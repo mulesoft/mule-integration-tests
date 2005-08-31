@@ -11,22 +11,24 @@
  * style license a copy of which has been included with this distribution in
  * the LICENSE.txt file.
  */
-package org.mule.test.integration.service;
+package org.mule.test.integration.providers.soap;
 
 /**
- * <code>PeopleService</code> is a test service that returns complex types
- * 
+ *
  * @author <a href="mailto:ross.mason@symphonysoft.com">Ross Mason</a>
  * @version $Revision$
  */
-
-public interface PeopleService
+public class GlueConnectorHttpFunctionalTestCase extends AxisConnectorHttpFunctionalTestCase
 {
-    public Person getPerson(String firstName);
+    static public class ComponentWithoutInterfaces
+    {
+        public String echo(String msg)
+        {
+            return msg;
+        }
+    }
 
-    public Person[] getPeople();
-
-    public void addPerson(Person person) throws Exception;
-
-    public Person addPerson(String firstname, String surname) throws Exception;
+    protected String getProtocol() {
+        return "glue";
+    }
 }
