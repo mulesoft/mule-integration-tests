@@ -15,8 +15,9 @@ package org.mule.test.integration.service;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mule.components.simple.EchoService;
+import org.mule.impl.RequestContext;
 import org.mule.tck.functional.FunctionalTestComponent;
+import org.mule.umo.UMOEventContext;
 import org.mule.umo.lifecycle.Disposable;
 
 import java.util.Date;
@@ -30,14 +31,14 @@ import java.util.Map;
  * @author <a href="mailto:ross.mason@symphonysoft.com">Ross Mason</a>
  * @version $Revision$
  */
-public class TestServiceComponent extends FunctionalTestComponent implements EchoService,
+public class TestNamedServiceComponent extends FunctionalTestComponent implements org.mule.components.simple.EchoService,
         DateService, PeopleService, Disposable
 {
     private static transient Log logger = LogFactory.getLog(FunctionalTestComponent.class);
 
     private static Map people = new HashMap();
 
-    public TestServiceComponent()
+    public TestNamedServiceComponent()
     {
         people.put("Barney", new Person("Barney", "Rubble"));
         people.put("Fred", new Person("Fred", "Flintstone"));
@@ -46,6 +47,7 @@ public class TestServiceComponent extends FunctionalTestComponent implements Ech
 
     public String echo(String echo)
     {
+        UMOEventContext context = RequestContext.getEventContext();
         return echo;
     }
 
@@ -91,7 +93,7 @@ public class TestServiceComponent extends FunctionalTestComponent implements Ech
     }
 
     /**
-     * A lifecycle method where implementor should free up any resources If an
+     * A lifecycle method where implementor should fee up any resources If an
      * exception is thrown it should just be logged and processing should
      * continue. This method should not throw Runtime exceptions
      */
