@@ -12,20 +12,15 @@
 * the LICENSE.txt file. 
 *
 */
-package org.mule.test.integration.providers.soap;
+package org.mule.test.integration.providers.soap.axis;
 
 import org.mortbay.http.HttpContext;
 import org.mortbay.http.SocketListener;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.ServletHandler;
 import org.mortbay.util.InetAddrPort;
-import org.mule.extras.client.MuleClient;
-import org.mule.providers.http.HttpConnector;
 import org.mule.providers.http.servlet.MuleReceiverServlet;
-import org.mule.umo.UMOMessage;
-
-import java.util.HashMap;
-import java.util.Map;
+import org.mule.test.integration.providers.soap.AbstractSoapFunctionalTestCase;
 
 /**
  * @author <a href="mailto:ross.mason@symphonysoft.com">Ross Mason</a>
@@ -36,7 +31,7 @@ public class AxisServletBindingTestCase extends AbstractSoapFunctionalTestCase
     private Server httpServer;
     public static final int HTTP_PORT = 8081;
 
-    protected void doPostFunctionalSetUp() throws Exception
+    protected void suitePostSetUp() throws Exception
     {
         httpServer = new Server();
         SocketListener socketListener = new SocketListener(new InetAddrPort(HTTP_PORT));
@@ -52,16 +47,12 @@ public class AxisServletBindingTestCase extends AbstractSoapFunctionalTestCase
         httpServer.start();
     }
 
-    String getProtocol() {
-        return "axis";
-    }
-
-    protected void doFunctionalTearDown() throws Exception {
+    protected void suiteTearDown() throws Exception {
         httpServer.stop();
     }
 
     public String getConfigResources() {
-        return "org/mule/test/integration/providers/soap/axis-test-servlet-mule-config.xml";
+        return "org/mule/test/integration/providers/soap/axis/axis-test-servlet-mule-config.xml";
     }
 
     protected String getRequestResponseEndpoint() {
@@ -81,7 +72,7 @@ public class AxisServletBindingTestCase extends AbstractSoapFunctionalTestCase
     }
 
     protected String getSendReceiveComplexEndpoint2() {
-        return "axis:http://localhost:" + HTTP_PORT + "/services/mycomponent?method=getPerson&param=Ross";
+        return "axis:http://localhost:" + HTTP_PORT + "/services/mycomponent?method=getPerson&param=Dino";
     }
 
     protected String getReceiveComplexCollectionEndpoint() {
@@ -93,20 +84,14 @@ public class AxisServletBindingTestCase extends AbstractSoapFunctionalTestCase
     }
 
     protected String getDispatchAsyncComplexEndpoint2() {
-        return "axis:http://localhost:" + HTTP_PORT + "/services/mycomponent?method=getPerson&param=Joe";
+        return "axis:http://localhost:" + HTTP_PORT + "/services/mycomponent?method=getPerson&param=Betty";
     }
 
     protected String getTestExceptionEndpoint() {
         return "axis:http://localhost:" + HTTP_PORT + "/services/mycomponent?method=getDate";
     }
 
-    public void testLocationUrlInWSDL() throws Exception {
-        Map props = new HashMap();
-        props.put(HttpConnector.HTTP_METHOD_PROPERTY, "GET");
-        MuleClient client = new MuleClient();
-        UMOMessage result = client.send("http://localhost:" + HTTP_PORT + "/services/mycomponent?wsdl", null, props);
-        assertNotNull(result);
-        assertTrue(result.getPayloadAsString().indexOf("location=\"http://localhost:" + HTTP_PORT + "/services/mycomponent") > -1);
-        System.out.println(result.getPayloadAsString());
+    protected String getWsdlEndpoint() {
+        return "http://localhost:" + HTTP_PORT + "/services/mycomponent?wsdl";
     }
 }

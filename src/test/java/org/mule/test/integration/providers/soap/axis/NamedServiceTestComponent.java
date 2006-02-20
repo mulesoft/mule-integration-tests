@@ -12,7 +12,7 @@
  * the LICENSE.txt file. 
  *
  */
-package org.mule.test.integration.providers.soap;
+package org.mule.test.integration.providers.soap.axis;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
