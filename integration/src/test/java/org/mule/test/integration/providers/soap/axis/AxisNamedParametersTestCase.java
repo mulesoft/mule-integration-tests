@@ -12,7 +12,7 @@
  * the LICENSE.txt file.
  *
  */
-package org.mule.test.integration.providers.soap;
+package org.mule.test.integration.providers.soap.axis;
 
 import org.mule.config.MuleProperties;
 import org.mule.extras.client.MuleClient;
@@ -33,7 +33,7 @@ import java.util.Map;
 public class AxisNamedParametersTestCase extends FunctionalTestCase
 {
     protected String getConfigResources() {
-        return "org/mule/test/integration/providers/soap/axis-named-param-mule-config.xml";
+        return "org/mule/test/integration/providers/soap/axis/axis-named-param-mule-config.xml";
     }
 
     public void testNamedParameters() throws Exception
