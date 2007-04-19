@@ -8,30 +8,27 @@
  * LICENSE.txt file.
  */
 
-package org.mule.test.integration.providers.soap.axis;
+package org.mule.test.integration.routing.nested;
 
 import org.mule.extras.client.MuleClient;
 import org.mule.tck.FunctionalTestCase;
+import org.mule.umo.UMOException;
 import org.mule.umo.UMOMessage;
 
-public class VmToAxisProxyTestCase extends FunctionalTestCase
+public class NestedRouterTestCase extends FunctionalTestCase
 {
-
     protected String getConfigResources()
     {
-        return "org/mule/test/integration/providers/soap/axis/vm-to-axis-proxy-mule-config.xml";
+        return "org/mule/test/integration/routing/nested/nestedrouter-test.xml";
     }
 
-    public void testWSProxy() throws Exception
+    public void testNestedRouter() throws UMOException
     {
-        if (isOffline("org.mule.test.integration.providers.soap.axis.VmToAxisProxyTestCase.testWSProxy()"))
-        {
-            return;
-        }
-
         MuleClient client = new MuleClient();
-        UMOMessage result = client.send("vm://proxy", "ibm", null);
-        assertNotNull(result);
+        String message = "Mule";
+        client.dispatch("vm://invoker.in", message, null);
+        UMOMessage reply = client.receive("vm://invoker.out", 10000);
+        assertNotNull(reply);
+        assertEquals("Received: Hello " + message, reply.getPayload());
     }
-
 }
