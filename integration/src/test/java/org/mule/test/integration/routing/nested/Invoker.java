@@ -8,12 +8,24 @@
  * LICENSE.txt file.
  */
 
-package org.mule.test.integration.providers.soap.axis;
+package org.mule.test.integration.routing.nested;
 
-public class AxisConnectorJmsFunctionalTestCase extends AxisConnectorVMFunctionalTestCase
+public class Invoker
 {
-    protected String getTransportProtocol()
+    private HelloInterface hello;
+
+    public String invoke(String s)
     {
-        return "jms";
+        return "Received: " + hello.hello(s);
+    }
+    
+    public void setHello(HelloInterface hello)
+    {
+        this.hello = hello;
+    }
+
+    public HelloInterface getHello()
+    {
+        return hello;
     }
 }

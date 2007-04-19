@@ -8,17 +8,12 @@
  * LICENSE.txt file.
  */
 
-package org.mule.test.integration.providers.soap.axis;
+package org.mule.test.integration.routing.nested;
 
-public class Calculator implements CalculatorInterface
+public class HelloService implements HelloInterface
 {
-    public long add(long i1, long i2)
+    public String hello(String s)
     {
-        return i1 + i2;
-    }
-
-    public int subtract(int i1, int i2)
-    {
-        return i1 - i2;
+        return "Hello " + s;
     }
 }
