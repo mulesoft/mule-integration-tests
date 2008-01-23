@@ -8,17 +8,12 @@
  * LICENSE.txt file.
  */
 
-package org.mule.test.integration.providers.jdbc;
+package org.mule.test.integration.transport.file;
 
-import org.mule.providers.jdbc.JdbcTransactionFactory;
-import org.mule.umo.UMOTransactionFactory;
-
-public class JdbcTransactionalJdbcFunctionalTestCase extends AbstractJdbcTransactionalFunctionalTestCase
+public class FileAppendEndpointTestCase extends FileAppendConnectorTestCase
 {
-
-    protected UMOTransactionFactory getTransactionFactory()
+    protected String getConfigResources()
     {
-        return new JdbcTransactionFactory();
+        return "org/mule/test/integration/providers/file/mule-fileappend-connector-config.xml";
     }
-
 }

@@ -8,13 +8,13 @@
  * LICENSE.txt file.
  */
 
-package org.mule.test.integration.providers.axis;
+package org.mule.test.integration.transport.axis;
 
+import org.mule.DefaultMuleMessage;
+import org.mule.api.MuleMessage;
 import org.mule.extras.client.MuleClient;
-import org.mule.impl.MuleMessage;
-import org.mule.providers.soap.axis.AxisConnector;
 import org.mule.tck.FunctionalTestCase;
-import org.mule.umo.UMOMessage;
+import org.mule.transport.soap.axis.AxisConnector;
 
 
 public abstract class AbstractAxisOverJMSWithTransactionsTestCase extends FunctionalTestCase
@@ -38,8 +38,8 @@ public abstract class AbstractAxisOverJMSWithTransactionsTestCase extends Functi
 
     public void testTransactionsOverAxis() throws Exception{
         MuleClient client = new MuleClient();
-        client.dispatch("axis:jms://TestComponent?method=echo", new MuleMessage("test"));
-        UMOMessage message = client.request("jms://testout", 5000);
+        client.dispatch("axis:jms://TestComponent?method=echo", new DefaultMuleMessage("test"));
+        MuleMessage message = client.request("jms://testout", 5000);
         assertNotNull(message.getPayload());
         assertTrue(message.getPayloadAsString().equals("test"));
     }

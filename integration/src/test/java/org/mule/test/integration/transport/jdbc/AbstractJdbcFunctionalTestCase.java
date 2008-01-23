@@ -8,19 +8,19 @@
  * LICENSE.txt file.
  */
 
-package org.mule.test.integration.providers.jdbc;
+package org.mule.test.integration.transport.jdbc;
 
 import org.mule.RegistryContext;
+import org.mule.api.MuleEventContext;
+import org.mule.api.model.Model;
+import org.mule.api.transport.Connector;
 import org.mule.config.PoolingProfile;
-import org.mule.impl.model.seda.SedaModel;
-import org.mule.providers.jdbc.JdbcConnector;
-import org.mule.providers.jdbc.JdbcUtils;
-import org.mule.providers.jdbc.util.MuleDerbyUtils;
+import org.mule.model.seda.SedaModel;
 import org.mule.tck.AbstractMuleTestCase;
 import org.mule.tck.functional.FunctionalTestComponent;
-import org.mule.umo.UMOEventContext;
-import org.mule.umo.model.UMOModel;
-import org.mule.umo.provider.UMOConnector;
+import org.mule.transport.jdbc.JdbcConnector;
+import org.mule.transport.jdbc.JdbcUtils;
+import org.mule.transport.jdbc.util.MuleDerbyUtils;
 
 import java.sql.Connection;
 import java.util.HashMap;
@@ -51,8 +51,8 @@ public abstract class AbstractJdbcFunctionalTestCase extends AbstractMuleTestCas
     public static String CLIENT_CONNECTION_STRING ;
     public static final String CLIENT_DRIVER_NAME = "org.apache.derby.jdbc.ClientDriver";
 
-    protected UMOConnector connector;
-    protected UMOModel model;
+    protected Connector connector;
+    protected Model model;
     protected DataSource dataSource;
     
     private static boolean derbySetupDone = false;
@@ -129,7 +129,7 @@ public abstract class AbstractJdbcFunctionalTestCase extends AbstractMuleTestCas
 
     public static class JdbcFunctionalTestComponent extends FunctionalTestComponent
     {
-        public Object onCall(UMOEventContext context) throws Exception
+        public Object onCall(MuleEventContext context) throws Exception
         {
             if (getEventCallback() != null)
             {
@@ -162,7 +162,7 @@ public abstract class AbstractJdbcFunctionalTestCase extends AbstractMuleTestCas
         return dataSource;
     }
 
-    public UMOConnector createConnector() throws Exception
+    public Connector createConnector() throws Exception
     {
         JdbcConnector connector = new JdbcConnector();
         connector.setDataSource(getDataSource());

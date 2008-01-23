@@ -8,15 +8,15 @@
  * LICENSE.txt file.
  */
 
-package org.mule.test.integration.providers.file;
+package org.mule.test.integration.transport.file;
 
 
+import org.mule.api.MuleEventContext;
+import org.mule.api.context.notification.ServerNotification;
 import org.mule.tck.FunctionalTestCase;
 import org.mule.tck.functional.FunctionalTestComponent;
 import org.mule.tck.functional.FunctionalTestNotification;
 import org.mule.tck.functional.FunctionalTestNotificationListener;
-import org.mule.umo.UMOEventContext;
-import org.mule.umo.manager.UMOServerNotification;
 import org.mule.util.FileUtils;
 import org.mule.util.IOUtils;
 
@@ -86,7 +86,7 @@ public class FileFunctionalTestCase extends FunctionalTestCase implements Functi
         }
     }
 
-    public void onNotification(UMOServerNotification notification)
+    public void onNotification(ServerNotification notification)
     {
         synchronized (this)
         {
@@ -98,7 +98,7 @@ public class FileFunctionalTestCase extends FunctionalTestCase implements Functi
 
     public static class FileTestComponent extends FunctionalTestComponent
     {
-        public Object onCall(UMOEventContext context) throws Exception
+        public Object onCall(MuleEventContext context) throws Exception
         {
             // there should not be any transformers configured by default, so the
             // return message should be a byte[]

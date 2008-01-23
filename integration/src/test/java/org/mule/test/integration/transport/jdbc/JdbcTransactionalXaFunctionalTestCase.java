@@ -8,11 +8,11 @@
  * LICENSE.txt file.
  */
 
-package org.mule.test.integration.providers.jdbc;
+package org.mule.test.integration.transport.jdbc;
 
-import org.mule.providers.jdbc.xa.DataSourceWrapper;
+import org.mule.api.transaction.TransactionFactory;
 import org.mule.transaction.XaTransactionFactory;
-import org.mule.umo.UMOTransactionFactory;
+import org.mule.transport.jdbc.xa.DataSourceWrapper;
 
 import javax.sql.DataSource;
 import javax.transaction.TransactionManager;
@@ -40,7 +40,7 @@ public class JdbcTransactionalXaFunctionalTestCase extends AbstractJdbcTransacti
        muleContext.setTransactionManager(txManager);
     }
 
-    protected UMOTransactionFactory getTransactionFactory()
+    protected TransactionFactory getTransactionFactory()
     {
         return new XaTransactionFactory();
     }
