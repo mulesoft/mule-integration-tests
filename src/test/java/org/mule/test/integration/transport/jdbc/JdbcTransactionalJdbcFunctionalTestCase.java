@@ -8,17 +8,17 @@
  * LICENSE.txt file.
  */
 
-package org.mule.test.integration.providers.axis;
+package org.mule.test.integration.transport.jdbc;
 
-/**
- * Embedded transaction factory
- */
-public class AxisOverJMSWithTransactionsAlternateTestCase extends AbstractAxisOverJMSWithTransactionsTestCase
+import org.mule.api.transaction.TransactionFactory;
+import org.mule.transport.jdbc.JdbcTransactionFactory;
+
+public class JdbcTransactionalJdbcFunctionalTestCase extends AbstractJdbcTransactionalFunctionalTestCase
 {
 
-    protected String getConfigResources()
+    protected TransactionFactory getTransactionFactory()
     {
-        return "org/mule/test/integration/providers/axis/axis-over-jms-config-alternate.xml";
+        return new JdbcTransactionFactory();
     }
 
 }

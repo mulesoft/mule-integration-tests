@@ -8,14 +8,14 @@
  * LICENSE.txt file.
  */
 
-package org.mule.test.integration.providers.xmpp;
+package org.mule.test.integration.transport.xmpp;
 
-import org.mule.impl.endpoint.MuleEndpointURI;
-import org.mule.providers.xmpp.XmppConnector;
+import org.mule.api.endpoint.EndpointException;
+import org.mule.api.endpoint.EndpointURI;
+import org.mule.api.transport.Connector;
+import org.mule.endpoint.MuleEndpointURI;
 import org.mule.tck.FunctionalTestCase;
-import org.mule.umo.endpoint.EndpointException;
-import org.mule.umo.endpoint.UMOEndpointURI;
-import org.mule.umo.provider.UMOConnector;
+import org.mule.transport.xmpp.XmppConnector;
 
 import org.jivesoftware.smack.XMPPConnection;
 
@@ -54,7 +54,7 @@ public class XmppFunctionalTestCase extends FunctionalTestCase
         //assertTrue(callbackCount > 100);
     }
 
-    protected UMOEndpointURI getInDest()
+    protected EndpointURI getInDest()
     {
         try
         {
@@ -67,7 +67,7 @@ public class XmppFunctionalTestCase extends FunctionalTestCase
         }
     }
 
-    protected UMOEndpointURI getOutDest()
+    protected EndpointURI getOutDest()
     {
         try
         {
@@ -80,7 +80,7 @@ public class XmppFunctionalTestCase extends FunctionalTestCase
         }
     }
 
-    protected UMOConnector createConnector() throws Exception
+    protected Connector createConnector() throws Exception
     {
         connector = new XmppConnector();
         connector.setName("test");

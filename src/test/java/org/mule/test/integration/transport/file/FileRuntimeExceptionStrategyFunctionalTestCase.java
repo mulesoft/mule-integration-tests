@@ -8,19 +8,18 @@
  * LICENSE.txt file.
  */
 
-package org.mule.test.integration.providers.file;
+package org.mule.test.integration.transport.file;
 
 import org.mule.tck.FunctionalTestCase;
 import org.mule.util.FileUtils;
 
 import java.io.File;
 
-public class FileExceptionStrategyFunctionalTestCase extends FunctionalTestCase
+public class FileRuntimeExceptionStrategyFunctionalTestCase extends FunctionalTestCase
 {
-
     protected String getConfigResources()
     {
-        return "org/mule/test/integration/providers/file/file-exception-strategy.xml";
+        return "org/mule/test/integration/providers/file/file-runtime-exception-strategy.xml";
     }
 
     public void testExceptionInTransformer() throws Exception

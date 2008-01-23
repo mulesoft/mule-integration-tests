@@ -8,12 +8,12 @@
  * LICENSE.txt file.
  */
 
-package org.mule.test.integration.providers.jms;
+package org.mule.test.integration.transport.jms;
 
+import org.mule.api.MuleException;
+import org.mule.api.MuleMessage;
 import org.mule.extras.client.MuleClient;
 import org.mule.tck.FunctionalTestCase;
-import org.mule.umo.UMOException;
-import org.mule.umo.UMOMessage;
 
 public class NestedRouterTestCase extends FunctionalTestCase
 {
@@ -22,12 +22,12 @@ public class NestedRouterTestCase extends FunctionalTestCase
         return "org/mule/test/integration/providers/jms/nestedrouter-test.xml";
     }
 
-    public void testNestedRouter() throws UMOException
+    public void testNestedRouter() throws MuleException
     {
         MuleClient client = new MuleClient();
         String message = "Mule";
         client.dispatch("jms://invoker.in", message, null);
-        UMOMessage reply = client.request("jms://invoker.out", 10000);
+        MuleMessage reply = client.request("jms://invoker.out", 10000);
         assertNotNull(reply);
         assertEquals("Received: Hello " + message + " " + 0xC0DE, reply.getPayload());
     }

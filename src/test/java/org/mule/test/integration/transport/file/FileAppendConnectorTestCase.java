@@ -8,7 +8,7 @@
  * LICENSE.txt file.
  */
 
-package org.mule.test.integration.providers.file;
+package org.mule.test.integration.transport.file;
 
 import org.mule.extras.client.MuleClient;
 import org.mule.tck.FunctionalTestCase;

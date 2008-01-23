@@ -8,12 +8,19 @@
  * LICENSE.txt file.
  */
 
-package org.mule.test.integration.providers.file;
+package org.mule.test.integration.transport.axis;
 
-public class FileAppendEndpointTestCase extends FileAppendConnectorTestCase
+/**
+ * Reference to a global transaction factort
+ */
+public class AxisOverJMSWithTransactionsTestCase extends AbstractAxisOverJMSWithTransactionsTestCase
 {
+
     protected String getConfigResources()
     {
-        return "org/mule/test/integration/providers/file/mule-fileappend-connector-config.xml";
+        return "org/mule/test/integration/providers/axis/axis-over-jms-config.xml";
     }
+
 }
+
+
