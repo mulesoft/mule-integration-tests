@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesource.org/schema/mule/core/2.0"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:spring="http://www.springframework.org/schema/beans"
+       xmlns:vm="http://www.mulesource.org/schema/mule/vm/2.0"
+       xsi:schemaLocation="
+               http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+               http://www.mulesource.org/schema/mule/core/2.0 http://www.mulesource.org/schema/mule/core/2.0/mule.xsd
+               http://www.mulesource.org/schema/mule/vm/2.0 http://www.mulesource.org/schema/mule/vm/2.0/mule-vm.xsd">
+
+    <configuration serverId="many-sends">
+        <default-threading-profile threadWaitTimeout="60000" threadTTL="60000"/>
+    </configuration>
+
+    <model name="synchTestModel">
+        <service name="mySynchService">
+            <inbound>
+                <vm:inbound-endpoint path="s-in" synchronous="true"/>
+            </inbound>
+            <component>
+                <pooled-object class="org.mule.tck.functional.FunctionalTestComponent">
+                    <property key="returnMessage" value="Polo"/>
+                </pooled-object>
+            </component>
+        </service>
+    </model>
+
+</mule>
