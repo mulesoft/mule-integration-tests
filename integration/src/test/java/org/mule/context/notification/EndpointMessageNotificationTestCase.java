@@ -12,7 +12,7 @@ package org.mule.context.notification;
 
 import org.mule.module.client.MuleClient;
 
-public class MessageNotificationTestCase extends AbstractNotificationTestCase
+public class EndpointMessageNotificationTestCase extends AbstractNotificationTestCase
 {
 
     public static final String SERVICE_1 = "service-1";
@@ -21,7 +21,7 @@ public class MessageNotificationTestCase extends AbstractNotificationTestCase
 
     protected String getConfigResources()
     {
-        return "org/mule/test/integration/notifications/message-notification-test.xml";
+        return "org/mule/test/integration/notifications/endpoint-message-notification-test.xml";
     }
 
     public void doTest() throws Exception
