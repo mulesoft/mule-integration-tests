@@ -10,8 +10,6 @@
                    http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
                    http://www.mulesoft.org/schema/mule/jbossts http://www.mulesoft.org/schema/mule/jbossts/current/mule-jbossts.xsd">
 
-    <jbossts:transaction-manager />
-
     <vm:connector name="vm-connector-large">
         <receiver-threading-profile maxThreadsActive="50" poolExhaustedAction="WAIT" />
         <dispatcher-threading-profile doThreading="false" />
