@@ -8,6 +8,6 @@
                http://www.mulesoft.org/schema/mule/domain http://www.mulesoft.org/schema/mule/domain/current/mule-domain.xsd
                http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
 
-    <http:connector name="sharedHttpConnector"/>
+    <http:listener-config name="sharedHttpListenerConfig" host="localhost" port="${port1}"/>
 
 </mule-domain>
