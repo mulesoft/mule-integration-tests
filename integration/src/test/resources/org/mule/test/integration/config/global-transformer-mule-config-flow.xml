@@ -6,12 +6,8 @@
 
     <string-to-byte-array-transformer name="StringtoByteArray"/>
 
-    <endpoint name="in" address="vm://in" exchange-pattern="request-response"/>
-
-    <flow name="Bridge">
-        <inbound-endpoint ref="in">
-            <transformer ref="StringtoByteArray"/>
-        </inbound-endpoint>
+    <flow name="Test">
+        <transformer ref="StringtoByteArray"/>
         <echo-component/>
     </flow>
 

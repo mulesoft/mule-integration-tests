@@ -7,9 +7,7 @@
 package org.mule.test.integration.config;
 
 import static org.junit.Assert.assertTrue;
-import org.mule.api.MuleException;
 import org.mule.api.MuleMessage;
-import org.mule.api.client.MuleClient;
 import org.mule.functional.junit4.FunctionalTestCase;
 
 import org.junit.Test;
@@ -17,20 +15,19 @@ import org.junit.Test;
 /*
  * This test has been added due to MULE-610
  */
-public class GlobalEndpointAndTransformerTestCase extends FunctionalTestCase
+public class GlobalTransformerTestCase extends FunctionalTestCase
 {
 
     @Override
     protected String getConfigFile()
     {
-        return "org/mule/test/integration/config/globalendpointandtransformer-mule-config-flow.xml";
+        return "org/mule/test/integration/config/global-transformer-mule-config-flow.xml";
     }
 
     @Test
-    public void testNormal() throws MuleException
+    public void testNormal() throws Exception
     {
-        MuleClient client = muleContext.getClient();
-        MuleMessage msg=client.send("vm://in", getTestMuleMessage("HELLO!"));
+        MuleMessage msg= flowRunner("Test").withPayload(getTestMuleMessage("HELLO!")).run().getMessage();
         assertTrue(msg.getPayload() instanceof byte[]);
     }
 }

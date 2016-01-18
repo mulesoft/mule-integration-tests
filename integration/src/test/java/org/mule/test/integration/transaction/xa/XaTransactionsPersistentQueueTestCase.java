@@ -6,23 +6,25 @@
  */
 package org.mule.test.integration.transaction.xa;
 
-import static org.junit.Assert.assertNull;
-import org.mule.api.MuleMessage;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertThat;
+import static org.mule.api.transaction.TransactionConfig.ACTION_ALWAYS_BEGIN;
+
 import org.mule.api.client.MuleClient;
 import org.mule.functional.junit4.FunctionalTestCase;
+import org.mule.transaction.XaTransactionFactory;
 
 import org.junit.Test;
 
-public class VmXaTransactionsPersistentQueueTestCase extends FunctionalTestCase
+public class XaTransactionsPersistentQueueTestCase extends FunctionalTestCase
 {
     private static final String TEST_MESSAGE = "TEST_MESSAGE";
-
-    private final long timeout = getTestTimeoutSecs() * 1000 / 30;
 
     @Override
     protected String getConfigFile()
     {
-        return "org/mule/test/integration/transaction/vm-xa-transaction-persistent-queue-flow.xml";
+        return "org/mule/test/integration/transaction/xa-transaction-persistent-queue-flow.xml";
     }
 
     @Test
@@ -30,7 +32,8 @@ public class VmXaTransactionsPersistentQueueTestCase extends FunctionalTestCase
     {
         MuleClient client = muleContext.getClient();
 
-        MuleMessage msg = client.send("vm://in", TEST_MESSAGE, null, (int) timeout);
-        assertNull(msg);
+        flowRunner("XaTestService").withPayload(TEST_MESSAGE).asynchronously().transactionally(ACTION_ALWAYS_BEGIN, new XaTransactionFactory()).run().getMessage();
+
+        assertThat(client.request("test://finish", RECEIVE_TIMEOUT), not(nullValue()));
     }
 }
