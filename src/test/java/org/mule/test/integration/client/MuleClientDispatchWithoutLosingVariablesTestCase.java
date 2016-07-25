@@ -34,7 +34,7 @@ public class MuleClientDispatchWithoutLosingVariablesTestCase extends Functional
     @Override
     protected String getConfigFile()
     {
-        return "org/mule/test/integration/client/client-flow-session-vars-when-dispatch-flow.xml";
+        return "org/mule/test/integration/client/client-flow-vars-when-dispatch-flow.xml";
     }
 
     private void doSendMessageToHttp(String flowName) throws Exception
@@ -58,12 +58,6 @@ public class MuleClientDispatchWithoutLosingVariablesTestCase extends Functional
         doSendMessageToHttp("flowVarsFlowUsingProcessor");
     }
 
-    @Test
-    public void testSessionVarsAfterDispatchFromMessageProcessor() throws Exception
-    {
-        doSendMessageToHttp("sessionVarsFlowUsingProcessor");
-    }
-
     /**
      * When doing a dispatch from a JavaComponent the event was overwritten in ThreadLocal by
      * OptimizedRequestContext while processing it and before dispatching it to a different thread so
@@ -76,18 +70,6 @@ public class MuleClientDispatchWithoutLosingVariablesTestCase extends Functional
     public void testFlowVarsAfterDispatchFromJavaComponent() throws Exception
     {
         doSendMessageToHttp("flowVarsFlowUsingJavaComponent");
-    }
-
-    @Test
-    public void testSessionVarsAfterDispatchFromJavaComponent() throws Exception
-    {
-        doSendMessageToHttp("sessionVarsFlowUsingJavaComponent");
-    }
-
-    @Test
-    public void testSessionVarsFlowUsingJavaComponentRequestResponse() throws Exception
-    {
-        doSendMessageToHttp("sessionVarsFlowUsingJavaComponentRequestResponse");
     }
 
     public static class MessageProcessorDispatchFlowUsingNewMuleClient implements MessageProcessor

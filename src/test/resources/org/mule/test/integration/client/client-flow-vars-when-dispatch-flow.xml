@@ -36,15 +36,6 @@
         <test:assert expression="#[flowVars['ammount'] == '100']" />
     </flow>
 
-    <flow name="sessionVarsFlowUsingProcessor">
-        <http:listener path="sessionVarsFlowUsingProcessor" config-ref="listenerConfig"/>
-        <set-session-variable variableName="team" value="Sales"/>
-        <processor ref="myProcessor"/>
-        <set-session-variable variableName="ammount" value="100"/>
-        <test:assert expression="#[sessionVars.team == 'Sales']" />
-        <test:assert expression="#[sessionVars.ammount == '100']" />
-    </flow>
-
     <flow name="flowVarsFlowUsingJavaComponent">
         <http:listener path="flowVarsFlowUsingJavaComponent" config-ref="listenerConfig"/>
         <set-variable variableName="team" value="Sales"/>
@@ -52,23 +43,5 @@
         <set-variable variableName="ammount" value="100"/>
         <test:assert expression="#[flowVars['team'] == 'Sales']" />
         <test:assert expression="#[flowVars['ammount'] == '100']" />
-    </flow>
-
-    <flow name="sessionVarsFlowUsingJavaComponent">
-        <http:listener path="sessionVarsFlowUsingJavaComponent" config-ref="listenerConfig"/>
-        <set-session-variable variableName="team" value="Sales"/>
-        <component class="org.mule.test.integration.client.MuleClientDispatchWithoutLosingVariablesTestCase$JavaComponentDispatchFlowUsingNewMuleClient"/>
-        <set-session-variable variableName="ammount" value="100"/>
-        <test:assert expression="#[sessionVars.team == 'Sales']" />
-        <test:assert expression="#[sessionVars.ammount == '100']" />
-    </flow>
-
-    <flow name="sessionVarsFlowUsingJavaComponentRequestResponse">
-        <http:listener path="sessionVarsFlowUsingJavaComponentRequestResponse" config-ref="listenerConfig"/>
-        <set-session-variable variableName="team" value="Sales"/>
-        <component class="org.mule.test.integration.client.MuleClientDispatchWithoutLosingVariablesTestCase$JavaComponentSendFlowUsingNewMuleClient"/>
-        <set-session-variable variableName="ammount" value="100"/>
-        <test:assert expression="#[sessionVars.team == 'Sales']" />
-        <test:assert expression="#[sessionVars.ammount == '100']" />
     </flow>
 </mule>
