@@ -31,7 +31,7 @@ import org.hamcrest.TypeSafeMatcher;
 import org.junit.Rule;
 import org.junit.Test;
 
-public class HttpListenerResponseBuilderTestCase extends AbstractHttpTestCase {
+public class HttpListenerSuccessResponseBuilderTestCase extends AbstractHttpTestCase {
 
   private static final String FAIL = "fail";
   public static final int TIMEOUT = 100000;
