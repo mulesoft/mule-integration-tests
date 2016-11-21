@@ -17,7 +17,7 @@ import org.mule.runtime.core.retry.policies.SimpleRetryPolicyTemplate;
 
 import org.junit.Test;
 
-public class DefaultRetryPolicyTestCase extends AbstractIntegrationTestCase {
+public class DefaultRetryPolicyProviderTestCase extends AbstractIntegrationTestCase {
 
   @Override
   protected String getConfigFile() {
