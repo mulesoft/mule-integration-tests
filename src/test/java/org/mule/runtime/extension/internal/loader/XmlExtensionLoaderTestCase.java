@@ -4,29 +4,26 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.runtime.extension.internal.introspection.describer;
+package org.mule.runtime.extension.internal.loader;
 
-import static java.lang.Thread.currentThread;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.mule.runtime.extension.internal.introspection.describer.XmlBasedDescriber.CONFIG_NAME;
+import static org.mule.runtime.extension.internal.loader.XmlExtensionLoaderDelegate.CONFIG_NAME;
+import static org.mule.runtime.extension.internal.loader.XmlExtensionModelLoader.RESOURCE_XML;
 import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.api.meta.model.config.ConfigurationModel;
-import org.mule.runtime.api.meta.model.declaration.fluent.ExtensionDeclarer;
 import org.mule.runtime.api.meta.model.operation.OperationModel;
 import org.mule.runtime.config.spring.dsl.model.extension.xml.GlobalElementComponentModelModelProperty;
 import org.mule.runtime.config.spring.dsl.model.extension.xml.OperationComponentModelModelProperty;
-import org.mule.runtime.core.registry.SpiServiceRegistry;
-import org.mule.runtime.extension.api.declaration.DescribingContext;
-import org.mule.runtime.module.extension.internal.DefaultDescribingContext;
-import org.mule.runtime.module.extension.internal.introspection.DefaultExtensionFactory;
 import org.mule.tck.junit4.AbstractMuleTestCase;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import org.junit.Test;
 
-public class XmlBasedDescriberTestCase extends AbstractMuleTestCase {
+public class XmlExtensionLoaderTestCase extends AbstractMuleTestCase {
 
   @Test
   public void testModuleSimple() {
@@ -117,20 +114,9 @@ public class XmlBasedDescriberTestCase extends AbstractMuleTestCase {
   }
 
   private ExtensionModel getExtensionModelFrom(String modulePath) {
-    DescribingContext context = getContext();
-    XmlBasedDescriber describer = new XmlBasedDescriber(modulePath);
-    ExtensionDeclarer extensionDeclarer = describer.describe(context);
+    Map<String, Object> parameters = new HashMap<>();
+    parameters.put(RESOURCE_XML, modulePath);
 
-    DefaultExtensionFactory defaultExtensionFactory =
-        new DefaultExtensionFactory(new SpiServiceRegistry(), currentThread().getContextClassLoader());
-    return defaultExtensionFactory.createFrom(extensionDeclarer, context);
+    return new XmlExtensionModelLoader().loadExtensionModel(getClass().getClassLoader(), parameters);
   }
-
-  /**
-   * @return the default implementation with the current test class loader
-   */
-  private DescribingContext getContext() {
-    return new DefaultDescribingContext(getClass().getClassLoader());
-  }
-
 }

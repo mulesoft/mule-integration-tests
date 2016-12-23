@@ -4,7 +4,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.runtime.extension.internal.introspection.describer;
+package org.mule.runtime.extension.internal.loader;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.lang.String.format;
@@ -19,6 +19,7 @@ import org.mule.metadata.api.model.MetadataType;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.meta.Category;
 import org.mule.runtime.api.meta.MuleVersion;
+import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.api.meta.model.XmlDslModel;
 import org.mule.runtime.api.meta.model.declaration.fluent.ConfigurationDeclarer;
 import org.mule.runtime.api.meta.model.declaration.fluent.ExtensionDeclarer;
@@ -36,12 +37,8 @@ import org.mule.runtime.config.spring.dsl.processor.ConfigLine;
 import org.mule.runtime.config.spring.dsl.processor.xml.XmlApplicationParser;
 import org.mule.runtime.core.registry.SpiServiceRegistry;
 import org.mule.runtime.dsl.api.component.ComponentIdentifier;
-import org.mule.runtime.extension.api.declaration.DescribingContext;
-import org.mule.runtime.extension.api.declaration.spi.Describer;
 import org.mule.runtime.extension.api.declaration.type.ExtensionsTypeLoaderFactory;
-import org.mule.runtime.extension.api.model.property.ConfigTypeModelProperty;
-import org.mule.runtime.extension.api.runtime.config.ConfigurationFactory;
-import org.mule.runtime.module.extension.internal.model.property.ConfigurationFactoryModelProperty;
+import org.mule.runtime.extension.api.loader.ExtensionLoadingContext;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -59,12 +56,11 @@ import java.util.stream.Collectors;
 import org.w3c.dom.Document;
 
 /**
- * Implementation of {@link Describer} which generates a {@link ExtensionDeclarer} by scanning an XML on from a file
- * provided in the constructor.
+ * Describes an {@link ExtensionModel} by scanning an XML provided in the constructor
  *
  * @since 4.0
  */
-public class XmlBasedDescriber implements Describer {
+final class XmlExtensionLoaderDelegate {
 
   private static final String PARAMETER_NAME = "name";
   private static final String PARAMETER_DEFAULT_VALUE = "defaultValue";
@@ -107,16 +103,12 @@ public class XmlBasedDescriber implements Describer {
   /**
    * @param modulePath relative path to a file that will be loaded from the current {@link ClassLoader}. Non null.
    */
-  public XmlBasedDescriber(String modulePath) {
+  public XmlExtensionLoaderDelegate(String modulePath) {
     checkArgument(!isEmpty(modulePath), "modulePath must not be empty");
     this.modulePath = modulePath;
   }
 
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public ExtensionDeclarer describe(DescribingContext context) {
+  public void declare(ExtensionLoadingContext context) {
     // We will assume the context classLoader of the current thread will be the one defined for the plugin (which is not filtered and will allow us to access any resource in it
     URL resource = currentThread().getContextClassLoader().getResource(modulePath);
     if (resource == null) {
@@ -136,9 +128,7 @@ public class XmlBasedDescriber implements Describer {
     ComponentModel componentModel =
         componentModelReader.extractComponentDefinitionModel(parseModule.get(), resource.getFile());
 
-    ExtensionDeclarer declarer = context.getExtensionDeclarer();
-    loadModuleExtension(declarer, componentModel);
-    return declarer;
+    loadModuleExtension(context.getExtensionDeclarer(), componentModel);
   }
 
   private Document getModuleDocument(XmlConfigurationDocumentLoader xmlConfigurationDocumentLoader, URL resource) {
@@ -199,21 +189,6 @@ public class XmlBasedDescriber implements Describer {
 
     if (!properties.isEmpty() || !globalElementsComponentModel.isEmpty()) {
       ConfigurationDeclarer configurationDeclarer = declarer.withConfig(CONFIG_NAME);
-      // TODO(fernandezlautaro): MULE-11057	validate with SDK team if it's really mandatory to configure a factory for configs
-      configurationDeclarer.withModelProperty(new ConfigurationFactoryModelProperty(new ConfigurationFactory() {
-
-        @Override
-        public Object newInstance() {
-          // TODO(fernandezlautaro): MULE-11057	clean this
-          return null;
-        }
-
-        @Override
-        public Class<?> getObjectType() {
-          // TODO(fernandezlautaro): MULE-11057	clean this
-          return String.class;
-        }
-      }));
       configurationDeclarer.withModelProperty(new GlobalElementComponentModelModelProperty(globalElementsComponentModel));
 
       properties.stream().forEach(param -> extractParameter(configurationDeclarer, param));
@@ -242,13 +217,6 @@ public class XmlBasedDescriber implements Describer {
 
     extractOperationParameters(operationDeclarer, operationModel);
     extractOutputType(operationDeclarer, operationModel);
-
-    if (declarer instanceof ConfigurationDeclarer) {
-      // TODO(fernandezlautaro): MULE-11057	clean this
-      operationDeclarer.withModelProperty(new ConfigTypeModelProperty(
-                                                                      ExtensionsTypeLoaderFactory.getDefault().createTypeLoader()
-                                                                          .load(String.class)));
-    }
   }
 
   private void extractOperationParameters(OperationDeclarer operationDeclarer, ComponentModel componentModel) {

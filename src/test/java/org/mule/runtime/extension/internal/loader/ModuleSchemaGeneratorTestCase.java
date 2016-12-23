@@ -4,7 +4,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.runtime.extension.internal.introspection.describer;
+package org.mule.runtime.extension.internal.loader;
 
 import static java.io.File.separator;
 import static java.lang.Thread.currentThread;
@@ -13,23 +13,20 @@ import static org.custommonkey.xmlunit.XMLUnit.setIgnoreAttributeOrder;
 import static org.custommonkey.xmlunit.XMLUnit.setIgnoreComments;
 import static org.custommonkey.xmlunit.XMLUnit.setIgnoreWhitespace;
 import static org.custommonkey.xmlunit.XMLUnit.setNormalizeWhitespace;
-import static org.mule.runtime.core.util.ClassUtils.withContextClassLoader;
-import static org.mule.runtime.extension.internal.introspection.describer.XmlBasedDescriber.XSD_SUFFIX;
+import static org.mule.runtime.extension.internal.loader.XmlExtensionLoaderDelegate.XSD_SUFFIX;
+import static org.mule.runtime.extension.internal.loader.XmlExtensionModelLoader.RESOURCE_XML;
 import org.mule.runtime.api.meta.model.ExtensionModel;
-import org.mule.runtime.core.registry.SpiServiceRegistry;
 import org.mule.runtime.core.util.IOUtils;
-import org.mule.runtime.extension.api.declaration.DescribingContext;
 import org.mule.runtime.extension.api.resources.GeneratedResource;
-import org.mule.runtime.extension.api.runtime.ExtensionFactory;
-import org.mule.runtime.module.extension.internal.DefaultDescribingContext;
 import org.mule.runtime.module.extension.internal.capability.xml.schema.SchemaXmlResourceFactory;
-import org.mule.runtime.module.extension.internal.introspection.DefaultExtensionFactory;
 import org.mule.tck.junit4.AbstractMuleTestCase;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -81,12 +78,9 @@ public class ModuleSchemaGeneratorTestCase extends AbstractMuleTestCase {
       String modulePath = moduleNamePrefix + ".xml";
 
       ClassLoader contextClassLoader = currentThread().getContextClassLoader();
-      DescribingContext context = new DefaultDescribingContext(contextClassLoader);
-      ExtensionFactory defaultExtensionFactory = new DefaultExtensionFactory(new SpiServiceRegistry(), contextClassLoader);
-      XmlBasedDescriber describer = new XmlBasedDescriber(modulePath);
-      ExtensionModel extensionModel =
-          withContextClassLoader(contextClassLoader,
-                                 () -> defaultExtensionFactory.createFrom(describer.describe(context), context));
+      Map<String, Object> parameters = new HashMap<>();
+      parameters.put(RESOURCE_XML, modulePath);
+      ExtensionModel extensionModel = new XmlExtensionModelLoader().loadExtensionModel(contextClassLoader, parameters);
 
       try {
         return new Object[] {extensionModel,
@@ -120,6 +114,7 @@ public class ModuleSchemaGeneratorTestCase extends AbstractMuleTestCase {
 
     Diff diff = XMLUnit.compareXML(expected, actual);
     if (!(diff.similar() && diff.identical())) {
+      System.out.println(actual);
       DetailedDiff detDiff = new DetailedDiff(diff);
       @SuppressWarnings("rawtypes")
       List differences = detDiff.getAllDifferences();
