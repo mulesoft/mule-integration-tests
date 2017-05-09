@@ -384,6 +384,12 @@
             <version>${project.version}</version>
             <classifier>mule-plugin</classifier>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>joda-time</artifactId>
+                    <groupId>joda-time</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 </project>
