@@ -39,4 +39,27 @@
       <scope>provided</scope>
     </dependency>
   </dependencies>
+
+
+  <repositories>
+    <repository>
+      <id>mule</id>
+      <name>Mule Repository</name>
+      <url>https://repository.mulesoft.org/nexus/content/repositories/public/</url>
+    </repository>
+    <repository>
+      <id>spring-snapshot</id>
+      <name>Spring Snapshot Repository</name>
+      <url>http://repo.spring.io/snapshot/</url>
+    </repository>
+  </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>mule-plugin</id>
+      <name>Mule Repository</name>
+      <url>https://repository.mulesoft.org/nexus/content/repositories/public/</url>
+    </pluginRepository>
+  </pluginRepositories>
+
 </project>
