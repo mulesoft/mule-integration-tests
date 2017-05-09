@@ -12,7 +12,7 @@
     <description>Micro-benchmarks to test the performance of core Mule functionality</description>
 
     <properties>
-        <formatterConfigPath>../../formatter.xml</formatterConfigPath>
+        <formatterConfigPath>../formatter.xml</formatterConfigPath>
     </properties>
 
     <build>

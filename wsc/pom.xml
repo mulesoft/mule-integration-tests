@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <properties>
-        <formatterConfigPath>../../formatter.xml</formatterConfigPath>
+        <formatterConfigPath>../formatter.xml</formatterConfigPath>
     </properties>
 
     <artifactId>mule-module-wsc-tests</artifactId>

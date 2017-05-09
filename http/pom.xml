@@ -12,7 +12,7 @@
     <name>Mule HTTP Module Integration Tests</name>
 
     <properties>
-        <formatterConfigPath>../../formatter.xml</formatterConfigPath>
+        <formatterConfigPath>../formatter.xml</formatterConfigPath>
     </properties>
 
     <build>

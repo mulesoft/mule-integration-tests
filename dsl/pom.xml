@@ -15,7 +15,7 @@
     <name>Mule Extensions DSL Integration Tests</name>
 
     <properties>
-        <formatterConfigPath>../../formatter.xml</formatterConfigPath>
+        <formatterConfigPath>../formatter.xml</formatterConfigPath>
     </properties>
 
     <build>
