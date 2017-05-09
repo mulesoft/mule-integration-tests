@@ -28,7 +28,7 @@ import org.mule.runtime.api.meta.AnnotatedObject;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.context.notification.MessageProcessorNotification;
 import org.mule.runtime.dsl.api.component.config.DefaultComponentLocation;
-import org.mule.runtime.dsl.api.component.config.DefaultLocationPart;
+import org.mule.runtime.dsl.api.component.config.DefaultComponentLocation.DefaultLocationPart;
 import org.mule.tck.probe.PollingProber;
 import org.mule.tck.probe.Probe;
 import org.mule.test.AbstractIntegrationTestCase;
