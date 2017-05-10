@@ -14,7 +14,7 @@
     </spring:beans>
 
     <flow name="splitter">
-        <collection-splitter/>
+        <splitter/>
         <test:component/>
         <collection-aggregator timeout="2000" failOnTimeout="false"
             processed-groups-object-store="processed-groups-object-store"

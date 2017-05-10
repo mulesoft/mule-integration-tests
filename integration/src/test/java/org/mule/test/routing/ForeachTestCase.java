@@ -24,8 +24,10 @@ import static org.mule.functional.junit4.TestLegacyMessageUtils.getOutboundPrope
 import static org.mule.runtime.api.exception.MuleException.INFO_LOCATION_KEY;
 import static org.mule.runtime.api.message.Message.of;
 import static org.mule.runtime.api.metadata.DataType.JSON_STRING;
+import static org.mule.runtime.api.metadata.MediaType.APPLICATION_JAVA;
 import static org.mule.runtime.api.metadata.MediaType.APPLICATION_JSON;
 import static org.mule.runtime.api.metadata.MediaType.APPLICATION_XML;
+import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS_FEATURE;
 import org.mule.functional.functional.FlowAssert;
 import org.mule.functional.junit4.TestLegacyMessageBuilder;
 import org.mule.runtime.api.exception.MuleException;
@@ -35,6 +37,9 @@ import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.runtime.core.exception.MessagingException;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.test.allure.AllureConstants;
+
+import com.google.common.collect.ImmutableList;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -50,7 +55,12 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
+import ru.yandex.qatools.allure.annotations.Description;
+import ru.yandex.qatools.allure.annotations.Features;
+import ru.yandex.qatools.allure.annotations.Stories;
 
+@Features(ROUTERS_FEATURE)
+@Stories(AllureConstants.RoutersFeature.ForeachStory.FOR_EACH)
 public class ForeachTestCase extends AbstractIntegrationTestCase {
 
   @Rule
@@ -243,6 +253,7 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
     assertSplitedString();
   }
 
+  @Description("Splits a JSON into an array of simple values and iterate over those values")
   @Test
   public void splitJson() throws Exception {
     flowRunner("splitJson").withPayload("{\"name\":\"Pepe\", \"lastname\":\"Le Pew\"}").withMediaType(APPLICATION_JSON).run();
@@ -250,6 +261,7 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
     assertQueueValueIs("splitJsonOutQueue", "Le Pew");
   }
 
+  @Description("Splits a JSON array that is inside an string in the payload without using any expression")
   @Test
   public void splitJsonArrayWithoutExpression() throws Exception {
     flowRunner("splitJsonArray").withPayload("[ \"1\", \"2\" ]").withMediaType(APPLICATION_JSON).run();
@@ -257,6 +269,7 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
     assertQueueValueIs("splitJsonArrayOutQueue", "2");
   }
 
+  @Description("Splits a JSON into other JSON objects and executed expressions over each object")
   @Test
   public void splitJsonComplexValue() throws Exception {
     String jsonUsers = "{ \"users\": [" +
@@ -273,6 +286,7 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
     assertQueueValueIs("splitJsonComplexValueOutQueue", "William Hanna");
   }
 
+  @Description("Splits an array of string generated from an expression executed over an XML payload")
   @Test
   public void splitXml() throws Exception {
     flowRunner("splitXml").withPayload("<person><name>Pepe</name><lastname>Le Pew</lastname></person>")
@@ -282,11 +296,36 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
   }
 
   @Ignore("MULE-12407")
+  @Description("Splits an XML where root contains a collection of child elements and verifies that expressions over each child element inside the foreach works")
   @Test
   public void spliXmlComplexValue() throws Exception {
     flowRunner("splitXmlComplexValue").withPayload(sampleXml).withMediaType(APPLICATION_XML).run();
     assertQueueValueIs("splitXmlComplexValueOutQueue", "872-AA 140");
     assertQueueValueIs("splitXmlComplexValueOutQueue", "926-AA 35");
+  }
+
+  @Description("Splits a collection of Messages and verifies that the Message payload and attribute are set as payload and attributes of the routed message")
+  @Test
+  public void splitCollectionOfMessages() throws Exception {
+    ImmutableList<Message> payload =
+        ImmutableList.<Message>builder().add(Message.builder().payload("1").attributes("one").build())
+            .add(Message.builder().payload("2").attributes("two").build()).build();
+    flowRunner("splitPayload").withVariable("useExpression", false).withPayload(payload).withMediaType(APPLICATION_JAVA).run();
+    assertQueueValueIs("splitPayloadOutQueue", "1");
+    assertQueueValueIs("splitPayloadOutQueue", "2");
+  }
+
+  @Description("Splits a collection of Messages with JSON payloads represented as string and verifies that inside the foreach, expressions associated with the json content work fine")
+  @Test
+  public void splitCollectionOfJsonMessagesAndEachValueHasRightContentType() throws Exception {
+    String firstPaylaod = "{ \"name\": \"Pepe\", \"lastname\": \"Le Pew\" }";
+    String secondPayload = "{ \"name\": \"Chuck\", \"lastname\": \"Jones\" }";
+    ImmutableList<Message> payload =
+        ImmutableList.<Message>builder().add(Message.builder().payload(firstPaylaod).mediaType(APPLICATION_JSON).build())
+            .add(Message.builder().payload(secondPayload).mediaType(APPLICATION_JSON).build()).build();
+    flowRunner("splitPayload").withVariable("useExpression", true).withPayload(payload).withMediaType(APPLICATION_JAVA).run();
+    assertQueueValueIs("splitPayloadOutQueue", "Pepe");
+    assertQueueValueIs("splitPayloadOutQueue", "Chuck");
   }
 
   private void assertQueueValueIs(String queueName, Object queueValue) throws MuleException {

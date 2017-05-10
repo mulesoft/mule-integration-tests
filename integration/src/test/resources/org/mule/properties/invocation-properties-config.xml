@@ -308,7 +308,7 @@
 
     <flow name="propogationOfPropertiesInMessageSplitWithSplitter" processingStrategy="synchronous">
         <processor ref="addP1" />
-        <collection-splitter />
+        <splitter />
         <test:assert expression="#[mel:payload is org.mule.tck.testmodels.fruit.Fruit]" count="3" />
         <test:assert expression="#[mel:P1]" />
     </flow>

@@ -9,7 +9,7 @@
 
     <flow name="withSplitter">
         <set-payload value="#[mel:['a','b']]" />
-        <collection-splitter />
+        <splitter />
         <until-successful objectStore-ref="objectStore" maxRetries="2" secondsBetweenRetries="1">
             <custom-processor class="org.mule.test.routing.UntilSuccessfulWithSplitterTestCase$FailAtFirstAttempt" />
         </until-successful>

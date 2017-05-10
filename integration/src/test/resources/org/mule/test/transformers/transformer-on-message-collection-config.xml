@@ -7,7 +7,7 @@
           http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
 
     <flow name="test">
-        <collection-splitter/>
+        <splitter/>
         <collection-aggregator/>
 
         <scripting:transformer>

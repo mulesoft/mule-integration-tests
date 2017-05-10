@@ -8,7 +8,7 @@
 
     <!-- Split the message and set correlation group ids and sizes -->
     <flow name="splitter">
-        <collection-splitter/>
+        <splitter/>
         <!-- round-robin is critical here, otherwise 'aggregator' endpoint is never hit. -->
         <round-robin>
             <async>

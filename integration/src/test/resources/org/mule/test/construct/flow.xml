@@ -76,7 +76,7 @@
     </flow>
 
     <flow name="split-aggregate-singleton-list">
-        <collection-splitter />
+        <splitter />
         <script:transformer>
             <script:script engine="groovy">
                 ((org.mule.tck.testmodels.fruit.Fruit)payload).bite();
@@ -88,7 +88,7 @@
     </flow>
 
     <flow name="split-aggregate-list">
-        <collection-splitter />
+        <splitter />
         <script:transformer>
             <script:script engine="groovy">
                 ((org.mule.tck.testmodels.fruit.Fruit)payload).bite();
@@ -101,7 +101,7 @@
 
 
     <flow name="split-aggregate-response-singleton-list">
-        <collection-splitter />
+        <splitter />
         <script:transformer>
             <script:script engine="groovy">
                 ((org.mule.tck.testmodels.fruit.Fruit)payload).bite();
@@ -112,7 +112,7 @@
     </flow>
 
     <flow name="split-aggregate-response-list">
-        <collection-splitter />
+        <splitter />
         <script:transformer>
             <script:script engine="groovy">
                 ((org.mule.tck.testmodels.fruit.Fruit)payload).bite();
@@ -122,10 +122,10 @@
     </flow>
 
     <flow name="split-aggregate-map">
-        <map-splitter/>
+        <splitter/>
         <script:transformer>
             <script:script engine="groovy">
-                ((org.mule.tck.testmodels.fruit.Fruit)payload).bite();
+                ((org.mule.tck.testmodels.fruit.Fruit)payload.getValue()).bite();
                 return payload;
             </script:script>
         </script:transformer>

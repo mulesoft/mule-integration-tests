@@ -33,12 +33,12 @@
     </flow>
 
     <flow name="singleMP2">
-        <collection-splitter/>
+        <splitter/>
         <logger message="check"/>
     </flow>
 
     <flow name="singleMP3">
-        <collection-splitter/>
+        <splitter/>
         <logger message="check"/>
         <logger message="check"/>
     </flow>
@@ -51,7 +51,7 @@
 
     <flow name="processorChain2">
         <processor-chain>
-            <collection-splitter/>
+            <splitter/>
             <logger message="check1"/>
             <logger message="check2"/>
         </processor-chain>
@@ -59,7 +59,7 @@
 
     <flow name="processorChain3">
         <processor-chain>
-            <collection-splitter/>
+            <splitter/>
             <logger message="check1"/>
         </processor-chain>
     </flow>
@@ -101,14 +101,14 @@
     <flow name="choice2">
         <choice>
             <when expression="payload == 'test1'">
-                <collection-splitter/>
+                <splitter/>
                 <logger message="check"/>
             </when>
             <when expression="payload == 'test2'">
                 <logger message="check"/>
             </when>
             <otherwise>
-                <collection-splitter/>
+                <splitter/>
                 <logger message="check"/>
             </otherwise>
         </choice>
@@ -139,11 +139,11 @@
     <flow name="all2">
         <all>
             <processor-chain>
-                <collection-splitter/>
+                <splitter/>
                 <logger message="check"/>
             </processor-chain>
             <processor-chain>
-                <collection-splitter/>
+                <splitter/>
                 <logger message="check"/>
             </processor-chain>
         </all>
@@ -324,7 +324,7 @@
     </flow>
 
     <flow name="collectionAggregator">
-        <collection-splitter/>
+        <splitter/>
         <logger level="INFO"/>
         <collection-aggregator failOnTimeout="false" timeout="3600"/>
     </flow>
