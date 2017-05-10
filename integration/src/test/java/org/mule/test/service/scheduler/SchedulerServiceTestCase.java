@@ -173,7 +173,7 @@ public class SchedulerServiceTestCase extends AbstractIntegrationTestCase {
     for (int i = 0; i < CUSTOM_SCHEDULER_SIZE; ++i) {
       ((SkeletonSource) messageSource).getListener()
           .process(Event.builder(create(delayScheduleFlow, fromSingleComponent(SchedulerServiceTestCase.class.getSimpleName())))
-              .build());
+              .message(of(null)).build());
     }
 
     expected.expect(MessagingException.class);
