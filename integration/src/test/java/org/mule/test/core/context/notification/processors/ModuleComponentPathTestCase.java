@@ -27,7 +27,7 @@ import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.runtime.core.config.builders.AbstractConfigurationBuilder;
 import org.mule.runtime.core.context.notification.MessageProcessorNotification;
 import org.mule.runtime.dsl.api.component.config.DefaultComponentLocation;
-import org.mule.runtime.dsl.api.component.config.DefaultLocationPart;
+import org.mule.runtime.dsl.api.component.config.DefaultComponentLocation.DefaultLocationPart;
 import org.mule.runtime.extension.internal.loader.XmlExtensionModelLoader;
 import org.mule.runtime.module.extension.internal.manager.DefaultExtensionManager;
 import org.mule.test.AbstractIntegrationTestCase;
