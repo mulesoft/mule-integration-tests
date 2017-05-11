@@ -395,8 +395,8 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
     MessageProcessorNotification processorNotification =
         (MessageProcessorNotification) listener.getNotifications().get(0);
     listener.getNotifications().remove(0);
-    Assert.assertThat(processorNotification.getComponentLocation().getLocation(), is(componentLocation.getLocation()));
-    Assert.assertThat(processorNotification.getComponentLocation(), is(componentLocation));
+    Assert.assertThat(processorNotification.getComponent().getLocation().getLocation(), is(componentLocation.getLocation()));
+    Assert.assertThat(processorNotification.getComponent().getLocation(), is(componentLocation));
   }
 
   private String[] getModulePaths() {

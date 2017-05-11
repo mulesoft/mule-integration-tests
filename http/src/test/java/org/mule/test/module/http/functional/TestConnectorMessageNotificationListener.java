@@ -52,7 +52,7 @@ public class TestConnectorMessageNotificationListener implements ServerNotificat
   public void onNotification(ConnectorMessageNotification notification) {
     notifications.add(notification);
     if (latch != null) {
-      assertThat(notification.getEndpoint(), is(expectedExchangePoint));
+      assertThat(notification.getLocationUri(), is(expectedExchangePoint));
       latch.countDown();
     }
   }

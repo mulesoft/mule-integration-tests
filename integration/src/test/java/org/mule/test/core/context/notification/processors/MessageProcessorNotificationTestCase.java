@@ -76,7 +76,7 @@ public class MessageProcessorNotificationTestCase extends AbstractMessageProcess
     MessageProcessorNotification errorPostNotification =
         ((MessageProcessorNotification) notificationLogger.getNotifications().get(3));
     assertThat(errorPostNotification.getAction(), equalTo(MESSAGE_PROCESSOR_POST_INVOKE));
-    assertThat(errorPostNotification.getExceptionThrown(), instanceOf(MessagingException.class));
+    assertThat(errorPostNotification.getException(), instanceOf(MessagingException.class));
 
     assertNotifications();
   }

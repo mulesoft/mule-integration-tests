@@ -440,8 +440,8 @@ public class ComponentPathTestCase extends AbstractIntegrationTestCase {
     MessageProcessorNotification processorNotification =
         (MessageProcessorNotification) processorNotificationStore.getNotifications().get(0);
     processorNotificationStore.getNotifications().remove(0);
-    assertThat(processorNotification.getComponentLocation().getLocation(), is(componentLocation.getLocation()));
-    assertThat(processorNotification.getComponentLocation(), is(componentLocation));
+    assertThat(processorNotification.getComponent().getLocation().getLocation(), is(componentLocation.getLocation()));
+    assertThat(processorNotification.getComponent().getLocation(), is(componentLocation));
   }
 
   private ProcessorNotificationStore getNotificationsStore() {

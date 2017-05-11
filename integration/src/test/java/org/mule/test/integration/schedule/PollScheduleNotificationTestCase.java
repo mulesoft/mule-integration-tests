@@ -37,7 +37,7 @@ public class PollScheduleNotificationTestCase extends AbstractIntegrationTestCas
       @Override
       public boolean isSatisfied() {
         return listener.getNotifications().size() > 1
-            && "pollfoo/scheduler".equals(listener.getNotifications().get(0).getEndpoint());
+            && "pollfoo/scheduler".equals(listener.getNotifications().get(0).getLocationUri());
       }
 
       @Override

@@ -98,7 +98,7 @@ public class MessageChunkingTestCase extends AbstractIntegrationTestCase {
     // Listen to Message Notifications on the Chunking receiver so we can
     // determine how many message parts have been received
     FlowExecutionListener flowExecutionListener = new FlowExecutionListener("ChunkingReceiver", muleContext);
-    flowExecutionListener.addListener(source -> messagePartsCount.getAndIncrement());
+    flowExecutionListener.addListener(notificationInfo -> messagePartsCount.getAndIncrement());
     flowRunner("Receiver").withPayload(data).run();
     // Ensure we processed expected number of message parts
     assertEquals(partsCount, messagePartsCount.get());
