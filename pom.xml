@@ -17,6 +17,7 @@
     <module>http</module>
     <module>wsc</module>
     <module>dsl</module>
+    <module>soap-connect</module>
   </modules>
 
   <build>
@@ -39,7 +40,6 @@
       <scope>provided</scope>
     </dependency>
   </dependencies>
-
 
   <repositories>
     <repository>
