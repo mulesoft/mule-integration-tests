@@ -9,8 +9,8 @@ package org.mule.test.integration.components;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import org.mule.runtime.api.message.Message;
+import org.mule.tck.core.lifecycle.AbstractLifecycleTracker;
 import org.mule.test.AbstractIntegrationTestCase;
-import org.mule.test.core.lifecycle.AbstractLifecycleTracker;
 
 import org.junit.Test;
 
