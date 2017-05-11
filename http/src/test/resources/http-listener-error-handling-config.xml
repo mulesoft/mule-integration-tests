@@ -42,6 +42,7 @@
     <flow name="exceptionPropagationFlow">
         <http:listener config-ref="listenerConfig" path="/exceptionPropagation">
             <http:error-response>
+                <http:body>#[payload]</http:body>
                 <http:headers>#[{'headerName':myHeader}]</http:headers>
             </http:error-response>
         </http:listener>
@@ -60,6 +61,24 @@
         <error-handler>
             <on-error-continue type="ANY">
                 <custom-processor class="org.mule.test.module.http.functional.listener.AbstractHttpListenerErrorHandlingTestCase$TrackPassageMessageProcessor"/>
+                <set-payload value="#['Exception Handled']"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="exceptionBuildingErrorResponse">
+        <http:listener config-ref="listenerConfig" path="/exceptionBuildingErrorResponse" responseStreamingMode="NEVER">
+            <http:error-response>
+                <http:body>#[payload]</http:body>
+            </http:error-response>
+        </http:listener>
+        <set-payload value="#[thisFails]"/>
+        <error-handler>
+            <on-error-propagate type="EXPRESSION">
+                <custom-processor class="org.mule.test.module.http.functional.listener.AbstractHttpListenerErrorHandlingTestCase$TrackPassageMessageProcessor"/>
+                <set-payload value="#[mel:inputStreamPayload]"/>
+            </on-error-propagate>
+            <on-error-continue type="ANY">
                 <set-payload value="#['Exception Handled']"/>
             </on-error-continue>
         </error-handler>
