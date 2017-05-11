@@ -6,7 +6,7 @@
                http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
     <flow name="splitter">
-        <collection-splitter/>
+        <splitter/>
         <test:component/>
         <collection-aggregator timeout="2000" failOnTimeout="false" persistentStores="false"/>
         <test:queue name="out"/>

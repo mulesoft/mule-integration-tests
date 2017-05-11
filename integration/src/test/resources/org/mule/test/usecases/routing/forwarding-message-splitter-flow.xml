@@ -8,7 +8,7 @@
 
 
     <flow name="forwardingSplitter">
-        <collection-splitter/>
+        <splitter/>
         
         <async>
             <payload-type-filter expectedType="java.lang.String"/>

@@ -276,6 +276,21 @@
         </foreach>
     </flow>
 
+    <flow name="splitPayload">
+        <foreach>
+            <choice>
+                <when expression="#[useExpression]">
+                    <test:queue name="splitPayloadOutQueue" contentJavaType="java.lang.String">
+                        <test:content>#[payload.name]</test:content>
+                    </test:queue>
+                </when>
+                <otherwise>
+                    <test:queue name="splitPayloadOutQueue"/>
+                </otherwise>
+            </choice>
+        </foreach>
+    </flow>
+
     <sub-flow name="setTestProperties">
 		<set-variable variableName="value1" value="value1" />
 		<set-variable variableName="value2" value="value2" />

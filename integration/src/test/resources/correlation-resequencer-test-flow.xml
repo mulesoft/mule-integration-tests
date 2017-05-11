@@ -11,7 +11,7 @@
 
     <!-- Split the message and set correlation group ids and sizes -->
     <flow name="splitter">
-        <collection-splitter/>
+        <splitter/>
         <async>
             <flow-ref name="resequencer"/>
         </async>

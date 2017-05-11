@@ -73,13 +73,13 @@
     </flow>
 
     <flow name="flowWithSplitter">
-        <collection-splitter/>
+        <splitter/>
         <logger message="check"/>
         <logger message="check"/>
     </flow>
 
     <flow name="flowWithAggregator">
-        <collection-splitter/>
+        <splitter/>
         <logger level="INFO"/>
         <collection-aggregator failOnTimeout="false" timeout="3600"/>
     </flow>
