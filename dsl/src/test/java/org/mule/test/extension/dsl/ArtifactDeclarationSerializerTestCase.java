@@ -340,7 +340,7 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
                                    .withParameter("bufferSizeIncrement", "8")
                                    .withParameter("bufferUnit", "KB")
                                    .withParameter("initialBufferSize", "51")
-                                   .withParameter("maxInMemorySize", "1000")
+                                   .withParameter("maxBufferSize", "1000")
                                    .build())
                 .getDeclaration())
             .withComponent(wsc.newOperation("consume")
