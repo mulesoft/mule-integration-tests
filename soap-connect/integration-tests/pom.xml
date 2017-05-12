@@ -11,6 +11,7 @@
 
     <name>Soap Connect Integration Tests</name>
     <artifactId>mule-modules-soap-connect-integration-tests</artifactId>
+    <packaging>jar</packaging>
 
     <properties>
         <formatterConfigPath>../../formatter.xml</formatterConfigPath>
