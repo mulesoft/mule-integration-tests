@@ -6,13 +6,14 @@
  */
 package org.mule.test.module.http.functional.listener;
 
+import static org.apache.http.client.fluent.Request.Get;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HttpStory.ERROR_HANDLING;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HttpStory.STREAMING;
-import static org.apache.http.client.fluent.Request.Get;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.fluent.Response;
+import org.junit.Ignore;
 import org.junit.Test;
 import ru.yandex.qatools.allure.annotations.Features;
 import ru.yandex.qatools.allure.annotations.Stories;
@@ -27,6 +28,7 @@ public class HttpListenerResponseStreamingErrorHandlingTestCase extends Abstract
   }
 
   @Test
+  @Ignore("MULE-12448: Sources error handling is inconsistent")
   public void exceptionHandledWhenBuildingResponse() throws Exception {
     final Response response =
         Get(getUrl("exceptionBuildingResponse")).connectTimeout(DEFAULT_TIMEOUT).socketTimeout(DEFAULT_TIMEOUT).execute();
@@ -39,7 +41,7 @@ public class HttpListenerResponseStreamingErrorHandlingTestCase extends Abstract
   @Test
   public void exceptionNotHandledWhenSendingResponse() throws Exception {
     final Response response =
-        Get(getUrl("exceptionSendingResponse")).connectTimeout(DEFAULT_TIMEOUT).socketTimeout(DEFAULT_TIMEOUT).execute();
+        Get(getUrl("exceptionSendingResponse")).connectTimeout(DEFAULT_TIMEOUT).socketTimeout(DEFAULT_TIMEOUT * 2).execute();
 
     final HttpResponse httpResponse = response.returnResponse();
 
@@ -47,6 +49,7 @@ public class HttpListenerResponseStreamingErrorHandlingTestCase extends Abstract
   }
 
   @Test
+  @Ignore("MULE-12448: Sources error handling is inconsistent")
   public void exceptionHandledWhenBuildingResponseFailAgain() throws Exception {
     final Response response = Get(getUrl("exceptionBuildingResponseFailAgain")).connectTimeout(DEFAULT_TIMEOUT)
         .socketTimeout(DEFAULT_TIMEOUT).execute();

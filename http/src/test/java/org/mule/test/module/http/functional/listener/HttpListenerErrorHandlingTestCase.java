@@ -15,6 +15,7 @@ import org.mule.runtime.core.util.IOUtils;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.fluent.Response;
+import org.junit.Ignore;
 import org.junit.Test;
 import ru.yandex.qatools.allure.annotations.Features;
 import ru.yandex.qatools.allure.annotations.Stories;
@@ -36,8 +37,17 @@ public class HttpListenerErrorHandlingTestCase extends AbstractHttpListenerError
   }
 
   @Test
+  @Ignore("MULE-12448: Sources error handling is inconsistent")
   public void exceptionBuildingResponseIsHandled() throws Exception {
     final Response response = Get(getUrl("exceptionBuildingResponse")).execute();
+    final HttpResponse httpResponse = response.returnResponse();
+    assertExceptionStrategyExecuted(httpResponse);
+  }
+
+  @Test
+  @Ignore("MULE-12448: Sources error handling is inconsistent")
+  public void exceptionBuildingErrorResponseIsHandled() throws Exception {
+    final Response response = Get(getUrl("exceptionBuildingErrorResponse")).execute();
     final HttpResponse httpResponse = response.returnResponse();
     assertExceptionStrategyExecuted(httpResponse);
   }
