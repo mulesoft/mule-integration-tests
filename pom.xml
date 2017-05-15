@@ -18,7 +18,16 @@
     <module>wsc</module>
     <module>dsl</module>
     <module>soap-connect</module>
+    <module>extensions-spring-support-integration-tests</module>
+    <module>schedulers-tests</module>
   </modules>
+
+    <properties>
+        <muleSchedulerServiceVersion>1.0.0-SNAPSHOT</muleSchedulerServiceVersion>
+        <muleHttpServiceVersion>1.0.0-SNAPSHOT</muleHttpServiceVersion>
+        <muleOAuthServiceVersion>1.0.0-SNAPSHOT</muleOAuthServiceVersion>
+        <muleSoapServiceVersion>1.0.0-SNAPSHOT</muleSoapServiceVersion>
+    </properties>
 
   <build>
     <plugins>
