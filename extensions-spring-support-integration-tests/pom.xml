@@ -67,6 +67,13 @@
 
         <dependency>
             <groupId>org.mule.runtime</groupId>
+            <artifactId>mule-module-extensions-support</artifactId>
+            <version>${project.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.runtime</groupId>
             <artifactId>mule-module-extensions-spring-support</artifactId>
             <version>${project.version}</version>
             <type>test-jar</type>
