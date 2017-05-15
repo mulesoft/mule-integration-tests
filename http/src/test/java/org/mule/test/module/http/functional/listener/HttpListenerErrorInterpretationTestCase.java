@@ -6,8 +6,12 @@
  */
 package org.mule.test.module.http.functional.listener;
 
+import static org.apache.http.client.fluent.Request.Get;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertThat;
 import static org.mule.extension.http.internal.listener.HttpListener.HTTP_NAMESPACE;
-import static org.mule.functional.util.http.SimpleHttpServer.DEFAULT_RESPONSE;
 import static org.mule.runtime.api.component.ComponentIdentifier.buildFromStringRepresentation;
 import static org.mule.runtime.core.exception.Errors.ComponentIdentifiers.EXPRESSION;
 import static org.mule.runtime.core.exception.Errors.ComponentIdentifiers.SECURITY;
@@ -29,12 +33,6 @@ import static org.mule.test.module.http.functional.matcher.HttpResponseContentSt
 import static org.mule.test.module.http.functional.matcher.HttpResponseHeaderStringMatcher.header;
 import static org.mule.test.module.http.functional.matcher.HttpResponseReasonPhraseMatcher.hasReasonPhrase;
 import static org.mule.test.module.http.functional.matcher.HttpResponseStatusCodeMatcher.hasStatusCode;
-import static org.apache.http.client.fluent.Request.Get;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
-
 import org.mule.extension.http.api.HttpListenerResponseAttributes;
 import org.mule.functional.junit4.rules.HttpServerRule;
 import org.mule.runtime.api.component.ComponentIdentifier;
@@ -163,7 +161,7 @@ public class HttpListenerErrorInterpretationTestCase extends AbstractHttpTestCas
 
   @Test
   public void requestErrorIsInterpretedWhenSelected() throws Exception {
-    verifyResponseFromRequestError("requestErrorInterpreted", CREATED, is(DEFAULT_RESPONSE));
+    verifyResponseFromRequestError("requestErrorInterpreted", CREATED, containsString("mapped as failure"));
   }
 
   @Test

@@ -6,6 +6,7 @@
  */
 package org.mule.test.module.http.functional.requester;
 
+import static java.lang.String.format;
 import static org.mule.extension.http.api.error.HttpError.RESPONSE_VALIDATION;
 import static org.mule.extension.http.internal.listener.HttpListener.HTTP_NAMESPACE;
 import static org.mule.service.http.api.HttpConstants.HttpStatus.BAD_REQUEST;
@@ -65,57 +66,58 @@ public class HttpRequestErrorHandlingTestCase extends AbstractHttpRequestTestCas
 
   @Test
   public void badRequest() throws Exception {
-    verifyErrorWhenReceiving(BAD_REQUEST);
+    verifyErrorWhenReceiving(BAD_REQUEST, ": bad request");
   }
 
   @Test
   public void unauthorised() throws Exception {
-    verifyErrorWhenReceiving(UNAUTHORIZED);
+    verifyErrorWhenReceiving(UNAUTHORIZED, ": unauthorized");
   }
 
   @Test
   public void forbidden() throws Exception {
-    verifyErrorWhenReceiving(FORBIDDEN);
+    verifyErrorWhenReceiving(FORBIDDEN, ": forbidden");
   }
 
   @Test
   public void notFound() throws Exception {
-    verifyErrorWhenReceiving(NOT_FOUND);
+    verifyErrorWhenReceiving(NOT_FOUND, String.format(": resource http://localhost:%s/testPath not found", httpPort.getValue()));
   }
 
   @Test
   public void methodNotAllowed() throws Exception {
-    verifyErrorWhenReceiving(METHOD_NOT_ALLOWED);
+    verifyErrorWhenReceiving(METHOD_NOT_ALLOWED, ": method GET not allowed");
   }
 
   @Test
   public void notAcceptable() throws Exception {
-    verifyErrorWhenReceiving(NOT_ACCEPTABLE);
+    verifyErrorWhenReceiving(NOT_ACCEPTABLE, ": not acceptable");
   }
 
   @Test
   public void unsupportedMediaType() throws Exception {
-    verifyErrorWhenReceiving(UNSUPPORTED_MEDIA_TYPE);
+    verifyErrorWhenReceiving(UNSUPPORTED_MEDIA_TYPE, ": media type application/xml not supported");
   }
 
   @Test
   public void tooManyRequest() throws Exception {
-    verifyErrorWhenReceiving(TOO_MANY_REQUESTS);
+    verifyErrorWhenReceiving(TOO_MANY_REQUESTS, ": too many requests");
   }
 
   @Test
   public void serverError() throws Exception {
-    verifyErrorWhenReceiving(INTERNAL_SERVER_ERROR);
+    verifyErrorWhenReceiving(INTERNAL_SERVER_ERROR, ": internal server error");
   }
 
   @Test
   public void serverUnavailable() throws Exception {
-    verifyErrorWhenReceiving(SERVICE_UNAVAILABLE);
+    verifyErrorWhenReceiving(SERVICE_UNAVAILABLE, ": service unavailable");
   }
 
   @Test
   public void notMappedStatus() throws Exception {
-    verifyErrorWhenReceiving(EXPECTATION_FAILED, "417 not understood", RESPONSE_VALIDATION.name());
+    verifyErrorWhenReceiving(EXPECTATION_FAILED, "417 not understood", RESPONSE_VALIDATION.name(),
+                             getErrorMessage(EXPECTATION_FAILED, ""));
   }
 
   @Test
@@ -141,17 +143,24 @@ public class HttpRequestErrorHandlingTestCase extends AbstractHttpRequestTestCas
     assertThat(result.getMessage().getPayload().getValue(), is("Unable to process multipart response parsing"));
   }
 
-  void verifyErrorWhenReceiving(HttpStatus status) throws Exception {
-    verifyErrorWhenReceiving(status, String.format("%s %s", status.getStatusCode(), status.getReasonPhrase()), status.name());
+  private String getErrorMessage(HttpStatus status, String customMessage) {
+    return String.format("Response code %s mapped as failure%s.", status.getStatusCode(), customMessage);
   }
 
-  void verifyErrorWhenReceiving(HttpStatus status, Object expectedResult, String expectedError) throws Exception {
+  void verifyErrorWhenReceiving(HttpStatus status, String expectedMessage) throws Exception {
+    verifyErrorWhenReceiving(status, format("%s %s", status.getStatusCode(), status.getReasonPhrase()), status.name(),
+                             getErrorMessage(status, expectedMessage));
+  }
+
+  void verifyErrorWhenReceiving(HttpStatus status, Object expectedResult, String expectedError, String expectedMessage)
+      throws Exception {
     serverStatus = status.getStatusCode();
     // Hit flow with error handler
     Event result = getFlowRunner("handled", httpPort.getNumber()).run();
     assertThat(result.getMessage().getPayload().getValue(), is(expectedResult));
     // Hit flow that will throw back the error
     this.expectedError.expectErrorType(HTTP_NAMESPACE.toUpperCase(), expectedError);
+    this.expectedError.expectMessage(is(expectedMessage));
     getFlowRunner("unhandled", httpPort.getNumber()).run();
   }
 

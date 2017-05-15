@@ -6,6 +6,12 @@
  */
 package org.mule.test.module.http.functional.requester;
 
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertThat;
+import static org.mule.extension.http.api.error.HttpError.CONNECTIVITY;
 import static org.mule.extension.http.internal.listener.HttpListener.HTTP_NAMESPACE;
 import static org.mule.functional.junit4.matchers.MessageMatchers.hasPayload;
 import static org.mule.functional.junit4.rules.ExpectedError.none;
@@ -14,13 +20,6 @@ import static org.mule.service.http.api.HttpConstants.Method.POST;
 import static org.mule.service.http.api.HttpHeaders.Names.HOST;
 import static org.mule.service.http.api.HttpHeaders.Names.TRANSFER_ENCODING;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
-
-import org.mule.extension.http.api.error.HttpError;
 import org.mule.functional.junit4.rules.ExpectedError;
 import org.mule.runtime.core.api.Event;
 import org.mule.tck.junit4.rule.DynamicPort;
@@ -128,7 +127,7 @@ public class HttpRequestDynamicConfigTestCase extends AbstractHttpRequestTestCas
     assertThat(headers.keys(), not(hasItem(TRANSFER_ENCODING)));
 
 
-    expectedError.expectError(HTTP_NAMESPACE.toUpperCase(), HttpError.CONNECTIVITY, ConnectException.class, "Connection refused");
+    expectedError.expectError(HTTP_NAMESPACE.toUpperCase(), CONNECTIVITY, ConnectException.class, "Connection refused");
     flowRunner("client2")
         .withVariable("parse", false)
         .withVariable("stream", "AUTO")
