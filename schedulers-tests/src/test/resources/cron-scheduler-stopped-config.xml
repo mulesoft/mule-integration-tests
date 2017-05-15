@@ -11,7 +11,9 @@
 
     <flow name="pollfoo" processingStrategy="synchronous" initialState="stopped">
         <scheduler>
-            <schedulers:cron-scheduler expression="0/1 * * * * ?"/>
+            <scheduling-strategy>
+                <schedulers:cron-scheduler expression="0/1 * * * * ?"/>
+            </scheduling-strategy>
         </scheduler>
         <set-payload value="testString"/>
         <component class="org.mule.test.module.scheduler.cron.StoppedCronSchedulerTestCase$FooComponent"/>

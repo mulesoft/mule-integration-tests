@@ -19,7 +19,9 @@
 
     <flow name="pollfoo">
         <scheduler doc:name="watermark">
-            <schedulers:cron-scheduler expression="0/1 * * * * ?"/>
+            <scheduling-strategy>
+                <schedulers:cron-scheduler expression="0/1 * * * * ?"/>
+            </scheduling-strategy>
         </scheduler>
         <flow-ref name="echo"/>
         <component class="org.mule.test.module.scheduler.cron.CronSchedulerTestCase$FooComponent"/>
@@ -28,7 +30,9 @@
 
     <flow name="pollbar" processingStrategy="synchronous">
         <scheduler>
-            <schedulers:cron-scheduler expression="${expression.property}"/>
+            <scheduling-strategy>
+                <schedulers:cron-scheduler expression="${expression.property}"/>
+            </scheduling-strategy>
         </scheduler>
         <static-component>
             <return-data>bar</return-data>

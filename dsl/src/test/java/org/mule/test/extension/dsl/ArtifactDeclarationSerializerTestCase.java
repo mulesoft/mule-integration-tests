@@ -34,6 +34,7 @@ import org.mule.runtime.api.app.declaration.ArtifactDeclaration;
 import org.mule.runtime.api.app.declaration.ParameterElementDeclaration;
 import org.mule.runtime.api.app.declaration.fluent.ElementDeclarer;
 import org.mule.runtime.config.spring.dsl.api.ArtifactDeclarationXmlSerializer;
+import org.mule.runtime.core.util.FileUtils;
 import org.mule.test.runner.RunnerDelegateTo;
 
 import java.io.IOException;
@@ -98,6 +99,7 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
     ArtifactDeclaration artifact = serializer.deserialize(configIs);
 
     String serializationResult = serializer.serialize(artifact);
+
     compareXML(expectedAppXml, serializationResult);
   }
 
@@ -352,6 +354,28 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
                     .withParameter("body", "#[payload]")
                     .build())
                 .getDeclaration())
+            .getDeclaration())
+        .withGlobalElement(newFlow().withRefName("schedulerFlow")
+            .withComponent(core.newSource("scheduler")
+                .withParameter("schedulingStrategy", newObjectValue()
+                    .ofType("org.mule.runtime.core.source.scheduler.schedule.FixedFrequencyScheduler")
+                    .withParameter("frequency", "50")
+                    .withParameter("startDelay", "20")
+                    .withParameter("timeUnit", "SECONDS")
+                    .build())
+                .getDeclaration())
+            .withComponent(core.newOperation("logger")
+                .withParameter("message", "#[payload]").getDeclaration())
+            .getDeclaration())
+        .withGlobalElement(newFlow().withRefName("cronSchedulerFlow")
+            .withComponent(core.newSource("scheduler")
+                .withParameter("schedulingStrategy", newObjectValue()
+                    .ofType("org.mule.runtime.module.scheduler.cron.CronScheduler")
+                    .withParameter("expression", "0/1 * * * * ?")
+                    .build())
+                .getDeclaration())
+            .withComponent(core.newOperation("logger")
+                .withParameter("message", "#[payload]").getDeclaration())
             .getDeclaration())
         .getDeclaration();
   }

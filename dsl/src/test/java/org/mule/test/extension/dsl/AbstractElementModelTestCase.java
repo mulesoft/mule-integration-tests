@@ -32,6 +32,7 @@ import org.mule.runtime.config.spring.dsl.processor.xml.XmlApplicationServiceReg
 import org.mule.runtime.core.registry.SpiServiceRegistry;
 import org.mule.runtime.dsl.api.component.config.ComponentConfiguration;
 import org.mule.runtime.module.extension.internal.resources.MuleExtensionModelProvider;
+import org.mule.runtime.module.scheduler.resources.SchedulersExtensionModelProvider;
 import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
 
 import com.google.common.collect.ImmutableSet;
@@ -78,7 +79,8 @@ public abstract class AbstractElementModelTestCase extends MuleArtifactFunctiona
     Set<ExtensionModel> extensions = muleContext.getExtensionManager().getExtensions();
     dslContext = DslResolvingContext.getDefault(ImmutableSet.<ExtensionModel>builder()
         .addAll(extensions)
-        .add(MuleExtensionModelProvider.getMuleExtensionModel()).build());
+        .add(MuleExtensionModelProvider.getExtensionModel())
+        .add(SchedulersExtensionModelProvider.getExtensionModel()).build());
     modelResolver = DslElementModelFactory.getDefault(dslContext);
   }
 
