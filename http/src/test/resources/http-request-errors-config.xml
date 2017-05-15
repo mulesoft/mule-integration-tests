@@ -11,7 +11,9 @@
     </http:request-config>
 
     <flow name="handled">
-        <http:request config-ref="simpleConfig" path="testPath" responseTimeout="1000"/>
+        <http:request config-ref="simpleConfig" path="testPath" responseTimeout="1000">
+            <http:headers>#[{'Content-Type': 'application/xml'}]</http:headers>
+        </http:request>
         <error-handler>
             <on-error-continue type="http:BAD_REQUEST">
                 <set-payload value="#[error.errorMessage.attributes.statusCode ++ ' Bad Request']"/>
@@ -59,7 +61,9 @@
     </flow>
 
     <flow name="unhandled">
-        <http:request config-ref="simpleConfig" path="testPath" responseTimeout="500"/>
+        <http:request config-ref="simpleConfig" path="testPath" responseTimeout="500">
+            <http:headers>#[{'Content-Type': 'application/xml'}]</http:headers>
+        </http:request>
     </flow>
 
 </mule>
