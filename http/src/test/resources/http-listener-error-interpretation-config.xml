@@ -59,13 +59,5 @@
         </http:request>
     </flow>
 
-    <flow name="requestErrorInterpreted">
-        <http:listener config-ref="listenerConfig" path="/requestErrorInterpreted" interpretRequestErrors="true"/>
-        <http:request path="/test" config-ref="requestConfig">
-            <http:response-validator>
-                <http:failure-status-code-validator values="201"/>
-            </http:response-validator>
-        </http:request>
-    </flow>
 
 </mule>

@@ -16,7 +16,6 @@ import static org.mule.runtime.api.component.ComponentIdentifier.buildFromString
 import static org.mule.runtime.core.exception.Errors.ComponentIdentifiers.EXPRESSION;
 import static org.mule.runtime.core.exception.Errors.ComponentIdentifiers.SECURITY;
 import static org.mule.service.http.api.HttpConstants.HttpStatus.BAD_REQUEST;
-import static org.mule.service.http.api.HttpConstants.HttpStatus.CREATED;
 import static org.mule.service.http.api.HttpConstants.HttpStatus.FORBIDDEN;
 import static org.mule.service.http.api.HttpConstants.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.mule.service.http.api.HttpConstants.HttpStatus.METHOD_NOT_ALLOWED;
@@ -92,42 +91,42 @@ public class HttpListenerErrorInterpretationTestCase extends AbstractHttpTestCas
   }
 
   @Test
-  public void badRequestErrorCauses400() throws Exception {
+  public void badRequestErrorCauses500() throws Exception {
     verifyStatusIsKnown(BAD_REQUEST);
   }
 
   @Test
-  public void unauthorizedErrorCauses401() throws Exception {
+  public void unauthorizedErrorCauses500() throws Exception {
     verifyStatusIsKnown(UNAUTHORIZED);
   }
 
   @Test
-  public void forbiddenErrorCauses403() throws Exception {
+  public void forbiddenErrorCauses500() throws Exception {
     verifyStatusIsKnown(FORBIDDEN);
   }
 
   @Test
-  public void notFoundErrorCauses404() throws Exception {
+  public void notFoundErrorCauses500() throws Exception {
     verifyStatusIsKnown(NOT_FOUND);
   }
 
   @Test
-  public void methodNotAllowedErrorCauses405() throws Exception {
+  public void methodNotAllowedErrorCauses500() throws Exception {
     verifyStatusIsKnown(METHOD_NOT_ALLOWED);
   }
 
   @Test
-  public void notAcceptableErrorCauses406() throws Exception {
+  public void notAcceptableErrorCauses500() throws Exception {
     verifyStatusIsKnown(NOT_ACCEPTABLE);
   }
 
   @Test
-  public void unsupportedMediaTypeErrorCauses415() throws Exception {
+  public void unsupportedMediaTypeErrorCauses500() throws Exception {
     verifyStatusIsKnown(UNSUPPORTED_MEDIA_TYPE);
   }
 
   @Test
-  public void tooManyRequestsErrorCauses429() throws Exception {
+  public void tooManyRequestsErrorCauses500() throws Exception {
     verifyStatusIsKnown(TOO_MANY_REQUESTS);
   }
 
@@ -137,7 +136,7 @@ public class HttpListenerErrorInterpretationTestCase extends AbstractHttpTestCas
   }
 
   @Test
-  public void serviceUnavailablesErrorCauses503() throws Exception {
+  public void serviceUnavailablesErrorCauses500() throws Exception {
     verifyStatusIsKnown(SERVICE_UNAVAILABLE);
   }
 
@@ -150,18 +149,13 @@ public class HttpListenerErrorInterpretationTestCase extends AbstractHttpTestCas
 
   @Test
   public void knownErrorTypeWithMessageIsConsidered() throws Exception {
-    final HttpResponse httpResponse = getAndVerifyResponseFromErrorWithCustomMessage(SECURITY, UNAUTHORIZED, UNAUTHORIZED, ERROR);
+    final HttpResponse httpResponse = getAndVerifyResponseFromErrorWithCustomMessage(SECURITY, UNAUTHORIZED, UNAUTHORIZED, OOPS);
     assertThat(httpResponse, header(HEADER_NAME, is(HEADER_VALUE)));
   }
 
   @Test
   public void requestErrorIsNotInterpretedIfNotSelected() throws Exception {
     verifyResponseFromRequestError("requestError", INTERNAL_SERVER_ERROR, containsString("mapped as failure"));
-  }
-
-  @Test
-  public void requestErrorIsInterpretedWhenSelected() throws Exception {
-    verifyResponseFromRequestError("requestErrorInterpreted", CREATED, containsString("mapped as failure"));
   }
 
   @Test
@@ -184,8 +178,8 @@ public class HttpListenerErrorInterpretationTestCase extends AbstractHttpTestCas
     final Response response = Get(getUrl("error")).execute();
     final HttpResponse httpResponse = response.returnResponse();
 
-    assertThat(httpResponse, hasStatusCode(status.getStatusCode()));
-    assertThat(httpResponse, hasReasonPhrase(status.getReasonPhrase()));
+    assertThat(httpResponse, hasStatusCode(INTERNAL_SERVER_ERROR.getStatusCode()));
+    assertThat(httpResponse, hasReasonPhrase(INTERNAL_SERVER_ERROR.getReasonPhrase()));
     assertThat(httpResponse, body(is(OOPS)));
   }
 
