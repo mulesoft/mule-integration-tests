@@ -6,19 +6,6 @@
        http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 
-    <flow name="all">
-        <all>
-            <flow-ref name="handler"/>
-            <flow-ref name="handler"/>
-            <flow-ref name="handler"/>
-        </all>
-        <error-handler>
-            <on-error-propagate>
-                <test:queue name="errors"/>
-            </on-error-propagate>
-        </error-handler>
-    </flow>
-
     <flow name="first-successful">
         <first-successful>
             <flow-ref name="handler"/>

@@ -231,17 +231,6 @@
         <test:queue name="async-tx-out"/>
     </flow>
     
-    <flow name="multicaster">
-        <all>
-            <test:queue name="multicaster-out1"/>
-            <test:queue name="multicaster-out2"/>
-            <processor-chain>
-                <test:component/>
-                <test:queue name="multicaster-out3"/>
-            </processor-chain>
-        </all>    
-    </flow>
-
     <flow name="choice2">
         <choice>
             <when expression="payload=='foo'">
