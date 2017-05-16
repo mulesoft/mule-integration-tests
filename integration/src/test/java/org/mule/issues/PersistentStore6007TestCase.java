@@ -17,7 +17,7 @@ import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.MuleEventContext;
 import org.mule.runtime.core.api.lifecycle.Callable;
 import org.mule.runtime.core.api.store.ListableObjectStore;
-import org.mule.runtime.core.api.store.ObjectStoreException;
+import org.mule.runtime.api.store.ObjectStoreException;
 import org.mule.runtime.core.session.DefaultMuleSession;
 import org.mule.runtime.core.util.concurrent.Latch;
 import org.mule.test.AbstractIntegrationTestCase;

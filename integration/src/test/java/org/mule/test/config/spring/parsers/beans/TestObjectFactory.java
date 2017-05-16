@@ -9,7 +9,7 @@ package org.mule.test.config.spring.parsers.beans;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.api.lifecycle.Lifecycle;
-import org.mule.runtime.core.api.store.ObjectStoreManager;
+import org.mule.runtime.api.store.ObjectStoreManager;
 import org.mule.runtime.dsl.api.component.AbstractAnnotatedObjectFactory;
 
 import java.util.LinkedList;

@@ -17,7 +17,7 @@ import org.mule.runtime.core.api.EventContext;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.runtime.core.api.construct.FlowConstruct;
-import org.mule.runtime.core.api.store.ObjectStoreException;
+import org.mule.runtime.api.store.ObjectStoreException;
 import org.mule.runtime.core.routing.AggregationException;
 import org.mule.runtime.core.routing.EventGroup;
 import org.mule.runtime.core.routing.SimpleCollectionAggregator;
