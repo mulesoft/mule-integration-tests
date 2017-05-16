@@ -27,7 +27,6 @@
         </db:derby-connection>
     </db:config>
    <http:listener-config basePath="/"
-                          interpretRequestErrors="false"
                           name="httpListener"
                           parseRequest="true">
       <http:listener-connection connectionIdleTimeout="30000"
