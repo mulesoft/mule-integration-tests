@@ -14,7 +14,7 @@ import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.runtime.core.api.config.MuleProperties;
 import org.mule.runtime.core.api.serialization.SerializationException;
-import org.mule.runtime.core.api.store.ObjectStoreException;
+import org.mule.runtime.api.store.ObjectStoreException;
 import org.mule.runtime.core.routing.EventGroup;
 import org.mule.runtime.core.util.store.SimpleMemoryObjectStore;
 import org.mule.test.AbstractIntegrationTestCase;

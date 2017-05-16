@@ -14,7 +14,7 @@ import static org.junit.Assert.assertTrue;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.construct.FlowConstruct;
 import org.mule.runtime.core.api.processor.Processor;
-import org.mule.runtime.core.api.store.ObjectStore;
+import org.mule.runtime.api.store.ObjectStore;
 import org.mule.runtime.core.routing.IdempotentMessageValidator;
 import org.mule.runtime.core.util.store.SimpleMemoryObjectStore;
 import org.mule.test.AbstractIntegrationTestCase;
