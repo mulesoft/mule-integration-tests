@@ -19,18 +19,17 @@ import static org.mule.runtime.core.api.config.MuleProperties.DEFAULT_USER_OBJEC
 import static org.mule.runtime.module.extension.internal.util.MuleExtensionUtils.getInitialiserEvent;
 import static org.mule.tck.probe.PollingProber.check;
 import static org.mule.test.module.extension.internal.util.ExtensionsTestUtils.getConfigurationFromRegistry;
-
+import org.mule.runtime.api.store.ObjectStore;
 import org.mule.runtime.core.api.Event;
-import org.mule.runtime.core.api.store.ObjectStore;
 import org.mule.runtime.extension.api.connectivity.oauth.AuthCodeRequest;
 import org.mule.runtime.extension.api.connectivity.oauth.AuthorizationCodeState;
 import org.mule.test.oauth.TestOAuthConnection;
 import org.mule.test.oauth.TestOAuthConnectionState;
 import org.mule.test.oauth.TestOAuthExtension;
 
-import org.junit.Test;
-
 import com.github.tomakehurst.wiremock.client.WireMock;
+
+import org.junit.Test;
 
 public class OAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
 
