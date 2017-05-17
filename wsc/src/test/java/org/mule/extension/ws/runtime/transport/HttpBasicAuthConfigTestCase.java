@@ -56,7 +56,7 @@ public class HttpBasicAuthConfigTestCase extends AbstractSoapServiceTestCase {
     Optional<Error> error = exc.getEvent().getError();
     assertThat(error.isPresent(), is(true));
     assertThat(error.get().getErrorType(), errorType("WSC", CANNOT_DISPATCH.toString()));
-    assertThat(error.get().getDescription(), containsString("Response code 401 mapped as failure"));
+    assertThat(error.get().getDescription(), containsString("failed: unauthorized (401)"));
   }
 
   @Override
