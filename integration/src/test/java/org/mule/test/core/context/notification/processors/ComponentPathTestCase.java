@@ -160,8 +160,8 @@ public class ComponentPathTestCase extends AbstractIntegrationTestCase {
       of(builder().withIdentifier(buildFromStringRepresentation("validation:is-true")).withType(PROCESSOR).build());
   private static final Optional<TypedComponentIdentifier> SKELETON_SOURCE =
       of(builder().withIdentifier(buildFromStringRepresentation("test:skeleton-source")).withType(SOURCE).build());
-  private static final Optional<TypedComponentIdentifier> COLLECTION_SPLITTER =
-      of(builder().withIdentifier(buildFromStringRepresentation("mule:collection-splitter")).withType(INTERCEPTING).build());
+  private static final Optional<TypedComponentIdentifier> SPLITTER =
+      of(builder().withIdentifier(buildFromStringRepresentation("mule:splitter")).withType(INTERCEPTING).build());
   private static final Optional<TypedComponentIdentifier> COLLECTION_AGGREGATOR =
       of(builder().withIdentifier(buildFromStringRepresentation("mule:collection-aggregator")).withType(INTERCEPTING).build());
   private static final Optional<TypedComponentIdentifier> SCATTER_GATHER =
@@ -288,7 +288,7 @@ public class ComponentPathTestCase extends AbstractIntegrationTestCase {
     DefaultComponentLocation flowWithSplitterProcessorsLocation =
         FLOW_WITH_SPLITTER.appendLocationPart("processors", empty(), empty(), empty());
     assertNextProcessorLocationIs(flowWithSplitterProcessorsLocation
-        .appendLocationPart("0", COLLECTION_SPLITTER, CONFIG_FILE_NAME,
+        .appendLocationPart("0", SPLITTER, CONFIG_FILE_NAME,
                             of(76)));
     assertNextProcessorLocationIs(flowWithSplitterProcessorsLocation
         .appendLocationPart("1", LOGGER, CONFIG_FILE_NAME, of(77)));
@@ -303,7 +303,7 @@ public class ComponentPathTestCase extends AbstractIntegrationTestCase {
     DefaultComponentLocation flowWithSplitterProcessorsLocation =
         FLOW_WITH_AGGREGATOR.appendLocationPart("processors", empty(), empty(), empty());
     assertNextProcessorLocationIs(flowWithSplitterProcessorsLocation
-        .appendLocationPart("0", COLLECTION_SPLITTER, CONFIG_FILE_NAME, of(82)));
+        .appendLocationPart("0", SPLITTER, CONFIG_FILE_NAME, of(82)));
     assertNextProcessorLocationIs(flowWithSplitterProcessorsLocation
         .appendLocationPart("1", LOGGER, CONFIG_FILE_NAME, of(83)));
     assertNextProcessorLocationIs(flowWithSplitterProcessorsLocation
