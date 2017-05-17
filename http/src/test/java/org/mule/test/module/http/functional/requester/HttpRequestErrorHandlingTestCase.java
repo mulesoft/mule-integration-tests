@@ -66,58 +66,58 @@ public class HttpRequestErrorHandlingTestCase extends AbstractHttpRequestTestCas
 
   @Test
   public void badRequest() throws Exception {
-    verifyErrorWhenReceiving(BAD_REQUEST, ": bad request");
+    verifyErrorWhenReceiving(BAD_REQUEST, ": bad request (400)");
   }
 
   @Test
   public void unauthorised() throws Exception {
-    verifyErrorWhenReceiving(UNAUTHORIZED, ": unauthorized");
+    verifyErrorWhenReceiving(UNAUTHORIZED, ": unauthorized (401)");
   }
 
   @Test
   public void forbidden() throws Exception {
-    verifyErrorWhenReceiving(FORBIDDEN, ": forbidden");
+    verifyErrorWhenReceiving(FORBIDDEN, ": forbidden (403)");
   }
 
   @Test
   public void notFound() throws Exception {
-    verifyErrorWhenReceiving(NOT_FOUND, String.format(": resource http://localhost:%s/testPath not found", httpPort.getValue()));
+    verifyErrorWhenReceiving(NOT_FOUND, String.format(": not found (404)", httpPort.getValue()));
   }
 
   @Test
   public void methodNotAllowed() throws Exception {
-    verifyErrorWhenReceiving(METHOD_NOT_ALLOWED, ": method GET not allowed");
+    verifyErrorWhenReceiving(METHOD_NOT_ALLOWED, ": method not allowed (405)");
   }
 
   @Test
   public void notAcceptable() throws Exception {
-    verifyErrorWhenReceiving(NOT_ACCEPTABLE, ": not acceptable");
+    verifyErrorWhenReceiving(NOT_ACCEPTABLE, ": not acceptable (406)");
   }
 
   @Test
   public void unsupportedMediaType() throws Exception {
-    verifyErrorWhenReceiving(UNSUPPORTED_MEDIA_TYPE, ": media type application/xml not supported");
+    verifyErrorWhenReceiving(UNSUPPORTED_MEDIA_TYPE, ": media type application/xml not supported (415)");
   }
 
   @Test
   public void tooManyRequest() throws Exception {
-    verifyErrorWhenReceiving(TOO_MANY_REQUESTS, ": too many requests");
+    verifyErrorWhenReceiving(TOO_MANY_REQUESTS, ": too many requests (429)");
   }
 
   @Test
   public void serverError() throws Exception {
-    verifyErrorWhenReceiving(INTERNAL_SERVER_ERROR, ": internal server error");
+    verifyErrorWhenReceiving(INTERNAL_SERVER_ERROR, ": internal server error (500)");
   }
 
   @Test
   public void serverUnavailable() throws Exception {
-    verifyErrorWhenReceiving(SERVICE_UNAVAILABLE, ": service unavailable");
+    verifyErrorWhenReceiving(SERVICE_UNAVAILABLE, ": service unavailable (503)");
   }
 
   @Test
   public void notMappedStatus() throws Exception {
     verifyErrorWhenReceiving(EXPECTATION_FAILED, "417 not understood", RESPONSE_VALIDATION.name(),
-                             getErrorMessage(EXPECTATION_FAILED, ""));
+                             getErrorMessage(EXPECTATION_FAILED, " with status code 417"));
   }
 
   @Test
@@ -144,7 +144,7 @@ public class HttpRequestErrorHandlingTestCase extends AbstractHttpRequestTestCas
   }
 
   private String getErrorMessage(HttpStatus status, String customMessage) {
-    return String.format("Response code %s mapped as failure%s.", status.getStatusCode(), customMessage);
+    return String.format("HTTP GET on resource http://localhost:%s/testPath failed%s.", httpPort.getValue(), customMessage);
   }
 
   void verifyErrorWhenReceiving(HttpStatus status, String expectedMessage) throws Exception {

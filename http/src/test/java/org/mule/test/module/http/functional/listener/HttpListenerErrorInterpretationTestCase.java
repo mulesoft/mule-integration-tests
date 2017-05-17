@@ -155,7 +155,7 @@ public class HttpListenerErrorInterpretationTestCase extends AbstractHttpTestCas
 
   @Test
   public void requestErrorIsNotInterpretedIfNotSelected() throws Exception {
-    verifyResponseFromRequestError("requestError", INTERNAL_SERVER_ERROR, containsString("mapped as failure"));
+    verifyResponseFromRequestError("requestError", INTERNAL_SERVER_ERROR, containsString("failed"));
   }
 
   @Test
