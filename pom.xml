@@ -27,6 +27,7 @@
         <muleHttpServiceVersion>1.0.0-SNAPSHOT</muleHttpServiceVersion>
         <muleOAuthServiceVersion>1.0.0-SNAPSHOT</muleOAuthServiceVersion>
         <muleSoapServiceVersion>1.0.0-SNAPSHOT</muleSoapServiceVersion>
+        <muleHttpConnectorVersion>1.0.0-SNAPSHOT</muleHttpConnectorVersion>
     </properties>
 
   <build>

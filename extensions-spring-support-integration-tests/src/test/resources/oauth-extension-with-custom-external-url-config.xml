@@ -13,18 +13,20 @@
 
 
     <test-oauth:config name="oauth">
-        <test-oauth:scopeless-connection display="PAGE" immediate="true" prompt="false">
+        <test-oauth:connection display="PAGE" immediate="true" prompt="false">
             <test-oauth:oauth-authorization-code consumerKey="${consumerKey}"
                                                  consumerSecret="${consumerSecret}"
                                                  authorizationUrl="${authorizationUrl}"
                                                  accessTokenUrl="${accessTokenUrl}"
-                                                 resourceOwnerId="MG"
+                                                 scopes="${scopes}"
+                                                 resourceOwnerId="#[ownerId]"
                                                  before="beforeFlow"
                                                  after="afterFlow" />
             <test-oauth:oauth-callback-config listenerConfig="listenerConfig"
                                               callbackPath="${callbackPath}"
-                                              authorizePath="${localAuthPath}" />
-        </test-oauth:scopeless-connection>
+                                              authorizePath="${localAuthPath}"
+                                              externalCallbackUrl="${externalCallbackUrl}" />
+        </test-oauth:connection>
     </test-oauth:config>
 
 </mule>
