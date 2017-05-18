@@ -2,15 +2,13 @@
 
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xmlns:schedulers="http://www.mulesoft.org/schema/mule/schedulers"
-      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/schedulers http://www.mulesoft.org/schema/mule/schedulers/current/mule-schedulers.xsd
-               http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 
 
     <flow name="poll1" processingStrategy="synchronous">
         <scheduler>
             <scheduling-strategy>
-                <schedulers:cron-scheduler expression="0/1 0/1 * 1/1 * ? *"/>
+                <cron-scheduler expression="0/1 0/1 * 1/1 * ? *"/>
             </scheduling-strategy>
         </scheduler>
         <set-payload value="poll1"/>
@@ -20,7 +18,7 @@
     <flow name="poll2" processingStrategy="synchronous">
         <scheduler>
             <scheduling-strategy>
-                <schedulers:cron-scheduler expression="0/1 0/1 * 1/1 * ? *"/>
+                <cron-scheduler expression="0/1 0/1 * 1/1 * ? *"/>
             </scheduling-strategy>
         </scheduler>
         <set-payload value="poll2"/>

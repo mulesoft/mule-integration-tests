@@ -3,16 +3,14 @@
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:spring="http://www.springframework.org/schema/beans"
-      xmlns:schedulers="http://www.mulesoft.org/schema/mule/schedulers"
       xsi:schemaLocation="
                http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
-               http://www.mulesoft.org/schema/mule/schedulers http://www.mulesoft.org/schema/mule/schedulers/current/mule-schedulers.xsd
                http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 
     <flow name="pollfoo" processingStrategy="synchronous" initialState="stopped">
         <scheduler>
             <scheduling-strategy>
-                <schedulers:cron-scheduler expression="0/1 * * * * ?"/>
+                <cron-scheduler expression="0/1 * * * * ?"/>
             </scheduling-strategy>
         </scheduler>
         <set-payload value="testString"/>
