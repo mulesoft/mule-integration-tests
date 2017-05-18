@@ -26,13 +26,18 @@ public class FlowStateTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  public void testDefaultInitialstate() throws Exception {
+  public void testDefaultInitialState() throws Exception {
     doTestStarted("default");
   }
 
   @Test
-  public void testStartedInitialstate() throws Exception {
+  public void testStartedInitialState() throws Exception {
     doTestStarted("started");
+  }
+
+  @Test
+  public void testPlaceholderStartedInitialState() throws Exception {
+    doTestStarted("placeholder");
   }
 
   protected void doTestStarted(String flowName) throws Exception {
