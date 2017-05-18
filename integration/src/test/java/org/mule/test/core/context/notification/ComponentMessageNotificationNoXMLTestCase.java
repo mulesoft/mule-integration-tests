@@ -21,6 +21,7 @@ import org.mule.runtime.core.api.component.Component;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.context.MuleContextBuilder;
 import org.mule.runtime.core.api.context.notification.ComponentMessageNotificationListener;
+import org.mule.runtime.core.api.context.notification.EnrichedServerNotification;
 import org.mule.runtime.core.api.context.notification.ServerNotification;
 import org.mule.runtime.core.component.DefaultJavaComponent;
 import org.mule.runtime.core.component.simple.EchoComponent;
@@ -111,7 +112,7 @@ public class ComponentMessageNotificationNoXMLTestCase extends AbstractMuleConte
     public void onNotification(ServerNotification notification) {
       this.notification = notification;
       assertEquals(ComponentMessageNotification.class, notification.getClass());
-      assertTrue(notification.getSource() instanceof Message);
+      assertTrue(((EnrichedServerNotification) notification).getMessage() instanceof Message);
       assertNotNull(((ComponentMessageNotification) notification).getFlowConstruct().getName());
 
       if (notification.getAction() == ComponentMessageNotification.COMPONENT_PRE_INVOKE) {
