@@ -11,10 +11,9 @@
 
     <wsc:config name="username">
         <wsc:connection wsdlLocation="http://localhost:${servicePort}/username?wsdl" service="TestService" port="TestPort">
-            <reconnect blocking="false" />
-            <wsc:security-strategies>
-                <wsc:wss-username-token-security-strategy username="admin" password="textPassword" addCreated="true" addNonce="true"/>
-            </wsc:security-strategies>
+            <wsc:web-service-security>
+                <wsc:username-token-security-strategy username="admin" password="textPassword" addCreated="true" addNonce="true"/>
+            </wsc:web-service-security>
         </wsc:connection>
     </wsc:config>
 

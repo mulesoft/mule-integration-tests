@@ -10,7 +10,6 @@
                         port="TestPort"
                         wsdlLocation="http://localhost:${servicePort}/server?wsdl"
                         soapVersion="${soapVersion}">
-            <reconnect blocking="false"/>
         </wsc:connection>
     </wsc:config>
 
@@ -20,7 +19,6 @@
                         address="http://dummy-metadata-address.com"
                         wsdlLocation="${humanWsdl}"
                         soapVersion="${soapVersion}">
-            <reconnect blocking="false"/>
         </wsc:connection>
     </wsc:config>
 
