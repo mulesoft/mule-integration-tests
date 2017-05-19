@@ -10,6 +10,8 @@ package org.mule.test.routing;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.mule.runtime.core.DefaultEventContext.create;
 import static org.mule.runtime.dsl.api.component.config.DefaultComponentLocation.fromSingleComponent;
+import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.LIFECYCLE_AND_DEPENDENCY_INJECTION;
+import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.MuleContextStartOrderStory.MULE_CONTEXT_START_ORDER_STORY;
 import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.lifecycle.Startable;
@@ -31,7 +33,11 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 
 import org.junit.Test;
+import ru.yandex.qatools.allure.annotations.Features;
+import ru.yandex.qatools.allure.annotations.Stories;
 
+@Features(LIFECYCLE_AND_DEPENDENCY_INJECTION)
+@Stories(MULE_CONTEXT_START_ORDER_STORY)
 public class SynchronizedFlowRefOnMuleContextStartTestCase extends AbstractIntegrationTestCase {
 
   protected static final Latch waitMessageInProgress = new Latch();
