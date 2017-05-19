@@ -6,7 +6,6 @@
 
     <wsc:config name="config">
         <wsc:connection wsdlLocation="http://localhost:${servicePort}/server?wsdl" service="TestService" port="TestPort" soapVersion="${soapVersion}">
-            <reconnect blocking="false"/>
         </wsc:connection>
     </wsc:config>
 

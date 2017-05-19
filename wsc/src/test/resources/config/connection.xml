@@ -6,21 +6,18 @@
 
     <wsc:config name="single-instance">
         <wsc:connection wsdlLocation="http://localhost:${servicePort}/server?wsdl" service="TestService" port="TestPort" soapVersion="${soapVersion}">
-            <reconnect blocking="false"/>
             <pooling-profile maxActive="1"/>
         </wsc:connection>
     </wsc:config>
 
     <wsc:config name="localWsdl">
         <wsc:connection address="http://localhost:${servicePort}/server" service="TestService" port="TestPort" wsdlLocation="wsdl/simple-service.wsdl" soapVersion="${soapVersion}">
-            <reconnect blocking="false"/>
             <pooling-profile maxActive="1"/>
         </wsc:connection>
     </wsc:config>
 
     <wsc:config name="rpcWsdl">
         <wsc:connection service="SoapResponder" port="SoapResponderPortType" wsdlLocation="#[wsdl]" soapVersion="${soapVersion}">
-            <reconnect blocking="false"/>
             <pooling-profile maxActive="1"/>
         </wsc:connection>
     </wsc:config>

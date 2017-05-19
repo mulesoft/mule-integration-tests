@@ -9,7 +9,6 @@
     <wsc:config name="wsc-config">
         <wsc:connection wsdlLocation="wsdl/simple-service.wsdl" service="TestService" port="TestPort"
                         soapVersion="${soapVersion}" address="http://localhost:${servicePort}/server">
-            <reconnect blocking="false"/>
             <wsc:custom-transport-configuration>
                 <wsc:http-transport-configuration configName="basic-auth-requester"/>
             </wsc:custom-transport-configuration>
@@ -19,14 +18,13 @@
     <wsc:config name="wsc-fail-config">
         <wsc:connection wsdlLocation="wsdl/simple-service.wsdl" service="TestService" port="TestPort"
                         soapVersion="${soapVersion}" address="http://localhost:${servicePort}/server">
-            <reconnect blocking="false"/>
             <wsc:custom-transport-configuration>
                 <wsc:http-transport-configuration configName="unauthorized-requester"/>
             </wsc:custom-transport-configuration>
         </wsc:connection>
     </wsc:config>
 
-    <http:request-config name="basic-auth-requester" >
+    <http:request-config name="basic-auth-requester">
         <http:request-connection host="localhost" port="${servicePort}" protocol="HTTP">
             <http:authentication>
                 <http:basic-authentication username="juani" password="changeIt"/>
@@ -34,7 +32,7 @@
         </http:request-connection>
     </http:request-config>
 
-    <http:request-config name="unauthorized-requester" >
+    <http:request-config name="unauthorized-requester">
         <http:request-connection host="localhost" port="${servicePort}" protocol="HTTP">
             <http:authentication>
                 <http:basic-authentication username="invalid" password="invalid"/>
