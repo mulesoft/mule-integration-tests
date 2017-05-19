@@ -6,14 +6,14 @@
  */
 package org.mule.test.integration.exceptions;
 
-import static org.mule.functional.junit4.matchers.ThrowableCauseMatcher.hasCause;
-import static org.mule.runtime.api.message.Message.of;
-import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
-
+import static org.mule.functional.junit4.matchers.ThrowableCauseMatcher.hasCause;
+import static org.mule.runtime.api.message.Message.of;
+import static org.mule.runtime.core.exception.Errors.ComponentIdentifiers.STREAM_MAXIMUM_SIZE_EXCEEDED;
+import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
 import org.mule.functional.functional.FunctionalTestComponent;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.i18n.I18nMessage;
@@ -177,6 +177,35 @@ public class ErrorHandlerTestCase extends AbstractIntegrationTestCase {
     MessagingException exception = flowRunner("propagatesCriticalErrors").runExpectingException();
     assertThat(exception.getEvent().getError().isPresent(), is(true));
     assertThat(exception.getEvent().getError().get().getErrorType().getIdentifier(), is("CRITICAL"));
+  }
+
+  @Test
+  public void messageProcessorErrorIsNotObfuscatedByRouterError() throws Exception {
+    MessagingException exception = flowRunner("routerWithFailureComponent").runExpectingException();
+    assertThat(exception.getEvent().getError().isPresent(), is(true));
+    assertThat(exception.getEvent().getError().get().getErrorType().getIdentifier(), is("UNKNOWN"));
+  }
+
+  @Test
+  public void messageProcessorErrorIsNotObfuscatedByRouterErrorInsideTry() throws Exception {
+    MessagingException exception = flowRunner("tryWithFailureComponent").runExpectingException();
+    assertThat(exception.getEvent().getError().isPresent(), is(true));
+    assertThat(exception.getEvent().getError().get().getErrorType().getIdentifier(), is("UNKNOWN"));
+  }
+
+  @Test
+  public void moduleOperationErrorIsNotObfuscatedByEnricherError() throws Exception {
+    MessagingException exception = flowRunner("enricherWithFailureOperation").runExpectingException();
+    assertThat(exception.getEvent().getError().isPresent(), is(true));
+    assertThat(exception.getEvent().getError().get().getErrorType().getIdentifier(), is("HEALTH"));
+  }
+
+  @Test
+  public void exceptionWithErrorTypeIsNotObfuscatedByModuleOperationWrappingTheException() throws Exception {
+    MessagingException messagingException = flowRunner("streamingFailureInsideOperation")
+        .withPayload("payload-to-long-for-streaming-configuration").runExpectingException();
+    assertThat(messagingException.getEvent().getError().get().getErrorType(),
+               is(muleContext.getErrorTypeRepository().getErrorType(STREAM_MAXIMUM_SIZE_EXCEEDED).get()));
   }
 
   private void callTypeAndThrowException(Exception exception, String expectedMessage) throws Exception {
