@@ -5,7 +5,11 @@
        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 
     <flow name="myFlow">
-        <scheduler/>
+        <scheduler>
+            <scheduling-strategy>
+                <fixed-frequency-scheduler/>
+            </scheduling-strategy>
+        </scheduler>
         <logger/>
         <set-payload value="anotherValue"/>
         <async>
@@ -15,7 +19,11 @@
     </flow>
 
     <flow name="anotherFlow">
-        <scheduler/>
+        <scheduler>
+            <scheduling-strategy>
+                <fixed-frequency-scheduler/>
+            </scheduling-strategy>
+        </scheduler>
         <logger/>
     </flow>
 

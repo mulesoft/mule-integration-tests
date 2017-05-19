@@ -11,7 +11,11 @@
     </flow>
 
     <flow name="complexFlow">
-        <scheduler/>
+        <scheduler>
+            <scheduling-strategy>
+                <fixed-frequency-scheduler/>
+            </scheduling-strategy>
+        </scheduler>
         <set-payload value="someValue"/>
         <set-payload value="someValue"/>
         <scatter-gather>
