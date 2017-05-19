@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:spring="http://www.springframework.org/schema/beans"
+      xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+
+    <spring:bean id="objectStore" class="org.mule.runtime.core.util.store.SimpleMemoryObjectStore" />
+
+    <flow name="flow1">
+        <until-successful maxRetries="0" objectStore-ref="objectStore">
+            <processor-chain>
+                <flow-ref name="flow2"/>
+            </processor-chain>
+        </until-successful>
+    </flow>
+
+    <flow name="flow2">
+        <custom-source class="org.mule.test.routing.SynchronizedFlowRefOnMuleContextStartTestCase$UnblockProcessingSource"/>
+        <component class="org.mule.test.routing.SynchronizedFlowRefOnMuleContextStartTestCase.TestMessageProcessor"/>
+    </flow>
+</mule>
