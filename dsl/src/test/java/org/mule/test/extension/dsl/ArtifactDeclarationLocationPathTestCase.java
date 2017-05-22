@@ -8,6 +8,7 @@ package org.mule.test.extension.dsl;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.mule.runtime.api.app.declaration.fluent.ElementDeclarer.newParameterGroup;
 import static org.mule.runtime.core.util.IOUtils.getResourceAsString;
 import static org.mule.test.module.extension.internal.util.ExtensionsTestUtils.compareXML;
 import org.mule.runtime.api.app.declaration.ArtifactDeclaration;
@@ -77,7 +78,9 @@ public class ArtifactDeclarationLocationPathTestCase extends AbstractElementMode
     assertThat(destination.isPresent(), is(true));
     flow.get().addComponent(0, jms.newSource("listener")
         .withConfig("config")
-        .withParameter("destination", "myListenerDestination")
+        .withParameterGroup(newParameterGroup()
+            .withParameter("destination", "myListenerDestination")
+            .getDeclaration())
         .getDeclaration());
 
     String serialized = serializer.serialize(multiFlowDeclaration);
