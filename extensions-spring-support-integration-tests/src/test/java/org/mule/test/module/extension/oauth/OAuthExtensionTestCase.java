@@ -47,7 +47,7 @@ public class OAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
 
   protected void verifyAuthUrlRequest() {
     wireMock.verify(getRequestedFor(urlPathEqualTo("/" + AUTHORIZE_PATH))
-        .withQueryParam("redirect_uri", equalTo((toUrl(CALLBACK_PATH, callbackPort.getNumber()))))
+        .withQueryParam("redirect_uri", equalTo(toUrl(CALLBACK_PATH, callbackPort.getNumber())))
         .withQueryParam("client_id", equalTo(CONSUMER_KEY))
         .withQueryParam("scope", equalTo(SCOPES.replaceAll(" ", "\\+")))
         .withQueryParam("state", containing(STATE)));
@@ -75,6 +75,7 @@ public class OAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
     assertThat(state.getRefreshToken().get(), is(REFRESH_TOKEN));
     assertThat(state.getState().get(), is(STATE));
     assertThat(state.getResourceOwnerId(), is(OWNER_ID));
+    assertExternalCallbackUrl(state);
 
     assertOAuthStateStored(DEFAULT_USER_OBJECT_STORE_NAME, OWNER_ID);
   }
@@ -122,6 +123,7 @@ public class OAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
     assertThat(request.getResourceOwnerId(), is(OWNER_ID));
     assertScopes(request);
     assertThat(request.getState().get(), is(STATE));
+    assertExternalCallbackUrl(request);
   }
 
   protected void assertScopes(AuthCodeRequest request) {
@@ -139,5 +141,18 @@ public class OAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
     assertThat(state.getAccessTokenUrl(), is(tokenUrl));
     assertThat(state.getConsumerKey(), is(CONSUMER_KEY));
     assertThat(state.getConsumerSecret(), is(CONSUMER_SECRET));
+    assertExternalCallbackUrlOnAfterCallback(state);
+  }
+
+  protected void assertExternalCallbackUrl(AuthCodeRequest request) {
+    assertThat(request.getExternalCallbackUrl().isPresent(), is(false));
+  }
+
+  protected void assertExternalCallbackUrlOnAfterCallback(AuthorizationCodeState state) {
+    assertThat(state.getExternalCallbackUrl().isPresent(), is(false));
+  }
+
+  protected void assertExternalCallbackUrl(AuthorizationCodeState state) {
+    assertThat(state.getExternalCallbackUrl().isPresent(), is(false));
   }
 }

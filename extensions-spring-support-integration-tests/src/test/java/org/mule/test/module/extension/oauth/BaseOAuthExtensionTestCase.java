@@ -23,23 +23,20 @@ import static org.mule.services.oauth.internal.OAuthConstants.ACCESS_TOKEN_PARAM
 import static org.mule.services.oauth.internal.OAuthConstants.EXPIRES_IN_PARAMETER;
 import static org.mule.services.oauth.internal.OAuthConstants.REFRESH_TOKEN_PARAMETER;
 import static org.mule.tck.probe.PollingProber.check;
-
 import org.mule.runtime.core.api.store.ListableObjectStore;
 import org.mule.runtime.oauth.api.state.ResourceOwnerOAuthContext;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.module.extension.AbstractExtensionFunctionalTestCase;
 
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.google.common.collect.ImmutableMap;
 
 import java.io.IOException;
 import java.util.Map;
 
 import org.apache.http.client.fluent.Response;
-
 import org.junit.Rule;
-
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 public abstract class BaseOAuthExtensionTestCase extends AbstractExtensionFunctionalTestCase {
 
@@ -101,7 +98,7 @@ public abstract class BaseOAuthExtensionTestCase extends AbstractExtensionFuncti
 
 
   protected String toUrl(String path, int port) {
-    return format("http://localhost:%d/%s", port, path);
+    return format("http://127.0.0.1:%d/%s", port, path);
   }
 
   protected void assertOAuthStateStored(String objectStoreName, String resourceOwnerId) throws Exception {
