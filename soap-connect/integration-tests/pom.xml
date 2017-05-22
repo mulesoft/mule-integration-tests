@@ -28,7 +28,7 @@
         <dependency>
             <groupId>org.mule.services</groupId>
             <artifactId>mule-service-soap</artifactId>
-            <version>${project.version}</version>
+            <version>${muleSoapServiceVersion}</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
@@ -65,7 +65,7 @@
         <dependency>
             <groupId>org.mule.services</groupId>
             <artifactId>mule-service-scheduler</artifactId>
-            <version>${project.version}</version>
+            <version>${muleSchedulerServiceVersion}</version>
             <classifier>mule-service</classifier>
             <scope>provided</scope>
         </dependency>
@@ -119,7 +119,7 @@
         <dependency>
             <groupId>org.mule.services</groupId>
             <artifactId>mule-service-http</artifactId>
-            <version>${project.version}</version>
+            <version>${muleHttpServiceVersion}</version>
             <scope>provided</scope>
             <classifier>mule-service</classifier>
         </dependency>
@@ -132,7 +132,7 @@
         <dependency>
             <groupId>org.mule.services</groupId>
             <artifactId>mule-service-soap</artifactId>
-            <version>${project.version}</version>
+            <version>${muleSoapServiceVersion}</version>
             <scope>provided</scope>
             <classifier>mule-service</classifier>
         </dependency>
