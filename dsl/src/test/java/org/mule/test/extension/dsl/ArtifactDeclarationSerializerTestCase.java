@@ -98,6 +98,7 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
     ArtifactDeclaration artifact = serializer.deserialize(configIs);
 
     String serializationResult = serializer.serialize(artifact);
+
     compareXML(expectedAppXml, serializationResult);
   }
 
@@ -352,6 +353,28 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
                     .withParameter("body", "#[payload]")
                     .build())
                 .getDeclaration())
+            .getDeclaration())
+        .withGlobalElement(newFlow().withRefName("schedulerFlow")
+            .withComponent(core.newSource("scheduler")
+                .withParameter("schedulingStrategy", newObjectValue()
+                    .ofType("org.mule.runtime.core.source.scheduler.schedule.FixedFrequencyScheduler")
+                    .withParameter("frequency", "50")
+                    .withParameter("startDelay", "20")
+                    .withParameter("timeUnit", "SECONDS")
+                    .build())
+                .getDeclaration())
+            .withComponent(core.newOperation("logger")
+                .withParameter("message", "#[payload]").getDeclaration())
+            .getDeclaration())
+        .withGlobalElement(newFlow().withRefName("cronSchedulerFlow")
+            .withComponent(core.newSource("scheduler")
+                .withParameter("schedulingStrategy", newObjectValue()
+                    .ofType("org.mule.runtime.core.source.scheduler.schedule.CronScheduler")
+                    .withParameter("expression", "0/1 * * * * ?")
+                    .build())
+                .getDeclaration())
+            .withComponent(core.newOperation("logger")
+                .withParameter("message", "#[payload]").getDeclaration())
             .getDeclaration())
         .getDeclaration();
   }

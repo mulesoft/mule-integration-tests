@@ -7,14 +7,18 @@
 
     <flow name="runningSchedulerOnStartup">
         <scheduler>
-            <fixed-frequency-scheduler startDelay="0" frequency="1000"/>
+            <scheduling-strategy>
+                <fixed-frequency-scheduler startDelay="0" frequency="1000"/>
+            </scheduling-strategy>
         </scheduler>
         <test:queue name="runningSchedulerOnStartupQueue"/>
     </flow>
 
     <flow name="notRunningSchedulerOnStartup">
         <scheduler>
-            <fixed-frequency-scheduler startDelay="0" frequency="1000"/>
+            <scheduling-strategy>
+                <fixed-frequency-scheduler startDelay="0" frequency="1000"/>
+            </scheduling-strategy>
         </scheduler>
         <test:queue name="notRunningSchedulerOnStartupQueue"/>
     </flow>

@@ -27,12 +27,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.mule.runtime</groupId>
-            <artifactId>mule-module-schedulers</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>org.mule.services</groupId>
             <artifactId>mule-service-scheduler</artifactId>
             <version>${project.version}</version>
