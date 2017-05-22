@@ -10,6 +10,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mule.runtime.api.app.declaration.fluent.ElementDeclarer.newListValue;
 import static org.mule.runtime.api.app.declaration.fluent.ElementDeclarer.newObjectValue;
+import static org.mule.runtime.api.app.declaration.fluent.ElementDeclarer.newParameterGroup;
+import static org.mule.runtime.api.meta.model.parameter.ParameterGroupModel.CONNECTION;
 import static org.mule.runtime.extension.api.ExtensionConstants.RECONNECTION_STRATEGY_PARAMETER_NAME;
 import static org.mule.runtime.extension.api.ExtensionConstants.REDELIVERY_POLICY_PARAMETER_NAME;
 import static org.mule.runtime.extension.api.ExtensionConstants.TLS_PARAMETER_NAME;
@@ -61,8 +63,10 @@ public class DeclarationBasedElementModelFactoryTestCase extends AbstractElement
     ElementDeclarer http = ElementDeclarer.forExtension("HTTP");
 
     derbyConnection = db.newConnection("derby-connection")
-        .withParameter("database", "target/muleEmbeddedDB")
-        .withParameter("create", "true")
+        .withParameterGroup(newParameterGroup(CONNECTION)
+            .withParameter("database", "target/muleEmbeddedDB")
+            .withParameter("create", "true")
+            .getDeclaration())
         .getDeclaration();
     dbConfig = db.newConfiguration("config")
         .withRefName("dbConfig")
@@ -70,42 +74,53 @@ public class DeclarationBasedElementModelFactoryTestCase extends AbstractElement
         .getDeclaration();
 
     listenerConnection = http.newConnection("listener-connection")
-        .withParameter(TLS_PARAMETER_NAME, newObjectValue()
-            .withParameter("key-store", newObjectValue()
-                .withParameter("path", "ssltest-keystore.jks")
-                .withParameter("password", "changeit")
-                .withParameter("keyPassword", "changeit")
+        .withParameterGroup(newParameterGroup()
+            .withParameter(TLS_PARAMETER_NAME, newObjectValue()
+                .withParameter("key-store", newObjectValue()
+                    .withParameter("path", "ssltest-keystore.jks")
+                    .withParameter("password", "changeit")
+                    .withParameter("keyPassword", "changeit")
+                    .build())
                 .build())
-            .build())
-        .withParameter("host", "localhost")
-        .withParameter("port", "49019")
-        .withParameter("protocol", "HTTPS")
+            .getDeclaration())
+        .withParameterGroup(newParameterGroup(CONNECTION)
+            .withParameter("host", "localhost")
+            .withParameter("port", "49019")
+            .withParameter("protocol", "HTTPS")
+            .getDeclaration())
         .getDeclaration();
 
     listenerConfig = http.newConfiguration("listener-config")
         .withRefName("httpListener")
-        .withParameter("basePath", "/")
+        .withParameterGroup(newParameterGroup()
+            .withParameter("basePath", "/")
+            .getDeclaration())
         .withConnection(listenerConnection)
         .getDeclaration();
 
     requestConnection = http.newConnection("request-connection")
-        .withParameter("host", "localhost")
-        .withParameter("port", "49020")
-        .withParameter("authentication",
-                       newObjectValue()
-                           .ofType("org.mule.extension.http.api.request.authentication.BasicAuthentication")
-                           .withParameter("username", "user")
-                           .withParameter("password", "pass")
-                           .build())
-        .withParameter("clientSocketProperties",
-                       newObjectValue()
-                           .withParameter("connectionTimeout", "1000")
-                           .withParameter("keepAlive", "true")
-                           .withParameter("receiveBufferSize", "1024")
-                           .withParameter("sendBufferSize", "1024")
-                           .withParameter("clientTimeout", "1000")
-                           .withParameter("linger", "1000")
-                           .build())
+        .withParameterGroup(newParameterGroup()
+            .withParameter("authentication",
+                           newObjectValue()
+                               .ofType(
+                                       "org.mule.extension.http.api.request.authentication.BasicAuthentication")
+                               .withParameter("username", "user")
+                               .withParameter("password", "pass")
+                               .build())
+            .getDeclaration())
+        .withParameterGroup(newParameterGroup(CONNECTION)
+            .withParameter("host", "localhost")
+            .withParameter("port", "49020")
+            .withParameter("clientSocketProperties",
+                           newObjectValue()
+                               .withParameter("connectionTimeout", "1000")
+                               .withParameter("keepAlive", "true")
+                               .withParameter("receiveBufferSize", "1024")
+                               .withParameter("sendBufferSize", "1024")
+                               .withParameter("clientTimeout", "1000")
+                               .withParameter("linger", "1000")
+                               .build())
+            .getDeclaration())
         .getDeclaration();
 
     requestConfig = http.newConfiguration("request-config")
@@ -115,42 +130,54 @@ public class DeclarationBasedElementModelFactoryTestCase extends AbstractElement
 
     listener = http.newSource("listener")
         .withConfig("httpListener")
-        .withParameter("path", "testBuilder")
-        .withParameter(REDELIVERY_POLICY_PARAMETER_NAME,
-                       newObjectValue()
-                           .withParameter(MAX_REDELIVERY_COUNT, "2")
-                           .withParameter(USE_SECURE_HASH, "true")
-                           .build())
-        .withParameter(RECONNECTION_STRATEGY_PARAMETER_NAME,
-                       newObjectValue()
-                           .ofType(RECONNECT_ALIAS)
-                           .withParameter(BLOCKING, "true")
-                           .withParameter(COUNT, "1")
-                           .withParameter(FREQUENCY, "0")
-                           .build())
-        .withParameter("Response",
-                       newObjectValue()
-                           .withParameter("headers", "#[{{'content-type' : 'text/plain'}}]")
-                           .build())
+        .withParameterGroup(newParameterGroup()
+            .withParameter("path", "testBuilder")
+            .withParameter(REDELIVERY_POLICY_PARAMETER_NAME,
+                           newObjectValue()
+                               .withParameter(MAX_REDELIVERY_COUNT, "2")
+                               .withParameter(USE_SECURE_HASH, "true")
+                               .build())
+            .getDeclaration())
+        .withParameterGroup(newParameterGroup(CONNECTION)
+            .withParameter(RECONNECTION_STRATEGY_PARAMETER_NAME,
+                           newObjectValue()
+                               .ofType(RECONNECT_ALIAS)
+                               .withParameter(BLOCKING, "true")
+                               .withParameter(COUNT, "1")
+                               .withParameter(FREQUENCY, "0")
+                               .build())
+            .getDeclaration())
+        .withParameterGroup(newParameterGroup("Response")
+            .withParameter("headers", "#[{{'content-type' : 'text/plain'}}]")
+            .getDeclaration())
         .getDeclaration();
 
     bulkInsert = db.newOperation("bulkInsert")
-        .withParameter("sql", "INSERT INTO PLANET(POSITION, NAME) VALUES (:position, :name)")
-        .withParameter("parameterTypes",
-                       newListValue()
-                           .withValue(newObjectValue()
-                               .withParameter("key", "name")
-                               .withParameter("type", "VARCHAR").build())
-                           .withValue(newObjectValue()
-                               .withParameter("key", "position")
-                               .withParameter("type", "INTEGER").build())
-                           .build())
+        .withParameterGroup(newParameterGroup("Query")
+            .withParameter("sql",
+                           "INSERT INTO PLANET(POSITION, NAME) VALUES (:position, :name)")
+            .withParameter("parameterTypes",
+                           newListValue()
+                               .withValue(newObjectValue()
+                                   .withParameter("key", "name")
+                                   .withParameter("type", "VARCHAR")
+                                   .build())
+                               .withValue(newObjectValue()
+                                   .withParameter("key", "position")
+                                   .withParameter("type", "INTEGER")
+                                   .build())
+                               .build())
+            .getDeclaration())
         .getDeclaration();
 
     request = http.newOperation("request")
         .withConfig("httpRequester")
-        .withParameter("path", "/nested")
-        .withParameter("method", "POST")
+        .withParameterGroup(newParameterGroup("URI Settings")
+            .withParameter("path", "/nested")
+            .getDeclaration())
+        .withParameterGroup(newParameterGroup()
+            .withParameter("method", "POST")
+            .getDeclaration())
         .getDeclaration();
 
   }
