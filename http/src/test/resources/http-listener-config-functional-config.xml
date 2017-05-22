@@ -47,7 +47,7 @@
         <echo-component/>
     </flow>
 
-    <http:listener-config name="slashListenerConfig" basePath="/">
+    <http:listener-config name="slashListenerConfig" basePath="//">
         <http:listener-connection host="localhost" port="${slashConfigPort}"/>
     </http:listener-config>
 

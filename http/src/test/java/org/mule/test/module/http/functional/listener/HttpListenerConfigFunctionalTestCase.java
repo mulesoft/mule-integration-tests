@@ -113,11 +113,11 @@ public class HttpListenerConfigFunctionalTestCase extends AbstractHttpTestCase {
   @Test
   public void useSlashInPathAndBasePath() throws Exception {
     String baseUrl = String.format("http://localhost:%s/", slashConfigPort.getNumber());
-    assertThat(callAndAssertStatusWithMuleClient(baseUrl, SC_OK), is("1"));
-    assertThat(callAndAssertStatusWithMuleClient(baseUrl + "/", SC_OK), is("2"));
-    assertThat(callAndAssertStatusWithMuleClient(baseUrl + "//", SC_OK), is("3"));
+    assertThat(callAndAssertStatusWithMuleClient(baseUrl + "/", SC_OK), is("1"));
+    assertThat(callAndAssertStatusWithMuleClient(baseUrl + "//", SC_OK), is("2"));
+    assertThat(callAndAssertStatusWithMuleClient(baseUrl + "///", SC_OK), is("3"));
 
-    callAndAssertStatusWithMuleClient(baseUrl + "///", SC_NOT_FOUND);
+    callAndAssertStatusWithMuleClient(baseUrl + "////", SC_NOT_FOUND);
   }
 
   private String callAndAssertStatusWithMuleClient(String url, int expectedStatus) throws Exception {
