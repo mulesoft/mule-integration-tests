@@ -38,7 +38,7 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
-@Ignore("MULE-11482 - Next commit will get these test fixed")
+@Ignore("MULE-12569: Fix tests")
 public class ProcessorsTraceTestCase extends AbstractIntegrationTestCase {
 
   public static class ProcessorsTraceAsserter implements Processor {
