@@ -6,6 +6,7 @@
  */
 package org.mule.test.core.context.notification.processors;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertNotNull;
@@ -393,7 +394,7 @@ public class MessageProcessorNotificationTestCase extends AbstractMessageProcess
             .parallelSynch(post().serial(prePost())));
 
     assertNotNull(flowRunner("until-successful").withPayload(TEST_PAYLOAD).run());
-    muleContext.getClient().request("test://out-us", getTestTimeoutSecs()).getRight().get();
+    muleContext.getClient().request("test://out-us", SECONDS.toMillis(getTestTimeoutSecs())).getRight().get();
 
     assertNotifications();
   }
@@ -408,7 +409,7 @@ public class MessageProcessorNotificationTestCase extends AbstractMessageProcess
             .parallelSynch(post().serial(prePost())));
 
     assertNotNull(flowRunner("until-successful-with-processor-chain").withPayload(TEST_PAYLOAD).run());
-    muleContext.getClient().request("test://out-us", getTestTimeoutSecs()).getRight().get();
+    muleContext.getClient().request("test://out-us", SECONDS.toMillis(getTestTimeoutSecs())).getRight().get();
 
     assertNotifications();
   }
@@ -423,7 +424,7 @@ public class MessageProcessorNotificationTestCase extends AbstractMessageProcess
             .parallelSynch(post().serial(prePost())));
 
     assertNotNull(flowRunner("until-successful-with-enricher").withPayload(TEST_PAYLOAD).run());
-    muleContext.getClient().request("test://out-us", getTestTimeoutSecs()).getRight().get();
+    muleContext.getClient().request("test://out-us", SECONDS.toMillis(getTestTimeoutSecs())).getRight().get();
 
     assertNotifications();
   }
