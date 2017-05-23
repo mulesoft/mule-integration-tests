@@ -55,7 +55,7 @@ public class HttpBasicAuthConfigTestCase extends AbstractSoapServiceTestCase {
     MessagingException exc = flowRunner("unauthorizedRequester").withPayload(getRequestResource(ECHO)).runExpectingException();
     Optional<Error> error = exc.getEvent().getError();
     assertThat(error.isPresent(), is(true));
-    assertThat(error.get().getErrorType(), errorType("WSC", CANNOT_DISPATCH.toString()));
+    assertThat(error.get().getErrorType(), errorType("HTTP", "UNAUTHORIZED"));
     assertThat(error.get().getDescription(), containsString("failed: unauthorized (401)"));
   }
 
