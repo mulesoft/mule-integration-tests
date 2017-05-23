@@ -57,17 +57,28 @@ public class HttpListenerHeadersTestCase extends AbstractHttpTestCase {
   }
 
   @Test
+  public void returnsHeaders() throws Exception {
+    HttpResponse response = Request.Post(getUrl("returnHeaders")).execute().returnResponse();
+
+    assertThat(response.getFirstHeader("X-Custom-Int").getValue(), is("3"));
+    assertThat(response.getFirstHeader("X-Custom-String").getValue(), is("4"));
+  }
+
+  @Test
   public void handlesMultipleHeadersCollection() throws Exception {
     testHeaders("multipleHeadersCollection", "custom1", new BasicHeader(header.getValue(), "custom1"),
                 new BasicHeader(header.getValue(), "custom2"));
   }
 
   public void testHeaders(String path, String expectedResponse, Header... headers) throws IOException {
-    String url = String.format("http://localhost:%s/%s", listenPort.getNumber(), path);
-    HttpResponse response = Request.Post(url).setHeaders(headers).execute().returnResponse();
+    HttpResponse response = Request.Post(getUrl(path)).setHeaders(headers).execute().returnResponse();
 
     assertThat(response.getStatusLine().getStatusCode(), is(OK.getStatusCode()));
     assertThat(IOUtils.toString(response.getEntity().getContent()), is(expectedResponse));
+  }
+
+  private String getUrl(String path) {
+    return String.format("http://localhost:%s/%s", listenPort.getNumber(), path);
   }
 
 

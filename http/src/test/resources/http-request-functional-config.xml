@@ -24,6 +24,21 @@
         <object-to-string-transformer />
     </flow>
 
+    <flow name="requestPropertiesFlow">
+        <http:request config-ref="requestConfig" method="POST" path="request/{param1}/{param2}">
+            <http:headers>
+                #[{'X-Custom-Int' : 5, 'X-Custom-String' : '6'}]
+            </http:headers>
+            <http:uri-params>
+                #[{'param1' : 1, 'param2' : '2'}]
+            </http:uri-params>
+            <http:query-params>
+                #[{'query1' : 4, 'query2' : '5'}]
+            </http:query-params>
+        </http:request>
+        <object-to-string-transformer />
+    </flow>
+
     <!-- MULE-8956 -->
     <http:request-config name="blockingRequestConfig" basePath="basePath">
         <http:request-connection host="localhost" port="${blockingHttpPort}"/>
