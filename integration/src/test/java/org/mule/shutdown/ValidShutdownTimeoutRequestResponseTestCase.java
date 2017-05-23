@@ -7,16 +7,16 @@
 package org.mule.shutdown;
 
 import static org.junit.Assert.assertTrue;
-import static org.mule.service.http.api.HttpConstants.Method.GET;
+import static org.mule.runtime.http.api.HttpConstants.Method.GET;
 
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.core.util.IOUtils;
-import org.mule.service.http.api.HttpService;
-import org.mule.service.http.api.domain.entity.ByteArrayHttpEntity;
-import org.mule.service.http.api.domain.entity.InputStreamHttpEntity;
-import org.mule.service.http.api.domain.message.request.HttpRequest;
-import org.mule.service.http.api.domain.message.response.HttpResponse;
-import org.mule.services.http.TestHttpClient;
+import org.mule.runtime.http.api.HttpService;
+import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;
+import org.mule.runtime.http.api.domain.entity.InputStreamHttpEntity;
+import org.mule.runtime.http.api.domain.message.request.HttpRequest;
+import org.mule.runtime.http.api.domain.message.response.HttpResponse;
+import org.mule.service.http.TestHttpClient;
 import org.mule.tck.junit4.rule.SystemProperty;
 
 import org.junit.After;

@@ -6,9 +6,9 @@
  */
 package org.mule.test.module.http.functional.listener;
 
-import static org.mule.service.http.api.HttpConstants.HttpStatus.METHOD_NOT_ALLOWED;
-import static org.mule.service.http.api.HttpConstants.HttpStatus.NOT_FOUND;
-import static org.mule.service.http.api.HttpConstants.Method.GET;
+import static org.mule.runtime.http.api.HttpConstants.HttpStatus.METHOD_NOT_ALLOWED;
+import static org.mule.runtime.http.api.HttpConstants.HttpStatus.NOT_FOUND;
+import static org.mule.runtime.http.api.HttpConstants.Method.GET;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
 import static org.mule.test.module.http.functional.matcher.HttpResponseReasonPhraseMatcher.hasReasonPhrase;
 import static org.mule.test.module.http.functional.matcher.HttpResponseStatusCodeMatcher.hasStatusCode;
@@ -19,10 +19,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import org.mule.runtime.core.util.IOUtils;
-import org.mule.service.http.api.HttpConstants.HttpStatus;
-import org.mule.service.http.api.domain.entity.ByteArrayHttpEntity;
-import org.mule.service.http.api.domain.entity.InputStreamHttpEntity;
-import org.mule.service.http.api.domain.message.request.HttpRequest;
+import org.mule.runtime.http.api.HttpConstants.HttpStatus;
+import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;
+import org.mule.runtime.http.api.domain.entity.InputStreamHttpEntity;
+import org.mule.runtime.http.api.domain.message.request.HttpRequest;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.module.http.functional.AbstractHttpTestCase;
@@ -123,7 +123,7 @@ public class HttpListenerConfigFunctionalTestCase extends AbstractHttpTestCase {
   private String callAndAssertStatusWithMuleClient(String url, int expectedStatus) throws Exception {
     HttpRequest request =
         HttpRequest.builder().setUri(url).setMethod(GET).setEntity(new ByteArrayHttpEntity(TEST_PAYLOAD.getBytes())).build();
-    final org.mule.service.http.api.domain.message.response.HttpResponse response =
+    final org.mule.runtime.http.api.domain.message.response.HttpResponse response =
         httpClient.send(request, RECEIVE_TIMEOUT, false, null);
     assertThat(response.getStatusCode(), is(expectedStatus));
 

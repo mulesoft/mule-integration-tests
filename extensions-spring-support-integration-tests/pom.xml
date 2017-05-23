@@ -212,7 +212,7 @@
         <dependency>
             <groupId>org.mule.services</groupId>
             <artifactId>mule-service-soap</artifactId>
-            <version>${project.version}</version>
+            <version>${muleSoapServiceVersion}</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>

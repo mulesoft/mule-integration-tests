@@ -6,13 +6,13 @@
  */
 package org.mule.test.module.extension.soap;
 
-import static org.mule.services.soap.SoapTestUtils.assertSimilarXml;
+import static org.mule.service.soap.SoapTestUtils.assertSimilarXml;
 import static org.mule.test.ram.RickAndMortyExtension.RICKS_PHRASE;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.streaming.bytes.CursorStreamProvider;
 import org.mule.runtime.core.util.IOUtils;
-import org.mule.services.soap.TestHttpSoapServer;
+import org.mule.service.soap.TestHttpSoapServer;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.module.extension.soap.services.InterdimentionalCableService;

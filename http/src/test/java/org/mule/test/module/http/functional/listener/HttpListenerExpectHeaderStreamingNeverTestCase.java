@@ -6,11 +6,11 @@
  */
 package org.mule.test.module.http.functional.listener;
 
-import static org.mule.service.http.api.HttpConstants.Method.POST;
-import static org.mule.service.http.api.HttpHeaders.Names.CONTENT_LENGTH;
-import static org.mule.service.http.api.HttpHeaders.Names.EXPECT;
-import static org.mule.service.http.api.HttpHeaders.Names.HOST;
-import static org.mule.service.http.api.HttpHeaders.Values.CONTINUE;
+import static org.mule.runtime.http.api.HttpConstants.Method.POST;
+import static org.mule.runtime.http.api.HttpHeaders.Names.CONTENT_LENGTH;
+import static org.mule.runtime.http.api.HttpHeaders.Names.EXPECT;
+import static org.mule.runtime.http.api.HttpHeaders.Names.HOST;
+import static org.mule.runtime.http.api.HttpHeaders.Values.CONTINUE;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;

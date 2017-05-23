@@ -8,7 +8,7 @@ package org.mule.test.module.http.functional.listener;
 
 import static org.mule.extension.http.api.HttpHeaders.Names.TRANSFER_ENCODING;
 import static org.mule.runtime.api.message.Message.of;
-import static org.mule.service.http.api.HttpConstants.HttpStatus.NO_CONTENT;
+import static org.mule.runtime.http.api.HttpConstants.HttpStatus.NO_CONTENT;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;

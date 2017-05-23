@@ -6,11 +6,11 @@
  */
 package org.mule.test.module.http.functional.listener;
 
-import static org.mule.service.http.api.HttpConstants.HttpStatus.OK;
-import static org.mule.service.http.api.HttpHeaders.Names.CONTENT_LENGTH;
-import static org.mule.service.http.api.HttpHeaders.Names.CONTENT_TYPE;
-import static org.mule.service.http.api.HttpHeaders.Values.APPLICATION_X_WWW_FORM_URLENCODED;
-import static org.mule.service.http.api.utils.HttpEncoderDecoderUtils.decodeUrlEncodedBody;
+import static org.mule.runtime.http.api.HttpConstants.HttpStatus.OK;
+import static org.mule.runtime.http.api.HttpHeaders.Names.CONTENT_LENGTH;
+import static org.mule.runtime.http.api.HttpHeaders.Names.CONTENT_TYPE;
+import static org.mule.runtime.http.api.HttpHeaders.Values.APPLICATION_X_WWW_FORM_URLENCODED;
+import static org.mule.runtime.http.api.utils.HttpEncoderDecoderUtils.decodeUrlEncodedBody;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
 import static org.mule.test.module.http.functional.matcher.ParamMapMatcher.isEqual;
 import static com.google.common.base.Charsets.UTF_8;
@@ -25,7 +25,7 @@ import static org.junit.Assert.assertThat;
 
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.util.StringUtils;
-import org.mule.service.http.api.domain.ParameterMap;
+import org.mule.runtime.http.api.domain.ParameterMap;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.module.http.functional.AbstractHttpTestCase;

@@ -11,7 +11,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 import org.mule.runtime.core.api.Event;
-import org.mule.service.http.api.HttpHeaders;
+import org.mule.runtime.http.api.HttpHeaders;
 import org.mule.test.runner.RunnerDelegateTo;
 
 import java.io.IOException;

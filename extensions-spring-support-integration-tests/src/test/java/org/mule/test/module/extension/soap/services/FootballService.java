@@ -12,7 +12,8 @@ import static org.mule.test.soap.extension.CalcioServiceProvider.CALCIO_FRIENDLY
 import static org.mule.test.soap.extension.FootballSoapExtension.LEAGUES_PORT;
 import static org.mule.test.soap.extension.FootballSoapExtension.LEAGUES_SERVICE;
 import static org.mule.test.soap.extension.LaLigaServiceProvider.LA_LIGA;
-import org.mule.services.soap.service.EchoException;
+
+import org.mule.service.soap.service.EchoException;
 
 import java.util.List;
 

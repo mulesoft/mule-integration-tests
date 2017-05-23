@@ -9,7 +9,7 @@ package org.mule.test.integration.domain.tls;
 import static java.lang.String.format;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mule.service.http.api.HttpConstants.Method.GET;
+import static org.mule.runtime.http.api.HttpConstants.Method.GET;
 
 import org.mule.functional.junit4.DomainFunctionalTestCase;
 import org.mule.functional.junit4.FlowRunner;
@@ -17,12 +17,12 @@ import org.mule.runtime.api.tls.TlsContextFactory;
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.util.IOUtils;
-import org.mule.service.http.api.client.HttpClient;
-import org.mule.service.http.api.domain.entity.ByteArrayHttpEntity;
-import org.mule.service.http.api.domain.entity.InputStreamHttpEntity;
-import org.mule.service.http.api.domain.message.request.HttpRequest;
-import org.mule.service.http.api.domain.message.response.HttpResponse;
-import org.mule.services.http.TestHttpClient;
+import org.mule.runtime.http.api.client.HttpClient;
+import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;
+import org.mule.runtime.http.api.domain.entity.InputStreamHttpEntity;
+import org.mule.runtime.http.api.domain.message.request.HttpRequest;
+import org.mule.runtime.http.api.domain.message.response.HttpResponse;
+import org.mule.service.http.TestHttpClient;
 import org.mule.tck.junit4.rule.DynamicPort;
 
 import org.junit.Ignore;

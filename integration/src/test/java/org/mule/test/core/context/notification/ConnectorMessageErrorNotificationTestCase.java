@@ -8,11 +8,12 @@ package org.mule.test.core.context.notification;
 
 import static org.mule.runtime.core.context.notification.ConnectorMessageNotification.MESSAGE_ERROR_RESPONSE;
 import static org.mule.runtime.core.context.notification.ConnectorMessageNotification.MESSAGE_RECEIVED;
-import static org.mule.service.http.api.HttpConstants.Method.POST;
+import static org.mule.runtime.http.api.HttpConstants.Method.POST;
+
 import org.mule.runtime.core.context.notification.ConnectorMessageNotification;
-import org.mule.service.http.api.HttpService;
-import org.mule.service.http.api.domain.message.request.HttpRequest;
-import org.mule.services.http.TestHttpClient;
+import org.mule.runtime.http.api.HttpService;
+import org.mule.runtime.http.api.domain.message.request.HttpRequest;
+import org.mule.service.http.TestHttpClient;
 import org.mule.tck.junit4.rule.DynamicPort;
 
 import org.junit.Rule;

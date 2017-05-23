@@ -8,7 +8,7 @@ package org.mule.extension.ws.runtime;
 
 import static org.mule.extension.ws.WscTestUtils.FAIL;
 import static org.mule.extension.ws.WscTestUtils.getRequestResource;
-import static org.mule.services.soap.api.SoapVersion.SOAP11;
+import static org.mule.runtime.soap.api.SoapVersion.SOAP11;
 import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
 import static org.mule.test.allure.AllureConstants.WscFeature.WSC_EXTENSION;
 import static org.hamcrest.Matchers.containsString;
@@ -20,8 +20,8 @@ import static org.junit.Assert.assertThat;
 import org.mule.extension.ws.AbstractSoapServiceTestCase;
 import org.mule.runtime.api.message.Error;
 import org.mule.runtime.core.exception.MessagingException;
-import org.mule.services.soap.api.exception.BadRequestException;
-import org.mule.services.soap.api.exception.SoapFaultException;
+import org.mule.runtime.soap.api.exception.BadRequestException;
+import org.mule.runtime.soap.api.exception.SoapFaultException;
 import org.mule.tck.junit4.matcher.ErrorTypeMatcher;
 
 import org.hamcrest.Matchers;

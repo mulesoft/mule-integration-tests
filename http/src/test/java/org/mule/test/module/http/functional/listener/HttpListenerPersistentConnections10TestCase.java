@@ -6,8 +6,8 @@
  */
 package org.mule.test.module.http.functional.listener;
 
-import static org.mule.service.http.api.HttpHeaders.Values.CLOSE;
-import static org.mule.service.http.api.HttpHeaders.Values.KEEP_ALIVE;
+import static org.mule.runtime.http.api.HttpHeaders.Values.CLOSE;
+import static org.mule.runtime.http.api.HttpHeaders.Values.KEEP_ALIVE;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;

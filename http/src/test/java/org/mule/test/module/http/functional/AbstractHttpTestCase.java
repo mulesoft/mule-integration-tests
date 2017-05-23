@@ -7,8 +7,8 @@
 package org.mule.test.module.http.functional;
 
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
-import org.mule.service.http.api.HttpService;
-import org.mule.services.http.TestHttpClient;
+import org.mule.runtime.http.api.HttpService;
+import org.mule.service.http.TestHttpClient;
 
 import org.junit.Rule;
 

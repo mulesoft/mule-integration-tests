@@ -6,9 +6,9 @@
  */
 package org.mule.test.module.http.functional.listener;
 
-import static org.mule.service.http.api.HttpHeaders.Names.CONTENT_LENGTH;
-import static org.mule.service.http.api.HttpHeaders.Names.TRANSFER_ENCODING;
-import static org.mule.service.http.api.HttpHeaders.Values.CHUNKED;
+import static org.mule.runtime.http.api.HttpHeaders.Names.CONTENT_LENGTH;
+import static org.mule.runtime.http.api.HttpHeaders.Names.TRANSFER_ENCODING;
+import static org.mule.runtime.http.api.HttpHeaders.Values.CHUNKED;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
 import static org.apache.http.client.fluent.Request.Get;
 import static org.apache.http.client.fluent.Request.Post;

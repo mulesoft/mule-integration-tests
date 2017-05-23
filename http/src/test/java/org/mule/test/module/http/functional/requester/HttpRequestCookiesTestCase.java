@@ -6,7 +6,7 @@
  */
 package org.mule.test.module.http.functional.requester;
 
-import static org.mule.service.http.api.HttpHeaders.Names.COOKIE;
+import static org.mule.runtime.http.api.HttpHeaders.Names.COOKIE;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
