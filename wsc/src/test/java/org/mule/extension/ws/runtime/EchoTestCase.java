@@ -19,7 +19,7 @@ import static org.junit.Assert.assertThat;
 
 import org.mule.extension.ws.AbstractSoapServiceTestCase;
 import org.mule.runtime.api.message.Message;
-import org.mule.services.soap.api.message.SoapAttributes;
+import org.mule.runtime.soap.api.message.SoapAttributes;
 
 import java.util.Map;
 

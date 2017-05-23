@@ -11,12 +11,12 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThat;
-import static org.mule.service.http.api.HttpHeaders.Names.X_FORWARDED_FOR;
+import static org.mule.runtime.http.api.HttpHeaders.Names.X_FORWARDED_FOR;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
 
 import org.mule.runtime.core.util.IOUtils;
 import org.mule.runtime.core.util.concurrent.Latch;
-import org.mule.service.http.api.HttpHeaders;
+import org.mule.runtime.http.api.HttpHeaders;
 import org.mule.tck.SensingNullRequestResponseMessageProcessor;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.module.http.functional.TestInputStream;

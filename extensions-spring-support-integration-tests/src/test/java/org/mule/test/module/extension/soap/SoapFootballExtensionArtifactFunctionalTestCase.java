@@ -7,7 +7,7 @@
 package org.mule.test.module.extension.soap;
 
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
-import org.mule.services.soap.TestHttpSoapServer;
+import org.mule.service.soap.TestHttpSoapServer;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.module.extension.soap.services.FootballService;

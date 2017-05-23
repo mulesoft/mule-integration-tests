@@ -15,7 +15,7 @@ import static org.hamcrest.core.Is.is;
 import static org.mule.extension.ws.WscTestUtils.ECHO;
 import static org.mule.extension.ws.WscTestUtils.assertSoapResponse;
 import static org.mule.extension.ws.WscTestUtils.getRequestResource;
-import static org.mule.services.soap.api.exception.error.SoapErrors.CANNOT_DISPATCH;
+import static org.mule.runtime.soap.api.exception.error.SoapErrors.CANNOT_DISPATCH;
 import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
 import static org.mule.test.allure.AllureConstants.WscFeature.WSC_EXTENSION;
 import org.mule.extension.ws.AbstractSoapServiceTestCase;

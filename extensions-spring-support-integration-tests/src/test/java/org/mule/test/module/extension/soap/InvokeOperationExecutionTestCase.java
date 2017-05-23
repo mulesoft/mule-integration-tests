@@ -6,7 +6,8 @@
  */
 package org.mule.test.module.extension.soap;
 
-import static org.mule.services.soap.SoapTestUtils.assertSimilarXml;
+import static org.mule.service.soap.SoapTestUtils.assertSimilarXml;
+
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.api.streaming.bytes.CursorStreamProvider;

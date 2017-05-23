@@ -14,15 +14,15 @@ import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mule.service.http.api.HttpHeaders.Names.CONNECTION;
-import static org.mule.service.http.api.HttpHeaders.Names.HOST;
-import static org.mule.service.http.api.HttpHeaders.Names.TRANSFER_ENCODING;
-import static org.mule.service.http.api.HttpHeaders.Values.CHUNKED;
-import static org.mule.service.http.api.HttpHeaders.Values.CLOSE;
+import static org.mule.runtime.http.api.HttpHeaders.Names.CONNECTION;
+import static org.mule.runtime.http.api.HttpHeaders.Names.HOST;
+import static org.mule.runtime.http.api.HttpHeaders.Names.TRANSFER_ENCODING;
+import static org.mule.runtime.http.api.HttpHeaders.Values.CHUNKED;
+import static org.mule.runtime.http.api.HttpHeaders.Values.CLOSE;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
 
 import org.mule.extension.http.api.HttpRequestAttributes;
-import org.mule.service.http.api.domain.ParameterMap;
+import org.mule.runtime.http.api.domain.ParameterMap;
 import org.mule.tck.junit4.rule.SystemProperty;
 
 import java.util.Arrays;

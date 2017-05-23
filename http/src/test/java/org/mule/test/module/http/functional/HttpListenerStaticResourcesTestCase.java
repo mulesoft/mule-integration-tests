@@ -12,9 +12,10 @@ import static org.hamcrest.Matchers.startsWith;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.core.util.ClassUtils.getClassPathRoot;
-import static org.mule.service.http.api.HttpConstants.HttpStatus.NOT_FOUND;
-import static org.mule.service.http.api.HttpConstants.HttpStatus.OK;
-import static org.mule.service.http.api.HttpHeaders.Names.CONTENT_TYPE;
+import static org.mule.runtime.http.api.HttpConstants.HttpStatus.NOT_FOUND;
+import static org.mule.runtime.http.api.HttpConstants.HttpStatus.OK;
+import static org.mule.runtime.http.api.HttpHeaders.Names.CONTENT_TYPE;
+
 import org.mule.runtime.api.lifecycle.CreateException;
 import org.mule.runtime.api.tls.TlsContextFactory;
 import org.mule.runtime.core.util.IOUtils;

@@ -6,8 +6,8 @@
  */
 package org.mule.test.module.http.functional.listener;
 
-import static org.mule.service.http.api.HttpHeaders.Names.X_FORWARDED_FOR;
-import static org.mule.service.http.api.domain.HttpProtocol.HTTP_1_1;
+import static org.mule.runtime.http.api.HttpHeaders.Names.X_FORWARDED_FOR;
+import static org.mule.runtime.http.api.domain.HttpProtocol.HTTP_1_1;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
 import static org.apache.http.client.fluent.Request.Post;
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -19,8 +19,8 @@ import static org.junit.Assert.assertThat;
 
 import org.mule.extension.http.api.HttpRequestAttributes;
 import org.mule.runtime.api.message.Message;
-import org.mule.service.http.api.domain.HttpProtocol;
-import org.mule.service.http.api.domain.ParameterMap;
+import org.mule.runtime.http.api.domain.HttpProtocol;
+import org.mule.runtime.http.api.domain.ParameterMap;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.module.http.functional.AbstractHttpTestCase;
 

@@ -8,15 +8,16 @@ package org.mule.issues;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertTrue;
-import static org.mule.service.http.api.HttpConstants.Method.POST;
+import static org.mule.runtime.http.api.HttpConstants.Method.POST;
+
 import org.mule.runtime.core.api.MuleEventContext;
 import org.mule.runtime.core.api.lifecycle.Callable;
 import org.mule.runtime.core.util.IOUtils;
-import org.mule.service.http.api.HttpService;
-import org.mule.service.http.api.domain.entity.InputStreamHttpEntity;
-import org.mule.service.http.api.domain.message.request.HttpRequest;
-import org.mule.service.http.api.domain.message.response.HttpResponse;
-import org.mule.services.http.TestHttpClient;
+import org.mule.runtime.http.api.HttpService;
+import org.mule.runtime.http.api.domain.entity.InputStreamHttpEntity;
+import org.mule.runtime.http.api.domain.message.request.HttpRequest;
+import org.mule.runtime.http.api.domain.message.response.HttpResponse;
+import org.mule.service.http.TestHttpClient;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
 

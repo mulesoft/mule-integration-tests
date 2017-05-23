@@ -8,7 +8,7 @@ package org.mule.extension.ws.runtime;
 
 import static org.mule.extension.ws.WscTestUtils.SIMPLE_ATTACHMENT;
 import static org.mule.extension.ws.WscTestUtils.resourceAsString;
-import static org.mule.services.soap.api.SoapVersion.SOAP11;
+import static org.mule.runtime.soap.api.SoapVersion.SOAP11;
 import static org.mule.test.allure.AllureConstants.WscFeature.WSC_EXTENSION;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;

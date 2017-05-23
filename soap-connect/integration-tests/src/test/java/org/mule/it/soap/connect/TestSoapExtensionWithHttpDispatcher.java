@@ -6,12 +6,13 @@
  */
 package org.mule.it.soap.connect;
 
-import static org.mule.services.soap.SoapTestUtils.assertSimilarXml;
+import static org.mule.service.soap.SoapTestUtils.assertSimilarXml;
+
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.streaming.bytes.CursorStreamProvider;
-import org.mule.services.soap.TestHttpSoapServer;
-import org.mule.services.soap.service.Soap11Service;
+import org.mule.service.soap.TestHttpSoapServer;
+import org.mule.service.soap.service.Soap11Service;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
 

@@ -7,11 +7,13 @@
 package org.mule.test.module.http.functional.listener;
 
 import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
+
+import org.mule.runtime.http.api.HttpHeaders;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import org.mule.test.module.http.functional.AbstractHttpTestCase;
-import org.mule.service.http.api.HttpHeaders;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
 

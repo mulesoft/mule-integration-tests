@@ -9,16 +9,16 @@ package org.mule.test.integration.messaging.meps;
 import static java.lang.String.format;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mule.service.http.api.HttpConstants.Method.GET;
+import static org.mule.runtime.http.api.HttpConstants.Method.GET;
 
 import org.mule.runtime.core.util.IOUtils;
 import org.mule.runtime.core.util.StringUtils;
-import org.mule.service.http.api.HttpService;
-import org.mule.service.http.api.domain.entity.ByteArrayHttpEntity;
-import org.mule.service.http.api.domain.entity.HttpEntity;
-import org.mule.service.http.api.domain.entity.InputStreamHttpEntity;
-import org.mule.service.http.api.domain.message.request.HttpRequest;
-import org.mule.services.http.TestHttpClient;
+import org.mule.runtime.http.api.HttpService;
+import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;
+import org.mule.runtime.http.api.domain.entity.HttpEntity;
+import org.mule.runtime.http.api.domain.entity.InputStreamHttpEntity;
+import org.mule.runtime.http.api.domain.message.request.HttpRequest;
+import org.mule.service.http.TestHttpClient;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
 

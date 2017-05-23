@@ -9,7 +9,7 @@ package org.mule.test.module.http.functional.requester;
 import static org.mule.runtime.core.api.context.notification.ServerNotification.getActionName;
 import static org.mule.runtime.core.context.notification.ConnectorMessageNotification.MESSAGE_REQUEST_BEGIN;
 import static org.mule.runtime.core.context.notification.ConnectorMessageNotification.MESSAGE_REQUEST_END;
-import static org.mule.service.http.api.HttpConstants.HttpStatus.OK;
+import static org.mule.runtime.http.api.HttpConstants.HttpStatus.OK;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
 import static org.mule.test.module.http.functional.TestConnectorMessageNotificationListener.register;
 import static org.mule.test.module.http.functional.matcher.HttpMessageAttributesMatchers.hasReasonPhrase;

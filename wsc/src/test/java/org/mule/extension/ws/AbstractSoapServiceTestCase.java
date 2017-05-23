@@ -11,13 +11,14 @@ import static java.util.Arrays.asList;
 import static org.mule.extension.ws.WscTestUtils.HEADER_IN;
 import static org.mule.extension.ws.WscTestUtils.HEADER_INOUT;
 import static org.mule.extension.ws.WscTestUtils.getRequestResource;
-import static org.mule.services.soap.api.SoapVersion.SOAP11;
-import static org.mule.services.soap.api.SoapVersion.SOAP12;
+import static org.mule.runtime.soap.api.SoapVersion.SOAP11;
+import static org.mule.runtime.soap.api.SoapVersion.SOAP12;
+
 import org.mule.extension.ws.service.Soap11Service;
 import org.mule.extension.ws.service.Soap12Service;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.api.message.Message;
-import org.mule.services.soap.api.SoapVersion;
+import org.mule.runtime.soap.api.SoapVersion;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.runner.RunnerDelegateTo;

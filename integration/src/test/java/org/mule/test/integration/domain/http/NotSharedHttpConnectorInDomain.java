@@ -10,12 +10,12 @@ import static java.lang.String.format;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
-import static org.mule.service.http.api.HttpConstants.Method.GET;
+import static org.mule.runtime.http.api.HttpConstants.Method.GET;
 
 import org.mule.functional.junit4.DomainFunctionalTestCase;
 import org.mule.runtime.core.api.MuleContext;
-import org.mule.service.http.api.domain.message.request.HttpRequest;
-import org.mule.services.http.TestHttpClient;
+import org.mule.runtime.http.api.domain.message.request.HttpRequest;
+import org.mule.service.http.TestHttpClient;
 import org.mule.tck.junit4.rule.DynamicPort;
 
 import org.junit.Rule;

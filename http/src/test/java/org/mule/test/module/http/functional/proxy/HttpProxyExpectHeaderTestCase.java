@@ -6,7 +6,7 @@
  */
 package org.mule.test.module.http.functional.proxy;
 
-import static org.mule.service.http.api.HttpConstants.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.mule.runtime.http.api.HttpConstants.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
 import static org.apache.http.entity.ContentType.DEFAULT_TEXT;
 import static org.hamcrest.CoreMatchers.equalTo;

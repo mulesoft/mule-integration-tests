@@ -22,7 +22,7 @@ import org.mule.runtime.api.lock.LockFactory;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.runtime.core.api.config.ConfigurationException;
-import org.mule.service.http.api.HttpService;
+import org.mule.runtime.http.api.HttpService;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.heisenberg.extension.HeisenbergExtension;
 import org.mule.test.heisenberg.extension.model.KillParameters;
