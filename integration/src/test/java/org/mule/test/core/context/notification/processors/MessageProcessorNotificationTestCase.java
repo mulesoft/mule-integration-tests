@@ -13,7 +13,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.message.Message.of;
 import static org.mule.runtime.core.context.notification.MessageProcessorNotification.MESSAGE_PROCESSOR_POST_INVOKE;
-
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.meta.AbstractAnnotatedObject;
 import org.mule.runtime.core.DefaultEventContext;
@@ -82,8 +81,8 @@ public class MessageProcessorNotificationTestCase extends AbstractMessageProcess
     assertNotifications();
   }
 
-  @Ignore // TODO remove ignore with final commit for MULE-11482
   @Test
+  @Ignore("MULE-12569: Fix tests")
   public void chain() throws Exception {
     specificationFactory = () -> new Node()
         .serial(pre()) // Message Processor Chain
@@ -123,8 +122,8 @@ public class MessageProcessorNotificationTestCase extends AbstractMessageProcess
     assertNotifications();
   }
 
-  @Ignore // TODO remove ignore with final commit for MULE-11482
   @Test
+  @Ignore("MULE-12569: Fix tests")
   public void scatterGather() throws Exception {
     specificationFactory = () -> new Node()
         .serial(pre()) // scatter-gather
@@ -159,8 +158,8 @@ public class MessageProcessorNotificationTestCase extends AbstractMessageProcess
     assertNotifications();
   }
 
-  @Ignore // TODO remove ignore with final commit for MULE-11482
   @Test
+  @Ignore("MULE-12569: Fix tests")
   public void enricher() throws Exception {
     specificationFactory = () -> new Node()
         .serial(pre())
@@ -191,7 +190,6 @@ public class MessageProcessorNotificationTestCase extends AbstractMessageProcess
     assertNotifications();
   }
 
-  @Ignore // TODO remove ignore with final commit for MULE-11482
   @Test
   public void filter() throws Exception {
     specificationFactory = () -> new Node()
@@ -204,8 +202,8 @@ public class MessageProcessorNotificationTestCase extends AbstractMessageProcess
     assertNotifications();
   }
 
-  @Ignore // TODO remove ignore with final commit for MULE-11482
   @Test
+  @Ignore("MULE-12569: Fix tests")
   public void idempotentMessageFilter() throws Exception {
     specificationFactory = () -> new Node()
         .serial(pre()) // open message filter
@@ -218,8 +216,8 @@ public class MessageProcessorNotificationTestCase extends AbstractMessageProcess
     assertNotifications();
   }
 
-  @Ignore // TODO remove ignore with final commit for MULE-11482
   @Test
+  @Ignore("MULE-12569: Fix tests")
   public void idempotentSecureHashMessageFilter() throws Exception {
     specificationFactory = () -> new Node()
         .serial(pre()) // open message filter
@@ -232,7 +230,6 @@ public class MessageProcessorNotificationTestCase extends AbstractMessageProcess
     assertNotifications();
   }
 
-  @Ignore // TODO remove ignore with final commit for MULE-11482
   @Test
   public void subFlow() throws Exception {
     specificationFactory = () -> new Node()
@@ -399,8 +396,8 @@ public class MessageProcessorNotificationTestCase extends AbstractMessageProcess
     assertNotifications();
   }
 
-  @Ignore // TODO remove ignore with final commit for MULE-11482
   @Test
+  @Ignore("MULE-12569: Fix tests")
   public void untilSuccesfulWithProcessorChain() throws Exception {
     specificationFactory = () -> new Node()
         .serial(pre())
@@ -414,8 +411,8 @@ public class MessageProcessorNotificationTestCase extends AbstractMessageProcess
     assertNotifications();
   }
 
-  @Ignore // TODO remove ignore with final commit for MULE-11482
   @Test
+  @Ignore("MULE-12569: Fix tests")
   public void untilSuccesfulWithEnricher() throws Exception {
     specificationFactory = () -> new Node()
         .serial(pre())
