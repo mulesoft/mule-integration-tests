@@ -4,14 +4,14 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.test.module.extension.soap;
+package org.mule.it.soap.connect;
 
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.service.soap.TestHttpSoapServer;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
-import org.mule.test.module.extension.soap.services.FootballService;
-import org.mule.test.module.extension.soap.services.LaLigaService;
+import org.mule.it.soap.connect.services.FootballService;
+import org.mule.it.soap.connect.services.LaLigaService;
 import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
 
 import org.junit.Rule;
@@ -48,7 +48,7 @@ public abstract class SoapFootballExtensionArtifactFunctionalTestCase extends Mu
   }
 
   String getBodyXml(String tagName, String content) {
-    String ns = "http://services.soap.extension.module.test.mule.org/";
+    String ns = "http://services.connect.soap.it.mule.org/";
     return String.format("<con:%s xmlns:con=\"%s\">%s</con:%s>", tagName, ns, content, tagName);
   }
 

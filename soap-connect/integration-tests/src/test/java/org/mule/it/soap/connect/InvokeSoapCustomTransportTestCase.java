@@ -4,18 +4,18 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.test.module.extension.soap;
+package org.mule.it.soap.connect;
 
 import static org.mule.service.soap.SoapTestUtils.assertSimilarXml;
-import static org.mule.test.ram.RickAndMortyExtension.RICKS_PHRASE;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
+import org.mule.it.soap.connect.services.InterdimentionalCableService;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.streaming.bytes.CursorStreamProvider;
 import org.mule.runtime.core.util.IOUtils;
 import org.mule.service.soap.TestHttpSoapServer;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
-import org.mule.test.module.extension.soap.services.InterdimentionalCableService;
+import org.mule.test.ram.RickAndMortyExtension;
 import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
 
 import org.custommonkey.xmlunit.XMLUnit;
@@ -53,7 +53,8 @@ public class InvokeSoapCustomTransportTestCase extends MuleArtifactFunctionalTes
   @Test
   public void sendThroughCustomTransport() throws Exception {
     Message message = flowRunner("customTransport").keepStreamsOpen().run().getMessage();
-    String response = "<con:ram xmlns:con=\"http://ram.test.mule.org\"><text>" + RICKS_PHRASE + "</text></con:ram>";
+    String response =
+        "<con:ram xmlns:con=\"http://ram.test.mule.org\"><text>" + RickAndMortyExtension.RICKS_PHRASE + "</text></con:ram>";
     assertSimilarXml(response, IOUtils.toString((CursorStreamProvider) message.getPayload().getValue()));
   }
 
@@ -67,7 +68,7 @@ public class InvokeSoapCustomTransportTestCase extends MuleArtifactFunctionalTes
   @Test
   public void withDefaultHttp() throws Exception {
     Message message = flowRunner("withDefaultHttp").keepStreamsOpen().run().getMessage();
-    String response = "<ns2:getChannelsResponse xmlns:ns2=\"http://services.soap.extension.module.test.mule.org/\">\n"
+    String response = "<ns2:getChannelsResponse xmlns:ns2=\"http://services.connect.soap.it.mule.org/\">\n"
         + "   <channel>Two Brothers</channel>\n"
         + "   <channel>Fake Doors</channel>\n"
         + "   <channel>The Adventures of Stealy</channel>\n"
