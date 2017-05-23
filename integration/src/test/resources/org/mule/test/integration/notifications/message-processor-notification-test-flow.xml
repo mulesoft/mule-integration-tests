@@ -171,7 +171,7 @@
             <enrich target="#[mel:message.outboundProperties.helloHeader]"/>
             <enrich target="#[mel:message.outboundProperties.helloHeader2]"/>
         </enricher>
-        <enricher target="#[mel:message.outboundProperties.echoHeader]" source="#[mel:payload]">
+        <enricher target="#[mel:message.outboundProperties.echoHeader]" source="#[payload]">
             <processor-chain>
                 <echo-component/>
                 <echo-component/>
@@ -199,7 +199,7 @@
     <flow name="until-successful-with-enricher">
         <until-successful objectStore-ref="objectStore">
             <processor-chain>
-                <enricher source="#[mel:payload]" target="#[mel:payload]">
+                <enricher source="#[payload]" target="#[payload]">
                     <append-string-transformer message="Hello"/>
                 </enricher>
                 <test:queue name="out-us"/>
