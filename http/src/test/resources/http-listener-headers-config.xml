@@ -14,22 +14,33 @@
 
     <flow name="empty">
         <http:listener config-ref="listenerConfig" path="emptyHeader"/>
-        <set-payload value="#[mel:message.getAttributes().getHeaders()['${header}']]"/>
+        <set-payload value="#[attributes.headers['${header}']]"/>
     </flow>
 
     <flow name="simple">
         <http:listener config-ref="listenerConfig" path="simpleHeader"/>
-        <set-payload value="#[mel:message.getAttributes().getHeaders()['${header}']]"/>
+        <set-payload value="#[attributes.headers['${header}']]"/>
     </flow>
 
     <flow name="multipleString">
         <http:listener config-ref="listenerConfig" path="multipleHeadersString"/>
-        <set-payload value="#[mel:message.getAttributes().getHeaders()['${header}']]"/>
+        <set-payload value="#[attributes.headers['${header}']]"/>
     </flow>
 
     <flow name="multipleCollection">
         <http:listener config-ref="listenerConfig" path="multipleHeadersCollection"/>
         <set-payload value="#[mel:message.getAttributes().getHeaders().getAll('${header}').iterator().next()]"/>
+    </flow>
+
+    <flow name="returnHeaders">
+        <http:listener config-ref="listenerConfig" path="returnHeaders">
+            <http:response>
+                <http:headers>
+                    #[{'X-Custom-Int' : 3, 'X-Custom-String' : '4'}]
+                </http:headers>
+            </http:response>
+        </http:listener>
+        <echo-component/>
     </flow>
 
 </mule>

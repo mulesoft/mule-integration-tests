@@ -8,6 +8,7 @@ package org.mule.test.module.http.functional.requester;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.hasEntry;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -86,6 +87,14 @@ public class HttpRequestFunctionalTestCase extends AbstractHttpRequestTestCase {
     Event event =
         flowRunner("requestFlow").withPayload(TEST_MESSAGE).withInboundProperty("TestInboundProperty", "TestValue").run();
     assertThat(getInboundProperty(event.getMessage(), "TestInboundProperty"), nullValue());
+  }
+
+  @Test
+  public void sendProperties() throws Exception {
+    flowRunner("requestPropertiesFlow").withPayload(TEST_MESSAGE).run();
+    assertThat(uri, equalTo("/basePath/request/1/2?query1=4&query2=5"));
+    assertThat(getFirstReceivedHeader("X-Custom-Int"), is("5"));
+    assertThat(getFirstReceivedHeader("X-Custom-String"), is("6"));
   }
 
   @Override
