@@ -68,8 +68,7 @@ public class LifecycleBean implements Lifecycle {
     failIfNeeded("initialise");
   }
 
-  public LifecycleBean getOtherLifecycleBean()
-  {
+  public LifecycleBean getOtherLifecycleBean() {
     return otherLifecycleBean;
   }
 
