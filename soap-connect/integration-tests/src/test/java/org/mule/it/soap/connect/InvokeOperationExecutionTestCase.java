@@ -4,10 +4,9 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.test.module.extension.soap;
+package org.mule.it.soap.connect;
 
 import static org.mule.service.soap.SoapTestUtils.assertSimilarXml;
-
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.api.streaming.bytes.CursorStreamProvider;

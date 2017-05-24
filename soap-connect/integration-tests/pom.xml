@@ -79,7 +79,7 @@
         <dependency>
             <groupId>org.mule.connectors</groupId>
             <artifactId>mule-sockets-connector</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>${muleHttpConnectorVersion}</version>
             <classifier>mule-plugin</classifier>
             <scope>test</scope>
         </dependency>
@@ -161,6 +161,35 @@
                     <artifactId>joda-time</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.tests</groupId>
+            <artifactId>mule-tests-unit</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!--Test Extensions-->
+        <dependency>
+            <groupId>org.mule.tests</groupId>
+            <artifactId>mule-football-soap-extension</artifactId>
+            <version>${project.version}</version>
+            <classifier>mule-plugin</classifier>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.tests</groupId>
+            <artifactId>mule-rick-and-morty-extension</artifactId>
+            <version>${project.version}</version>
+            <classifier>mule-plugin</classifier>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.tests.extension</groupId>
+            <artifactId>mule-extension-test-soap</artifactId>
+            <version>${project.version}</version>
+            <classifier>mule-plugin</classifier>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

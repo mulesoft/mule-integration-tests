@@ -13,7 +13,7 @@ import org.mule.runtime.extension.api.soap.annotation.SoapMessageDispatcherProvi
 
 @Soap(TestServiceProvider.class)
 @SoapMessageDispatcherProviders(HttpMessageDispatcherProvider.class)
-@Extension(name = "soap")
+@Extension(name = "simple")
 public class SoapTestExtension {
 
 }

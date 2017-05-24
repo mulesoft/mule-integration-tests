@@ -4,7 +4,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.test.module.extension.soap.services;
+package org.mule.it.soap.connect.services;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;

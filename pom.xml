@@ -18,7 +18,7 @@
     <module>wsc</module>
     <module>dsl</module>
     <module>soap-connect</module>
-    <module>extensions-spring-support-integration-tests</module>
+    <module>oauth</module>
     <module>schedulers-tests</module>
   </modules>
 

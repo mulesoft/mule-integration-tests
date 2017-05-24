@@ -4,7 +4,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.test.module.extension.soap;
+package org.mule.it.soap.connect;
 
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
@@ -56,7 +56,7 @@ public class InvokeMetadataTestCase extends SoapFootballExtensionArtifactFunctio
     final MetadataResult<MetadataKeysContainer> result = metadataService.getMetadataKeys(location);
     assertThat(result.isSuccess(), is(true));
     Set<MetadataKey> keys = result.get().getKeysByCategory().values().iterator().next();
-    assertThat(keys, hasSize(1));
+    assertThat(keys, hasSize(2));
     MetadataKey leaguesService = keys.iterator().next();
     assertThat(leaguesService.getId(), is("leagues"));
     assertThat(leaguesService.getChilds(), hasSize(3));
