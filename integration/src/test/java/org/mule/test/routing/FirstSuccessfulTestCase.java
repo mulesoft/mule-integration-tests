@@ -13,6 +13,7 @@ import static org.junit.Assert.assertThat;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.runtime.core.api.routing.CouldNotRouteOutboundMessageException;
+import org.mule.runtime.core.api.routing.filter.FilterUnacceptedException;
 import org.mule.runtime.core.exception.MessagingException;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -39,7 +40,7 @@ public class FirstSuccessfulTestCase extends AbstractIntegrationTestCase {
     try {
       flowRunner("test-router").withPayload(Boolean.TRUE).run().getMessage();
     } catch (MessagingException e) {
-      assertThat(e.getCause(), instanceOf(CouldNotRouteOutboundMessageException.class));
+      assertThat(e.getCause(), instanceOf(FilterUnacceptedException.class));
     }
   }
 

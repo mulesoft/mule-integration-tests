@@ -22,6 +22,7 @@ import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.routing.RoutingException;
+import org.mule.runtime.core.component.ComponentException;
 import org.mule.runtime.core.retry.RetryPolicyExhaustedException;
 import org.mule.runtime.core.util.store.AbstractPartitionedObjectStore;
 import org.mule.tck.probe.JUnitLambdaProbe;
@@ -125,7 +126,7 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
   @Test
   public void executeSynchronously() throws Exception {
     final String payload = RandomStringUtils.randomAlphanumeric(20);
-    expectedException.expectCause(instanceOf(RoutingException.class));
+    expectedException.expectCause(instanceOf(ComponentException.class));
     flowRunner("synchronous").withPayload(payload).run();
   }
 

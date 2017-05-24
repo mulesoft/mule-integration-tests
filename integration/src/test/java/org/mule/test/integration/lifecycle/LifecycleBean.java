@@ -16,10 +16,16 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.springframework.context.ApplicationContext;
+
 public class LifecycleBean implements Lifecycle {
 
   @Inject
   private MuleContext muleContext;
+  @Inject
+  private ApplicationContext applicationContext;
+  @Inject
+  private LifecycleBean otherLifecycleBean;
 
   private String failurePhase;
   private List<String> lifecycleInvocations = new ArrayList<>();
@@ -60,6 +66,14 @@ public class LifecycleBean implements Lifecycle {
   public void initialise() throws InitialisationException {
     lifecycleInvocations.add("initialise");
     failIfNeeded("initialise");
+  }
+
+  public LifecycleBean getOtherLifecycleBean() {
+    return otherLifecycleBean;
+  }
+
+  public ApplicationContext getApplicationContext() {
+    return applicationContext;
   }
 
   public MuleContext getMuleContext() {
