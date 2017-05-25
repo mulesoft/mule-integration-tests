@@ -6,34 +6,43 @@
  */
 package org.mule.test.module.http.functional.requester;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.mule.runtime.api.message.Message.of;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HttpStory.STREAMING;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.processor.Processor;
+import org.mule.runtime.core.util.concurrent.Latch;
+import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.probe.PollingProber;
 import org.mule.tck.probe.Probe;
+import org.mule.test.module.http.functional.AbstractHttpTestCase;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import ru.yandex.qatools.allure.annotations.Features;
 import ru.yandex.qatools.allure.annotations.Stories;
 
 @Features(HTTP_EXTENSION)
 @Stories(STREAMING)
-public class HttpRequestResponseStreamingTestCase extends AbstractHttpRequestTestCase {
+public class HttpRequestResponseStreamingTestCase extends AbstractHttpTestCase {
 
-  private static final int POLL_DELAY = 1000;
+  private static final int POLL_TIMEOUT = 2000;
+  private static final int POLL_DELAY = 200;
 
-  protected static AtomicBoolean stop;
-  protected static AtomicBoolean executed;
+  @Rule
+  public DynamicPort httpPort = new DynamicPort("httpPort");
 
-  public final PollingProber pollingProber = new PollingProber(RECEIVE_TIMEOUT, POLL_DELAY);
+  protected static Latch latch;
+  private static AtomicBoolean executed;
+
+  private final PollingProber pollingProber = new PollingProber(POLL_TIMEOUT, POLL_DELAY);
   private Probe processorExecuted = new Probe() {
 
     @Override
@@ -68,7 +77,7 @@ public class HttpRequestResponseStreamingTestCase extends AbstractHttpRequestTes
 
   @Before
   public void setUp() {
-    stop = new AtomicBoolean(false);
+    latch = new Latch();
     executed = new AtomicBoolean(false);
   }
 
@@ -76,14 +85,14 @@ public class HttpRequestResponseStreamingTestCase extends AbstractHttpRequestTes
   public void executionIsExpeditedWhenStreaming() throws Exception {
     flowRunner("streamingClient").dispatchAsync();
     pollingProber.check(processorExecuted);
-    stop.set(true);
+    latch.release();
   }
 
   @Test
   public void executionHangsWhenNotStreaming() throws Exception {
     flowRunner("noStreamingClient").dispatchAsync();
     pollingProber.check(processorNotExecuted);
-    stop.set(true);
+    latch.release();
     pollingProber.check(processorExecuted);
   }
 
@@ -98,18 +107,28 @@ public class HttpRequestResponseStreamingTestCase extends AbstractHttpRequestTes
 
   }
 
-  protected static class StoppableInputStreamProcessor implements Processor {
+  protected static class FillAndWaitInputStreamProcessor implements Processor {
+
+    private static final int LISTENER_BUFFER = 8 * 1024;
 
     @Override
     public Event process(Event event) throws MuleException {
       InputStream inputStream = new InputStream() {
 
+        private int sent = 0;
+
         @Override
         public int read() throws IOException {
-          if (stop.get()) {
-            return -1;
-          } else {
+          if (sent <= LISTENER_BUFFER) {
+            sent++;
             return 1;
+          } else {
+            try {
+              latch.await(RECEIVE_TIMEOUT, MILLISECONDS);
+            } catch (InterruptedException e) {
+              // Do nothing
+            }
+            return -1;
           }
         }
       };
