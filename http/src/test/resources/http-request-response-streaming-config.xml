@@ -26,6 +26,7 @@
     <flow name="streamingClient">
         <http:request config-ref="requestConfig" method="GET" path="/"/>
         <custom-processor class="org.mule.test.module.http.functional.requester.HttpRequestResponseStreamingTestCase$StatusProcessor"/>
+        <object-to-string-transformer/>
     </flow>
 
     <flow name="server">
