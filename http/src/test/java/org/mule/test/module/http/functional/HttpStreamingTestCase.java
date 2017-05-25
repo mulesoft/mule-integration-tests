@@ -13,6 +13,8 @@ import static org.mule.functional.junit4.matchers.MessageMatchers.hasAttributes;
 import static org.mule.runtime.api.message.Message.of;
 import static org.mule.runtime.http.api.HttpHeaders.Names.TRANSFER_ENCODING;
 import static org.mule.runtime.http.api.HttpHeaders.Values.CHUNKED;
+import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
+import static org.mule.test.allure.AllureConstants.HttpFeature.HttpStory.STREAMING;
 
 import org.mule.extension.http.api.HttpResponseAttributes;
 import org.mule.runtime.api.exception.MuleException;
@@ -34,7 +36,11 @@ import org.apache.http.nio.protocol.BasicAsyncResponseConsumer;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import ru.yandex.qatools.allure.annotations.Features;
+import ru.yandex.qatools.allure.annotations.Stories;
 
+@Features(HTTP_EXTENSION)
+@Stories(STREAMING)
 public class HttpStreamingTestCase extends AbstractHttpTestCase {
 
   protected static AtomicBoolean stop;
