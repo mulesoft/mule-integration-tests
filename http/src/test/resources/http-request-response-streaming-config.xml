@@ -31,7 +31,7 @@
 
     <flow name="server">
         <http:listener path="/" config-ref="listenerConfig"/>
-        <custom-processor class="org.mule.test.module.http.functional.requester.HttpRequestResponseStreamingTestCase$StoppableInputStreamProcessor"/>
+        <custom-processor class="org.mule.test.module.http.functional.requester.HttpRequestResponseStreamingTestCase$FillAndWaitInputStreamProcessor"/>
     </flow>
 
 </mule>
