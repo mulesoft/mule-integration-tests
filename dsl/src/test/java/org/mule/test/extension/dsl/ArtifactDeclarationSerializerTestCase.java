@@ -291,7 +291,7 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
                     .withParameter("headers", "<![CDATA[#[{{'content-type' : 'text/plain'}}]]]>")
                     .withParameter("body",
                                    "<![CDATA[#[\n"
-                                       + "                    %dw 1.0\n"
+                                       + "                    %dw 2.0\n"
                                        + "                    output application/json\n"
                                        + "                    input payload application/xml\n"
                                        + "                    %var baseUrl=\"http://sample.cloudhub.io/api/v1.0/\"\n"
