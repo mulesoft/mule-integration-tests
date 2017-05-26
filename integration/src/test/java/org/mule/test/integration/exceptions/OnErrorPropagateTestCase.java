@@ -8,6 +8,7 @@ package org.mule.test.integration.exceptions;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.mule.functional.junit4.matchers.MessageMatchers.hasPayload;
+import static org.mule.functional.junit4.matchers.ThrowableCauseMatcher.hasCause;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -22,19 +23,26 @@ import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.routing.RoutingException;
 import org.mule.runtime.core.exception.MessagingException;
+import org.mule.runtime.core.exception.MuleFatalException;
 import org.mule.runtime.core.util.concurrent.Latch;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
+import org.hamcrest.Matchers;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import ru.yandex.qatools.allure.annotations.Features;
 import ru.yandex.qatools.allure.annotations.Stories;
 
 @Features(ERROR_HANDLING)
 @Stories("On Error Propagate")
 public class OnErrorPropagateTestCase extends AbstractIntegrationTestCase {
+
+  @Rule
+  public ExpectedException expectedException = ExpectedException.none();
 
   @Override
   protected String getConfigFile() {
@@ -77,6 +85,13 @@ public class OnErrorPropagateTestCase extends AbstractIntegrationTestCase {
     assertThat(errorEvent.getMessage(), hasPayload(equalTo("propagated")));
   }
 
+  @Test
+  public void onErrorContinueFailure() throws Exception {
+    expectedException.expectCause(Matchers.instanceOf(MuleFatalException.class));
+    expectedException.expectCause(hasCause(Matchers.instanceOf(NoClassDefFoundError.class)));
+    flowRunner("failingHandler").run();
+  }
+
   private void verifyFlow(String flowName, Object payload) throws InterruptedException {
     try {
       flowRunner(flowName).withPayload(payload).dispatch();
@@ -90,6 +105,15 @@ public class OnErrorPropagateTestCase extends AbstractIntegrationTestCase {
 
   private void verifyFlow(String flowName) throws InterruptedException {
     verifyFlow(flowName, TEST_MESSAGE);
+  }
+
+  public static class ErrorProcessor implements Processor {
+
+    @Override
+    public Event process(Event event) throws MuleException {
+      throw new NoClassDefFoundError("Test error");
+    }
+
   }
 
   public static class CallMessageProcessor implements Processor {

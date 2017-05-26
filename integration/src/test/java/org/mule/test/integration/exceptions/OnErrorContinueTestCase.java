@@ -6,9 +6,11 @@
  */
 package org.mule.test.integration.exceptions;
 
+import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.mule.functional.junit4.matchers.ThrowableCauseMatcher.hasCause;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 import static org.mule.runtime.http.api.HttpConstants.Method.POST;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
@@ -22,6 +24,7 @@ import org.mule.runtime.api.tls.TlsContextFactory;
 import org.mule.runtime.core.api.DefaultMuleException;
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.processor.Processor;
+import org.mule.runtime.core.exception.MuleFatalException;
 import org.mule.runtime.core.retry.RetryPolicyExhaustedException;
 import org.mule.runtime.core.util.IOUtils;
 import org.mule.runtime.http.api.HttpService;
@@ -48,6 +51,7 @@ import org.hamcrest.core.Is;
 import org.hamcrest.core.IsNull;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import ru.yandex.qatools.allure.annotations.Features;
 import ru.yandex.qatools.allure.annotations.Stories;
 
@@ -81,6 +85,9 @@ public class OnErrorContinueTestCase extends AbstractIntegrationTestCase {
       throw new MuleRuntimeException(e);
     }
   }).build();
+
+  @Rule
+  public ExpectedException expectedException = ExpectedException.none();
 
   @Override
   protected String getConfigFile() {
@@ -170,11 +177,27 @@ public class OnErrorContinueTestCase extends AbstractIntegrationTestCase {
     assertThat(getPayloadAsString(result), is("false apt1 apt2"));
   }
 
+  @Test
+  public void onErrorContinueFailure() throws Exception {
+    expectedException.expectCause(instanceOf(MuleFatalException.class));
+    expectedException.expectCause(hasCause(instanceOf(NoClassDefFoundError.class)));
+    flowRunner("failingHandler").run();
+  }
+
   public static class FailingProcessor implements Processor {
 
     @Override
     public Event process(Event event) throws MuleException {
       throw new RetryPolicyExhaustedException(createStaticMessage("Error."), new Object());
+    }
+
+  }
+
+  public static class ErrorProcessor implements Processor {
+
+    @Override
+    public Event process(Event event) throws MuleException {
+      throw new NoClassDefFoundError("Test error");
     }
 
   }

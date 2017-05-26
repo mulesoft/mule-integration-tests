@@ -133,4 +133,13 @@
         </error-handler>
     </flow>
 
+    <flow name="failingHandler">
+        <test:component throwException="true"/>
+        <error-handler>
+            <on-error-continue>
+                <custom-processor class="org.mule.test.integration.exceptions.OnErrorContinueTestCase$ErrorProcessor"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
 </mule>
