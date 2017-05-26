@@ -8,15 +8,12 @@ package org.mule.test.integration.exceptions;
 
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.routing.MessageFilter;
+import org.mule.runtime.core.routing.filters.AcceptAllFilter;
 
 public class ExceptionThrowingInboundRouter extends MessageFilter {
 
-  /**
-   * For IoC only
-   */
-  @Deprecated
   public ExceptionThrowingInboundRouter() {
-    super();
+    super(new AcceptAllFilter());
   }
 
   @Override

@@ -9,7 +9,6 @@ package org.mule.test.integration.exceptions;
 import org.junit.Ignore;
 import org.junit.Test;
 
-@Ignore("MULE-12547: Failing")
 public class SynchronousMessagingExceptionStrategyTestCase extends AbstractExceptionStrategyTestCase {
 
   @Override
