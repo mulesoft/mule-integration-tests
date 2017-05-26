@@ -52,11 +52,11 @@
     </flow>
     <flow name="remote">
         <http:listener config-ref="blockingListenerConfig" path="/remote" allowedMethods="GET"/>
-        <set-payload value="#[%output application/xml --- { root: {node: 'value'} } ]"/>
+        <set-payload value="#[output application/xml --- { root: {node: 'value'} } ]"/>
     </flow>
     <flow name="blockingRequest">
         <http:request config-ref="blockingRequestConfig" path="remote" method="GET"/>
-        <set-payload value="#[%output application/java --- payload.root.node]"/>
+        <set-payload value="#[output application/java --- payload.root.node]"/>
         <object-to-string-transformer />
     </flow>
 

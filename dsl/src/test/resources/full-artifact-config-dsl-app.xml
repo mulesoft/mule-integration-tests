@@ -47,9 +47,9 @@
             <reconnect blocking="true" count="1" frequency="0"/>
             <http:response>
                 <http:body><![CDATA[#[
-                    %dw 1.0
-                    %output application/json
-                    %input payload application/xml
+                    %dw 2.0
+                    output application/json
+                    input payload application/xml
                     %var baseUrl="http://sample.cloudhub.io/api/v1.0/"
                     ---
                     using (pageSize = payload.getItemsResponse.PageInfo.pageSize) {

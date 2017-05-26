@@ -43,8 +43,8 @@
             <soap:headers>
             #[
             %dw 2.0
-            %output application/xml
-            %namespace con http://services.connect.soap.it.mule.org/
+            output application/xml
+            ns con http://services.connect.soap.it.mule.org/
              ---
             "headers": {
                 con#auth: "Authorized"

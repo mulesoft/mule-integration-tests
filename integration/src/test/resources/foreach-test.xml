@@ -263,7 +263,7 @@
     </flow>
 
     <flow name="splitXml">
-        <foreach collection="#[%output application/java --- [ payload.person.name, payload.person.lastname ]]">
+        <foreach collection="#[output application/java --- [ payload.person.name, payload.person.lastname ]]">
             <test:queue name="splitXmlOutQueue"/>
         </foreach>
     </flow>
