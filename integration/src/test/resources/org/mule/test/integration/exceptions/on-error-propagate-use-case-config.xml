@@ -68,4 +68,13 @@
         </error-handler>
     </flow>
 
+    <flow name="failingHandler">
+        <test:component throwException="true"/>
+        <error-handler>
+            <on-error-propagate>
+                <custom-processor class="org.mule.test.integration.exceptions.OnErrorPropagateTestCase$ErrorProcessor"/>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+
 </mule>
