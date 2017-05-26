@@ -72,7 +72,7 @@
     </flow>
     
     <flow name="split-no-parts">
-        <splitter expression="#[%output application/java --- payload..Order.item]"/>
+        <splitter expression="#[output application/java --- payload..Order.item]"/>
     </flow>
 
     <flow name="split-aggregate-singleton-list">

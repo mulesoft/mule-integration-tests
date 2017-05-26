@@ -34,8 +34,8 @@
                 <wsc:body>
                 #[
                 %dw 2.0
-                %output application/xml
-                %namespace con http://service.ws.extension.mule.org/
+                output application/xml
+                ns con http://service.ws.extension.mule.org/
                 ---
                 con#echoWithHeaders: {
                    text: "test"
@@ -44,8 +44,8 @@
                 <wsc:headers>
                 #[
                 %dw 2.0
-                %output application/xml
-                %namespace con http://service.ws.extension.mule.org/
+                output application/xml
+                ns con http://service.ws.extension.mule.org/
                    ---
                 "headers": {
                     con#headerIn: "Header In Value",
