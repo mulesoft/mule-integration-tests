@@ -101,7 +101,7 @@ public abstract class AbstractElementModelTestCase extends MuleArtifactFunctiona
   }
 
   protected ComponentConfiguration getAppElement(ApplicationModel applicationModel, String name) {
-    Optional<ComponentConfiguration> component = applicationModel.findNamedElement(name);
+    Optional<ComponentConfiguration> component = applicationModel.findTopLevelNamedElement(name);
     assertThat(component.isPresent(), is(true));
     return component.get();
   }
