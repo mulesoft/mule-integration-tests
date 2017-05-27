@@ -50,7 +50,7 @@
                     %dw 2.0
                     output application/json
                     input payload application/xml
-                    %var baseUrl="http://sample.cloudhub.io/api/v1.0/"
+                    var baseUrl="http://sample.cloudhub.io/api/v1.0/"
                     ---
                     using (pageSize = payload.getItemsResponse.PageInfo.pageSize) {
                          links: [
