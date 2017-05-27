@@ -3,9 +3,33 @@
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:test="http://www.mulesoft.org/schema/mule/test"
       xmlns:script="http://www.mulesoft.org/schema/mule/scripting"
+      xmlns:heisenberg="http://www.mulesoft.org/schema/mule/heisenberg"
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
        http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
+       http://www.mulesoft.org/schema/mule/heisenberg http://www.mulesoft.org/schema/mule/heisenberg/current/mule-heisenberg.xsd
        http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
+
+    <heisenberg:config name="heisenbergConfig" cancer="true" money="1000000" finalHealth="CANCER">
+        <heisenberg:enemies>
+            <heisenberg:enemy value="Gustavo Fring"/>
+            <heisenberg:enemy value="Hank"/>
+        </heisenberg:enemies>
+        <heisenberg:monthly-incomes>
+            <heisenberg:monthly-income value="12000"/>
+            <heisenberg:monthly-income value="500"/>
+        </heisenberg:monthly-incomes>
+        <heisenberg:next-door address="pollos hermanos" victim="Gustavo Fring">
+            <heisenberg:previous victim="Krazy-8" address="Jesse's"/>
+        </heisenberg:next-door>
+        <heisenberg:ricin-packs>
+            <heisenberg:ricin microgramsPerKilo="22">
+                <heisenberg:destination victim="Lidia" address="Stevia coffe shop"/>
+            </heisenberg:ricin>
+        </heisenberg:ricin-packs>
+        <heisenberg:known-addresses>
+            <heisenberg:known-address value="one address"/>
+        </heisenberg:known-addresses>
+    </heisenberg:config>
 
     <flow name="matchesHandlerUsingWhen">
         <test:component/>
@@ -82,6 +106,31 @@
                 <append-string-transformer message=" nope"/>
             </on-error-continue>
         </error-handler>
+    </flow>
+
+    <flow name="routerWithFailureComponent">
+        <first-successful>
+            <test:component throwException="true"/>
+        </first-successful>
+    </flow>
+
+    <flow name="tryWithFailureComponent">
+        <try>
+            <test:component throwException="true"/>
+            <error-handler>
+                <on-error-continue>
+                    <first-successful>
+                        <test:component throwException="true"/>
+                    </first-successful>
+                </on-error-continue>
+            </error-handler>
+        </try>
+    </flow>
+
+    <flow name="enricherWithFailureOperation">
+        <enricher>
+            <heisenberg:cure-cancer/>
+        </enricher>
     </flow>
 
 </mule>
