@@ -294,7 +294,7 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
                                        + "                    %dw 2.0\n"
                                        + "                    output application/json\n"
                                        + "                    input payload application/xml\n"
-                                       + "                    %var baseUrl=\"http://sample.cloudhub.io/api/v1.0/\"\n"
+                                       + "                    var baseUrl=\"http://sample.cloudhub.io/api/v1.0/\"\n"
                                        + "                    ---\n"
                                        + "                    using (pageSize = payload.getItemsResponse.PageInfo.pageSize) {\n"
                                        + "                         links: [\n"
