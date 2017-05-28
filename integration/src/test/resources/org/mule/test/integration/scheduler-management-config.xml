@@ -8,7 +8,7 @@
     <flow name="neverRunningScheduler">
         <scheduler>
             <scheduling-strategy>
-                <fixed-frequency-scheduler startDelay="999999" frequency="999999"/>
+                <fixed-frequency startDelay="999999" frequency="999999"/>
             </scheduling-strategy>
         </scheduler>
         <test:queue name="neverRunningSchedulerQueue"/>
@@ -17,7 +17,7 @@
     <flow name="schedulerControlledFromSameFlow">
         <scheduler>
             <scheduling-strategy>
-                <fixed-frequency-scheduler startDelay="0" frequency="200"/>
+                <fixed-frequency startDelay="0" frequency="200"/>
             </scheduling-strategy>
         </scheduler>
         <test:component />

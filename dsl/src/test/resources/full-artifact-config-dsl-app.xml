@@ -130,7 +130,7 @@
     <flow name="schedulerFlow">
         <scheduler>
             <scheduling-strategy>
-                <fixed-frequency-scheduler frequency="50" startDelay="20" timeUnit="SECONDS"/>
+                <fixed-frequency frequency="50" startDelay="20" timeUnit="SECONDS"/>
             </scheduling-strategy>
         </scheduler>
         <logger message="#[payload]"/>
@@ -139,7 +139,7 @@
     <flow name="cronSchedulerFlow">
         <scheduler>
             <scheduling-strategy>
-                <cron-scheduler expression="0/1 * * * * ?"/>
+                <cron expression="0/1 * * * * ?"/>
             </scheduling-strategy>
         </scheduler>
         <logger message="#[payload]"/>
