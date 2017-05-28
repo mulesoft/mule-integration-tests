@@ -65,7 +65,7 @@ public class ErrorHandlingConfigurationFailuresTestCase extends AbstractMuleTest
       useXalan = null;
     }
   }
-  
+
   @Test(expected = ConfigurationException.class)
   public void errorHandlerCantHaveMiddleExceptionStrategyWithoutExpression() throws Exception {
     loadConfiguration("org/mule/test/integration/exceptions/exception-strategy-in-choice-without-expression.xml");
