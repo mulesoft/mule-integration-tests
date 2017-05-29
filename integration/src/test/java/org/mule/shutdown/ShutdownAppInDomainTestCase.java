@@ -22,7 +22,7 @@ import org.mule.service.http.TestHttpClient;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.probe.JUnitProbe;
 import org.mule.tck.probe.PollingProber;
-import org.mule.test.infrastructure.report.HeapDumpOnFailure;
+import org.mule.tck.report.HeapDumpOnFailure;
 
 import java.io.IOException;
 import java.lang.ref.PhantomReference;
