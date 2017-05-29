@@ -67,11 +67,6 @@ public class ErrorHandlingConfigurationFailuresTestCase extends AbstractMuleTest
   }
 
   @Test(expected = ConfigurationException.class)
-  public void namedFlowExceptionStrategyFails() throws Exception {
-    loadConfiguration("org/mule/test/integration/exceptions/named-flow-exception-strategy.xml");
-  }
-
-  @Test(expected = ConfigurationException.class)
   public void errorHandlerCantHaveMiddleExceptionStrategyWithoutExpression() throws Exception {
     loadConfiguration("org/mule/test/integration/exceptions/exception-strategy-in-choice-without-expression.xml");
   }
