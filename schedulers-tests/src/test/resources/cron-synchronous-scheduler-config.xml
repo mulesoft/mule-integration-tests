@@ -11,7 +11,7 @@
     <flow name="pollfoo" processingStrategy="synchronous">
         <scheduler>
             <scheduling-strategy>
-                <cron-scheduler expression="0/1 * * * * ?"/>
+                <cron expression="0/1 * * * * ?"/>
             </scheduling-strategy>
         </scheduler>
         <set-payload value="testString"/>

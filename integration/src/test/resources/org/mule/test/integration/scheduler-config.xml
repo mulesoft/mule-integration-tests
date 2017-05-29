@@ -13,7 +13,7 @@
     <flow name="pollfoo">
         <scheduler>
             <scheduling-strategy>
-                <fixed-frequency-scheduler frequency="1000" timeUnit="MILLISECONDS"/>
+                <fixed-frequency frequency="1000" timeUnit="MILLISECONDS"/>
             </scheduling-strategy>
         </scheduler>
         <flow-ref name="echo"/>
@@ -23,7 +23,7 @@
     <flow name="pollbar" processingStrategy="synchronous">
         <scheduler>
             <scheduling-strategy>
-                <fixed-frequency-scheduler frequency="1000"/>
+                <fixed-frequency frequency="1000"/>
             </scheduling-strategy>
         </scheduler>
         <static-component>
@@ -36,7 +36,7 @@
         <scheduler>
             <!-- Will not run unless my test takes 200 days -->
             <scheduling-strategy>
-                <fixed-frequency-scheduler frequency="4" timeUnit="DAYS" startDelay="200"/>
+                <fixed-frequency frequency="4" timeUnit="DAYS" startDelay="200"/>
             </scheduling-strategy>
         </scheduler>
         <static-component>
@@ -48,7 +48,7 @@
     <flow name="pollWithRequestContextEvent">
         <scheduler>
             <scheduling-strategy>
-                <fixed-frequency-scheduler frequency="1000" />
+                <fixed-frequency frequency="1000" />
             </scheduling-strategy>
         </scheduler>
         <custom-processor class="org.mule.test.integration.SchedulerTestCase$EventWireTrap" />

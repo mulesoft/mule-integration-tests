@@ -343,7 +343,7 @@
     <flow name="poll">
         <scheduler>
             <scheduling-strategy>
-                <fixed-frequency-scheduler frequency="3000"/>
+                <fixed-frequency frequency="3000"/>
             </scheduling-strategy>
         </scheduler>
         <set-payload value="#['']"/>
@@ -355,7 +355,7 @@
     <flow name="poll2">
         <scheduler>
             <scheduling-strategy>
-                <fixed-frequency-scheduler frequency="3000"/>
+                <fixed-frequency frequency="3000"/>
             </scheduling-strategy>
         </scheduler>
         <flow-ref name="pollappend"/>

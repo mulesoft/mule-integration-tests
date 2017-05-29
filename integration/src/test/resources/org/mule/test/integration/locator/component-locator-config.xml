@@ -7,7 +7,7 @@
     <flow name="myFlow">
         <scheduler>
             <scheduling-strategy>
-                <fixed-frequency-scheduler/>
+                <fixed-frequency/>
             </scheduling-strategy>
         </scheduler>
         <logger/>
@@ -21,7 +21,7 @@
     <flow name="anotherFlow">
         <scheduler>
             <scheduling-strategy>
-                <fixed-frequency-scheduler/>
+                <fixed-frequency/>
             </scheduling-strategy>
         </scheduler>
         <logger/>

@@ -14,7 +14,7 @@
     <flow name="pollfoo">
         <scheduler doc:name="watermark">
             <scheduling-strategy>
-                <fixed-frequency-scheduler frequency="${frequency.millis}"/>
+                <fixed-frequency frequency="${frequency.millis}"/>
             </scheduling-strategy>
         </scheduler>
         <flow-ref name="echo"/>
@@ -24,7 +24,7 @@
     <flow name="pollbar" processingStrategy="synchronous">
         <scheduler>
             <scheduling-strategy>
-                <fixed-frequency-scheduler frequency="1000"/>
+                <fixed-frequency frequency="1000"/>
             </scheduling-strategy>
         </scheduler>
         <static-component>
@@ -37,7 +37,7 @@
         <scheduler>
             <!-- Will not run unless my test takes 200 days -->
             <scheduling-strategy>
-                <fixed-frequency-scheduler frequency="${frequency.days}" timeUnit="DAYS" startDelay="200"/>
+                <fixed-frequency frequency="${frequency.days}" timeUnit="DAYS" startDelay="200"/>
             </scheduling-strategy>
         </scheduler>
         <static-component>

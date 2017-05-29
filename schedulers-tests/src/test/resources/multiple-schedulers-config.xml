@@ -8,7 +8,7 @@
     <flow name="poll1" processingStrategy="synchronous">
         <scheduler>
             <scheduling-strategy>
-                <cron-scheduler expression="0/1 0/1 * 1/1 * ? *"/>
+                <cron expression="0/1 0/1 * 1/1 * ? *"/>
             </scheduling-strategy>
         </scheduler>
         <set-payload value="poll1"/>
@@ -18,7 +18,7 @@
     <flow name="poll2" processingStrategy="synchronous">
         <scheduler>
             <scheduling-strategy>
-                <cron-scheduler expression="0/1 0/1 * 1/1 * ? *"/>
+                <cron expression="0/1 0/1 * 1/1 * ? *"/>
             </scheduling-strategy>
         </scheduler>
         <set-payload value="poll2"/>
