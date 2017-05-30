@@ -12,8 +12,10 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
-import static org.mule.test.allure.AllureConstants.InterceptonApi.ComponentInterceptionStory.COMPONENT_INTERCEPTION_STORY;
 import static org.mule.test.allure.AllureConstants.InterceptonApi.INTERCEPTION_API;
+import static org.mule.test.allure.AllureConstants.InterceptonApi.ComponentInterceptionStory.COMPONENT_INTERCEPTION_STORY;
+
+import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.api.el.MuleExpressionLanguage;
 import org.mule.runtime.api.interception.InterceptionEvent;
 import org.mule.runtime.api.interception.ProcessorInterceptor;
@@ -36,6 +38,7 @@ import javax.inject.Inject;
 
 import org.junit.Before;
 import org.junit.Test;
+
 import ru.yandex.qatools.allure.annotations.Description;
 import ru.yandex.qatools.allure.annotations.Features;
 import ru.yandex.qatools.allure.annotations.Stories;
@@ -169,8 +172,8 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     }
 
     @Override
-    public void before(Map<String, Object> parameters, InterceptionEvent event) {
-      interceptionParameters.add(new InterceptionParameters(parameters, event));
+    public void before(ComponentLocation location, Map<String, Object> parameters, InterceptionEvent event) {
+      interceptionParameters.add(new InterceptionParameters(location, parameters, event));
       assertThat(expressionEvaluator, not(nullValue()));
       assertThat(lockFactory, not(nullValue()));
       assertThat(httpService, not(nullValue()));
@@ -179,12 +182,18 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
 
   public static class InterceptionParameters {
 
+    private ComponentLocation location;
     private Map<String, Object> parameters;
     private InterceptionEvent event;
 
-    public InterceptionParameters(Map<String, Object> parameters, InterceptionEvent event) {
+    public InterceptionParameters(ComponentLocation location, Map<String, Object> parameters, InterceptionEvent event) {
+      this.location = location;
       this.parameters = parameters;
       this.event = event;
+    }
+
+    public ComponentLocation getLocation() {
+      return location;
     }
 
     public Map<String, Object> getParameters() {
