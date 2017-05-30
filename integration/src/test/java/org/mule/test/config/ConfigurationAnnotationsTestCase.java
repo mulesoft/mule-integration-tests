@@ -7,18 +7,17 @@
 package org.mule.test.config;
 
 
+import static org.apache.commons.lang.SystemUtils.LINE_SEPARATOR;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
-
 import org.mule.runtime.api.meta.AnnotatedObject;
 import org.mule.runtime.core.api.construct.Flow;
-import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.runtime.core.api.construct.FlowConstruct;
 import org.mule.runtime.core.api.transformer.Transformer;
 import org.mule.runtime.core.component.DefaultJavaComponent;
-import org.mule.runtime.core.util.SystemUtils;
+import org.mule.test.AbstractIntegrationTestCase;
 
 import javax.xml.namespace.QName;
 
@@ -43,9 +42,9 @@ public class ConfigurationAnnotationsTestCase extends AbstractIntegrationTestCas
     assertThat(getSourceFileLine(stb), is(10));
     assertThat(getSourceElement(stb),
                is("<string-to-byte-array-transformer name=\"StringtoByteArray\" doc:name=\"stb-transformer\">"
-                   + SystemUtils.LINE_SEPARATOR + "<annotations>" + SystemUtils.LINE_SEPARATOR
-                   + "<doc:description>Convert a String to a Byte Array</doc:description>" + SystemUtils.LINE_SEPARATOR
-                   + "</annotations>" + SystemUtils.LINE_SEPARATOR + "</string-to-byte-array-transformer>"));
+                   + LINE_SEPARATOR + "<annotations>" + LINE_SEPARATOR
+                   + "<doc:description>Convert a String to a Byte Array</doc:description>" + LINE_SEPARATOR
+                   + "</annotations>" + LINE_SEPARATOR + "</string-to-byte-array-transformer>"));
   }
 
   @Test
@@ -56,10 +55,10 @@ public class ConfigurationAnnotationsTestCase extends AbstractIntegrationTestCas
     assertThat(getDocDescription(flow), is("Main flow"));
     assertThat(getSourceFileLine(flow), is(7));
     assertThat(getSourceElement(flow),
-               is("<flow name=\"Bridge\" doc:name=\"Bridge flow\">" + SystemUtils.LINE_SEPARATOR + "<annotations>"
-                   + SystemUtils.LINE_SEPARATOR + "<doc:description>Main flow</doc:description>" + SystemUtils.LINE_SEPARATOR
-                   + "</annotations>" + SystemUtils.LINE_SEPARATOR + "<echo-component doc:name=\"echo\">" + "</echo-component>"
-                   + SystemUtils.LINE_SEPARATOR + "</flow>"));
+               is("<flow name=\"Bridge\" doc:name=\"Bridge flow\">" + LINE_SEPARATOR + "<annotations>"
+                   + LINE_SEPARATOR + "<doc:description>Main flow</doc:description>" + LINE_SEPARATOR
+                   + "</annotations>" + LINE_SEPARATOR + "<echo-component doc:name=\"echo\">" + "</echo-component>"
+                   + LINE_SEPARATOR + "</flow>"));
   }
 
   @Test
@@ -71,13 +70,13 @@ public class ConfigurationAnnotationsTestCase extends AbstractIntegrationTestCas
     assertThat(getSourceFileLine(flow), is(18));
     assertThat(getSourceElement(flow),
                is("<flow name=\"WithRefExceptionStrategy\" doc:name=\"With Referenced Exception Strategy\">"
-                   + SystemUtils.LINE_SEPARATOR + "<echo-component doc:name=\"echo_ex\">" + "</echo-component>"
-                   + SystemUtils.LINE_SEPARATOR
-                   + "<error-handler doc:name=\"error handler doc name\">" + SystemUtils.LINE_SEPARATOR
-                   + "<on-error-continue doc:name=\"On Error Continue\">" + SystemUtils.LINE_SEPARATOR
-                   + "<logger message=\"Exception! \" level=\"ERROR\" doc:name=\"Logger\"></logger>" + SystemUtils.LINE_SEPARATOR
-                   + "</on-error-continue>" + SystemUtils.LINE_SEPARATOR
-                   + "</error-handler>" + SystemUtils.LINE_SEPARATOR + "</flow>"));
+                   + LINE_SEPARATOR + "<echo-component doc:name=\"echo_ex\">" + "</echo-component>"
+                   + LINE_SEPARATOR
+                   + "<error-handler doc:name=\"error handler doc name\">" + LINE_SEPARATOR
+                   + "<on-error-continue doc:name=\"On Error Continue\">" + LINE_SEPARATOR
+                   + "<logger message=\"Exception! \" level=\"ERROR\" doc:name=\"Logger\"></logger>" + LINE_SEPARATOR
+                   + "</on-error-continue>" + LINE_SEPARATOR
+                   + "</error-handler>" + LINE_SEPARATOR + "</flow>"));
   }
 
   @Test
@@ -87,8 +86,8 @@ public class ConfigurationAnnotationsTestCase extends AbstractIntegrationTestCas
     assertThat(getDocName(flow), is(nullValue()));
     assertThat(getDocDescription(flow), is(nullValue()));
     assertThat(getSourceFileLine(flow), is(14));
-    assertThat(getSourceElement(flow), is("<flow name=\"NotAnnotatedBridge\">" + SystemUtils.LINE_SEPARATOR
-        + "<echo-component></echo-component>" + SystemUtils.LINE_SEPARATOR + "</flow>"));
+    assertThat(getSourceElement(flow), is("<flow name=\"NotAnnotatedBridge\">" + LINE_SEPARATOR
+        + "<echo-component></echo-component>" + LINE_SEPARATOR + "</flow>"));
   }
 
   @Test
