@@ -392,7 +392,7 @@ public class ConfigurationBasedElementModelFactoryTestCase extends AbstractEleme
 
     assertThat(bulkInsertElement.getContainedElements().size(), is(6));
 
-    assertValue(bulkInsertElement.findElement("inputParameters").get(), "#[payload]");
+    assertValue(bulkInsertElement.findElement("bulkInputParameters").get(), "#[payload]");
 
     ComponentConfiguration sql = dbInsert.getNestedComponents().get(0);
     DslElementModel<ParameterModel> sqlElement = getChild(bulkInsertElement, sql);

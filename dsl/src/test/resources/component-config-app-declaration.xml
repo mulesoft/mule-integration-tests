@@ -54,7 +54,6 @@
                                 maxConnections="-1"
                                 port="49020"
                                 protocol="HTTP"
-                                streamResponse="true"
                                 responseBufferSize="10240"
                                 usePersistentConnections="true">
             <http:authentication>
