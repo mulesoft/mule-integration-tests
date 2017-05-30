@@ -56,7 +56,6 @@
                                 protocol="HTTP"
                                 streamResponse="true"
                                 responseBufferSize="10240"
-                                streamResponse="true"
                                 usePersistentConnections="true">
             <http:authentication>
             <http:basic-authentication password="pass" preemptive="true" username="user"/>
