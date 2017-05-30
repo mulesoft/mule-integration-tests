@@ -13,7 +13,7 @@ import static org.junit.Assert.assertTrue;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.exception.MessagingException;
-import org.mule.runtime.core.util.ExceptionUtils;
+import org.mule.runtime.core.internal.util.ExceptionUtils;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.io.FileNotFoundException;
