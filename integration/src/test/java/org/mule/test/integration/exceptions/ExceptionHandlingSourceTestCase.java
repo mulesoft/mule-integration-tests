@@ -10,7 +10,6 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.mule.runtime.http.api.HttpConstants.Method.GET;
-
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.processor.Processor;
@@ -21,11 +20,11 @@ import org.mule.service.http.TestHttpClient;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ExceptionHandlingSourceTestCase extends AbstractIntegrationTestCase {
 
@@ -54,7 +53,6 @@ public class ExceptionHandlingSourceTestCase extends AbstractIntegrationTestCase
     HttpResponse response = httpClient.send(request, RECEIVE_TIMEOUT, false, null);
 
     assertThat(response.getStatusCode(), is(INTERNAL_SERVER_ERROR.getStatusCode()));
-    System.out.println(response.getEntity());
     assertThat(OnErrorCounterProcessor.count.get(), is(1));
   }
 
