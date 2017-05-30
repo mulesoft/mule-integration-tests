@@ -7,42 +7,17 @@
 package org.mule.it.soap.connect;
 
 import static org.mule.service.soap.SoapTestUtils.assertSimilarXml;
-import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.streaming.bytes.CursorStreamProvider;
-import org.mule.service.soap.TestHttpSoapServer;
-import org.mule.service.soap.service.Soap11Service;
-import org.mule.tck.junit4.rule.DynamicPort;
-import org.mule.tck.junit4.rule.SystemProperty;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Rule;
 import org.junit.Test;
 
-public class TestSoapExtensionWithHttpDispatcher extends MuleArtifactFunctionalTestCase {
-
-  @Rule
-  public DynamicPort port = new DynamicPort("testPort");
-
-  private TestHttpSoapServer server = new TestHttpSoapServer(port.getNumber(), new Soap11Service());
-
-  @Rule
-  public SystemProperty systemProperty = new SystemProperty("address", server.getDefaultAddress());
-
+public class SoapExtensionWithHttpDispatcher extends AbstractSimpleServiceFunctionalTestCase {
 
   @Override
   protected String getConfigFile() {
     return "http-dispatcher.xml";
-  }
-
-  @Override
-  protected void doSetUp() throws Exception {
-    server.init();
-  }
-
-  @Override
-  protected void doTearDown() throws Exception {
-    server.stop();
   }
 
   @Test
