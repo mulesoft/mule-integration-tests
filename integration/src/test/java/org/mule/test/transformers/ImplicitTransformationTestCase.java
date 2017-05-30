@@ -6,6 +6,7 @@
  */
 package org.mule.test.transformers;
 
+import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import org.mule.runtime.api.message.Message;
@@ -111,7 +112,7 @@ public class ImplicitTransformationTestCase extends AbstractIntegrationTestCase 
       try {
         stringValue = IOUtils.toString(input);
       } finally {
-        IOUtils.closeQuietly(input);
+        closeQuietly(input);
       }
       return StringUtils.reverse(stringValue);
     }

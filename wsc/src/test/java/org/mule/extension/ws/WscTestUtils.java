@@ -6,13 +6,13 @@
  */
 package org.mule.extension.ws;
 
+import static org.apache.commons.io.IOUtils.copy;
+import static org.apache.commons.io.IOUtils.toInputStream;
 import static org.custommonkey.xmlunit.XMLUnit.compareXML;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mule.runtime.core.util.IOUtils.copy;
-import static org.mule.runtime.core.util.IOUtils.toInputStream;
 import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.extension.api.soap.SoapAttachment;
 

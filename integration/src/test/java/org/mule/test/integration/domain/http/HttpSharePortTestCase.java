@@ -56,14 +56,15 @@ public class HttpSharePortTestCase extends DomainFunctionalTestCase {
         .setUri(format("%s://localhost:%d/service/helloWorld", endpointScheme.getValue(), dynamicPort.getNumber())).build();
     HttpResponse httpResponse = httpClient.send(httpRequest, RECEIVE_TIMEOUT, false, null);
 
-    String payload = IOUtils.toString(((InputStreamHttpEntity) httpResponse.getEntity()).getInputStream(), UTF_8);
+    String payload =
+        org.apache.commons.io.IOUtils.toString(((InputStreamHttpEntity) httpResponse.getEntity()).getInputStream(), UTF_8);
     assertThat(payload, is("hello world"));
 
     httpRequest = HttpRequest.builder()
         .setUri(format("%s://localhost:%d/service/helloMule", endpointScheme.getValue(), dynamicPort.getNumber())).build();
     httpResponse = httpClient.send(httpRequest, RECEIVE_TIMEOUT, false, null);
 
-    payload = IOUtils.toString(((InputStreamHttpEntity) httpResponse.getEntity()).getInputStream(), UTF_8);
+    payload = org.apache.commons.io.IOUtils.toString(((InputStreamHttpEntity) httpResponse.getEntity()).getInputStream(), UTF_8);
     assertThat(payload, is("hello mule"));
   }
 

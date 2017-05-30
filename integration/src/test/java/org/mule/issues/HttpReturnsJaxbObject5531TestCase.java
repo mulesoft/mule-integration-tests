@@ -55,7 +55,8 @@ public class HttpReturnsJaxbObject5531TestCase extends AbstractIntegrationTestCa
         HttpRequest.builder().setUri("http://localhost:" + port1.getNumber() + "/test").setMethod(POST).build();
 
     HttpResponse response = httpClient.send(request, RECEIVE_TIMEOUT, false, null);
-    String payload = IOUtils.toString(((InputStreamHttpEntity) response.getEntity()).getInputStream(), UTF_8);
+    String payload =
+        org.apache.commons.io.IOUtils.toString(((InputStreamHttpEntity) response.getEntity()).getInputStream(), UTF_8);
     assertTrue(payload.contains("<Success>true</Success>"));
   }
 

@@ -6,18 +6,17 @@
  */
 package org.mule.test.module.http.functional.listener;
 
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
+import static org.apache.commons.io.IOUtils.read;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertThat;
 import static org.mule.runtime.http.api.HttpConstants.Method.POST;
 import static org.mule.runtime.http.api.HttpHeaders.Names.CONTENT_LENGTH;
 import static org.mule.runtime.http.api.HttpHeaders.Names.EXPECT;
 import static org.mule.runtime.http.api.HttpHeaders.Names.HOST;
 import static org.mule.runtime.http.api.HttpHeaders.Values.CONTINUE;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
-import static java.lang.Boolean.FALSE;
-import static java.lang.Boolean.TRUE;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertThat;
-
-import org.mule.runtime.core.util.IOUtils;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.module.http.functional.AbstractHttpTestCase;
@@ -166,13 +165,13 @@ public class HttpListenerExpectHeaderStreamingNeverTestCase extends AbstractHttp
     }
 
     char[] body = new char[getExpectedResponseBody().length()];
-    IOUtils.read(reader, body);
+    read(reader, body);
     assertThat(new String(body), equalTo(getExpectedResponseBody()));
   }
 
   private void assertFromStream(InputStream inputStream, String expectedInput) throws IOException {
     byte[] actualInput = new byte[expectedInput.length()];
-    IOUtils.read(inputStream, actualInput);
+    read(inputStream, actualInput);
     assertThat(new String(actualInput), equalTo(expectedInput));
   }
 

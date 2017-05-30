@@ -6,7 +6,7 @@
  */
 package org.mule.test.module.http.functional;
 
-import org.mule.runtime.core.util.IOUtils;
+import static org.apache.commons.io.IOUtils.read;
 import org.mule.runtime.core.util.concurrent.Latch;
 import org.mule.tck.junit4.rule.DynamicPort;
 
@@ -115,7 +115,7 @@ public abstract class AbstractHttpExpectHeaderServerTestCase extends AbstractHtt
       writer.flush();
 
       char[] body = new char[TEST_MESSAGE.length()];
-      IOUtils.read(reader, body);
+      read(reader, body);
       requestBody = new String(body);
 
       String response = String.format("HTTP/1.1 200 OK\nContent-Length: %d\n\n%s", TEST_MESSAGE.length(), TEST_MESSAGE);
