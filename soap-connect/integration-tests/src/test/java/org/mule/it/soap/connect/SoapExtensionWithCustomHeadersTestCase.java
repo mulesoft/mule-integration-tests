@@ -19,7 +19,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Rule;
 import org.junit.Test;
 
-public class TestSoapExtensionWithHttpDispatcher extends MuleArtifactFunctionalTestCase {
+public class SoapExtensionWithCustomHeadersTestCase extends MuleArtifactFunctionalTestCase {
 
   @Rule
   public DynamicPort port = new DynamicPort("testPort");
@@ -32,7 +32,7 @@ public class TestSoapExtensionWithHttpDispatcher extends MuleArtifactFunctionalT
 
   @Override
   protected String getConfigFile() {
-    return "http-dispatcher.xml";
+    return "custom-headers.xml";
   }
 
   @Override
@@ -46,20 +46,12 @@ public class TestSoapExtensionWithHttpDispatcher extends MuleArtifactFunctionalT
   }
 
   @Test
-  public void withDefaultHttp() throws Exception {
-    executeAndAssertSoapCall("withDefaultHttp");
-  }
-
-  @Test
-  public void withConfigHttp() throws Exception {
-    executeAndAssertSoapCall("withConfigHttp");
-  }
-
-  private void executeAndAssertSoapCall(String flow) throws Exception {
-    Message m = flowRunner(flow).keepStreamsOpen().run().getMessage();
+  public void useServiceProviderWithCustomHeaders() throws Exception {
+    Message m = flowRunner("customHeaders").keepStreamsOpen().run().getMessage();
     String result = IOUtils.toString(((CursorStreamProvider) m.getPayload().getValue()).openCursor());
-    assertSimilarXml("<ns2:noParamsResponse xmlns:ns2=\"http://service.soap.services.mule.org/\">"
-        + "<text>response</text>"
-        + "</ns2:noParamsResponse>", result);
+    assertSimilarXml("<ns2:noParamsWithHeaderResponse xmlns:ns2=\"http://service.soap.service.mule.org/\">"
+        + "<text>OP=noParamsWithHeader</text>"
+        + "</ns2:noParamsWithHeaderResponse>", result);
   }
+
 }
