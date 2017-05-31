@@ -72,7 +72,7 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
    * "flows-using-modules.xml" flows defined below
    */
   private static final DefaultComponentLocation FLOW_WITH_SINGLE_MP_LOCATION =
-    getFlowLocation("flowWithSingleMp", 15);
+      getFlowLocation("flowWithSingleMp", 15);
   private static final DefaultComponentLocation FLOW_WITH_SET_PAYLOAD_HARDCODED =
       getFlowLocation("flowWithSetPayloadHardcoded", 19);
   private static final DefaultComponentLocation FLOW_WITH_SET_PAYLOAD_HARDCODED_TWICE =
