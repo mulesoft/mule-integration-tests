@@ -6,11 +6,12 @@
  */
 package org.mule.test.module.http.functional.requester;
 
-import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.core.AnyOf.anyOf;
 import static org.junit.Assert.assertThat;
-
+import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
 import org.mule.extension.http.api.request.validator.ResponseValidatorException;
+import org.mule.extension.http.api.request.validator.ResponseValidatorTypedException;
 import org.mule.runtime.core.exception.MessagingException;
 
 import java.io.IOException;
@@ -72,7 +73,8 @@ public class HttpRequestStatusCodesTestCase extends AbstractHttpRequestTestCase 
     MessagingException e =
         flowRunner(flowName).withPayload(TEST_MESSAGE).withVariable("code", toString(statusCode)).runExpectingException();
 
-    assertThat(e.getEvent().getError().get().getCause(), instanceOf(ResponseValidatorException.class));
+    assertThat(e.getEvent().getError().get().getCause(),
+               anyOf(instanceOf(ResponseValidatorException.class), instanceOf(ResponseValidatorTypedException.class)));
   }
 
   @Override

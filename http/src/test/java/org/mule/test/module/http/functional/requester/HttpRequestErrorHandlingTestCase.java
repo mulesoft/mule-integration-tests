@@ -7,8 +7,12 @@
 package org.mule.test.module.http.functional.requester;
 
 import static java.lang.String.format;
-import static org.mule.extension.http.api.error.HttpError.RESPONSE_VALIDATION;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.mule.extension.http.internal.listener.HttpListener.HTTP_NAMESPACE;
+import static org.mule.runtime.extension.api.error.MuleErrors.ANY;
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.BAD_REQUEST;
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.EXPECTATION_FAILED;
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.FORBIDDEN;
@@ -23,11 +27,6 @@ import static org.mule.runtime.http.api.HttpConstants.HttpStatus.UNSUPPORTED_MED
 import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HttpStory.ERRORS;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HttpStory.ERROR_HANDLING;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import org.mule.functional.junit4.FlowRunner;
 import org.mule.functional.junit4.rules.ExpectedError;
 import org.mule.runtime.core.api.Event;
@@ -116,7 +115,7 @@ public class HttpRequestErrorHandlingTestCase extends AbstractHttpRequestTestCas
 
   @Test
   public void notMappedStatus() throws Exception {
-    verifyErrorWhenReceiving(EXPECTATION_FAILED, "417 not understood", RESPONSE_VALIDATION.name(),
+    verifyErrorWhenReceiving(EXPECTATION_FAILED, "417 not understood", ANY.name(),
                              getErrorMessage(EXPECTATION_FAILED, " with status code 417"));
   }
 
@@ -159,7 +158,9 @@ public class HttpRequestErrorHandlingTestCase extends AbstractHttpRequestTestCas
     Event result = getFlowRunner("handled", httpPort.getNumber()).run();
     assertThat(result.getMessage().getPayload().getValue(), is(expectedResult));
     // Hit flow that will throw back the error
-    this.expectedError.expectErrorType(HTTP_NAMESPACE.toUpperCase(), expectedError);
+    if (!expectedError.endsWith("ANY")) {
+      this.expectedError.expectErrorType(HTTP_NAMESPACE.toUpperCase(), expectedError);
+    }
     this.expectedError.expectMessage(is(expectedMessage));
     getFlowRunner("unhandled", httpPort.getNumber()).run();
   }

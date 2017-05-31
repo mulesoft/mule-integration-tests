@@ -73,7 +73,7 @@ public class HttpListenerAuthenticationTestCase extends AbstractHttpTestCase {
     Header authHeader = httpResponse.getFirstHeader(WWW_AUTHENTICATE);
     assertThat(authHeader, is(notNullValue()));
     assertThat(authHeader.getValue(), is(BASIC_REALM_MULE_REALM));
-    assertThat(muleContext.getClient().request("test://unauthorized", RECEIVE_TIMEOUT).getRight().isPresent(), is(true));
+    assertThat(muleContext.getClient().request("test://basicAuthentication", RECEIVE_TIMEOUT).getRight().isPresent(), is(true));
   }
 
   @Test
@@ -92,7 +92,7 @@ public class HttpListenerAuthenticationTestCase extends AbstractHttpTestCase {
 
     assertThat(httpResponse, hasStatusCode(INTERNAL_SERVER_ERROR.getStatusCode()));
     assertThat(httpResponse, hasReasonPhrase(INTERNAL_SERVER_ERROR.getReasonPhrase()));
-    assertThat(muleContext.getClient().request("test://security", RECEIVE_TIMEOUT).getRight().isPresent(), is(true));
+    assertThat(muleContext.getClient().request("test://basicAuthentication", RECEIVE_TIMEOUT).getRight().isPresent(), is(true));
   }
 
   private void getHttpResponse(CredentialsProvider credsProvider) throws IOException {
