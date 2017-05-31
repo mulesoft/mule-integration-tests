@@ -7,6 +7,7 @@
 package org.mule.test.transformers;
 
 import static org.apache.commons.io.IOUtils.closeQuietly;
+import static org.apache.commons.lang.StringUtils.reverse;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import org.mule.runtime.api.message.Message;
@@ -14,7 +15,6 @@ import org.mule.runtime.api.metadata.DataType;
 import org.mule.runtime.core.api.transformer.TransformerException;
 import org.mule.runtime.core.transformer.AbstractTransformer;
 import org.mule.runtime.core.util.IOUtils;
-import org.mule.runtime.core.util.StringUtils;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.io.InputStream;
@@ -78,7 +78,7 @@ public class ImplicitTransformationTestCase extends AbstractIntegrationTestCase 
 
     @Override
     protected Object doTransform(Object src, Charset enc) throws TransformerException {
-      return StringUtils.reverse((String) src);
+      return reverse((String) src);
     }
   }
 
@@ -92,7 +92,7 @@ public class ImplicitTransformationTestCase extends AbstractIntegrationTestCase 
 
     @Override
     protected Object doTransform(Object src, Charset enc) throws TransformerException {
-      return StringUtils.reverse(new String((byte[]) src));
+      return reverse(new String((byte[]) src));
     }
   }
 
@@ -114,7 +114,7 @@ public class ImplicitTransformationTestCase extends AbstractIntegrationTestCase 
       } finally {
         closeQuietly(input);
       }
-      return StringUtils.reverse(stringValue);
+      return reverse(stringValue);
     }
   }
 }
