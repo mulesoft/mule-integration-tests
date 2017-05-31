@@ -45,9 +45,6 @@
             <on-error-continue type="http:SERVICE_UNAVAILABLE">
                 <set-payload value="#[error.errorMessage.attributes.statusCode ++ ' Service Unavailable']"/>
             </on-error-continue>
-            <on-error-continue type="http:RESPONSE_VALIDATION">
-                <set-payload value="#[error.errorMessage.attributes.statusCode ++ ' not understood']"/>
-            </on-error-continue>
             <on-error-continue type="http:TIMEOUT">
                 <set-payload value="#[error.cause.message ++ ' timeout']"/>
             </on-error-continue>
@@ -56,6 +53,9 @@
             </on-error-continue>
             <on-error-continue type="http:PARSING">
                 <set-payload value="#[error.cause.message ++ ' parsing']"/>
+            </on-error-continue>
+            <on-error-continue type="ANY">
+                <set-payload value="#[error.errorMessage.attributes.statusCode ++ ' not understood']"/>
             </on-error-continue>
         </error-handler>
     </flow>

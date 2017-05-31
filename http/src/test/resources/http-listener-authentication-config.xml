@@ -40,8 +40,8 @@
         <http:basic-security-filter realm="mule-realm" securityProviders="#[[attributes.queryParams.provider]]"/>
         <set-payload value="TestBasicAuthOk"/>
         <error-handler>
-            <on-error-propagate type="http:UNAUTHORIZED">
-                <test:queue name="unauthorized"/>
+            <on-error-propagate type="http:BASIC_AUTHENTICATION">
+                <test:queue name="basicAuthentication"/>
             </on-error-propagate>
             <on-error-propagate type="http:SECURITY">
                 <test:queue name="security"/>
