@@ -6,6 +6,7 @@
  */
 package org.mule.test.module.http.functional.tls;
 
+import static org.apache.commons.io.FileUtils.getFile;
 import org.mule.runtime.core.util.FileUtils;
 import org.mule.test.module.http.functional.AbstractHttpTestCase;
 
@@ -46,8 +47,8 @@ public abstract class AbstractHttpTlsContextTestCase extends AbstractHttpTestCas
 
   private static SSLContext getSslContext() throws IOException, GeneralSecurityException {
     SSLContext customSslContext;
-    File keyStore = FileUtils.getFile(FileUtils.getResourcePath(keyStorePath, AbstractHttpTlsContextTestCase.class));
-    File trustStore = FileUtils.getFile(FileUtils.getResourcePath(trustStorePath, AbstractHttpTlsContextTestCase.class));
+    File keyStore = getFile(FileUtils.getResourcePath(keyStorePath, AbstractHttpTlsContextTestCase.class));
+    File trustStore = getFile(FileUtils.getResourcePath(trustStorePath, AbstractHttpTlsContextTestCase.class));
     char[] storePass = storePassword.toCharArray();
     char[] keyPass = keyPassword.toCharArray();
     customSslContext =
