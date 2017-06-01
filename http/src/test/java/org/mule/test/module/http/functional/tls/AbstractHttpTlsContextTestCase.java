@@ -7,7 +7,7 @@
 package org.mule.test.module.http.functional.tls;
 
 import static org.apache.commons.io.FileUtils.getFile;
-import org.mule.runtime.core.util.FileUtils;
+import org.mule.runtime.core.api.util.FileUtils;
 import org.mule.test.module.http.functional.AbstractHttpTestCase;
 
 import java.io.File;

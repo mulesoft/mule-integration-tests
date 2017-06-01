@@ -11,7 +11,7 @@ import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.it.soap.connect.services.InterdimentionalCableService;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.streaming.bytes.CursorStreamProvider;
-import org.mule.runtime.core.util.IOUtils;
+import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.service.soap.TestHttpSoapServer;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;

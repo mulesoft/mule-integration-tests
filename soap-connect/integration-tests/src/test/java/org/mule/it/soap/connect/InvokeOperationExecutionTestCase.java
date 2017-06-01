@@ -10,7 +10,7 @@ import static org.mule.service.soap.SoapTestUtils.assertSimilarXml;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.api.streaming.bytes.CursorStreamProvider;
-import org.mule.runtime.core.util.IOUtils;
+import org.mule.runtime.core.api.util.IOUtils;
 
 import java.io.ByteArrayInputStream;
 

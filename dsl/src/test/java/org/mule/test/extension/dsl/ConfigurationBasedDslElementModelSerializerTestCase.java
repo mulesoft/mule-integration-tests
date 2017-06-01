@@ -7,7 +7,7 @@
 package org.mule.test.extension.dsl;
 
 import static org.mule.runtime.internal.dsl.DslConstants.REDELIVERY_POLICY_ELEMENT_IDENTIFIER;
-import static org.mule.runtime.core.util.IOUtils.getResourceAsString;
+import static org.mule.runtime.core.api.util.IOUtils.getResourceAsString;
 import static org.mule.test.module.extension.internal.util.ExtensionsTestUtils.compareXML;
 import org.mule.runtime.api.meta.NamedObject;
 import org.mule.runtime.config.spring.dsl.model.DslElementModel;

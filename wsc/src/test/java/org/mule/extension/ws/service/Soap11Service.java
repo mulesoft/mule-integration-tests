@@ -7,7 +7,7 @@
 package org.mule.extension.ws.service;
 
 import static java.lang.String.format;
-import org.mule.runtime.core.util.IOUtils;
+import org.mule.runtime.core.api.util.IOUtils;
 
 import java.io.File;
 import java.io.IOException;
