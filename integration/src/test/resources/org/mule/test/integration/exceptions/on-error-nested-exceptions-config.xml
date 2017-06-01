@@ -22,11 +22,6 @@
                 </on-error-continue>
             </error-handler>
         </try>
-        <error-handler>
-            <on-error-continue>
-                <append-string-transformer message=" and again"/>
-            </on-error-continue>
-        </error-handler>
     </flow>
 
     <flow name="propagatesToOuterWithoutExceptionAndFails">
@@ -47,38 +42,6 @@
         </try>
     </flow>
 
-    <flow name="propagatesToFlowWithoutExceptionAndSucceeds">
-        <try>
-            <test:component throwException="true"/>
-            <error-handler>
-                <on-error-propagate>
-                    <set-payload value="propagated"/>
-                </on-error-propagate>
-            </error-handler>
-        </try>
-        <error-handler>
-            <on-error-continue>
-                <append-string-transformer message=" again"/>
-            </on-error-continue>
-        </error-handler>
-    </flow>
-
-    <flow name="propagatesToFlowWithoutExceptionAndFails">
-        <try>
-            <test:component throwException="true"/>
-            <error-handler>
-                <on-error-propagate>
-                    <set-payload value="propagated"/>
-                </on-error-propagate>
-            </error-handler>
-        </try>
-        <error-handler>
-            <on-error-propagate>
-                <append-string-transformer message=" again"/>
-            </on-error-propagate>
-        </error-handler>
-    </flow>
-
     <flow name="propagatesToOuterWithExceptionAndSucceeds">
         <try>
             <try>
@@ -97,11 +60,6 @@
                 </on-error-continue>
             </error-handler>
         </try>
-        <error-handler>
-            <on-error-continue>
-                <append-string-transformer message=" and again"/>
-            </on-error-continue>
-        </error-handler>
     </flow>
 
     <flow name="propagatesToOuterWithExceptionAndFails">
@@ -124,73 +82,4 @@
         </try>
     </flow>
 
-    <flow name="propagatesToFlowWithExceptionAndSucceeds">
-        <try>
-            <test:component throwException="true"/>
-            <error-handler>
-                <on-error-propagate>
-                    <set-payload value="propagated"/>
-                    <test:component throwException="true"/>
-                </on-error-propagate>
-            </error-handler>
-        </try>
-        <error-handler>
-            <on-error-continue>
-                <append-string-transformer message=" again"/>
-            </on-error-continue>
-        </error-handler>
-    </flow>
-
-    <flow name="propagatesToFlowWithExceptionAndFails">
-        <try>
-            <test:component throwException="true"/>
-            <error-handler>
-                <on-error-continue>
-                    <set-payload value="propagated"/>
-                    <test:component throwException="true"/>
-                </on-error-continue>
-            </error-handler>
-        </try>
-        <error-handler>
-            <on-error-propagate>
-                <append-string-transformer message=" again"/>
-            </on-error-propagate>
-        </error-handler>
-    </flow>
-
-    <flow name="exceptionInErrorHandlerFlow">
-        <test:component throwException="true"/>
-        <error-handler>
-            <on-error-continue>
-                <set-payload value="propagated"/>
-                <test:component throwException="true"/>
-            </on-error-continue>
-        </error-handler>
-    </flow>
-
-    <flow name="exceptionInErrorHandlerTry">
-        <try>
-            <test:component throwException="true"/>
-            <error-handler>
-                <on-error-continue>
-                    <set-payload value="propagated"/>
-                    <test:component throwException="true"/>
-                </on-error-continue>
-            </error-handler>
-        </try>
-    </flow>
-
-    <flow name="exceptionInErrorHandlerNestedTry">
-        <try>
-            <try>
-                <test:component throwException="true"/>
-                <error-handler>
-                    <on-error-continue>
-                        <set-payload value="propagated"/>
-                        <test:component throwException="true"/>
-                    </on-error-continue>
-                </error-handler>
-            </try>
-        </try>
-    </flow>
 </mule>
