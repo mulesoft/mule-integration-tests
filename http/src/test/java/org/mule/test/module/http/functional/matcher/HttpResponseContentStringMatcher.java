@@ -6,7 +6,7 @@
  */
 package org.mule.test.module.http.functional.matcher;
 
-import org.mule.runtime.core.util.IOUtils;
+import org.mule.runtime.core.api.util.IOUtils;
 
 import java.io.IOException;
 

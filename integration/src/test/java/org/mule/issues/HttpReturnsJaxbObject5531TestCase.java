@@ -12,7 +12,6 @@ import static org.mule.runtime.http.api.HttpConstants.Method.POST;
 
 import org.mule.runtime.core.api.MuleEventContext;
 import org.mule.runtime.core.api.lifecycle.Callable;
-import org.mule.runtime.core.util.IOUtils;
 import org.mule.runtime.http.api.HttpService;
 import org.mule.runtime.http.api.domain.entity.InputStreamHttpEntity;
 import org.mule.runtime.http.api.domain.message.request.HttpRequest;
@@ -55,7 +54,8 @@ public class HttpReturnsJaxbObject5531TestCase extends AbstractIntegrationTestCa
         HttpRequest.builder().setUri("http://localhost:" + port1.getNumber() + "/test").setMethod(POST).build();
 
     HttpResponse response = httpClient.send(request, RECEIVE_TIMEOUT, false, null);
-    String payload = IOUtils.toString(((InputStreamHttpEntity) response.getEntity()).getInputStream(), UTF_8);
+    String payload =
+        org.apache.commons.io.IOUtils.toString(((InputStreamHttpEntity) response.getEntity()).getInputStream(), UTF_8);
     assertTrue(payload.contains("<Success>true</Success>"));
   }
 

@@ -8,8 +8,8 @@ package org.mule.test.module.http.functional.requester;
 
 import static com.google.common.collect.Multimaps.newMultimap;
 import org.mule.runtime.api.util.CaseInsensitiveMapWrapper;
-import org.mule.runtime.core.util.FileUtils;
-import org.mule.runtime.core.util.IOUtils;
+import org.mule.runtime.core.api.util.FileUtils;
+import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.module.http.functional.AbstractHttpTestCase;
 

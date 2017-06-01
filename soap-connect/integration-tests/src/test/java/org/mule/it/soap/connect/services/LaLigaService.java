@@ -10,7 +10,7 @@ import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static org.mule.test.soap.extension.LaLigaServiceProvider.LA_LIGA_PORT_A;
 import static org.mule.test.soap.extension.LaLigaServiceProvider.LA_LIGA_SERVICE_A;
-import org.mule.runtime.core.util.IOUtils;
+import org.mule.runtime.core.api.util.IOUtils;
 
 import java.io.IOException;
 import java.util.List;

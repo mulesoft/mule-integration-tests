@@ -12,9 +12,9 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import org.mule.runtime.core.exception.MessagingException;
 import org.mule.runtime.core.api.security.tls.TlsConfiguration;
-import org.mule.runtime.core.util.ClassUtils;
-import org.mule.runtime.core.util.FileUtils;
-import org.mule.runtime.core.util.IOUtils;
+import org.mule.runtime.core.api.util.ClassUtils;
+import org.mule.runtime.core.api.util.FileUtils;
+import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.tck.junit4.rule.DynamicPort;
 
 import java.io.File;

@@ -6,6 +6,7 @@
  */
 package org.mule.test.config;
 
+import static org.apache.commons.lang.SystemUtils.LINE_SEPARATOR;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -20,7 +21,6 @@ import org.mule.runtime.core.api.DefaultMuleException;
 import org.mule.runtime.core.api.config.ConfigurationException;
 import org.mule.runtime.core.api.registry.ResolverException;
 import org.mule.runtime.core.config.i18n.CoreMessages;
-import org.mule.runtime.core.util.SystemUtils;
 import org.mule.tck.junit4.AbstractMuleTestCase;
 import org.mule.tck.size.SmallTest;
 
@@ -204,7 +204,7 @@ public class ExceptionHelperTestCase extends AbstractMuleTestCase {
 
     @Override
     protected boolean matchesSafely(String item) {
-      String[] stackEntries = item.split(SystemUtils.LINE_SEPARATOR);
+      String[] stackEntries = item.split(LINE_SEPARATOR);
 
       if (stackEntries.length != expectedEntries.length) {
         return false;

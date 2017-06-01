@@ -9,7 +9,7 @@ package org.mule.test.extension.dsl;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mule.runtime.api.app.declaration.fluent.ElementDeclarer.newParameterGroup;
-import static org.mule.runtime.core.util.IOUtils.getResourceAsString;
+import static org.mule.runtime.core.api.util.IOUtils.getResourceAsString;
 import static org.mule.test.module.extension.internal.util.ExtensionsTestUtils.compareXML;
 import org.mule.runtime.api.app.declaration.ArtifactDeclaration;
 import org.mule.runtime.api.app.declaration.FlowElementDeclaration;
