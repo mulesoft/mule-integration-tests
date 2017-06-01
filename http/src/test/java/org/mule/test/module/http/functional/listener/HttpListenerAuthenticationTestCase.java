@@ -6,7 +6,7 @@
  */
 package org.mule.test.module.http.functional.listener;
 
-import static org.apache.commons.io.IOUtils.closeQuietly;
+import static org.mule.runtime.core.util.IOUtils.closeQuietly;
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.OK;
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.UNAUTHORIZED;
