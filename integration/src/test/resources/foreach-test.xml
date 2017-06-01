@@ -269,9 +269,9 @@
     </flow>
 
     <flow name="splitXmlComplexValue">
-        <foreach collection="#[[ payload.PurchaseOrder.Items ]]">
+        <foreach collection="#[payload.PurchaseOrder.Items]">
             <test:queue name="splitXmlComplexValueOutQueue" contentJavaType="java.lang.String">
-                <test:content>#["$(payload.@PartNumber) $(payload.Price)"]</test:content>
+                <test:content>#["$(payload.Item.@PartNumber) $(payload.Item.Price)"]</test:content>
             </test:queue>
         </foreach>
     </flow>
