@@ -295,7 +295,6 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
     assertQueueValueIs("splitXmlOutQueue", "Le Pew");
   }
 
-  @Ignore("MULE-12407")
   @Description("Splits an XML where root contains a collection of child elements and verifies that expressions over each child element inside the foreach works")
   @Test
   public void spliXmlComplexValue() throws Exception {
