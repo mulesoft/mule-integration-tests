@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xsi:schemaLocation="
+       http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+       http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+
+    <flow name="propagatesToOuterWithoutExceptionAndSucceeds">
+        <try>
+            <try>
+                <test:component throwException="true"/>
+                <error-handler>
+                    <on-error-propagate>
+                        <set-payload value="propagated"/>
+                    </on-error-propagate>
+                </error-handler>
+            </try>
+            <error-handler>
+                <on-error-continue>
+                    <append-string-transformer message=" again"/>
+                </on-error-continue>
+            </error-handler>
+        </try>
+    </flow>
+
+    <flow name="propagatesToOuterWithoutExceptionAndFails">
+        <try>
+            <try>
+                <test:component throwException="true"/>
+                <error-handler>
+                    <on-error-propagate>
+                        <set-payload value="propagated"/>
+                    </on-error-propagate>
+                </error-handler>
+            </try>
+            <error-handler>
+                <on-error-propagate>
+                    <append-string-transformer message=" again"/>
+                </on-error-propagate>
+            </error-handler>
+        </try>
+    </flow>
+
+    <flow name="propagatesToOuterWithExceptionAndSucceeds">
+        <try>
+            <try>
+                <test:component throwException="true"/>
+                <error-handler>
+                    <!-- Here propagate/continue shouldn't matter as there is an exception inside the handler -->
+                    <on-error-propagate>
+                        <set-payload value="propagated"/>
+                        <test:component throwException="true"/>
+                    </on-error-propagate>
+                </error-handler>
+            </try>
+            <error-handler>
+                <on-error-continue>
+                    <append-string-transformer message=" again"/>
+                </on-error-continue>
+            </error-handler>
+        </try>
+    </flow>
+
+    <flow name="propagatesToOuterWithExceptionAndFails">
+        <try>
+            <try>
+                <test:component throwException="true"/>
+                <error-handler>
+                    <!-- Here propagate/continue shouldn't matter as there is an exception inside the handler -->
+                    <on-error-continue>
+                        <set-payload value="propagated"/>
+                        <test:component throwException="true"/>
+                    </on-error-continue>
+                </error-handler>
+            </try>
+            <error-handler>
+                <on-error-propagate>
+                    <append-string-transformer message=" again"/>
+                </on-error-propagate>
+            </error-handler>
+        </try>
+    </flow>
+
+</mule>
