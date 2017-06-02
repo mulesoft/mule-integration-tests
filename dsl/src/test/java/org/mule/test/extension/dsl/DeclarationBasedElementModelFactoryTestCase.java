@@ -62,7 +62,7 @@ public class DeclarationBasedElementModelFactoryTestCase extends AbstractElement
     ElementDeclarer db = ElementDeclarer.forExtension("Database");
     ElementDeclarer http = ElementDeclarer.forExtension("HTTP");
 
-    derbyConnection = db.newConnection("derby-connection")
+    derbyConnection = db.newConnection("derby")
         .withParameterGroup(newParameterGroup(CONNECTION)
             .withParameter("database", "target/muleEmbeddedDB")
             .withParameter("create", "true")
@@ -73,7 +73,7 @@ public class DeclarationBasedElementModelFactoryTestCase extends AbstractElement
         .withConnection(derbyConnection)
         .getDeclaration();
 
-    listenerConnection = http.newConnection("listener-connection")
+    listenerConnection = http.newConnection("listener")
         .withParameterGroup(newParameterGroup()
             .withParameter(TLS_PARAMETER_NAME, newObjectValue()
                 .withParameter("key-store", newObjectValue()
@@ -98,7 +98,7 @@ public class DeclarationBasedElementModelFactoryTestCase extends AbstractElement
         .withConnection(listenerConnection)
         .getDeclaration();
 
-    requestConnection = http.newConnection("request-connection")
+    requestConnection = http.newConnection("request")
         .withParameterGroup(newParameterGroup()
             .withParameter("authentication",
                            newObjectValue()
@@ -239,7 +239,7 @@ public class DeclarationBasedElementModelFactoryTestCase extends AbstractElement
     assertAttributeIsPresent(connectionElement, "host");
     assertAttributeIsPresent(connectionElement, "port");
 
-    assertThat(configElement.findElement(newIdentifier("request-connection", HTTP_NS)).isPresent(),
+    assertThat(configElement.findElement(newIdentifier("request", HTTP_NS)).isPresent(),
                is(false));
   }
 
@@ -264,7 +264,7 @@ public class DeclarationBasedElementModelFactoryTestCase extends AbstractElement
     assertThat(basicAuthElement.getDsl().isWrapped(), is(false));
     assertThat(basicAuthElement.getDsl().supportsAttributeDeclaration(), is(false));
 
-    assertThat(configElement.findElement(newIdentifier("listener-connection", HTTP_NS)).isPresent(),
+    assertThat(configElement.findElement(newIdentifier("listener", HTTP_NS)).isPresent(),
                is(false));
   }
 
@@ -291,7 +291,7 @@ public class DeclarationBasedElementModelFactoryTestCase extends AbstractElement
     assertThat(propertiesElement.getDsl().isWrapped(), is(true));
     assertThat(propertiesElement.getDsl().supportsAttributeDeclaration(), is(false));
 
-    assertThat(configElement.findElement(newIdentifier("listener-connection", DB_NS)).isPresent(),
+    assertThat(configElement.findElement(newIdentifier("listener", DB_NS)).isPresent(),
                is(false));
   }
 

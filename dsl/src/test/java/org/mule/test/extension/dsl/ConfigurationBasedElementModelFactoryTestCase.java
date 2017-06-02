@@ -348,8 +348,8 @@ public class ConfigurationBasedElementModelFactoryTestCase extends AbstractEleme
 
   private void assertConnectionLoaded(DslElementModel<ConfigurationModel> config) {
     assertThat(config.getContainedElements().size(), is(2));
-    assertThat(config.findElement("active-mq-connection").isPresent(), is(true));
-    assertThat(config.findElement("active-mq-connection").get().getContainedElements().size(), is(3));
+    assertThat(config.findElement("active-mq").isPresent(), is(true));
+    assertThat(config.findElement("active-mq").get().getContainedElements().size(), is(3));
 
     assertThat(config.findElement(newIdentifier("no-caching", "jms")).isPresent(), is(true));
   }
