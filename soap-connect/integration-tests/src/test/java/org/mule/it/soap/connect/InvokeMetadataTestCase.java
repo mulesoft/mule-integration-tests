@@ -17,7 +17,7 @@ import static org.hamcrest.core.Is.is;
 import static org.mule.metadata.api.utils.MetadataTypeUtils.getTypeId;
 import static org.mule.runtime.module.extension.soap.internal.loader.SoapInvokeOperationDeclarer.ATTACHMENTS_PARAM;
 import static org.mule.runtime.module.extension.soap.internal.loader.SoapInvokeOperationDeclarer.HEADERS_PARAM;
-import static org.mule.runtime.module.extension.soap.internal.loader.SoapInvokeOperationDeclarer.REQUEST_PARAM;
+import static org.mule.runtime.module.extension.soap.internal.loader.SoapInvokeOperationDeclarer.BODY_PARAM;
 import org.mule.metadata.api.model.BooleanType;
 import org.mule.metadata.api.model.MetadataType;
 import org.mule.metadata.api.model.ObjectFieldType;
@@ -90,7 +90,7 @@ public class InvokeMetadataTestCase extends SoapFootballExtensionArtifactFunctio
   @Test
   public void requestMetadata() {
     OperationModel model = getMetadata("getPresidentInfo");
-    ObjectType request = toObjectType(getParameter(model, REQUEST_PARAM).getType());
+    ObjectType request = toObjectType(getParameter(model, BODY_PARAM).getType());
     assertThat(request.getFields(), hasSize(1));
     ObjectType getPresidentInfoType = toObjectType(request.getFields().iterator().next().getValue());
     assertThat(getPresidentInfoType.getFields(), hasSize(1));
