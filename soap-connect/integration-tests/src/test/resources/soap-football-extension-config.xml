@@ -15,56 +15,61 @@
     </soap:config>
 
     <flow name="getLeagues">
+        <logger message="#[payload]" level="ERROR"/>
         <soap:invoke config-ref="leagues" service="leagues" operation="getLeagues">
-            <soap:request>#[payload]</soap:request>
+            <soap:message>
+                <soap:body>#[payload]</soap:body>
+            </soap:message>
         </soap:invoke>
     </flow>
 
     <flow name="getPresidentInfo">
-        <soap:invoke config-ref="leagues" service="leagues" operation="getPresidentInfo">
-            <soap:request>#[payload]</soap:request>
-        </soap:invoke>
+        <soap:invoke config-ref="leagues" service="leagues" operation="getPresidentInfo"/>
     </flow>
 
     <flow name="invalidKey">
-        <soap:invoke config-ref="leagues" service="leagues" operation="invalidKey">
-            <soap:request>#[payload]</soap:request>
-        </soap:invoke>
+        <soap:invoke config-ref="leagues" service="leagues" operation="invalidKey"/>
     </flow>
 
     <flow name="getTeams">
         <soap:invoke config-ref="laLiga" service="A" operation="getTeams">
-            <soap:request>#[payload]</soap:request>
+            <soap:message>
+                <soap:body>#[payload]</soap:body>
+            </soap:message>
         </soap:invoke>
     </flow>
 
     <flow name="getLeagueTeams">
         <soap:invoke config-ref="leagues" service="leagues" operation="getLeagueTeams">
-            <soap:headers>
-            #[
-            %dw 2.0
-            output application/xml
-            ns con http://services.connect.soap.it.mule.org/
-             ---
-            "headers": {
-                con#auth: "Authorized"
-            }]
-            </soap:headers>
-            <soap:request>#[payload]</soap:request>
+            <soap:message>
+                <soap:body>#[payload]</soap:body>
+                <soap:headers>
+                    #[
+                    %dw 2.0
+                    output application/xml
+                    ns con http://services.connect.soap.it.mule.org/
+                    ---
+                    "headers": {
+                    con#auth: "Authorized"
+                    }]
+                </soap:headers>
+            </soap:message>
         </soap:invoke>
     </flow>
 
     <flow name="uploadResult">
         <soap:invoke config-ref="laLiga" service="A" operation="uploadResult">
-            <soap:request>#[payload]</soap:request>
-            <soap:attachments>
-            #[{
-                result: {
+            <soap:message>
+                <soap:body>#[payload]</soap:body>
+                <soap:attachments>
+                    #[{
+                    result: {
                     content: att,
                     contentType: attCt
-                }
-            }]
-            </soap:attachments>
+                    }
+                    }]
+                </soap:attachments>
+            </soap:message>
         </soap:invoke>
     </flow>
 </mule>

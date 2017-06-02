@@ -30,20 +30,14 @@
     </ram:config>
 
     <flow name="customTransport">
-        <ram:invoke config-ref="miniverse" service="ram" operation="getChannels">
-            <ram:request>#[payload]</ram:request>
-        </ram:invoke>
+        <ram:invoke config-ref="miniverse" service="ram" operation="getChannels"/>
     </flow>
 
     <flow name="customTransportWithParams">
-        <ram:invoke config-ref="portal-gun" service="ram" operation="getChannels">
-            <ram:request>#[payload]</ram:request>
-        </ram:invoke>
+        <ram:invoke config-ref="portal-gun" service="ram" operation="getChannels"/>
     </flow>
 
     <flow name="withDefaultHttp">
-        <ram:invoke config-ref="http-default" service="ram" operation="getChannels">
-            <ram:request>#[payload]</ram:request>
-        </ram:invoke>
+        <ram:invoke config-ref="http-default" service="ram" operation="getChannels"/>
     </flow>
 </mule>
