@@ -116,7 +116,7 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
     return newArtifact()
         .withGlobalElement(jms.newConfiguration("config")
             .withRefName("config")
-            .withConnection(jms.newConnection("active-mq-connection")
+            .withConnection(jms.newConnection("active-mq")
                 .withParameterGroup(newParameterGroup()
                     .withParameter("cachingStrategy",
                                    newObjectValue()
@@ -198,7 +198,7 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
         .withGlobalElement(db.newConfiguration("config")
             .withRefName("dbConfig")
             .withConnection(db
-                .newConnection("derby-connection")
+                .newConnection("derby")
                 .withParameterGroup(newParameterGroup()
                     .withParameter(POOLING_PROFILE_PARAMETER_NAME, newObjectValue()
                         .withParameter("maxPoolSize", "10")
@@ -219,7 +219,7 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
             .withParameterGroup(newParameterGroup()
                 .withParameter("basePath", "/")
                 .getDeclaration())
-            .withConnection(http.newConnection("listener-connection")
+            .withConnection(http.newConnection("listener")
                 .withParameterGroup(newParameterGroup()
                     .withParameter(TLS_PARAMETER_NAME, newObjectValue()
                         .withParameter("key-store", newObjectValue()
@@ -239,7 +239,7 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
             .getDeclaration())
         .withGlobalElement(http.newConfiguration("request-config")
             .withRefName("httpRequester")
-            .withConnection(http.newConnection("request-connection")
+            .withConnection(http.newConnection("request")
                 .withParameterGroup(newParameterGroup()
                     .withParameter("authentication",
                                    newObjectValue()
