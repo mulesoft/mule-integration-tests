@@ -7,13 +7,12 @@
 package extension.org.mule.soap.it;
 
 import static java.util.Collections.singletonList;
+import static java.util.Collections.singletonMap;
 import static org.mule.runtime.extension.api.soap.WebServiceDefinition.builder;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
 import org.mule.runtime.extension.api.soap.SoapServiceProvider;
 import org.mule.runtime.extension.api.soap.WebServiceDefinition;
-
-import com.google.common.collect.ImmutableMap;
 
 import java.util.List;
 import java.util.Map;
@@ -36,8 +35,6 @@ public class TestServiceProviderWithCustomHeaders implements SoapServiceProvider
 
   @Override
   public Map<String, String> getCustomHeaders(WebServiceDefinition definition, String operation) {
-    return ImmutableMap.<String, String>builder()
-      .put("headerIn", "<con:headerIn xmlns:con=\"http://service.soap.service.mule.org/\">OP=" + operation + "</con:headerIn>")
-      .build();
+    return singletonMap("headerIn", "<con:headerIn xmlns:con=\"http://service.soap.service.mule.org/\">OP=" + operation + "</con:headerIn>");
   }
 }
