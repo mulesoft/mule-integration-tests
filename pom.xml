@@ -20,6 +20,7 @@
     <module>soap-connect</module>
     <module>oauth</module>
     <module>schedulers-tests</module>
+    <module>mule-test-smart-connectors-parent</module>
   </modules>
 
     <properties>
