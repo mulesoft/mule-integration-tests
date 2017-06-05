@@ -12,6 +12,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.junit.Assert.assertThat;
+import static org.mule.functional.junit4.matchers.MessageMatchers.hasMediaType;
 import static org.mule.runtime.api.metadata.MediaType.ANY;
 import static org.mule.runtime.api.metadata.MediaType.parse;
 import static org.mule.runtime.http.api.HttpHeaders.Values.APPLICATION_X_WWW_FORM_URLENCODED;
@@ -22,6 +23,7 @@ import org.mule.runtime.core.api.Event;
 import org.mule.runtime.http.api.HttpHeaders;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -78,6 +80,7 @@ public class HttpRequestFormParamsTestCase extends AbstractHttpRequestTestCase {
     Event event = flowRunner("formParam").withPayload(TEST_MESSAGE).run();
 
     assertThat(event.getMessage().getPayload().getValue(), instanceOf(Map.class));
+    assertThat(event.getMessage(), hasMediaType(MediaType.create("application", "java", Charset.forName("UTF-8"))));
 
     Map<String, String> payload = (Map<String, String>) event.getMessage().getPayload().getValue();
     assertThat(payload.size(), is(2));

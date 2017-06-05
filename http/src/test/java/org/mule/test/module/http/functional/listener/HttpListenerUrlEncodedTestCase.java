@@ -6,13 +6,6 @@
  */
 package org.mule.test.module.http.functional.listener;
 
-import static org.mule.runtime.http.api.HttpConstants.HttpStatus.OK;
-import static org.mule.runtime.http.api.HttpHeaders.Names.CONTENT_LENGTH;
-import static org.mule.runtime.http.api.HttpHeaders.Names.CONTENT_TYPE;
-import static org.mule.runtime.http.api.HttpHeaders.Values.APPLICATION_X_WWW_FORM_URLENCODED;
-import static org.mule.runtime.http.api.utils.HttpEncoderDecoderUtils.decodeUrlEncodedBody;
-import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
-import static org.mule.test.module.http.functional.matcher.ParamMapMatcher.isEqual;
 import static com.google.common.base.Charsets.UTF_8;
 import static org.apache.http.HttpVersion.HTTP_1_0;
 import static org.apache.http.HttpVersion.HTTP_1_1;
@@ -22,21 +15,31 @@ import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertThat;
-
+import static org.mule.functional.junit4.matchers.MessageMatchers.hasMediaType;
+import static org.mule.runtime.http.api.HttpConstants.HttpStatus.OK;
+import static org.mule.runtime.http.api.HttpHeaders.Names.CONTENT_LENGTH;
+import static org.mule.runtime.http.api.HttpHeaders.Names.CONTENT_TYPE;
+import static org.mule.runtime.http.api.HttpHeaders.Values.APPLICATION_X_WWW_FORM_URLENCODED;
+import static org.mule.runtime.http.api.utils.HttpEncoderDecoderUtils.decodeUrlEncodedBody;
+import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
+import static org.mule.test.module.http.functional.matcher.ParamMapMatcher.isEqual;
 import org.mule.runtime.api.message.Message;
+import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.core.api.util.StringUtils;
 import org.mule.runtime.http.api.domain.ParameterMap;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.module.http.functional.AbstractHttpTestCase;
 
-import java.io.IOException;
-import java.net.URLDecoder;
-
 import com.ning.http.client.AsyncHttpClient;
 import com.ning.http.client.AsyncHttpClientConfig;
 import com.ning.http.client.ListenableFuture;
 import com.ning.http.client.providers.grizzly.GrizzlyAsyncHttpProvider;
+
+import java.io.IOException;
+import java.net.URLDecoder;
+import java.nio.charset.Charset;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.fluent.Request;
@@ -76,6 +79,7 @@ public class HttpListenerUrlEncodedTestCase extends AbstractHttpTestCase {
         .execute();
     final Message receivedMessage = muleContext.getClient().request(OUT_QUEUE_URL, 1000).getRight().get();
     assertThat(receivedMessage.getPayload().getValue(), instanceOf(ParameterMap.class));
+    assertThat(receivedMessage, hasMediaType(MediaType.create("application", "java", Charset.forName("ISO-8859-1"))));
     ParameterMap payloadAsMap = (ParameterMap) receivedMessage.getPayload().getValue();
     assertThat(payloadAsMap.size(), is(2));
     assertThat(payloadAsMap.get(PARAM_1_NAME), is(PARAM_1_VALUE));
