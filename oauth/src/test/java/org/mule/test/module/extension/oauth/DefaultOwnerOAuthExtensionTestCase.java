@@ -8,15 +8,16 @@ package org.mule.test.module.extension.oauth;
 
 import org.junit.Before;
 
-public class StaticOAuthExtensionTestCase extends OAuthExtensionTestCase {
+public class DefaultOwnerOAuthExtensionTestCase extends OAuthExtensionTestCase {
 
   @Override
   protected String[] getConfigFiles() {
-    return new String[] {"static-oauth-extension-config.xml", "oauth-extension-flows.xml"};
+    return new String[] {"default-owner-oauth-extension-config.xml", "oauth-extension-flows.xml"};
   }
 
   @Before
-  public void setOwnerId() throws Exception {
-    ownerId = CUSTOM_OWNER_ID;
+  public void setOwnerId() {
+    ownerId = DEFAULT_OWNER_ID;
   }
+
 }

@@ -44,7 +44,8 @@ public abstract class BaseOAuthExtensionTestCase extends AbstractExtensionFuncti
   protected static final String LOCAL_AUTH_PATH = "dance";
   protected static final String CALLBACK_PATH = "callback";
   protected static final String OWNER_ID_VARIABLE_NAME = "ownerId";
-  protected static final String OWNER_ID = "MG";
+  protected static final String CUSTOM_OWNER_ID = "MG";
+  protected static final String DEFAULT_OWNER_ID = "default";
   protected static final String TOKEN_PATH = "token";
   protected static final String STATE = "myState";
   protected static final String AUTHORIZE_PATH = "authorize";
@@ -96,6 +97,7 @@ public abstract class BaseOAuthExtensionTestCase extends AbstractExtensionFuncti
   @Rule
   public SystemProperty accessTokenUrl = new SystemProperty("accessTokenUrl", tokenUrl);
 
+  protected String ownerId;
 
   protected String toUrl(String path, int port) {
     return format("http://127.0.0.1:%d/%s", port, path);
@@ -117,7 +119,7 @@ public abstract class BaseOAuthExtensionTestCase extends AbstractExtensionFuncti
   protected void simulateDanceStart() throws IOException {
     wireMock.stubFor(get(urlMatching("/" + LOCAL_AUTH_PATH)).willReturn(aResponse().withStatus(OK.getStatusCode())));
     Map<String, String> queryParams = ImmutableMap.<String, String>builder()
-        .put("resourceOwnerId", OWNER_ID)
+        .put("resourceOwnerId", ownerId)
         .put("state", STATE)
         .build();
 
@@ -130,7 +132,7 @@ public abstract class BaseOAuthExtensionTestCase extends AbstractExtensionFuncti
     final String authCode = "chu chu ua, chu chu ua";
 
     Map<String, String> queryParams = ImmutableMap.<String, String>builder()
-        .put(STATE_PARAMETER, String.format("%s:resourceOwnerId=%s", STATE, OWNER_ID))
+        .put(STATE_PARAMETER, String.format("%s:resourceOwnerId=%s", STATE, ownerId))
         .put(CODE_PARAMETER, authCode)
         .build();
 

@@ -14,6 +14,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import org.mule.runtime.extension.api.connectivity.oauth.AuthCodeRequest;
 
+import org.junit.Before;
+
 public class ScopelessOAuthExtensionTestCase extends OAuthExtensionTestCase {
 
   @Override
@@ -24,6 +26,11 @@ public class ScopelessOAuthExtensionTestCase extends OAuthExtensionTestCase {
   @Override
   protected void assertScopes(AuthCodeRequest request) {
     assertThat(request.getScopes().isPresent(), is(false));
+  }
+
+  @Before
+  public void setOwnerId() {
+    ownerId = CUSTOM_OWNER_ID;
   }
 
   @Override
