@@ -29,6 +29,7 @@ import org.mule.test.oauth.TestOAuthExtension;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 
+import org.junit.Before;
 import org.junit.Test;
 
 public class OAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
@@ -38,10 +39,14 @@ public class OAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
     return new String[] {"dynamic-oauth-extension-config.xml", "oauth-extension-flows.xml"};
   }
 
+  @Before
+  public void setOwnerId() throws Exception {
+    ownerId = CUSTOM_OWNER_ID;
+  }
+
   @Test
   public void authorizeAndStartDancingBaby() throws Exception {
     simulateDanceStart();
-
     verifyAuthUrlRequest();
   }
 
@@ -58,7 +63,7 @@ public class OAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
     simulateCallback();
 
     TestOAuthConnectionState connection = ((TestOAuthConnection) flowRunner("getConnection")
-        .withVariable(OWNER_ID_VARIABLE_NAME, OWNER_ID)
+        .withVariable(OWNER_ID_VARIABLE_NAME, ownerId)
         .run().getMessage().getPayload().getValue()).getState();
 
     assertThat(connection, is(notNullValue()));
@@ -74,10 +79,10 @@ public class OAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
     assertThat(state.getExpiresIn().get(), is(EXPIRES_IN));
     assertThat(state.getRefreshToken().get(), is(REFRESH_TOKEN));
     assertThat(state.getState().get(), is(STATE));
-    assertThat(state.getResourceOwnerId(), is(OWNER_ID));
+    assertThat(state.getResourceOwnerId(), is(ownerId));
     assertExternalCallbackUrl(state);
 
-    assertOAuthStateStored(DEFAULT_USER_OBJECT_STORE_NAME, OWNER_ID);
+    assertOAuthStateStored(DEFAULT_USER_OBJECT_STORE_NAME, ownerId);
   }
 
   @Test
@@ -85,7 +90,7 @@ public class OAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
     receiveAccessTokenAndUserConnection();
     WireMock.reset();
     stubTokenUrl(accessTokenContent(ACCESS_TOKEN + "-refreshed"));
-    flowRunner("refreshToken").withVariable(OWNER_ID_VARIABLE_NAME, OWNER_ID).run();
+    flowRunner("refreshToken").withVariable(OWNER_ID_VARIABLE_NAME, ownerId).run();
     wireMock.verify(postRequestedFor(urlPathEqualTo("/" + TOKEN_PATH)));
   }
 
@@ -95,7 +100,7 @@ public class OAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
     receiveAccessTokenAndUserConnection();
 
     TestOAuthExtension config = getConfigurationFromRegistry("oauth", Event.builder(getInitialiserEvent())
-        .addVariable(OWNER_ID_VARIABLE_NAME, OWNER_ID)
+        .addVariable(OWNER_ID_VARIABLE_NAME, ownerId)
         .build(), muleContext);
 
     check(REQUEST_TIMEOUT, 500, () -> {
@@ -113,14 +118,14 @@ public class OAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
     authorizeAndStartDancingBaby();
     receiveAccessTokenAndUserConnection();
 
-    flowRunner("unauthorize").withVariable(OWNER_ID_VARIABLE_NAME, OWNER_ID).run();
+    flowRunner("unauthorize").withVariable(OWNER_ID_VARIABLE_NAME, ownerId).run();
     ObjectStore objectStore = getObjectStore(DEFAULT_USER_OBJECT_STORE_NAME);
-    assertThat(objectStore.contains(OWNER_ID), is(false));
+    assertThat(objectStore.contains(ownerId), is(false));
   }
 
   protected void assertBeforeCallbackPayload(TestOAuthExtension config) {
     AuthCodeRequest request = config.getCapturedAuthCodeRequests().get(0);
-    assertThat(request.getResourceOwnerId(), is(OWNER_ID));
+    assertThat(request.getResourceOwnerId(), is(ownerId));
     assertScopes(request);
     assertThat(request.getState().get(), is(STATE));
     assertExternalCallbackUrl(request);
@@ -134,7 +139,7 @@ public class OAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
     AuthorizationCodeState state = config.getCapturedAuthCodeStates().get(0);
     assertThat(state.getAccessToken(), is(ACCESS_TOKEN));
     assertThat(state.getRefreshToken().get(), is(REFRESH_TOKEN));
-    assertThat(state.getResourceOwnerId(), is(OWNER_ID));
+    assertThat(state.getResourceOwnerId(), is(ownerId));
     assertThat(state.getExpiresIn().get(), is(EXPIRES_IN));
     assertThat(state.getState().get(), is(STATE));
     assertThat(state.getAuthorizationUrl(), is(authUrl));
