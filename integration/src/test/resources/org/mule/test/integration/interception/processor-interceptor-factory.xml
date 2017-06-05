@@ -43,4 +43,8 @@
         <heisenberg:die config-ref="heisenberg"/>
     </flow>
 
+    <flow name="callSaul">
+        <heisenberg:call-saul config-ref="heisenberg"/>
+    </flow>
+
 </mule>
