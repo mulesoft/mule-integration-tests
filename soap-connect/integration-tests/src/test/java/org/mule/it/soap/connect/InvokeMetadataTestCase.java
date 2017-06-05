@@ -52,7 +52,7 @@ public class InvokeMetadataTestCase extends SoapFootballExtensionArtifactFunctio
 
   @Test
   public void metadataKeys() {
-    Location location = Location.builder().globalName("getLeagues").addProcessorsPart().addIndexPart(0).build();
+    Location location = Location.builder().globalName("getLeagues").addProcessorsPart().addIndexPart(1).build();
     final MetadataResult<MetadataKeysContainer> result = metadataService.getMetadataKeys(location);
     assertThat(result.isSuccess(), is(true));
     Set<MetadataKey> keys = result.get().getKeysByCategory().values().iterator().next();
