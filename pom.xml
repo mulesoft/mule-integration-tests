@@ -15,7 +15,6 @@
     <module>performance</module>
     <module>integration</module>
     <module>http</module>
-    <module>wsc</module>
     <module>dsl</module>
     <module>soap-connect</module>
     <module>oauth</module>
