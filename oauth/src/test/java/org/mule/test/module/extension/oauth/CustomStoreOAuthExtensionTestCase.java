@@ -16,8 +16,14 @@ public class CustomStoreOAuthExtensionTestCase extends BaseOAuthExtensionTestCas
   private ListableObjectStore objectStore;
 
   @Override
+  protected String getConfigFile() {
+    return "custom-store-oauth-extension-config.xml";
+  }
+
+  @Override
   protected void doSetUp() throws Exception {
     ownerId = CUSTOM_OWNER_ID;
+    storedOwnerId = CUSTOM_OWNER_ID + "-oauth";
     objectStore = muleContext.getObjectStoreManager().getObjectStore(CUSTOM_STORE_NAME);
   }
 
@@ -26,16 +32,11 @@ public class CustomStoreOAuthExtensionTestCase extends BaseOAuthExtensionTestCas
     muleContext.getObjectStoreManager().disposeStore(objectStore);
   }
 
-  @Override
-  protected String getConfigFile() {
-    return "custom-store-oauth-extension-config.xml";
-  }
-
   @Test
   public void useCustomStore() throws Exception {
     simulateDanceStart();
     simulateCallback();
 
-    assertOAuthStateStored(CUSTOM_STORE_NAME, ownerId);
+    assertOAuthStateStored(CUSTOM_STORE_NAME, storedOwnerId, ownerId);
   }
 }
