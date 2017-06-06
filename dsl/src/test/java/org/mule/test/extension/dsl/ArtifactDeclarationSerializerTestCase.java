@@ -84,8 +84,7 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
 
     ArtifactDeclaration artifact = serializer.deserialize(configIs);
 
-    List<String> expectedCustomParams = asList("xmlns", "xmlns:xsi", "xmlns:db", "xmlns:http", "xmlns:jms", "xmlns:sockets",
-                                               "xmlns:wsc", "xsi:schemaLocation");
+    List<String> expectedCustomParams = asList("xmlns", "xmlns:xsi", "xsi:schemaLocation");
     List<ParameterElementDeclaration> customParameters = artifact.getCustomConfigurationParameters();
     expectedCustomParams
         .forEach(custom -> assertThat("Missing parameter: " + custom,
