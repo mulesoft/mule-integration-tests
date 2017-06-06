@@ -8,13 +8,12 @@ package org.mule.it.soap.connect;
 
 import static org.mule.service.soap.SoapTestUtils.assertSimilarXml;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.api.streaming.bytes.CursorStreamProvider;
 import org.mule.runtime.core.api.util.IOUtils;
 
-import java.io.ByteArrayInputStream;
-
 import org.junit.Test;
+
+import java.io.ByteArrayInputStream;
 
 public class InvokeOperationExecutionTestCase extends SoapFootballExtensionArtifactFunctionalTestCase {
 
@@ -38,7 +37,6 @@ public class InvokeOperationExecutionTestCase extends SoapFootballExtensionArtif
     Message message = flowRunner("uploadResult")
         .withPayload(getBodyXml("uploadResult", ""))
         .withVariable("att", new ByteArrayInputStream("Barcelona Won".getBytes()))
-        .withVariable("attCt", MediaType.HTML)
         .keepStreamsOpen()
         .run().getMessage();
     String response = getBodyXml("uploadResultResponse", "<message>Ok</message>");
