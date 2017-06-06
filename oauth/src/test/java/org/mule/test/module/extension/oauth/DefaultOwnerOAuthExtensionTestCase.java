@@ -17,7 +17,7 @@ public class DefaultOwnerOAuthExtensionTestCase extends OAuthExtensionTestCase {
 
   @Before
   public void setOwnerId() {
-    ownerId = DEFAULT_OWNER_ID;
+    ownerId = DEFAULT_OWNER_ID + "-oauth";
   }
 
 }
