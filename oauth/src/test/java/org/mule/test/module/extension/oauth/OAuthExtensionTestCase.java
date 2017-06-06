@@ -6,13 +6,9 @@
  */
 package org.mule.test.module.extension.oauth;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.containing;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.core.api.config.MuleProperties.DEFAULT_USER_OBJECT_STORE_NAME;
@@ -42,6 +38,7 @@ public class OAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
   @Before
   public void setOwnerId() throws Exception {
     ownerId = CUSTOM_OWNER_ID;
+    storedOwnerId = CUSTOM_OWNER_ID + "-oauth";
   }
 
   @Test
@@ -50,39 +47,18 @@ public class OAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
     verifyAuthUrlRequest();
   }
 
-  protected void verifyAuthUrlRequest() {
-    wireMock.verify(getRequestedFor(urlPathEqualTo("/" + AUTHORIZE_PATH))
-        .withQueryParam("redirect_uri", equalTo(toUrl(CALLBACK_PATH, callbackPort.getNumber())))
-        .withQueryParam("client_id", equalTo(CONSUMER_KEY))
-        .withQueryParam("scope", equalTo(SCOPES.replaceAll(" ", "\\+")))
-        .withQueryParam("state", containing(STATE)));
-  }
-
   @Test
   public void receiveAccessTokenAndUserConnection() throws Exception {
     simulateCallback();
 
     TestOAuthConnectionState connection = ((TestOAuthConnection) flowRunner("getConnection")
-        .withVariable(OWNER_ID_VARIABLE_NAME, ownerId)
+        .withVariable(OWNER_ID_VARIABLE_NAME, CUSTOM_OWNER_ID)
         .run().getMessage().getPayload().getValue()).getState();
 
-    assertThat(connection, is(notNullValue()));
-    assertThat(connection.getApiVersion(), is(34.0D));
-    assertThat(connection.getDisplay(), is("PAGE"));
-    assertThat(connection.isPrompt(), is(false));
-    assertThat(connection.isImmediate(), is(true));
-    assertThat(connection.getInstanceId(), is(INSTANCE_ID));
-    assertThat(connection.getUserId(), is(USER_ID));
+    assertConnectionState(connection);
+    assertExternalCallbackUrl(connection.getState());
 
-    AuthorizationCodeState state = connection.getState();
-    assertThat(state.getAccessToken(), is(ACCESS_TOKEN));
-    assertThat(state.getExpiresIn().get(), is(EXPIRES_IN));
-    assertThat(state.getRefreshToken().get(), is(REFRESH_TOKEN));
-    assertThat(state.getState().get(), is(STATE));
-    assertThat(state.getResourceOwnerId(), is(ownerId));
-    assertExternalCallbackUrl(state);
-
-    assertOAuthStateStored(DEFAULT_USER_OBJECT_STORE_NAME, ownerId);
+    assertOAuthStateStored(DEFAULT_USER_OBJECT_STORE_NAME, storedOwnerId, ownerId);
   }
 
   @Test
@@ -90,7 +66,7 @@ public class OAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
     receiveAccessTokenAndUserConnection();
     WireMock.reset();
     stubTokenUrl(accessTokenContent(ACCESS_TOKEN + "-refreshed"));
-    flowRunner("refreshToken").withVariable(OWNER_ID_VARIABLE_NAME, ownerId).run();
+    flowRunner("refreshToken").withVariable(OWNER_ID_VARIABLE_NAME, CUSTOM_OWNER_ID).run();
     wireMock.verify(postRequestedFor(urlPathEqualTo("/" + TOKEN_PATH)));
   }
 
@@ -100,7 +76,7 @@ public class OAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
     receiveAccessTokenAndUserConnection();
 
     TestOAuthExtension config = getConfigurationFromRegistry("oauth", Event.builder(getInitialiserEvent())
-        .addVariable(OWNER_ID_VARIABLE_NAME, ownerId)
+        .addVariable(OWNER_ID_VARIABLE_NAME, CUSTOM_OWNER_ID)
         .build(), muleContext);
 
     check(REQUEST_TIMEOUT, 500, () -> {
@@ -120,7 +96,7 @@ public class OAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
 
     flowRunner("unauthorize").withVariable(OWNER_ID_VARIABLE_NAME, ownerId).run();
     ObjectStore objectStore = getObjectStore(DEFAULT_USER_OBJECT_STORE_NAME);
-    assertThat(objectStore.contains(ownerId), is(false));
+    assertThat(objectStore.contains(storedOwnerId), is(false));
   }
 
   protected void assertBeforeCallbackPayload(TestOAuthExtension config) {
