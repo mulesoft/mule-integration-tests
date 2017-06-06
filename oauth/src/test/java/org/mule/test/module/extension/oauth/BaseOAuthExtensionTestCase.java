@@ -186,13 +186,13 @@ public abstract class BaseOAuthExtensionTestCase extends AbstractExtensionFuncti
   protected void verifyAuthUrlRequest() {
     verifyAuthUrlRequest(callbackPort.getNumber());
   }
-  
+
   protected void verifyAuthUrlRequest(int port) {
     wireMock.verify(getRequestedFor(urlPathEqualTo("/" + AUTHORIZE_PATH))
-                      .withQueryParam("redirect_uri", equalTo(toUrl(CALLBACK_PATH, port)))
-                      .withQueryParam("client_id", equalTo(CONSUMER_KEY))
-                      .withQueryParam("scope", equalTo(SCOPES.replaceAll(" ", "\\+")))
-                      .withQueryParam("state", containing(STATE)));
+        .withQueryParam("redirect_uri", equalTo(toUrl(CALLBACK_PATH, port)))
+        .withQueryParam("client_id", equalTo(CONSUMER_KEY))
+        .withQueryParam("scope", equalTo(SCOPES.replaceAll(" ", "\\+")))
+        .withQueryParam("state", containing(STATE)));
   }
 
   protected void assertConnectionState(TestOAuthConnectionState connection) {
