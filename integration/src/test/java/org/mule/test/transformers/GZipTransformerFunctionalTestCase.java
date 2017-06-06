@@ -12,7 +12,7 @@ import static org.junit.Assert.assertTrue;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.util.IOUtils;
-import org.mule.runtime.core.util.compression.GZipCompression;
+import org.mule.runtime.core.api.util.compression.GZipCompression;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.io.ByteArrayInputStream;
