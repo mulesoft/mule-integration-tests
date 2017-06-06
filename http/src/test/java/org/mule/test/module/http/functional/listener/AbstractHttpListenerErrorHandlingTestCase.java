@@ -22,13 +22,13 @@ import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.module.http.functional.AbstractHttpTestCase;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 import org.apache.http.HttpResponse;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 public abstract class AbstractHttpListenerErrorHandlingTestCase extends AbstractHttpTestCase {
 
@@ -57,8 +57,12 @@ public abstract class AbstractHttpListenerErrorHandlingTestCase extends Abstract
   }
 
   protected void assertExceptionStrategyFailed(final HttpResponse httpResponse) throws IOException {
+    assertExceptionStrategyFailed(httpResponse, "");
+  }
+
+  protected void assertExceptionStrategyFailed(final HttpResponse httpResponse, String message) throws IOException {
     assertThat(httpResponse.getStatusLine().getStatusCode(), is(SC_INTERNAL_SERVER_ERROR));
-    assertThat(IOUtils.toString(httpResponse.getEntity().getContent()), is(""));
+    assertThat(IOUtils.toString(httpResponse.getEntity().getContent()), is(message));
     assertThat(TrackPassageMessageProcessor.passed, is(true));
   }
 
