@@ -54,7 +54,7 @@ public class MultiConfigOAuthExtensionTestCase extends BaseOAuthExtensionTestCas
     simulateCallback();
 
     TestOAuthConnectionState connection = ((TestOAuthConnection) flowRunner("getConnection")
-      .run().getMessage().getPayload().getValue()).getState();
+        .run().getMessage().getPayload().getValue()).getState();
 
     assertConnectionState(connection);
     assertOAuthStateStored(DEFAULT_USER_OBJECT_STORE_NAME, storedOwnerId, ownerId);
@@ -64,7 +64,7 @@ public class MultiConfigOAuthExtensionTestCase extends BaseOAuthExtensionTestCas
     simulateCallback(otherCallbackPort.getNumber());
 
     TestOAuthConnectionState otherConnection = ((TestOAuthConnection) flowRunner("getOtherConnection")
-      .run().getMessage().getPayload().getValue()).getState();
+        .run().getMessage().getPayload().getValue()).getState();
 
     assertConnectionState(otherConnection);
     assertOAuthStateStored(DEFAULT_USER_OBJECT_STORE_NAME, storedOwnerId, ownerId);
@@ -92,7 +92,7 @@ public class MultiConfigOAuthExtensionTestCase extends BaseOAuthExtensionTestCas
     simulateCallback(port);
 
     TestOAuthConnectionState connection = ((TestOAuthConnection) flowRunner("getConnection")
-      .run().getMessage().getPayload().getValue()).getState();
+        .run().getMessage().getPayload().getValue()).getState();
 
     assertConnectionState(connection);
     assertOAuthStateStored(DEFAULT_USER_OBJECT_STORE_NAME, storedOwnerId, ownerId);
