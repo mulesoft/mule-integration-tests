@@ -6,19 +6,9 @@
  */
 package org.mule.test.module.http.functional.listener;
 
-import static org.mule.runtime.api.message.Message.builder;
-import static org.mule.runtime.api.message.Message.of;
-import static org.mule.runtime.api.metadata.MediaType.BINARY;
-import static org.mule.runtime.http.api.HttpConstants.Method.GET;
-import static org.mule.runtime.http.api.HttpHeaders.Names.CONTENT_DISPOSITION;
-import static org.mule.runtime.http.api.HttpHeaders.Names.CONTENT_LENGTH;
-import static org.mule.runtime.http.api.HttpHeaders.Names.CONTENT_TYPE;
-import static org.mule.runtime.http.api.HttpHeaders.Names.TRANSFER_ENCODING;
-import static org.mule.runtime.http.api.HttpHeaders.Values.CHUNKED;
-import static org.mule.runtime.http.api.HttpHeaders.Values.MULTIPART_FORM_DATA;
-import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
 import static java.lang.String.format;
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.emptyMap;
 import static org.apache.commons.lang.RandomStringUtils.randomAlphanumeric;
 import static org.apache.commons.lang.StringUtils.countMatches;
@@ -31,16 +21,28 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-
+import static org.mule.functional.junit4.matchers.MessageMatchers.hasMediaType;
+import static org.mule.runtime.api.message.Message.builder;
+import static org.mule.runtime.api.message.Message.of;
+import static org.mule.runtime.api.metadata.MediaType.APPLICATION_JAVA;
+import static org.mule.runtime.api.metadata.MediaType.BINARY;
+import static org.mule.runtime.http.api.HttpConstants.Method.GET;
+import static org.mule.runtime.http.api.HttpHeaders.Names.CONTENT_DISPOSITION;
+import static org.mule.runtime.http.api.HttpHeaders.Names.CONTENT_LENGTH;
+import static org.mule.runtime.http.api.HttpHeaders.Names.CONTENT_TYPE;
+import static org.mule.runtime.http.api.HttpHeaders.Names.TRANSFER_ENCODING;
+import static org.mule.runtime.http.api.HttpHeaders.Values.CHUNKED;
+import static org.mule.runtime.http.api.HttpHeaders.Values.MULTIPART_FORM_DATA;
+import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.message.MultiPartPayload;
 import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.processor.Processor;
+import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.runtime.core.message.DefaultMultiPartPayload;
 import org.mule.runtime.core.message.PartAttributes;
-import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.runtime.http.api.HttpHeaders;
 import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;
 import org.mule.runtime.http.api.domain.entity.InputStreamHttpEntity;
@@ -51,6 +53,8 @@ import org.mule.runtime.http.api.domain.message.response.HttpResponse;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.module.http.functional.AbstractHttpTestCase;
+
+import com.google.common.collect.Lists;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -69,7 +73,6 @@ import javax.mail.internet.MimeMultipart;
 import javax.mail.util.ByteArrayDataSource;
 import javax.servlet.ServletException;
 
-import com.google.common.collect.Lists;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -204,6 +207,7 @@ public class HttpListenerPartsTestCase extends AbstractHttpTestCase {
       try {
         final Message receivedMessage = muleContext.getClient().request("test://out", 1000).getRight().get();
         assertThat(receivedMessage.getPayload().getValue(), instanceOf(MultiPartPayload.class));
+        assertThat(receivedMessage, hasMediaType(APPLICATION_JAVA.withCharset(UTF_8)));
         MultiPartPayload receivedParts = ((MultiPartPayload) receivedMessage.getPayload().getValue());
         assertThat(receivedParts.getParts().size(), is(2));
         assertThat(receivedParts.getPartNames(), hasItem(TEXT_BODY_FIELD_NAME));

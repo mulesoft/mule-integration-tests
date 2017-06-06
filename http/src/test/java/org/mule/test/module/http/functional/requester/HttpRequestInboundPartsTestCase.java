@@ -6,6 +6,7 @@
  */
 package org.mule.test.module.http.functional.requester;
 
+import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -15,10 +16,10 @@ import static org.mule.functional.junit4.matchers.MessageMatchers.hasPayload;
 import static org.mule.functional.junit4.matchers.MultiPartPayloadMatchers.hasPartThat;
 import static org.mule.functional.junit4.matchers.MultiPartPayloadMatchers.hasSize;
 import static org.mule.functional.junit4.matchers.PartAttributesMatchers.hasName;
+import static org.mule.runtime.api.metadata.MediaType.APPLICATION_JAVA;
 import static org.mule.runtime.api.metadata.MediaType.HTML;
 import static org.mule.runtime.api.metadata.MediaType.TEXT;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
-
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.message.MultiPartPayload;
 import org.mule.runtime.api.metadata.MediaType;
@@ -48,6 +49,7 @@ public class HttpRequestInboundPartsTestCase extends AbstractHttpRequestTestCase
     Event event = flowRunner("requestFlow").withPayload(TEST_MESSAGE).run();
 
     assertThat(event.getMessage().getPayload().getValue(), instanceOf(MultiPartPayload.class));
+    assertThat(event.getMessage(), hasMediaType(APPLICATION_JAVA.withCharset(ISO_8859_1)));
 
     MultiPartPayload payload = (MultiPartPayload) event.getMessage().getPayload().getValue();
     assertThat(payload, hasSize(2));
