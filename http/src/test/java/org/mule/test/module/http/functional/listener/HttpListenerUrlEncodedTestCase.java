@@ -7,6 +7,7 @@
 package org.mule.test.module.http.functional.listener;
 
 import static com.google.common.base.Charsets.UTF_8;
+import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static org.apache.http.HttpVersion.HTTP_1_0;
 import static org.apache.http.HttpVersion.HTTP_1_1;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -38,7 +39,6 @@ import com.ning.http.client.providers.grizzly.GrizzlyAsyncHttpProvider;
 
 import java.io.IOException;
 import java.net.URLDecoder;
-import java.nio.charset.Charset;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
@@ -79,7 +79,7 @@ public class HttpListenerUrlEncodedTestCase extends AbstractHttpTestCase {
         .execute();
     final Message receivedMessage = muleContext.getClient().request(OUT_QUEUE_URL, 1000).getRight().get();
     assertThat(receivedMessage.getPayload().getValue(), instanceOf(ParameterMap.class));
-    assertThat(receivedMessage, hasMediaType(APPLICATION_JAVA.withCharset(Charset.forName("ISO-8859-1"))));
+    assertThat(receivedMessage, hasMediaType(APPLICATION_JAVA.withCharset(ISO_8859_1)));
     ParameterMap payloadAsMap = (ParameterMap) receivedMessage.getPayload().getValue();
     assertThat(payloadAsMap.size(), is(2));
     assertThat(payloadAsMap.get(PARAM_1_NAME), is(PARAM_1_VALUE));

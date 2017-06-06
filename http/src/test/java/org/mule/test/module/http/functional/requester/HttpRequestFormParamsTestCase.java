@@ -7,6 +7,7 @@
 package org.mule.test.module.http.functional.requester;
 
 
+import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -22,7 +23,6 @@ import org.mule.runtime.core.api.Event;
 import org.mule.runtime.http.api.HttpHeaders;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -78,7 +78,7 @@ public class HttpRequestFormParamsTestCase extends AbstractHttpRequestTestCase {
     Event event = flowRunner("formParam").withPayload(TEST_MESSAGE).run();
 
     assertThat(event.getMessage().getPayload().getValue(), instanceOf(Map.class));
-    assertThat(event.getMessage(), hasMediaType(APPLICATION_JAVA.withCharset(Charset.forName("ISO-8859-1"))));
+    assertThat(event.getMessage(), hasMediaType(APPLICATION_JAVA.withCharset(ISO_8859_1)));
 
     Map<String, String> payload = (Map<String, String>) event.getMessage().getPayload().getValue();
     assertThat(payload.size(), is(2));

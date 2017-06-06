@@ -8,6 +8,7 @@ package org.mule.test.module.http.functional.listener;
 
 import static java.lang.String.format;
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.emptyMap;
 import static org.apache.commons.lang.RandomStringUtils.randomAlphanumeric;
 import static org.apache.commons.lang.StringUtils.countMatches;
@@ -58,7 +59,6 @@ import com.google.common.collect.Lists;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -207,7 +207,7 @@ public class HttpListenerPartsTestCase extends AbstractHttpTestCase {
       try {
         final Message receivedMessage = muleContext.getClient().request("test://out", 1000).getRight().get();
         assertThat(receivedMessage.getPayload().getValue(), instanceOf(MultiPartPayload.class));
-        assertThat(receivedMessage, hasMediaType(APPLICATION_JAVA.withCharset(Charset.forName("UTF-8"))));
+        assertThat(receivedMessage, hasMediaType(APPLICATION_JAVA.withCharset(UTF_8)));
         MultiPartPayload receivedParts = ((MultiPartPayload) receivedMessage.getPayload().getValue());
         assertThat(receivedParts.getParts().size(), is(2));
         assertThat(receivedParts.getPartNames(), hasItem(TEXT_BODY_FIELD_NAME));

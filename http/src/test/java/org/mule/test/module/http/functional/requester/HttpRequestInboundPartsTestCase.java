@@ -6,6 +6,7 @@
  */
 package org.mule.test.module.http.functional.requester;
 
+import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -26,7 +27,6 @@ import org.mule.runtime.core.api.Event;
 import org.mule.runtime.http.api.HttpHeaders;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -49,7 +49,7 @@ public class HttpRequestInboundPartsTestCase extends AbstractHttpRequestTestCase
     Event event = flowRunner("requestFlow").withPayload(TEST_MESSAGE).run();
 
     assertThat(event.getMessage().getPayload().getValue(), instanceOf(MultiPartPayload.class));
-    assertThat(event.getMessage(), hasMediaType(APPLICATION_JAVA.withCharset(Charset.forName("ISO-8859-1"))));
+    assertThat(event.getMessage(), hasMediaType(APPLICATION_JAVA.withCharset(ISO_8859_1)));
 
     MultiPartPayload payload = (MultiPartPayload) event.getMessage().getPayload().getValue();
     assertThat(payload, hasSize(2));
