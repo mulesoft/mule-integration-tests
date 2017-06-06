@@ -23,6 +23,7 @@ import static org.junit.Assert.assertThat;
 import static org.mule.functional.junit4.matchers.MessageMatchers.hasMediaType;
 import static org.mule.runtime.api.message.Message.builder;
 import static org.mule.runtime.api.message.Message.of;
+import static org.mule.runtime.api.metadata.MediaType.APPLICATION_JAVA;
 import static org.mule.runtime.api.metadata.MediaType.BINARY;
 import static org.mule.runtime.http.api.HttpConstants.Method.GET;
 import static org.mule.runtime.http.api.HttpHeaders.Names.CONTENT_DISPOSITION;
@@ -206,7 +207,7 @@ public class HttpListenerPartsTestCase extends AbstractHttpTestCase {
       try {
         final Message receivedMessage = muleContext.getClient().request("test://out", 1000).getRight().get();
         assertThat(receivedMessage.getPayload().getValue(), instanceOf(MultiPartPayload.class));
-        assertThat(receivedMessage, hasMediaType(MediaType.create("application", "java", Charset.forName("UTF-8"))));
+        assertThat(receivedMessage, hasMediaType(APPLICATION_JAVA.withCharset(Charset.forName("UTF-8"))));
         MultiPartPayload receivedParts = ((MultiPartPayload) receivedMessage.getPayload().getValue());
         assertThat(receivedParts.getParts().size(), is(2));
         assertThat(receivedParts.getPartNames(), hasItem(TEXT_BODY_FIELD_NAME));

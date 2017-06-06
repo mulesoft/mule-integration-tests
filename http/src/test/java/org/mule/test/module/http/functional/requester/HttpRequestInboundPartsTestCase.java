@@ -15,6 +15,7 @@ import static org.mule.functional.junit4.matchers.MessageMatchers.hasPayload;
 import static org.mule.functional.junit4.matchers.MultiPartPayloadMatchers.hasPartThat;
 import static org.mule.functional.junit4.matchers.MultiPartPayloadMatchers.hasSize;
 import static org.mule.functional.junit4.matchers.PartAttributesMatchers.hasName;
+import static org.mule.runtime.api.metadata.MediaType.APPLICATION_JAVA;
 import static org.mule.runtime.api.metadata.MediaType.HTML;
 import static org.mule.runtime.api.metadata.MediaType.TEXT;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
@@ -48,7 +49,7 @@ public class HttpRequestInboundPartsTestCase extends AbstractHttpRequestTestCase
     Event event = flowRunner("requestFlow").withPayload(TEST_MESSAGE).run();
 
     assertThat(event.getMessage().getPayload().getValue(), instanceOf(MultiPartPayload.class));
-    assertThat(event.getMessage(), hasMediaType(MediaType.create("application", "java", Charset.forName("UTF-8"))));
+    assertThat(event.getMessage(), hasMediaType(APPLICATION_JAVA.withCharset(Charset.forName("ISO-8859-1"))));
 
     MultiPartPayload payload = (MultiPartPayload) event.getMessage().getPayload().getValue();
     assertThat(payload, hasSize(2));
