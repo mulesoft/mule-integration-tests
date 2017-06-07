@@ -18,7 +18,7 @@ import static org.mule.metadata.api.utils.MetadataTypeUtils.getTypeId;
 import static org.mule.runtime.module.extension.soap.internal.loader.SoapInvokeOperationDeclarer.ATTACHMENTS_PARAM;
 import static org.mule.runtime.module.extension.soap.internal.loader.SoapInvokeOperationDeclarer.BODY_PARAM;
 import static org.mule.runtime.module.extension.soap.internal.loader.SoapInvokeOperationDeclarer.HEADERS_PARAM;
-import org.mule.metadata.api.model.AnyType;
+import org.mule.metadata.api.model.BinaryType;
 import org.mule.metadata.api.model.BooleanType;
 import org.mule.metadata.api.model.MetadataType;
 import org.mule.metadata.api.model.ObjectFieldType;
@@ -104,7 +104,7 @@ public class InvokeMetadataTestCase extends SoapFootballExtensionArtifactFunctio
     assertThat(attachments.getFields(), hasSize(1));
     ObjectFieldType attachment = attachments.getFields().iterator().next();
     assertThat(attachment.getKey().getName().getLocalPart(), is("result"));
-    assertThat(attachment.getValue(), is(instanceOf(AnyType.class)));
+    assertThat(attachment.getValue(), is(instanceOf(BinaryType.class)));
   }
 
   @Test
