@@ -61,14 +61,7 @@
         <soap:invoke config-ref="laLiga" service="A" operation="uploadResult">
             <soap:message>
                 <soap:body>#[payload]</soap:body>
-                <soap:attachments>
-                    #[{
-                    result: {
-                    content: att,
-                    contentType: attCt
-                    }
-                    }]
-                </soap:attachments>
+                <soap:attachments>#[{result: att}]</soap:attachments>
             </soap:message>
         </soap:invoke>
     </flow>

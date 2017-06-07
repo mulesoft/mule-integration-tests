@@ -16,8 +16,9 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.core.Is.is;
 import static org.mule.metadata.api.utils.MetadataTypeUtils.getTypeId;
 import static org.mule.runtime.module.extension.soap.internal.loader.SoapInvokeOperationDeclarer.ATTACHMENTS_PARAM;
-import static org.mule.runtime.module.extension.soap.internal.loader.SoapInvokeOperationDeclarer.HEADERS_PARAM;
 import static org.mule.runtime.module.extension.soap.internal.loader.SoapInvokeOperationDeclarer.BODY_PARAM;
+import static org.mule.runtime.module.extension.soap.internal.loader.SoapInvokeOperationDeclarer.HEADERS_PARAM;
+import org.mule.metadata.api.model.BinaryType;
 import org.mule.metadata.api.model.BooleanType;
 import org.mule.metadata.api.model.MetadataType;
 import org.mule.metadata.api.model.ObjectFieldType;
@@ -32,12 +33,11 @@ import org.mule.runtime.api.metadata.descriptor.ComponentMetadataDescriptor;
 import org.mule.runtime.api.metadata.resolving.MetadataFailure;
 import org.mule.runtime.api.metadata.resolving.MetadataResult;
 import org.mule.runtime.core.internal.metadata.MuleMetadataService;
-import org.mule.runtime.extension.api.soap.SoapAttachment;
+
+import org.junit.Test;
 
 import java.util.List;
 import java.util.Set;
-
-import org.junit.Test;
 
 public class InvokeMetadataTestCase extends SoapFootballExtensionArtifactFunctionalTestCase {
 
@@ -104,7 +104,7 @@ public class InvokeMetadataTestCase extends SoapFootballExtensionArtifactFunctio
     assertThat(attachments.getFields(), hasSize(1));
     ObjectFieldType attachment = attachments.getFields().iterator().next();
     assertThat(attachment.getKey().getName().getLocalPart(), is("result"));
-    assertThat(getTypeId(toObjectType(attachment.getValue())).get(), containsString(SoapAttachment.class.getName()));
+    assertThat(attachment.getValue(), is(instanceOf(BinaryType.class)));
   }
 
   @Test
