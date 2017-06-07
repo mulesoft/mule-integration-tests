@@ -9,12 +9,12 @@ package org.mule.test.routing;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-import org.mule.runtime.core.api.Event;
 import org.mule.runtime.api.exception.MuleException;
+import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import com.google.common.collect.HashMultiset;
+import com.google.common.collect.ConcurrentHashMultiset;
 import com.google.common.collect.Multiset;
 
 import java.util.concurrent.CountDownLatch;
@@ -35,7 +35,7 @@ public class UntilSuccessfulWithSplitterTestCase extends AbstractIntegrationTest
 
   @Override
   protected void doSetUp() throws Exception {
-    seenPayloads = HashMultiset.create();
+    seenPayloads = ConcurrentHashMultiset.create();
     latch = new CountDownLatch(2);
   }
 
