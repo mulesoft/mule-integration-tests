@@ -15,7 +15,7 @@ import static org.junit.Assert.fail;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.Event;
-import org.mule.runtime.core.util.Base64;
+import org.mule.runtime.core.api.util.Base64;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.util.List;

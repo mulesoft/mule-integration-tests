@@ -30,7 +30,7 @@ import static org.mule.test.allure.AllureConstants.HttpFeature.HttpStory.ERROR_H
 import org.mule.functional.junit4.FlowRunner;
 import org.mule.functional.junit4.rules.ExpectedError;
 import org.mule.runtime.core.api.Event;
-import org.mule.runtime.core.util.concurrent.Latch;
+import org.mule.runtime.core.api.util.concurrent.Latch;
 import org.mule.runtime.http.api.HttpConstants.HttpStatus;
 import org.mule.tck.junit4.rule.DynamicPort;
 

@@ -7,8 +7,8 @@
 package org.mule.util;
 
 import static org.junit.Assert.assertEquals;
-import static org.mule.runtime.core.util.TemplateParser.createAntStyleParser;
-import org.mule.runtime.core.util.TemplateParser;
+import static org.mule.runtime.core.api.util.TemplateParser.createAntStyleParser;
+import org.mule.runtime.core.api.util.TemplateParser;
 import org.mule.tck.junit4.AbstractMuleTestCase;
 import org.mule.tck.size.SmallTest;
 

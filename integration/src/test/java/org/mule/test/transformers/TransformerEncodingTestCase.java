@@ -12,7 +12,7 @@ import static org.junit.Assert.assertThat;
 import org.mule.runtime.api.metadata.MediaType;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.runtime.core.api.Event;
-import org.mule.runtime.core.util.Base64;
+import org.mule.runtime.core.api.util.Base64;
 
 import java.nio.charset.Charset;
 

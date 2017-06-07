@@ -9,7 +9,7 @@ package org.mule.test.config.spring;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.MuleEventContext;
 import org.mule.runtime.core.api.context.MuleContextAware;
-import org.mule.runtime.core.util.concurrent.Latch;
+import org.mule.runtime.core.api.util.concurrent.Latch;
 
 import java.lang.reflect.Method;
 import java.util.concurrent.TimeUnit;

@@ -8,7 +8,7 @@ package org.mule.test.integration.streaming;
 
 import static org.junit.Assert.assertTrue;
 
-import org.mule.runtime.core.util.concurrent.Latch;
+import org.mule.runtime.core.api.util.concurrent.Latch;
 import org.mule.tck.probe.PollingProber;
 import org.mule.tck.probe.Probe;
 import org.mule.test.AbstractIntegrationTestCase;

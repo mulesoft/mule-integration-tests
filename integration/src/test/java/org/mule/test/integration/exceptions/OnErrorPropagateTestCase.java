@@ -24,7 +24,7 @@ import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.routing.RoutingException;
 import org.mule.runtime.core.exception.MessagingException;
 import org.mule.runtime.core.exception.MuleFatalException;
-import org.mule.runtime.core.util.concurrent.Latch;
+import org.mule.runtime.core.api.util.concurrent.Latch;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.util.Optional;
