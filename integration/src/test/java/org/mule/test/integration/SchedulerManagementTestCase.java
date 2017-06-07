@@ -19,7 +19,7 @@ import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.source.SchedulerMessageSource;
 import org.mule.runtime.core.api.functional.Either;
 import org.mule.runtime.core.source.scheduler.DefaultSchedulerMessageSource;
-import org.mule.runtime.core.util.concurrent.Latch;
+import org.mule.runtime.core.api.util.concurrent.Latch;
 import org.mule.tck.probe.PollingProber;
 import org.mule.tck.probe.Probe;
 import org.mule.test.AbstractIntegrationTestCase;

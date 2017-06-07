@@ -9,7 +9,7 @@ package org.mule.test.integration.messaging.meps;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.junit.Assert.assertTrue;
 import org.mule.functional.functional.FunctionalTestNotificationListener;
-import org.mule.runtime.core.util.concurrent.Latch;
+import org.mule.runtime.core.api.util.concurrent.Latch;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Test;

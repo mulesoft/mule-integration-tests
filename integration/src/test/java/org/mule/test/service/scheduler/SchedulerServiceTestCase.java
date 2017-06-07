@@ -41,7 +41,7 @@ import org.mule.runtime.core.api.source.MessageSource;
 import org.mule.runtime.core.config.DefaultMuleConfiguration;
 import org.mule.runtime.core.config.builders.AbstractConfigurationBuilder;
 import org.mule.runtime.core.exception.MessagingException;
-import org.mule.runtime.core.util.concurrent.Latch;
+import org.mule.runtime.core.api.util.concurrent.Latch;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.util.List;

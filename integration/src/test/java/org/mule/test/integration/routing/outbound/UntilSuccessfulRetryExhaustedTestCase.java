@@ -10,7 +10,7 @@ import static org.junit.Assert.fail;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.runtime.core.api.context.notification.ExceptionNotificationListener;
 import org.mule.runtime.core.context.notification.ExceptionNotification;
-import org.mule.runtime.core.util.concurrent.Latch;
+import org.mule.runtime.core.api.util.concurrent.Latch;
 
 import java.util.concurrent.TimeUnit;
 
