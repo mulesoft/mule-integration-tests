@@ -19,17 +19,16 @@ import org.mule.runtime.core.config.DefaultMuleConfiguration;
 import org.mule.runtime.core.processor.strategy.DefaultFlowProcessingStrategyFactory;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
-public class NonBlockingFullySupportedFunctionalTestCase extends AbstractIntegrationTestCase {
+public class NonBlockingFunctionalTestCase extends AbstractIntegrationTestCase {
 
   public static String FOO = "foo";
   private ProcessingStrategyFactory processingStrategyFactory = new DefaultFlowProcessingStrategyFactory();
 
   @Override
   protected String getConfigFile() {
-    return "non-blocking-fully-supported-test-config.xml";
+    return "non-blocking-test-config.xml";
   }
 
   @Override
@@ -183,6 +182,27 @@ public class NonBlockingFullySupportedFunctionalTestCase extends AbstractIntegra
   @Test
   public void nonTransactionalTryErrorHandler() throws Exception {
     flowRunner("nonTransactionalTryErrorHandler").withPayload(TEST_MESSAGE).run();
+  }
+
+  @Test
+  public void tansactionalTry() throws Exception {
+    flowRunner("transactionalTry").withPayload(TEST_MESSAGE).run();
+  }
+
+  @Test
+  public void transactionalTryErrorHandler() throws Exception {
+    flowRunner("transactionalTryErrorHandler").withPayload(TEST_MESSAGE).run();
+  }
+
+  @Test
+  public void wiretap() throws Exception {
+    flowRunner("wiretap").withPayload(TEST_MESSAGE).run();
+  }
+
+  @Test
+  public void childDefaultFlow() throws Exception {
+    flowRunner("childDefaultFlow").withPayload(TEST_MESSAGE).run();
+    verify("childDefaultFlowChild");
   }
 
 }
