@@ -11,10 +11,9 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 import org.mule.runtime.core.api.construct.Flow;
-import org.mule.runtime.core.api.processor.MessageProcessorChain;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.processor.DelegateTransactionFactory;
-import org.mule.runtime.core.processor.TransactionalInterceptingMessageProcessor;
+import org.mule.runtime.core.processor.TryMessageProcessor;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Test;
@@ -28,14 +27,12 @@ public class TransactionalTryTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void resolvesStandardTransactionFactory() throws Exception {
-    MessageProcessorChain blockChain =
-        (MessageProcessorChain) ((Flow) getFlowConstruct("standardBlock")).getMessageProcessors().get(0);
-    Processor firstProcessor = ((MessageProcessorChain) blockChain.getMessageProcessors().get(0)).getMessageProcessors().get(0);
-    assertThat(firstProcessor,
-               is(instanceOf(TransactionalInterceptingMessageProcessor.class)));
+    Processor processor = ((Flow) getFlowConstruct("standardTry")).getMessageProcessors().get(0);
+    assertThat(processor,
+               is(instanceOf(TryMessageProcessor.class)));
 
-    TransactionalInterceptingMessageProcessor block = (TransactionalInterceptingMessageProcessor) firstProcessor;
-    assertThat(block.getTransactionConfig().getFactory(), is(instanceOf(DelegateTransactionFactory.class)));
+    assertThat(((TryMessageProcessor) processor).getTransactionConfig().getFactory(),
+               is(instanceOf(DelegateTransactionFactory.class)));
   }
 
 }

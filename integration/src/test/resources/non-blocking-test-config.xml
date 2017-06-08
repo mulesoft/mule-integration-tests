@@ -204,7 +204,7 @@
     </flow>
 
     <flow name="enricherFlowVar">
-        <enricher target="mel:flowVars[org.mule.test.core.NonBlockingFullySupportedFunctionalTestCase.FOO]">
+        <enricher target="mel:flowVars[org.mule.test.core.NonBlockingFunctionalTestCase.FOO]">
             <test:non-blocking-processor/>
         </enricher>
         <test:assert expression="#[mel:assertPayload()]"/>
@@ -253,6 +253,72 @@
                 <test:non-blocking-processor/>
             </on-error-propagate>
         </error-handler>
+    </flow>
+
+    <flow name="nonTransactionalTry">
+        <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]"/>
+        <try>
+            <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]"/>
+            <test:non-blocking-processor/>
+        </try>
+    </flow>
+
+    <flow name="nonTransactionalTryErrorHandler">
+        <try>
+            <test:component throwException="true"/>
+            <error-handler>
+                <on-error-continue>
+                    <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]"/>
+                    <test:non-blocking-processor/>
+                </on-error-continue>
+            </error-handler>
+        </try>
+    </flow>
+
+    <flow name="transactionalTry">
+        <test:assert-intercepting responseSameTask="true" responseExpression="#[mel:assertPayload()]"/>
+        <try transactionalAction="ALWAYS_BEGIN">
+            <test:assert-intercepting responseSameTask="true" responseExpression="#[mel:assertPayload()]"/>
+            <test:non-blocking-processor/>
+        </try>
+    </flow>
+
+    <flow name="transactionalTryErrorHandler">
+        <try transactionalAction="ALWAYS_BEGIN">
+            <test:component throwException="true"/>
+            <error-handler>
+                <on-error-continue>
+                    <test:assert-intercepting responseSameTask="true" responseExpression="#[mel:assertPayload()]"/>
+                    <test:non-blocking-processor/>
+                </on-error-continue>
+            </error-handler>
+        </try>
+    </flow>
+
+    <flow name="wiretap">
+        <test:assert-intercepting message="before" responseSameTask="false" responseExpression="#[mel:assertPayload()]"/>
+        <wire-tap>
+            <processor-chain>
+                <set-variable variableName="beforeThread" value="#[mel:Thread.currentThread()]"/>
+                <test:non-blocking-processor/>
+                <test:assert count="1" expression="#[mel:Thread.currentThread()==beforeThread  and assertPayload()]"/>
+            </processor-chain>
+        </wire-tap>
+        <test:non-blocking-processor/>
+    </flow>
+
+    <flow name="childDefaultFlow">
+        <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]" message="1"/>
+        <expression-component>mel:flowVars['requestThread'] = Thread.currentThread()</expression-component>
+        <flow-ref name="childDefaultFlowChild"/>
+        <test:assert expression="#[mel:assertPayload()]"/>
+        <test:non-blocking-processor/>
+    </flow>
+    
+    <flow name="childDefaultFlowChild" processingStrategy="synchronous">
+        <test:assert-intercepting responseSameTask="true" responseExpression="#[mel:assertPayload()]" message="2"/>
+        <test:non-blocking-processor/>
+        <test:assert expression="#[mel:assertPayload()]"/>
     </flow>
 
 </mule>
