@@ -6,13 +6,18 @@
  */
 package org.mule.test.routing;
 
+import static java.util.Arrays.asList;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mule.functional.api.component.FunctionalTestComponent.getFromFlow;
+import static org.mule.functional.junit4.matchers.MessageMatchers.hasPayload;
+import static org.mule.tck.junit4.matcher.EventMatcher.hasMessage;
 
-import org.mule.functional.functional.FunctionalTestComponent;
+import org.mule.functional.api.component.FunctionalTestComponent;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -31,24 +36,23 @@ public class CorrelationResequencerTestCase extends AbstractIntegrationTestCase 
   protected void doSetUp() throws Exception {
     super.doSetUp();
 
-    FunctionalTestComponent testComponent = getFunctionalTestComponent("sorted");
-    testComponent.setEventCallback((context, component, muleContext) -> receiveLatch.countDown());
+    getFromFlow(muleContext, "sorted").setEventCallback((context, component, muleContext) -> receiveLatch.countDown());
   }
 
   @Test
   public void testResequencer() throws Exception {
-    flowRunner("splitter").withPayload(Arrays.asList("a", "b", "c", "d", "e", "f")).run();
+    flowRunner("splitter").withPayload(asList("a", "b", "c", "d", "e", "f")).run();
 
-    FunctionalTestComponent resequencer = getFunctionalTestComponent("sorted");
+    FunctionalTestComponent resequencer = getFromFlow(muleContext, "sorted");
 
     assertTrue(receiveLatch.await(3000, TimeUnit.SECONDS));
 
     assertEquals("Wrong number of messages received.", 6, resequencer.getReceivedMessagesCount());
-    assertEquals("Sequence wasn't reordered.", "a", resequencer.getReceivedMessage(1));
-    assertEquals("Sequence wasn't reordered.", "b", resequencer.getReceivedMessage(2));
-    assertEquals("Sequence wasn't reordered.", "c", resequencer.getReceivedMessage(3));
-    assertEquals("Sequence wasn't reordered.", "d", resequencer.getReceivedMessage(4));
-    assertEquals("Sequence wasn't reordered.", "e", resequencer.getReceivedMessage(5));
-    assertEquals("Sequence wasn't reordered.", "f", resequencer.getReceivedMessage(6));
+    assertThat("Sequence wasn't reordered.", resequencer.getReceivedMessage(1), hasMessage(hasPayload(is("a"))));
+    assertThat("Sequence wasn't reordered.", resequencer.getReceivedMessage(2), hasMessage(hasPayload(is("b"))));
+    assertThat("Sequence wasn't reordered.", resequencer.getReceivedMessage(3), hasMessage(hasPayload(is("c"))));
+    assertThat("Sequence wasn't reordered.", resequencer.getReceivedMessage(4), hasMessage(hasPayload(is("d"))));
+    assertThat("Sequence wasn't reordered.", resequencer.getReceivedMessage(5), hasMessage(hasPayload(is("e"))));
+    assertThat("Sequence wasn't reordered.", resequencer.getReceivedMessage(6), hasMessage(hasPayload(is("f"))));
   }
 }

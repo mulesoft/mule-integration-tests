@@ -6,10 +6,11 @@
  */
 package org.mule.test.module.http.functional.listener;
 
-import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
 import static java.lang.String.format;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+import static org.mule.functional.api.component.FunctionalTestComponent.getFromFlow;
+import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
 
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.module.http.functional.AbstractHttpTestCase;
@@ -21,6 +22,7 @@ import org.apache.http.client.fluent.Request;
 import org.apache.http.entity.InputStreamEntity;
 import org.junit.Rule;
 import org.junit.Test;
+
 import ru.yandex.qatools.allure.annotations.Features;
 
 @Features(HTTP_EXTENSION)
@@ -40,7 +42,7 @@ public class HttpListenerRequestStreamingTestCase extends AbstractHttpTestCase {
   @Test
   public void listenerReceivedChunkedRequest() throws Exception {
     String url = format("http://localhost:%s/", listenPort.getNumber());
-    getFunctionalTestComponent("defaultFlow")
+    getFromFlow(muleContext, "defaultFlow")
         .setEventCallback((context, component, muleContext) -> flowReceivedMessage = context.getMessageAsString(muleContext));
     testChunkedRequestContentAndResponse(url);
     // We check twice to verify that the chunked request is consumed completely. Otherwise second request would fail

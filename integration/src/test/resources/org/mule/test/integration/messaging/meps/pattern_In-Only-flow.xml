@@ -16,9 +16,9 @@
     <flow name="In-Only-Service">
         <script:component>
             <script:script engine="groovy">
-                import org.mule.functional.functional.FunctionalTestNotification
+                import org.mule.functional.api.notification.FunctionalTestNotification
 
-                muleContext.fireNotification(new FunctionalTestNotification(eventContext, src, FunctionalTestNotification.EVENT_RECEIVED));
+                muleContext.fireNotification(new FunctionalTestNotification(eventContext.getEvent(), eventContext.getFlowConstruct(), src, FunctionalTestNotification.EVENT_RECEIVED));
             </script:script>
         </script:component>
     </flow>

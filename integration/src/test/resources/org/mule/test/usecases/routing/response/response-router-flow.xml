@@ -28,7 +28,7 @@
     <flow name="W10FO">
         <byte-array-to-string-transformer />
 
-        <component class="org.mule.functional.testmodels.services.TestReceiver" />
+        <custom-processor class="org.mule.functional.testmodels.services.TestReceiver"/>
 
         <test:queue name="someOtherQueue" />
 

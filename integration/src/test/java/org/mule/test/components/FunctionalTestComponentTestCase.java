@@ -6,17 +6,19 @@
  */
 package org.mule.test.components;
 
-import org.mule.functional.exceptions.FunctionalTestException;
-import org.mule.functional.functional.FunctionalTestComponent;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mule.functional.api.exceptions.FunctionalTestException.EXCEPTION_MESSAGE;
+
+import org.mule.functional.api.component.FunctionalTestComponent;
+import org.mule.functional.api.exceptions.FunctionalTestException;
 import org.mule.tck.junit4.AbstractMuleTestCase;
 
 import java.io.IOException;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class FunctionalTestComponentTestCase extends AbstractMuleTestCase {
 
@@ -30,7 +32,7 @@ public class FunctionalTestComponentTestCase extends AbstractMuleTestCase {
 
   @Test
   public void defaultExceptionWithDefaultText() throws Exception {
-    checkExceptionThrown(FunctionalTestException.class, FunctionalTestException.EXCEPTION_MESSAGE);
+    checkExceptionThrown(FunctionalTestException.class, EXCEPTION_MESSAGE);
   }
 
   @Test
@@ -57,10 +59,11 @@ public class FunctionalTestComponentTestCase extends AbstractMuleTestCase {
 
   private void checkExceptionThrown(Class<? extends Exception> exceptionClass, String expectedMessage) {
     try {
-      ftc.onCall(null);
+      ftc.process(null);
+      fail();
     } catch (Exception e) {
-      assertTrue(e.getClass().isAssignableFrom(exceptionClass));
-      assertEquals(expectedMessage, e.getMessage());
+      assertTrue(e.getCause().getClass().getName(), e.getCause().getClass().isAssignableFrom(exceptionClass));
+      assertEquals(expectedMessage, e.getCause().getMessage());
     }
   }
 }

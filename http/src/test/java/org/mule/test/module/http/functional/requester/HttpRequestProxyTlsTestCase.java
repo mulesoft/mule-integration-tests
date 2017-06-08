@@ -6,11 +6,12 @@
  */
 package org.mule.test.module.http.functional.requester;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertThat;
+import static org.mule.functional.api.component.FunctionalTestComponent.getFromFlow;
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.OK;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
 import static org.mule.test.module.http.functional.matcher.HttpMessageAttributesMatchers.hasStatusCode;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertThat;
 
 import org.mule.extension.http.api.HttpRequestAttributes;
 import org.mule.extension.http.api.HttpResponseAttributes;
@@ -27,6 +28,7 @@ import java.util.Collection;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
+
 import ru.yandex.qatools.allure.annotations.Features;
 
 
@@ -80,7 +82,7 @@ public class HttpRequestProxyTlsTestCase extends AbstractHttpTestCase {
 
   @Test
   public void requestIsSentCorrectlyThroughHttpsProxy() throws Exception {
-    getFunctionalTestComponent("serverFlow").setEventCallback((context, component, muleContext) -> {
+    getFromFlow(muleContext, "serverFlow").setEventCallback((context, component, muleContext) -> {
       requestPayload = getPayloadAsString(context.getMessage());
       requestURI = ((HttpRequestAttributes) context.getMessage().getAttributes().getValue()).getRequestUri();
     });

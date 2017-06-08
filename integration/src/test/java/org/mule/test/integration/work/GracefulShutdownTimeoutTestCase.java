@@ -6,15 +6,14 @@
  */
 package org.mule.test.integration.work;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.junit.Assert.assertTrue;
+import static org.mule.functional.api.component.FunctionalTestComponent.getFromFlow;
 
-import org.mule.functional.functional.FunctionalTestComponent;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.construct.FlowConstruct;
 import org.mule.runtime.core.api.util.concurrent.Latch;
 import org.mule.test.AbstractIntegrationTestCase;
-
-import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 
@@ -40,10 +39,8 @@ public class GracefulShutdownTimeoutTestCase extends AbstractIntegrationTestCase
   @Test
   public void testGracefulShutdownTimeout() throws Exception {
     final Latch latch = new Latch();
-
     FlowConstruct flowConstruct = muleContext.getRegistry().lookupFlowConstruct("TestService");
-    FunctionalTestComponent testComponent = (FunctionalTestComponent) getComponent(flowConstruct);
-    testComponent.setEventCallback((context, component, muleContext) -> {
+    getFromFlow(muleContext, flowConstruct.getName()).setEventCallback((context, component, muleContext) -> {
       Thread.sleep(5500);
       latch.countDown();
 
@@ -52,6 +49,6 @@ public class GracefulShutdownTimeoutTestCase extends AbstractIntegrationTestCase
     flowRunner("TestService").withPayload("test").run();
     Thread.sleep(200);
     ((Flow) flowConstruct).dispose();
-    assertTrue(latch.await(1000, TimeUnit.MILLISECONDS));
+    assertTrue(latch.await(1000, MILLISECONDS));
   }
 }

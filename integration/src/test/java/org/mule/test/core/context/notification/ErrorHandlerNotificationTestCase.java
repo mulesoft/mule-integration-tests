@@ -11,7 +11,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.mule.runtime.core.context.notification.ErrorHandlerNotification.PROCESS_END;
 import static org.mule.runtime.core.context.notification.ErrorHandlerNotification.PROCESS_START;
 
-import org.mule.runtime.core.component.ComponentException;
+import org.mule.functional.api.exceptions.FunctionalTestException;
 import org.mule.runtime.core.context.notification.ErrorHandlerNotification;
 
 import org.junit.Rule;
@@ -33,7 +33,7 @@ public class ErrorHandlerNotificationTestCase extends AbstractNotificationTestCa
   public void doTest() throws Exception {
     assertNotNull(flowRunner("catch-es").withPayload(TEST_PAYLOAD).run());
     assertNotNull(flowRunner("choice-es").withPayload(TEST_PAYLOAD).run());
-    expectedException.expectCause(instanceOf(ComponentException.class));
+    expectedException.expectCause(instanceOf(FunctionalTestException.class));
     assertNotNull(flowRunner("rollback-es").withPayload(TEST_PAYLOAD).run());
     assertNotNull(flowRunner("default-es").withPayload(TEST_PAYLOAD).run());
 

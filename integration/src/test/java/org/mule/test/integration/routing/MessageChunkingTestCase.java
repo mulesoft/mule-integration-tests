@@ -9,7 +9,7 @@ package org.mule.test.integration.routing;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import org.mule.functional.functional.FunctionalTestNotification;
+import org.mule.functional.api.notification.FunctionalTestNotification;
 import org.mule.functional.listener.FlowExecutionListener;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -61,7 +61,7 @@ public class MessageChunkingTestCase extends AbstractIntegrationTestCase {
       // listener we supply the ComponentName as the subscription filter
       assertEquals("ChunkingObjectReceiver", notification.getResourceIdentifier());
       // Test that we have received all chunks in the correct order
-      Object reply = ((FunctionalTestNotification) notification).getEventContext().getMessage().getPayload().getValue();
+      Object reply = ((FunctionalTestNotification) notification).getEvent().getMessage().getPayload().getValue();
       // Check if Object is of Correct Type
       assertTrue(reply instanceof SimpleSerializableObject);
       SimpleSerializableObject replySimpleSerializableObject = (SimpleSerializableObject) reply;

@@ -6,8 +6,10 @@
  */
 package org.mule.test.config.spring;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
+@Ignore("MULE-11686")
 public class ClassInterceptorTestCase extends AbstractInterceptorTestCase {
 
   @Override

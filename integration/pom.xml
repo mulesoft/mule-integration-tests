@@ -130,6 +130,14 @@
 
         <dependency>
             <groupId>org.mule.tests</groupId>
+            <artifactId>mule-tests-component-plugin</artifactId>
+            <version>${project.version}</version>
+            <classifier>mule-plugin</classifier>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mule.tests</groupId>
             <artifactId>mule-heisenberg-extension</artifactId>
             <version>${project.version}</version>
             <classifier>mule-plugin</classifier>
@@ -371,7 +379,6 @@
         <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
-            <version>${commonsLangVersion}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

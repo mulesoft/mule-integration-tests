@@ -9,7 +9,8 @@ package org.mule.test;
 
 import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
 
-@ArtifactClassLoaderRunnerConfig(sharedRuntimeLibs = {"org.mule.tests:mule-tests-unit", "org.mule.tests:mule-tests-functional"})
+@ArtifactClassLoaderRunnerConfig(sharedRuntimeLibs = {"org.mule.tests:mule-tests-unit", "org.mule.tests:mule-tests-functional",
+    "org.mule.tests:mule-tests-component-plugin"})
 public interface IntegrationTestCaseRunnerConfig {
 
 }

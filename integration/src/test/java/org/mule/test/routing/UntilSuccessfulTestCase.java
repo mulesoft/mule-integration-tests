@@ -6,6 +6,7 @@
  */
 package org.mule.test.routing;
 
+import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -13,15 +14,17 @@ import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.mule.functional.functional.InvocationCountMessageProcessor.getNumberOfInvocationsFor;
+import static org.mule.functional.api.component.FunctionalTestComponent.getFromFlow;
+import static org.mule.functional.api.component.InvocationCountMessageProcessor.getNumberOfInvocationsFor;
 import static org.mule.functional.junit4.TestLegacyMessageUtils.getExceptionPayload;
-import org.mule.functional.functional.FunctionalTestComponent;
+
+import org.mule.functional.api.component.FunctionalTestComponent;
+import org.mule.functional.api.exception.FunctionalTestException;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.processor.Processor;
-import org.mule.runtime.core.component.ComponentException;
 import org.mule.runtime.core.api.retry.policy.RetryPolicyExhaustedException;
 import org.mule.runtime.core.util.store.AbstractPartitionedObjectStore;
 import org.mule.tck.probe.JUnitLambdaProbe;
@@ -31,7 +34,6 @@ import org.mule.test.runner.RunnerDelegateTo;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -53,7 +55,7 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
 
   @Parameterized.Parameters
   public static Collection<Object[]> parameters() {
-    return Arrays.asList(new Object[][] {{"until-successful-test.xml"}, {"until-successful-seconds-test.xml"}});
+    return asList(new Object[][] {{"until-successful-test.xml"}, {"until-successful-seconds-test.xml"}});
   }
 
   public UntilSuccessfulTestCase(String configFile) {
@@ -69,7 +71,7 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
   protected void doSetUp() throws Exception {
     super.doSetUp();
 
-    targetMessageProcessor = getFunctionalTestComponent("target-mp");
+    targetMessageProcessor = getFromFlow(muleContext, "target-mp");
 
     final AbstractPartitionedObjectStore<Serializable> objectStore = muleContext.getRegistry().lookupObject("objectStore");
     objectStore.disposePartition("DEFAULT_PARTITION");
@@ -125,7 +127,7 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
   @Test
   public void executeSynchronously() throws Exception {
     final String payload = RandomStringUtils.randomAlphanumeric(20);
-    expectedException.expectCause(instanceOf(ComponentException.class));
+    expectedException.expectCause(instanceOf(FunctionalTestException.class));
     flowRunner("synchronous").withPayload(payload).run();
   }
 
@@ -162,7 +164,7 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
     }));
 
     for (int i = 0; i < ftc.getReceivedMessagesCount(); i++) {
-      results.add(ftc.getReceivedMessage(1 + i));
+      results.add(ftc.getReceivedMessage(1 + i).getMessage().getPayload().getValue());
     }
     return results;
   }

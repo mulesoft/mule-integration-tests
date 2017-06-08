@@ -10,11 +10,11 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+import static org.mule.functional.api.component.FunctionalTestComponent.getFromFlow;
 
-import org.mule.functional.functional.FunctionalTestComponent;
 import org.mule.runtime.core.api.context.notification.TransactionNotificationListener;
-import org.mule.runtime.core.context.notification.TransactionNotification;
 import org.mule.runtime.core.api.util.concurrent.Latch;
+import org.mule.runtime.core.context.notification.TransactionNotification;
 import org.mule.tck.probe.JUnitProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -58,8 +58,7 @@ public class TransactionalElementLifecycleTestCase extends AbstractIntegrationTe
     muleContext.getNotificationManager().addListener(listener);
 
     final Latch endDlqFlowLatch = new Latch();
-    FunctionalTestComponent functionalTestComponent = getFunctionalTestComponent("dlq-out");
-    functionalTestComponent.setEventCallback((context, component, muleContext) -> endDlqFlowLatch.release());
+    getFromFlow(muleContext, "dlq-out").setEventCallback((context, component, muleContext) -> endDlqFlowLatch.release());
     flowRunner("in-flow").withPayload("message").run();
     if (!endDlqFlowLatch.await(RECEIVE_TIMEOUT, TimeUnit.MILLISECONDS)) {
       fail("message wasn't received by dlq flow");

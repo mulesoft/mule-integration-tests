@@ -8,7 +8,9 @@ package org.mule.test.routing;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import org.mule.functional.functional.FunctionalTestComponent;
+import static org.mule.functional.api.component.FunctionalTestComponent.getFromFlow;
+
+import org.mule.functional.api.component.FunctionalTestComponent;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.runtime.core.api.context.notification.RoutingNotificationListener;
@@ -49,8 +51,8 @@ public class CollectionAggregatorRouterTimeoutTestCase extends AbstractIntegrati
       }
     });
 
-    FunctionalTestComponent vortex = (FunctionalTestComponent) getComponent("vortex");
-    FunctionalTestComponent aggregator = (FunctionalTestComponent) getComponent("aggregator");
+    FunctionalTestComponent vortex = getFromFlow(muleContext, "vortex");
+    FunctionalTestComponent aggregator = getFromFlow(muleContext, "aggregator");
 
     MuleClient client = muleContext.getClient();
     List<String> list = Arrays.asList("first", "second");
@@ -64,12 +66,14 @@ public class CollectionAggregatorRouterTimeoutTestCase extends AbstractIntegrati
 
     // should receive only the second message
     assertThat("Vortex received wrong number of messages.", vortex.getReceivedMessagesCount(), is(1));
-    assertThat("Wrong message received", vortex.getLastReceivedMessage(), is("second"));
+    assertThat("Wrong message received", vortex.getLastReceivedMessage().getMessage().getPayload().getValue(), is("second"));
 
     // should receive only the first part
     assertThat("Aggregator received wrong number of messages.", aggregator.getReceivedMessagesCount(), is(1));
     assertThat("Wrong message received",
-               ((List<Message>) aggregator.getLastReceivedMessage()).get(0).getPayload().getValue(), is("first"));
+               ((List<Message>) aggregator.getLastReceivedMessage().getMessage().getPayload().getValue()).get(0).getPayload()
+                   .getValue(),
+               is("first"));
 
     // wait for the vortex timeout (6000ms for vortext + 2000ms for aggregator
     // timeout + some extra for a test)
