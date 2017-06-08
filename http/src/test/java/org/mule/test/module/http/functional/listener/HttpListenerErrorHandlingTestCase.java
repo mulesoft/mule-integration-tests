@@ -58,4 +58,20 @@ public class HttpListenerErrorHandlingTestCase extends AbstractHttpListenerError
     assertThat(httpResponse.getFirstHeader("headername").getValue(), is("headerValue"));
   }
 
+  @Test
+  public void exceptionInPropagateErrorHandlerSkipsErrorResponse() throws Exception {
+    final Response response = Get(getUrl("exceptionInPropagateErrorHandler")).execute();
+    final HttpResponse httpResponse = response.returnResponse();
+
+    assertThat(IOUtils.toString(httpResponse.getEntity().getContent()), is("Functional Test Service Exception"));
+  }
+
+  @Test
+  public void exceptionInContinueErrorHandlerSkipsErrorResponse() throws Exception {
+    final Response response = Get(getUrl("exceptionInContinueErrorHandler")).execute();
+    final HttpResponse httpResponse = response.returnResponse();
+
+    assertThat(IOUtils.toString(httpResponse.getEntity().getContent()), is("Functional Test Service Exception"));
+  }
+
 }
