@@ -13,7 +13,7 @@ import org.mule.runtime.core.api.transaction.Transaction;
 import org.mule.runtime.core.config.i18n.CoreMessages;
 import org.mule.runtime.core.exception.DefaultSystemExceptionStrategy;
 import org.mule.runtime.core.routing.filters.WildcardFilter;
-import org.mule.runtime.core.transaction.TransactionCoordination;
+import org.mule.runtime.core.api.transaction.TransactionCoordination;
 import org.mule.tck.junit4.AbstractMuleContextTestCase;
 import org.mule.tck.testmodels.mule.TestTransaction;
 
