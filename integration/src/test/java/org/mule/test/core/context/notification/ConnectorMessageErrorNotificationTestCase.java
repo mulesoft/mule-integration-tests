@@ -9,7 +9,6 @@ package org.mule.test.core.context.notification;
 import static org.mule.runtime.core.context.notification.ConnectorMessageNotification.MESSAGE_ERROR_RESPONSE;
 import static org.mule.runtime.core.context.notification.ConnectorMessageNotification.MESSAGE_RECEIVED;
 import static org.mule.runtime.http.api.HttpConstants.Method.POST;
-
 import org.mule.runtime.core.context.notification.ConnectorMessageNotification;
 import org.mule.runtime.http.api.HttpService;
 import org.mule.runtime.http.api.domain.message.request.HttpRequest;
@@ -22,7 +21,7 @@ import org.junit.Test;
 public class ConnectorMessageErrorNotificationTestCase extends AbstractNotificationTestCase {
 
   private static final String FLOW_ID = "testFlow";
-  private static final int TIMEOUT = 1000;
+  private static final int TIMEOUT = 3000;
 
   @Rule
   public DynamicPort port = new DynamicPort("port");
