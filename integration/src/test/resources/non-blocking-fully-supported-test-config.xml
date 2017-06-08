@@ -255,4 +255,24 @@
         </error-handler>
     </flow>
 
+    <flow name="nonTransactionalTry">
+        <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]"/>
+        <try>
+            <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]"/>
+            <test:non-blocking-processor/>
+        </try>
+    </flow>
+
+    <flow name="nonTransactionalTryErrorHandler">
+        <try>
+            <test:component throwException="true"/>
+            <error-handler>
+                <on-error-continue>
+                    <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]"/>
+                    <test:non-blocking-processor/>
+                </on-error-continue>
+            </error-handler>
+        </try>
+    </flow>
+
 </mule>

@@ -174,5 +174,16 @@ public class NonBlockingFullySupportedFunctionalTestCase extends AbstractIntegra
     flowRunner("rollbackExceptionStrategy").withPayload(TEST_MESSAGE).run();
     verify("rollbackExceptionStrategyChild");
   }
+
+  @Test
+  public void nonTransactionalTry() throws Exception {
+    flowRunner("nonTransactionalTry").withPayload(TEST_MESSAGE).run();
+  }
+
+  @Test
+  public void nonTransactionalTryErrorHandler() throws Exception {
+    flowRunner("nonTransactionalTryErrorHandler").withPayload(TEST_MESSAGE).run();
+  }
+
 }
 
