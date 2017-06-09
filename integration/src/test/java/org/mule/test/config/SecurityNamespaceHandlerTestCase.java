@@ -10,10 +10,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import org.mule.functional.security.MockEncryptionStrategy;
-import org.mule.functional.security.TestSingleUserSecurityProvider;
+import org.mule.runtime.config.spring.CustomEncryptionStrategyDelegate;
+import org.mule.runtime.config.spring.CustomSecurityProviderDelegate;
 import org.mule.runtime.core.api.security.EncryptionStrategy;
 import org.mule.runtime.core.api.security.SecurityManager;
+import org.mule.runtime.core.api.security.SecurityProvider;
 import org.mule.runtime.core.security.PasswordBasedEncryptionStrategy;
 import org.mule.runtime.core.security.SecretKeyEncryptionStrategy;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -35,9 +36,10 @@ public class SecurityNamespaceHandlerTestCase extends AbstractIntegrationTestCas
   @Test
   public void testSecurity() {
     SecurityManager securityManager = muleContext.getSecurityManager();
-    assertNotNull(securityManager.getProvider("dummySecurityProvider"));
-    assertTrue(securityManager.getProvider("dummySecurityProvider") instanceof TestSingleUserSecurityProvider);
-    verifyEncryptionStrategy(securityManager, "dummyEncryptionStrategy", MockEncryptionStrategy.class);
+    SecurityProvider dummySecurityProvider = securityManager.getProvider("dummySecurityProvider");
+    assertNotNull(dummySecurityProvider);
+    assertTrue(dummySecurityProvider instanceof CustomSecurityProviderDelegate);
+    verifyEncryptionStrategy(securityManager, "dummyEncryptionStrategy", CustomEncryptionStrategyDelegate.class);
     verifyEncryptionStrategy(securityManager, "passwordEncryptionStrategy", PasswordBasedEncryptionStrategy.class);
     verifyEncryptionStrategy(securityManager, "secretKeyEncryptionStrategy", SecretKeyEncryptionStrategy.class);
   }
