@@ -123,41 +123,7 @@
             </processor-chain>
         </scatter-gather>
     </flow>
-
-    <flow name="all">
-        <all>
-            <processor-chain>
-                <logger/>
-            </processor-chain>
-            <processor-chain>
-                <logger/>
-            </processor-chain>
-        </all>
-        <logger message="Log after a scope"/>
-    </flow>
-
-    <flow name="all2">
-        <all>
-            <processor-chain>
-                <splitter/>
-                <logger message="check"/>
-            </processor-chain>
-            <processor-chain>
-                <splitter/>
-                <logger message="check"/>
-            </processor-chain>
-        </all>
-        <logger message="Log after a scope"/>
-    </flow>
-
-    <flow name="all3">
-        <all>
-            <logger message="check1"/>
-            <logger message="check2"/>
-        </all>
-        <logger message="Log after a scope"/>
-    </flow>
-
+    
     <flow name="foreach">
         <foreach collection="#[mel:{'one','two'}]">
             <logger/>

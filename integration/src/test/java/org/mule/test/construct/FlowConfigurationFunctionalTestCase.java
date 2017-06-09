@@ -398,26 +398,7 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
     assertThat(client.request("test://async-requestresponse-out", RECEIVE_TIMEOUT).getRight().isPresent(), is(false));
     assertThat(client.request("test://async-async-oneway-out", RECEIVE_TIMEOUT).getRight().isPresent(), is(false));
   }
-
-  @Test
-  public void testMulticaster() throws Exception {
-    flowRunner("multicaster").withPayload(TEST_MESSAGE).run();
-
-    final MuleClient client = muleContext.getClient();
-    final Message result1 = client.request("test://multicaster-out1", RECEIVE_TIMEOUT).getRight().get();
-    final Message result2 = client.request("test://multicaster-out2", RECEIVE_TIMEOUT).getRight().get();
-    final Message result3 = client.request("test://multicaster-out3", RECEIVE_TIMEOUT).getRight().get();
-
-    assertNotNull(result1);
-    assertNotNull(result2);
-    assertNotNull(result3);
-
-    assertEquals(TEST_MESSAGE, result1.getPayload().getValue());
-    assertEquals(TEST_MESSAGE, result1.getPayload().getValue());
-    assertEquals(TEST_MESSAGE, result1.getPayload().getValue());
-
-  }
-
+  
   @Test
   public void testChoiceWithoutOutboundEndpoints() throws Exception {
     assertEquals("foo Hello foo", getPayloadAsString(flowRunner("choice2").withPayload("foo").run().getMessage()));
