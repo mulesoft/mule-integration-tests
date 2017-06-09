@@ -13,8 +13,8 @@ import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.core.api.config.MuleProperties.OBJECT_DEFAULT_RETRY_POLICY_TEMPLATE;
 import org.mule.test.AbstractIntegrationTestCase;
-import org.mule.runtime.core.retry.async.AsynchronousRetryTemplate;
-import org.mule.runtime.core.retry.policies.SimpleRetryPolicyTemplate;
+import org.mule.runtime.core.api.retry.async.AsynchronousRetryTemplate;
+import org.mule.runtime.core.api.retry.policy.SimpleRetryPolicyTemplate;
 
 import org.junit.Test;
 
