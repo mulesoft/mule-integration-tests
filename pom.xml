@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.mule.runtime</groupId>
     <artifactId>mule</artifactId>
-    <version>4.0.0-SNAPSHOT</version>
+    <version>4.0.0-BETA-SNAPSHOT</version>
   </parent>
   <groupId>org.mule.tests</groupId>
   <artifactId>mule-extensions-integration-tests</artifactId>
@@ -23,11 +23,11 @@
   </modules>
 
     <properties>
-        <muleSchedulerServiceVersion>1.0.0-SNAPSHOT</muleSchedulerServiceVersion>
-        <muleHttpServiceVersion>1.0.0-SNAPSHOT</muleHttpServiceVersion>
-        <muleOAuthServiceVersion>1.0.0-SNAPSHOT</muleOAuthServiceVersion>
-        <muleSoapServiceVersion>1.0.0-SNAPSHOT</muleSoapServiceVersion>
-        <muleHttpConnectorVersion>1.0.0-SNAPSHOT</muleHttpConnectorVersion>
+        <muleSchedulerServiceVersion>1.0.0-BETA-SNAPSHOT</muleSchedulerServiceVersion>
+        <muleHttpServiceVersion>1.0.0-BETA-SNAPSHOT</muleHttpServiceVersion>
+        <muleOAuthServiceVersion>1.0.0-BETA-SNAPSHOT</muleOAuthServiceVersion>
+        <muleSoapServiceVersion>1.0.0-BETA-SNAPSHOT</muleSoapServiceVersion>
+        <muleHttpConnectorVersion>0.8.0-SNAPSHOT</muleHttpConnectorVersion>
     </properties>
 
   <build>
