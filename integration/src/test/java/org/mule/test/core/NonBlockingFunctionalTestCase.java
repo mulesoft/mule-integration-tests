@@ -16,7 +16,7 @@ import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.context.MuleContextBuilder;
 import org.mule.runtime.core.api.processor.strategy.ProcessingStrategyFactory;
 import org.mule.runtime.core.config.DefaultMuleConfiguration;
-import org.mule.runtime.core.processor.strategy.DefaultFlowProcessingStrategyFactory;
+import org.mule.runtime.core.processor.strategy.TransactionAwareWorkQueueProcessingStrategyFactory;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Test;
@@ -24,7 +24,7 @@ import org.junit.Test;
 public class NonBlockingFunctionalTestCase extends AbstractIntegrationTestCase {
 
   public static String FOO = "foo";
-  private ProcessingStrategyFactory processingStrategyFactory = new DefaultFlowProcessingStrategyFactory();
+  private ProcessingStrategyFactory processingStrategyFactory = new TransactionAwareWorkQueueProcessingStrategyFactory();
 
   @Override
   protected String getConfigFile() {

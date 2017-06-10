@@ -11,9 +11,11 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThat;
+import static org.mule.functional.functional.FlowAssert.verify;
 import static org.mule.runtime.http.api.HttpHeaders.Names.X_FORWARDED_FOR;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
 
+import org.mule.functional.functional.FlowAssert;
 import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.runtime.core.api.util.concurrent.Latch;
 import org.mule.runtime.http.api.HttpHeaders;
@@ -56,7 +58,7 @@ public class HttpProxyTemplateTestCase extends AbstractHttpRequestTestCase {
   private static String SENSING_REQUEST_RESPONSE_PROCESSOR_NAME = "sensingRequestResponseProcessor";
   private RequestHandlerExtender handlerExtender;
   private boolean consumeAllRequest = true;
-  private static String CPU_LIGHT_THREAD_PREFIX = "[MuleRuntime].cpuLight";
+  private static String IO_THREAD_PREFIX = "[MuleRuntime].io";
 
   @Override
   protected String getConfigFile() {
@@ -239,15 +241,15 @@ public class HttpProxyTemplateTestCase extends AbstractHttpRequestTestCase {
   public void requestThread() throws Exception {
     Request.Get(getProxyUrl("")).connectTimeout(RECEIVE_TIMEOUT).execute();
     SensingNullRequestResponseMessageProcessor sensingMessageProcessor = getSensingNullRequestResponseMessageProcessor();
-    assertThat(sensingMessageProcessor.requestThread.getName(), startsWith(CPU_LIGHT_THREAD_PREFIX));
+    assertThat(sensingMessageProcessor.requestThread.getName(), startsWith(IO_THREAD_PREFIX));
   }
 
   @Test
   public void responseThread() throws Exception {
     assertRequestOk(getProxyUrl(""), null);
     SensingNullRequestResponseMessageProcessor requestResponseProcessor = getSensingNullRequestResponseMessageProcessor();
-    assertThat(requestResponseProcessor.requestThread, not(equalTo(requestResponseProcessor.responseThread)));
-    assertThat(requestResponseProcessor.responseThread.getName(), startsWith(CPU_LIGHT_THREAD_PREFIX));
+    assertThat(requestResponseProcessor.responseThread.getName(), startsWith(IO_THREAD_PREFIX));
+    verify();
   }
 
   private SensingNullRequestResponseMessageProcessor getSensingNullRequestResponseMessageProcessor() {
