@@ -12,7 +12,7 @@ import static org.mule.functional.junit4.matchers.ThrowableCauseMatcher.hasCause
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
 
-import org.mule.functional.api.exceptions.FunctionalTestException;
+import org.mule.functional.api.exception.FunctionalTestException;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.core.Is.is;

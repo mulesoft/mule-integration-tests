@@ -11,7 +11,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.mule.runtime.core.context.notification.ErrorHandlerNotification.PROCESS_END;
 import static org.mule.runtime.core.context.notification.ErrorHandlerNotification.PROCESS_START;
 
-import org.mule.functional.api.exceptions.FunctionalTestException;
+import org.mule.functional.api.exception.FunctionalTestException;
 import org.mule.runtime.core.context.notification.ErrorHandlerNotification;
 
 import org.junit.Rule;

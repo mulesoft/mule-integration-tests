@@ -13,7 +13,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
-import org.mule.functional.api.exceptions.FunctionalTestException;
+import org.mule.functional.api.exception.FunctionalTestException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.exception.AbstractMessagingExceptionStrategy;
