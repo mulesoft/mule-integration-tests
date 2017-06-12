@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.mule.tests</groupId>
         <artifactId>mule-extensions-integration-tests</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <version>4.0.0-BETA-SNAPSHOT</version>
     </parent>
 
     <artifactId>mule-test-extensions-dsl</artifactId>
@@ -59,7 +59,7 @@
         <dependency>
             <groupId>org.mule.connectors</groupId>
             <artifactId>mule-jms-connector</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>0.8.0-SNAPSHOT</version>
             <classifier>mule-plugin</classifier>
             <scope>provided</scope>
         </dependency>
@@ -67,7 +67,7 @@
         <dependency>
             <groupId>org.mule.connectors</groupId>
             <artifactId>mule-wsc-connector</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>0.8.0-SNAPSHOT</version>
             <classifier>mule-plugin</classifier>
             <scope>provided</scope>
         </dependency>
@@ -75,7 +75,7 @@
         <dependency>
             <groupId>org.mule.connectors</groupId>
             <artifactId>mule-db-connector</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>0.8.0-SNAPSHOT</version>
             <classifier>mule-plugin</classifier>
             <scope>provided</scope>
         </dependency>
@@ -83,7 +83,7 @@
         <dependency>
             <groupId>org.mule.modules</groupId>
             <artifactId>mule-oauth-module</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>0.8.0-SNAPSHOT</version>
             <classifier>mule-plugin</classifier>
             <scope>provided</scope>
         </dependency>
@@ -119,7 +119,7 @@
         <dependency>
             <groupId>org.mule.connectors</groupId>
             <artifactId>mule-sockets-connector</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>0.8.0-SNAPSHOT</version>
             <classifier>mule-plugin</classifier>
             <scope>test</scope>
         </dependency>

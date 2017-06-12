@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.mule.tests</groupId>
         <artifactId>mule-extensions-integration-tests</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <version>4.0.0-BETA-SNAPSHOT</version>
     </parent>
     <artifactId>mule-tests-extensions-performance</artifactId>
     <packaging>jar</packaging>
@@ -56,7 +56,7 @@
         <dependency>
             <groupId>org.mule.modules</groupId>
             <artifactId>mule-module-file-extension-common</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>0.8.0-SNAPSHOT</version>
             <classifier>mule-plugin</classifier>
             <scope>test</scope>
         </dependency>
@@ -108,14 +108,14 @@
         <dependency>
             <groupId>org.mule.connectors</groupId>
             <artifactId>mule-file-connector</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>0.8.0-SNAPSHOT</version>
             <classifier>mule-plugin</classifier>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mule.connectors</groupId>
             <artifactId>mule-ftp-connector</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>0.8.0-SNAPSHOT</version>
             <classifier>mule-plugin</classifier>
             <scope>test</scope>
         </dependency>
@@ -129,7 +129,7 @@
         <dependency>
             <groupId>org.mule.connectors</groupId>
             <artifactId>mule-sockets-connector</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>0.8.0-SNAPSHOT</version>
             <classifier>mule-plugin</classifier>
             <scope>test</scope>
         </dependency>
