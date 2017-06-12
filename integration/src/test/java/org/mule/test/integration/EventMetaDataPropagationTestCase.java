@@ -14,13 +14,16 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mule.functional.junit4.TestLegacyMessageUtils.getOutboundProperty;
 import static org.mule.runtime.core.message.DefaultMultiPartPayload.BODY_ATTRIBUTES;
+
 import org.mule.functional.junit4.TestLegacyMessageBuilder;
+import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.message.MultiPartPayload;
 import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.core.api.Event;
-import org.mule.runtime.core.api.MuleEventContext;
-import org.mule.runtime.core.api.lifecycle.Callable;
+import org.mule.runtime.core.api.construct.FlowConstruct;
+import org.mule.runtime.core.api.construct.FlowConstructAware;
+import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.transformer.TransformerException;
 import org.mule.runtime.core.internal.message.InternalMessage;
 import org.mule.runtime.core.message.DefaultMultiPartPayload;
@@ -48,11 +51,17 @@ public class EventMetaDataPropagationTestCase extends AbstractIntegrationTestCas
     flowRunner("component1").withPayload(TEST_PAYLOAD).run();
   }
 
-  public static class DummyComponent implements Callable {
+  public static class DummyComponent implements Processor, FlowConstructAware {
+
+    private FlowConstruct flowConstruct;
 
     @Override
-    public Object onCall(MuleEventContext context) throws Exception {
-      if ("component1".equals(context.getFlowConstruct().getName())) {
+    public Event process(Event event) throws MuleException {
+      return Event.builder(event).message(doProcess(event)).build();
+    }
+
+    private Message doProcess(Event event) throws MuleException {
+      if ("component1".equals(flowConstruct.getName())) {
         Map<String, Serializable> props = new HashMap<>();
         props.put("stringParam", "param1");
         props.put("objectParam", new Apple());
@@ -62,13 +71,13 @@ public class EventMetaDataPropagationTestCase extends AbstractIntegrationTestCas
         props.put("booleanParam", Boolean.TRUE);
 
         return new TestLegacyMessageBuilder()
-            .payload(new DefaultMultiPartPayload(Message.builder().payload(context.getMessageAsString(muleContext))
+            .payload(new DefaultMultiPartPayload(Message.builder().payload(event.getMessageAsString(muleContext))
                 .attributes(BODY_ATTRIBUTES).build(),
                                                  Message.builder().nullPayload().mediaType(MediaType.TEXT)
                                                      .attributes(new PartAttributes("test1")).build()))
             .outboundProperties(props).build();
       } else {
-        InternalMessage msg = (InternalMessage) context.getMessage();
+        InternalMessage msg = (InternalMessage) event.getMessage();
         assertEquals("param1", msg.getInboundProperty("stringParam"));
         final Object o = msg.getInboundProperty("objectParam");
         assertTrue(o instanceof Apple);
@@ -79,7 +88,12 @@ public class EventMetaDataPropagationTestCase extends AbstractIntegrationTestCas
         assertThat(msg.getPayload().getValue(), instanceOf(DefaultMultiPartPayload.class));
         assertThat(((MultiPartPayload) msg.getPayload().getValue()).getPart("test1"), not(nullValue()));
       }
-      return null;
+      return event.getMessage();
+    }
+
+    @Override
+    public void setFlowConstruct(FlowConstruct flowConstruct) {
+      this.flowConstruct = flowConstruct;
     }
   }
 

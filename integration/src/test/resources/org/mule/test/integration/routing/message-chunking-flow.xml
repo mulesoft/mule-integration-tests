@@ -26,12 +26,7 @@
 
     <flow name="ChunkingObjectReceiver">
         <message-chunk-aggregator/>
-        <test:component doInboundTransform="false" logMessageDetails="true"/>
-        <!--<component> -->
-        <!--<singleton-object class="FunctionalTestComponent"> -->
-        <!--<property key="asString" value="false"/> -->
-        <!--</singleton-object> -->
-        <!--</component> -->
+        <test:component logMessageDetails="true"/>
     </flow>
 
 </mule>
