@@ -25,7 +25,7 @@ import org.mule.runtime.core.api.DefaultMuleException;
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.exception.MuleFatalException;
-import org.mule.runtime.core.retry.RetryPolicyExhaustedException;
+import org.mule.runtime.core.api.retry.policy.RetryPolicyExhaustedException;
 import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.runtime.http.api.HttpService;
 import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;

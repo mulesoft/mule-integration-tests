@@ -15,7 +15,7 @@ import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.transaction.Transaction;
-import org.mule.runtime.core.transaction.TransactionCoordination;
+import org.mule.runtime.core.api.transaction.TransactionCoordination;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.codehaus.jackson.JsonNode;

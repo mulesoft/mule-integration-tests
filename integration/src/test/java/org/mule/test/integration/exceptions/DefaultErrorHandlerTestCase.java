@@ -19,7 +19,7 @@ import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.component.Component;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.runtime.core.api.processor.Processor;
-import org.mule.runtime.core.retry.RetryPolicyExhaustedException;
+import org.mule.runtime.core.api.retry.policy.RetryPolicyExhaustedException;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Test;

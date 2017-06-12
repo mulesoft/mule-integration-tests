@@ -6,9 +6,9 @@
  */
 package org.mule.test.config.spring.handlers;
 
-import org.mule.runtime.core.api.retry.RetryPolicy;
-import org.mule.runtime.core.retry.PolicyStatus;
-import org.mule.runtime.core.retry.policies.AbstractPolicyTemplate;
+import org.mule.runtime.core.api.retry.policy.RetryPolicy;
+import org.mule.runtime.core.api.retry.policy.PolicyStatus;
+import org.mule.runtime.core.api.retry.policy.AbstractPolicyTemplate;
 
 import java.util.List;
 
