@@ -10,6 +10,7 @@
   <artifactId>mule-extensions-integration-tests</artifactId>
   <packaging>pom</packaging>
   <name>Mule Tests</name>
+  <version>4.0.0-BETA-SNAPSHOT</version>
 
   <modules>
     <module>performance</module>
