@@ -2,15 +2,13 @@
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:spring="http://www.springframework.org/schema/beans"
+      xmlns:test="http://www.mulesoft.org/schema/mule/test"
       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
-               http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+               http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+               http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
     <!-- see http://www.javalobby.org/java/forums/t44746.html and http://www.javalobby.org/java/forums/t45333.html for a 
         very nice, simple intro to spring aop -->
-
-    <spring:bean name="target" class="org.mule.functional.functional.FunctionalTestComponent">
-        <spring:property name="enableMessageHistory" value="false"/>
-    </spring:bean>
 
     <spring:bean name="advice" class="org.mule.test.config.spring.FunctionalTestAdvice"/>
 
@@ -24,9 +22,7 @@
     </spring:bean>
 
     <flow name="service">
-        <component>
-            <spring-object bean="target"/>
-        </component>
+        <test:component enableMessageHistory="false"/>
     </flow>
 </mule>
         

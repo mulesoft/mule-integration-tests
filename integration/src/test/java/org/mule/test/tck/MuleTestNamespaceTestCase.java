@@ -11,9 +11,12 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mule.functional.api.component.FunctionalTestComponent.getFromFlow;
 
-import org.mule.functional.functional.CounterCallback;
-import org.mule.functional.functional.FunctionalTestComponent;
+import org.mule.functional.api.component.EventCallback;
+import org.mule.functional.api.component.FunctionalTestComponent;
+import org.mule.runtime.core.api.Event;
+import org.mule.runtime.core.api.MuleContext;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Test;
@@ -27,30 +30,33 @@ public class MuleTestNamespaceTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void testComponent1Config() throws Exception {
-    Object object = getComponent("testService1");
-    assertNotNull(object);
-    assertTrue(object instanceof FunctionalTestComponent);
-    FunctionalTestComponent ftc = (FunctionalTestComponent) object;
+    FunctionalTestComponent ftc = getFromFlow(muleContext, "testService1");
 
     assertFalse(ftc.isEnableMessageHistory());
     assertFalse(ftc.isEnableNotifications());
     assertNull(ftc.getAppendString());
     assertEquals("Foo Bar Car Jar", ftc.getReturnData());
     assertNotNull(ftc.getEventCallback());
-    assertTrue(ftc.getEventCallback() instanceof CounterCallback);
+    assertTrue(ftc.getEventCallback() instanceof TestCallback);
   }
 
   @Test
   public void testComponent3Config() throws Exception {
-    Object object = getComponent("testService3");
-    assertNotNull(object);
-    assertTrue(object instanceof FunctionalTestComponent);
-    FunctionalTestComponent ftc = (FunctionalTestComponent) object;
+    FunctionalTestComponent ftc = getFromFlow(muleContext, "testService3");
 
     assertFalse(ftc.isEnableMessageHistory());
     assertTrue(ftc.isEnableNotifications());
     assertEquals(" #[mel:context:serviceName]", ftc.getAppendString());
     assertNull(ftc.getReturnData());
     assertNull(ftc.getEventCallback());
+  }
+
+  public static final class TestCallback implements EventCallback {
+
+    @Override
+    public void eventReceived(Event event, Object component, MuleContext muleContext) throws Exception {
+      // Nothing to do
+    }
+
   }
 }

@@ -7,8 +7,9 @@
 package org.mule.test.integration.routing;
 
 import static org.junit.Assert.assertTrue;
-import org.mule.functional.functional.FunctionalTestNotificationListener;
+
 import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.functional.api.notification.FunctionalTestNotificationListener;
 import org.mule.runtime.core.api.context.notification.ServerNotification;
 import org.mule.runtime.core.api.util.concurrent.Latch;
 

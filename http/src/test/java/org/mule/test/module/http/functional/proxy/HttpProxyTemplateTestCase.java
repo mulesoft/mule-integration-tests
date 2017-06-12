@@ -6,16 +6,14 @@
  */
 package org.mule.test.module.http.functional.proxy;
 
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThat;
-import static org.mule.functional.functional.FlowAssert.verify;
+import static org.mule.functional.api.component.FlowAssert.verify;
 import static org.mule.runtime.http.api.HttpHeaders.Names.X_FORWARDED_FOR;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
 
-import org.mule.functional.functional.FlowAssert;
 import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.runtime.core.api.util.concurrent.Latch;
 import org.mule.runtime.http.api.HttpHeaders;

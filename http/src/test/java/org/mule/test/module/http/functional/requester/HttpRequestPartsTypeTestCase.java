@@ -6,15 +6,15 @@
  */
 package org.mule.test.module.http.functional.requester;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
+import static org.mule.functional.api.component.FlowAssert.verify;
 import static org.mule.functional.junit4.matchers.MessageMatchers.hasPayload;
 import static org.mule.runtime.api.message.Message.builder;
 import static org.mule.runtime.api.metadata.MediaType.JSON;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 
-import org.mule.functional.functional.FlowAssert;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.message.MultiPartPayload;
 import org.mule.runtime.core.api.Event;
@@ -27,6 +27,7 @@ import java.io.ByteArrayInputStream;
 
 import org.junit.Rule;
 import org.junit.Test;
+
 import ru.yandex.qatools.allure.annotations.Features;
 
 @Features(HTTP_EXTENSION)
@@ -50,7 +51,7 @@ public class HttpRequestPartsTypeTestCase extends AbstractHttpTestCase {
     MultiPartPayload partPayload = getMultiPartPayload(dataBytes);
     final Event result = flowRunner("attachmentFromBytes").withPayload(partPayload).run();
     assertThat(result.getMessage(), hasPayload(equalTo("OK")));
-    FlowAssert.verify("reqWithAttachment");
+    verify("reqWithAttachment");
   }
 
   /**
@@ -61,7 +62,7 @@ public class HttpRequestPartsTypeTestCase extends AbstractHttpTestCase {
     MultiPartPayload partPayload = getMultiPartPayload(new ByteArrayInputStream(dataBytes));
     final Event result = flowRunner("attachmentFromStream").withPayload(partPayload).run();
     assertThat(result.getMessage(), hasPayload(equalTo("OK")));
-    FlowAssert.verify("reqWithAttachment");
+    verify("reqWithAttachment");
   }
 
   private MultiPartPayload getMultiPartPayload(Object data) {

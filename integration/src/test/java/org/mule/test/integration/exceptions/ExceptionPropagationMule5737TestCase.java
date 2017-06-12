@@ -9,12 +9,11 @@ package org.mule.test.integration.exceptions;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mule.functional.junit4.matchers.ThrowableCauseMatcher.hasCause;
-import org.mule.functional.exceptions.FunctionalTestException;
+
+import org.mule.functional.api.exception.FunctionalTestException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.construct.FlowConstruct;
-import org.mule.runtime.core.component.ComponentException;
 import org.mule.runtime.core.exception.AbstractMessagingExceptionStrategy;
 import org.mule.runtime.core.exception.MessagingException;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -39,8 +38,7 @@ public class ExceptionPropagationMule5737TestCase extends AbstractIntegrationTes
 
   @Test
   public void testRequestResponseEndpointExceptionPropagation() throws Exception {
-    expectedException.expectCause(instanceOf(ComponentException.class));
-    expectedException.expectCause(hasCause(instanceOf(FunctionalTestException.class)));
+    expectedException.expectCause(instanceOf(FunctionalTestException.class));
     runFlow("flow");
   }
 

@@ -6,12 +6,12 @@
  */
 package org.mule.test.integration.routing.outbound;
 
-import org.mule.functional.functional.FlowAssert;
-import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.functional.api.component.FlowAssert;
 import org.mule.tck.testmodels.fruit.Apple;
 import org.mule.tck.testmodels.fruit.Banana;
 import org.mule.tck.testmodels.fruit.FruitBowl;
 import org.mule.tck.testmodels.fruit.Orange;
+import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Test;
 

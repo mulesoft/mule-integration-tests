@@ -8,10 +8,11 @@ package org.mule.test.integration.messaging.meps;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
-import org.mule.functional.exceptions.FunctionalTestException;
+
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.runtime.core.exception.MessagingException;
 import org.mule.runtime.core.api.transformer.TransformerException;
+import org.mule.functional.api.exception.FunctionalTestException;
 import org.mule.runtime.api.exception.ExceptionHelper;
 
 import org.junit.Test;

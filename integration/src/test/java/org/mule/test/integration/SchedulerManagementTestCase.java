@@ -6,20 +6,20 @@
  */
 package org.mule.test.integration;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static org.junit.Assert.fail;
+import static org.mule.functional.api.component.FunctionalTestComponent.getFromFlow;
 import static org.mule.runtime.api.component.location.Location.builder;
 import static org.mule.test.allure.AllureConstants.SchedulerServiceFeature.SCHEDULER_SERVICE;
 import static org.mule.test.allure.AllureConstants.SchedulerServiceFeature.SchedulerServiceStory.SOURCE_MANAGEMENT;
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static org.junit.Assert.fail;
 
-import org.mule.functional.functional.FunctionalTestComponent;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Error;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.source.SchedulerMessageSource;
 import org.mule.runtime.core.api.functional.Either;
-import org.mule.runtime.core.source.scheduler.DefaultSchedulerMessageSource;
 import org.mule.runtime.core.api.util.concurrent.Latch;
+import org.mule.runtime.core.source.scheduler.DefaultSchedulerMessageSource;
 import org.mule.tck.probe.PollingProber;
 import org.mule.tck.probe.Probe;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -28,6 +28,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
+
 import ru.yandex.qatools.allure.annotations.Description;
 import ru.yandex.qatools.allure.annotations.Features;
 import ru.yandex.qatools.allure.annotations.Stories;
@@ -70,13 +71,12 @@ public class SchedulerManagementTestCase extends AbstractIntegrationTestCase {
   @Description("scheduler that runs once, gets stopped by a functional component within the same flow and the it's triggered manually")
   @Test
   public void stopSchedulerWithinFlowAndTriggerItManually() throws Exception {
-    FunctionalTestComponent functionalTestComponent = getFunctionalTestComponent("schedulerControlledFromSameFlow");
     SchedulerMessageSource scheduler = (DefaultSchedulerMessageSource) muleContext.getConfigurationComponentLocator()
         .find(builder().globalName("schedulerControlledFromSameFlow").addSourcePart().build()).get();
     AtomicInteger atomicInteger = new AtomicInteger(0);
 
     Latch componentExecutedLatch = new Latch();
-    functionalTestComponent.setEventCallback((eventContext, component, muleContext) -> {
+    getFromFlow(muleContext, "schedulerControlledFromSameFlow").setEventCallback((eventContext, component, muleContext) -> {
       scheduler.stop();
       atomicInteger.incrementAndGet();
       componentExecutedLatch.release();

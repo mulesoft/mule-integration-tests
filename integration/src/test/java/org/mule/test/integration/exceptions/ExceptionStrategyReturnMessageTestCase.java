@@ -12,9 +12,10 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+
+import org.mule.functional.api.exception.FunctionalTestException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.Event;
-import org.mule.runtime.core.component.ComponentException;
 import org.mule.runtime.core.exception.AbstractMessagingExceptionStrategy;
 import org.mule.runtime.core.exception.MessagingException;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -33,7 +34,7 @@ public class ExceptionStrategyReturnMessageTestCase extends AbstractIntegrationT
     try {
       flowRunner("InputService2").withPayload("Test Message").run();
     } catch (MessagingException e) {
-      assertThat(e.getCause(), is(instanceOf(ComponentException.class)));
+      assertThat(e.getCause(), is(instanceOf(FunctionalTestException.class)));
       assertThat(e.getEvent().getMessage().getPayload().getValue(), is(notNullValue()));
     }
   }

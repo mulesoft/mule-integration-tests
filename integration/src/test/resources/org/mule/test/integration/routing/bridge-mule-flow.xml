@@ -11,7 +11,7 @@
     </flow>
 
     <flow name="Receiver">
-        <component class="org.mule.functional.testmodels.services.TestReceiver"/>
+        <custom-processor class="org.mule.functional.testmodels.services.TestReceiver"/>
     </flow>
 
 </mule>

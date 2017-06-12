@@ -6,15 +6,14 @@
  */
 package org.mule.test.integration.exceptions;
 
-import static org.mule.functional.junit4.matchers.ThrowableCauseMatcher.hasCause;
-import static org.mule.runtime.api.message.Message.of;
-import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mule.functional.api.component.FunctionalTestComponent.getFromFlow;
+import static org.mule.runtime.api.message.Message.of;
+import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
 
-import org.mule.functional.functional.FunctionalTestComponent;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.i18n.I18nMessage;
 import org.mule.runtime.api.message.Message;
@@ -29,7 +28,6 @@ import org.mule.runtime.core.api.security.UnauthorisedException;
 import org.mule.runtime.core.api.transformer.MessageTransformerException;
 import org.mule.runtime.core.api.transformer.Transformer;
 import org.mule.runtime.core.api.transformer.TransformerException;
-import org.mule.runtime.core.component.ComponentException;
 import org.mule.runtime.core.config.i18n.CoreMessages;
 import org.mule.runtime.core.exception.MessageRedeliveredException;
 import org.mule.runtime.core.exception.MessagingException;
@@ -41,6 +39,7 @@ import java.sql.SQLDataException;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
 import ru.yandex.qatools.allure.annotations.Features;
 import ru.yandex.qatools.allure.annotations.Stories;
 
@@ -123,8 +122,7 @@ public class ErrorHandlerTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void testMatchesCorrectExceptionUsingNoCause() throws Exception {
-    expectedException.expectCause(is(instanceOf(ComponentException.class)));
-    expectedException.expectCause(hasCause(instanceOf(ResolverException.class)));
+    expectedException.expectCause(is(instanceOf(ResolverException.class)));
     callAndThrowException(new ResolverException(CoreMessages.createStaticMessage("")), null);
   }
 
@@ -194,8 +192,7 @@ public class ErrorHandlerTestCase extends AbstractIntegrationTestCase {
 
   private void callAndThrowException(Object payload, final Exception exceptionToThrow, final String expectedMessage)
       throws Exception {
-    FunctionalTestComponent ftc = getFunctionalTestComponent("matchesHandlerUsingWhen");
-    ftc.setEventCallback((context, component, muleContext) -> {
+    getFromFlow(muleContext, "matchesHandlerUsingWhen").setEventCallback((context, component, muleContext) -> {
       throw exceptionToThrow;
     });
     Message response =

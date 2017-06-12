@@ -8,7 +8,8 @@ package org.mule.test.integration.routing;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import org.mule.functional.functional.InvocationCountMessageProcessor;
+
+import org.mule.functional.api.component.InvocationCountMessageProcessor;
 import org.mule.runtime.api.message.Message;
 import org.mule.test.AbstractIntegrationTestCase;
 

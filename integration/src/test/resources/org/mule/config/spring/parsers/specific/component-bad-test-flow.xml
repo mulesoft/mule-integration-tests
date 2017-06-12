@@ -4,7 +4,7 @@
                http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 
     <flow name="service">
-        <component class="org.mule.functional.functional.FunctionalTestComponent">
+        <component class="org.mule.functional.component.FunctionalTestComponent">
             <singleton-object class="org.mule.runtime.core.component.simple.StaticComponent"/>
         </component>
     </flow>

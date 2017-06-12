@@ -9,7 +9,8 @@ package org.mule.test.integration.routing.outbound;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import org.mule.functional.functional.FlowAssert;
+
+import org.mule.functional.api.component.FlowAssert;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.tck.testmodels.fruit.Apple;

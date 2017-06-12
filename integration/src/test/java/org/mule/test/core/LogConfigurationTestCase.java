@@ -9,8 +9,9 @@ package org.mule.test.core;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.mule.runtime.core.api.config.MuleProperties.MULE_SIMPLE_LOG;
+
 import org.mule.rule.UseMuleLog4jContextFactory;
-import org.mule.runtime.core.api.config.MuleProperties;
 import org.mule.runtime.deployment.model.api.application.Application;
 import org.mule.runtime.module.deployment.impl.internal.builder.ApplicationFileBuilder;
 import org.mule.test.infrastructure.deployment.AbstractFakeMuleServerTestCase;
@@ -47,7 +48,7 @@ public class LogConfigurationTestCase extends AbstractFakeMuleServerTestCase {
     // here we're trying to test log separation so we need to
     // disable this default property of the fake mule server
     // in order to test that
-    System.clearProperty(MuleProperties.MULE_SIMPLE_LOG);
+    System.clearProperty(MULE_SIMPLE_LOG);
   }
 
   @Test

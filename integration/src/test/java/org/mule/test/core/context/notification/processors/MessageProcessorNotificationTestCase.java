@@ -13,6 +13,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.message.Message.of;
 import static org.mule.runtime.core.context.notification.MessageProcessorNotification.MESSAGE_PROCESSOR_POST_INVOKE;
+
+import org.mule.functional.api.exception.FunctionalTestException;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.meta.AbstractAnnotatedObject;
 import org.mule.runtime.core.DefaultEventContext;
@@ -21,7 +23,6 @@ import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.source.CompositeMessageSource;
 import org.mule.runtime.core.api.source.MessageSource;
-import org.mule.runtime.core.component.ComponentException;
 import org.mule.runtime.core.context.notification.MessageProcessorNotification;
 import org.mule.runtime.core.exception.MessagingException;
 import org.mule.test.core.context.notification.Node;
@@ -265,10 +266,13 @@ public class MessageProcessorNotificationTestCase extends AbstractMessageProcess
         .serial(prePost());
 
     expectedException.expect(MessagingException.class);
-    expectedException.expectCause(instanceOf(ComponentException.class));
-    flowRunner("rollback-es").withPayload(TEST_PAYLOAD).run();
+    expectedException.expectCause(instanceOf(FunctionalTestException.class));
+    try {
+      flowRunner("rollback-es").withPayload(TEST_PAYLOAD).run();
+    } finally {
+      assertNotifications();
+    }
 
-    assertNotifications();
   }
 
   @Test

@@ -23,7 +23,6 @@
         <spring:property name="beanProperty2" value="12"/>
         <spring:property name="containerProperty" value="a string"/>
     </custom-transformer>
-    <test:no-action-transformer name="TestTransformer" returnClass="[B"/>
 
     <spring:bean name="apple" class="org.mule.tck.testmodels.fruit.Apple"/>
 
