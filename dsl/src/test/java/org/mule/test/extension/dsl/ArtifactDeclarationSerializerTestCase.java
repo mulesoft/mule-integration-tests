@@ -43,6 +43,7 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
@@ -62,7 +63,8 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
   public static Collection<Object[]> data() {
     return asList(new Object[][] {
         {"full-artifact-config-dsl-app.xml", createFullArtifactDeclaration()},
-        {"multi-flow-dsl-app.xml", createMultiFlowArtifactDeclaration()}
+        {"multi-flow-dsl-app.xml", createMultiFlowArtifactDeclaration()},
+        {"no-mule-components-dsl-app.xml", createNoMuleComponentsArtifactDeclaration()}
     });
   }
 
@@ -447,4 +449,65 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
         .getDeclaration();
   }
 
+  private static Object createNoMuleComponentsArtifactDeclaration() {
+    ElementDeclarer jms = ElementDeclarer.forExtension("JMS");
+    ElementDeclarer http = ElementDeclarer.forExtension("HTTP");
+
+    return newArtifact()
+        .withGlobalElement(jms.newConfiguration("config")
+            .withRefName("config")
+            .withConnection(jms.newConnection("active-mq")
+                .withParameterGroup(newParameterGroup()
+                    .withParameter("cachingStrategy",
+                                   newObjectValue()
+                                       .ofType(NoCachingConfiguration.class.getName())
+                                       .build())
+                    .getDeclaration())
+                .withParameterGroup(newParameterGroup(CONNECTION)
+                    .withParameter("disableValidation", "true")
+                    .getDeclaration())
+                .getDeclaration())
+            .getDeclaration())
+        .withGlobalElement(http.newConfiguration("request-config")
+            .withRefName("httpRequester")
+            .withConnection(http.newConnection("request").getDeclaration()).getDeclaration())
+        .withGlobalElement(newFlow()
+            .withRefName("send-payload")
+            .withComponent(jms.newOperation("publish")
+                .withConfig("config")
+                .withParameterGroup(newParameterGroup()
+                    .withParameter("destination", "#[initialDestination]")
+                    .getDeclaration())
+                .withParameterGroup(newParameterGroup("Message")
+                    .withParameter("body", "#[payload]")
+                    .withParameter("properties", "#[{(initialProperty): propertyValue}]")
+                    .getDeclaration())
+                .getDeclaration())
+            .withComponent(http.newOperation("request")
+                .withConfig("httpRequester")
+                .withParameterGroup(newParameterGroup("URI Settings")
+                    .withParameter("path", "/nested")
+                    .getDeclaration())
+                .withParameterGroup(newParameterGroup()
+                    .withParameter("method", "POST")
+                    .getDeclaration())
+                .getDeclaration())
+            .getDeclaration())
+        .withGlobalElement(newFlow().withRefName("bridge")
+            .withComponent(jms.newOperation("consume")
+                .withConfig("config")
+                .withParameterGroup(newParameterGroup()
+                    .withParameter("destination", "#[initialDestination]")
+                    .withParameter("maximumWait", "1000")
+                    .getDeclaration())
+                .getDeclaration())
+            .withComponent(http.newOperation("request")
+                .withConfig("httpRequester")
+                .withParameterGroup(newParameterGroup("URI Settings")
+                    .withParameter("path", "/nested")
+                    .getDeclaration())
+                .getDeclaration())
+            .getDeclaration())
+        .getDeclaration();
+  }
 }

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:jms="http://www.mulesoft.org/schema/mule/jms"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+    <jms:config name="config">
+        <jms:active-mq-connection disableValidation="true">
+            <jms:caching-strategy>
+                <jms:no-caching/>
+            </jms:caching-strategy>
+        </jms:active-mq-connection>
+    </jms:config>
+    <http:request-config name="httpRequester">
+        <http:request-connection/>
+    </http:request-config>
+    <flow name="send-payload">
+        <jms:publish config-ref="config" destination="#[initialDestination]">
+            <jms:message>
+                <jms:body>#[payload]</jms:body>
+                <jms:properties>#[{(initialProperty): propertyValue}]</jms:properties>
+            </jms:message>
+        </jms:publish>
+        <http:request config-ref="httpRequester" method="POST" path="/nested"/>
+    </flow>
+    <flow name="bridge">
+        <jms:consume config-ref="config"
+                     destination="#[initialDestination]"
+                     maximumWait="1000"/>
+        <http:request config-ref="httpRequester" path="/nested"/>
+    </flow>
+</mule>
