@@ -11,10 +11,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mule.functional.api.component.FunctionalTestComponent.getFromFlow;
+import static org.mule.functional.api.component.FunctionalTestProcessor.getFromFlow;
 
 import org.mule.functional.api.component.EventCallback;
-import org.mule.functional.api.component.FunctionalTestComponent;
+import org.mule.functional.api.component.FunctionalTestProcessor;
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -30,7 +30,7 @@ public class MuleTestNamespaceTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void testComponent1Config() throws Exception {
-    FunctionalTestComponent ftc = getFromFlow(muleContext, "testService1");
+    FunctionalTestProcessor ftc = getFromFlow(muleContext, "testService1");
 
     assertFalse(ftc.isEnableMessageHistory());
     assertFalse(ftc.isEnableNotifications());
@@ -42,7 +42,7 @@ public class MuleTestNamespaceTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void testComponent3Config() throws Exception {
-    FunctionalTestComponent ftc = getFromFlow(muleContext, "testService3");
+    FunctionalTestProcessor ftc = getFromFlow(muleContext, "testService3");
 
     assertFalse(ftc.isEnableMessageHistory());
     assertTrue(ftc.isEnableNotifications());

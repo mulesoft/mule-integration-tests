@@ -7,7 +7,7 @@
 
     <spring:bean name="advice" class="org.mule.test.config.spring.FunctionalTestAdvice"/>
     <spring:bean name="pointcut" class="org.springframework.aop.support.JdkRegexpMethodPointcut">
-        <!-- we must name the correct interface below, FunctionalTestComponent itself does not work -->
+        <!-- we must name the correct interface below, FunctionalTestProcessor itself does not work -->
         <spring:property name="pattern" value="org.mule.runtime.core.api.lifecycle.Callable.onCall"/>
     </spring:bean>
     <spring:bean name="advisor" class="org.springframework.aop.support.DefaultPointcutAdvisor">
@@ -23,7 +23,7 @@
         </spring:property>
     </spring:bean>
 
-    <spring:bean name="target" class="org.mule.functional.api.component.FunctionalTestComponent">
+    <spring:bean name="target" class="org.mule.functional.api.component.FunctionalTestProcessor">
         <spring:property name="enableMessageHistory" value="false"/>
     </spring:bean>
 

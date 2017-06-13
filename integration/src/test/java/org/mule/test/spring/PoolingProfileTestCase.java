@@ -21,7 +21,7 @@ import static org.mule.runtime.api.config.PoolingProfile.WHEN_EXHAUSTED_FAIL;
 import static org.mule.runtime.api.config.PoolingProfile.WHEN_EXHAUSTED_GROW;
 import static org.mule.runtime.api.config.PoolingProfile.WHEN_EXHAUSTED_WAIT;
 
-import org.mule.functional.api.component.FunctionalTestComponent;
+import org.mule.functional.api.component.FunctionalTestProcessor;
 import org.mule.runtime.api.config.PoolingProfile;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.component.PooledJavaComponent;
@@ -101,7 +101,7 @@ public class PoolingProfileTestCase extends AbstractIntegrationTestCase {
     assertEquals("wait:", wait, profile.getMaxWait());
   }
 
-  public static class EvictablePooledComponent extends FunctionalTestComponent {
+  public static class EvictablePooledComponent extends FunctionalTestProcessor {
 
     @Override
     public void dispose() {

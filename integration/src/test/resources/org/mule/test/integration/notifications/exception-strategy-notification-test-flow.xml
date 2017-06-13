@@ -15,7 +15,7 @@
     </notifications>
 
     <flow name="catch-es">
-        <test:component throwException="true"/>
+        <test:processor throwException="true"/>
         <error-handler>
             <on-error-continue>
                 <logger/>
@@ -24,7 +24,7 @@
     </flow>
 
     <flow name="rollback-es">
-        <test:component throwException="true"/>
+        <test:processor throwException="true"/>
         <error-handler>
             <on-error-continue type="REDELIVERY_EXHAUSTED">
                 <echo-component/>
@@ -36,7 +36,7 @@
     </flow>
 
     <flow name="choice-es">
-        <test:component throwException="true"/>
+        <test:processor throwException="true"/>
         <error-handler>
             <on-error-continue type="REDELIVERY_EXHAUSTED">
                 <logger/>
@@ -51,6 +51,6 @@
     </flow>
 
     <flow name="default-es">
-        <test:component throwException="true"/>
+        <test:processor throwException="true"/>
     </flow>
 </mule>

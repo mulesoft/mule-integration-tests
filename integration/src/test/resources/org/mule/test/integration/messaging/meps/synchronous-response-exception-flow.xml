@@ -11,7 +11,7 @@
 
     <flow name="ComponentException">
         <!-- Component throws an exception -->
-        <test:component throwException="true" />
+        <test:processor throwException="true" />
     </flow>
 
     <flow name="FlowRefInvalidException">
@@ -21,6 +21,6 @@
     <flow name="TransformerException">
         <!-- Transformer throws an exception -->
         <transformer ref="validateResponse" />
-        <test:component />
+        <test:processor />
     </flow>
 </mule>

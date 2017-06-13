@@ -7,7 +7,7 @@
 
     <flow name="splitter">
         <splitter/>
-        <test:component/>
+        <test:processor/>
         <collection-aggregator timeout="2000" failOnTimeout="false" persistentStores="false"/>
         <test:queue name="out"/>
     </flow>

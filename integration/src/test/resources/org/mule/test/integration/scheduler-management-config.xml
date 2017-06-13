@@ -20,7 +20,7 @@
                 <fixed-frequency startDelay="0" frequency="200"/>
             </scheduling-strategy>
         </scheduler>
-        <test:component />
+        <test:processor />
     </flow>
 
 </mule>

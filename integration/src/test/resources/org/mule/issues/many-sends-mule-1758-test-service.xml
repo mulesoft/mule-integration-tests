@@ -10,9 +10,9 @@
     </configuration>
 
     <flow name="mySynchService">
-        <test:component>
+        <test:processor>
             <test:return-data>Polo</test:return-data>
-        </test:component>
+        </test:processor>
     </flow>
 
 </mule>

@@ -126,7 +126,7 @@
                 <flow-ref name="flow"/>
             </when>
             <otherwise>
-                <test:component throwException="true"/>
+                <test:processor throwException="true"/>
             </otherwise>
         </choice>
     </flow>
@@ -137,7 +137,7 @@
                 <flow-ref name="subFlow"/>
             </when>
             <otherwise>
-                <test:component throwException="true"/>
+                <test:processor throwException="true"/>
             </otherwise>
         </choice>
     </flow>
@@ -148,7 +148,7 @@
                 <flow-ref name="#[mel:'flow']"/>
             </when>
             <otherwise>
-                <test:component throwException="true"/>
+                <test:processor throwException="true"/>
             </otherwise>
         </choice>
     </flow>
@@ -159,7 +159,7 @@
                 <flow-ref name="#[mel:'subFlow']"/>
             </when>
             <otherwise>
-                <test:component throwException="true"/>
+                <test:processor throwException="true"/>
             </otherwise>
         </choice>
     </flow>
@@ -168,28 +168,28 @@
     
     <flow name="flowStaticWithScatterGather">
         <scatter-gather>
-            <test:component/>
+            <test:processor/>
             <flow-ref name="flow"/>
         </scatter-gather>
     </flow>
 
     <flow name="subFlowStaticWithScatterGather">
         <scatter-gather>
-            <test:component/>
+            <test:processor/>
             <flow-ref name="subFlow"/>
         </scatter-gather>
     </flow>
 
     <flow name="flowDynamicWithScatterGather">
         <scatter-gather>
-            <test:component/>
+            <test:processor/>
             <flow-ref name="#[mel:'flow']"/>
         </scatter-gather>
     </flow>
 
     <flow name="subFlowDynamicWithScatterGather">
         <scatter-gather>
-            <test:component/>
+            <test:processor/>
             <flow-ref name="#[mel:'subFlow']"/>
         </scatter-gather>
     </flow>
@@ -198,7 +198,7 @@
     
     <flow name="flowStaticWithScatterGatherChain">
         <scatter-gather>
-            <test:component/>
+            <test:processor/>
             <processor-chain>
                 <flow-ref name="flow"/>
             </processor-chain>
@@ -207,7 +207,7 @@
 
     <flow name="subFlowStaticWithScatterGatherChain">
         <scatter-gather>
-            <test:component/>
+            <test:processor/>
             <processor-chain>
                 <flow-ref name="subFlow"/>
             </processor-chain>
@@ -216,7 +216,7 @@
 
     <flow name="flowDynamicWithScatterGatherChain">
         <scatter-gather>
-            <test:component/>
+            <test:processor/>
             <processor-chain>
                 <flow-ref name="#[mel:'flow']"/>
             </processor-chain>
@@ -225,7 +225,7 @@
 
     <flow name="subFlowDynamicWithScatterGatherChain">
         <scatter-gather>
-            <test:component/>
+            <test:processor/>
             <processor-chain>
                 <flow-ref name="#[mel:'subFlow']"/>
             </processor-chain>

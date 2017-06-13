@@ -36,7 +36,7 @@
         <!-- The default handler ignores the error and returns 200, so we can't detect if it was handled correctly -->
         <error-handler>
             <on-error-continue>
-                <test:component throwException="true"/>
+                <test:processor throwException="true"/>
             </on-error-continue>
         </error-handler>
     </flow>

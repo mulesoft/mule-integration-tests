@@ -40,18 +40,18 @@
         <http:listener path="errorSendingThrownError" allowedMethods="GET" config-ref="listenerConfig">
             <http:error-response statusCode="#['notANumber']"/>
         </http:listener>
-        <test:component throwException="true"/>
+        <test:processor throwException="true"/>
     </flow>
 
     <flow name="errorSendingErrorFromHandlerFlow">
         <http:listener path="errorSendingErrorFromHandler" allowedMethods="GET" config-ref="listenerConfig">
             <http:error-response  statusCode="#['notANumber']"/>
         </http:listener>
-        <test:component throwException="true"/>
+        <test:processor throwException="true"/>
         <error-handler>
             <on-error-continue>
                 <custom-processor class="org.mule.test.integration.exceptions.ExceptionHandlingSourceTestCase$OnErrorCounterProcessor"/>
-                <test:component throwException="true"/>
+                <test:processor throwException="true"/>
             </on-error-continue>
         </error-handler>
     </flow>
@@ -60,7 +60,7 @@
         <http:listener path="errorSendingPropagatedError" allowedMethods="GET" config-ref="listenerConfig">
             <http:error-response  statusCode="#['notANumber']"/>
         </http:listener>
-        <test:component throwException="true"/>
+        <test:processor throwException="true"/>
         <error-handler>
             <on-error-propagate>
                 <custom-processor class="org.mule.test.integration.exceptions.ExceptionHandlingSourceTestCase$OnErrorCounterProcessor"/>

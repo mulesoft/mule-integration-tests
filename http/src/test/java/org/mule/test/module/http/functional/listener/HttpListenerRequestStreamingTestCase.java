@@ -9,7 +9,7 @@ package org.mule.test.module.http.functional.listener;
 import static java.lang.String.format;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.mule.functional.api.component.FunctionalTestComponent.getFromFlow;
+import static org.mule.functional.api.component.FunctionalTestProcessor.getFromFlow;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
 
 import org.mule.tck.junit4.rule.DynamicPort;

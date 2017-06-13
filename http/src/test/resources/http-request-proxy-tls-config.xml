@@ -36,7 +36,7 @@
 
     <flow name="serverFlow">
         <http:listener config-ref="listenerConfig" path="/*" />
-        <test:component />
+        <test:processor />
         <set-payload value="OK" />
     </flow>
 

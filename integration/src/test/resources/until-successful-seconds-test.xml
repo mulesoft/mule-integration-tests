@@ -45,7 +45,7 @@
     </flow>
 
     <flow name="target-mp">
-        <test:component appendString="ERROR" />
+        <test:processor appendString="ERROR" />
     </flow>
 
     <flow name="target-flow">
@@ -54,7 +54,7 @@
 
     <flow name="synchronous">
         <until-successful synchronous="true" secondsBetweenRetries="1">
-            <test:component throwException="true"/>
+            <test:processor throwException="true"/>
         </until-successful>
     </flow>
 
@@ -62,7 +62,7 @@
         <until-successful maxRetries="3" secondsBetweenRetries="0" synchronous="true">
             <processor-chain>
                 <test:invocation-counter name="untilSuccessful"/>
-                <test:component throwException="true"/>
+                <test:processor throwException="true"/>
             </processor-chain>
         </until-successful>
         <error-handler>
@@ -76,7 +76,7 @@
         <until-successful maxRetries="1" secondsBetweenRetries="1" synchronous="true">
             <processor-chain>
                 <custom-processor class="org.mule.test.routing.UntilSuccessfulTestCase$WaitMeasure" />
-                <test:component throwException="true"/>
+                <test:processor throwException="true"/>
             </processor-chain>
         </until-successful>
     </flow>

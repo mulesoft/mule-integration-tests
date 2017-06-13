@@ -8,9 +8,9 @@ package org.mule.test.routing;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mule.functional.api.component.FunctionalTestComponent.getFromFlow;
+import static org.mule.functional.api.component.FunctionalTestProcessor.getFromFlow;
 
-import org.mule.functional.api.component.FunctionalTestComponent;
+import org.mule.functional.api.component.FunctionalTestProcessor;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.runtime.core.api.context.notification.RoutingNotificationListener;
@@ -51,8 +51,8 @@ public class CollectionAggregatorRouterTimeoutTestCase extends AbstractIntegrati
       }
     });
 
-    FunctionalTestComponent vortex = getFromFlow(muleContext, "vortex");
-    FunctionalTestComponent aggregator = getFromFlow(muleContext, "aggregator");
+    FunctionalTestProcessor vortex = getFromFlow(muleContext, "vortex");
+    FunctionalTestProcessor aggregator = getFromFlow(muleContext, "aggregator");
 
     MuleClient client = muleContext.getClient();
     List<String> list = Arrays.asList("first", "second");

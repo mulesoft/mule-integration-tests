@@ -37,7 +37,7 @@
     <flow name="flowWithErrorHandler">
         <choice>
             <when expression="#[mel:executeFailingComponent == true]">
-                <test:component throwException="true" />
+                <test:processor throwException="true" />
             </when>
             <when expression="#[mel:wrong expression]">
                 <logger/>
@@ -57,7 +57,7 @@
 
     <flow name="flowWithTryWithErrorHandler">
         <try>
-            <test:component throwException="true" />
+            <test:processor throwException="true" />
             <error-handler>
                 <on-error-continue>
                     <validation:is-false expression="false"/>

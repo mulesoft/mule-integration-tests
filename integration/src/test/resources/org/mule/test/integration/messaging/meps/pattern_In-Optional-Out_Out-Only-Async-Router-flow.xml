@@ -50,9 +50,9 @@
     
 
     <flow name="ExternalApp">
-        <test:component>
+        <test:processor>
             <test:return-data>got it!</test:return-data>
-        </test:component>
+        </test:processor>
     </flow>
     
     <!--// END SNIPPET: full-config -->

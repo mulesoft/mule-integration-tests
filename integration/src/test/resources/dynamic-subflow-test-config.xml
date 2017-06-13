@@ -18,7 +18,7 @@
     </sub-flow>
 
     <sub-flow name="EnrichCreateLicense">
-        <test:component />
+        <test:processor />
         <set-payload value="SUCCESS" />
     </sub-flow>
 </mule>

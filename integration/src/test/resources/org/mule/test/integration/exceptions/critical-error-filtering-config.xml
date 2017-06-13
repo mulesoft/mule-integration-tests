@@ -9,7 +9,7 @@
 
     <flow name="onErrorPropagateTypeMatch">
         <append-string-transformer message=" apt1"/>
-        <test:component throwException="true"/>
+        <test:processor throwException="true"/>
         <error-handler>
             <on-error-propagate type="CRITICAL">
                 <append-string-transformer message=" nope"/>

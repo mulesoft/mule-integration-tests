@@ -8,7 +8,7 @@ package org.mule.test.integration;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.junit.Assert.fail;
-import static org.mule.functional.api.component.FunctionalTestComponent.getFromFlow;
+import static org.mule.functional.api.component.FunctionalTestProcessor.getFromFlow;
 import static org.mule.runtime.api.component.location.Location.builder;
 import static org.mule.test.allure.AllureConstants.SchedulerServiceFeature.SCHEDULER_SERVICE;
 import static org.mule.test.allure.AllureConstants.SchedulerServiceFeature.SchedulerServiceStory.SOURCE_MANAGEMENT;

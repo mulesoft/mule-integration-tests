@@ -87,7 +87,7 @@
         <http:listener config-ref="listenerConfig" path="${errorEmptyResponseBuilderPath}">
             <http:error-response />
         </http:listener>
-        <test:component throwException="true"/>
+        <test:processor throwException="true"/>
     </flow>
 
     <flow name="errorStatusResponseBuilderFlow">
@@ -95,7 +95,7 @@
             <http:error-response statusCode="201" reasonPhrase="everything works!"/>
         </http:listener>
         <logger level="ERROR" message="#[mel:payload]"/>
-        <test:component throwException="true"/>
+        <test:processor throwException="true"/>
     </flow>
 
     <flow name="errorHeaderResponseBuilderFlow">
@@ -104,7 +104,7 @@
                 <http:headers>#[mel:['User-Agent': 'Mule 4.0.0','Date': server.dateTime.toString()]]</http:headers>
             </http:error-response>
         </http:listener>
-        <test:component throwException="true"/>
+        <test:processor throwException="true"/>
     </flow>
 
     <flow name="errorHeadersResponseBuilderFlow">
@@ -115,7 +115,7 @@
                 </http:headers>
             </http:error-response>
         </http:listener>
-        <test:component throwException="true"/>
+        <test:processor throwException="true"/>
     </flow>
 
     <flow name="errorHeadersOverrideResponseBuilderFlow">
@@ -126,7 +126,7 @@
                 </http:headers>
             </http:error-response>
         </http:listener>
-        <test:component throwException="true"/>
+        <test:processor throwException="true"/>
     </flow>
 
     <flow name="responseBuilderAndErrorResponseBuilderNotTheSame">

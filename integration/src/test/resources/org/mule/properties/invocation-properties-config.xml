@@ -323,7 +323,7 @@
 
     <flow name="catchExceptionStrategy">
         <processor ref="addP1" />
-        <test:component throwException="true" />
+        <test:processor throwException="true" />
         <error-handler>
             <on-error-continue>
                 <test:assert expression="#[mel:P1]" />
@@ -358,7 +358,7 @@
 
     <flow name="TestSubFlowServer">
         <http:listener path="/" config-ref="listenerConfig3"/>
-        <test:component throwException="true"/>
+        <test:processor throwException="true"/>
     </flow>
 
 </mule>

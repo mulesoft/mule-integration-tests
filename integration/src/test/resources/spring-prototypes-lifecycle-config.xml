@@ -21,7 +21,7 @@
 
     <!-- This caused a StackOverflowException during app init before MULE-8913 -->
     <flow name="testExceptionHandlerWithTransformerInEndpointFlow">
-        <test:component throwException="true"/>
+        <test:processor throwException="true"/>
         <error-handler>
             <on-error-continue>
                 <transformer ref="AtoBConverter" />

@@ -15,7 +15,7 @@
     </flow>
 
     <flow name="throw_an_exception">
-        <test:component throwException="true" exceptionText="Ad hoc message exception"/>
+        <test:processor throwException="true" exceptionText="Ad hoc message exception"/>
     </flow>
 
 </mule>

@@ -15,7 +15,7 @@
 
     <flow name="splitter">
         <splitter/>
-        <test:component/>
+        <test:processor/>
         <collection-aggregator timeout="2000" failOnTimeout="false"
             processed-groups-object-store="processed-groups-object-store"
             event-groups-object-store="event-groups-object-store"/>

@@ -15,7 +15,7 @@
     </notifications>
 
     <flow name="the-service">
-        <test:component throwException="true" enableMessageHistory="false"/>
+        <test:processor throwException="true" enableMessageHistory="false"/>
     </flow>
 
 </mule>

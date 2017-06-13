@@ -11,11 +11,11 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mule.functional.api.component.FunctionalTestComponent.getFromFlow;
+import static org.mule.functional.api.component.FunctionalTestProcessor.getFromFlow;
 import static org.mule.functional.junit4.matchers.MessageMatchers.hasPayload;
 import static org.mule.tck.junit4.matcher.EventMatcher.hasMessage;
 
-import org.mule.functional.api.component.FunctionalTestComponent;
+import org.mule.functional.api.component.FunctionalTestProcessor;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.util.concurrent.CountDownLatch;
@@ -43,7 +43,7 @@ public class CorrelationResequencerTestCase extends AbstractIntegrationTestCase 
   public void testResequencer() throws Exception {
     flowRunner("splitter").withPayload(asList("a", "b", "c", "d", "e", "f")).run();
 
-    FunctionalTestComponent resequencer = getFromFlow(muleContext, "sorted");
+    FunctionalTestProcessor resequencer = getFromFlow(muleContext, "sorted");
 
     assertTrue(receiveLatch.await(3000, TimeUnit.SECONDS));
 

@@ -6,7 +6,7 @@
            http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
     <flow name="inbound">
-        <test:component throwException="true"/>
+        <test:processor throwException="true"/>
         <error-handler>
             <on-error-continue>
                 <set-property propertyName="prop" value="#[mel:message.inboundProperties.foo]" />

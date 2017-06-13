@@ -8,7 +8,7 @@ package org.mule.issues;
 
 import static org.junit.Assert.assertEquals;
 
-import org.mule.functional.api.component.FunctionalTestComponent;
+import org.mule.functional.api.component.FunctionalTestProcessor;
 import org.mule.runtime.api.lifecycle.Disposable;
 import org.mule.runtime.api.lifecycle.Initialisable;
 import org.mule.runtime.api.lifecycle.Startable;
@@ -22,20 +22,20 @@ import java.util.List;
 import org.junit.Test;
 
 public class AsyncComponentLifecycleIssue5649TestCase extends AbstractIntegrationTestCase
-    implements FunctionalTestComponent.LifecycleCallback {
+    implements FunctionalTestProcessor.LifecycleCallback {
 
   List<String> componentPhases = new ArrayList<String>();
 
   @Override
   protected MuleContext createMuleContext() throws Exception {
     componentPhases.clear();
-    FunctionalTestComponent.addLifecycleCallback(this);
+    FunctionalTestProcessor.addLifecycleCallback(this);
     return super.createMuleContext(); // To change body of overridden methods use File | Settings | File Templates.
   }
 
   @Override
   protected void doTearDown() throws Exception {
-    FunctionalTestComponent.removeLifecycleCallback(this);
+    FunctionalTestProcessor.removeLifecycleCallback(this);
   }
 
   @Override
@@ -47,7 +47,7 @@ public class AsyncComponentLifecycleIssue5649TestCase extends AbstractIntegratio
   public void testConfig() throws Exception {
     muleContext.stop();
     muleContext.dispose();
-    FunctionalTestComponent.removeLifecycleCallback(this);
+    FunctionalTestProcessor.removeLifecycleCallback(this);
     System.out.println(componentPhases);
     assertEquals(4, componentPhases.size());
     assertEquals(Initialisable.PHASE_NAME, componentPhases.get(0));

@@ -20,7 +20,7 @@
     </flow>
 
     <flow name="blockWithOwnExceptionStrategy" processingStrategy="synchronous">
-        <test:component throwException="true"/>
+        <test:processor throwException="true"/>
         <error-handler>
             <on-error-propagate>
                 <set-variable variableName="flowRefEs" value="yes"/>

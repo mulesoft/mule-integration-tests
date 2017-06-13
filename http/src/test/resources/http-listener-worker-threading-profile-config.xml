@@ -24,12 +24,12 @@
 
     <flow name="maxActiveThreadsConfigFlow">
         <http:listener path="/*" config-ref="maxActiveThreadsThreadingProfileConfig" />
-        <test:component />
+        <test:processor />
     </flow>
 
     <flow name="defaultMaxActiveThreadsConfigFlow">
         <http:listener path="/*" config-ref="defaultMaxActiveThreadsThreadingProfileConfig" />
-        <test:component />
+        <test:processor />
     </flow>
 
 

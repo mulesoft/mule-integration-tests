@@ -8,7 +8,7 @@
        http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
 
     <flow name="matchesHandlerUsingWhen">
-        <test:component/>
+        <test:processor/>
         <error-handler>
             <on-error-continue when="#[mel:exception.causedBy(java.lang.IllegalArgumentException)]">
                 <append-string-transformer message=" catch-1"/>

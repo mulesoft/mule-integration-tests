@@ -7,7 +7,7 @@
 
 
     <flow name="flow">
-        <test:component throwException="true"/>
+        <test:processor throwException="true"/>
     </flow>
 
     <flow name="flowWithChildFlow">
@@ -29,17 +29,17 @@
     </flow>
 
     <flow name="childFlow">
-        <test:component throwException="true"/>
+        <test:processor throwException="true"/>
         <custom-exception-strategy
                 class="org.mule.test.integration.exceptions.ExceptionPropagationMule5737TestCase$SensingExceptionStrategy"/>
     </flow>
 
     <processor-chain name="subFlow">
-        <test:component throwException="true"/>
+        <test:processor throwException="true"/>
     </processor-chain>
 
     <flow name="childService">
-        <test:component throwException="true"/>
+        <test:processor throwException="true"/>
         <custom-exception-strategy
                 class="org.mule.test.integration.exceptions.ExceptionPropagationMule5737TestCase$SensingExceptionStrategy"/>
     </flow>

@@ -9,7 +9,7 @@
     <configuration shutdownTimeout="10000"/>
 
     <flow name="TestService">
-        <test:component/>
+        <test:processor/>
     </flow>
 
 </mule>

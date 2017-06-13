@@ -225,7 +225,7 @@
         <test:assert count="1"/>
     </flow>
     <flow name="catchExceptionStrategyChild">
-        <test:component throwException="true"/>
+        <test:processor throwException="true"/>
         <error-handler>
             <on-error-continue>
                 <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]"/>
@@ -247,7 +247,7 @@
         </error-handler>
     </flow>
     <flow name="rollbackExceptionStrategyGrandChild">
-        <test:component throwException="true"/>
+        <test:processor throwException="true"/>
         <error-handler>
             <on-error-propagate>
                 <test:non-blocking-processor/>
@@ -265,7 +265,7 @@
 
     <flow name="nonTransactionalTryErrorHandler">
         <try>
-            <test:component throwException="true"/>
+            <test:processor throwException="true"/>
             <error-handler>
                 <on-error-continue>
                     <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]"/>
@@ -285,7 +285,7 @@
 
     <flow name="transactionalTryErrorHandler">
         <try transactionalAction="ALWAYS_BEGIN">
-            <test:component throwException="true"/>
+            <test:processor throwException="true"/>
             <error-handler>
                 <on-error-continue>
                     <test:assert-intercepting responseSameTask="true" responseExpression="#[mel:assertPayload()]"/>
