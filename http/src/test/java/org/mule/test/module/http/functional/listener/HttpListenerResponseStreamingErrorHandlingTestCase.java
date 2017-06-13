@@ -13,7 +13,6 @@ import static org.mule.test.allure.AllureConstants.HttpFeature.HttpStory.STREAMI
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.fluent.Response;
-import org.junit.Ignore;
 import org.junit.Test;
 import ru.yandex.qatools.allure.annotations.Features;
 import ru.yandex.qatools.allure.annotations.Stories;
@@ -22,26 +21,27 @@ import ru.yandex.qatools.allure.annotations.Stories;
 @Stories({ERROR_HANDLING, STREAMING})
 public class HttpListenerResponseStreamingErrorHandlingTestCase extends AbstractHttpListenerErrorHandlingTestCase {
 
+  final static int TIMEOUT = 3000;
+
   @Override
   protected String getConfigFile() {
     return "http-listener-response-streaming-exception-strategy-config.xml";
   }
 
   @Test
-  @Ignore("MULE-12448: Sources error handling is inconsistent")
-  public void exceptionHandledWhenBuildingResponse() throws Exception {
+  public void whenBuildingResponseHandlerCalledAndErrorReturned() throws Exception {
     final Response response =
-        Get(getUrl("exceptionBuildingResponse")).connectTimeout(DEFAULT_TIMEOUT).socketTimeout(DEFAULT_TIMEOUT).execute();
+        Get(getUrl("exceptionBuildingResponse")).connectTimeout(TIMEOUT).socketTimeout(TIMEOUT).execute();
 
     final HttpResponse httpResponse = response.returnResponse();
 
-    assertExceptionStrategyExecuted(httpResponse);
+    assertExceptionStrategyFailed(httpResponse, "java.io.IOException: Some exception");
   }
 
   @Test
-  public void exceptionNotHandledWhenSendingResponse() throws Exception {
+  public void whenSendingResponseHandlerNotCalledAndErrorReturned() throws Exception {
     final Response response =
-        Get(getUrl("exceptionSendingResponse")).connectTimeout(DEFAULT_TIMEOUT).socketTimeout(DEFAULT_TIMEOUT * 2).execute();
+        Get(getUrl("exceptionSendingResponse")).connectTimeout(TIMEOUT).socketTimeout(TIMEOUT).execute();
 
     final HttpResponse httpResponse = response.returnResponse();
 
@@ -49,20 +49,19 @@ public class HttpListenerResponseStreamingErrorHandlingTestCase extends Abstract
   }
 
   @Test
-  @Ignore("MULE-12448: Sources error handling is inconsistent")
-  public void exceptionHandledWhenBuildingResponseFailAgain() throws Exception {
-    final Response response = Get(getUrl("exceptionBuildingResponseFailAgain")).connectTimeout(DEFAULT_TIMEOUT)
-        .socketTimeout(DEFAULT_TIMEOUT).execute();
+  public void whenBuildingResponseFailsTwiceHandlerCalledAndErrorReturned() throws Exception {
+    final Response response = Get(getUrl("exceptionBuildingResponseFailAgain")).connectTimeout(TIMEOUT)
+        .socketTimeout(TIMEOUT).execute();
 
     final HttpResponse httpResponse = response.returnResponse();
 
-    assertExceptionStrategyFailed(httpResponse);
+    assertExceptionStrategyFailed(httpResponse, "java.io.IOException: Some exception");
   }
 
   @Test
-  public void exceptionNotHandledWhenSendingResponseFailAgain() throws Exception {
+  public void whenSendingResponseFailsTwiceHandlerNotCalledAndErrorReturned() throws Exception {
     final Response response =
-        Get(getUrl("exceptionSendingResponseFailAgain")).connectTimeout(DEFAULT_TIMEOUT).socketTimeout(DEFAULT_TIMEOUT).execute();
+        Get(getUrl("exceptionSendingResponseFailAgain")).connectTimeout(TIMEOUT).socketTimeout(TIMEOUT).execute();
 
     final HttpResponse httpResponse = response.returnResponse();
 
