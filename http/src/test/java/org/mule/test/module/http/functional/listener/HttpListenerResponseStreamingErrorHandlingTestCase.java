@@ -21,7 +21,7 @@ import ru.yandex.qatools.allure.annotations.Stories;
 @Stories({ERROR_HANDLING, STREAMING})
 public class HttpListenerResponseStreamingErrorHandlingTestCase extends AbstractHttpListenerErrorHandlingTestCase {
 
-  final int timeout = 3000;
+  final static int TIMEOUT = 3000;
 
   @Override
   protected String getConfigFile() {
@@ -29,9 +29,9 @@ public class HttpListenerResponseStreamingErrorHandlingTestCase extends Abstract
   }
 
   @Test
-  public void exceptionHandledWhenBuildingResponse() throws Exception {
+  public void whenBuildingResponseHandlerCalledAndErrorReturned() throws Exception {
     final Response response =
-        Get(getUrl("exceptionBuildingResponse")).connectTimeout(timeout).socketTimeout(timeout).execute();
+        Get(getUrl("exceptionBuildingResponse")).connectTimeout(TIMEOUT).socketTimeout(TIMEOUT).execute();
 
     final HttpResponse httpResponse = response.returnResponse();
 
@@ -39,9 +39,9 @@ public class HttpListenerResponseStreamingErrorHandlingTestCase extends Abstract
   }
 
   @Test
-  public void exceptionNotHandledWhenSendingResponse() throws Exception {
+  public void whenSendingResponseHandlerNotCalledAndErrorReturned() throws Exception {
     final Response response =
-        Get(getUrl("exceptionSendingResponse")).connectTimeout(timeout).socketTimeout(timeout).execute();
+        Get(getUrl("exceptionSendingResponse")).connectTimeout(TIMEOUT).socketTimeout(TIMEOUT).execute();
 
     final HttpResponse httpResponse = response.returnResponse();
 
@@ -49,9 +49,9 @@ public class HttpListenerResponseStreamingErrorHandlingTestCase extends Abstract
   }
 
   @Test
-  public void exceptionHandledWhenBuildingResponseFailAgain() throws Exception {
-    final Response response = Get(getUrl("exceptionBuildingResponseFailAgain")).connectTimeout(timeout)
-        .socketTimeout(timeout).execute();
+  public void whenBuildingResponseFailsTwiceHandlerCalledAndErrorReturned() throws Exception {
+    final Response response = Get(getUrl("exceptionBuildingResponseFailAgain")).connectTimeout(TIMEOUT)
+        .socketTimeout(TIMEOUT).execute();
 
     final HttpResponse httpResponse = response.returnResponse();
 
@@ -59,9 +59,9 @@ public class HttpListenerResponseStreamingErrorHandlingTestCase extends Abstract
   }
 
   @Test
-  public void exceptionNotHandledWhenSendingResponseFailAgain() throws Exception {
+  public void whenSendingResponseFailsTwiceHandlerNotCalledAndErrorReturned() throws Exception {
     final Response response =
-        Get(getUrl("exceptionSendingResponseFailAgain")).connectTimeout(timeout).socketTimeout(timeout).execute();
+        Get(getUrl("exceptionSendingResponseFailAgain")).connectTimeout(TIMEOUT).socketTimeout(TIMEOUT).execute();
 
     final HttpResponse httpResponse = response.returnResponse();
 
