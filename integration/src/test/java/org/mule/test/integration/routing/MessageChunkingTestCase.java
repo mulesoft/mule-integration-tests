@@ -15,7 +15,7 @@ import org.mule.test.AbstractIntegrationTestCase;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.commons.lang.SerializationUtils;
+import org.apache.commons.lang3.SerializationUtils;
 import org.junit.Test;
 
 public class MessageChunkingTestCase extends AbstractIntegrationTestCase {

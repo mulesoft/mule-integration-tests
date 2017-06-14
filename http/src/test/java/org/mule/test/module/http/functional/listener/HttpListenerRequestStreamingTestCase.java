@@ -17,7 +17,7 @@ import org.mule.test.module.http.functional.AbstractHttpTestCase;
 
 import java.io.ByteArrayInputStream;
 
-import org.apache.commons.lang.RandomStringUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.entity.InputStreamEntity;
 import org.junit.Rule;

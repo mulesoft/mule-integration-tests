@@ -8,7 +8,7 @@ package org.mule.test.module.http.functional.listener;
 
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.OK;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
-import static org.apache.commons.lang.StringUtils.EMPTY;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 

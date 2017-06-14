@@ -16,7 +16,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.RandomStringUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.databene.contiperf.PerfTest;
 import org.databene.contiperf.Required;
 import org.junit.Before;
