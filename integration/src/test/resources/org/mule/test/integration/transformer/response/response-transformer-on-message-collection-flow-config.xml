@@ -25,14 +25,14 @@
     </flow>
 
     <flow name="One">
-        <test:component>
+        <test:processor>
             <test:return-data>Received in #[mel:mule:context.serviceName]</test:return-data>
-        </test:component>
+        </test:processor>
     </flow>
 
     <flow name="Two">
-        <test:component>
+        <test:processor>
             <test:return-data>Received in #[mel:mule:context.serviceName]</test:return-data>
-        </test:component>
+        </test:processor>
     </flow>
 </mule>

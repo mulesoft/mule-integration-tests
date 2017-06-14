@@ -46,7 +46,7 @@
                 <http:headers>#[{'headerName':myHeader}]</http:headers>
             </http:error-response>
         </http:listener>
-        <test:component throwException="true"/>
+        <test:processor throwException="true"/>
         <error-handler>
             <on-error-propagate>
                 <set-payload value="#['An error occurred: ' ++ error.description]"/>
@@ -90,11 +90,11 @@
                 <http:body>errorResponse</http:body>
             </http:error-response>
         </http:listener>
-        <test:component throwException="true"/>
+        <test:processor throwException="true"/>
         <error-handler>
             <on-error-propagate>
                 <set-payload value="errorHandler"/>
-                <test:component throwException="true"/>
+                <test:processor throwException="true"/>
             </on-error-propagate>
         </error-handler>
     </flow>
@@ -105,11 +105,11 @@
                 <http:body>errorResponse</http:body>
             </http:error-response>
         </http:listener>
-        <test:component throwException="true"/>
+        <test:processor throwException="true"/>
         <error-handler>
             <on-error-continue>
                 <set-payload value="errorHandler"/>
-                <test:component throwException="true"/>
+                <test:processor throwException="true"/>
             </on-error-continue>
         </error-handler>
     </flow>

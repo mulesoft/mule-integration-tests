@@ -15,7 +15,7 @@
     <flow name="defaultFlow">
         <http:listener config-ref="listenerConfig"  path="/"/>
         <object-to-string-transformer />
-        <test:component />
+        <test:processor />
     </flow>
 
 </mule>

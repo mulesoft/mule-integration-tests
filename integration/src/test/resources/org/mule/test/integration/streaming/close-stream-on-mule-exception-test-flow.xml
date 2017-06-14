@@ -7,7 +7,7 @@
                http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
     <flow name="echo">
-        <test:component throwException="true"/>
+        <test:processor throwException="true"/>
     </flow>
 
     <flow name="inboundFilterExceptionBridge">

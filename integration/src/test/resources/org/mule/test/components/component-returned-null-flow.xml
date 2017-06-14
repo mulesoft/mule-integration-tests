@@ -16,9 +16,9 @@
     </flow>
 
     <flow name="ShouldNotBeReachable">
-        <test:component>
+        <test:processor>
             <test:return-data>ERROR</test:return-data>
-        </test:component>
+        </test:processor>
     </flow>
 
 </mule>

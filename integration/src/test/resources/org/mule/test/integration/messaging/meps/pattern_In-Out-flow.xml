@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:mule="http://www.mulesoft.org/schema/mule/core"
     xmlns:script="http://www.mulesoft.org/schema/mule/scripting"
     xmlns:http="http://www.mulesoft.org/schema/mule/http"
     xsi:schemaLocation="
@@ -34,6 +33,6 @@
             </script:script>
         </script:component>
 
-        <mule:echo-component />
+        <echo-component />
     </flow>
 </mule>

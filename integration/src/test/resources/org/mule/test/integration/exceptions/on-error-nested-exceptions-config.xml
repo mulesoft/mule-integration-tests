@@ -9,7 +9,7 @@
     <flow name="propagatesToOuterWithoutExceptionAndSucceeds">
         <try>
             <try>
-                <test:component throwException="true"/>
+                <test:processor throwException="true"/>
                 <error-handler>
                     <on-error-propagate>
                         <set-payload value="propagated"/>
@@ -32,7 +32,7 @@
     <flow name="propagatesToOuterWithoutExceptionAndFails">
         <try>
             <try>
-                <test:component throwException="true"/>
+                <test:processor throwException="true"/>
                 <error-handler>
                     <on-error-propagate>
                         <set-payload value="propagated"/>
@@ -49,7 +49,7 @@
 
     <flow name="propagatesToFlowWithoutExceptionAndSucceeds">
         <try>
-            <test:component throwException="true"/>
+            <test:processor throwException="true"/>
             <error-handler>
                 <on-error-propagate>
                     <set-payload value="propagated"/>
@@ -65,7 +65,7 @@
 
     <flow name="propagatesToFlowWithoutExceptionAndFails">
         <try>
-            <test:component throwException="true"/>
+            <test:processor throwException="true"/>
             <error-handler>
                 <on-error-propagate>
                     <set-payload value="propagated"/>
@@ -82,12 +82,12 @@
     <flow name="propagatesToOuterWithExceptionAndSucceeds">
         <try>
             <try>
-                <test:component throwException="true"/>
+                <test:processor throwException="true"/>
                 <error-handler>
                     <!-- Here propagate/continue shouldn't matter as there is an exception inside the handler -->
                     <on-error-propagate>
                         <set-payload value="propagated"/>
-                        <test:component throwException="true"/>
+                        <test:processor throwException="true"/>
                     </on-error-propagate>
                 </error-handler>
             </try>
@@ -107,12 +107,12 @@
     <flow name="propagatesToOuterWithExceptionAndFails">
         <try>
             <try>
-                <test:component throwException="true"/>
+                <test:processor throwException="true"/>
                 <error-handler>
                     <!-- Here propagate/continue shouldn't matter as there is an exception inside the handler -->
                     <on-error-continue>
                         <set-payload value="propagated"/>
-                        <test:component throwException="true"/>
+                        <test:processor throwException="true"/>
                     </on-error-continue>
                 </error-handler>
             </try>
@@ -126,11 +126,11 @@
 
     <flow name="propagatesToFlowWithExceptionAndSucceeds">
         <try>
-            <test:component throwException="true"/>
+            <test:processor throwException="true"/>
             <error-handler>
                 <on-error-propagate>
                     <set-payload value="propagated"/>
-                    <test:component throwException="true"/>
+                    <test:processor throwException="true"/>
                 </on-error-propagate>
             </error-handler>
         </try>
@@ -143,11 +143,11 @@
 
     <flow name="propagatesToFlowWithExceptionAndFails">
         <try>
-            <test:component throwException="true"/>
+            <test:processor throwException="true"/>
             <error-handler>
                 <on-error-continue>
                     <set-payload value="propagated"/>
-                    <test:component throwException="true"/>
+                    <test:processor throwException="true"/>
                 </on-error-continue>
             </error-handler>
         </try>
@@ -159,22 +159,22 @@
     </flow>
 
     <flow name="exceptionInErrorHandlerFlow">
-        <test:component throwException="true"/>
+        <test:processor throwException="true"/>
         <error-handler>
             <on-error-continue>
                 <set-payload value="propagated"/>
-                <test:component throwException="true"/>
+                <test:processor throwException="true"/>
             </on-error-continue>
         </error-handler>
     </flow>
 
     <flow name="exceptionInErrorHandlerTry">
         <try>
-            <test:component throwException="true"/>
+            <test:processor throwException="true"/>
             <error-handler>
                 <on-error-continue>
                     <set-payload value="propagated"/>
-                    <test:component throwException="true"/>
+                    <test:processor throwException="true"/>
                 </on-error-continue>
             </error-handler>
         </try>
@@ -183,11 +183,11 @@
     <flow name="exceptionInErrorHandlerNestedTry">
         <try>
             <try>
-                <test:component throwException="true"/>
+                <test:processor throwException="true"/>
                 <error-handler>
                     <on-error-continue>
                         <set-payload value="propagated"/>
-                        <test:component throwException="true"/>
+                        <test:processor throwException="true"/>
                     </on-error-continue>
                 </error-handler>
             </try>

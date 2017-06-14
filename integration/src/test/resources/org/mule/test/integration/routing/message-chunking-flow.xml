@@ -14,7 +14,7 @@
 
     <flow name="ChunkingReceiver">
         <message-chunk-aggregator/>
-        <test:component appendString=" Received" logMessageDetails="true"/>
+        <test:processor appendString=" Received" logMessageDetails="true"/>
     </flow>
 
     <!-- this has changed slightly from 1.x; we need to stop the functional test component from converting response to a 
@@ -26,12 +26,7 @@
 
     <flow name="ChunkingObjectReceiver">
         <message-chunk-aggregator/>
-        <test:component doInboundTransform="false" logMessageDetails="true"/>
-        <!--<component> -->
-        <!--<singleton-object class="FunctionalTestComponent"> -->
-        <!--<property key="asString" value="false"/> -->
-        <!--</singleton-object> -->
-        <!--</component> -->
+        <test:processor logMessageDetails="true"/>
     </flow>
 
 </mule>

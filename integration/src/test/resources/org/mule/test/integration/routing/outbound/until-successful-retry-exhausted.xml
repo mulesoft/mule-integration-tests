@@ -12,7 +12,7 @@
 
 	<flow name="retryExhausted">
 		<until-successful objectStore-ref="objectStore" maxRetries="1" secondsBetweenRetries="1">
-			<test:component throwException="true"/>
+			<test:processor throwException="true"/>
 		</until-successful>
 	</flow>
 </mule>

@@ -9,9 +9,9 @@
                http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 
     <flow name="mySynchService">
-        <test:component>
+        <test:processor>
             <test:return-data>Polo</test:return-data>
-        </test:component>
+        </test:processor>
     </flow>
 
 </mule>

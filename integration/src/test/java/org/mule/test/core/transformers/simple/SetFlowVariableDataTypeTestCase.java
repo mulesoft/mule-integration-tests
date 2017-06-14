@@ -10,12 +10,13 @@ package org.mule.test.core.transformers.simple;
 import static java.nio.charset.StandardCharsets.UTF_16;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mule.tck.junit4.matcher.DataTypeMatcher.like;
+
+import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.metadata.DataType;
 import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.core.api.Event;
-import org.mule.runtime.core.api.MuleEventContext;
-import org.mule.runtime.core.api.lifecycle.Callable;
+import org.mule.runtime.core.api.processor.Processor;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Test;
@@ -36,11 +37,14 @@ public class SetFlowVariableDataTypeTestCase extends AbstractIntegrationTestCase
     assertThat(dataType, like(String.class, MediaType.XML, UTF_16));
   }
 
-  public static class FlowVariableDataTypeAccessor implements Callable {
+  public static class FlowVariableDataTypeAccessor implements Processor {
 
     @Override
-    public Object onCall(MuleEventContext eventContext) throws Exception {
-      return eventContext.getEvent().getVariable("testVariable").getDataType();
+    public Event process(Event event) throws MuleException {
+      return Event.builder(event)
+          .message(Message.builder(event.getMessage()).payload(event.getVariable("testVariable").getDataType()).build())
+          .build();
     }
+
   }
 }

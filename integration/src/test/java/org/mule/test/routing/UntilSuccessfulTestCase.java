@@ -14,11 +14,11 @@ import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.mule.functional.api.component.FunctionalTestComponent.getFromFlow;
+import static org.mule.functional.api.component.FunctionalTestProcessor.getFromFlow;
 import static org.mule.functional.api.component.InvocationCountMessageProcessor.getNumberOfInvocationsFor;
 import static org.mule.functional.junit4.TestLegacyMessageUtils.getExceptionPayload;
 
-import org.mule.functional.api.component.FunctionalTestComponent;
+import org.mule.functional.api.component.FunctionalTestProcessor;
 import org.mule.functional.api.exception.FunctionalTestException;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.exception.MuleRuntimeException;
@@ -51,7 +51,7 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
 
   private final String configFile;
 
-  private FunctionalTestComponent targetMessageProcessor;
+  private FunctionalTestProcessor targetMessageProcessor;
 
   @Parameterized.Parameters
   public static Collection<Object[]> parameters() {
@@ -154,7 +154,7 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
     return ponderUntilMessageCountReceived(expectedCount, targetMessageProcessor);
   }
 
-  private List<Object> ponderUntilMessageCountReceived(final int expectedCount, final FunctionalTestComponent ftc)
+  private List<Object> ponderUntilMessageCountReceived(final int expectedCount, final FunctionalTestProcessor ftc)
       throws InterruptedException {
     final List<Object> results = new ArrayList<>();
 

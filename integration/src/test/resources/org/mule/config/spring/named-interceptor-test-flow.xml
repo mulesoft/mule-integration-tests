@@ -22,7 +22,7 @@
     </spring:bean>
 
     <flow name="service">
-        <test:component enableMessageHistory="false"/>
+        <test:processor enableMessageHistory="false"/>
     </flow>
 </mule>
         

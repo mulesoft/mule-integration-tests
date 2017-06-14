@@ -13,6 +13,6 @@
     </spring:beans>
 
     <flow name="testFlow">
-        <test:component throwException="true"/>
+        <test:processor throwException="true"/>
     </flow>
 </mule>

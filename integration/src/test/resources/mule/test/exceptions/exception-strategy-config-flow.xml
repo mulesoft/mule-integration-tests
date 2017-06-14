@@ -11,7 +11,7 @@
 
     <flow name="testService1">
         <inbound-endpoint address="test://test1" exchange-pattern="one-way"/>
-        <test:component/>
+        <test:processor/>
     </flow>
     
 </mule>

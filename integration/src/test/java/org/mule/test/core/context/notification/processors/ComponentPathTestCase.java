@@ -12,6 +12,7 @@ import static java.util.Optional.of;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.component.ComponentIdentifier.buildFromStringRepresentation;
+import static org.mule.runtime.api.component.TypedComponentIdentifier.builder;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.FLOW;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.INTERCEPTING;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.ON_ERROR;
@@ -19,10 +20,10 @@ import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentT
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.ROUTER;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.SOURCE;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.UNKNOWN;
-import static org.mule.runtime.api.component.TypedComponentIdentifier.builder;
 import static org.mule.runtime.api.meta.AbstractAnnotatedObject.LOCATION_KEY;
 import static org.mule.runtime.config.spring.dsl.model.ApplicationModel.FLOW_IDENTIFIER;
 import static org.mule.runtime.config.spring.dsl.model.ApplicationModel.SUBFLOW_IDENTIFIER;
+
 import org.mule.runtime.api.component.TypedComponentIdentifier;
 import org.mule.runtime.api.meta.AnnotatedObject;
 import org.mule.runtime.core.api.construct.Flow;
@@ -150,8 +151,8 @@ public class ComponentPathTestCase extends AbstractIntegrationTestCase {
       of(builder().withIdentifier(buildFromStringRepresentation("validation:is-false")).withType(PROCESSOR).build());
   private static final Optional<TypedComponentIdentifier> WHEN =
       of(builder().withIdentifier(buildFromStringRepresentation("mule:when")).withType(UNKNOWN).build());
-  private static final Optional<TypedComponentIdentifier> TEST_COMPONENT =
-      of(builder().withIdentifier(buildFromStringRepresentation("test:component")).withType(PROCESSOR).build());
+  private static final Optional<TypedComponentIdentifier> TEST_PROCESSOR =
+      of(builder().withIdentifier(buildFromStringRepresentation("test:processor")).withType(PROCESSOR).build());
   private static final Optional<TypedComponentIdentifier> ON_ERROR_PROPAGATE =
       of(builder().withIdentifier(buildFromStringRepresentation("mule:on-error-propagate")).withType(ON_ERROR).build());
   private static final Optional<TypedComponentIdentifier> TRY =
@@ -228,7 +229,7 @@ public class ComponentPathTestCase extends AbstractIntegrationTestCase {
         .appendRoutePart()
         .appendLocationPart("0", empty(), empty(), empty())
         .appendProcessorsPart()
-        .appendLocationPart("0", TEST_COMPONENT, CONFIG_FILE_NAME, of(40)));
+        .appendLocationPart("0", TEST_PROCESSOR, CONFIG_FILE_NAME, of(40)));
     assertNextProcessorLocationIs(FLOW_WITH_ERROR_HANDLER
         .appendLocationPart("errorHandler", ERROR_HANDLER, CONFIG_FILE_NAME, of(46))
         .appendLocationPart("1", ON_ERROR_PROPAGATE, CONFIG_FILE_NAME, of(50))
@@ -254,7 +255,7 @@ public class ComponentPathTestCase extends AbstractIntegrationTestCase {
     assertNextProcessorLocationIs(blockLocation);
     assertNextProcessorLocationIs(blockLocation
         .appendProcessorsPart()
-        .appendLocationPart("0", TEST_COMPONENT, CONFIG_FILE_NAME, of(60)));
+        .appendLocationPart("0", TEST_PROCESSOR, CONFIG_FILE_NAME, of(60)));
     DefaultComponentLocation blockOnErrorContinueLocation = blockLocation
         .appendLocationPart("errorHandler", ERROR_HANDLER, CONFIG_FILE_NAME, of(61))
         .appendLocationPart("0", ON_ERROR_CONTINUE, CONFIG_FILE_NAME,

@@ -25,7 +25,7 @@
 
     <flow name="onErrorPropagateTypeMatchAny">
         <append-string-transformer message=" apt1"/>
-        <test:component throwException="true"/>
+        <test:processor throwException="true"/>
         <error-handler>
             <on-error-propagate type="REDELIVERY_EXHAUSTED">
                 <test:queue name="custom2"/>
@@ -69,7 +69,7 @@
     </flow>
 
     <flow name="failingHandler">
-        <test:component throwException="true"/>
+        <test:processor throwException="true"/>
         <error-handler>
             <on-error-propagate>
                 <custom-processor class="org.mule.test.integration.exceptions.OnErrorPropagateTestCase$ErrorProcessor"/>

@@ -7,14 +7,14 @@
        http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
     <flow name="component1">
-        <component class="org.mule.test.integration.EventMetaDataPropagationTestCase$DummyComponent"/>
+        <custom-processor class="org.mule.test.integration.EventMetaDataPropagationTestCase$DummyComponent"/>
 
         <custom-transformer class="org.mule.test.integration.EventMetaDataPropagationTestCase$DummyTransformer"/>
         <test:queue name="queue"/>
     </flow>
 
     <flow name="component2">
-        <component class="org.mule.test.integration.EventMetaDataPropagationTestCase$DummyComponent"/>
+        <custom-processor class="org.mule.test.integration.EventMetaDataPropagationTestCase$DummyComponent"/>
     </flow>
 
 </mule>

@@ -7,7 +7,7 @@
 
     <flow name="test">
         <async>
-            <test:component id="async"/>
+            <test:processor id="async"/>
         </async>
     </flow>
 </mule>

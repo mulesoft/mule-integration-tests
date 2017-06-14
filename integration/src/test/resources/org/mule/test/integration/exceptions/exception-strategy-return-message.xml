@@ -17,12 +17,12 @@
 
 
     <flow name="ExceptionService">
-        <test:component throwException="true"/>
+        <test:processor throwException="true"/>
         <custom-exception-strategy class="org.mule.test.integration.exceptions.ExceptionStrategyReturnMessageTestCase$TestExceptionStrategy"/>
     </flow>
 
     <flow name="ExceptionService2">
-        <test:component throwException="true"/>
+        <test:processor throwException="true"/>
     </flow>
 
 </mule>

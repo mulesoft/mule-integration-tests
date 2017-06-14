@@ -17,15 +17,15 @@
             <flow-ref name="TappedReceiver2"/>
         </wire-tap>
         
-        <test:component />
+        <test:processor />
     </flow>
 
     <flow name="TappedReceiver1">
-        <test:component />
+        <test:processor />
     </flow>
 
     <flow name="TappedReceiver2">
-        <test:component />
+        <test:processor />
     </flow>
 
 </mule>

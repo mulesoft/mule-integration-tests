@@ -11,7 +11,7 @@
     </flow>
     
     <flow name="RequestFlow">
-        <test:component throwException="true"/>
+        <test:processor throwException="true"/>
         <error-handler>
             <on-error-propagate>
                 <async>

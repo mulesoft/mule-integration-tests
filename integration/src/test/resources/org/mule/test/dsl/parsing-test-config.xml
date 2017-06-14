@@ -7,7 +7,7 @@
        http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
     <flow name="simpleFlow">
-        <test:component/>
+        <test:processor/>
     </flow>
 
     <flow name="complexFlow">

@@ -15,7 +15,7 @@
     <flow name="bridge">
         <http:listener path="in" config-ref="listenerConfig"/>
         <object-to-string-transformer/>
-        <test:component logMessageDetails="true"/>
+        <test:processor logMessageDetails="true"/>
         <!-- TODO MULE-9857 Make message properties case sensitive -->
         <set-property propertyName="X-Custom-Header" value="#[mel:message.attributes.headers['x-custom-header']]"/>
         <test:queue name="out"/>

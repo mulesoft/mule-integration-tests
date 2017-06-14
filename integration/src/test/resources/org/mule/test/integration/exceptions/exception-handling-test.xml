@@ -19,7 +19,7 @@
     <flow name="asyncInFlow">
         <async>
             <custom-processor class="org.mule.test.integration.exceptions.ExceptionHandlingTestCase$ExceptionHandlerVerifierProcessor" />
-            <test:component throwException="true"/>
+            <test:processor throwException="true"/>
         </async>
         <error-handler>
             <on-error-continue>
@@ -33,7 +33,7 @@
             <custom-processor class="org.mule.test.integration.exceptions.ExceptionHandlingTestCase$ExceptionHandlerVerifierProcessor" />
         </until-successful>
         <until-successful objectStore-ref="objectStore" maxRetries="1" millisBetweenRetries="1000">
-            <test:component throwException="true"/>
+            <test:processor throwException="true"/>
         </until-successful>
         <error-handler>
             <on-error-continue>
@@ -54,7 +54,7 @@
     <flow name="customProcessorInTransactionalScope">
         <try>
             <custom-processor class="org.mule.test.integration.exceptions.ExceptionHandlingTestCase$ExceptionHandlerVerifierProcessor" />
-            <test:component throwException="true"/>
+            <test:processor throwException="true"/>
             <error-handler>
                 <on-error-continue>
                     <test:assert expression="#[mel:flowVars.expectedHandler == false]"/>
@@ -68,7 +68,7 @@
         <try>
             <async>
                 <custom-processor class="org.mule.test.integration.exceptions.ExceptionHandlingTestCase$ExceptionHandlerVerifierProcessor" />
-                <test:component throwException="true"/>
+                <test:processor throwException="true"/>
             </async>
             <error-handler>
                 <on-error-continue>
@@ -84,7 +84,7 @@
                 <custom-processor class="org.mule.test.integration.exceptions.ExceptionHandlingTestCase$ExceptionHandlerVerifierProcessor" />
             </until-successful>
             <until-successful objectStore-ref="objectStore2" maxRetries="1" millisBetweenRetries="1000">
-                <test:component throwException="true"/>
+                <test:processor throwException="true"/>
             </until-successful>
             <error-handler>
                 <on-error-continue>
@@ -95,7 +95,7 @@
     </flow>
 
     <flow name="customProcessorInExceptionStrategy">
-        <test:component throwException="true"/>
+        <test:processor throwException="true"/>
         <error-handler>
             <on-error-continue>
                 <custom-processor class="org.mule.test.integration.exceptions.ExceptionHandlingTestCase$ExceptionHandlerVerifierProcessor" />
@@ -106,20 +106,20 @@
     </flow>
 
     <flow name="asyncInExceptionStrategy">
-        <test:component throwException="true"/>
+        <test:processor throwException="true"/>
         <error-handler>
             <on-error-continue>
                 <custom-processor class="org.mule.test.integration.exceptions.ExceptionHandlingTestCase$ExecutionCountProcessor" />
                 <async>
                     <custom-processor class="org.mule.test.integration.exceptions.ExceptionHandlingTestCase$ExceptionHandlerVerifierProcessor" />
-                    <test:component throwException="true"/>
+                    <test:processor throwException="true"/>
                 </async>
             </on-error-continue>
         </error-handler>
     </flow>
 
     <flow name="untilSuccessfulInExceptionStrategy">
-        <test:component throwException="true"/>
+        <test:processor throwException="true"/>
         <error-handler>
             <on-error-continue>
                 <custom-processor class="org.mule.test.integration.exceptions.ExceptionHandlingTestCase$ExecutionCountProcessor" />
@@ -127,14 +127,14 @@
                     <custom-processor class="org.mule.test.integration.exceptions.ExceptionHandlingTestCase$ExceptionHandlerVerifierProcessor" />
                 </until-successful>
                 <until-successful objectStore-ref="objectStore" maxRetries="1" millisBetweenRetries="1000">
-                    <test:component throwException="true"/>
+                    <test:processor throwException="true"/>
                 </until-successful>
             </on-error-continue>
         </error-handler>
     </flow>
 
     <flow name="untilSuccessfulInExceptionStrategyRollback">
-        <test:component throwException="true"/>
+        <test:processor throwException="true"/>
         <error-handler>
             <on-error-propagate>
                 <custom-processor class="org.mule.test.integration.exceptions.ExceptionHandlingTestCase$ExecutionCountProcessor" />
@@ -142,7 +142,7 @@
                     <custom-processor class="org.mule.test.integration.exceptions.ExceptionHandlingTestCase$ExceptionHandlerVerifierProcessor" />
                 </until-successful>
                 <until-successful objectStore-ref="objectStore" maxRetries="1" millisBetweenRetries="1000">
-                    <test:component throwException="true"/>
+                    <test:processor throwException="true"/>
                 </until-successful>
             </on-error-propagate>
         </error-handler>

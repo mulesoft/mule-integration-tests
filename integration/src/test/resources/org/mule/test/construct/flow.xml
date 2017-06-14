@@ -153,7 +153,7 @@
 
     <flow name="components">
         <echo-component/>
-        <test:component appendString="test"/>
+        <test:processor appendString="test"/>
     </flow>
 
     <flow name="wiretap">
@@ -173,7 +173,7 @@
         <append-string-transformer message="a" />
         <response>
             <append-string-transformer message="i" />
-            <test:component/>
+            <test:processor/>
         </response>
         <append-string-transformer message="b" />
         <response>
@@ -186,7 +186,7 @@
         </response>
         <append-string-transformer message="c" />
         <response>
-            <test:component/>
+            <test:processor/>
         </response>
         <append-string-transformer message="d" />
     </flow>
@@ -236,7 +236,7 @@
             <test:queue name="multicaster-out1"/>
             <test:queue name="multicaster-out2"/>
             <processor-chain>
-                <test:component/>
+                <test:processor/>
                 <test:queue name="multicaster-out3"/>
             </processor-chain>
         </all>    
