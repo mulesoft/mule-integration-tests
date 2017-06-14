@@ -6,7 +6,7 @@
  */
 package org.mule.test.transformers;
 
-import static org.apache.commons.lang.StringUtils.reverse;
+import static org.apache.commons.lang3.StringUtils.reverse;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.core.api.util.IOUtils.closeQuietly;

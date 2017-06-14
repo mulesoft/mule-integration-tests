@@ -6,7 +6,7 @@
 
     <configuration>
         <expression-language autoResolveVariables="false">
-            <import class="org.apache.commons.lang.StringUtils" />
+            <import class="org.apache.commons.lang3.StringUtils" />
             <global-functions>
                 def reversePayload() { StringUtils.reverse(payload) }
             </global-functions>

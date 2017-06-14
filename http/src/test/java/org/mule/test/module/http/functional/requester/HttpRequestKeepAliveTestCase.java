@@ -7,7 +7,7 @@
 package org.mule.test.module.http.functional.requester;
 
 import static java.util.Collections.singletonMap;
-import static org.apache.commons.lang.StringUtils.join;
+import static org.apache.commons.lang3.StringUtils.join;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
