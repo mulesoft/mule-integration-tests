@@ -30,33 +30,33 @@ public class FlowProcessingStrategyConfigTestCase extends AbstractIntegrationTes
 
   @Test
   public void testDefault() throws Exception {
-    assertThat(getFlowProcessingStrategyFactory("defaultFlow"),
-               instanceOf(TransactionAwareWorkQueueProcessingStrategyFactory.class));
+    assertThat(getFlowProcessingStrategy("defaultFlow"),
+               instanceOf(new TransactionAwareWorkQueueProcessingStrategyFactory().getProcessingStrategyClass()));
   }
 
   @Test
   public void testSynchronous() throws Exception {
-    assertThat(getFlowProcessingStrategyFactory("synchronousFlow"),
-               instanceOf(BlockingProcessingStrategyFactory.class));
+    assertThat(getFlowProcessingStrategy("synchronousFlow"),
+               instanceOf(new BlockingProcessingStrategyFactory().getProcessingStrategyClass()));
   }
 
   @Test
   public void testCustom() throws Exception {
-    ProcessingStrategyFactory processingStrategy = getFlowProcessingStrategyFactory("customProcessingStrategyFlow");
-    assertThat(processingStrategy, instanceOf(CustomProcessingStrategyFactory.class));
+    ProcessingStrategy processingStrategy = getFlowProcessingStrategy("customProcessingStrategyFlow");
+    assertThat(processingStrategy, instanceOf(new CustomProcessingStrategyFactory().getProcessingStrategyClass()));
 
     assertThat(((CustomProcessingStrategyFactory) processingStrategy).foo, is("bar"));
   }
 
   @Test
   public void testDefaultAsync() throws Exception {
-    assertThat(getFlowProcessingStrategyFactory("defaultAsync"),
-               instanceOf(TransactionAwareWorkQueueProcessingStrategyFactory.class));
+    assertThat(getFlowProcessingStrategy("defaultAsync"),
+               instanceOf(new TransactionAwareWorkQueueProcessingStrategyFactory().getProcessingStrategyClass()));
   }
 
-  private ProcessingStrategyFactory getFlowProcessingStrategyFactory(String flowName) throws Exception {
+  private ProcessingStrategy getFlowProcessingStrategy(String flowName) throws Exception {
     Flow flow = (Flow) getFlowConstruct(flowName);
-    return flow.getProcessingStrategyFactory();
+    return flow.getProcessingStrategy();
   }
 
   public static class CustomProcessingStrategyFactory extends AbstractProcessingStrategy implements ProcessingStrategyFactory {
@@ -70,6 +70,11 @@ public class FlowProcessingStrategyConfigTestCase extends AbstractIntegrationTes
     @Override
     public ProcessingStrategy create(MuleContext muleContext, String schedulersNamePrefix) {
       return this;
+    }
+
+    @Override
+    public Class<? extends ProcessingStrategy> getProcessingStrategyClass() {
+      return getClass();
     }
   }
 
