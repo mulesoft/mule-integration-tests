@@ -43,7 +43,6 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
@@ -404,15 +403,31 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
                     .withParameter(TARGET_PARAMETER_NAME, "myVar")
                     .getDeclaration())
                 .getDeclaration())
-            .withComponent(wsc.newOperation("consume")
-                .withParameterGroup(newParameterGroup()
-                    .withParameter("operation", "GetCitiesByCountry")
+            .withComponent(core.newScope("try")
+                .withComponent(wsc.newOperation("consume")
+                    .withParameterGroup(newParameterGroup()
+                        .withParameter("operation", "GetCitiesByCountry")
+                        .getDeclaration())
+                    .withParameterGroup(newParameterGroup("Message")
+                        .withParameter("attachments", "#[{}]")
+                        .withParameter("headers",
+                                       "#[{\"headers\": {con#headerIn: \"Header In Value\",con#headerInOut: \"Header In Out Value\"}]")
+                        .withParameter("body", "#[payload]")
+                        .getDeclaration())
                     .getDeclaration())
-                .withParameterGroup(newParameterGroup("Message")
-                    .withParameter("attachments", "#[{}]")
-                    .withParameter("headers",
-                                   "#[{\"headers\": {con#headerIn: \"Header In Value\",con#headerInOut: \"Header In Out Value\"}]")
-                    .withParameter("body", "#[payload]")
+                .withComponent(core.newScope("errorHandler")
+                    .withComponent(core.newScope("onErrorContinue")
+                        .withParameterGroup(newParameterGroup()
+                            .withParameter("type", "MULE:ANY")
+                            .getDeclaration())
+                        .withComponent(core.newOperation("logger").getDeclaration())
+                        .getDeclaration())
+                    .withComponent(core.newScope("onErrorPropagate")
+                        .withParameterGroup(newParameterGroup()
+                            .withParameter("type", "WSC:CONNECTIVITY")
+                            .withParameter("when", "#[e.cause == null]")
+                            .getDeclaration())
+                        .getDeclaration())
                     .getDeclaration())
                 .getDeclaration())
             .getDeclaration())
