@@ -12,6 +12,7 @@ import static org.apache.http.HttpVersion.HTTP_1_0;
 import static org.apache.http.HttpVersion.HTTP_1_1;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.startsWith;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertThat;
@@ -165,7 +166,7 @@ public class HttpListenerUrlEncodedTestCase extends AbstractHttpTestCase {
     final Message receivedMessage = muleContext.getClient().request(OUT_QUEUE_URL, TIMEOUT).getRight().get();
     assertThat(receivedMessage.getPayload().getValue(), is(instanceOf(ParameterMap.class)));
     ParameterMap payloadAsMap = (ParameterMap) receivedMessage.getPayload().getValue();
-    assertThat(payloadAsMap.size(), is(0));
+    assertThat(payloadAsMap.entrySet(), hasSize(0));
 
     assertEmptyResponse(response);
   }
