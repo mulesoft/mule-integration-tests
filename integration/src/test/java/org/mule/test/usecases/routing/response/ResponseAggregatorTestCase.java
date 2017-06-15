@@ -55,7 +55,7 @@ public class ResponseAggregatorTestCase extends AbstractIntegrationTestCase {
 
     HttpResponse response = httpClient.send(request, RECEIVE_TIMEOUT, false, null);
 
-    String payload = IOUtils.toString(((InputStreamHttpEntity) response.getEntity()).getInputStream());
+    String payload = IOUtils.toString(response.getEntity().getContent());
     assertThat(payload, is("Received: request"));
   }
 

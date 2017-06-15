@@ -74,7 +74,7 @@ public class ValidShutdownTimeoutRequestResponseTestCase extends AbstractShutdow
           HttpRequest request =
               HttpRequest.builder().setUri(url).setMethod(GET).setEntity(new ByteArrayHttpEntity(payload.getBytes())).build();
           final HttpResponse response = httpClient.send(request, RECEIVE_TIMEOUT, false, null);
-          results[0] = payload.equals(IOUtils.toString(((InputStreamHttpEntity) response.getEntity()).getInputStream()));
+          results[0] = payload.equals(IOUtils.toString(response.getEntity().getContent()));
         } catch (Exception e) {
           // Ignore
         }

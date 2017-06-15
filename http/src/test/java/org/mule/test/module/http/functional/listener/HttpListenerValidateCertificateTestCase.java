@@ -19,7 +19,6 @@ import org.mule.runtime.http.api.HttpService;
 import org.mule.runtime.http.api.client.HttpClient;
 import org.mule.runtime.http.api.client.HttpClientConfiguration;
 import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;
-import org.mule.runtime.http.api.domain.entity.InputStreamHttpEntity;
 import org.mule.runtime.http.api.domain.message.request.HttpRequest;
 import org.mule.runtime.http.api.domain.message.response.HttpResponse;
 import org.mule.tck.junit4.rule.DynamicPort;
@@ -118,7 +117,7 @@ public class HttpListenerValidateCertificateTestCase extends AbstractHttpTestCas
         HttpRequest.builder().setUri(url).setMethod(POST).setEntity(new ByteArrayHttpEntity(payload.getBytes())).build();
     final HttpResponse response = httpClientWithCertificate.send(request, RECEIVE_TIMEOUT, false, null);
 
-    return IOUtils.toString(((InputStreamHttpEntity) response.getEntity()).getInputStream());
+    return IOUtils.toString(response.getEntity().getContent());
   }
 
   private void assertValidRequest(String url) throws Exception {

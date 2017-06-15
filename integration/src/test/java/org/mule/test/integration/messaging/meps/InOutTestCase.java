@@ -10,12 +10,10 @@ import static java.lang.String.format;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mule.runtime.http.api.HttpConstants.Method.GET;
-
 import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.runtime.http.api.HttpService;
 import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;
 import org.mule.runtime.http.api.domain.entity.HttpEntity;
-import org.mule.runtime.http.api.domain.entity.InputStreamHttpEntity;
 import org.mule.runtime.http.api.domain.message.request.HttpRequest;
 import org.mule.service.http.TestHttpClient;
 import org.mule.tck.junit4.rule.DynamicPort;
@@ -46,12 +44,12 @@ public class InOutTestCase extends AbstractIntegrationTestCase {
         .setEntity(new ByteArrayHttpEntity("some data".getBytes())).build();
     HttpEntity responseEntity = httpClient.send(request, RECEIVE_TIMEOUT, false, null).getEntity();
     assertNotNull(responseEntity);
-    assertEquals("foo header not received", IOUtils.toString(((InputStreamHttpEntity) responseEntity).getInputStream()));
+    assertEquals("foo header not received", IOUtils.toString(responseEntity.getContent()));
 
     request = HttpRequest.builder().setUri(listenerUrl).setMethod(GET).addHeader("foo", "bar")
         .setEntity(new ByteArrayHttpEntity("some data".getBytes())).build();
     responseEntity = httpClient.send(request, RECEIVE_TIMEOUT, false, null).getEntity();
     assertNotNull(responseEntity);
-    assertEquals("foo header received", IOUtils.toString(((InputStreamHttpEntity) responseEntity).getInputStream()));
+    assertEquals("foo header received", IOUtils.toString(responseEntity.getContent()));
   }
 }

@@ -78,7 +78,7 @@ public class TlsSharedContextTestCase extends DomainFunctionalTestCase {
 
     httpClient.stop();
 
-    assertThat(IOUtils.toString(((InputStreamHttpEntity) response.getEntity()).getInputStream()), is("hello all"));
+    assertThat(IOUtils.toString(response.getEntity().getContent()), is("hello all"));
   }
 
   private void testFlowForApp(String flowName, String appName, String expected) throws Exception {

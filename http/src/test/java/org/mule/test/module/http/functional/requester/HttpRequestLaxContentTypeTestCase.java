@@ -7,18 +7,16 @@
 
 package org.mule.test.module.http.functional.requester;
 
-import static org.mule.runtime.http.api.HttpConstants.Method.GET;
-import static org.mule.runtime.http.api.HttpHeaders.Names.CONTENT_TYPE;
-import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.equalToIgnoringCase;
 import static org.hamcrest.Matchers.hasItem;
-
+import static org.mule.runtime.http.api.HttpConstants.Method.GET;
+import static org.mule.runtime.http.api.HttpHeaders.Names.CONTENT_TYPE;
+import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
 import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;
-import org.mule.runtime.http.api.domain.entity.InputStreamHttpEntity;
 import org.mule.runtime.http.api.domain.message.request.HttpRequest;
 import org.mule.runtime.http.api.domain.message.response.HttpResponse;
 import org.mule.tck.junit4.rule.DynamicPort;
@@ -47,7 +45,7 @@ public class HttpRequestLaxContentTypeTestCase extends AbstractHttpTestCase {
     final HttpResponse response = httpClient.send(request, RECEIVE_TIMEOUT, false, null);
 
     assertNoContentTypeProperty(response);
-    assertThat(IOUtils.toString(((InputStreamHttpEntity) response.getEntity()).getInputStream()), equalTo("invalidMimeType"));
+    assertThat(IOUtils.toString(response.getEntity().getContent()), equalTo("invalidMimeType"));
   }
 
   private void assertNoContentTypeProperty(HttpResponse response) {

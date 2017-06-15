@@ -13,7 +13,6 @@ import static org.junit.Assert.assertThat;
 import static org.mule.tck.junit4.AbstractMuleContextTestCase.RECEIVE_TIMEOUT;
 import org.mule.functional.junit4.DomainFunctionalTestCase;
 import org.mule.runtime.api.tls.TlsContextFactory;
-import org.mule.runtime.http.api.domain.entity.InputStreamHttpEntity;
 import org.mule.runtime.http.api.domain.message.request.HttpRequest;
 import org.mule.runtime.http.api.domain.message.response.HttpResponse;
 import org.mule.service.http.TestHttpClient;
@@ -56,14 +55,14 @@ public class HttpSharePortTestCase extends DomainFunctionalTestCase {
     HttpResponse httpResponse = httpClient.send(httpRequest, RECEIVE_TIMEOUT, false, null);
 
     String payload =
-        org.apache.commons.io.IOUtils.toString(((InputStreamHttpEntity) httpResponse.getEntity()).getInputStream(), UTF_8);
+        org.apache.commons.io.IOUtils.toString(httpResponse.getEntity().getContent(), UTF_8);
     assertThat(payload, is("hello world"));
 
     httpRequest = HttpRequest.builder()
         .setUri(format("%s://localhost:%d/service/helloMule", endpointScheme.getValue(), dynamicPort.getNumber())).build();
     httpResponse = httpClient.send(httpRequest, RECEIVE_TIMEOUT, false, null);
 
-    payload = org.apache.commons.io.IOUtils.toString(((InputStreamHttpEntity) httpResponse.getEntity()).getInputStream(), UTF_8);
+    payload = org.apache.commons.io.IOUtils.toString(httpResponse.getEntity().getContent(), UTF_8);
     assertThat(payload, is("hello mule"));
   }
 

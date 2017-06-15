@@ -58,7 +58,7 @@ public class AppAndDomainLifecycleTestCase extends AbstractMuleTestCase {
       final HttpResponse response = httpClient.send(request, DEFAULT_TEST_TIMEOUT_SECS, false, null);
 
       assertThat(response, notNullValue());
-      assertThat(IOUtils.toString(((InputStreamHttpEntity) response.getEntity()).getInputStream()), is("hello world"));
+      assertThat(IOUtils.toString(response.getEntity().getContent()), is("hello world"));
       // TODO MULE-10633 assert that the shared listener is started
     } finally {
       closeQuietly(domainContext);

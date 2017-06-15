@@ -6,22 +6,20 @@
  */
 package org.mule.test.module.http.functional.listener;
 
+import static org.apache.http.HttpStatus.SC_NOT_FOUND;
+import static org.apache.http.HttpStatus.SC_OK;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.METHOD_NOT_ALLOWED;
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.NOT_FOUND;
 import static org.mule.runtime.http.api.HttpConstants.Method.GET;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
 import static org.mule.test.module.http.functional.matcher.HttpResponseReasonPhraseMatcher.hasReasonPhrase;
 import static org.mule.test.module.http.functional.matcher.HttpResponseStatusCodeMatcher.hasStatusCode;
-import static org.apache.http.HttpStatus.SC_NOT_FOUND;
-import static org.apache.http.HttpStatus.SC_OK;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
 import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.runtime.http.api.HttpConstants.HttpStatus;
 import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;
-import org.mule.runtime.http.api.domain.entity.InputStreamHttpEntity;
 import org.mule.runtime.http.api.domain.message.request.HttpRequest;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
@@ -127,7 +125,7 @@ public class HttpListenerConfigFunctionalTestCase extends AbstractHttpTestCase {
         httpClient.send(request, RECEIVE_TIMEOUT, false, null);
     assertThat(response.getStatusCode(), is(expectedStatus));
 
-    return IOUtils.toString(((InputStreamHttpEntity) response.getEntity()).getInputStream());
+    return IOUtils.toString(response.getEntity().getContent());
   }
 
   private HttpResponse callAndAssertStatus(String url, int expectedStatus) throws IOException {

@@ -11,7 +11,6 @@ import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static org.apache.http.HttpVersion.HTTP_1_0;
 import static org.apache.http.HttpVersion.HTTP_1_1;
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
@@ -53,13 +52,14 @@ import ru.yandex.qatools.allure.annotations.Features;
 @Features(HTTP_EXTENSION)
 public class HttpListenerUrlEncodedTestCase extends AbstractHttpTestCase {
 
-  public static final String PARAM_1_NAME = "param1";
-  public static final String PARAM_2_NAME = "param2";
-  public static final String PARAM_1_VALUE = "param1Value";
-  public static final String PARAM_2_VALUE = "param2Value";
-  public static final String PARAM_2_VALUE_1 = "param2Value1";
-  public static final String PARAM_2_VALUE_2 = "param2Value2";
-  public static final String OUT_QUEUE_URL = "test://out";
+  private static final String PARAM_1_NAME = "param1";
+  private static final String PARAM_2_NAME = "param2";
+  private static final String PARAM_1_VALUE = "param1Value";
+  private static final String PARAM_2_VALUE = "param2Value";
+  private static final String PARAM_2_VALUE_1 = "param2Value1";
+  private static final String PARAM_2_VALUE_2 = "param2Value2";
+  private static final String OUT_QUEUE_URL = "test://out";
+  private static final int TIMEOUT = 1000;
 
   @Rule
   public DynamicPort listenPort = new DynamicPort("port");
@@ -77,7 +77,7 @@ public class HttpListenerUrlEncodedTestCase extends AbstractHttpTestCase {
     final Response response = Request.Post(getListenerUrl())
         .bodyForm(new BasicNameValuePair(PARAM_1_NAME, PARAM_1_VALUE), new BasicNameValuePair(PARAM_2_NAME, PARAM_2_VALUE))
         .execute();
-    final Message receivedMessage = muleContext.getClient().request(OUT_QUEUE_URL, 1000).getRight().get();
+    final Message receivedMessage = muleContext.getClient().request(OUT_QUEUE_URL, TIMEOUT).getRight().get();
     assertThat(receivedMessage.getPayload().getValue(), instanceOf(ParameterMap.class));
     assertThat(receivedMessage, hasMediaType(APPLICATION_JAVA.withCharset(ISO_8859_1)));
     ParameterMap payloadAsMap = (ParameterMap) receivedMessage.getPayload().getValue();
@@ -107,7 +107,7 @@ public class HttpListenerUrlEncodedTestCase extends AbstractHttpTestCase {
         .bodyForm(new BasicNameValuePair(PARAM_1_NAME, PARAM_1_VALUE), new BasicNameValuePair(PARAM_2_NAME, PARAM_2_VALUE_1),
                   new BasicNameValuePair(PARAM_2_NAME, PARAM_2_VALUE_2))
         .execute();
-    final Message receivedMessage = muleContext.getClient().request(OUT_QUEUE_URL, 1000).getRight().get();
+    final Message receivedMessage = muleContext.getClient().request(OUT_QUEUE_URL, TIMEOUT).getRight().get();
     assertThat(receivedMessage.getPayload().getValue(), instanceOf(ParameterMap.class));
     ParameterMap payloadAsMap = (ParameterMap) receivedMessage.getPayload().getValue();
     assertThat(payloadAsMap.size(), is(2));
@@ -120,17 +120,17 @@ public class HttpListenerUrlEncodedTestCase extends AbstractHttpTestCase {
   }
 
   @Test
-  public void urlEncodedEmptyParamsGenerateANullPayload() throws Exception {
+  public void urlEncodedEmptyParamsGenerateAnEmptyPayload() throws Exception {
     final Response response = Request.Post(getListenerUrl()).execute();
-    assertNullPayloadAndEmptyResponse(response);
+    assertEmptyResponse(response);
   }
 
   @Test
-  public void urlEncodedEmptyParamsUrlEncodedContentTypeGenerateANullPayload() throws Exception {
+  public void urlEncodedEmptyParamsUrlEncodedContentTypeGenerateAMapPayload() throws Exception {
     final Response response =
         Request.Post(getListenerUrl()).addHeader(CONTENT_TYPE, APPLICATION_X_WWW_FORM_URLENCODED.toRfcString()).execute();
 
-    assertNullPayloadAndEmptyResponse(response);
+    assertMapPayloadAndEmptyResponse(response);
   }
 
   @Test
@@ -161,10 +161,16 @@ public class HttpListenerUrlEncodedTestCase extends AbstractHttpTestCase {
     assertThat(response.returnResponse().getStatusLine().getStatusCode(), is(OK.getStatusCode()));
   }
 
-  private void assertNullPayloadAndEmptyResponse(Response response) throws Exception {
-    final Message receivedMessage = muleContext.getClient().request(OUT_QUEUE_URL, 1000).getRight().get();
-    assertThat(receivedMessage.getPayload().getValue(), is(nullValue()));
+  private void assertMapPayloadAndEmptyResponse(Response response) throws Exception {
+    final Message receivedMessage = muleContext.getClient().request(OUT_QUEUE_URL, TIMEOUT).getRight().get();
+    assertThat(receivedMessage.getPayload().getValue(), is(instanceOf(ParameterMap.class)));
+    ParameterMap payloadAsMap = (ParameterMap) receivedMessage.getPayload().getValue();
+    assertThat(payloadAsMap.size(), is(0));
 
+    assertEmptyResponse(response);
+  }
+
+  private void assertEmptyResponse(Response response) throws IOException {
     final HttpResponse httpResponse = response.returnResponse();
     assertThat(httpResponse.getFirstHeader(CONTENT_LENGTH).getValue(), is("0"));
     assertThat(IOUtils.toString(httpResponse.getEntity().getContent()), is(StringUtils.EMPTY));

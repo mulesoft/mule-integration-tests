@@ -12,13 +12,11 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.http.api.HttpConstants.Method.POST;
-
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.core.transformer.simple.ByteArrayToSerializable;
 import org.mule.runtime.core.api.util.IOUtils;
+import org.mule.runtime.core.transformer.simple.ByteArrayToSerializable;
 import org.mule.runtime.http.api.HttpService;
 import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;
-import org.mule.runtime.http.api.domain.entity.InputStreamHttpEntity;
 import org.mule.runtime.http.api.domain.message.request.HttpRequest;
 import org.mule.runtime.http.api.domain.message.response.HttpResponse;
 import org.mule.service.http.TestHttpClient;
@@ -55,7 +53,7 @@ public class HttpTransformTestCase extends AbstractIntegrationTestCase {
 
     ByteArrayToSerializable transformer = new ByteArrayToSerializable();
     transformer.setMuleContext(muleContext);
-    byte[] byteArray = IOUtils.toByteArray(((InputStreamHttpEntity) httpResponse.getEntity()).getInputStream());
+    byte[] byteArray = IOUtils.toByteArray(httpResponse.getEntity().getContent());
     Object result = transformer.transform(byteArray);
     assertThat(result, is(payload));
   }
