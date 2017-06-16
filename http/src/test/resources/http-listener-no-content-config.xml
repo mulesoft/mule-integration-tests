@@ -12,14 +12,14 @@
 
     <flow name="testFlow1">
         <http:listener path="empty" allowedMethods="GET" config-ref="listenerConfig">
-            <http:response statusCode="204"/>
+            <http:response statusCode="#[attributes.queryParams.status]"/>
         </http:listener>
-        <custom-processor class="org.mule.test.module.http.functional.listener.HttpListenerNoContentTestCase$StreamingProcessor"/>
+        <custom-processor class="org.mule.test.module.http.functional.listener.HttpListenerNoBodyStatusTestCase$StreamingProcessor"/>
     </flow>
 
     <flow name="testFlow2">
         <http:listener path="content" allowedMethods="GET" config-ref="listenerConfig">
-            <http:response statusCode="204"/>
+            <http:response statusCode="#[attributes.queryParams.status]"/>
         </http:listener>
         <set-payload value="WAT"/>
     </flow>

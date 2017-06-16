@@ -45,7 +45,6 @@ import org.mule.runtime.core.message.DefaultMultiPartPayload;
 import org.mule.runtime.core.message.PartAttributes;
 import org.mule.runtime.http.api.HttpHeaders;
 import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;
-import org.mule.runtime.http.api.domain.entity.InputStreamHttpEntity;
 import org.mule.runtime.http.api.domain.entity.multipart.HttpPart;
 import org.mule.runtime.http.api.domain.entity.multipart.Part;
 import org.mule.runtime.http.api.domain.message.request.HttpRequest;
@@ -152,7 +151,7 @@ public class HttpListenerPartsTestCase extends AbstractHttpTestCase {
     HttpRequest request = HttpRequest.builder().setUri(getUrl(filePath.getValue())).setMethod(GET)
         .setEntity(new ByteArrayHttpEntity(TEST_PAYLOAD.getBytes())).build();
     final HttpResponse response = httpClient.send(request, RECEIVE_TIMEOUT, false, null);
-    final Collection<HttpPart> parts = parseMultipartContent(((InputStreamHttpEntity) response.getEntity()).getInputStream(),
+    final Collection<HttpPart> parts = parseMultipartContent(response.getEntity().getContent(),
                                                              response.getHeaderValueIgnoreCase(CONTENT_TYPE));
     assertThat(parts, hasSize(2));
 

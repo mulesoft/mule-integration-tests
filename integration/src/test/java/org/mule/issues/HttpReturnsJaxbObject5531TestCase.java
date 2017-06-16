@@ -9,11 +9,9 @@ package org.mule.issues;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertTrue;
 import static org.mule.runtime.http.api.HttpConstants.Method.POST;
-
 import org.mule.runtime.core.api.MuleEventContext;
 import org.mule.runtime.core.api.lifecycle.Callable;
 import org.mule.runtime.http.api.HttpService;
-import org.mule.runtime.http.api.domain.entity.InputStreamHttpEntity;
 import org.mule.runtime.http.api.domain.message.request.HttpRequest;
 import org.mule.runtime.http.api.domain.message.response.HttpResponse;
 import org.mule.service.http.TestHttpClient;
@@ -55,7 +53,7 @@ public class HttpReturnsJaxbObject5531TestCase extends AbstractIntegrationTestCa
 
     HttpResponse response = httpClient.send(request, RECEIVE_TIMEOUT, false, null);
     String payload =
-        org.apache.commons.io.IOUtils.toString(((InputStreamHttpEntity) response.getEntity()).getInputStream(), UTF_8);
+        org.apache.commons.io.IOUtils.toString(response.getEntity().getContent(), UTF_8);
     assertTrue(payload.contains("<Success>true</Success>"));
   }
 

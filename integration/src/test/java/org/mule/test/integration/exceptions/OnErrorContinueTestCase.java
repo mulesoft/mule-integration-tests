@@ -24,13 +24,12 @@ import org.mule.runtime.api.tls.TlsContextFactory;
 import org.mule.runtime.core.api.DefaultMuleException;
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.processor.Processor;
+import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.runtime.core.exception.MuleFatalException;
 import org.mule.runtime.core.api.retry.policy.RetryPolicyExhaustedException;
-import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.runtime.http.api.HttpService;
 import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;
 import org.mule.runtime.http.api.domain.entity.HttpEntity;
-import org.mule.runtime.http.api.domain.entity.InputStreamHttpEntity;
 import org.mule.runtime.http.api.domain.message.request.HttpRequest;
 import org.mule.service.http.TestHttpClient;
 import org.mule.tck.junit4.rule.DynamicPort;
@@ -77,10 +76,7 @@ public class OnErrorContinueTestCase extends AbstractIntegrationTestCase {
   public TestHttpClient httpClient = new TestHttpClient.Builder(getService(HttpService.class)).tlsContextFactory(() -> {
     try {
       // Configure trust store in the client with the certificate of the server.
-      return TlsContextFactory.builder()
-          .setTrustStorePath("ssltest-cacerts.jks")
-          .setTrustStorePassword("changeit")
-          .build();
+      return TlsContextFactory.builder().setTrustStorePath("ssltest-cacerts.jks").setTrustStorePassword("changeit").build();
     } catch (CreateException e) {
       throw new MuleRuntimeException(e);
     }
@@ -129,7 +125,7 @@ public class OnErrorContinueTestCase extends AbstractIntegrationTestCase {
     assertThat(responseEntity, IsNull.<Object>notNullValue());
     // compare the structure and values but not the attributes' order
     JsonNode actualJsonNode =
-        new ObjectMapper().readTree(IOUtils.toString(((InputStreamHttpEntity) responseEntity).getInputStream()));
+        new ObjectMapper().readTree(IOUtils.toString(responseEntity.getContent()));
     JsonNode expectedJsonNode = new ObjectMapper().readTree(JSON_RESPONSE);
     assertThat(actualJsonNode, Is.is(expectedJsonNode));
   }

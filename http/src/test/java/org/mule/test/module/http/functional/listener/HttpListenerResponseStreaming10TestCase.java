@@ -155,4 +155,25 @@ public class HttpListenerResponseStreaming10TestCase extends HttpListenerRespons
     final String url = getUrl("neverMap");
     testResponseIsContentLengthEncoding(url, getHttpVersion(), TEST_BODY_MAP);
   }
+
+  // Multipart
+
+  @Test
+  public void parts() throws Exception {
+    final String url = getUrl("parts");
+    testResponseIsMultipartContentLengthEncoding(url, getHttpVersion());
+  }
+
+  @Test
+  public void alwaysParts() throws Exception {
+    final String url = getUrl("alwaysParts");
+    testResponseIsMultipartContentLengthEncoding(url, getHttpVersion());
+  }
+
+  @Test
+  public void neverParts() throws Exception {
+    final String url = getUrl("neverParts");
+    testResponseIsMultipartContentLengthEncoding(url, getHttpVersion());
+  }
+
 }

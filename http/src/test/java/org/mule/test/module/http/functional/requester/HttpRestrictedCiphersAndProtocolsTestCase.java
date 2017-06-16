@@ -21,7 +21,6 @@ import org.mule.runtime.http.api.HttpService;
 import org.mule.runtime.http.api.client.HttpClient;
 import org.mule.runtime.http.api.client.HttpClientConfiguration;
 import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;
-import org.mule.runtime.http.api.domain.entity.InputStreamHttpEntity;
 import org.mule.runtime.http.api.domain.message.request.HttpRequest;
 import org.mule.runtime.http.api.domain.message.response.HttpResponse;
 import org.mule.tck.junit4.rule.DynamicPort;
@@ -95,7 +94,7 @@ public class HttpRestrictedCiphersAndProtocolsTestCase extends AbstractHttpTestC
     HttpRequest request = HttpRequest.builder().setUri(format("https://localhost:%s", port1.getValue())).setMethod(POST)
         .setEntity(new ByteArrayHttpEntity(TEST_PAYLOAD.getBytes())).build();
     final HttpResponse response = httpClientWithCertificate.send(request, RECEIVE_TIMEOUT, false, null);
-    assertThat(IOUtils.toString(((InputStreamHttpEntity) response.getEntity()).getInputStream()), is(TEST_PAYLOAD));
+    assertThat(IOUtils.toString(response.getEntity().getContent()), is(TEST_PAYLOAD));
   }
 
   @Test
@@ -108,7 +107,7 @@ public class HttpRestrictedCiphersAndProtocolsTestCase extends AbstractHttpTestC
     HttpRequest request = HttpRequest.builder().setUri(format("https://localhost:%s", port3.getValue())).setMethod(POST)
         .setEntity(new ByteArrayHttpEntity(TEST_PAYLOAD.getBytes())).build();
     final HttpResponse response = httpClientWithCertificate.send(request, RECEIVE_TIMEOUT, false, null);
-    assertThat(IOUtils.toString(((InputStreamHttpEntity) response.getEntity()).getInputStream()), is(TEST_PAYLOAD));
+    assertThat(IOUtils.toString(response.getEntity().getContent()), is(TEST_PAYLOAD));
   }
 
   public void createHttpClient() {
