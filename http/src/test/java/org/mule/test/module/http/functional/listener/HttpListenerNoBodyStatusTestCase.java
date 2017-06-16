@@ -6,35 +6,51 @@
  */
 package org.mule.test.module.http.functional.listener;
 
-import static org.mule.extension.http.api.HttpHeaders.Names.TRANSFER_ENCODING;
-import static org.mule.runtime.api.message.Message.of;
-import static org.mule.runtime.http.api.HttpConstants.HttpStatus.NO_CONTENT;
-import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-
+import static org.mule.extension.http.api.HttpHeaders.Names.TRANSFER_ENCODING;
+import static org.mule.runtime.http.api.HttpConstants.HttpStatus.NOT_MODIFIED;
+import static org.mule.runtime.http.api.HttpConstants.HttpStatus.NO_CONTENT;
+import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
 import org.mule.runtime.api.exception.MuleException;
+import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.processor.Processor;
+import org.mule.runtime.http.api.HttpConstants.HttpStatus;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.module.http.functional.AbstractHttpTestCase;
+import org.mule.test.runner.RunnerDelegateTo;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.client.fluent.Response;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameter;
+import org.junit.runners.Parameterized.Parameters;
 import ru.yandex.qatools.allure.annotations.Features;
 
 @Features(HTTP_EXTENSION)
-public class HttpListenerNoContentTestCase extends AbstractHttpTestCase {
+@RunnerDelegateTo(Parameterized.class)
+public class HttpListenerNoBodyStatusTestCase extends AbstractHttpTestCase {
 
   @Rule
   public DynamicPort port = new DynamicPort("port");
+
+  @Parameter
+  public HttpStatus status;
+
+  @Parameters(name = "{0}")
+  public static Collection<Object[]> parameters() {
+    return Arrays.asList(new Object[][] {{NO_CONTENT}, {NOT_MODIFIED}});
+  }
 
   @Override
   protected String getConfigFile() {
@@ -55,19 +71,21 @@ public class HttpListenerNoContentTestCase extends AbstractHttpTestCase {
     final Response response = Request.Get(getUrl(path)).execute();
     HttpResponse httpResponse = response.returnResponse();
     assertThat(httpResponse.getEntity(), is(nullValue()));
-    assertThat(httpResponse.getStatusLine().getStatusCode(), is(NO_CONTENT.getStatusCode()));
+    assertThat(httpResponse.getStatusLine().getStatusCode(), is(status.getStatusCode()));
     assertThat(httpResponse.getFirstHeader(TRANSFER_ENCODING), is(nullValue()));
   }
 
   private String getUrl(String path) {
-    return String.format("http://localhost:%s/%s", port.getNumber(), path);
+    return String.format("http://localhost:%s/%s?status=%s", port.getNumber(), path, status.getStatusCode());
   }
 
   private static class StreamingProcessor implements Processor {
 
     @Override
     public Event process(Event event) throws MuleException {
-      return Event.builder(event).message(of(new ByteArrayInputStream(new byte[] {}))).build();
+      return Event.builder(event)
+          .message(Message.builder(event.getMessage()).payload(new ByteArrayInputStream(new byte[] {})).build())
+          .build();
     }
   }
 
