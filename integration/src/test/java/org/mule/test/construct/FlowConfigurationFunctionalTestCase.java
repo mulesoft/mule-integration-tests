@@ -72,7 +72,6 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
     assertNotNull(flow.getExceptionListener());
 
     assertEquals("012xyzabc3", getPayloadAsString(flowRunner("flow").withPayload("0").run().getMessage()));
-
   }
 
   @Test
@@ -374,29 +373,36 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
 
   @Test
   public void testAsyncRequestResponseEndpoint() throws Exception {
-    flowRunner("async-requestresponse").withPayload("0").run();
+    Event syncResult = flowRunner("async-requestresponse").withPayload("0").run();
     MuleClient client = muleContext.getClient();
     final Message result = client.request("test://async-requestresponse-out", RECEIVE_TIMEOUT).getRight().get();
     final Message asyncResult =
         client.request("test://async-async-requestresponse-out", RECEIVE_TIMEOUT).getRight().get();
 
-    assertNotNull(result);
-    assertNotNull(asyncResult);
-    assertEquals("0ac", getPayloadAsString(result));
-    assertEquals("0ab", getPayloadAsString(asyncResult));
+    assertAsync(syncResult.getMessage(), result, asyncResult);
   }
 
   @Test
   public void testAsyncTransactionalEndpoint() throws Exception {
-    Exception e = flowRunner("async-tx").withPayload("0").transactionally(ACTION_ALWAYS_BEGIN, new TestTransactionFactory())
-        .runExpectingException();
-
-    assertThat(e, instanceOf(MessagingException.class));
-    assertThat(e.getMessage(), containsString("The <async> element cannot be used with transactions"));
+    Event syncResult =
+        flowRunner("async-tx").withPayload("0").transactionally(ACTION_ALWAYS_BEGIN, new TestTransactionFactory()).run();
 
     final MuleClient client = muleContext.getClient();
-    assertThat(client.request("test://async-requestresponse-out", RECEIVE_TIMEOUT).getRight().isPresent(), is(false));
-    assertThat(client.request("test://async-async-oneway-out", RECEIVE_TIMEOUT).getRight().isPresent(), is(false));
+    final Message result =
+        client.request("test://async-tx-out", RECEIVE_TIMEOUT).getRight().get();
+    final Message asyncResult =
+        client.request("test://async-async-tx-out", RECEIVE_TIMEOUT).getRight().get();
+
+    assertAsync(syncResult.getMessage(), result, asyncResult);
+  }
+
+  private void assertAsync(Message syncResult, Message result, Message asyncResult) throws Exception {
+    assertNotNull(syncResult);
+    assertNotNull(result);
+    assertNotNull(asyncResult);
+    assertEquals("0ac", getPayloadAsString(syncResult));
+    assertEquals("0ac", getPayloadAsString(result));
+    assertEquals("0ab", getPayloadAsString(asyncResult));
   }
 
   @Test
