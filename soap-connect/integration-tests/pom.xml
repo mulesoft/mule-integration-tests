@@ -21,14 +21,14 @@
         <dependency>
             <groupId>org.mule.tests.extension</groupId>
             <artifactId>mule-extension-test-soap</artifactId>
-            <version>${project.version}</version>
+            <version>${muleExtensionTestSoapTestVersion}</version>
             <classifier>mule-plugin</classifier>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mule.services</groupId>
             <artifactId>mule-service-soap</artifactId>
-            <version>${muleSoapServiceVersion}</version>
+            <version>${muleSoapServiceTestVersion}</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
@@ -65,21 +65,21 @@
         <dependency>
             <groupId>org.mule.services</groupId>
             <artifactId>mule-service-scheduler</artifactId>
-            <version>${muleSchedulerServiceVersion}</version>
+            <version>${muleSchedulerServiceTestVersion}</version>
             <classifier>mule-service</classifier>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.mule.connectors</groupId>
             <artifactId>mule-http-connector</artifactId>
-            <version>${muleHttpConnectorVersion}</version>
+            <version>${muleHttpConnectorTestVersion}</version>
             <classifier>mule-plugin</classifier>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mule.connectors</groupId>
             <artifactId>mule-sockets-connector</artifactId>
-            <version>${muleHttpConnectorVersion}</version>
+            <version>${muleHttpConnectorTestVersion}</version>
             <classifier>mule-plugin</classifier>
             <scope>test</scope>
         </dependency>
@@ -119,7 +119,7 @@
         <dependency>
             <groupId>org.mule.services</groupId>
             <artifactId>mule-service-http</artifactId>
-            <version>${muleHttpServiceVersion}</version>
+            <version>${muleHttpServiceTestVersion}</version>
             <scope>provided</scope>
             <classifier>mule-service</classifier>
         </dependency>
@@ -132,7 +132,7 @@
         <dependency>
             <groupId>org.mule.services</groupId>
             <artifactId>mule-service-soap</artifactId>
-            <version>${muleSoapServiceVersion}</version>
+            <version>${muleSoapServiceTestVersion}</version>
             <scope>provided</scope>
             <classifier>mule-service</classifier>
         </dependency>
@@ -187,7 +187,7 @@
         <dependency>
             <groupId>org.mule.tests.extension</groupId>
             <artifactId>mule-extension-test-soap</artifactId>
-            <version>${project.version}</version>
+            <version>${muleExtensionTestSoapTestVersion}</version>
             <classifier>mule-plugin</classifier>
             <scope>test</scope>
         </dependency>

@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -o nounset
+
 updatePropertiesVersion() {
   VERSION_TO_PROPERTY="$1"
   POM_PROPERTY_PATH="$2"
@@ -32,15 +34,31 @@ VERSION_TO_CONNECTORS=$2
 VERSION_TO_MULE=$3
 
 # Properties with releaseVersion in the root pom.xml
-propertiesDepsServices=("muleSchedulerServiceVersion"
-                "muleHttpServiceVersion"
-                "muleOAuthServiceVersion"
-                "muleSoapServiceVersion")
+propertiesDepsServices=("muleSchedulerServiceTestVersion"
+                        "muleHttpServiceTestVersion"
+                        "muleOAuthServiceTestVersion"
+                        "muleSoapServiceTestVersion"
+                        "muleExtensionTestSoapTestVersion")
 
 updatePropertiesVersion "$VERSION_TO_SERVICES" pom.xml propertiesDepsServices[@]
 
-propertiesDeps=("muleHttpConnectorVersion")
+propertiesDeps=("muleValidationModuleTestVersion"
+                "muleScriptingModuleVersion"
+                "muleFileCommonsTestVersion"
+
+                "muleHttpConnectorTestVersion"
+                "muleDbConnectorTestVersion"
+                "muleFtpConnectorTestVersion"
+                "muleFileConnectorTestVersion"
+                "muleJmsConnectorTestVersion"
+                "muleWscConnectorTestVersion"
+                "muleOauthModuleTestVersion"
+                "muleSocketsConnectorTestVersion")
 
 updatePropertiesVersion "$VERSION_TO_CONNECTORS" pom.xml propertiesDeps[@]
 
 updateParentVersion "$VERSION_TO_MULE" pom.xml
+
+updateParentVersion "$VERSION_TO_SERVICES" soap-connect/soap-extension/pom.xml
+
+

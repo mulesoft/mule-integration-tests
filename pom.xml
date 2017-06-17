@@ -8,9 +8,9 @@
   </parent>
   <groupId>org.mule.tests</groupId>
   <artifactId>mule-extensions-integration-tests</artifactId>
+  <version>4.0.0-BETA-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Mule Tests</name>
-  <version>4.0.0-BETA-SNAPSHOT</version>
 
   <modules>
     <module>performance</module>
@@ -24,11 +24,24 @@
   </modules>
 
     <properties>
-        <muleSchedulerServiceVersion>1.0.0-BETA-SNAPSHOT</muleSchedulerServiceVersion>
-        <muleHttpServiceVersion>1.0.0-BETA-SNAPSHOT</muleHttpServiceVersion>
-        <muleOAuthServiceVersion>1.0.0-BETA-SNAPSHOT</muleOAuthServiceVersion>
-        <muleSoapServiceVersion>1.0.0-BETA-SNAPSHOT</muleSoapServiceVersion>
-        <muleHttpConnectorVersion>0.8.0-SNAPSHOT</muleHttpConnectorVersion>
+      <muleSchedulerServiceTestVersion>1.0.0-BETA-SNAPSHOT</muleSchedulerServiceTestVersion>
+      <muleHttpServiceTestVersion>1.0.0-BETA-SNAPSHOT</muleHttpServiceTestVersion>
+      <muleOAuthServiceTestVersion>1.0.0-BETA-SNAPSHOT</muleOAuthServiceTestVersion>
+      <muleSoapServiceTestVersion>1.0.0-BETA-SNAPSHOT</muleSoapServiceTestVersion>
+      <muleExtensionTestSoapTestVersion>1.0.0-BETA-SNAPSHOT</muleExtensionTestSoapTestVersion>
+
+      <muleValidationModuleTestVersion>0.8.0-SNAPSHOT</muleValidationModuleTestVersion>
+      <muleScriptingModuleVersion>0.8.0-SNAPSHOT</muleScriptingModuleVersion>
+      <muleFileCommonsTestVersion>0.8.0-SNAPSHOT</muleFileCommonsTestVersion>
+
+      <muleHttpConnectorTestVersion>0.8.0-SNAPSHOT</muleHttpConnectorTestVersion>
+      <muleDbConnectorTestVersion>0.8.0-SNAPSHOT</muleDbConnectorTestVersion>
+      <muleFtpConnectorTestVersion>0.8.0-SNAPSHOT</muleFtpConnectorTestVersion>
+      <muleFileConnectorTestVersion>0.8.0-SNAPSHOT</muleFileConnectorTestVersion>
+      <muleJmsConnectorTestVersion>0.8.0-SNAPSHOT</muleJmsConnectorTestVersion>
+      <muleWscConnectorTestVersion>0.8.0-SNAPSHOT</muleWscConnectorTestVersion>
+      <muleOauthModuleTestVersion>0.8.0-SNAPSHOT</muleOauthModuleTestVersion>
+      <muleSocketsConnectorTestVersion>0.8.0-SNAPSHOT</muleSocketsConnectorTestVersion>
     </properties>
 
   <build>
