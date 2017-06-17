@@ -8,6 +8,7 @@
   </parent>
   <groupId>org.mule.tests</groupId>
   <artifactId>mule-extensions-integration-tests</artifactId>
+  <version>4.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Mule Tests</name>
 
@@ -22,14 +23,27 @@
     <module>mule-test-smart-connectors-parent</module>
   </modules>
 
-    <properties>
-        <muleSchedulerServiceVersion>1.0.0-SNAPSHOT</muleSchedulerServiceVersion>
-        <muleHttpServiceVersion>1.0.0-SNAPSHOT</muleHttpServiceVersion>
-        <muleOAuthServiceVersion>1.0.0-SNAPSHOT</muleOAuthServiceVersion>
-        <muleSoapServiceVersion>1.0.0-SNAPSHOT</muleSoapServiceVersion>
-        <muleHttpConnectorVersion>1.0.0-SNAPSHOT</muleHttpConnectorVersion>
-        <muleSpringModuleVersion>1.0.0-SNAPSHOT</muleSpringModuleVersion>
-    </properties>
+  <properties>
+    <muleSchedulerServiceTestVersion>1.0.0-SNAPSHOT</muleSchedulerServiceTestVersion>
+    <muleHttpServiceTestVersion>1.0.0-SNAPSHOT</muleHttpServiceTestVersion>
+    <muleOAuthServiceTestVersion>1.0.0-SNAPSHOT</muleOAuthServiceTestVersion>
+    <muleSoapServiceTestVersion>1.0.0-SNAPSHOT</muleSoapServiceTestVersion>
+    <muleExtensionTestSoapTestVersion>1.0.0-SNAPSHOT</muleExtensionTestSoapTestVersion>
+
+    <muleSpringModuleVersion>1.0.0-SNAPSHOT</muleSpringModuleVersion>
+    <muleValidationModuleTestVersion>1.0.0-SNAPSHOT</muleValidationModuleTestVersion>
+    <muleScriptingModuleVersion>1.0.0-SNAPSHOT</muleScriptingModuleVersion>
+    <muleFileCommonsTestVersion>1.0.0-SNAPSHOT</muleFileCommonsTestVersion>
+
+    <muleHttpConnectorTestVersion>1.0.0-SNAPSHOT</muleHttpConnectorTestVersion>
+    <muleDbConnectorTestVersion>1.0.0-SNAPSHOT</muleDbConnectorTestVersion>
+    <muleFtpConnectorTestVersion>1.0.0-SNAPSHOT</muleFtpConnectorTestVersion>
+    <muleFileConnectorTestVersion>1.0.0-SNAPSHOT</muleFileConnectorTestVersion>
+    <muleJmsConnectorTestVersion>1.0.0-SNAPSHOT</muleJmsConnectorTestVersion>
+    <muleWscConnectorTestVersion>1.0.0-SNAPSHOT</muleWscConnectorTestVersion>
+    <muleOauthModuleTestVersion>1.0.0-SNAPSHOT</muleOauthModuleTestVersion>
+    <muleSocketsConnectorTestVersion>1.0.0-SNAPSHOT</muleSocketsConnectorTestVersion>
+  </properties>
 
   <build>
     <plugins>
