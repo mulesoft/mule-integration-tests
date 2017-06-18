@@ -10,12 +10,13 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.core.api.config.MuleProperties.MULE_SIMPLE_LOG;
-
 import org.mule.rule.UseMuleLog4jContextFactory;
 import org.mule.runtime.deployment.model.api.application.Application;
 import org.mule.runtime.module.deployment.impl.internal.builder.ApplicationFileBuilder;
+import org.mule.runtime.module.deployment.impl.internal.builder.DomainFileBuilder;
 import org.mule.test.infrastructure.deployment.AbstractFakeMuleServerTestCase;
 
+import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -62,7 +63,10 @@ public class LogConfigurationTestCase extends AbstractFakeMuleServerTestCase {
   @Test
   public void defaultAppInDomainLoggingConfigurationOnlyLogsOnApplicationLogFile() throws Exception {
     muleServer.start();
-    muleServer.deployDomainFromClasspathFolder("log/empty-domain", DOMAIN_NAME);
+    File domainFile =
+        new DomainFileBuilder(DOMAIN_NAME).definedBy("log/empty-domain/empty-domain-config.xml").getArtifactFile();
+    muleServer.deployDomainFile(domainFile);
+
     ApplicationFileBuilder applicationFileBuilder =
         new ApplicationFileBuilder(APP_NAME).definedBy("log/empty-config.xml").deployedWith("domain", "domain");
     muleServer.deploy(applicationFileBuilder.getArtifactFile().toURI().toURL(), APP_NAME);
@@ -81,9 +85,15 @@ public class LogConfigurationTestCase extends AbstractFakeMuleServerTestCase {
   @Test
   public void honorLog4jConfigFileForAppInDomain() throws Exception {
     muleServer.start();
-    muleServer.deployDomainFromClasspathFolder("log/empty-domain-with-log4j", DOMAIN_NAME);
-    ApplicationFileBuilder applicationFileBuilder =
-        new ApplicationFileBuilder(APP_NAME).definedBy("log/empty-config.xml").deployedWith("domain", "domain");
+
+    File domainFile = new DomainFileBuilder(DOMAIN_NAME)
+        .definedBy("log/empty-domain-with-log4j/empty-domain-config.xml")
+        .containingResource("log/empty-domain-with-log4j/log4j2-test.xml", "classes/log4j2-test.xml")
+        .getArtifactFile();
+    muleServer.deployDomainFile(domainFile);
+
+    ApplicationFileBuilder applicationFileBuilder = new ApplicationFileBuilder(APP_NAME)
+        .definedBy("log/empty-config.xml").deployedWith("domain", "domain");
     muleServer.deploy(applicationFileBuilder.getArtifactFile().toURI().toURL(), APP_NAME);
     ensureArtifactAppender("ConsoleForDomain", ConsoleAppender.class);
   }
