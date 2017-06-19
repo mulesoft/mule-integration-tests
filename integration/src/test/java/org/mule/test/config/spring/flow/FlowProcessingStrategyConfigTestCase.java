@@ -31,19 +31,19 @@ public class FlowProcessingStrategyConfigTestCase extends AbstractIntegrationTes
   @Test
   public void testDefault() throws Exception {
     assertThat(getFlowProcessingStrategy("defaultFlow"),
-               instanceOf(new TransactionAwareWorkQueueProcessingStrategyFactory().getProcessingStrategyClass()));
+               instanceOf(new TransactionAwareWorkQueueProcessingStrategyFactory().getProcessingStrategyType()));
   }
 
   @Test
   public void testSynchronous() throws Exception {
     assertThat(getFlowProcessingStrategy("synchronousFlow"),
-               instanceOf(new BlockingProcessingStrategyFactory().getProcessingStrategyClass()));
+               instanceOf(new BlockingProcessingStrategyFactory().getProcessingStrategyType()));
   }
 
   @Test
   public void testCustom() throws Exception {
     ProcessingStrategy processingStrategy = getFlowProcessingStrategy("customProcessingStrategyFlow");
-    assertThat(processingStrategy, instanceOf(new CustomProcessingStrategyFactory().getProcessingStrategyClass()));
+    assertThat(processingStrategy, instanceOf(new CustomProcessingStrategyFactory().getProcessingStrategyType()));
 
     assertThat(((CustomProcessingStrategyFactory) processingStrategy).foo, is("bar"));
   }
@@ -51,7 +51,7 @@ public class FlowProcessingStrategyConfigTestCase extends AbstractIntegrationTes
   @Test
   public void testDefaultAsync() throws Exception {
     assertThat(getFlowProcessingStrategy("defaultAsync"),
-               instanceOf(new TransactionAwareWorkQueueProcessingStrategyFactory().getProcessingStrategyClass()));
+               instanceOf(new TransactionAwareWorkQueueProcessingStrategyFactory().getProcessingStrategyType()));
   }
 
   private ProcessingStrategy getFlowProcessingStrategy(String flowName) throws Exception {
@@ -73,7 +73,7 @@ public class FlowProcessingStrategyConfigTestCase extends AbstractIntegrationTes
     }
 
     @Override
-    public Class<? extends ProcessingStrategy> getProcessingStrategyClass() {
+    public Class<? extends ProcessingStrategy> getProcessingStrategyType() {
       return getClass();
     }
   }
