@@ -45,7 +45,7 @@ public class FlowStateTestCase extends AbstractIntegrationTestCase {
     // Flow initially started
     assertTrue(flow.getLifecycleState().isStarted());
     assertFalse(flow.getLifecycleState().isStopped());
-    assertTrue(((TestMessageSource) flow.getMessageSource()).isStarted());
+    assertTrue(((TestMessageSource) flow.getSource()).isStarted());
   }
 
   @Test
@@ -54,12 +54,12 @@ public class FlowStateTestCase extends AbstractIntegrationTestCase {
     // Flow initially stopped
     assertFalse(flow.getLifecycleState().isStarted());
     assertTrue(flow.getLifecycleState().isStopped());
-    assertFalse(((TestMessageSource) flow.getMessageSource()).isStarted());
+    assertFalse(((TestMessageSource) flow.getSource()).isStarted());
 
     flow.start();
     assertTrue(flow.getLifecycleState().isStarted());
     assertFalse(flow.getLifecycleState().isStopped());
-    assertTrue(((TestMessageSource) flow.getMessageSource()).isStarted());
+    assertTrue(((TestMessageSource) flow.getSource()).isStarted());
   }
 
   public static class TestMessageSource extends AbstractAnnotatedObject implements MessageSource, Startable {

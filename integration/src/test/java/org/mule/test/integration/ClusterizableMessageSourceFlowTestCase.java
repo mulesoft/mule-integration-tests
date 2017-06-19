@@ -46,7 +46,7 @@ public class ClusterizableMessageSourceFlowTestCase extends AbstractIntegrationT
     muleContext.start();
 
     Flow test1 = muleContext.getRegistry().get("test1");
-    ClusterizableMessageSourceWrapper messageSource = (ClusterizableMessageSourceWrapper) test1.getMessageSource();
+    ClusterizableMessageSourceWrapper messageSource = (ClusterizableMessageSourceWrapper) test1.getSource();
     assertTrue(test1.getLifecycleState().isStarted());
     assertTrue(messageSource.isStarted());
   }
@@ -59,7 +59,7 @@ public class ClusterizableMessageSourceFlowTestCase extends AbstractIntegrationT
     muleContext.start();
 
     Flow test1 = (Flow) muleContext.getRegistry().get("test1");
-    ClusterizableMessageSourceWrapper messageSource = (ClusterizableMessageSourceWrapper) test1.getMessageSource();
+    ClusterizableMessageSourceWrapper messageSource = (ClusterizableMessageSourceWrapper) test1.getSource();
 
     messageSource.initialise();
 

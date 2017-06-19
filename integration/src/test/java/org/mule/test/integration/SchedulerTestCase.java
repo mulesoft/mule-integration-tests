@@ -54,7 +54,7 @@ public class SchedulerTestCase extends AbstractIntegrationTestCase {
     int schedulers = 0;
     for (FlowConstruct flowConstruct : muleContext.getRegistry().lookupFlowConstructs()) {
       Flow flow = (Flow) flowConstruct;
-      MessageSource flowSource = flow.getMessageSource();
+      MessageSource flowSource = flow.getSource();
       if (flowSource instanceof DefaultSchedulerMessageSource) {
         schedulers++;
       }

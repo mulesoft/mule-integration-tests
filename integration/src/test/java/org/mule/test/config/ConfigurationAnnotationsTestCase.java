@@ -93,7 +93,7 @@ public class ConfigurationAnnotationsTestCase extends AbstractIntegrationTestCas
   @Test
   public void testJavaComponentAnnotations() {
     Flow flow = (Flow) muleContext.getRegistry().lookupFlowConstruct("Bridge");
-    DefaultJavaComponent echo = (DefaultJavaComponent) flow.getMessageProcessors().get(0);
+    DefaultJavaComponent echo = (DefaultJavaComponent) flow.getProcessors().get(0);
     assertThat(getSourceFileLine(echo), is(11));
     assertThat(getSourceElement(echo), is("<echo-component doc:name=\"echo\">" + "</echo-component>"));
   }

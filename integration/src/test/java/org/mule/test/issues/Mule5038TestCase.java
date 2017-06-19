@@ -26,9 +26,9 @@ public class Mule5038TestCase extends AbstractIntegrationTestCase {
   @Test
   public void testTransformerOnGlobalEndpoint() {
     Flow flow1 = muleContext.getRegistry().lookupObject("flow1");
-    Filter flow1Filter = ((MessageFilter) flow1.getMessageProcessors().get(0)).getFilter();
+    Filter flow1Filter = ((MessageFilter) flow1.getProcessors().get(0)).getFilter();
     Flow flow2 = muleContext.getRegistry().lookupObject("flow2");
-    Filter flow2Filter = ((MessageFilter) flow2.getMessageProcessors().get(0)).getFilter();
+    Filter flow2Filter = ((MessageFilter) flow2.getProcessors().get(0)).getFilter();
 
     assertNotSame(flow1Filter, flow2Filter);
   }
@@ -36,9 +36,9 @@ public class Mule5038TestCase extends AbstractIntegrationTestCase {
   @Test
   public void testFilterOnGlobalEndpoint() {
     Flow flow1 = muleContext.getRegistry().lookupObject("flow1");
-    Transformer flow1Transoformer = (Transformer) flow1.getMessageProcessors().get(1);
+    Transformer flow1Transoformer = (Transformer) flow1.getProcessors().get(1);
     Flow flow2 = muleContext.getRegistry().lookupObject("flow2");
-    Transformer flow2Transoformer = (Transformer) flow2.getMessageProcessors().get(1);
+    Transformer flow2Transoformer = (Transformer) flow2.getProcessors().get(1);
 
     assertNotSame(flow1Transoformer, flow2Transoformer);
   }
@@ -46,9 +46,9 @@ public class Mule5038TestCase extends AbstractIntegrationTestCase {
   @Test
   public void testCustomProcessorOnGlobalEndpoint() {
     Flow flow1 = muleContext.getRegistry().lookupObject("flow1");
-    Processor flow1Processor = flow1.getMessageProcessors().get(3);
+    Processor flow1Processor = flow1.getProcessors().get(3);
     Flow flow2 = muleContext.getRegistry().lookupObject("flow2");
-    Processor flow2Processor = flow2.getMessageProcessors().get(3);
+    Processor flow2Processor = flow2.getProcessors().get(3);
 
     assertNotSame(flow1Processor, flow2Processor);
   }
@@ -56,9 +56,9 @@ public class Mule5038TestCase extends AbstractIntegrationTestCase {
   @Test
   public void testCompositeProcessorOnGlobalEndpoint() {
     Flow flow1 = muleContext.getRegistry().lookupObject("flow1");
-    Processor flow1Processor = flow1.getMessageProcessors().get(2);
+    Processor flow1Processor = flow1.getProcessors().get(2);
     Flow flow2 = muleContext.getRegistry().lookupObject("flow2");
-    Processor flow2Processor = flow2.getMessageProcessors().get(2);
+    Processor flow2Processor = flow2.getProcessors().get(2);
 
     assertNotSame(flow1Processor, flow2Processor);
   }

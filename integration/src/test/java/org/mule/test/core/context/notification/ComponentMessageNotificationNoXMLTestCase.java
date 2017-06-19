@@ -6,7 +6,6 @@
  */
 package org.mule.test.core.context.notification;
 
-import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -61,7 +60,7 @@ public class ComponentMessageNotificationNoXMLTestCase extends AbstractMuleConte
 
     componentListener = new ComponentListener();
     component = new DefaultJavaComponent(new SingletonObjectFactory(EchoComponent.class));
-    flow = builder("testFlow", muleContext).messageProcessors(singletonList(component)).build();
+    flow = builder("testFlow", muleContext).processors(component).build();
     muleContext.getRegistry().registerFlowConstruct(flow);
 
     if (!muleContext.isStarted()) {

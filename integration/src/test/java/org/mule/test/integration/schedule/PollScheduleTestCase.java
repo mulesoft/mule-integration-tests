@@ -103,7 +103,7 @@ public class PollScheduleTestCase extends AbstractIntegrationTestCase {
 
   private void runSchedulersOnce() throws Exception {
     Flow flow = (Flow) (muleContext.getRegistry().lookupFlowConstruct("pollfoo"));
-    MessageSource flowSource = flow.getMessageSource();
+    MessageSource flowSource = flow.getSource();
     if (flowSource instanceof DefaultSchedulerMessageSource) {
       ((SchedulerMessageSource) flowSource).trigger();
     }

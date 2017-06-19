@@ -44,7 +44,7 @@ public class HttpListenerLifecycleTestCase extends AbstractHttpTestCase {
 
   @Test
   public void stopOneListenerDoesNotAffectAnother() throws Exception {
-    ExtensionMessageSource httpListener = (ExtensionMessageSource) ((Flow) getFlowConstruct("testPathFlow")).getMessageSource();
+    ExtensionMessageSource httpListener = (ExtensionMessageSource) ((Flow) getFlowConstruct("testPathFlow")).getSource();
     httpListener.stop();
     callAndAssertResponseFromUnaffectedListener(getLifecycleConfigUrl("/path/catch"), "catchAll");
     httpListener.start();
@@ -52,7 +52,7 @@ public class HttpListenerLifecycleTestCase extends AbstractHttpTestCase {
 
   @Test
   public void restartListener() throws Exception {
-    ExtensionMessageSource httpListener = (ExtensionMessageSource) ((Flow) getFlowConstruct("testPathFlow")).getMessageSource();
+    ExtensionMessageSource httpListener = (ExtensionMessageSource) ((Flow) getFlowConstruct("testPathFlow")).getSource();
     httpListener.stop();
     httpListener.start();
     final Response response = Request.Get(getLifecycleConfigUrl("/path/subpath")).execute();
@@ -64,7 +64,7 @@ public class HttpListenerLifecycleTestCase extends AbstractHttpTestCase {
   @Test
   public void stopListenerReturns404() throws Exception {
     ExtensionMessageSource httpListener =
-        (ExtensionMessageSource) ((Flow) getFlowConstruct("catchAllWithinTestPathFlow")).getMessageSource();
+        (ExtensionMessageSource) ((Flow) getFlowConstruct("catchAllWithinTestPathFlow")).getSource();
     httpListener.stop();
     final Response response = Request.Get(getLifecycleConfigUrl("/path/somepath")).execute();
     final HttpResponse httpResponse = response.returnResponse();

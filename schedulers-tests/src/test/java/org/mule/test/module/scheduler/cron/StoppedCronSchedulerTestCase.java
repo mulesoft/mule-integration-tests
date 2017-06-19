@@ -58,7 +58,7 @@ public class StoppedCronSchedulerTestCase extends MuleArtifactFunctionalTestCase
     Flow flow = (Flow) (muleContext.getRegistry().lookupFlowConstruct("pollfoo"));
     flow.start();
     try {
-      MessageSource flowSource = flow.getMessageSource();
+      MessageSource flowSource = flow.getSource();
       if (flowSource instanceof SchedulerMessageSource) {
         ((SchedulerMessageSource) flowSource).trigger();
       }

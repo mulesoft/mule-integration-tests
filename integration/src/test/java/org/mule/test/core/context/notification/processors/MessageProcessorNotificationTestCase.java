@@ -293,7 +293,7 @@ public class MessageProcessorNotificationTestCase extends AbstractMessageProcess
         .serial(prePost());
 
     final Flow flow = (Flow) muleContext.getRegistry().lookupFlowConstruct("composite-source");
-    CompositeMessageSource composite = (CompositeMessageSource) flow.getMessageSource();
+    CompositeMessageSource composite = (CompositeMessageSource) flow.getSource();
     assertNotNull(((TestMessageSource) composite.getSources().get(0))
         .fireEvent(Event.builder(DefaultEventContext.create(flow, TEST_CONNECTOR_LOCATION)).message(of(TEST_PAYLOAD))
             .build()));
