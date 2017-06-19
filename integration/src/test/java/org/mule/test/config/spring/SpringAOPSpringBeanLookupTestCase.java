@@ -83,11 +83,11 @@ public class SpringAOPSpringBeanLookupTestCase extends AbstractIntegrationTestCa
   }
 
   private ObjectFactory getPrototypeSpringObjectFactory() throws Exception {
-    return ((JavaComponent) ((Flow) getFlowConstruct("flow")).getMessageProcessors().get(0)).getObjectFactory();
+    return ((JavaComponent) ((Flow) getFlowConstruct("flow")).getProcessors().get(0)).getObjectFactory();
   }
 
   private ObjectFactory getSingletonSpringObjectFactory() throws Exception {
-    return ((JavaComponent) ((Flow) getFlowConstruct("flow")).getMessageProcessors().get(1)).getObjectFactory();
+    return ((JavaComponent) ((Flow) getFlowConstruct("flow")).getProcessors().get(1)).getObjectFactory();
   }
 
 }

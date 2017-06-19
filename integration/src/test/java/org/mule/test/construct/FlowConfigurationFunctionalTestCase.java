@@ -68,7 +68,7 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
   @Test
   public void testFlow() throws Exception {
     final Flow flow = muleContext.getRegistry().lookupObject("flow");
-    assertEquals(5, flow.getMessageProcessors().size());
+    assertEquals(5, flow.getProcessors().size());
     assertNotNull(flow.getExceptionListener());
 
     assertEquals("012xyzabc3", getPayloadAsString(flowRunner("flow").withPayload("0").run().getMessage()));
@@ -97,9 +97,9 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
   @Test
   public void testFlowCompositeSource() throws Exception {
     final Flow flow = muleContext.getRegistry().lookupObject("flow2");
-    CompositeMessageSource compositeSource = (CompositeMessageSource) flow.getMessageSource();
+    CompositeMessageSource compositeSource = (CompositeMessageSource) flow.getSource();
     assertEquals(StartableCompositeMessageSource.class, compositeSource.getClass());
-    assertEquals(2, flow.getMessageProcessors().size());
+    assertEquals(2, flow.getProcessors().size());
 
     final List<MessageSource> sources = compositeSource.getSources();
     TestSimpleMessageSource source1 = (TestSimpleMessageSource) sources.get(0);
@@ -552,7 +552,7 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
   @Test
   public void testCustomMessageSource() throws Exception {
     Flow flow = (Flow) muleContext.getRegistry().lookupFlowConstruct("customMessageSource");
-    TestMessageSource source = (TestMessageSource) flow.getMessageSource();
+    TestMessageSource source = (TestMessageSource) flow.getSource();
 
     Event result = source
         .fireEvent(Event.builder(DefaultEventContext.create(flow, TEST_CONNECTOR_LOCATION)).message(of("a")).build());

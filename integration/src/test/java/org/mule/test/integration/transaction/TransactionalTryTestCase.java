@@ -27,7 +27,7 @@ public class TransactionalTryTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void resolvesStandardTransactionFactory() throws Exception {
-    Processor processor = ((Flow) getFlowConstruct("standardTry")).getMessageProcessors().get(0);
+    Processor processor = ((Flow) getFlowConstruct("standardTry")).getProcessors().get(0);
     assertThat(processor,
                is(instanceOf(TryMessageProcessor.class)));
 

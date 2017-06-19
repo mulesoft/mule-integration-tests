@@ -37,7 +37,7 @@ public class ComponentLifecycleTestCase extends AbstractIntegrationTestCase {
   public void innerElementLifecycle() {
     Flow flow = muleContext.getRegistry().get("flow");
     LifecycleSensingMessageProcessor lifecycleSensingMessageProcessor =
-        (LifecycleSensingMessageProcessor) flow.getMessageProcessors().get(0);
+        (LifecycleSensingMessageProcessor) flow.getProcessors().get(0);
     assertObjectFactoryAndMessageProcessorLifecycle(lifecycleSensingMessageProcessor);
   }
 

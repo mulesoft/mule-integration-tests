@@ -73,12 +73,12 @@ public class DslConstantsRoutersFlowTestCase extends AbstractIntegrationTestCase
 
   protected Processor lookupCustomRouterFromFlow(String flowName) throws Exception {
     Flow flow = lookupFlow(flowName);
-    return flow.getMessageProcessors().get(0);
+    return flow.getProcessors().get(0);
   }
 
   protected Processor lookupMessageProcessorFromFlow(String flowName) throws Exception {
     Flow flow = lookupFlow(flowName);
-    List<Processor> routers = flow.getMessageProcessors();
+    List<Processor> routers = flow.getProcessors();
     assertEquals(1, routers.size());
     return routers.get(0);
   }

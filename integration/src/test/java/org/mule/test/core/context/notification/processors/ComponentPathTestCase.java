@@ -276,9 +276,9 @@ public class ComponentPathTestCase extends AbstractIntegrationTestCase {
                                             CONFIG_FILE_NAME, of(71));
     Flow flowWithSource = (Flow) getFlowConstruct("flowWithSource");
     DefaultComponentLocation sourceLocation =
-        (DefaultComponentLocation) ((AnnotatedObject) flowWithSource.getMessageSource()).getAnnotation(LOCATION_KEY);
+        (DefaultComponentLocation) ((AnnotatedObject) flowWithSource.getSource()).getAnnotation(LOCATION_KEY);
     assertThat(sourceLocation, is(expectedSourceLocation));
-    assertThat(((AnnotatedObject) flowWithSource.getMessageProcessors().get(0)).getAnnotation(LOCATION_KEY), is(FLOW_WITH_SOURCE
+    assertThat(((AnnotatedObject) flowWithSource.getProcessors().get(0)).getAnnotation(LOCATION_KEY), is(FLOW_WITH_SOURCE
         .appendLocationPart("processors", empty(), empty(), empty())
         .appendLocationPart("0", LOGGER, CONFIG_FILE_NAME, of(72))));
   }

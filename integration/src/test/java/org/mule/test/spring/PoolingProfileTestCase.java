@@ -89,8 +89,8 @@ public class PoolingProfileTestCase extends AbstractIntegrationTestCase {
     assertNotNull(serviceFlow, o);
 
 
-    assertTrue(((Flow) o).getMessageProcessors().get(0) instanceof PooledJavaComponent);
-    PooledJavaComponent pjc = (PooledJavaComponent) ((Flow) o).getMessageProcessors().get(0);
+    assertTrue(((Flow) o).getProcessors().get(0) instanceof PooledJavaComponent);
+    PooledJavaComponent pjc = (PooledJavaComponent) ((Flow) o).getProcessors().get(0);
 
     PoolingProfile profile = pjc.getPoolingProfile();
     assertNotNull(profile);

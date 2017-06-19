@@ -168,7 +168,7 @@ public class SchedulerServiceTestCase extends AbstractIntegrationTestCase {
       + " This assumes org.mule.test.integration.exceptions.ErrorHandlerTestCase#criticalNotHandled")
   public void overloadErrorHandlingFromSource() throws Throwable {
     FlowConstruct delayScheduleFlow = getFlowConstruct("delaySchedule");
-    MessageSource messageSource = ((Flow) delayScheduleFlow).getMessageSource();
+    MessageSource messageSource = ((Flow) delayScheduleFlow).getSource();
 
     for (int i = 0; i < CUSTOM_SCHEDULER_SIZE; ++i) {
       ((SkeletonSource) messageSource).getListener()

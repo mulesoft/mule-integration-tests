@@ -34,7 +34,7 @@ public class GlobalInterceptingMessageProcessorsTestCase extends AbstractIntegra
   public void testConfig() throws Exception {
     Flow flow1 = muleContext.getRegistry().lookupObject("flow1");
     assertNotNull(flow1);
-    List<Processor> mpList = flow1.getMessageProcessors();
+    List<Processor> mpList = flow1.getProcessors();
 
     Processor mp2 = muleContext.getRegistry().lookupObject("messageFilter");
     assertTrue(mp2 instanceof MessageFilter);

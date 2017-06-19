@@ -30,16 +30,16 @@ public class ConfigurationProcessingTestCase extends AbstractIntegrationTestCase
   public void simpleFlowConfiguration() throws Exception {
     Flow flow = (Flow) getFlowConstruct("simpleFlow");
     assertThat(flow, notNullValue());
-    assertThat(flow.getMessageProcessors(), notNullValue());
-    assertThat(flow.getMessageProcessors().size(), is(1));
+    assertThat(flow.getProcessors(), notNullValue());
+    assertThat(flow.getProcessors().size(), is(1));
   }
 
   @Test
   public void complexFlowConfiguration() throws Exception {
     Flow flow = (Flow) getFlowConstruct("complexFlow");
     assertThat(flow, notNullValue());
-    assertThat(flow.getMessageSource(), notNullValue());
-    assertThat(flow.getMessageProcessors(), notNullValue());
-    assertThat(flow.getMessageProcessors().size(), is(4));
+    assertThat(flow.getSource(), notNullValue());
+    assertThat(flow.getProcessors(), notNullValue());
+    assertThat(flow.getProcessors().size(), is(4));
   }
 }

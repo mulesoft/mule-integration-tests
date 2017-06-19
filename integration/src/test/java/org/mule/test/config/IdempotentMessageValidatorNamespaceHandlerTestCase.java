@@ -59,7 +59,7 @@ public class IdempotentMessageValidatorNamespaceHandlerTestCase extends Abstract
     assertTrue(flow instanceof Flow);
 
     final Flow simpleFlow = (Flow) flow;
-    final List<Processor> processors = simpleFlow.getMessageProcessors();
+    final List<Processor> processors = simpleFlow.getProcessors();
     assertEquals(1, processors.size());
 
     final Processor firstMP = processors.get(0);
