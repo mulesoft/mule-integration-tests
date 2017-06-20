@@ -15,13 +15,13 @@
     <flow name="getLaszloW10">
         <http:listener path="*" config-ref="listenerConfig"/>
 
-        <echo-component />
+        <logger />
 
         <flow-ref name="W10Report"/>
     </flow>
 
     <flow name="W10Report">
-        <echo-component />
+        <logger />
         <flow-ref name="W10FO"/>
     </flow>
 

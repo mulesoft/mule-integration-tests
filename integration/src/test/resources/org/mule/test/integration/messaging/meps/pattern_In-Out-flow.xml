@@ -33,6 +33,6 @@
             </script:script>
         </script:component>
 
-        <echo-component />
+        <logger />
     </flow>
 </mule>

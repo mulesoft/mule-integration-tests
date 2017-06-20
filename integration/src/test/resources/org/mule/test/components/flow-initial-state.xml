@@ -6,18 +6,18 @@
        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
     <flow name="defaultFlow">
         <custom-source class="org.mule.test.components.FlowStateTestCase$TestMessageSource"/>
-        <echo-component/>
+        <logger/>
     </flow>
     <flow name="startedFlow" initialState="started">
         <custom-source class="org.mule.test.components.FlowStateTestCase$TestMessageSource"/>
-        <echo-component/>
+        <logger/>
     </flow>
     <flow name="stoppedFlow" initialState="stopped">
         <custom-source class="org.mule.test.components.FlowStateTestCase$TestMessageSource"/>
-        <echo-component/>
+        <logger/>
     </flow>
     <flow name="placeholderFlow" initialState="${state}">
         <custom-source class="org.mule.test.components.FlowStateTestCase$TestMessageSource"/>
-        <echo-component/>
+        <logger/>
     </flow>
 </mule>

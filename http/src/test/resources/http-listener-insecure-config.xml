@@ -37,12 +37,12 @@
 
     <flow name="testInsecureServer">
         <http:listener config-ref="insecureConfig" path="/"/>
-        <echo-component/>
+        <logger/>
     </flow>
 
     <flow name="testSecureServer">
         <http:listener config-ref="secureConfig" path="/"/>
-        <echo-component/>
+        <logger/>
     </flow>
 
     <flow name="testRequestToInsecure">

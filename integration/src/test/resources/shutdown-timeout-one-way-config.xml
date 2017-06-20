@@ -14,9 +14,7 @@
     <flow name="staticComponentFlow">
 
         <custom-processor class="org.mule.shutdown.AbstractShutdownTimeoutRequestResponseTestCase$BlockMessageProcessor"/>
-        <static-component>
-            <return-data>staticComponentResponse</return-data>
-        </static-component>
+        <set-payload value="staticComponentResponse"/>
 
         <test:queue name="response"/>
     </flow>

@@ -29,7 +29,7 @@
     <flow name="flow2">
         <set-property propertyName="where" value="flow2-request"/>
         <custom-transformer class="org.mule.issues.MessageRootIdPropagationTestCase$RootIDGatherer"/>
-        <echo-component/>
+        <logger/>
     </flow>
 
     <flow name="flow3">

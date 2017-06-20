@@ -8,7 +8,7 @@
 
     <flow name="Test">
         <transformer ref="StringtoByteArray"/>
-        <echo-component/>
+        <logger/>
     </flow>
 
 </mule>

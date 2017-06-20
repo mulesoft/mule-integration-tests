@@ -8,20 +8,20 @@
 
 
     <flow name="defaultFlow">
-        <echo-component />
+        <logger />
     </flow>
 
     <flow name="synchronousFlow" processingStrategy="synchronous">
-        <echo-component />
+        <logger />
     </flow>
 
     <flow name="customProcessingStrategyFlow" processingStrategy="customStrategy">
-        <echo-component />
+        <logger />
     </flow>
     
     <flow name="defaultAsync">
         <async>
-            <echo-component />
+            <logger />
         </async>
     </flow>
     

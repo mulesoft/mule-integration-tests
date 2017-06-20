@@ -8,7 +8,9 @@ package org.mule.test.core.context.notification;
 
 import static org.junit.Assert.assertNotNull;
 
+import org.mule.runtime.core.api.MuleEventContext;
 import org.mule.runtime.core.api.client.MuleClient;
+import org.mule.runtime.core.api.lifecycle.Callable;
 import org.mule.runtime.core.context.notification.ComponentMessageNotification;
 
 import org.junit.Test;
@@ -46,5 +48,14 @@ public class ComponentMessageNotificationTestCase extends AbstractNotificationTe
   public void validateSpecification(RestrictedNode spec) throws Exception {
     verifyAllNotifications(spec, ComponentMessageNotification.class, ComponentMessageNotification.COMPONENT_PRE_INVOKE,
                            ComponentMessageNotification.COMPONENT_POST_INVOKE);
+  }
+
+  public static final class SimpleComponent implements Callable {
+
+    @Override
+    public Object onCall(MuleEventContext eventContext) throws Exception {
+      return eventContext.getMessage().getPayload().getValue();
+    }
+
   }
 }

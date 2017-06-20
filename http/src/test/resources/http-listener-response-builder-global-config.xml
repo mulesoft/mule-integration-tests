@@ -26,7 +26,7 @@
                 <http:builder ref="globalResponseBuilder"/>
             </http:response-builder>
         </http:listener>
-        <echo-component/>
+        <logger/>
     </flow>
 
     <flow name="globalResponseBuilderCustomizedFlow">
@@ -36,7 +36,7 @@
                 <http:header headerName="User-Agent" value="Mule 3.7.0"/>
             </http:response-builder>
         </http:listener>
-        <echo-component/>
+        <logger/>
     </flow>
 
     <flow name="globalCompositeResponseBuilderFlow">
@@ -46,7 +46,7 @@
                 <http:header headerName="User-Agent" value="Mule 3.7.0"/>
             </http:response-builder>
         </http:listener>
-        <echo-component/>
+        <logger/>
     </flow>
 
 </mule>

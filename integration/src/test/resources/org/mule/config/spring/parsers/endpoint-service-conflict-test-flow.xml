@@ -10,7 +10,7 @@
     </http:listener-config>
 
     <flow name="LenderService">
-        <echo-component/>
+        <logger/>
     </flow>
     
 </mule>

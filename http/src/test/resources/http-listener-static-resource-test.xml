@@ -41,11 +41,11 @@
          port but with a different path -->
     <flow name="main-http-echo">
         <http:listener config-ref="listenerConfigPort1" path="echo/*"/>
-        <echo-component/>
+        <logger/>
     </flow>
 
     <flow name="main-https-echo">
         <http:listener config-ref="listenerConfigPort2" path="echo/*"/>
-        <echo-component/>
+        <logger/>
     </flow>
 </mule>

@@ -23,28 +23,28 @@
 
     <flow name="emptyListenerConfigFlow">
         <http:listener path="${path}" config-ref="emptyConfig" />
-        <echo-component/>
+        <logger/>
     </flow>
 
     <!-- If no listener is defined for a config, no server is created -->
     <flow name="noListenerConfigListenerFlow">
         <http:listener path="listener" config-ref="noListenerConfig" />
-        <echo-component/>
+        <logger/>
     </flow>
 
     <flow name="fullListenerConfigFlow">
         <http:listener path="${path}" config-ref="fullConfig" />
-        <echo-component/>
+        <logger/>
     </flow>
 
     <flow name="useDifferentIpSamePathFlow">
         <http:listener path="${path}" config-ref="nonLocalHostConfig" />
-        <echo-component/>
+        <logger/>
     </flow>
 
     <flow name="restrictedMethodsFlow">
         <http:listener path="post" config-ref="fullConfig" allowedMethods="POST"/>
-        <echo-component/>
+        <logger/>
     </flow>
 
     <http:listener-config name="slashListenerConfig" basePath="//">

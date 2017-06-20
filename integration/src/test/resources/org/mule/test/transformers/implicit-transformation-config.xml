@@ -15,16 +15,16 @@
 
     <flow name="StringEchoService">
         <transformer ref="TestStringTransformer" />
-        <echo-component />
+        <logger />
     </flow>
 
     <flow name="ByteArrayEchoService">
         <transformer ref="TestByteArrayTransformer" />
-        <echo-component />
+        <logger />
     </flow>
 
     <flow name="InputStreamEchoService">
         <transformer ref="TestInputStreamTransformer" />
-        <echo-component />
+        <logger />
     </flow>
 </mule>

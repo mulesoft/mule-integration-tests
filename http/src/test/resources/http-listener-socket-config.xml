@@ -18,7 +18,7 @@
 
     <flow name="globalConfigFlow">
         <http:listener config-ref="globalConfig" path="/global"/>
-        <echo-component />
+        <logger />
     </flow>
 
 

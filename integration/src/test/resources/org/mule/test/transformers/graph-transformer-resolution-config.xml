@@ -9,6 +9,6 @@
 
     <flow name="stringEchoService">
         <auto-transformer returnClass="org.mule.test.transformers.GraphTransformerResolutionTestCase$C"/>
-        <echo-component/>
+        <logger/>
     </flow>
 </mule>

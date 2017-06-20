@@ -16,7 +16,7 @@
         <http:listener path="foo" config-ref="listenerConfig"/>
         <append-string-transformer message=" bar"/>
         <set-property propertyName="foo" value="#[mel:message.inboundProperties.foo]"/>
-        <echo-component/>
+        <logger/>
     </flow>
     
 </mule>

@@ -16,14 +16,15 @@ import static org.mule.runtime.core.api.construct.Flow.builder;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.DefaultEventContext;
 import org.mule.runtime.core.api.Event;
+import org.mule.runtime.core.api.MuleEventContext;
 import org.mule.runtime.core.api.component.Component;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.context.MuleContextBuilder;
 import org.mule.runtime.core.api.context.notification.ComponentMessageNotificationListener;
 import org.mule.runtime.core.api.context.notification.EnrichedServerNotification;
 import org.mule.runtime.core.api.context.notification.ServerNotification;
+import org.mule.runtime.core.api.lifecycle.Callable;
 import org.mule.runtime.core.component.DefaultJavaComponent;
-import org.mule.runtime.core.component.simple.EchoComponent;
 import org.mule.runtime.core.context.notification.ComponentMessageNotification;
 import org.mule.runtime.core.context.notification.ServerNotificationManager;
 import org.mule.runtime.core.object.SingletonObjectFactory;
@@ -59,7 +60,7 @@ public class ComponentMessageNotificationNoXMLTestCase extends AbstractMuleConte
     setDisposeContextPerClass(true);
 
     componentListener = new ComponentListener();
-    component = new DefaultJavaComponent(new SingletonObjectFactory(EchoComponent.class));
+    component = new DefaultJavaComponent(new SingletonObjectFactory(TestComponent.class));
     flow = builder("testFlow", muleContext).processors(component).build();
     muleContext.getRegistry().registerFlowConstruct(flow);
 
@@ -141,4 +142,12 @@ public class ComponentMessageNotificationNoXMLTestCase extends AbstractMuleConte
 
   }
 
+  public static class TestComponent implements Callable {
+
+    @Override
+    public Object onCall(MuleEventContext eventContext) throws Exception {
+      return eventContext.getMessage();
+    }
+
+  }
 }
