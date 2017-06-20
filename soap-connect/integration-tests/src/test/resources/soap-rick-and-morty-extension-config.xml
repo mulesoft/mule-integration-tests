@@ -7,25 +7,25 @@
 
     <ram:config name="miniverse">
          <ram:rick-and-morty-connection wsdlUrl="${serviceAddress}?wsdl" service="CableService" port="CablePort">
-             <ram:custom-transport>
+             <ram:transport>
                  <ram:miniverse-dispatcher-provider/>
-             </ram:custom-transport>
+             </ram:transport>
          </ram:rick-and-morty-connection>
     </ram:config>
 
     <ram:config name="portal-gun">
          <ram:rick-and-morty-connection wsdlUrl="${serviceAddress}?wsdl" service="CableService" port="CablePort">
-             <ram:custom-transport>
+             <ram:transport>
                  <ram:default-portal-gun-dispatcher-provider responseMessage="CUSTOM RESPONSE"/>
-             </ram:custom-transport>
+             </ram:transport>
          </ram:rick-and-morty-connection>
     </ram:config>
 
     <ram:config name="http-default">
          <ram:rick-and-morty-connection wsdlUrl="${serviceAddress}?wsdl" service="CableService" port="CablePort">
-             <ram:custom-transport>
+             <ram:transport>
                  <ram:default-http-message-dispatcher-provider />
-             </ram:custom-transport>
+             </ram:transport>
          </ram:rick-and-morty-connection>
     </ram:config>
 
