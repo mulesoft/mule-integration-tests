@@ -559,6 +559,12 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
     assertEquals("abcd", result.getMessageAsString(muleContext));
   }
 
+  @Test
+  public void customMaxConcurrency() throws Exception {
+    Flow flow = (Flow) muleContext.getRegistry().lookupFlowConstruct("customMaxConcurrency");
+    assertThat(flow.getMaxConcurrency(), equalTo(1));
+  }
+
   public static class TestMessageSource extends AbstractAnnotatedObject implements MessageSource {
 
     private Processor listener;

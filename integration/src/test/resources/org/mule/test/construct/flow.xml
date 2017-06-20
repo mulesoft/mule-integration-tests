@@ -393,4 +393,8 @@
         <append-string-transformer message="c" />
     </flow>
 
+    <flow name="customMaxConcurrency" maxConcurrency="1">
+        <append-string-transformer message="nop" />
+    </flow>
+
 </mule>
