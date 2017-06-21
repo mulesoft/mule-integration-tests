@@ -80,11 +80,13 @@
 
         <wsc:consume operation="GetCitiesByCountry">
             <wsc:message>
-                <wsc:body>#[payload]</wsc:body>
+                <wsc:body>#['modified' ++ payload]</wsc:body>
                 <wsc:headers>#[{"headers": {con#headerIn: "Header In Value",con#headerInOut: "Header In Out Value"}]</wsc:headers>
                 <wsc:attachments>#[{}]</wsc:attachments>
             </wsc:message>
         </wsc:consume>
+
+        <wsc:consume operation="GetCitiesByCountry"/>
 
     </flow>
 
