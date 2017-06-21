@@ -13,7 +13,7 @@ import org.mule.runtime.core.DefaultMuleContext;
 import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.runtime.core.api.connector.SchedulerController;
 import org.mule.runtime.core.api.construct.Flow;
-import org.mule.runtime.core.context.notification.ClusterNodeNotification;
+import org.mule.runtime.core.api.context.notification.ClusterNodeNotification;
 import org.mule.runtime.core.source.ClusterizableMessageSourceWrapper;
 import org.mule.test.AbstractIntegrationTestCase;
 

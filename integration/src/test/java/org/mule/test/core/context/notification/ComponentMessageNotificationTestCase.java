@@ -7,11 +7,10 @@
 package org.mule.test.core.context.notification;
 
 import static org.junit.Assert.assertNotNull;
-
 import org.mule.runtime.core.api.MuleEventContext;
 import org.mule.runtime.core.api.client.MuleClient;
+import org.mule.runtime.core.api.context.notification.ComponentMessageNotification;
 import org.mule.runtime.core.api.lifecycle.Callable;
-import org.mule.runtime.core.context.notification.ComponentMessageNotification;
 
 import org.junit.Test;
 

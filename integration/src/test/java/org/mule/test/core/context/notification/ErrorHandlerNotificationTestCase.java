@@ -8,11 +8,11 @@ package org.mule.test.core.context.notification;
 
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertNotNull;
-import static org.mule.runtime.core.context.notification.ErrorHandlerNotification.PROCESS_END;
-import static org.mule.runtime.core.context.notification.ErrorHandlerNotification.PROCESS_START;
+import static org.mule.runtime.core.api.context.notification.ErrorHandlerNotification.PROCESS_END;
+import static org.mule.runtime.core.api.context.notification.ErrorHandlerNotification.PROCESS_START;
 
 import org.mule.functional.api.exception.FunctionalTestException;
-import org.mule.runtime.core.context.notification.ErrorHandlerNotification;
+import org.mule.runtime.core.api.context.notification.ErrorHandlerNotification;
 
 import org.junit.Rule;
 import org.junit.Test;

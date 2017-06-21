@@ -24,8 +24,8 @@ import org.mule.extension.http.api.HttpResponseAttributes;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.core.api.Event;
-import org.mule.runtime.core.message.DefaultMultiPartPayload;
-import org.mule.runtime.core.message.PartAttributes;
+import org.mule.runtime.core.api.message.DefaultMultiPartPayload;
+import org.mule.runtime.core.api.message.PartAttributes;
 import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.tck.junit4.rule.SystemProperty;
 

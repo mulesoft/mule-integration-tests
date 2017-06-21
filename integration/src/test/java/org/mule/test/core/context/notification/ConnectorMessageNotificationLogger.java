@@ -7,7 +7,7 @@
 package org.mule.test.core.context.notification;
 
 import org.mule.runtime.core.api.context.notification.ConnectorMessageNotificationListener;
-import org.mule.runtime.core.context.notification.ConnectorMessageNotification;
+import org.mule.runtime.core.api.context.notification.ConnectorMessageNotification;
 
 public class ConnectorMessageNotificationLogger extends AbstractNotificationLogger<ConnectorMessageNotification>
     implements ConnectorMessageNotificationListener<ConnectorMessageNotification> {

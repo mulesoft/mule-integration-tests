@@ -15,7 +15,7 @@ import static org.mule.functional.api.component.FlowAssert.verify;
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.context.MuleContextBuilder;
 import org.mule.runtime.core.api.processor.strategy.ProcessingStrategyFactory;
-import org.mule.runtime.core.config.DefaultMuleConfiguration;
+import org.mule.runtime.core.api.config.DefaultMuleConfiguration;
 import org.mule.runtime.core.processor.strategy.TransactionAwareWorkQueueProcessingStrategyFactory;
 import org.mule.test.AbstractIntegrationTestCase;
 

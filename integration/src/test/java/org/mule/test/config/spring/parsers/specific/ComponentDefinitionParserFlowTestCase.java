@@ -30,7 +30,7 @@ import org.mule.runtime.core.api.model.resolvers.ReflectionEntryPointResolver;
 import org.mule.runtime.core.component.AbstractJavaComponent;
 import org.mule.runtime.core.component.DefaultJavaComponent;
 import org.mule.runtime.core.component.PooledJavaComponent;
-import org.mule.runtime.core.context.DefaultMuleContextFactory;
+import org.mule.runtime.core.api.context.DefaultMuleContextFactory;
 import org.mule.runtime.core.object.PrototypeObjectFactory;
 import org.mule.runtime.core.object.SingletonObjectFactory;
 import org.mule.tck.config.TestServicesConfigurationBuilder;

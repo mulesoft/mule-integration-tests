@@ -7,15 +7,15 @@
 package org.mule.test.module.http.functional.listener;
 
 import static org.mule.runtime.core.api.context.notification.ServerNotification.getActionName;
-import static org.mule.runtime.core.context.notification.ConnectorMessageNotification.MESSAGE_RECEIVED;
-import static org.mule.runtime.core.context.notification.ConnectorMessageNotification.MESSAGE_RESPONSE;
+import static org.mule.runtime.core.api.context.notification.ConnectorMessageNotification.MESSAGE_RECEIVED;
+import static org.mule.runtime.core.api.context.notification.ConnectorMessageNotification.MESSAGE_RESPONSE;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
 import static org.mule.test.module.http.functional.TestConnectorMessageNotificationListener.register;
 import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertThat;
 
 import org.mule.runtime.core.api.context.MuleContextBuilder;
-import org.mule.runtime.core.context.DefaultMuleContextBuilder;
+import org.mule.runtime.core.api.context.DefaultMuleContextBuilder;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.module.http.functional.AbstractHttpTestCase;

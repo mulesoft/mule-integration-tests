@@ -8,7 +8,7 @@ package org.mule.test.firewall;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
-import org.mule.runtime.core.config.factories.HostNameFactory;
+import org.mule.runtime.core.internal.config.factory.HostNameFactory;
 import org.mule.runtime.core.api.util.NetworkUtils;
 import org.mule.tck.junit4.AbstractMuleTestCase;
 

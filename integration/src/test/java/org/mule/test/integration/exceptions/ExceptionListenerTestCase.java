@@ -17,7 +17,7 @@ import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.runtime.core.api.context.notification.ErrorHandlerNotificationListener;
 import org.mule.runtime.core.api.context.notification.ServerNotification;
-import org.mule.runtime.core.context.notification.ErrorHandlerNotification;
+import org.mule.runtime.core.api.context.notification.ErrorHandlerNotification;
 import org.mule.tck.probe.JUnitProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.test.AbstractIntegrationTestCase;

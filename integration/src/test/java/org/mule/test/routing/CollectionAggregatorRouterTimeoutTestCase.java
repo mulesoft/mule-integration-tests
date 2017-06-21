@@ -14,7 +14,7 @@ import org.mule.functional.api.component.FunctionalTestProcessor;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.runtime.core.api.context.notification.RoutingNotificationListener;
-import org.mule.runtime.core.context.notification.RoutingNotification;
+import org.mule.runtime.core.api.context.notification.RoutingNotification;
 import org.mule.tck.probe.PollingProber;
 import org.mule.tck.probe.Probe;
 import org.mule.test.AbstractIntegrationTestCase;

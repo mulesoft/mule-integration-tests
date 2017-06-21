@@ -9,7 +9,7 @@ package org.mule.properties;
 import static java.util.Arrays.asList;
 import org.mule.runtime.config.spring.SpringXmlConfigurationBuilder;
 import org.mule.runtime.core.api.config.ConfigurationException;
-import org.mule.runtime.core.context.DefaultMuleContextFactory;
+import org.mule.runtime.core.api.context.DefaultMuleContextFactory;
 import org.mule.tck.junit4.AbstractMuleTestCase;
 
 import java.util.Collection;

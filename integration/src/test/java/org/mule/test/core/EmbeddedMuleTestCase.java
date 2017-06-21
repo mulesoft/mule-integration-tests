@@ -12,7 +12,7 @@ import static org.junit.Assert.assertTrue;
 import org.mule.runtime.config.spring.SpringXmlConfigurationBuilder;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.context.MuleContextFactory;
-import org.mule.runtime.core.context.DefaultMuleContextFactory;
+import org.mule.runtime.core.api.context.DefaultMuleContextFactory;
 import org.mule.tck.config.TestServicesConfigurationBuilder;
 import org.mule.tck.junit4.AbstractMuleTestCase;
 

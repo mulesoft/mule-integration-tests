@@ -16,7 +16,7 @@ import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.runtime.core.api.scheduler.SchedulerService;
-import org.mule.runtime.core.config.builders.AbstractConfigurationBuilder;
+import org.mule.runtime.core.api.config.builders.AbstractConfigurationBuilder;
 import org.mule.runtime.http.api.HttpService;
 import org.mule.service.http.impl.service.HttpServiceImplementation;
 import org.mule.tck.SimpleUnitTestSupportSchedulerService;

@@ -15,10 +15,10 @@ import org.mule.runtime.core.api.context.notification.SecurityNotificationListen
 import org.mule.runtime.core.api.context.notification.ServerNotification;
 import org.mule.runtime.core.api.context.notification.ServerNotificationListener;
 import org.mule.runtime.core.api.security.UnauthorisedException;
-import org.mule.runtime.core.config.i18n.CoreMessages;
-import org.mule.runtime.core.context.notification.ListenerSubscriptionPair;
-import org.mule.runtime.core.context.notification.SecurityNotification;
-import org.mule.runtime.core.context.notification.ServerNotificationManager;
+import org.mule.runtime.core.api.config.i18n.CoreMessages;
+import org.mule.runtime.core.api.context.notification.ListenerSubscriptionPair;
+import org.mule.runtime.core.api.context.notification.SecurityNotification;
+import org.mule.runtime.core.api.context.notification.ServerNotificationManager;
 import org.mule.tck.probe.PollingProber;
 import org.mule.tck.probe.Probe;
 import org.mule.test.AbstractIntegrationTestCase;

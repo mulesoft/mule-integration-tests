@@ -18,8 +18,8 @@ import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.message.MultiPartPayload;
 import org.mule.runtime.core.api.Event;
-import org.mule.runtime.core.message.DefaultMultiPartPayload;
-import org.mule.runtime.core.message.PartAttributes;
+import org.mule.runtime.core.api.message.DefaultMultiPartPayload;
+import org.mule.runtime.core.api.message.PartAttributes;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.module.http.functional.AbstractHttpTestCase;
 

@@ -25,8 +25,8 @@ import org.mule.runtime.core.api.context.notification.EnrichedServerNotification
 import org.mule.runtime.core.api.context.notification.ServerNotification;
 import org.mule.runtime.core.api.lifecycle.Callable;
 import org.mule.runtime.core.component.DefaultJavaComponent;
-import org.mule.runtime.core.context.notification.ComponentMessageNotification;
-import org.mule.runtime.core.context.notification.ServerNotificationManager;
+import org.mule.runtime.core.api.context.notification.ComponentMessageNotification;
+import org.mule.runtime.core.api.context.notification.ServerNotificationManager;
 import org.mule.runtime.core.object.SingletonObjectFactory;
 import org.mule.tck.junit4.AbstractMuleContextTestCase;
 
