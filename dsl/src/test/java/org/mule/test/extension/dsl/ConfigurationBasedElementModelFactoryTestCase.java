@@ -44,6 +44,31 @@ public class ConfigurationBasedElementModelFactoryTestCase extends AbstractEleme
   }
 
   @Test
+  public void defaultGroupResolution() throws Exception {
+    ComponentConfiguration flow = getAppElement(applicationModel, COMPONENTS_FLOW);
+
+    DslElementModel<ConfigurationModel> overrideWscConsume = resolve(flow.getNestedComponents().get(6));
+    DslElementModel<ConfigurationModel> defaultWscConsume = resolve(flow.getNestedComponents().get(7));
+
+    assertElementName(overrideWscConsume, "consume");
+    assertElementName(defaultWscConsume, "consume");
+
+    assertAttributeIsPresent(overrideWscConsume, "operation");
+    assertAttributeIsPresent(defaultWscConsume, "operation");
+
+    assertThat(overrideWscConsume.findElement("transportHeaders").isPresent(), is(false));
+    assertThat(defaultWscConsume.findElement("transportHeaders").isPresent(), is(false));
+
+    assertThat(defaultWscConsume.getContainedElements().size(), is(overrideWscConsume.getContainedElements().size()));
+
+    assertThat(overrideWscConsume.findElement("body").isPresent(), is(true));
+    assertThat(defaultWscConsume.findElement("body").isPresent(), is(true));
+
+    assertThat(overrideWscConsume.findElement("body").get().getValue().get(), is("#['modified' ++ payload]"));
+    assertThat(defaultWscConsume.findElement("body").get().getValue().get(), is("#[payload]"));
+  }
+
+  @Test
   public void defaultValueResolution() throws Exception {
     ComponentConfiguration config = getAppElement(applicationModel, DB_CONFIG);
     DslElementModel<ConfigurationModel> configElement = resolve(config);
@@ -347,9 +372,15 @@ public class ConfigurationBasedElementModelFactoryTestCase extends AbstractEleme
   }
 
   private void assertConnectionLoaded(DslElementModel<ConfigurationModel> config) {
-    assertThat(config.getContainedElements().size(), is(2));
+    assertThat(config.getContainedElements().size(), is(4));
     assertThat(config.findElement("active-mq").isPresent(), is(true));
     assertThat(config.findElement("active-mq").get().getContainedElements().size(), is(3));
+
+    assertThat(config.findElement(newIdentifier("consumer-config", "jms")).isPresent(), is(true));
+    assertThat(config.findElement(newIdentifier("consumer-config", "jms")).get().getContainedElements().size(), is(2));
+
+    assertThat(config.findElement(newIdentifier("producer-config", "jms")).isPresent(), is(true));
+    assertThat(config.findElement(newIdentifier("producer-config", "jms")).get().getContainedElements().size(), is(7));
 
     assertThat(config.findElement(newIdentifier("no-caching", "jms")).isPresent(), is(true));
   }
