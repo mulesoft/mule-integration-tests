@@ -16,10 +16,12 @@ import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.config.spring.SpringXmlConfigurationBuilder;
 import org.mule.runtime.config.spring.util.SpringBeanLookup;
 import org.mule.runtime.core.api.MuleContext;
+import org.mule.runtime.core.api.MuleEventContext;
 import org.mule.runtime.core.api.component.JavaComponent;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.context.MuleContextFactory;
+import org.mule.runtime.core.api.lifecycle.Callable;
 import org.mule.runtime.core.api.model.resolvers.ArrayEntryPointResolver;
 import org.mule.runtime.core.api.model.resolvers.CallableEntryPointResolver;
 import org.mule.runtime.core.api.model.resolvers.DefaultEntryPointResolverSet;
@@ -244,5 +246,14 @@ public class ComponentDefinitionParserFlowTestCase extends AbstractMuleTestCase 
 
   protected MuleContext createMuleContext() throws Exception {
     return null;
+  }
+
+  public static class TestComponent implements Callable {
+
+    @Override
+    public Object onCall(MuleEventContext eventContext) throws Exception {
+      return eventContext.getMessage();
+    }
+
   }
 }

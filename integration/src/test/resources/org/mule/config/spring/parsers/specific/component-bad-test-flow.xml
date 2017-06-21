@@ -5,7 +5,7 @@
 
     <flow name="service">
         <component class="org.mule.functional.component.FunctionalTestProcessor">
-            <singleton-object class="org.mule.runtime.core.component.simple.StaticComponent"/>
+            <singleton-object class="org.mule.test.config.spring.parsers.specific.ComponentDefinitionParserFlowTestCase$TestComponent"/>
         </component>
     </flow>
     
