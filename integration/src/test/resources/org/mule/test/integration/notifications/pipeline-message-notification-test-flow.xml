@@ -19,7 +19,7 @@
     </notifications>
 
     <flow name="service-1">
-        <echo-component />
+        <logger />
     </flow>
 
     <flow name="service-2">

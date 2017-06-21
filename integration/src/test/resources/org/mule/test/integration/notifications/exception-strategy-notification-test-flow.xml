@@ -27,7 +27,7 @@
         <test:processor throwException="true"/>
         <error-handler>
             <on-error-continue type="REDELIVERY_EXHAUSTED">
-                <echo-component/>
+                <logger/>
             </on-error-continue>
             <on-error-propagate>
                 <logger/>
@@ -42,10 +42,10 @@
                 <logger/>
             </on-error-continue>
             <on-error-propagate when="#[mel:exception.causedBy(java.io.IOException)]">
-                <echo-component/>
+                <logger/>
             </on-error-propagate>
             <on-error-continue>
-                <echo-component/>
+                <logger/>
             </on-error-continue>
         </error-handler>
     </flow>

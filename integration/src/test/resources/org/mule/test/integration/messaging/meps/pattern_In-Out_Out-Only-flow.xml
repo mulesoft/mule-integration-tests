@@ -35,7 +35,7 @@
             <test:queue name="notReceived"/>
         </async>
         
-        <mule:echo-component />
+        <mule:logger />
     </flow>
     
     <!--// END SNIPPET: full-config -->

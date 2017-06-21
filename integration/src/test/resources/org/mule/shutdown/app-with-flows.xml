@@ -9,13 +9,13 @@
     <flow name="http" processingStrategy="synchronous">
         <http:listener config-ref="httpListenerConfig" path="/sync" />
         <custom-processor class="org.mule.shutdown.ShutdownAppInDomainTestCase$RetrieveRequestContext"/>
-        <echo-component />
+        <logger />
     </flow>
 
     <flow name="httponBlocking">
         <http:listener config-ref="httpListenerConfig" path="/nonBlocking"/>
         <custom-processor class="org.mule.shutdown.ShutdownAppInDomainTestCase$RetrieveRequestContext"/>
-        <echo-component />
+        <logger />
     </flow>
 
     <flow name="httpRequest">
@@ -23,6 +23,6 @@
         <custom-processor class="org.mule.shutdown.ShutdownAppInDomainTestCase$RetrieveRequestContext"/>
         <http:request config-ref="httpRequester" path="/sync" method="GET"/>
         <custom-processor class="org.mule.shutdown.ShutdownAppInDomainTestCase$RetrieveRequestContext"/>
-        <echo-component />
+        <logger />
     </flow>
 </mule>

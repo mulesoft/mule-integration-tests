@@ -5,9 +5,7 @@
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 
     <flow name="echo" processingStrategy="synchronous">
-        <static-component>
-            <return-data>foo</return-data>
-        </static-component>
+        <set-payload value="foo"/>
     </flow>
 
     <flow name="pollfoo">
@@ -26,9 +24,7 @@
                 <fixed-frequency frequency="1000"/>
             </scheduling-strategy>
         </scheduler>
-        <static-component>
-            <return-data>bar</return-data>
-        </static-component>
+        <set-payload value="bar"/>
         <component class="org.mule.test.integration.SchedulerTestCase$BarComponent" />
     </flow>
 
@@ -39,9 +35,7 @@
                 <fixed-frequency frequency="4" timeUnit="DAYS" startDelay="200"/>
             </scheduling-strategy>
         </scheduler>
-        <static-component>
-            <return-data>barNever</return-data>
-        </static-component>
+        <set-payload value="barNever"/>
         <component class="org.mule.test.integration.SchedulerTestCase$BarComponent" />
     </flow>
 

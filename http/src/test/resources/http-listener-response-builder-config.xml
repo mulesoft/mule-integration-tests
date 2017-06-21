@@ -16,7 +16,7 @@
         <http:listener config-ref="listenerConfig" path="${emptyResponseBuilderPath}">
             <http:response />
         </http:listener>
-        <echo-component/>
+        <logger/>
     </flow>
 
     <flow name="twoHeadersResponseBuilderFlow">
@@ -27,14 +27,14 @@
                 </http:headers>
             </http:response>
         </http:listener>
-        <echo-component/>
+        <logger/>
     </flow>
 
     <flow name="statusResponseBuilderFlow">
         <http:listener config-ref="listenerConfig" path="${statusResponseBuilderPath}">
             <http:response statusCode="201" reasonPhrase="everything works!"/>
         </http:listener>
-        <echo-component/>
+        <logger/>
         <logger level="ERROR" message="#[mel:payload]"/>
     </flow>
 
@@ -46,7 +46,7 @@
                 </http:headers>
             </http:response>
         </http:listener>
-        <echo-component/>
+        <logger/>
     </flow>
 
     <flow name="headersResponseBuilderFlow">
@@ -55,7 +55,7 @@
                 <http:headers>#[mel:['User-Agent': 'Mule 4.0.0','Date': server.dateTime.toString()]]</http:headers>
             </http:response>
         </http:listener>
-        <echo-component/>
+        <logger/>
     </flow>
 
     <flow name="headersOverrideResponseBuilderFlow">
@@ -66,21 +66,21 @@
                 </http:headers>
             </http:response>
         </http:listener>
-        <echo-component/>
+        <logger/>
     </flow>
 
     <flow name="defaultReasonPhraseResponseBuilderFlow">
         <http:listener config-ref="listenerConfig" path="${defaultReasonPhraseResponseBuilderPath}">
             <http:response statusCode="200"/>
         </http:listener>
-        <echo-component/>
+        <logger/>
     </flow>
 
     <flow name="noReasonPhraseUnknownStatusCodeResponseBuilderFlow">
         <http:listener config-ref="listenerConfig" path="${noReasonPhraseUnknownStatusCodeResponseBuilderPath}">
             <http:response statusCode="1001"/>
         </http:listener>
-        <echo-component/>
+        <logger/>
     </flow>
 
     <flow name="errorEmptyResponseBuilderFlow">

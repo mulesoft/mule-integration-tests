@@ -41,7 +41,7 @@
 
     <flow name="testFlowServer">
         <http:listener config-ref="listenerConfig" path="/" allowedMethods="POST"/>
-        <echo-component />
+        <logger/>
     </flow>
 
     <flow name="testFlowClientWithCertificate">

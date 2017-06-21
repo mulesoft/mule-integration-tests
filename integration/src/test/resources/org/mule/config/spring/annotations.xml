@@ -8,15 +8,15 @@
         <annotations>
             <doc:description>Main flow</doc:description>
         </annotations>
-        <echo-component doc:name="echo"/>
+        <logger doc:name="echo"/>
     </flow>
 
     <flow name="NotAnnotatedBridge">
-        <echo-component/>
+        <logger/>
     </flow>
 
     <flow name="WithRefExceptionStrategy" doc:name="With Referenced Exception Strategy">
-        <echo-component doc:name="echo_ex"/>
+        <logger doc:name="echo_ex"/>
         <error-handler doc:name="error handler doc name">
             <on-error-continue doc:name="On Error Continue">
                 <logger message="Exception! " level="ERROR" doc:name="Logger"/>

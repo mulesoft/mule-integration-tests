@@ -86,7 +86,7 @@
     </flow>
     <flow name="HTPPEchoFlow">
         <http:listener path="/" config-ref="listenerConfig1" />
-        <echo-component />
+        <logger />
     </flow>
 
     <flow name="propagationThroughFlowRefToFlow">
@@ -237,8 +237,8 @@
         <processor ref="addP1" />
         <test:assert expression="#[mel:P1]" />
         <all>
-            <echo-component />
-            <echo-component />
+            <logger />
+            <logger />
         </all>
         <test:assert expression="#[mel:P1]" />
     </flow>

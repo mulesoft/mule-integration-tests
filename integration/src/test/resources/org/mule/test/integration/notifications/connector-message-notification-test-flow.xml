@@ -24,7 +24,7 @@
 
     <flow name="testFlow">
         <http:listener config-ref="listenerConfig"  path="/path"/>
-        <echo-component/>
+        <logger/>
     </flow>
 
 </mule>

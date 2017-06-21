@@ -31,6 +31,6 @@
     </flow>
 
     <flow name="handler">
-        <echo-component/>
+        <logger/>
     </flow>
 </mule>

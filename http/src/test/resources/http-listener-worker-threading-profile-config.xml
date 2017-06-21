@@ -35,7 +35,7 @@
 
     <flow name="anotherConfigFlow">
         <http:listener path="/*" config-ref="listenerConfig" />
-        <echo-component/>
+        <logger/>
     </flow>
 
 </mule>

@@ -45,7 +45,7 @@
     </flow>
 
     <processor-chain name="subFlowWithComponent">
-        <echo-component/>
+        <logger/>
     </processor-chain>
 
     <flow name="flowWithSameSubFlowTwice">
@@ -75,7 +75,7 @@
         <append-string-transformer message="x"/>
         <append-string-transformer message="y"/>
         <append-string-transformer message="z"/>
-        <echo-component/>
+        <logger/>
     </processor-chain>
 
     <processor-chain name="chain-singleton">
@@ -93,7 +93,7 @@
         <append-string-transformer message="x"/>
         <append-string-transformer message="y"/>
         <append-string-transformer message="z"/>
-        <echo-component/>
+        <logger/>
     </sub-flow>
 
     <flow name="childFlow">
@@ -101,7 +101,7 @@
         <append-string-transformer message="x"/>
         <append-string-transformer message="y"/>
         <append-string-transformer message="z"/>
-        <echo-component/>
+        <logger/>
     </flow>
 
     <sub-flow name="sub-flow-singleton">

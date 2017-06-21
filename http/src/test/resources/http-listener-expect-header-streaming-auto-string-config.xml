@@ -12,7 +12,7 @@
 
     <flow name="defaultFlow">
         <http:listener config-ref="listenerConfig"  path="/" responseStreamingMode="AUTO"/>
-        <echo-component/>
+        <object-to-string-transformer/>
     </flow>
 
 </mule>

@@ -10,9 +10,7 @@
 
 
     <flow name="echo" processingStrategy="synchronous">
-        <static-component>
-            <return-data>foo</return-data>
-        </static-component>
+        <set-payload value="foo"/>
     </flow>
 
     <flow name="pollfoo">
@@ -32,10 +30,8 @@
                 <cron expression="${expression.property}"/>
             </scheduling-strategy>
         </scheduler>
-        <static-component>
-            <return-data>bar</return-data>
-        </static-component>
-       <component class="org.mule.test.module.scheduler.cron.CronSchedulerTestCase$BarComponent"/>
+        <set-payload value="bar"/>
+        <component class="org.mule.test.module.scheduler.cron.CronSchedulerTestCase$BarComponent"/>
     </flow>
 
 </mule>

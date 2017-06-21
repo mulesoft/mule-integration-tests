@@ -39,7 +39,7 @@
 
     <flow name="httpEcho">
         <http:listener config-ref="listenerConfig" path="echo"/>
-        <echo-component/>
+        <logger/>
     </flow>
 
 </mule>

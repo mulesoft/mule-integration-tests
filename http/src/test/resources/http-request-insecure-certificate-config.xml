@@ -36,7 +36,7 @@
 
     <flow name="testFlowNestedContext">
         <http:listener config-ref="hostnameListener" path="/" allowedMethods="POST"/>
-        <echo-component/>
+        <logger/>
     </flow>
 
     <flow name="testInsecureRequest">

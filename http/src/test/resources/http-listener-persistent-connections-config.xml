@@ -10,7 +10,7 @@
     </http:listener-config>
     <flow name="nonPersistent">
         <http:listener path="/" config-ref="nonPersistentConfig" />
-        <echo-component/>
+        <logger/>
     </flow>
 
     <http:listener-config name="persistentConfig">
@@ -18,7 +18,7 @@
     </http:listener-config>
     <flow name="persistent">
         <http:listener path="/" config-ref="persistentConfig" />
-        <echo-component/>
+        <logger/>
     </flow>
 
     <http:listener-config name="persistentConfigCloseHeader">
@@ -32,7 +32,7 @@
                 </http:headers>
             </http:response>
                 </http:listener>
-        <echo-component/>
+        <logger/>
     </flow>
 
     <http:listener-config name="persistentConfigCloseProperty">
@@ -41,7 +41,7 @@
     <flow name="persistentCloseProperty">
         <http:listener path="/" config-ref="persistentConfigCloseProperty"/>
         <set-property propertyName="Connection" value="close"/>
-        <echo-component/>
+        <logger/>
     </flow>
 
     <!-- MULE-8502 -->
@@ -50,7 +50,7 @@
     </http:listener-config>
     <flow name="persistentStreaming">
         <http:listener path="/" config-ref="persistentConfigStreaming" responseStreamingMode="ALWAYS" />
-        <echo-component />
+        <object-to-string-transformer />
     </flow>
 
     <http:listener-config name="persistentConfigStreamingTransformer">

@@ -22,7 +22,7 @@
 
         <test:queue name="test.before.out" />
 
-        <echo-component />
+        <logger />
 
     </flow>
 
@@ -37,7 +37,7 @@
             <test:queue name="test.after.async.out" />
         </async>       
 
-        <echo-component />
+        <logger />
     </flow>
 
     <sub-flow name="set-rr-thread-property">

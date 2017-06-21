@@ -12,6 +12,6 @@
 
     <flow name="test">
         <custom-security-filter ref="customFilter"/>
-        <component class="org.mule.runtime.core.component.simple.EchoComponent"/>
+        <logger/>
     </flow>
 </mule>

@@ -17,7 +17,7 @@
 
     <flow name="serverFlow">
         <http:listener config-ref="listenerConfig" path="/" allowedMethods="GET"/>
-        <echo-component/>
+        <logger/>
     </flow>
 
 </mule>

@@ -12,7 +12,7 @@
 
     <flow name="defaultFlow">
         <http:listener config-ref="listenerConfig"  path="/" responseStreamingMode="ALWAYS"/>
-        <echo-component />
+        <logger/>
     </flow>
 
 </mule>

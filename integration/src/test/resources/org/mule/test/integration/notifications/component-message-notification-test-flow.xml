@@ -19,11 +19,11 @@
     </notifications>
 
     <flow name="service-1">
-        <echo-component/>
+        <component class="org.mule.test.core.context.notification.ComponentMessageNotificationTestCase$SimpleComponent"/>
     </flow>
 
     <flow name="service-2">
-        <echo-component/>
+        <component class="org.mule.test.core.context.notification.ComponentMessageNotificationTestCase$SimpleComponent"/>
         <test:queue name="out-2"/>
     </flow>
     

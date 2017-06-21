@@ -6,7 +6,7 @@
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd">
 
     <flow name="EchoService">
-        <echo-component />
+        <logger />
         <custom-transformer
             class="org.mule.test.integration.transformer.LifecycleTrackerTransformer">
             <spring:property name="property" value="ltt" />

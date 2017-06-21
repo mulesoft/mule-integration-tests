@@ -28,7 +28,7 @@
 
     <flow name="TransformerException">
         <transformer ref="exceptionTransformer"/>
-        <log-component/>
+        <logger/>
     </flow>
 
     <flow name="ScriptComponentException">
@@ -36,7 +36,7 @@
     </flow>
 
     <flow name="CustomProcessorException">
-        <log-component/>
+        <logger/>
         <custom-processor class="org.mule.test.integration.exceptions.ExceptionThrowingOutboundRouter"/>
     </flow>
 

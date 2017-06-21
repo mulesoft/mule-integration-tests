@@ -25,7 +25,7 @@
             </script:script>
         </script:component>
                 
-        <mule:echo-component />
+        <mule:logger />
     </flow>
     
     <!--// END SNIPPET: full-config -->

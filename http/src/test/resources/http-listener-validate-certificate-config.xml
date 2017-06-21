@@ -26,7 +26,7 @@
         <test:assert expression="#[mel:message.getAttributes().getClientCertificate() instanceof java.security.cert.Certificate]"/>
         <!-- Only the client certificate contains CN=OLEKSIYS-W3T this way we validate that we are actually publishing the client cert -->
         <test:assert expression="#[mel:message.getAttributes().getClientCertificate().getSubjectDN().getName().contains('CN=OLEKSIYS-W3T')]"/>
-        <echo-component />
+        <logger />
     </flow>
 
 
@@ -41,7 +41,7 @@
 
     <flow name="listenerWithoutTrustStoreFlow">
         <http:listener config-ref="listenerConfigWithoutTrustStore" path="/" allowedMethods="POST"/>
-        <echo-component />
+        <logger />
     </flow>
 
 

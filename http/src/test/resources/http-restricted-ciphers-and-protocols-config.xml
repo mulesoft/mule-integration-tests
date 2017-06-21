@@ -61,7 +61,7 @@
 
     <flow name="1Server">
         <http:listener config-ref="listenerConfig1" path="/" allowedMethods="POST"/>
-        <echo-component/>
+        <logger/>
         <object-to-string-transformer />
     </flow>
 

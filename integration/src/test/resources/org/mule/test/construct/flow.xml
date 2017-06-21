@@ -50,7 +50,7 @@
     </flow>    
 
     <flow name="inout">
-        <echo-component/>
+        <logger/>
         <test:queue name="inout-out"/>
     </flow>
 
@@ -152,7 +152,7 @@
     </flow>
 
     <flow name="components">
-        <echo-component/>
+        <logger/>
         <test:processor appendString="test"/>
     </flow>
 
@@ -301,14 +301,14 @@
     <!-- MULE-5544 -->
     <flow name="enrichcomponent">
         <enricher target="#[mel:message.outboundProperties.echoHeader]" source="#[mel:payload]">
-            <echo-component/>
+            <logger/>
         </enricher>
     </flow>
 
     <flow name="enrichcomponent2">
         <enricher target="#[mel:message.outboundProperties.echoHeader]" source="#[mel:payload]">
             <processor-chain>
-                <echo-component/>
+                <logger/>
             </processor-chain>
         </enricher>
     </flow>

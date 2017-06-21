@@ -13,7 +13,7 @@
     <flow name="testFlow1">
         <http:listener config-ref="listenerConfig"  path="/"/>
         <expression-filter expression="#[mel:message.getAttributes().getHeaders().get('filterexpression')]" />
-        <echo-component />
+        <logger/>
     </flow>
 
 </mule>
