@@ -49,7 +49,7 @@ import ru.yandex.qatools.allure.annotations.Features;
 @Features(HTTP_EXTENSION)
 public abstract class HttpListenerResponseStreamingTestCase extends AbstractHttpTestCase {
 
-  private static final int DEFAULT_TIMEOUT = 1000;
+  private static final int DEFAULT_TIMEOUT = 5000;
 
   public static final String TEST_BODY = RandomStringUtils.randomAlphabetic(100 * 1024);
   public static final String TEST_BODY_MAP = "one=1&two=2";
