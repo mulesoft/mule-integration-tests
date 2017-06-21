@@ -15,7 +15,7 @@ import static org.mule.runtime.http.api.HttpConstants.Method.POST;
 
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.http.api.HttpService;
-import org.mule.runtime.http.api.domain.ParameterMap;
+import org.mule.runtime.api.util.MultiMap;
 import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;
 import org.mule.runtime.http.api.domain.message.request.HttpRequest;
 import org.mule.service.http.TestHttpClient;
@@ -42,7 +42,7 @@ public class HttpJmsBridgeTestCase extends AbstractIntegrationTestCase {
   public void testBridge() throws Exception {
     String payload = "payload";
 
-    ParameterMap headersMap = new ParameterMap();
+    MultiMap<String, String> headersMap = new MultiMap<>();
     final String customHeader = "X-Custom-Header";
     headersMap.put(customHeader, "value");
 

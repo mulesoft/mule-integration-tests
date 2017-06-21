@@ -15,7 +15,7 @@ import static org.mule.runtime.http.api.HttpHeaders.Values.APPLICATION_X_WWW_FOR
 
 import org.mule.extension.http.api.HttpResponseAttributes;
 import org.mule.runtime.core.api.Event;
-import org.mule.runtime.http.api.domain.ParameterMap;
+import org.mule.runtime.api.util.MultiMap;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
 
@@ -44,9 +44,9 @@ public class HttpHeaderCaseTestCase extends AbstractHttpTestCase {
   public void worksPreservingHeaders() throws Exception {
     Event response = runFlow("client");
     Object payload = response.getMessage().getPayload().getValue();
-    assertThat(payload, is(instanceOf(ParameterMap.class)));
-    assertThat(((ParameterMap) payload).keySet(), hasItem("CustomValue"));
-    assertThat(((ParameterMap) payload).get("CustomValue"), is("value"));
+    assertThat(payload, is(instanceOf(MultiMap.class)));
+    assertThat(((MultiMap<String, String>) payload).keySet(), hasItem("CustomValue"));
+    assertThat(((MultiMap<String, String>) payload).get("CustomValue"), is("value"));
     HttpResponseAttributes attributes = (HttpResponseAttributes) response.getMessage().getAttributes().getValue();
     assertThat(attributes.getHeaders().get(CONTENT_TYPE), is(APPLICATION_X_WWW_FORM_URLENCODED.toRfcString()));
     assertThat(attributes.getHeaders().get("customname1"), is("customValue"));

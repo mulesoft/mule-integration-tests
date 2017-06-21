@@ -22,7 +22,7 @@ import static org.mule.runtime.http.api.HttpHeaders.Values.CLOSE;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
 
 import org.mule.extension.http.api.HttpRequestAttributes;
-import org.mule.runtime.http.api.domain.ParameterMap;
+import org.mule.runtime.api.util.MultiMap;
 import org.mule.tck.junit4.rule.SystemProperty;
 
 import java.util.Arrays;
@@ -111,7 +111,7 @@ public class HttpRequestHeadersTestCase extends AbstractHttpRequestTestCase {
   @Test
   public void ignoresConnectionOutboundProperty() throws Exception {
     final HttpRequestAttributes reqAttributes = mock(HttpRequestAttributes.class);
-    when(reqAttributes.getHeaders()).thenReturn(new ParameterMap(singletonMap(CONNECTION, CLOSE)));
+    when(reqAttributes.getHeaders()).thenReturn(new MultiMap<>(singletonMap(CONNECTION, CLOSE)));
 
     flowRunner("outboundProperties").withPayload(TEST_MESSAGE).withAttributes(reqAttributes).run();
     assertThat(getFirstReceivedHeader(CONNECTION), is(not(CLOSE)));

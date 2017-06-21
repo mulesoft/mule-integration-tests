@@ -27,7 +27,7 @@ import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
 import static org.mule.test.module.http.functional.matcher.ParamMapMatcher.isEqual;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.util.StringUtils;
-import org.mule.runtime.http.api.domain.ParameterMap;
+import org.mule.runtime.api.util.MultiMap;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.module.http.functional.AbstractHttpTestCase;
@@ -79,9 +79,9 @@ public class HttpListenerUrlEncodedTestCase extends AbstractHttpTestCase {
         .bodyForm(new BasicNameValuePair(PARAM_1_NAME, PARAM_1_VALUE), new BasicNameValuePair(PARAM_2_NAME, PARAM_2_VALUE))
         .execute();
     final Message receivedMessage = muleContext.getClient().request(OUT_QUEUE_URL, TIMEOUT).getRight().get();
-    assertThat(receivedMessage.getPayload().getValue(), instanceOf(ParameterMap.class));
+    assertThat(receivedMessage.getPayload().getValue(), instanceOf(MultiMap.class));
     assertThat(receivedMessage, hasMediaType(APPLICATION_JAVA.withCharset(ISO_8859_1)));
-    ParameterMap payloadAsMap = (ParameterMap) receivedMessage.getPayload().getValue();
+    MultiMap payloadAsMap = (MultiMap) receivedMessage.getPayload().getValue();
     assertThat(payloadAsMap.size(), is(2));
     assertThat(payloadAsMap.get(PARAM_1_NAME), is(PARAM_1_VALUE));
     assertThat(payloadAsMap.get(PARAM_2_NAME), is(PARAM_2_VALUE));
@@ -109,8 +109,8 @@ public class HttpListenerUrlEncodedTestCase extends AbstractHttpTestCase {
                   new BasicNameValuePair(PARAM_2_NAME, PARAM_2_VALUE_2))
         .execute();
     final Message receivedMessage = muleContext.getClient().request(OUT_QUEUE_URL, TIMEOUT).getRight().get();
-    assertThat(receivedMessage.getPayload().getValue(), instanceOf(ParameterMap.class));
-    ParameterMap payloadAsMap = (ParameterMap) receivedMessage.getPayload().getValue();
+    assertThat(receivedMessage.getPayload().getValue(), instanceOf(MultiMap.class));
+    MultiMap payloadAsMap = (MultiMap) receivedMessage.getPayload().getValue();
     assertThat(payloadAsMap.size(), is(2));
     assertThat(payloadAsMap.get(PARAM_1_NAME), is(PARAM_1_VALUE));
     assertThat(payloadAsMap.getAll(PARAM_2_NAME).size(), is(2));
@@ -164,8 +164,8 @@ public class HttpListenerUrlEncodedTestCase extends AbstractHttpTestCase {
 
   private void assertMapPayloadAndEmptyResponse(Response response) throws Exception {
     final Message receivedMessage = muleContext.getClient().request(OUT_QUEUE_URL, TIMEOUT).getRight().get();
-    assertThat(receivedMessage.getPayload().getValue(), is(instanceOf(ParameterMap.class)));
-    ParameterMap payloadAsMap = (ParameterMap) receivedMessage.getPayload().getValue();
+    assertThat(receivedMessage.getPayload().getValue(), is(instanceOf(MultiMap.class)));
+    MultiMap<String, String> payloadAsMap = (MultiMap) receivedMessage.getPayload().getValue();
     assertThat(payloadAsMap.entrySet(), hasSize(0));
 
     assertEmptyResponse(response);
@@ -177,7 +177,7 @@ public class HttpListenerUrlEncodedTestCase extends AbstractHttpTestCase {
     assertThat(IOUtils.toString(httpResponse.getEntity().getContent()), is(StringUtils.EMPTY));
   }
 
-  private void compareParameterMaps(Response response, ParameterMap payloadAsMap) throws IOException {
+  private void compareParameterMaps(Response response, MultiMap<String, String> payloadAsMap) throws IOException {
     final HttpResponse httpResponse = response.returnResponse();
     assertThat(httpResponse.getFirstHeader(CONTENT_TYPE).getValue(), startsWith(APPLICATION_X_WWW_FORM_URLENCODED.toRfcString()));
     final String responseContent = IOUtils.toString(httpResponse.getEntity().getContent());

@@ -8,7 +8,7 @@ package org.mule.test.module.http.functional.matcher;
 
 import static org.junit.Assert.assertThat;
 
-import org.mule.runtime.http.api.domain.ParameterMap;
+import org.mule.runtime.api.util.MultiMap;
 
 import java.util.List;
 import java.util.Map;
@@ -21,18 +21,18 @@ import org.hamcrest.core.Is;
 
 public class ParamMapMatcher {
 
-  public static Matcher<ParameterMap> isEqual(final Map<String, ? extends List<String>> parameters) {
-    return new BaseMatcher<ParameterMap>() {
+  public static Matcher<MultiMap> isEqual(final Map<String, ? extends List<String>> parameters) {
+    return new BaseMatcher<MultiMap>() {
 
       @Override
       public boolean matches(Object o) {
-        ParameterMap parameterMap = (ParameterMap) o;
-        assertThat(parameterMap.size(), Is.is(parameters.size()));
+        MultiMap<String, String> multiMap = (MultiMap<String, String>) o;
+        assertThat(multiMap.size(), Is.is(parameters.size()));
         for (String key : parameters.keySet()) {
-          assertThat(parameterMap.keySet(),
-                     Matchers.containsInAnyOrder(parameters.keySet().toArray(new String[parameterMap.size()])));
+          assertThat(multiMap.keySet(),
+                     Matchers.containsInAnyOrder(parameters.keySet().toArray(new String[multiMap.size()])));
           final List<String> parameterKeyValues = parameters.get(key);
-          final List<String> parameterMapValues = parameterMap.getAll(key);
+          final List<String> parameterMapValues = multiMap.getAll(key);
           assertThat(parameterMapValues,
                      Matchers.containsInAnyOrder(parameterKeyValues.toArray(new String[parameterKeyValues.size()])));
         }
