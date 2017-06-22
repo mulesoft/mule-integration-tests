@@ -6,8 +6,9 @@
  */
 package org.mule.test.module.http.functional.matcher;
 
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
-
 import org.mule.runtime.api.util.MultiMap;
 
 import java.util.List;
@@ -16,8 +17,6 @@ import java.util.Map;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
-import org.hamcrest.Matchers;
-import org.hamcrest.core.Is;
 
 public class MultiMapMatcher {
 
@@ -27,14 +26,14 @@ public class MultiMapMatcher {
       @Override
       public boolean matches(Object o) {
         MultiMap<String, String> multiMap = (MultiMap<String, String>) o;
-        assertThat(multiMap.keySet().size(), Is.is(parameters.size()));
+        assertThat(multiMap.keySet(), hasSize(parameters.size()));
         for (String key : parameters.keySet()) {
           assertThat(multiMap.keySet(),
-                     Matchers.containsInAnyOrder(parameters.keySet().toArray(new String[multiMap.keySet().size()])));
+                     containsInAnyOrder(parameters.keySet().toArray(new String[multiMap.keySet().size()])));
           final List<String> multiKeyValues = parameters.get(key);
           final List<String> multiMapValues = multiMap.getAll(key);
           assertThat(multiMapValues,
-                     Matchers.containsInAnyOrder(multiKeyValues.toArray(new String[multiKeyValues.size()])));
+                     containsInAnyOrder(multiKeyValues.toArray(new String[multiKeyValues.size()])));
         }
         return true;
       }
