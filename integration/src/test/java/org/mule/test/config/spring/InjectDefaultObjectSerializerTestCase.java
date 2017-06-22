@@ -10,9 +10,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.junit.Assert.assertThat;
 import org.mule.runtime.core.api.config.MuleProperties;
-import org.mule.runtime.core.api.serialization.DefaultObjectSerializer;
-import org.mule.runtime.core.api.serialization.ObjectSerializer;
-import org.mule.runtime.core.api.serialization.SerializationProtocol;
+import org.mule.runtime.api.serialization.DefaultObjectSerializer;
+import org.mule.runtime.api.serialization.ObjectSerializer;
+import org.mule.runtime.api.serialization.SerializationProtocol;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.runner.RunnerDelegateTo;
 
