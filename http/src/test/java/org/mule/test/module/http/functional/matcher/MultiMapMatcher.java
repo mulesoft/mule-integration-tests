@@ -21,8 +21,8 @@ import org.hamcrest.core.Is;
 
 public class MultiMapMatcher {
 
-  public static Matcher<MultiMap> isEqual(final Map<String, ? extends List<String>> parameters) {
-    return new BaseMatcher<MultiMap>() {
+  public static Matcher<MultiMap<String, String>> isEqual(final Map<String, ? extends List<String>> parameters) {
+    return new BaseMatcher<MultiMap<String, String>>() {
 
       @Override
       public boolean matches(Object o) {

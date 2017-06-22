@@ -13,6 +13,7 @@ import static org.apache.http.HttpVersion.HTTP_1_1;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.collection.IsMapContaining.hasEntry;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertThat;
@@ -26,8 +27,8 @@ import static org.mule.runtime.http.api.utils.HttpEncoderDecoderUtils.decodeUrlE
 import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
 import static org.mule.test.module.http.functional.matcher.MultiMapMatcher.isEqual;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.core.api.util.StringUtils;
 import org.mule.runtime.api.util.MultiMap;
+import org.mule.runtime.core.api.util.StringUtils;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.module.http.functional.AbstractHttpTestCase;
@@ -81,10 +82,10 @@ public class HttpListenerUrlEncodedTestCase extends AbstractHttpTestCase {
     final Message receivedMessage = muleContext.getClient().request(OUT_QUEUE_URL, TIMEOUT).getRight().get();
     assertThat(receivedMessage.getPayload().getValue(), instanceOf(MultiMap.class));
     assertThat(receivedMessage, hasMediaType(APPLICATION_JAVA.withCharset(ISO_8859_1)));
-    MultiMap payloadAsMap = (MultiMap) receivedMessage.getPayload().getValue();
+    MultiMap<String, String> payloadAsMap = (MultiMap<String, String>) receivedMessage.getPayload().getValue();
     assertThat(payloadAsMap.size(), is(2));
-    assertThat(payloadAsMap.get(PARAM_1_NAME), is(PARAM_1_VALUE));
-    assertThat(payloadAsMap.get(PARAM_2_NAME), is(PARAM_2_VALUE));
+    assertThat(payloadAsMap, hasEntry(PARAM_1_NAME, PARAM_1_VALUE));
+    assertThat(payloadAsMap, hasEntry(PARAM_2_NAME, PARAM_2_VALUE));
 
     compareMultiMaps(response, payloadAsMap);
   }
