@@ -24,7 +24,7 @@ import static org.mule.runtime.http.api.HttpHeaders.Names.CONTENT_TYPE;
 import static org.mule.runtime.http.api.HttpHeaders.Values.APPLICATION_X_WWW_FORM_URLENCODED;
 import static org.mule.runtime.http.api.utils.HttpEncoderDecoderUtils.decodeUrlEncodedBody;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
-import static org.mule.test.module.http.functional.matcher.ParamMapMatcher.isEqual;
+import static org.mule.test.module.http.functional.matcher.MultiMapMatcher.isEqual;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.util.StringUtils;
 import org.mule.runtime.api.util.MultiMap;
@@ -86,7 +86,7 @@ public class HttpListenerUrlEncodedTestCase extends AbstractHttpTestCase {
     assertThat(payloadAsMap.get(PARAM_1_NAME), is(PARAM_1_VALUE));
     assertThat(payloadAsMap.get(PARAM_2_NAME), is(PARAM_2_VALUE));
 
-    compareParameterMaps(response, payloadAsMap);
+    compareMultiMaps(response, payloadAsMap);
   }
 
   @Test
@@ -117,7 +117,7 @@ public class HttpListenerUrlEncodedTestCase extends AbstractHttpTestCase {
     assertThat(payloadAsMap.getAll(PARAM_2_NAME).get(0), is(PARAM_2_VALUE_1));
     assertThat(payloadAsMap.getAll(PARAM_2_NAME).get(1), is(PARAM_2_VALUE_2));
 
-    compareParameterMaps(response, payloadAsMap);
+    compareMultiMaps(response, payloadAsMap);
   }
 
   @Test
@@ -151,13 +151,13 @@ public class HttpListenerUrlEncodedTestCase extends AbstractHttpTestCase {
   }
 
   @Test
-  public void emptyParameterMapHttp10() throws Exception {
+  public void emptyMultiMapHttp10() throws Exception {
     final Response response = Request.Post(getListenerUrl("map")).version(HTTP_1_0).execute();
     assertThat(response.returnResponse().getStatusLine().getStatusCode(), is(OK.getStatusCode()));
   }
 
   @Test
-  public void emptyParameterMapHttp11() throws Exception {
+  public void emptyMultiMapHttp11() throws Exception {
     final Response response = Request.Post(getListenerUrl("map")).version(HTTP_1_1).execute();
     assertThat(response.returnResponse().getStatusLine().getStatusCode(), is(OK.getStatusCode()));
   }
@@ -177,7 +177,7 @@ public class HttpListenerUrlEncodedTestCase extends AbstractHttpTestCase {
     assertThat(IOUtils.toString(httpResponse.getEntity().getContent()), is(StringUtils.EMPTY));
   }
 
-  private void compareParameterMaps(Response response, MultiMap<String, String> payloadAsMap) throws IOException {
+  private void compareMultiMaps(Response response, MultiMap<String, String> payloadAsMap) throws IOException {
     final HttpResponse httpResponse = response.returnResponse();
     assertThat(httpResponse.getFirstHeader(CONTENT_TYPE).getValue(), startsWith(APPLICATION_X_WWW_FORM_URLENCODED.toRfcString()));
     final String responseContent = IOUtils.toString(httpResponse.getEntity().getContent());

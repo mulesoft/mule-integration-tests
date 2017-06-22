@@ -19,7 +19,7 @@ import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.hamcrest.core.Is;
 
-public class ParamMapMatcher {
+public class MultiMapMatcher {
 
   public static Matcher<MultiMap> isEqual(final Map<String, ? extends List<String>> parameters) {
     return new BaseMatcher<MultiMap>() {
@@ -31,10 +31,10 @@ public class ParamMapMatcher {
         for (String key : parameters.keySet()) {
           assertThat(multiMap.keySet(),
                      Matchers.containsInAnyOrder(parameters.keySet().toArray(new String[multiMap.size()])));
-          final List<String> parameterKeyValues = parameters.get(key);
-          final List<String> parameterMapValues = multiMap.getAll(key);
-          assertThat(parameterMapValues,
-                     Matchers.containsInAnyOrder(parameterKeyValues.toArray(new String[parameterKeyValues.size()])));
+          final List<String> multiKeyValues = parameters.get(key);
+          final List<String> multiMapValues = multiMap.getAll(key);
+          assertThat(multiMapValues,
+                     Matchers.containsInAnyOrder(multiKeyValues.toArray(new String[multiKeyValues.size()])));
         }
         return true;
       }
