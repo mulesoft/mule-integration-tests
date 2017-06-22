@@ -7,7 +7,7 @@
 package org.mule.test.core.context.notification.processors;
 
 import org.mule.test.core.context.notification.AbstractNotificationTestCase;
-import org.mule.runtime.core.context.notification.MessageProcessorNotification;
+import org.mule.runtime.core.api.context.notification.MessageProcessorNotification;
 import org.mule.test.core.context.notification.Node;
 import org.mule.test.core.context.notification.RestrictedNode;
 

@@ -14,8 +14,8 @@ import static org.junit.Assert.assertThat;
 import org.mule.runtime.core.api.context.notification.ConnectorMessageNotificationListener;
 import org.mule.runtime.core.api.context.notification.ServerNotification;
 import org.mule.runtime.core.api.context.notification.ServerNotificationListener;
-import org.mule.runtime.core.context.notification.ConnectorMessageNotification;
-import org.mule.runtime.core.context.notification.ServerNotificationManager;
+import org.mule.runtime.core.api.context.notification.ConnectorMessageNotification;
+import org.mule.runtime.core.api.context.notification.ServerNotificationManager;
 
 import java.util.ArrayList;
 import java.util.List;

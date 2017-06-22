@@ -10,7 +10,7 @@ import static org.hamcrest.Matchers.containsString;
 import org.mule.runtime.config.spring.SpringXmlConfigurationBuilder;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
-import org.mule.runtime.core.context.DefaultMuleContextFactory;
+import org.mule.runtime.core.api.context.DefaultMuleContextFactory;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Rule;

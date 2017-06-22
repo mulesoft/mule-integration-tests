@@ -12,7 +12,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.message.Message.of;
-import static org.mule.runtime.core.context.notification.MessageProcessorNotification.MESSAGE_PROCESSOR_POST_INVOKE;
+import static org.mule.runtime.core.api.context.notification.MessageProcessorNotification.MESSAGE_PROCESSOR_POST_INVOKE;
 
 import org.mule.functional.api.exception.FunctionalTestException;
 import org.mule.runtime.api.exception.MuleException;
@@ -23,7 +23,7 @@ import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.source.CompositeMessageSource;
 import org.mule.runtime.core.api.source.MessageSource;
-import org.mule.runtime.core.context.notification.MessageProcessorNotification;
+import org.mule.runtime.core.api.context.notification.MessageProcessorNotification;
 import org.mule.runtime.core.exception.MessagingException;
 import org.mule.test.core.context.notification.Node;
 import org.mule.test.core.context.notification.NotificationLogger;

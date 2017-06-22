@@ -7,7 +7,7 @@
 package org.mule.test.core.context.notification;
 
 import org.mule.runtime.core.api.context.notification.PipelineMessageNotificationListener;
-import org.mule.runtime.core.context.notification.PipelineMessageNotification;
+import org.mule.runtime.core.api.context.notification.PipelineMessageNotification;
 
 import java.util.List;
 

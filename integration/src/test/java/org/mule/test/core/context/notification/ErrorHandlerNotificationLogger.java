@@ -7,7 +7,7 @@
 package org.mule.test.core.context.notification;
 
 import org.mule.runtime.core.api.context.notification.ErrorHandlerNotificationListener;
-import org.mule.runtime.core.context.notification.ErrorHandlerNotification;
+import org.mule.runtime.core.api.context.notification.ErrorHandlerNotification;
 
 public class ErrorHandlerNotificationLogger extends AbstractNotificationLogger<ErrorHandlerNotification>
     implements ErrorHandlerNotificationListener<ErrorHandlerNotification> {

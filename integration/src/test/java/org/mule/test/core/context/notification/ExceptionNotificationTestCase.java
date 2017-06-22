@@ -12,7 +12,7 @@ import static org.junit.Assert.assertNull;
 import org.mule.functional.api.exception.FunctionalTestException;
 import org.mule.functional.listener.ExceptionListener;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.core.context.notification.ExceptionNotification;
+import org.mule.runtime.core.api.context.notification.ExceptionNotification;
 
 import org.junit.Rule;
 import org.junit.Test;

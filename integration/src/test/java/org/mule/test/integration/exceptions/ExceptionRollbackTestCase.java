@@ -10,7 +10,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import org.mule.runtime.core.api.DefaultMuleException;
 import org.mule.runtime.core.api.transaction.Transaction;
-import org.mule.runtime.core.config.i18n.CoreMessages;
+import org.mule.runtime.core.api.config.i18n.CoreMessages;
 import org.mule.runtime.core.exception.DefaultSystemExceptionStrategy;
 import org.mule.runtime.core.routing.filters.WildcardFilter;
 import org.mule.runtime.core.api.transaction.TransactionCoordination;

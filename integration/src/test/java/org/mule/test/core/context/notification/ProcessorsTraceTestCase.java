@@ -19,7 +19,7 @@ import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.context.notification.MessageProcessorNotificationListener;
 import org.mule.runtime.core.api.context.notification.ProcessorsTrace;
 import org.mule.runtime.core.api.processor.Processor;
-import org.mule.runtime.core.context.notification.MessageProcessorNotification;
+import org.mule.runtime.core.api.context.notification.MessageProcessorNotification;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
 

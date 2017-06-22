@@ -17,10 +17,10 @@ import static org.mule.runtime.core.api.config.MuleProperties.SYSTEM_PROPERTY_PR
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.config.MuleConfiguration;
 import org.mule.runtime.core.api.context.MuleContextBuilder;
-import org.mule.runtime.core.config.DefaultMuleConfiguration;
-import org.mule.runtime.core.config.builders.DefaultsConfigurationBuilder;
-import org.mule.runtime.core.context.DefaultMuleContextBuilder;
-import org.mule.runtime.core.context.DefaultMuleContextFactory;
+import org.mule.runtime.core.api.config.DefaultMuleConfiguration;
+import org.mule.runtime.core.api.config.builders.DefaultsConfigurationBuilder;
+import org.mule.runtime.core.api.context.DefaultMuleContextBuilder;
+import org.mule.runtime.core.api.context.DefaultMuleContextFactory;
 import org.mule.tck.config.TestServicesConfigurationBuilder;
 import org.mule.tck.junit4.AbstractMuleTestCase;
 

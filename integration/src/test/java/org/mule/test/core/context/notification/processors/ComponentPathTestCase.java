@@ -27,7 +27,7 @@ import static org.mule.runtime.config.spring.dsl.model.ApplicationModel.SUBFLOW_
 import org.mule.runtime.api.component.TypedComponentIdentifier;
 import org.mule.runtime.api.meta.AnnotatedObject;
 import org.mule.runtime.core.api.construct.Flow;
-import org.mule.runtime.core.context.notification.MessageProcessorNotification;
+import org.mule.runtime.core.api.context.notification.MessageProcessorNotification;
 import org.mule.runtime.dsl.api.component.config.DefaultComponentLocation;
 import org.mule.runtime.dsl.api.component.config.DefaultComponentLocation.DefaultLocationPart;
 import org.mule.tck.probe.PollingProber;

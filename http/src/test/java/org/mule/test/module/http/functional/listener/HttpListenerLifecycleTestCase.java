@@ -6,13 +6,14 @@
  */
 package org.mule.test.module.http.functional.listener;
 
-import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
+import org.mule.runtime.api.lifecycle.Stoppable;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.util.IOUtils;
+import org.mule.runtime.module.extension.internal.runtime.ExtensionComponent;
 import org.mule.runtime.module.extension.internal.runtime.config.LifecycleAwareConfigurationProvider;
-import org.mule.runtime.module.extension.internal.runtime.source.ExtensionMessageSource;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.module.http.functional.AbstractHttpTestCase;
 
@@ -44,7 +45,7 @@ public class HttpListenerLifecycleTestCase extends AbstractHttpTestCase {
 
   @Test
   public void stopOneListenerDoesNotAffectAnother() throws Exception {
-    ExtensionMessageSource httpListener = (ExtensionMessageSource) ((Flow) getFlowConstruct("testPathFlow")).getSource();
+    ExtensionComponent httpListener = (ExtensionComponent) ((Flow) getFlowConstruct("testPathFlow")).getSource();
     httpListener.stop();
     callAndAssertResponseFromUnaffectedListener(getLifecycleConfigUrl("/path/catch"), "catchAll");
     httpListener.start();
@@ -52,7 +53,7 @@ public class HttpListenerLifecycleTestCase extends AbstractHttpTestCase {
 
   @Test
   public void restartListener() throws Exception {
-    ExtensionMessageSource httpListener = (ExtensionMessageSource) ((Flow) getFlowConstruct("testPathFlow")).getSource();
+    ExtensionComponent httpListener = (ExtensionComponent) ((Flow) getFlowConstruct("testPathFlow")).getSource();
     httpListener.stop();
     httpListener.start();
     final Response response = Request.Get(getLifecycleConfigUrl("/path/subpath")).execute();
@@ -63,8 +64,7 @@ public class HttpListenerLifecycleTestCase extends AbstractHttpTestCase {
 
   @Test
   public void stopListenerReturns404() throws Exception {
-    ExtensionMessageSource httpListener =
-        (ExtensionMessageSource) ((Flow) getFlowConstruct("catchAllWithinTestPathFlow")).getSource();
+    Stoppable httpListener = (Stoppable) ((Flow) getFlowConstruct("catchAllWithinTestPathFlow")).getSource();
     httpListener.stop();
     final Response response = Request.Get(getLifecycleConfigUrl("/path/somepath")).execute();
     final HttpResponse httpResponse = response.returnResponse();
