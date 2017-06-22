@@ -112,7 +112,7 @@ public class HttpListenerUrlEncodedTestCase extends AbstractHttpTestCase {
     final Message receivedMessage = muleContext.getClient().request(OUT_QUEUE_URL, TIMEOUT).getRight().get();
     assertThat(receivedMessage.getPayload().getValue(), instanceOf(MultiMap.class));
     MultiMap payloadAsMap = (MultiMap) receivedMessage.getPayload().getValue();
-    assertThat(payloadAsMap.size(), is(2));
+    assertThat(payloadAsMap.size(), is(3));
     assertThat(payloadAsMap.get(PARAM_1_NAME), is(PARAM_1_VALUE));
     assertThat(payloadAsMap.getAll(PARAM_2_NAME).size(), is(2));
     assertThat(payloadAsMap.getAll(PARAM_2_NAME).get(0), is(PARAM_2_VALUE_1));

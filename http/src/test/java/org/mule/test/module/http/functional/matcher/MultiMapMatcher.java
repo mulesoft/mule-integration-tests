@@ -27,10 +27,10 @@ public class MultiMapMatcher {
       @Override
       public boolean matches(Object o) {
         MultiMap<String, String> multiMap = (MultiMap<String, String>) o;
-        assertThat(multiMap.size(), Is.is(parameters.size()));
+        assertThat(multiMap.keySet().size(), Is.is(parameters.size()));
         for (String key : parameters.keySet()) {
           assertThat(multiMap.keySet(),
-                     Matchers.containsInAnyOrder(parameters.keySet().toArray(new String[multiMap.size()])));
+                     Matchers.containsInAnyOrder(parameters.keySet().toArray(new String[multiMap.keySet().size()])));
           final List<String> multiKeyValues = parameters.get(key);
           final List<String> multiMapValues = multiMap.getAll(key);
           assertThat(multiMapValues,
