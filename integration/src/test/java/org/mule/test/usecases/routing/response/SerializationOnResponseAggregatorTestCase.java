@@ -12,7 +12,7 @@ import static org.mule.runtime.http.api.HttpConstants.Method.POST;
 import org.mule.runtime.api.store.ObjectStoreException;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.config.MuleProperties;
-import org.mule.runtime.core.api.serialization.ObjectSerializer;
+import org.mule.runtime.api.serialization.ObjectSerializer;
 import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.runtime.core.util.store.SimpleMemoryObjectStore;
 import org.mule.runtime.http.api.HttpService;
