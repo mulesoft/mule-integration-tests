@@ -42,7 +42,7 @@ import org.mule.runtime.core.exception.ErrorTypeRepository;
 import org.mule.runtime.core.exception.TypedException;
 import org.mule.runtime.core.exception.WrapperErrorMessageAwareException;
 import org.mule.runtime.http.api.HttpConstants.HttpStatus;
-import org.mule.runtime.http.api.domain.ParameterMap;
+import org.mule.runtime.api.util.MultiMap;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.module.http.functional.AbstractHttpTestCase;
 
@@ -198,7 +198,7 @@ public class HttpListenerErrorInterpretationTestCase extends AbstractHttpTestCas
   }
 
   void createListenerResponseAttributes(HttpStatus status) {
-    ParameterMap headers = new ParameterMap();
+    MultiMap<String, String> headers = new MultiMap<>();
     headers.put(HEADER_NAME, HEADER_VALUE);
     attributesToSend = new HttpListenerResponseAttributes(status.getStatusCode(), status.getReasonPhrase(), headers);
   }

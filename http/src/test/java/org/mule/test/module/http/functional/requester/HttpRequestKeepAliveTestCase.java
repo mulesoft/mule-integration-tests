@@ -18,7 +18,7 @@ import static org.mule.runtime.http.api.HttpHeaders.Values.KEEP_ALIVE;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
 import org.mule.extension.http.api.HttpRequestAttributes;
 import org.mule.functional.junit4.FlowRunner;
-import org.mule.runtime.http.api.domain.ParameterMap;
+import org.mule.runtime.api.util.MultiMap;
 
 import org.junit.Test;
 import ru.yandex.qatools.allure.annotations.Features;
@@ -63,7 +63,7 @@ public class HttpRequestKeepAliveTestCase extends AbstractHttpRequestTestCase {
 
     if (connectionOutboundProperty != null) {
       final HttpRequestAttributes reqAttributes = mock(HttpRequestAttributes.class);
-      when(reqAttributes.getHeaders()).thenReturn(new ParameterMap(singletonMap(CONNECTION, connectionOutboundProperty)));
+      when(reqAttributes.getHeaders()).thenReturn(new MultiMap<>(singletonMap(CONNECTION, connectionOutboundProperty)));
 
       runner = runner.withAttributes(reqAttributes);
     }

@@ -6,16 +6,15 @@
  */
 package org.mule.test.module.http.functional;
 
-import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.collection.IsMapContaining.hasEntry;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.http.api.HttpHeaders.Names.CONTENT_TYPE;
 import static org.mule.runtime.http.api.HttpHeaders.Values.APPLICATION_X_WWW_FORM_URLENCODED;
-
 import org.mule.extension.http.api.HttpResponseAttributes;
+import org.mule.runtime.api.util.MultiMap;
 import org.mule.runtime.core.api.Event;
-import org.mule.runtime.http.api.domain.ParameterMap;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
 
@@ -44,9 +43,8 @@ public class HttpHeaderCaseTestCase extends AbstractHttpTestCase {
   public void worksPreservingHeaders() throws Exception {
     Event response = runFlow("client");
     Object payload = response.getMessage().getPayload().getValue();
-    assertThat(payload, is(instanceOf(ParameterMap.class)));
-    assertThat(((ParameterMap) payload).keySet(), hasItem("CustomValue"));
-    assertThat(((ParameterMap) payload).get("CustomValue"), is("value"));
+    assertThat(payload, is(instanceOf(MultiMap.class)));
+    assertThat((MultiMap<String, String>) payload, hasEntry("CustomValue", "value"));
     HttpResponseAttributes attributes = (HttpResponseAttributes) response.getMessage().getAttributes().getValue();
     assertThat(attributes.getHeaders().get(CONTENT_TYPE), is(APPLICATION_X_WWW_FORM_URLENCODED.toRfcString()));
     assertThat(attributes.getHeaders().get("customname1"), is("customValue"));
