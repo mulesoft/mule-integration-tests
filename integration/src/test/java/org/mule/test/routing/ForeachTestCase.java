@@ -591,7 +591,8 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
       list.add(RandomStringUtils.randomAlphabetic(10));
     }
 
-    CountDownLatch latch = new CountDownLatch(size);
+    // one more for the flow-ref outside foreach
+    CountDownLatch latch = new CountDownLatch(size + 1);
     flowRunner("foreachWithAsync").withPayload(list).withVariable("latch", latch).run();
 
     latch.await(10, TimeUnit.SECONDS);
