@@ -6,16 +6,23 @@
  */
 package org.mule.test.module.http.functional.requester;
 
+import static org.mule.extension.http.internal.HttpConnectorConstants.DISABLE_RESPONSE_STREAMING_PROPERTY;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HttpStory.STREAMING;
 
+import org.mule.tck.junit4.rule.SystemProperty;
+
+import org.junit.Rule;
 import org.junit.Test;
 import ru.yandex.qatools.allure.annotations.Features;
 import ru.yandex.qatools.allure.annotations.Stories;
 
 @Features(HTTP_EXTENSION)
 @Stories(STREAMING)
-public class HttpRequestResponseStreamingTestCase extends AbstractHttpRequestResponseStreamingTestCase {
+public class HttpRequestResponseNoStreamingTestCase extends AbstractHttpRequestResponseStreamingTestCase {
+
+  @Rule
+  public SystemProperty noStreaming = new SystemProperty(DISABLE_RESPONSE_STREAMING_PROPERTY, "true");
 
   @Override
   protected String getConfigFile() {
@@ -23,10 +30,11 @@ public class HttpRequestResponseStreamingTestCase extends AbstractHttpRequestRes
   }
 
   @Test
-  public void executionIsExpeditedWhenStreaming() throws Exception {
+  public void executionHangsWhenNotStreaming() throws Exception {
     flowRunner("client").dispatchAsync();
-    pollingProber.check(processorExecuted);
+    pollingProber.check(processorNotExecuted);
     latch.release();
+    pollingProber.check(processorExecuted);
   }
 
 }
