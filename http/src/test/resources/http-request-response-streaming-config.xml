@@ -6,10 +6,6 @@
                http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
                http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
 
-    <http:request-config name="requestNoStreamingConfig">
-        <http:request-connection host="localhost" port="${httpPort}" streamResponse="false"/>
-    </http:request-config>
-
     <http:request-config name="requestConfig">
         <http:request-connection host="localhost" port="${httpPort}"/>
     </http:request-config>
@@ -18,20 +14,15 @@
         <http:listener-connection host="localhost" port="${httpPort}"/>
     </http:listener-config>
 
-    <flow name="noStreamingClient">
-        <http:request config-ref="requestNoStreamingConfig" method="GET" path="/"/>
-        <custom-processor class="org.mule.test.module.http.functional.requester.HttpRequestResponseStreamingTestCase$StatusProcessor"/>
-    </flow>
-
-    <flow name="streamingClient">
+    <flow name="client">
         <http:request config-ref="requestConfig" method="GET" path="/"/>
-        <custom-processor class="org.mule.test.module.http.functional.requester.HttpRequestResponseStreamingTestCase$StatusProcessor"/>
+        <custom-processor class="org.mule.test.module.http.functional.requester.AbstractHttpRequestResponseStreamingTestCase$StatusProcessor"/>
         <object-to-string-transformer/>
     </flow>
 
     <flow name="server">
         <http:listener path="/" config-ref="listenerConfig"/>
-        <custom-processor class="org.mule.test.module.http.functional.requester.HttpRequestResponseStreamingTestCase$FillAndWaitInputStreamProcessor"/>
+        <custom-processor class="org.mule.test.module.http.functional.requester.AbstractHttpRequestResponseStreamingTestCase$FillAndWaitInputStreamProcessor"/>
     </flow>
 
 </mule>
