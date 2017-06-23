@@ -6,7 +6,7 @@
  */
 package org.mule.test.module.http.functional.requester;
 
-import static org.mule.extension.http.internal.HttpConnectorConstants.STREAM_RESPONSE_PROPERTY;
+import static org.mule.extension.http.internal.HttpConnectorConstants.DISABLE_RESPONSE_STREAMING_PROPERTY;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HttpStory.STREAMING;
 
@@ -22,7 +22,7 @@ import ru.yandex.qatools.allure.annotations.Stories;
 public class HttpRequestResponseNoStreamingTestCase extends AbstractHttpRequestResponseStreamingTestCase {
 
   @Rule
-  public SystemProperty noStreaming = new SystemProperty(STREAM_RESPONSE_PROPERTY, "false");
+  public SystemProperty noStreaming = new SystemProperty(DISABLE_RESPONSE_STREAMING_PROPERTY, "true");
 
   @Override
   protected String getConfigFile() {
