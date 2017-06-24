@@ -20,10 +20,10 @@ import org.mule.runtime.api.meta.AbstractAnnotatedObject;
 import org.mule.runtime.core.DefaultEventContext;
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.construct.Flow;
+import org.mule.runtime.core.api.context.notification.MessageProcessorNotification;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.source.CompositeMessageSource;
 import org.mule.runtime.core.api.source.MessageSource;
-import org.mule.runtime.core.api.context.notification.MessageProcessorNotification;
 import org.mule.runtime.core.exception.MessagingException;
 import org.mule.test.core.context.notification.Node;
 import org.mule.test.core.context.notification.NotificationLogger;
@@ -371,17 +371,6 @@ public class MessageProcessorNotificationTestCase extends AbstractMessageProcess
     ;
 
     assertNotNull(flowRunner("chunkAggregator").withPayload(TEST_PAYLOAD).run());
-
-    assertNotifications();
-  }
-
-  @Test
-  public void wireTap() throws Exception {
-    specificationFactory = () -> new Node()
-        .serial(prePost())
-        .serial(prePost());
-
-    assertNotNull(flowRunner("wire-tap").withPayload(TEST_PAYLOAD).run());
 
     assertNotifications();
   }

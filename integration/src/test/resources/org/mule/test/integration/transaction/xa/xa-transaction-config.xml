@@ -8,9 +8,9 @@
     <flow name="inbound-to-outbound-with-xa">
         <inbound-endpoint ref="inbound"/>
         <custom-processor class="org.mule.test.integration.transaction.xa.FailureGeneratorMessageProcessor"/>
-        <wire-tap>
+        <async>
             <outbound-endpoint ref="outbound"/>
-        </wire-tap>
+        </async>
     </flow>
 
 </mule>

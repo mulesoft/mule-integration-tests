@@ -103,16 +103,6 @@
         </scatter-gather>
     </flow>
 
-    <flow name="flowWithWireTap">
-        <wire-tap>
-            <processor-chain>
-                <logger/>
-                <validation:is-true expression="true"/>
-                <validation:is-false expression="false"/>
-            </processor-chain>
-        </wire-tap>
-    </flow>
-
     <flow name="flowWithAsync">
         <async>
             <logger/>

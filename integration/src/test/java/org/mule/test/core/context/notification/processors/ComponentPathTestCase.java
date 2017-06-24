@@ -103,19 +103,12 @@ public class ComponentPathTestCase extends AbstractIntegrationTestCase {
                                                                   CONFIG_FILE_NAME,
                                                                   of(98))));
 
-  private static final DefaultComponentLocation FLOW_WITH_WIRE_TAP =
-      new DefaultComponentLocation(of("flowWithWireTap"),
-                                   asList(new DefaultLocationPart("flowWithWireTap",
-                                                                  FLOW_TYPED_COMPONENT_IDENTIFIER,
-                                                                  CONFIG_FILE_NAME,
-                                                                  of(106))));
-
   private static final DefaultComponentLocation FLOW_WITH_ASYNC =
       new DefaultComponentLocation(of("flowWithAsync"),
                                    asList(new DefaultLocationPart("flowWithAsync",
                                                                   FLOW_TYPED_COMPONENT_IDENTIFIER,
                                                                   CONFIG_FILE_NAME,
-                                                                  of(116))));
+                                                                  of(106))));
 
   private static final DefaultComponentLocation FLOW_WITH_SUBFLOW =
       new DefaultComponentLocation(of("flowWithSubflow"),
@@ -368,49 +361,21 @@ public class ComponentPathTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  public void flowWithWireTap() throws Exception {
-    flowRunner("flowWithWireTap").run();
-    DefaultComponentLocation flowWithWireTapLocation =
-        FLOW_WITH_WIRE_TAP.appendLocationPart("processors", empty(), empty(), empty());
-    DefaultComponentLocation wireTapLocation =
-        flowWithWireTapLocation.appendLocationPart("0", WIRE_TAP,
-                                                   CONFIG_FILE_NAME, of(107));
-    assertNextProcessorLocationIs(wireTapLocation);
-    DefaultComponentLocation wireTapProcessorChainProcessorsLocation =
-        wireTapLocation
-            .appendProcessorsPart()
-            .appendLocationPart("0", PROCESS_CHAIN,
-                                CONFIG_FILE_NAME, of(108))
-            .appendProcessorsPart();
-    assertNextProcessorLocationIs(wireTapProcessorChainProcessorsLocation
-        .appendLocationPart("0",
-                            LOGGER,
-                            CONFIG_FILE_NAME, of(109)));
-    assertNextProcessorLocationIs(wireTapProcessorChainProcessorsLocation
-        .appendLocationPart("1", VALIDATION_IS_TRUE, CONFIG_FILE_NAME,
-                            of(110)));
-    assertNextProcessorLocationIs(wireTapProcessorChainProcessorsLocation
-        .appendLocationPart("2", VALIDATION_IS_FALSE, CONFIG_FILE_NAME,
-                            of(111)));
-    assertNoNextProcessorNotification();
-  }
-
-  @Test
   public void flowWithAsync() throws Exception {
     flowRunner("flowWithAsync").run();
     waitUntilNotificationsArrived(3);
     DefaultComponentLocation flowWithAsyncLocation = FLOW_WITH_ASYNC.appendProcessorsPart();
     DefaultComponentLocation asyncLocation = flowWithAsyncLocation
-        .appendLocationPart("0", ASYNC, CONFIG_FILE_NAME, of(117));
+        .appendLocationPart("0", ASYNC, CONFIG_FILE_NAME, of(107));
     assertNextProcessorLocationIs(asyncLocation);
     DefaultComponentLocation asyncProcessorsLocation = asyncLocation
         .appendProcessorsPart();
     assertNextProcessorLocationIs(asyncProcessorsLocation
         .appendLocationPart("0", LOGGER,
-                            CONFIG_FILE_NAME, of(118)));
+                            CONFIG_FILE_NAME, of(108)));
     assertNextProcessorLocationIs(asyncProcessorsLocation
         .appendLocationPart("1", VALIDATION_IS_TRUE,
-                            CONFIG_FILE_NAME, of(119)));
+                            CONFIG_FILE_NAME, of(109)));
     assertNoNextProcessorNotification();
   }
 

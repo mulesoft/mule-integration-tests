@@ -10,9 +10,6 @@ import static java.lang.Thread.currentThread;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -23,6 +20,7 @@ import static org.mule.functional.junit4.TestLegacyMessageUtils.getOutboundPrope
 import static org.mule.functional.junit4.TransactionConfigEnum.ACTION_ALWAYS_BEGIN;
 import static org.mule.runtime.api.message.Message.of;
 import static org.mule.runtime.api.metadata.MediaType.APPLICATION_XML;
+
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.meta.AbstractAnnotatedObject;
@@ -34,7 +32,6 @@ import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.source.CompositeMessageSource;
 import org.mule.runtime.core.api.source.MessageSource;
 import org.mule.runtime.core.api.transformer.Transformer;
-import org.mule.runtime.core.exception.MessagingException;
 import org.mule.runtime.core.source.StartableCompositeMessageSource;
 import org.mule.runtime.core.transformer.simple.StringAppendTransformer;
 import org.mule.tck.testmodels.fruit.Apple;
@@ -333,21 +330,6 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
 
     assertNotNull(result);
     assertNotSame(TEST_MESSAGE + "test", result.getPayload().getValue());
-  }
-
-  @Test
-  public void testWireTapFlow() throws Exception {
-    flowRunner("wiretap").withPayload(TEST_MESSAGE).run();
-
-    final MuleClient client = muleContext.getClient();
-    final Message result = client.request("test://wiretap-out", RECEIVE_TIMEOUT).getRight().get();
-    final Message tapResult = client.request("test://wiretap-tap", RECEIVE_TIMEOUT).getRight().get();
-
-    assertNotNull(result);
-    assertNotNull(tapResult);
-    assertNotSame(result, tapResult);
-    assertEquals(TEST_MESSAGE + "inout", getPayloadAsString(result));
-    assertEquals(TEST_MESSAGE + "intap", getPayloadAsString(tapResult));
   }
 
   @Test
