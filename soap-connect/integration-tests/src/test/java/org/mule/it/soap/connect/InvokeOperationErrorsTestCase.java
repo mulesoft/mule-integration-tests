@@ -12,7 +12,7 @@ import static org.mule.runtime.soap.api.exception.error.SoapErrors.BAD_REQUEST;
 import static org.mule.runtime.soap.api.exception.error.SoapErrors.SOAP_FAULT;
 import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
 import org.mule.runtime.api.message.Error;
-import org.mule.runtime.core.exception.MessagingException;
+import org.mule.runtime.core.api.exception.MessagingException;
 
 import org.junit.Test;
 

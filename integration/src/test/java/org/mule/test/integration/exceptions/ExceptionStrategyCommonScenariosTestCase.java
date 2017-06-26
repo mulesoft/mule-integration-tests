@@ -10,12 +10,12 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-
+import org.mule.functional.api.component.ExceptionStrategyCallback;
 import org.mule.functional.api.exception.FunctionalTestException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.Event;
-import org.mule.runtime.core.exception.AbstractMessagingExceptionStrategy;
-import org.mule.runtime.core.exception.MessagingException;
+import org.mule.runtime.core.api.exception.MessagingException;
+import org.mule.runtime.core.api.exception.MessagingExceptionHandler;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -66,14 +66,13 @@ public class ExceptionStrategyCommonScenariosTestCase extends AbstractIntegratio
     }
   }
 
-
-  public static class PreservePayloadExceptionStrategy extends AbstractMessagingExceptionStrategy {
+  public static class PreservePayloadExceptionStrategy implements ExceptionStrategyCallback {
 
     public PreservePayloadExceptionStrategy() {}
 
     @Override
-    public Event handleException(MessagingException e, Event event) {
-      return Event.builder(super.handleException(e, event))
+    public Event handleException(MessagingException exception, Event event, MessagingExceptionHandler delegate) {
+      return Event.builder(delegate.handleException(exception, event))
           .message(Message.builder(event.getMessage()).payload(event.getMessage().getPayload().getValue()).build()).build();
     }
   }

@@ -12,7 +12,7 @@ import static org.junit.Assert.assertThat;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
 import org.mule.extension.http.api.request.validator.ResponseValidatorException;
 import org.mule.extension.http.api.request.validator.ResponseValidatorTypedException;
-import org.mule.runtime.core.exception.MessagingException;
+import org.mule.runtime.core.api.exception.MessagingException;
 
 import java.io.IOException;
 

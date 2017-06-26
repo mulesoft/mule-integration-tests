@@ -8,7 +8,7 @@ package org.mule.test.integration.exceptions;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import org.mule.runtime.core.exception.ErrorHandler;
+import org.mule.runtime.core.internal.exception.ErrorHandler;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.api.exception.MuleException;
@@ -16,7 +16,7 @@ import org.mule.runtime.core.api.construct.FlowConstruct;
 import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.api.lifecycle.Lifecycle;
 import org.mule.runtime.core.api.processor.Processor;
-import org.mule.runtime.core.exception.TemplateOnErrorHandler;
+import org.mule.runtime.core.internal.exception.TemplateOnErrorHandler;
 
 import org.junit.Test;
 

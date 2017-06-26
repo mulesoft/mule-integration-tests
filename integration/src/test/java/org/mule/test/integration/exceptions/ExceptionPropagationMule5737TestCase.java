@@ -9,13 +9,13 @@ package org.mule.test.integration.exceptions;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-
+import org.mule.functional.api.component.ExceptionStrategyCallback;
+import org.mule.functional.api.component.TestExceptionStrategy;
 import org.mule.functional.api.exception.FunctionalTestException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.Event;
-import org.mule.runtime.core.api.construct.FlowConstruct;
-import org.mule.runtime.core.exception.AbstractMessagingExceptionStrategy;
-import org.mule.runtime.core.exception.MessagingException;
+import org.mule.runtime.core.api.exception.MessagingException;
+import org.mule.runtime.core.api.exception.MessagingExceptionHandler;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Rule;
@@ -44,10 +44,8 @@ public class ExceptionPropagationMule5737TestCase extends AbstractIntegrationTes
 
   @Test
   public void testFlowWithChildFlowExceptionPropagation() throws Exception {
-    FlowConstruct flow = muleContext.getRegistry().lookupFlowConstruct("flowWithChildFlow");
-    FlowConstruct childFlow = muleContext.getRegistry().lookupFlowConstruct("childFlow");
-    SensingExceptionStrategy parentES = (SensingExceptionStrategy) flow.getExceptionListener();
-    SensingExceptionStrategy childFlowES = (SensingExceptionStrategy) childFlow.getExceptionListener();
+    SensingExceptionStrategy parentES = getSensingExceptionStrategy("flowWithChildFlow");
+    SensingExceptionStrategy childFlowES = getSensingExceptionStrategy("childFlow");
 
     runFlow("flowWithChildFlow");
 
@@ -57,9 +55,7 @@ public class ExceptionPropagationMule5737TestCase extends AbstractIntegrationTes
 
   @Test
   public void testFlowWithSubFlowExceptionPropagation() throws Exception {
-    SensingExceptionStrategy parentES = (SensingExceptionStrategy) muleContext.getRegistry()
-        .lookupFlowConstruct("flowWithSubFlow")
-        .getExceptionListener();
+    SensingExceptionStrategy parentES = getSensingExceptionStrategy("flowWithSubFlow");
 
     runFlow("flowWithSubFlow");
 
@@ -68,12 +64,8 @@ public class ExceptionPropagationMule5737TestCase extends AbstractIntegrationTes
 
   @Test
   public void testFlowWithChildServiceExceptionPropagation() throws Exception {
-    SensingExceptionStrategy parentES = (SensingExceptionStrategy) muleContext.getRegistry()
-        .lookupFlowConstruct("flowWithChildService")
-        .getExceptionListener();
-    SensingExceptionStrategy childServiceES = (SensingExceptionStrategy) muleContext.getRegistry()
-        .lookupFlowConstruct("childService")
-        .getExceptionListener();
+    SensingExceptionStrategy parentES = getSensingExceptionStrategy("flowWithChildService");
+    SensingExceptionStrategy childServiceES = getSensingExceptionStrategy("childService");
 
     runFlow("flowWithChildService");
 
@@ -81,21 +73,22 @@ public class ExceptionPropagationMule5737TestCase extends AbstractIntegrationTes
     assertTrue(childServiceES.caught);
   }
 
-  public static class SensingExceptionStrategy extends AbstractMessagingExceptionStrategy {
+  private SensingExceptionStrategy getSensingExceptionStrategy(String flowWithChildService) {
+    return (SensingExceptionStrategy) ((TestExceptionStrategy) muleContext.getRegistry()
+        .lookupFlowConstruct(flowWithChildService)
+        .getExceptionListener()).getCallback();
+  }
 
-    public SensingExceptionStrategy() {
-      super(null);
-    }
+  public static class SensingExceptionStrategy implements ExceptionStrategyCallback {
 
     boolean caught;
 
     @Override
-    public Event handleException(MessagingException e, Event event) {
+    public Event handleException(MessagingException exception, Event event, MessagingExceptionHandler delegate) {
       caught = true;
-      Event resultEvent = super.handleException(e, event);
-      e.setHandled(true);
+      Event resultEvent = delegate.handleException(exception, event);
+      exception.setHandled(true);
       return Event.builder(resultEvent).message(Message.builder(resultEvent.getMessage()).build()).error(null).build();
     }
   }
-
 }

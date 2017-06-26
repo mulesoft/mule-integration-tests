@@ -31,10 +31,10 @@ import org.mule.runtime.core.api.exception.MessagingExceptionHandlerAcceptor;
 import org.mule.runtime.core.api.exception.MessagingExceptionHandlerAware;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.runtime.core.api.processor.Processor;
-import org.mule.runtime.core.exception.ErrorHandler;
-import org.mule.runtime.core.exception.MessagingException;
-import org.mule.runtime.core.exception.MessagingExceptionHandlerToSystemAdapter;
-import org.mule.runtime.core.exception.OnErrorPropagateHandler;
+import org.mule.runtime.core.internal.exception.ErrorHandler;
+import org.mule.runtime.core.api.exception.MessagingException;
+import org.mule.runtime.core.internal.exception.MessagingExceptionHandlerToSystemAdapter;
+import org.mule.runtime.core.internal.exception.OnErrorPropagateHandler;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.io.Serializable;
