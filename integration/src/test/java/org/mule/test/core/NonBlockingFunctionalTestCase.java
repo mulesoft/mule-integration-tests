@@ -13,9 +13,9 @@ import static org.junit.Assert.assertThat;
 import static org.mule.functional.api.component.FlowAssert.verify;
 
 import org.mule.runtime.core.api.Event;
+import org.mule.runtime.core.api.config.DefaultMuleConfiguration;
 import org.mule.runtime.core.api.context.MuleContextBuilder;
 import org.mule.runtime.core.api.processor.strategy.ProcessingStrategyFactory;
-import org.mule.runtime.core.api.config.DefaultMuleConfiguration;
 import org.mule.runtime.core.processor.strategy.TransactionAwareWorkQueueProcessingStrategyFactory;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -192,11 +192,6 @@ public class NonBlockingFunctionalTestCase extends AbstractIntegrationTestCase {
   @Test
   public void transactionalTryErrorHandler() throws Exception {
     flowRunner("transactionalTryErrorHandler").withPayload(TEST_MESSAGE).run();
-  }
-
-  @Test
-  public void wiretap() throws Exception {
-    flowRunner("wiretap").withPayload(TEST_MESSAGE).run();
   }
 
   @Test

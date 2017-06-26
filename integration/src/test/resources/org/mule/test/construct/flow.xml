@@ -156,19 +156,6 @@
         <test:processor appendString="test"/>
     </flow>
 
-    <flow name="wiretap">
-        <append-string-transformer message="in" />
-        <wire-tap>
-            <processor-chain>
-                <append-string-transformer message="tap" />
-                <test:queue name="wiretap-tap"/>
-            </processor-chain>
-            <payload-type-filter expectedType="java.lang.String"/>
-        </wire-tap>
-        <append-string-transformer message="out" />
-        <test:queue name="wiretap-out"/>
-    </flow>
-
     <flow name="response">
         <append-string-transformer message="a" />
         <response>

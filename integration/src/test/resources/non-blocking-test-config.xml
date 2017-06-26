@@ -295,18 +295,6 @@
         </try>
     </flow>
 
-    <flow name="wiretap">
-        <test:assert-intercepting message="before" responseSameTask="false" responseExpression="#[mel:assertPayload()]"/>
-        <wire-tap>
-            <processor-chain>
-                <set-variable variableName="beforeThread" value="#[mel:Thread.currentThread()]"/>
-                <test:non-blocking-processor/>
-                <test:assert count="1" expression="#[mel:Thread.currentThread()==beforeThread  and assertPayload()]"/>
-            </processor-chain>
-        </wire-tap>
-        <test:non-blocking-processor/>
-    </flow>
-
     <flow name="childDefaultFlow">
         <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]" message="1"/>
         <expression-component>mel:flowVars['requestThread'] = Thread.currentThread()</expression-component>

@@ -340,11 +340,4 @@
         <combine-collections-transformer/>
         <logger level="INFO"/>
     </flow>
-
-    <flow name="wire-tap">
-        <wire-tap>
-            <test:queue name="tapped.channel"/>
-        </wire-tap>
-        <logger level="INFO"/>
-    </flow>
 </mule>
