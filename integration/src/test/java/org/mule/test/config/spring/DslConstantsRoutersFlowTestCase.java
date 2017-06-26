@@ -13,15 +13,11 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
-import org.mule.runtime.api.exception.MuleException;
-import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.routing.IdempotentMessageValidator;
 import org.mule.runtime.core.routing.IdempotentSecureHashMessageValidator;
-import org.mule.runtime.core.routing.outbound.AbstractOutboundRouter;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.util.List;
@@ -65,17 +61,6 @@ public class DslConstantsRoutersFlowTestCase extends AbstractIntegrationTestCase
                is("Duplicate"));
   }
 
-  @Test
-  public void testCustomRouter() throws Exception {
-    Processor router = lookupCustomRouterFromFlow("CustomRouter");
-    assertTrue(router instanceof CustomRouter);
-  }
-
-  protected Processor lookupCustomRouterFromFlow(String flowName) throws Exception {
-    Flow flow = lookupFlow(flowName);
-    return flow.getProcessors().get(0);
-  }
-
   protected Processor lookupMessageProcessorFromFlow(String flowName) throws Exception {
     Flow flow = lookupFlow(flowName);
     List<Processor> routers = flow.getProcessors();
@@ -87,18 +72,5 @@ public class DslConstantsRoutersFlowTestCase extends AbstractIntegrationTestCase
     Flow flow = muleContext.getRegistry().lookupObject(flowName);
     assertNotNull(flow);
     return flow;
-  }
-
-  public static class CustomRouter extends AbstractOutboundRouter {
-
-    @Override
-    public boolean isMatch(Event message, Event.Builder builder) throws MuleException {
-      return true;
-    }
-
-    @Override
-    protected Event route(Event event) throws MuleException {
-      return event;
-    }
   }
 }
