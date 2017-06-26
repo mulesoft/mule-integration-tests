@@ -23,48 +23,19 @@ import org.mule.runtime.core.api.context.notification.MuleContextNotification;
 import org.mule.runtime.core.api.util.concurrent.Latch;
 import org.mule.tck.config.TestServicesConfigurationBuilder;
 import org.mule.tck.junit4.AbstractMuleTestCase;
-import org.mule.tck.junit4.rule.ForceXalanTransformerFactory;
-import org.mule.tck.junit4.rule.SystemProperty;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 import ru.yandex.qatools.allure.annotations.Features;
 import ru.yandex.qatools.allure.annotations.Stories;
 
 @Features(ERROR_HANDLING)
 @Stories("Validations")
-@RunWith(Parameterized.class)
 public class ErrorHandlingConfigurationFailuresTestCase extends AbstractMuleTestCase {
-
-  @Rule
-  public SystemProperty useXalan;
-
-  /**
-   * Verify that regardless of the XML library used, validation errors are handled correctly.
-   * 
-   * @return
-   */
-  @Parameterized.Parameters
-  public static Collection<Object[]> parameters() {
-    return Arrays.asList(new Object[][] {{false}, {true}});
-  }
-
-  public ErrorHandlingConfigurationFailuresTestCase(boolean isUseXalan) {
-    if (isUseXalan) {
-      useXalan = new ForceXalanTransformerFactory();
-    } else {
-      useXalan = null;
-    }
-  }
 
   @Test(expected = ConfigurationException.class)
   public void errorHandlerCantHaveMiddleExceptionStrategyWithoutExpression() throws Exception {
