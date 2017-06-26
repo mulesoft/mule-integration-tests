@@ -19,15 +19,4 @@
         <test:queue name="collectionCreated"/>
     </flow>
 
-    <flow name="SplitterFlow2">
-        <message-chunk-splitter messageSize="2"/>
-        <flow-ref name="AggregationFlow2"/>
-    </flow>
-
-    <flow name="AggregationFlow2">
-        <custom-aggregator class="org.mule.test.core.routing.outbound.AggregationTestCase$Aggregator" timeout="2000" failOnTimeout="false"/>
-        <logger message="#[mel:payload]" level="ERROR"/>
-        <test:queue name="collectionCreated2"/>
-    </flow>
-
 </mule>
