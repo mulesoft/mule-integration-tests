@@ -124,16 +124,15 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void defaultConfigurationExpression() throws Exception {
-    final ArrayList<String> names = new ArrayList<>();
+    final List<String> names = new ArrayList<>();
     names.add("residente");
     names.add("visitante");
 
-    Message message = new TestLegacyMessageBuilder().payload("message payload").addOutboundProperty("names", names).build();
-    Message result = flowRunner("minimal-config-expression").withPayload("message payload")
-        .withInboundProperty("names", names).run().getMessage();
+    Event result = flowRunner("minimal-config-expression").withPayload("message payload")
+        .withVariable("names", names).run();
 
-    assertThat(result.getPayload().getValue(), instanceOf(String.class));
-    assertThat(getOutboundProperty(message, "names"), hasSize(names.size()));
+    assertThat(result.getMessage().getPayload().getValue(), instanceOf(String.class));
+    assertThat((List<String>) result.getVariable("names").getValue(), hasSize(names.size()));
 
     Message out = client.request("test://out", getTestTimeoutSecs()).getRight().get();
     assertThat(out.getPayload().getValue(), instanceOf(String.class));
@@ -142,6 +141,19 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
     out = client.request("test://out", getTestTimeoutSecs()).getRight().get();
     assertThat(out.getPayload().getValue(), instanceOf(String.class));
     assertThat(out.getPayload().getValue(), is("visitante"));
+  }
+
+  @Test
+  public void filteredConfiguration() throws Exception {
+    final List<String> names = new ArrayList<>();
+    names.add("residente");
+    names.add("visitante");
+
+    Event result = flowRunner("filtered-config").withPayload("message payload")
+        .withVariable("names", names).run();
+
+    assertThat(result.getMessage().getPayload().getValue(), instanceOf(String.class));
+    assertThat((List<String>) result.getVariable("names").getValue(), hasSize(names.size()));
   }
 
   @Test

@@ -9,9 +9,9 @@ package org.mule.test.integration.messaging.meps;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+
 import org.mule.functional.junit4.FlowRunner;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.core.api.Event;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Test;
@@ -26,8 +26,8 @@ public class InOptionalOutOutOnlyAsyncRouterTestCase extends AbstractIntegration
   @Test
   public void testExchange() throws Exception {
     FlowRunner baseRunner = flowRunner("In-Out_Out-Only-Async-Service").withPayload("some data");
-    Event event = baseRunner.run();
-    assertNull(event);
+
+    assertNull(baseRunner.run().getMessage().getPayload().getValue());
 
     baseRunner.reset();
     Message result = baseRunner.withInboundProperty("foo", "bar").run().getMessage();

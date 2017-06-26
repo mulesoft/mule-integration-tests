@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:test="http://www.mulesoft.org/schema/mule/test"
       xmlns:script="http://www.mulesoft.org/schema/mule/scripting"
       xsi:schemaLocation="
        http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd
+       http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 
     <configuration defaultErrorHandler-ref="testEH"/>
@@ -36,13 +38,13 @@
     </flow>
 
     <flow name="ProcessorInboundRouter">
-        <custom-processor class="org.mule.test.integration.exceptions.ExceptionThrowingInboundRouter"/>
+        <test:processor throwException="true"/>
         <logger/>
     </flow>
 
     <flow name="ProcessorOutboundRouter">
         <logger/>
-        <custom-processor class="org.mule.test.integration.exceptions.ExceptionThrowingOutboundRouter"/>
+        <test:processor throwException="true" exceptionText="dummyException" exceptionToThrow="org.mule.runtime.core.api.routing.RoutingException"/>
     </flow>
 
 </mule>

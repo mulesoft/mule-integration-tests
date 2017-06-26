@@ -8,11 +8,12 @@
 
     <flow name="IdempotentPlaceHolder">
         <!-- Only strings should be allowed in -->
-        <message-filter>
-            <payload-type-filter expectedType="java.lang.String"/>
-        </message-filter>
-        <idempotent-message-validator/>
-        <test:queue name="ToTestCase"/>
+        <choice>
+            <when expression="#[payload is String]">
+                <idempotent-message-validator/>
+                <test:queue name="ToTestCase"/>
+            </when>
+        </choice>
     </flow>
 
 </mule>
