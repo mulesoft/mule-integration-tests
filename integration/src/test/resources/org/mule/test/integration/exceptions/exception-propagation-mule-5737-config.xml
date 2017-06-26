@@ -12,25 +12,25 @@
 
     <flow name="flowWithChildFlow">
         <flow-ref name="childFlow"/>
-        <custom-exception-strategy
+        <test:exception-strategy
                 class="org.mule.test.integration.exceptions.ExceptionPropagationMule5737TestCase$SensingExceptionStrategy"/>
     </flow>
 
     <flow name="flowWithSubFlow">
         <flow-ref name="subFlow"/>
-        <custom-exception-strategy
+        <test:exception-strategy
                 class="org.mule.test.integration.exceptions.ExceptionPropagationMule5737TestCase$SensingExceptionStrategy"/>
     </flow>
 
     <flow name="flowWithChildService">
         <flow-ref name="childService"/>
-        <custom-exception-strategy
+        <test:exception-strategy
                 class="org.mule.test.integration.exceptions.ExceptionPropagationMule5737TestCase$SensingExceptionStrategy"/>
     </flow>
 
     <flow name="childFlow">
         <test:processor throwException="true"/>
-        <custom-exception-strategy
+        <test:exception-strategy
                 class="org.mule.test.integration.exceptions.ExceptionPropagationMule5737TestCase$SensingExceptionStrategy"/>
     </flow>
 
@@ -40,7 +40,7 @@
 
     <flow name="childService">
         <test:processor throwException="true"/>
-        <custom-exception-strategy
+        <test:exception-strategy
                 class="org.mule.test.integration.exceptions.ExceptionPropagationMule5737TestCase$SensingExceptionStrategy"/>
     </flow>
 

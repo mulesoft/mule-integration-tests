@@ -58,10 +58,6 @@
         <custom-interceptor class="org.mule.runtime.core.interceptor.LoggingInterceptor"/>
     </interceptor-stack>
 
-    <custom-exception-strategy class="org.mule.tck.testmodels.mule.TestExceptionStrategy">
-        <spring:property name="testProperty" value="testValue"/>
-    </custom-exception-strategy>
-
     <!-- MULE-3932 Ensure interceptors can be used with shortcut component config -->
     <flow name="MULE3932Service">
         <component class="org.mule.tck.testmodels.fruit.Apple">

@@ -9,9 +9,7 @@
     <flow name="PreservePayloadExceptionStrategy">
         <append-string-transformer message=" with some text added"/>
         <test:processor throwException="true"/>
-        <custom-exception-strategy class="org.mule.test.integration.exceptions.ExceptionStrategyCommonScenariosTestCase$PreservePayloadExceptionStrategy">
-            <logger/>
-        </custom-exception-strategy>
+        <test:exception-strategy class="org.mule.test.integration.exceptions.ExceptionStrategyCommonScenariosTestCase$PreservePayloadExceptionStrategy"/>         
     </flow>
 
 </mule>

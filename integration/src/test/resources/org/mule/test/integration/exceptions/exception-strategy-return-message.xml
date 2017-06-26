@@ -18,7 +18,7 @@
 
     <flow name="ExceptionService">
         <test:processor throwException="true"/>
-        <custom-exception-strategy class="org.mule.test.integration.exceptions.ExceptionStrategyReturnMessageTestCase$TestExceptionStrategy"/>
+        <test:exception-strategy class="org.mule.test.integration.exceptions.ExceptionStrategyReturnMessageTestCase$TestExceptionStrategy"/>
     </flow>
 
     <flow name="ExceptionService2">

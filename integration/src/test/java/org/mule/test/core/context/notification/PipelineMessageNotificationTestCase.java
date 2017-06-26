@@ -11,7 +11,7 @@ import static org.junit.Assert.assertNotNull;
 import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.runtime.core.api.context.notification.AsyncMessageNotification;
 import org.mule.runtime.core.api.context.notification.PipelineMessageNotification;
-import org.mule.runtime.core.exception.MessagingException;
+import org.mule.runtime.core.api.exception.MessagingException;
 
 import org.junit.Rule;
 import org.junit.Test;
