@@ -20,11 +20,11 @@ import org.mule.runtime.core.exception.TemplateOnErrorHandler;
 
 import org.junit.Test;
 
-public class ExceptionStrategyLifecycleTestCase extends AbstractIntegrationTestCase {
+public class ErrorHandlerLifecycleTestCase extends AbstractIntegrationTestCase {
 
   @Override
   protected String getConfigFile() {
-    return "org/mule/test/integration/exceptions/default-exception-strategy-lifecycle.xml";
+    return "org/mule/test/integration/exceptions/default-error-handler-lifecycle.xml";
   }
 
   @Test

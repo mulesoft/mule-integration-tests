@@ -74,7 +74,7 @@ public class ErrorHandlingConfigurationFailuresTestCase extends AbstractMuleTest
   // TODO MULE-10061 - Review once the MuleContext lifecycle is clearly defined
   @Test(expected = InitialisationException.class)
   public void defaultExceptionStrategyReferencesNonExistentExceptionStrategy() throws Exception {
-    loadConfiguration("org/mule/test/integration/exceptions/default-exception-strategy-reference-non-existent-es.xml");
+    loadConfiguration("org/mule/test/integration/exceptions/default-error-handler-reference-non-existent-es.xml");
   }
 
   @Test(expected = InitialisationException.class)
