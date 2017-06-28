@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
     xmlns:spring="http://www.springframework.org/schema/beans"
     xmlns:script="http://www.mulesoft.org/schema/mule/scripting"
     xmlns:test="http://www.mulesoft.org/schema/mule/test"
@@ -7,6 +9,7 @@
                http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
                http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
                http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd
+               http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
                http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
     <processor-chain name="composite1">
@@ -132,15 +135,8 @@
     </flow>
 
     <flow name="split-filter-aggregate">
-        <splitter expression="#[mel:payload.fruit]"/>
-        <message-filter throwOnUnaccepted="false">
-            <not-filter>
-                <or-filter>
-                    <payload-type-filter expectedType="org.mule.tck.testmodels.fruit.Banana" />
-                    <payload-type-filter expectedType="org.mule.tck.testmodels.fruit.Orange" />
-                </or-filter>
-            </not-filter>
-        </message-filter>
+        <splitter expression="#[payload.fruit]" filterOnErrorType="VALIDATION:VALIDATION"/>
+        <validation:is-true expression="#[payload.^class != 'org.mule.tck.testmodels.fruit.Banana' and payload.^class != 'org.mule.tck.testmodels.fruit.Orange']"/>
         <collection-aggregator failOnTimeout="false" timeout="1000" />
         <test:queue name="split-filter-aggregate-out"/>
     </flow>
@@ -351,9 +347,14 @@
     </flow>
 
     <flow name="messagefiltersubflow">
-        <message-filter onUnaccepted="invokedByMessageFilter">
-            <expression-filter expression="#[mel:false]"/>
-        </message-filter>
+        <choice>
+            <when expression="#[false]">
+                <test:throw exception="java.lang.RuntimeException" error="ROUTING"/>
+            </when>
+            <otherwise>
+                <flow-ref name="invokedByMessageFilter"/>
+            </otherwise>
+        </choice>
     </flow>
      
     <sub-flow name="pollappend">

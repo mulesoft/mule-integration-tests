@@ -6,9 +6,10 @@
  */
 package org.mule.test.integration.routing.outbound;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.junit.Assert.assertThat;
+import static org.mule.functional.junit4.matchers.MessageMatchers.hasPayload;
 
 import org.mule.functional.api.component.FlowAssert;
 import org.mule.runtime.api.message.Message;
@@ -36,10 +37,8 @@ public class ExpressionSplitterMixedSyncAsyncTestCase extends AbstractIntegratio
 
     Message result = flowRunner("Distributor").withPayload(fruitBowl).run().getMessage();
 
-    assertNotNull(result);
-    assertTrue(result.getPayload().getValue() instanceof List);
-    List<Message> coll = (List<Message>) result.getPayload().getValue();
-    assertEquals(2, coll.size());
+    assertThat((List<Message>) result.getPayload().getValue(),
+               containsInAnyOrder(hasPayload(instanceOf(Apple.class)), hasPayload(instanceOf(Orange.class))));
 
     FlowAssert.verify();
   }

@@ -39,13 +39,11 @@
             </script:script>
         </script:component>
         
-        <mule:message-filter>
-            <mule:not-filter>
-                <mule:expression-filter expression="#[mel:payload == null]"/>
-            </mule:not-filter>
-        </mule:message-filter>
-                
-        <flow-ref name="ExternalApp"/>
+        <choice>
+            <when expression="#[payload != null]">
+                <flow-ref name="ExternalApp"/>
+            </when>
+        </choice>
     </flow>    
     
 
