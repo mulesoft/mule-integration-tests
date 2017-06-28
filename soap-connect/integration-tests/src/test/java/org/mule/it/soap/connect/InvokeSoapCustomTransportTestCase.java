@@ -12,7 +12,7 @@ import org.mule.it.soap.connect.services.InterdimentionalCableService;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.streaming.bytes.CursorStreamProvider;
 import org.mule.runtime.core.api.util.IOUtils;
-import org.mule.service.soap.TestHttpSoapServer;
+import org.mule.service.soap.server.HttpServer;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.ram.RickAndMortyExtension;
@@ -28,21 +28,20 @@ public class InvokeSoapCustomTransportTestCase extends MuleArtifactFunctionalTes
   @Rule
   public DynamicPort port = new DynamicPort("servicePort");
 
-  private final TestHttpSoapServer service = new TestHttpSoapServer(port.getNumber(), new InterdimentionalCableService());
+  private HttpServer server = new HttpServer(port.getNumber(), null, null, new InterdimentionalCableService());
 
   @Rule
-  public SystemProperty systemProperty = new SystemProperty("serviceAddress", service.getDefaultAddress());
+  public SystemProperty address = new SystemProperty("serviceAddress", server.getDefaultAddress());
 
   @Override
   protected void doSetUp() throws Exception {
-    service.init();
     XMLUnit.setIgnoreWhitespace(true);
   }
 
   @Override
   protected void doTearDown() throws Exception {
     super.doTearDown();
-    service.stop();
+    server.stop();
   }
 
   @Override

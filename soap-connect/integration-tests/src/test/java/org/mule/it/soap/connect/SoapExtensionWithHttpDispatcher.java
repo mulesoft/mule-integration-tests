@@ -33,7 +33,7 @@ public class SoapExtensionWithHttpDispatcher extends AbstractSimpleServiceFuncti
   private void executeAndAssertSoapCall(String flow) throws Exception {
     Message m = flowRunner(flow).keepStreamsOpen().run().getMessage();
     String result = IOUtils.toString(((CursorStreamProvider) m.getPayload().getValue()).openCursor());
-    assertSimilarXml("<ns2:noParamsResponse xmlns:ns2=\"http://service.soap.services.mule.org/\">"
+    assertSimilarXml("<ns2:noParamsResponse xmlns:ns2=\"http://service.soap.service.mule.org/\">"
         + "<text>response</text>"
         + "</ns2:noParamsResponse>", result);
   }
