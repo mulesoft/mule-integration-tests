@@ -316,17 +316,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>xalan</groupId>
-            <artifactId>xalan</artifactId>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>xerces</groupId>
-                    <artifactId>xercesImpl</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
             <groupId>com.thoughtworks.xstream</groupId>
             <artifactId>xstream</artifactId>
             <version>1.4.7</version>
