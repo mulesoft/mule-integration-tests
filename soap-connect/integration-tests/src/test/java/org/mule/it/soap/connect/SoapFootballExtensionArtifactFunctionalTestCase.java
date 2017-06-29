@@ -7,13 +7,12 @@
 package org.mule.it.soap.connect;
 
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
-import org.mule.service.soap.TestHttpSoapServer;
-import org.mule.tck.junit4.rule.DynamicPort;
-import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.it.soap.connect.services.FootballService;
 import org.mule.it.soap.connect.services.LaLigaService;
+import org.mule.service.soap.server.HttpServer;
+import org.mule.tck.junit4.rule.DynamicPort;
+import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
-
 import org.junit.Rule;
 
 @ArtifactClassLoaderRunnerConfig(sharedRuntimeLibs = {"org.mule.tests:mule-tests-unit"})
@@ -27,20 +26,14 @@ public abstract class SoapFootballExtensionArtifactFunctionalTestCase extends Mu
   @Rule
   public DynamicPort laLigaPort = new DynamicPort("laLigaPort");
 
-  private final TestHttpSoapServer footballService = new TestHttpSoapServer(footballPort.getNumber(), new FootballService());
-  private final TestHttpSoapServer laLigaService = new TestHttpSoapServer(laLigaPort.getNumber(), new LaLigaService());
+  private HttpServer footballService = new HttpServer(footballPort.getNumber(), null, null, new FootballService());
+  private HttpServer laLigaService = new HttpServer(laLigaPort.getNumber(), null, null, new LaLigaService());
 
   @Rule
-  public SystemProperty systemProperty = new SystemProperty("footballAddress", footballService.getDefaultAddress());
+  public SystemProperty footballAddress = new SystemProperty("footballAddress", footballService.getDefaultAddress());
 
   @Rule
-  public SystemProperty laLigaProp = new SystemProperty("laLigaAddress", laLigaService.getDefaultAddress());
-
-  @Override
-  protected void doSetUp() throws Exception {
-    footballService.init();
-    laLigaService.init();
-  }
+  public SystemProperty laLigaAddress = new SystemProperty("laLigaAddress", laLigaService.getDefaultAddress());
 
   @Override
   protected String getConfigFile() {
