@@ -70,11 +70,4 @@
             <spring-object bean="apple"/>
         </component>
     </flow>
-
-    <flow name="anotherComponent">
-        <custom-aggregator class="org.mule.tck.testmodels.mule.TestCorrelationAggregator">
-            <spring:property name="testProperty" value="testValue"/>
-        </custom-aggregator>
-    </flow>
-
 </mule>

@@ -502,14 +502,6 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
   }
 
   @Test
-  public void testCustomMessageRouter() throws Exception {
-    Message result = flowRunner("customRouter").withPayload("").run().getMessage();
-    assertEquals("abc",
-                 ((List<Message>) result.getPayload().getValue()).stream()
-                     .map(msg -> (String) msg.getPayload().getValue()).collect(joining()));
-  }
-
-  @Test
   public void testPoll() throws Exception {
     Message message = muleContext.getClient().request("test://poll-out", RECEIVE_TIMEOUT).getRight().get();
     assertNotNull(message);

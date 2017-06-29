@@ -364,14 +364,6 @@
     <sub-flow name="invokedByMessageFilter">
         <test:queue name="messagefiltersubflow-out"/>
     </sub-flow>
-
-    <flow name="customRouter">
-        <custom-router class="org.mule.runtime.core.routing.outbound.MulticastingRouter">
-            <append-string-transformer message="a" />
-            <append-string-transformer message="b" />
-            <append-string-transformer message="c" />
-        </custom-router>
-    </flow>
     
     <flow name="customMessageSource">
         <custom-source class="org.mule.test.construct.FlowConfigurationFunctionalTestCase$TestMessageSource">

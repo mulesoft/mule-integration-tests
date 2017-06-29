@@ -23,12 +23,6 @@
             </on-error-continue>
         </error-handler>
     </flow>
-
-    <flow name="CustomRouter">
-        <custom-router class="org.mule.test.config.spring.DslConstantsRoutersFlowTestCase$CustomRouter">
-            <set-payload value="hi"/>
-        </custom-router>
-    </flow>
     
 </mule>
         
