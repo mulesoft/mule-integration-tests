@@ -11,8 +11,6 @@
 
     <configuration defaultResponseTimeout="10" defaultTransactionTimeout="20" shutdownTimeout="30"/>
 
-    <custom-transaction-manager class="org.mule.tck.testmodels.mule.TestTransactionManagerFactory"/>
-
     <custom-transformer name="TestCompressionTransformer"
                              class="org.mule.tck.testmodels.mule.TestCompressionTransformer"
                              returnClass="java.lang.String">
