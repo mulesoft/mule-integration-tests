@@ -8,11 +8,17 @@ package org.mule.test.config.spring.parsers;
 
 import static java.lang.String.format;
 
+import org.mule.tck.junit4.rule.DynamicPort;
+
+import org.junit.Rule;
 import org.junit.Test;
 
 public class EndpointServiceConflictTestCase extends AbstractBadConfigTestCase {
 
   private static final String REPEATED_GLOBAL_NAME = "LenderService";
+
+  @Rule
+  public DynamicPort dynamicPort = new DynamicPort("port");
 
   @Override
   protected String getConfigFile() {
