@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+
+    <flow name="first-flow">
+        <choice>
+            <when expression="#[payload == 'test']">
+                <logger message="#[payload]" level="INFO" />
+            </when>
+            <otherwise>
+                <flow-ref name="second-flow" />
+            </otherwise>
+        </choice>
+    </flow>
+
+    <flow name="second-flow">
+        <flow-ref name="first-flow" />
+    </flow>
+</mule>
