@@ -14,11 +14,16 @@ import org.mule.runtime.api.meta.AbstractAnnotatedObject;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.source.MessageSource;
+import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import org.junit.Rule;
 import org.junit.Test;
 
 public class FlowStateTestCase extends AbstractIntegrationTestCase {
+
+  @Rule
+  public SystemProperty initialState = new SystemProperty("state", "started");
 
   @Override
   protected String getConfigFile() {

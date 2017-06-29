@@ -8,10 +8,11 @@ package org.mule.test.integration.domain.properties;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-
 import org.mule.functional.junit4.ApplicationContextBuilder;
 import org.mule.functional.junit4.DomainContextBuilder;
+import org.mule.runtime.api.component.ConfigurationProperties;
 import org.mule.runtime.core.api.MuleContext;
+import org.mule.runtime.core.api.registry.RegistrationException;
 import org.mule.tck.junit4.AbstractMuleTestCase;
 
 import org.junit.After;
@@ -34,44 +35,28 @@ public class DomainPropertiesPlaceHolderPropagationTestCase extends AbstractMule
     appPropertiesPrecedeDomainPropertiesScenario();
   }
 
-  @Test
-  public void propertiesPropagatesToAppUsingBeans() throws Exception {
-    configureContexts("domain/properties/shared-beans-properties.xml", "domain/properties/app-with-no-properties.xml");
-    propertiesPropagatesScenario();
-  }
-
-  @Test
-  public void appPropertiesPrecedeDomainPropertiesUsingBeans() throws Exception {
-    configureContexts("domain/properties/shared-beans-properties.xml", "domain/properties/app-with-beans-properties.xml");
-    appPropertiesPrecedeDomainPropertiesScenario();
-  }
-
-  @Test
-  public void propertiesPropagatesToAppUsingContextAndBeans() throws Exception {
-    configureContexts("domain/properties/shared-context-properties.xml", "domain/properties/app-with-no-properties.xml");
-    propertiesPropagatesScenario();
-  }
-
-  @Test
-  public void appPropertiesPrecedeDomainPropertiesUsingContextAndBeans() throws Exception {
-    configureContexts("domain/properties/shared-beans-properties.xml", "domain/properties/app-with-context-properties.xml");
-    appPropertiesPrecedeDomainPropertiesScenario();
-  }
-
-  private void appPropertiesPrecedeDomainPropertiesScenario() {
-    String domainPropertyObject = domainContext.getRegistry().lookupObject("domainPropertyObject");
+  private void appPropertiesPrecedeDomainPropertiesScenario() throws RegistrationException {
+    String domainPropertyObject = getDomainProperty("domainPropertyObject");
     assertThat(domainPropertyObject, is("9999"));
-    String appPropertyObject = applicationContext.getRegistry().lookupObject("appPropertyObject");
+    String appPropertyObject = getApplicationProperty("appPropertyObject");
     assertThat(appPropertyObject, is("10000"));
-    String app2PropertyObject = applicationContext.getRegistry().lookupObject("app2PropertyObject");
+    String app2PropertyObject = getApplicationProperty("app2PropertyObject");
     assertThat(app2PropertyObject, is("service"));
   }
 
-  private void propertiesPropagatesScenario() {
-    String domainPropertyObject = domainContext.getRegistry().lookupObject("domainPropertyObject");
+  private void propertiesPropagatesScenario() throws RegistrationException {
+    String domainPropertyObject = getDomainProperty("domainPropertyObject");
     assertThat(domainPropertyObject, is("9999"));
-    String appPropertyObject = applicationContext.getRegistry().lookupObject("appPropertyObject");
+    String appPropertyObject = getApplicationProperty("appPropertyObject");
     assertThat(appPropertyObject, is("9999"));
+  }
+
+  private String getApplicationProperty(String property) throws RegistrationException {
+    return applicationContext.getRegistry().lookupObject(ConfigurationProperties.class).resolveStringProperty(property).get();
+  }
+
+  private String getDomainProperty(String property) throws org.mule.runtime.core.api.registry.RegistrationException {
+    return domainContext.getRegistry().lookupObject(ConfigurationProperties.class).resolveStringProperty(property).get();
   }
 
   private void configureContexts(String domainConfig, String appConfig) throws Exception {

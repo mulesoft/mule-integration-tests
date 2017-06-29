@@ -1,25 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule-domain xmlns="http://www.mulesoft.org/schema/mule/domain"
+             xmlns:mule="http://www.mulesoft.org/schema/mule/core"
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xmlns:context="http://www.springframework.org/schema/context"
-             xmlns:spring="http://www.springframework.org/schema/beans"
              xsi:schemaLocation="
                http://www.mulesoft.org/schema/mule/domain http://www.mulesoft.org/schema/mule/domain/current/mule-domain.xsd
-               http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
-               http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-current.xsd">
+               http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 
-    <!--<spring:bean id="property-placeholder"-->
-                 <!--class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">-->
-        <!--<spring:property name="location" value="classpath:derby.properties"/>-->
-    <!--</spring:bean>-->
+    <mule:configuration-properties file="domain/properties/domain.properties"/>
 
-    <context:property-placeholder
-            location="domain/properties/domain.properties"/>
-
-    <spring:bean id="domainPropertyObject" class="java.lang.String">
-        <spring:constructor-arg value="${http.port}"/>
-    </spring:bean>
-
+    <mule:global-property name="domainPropertyObject" value="${http.port}"/>
 
 </mule-domain>
 
