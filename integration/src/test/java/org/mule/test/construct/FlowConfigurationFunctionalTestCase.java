@@ -20,7 +20,6 @@ import static org.mule.functional.junit4.TestLegacyMessageUtils.getOutboundPrope
 import static org.mule.functional.junit4.TransactionConfigEnum.ACTION_ALWAYS_BEGIN;
 import static org.mule.runtime.api.message.Message.of;
 import static org.mule.runtime.api.metadata.MediaType.APPLICATION_XML;
-
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.meta.AbstractAnnotatedObject;
@@ -32,7 +31,6 @@ import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.source.CompositeMessageSource;
 import org.mule.runtime.core.api.source.MessageSource;
 import org.mule.runtime.core.api.transformer.Transformer;
-import org.mule.runtime.core.source.StartableCompositeMessageSource;
 import org.mule.runtime.core.transformer.simple.StringAppendTransformer;
 import org.mule.tck.testmodels.fruit.Apple;
 import org.mule.tck.testmodels.fruit.Banana;
@@ -95,7 +93,8 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
   public void testFlowCompositeSource() throws Exception {
     final Flow flow = muleContext.getRegistry().lookupObject("flow2");
     CompositeMessageSource compositeSource = (CompositeMessageSource) flow.getSource();
-    assertEquals(StartableCompositeMessageSource.class, compositeSource.getClass());
+    assertThat(compositeSource.getClass().getName(),
+               equalTo("org.mule.runtime.core.internal.source.StartableCompositeMessageSource"));
     assertEquals(2, flow.getProcessors().size());
 
     final List<MessageSource> sources = compositeSource.getSources();

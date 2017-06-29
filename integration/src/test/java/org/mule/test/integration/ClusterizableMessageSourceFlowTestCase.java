@@ -14,7 +14,7 @@ import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.runtime.core.api.connector.SchedulerController;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.context.notification.ClusterNodeNotification;
-import org.mule.runtime.core.source.ClusterizableMessageSourceWrapper;
+import org.mule.runtime.core.api.source.ClusterizableMessageSource;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Test;
@@ -46,7 +46,7 @@ public class ClusterizableMessageSourceFlowTestCase extends AbstractIntegrationT
     muleContext.start();
 
     Flow test1 = muleContext.getRegistry().get("test1");
-    ClusterizableMessageSourceWrapper messageSource = (ClusterizableMessageSourceWrapper) test1.getSource();
+    ClusterizableMessageSource messageSource = (ClusterizableMessageSource) test1.getSource();
     assertTrue(test1.getLifecycleState().isStarted());
     assertTrue(messageSource.isStarted());
   }
@@ -58,8 +58,8 @@ public class ClusterizableMessageSourceFlowTestCase extends AbstractIntegrationT
 
     muleContext.start();
 
-    Flow test1 = (Flow) muleContext.getRegistry().get("test1");
-    ClusterizableMessageSourceWrapper messageSource = (ClusterizableMessageSourceWrapper) test1.getSource();
+    Flow test1 = muleContext.getRegistry().get("test1");
+    ClusterizableMessageSource messageSource = (ClusterizableMessageSource) test1.getSource();
 
     messageSource.initialise();
 

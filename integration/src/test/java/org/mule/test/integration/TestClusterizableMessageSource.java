@@ -9,6 +9,7 @@ package org.mule.test.integration;
 import static org.mule.runtime.api.message.Message.of;
 import static org.mule.tck.junit4.AbstractMuleTestCase.TEST_CONNECTOR_LOCATION;
 import org.mule.runtime.api.exception.MuleException;
+import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.api.lifecycle.Startable;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.meta.AbstractAnnotatedObject;
@@ -41,5 +42,21 @@ public class TestClusterizableMessageSource extends AbstractAnnotatedObject
   @Override
   public void setFlowConstruct(FlowConstruct flowConstruct) {
     this.flowConstruct = flowConstruct;
+  }
+
+  @Override public boolean isStarted() {
+    return false;
+  }
+
+  @Override public void stop() throws MuleException {
+
+  }
+
+  @Override public void dispose() {
+
+  }
+
+  @Override public void initialise() throws InitialisationException {
+
   }
 }

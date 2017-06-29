@@ -16,7 +16,7 @@ import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.source.SchedulerMessageSource;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.source.MessageSource;
-import org.mule.runtime.core.source.scheduler.DefaultSchedulerMessageSource;
+import org.mule.runtime.core.internal.source.scheduler.DefaultSchedulerMessageSource;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.tck.probe.JUnitLambdaProbe;
 import org.mule.tck.probe.PollingProber;
