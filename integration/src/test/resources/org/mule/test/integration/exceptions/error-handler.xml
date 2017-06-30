@@ -22,26 +22,26 @@
             <on-error-continue when="#[mel:exception.causedBy(org.mule.test.integration.exceptions.ErrorHandlerTestCase$SubtypeException)]">
                 <append-string-transformer message=" catch-4"/>
             </on-error-continue>
-            <on-error-continue when="#[mel:exception.causeMatches('(.*)mule.test.integration.(.*).ErrorHandlerTestCase(.*)MyException')]">
+            <on-error-continue when="#[mel:exception.causeMatches('(.*?)mule.test.integration.(.*?).ErrorHandlerTestCase(.*?)MyException')]">
                 <append-string-transformer message=" catch-5"/>
             </on-error-continue>
             <on-error-continue when="#[mel:payload == 'groovy']">
                 <append-string-transformer message=" catch-6"/>
             </on-error-continue>
-            <on-error-continue when="#[mel:exception.causeMatches('org.mule.test.integration.exceptions.ErrorHandlerTestCase$StartsWith*')]">
+            <on-error-continue when="#[mel:exception.causeMatches('org.mule.test.integration.exceptions.ErrorHandlerTestCase\\$StartsWith(.*)')]">
                 <append-string-transformer message=" catch-7"/>
             </on-error-continue>
-            <on-error-continue when="#[mel:exception.causeMatches('*FinishesWithException')]">
+            <on-error-continue when="#[mel:exception.causeMatches('(.*?)FinishesWithException')]">
                 <append-string-transformer message=" catch-8"/>
             </on-error-continue>
-            <on-error-continue when="#[mel:exception.causeMatches('*FinishesWithSomethingElse')]">
+            <on-error-continue when="#[mel:exception.causeMatches('(.*?)FinishesWithSomethingElse')]">
 		        <script:component>
 		            <script:script engine="groovy">
 		                return "$payload groovified"
 		            </script:script>
 		        </script:component>
             </on-error-continue>
-            <on-error-continue when="#[mel:exception.causeMatches('*') &amp;&amp; !exception.causedBy(java.lang.ArithmeticException) &amp;&amp; !exception.causedBy(org.mule.runtime.core.api.registry.ResolverException)]">
+            <on-error-continue when="#[mel:exception.causeMatches('.*') &amp;&amp; !exception.causedBy(java.lang.ArithmeticException) &amp;&amp; !exception.causedBy(org.mule.runtime.core.api.registry.ResolverException)]">
                 <append-string-transformer message=" catch-9"/>
             </on-error-continue>
         </error-handler>

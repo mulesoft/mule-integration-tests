@@ -158,7 +158,7 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
       throws InterruptedException {
     final List<Object> results = new ArrayList<>();
 
-    new PollingProber(DEFAULT_TEST_TIMEOUT_SECS * 1000, 1000).check(new JUnitLambdaProbe(() -> {
+    new PollingProber(RECEIVE_TIMEOUT, 200).check(new JUnitLambdaProbe(() -> {
       assertThat(ftc.getReceivedMessagesCount(), greaterThanOrEqualTo(expectedCount));
       return true;
     }));
@@ -170,7 +170,7 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
   }
 
   private void ponderUntilMessageCountReceivedByCustomMP(final int expectedCount) throws InterruptedException {
-    new PollingProber(DEFAULT_TEST_TIMEOUT_SECS * 1000, 1000).check(new JUnitLambdaProbe(() -> {
+    new PollingProber(RECEIVE_TIMEOUT, 200).check(new JUnitLambdaProbe(() -> {
       assertThat(CustomMP.getCount(), greaterThanOrEqualTo(expectedCount));
       return true;
     }));
@@ -195,7 +195,7 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
     @Override
     public Event process(final Event event) throws MuleException {
       processedEvents.add(event);
-      return null;
+      return event;
     }
   }
 

@@ -10,12 +10,14 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
+
+import org.mule.functional.api.exception.FunctionalTestException;
 import org.mule.functional.junit4.TestLegacyMessageUtils;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.client.MuleClient;
+import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.runtime.core.api.message.ExceptionPayload;
 import org.mule.runtime.core.api.routing.RoutingException;
-import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.io.ByteArrayInputStream;
@@ -36,7 +38,7 @@ public class MulticastRouterTestCase extends AbstractIntegrationTestCase {
     flowRunner("all").withPayload(bis).dispatch();
 
     Message error = client.request("test://errors", 2000).getRight().get();
-    assertRoutingExceptionReceived(error);
+    assertExceptionReceived(error);
   }
 
   @Test
@@ -47,7 +49,7 @@ public class MulticastRouterTestCase extends AbstractIntegrationTestCase {
     flowRunner("first-successful").withPayload(bis).dispatch();
 
     Message error = client.request("test://errors2", 2000).getRight().get();
-    assertRoutingExceptionReceived(error);
+    assertExceptionReceived(error);
   }
 
   /**
@@ -55,13 +57,13 @@ public class MulticastRouterTestCase extends AbstractIntegrationTestCase {
    *
    * @param message The received message.
    */
-  private void assertRoutingExceptionReceived(Message message) {
+  private void assertExceptionReceived(Message message) {
     assertThat(message, is(notNullValue()));
     Object payload = message.getPayload().getValue();
     assertThat(payload, is(notNullValue()));
     ExceptionPayload exceptionPayload = TestLegacyMessageUtils.getExceptionPayload(message);
     assertThat(exceptionPayload, is(notNullValue()));
     assertThat(exceptionPayload.getException(), is(instanceOf(MessagingException.class)));
-    assertThat(exceptionPayload.getException().getCause(), is(instanceOf(RoutingException.class)));
+    assertThat(exceptionPayload.getException().getCause(), is(instanceOf(FunctionalTestException.class)));
   }
 }
