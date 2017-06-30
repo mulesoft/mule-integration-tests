@@ -12,12 +12,11 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import org.mule.functional.api.component.ExceptionStrategyCallback;
+
 import org.mule.functional.api.exception.FunctionalTestException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.exception.MessagingException;
-import org.mule.runtime.core.api.exception.MessagingExceptionHandler;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Test;
@@ -45,22 +44,9 @@ public class ExceptionStrategyReturnMessageTestCase extends AbstractIntegrationT
     Message msg = event.getMessage();
 
     assertNotNull(msg);
-    assertThat(event.getError().isPresent(), is(true));
-    assertEquals("Functional Test Service Exception", event.getError().get().getDescription());
 
     assertNotNull(msg.getPayload().getValue());
     assertEquals("Ka-boom!", msg.getPayload().getValue());
-  }
-
-  public static class TestExceptionStrategy implements ExceptionStrategyCallback {
-
-    @Override
-    public Event handleException(MessagingException exception, Event event, MessagingExceptionHandler delegate) {
-      Event result = delegate.handleException(exception, event);
-      result = Event.builder(result).message(Message.builder(event.getMessage()).payload("Ka-boom!").build()).build();
-      exception.setHandled(true);
-      return result;
-    }
   }
 
 }

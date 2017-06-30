@@ -17,10 +17,10 @@
     </scripting:transformer>
 
     <flow name="Distributor">
-        <all>
+        <scatter-gather>
             <flow-ref name="One"/>
             <flow-ref name="Two"/>
-        </all>
+        </scatter-gather>
         <transformer ref="fooTransformer"/>
     </flow>
 
