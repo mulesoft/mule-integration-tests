@@ -9,9 +9,9 @@ package org.mule.test.module.http.functional.requester;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static javax.servlet.http.HttpServletResponse.SC_PROXY_AUTHENTICATION_REQUIRED;
 import static org.glassfish.grizzly.http.server.Constants.CLOSE;
+import static org.glassfish.grizzly.http.server.Constants.CONNECTION;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
-import static org.glassfish.grizzly.http.server.Constants.CONNECTION;
 import static org.mule.runtime.http.api.HttpHeaders.Names.PROXY_AUTHENTICATE;
 import static org.mule.runtime.http.api.HttpHeaders.Names.PROXY_AUTHORIZATION;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
@@ -39,7 +39,7 @@ import ru.yandex.qatools.allure.annotations.Stories;
 @Features(HTTP_EXTENSION)
 @Stories({NTLM})
 @Description("This is a simple Functional TestCase that simulates the case of a NTLM HTTP Proxy and " +
-	    " an HTTPS Server behind that proxy. Authentication is required.")
+    " an HTTPS Server behind that proxy. Authentication is required.")
 public class HttpsRequestNtlmProxyTestCase extends AbstractNtlmTestCase {
 
   private static final String TARGET_RESPONSE = "Response";
