@@ -44,19 +44,23 @@ public class TestClusterizableMessageSource extends AbstractAnnotatedObject
     this.flowConstruct = flowConstruct;
   }
 
-  @Override public boolean isStarted() {
+  @Override
+  public boolean isStarted() {
     return false;
   }
 
-  @Override public void stop() throws MuleException {
+  @Override
+  public void stop() throws MuleException {
 
   }
 
-  @Override public void dispose() {
+  @Override
+  public void dispose() {
 
   }
 
-  @Override public void initialise() throws InitialisationException {
+  @Override
+  public void initialise() throws InitialisationException {
 
   }
 }
