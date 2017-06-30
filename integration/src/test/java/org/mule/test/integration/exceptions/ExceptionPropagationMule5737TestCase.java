@@ -7,17 +7,16 @@
 package org.mule.test.integration.exceptions;
 
 import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import org.mule.functional.api.component.ExceptionStrategyCallback;
-import org.mule.functional.api.component.TestExceptionStrategy;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+
 import org.mule.functional.api.exception.FunctionalTestException;
-import org.mule.runtime.api.message.Message;
+import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.core.api.Event;
-import org.mule.runtime.core.api.exception.MessagingException;
-import org.mule.runtime.core.api.exception.MessagingExceptionHandler;
+import org.mule.runtime.core.api.processor.Processor;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -36,6 +35,12 @@ public class ExceptionPropagationMule5737TestCase extends AbstractIntegrationTes
     return "org/mule/test/integration/exceptions/exception-propagation-mule-5737-config.xml";
   }
 
+  @Before
+  public void before() {
+    SensingExceptionParentProcessor.caught = false;
+    SensingExceptionChildProcessor.caught = true;
+  }
+
   @Test
   public void testRequestResponseEndpointExceptionPropagation() throws Exception {
     expectedException.expectCause(instanceOf(FunctionalTestException.class));
@@ -44,51 +49,46 @@ public class ExceptionPropagationMule5737TestCase extends AbstractIntegrationTes
 
   @Test
   public void testFlowWithChildFlowExceptionPropagation() throws Exception {
-    SensingExceptionStrategy parentES = getSensingExceptionStrategy("flowWithChildFlow");
-    SensingExceptionStrategy childFlowES = getSensingExceptionStrategy("childFlow");
-
     runFlow("flowWithChildFlow");
 
-    assertFalse(parentES.caught);
-    assertTrue(childFlowES.caught);
+    assertThat(SensingExceptionParentProcessor.caught, is(false));
+    assertThat(SensingExceptionChildProcessor.caught, is(true));
   }
 
   @Test
   public void testFlowWithSubFlowExceptionPropagation() throws Exception {
-    SensingExceptionStrategy parentES = getSensingExceptionStrategy("flowWithSubFlow");
-
     runFlow("flowWithSubFlow");
 
-    assertTrue(parentES.caught);
+    assertThat(SensingExceptionParentProcessor.caught, is(true));
   }
 
   @Test
   public void testFlowWithChildServiceExceptionPropagation() throws Exception {
-    SensingExceptionStrategy parentES = getSensingExceptionStrategy("flowWithChildService");
-    SensingExceptionStrategy childServiceES = getSensingExceptionStrategy("childService");
-
     runFlow("flowWithChildService");
 
-    assertFalse(parentES.caught);
-    assertTrue(childServiceES.caught);
+    assertThat(SensingExceptionParentProcessor.caught, is(false));
+    assertThat(SensingExceptionChildProcessor.caught, is(true));
   }
 
-  private SensingExceptionStrategy getSensingExceptionStrategy(String flowWithChildService) {
-    return (SensingExceptionStrategy) ((TestExceptionStrategy) muleContext.getRegistry()
-        .lookupFlowConstruct(flowWithChildService)
-        .getExceptionListener()).getCallback();
-  }
+  public static class SensingExceptionParentProcessor implements Processor {
 
-  public static class SensingExceptionStrategy implements ExceptionStrategyCallback {
-
-    boolean caught;
+    static boolean caught;
 
     @Override
-    public Event handleException(MessagingException exception, Event event, MessagingExceptionHandler delegate) {
+    public Event process(Event event) throws MuleException {
       caught = true;
-      Event resultEvent = delegate.handleException(exception, event);
-      exception.setHandled(true);
-      return Event.builder(resultEvent).message(Message.builder(resultEvent.getMessage()).build()).error(null).build();
+      return event;
+    }
+  }
+
+  public static class SensingExceptionChildProcessor implements Processor {
+
+    static boolean caught;
+
+    @Override
+    public Event process(Event event) throws MuleException {
+      caught = true;
+      return event;
     }
   }
 }

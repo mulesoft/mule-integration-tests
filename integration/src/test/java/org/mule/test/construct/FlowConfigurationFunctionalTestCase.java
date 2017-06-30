@@ -7,7 +7,6 @@
 package org.mule.test.construct;
 
 import static java.lang.Thread.currentThread;
-import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertEquals;
@@ -384,25 +383,6 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
     assertEquals("0ac", getPayloadAsString(syncResult));
     assertEquals("0ac", getPayloadAsString(result));
     assertEquals("0ab", getPayloadAsString(asyncResult));
-  }
-
-  @Test
-  public void testMulticaster() throws Exception {
-    flowRunner("multicaster").withPayload(TEST_MESSAGE).run();
-
-    final MuleClient client = muleContext.getClient();
-    final Message result1 = client.request("test://multicaster-out1", RECEIVE_TIMEOUT).getRight().get();
-    final Message result2 = client.request("test://multicaster-out2", RECEIVE_TIMEOUT).getRight().get();
-    final Message result3 = client.request("test://multicaster-out3", RECEIVE_TIMEOUT).getRight().get();
-
-    assertNotNull(result1);
-    assertNotNull(result2);
-    assertNotNull(result3);
-
-    assertEquals(TEST_MESSAGE, result1.getPayload().getValue());
-    assertEquals(TEST_MESSAGE, result1.getPayload().getValue());
-    assertEquals(TEST_MESSAGE, result1.getPayload().getValue());
-
   }
 
   @Test

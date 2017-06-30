@@ -12,26 +12,38 @@
 
     <flow name="flowWithChildFlow">
         <flow-ref name="childFlow"/>
-        <test:exception-strategy
-                class="org.mule.test.integration.exceptions.ExceptionPropagationMule5737TestCase$SensingExceptionStrategy"/>
+        <error-handler>
+            <on-error-continue>
+                <custom-processor class="org.mule.test.integration.exceptions.ExceptionPropagationMule5737TestCase$SensingExceptionParentProcessor"/>
+            </on-error-continue>
+        </error-handler>
     </flow>
 
     <flow name="flowWithSubFlow">
         <flow-ref name="subFlow"/>
-        <test:exception-strategy
-                class="org.mule.test.integration.exceptions.ExceptionPropagationMule5737TestCase$SensingExceptionStrategy"/>
+        <error-handler>
+            <on-error-continue>
+                <custom-processor class="org.mule.test.integration.exceptions.ExceptionPropagationMule5737TestCase$SensingExceptionParentProcessor"/>
+            </on-error-continue>
+        </error-handler>
     </flow>
 
     <flow name="flowWithChildService">
         <flow-ref name="childService"/>
-        <test:exception-strategy
-                class="org.mule.test.integration.exceptions.ExceptionPropagationMule5737TestCase$SensingExceptionStrategy"/>
+        <error-handler>
+            <on-error-continue>
+                <custom-processor class="org.mule.test.integration.exceptions.ExceptionPropagationMule5737TestCase$SensingExceptionParentProcessor"/>
+            </on-error-continue>
+        </error-handler>
     </flow>
 
     <flow name="childFlow">
         <test:processor throwException="true"/>
-        <test:exception-strategy
-                class="org.mule.test.integration.exceptions.ExceptionPropagationMule5737TestCase$SensingExceptionStrategy"/>
+        <error-handler>
+            <on-error-continue>
+                <custom-processor class="org.mule.test.integration.exceptions.ExceptionPropagationMule5737TestCase$SensingExceptionChildProcessor"/>
+            </on-error-continue>
+        </error-handler>
     </flow>
 
     <processor-chain name="subFlow">
@@ -40,8 +52,11 @@
 
     <flow name="childService">
         <test:processor throwException="true"/>
-        <test:exception-strategy
-                class="org.mule.test.integration.exceptions.ExceptionPropagationMule5737TestCase$SensingExceptionStrategy"/>
+        <error-handler>
+            <on-error-continue>
+                <custom-processor class="org.mule.test.integration.exceptions.ExceptionPropagationMule5737TestCase$SensingExceptionChildProcessor"/>
+            </on-error-continue>
+        </error-handler>
     </flow>
 
 </mule>

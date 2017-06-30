@@ -18,7 +18,11 @@
 
     <flow name="ExceptionService">
         <test:processor throwException="true"/>
-        <test:exception-strategy class="org.mule.test.integration.exceptions.ExceptionStrategyReturnMessageTestCase$TestExceptionStrategy"/>
+        <error-handler>
+            <on-error-continue>
+                <set-payload value="Ka-boom!"/>
+            </on-error-continue>
+        </error-handler>
     </flow>
 
     <flow name="ExceptionService2">
