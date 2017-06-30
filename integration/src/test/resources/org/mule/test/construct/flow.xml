@@ -33,8 +33,8 @@
 
     <flow name="flow2">
         <composite-source>
-            <custom-source class="org.mule.test.construct.FlowConfigurationFunctionalTestCase$TestSimpleMessageSource"/>
-            <custom-source class="org.mule.test.construct.FlowConfigurationFunctionalTestCase$TestSimpleMessageSource"/>
+            <test:custom-source class="org.mule.test.construct.FlowConfigurationFunctionalTestCase$TestSimpleMessageSource"/>
+            <test:custom-source class="org.mule.test.construct.FlowConfigurationFunctionalTestCase$TestSimpleMessageSource"/>
         </composite-source>
         <append-string-transformer message="1" />
         <processor ref="composite1" />
@@ -353,14 +353,6 @@
     <sub-flow name="invokedByMessageFilter">
         <test:queue name="messagefiltersubflow-out"/>
     </sub-flow>
-    
-    <flow name="customMessageSource">
-        <custom-source class="org.mule.test.construct.FlowConfigurationFunctionalTestCase$TestMessageSource">
-            <spring:property name="appendBefore" value="b"/>
-            <spring:property name="appendAfter" value="d"/>
-        </custom-source>
-        <append-string-transformer message="c" />
-    </flow>
 
     <flow name="customMaxConcurrency" maxConcurrency="1">
         <append-string-transformer message="nop" />

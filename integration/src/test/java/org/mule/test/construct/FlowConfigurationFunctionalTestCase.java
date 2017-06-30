@@ -501,17 +501,7 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
         muleContext.getClient().request("test://messagefiltersubflow-out", RECEIVE_TIMEOUT).getRight().get();
     assertNotNull(message);
   }
-
-  @Test
-  public void testCustomMessageSource() throws Exception {
-    Flow flow = (Flow) muleContext.getRegistry().lookupFlowConstruct("customMessageSource");
-    TestMessageSource source = (TestMessageSource) flow.getSource();
-
-    Event result = source
-        .fireEvent(Event.builder(DefaultEventContext.create(flow, TEST_CONNECTOR_LOCATION)).message(of("a")).build());
-    assertEquals("abcd", result.getMessageAsString(muleContext));
-  }
-
+  
   @Test
   public void customMaxConcurrency() throws Exception {
     Flow flow = (Flow) muleContext.getRegistry().lookupFlowConstruct("customMaxConcurrency");
