@@ -10,10 +10,10 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
+import org.mule.functional.api.component.EventCallback;
 import org.mule.functional.api.exception.FunctionalTestException;
-import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.core.api.Event;
-import org.mule.runtime.core.api.processor.Processor;
+import org.mule.runtime.core.api.MuleContext;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Before;
@@ -37,8 +37,8 @@ public class ExceptionPropagationMule5737TestCase extends AbstractIntegrationTes
 
   @Before
   public void before() {
-    SensingExceptionParentProcessor.caught = false;
-    SensingExceptionChildProcessor.caught = true;
+    SensingExceptionParentCallback.caught = false;
+    SensingExceptionChildCallback.caught = true;
   }
 
   @Test
@@ -51,44 +51,42 @@ public class ExceptionPropagationMule5737TestCase extends AbstractIntegrationTes
   public void testFlowWithChildFlowExceptionPropagation() throws Exception {
     runFlow("flowWithChildFlow");
 
-    assertThat(SensingExceptionParentProcessor.caught, is(false));
-    assertThat(SensingExceptionChildProcessor.caught, is(true));
+    assertThat(SensingExceptionParentCallback.caught, is(false));
+    assertThat(SensingExceptionChildCallback.caught, is(true));
   }
 
   @Test
   public void testFlowWithSubFlowExceptionPropagation() throws Exception {
     runFlow("flowWithSubFlow");
 
-    assertThat(SensingExceptionParentProcessor.caught, is(true));
+    assertThat(SensingExceptionParentCallback.caught, is(true));
   }
 
   @Test
   public void testFlowWithChildServiceExceptionPropagation() throws Exception {
     runFlow("flowWithChildService");
 
-    assertThat(SensingExceptionParentProcessor.caught, is(false));
-    assertThat(SensingExceptionChildProcessor.caught, is(true));
+    assertThat(SensingExceptionParentCallback.caught, is(false));
+    assertThat(SensingExceptionChildCallback.caught, is(true));
   }
 
-  public static class SensingExceptionParentProcessor implements Processor {
+  public static class SensingExceptionParentCallback implements EventCallback {
 
     static boolean caught;
 
     @Override
-    public Event process(Event event) throws MuleException {
+    public void eventReceived(Event event, Object component, MuleContext muleContext) throws Exception {
       caught = true;
-      return event;
     }
   }
 
-  public static class SensingExceptionChildProcessor implements Processor {
+  public static class SensingExceptionChildCallback implements EventCallback {
 
     static boolean caught;
 
     @Override
-    public Event process(Event event) throws MuleException {
+    public void eventReceived(Event event, Object component, MuleContext muleContext) throws Exception {
       caught = true;
-      return event;
     }
   }
 }

@@ -14,7 +14,9 @@
         <flow-ref name="childFlow"/>
         <error-handler>
             <on-error-continue>
-                <custom-processor class="org.mule.test.integration.exceptions.ExceptionPropagationMule5737TestCase$SensingExceptionParentProcessor"/>
+                <test:processor>
+                    <test:callback class="org.mule.test.integration.exceptions.ExceptionPropagationMule5737TestCase$SensingExceptionParentCallback"/>
+                </test:processor>
             </on-error-continue>
         </error-handler>
     </flow>
@@ -23,7 +25,9 @@
         <flow-ref name="subFlow"/>
         <error-handler>
             <on-error-continue>
-                <custom-processor class="org.mule.test.integration.exceptions.ExceptionPropagationMule5737TestCase$SensingExceptionParentProcessor"/>
+                <test:processor>
+                    <test:callback class="org.mule.test.integration.exceptions.ExceptionPropagationMule5737TestCase$SensingExceptionParentCallback"/>
+                </test:processor>
             </on-error-continue>
         </error-handler>
     </flow>
@@ -32,7 +36,9 @@
         <flow-ref name="childService"/>
         <error-handler>
             <on-error-continue>
-                <custom-processor class="org.mule.test.integration.exceptions.ExceptionPropagationMule5737TestCase$SensingExceptionParentProcessor"/>
+                <test:processor>
+                    <test:callback class="org.mule.test.integration.exceptions.ExceptionPropagationMule5737TestCase$SensingExceptionParentCallback"/>
+                </test:processor>
             </on-error-continue>
         </error-handler>
     </flow>
@@ -41,7 +47,9 @@
         <test:processor throwException="true"/>
         <error-handler>
             <on-error-continue>
-                <custom-processor class="org.mule.test.integration.exceptions.ExceptionPropagationMule5737TestCase$SensingExceptionChildProcessor"/>
+                <test:processor>
+                    <test:callback class="org.mule.test.integration.exceptions.ExceptionPropagationMule5737TestCase$SensingExceptionChildCallback"/>
+                </test:processor>
             </on-error-continue>
         </error-handler>
     </flow>
@@ -54,7 +62,9 @@
         <test:processor throwException="true"/>
         <error-handler>
             <on-error-continue>
-                <custom-processor class="org.mule.test.integration.exceptions.ExceptionPropagationMule5737TestCase$SensingExceptionChildProcessor"/>
+                <test:processor>
+                    <test:callback class="org.mule.test.integration.exceptions.ExceptionPropagationMule5737TestCase$SensingExceptionChildCallback"/>
+                </test:processor>
             </on-error-continue>
         </error-handler>
     </flow>
