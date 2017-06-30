@@ -1,21 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:test="http://www.mulesoft.org/schema/mule/test"
       xsi:schemaLocation="
-       http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+       http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
     <flow name="defaultFlow">
-        <custom-source class="org.mule.test.components.FlowStateTestCase$TestMessageSource"/>
+        <test:custom-source class="org.mule.test.components.FlowStateTestCase$TestMessageSource"/>
         <logger/>
     </flow>
     <flow name="startedFlow" initialState="started">
-        <custom-source class="org.mule.test.components.FlowStateTestCase$TestMessageSource"/>
+        <test:custom-source class="org.mule.test.components.FlowStateTestCase$TestMessageSource"/>
         <logger/>
     </flow>
     <flow name="stoppedFlow" initialState="stopped">
-        <custom-source class="org.mule.test.components.FlowStateTestCase$TestMessageSource"/>
+        <test:custom-source class="org.mule.test.components.FlowStateTestCase$TestMessageSource"/>
         <logger/>
     </flow>
     <flow name="placeholderFlow" initialState="${state}">
-        <custom-source class="org.mule.test.components.FlowStateTestCase$TestMessageSource"/>
+        <test:custom-source class="org.mule.test.components.FlowStateTestCase$TestMessageSource"/>
         <logger/>
     </flow>
 </mule>
