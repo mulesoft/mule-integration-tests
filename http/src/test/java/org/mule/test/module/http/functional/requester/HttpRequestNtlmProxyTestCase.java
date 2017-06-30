@@ -6,16 +6,20 @@
  */
 package org.mule.test.module.http.functional.requester;
 
-import static org.mule.runtime.http.api.HttpHeaders.Names.PROXY_AUTHENTICATE;
-import static org.mule.runtime.http.api.HttpHeaders.Names.PROXY_AUTHORIZATION;
-import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
 import static javax.servlet.http.HttpServletResponse.SC_PROXY_AUTHENTICATION_REQUIRED;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mule.runtime.http.api.HttpHeaders.Names.PROXY_AUTHENTICATE;
+import static org.mule.runtime.http.api.HttpHeaders.Names.PROXY_AUTHORIZATION;
+import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
+import static org.mule.test.allure.AllureConstants.HttpFeature.HttpStory.NTLM;
 
+import ru.yandex.qatools.allure.annotations.Description;
 import ru.yandex.qatools.allure.annotations.Features;
+import ru.yandex.qatools.allure.annotations.Stories;
 
 @Features(HTTP_EXTENSION)
+@Stories(NTLM)
 public class HttpRequestNtlmProxyTestCase extends AbstractNtlmTestCase {
 
   public HttpRequestNtlmProxyTestCase() {
@@ -28,6 +32,7 @@ public class HttpRequestNtlmProxyTestCase extends AbstractNtlmTestCase {
   }
 
   @Override
+  @Description("Verifies that NTLM Auth is successfully performed.")
   public void validNtlmAuth() throws Exception {
     super.validNtlmAuth();
     assertThat(requestUrl, is("http://localhost:9999/basePath/requestPath"));

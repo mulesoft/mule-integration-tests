@@ -17,6 +17,8 @@ import org.mule.runtime.core.api.util.NetworkUtils;
 
 import com.ning.http.client.ntlm.NTLMEngine;
 
+import ru.yandex.qatools.allure.annotations.Description;
+
 import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -103,6 +105,7 @@ public abstract class AbstractNtlmTestCase extends AbstractHttpRequestTestCase {
   }
 
   @Test
+  @Description("Verifies a flow involving a NTLM proxy is successfully performed.")
   public void validNtlmAuth() throws Exception {
     Message response = runFlow(getFlowName()).getMessage();
 

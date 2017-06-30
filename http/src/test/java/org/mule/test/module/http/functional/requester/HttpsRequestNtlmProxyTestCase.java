@@ -15,6 +15,7 @@ import static org.glassfish.grizzly.http.server.Constants.CONNECTION;
 import static org.mule.runtime.http.api.HttpHeaders.Names.PROXY_AUTHENTICATE;
 import static org.mule.runtime.http.api.HttpHeaders.Names.PROXY_AUTHORIZATION;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
+import static org.mule.test.allure.AllureConstants.HttpFeature.HttpStory.NTLM;
 import static org.mule.test.module.http.functional.matcher.HttpMessageAttributesMatchers.hasStatusCode;
 
 import java.io.IOException;
@@ -31,13 +32,16 @@ import org.junit.Test;
 import org.mule.extension.http.api.HttpResponseAttributes;
 import org.mule.runtime.api.message.Message;
 
+import ru.yandex.qatools.allure.annotations.Description;
 import ru.yandex.qatools.allure.annotations.Features;
+import ru.yandex.qatools.allure.annotations.Stories;
 
 /**
  * This is a simple Functional TestCase that simulates the case of a NTLM HTTP Proxy and an HTTPS Server behind that proxy.
  * Authentication is required.
  */
 @Features(HTTP_EXTENSION)
+@Stories({NTLM})
 public class HttpsRequestNtlmProxyTestCase extends AbstractNtlmTestCase {
 
   private static final String TARGET_RESPONSE = "Response";
@@ -97,6 +101,7 @@ public class HttpsRequestNtlmProxyTestCase extends AbstractNtlmTestCase {
   }
 
   @Test
+  @Description("Verifies that HTTP CONNECT is established for TLS tunnelling through a NTLM Proxy with mandatory auth.")
   public void validNtlmAuth() throws Exception {
     Message response = runFlow(getFlowName()).getMessage();
 
