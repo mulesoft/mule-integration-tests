@@ -501,7 +501,7 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
         muleContext.getClient().request("test://messagefiltersubflow-out", RECEIVE_TIMEOUT).getRight().get();
     assertNotNull(message);
   }
-  
+
   @Test
   public void customMaxConcurrency() throws Exception {
     Flow flow = (Flow) muleContext.getRegistry().lookupFlowConstruct("customMaxConcurrency");
