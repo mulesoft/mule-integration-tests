@@ -36,12 +36,10 @@ import ru.yandex.qatools.allure.annotations.Description;
 import ru.yandex.qatools.allure.annotations.Features;
 import ru.yandex.qatools.allure.annotations.Stories;
 
-/**
- * This is a simple Functional TestCase that simulates the case of a NTLM HTTP Proxy and an HTTPS Server behind that proxy.
- * Authentication is required.
- */
 @Features(HTTP_EXTENSION)
 @Stories({NTLM})
+@Description("This is a simple Functional TestCase that simulates the case of a NTLM HTTP Proxy and " +
+	    " an HTTPS Server behind that proxy. Authentication is required.")
 public class HttpsRequestNtlmProxyTestCase extends AbstractNtlmTestCase {
 
   private static final String TARGET_RESPONSE = "Response";
