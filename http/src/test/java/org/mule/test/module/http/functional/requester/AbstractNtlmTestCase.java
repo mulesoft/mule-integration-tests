@@ -17,6 +17,8 @@ import org.mule.runtime.core.api.util.NetworkUtils;
 
 import com.ning.http.client.ntlm.NTLMEngine;
 
+import ru.yandex.qatools.allure.annotations.Description;
+
 import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -65,26 +67,45 @@ public abstract class AbstractNtlmTestCase extends AbstractHttpRequestTestCase {
     return null;
   }
 
-  @Override
-  protected void handleRequest(Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException {
+  protected boolean authorizeRequest(String address, HttpServletRequest request, HttpServletResponse response,
+                                     boolean addAuthorizeMessageInProxy)
+      throws IOException {
     String auth = request.getHeader(clientAuthHeader);
     if (auth == null) {
       response.setStatus(unauthorizedHeader);
       response.addHeader(serverAuthHeader, "NTLM");
+      return false;
     }
     if (TYPE_1_MESSAGE.equals(auth)) {
       response.setStatus(unauthorizedHeader);
       response.setHeader(serverAuthHeader, TYPE_2_MESSAGE);
+      return false;
     } else if (type3Message.equals(auth)) {
-      requestUrl = baseRequest.getRequestURL().toString();
+      requestUrl = address;
       response.setStatus(SC_OK);
-      response.getWriter().print(AUTHORIZED);
+      if (addAuthorizeMessageInProxy) {
+        response.getWriter().print(AUTHORIZED);
+      }
+      return true;
     } else {
       response.setStatus(SC_UNAUTHORIZED);
+      return false;
     }
   }
 
+  protected void handleRequest(String address, HttpServletRequest request, HttpServletResponse response)
+      throws IOException {
+    authorizeRequest(address, request, response, true);
+  }
+
+  @Override
+  protected void handleRequest(Request baseRequest, HttpServletRequest request, HttpServletResponse response)
+      throws IOException {
+    handleRequest(baseRequest.getRequestURL().toString(), request, response);
+  }
+
   @Test
+  @Description("Verifies a flow involving a NTLM proxy is successfully performed.")
   public void validNtlmAuth() throws Exception {
     Message response = runFlow(getFlowName()).getMessage();
 
