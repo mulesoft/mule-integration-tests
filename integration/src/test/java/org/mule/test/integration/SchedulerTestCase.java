@@ -13,12 +13,12 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mule.runtime.core.api.Event.getCurrentEvent;
 import org.mule.runtime.api.exception.MuleException;
+import org.mule.runtime.api.source.SchedulerMessageSource;
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.construct.FlowConstruct;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.source.MessageSource;
-import org.mule.runtime.core.source.scheduler.DefaultSchedulerMessageSource;
 import org.mule.tck.probe.PollingProber;
 import org.mule.tck.probe.Probe;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -55,7 +55,7 @@ public class SchedulerTestCase extends AbstractIntegrationTestCase {
     for (FlowConstruct flowConstruct : muleContext.getRegistry().lookupFlowConstructs()) {
       Flow flow = (Flow) flowConstruct;
       MessageSource flowSource = flow.getSource();
-      if (flowSource instanceof DefaultSchedulerMessageSource) {
+      if (flowSource instanceof SchedulerMessageSource) {
         schedulers++;
       }
     }

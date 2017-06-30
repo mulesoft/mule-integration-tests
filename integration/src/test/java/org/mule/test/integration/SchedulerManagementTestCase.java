@@ -12,14 +12,12 @@ import static org.mule.functional.api.component.FunctionalTestProcessor.getFromF
 import static org.mule.runtime.api.component.location.Location.builder;
 import static org.mule.test.allure.AllureConstants.SchedulerServiceFeature.SCHEDULER_SERVICE;
 import static org.mule.test.allure.AllureConstants.SchedulerServiceFeature.SchedulerServiceStory.SOURCE_MANAGEMENT;
-
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Error;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.source.SchedulerMessageSource;
 import org.mule.runtime.core.api.functional.Either;
 import org.mule.runtime.core.api.util.concurrent.Latch;
-import org.mule.runtime.core.source.scheduler.DefaultSchedulerMessageSource;
 import org.mule.tck.probe.PollingProber;
 import org.mule.tck.probe.Probe;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -28,7 +26,6 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
-
 import ru.yandex.qatools.allure.annotations.Description;
 import ru.yandex.qatools.allure.annotations.Features;
 import ru.yandex.qatools.allure.annotations.Stories;
@@ -45,7 +42,7 @@ public class SchedulerManagementTestCase extends AbstractIntegrationTestCase {
   @Description("scheduler that never runs due to configuration but works by triggering it manually")
   @Test
   public void triggerSchedulerManually() {
-    SchedulerMessageSource scheduler = (DefaultSchedulerMessageSource) muleContext.getConfigurationComponentLocator()
+    SchedulerMessageSource scheduler = (SchedulerMessageSource) muleContext.getConfigurationComponentLocator()
         .find(builder().globalName("neverRunningScheduler").addSourcePart().build()).get();
     scheduler.trigger();
     new PollingProber(10000, 100).check(new Probe() {
@@ -71,7 +68,7 @@ public class SchedulerManagementTestCase extends AbstractIntegrationTestCase {
   @Description("scheduler that runs once, gets stopped by a functional component within the same flow and the it's triggered manually")
   @Test
   public void stopSchedulerWithinFlowAndTriggerItManually() throws Exception {
-    SchedulerMessageSource scheduler = (DefaultSchedulerMessageSource) muleContext.getConfigurationComponentLocator()
+    SchedulerMessageSource scheduler = (SchedulerMessageSource) muleContext.getConfigurationComponentLocator()
         .find(builder().globalName("schedulerControlledFromSameFlow").addSourcePart().build()).get();
     AtomicInteger atomicInteger = new AtomicInteger(0);
 
@@ -103,7 +100,7 @@ public class SchedulerManagementTestCase extends AbstractIntegrationTestCase {
   @Description("scheduler start twice does not fail")
   @Test
   public void startTwiceDoesNotFail() throws MuleException {
-    SchedulerMessageSource scheduler = (DefaultSchedulerMessageSource) muleContext.getConfigurationComponentLocator()
+    SchedulerMessageSource scheduler = (SchedulerMessageSource) muleContext.getConfigurationComponentLocator()
         .find(builder().globalName("schedulerControlledFromSameFlow").addSourcePart().build()).get();
     scheduler.start();
     scheduler.start();
@@ -112,7 +109,7 @@ public class SchedulerManagementTestCase extends AbstractIntegrationTestCase {
   @Description("scheduler stop twice does not fail")
   @Test
   public void stopTwiceDoesNotFail() throws MuleException {
-    SchedulerMessageSource scheduler = (DefaultSchedulerMessageSource) muleContext.getConfigurationComponentLocator()
+    SchedulerMessageSource scheduler = (SchedulerMessageSource) muleContext.getConfigurationComponentLocator()
         .find(builder().globalName("schedulerControlledFromSameFlow").addSourcePart().build()).get();
     scheduler.stop();
     scheduler.stop();

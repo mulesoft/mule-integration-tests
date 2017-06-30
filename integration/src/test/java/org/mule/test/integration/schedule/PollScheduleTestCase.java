@@ -13,7 +13,6 @@ import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.source.SchedulerMessageSource;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.source.MessageSource;
-import org.mule.runtime.core.source.scheduler.DefaultSchedulerMessageSource;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.tck.probe.JUnitLambdaProbe;
 import org.mule.tck.probe.PollingProber;
@@ -104,7 +103,7 @@ public class PollScheduleTestCase extends AbstractIntegrationTestCase {
   private void runSchedulersOnce() throws Exception {
     Flow flow = (Flow) (muleContext.getRegistry().lookupFlowConstruct("pollfoo"));
     MessageSource flowSource = flow.getSource();
-    if (flowSource instanceof DefaultSchedulerMessageSource) {
+    if (flowSource instanceof SchedulerMessageSource) {
       ((SchedulerMessageSource) flowSource).trigger();
     }
   }
