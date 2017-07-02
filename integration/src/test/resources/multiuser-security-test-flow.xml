@@ -11,7 +11,7 @@
         
         <encryption-security-filter strategy-ref="PBE"/>
         
-        <component class="org.mule.functional.security.TestSecurityComponent"/>
+        <custom-processor class="org.mule.test.core.security.MultiuserSecurityTestCase$TestSecurityProcessor"/>
     </flow>
 
 </mule>

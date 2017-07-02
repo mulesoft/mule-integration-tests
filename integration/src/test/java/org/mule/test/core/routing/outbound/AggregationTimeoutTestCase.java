@@ -12,7 +12,11 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertThat;
+
+import org.mule.functional.api.component.EventCallback;
 import org.mule.runtime.api.message.Message;
+import org.mule.runtime.core.api.Event;
+import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -59,14 +63,13 @@ public class AggregationTimeoutTestCase extends AbstractIntegrationTestCase {
     }
   }
 
-  public static class BlockExecutionComponent {
+  public static class BlockExecutionComponent implements EventCallback {
 
-    public Object onCall(Object payload) throws Exception {
-      if (payload.equals(BLOCK_EVENT)) {
+    @Override
+    public void eventReceived(Event event, Object component, MuleContext muleContext) throws Exception {
+      if (event.getMessage().getPayload().getValue().equals(BLOCK_EVENT)) {
         blockExecution.await();
       }
-
-      return PROCESSED_EVENT;
     }
   }
 }

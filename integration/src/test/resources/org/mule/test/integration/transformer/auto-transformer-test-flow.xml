@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+      xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xsi:schemaLocation="
+            http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+            http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
     <!-- this will be used by the auto transformer -->
     <custom-transformer class="org.mule.tck.testmodels.fruit.FruitBowlToFruitBasket"/>
@@ -9,6 +12,8 @@
 
     <flow name="test">
         <auto-transformer returnClass="org.mule.tck.testmodels.fruit.FruitBasket"/>
-        <component class="org.mule.test.transformers.AutoTransformerTestCase$FruitBasketComponent"/>
+        <test:processor>
+            <test:callback class="org.mule.test.transformers.AutoTransformerTestCase$FruitBasketCallback"/>
+        </test:processor>
     </flow>
 </mule>

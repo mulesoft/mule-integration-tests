@@ -8,10 +8,18 @@ package org.mule.test.core.security;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mule.functional.security.TestSingleUserSecurityProvider.PROPERTY_FAVORITE_COLOR;
+import static org.mule.functional.security.TestSingleUserSecurityProvider.PROPERTY_NUMBER_LOGINS;
 import static org.mule.runtime.core.api.config.MuleProperties.MULE_USER_PROPERTY;
+
+import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
+import org.mule.runtime.api.security.Authentication;
+import org.mule.runtime.core.api.Event;
+import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.security.DefaultMuleCredentials;
 import org.mule.runtime.core.api.security.EncryptionStrategy;
+import org.mule.runtime.core.api.security.SecurityContext;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.io.Serializable;
@@ -20,6 +28,8 @@ import java.util.Map;
 
 import org.junit.Ignore;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Tests multi-user security against a security provider which only authenticates a single user at a time (i.e., authentication of
@@ -69,5 +79,24 @@ public class MultiuserSecurityTestCase extends AbstractIntegrationTestCase {
     Map<String, Serializable> props = new HashMap<>();
     props.put(MULE_USER_PROPERTY, DefaultMuleCredentials.createHeader(user, user, "PBE", strategy));
     return flowRunner("testService").withPayload(data).withInboundProperties(props).run().getMessage();
+  }
+
+  public static class TestSecurityProcessor implements Processor {
+
+    protected static final Logger logger = LoggerFactory.getLogger(TestSecurityProcessor.class);
+
+    @Override
+    public Event process(Event event) throws MuleException {
+      SecurityContext securityContext = event.getSession().getSecurityContext();
+      Authentication authentication = securityContext.getAuthentication();
+
+      int numberLogins = (Integer) authentication.getProperties().get(PROPERTY_NUMBER_LOGINS);
+      String favoriteColor = (String) authentication.getProperties().get(PROPERTY_FAVORITE_COLOR);
+
+      String msg = "user = " + authentication.getPrincipal() + ", logins = " + numberLogins + ", color = " + favoriteColor;
+      logger.debug(msg);
+
+      return Event.builder(event).message(Message.builder(event.getMessage()).payload(msg).build()).build();
+    }
   }
 }

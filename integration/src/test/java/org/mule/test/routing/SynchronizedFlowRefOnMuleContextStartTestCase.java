@@ -12,6 +12,8 @@ import static org.mule.runtime.core.DefaultEventContext.create;
 import static org.mule.runtime.dsl.api.component.config.DefaultComponentLocation.fromSingleComponent;
 import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.LIFECYCLE_AND_DEPENDENCY_INJECTION;
 import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.MuleContextStartOrderStory.MULE_CONTEXT_START_ORDER_STORY;
+
+import org.mule.functional.api.component.EventCallback;
 import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.lifecycle.Startable;
@@ -19,6 +21,7 @@ import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.store.ObjectStore;
 import org.mule.runtime.api.store.ObjectStoreException;
 import org.mule.runtime.core.api.Event;
+import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.source.MessageSource;
@@ -33,6 +36,7 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 
 import org.junit.Test;
+
 import ru.yandex.qatools.allure.annotations.Features;
 import ru.yandex.qatools.allure.annotations.Stories;
 
@@ -62,10 +66,12 @@ public class SynchronizedFlowRefOnMuleContextStartTestCase extends AbstractInteg
 
     prober.check(new Probe() {
 
+      @Override
       public boolean isSatisfied() {
         return processedMessageCounter == 1;
       }
 
+      @Override
       public String describeFailure() {
         return "Did not wait for mule context started before attempting to process event";
       }
@@ -115,14 +121,13 @@ public class SynchronizedFlowRefOnMuleContextStartTestCase extends AbstractInteg
     }
   }
 
-  public static class TestMessageProcessor {
+  public static class TestMessageProcessorCallback implements EventCallback {
 
-    public String count(String value) throws InterruptedException {
+    @Override
+    public void eventReceived(Event event, Object component, MuleContext muleContext) throws Exception {
       if (waitMessageInProgress.await(0, MILLISECONDS)) {
         processedMessageCounter++;
       }
-
-      return value;
     }
   }
 }

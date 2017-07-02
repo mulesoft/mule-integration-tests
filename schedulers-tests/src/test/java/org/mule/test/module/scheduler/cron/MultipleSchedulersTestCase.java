@@ -7,7 +7,10 @@
 
 package org.mule.test.module.scheduler.cron;
 
+import org.mule.functional.api.component.EventCallback;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
+import org.mule.runtime.core.api.Event;
+import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.util.concurrent.Latch;
 import org.mule.tck.probe.PollingProber;
@@ -54,17 +57,16 @@ public class MultipleSchedulersTestCase extends MuleArtifactFunctionalTestCase {
 
   }
 
-  public static class SynchronizedPollExecutionCounter {
+  public static class SynchronizedPollExecutionCounter implements EventCallback {
 
-    public Object process(Object payload) throws InterruptedException {
-      if ("poll2".equals(payload)) {
+    @Override
+    public void eventReceived(Event event, Object component, MuleContext muleContext) throws Exception {
+      if ("poll2".equals(event.getMessage().getPayload().getValue())) {
         counter++;
       }
 
       firstRequest.countDown();
       stoppedFlowLatch.await();
-
-      return payload;
     }
   }
 }

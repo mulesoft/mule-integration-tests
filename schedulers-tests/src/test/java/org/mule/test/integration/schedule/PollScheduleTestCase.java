@@ -4,12 +4,11 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.test.module.scheduler.cron;
+package org.mule.test.integration.schedule;
+
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 import org.mule.functional.api.component.EventCallback;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
@@ -22,6 +21,7 @@ import org.mule.runtime.core.api.source.MessageSource;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.tck.probe.JUnitLambdaProbe;
 import org.mule.tck.probe.PollingProber;
+import org.mule.tck.probe.Probe;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,31 +29,45 @@ import java.util.List;
 import org.junit.ClassRule;
 import org.junit.Test;
 
-
 /**
- * <p>
- * Uses the API to stop and start cron schedulers.
- * </p>
+ * This is a test for poll with schedulers. It validates that the polls can be executed, stopped, run.
  */
-public class CronSchedulerTestCase extends MuleArtifactFunctionalTestCase {
+public class PollScheduleTestCase extends MuleArtifactFunctionalTestCase {
 
   private static List<String> foo = new ArrayList<>();
   private static List<String> bar = new ArrayList<>();
 
   @ClassRule
-  public static SystemProperty days = new SystemProperty("expression.property", "0/1 * * * * ?");
+  public static SystemProperty days = new SystemProperty("frequency.days", "4");
+
+  @ClassRule
+  public static SystemProperty millis = new SystemProperty("frequency.millis", "2000");
 
   @Override
   protected String getConfigFile() {
-    return "cron-scheduler-config.xml";
+    return "org/mule/test/integration/schedule/polling-schedule-config.xml";
   }
 
+  /**
+   * This test validates that the polls can be stopped and run on demand.
+   *
+   * It checks correct functionality of polls. Stop the schedulers Waits for the polls to be executed (they shouldn't, as they are
+   * stopped) Checks that the polls where not executed. Runs the polls on demand Checks that the polls where executed only once.
+   */
   @Test
   public void test() throws Exception {
-    waitForPollElements();
+    new PollingProber(10000, 100l).check(new Probe() {
 
-    checkForFooCollectionToBeFilled();
-    checkForBarCollectionToBeFilled();
+      @Override
+      public boolean isSatisfied() {
+        return (foo.size() > 2 && checkCollectionValues(foo, "foo")) && (bar.size() > 2 && checkCollectionValues(bar, "bar"));
+      }
+
+      @Override
+      public String describeFailure() {
+        return "The collections foo and bar are not correctly filled";
+      }
+    });
 
     stopSchedulers();
 
@@ -66,7 +80,7 @@ public class CronSchedulerTestCase extends MuleArtifactFunctionalTestCase {
     startSchedulers();
     runSchedulersOnce();
 
-    new PollingProber(2000, 100).check(new JUnitLambdaProbe(() -> {
+    new PollingProber(200, 10).check(new JUnitLambdaProbe(() -> {
       // One for the scheduler run and another for the on-demand one
       assertThat(foo.size(), is(fooElementsAfterStopping + 2));
       return true;
@@ -77,25 +91,18 @@ public class CronSchedulerTestCase extends MuleArtifactFunctionalTestCase {
     Thread.sleep(2000);
   }
 
-  private void checkForFooCollectionToBeFilled() {
-    synchronized (foo) {
-      foo.size();
-      assertTrue(foo.size() > 0);
-      for (String s : foo) {
-        assertEquals("foo", s);
+
+
+  private boolean checkCollectionValues(List<String> coll, String value) {
+    for (String s : coll) {
+      if (!s.equals(value)) {
+        return false;
       }
     }
+
+    return true;
   }
 
-  private void checkForBarCollectionToBeFilled() {
-    synchronized (bar) {
-      bar.size();
-      assertTrue(bar.size() > 0);
-      for (String s : bar) {
-        assertEquals("bar", s);
-      }
-    }
-  }
 
   private void runSchedulersOnce() throws Exception {
     Flow flow = (Flow) (muleContext.getRegistry().lookupFlowConstruct("pollfoo"));

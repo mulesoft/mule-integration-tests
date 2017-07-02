@@ -8,7 +8,9 @@ package org.mule.test.integration.el;
 
 import static org.junit.Assert.assertSame;
 
+import org.mule.functional.api.component.EventCallback;
 import org.mule.runtime.api.el.MuleExpressionLanguage;
+import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.el.mvel.MVELExpressionLanguage;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -33,12 +35,11 @@ public class ExpressionLanguageExtensionTestCase extends AbstractIntegrationTest
     assertSame(originalExpressionManager, newExpressionManager);
   }
 
-  public static class ExpressionLanguageFactory {
+  public static class ExpressionLanguageFactory implements EventCallback {
 
-    public Object process(Object value) {
+    @Override
+    public void eventReceived(Event event, Object component, MuleContext muleContext) throws Exception {
       new TestExpressionLanguage(muleContext);
-
-      return value;
     }
   }
 
