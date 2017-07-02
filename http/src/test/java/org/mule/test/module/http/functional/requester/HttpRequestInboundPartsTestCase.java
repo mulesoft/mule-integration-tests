@@ -20,6 +20,7 @@ import static org.mule.runtime.api.metadata.MediaType.APPLICATION_JAVA;
 import static org.mule.runtime.api.metadata.MediaType.HTML;
 import static org.mule.runtime.api.metadata.MediaType.TEXT;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
+import static org.mule.test.allure.AllureConstants.HttpFeature.HttpStory.MULTIPART;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.message.MultiPartPayload;
 import org.mule.runtime.api.metadata.MediaType;
@@ -33,10 +34,14 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.util.MultiPartWriter;
+import org.junit.Ignore;
 import org.junit.Test;
 import ru.yandex.qatools.allure.annotations.Features;
+import ru.yandex.qatools.allure.annotations.Stories;
 
 @Features(HTTP_EXTENSION)
+@Stories(MULTIPART)
+@Ignore("MULE-12976 - DW: Support multipart mime types")
 public class HttpRequestInboundPartsTestCase extends AbstractHttpRequestTestCase {
 
   @Override

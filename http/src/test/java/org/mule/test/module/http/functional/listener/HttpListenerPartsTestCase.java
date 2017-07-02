@@ -34,6 +34,7 @@ import static org.mule.runtime.http.api.HttpHeaders.Names.TRANSFER_ENCODING;
 import static org.mule.runtime.http.api.HttpHeaders.Values.CHUNKED;
 import static org.mule.runtime.http.api.HttpHeaders.Values.MULTIPART_FORM_DATA;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
+import static org.mule.test.allure.AllureConstants.HttpFeature.HttpStory.MULTIPART;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.message.MultiPartPayload;
@@ -80,11 +81,15 @@ import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import ru.yandex.qatools.allure.annotations.Features;
+import ru.yandex.qatools.allure.annotations.Stories;
 
 @Features(HTTP_EXTENSION)
+@Stories(MULTIPART)
+@Ignore("MULE-12976 - DW: Support multipart mime types")
 public class HttpListenerPartsTestCase extends AbstractHttpTestCase {
 
   private static final String TEXT_BODY_FIELD_NAME = "field1";

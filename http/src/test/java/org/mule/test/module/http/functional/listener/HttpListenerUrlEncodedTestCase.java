@@ -6,62 +6,30 @@
  */
 package org.mule.test.module.http.functional.listener;
 
-import static com.google.common.base.Charsets.UTF_8;
-import static java.nio.charset.StandardCharsets.ISO_8859_1;
-import static org.apache.http.HttpVersion.HTTP_1_0;
-import static org.apache.http.HttpVersion.HTTP_1_1;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.startsWith;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.collection.IsMapContaining.hasEntry;
 import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertThat;
-import static org.mule.functional.junit4.matchers.MessageMatchers.hasMediaType;
-import static org.mule.runtime.api.metadata.MediaType.APPLICATION_JAVA;
-import static org.mule.runtime.http.api.HttpConstants.HttpStatus.OK;
-import static org.mule.runtime.http.api.HttpHeaders.Names.CONTENT_LENGTH;
-import static org.mule.runtime.http.api.HttpHeaders.Names.CONTENT_TYPE;
-import static org.mule.runtime.http.api.HttpHeaders.Values.APPLICATION_X_WWW_FORM_URLENCODED;
-import static org.mule.runtime.http.api.utils.HttpEncoderDecoderUtils.decodeUrlEncodedBody;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
-import static org.mule.test.module.http.functional.matcher.MultiMapMatcher.isEqual;
-import org.mule.runtime.api.message.Message;
-import org.mule.runtime.api.util.MultiMap;
-import org.mule.runtime.core.api.util.StringUtils;
+import static org.mule.test.allure.AllureConstants.HttpFeature.HttpStory.URL_ENCODED;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.module.http.functional.AbstractHttpTestCase;
 
-import com.ning.http.client.AsyncHttpClient;
-import com.ning.http.client.AsyncHttpClientConfig;
-import com.ning.http.client.ListenableFuture;
-import com.ning.http.client.providers.grizzly.GrizzlyAsyncHttpProvider;
-
-import java.io.IOException;
-import java.net.URLDecoder;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpResponse;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.client.fluent.Response;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicNameValuePair;
 import org.junit.Rule;
 import org.junit.Test;
 import ru.yandex.qatools.allure.annotations.Features;
+import ru.yandex.qatools.allure.annotations.Stories;
 
 @Features(HTTP_EXTENSION)
+@Stories(URL_ENCODED)
 public class HttpListenerUrlEncodedTestCase extends AbstractHttpTestCase {
 
   private static final String PARAM_1_NAME = "param1";
   private static final String PARAM_2_NAME = "param2";
   private static final String PARAM_1_VALUE = "param1Value";
   private static final String PARAM_2_VALUE = "param2Value";
-  private static final String PARAM_2_VALUE_1 = "param2Value1";
-  private static final String PARAM_2_VALUE_2 = "param2Value2";
-  private static final String OUT_QUEUE_URL = "test://out";
-  private static final int TIMEOUT = 1000;
 
   @Rule
   public DynamicPort listenPort = new DynamicPort("port");
@@ -74,122 +42,25 @@ public class HttpListenerUrlEncodedTestCase extends AbstractHttpTestCase {
     return "http-listener-url-encoded-config.xml";
   }
 
+
   @Test
-  public void urlEncodedParamsGenerateAMapPayload() throws Exception {
-    final Response response = Request.Post(getListenerUrl())
+  public void receivesUrlEncodedRequest() throws Exception {
+    final Response response = Request.Post(getListenerUrl("receive"))
         .bodyForm(new BasicNameValuePair(PARAM_1_NAME, PARAM_1_VALUE), new BasicNameValuePair(PARAM_2_NAME, PARAM_2_VALUE))
         .execute();
-    final Message receivedMessage = muleContext.getClient().request(OUT_QUEUE_URL, TIMEOUT).getRight().get();
-    assertThat(receivedMessage.getPayload().getValue(), instanceOf(MultiMap.class));
-    assertThat(receivedMessage, hasMediaType(APPLICATION_JAVA.withCharset(ISO_8859_1)));
-    MultiMap<String, String> payloadAsMap = (MultiMap<String, String>) receivedMessage.getPayload().getValue();
-    assertThat(payloadAsMap.size(), is(2));
-    assertThat(payloadAsMap, hasEntry(PARAM_1_NAME, PARAM_1_VALUE));
-    assertThat(payloadAsMap, hasEntry(PARAM_2_NAME, PARAM_2_VALUE));
 
-    compareMultiMaps(response, payloadAsMap);
+    assertThat(response.returnContent().asString(), is(PARAM_1_VALUE + PARAM_2_VALUE));
   }
 
   @Test
-  public void invalidUrlEncodedParamsReturnInvalidRequestStatusCode() throws Exception {
-    final Response response = Request.Post(getListenerUrl()).body(new StringEntity("Invalid url encoded content"))
-        .addHeader(CONTENT_TYPE, APPLICATION_X_WWW_FORM_URLENCODED.toRfcString()).execute();
+  public void sendUrlEncodedResponse() throws Exception {
+    final Response response = Request.Get(getListenerUrl("send")).execute();
 
-    final HttpResponse httpResponse = response.returnResponse();
-
-    assertThat(httpResponse.getStatusLine().getStatusCode(), equalTo(OK.getStatusCode()));
-
-    assertThat(URLDecoder.decode(IOUtils.toString(httpResponse.getEntity().getContent()), UTF_8.name()),
-               is("Invalid url encoded content"));
-  }
-
-  @Test
-  public void urlEncodedMultiValueParamsHasOldValues() throws Exception {
-    final Response response = Request.Post(getListenerUrl())
-        .bodyForm(new BasicNameValuePair(PARAM_1_NAME, PARAM_1_VALUE), new BasicNameValuePair(PARAM_2_NAME, PARAM_2_VALUE_1),
-                  new BasicNameValuePair(PARAM_2_NAME, PARAM_2_VALUE_2))
-        .execute();
-    final Message receivedMessage = muleContext.getClient().request(OUT_QUEUE_URL, TIMEOUT).getRight().get();
-    assertThat(receivedMessage.getPayload().getValue(), instanceOf(MultiMap.class));
-    MultiMap payloadAsMap = (MultiMap) receivedMessage.getPayload().getValue();
-    assertThat(payloadAsMap.size(), is(3));
-    assertThat(payloadAsMap.get(PARAM_1_NAME), is(PARAM_1_VALUE));
-    assertThat(payloadAsMap.getAll(PARAM_2_NAME).size(), is(2));
-    assertThat(payloadAsMap.getAll(PARAM_2_NAME).get(0), is(PARAM_2_VALUE_1));
-    assertThat(payloadAsMap.getAll(PARAM_2_NAME).get(1), is(PARAM_2_VALUE_2));
-
-    compareMultiMaps(response, payloadAsMap);
-  }
-
-  @Test
-  public void urlEncodedEmptyParamsGenerateAnEmptyPayload() throws Exception {
-    final Response response = Request.Post(getListenerUrl()).execute();
-    assertEmptyResponse(response);
-  }
-
-  @Test
-  public void urlEncodedEmptyParamsUrlEncodedContentTypeGenerateAMapPayload() throws Exception {
-    final Response response =
-        Request.Post(getListenerUrl()).addHeader(CONTENT_TYPE, APPLICATION_X_WWW_FORM_URLENCODED.toRfcString()).execute();
-
-    assertMapPayloadAndEmptyResponse(response);
-  }
-
-  @Test
-  public void serverClosesConnectionAfterSendingData() throws Exception {
-    // Apache Fluent doesn't fail while other clients such as curl, postman and this one do
-    AsyncHttpClientConfig asyncHttpClientConfig = new AsyncHttpClientConfig.Builder().build();
-    GrizzlyAsyncHttpProvider httpProvider = new GrizzlyAsyncHttpProvider(asyncHttpClientConfig);
-
-    try (AsyncHttpClient asyncHttpClient =
-        new AsyncHttpClient(httpProvider, asyncHttpClientConfig)) {
-      ListenableFuture<com.ning.http.client.Response> responseFuture = asyncHttpClient.preparePost(getListenerUrl())
-          .setBody("a=1&b=2").addHeader(CONTENT_TYPE, APPLICATION_X_WWW_FORM_URLENCODED.toRfcString()).execute();
-      com.ning.http.client.Response response = responseFuture.get();
-
-      assertThat(response.getStatusCode(), is(200));
-    }
-  }
-
-  @Test
-  public void emptyMultiMapHttp10() throws Exception {
-    final Response response = Request.Post(getListenerUrl("map")).version(HTTP_1_0).execute();
-    assertThat(response.returnResponse().getStatusLine().getStatusCode(), is(OK.getStatusCode()));
-  }
-
-  @Test
-  public void emptyMultiMapHttp11() throws Exception {
-    final Response response = Request.Post(getListenerUrl("map")).version(HTTP_1_1).execute();
-    assertThat(response.returnResponse().getStatusLine().getStatusCode(), is(OK.getStatusCode()));
-  }
-
-  private void assertMapPayloadAndEmptyResponse(Response response) throws Exception {
-    final Message receivedMessage = muleContext.getClient().request(OUT_QUEUE_URL, TIMEOUT).getRight().get();
-    assertThat(receivedMessage.getPayload().getValue(), is(instanceOf(MultiMap.class)));
-    MultiMap<String, String> payloadAsMap = (MultiMap) receivedMessage.getPayload().getValue();
-    assertThat(payloadAsMap.entrySet(), hasSize(0));
-
-    assertEmptyResponse(response);
-  }
-
-  private void assertEmptyResponse(Response response) throws IOException {
-    final HttpResponse httpResponse = response.returnResponse();
-    assertThat(httpResponse.getFirstHeader(CONTENT_LENGTH).getValue(), is("0"));
-    assertThat(IOUtils.toString(httpResponse.getEntity().getContent()), is(StringUtils.EMPTY));
-  }
-
-  private void compareMultiMaps(Response response, MultiMap<String, String> payloadAsMap) throws IOException {
-    final HttpResponse httpResponse = response.returnResponse();
-    assertThat(httpResponse.getFirstHeader(CONTENT_TYPE).getValue(), startsWith(APPLICATION_X_WWW_FORM_URLENCODED.toRfcString()));
-    final String responseContent = IOUtils.toString(httpResponse.getEntity().getContent());
-    assertThat(payloadAsMap, isEqual(decodeUrlEncodedBody(responseContent, UTF_8).toListValuesMap()));
+    assertThat(response.returnContent().asString(), is("testName1=testValue1&testName2=testValue2"));
   }
 
   private String getListenerUrl(String path) {
     return String.format("http://localhost:%s/%s", listenPort.getNumber(), path);
   }
 
-  private String getListenerUrl() {
-    return getListenerUrl(path.getValue());
-  }
 }

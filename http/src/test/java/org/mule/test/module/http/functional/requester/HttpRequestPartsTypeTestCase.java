@@ -14,6 +14,7 @@ import static org.mule.functional.junit4.matchers.MessageMatchers.hasPayload;
 import static org.mule.runtime.api.message.Message.builder;
 import static org.mule.runtime.api.metadata.MediaType.JSON;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
+import static org.mule.test.allure.AllureConstants.HttpFeature.HttpStory.MULTIPART;
 
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.message.MultiPartPayload;
@@ -25,12 +26,16 @@ import org.mule.test.module.http.functional.AbstractHttpTestCase;
 
 import java.io.ByteArrayInputStream;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
 import ru.yandex.qatools.allure.annotations.Features;
+import ru.yandex.qatools.allure.annotations.Stories;
 
 @Features(HTTP_EXTENSION)
+@Stories(MULTIPART)
+@Ignore("MULE-12976 - DW: Support multipart mime types")
 public class HttpRequestPartsTypeTestCase extends AbstractHttpTestCase {
 
   @Rule

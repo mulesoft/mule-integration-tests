@@ -12,6 +12,7 @@ import static org.junit.Assert.assertThat;
 import static org.mule.functional.junit4.matchers.MultiPartPayloadMatchers.hasSize;
 import static org.mule.runtime.http.api.HttpHeaders.Names.CONTENT_TYPE;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
+import static org.mule.test.allure.AllureConstants.HttpFeature.HttpStory.MULTIPART;
 
 import org.mule.extension.http.api.HttpResponseAttributes;
 import org.mule.runtime.api.message.MultiPartPayload;
@@ -23,10 +24,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.server.Request;
+import org.junit.Ignore;
 import org.junit.Test;
 import ru.yandex.qatools.allure.annotations.Features;
+import ru.yandex.qatools.allure.annotations.Stories;
 
 @Features(HTTP_EXTENSION)
+@Stories(MULTIPART)
+@Ignore("MULE-12976 - DW: Support multipart mime types")
 public class HttpRequestMultipartTestCase extends AbstractHttpRequestTestCase {
 
   private static final String BOUNDARY = "bec89590-35fe-11e5-a966-de100cec9c0d";
