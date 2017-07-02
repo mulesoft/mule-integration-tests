@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:http="http://www.mulesoft.org/schema/mule/http"
-      xmlns:test="http://www.mulesoft.org/schema/mule/test"
       xmlns="http://www.mulesoft.org/schema/mule/core"
       xsi:schemaLocation="
                http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-               http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
                http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
 
     <http:listener-config name="listenerConfig">
@@ -14,7 +12,7 @@
 
     <flow name="inbound">
         <http:listener config-ref="listenerConfig"  path="receive"/>
-        <test:set-payload value="#[output text/plain --- payload.param1 ++ payload.param2]"/>
+        <set-payload value="#[output text/plain --- payload.param1 ++ payload.param2]"/>
     </flow>
 
     <flow name="outbound">
@@ -32,7 +30,7 @@
                 </http:body>
             </http:response>
         </http:listener>
-        <test:set-payload value="OK"/>
+        <set-payload value="OK"/>
     </flow>
 
 </mule>
