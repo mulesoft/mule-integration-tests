@@ -1,43 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:http="http://www.mulesoft.org/schema/mule/http"
-      xmlns:test="http://www.mulesoft.org/schema/mule/test"
       xmlns="http://www.mulesoft.org/schema/mule/core"
       xsi:schemaLocation="
                http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-               http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
                http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
 
     <http:listener-config name="listenerConfig">
         <http:listener-connection host="localhost" port="${port}"/>
     </http:listener-config>
 
-    <flow name="testFlow1">
-        <http:listener config-ref="listenerConfig"  path="${path}">
-            <http:response>
-                <http:headers>
-                    #[{'Content-Type' : 'application/x-www-form-urlencoded'}]
-                </http:headers>
-            </http:response>
-        </http:listener>
-        <test:queue name="out"/>
+    <flow name="inbound">
+        <http:listener config-ref="listenerConfig"  path="receive"/>
+        <set-payload value="#[output text/plain --- payload.param1 ++ payload.param2]"/>
     </flow>
 
-    <flow name="testFlow2">
-        <http:listener config-ref="listenerConfig"  path="map">
+    <flow name="outbound">
+        <http:listener config-ref="listenerConfig"  path="send">
             <http:response>
-                <http:headers>
-                    #[{'Content-Type' : 'application/x-www-form-urlencoded'}]
-                </http:headers>
+                <http:body>
+                    #[
+                    %dw 2.0
+                    output application/x-www-form-urlencoded
+                    ---
+                    {
+                    testName1: "testValue1",
+                    testName2: "testValue2"
+                    }]
+                </http:body>
             </http:response>
         </http:listener>
-        <expression-transformer expression="#[attributes.queryParams]"/>
-
-        <!-- The default handler ignores the error and returns 200, so we can't detect if it was handled correctly -->
-        <error-handler>
-            <on-error-continue>
-                <test:processor throwException="true"/>
-            </on-error-continue>
-        </error-handler>
+        <set-payload value="OK"/>
     </flow>
+
 </mule>

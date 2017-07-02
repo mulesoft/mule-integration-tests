@@ -9,7 +9,7 @@
     <http:request-config name="dynamicConfig1" basePath="#[basePath]" followRedirects="#[follow]" sendBodyMode="#[send]">
         <http:request-connection host="#[host]" port="${httpPort}"/>
     </http:request-config>
-    <http:request-config name="dynamicConfig2" parseResponse="#[parse]" requestStreamingMode="#[stream]" responseTimeout="#[timeout]">
+    <http:request-config name="dynamicConfig2" requestStreamingMode="#[stream]" responseTimeout="#[timeout]">
         <http:request-connection host="localhost" port="#[port]"/>
     </http:request-config>
 

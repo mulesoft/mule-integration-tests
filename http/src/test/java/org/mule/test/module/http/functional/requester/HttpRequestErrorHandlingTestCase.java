@@ -9,8 +9,6 @@ package org.mule.test.module.http.functional.requester;
 import static java.lang.String.format;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static org.mule.extension.http.internal.listener.HttpListener.HTTP_NAMESPACE;
 import static org.mule.runtime.extension.api.error.MuleErrors.ANY;
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.BAD_REQUEST;
@@ -35,7 +33,6 @@ import org.mule.runtime.http.api.HttpConstants.HttpStatus;
 import org.mule.tck.junit4.rule.DynamicPort;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -131,15 +128,6 @@ public class HttpRequestErrorHandlingTestCase extends AbstractHttpRequestTestCas
   public void connectivity() throws Exception {
     Event result = getFlowRunner("handled", unusedPort.getNumber()).run();
     assertThat(result.getMessage().getPayload().getValue(), is("Connection refused connectivity"));
-  }
-
-  @Test
-  public void parsing() throws Exception {
-    serverContentType = "multipart/form-data; boundary=\"sdgksdg\"";
-    InputStream mockStream = mock(InputStream.class);
-    when(mockStream.read()).thenThrow(IOException.class);
-    Event result = getFlowRunner("handled", httpPort.getNumber()).run();
-    assertThat(result.getMessage().getPayload().getValue(), is("Unable to process multipart response parsing"));
   }
 
   private String getErrorMessage(HttpStatus status, String customMessage) {
