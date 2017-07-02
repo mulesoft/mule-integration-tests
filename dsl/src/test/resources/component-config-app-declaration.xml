@@ -27,8 +27,7 @@
         </db:derby-connection>
     </db:config>
    <http:listener-config basePath="/"
-                          name="httpListener"
-                          parseRequest="true">
+                          name="httpListener">
       <http:listener-connection connectionIdleTimeout="30000"
                                  disableValidation="true"
                                  host="localhost"
@@ -46,7 +45,6 @@
                          enableCookies="true"
                          followRedirects="true"
                          name="httpRequester"
-                         parseResponse="true"
                          requestStreamingMode="AUTO"
                          sendBodyMode="AUTO">
       <http:request-connection connectionIdleTimeout="30000"
@@ -94,7 +92,6 @@
         </db:bulk-insert>
       <http:request config-ref="httpRequester"
                      method="POST"
-                     outputType="ANY"
                      path="/nested"/>
       <db:insert autoGenerateKeys="false"
                  config-ref="dbConfig"

@@ -6,26 +6,29 @@
  */
 package org.mule.test.module.http.functional;
 
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mule.functional.junit4.matchers.MessageMatchers.hasPayload;
 import static org.mule.runtime.http.api.HttpHeaders.Names.CONTENT_TYPE;
 import static org.mule.runtime.http.api.HttpHeaders.Values.APPLICATION_X_WWW_FORM_URLENCODED;
 
+import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
 import org.mule.extension.http.api.HttpResponseAttributes;
 import org.mule.runtime.core.api.Event;
-import org.mule.runtime.http.api.domain.ParameterMap;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
 
 import org.junit.Rule;
 import org.junit.Test;
+import ru.yandex.qatools.allure.annotations.Description;
+import ru.yandex.qatools.allure.annotations.Features;
+import ru.yandex.qatools.allure.annotations.Stories;
 
-/**
- * Set up a listener that returns form data and a requester that triggers it, all while preserving the headers name case. That way
- * we make sure the Host, Content-Type and other headers are handled correctly by both listener and requester.
- */
+@Features(HTTP_EXTENSION)
+@Stories("Header case preservation")
+@Description("Sets up a listener that returns form data and a requester that triggers it, all while preserving the headers name case. That way "
+    + "we make sure the Host, Content-Type and other headers are handled correctly by both listener and requester.")
 public class HttpHeaderCaseTestCase extends AbstractHttpTestCase {
 
   public static final String PRESERVE_HEADER_CASE = "org.glassfish.grizzly.http.PRESERVE_HEADER_CASE";
@@ -43,10 +46,8 @@ public class HttpHeaderCaseTestCase extends AbstractHttpTestCase {
   @Test
   public void worksPreservingHeaders() throws Exception {
     Event response = runFlow("client");
-    Object payload = response.getMessage().getPayload().getValue();
-    assertThat(payload, is(instanceOf(ParameterMap.class)));
-    assertThat(((ParameterMap) payload).keySet(), hasItem("CustomValue"));
-    assertThat(((ParameterMap) payload).get("CustomValue"), is("value"));
+
+    assertThat(response.getMessage(), hasPayload(equalTo("CustomValue=value")));
     HttpResponseAttributes attributes = (HttpResponseAttributes) response.getMessage().getAttributes().getValue();
     assertThat(attributes.getHeaders().get(CONTENT_TYPE), is(APPLICATION_X_WWW_FORM_URLENCODED.toRfcString()));
     assertThat(attributes.getHeaders().get("customname1"), is("customValue"));
