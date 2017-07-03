@@ -83,7 +83,8 @@ public class SynchronizedFlowRefOnMuleContextStartTestCase extends AbstractInteg
 
     @Override
     public void eventReceived(Event event, Object component, MuleContext muleContext) throws Exception {
-      if (((SkeletonSource)((AbstractPipeline)muleContext.getRegistry().lookupFlowConstruct(FLOW_UNDER_TESTING)).getSource()).isStarted()) {
+      if (((SkeletonSource) ((AbstractPipeline) muleContext.getRegistry().lookupFlowConstruct(FLOW_UNDER_TESTING)).getSource())
+          .isStarted()) {
         processedMessageCounter++;
       }
     }
