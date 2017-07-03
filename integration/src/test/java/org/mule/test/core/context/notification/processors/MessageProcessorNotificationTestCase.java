@@ -13,17 +13,14 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.message.Message.of;
 import static org.mule.runtime.core.api.context.notification.MessageProcessorNotification.MESSAGE_PROCESSOR_POST_INVOKE;
+import org.mule.functional.api.component.SkeletonSource;
 import org.mule.functional.api.exception.FunctionalTestException;
-import org.mule.runtime.api.exception.MuleException;
-import org.mule.runtime.api.meta.AbstractAnnotatedObject;
 import org.mule.runtime.core.DefaultEventContext;
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.context.notification.MessageProcessorNotification;
 import org.mule.runtime.core.api.exception.MessagingException;
-import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.source.CompositeMessageSource;
-import org.mule.runtime.core.api.source.MessageSource;
 import org.mule.test.core.context.notification.Node;
 import org.mule.test.core.context.notification.NotificationLogger;
 import org.mule.test.core.context.notification.RestrictedNode;
@@ -293,11 +290,11 @@ public class MessageProcessorNotificationTestCase extends AbstractMessageProcess
 
     final Flow flow = (Flow) muleContext.getRegistry().lookupFlowConstruct("composite-source");
     CompositeMessageSource composite = (CompositeMessageSource) flow.getSource();
-    assertNotNull(((TestMessageSource) composite.getSources().get(0))
-        .fireEvent(Event.builder(DefaultEventContext.create(flow, TEST_CONNECTOR_LOCATION)).message(of(TEST_PAYLOAD))
+    assertNotNull(((SkeletonSource) composite.getSources().get(0))
+        .getListener().process(Event.builder(DefaultEventContext.create(flow, TEST_CONNECTOR_LOCATION)).message(of(TEST_PAYLOAD))
             .build()));
-    assertNotNull(((TestMessageSource) composite.getSources().get(1))
-        .fireEvent(Event.builder(DefaultEventContext.create(flow, TEST_CONNECTOR_LOCATION)).message(of(TEST_PAYLOAD))
+    assertNotNull(((SkeletonSource) composite.getSources().get(1))
+        .getListener().process(Event.builder(DefaultEventContext.create(flow, TEST_CONNECTOR_LOCATION)).message(of(TEST_PAYLOAD))
             .build()));
 
     assertNotifications();
@@ -425,20 +422,5 @@ public class MessageProcessorNotificationTestCase extends AbstractMessageProcess
 
   @Override
   public void validateSpecification(RestrictedNode spec) throws Exception {}
-
-  public static class TestMessageSource extends AbstractAnnotatedObject implements MessageSource {
-
-    private Processor listener;
-
-    Event fireEvent(Event event) throws MuleException {
-      return listener.process(event);
-    }
-
-    @Override
-    public void setListener(Processor listener) {
-      this.listener = listener;
-    }
-
-  }
 
 }

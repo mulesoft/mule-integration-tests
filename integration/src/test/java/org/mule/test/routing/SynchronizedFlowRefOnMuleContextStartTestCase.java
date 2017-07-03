@@ -7,33 +7,24 @@
 
 package org.mule.test.routing;
 
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.mule.runtime.core.DefaultEventContext.create;
 import static org.mule.runtime.dsl.api.component.config.DefaultComponentLocation.fromSingleComponent;
 import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.LIFECYCLE_AND_DEPENDENCY_INJECTION;
 import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.MuleContextStartOrderStory.MULE_CONTEXT_START_ORDER_STORY;
 
 import org.mule.functional.api.component.EventCallback;
-import org.mule.runtime.api.component.location.ComponentLocation;
-import org.mule.runtime.api.exception.MuleException;
-import org.mule.runtime.api.lifecycle.Startable;
+import org.mule.functional.api.component.SkeletonSource;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.store.ObjectStore;
 import org.mule.runtime.api.store.ObjectStoreException;
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.construct.Flow;
-import org.mule.runtime.core.api.processor.Processor;
-import org.mule.runtime.core.api.source.MessageSource;
-import org.mule.runtime.core.api.util.concurrent.Latch;
+import org.mule.runtime.core.internal.construct.AbstractPipeline;
 import org.mule.tck.probe.PollingProber;
 import org.mule.tck.probe.Probe;
 import org.mule.tck.probe.Prober;
 import org.mule.test.AbstractIntegrationTestCase;
-
-import java.util.Map;
-
-import javax.xml.namespace.QName;
 
 import org.junit.Test;
 
@@ -44,8 +35,8 @@ import ru.yandex.qatools.allure.annotations.Stories;
 @Stories(MULE_CONTEXT_START_ORDER_STORY)
 public class SynchronizedFlowRefOnMuleContextStartTestCase extends AbstractIntegrationTestCase {
 
-  protected static final Latch waitMessageInProgress = new Latch();
   protected static volatile int processedMessageCounter = 0;
+  protected static final String FLOW_UNDER_TESTING = "flow2";
 
   public SynchronizedFlowRefOnMuleContextStartTestCase() {
     setStartContext(false);
@@ -82,50 +73,18 @@ public class SynchronizedFlowRefOnMuleContextStartTestCase extends AbstractInteg
     ObjectStore<Event> objectStore = muleContext.getRegistry().lookupObject("objectStore");
 
     Message testMessage = Message.builder().payload(TEST_MESSAGE).build();
-    Flow clientFlow = muleContext.getRegistry().get("flow2");
+    Flow clientFlow = muleContext.getRegistry().get(FLOW_UNDER_TESTING);
     Event testMuleEvent =
         Event.builder(create(clientFlow, fromSingleComponent(clientFlow.getName()))).message(testMessage).build();
     objectStore.store(testMuleEvent.getCorrelationId(), testMuleEvent);
-  }
-
-  public static class UnblockProcessingSource implements MessageSource, Startable {
-
-    @Override
-    public void start() throws MuleException {
-      waitMessageInProgress.release();
-    }
-
-    @Override
-    public Object getAnnotation(QName name) {
-      return null;
-    }
-
-    @Override
-    public Map<QName, Object> getAnnotations() {
-      return null;
-    }
-
-    @Override
-    public void setAnnotations(Map<QName, Object> annotations) {
-
-    }
-
-    @Override
-    public ComponentLocation getLocation() {
-      return null;
-    }
-
-    @Override
-    public void setListener(Processor listener) {
-
-    }
   }
 
   public static class TestMessageProcessorCallback implements EventCallback {
 
     @Override
     public void eventReceived(Event event, Object component, MuleContext muleContext) throws Exception {
-      if (waitMessageInProgress.await(0, MILLISECONDS)) {
+      if (((SkeletonSource) ((AbstractPipeline) muleContext.getRegistry().lookupFlowConstruct(FLOW_UNDER_TESTING)).getSource())
+          .isStarted()) {
         processedMessageCounter++;
       }
     }

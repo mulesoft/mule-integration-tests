@@ -262,8 +262,8 @@
 
     <flow name="composite-source">
         <composite-source>
-            <custom-source class="org.mule.test.core.context.notification.processors.MessageProcessorNotificationTestCase$TestMessageSource"/>
-            <custom-source class="org.mule.test.core.context.notification.processors.MessageProcessorNotificationTestCase$TestMessageSource"/>
+            <test:skeleton-source/>
+            <test:skeleton-source/>
         </composite-source>
         <logger level="INFO"/>
     </flow>

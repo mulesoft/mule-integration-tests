@@ -19,9 +19,9 @@ import static org.mule.functional.junit4.TestLegacyMessageUtils.getOutboundPrope
 import static org.mule.functional.junit4.TransactionConfigEnum.ACTION_ALWAYS_BEGIN;
 import static org.mule.runtime.api.message.Message.of;
 import static org.mule.runtime.api.metadata.MediaType.APPLICATION_XML;
+import org.mule.functional.api.component.SkeletonSource;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.api.meta.AbstractAnnotatedObject;
 import org.mule.runtime.core.DefaultEventContext;
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.client.MuleClient;
@@ -29,8 +29,6 @@ import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.source.CompositeMessageSource;
 import org.mule.runtime.core.api.source.MessageSource;
-import org.mule.runtime.core.api.transformer.Transformer;
-import org.mule.runtime.core.transformer.simple.StringAppendTransformer;
 import org.mule.tck.testmodels.fruit.Apple;
 import org.mule.tck.testmodels.fruit.Banana;
 import org.mule.tck.testmodels.fruit.Fruit;
@@ -97,16 +95,16 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
     assertEquals(2, flow.getProcessors().size());
 
     final List<MessageSource> sources = compositeSource.getSources();
-    TestSimpleMessageSource source1 = (TestSimpleMessageSource) sources.get(0);
-    TestSimpleMessageSource source2 = (TestSimpleMessageSource) sources.get(1);
+    SkeletonSource source1 = (SkeletonSource) sources.get(0);
+    SkeletonSource source2 = (SkeletonSource) sources.get(1);
 
     assertEquals("01xyz", getPayloadAsString(source1
-        .fireEvent(Event.builder(DefaultEventContext.create(flow, TEST_CONNECTOR_LOCATION))
+        .getListener().process(Event.builder(DefaultEventContext.create(flow, TEST_CONNECTOR_LOCATION))
             .message(of("0"))
             .build())
         .getMessage()));
     assertEquals("01xyz", getPayloadAsString(source2
-        .fireEvent(Event.builder(DefaultEventContext.create(flow, TEST_CONNECTOR_LOCATION))
+        .getListener().process(Event.builder(DefaultEventContext.create(flow, TEST_CONNECTOR_LOCATION))
             .message(of("0"))
             .build())
         .getMessage()));
@@ -503,64 +501,9 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
   }
 
   @Test
-  public void testCustomMessageSource() throws Exception {
-    Flow flow = (Flow) muleContext.getRegistry().lookupFlowConstruct("customMessageSource");
-    TestMessageSource source = (TestMessageSource) flow.getSource();
-
-    Event result = source
-        .fireEvent(Event.builder(DefaultEventContext.create(flow, TEST_CONNECTOR_LOCATION)).message(of("a")).build());
-    assertEquals("abcd", result.getMessageAsString(muleContext));
-  }
-
-  @Test
   public void customMaxConcurrency() throws Exception {
     Flow flow = (Flow) muleContext.getRegistry().lookupFlowConstruct("customMaxConcurrency");
     assertThat(flow.getMaxConcurrency(), equalTo(1));
-  }
-
-  public static class TestMessageSource extends AbstractAnnotatedObject implements MessageSource {
-
-    private Processor listener;
-    private String appendBefore;
-    private String appendAfter;
-
-    Event fireEvent(Event event) throws MuleException {
-      Transformer before = new StringAppendTransformer(appendBefore);
-      Transformer after = new StringAppendTransformer(appendAfter);
-      before.setMuleContext(muleContext);
-      after.setMuleContext(muleContext);
-      return after.process(listener.process(before.process(event)));
-    }
-
-    public void setAppendBefore(String appendBefore) {
-      this.appendBefore = appendBefore;
-    }
-
-    public void setAppendAfter(String appendAfter) {
-      this.appendAfter = appendAfter;
-    }
-
-    @Override
-    public void setListener(Processor listener) {
-      this.listener = listener;
-    }
-
-  }
-
-  public static class TestSimpleMessageSource extends AbstractAnnotatedObject implements MessageSource {
-
-    private Processor listener;
-
-
-    Event fireEvent(Event event) throws MuleException {
-      return listener.process(event);
-    }
-
-    @Override
-    public void setListener(Processor listener) {
-      this.listener = listener;
-    }
-
   }
 
   public static class ThreadSensingMessageProcessor implements Processor {
