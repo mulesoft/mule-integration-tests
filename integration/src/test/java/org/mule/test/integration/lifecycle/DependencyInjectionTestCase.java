@@ -11,6 +11,7 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.ArtifactObjectsDependencyInjectionStory.ARTIFACT_OBJECTS_DEPENDENCY_INJECTION_STORY;
 import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.LIFECYCLE_AND_DEPENDENCY_INJECTION;
+import org.mule.runtime.api.exception.MuleException;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Test;
@@ -27,8 +28,19 @@ public class DependencyInjectionTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  public void validateInjectedObjects() {
+  public void validateInjectedObjectsDefinedInXmlConfig() {
     DependencyInjectionBean dependencyInjectionBean = muleContext.getRegistry().get("dependencyInjectionBean");
+    validateInjectedObjects(dependencyInjectionBean);
+  }
+
+  @Test
+  public void validateInjectedObjectsUsingInjector() throws MuleException {
+    DependencyInjectionBean dependencyInjectionBean = new DependencyInjectionBean();
+    muleContext.getInjector().inject(dependencyInjectionBean);
+    validateInjectedObjects(dependencyInjectionBean);
+  }
+
+  private void validateInjectedObjects(DependencyInjectionBean dependencyInjectionBean) {
     assertThat(dependencyInjectionBean.getConfigurationComponentLocator(), notNullValue());
     assertThat(dependencyInjectionBean.getExtensionsClient(), notNullValue());
     assertThat(dependencyInjectionBean.getExpressionLanguage(), notNullValue());
@@ -47,8 +59,6 @@ public class DependencyInjectionTestCase extends AbstractIntegrationTestCase {
     assertThat(dependencyInjectionBean.getLockFactory(), notNullValue());
     assertThat(dependencyInjectionBean.getLocalLockFactory().equals(dependencyInjectionBean.getLockFactory()),
                is(true));
-
-
   }
 
 }
