@@ -4,19 +4,19 @@
       xsi:schemaLocation="
        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
     <flow name="defaultFlow">
-        <test:custom-source class="org.mule.test.components.FlowStateTestCase$TestMessageSource"/>
+        <test:custom-source class="org.mule.functional.api.component.StartableSkeletonSource"/>
         <logger/>
     </flow>
     <flow name="startedFlow" initialState="started">
-        <test:custom-source class="org.mule.test.components.FlowStateTestCase$TestMessageSource"/>
+        <test:custom-source class="org.mule.functional.api.component.StartableSkeletonSource"/>
         <logger/>
     </flow>
     <flow name="stoppedFlow" initialState="stopped">
-        <test:custom-source class="org.mule.test.components.FlowStateTestCase$TestMessageSource"/>
+        <test:custom-source class="org.mule.functional.api.component.StartableSkeletonSource"/>
         <logger/>
     </flow>
     <flow name="placeholderFlow" initialState="${state}">
-        <test:custom-source class="org.mule.test.components.FlowStateTestCase$TestMessageSource"/>
+        <test:custom-source class="org.mule.functional.api.component.StartableSkeletonSource"/>
         <logger/>
     </flow>
 </mule>

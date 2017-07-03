@@ -8,6 +8,8 @@ package org.mule.test.components;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import org.mule.functional.api.component.SkeletonSource;
+import org.mule.functional.api.component.StartableSkeletonSource;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.lifecycle.Startable;
 import org.mule.runtime.api.meta.AbstractAnnotatedObject;
@@ -50,7 +52,7 @@ public class FlowStateTestCase extends AbstractIntegrationTestCase {
     // Flow initially started
     assertTrue(flow.getLifecycleState().isStarted());
     assertFalse(flow.getLifecycleState().isStopped());
-    assertTrue(((TestMessageSource) flow.getSource()).isStarted());
+    assertTrue(((StartableSkeletonSource) flow.getSource()).isStarted());
   }
 
   @Test
@@ -59,31 +61,12 @@ public class FlowStateTestCase extends AbstractIntegrationTestCase {
     // Flow initially stopped
     assertFalse(flow.getLifecycleState().isStarted());
     assertTrue(flow.getLifecycleState().isStopped());
-    assertFalse(((TestMessageSource) flow.getSource()).isStarted());
+    assertFalse(((StartableSkeletonSource) flow.getSource()).isStarted());
 
     flow.start();
     assertTrue(flow.getLifecycleState().isStarted());
     assertFalse(flow.getLifecycleState().isStopped());
-    assertTrue(((TestMessageSource) flow.getSource()).isStarted());
-  }
-
-  public static class TestMessageSource extends AbstractAnnotatedObject implements MessageSource, Startable {
-
-    private boolean started;
-
-    @Override
-    public void setListener(Processor listener) {
-
-    }
-
-    @Override
-    public void start() throws MuleException {
-      started = true;
-    }
-
-    public boolean isStarted() {
-      return started;
-    }
+    assertTrue(((StartableSkeletonSource) flow.getSource()).isStarted());
   }
 
 }
