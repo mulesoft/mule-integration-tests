@@ -7,7 +7,7 @@
 http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 
     <spring:beans>
-        <spring:bean id="objectStore" class="org.mule.runtime.core.util.store.SimpleMemoryObjectStore"/>
+        <spring:bean id="objectStore" class="org.mule.runtime.core.api.store.SimpleMemoryObjectStore"/>
     </spring:beans>
 
     <flow name="withSplitterAggregatorTest">

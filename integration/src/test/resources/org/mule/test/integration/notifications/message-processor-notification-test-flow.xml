@@ -24,7 +24,7 @@
         <notification-listener ref="notificationLogger"/>
     </notifications>
 
-    <spring:bean id="objectStore" class="org.mule.runtime.core.util.store.SimpleMemoryObjectStore"/>
+    <spring:bean id="objectStore" class="org.mule.runtime.core.api.store.SimpleMemoryObjectStore"/>
 
     <flow name="singleMP">
         <logger message="check"/>
