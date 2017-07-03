@@ -47,4 +47,8 @@
         <heisenberg:call-saul config-ref="heisenberg"/>
     </flow>
 
+    <flow name="expressionsInInterception">
+    	<logger/>
+    </flow>
+
 </mule>
