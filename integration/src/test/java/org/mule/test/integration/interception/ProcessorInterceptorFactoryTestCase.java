@@ -9,6 +9,7 @@ package org.mule.test.integration.interception;
 import static java.lang.Math.random;
 import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
@@ -31,6 +32,7 @@ import org.mule.runtime.api.lock.LockFactory;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.runtime.core.api.config.ConfigurationException;
+import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.runtime.http.api.HttpService;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.heisenberg.extension.HeisenbergConnection;
@@ -70,7 +72,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
 
   @Parameters(name = "{0}")
   public static Collection<Object> data() {
-    return asList(new Object[] {true, false});
+    return asList(true, false);
   }
 
   @Override
@@ -93,6 +95,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
       public void configure(MuleContext muleContext) throws ConfigurationException {
         muleContext.getProcessorInterceptorManager()
             .addInterceptorFactory(new HasInjectedAttributesInterceptorFactory(mutateEventBefore));
+        muleContext.getProcessorInterceptorManager().addInterceptorFactory(new EvaluatesExpressionInterceptorFactory());
       }
     });
   }
@@ -240,6 +243,11 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     }
   }
 
+  @Test
+  public void expressionsInInterception() throws Exception {
+    assertThat(flowRunner("expressionsInInterception").run().getVariable("addedVar").getValue(), is("value2"));
+  }
+
   public static class HasInjectedAttributesInterceptorFactory implements ProcessorInterceptorFactory {
 
     @Inject
@@ -324,6 +332,49 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     public InterceptionEvent getEvent() {
       return event;
     }
+  }
+
+  public static class EvaluatesExpressionInterceptorFactory implements ProcessorInterceptorFactory {
+
+    @Inject
+    private MuleExpressionLanguage expressionEvaluator;
+
+    public EvaluatesExpressionInterceptorFactory() {}
+
+    @Override
+    public ProcessorInterceptor get() {
+      return new EvaluatesExpressionInterceptor(expressionEvaluator);
+    }
+
+    @Override
+    public boolean intercept(ComponentLocation location) {
+      return location.getLocation().startsWith("expressionsInInterception");
+    }
+  }
+
+  public static class EvaluatesExpressionInterceptor implements ProcessorInterceptor {
+
+    private MuleExpressionLanguage expressionEvaluator;
+
+    public EvaluatesExpressionInterceptor(MuleExpressionLanguage expressionEvaluator) {
+      this.expressionEvaluator = expressionEvaluator;
+    }
+
+    @Override
+    public void before(ComponentLocation location, Map<String, Object> parameters, InterceptionEvent event) {
+      try {
+        expressionEvaluator.evaluate("variables.addedVar", event.asBindingContext());
+      } catch (ExpressionRuntimeException e) {
+        assertThat(e.getMessage(), containsString("Unable to resolve reference of addedVar"));
+      }
+
+      event.addVariable("addedVar", "value1");
+      assertThat(expressionEvaluator.evaluate("variables.addedVar", event.asBindingContext()).getValue(), is("value1"));
+
+      event.addVariable("addedVar", "value2");
+      assertThat(expressionEvaluator.evaluate("variables.addedVar", event.asBindingContext()).getValue(), is("value2"));
+    }
+
   }
 
 }
