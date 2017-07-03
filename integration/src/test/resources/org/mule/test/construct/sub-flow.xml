@@ -83,9 +83,7 @@
         <append-string-transformer message="x"/>
         <append-string-transformer message="y"/>
         <append-string-transformer message="z"/>
-        <component>
-            <singleton-object class="org.mule.tck.core.lifecycle.LifecycleTrackerCheckComponent"/>
-        </component>
+        <custom-processor class="org.mule.tck.core.lifecycle.LifecycleTrackerCheckProcessor"/>
     </processor-chain>
 
     <sub-flow name="sub-flow">
@@ -109,9 +107,7 @@
         <append-string-transformer message="x"/>
         <append-string-transformer message="y"/>
         <append-string-transformer message="z"/>
-        <component>
-            <singleton-object class="org.mule.tck.core.lifecycle.LifecycleTrackerCheckComponent"/>
-        </component>
+        <custom-processor class="org.mule.tck.core.lifecycle.LifecycleTrackerCheckProcessor"/>
     </sub-flow>
 
     <flow name="service">

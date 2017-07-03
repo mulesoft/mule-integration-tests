@@ -9,8 +9,11 @@ package org.mule.test.module.scheduler.cron;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.junit.Assert.assertThat;
 
+import org.mule.functional.api.component.EventCallback;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.api.source.SchedulerMessageSource;
+import org.mule.runtime.core.api.Event;
+import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.source.MessageSource;
 import org.mule.tck.probe.JUnitLambdaProbe;
@@ -43,14 +46,13 @@ public class StoppedCronSchedulerTestCase extends MuleArtifactFunctionalTestCase
     });
   }
 
+  public static class Foo implements EventCallback {
 
-  public static class FooComponent {
-
-    public boolean process(String s) {
+    @Override
+    public void eventReceived(Event event, Object component, MuleContext muleContext) throws Exception {
       synchronized (foo) {
-        foo.add(s);
+        foo.add((String) event.getMessage().getPayload().getValue());
       }
-      return false;
     }
   }
 

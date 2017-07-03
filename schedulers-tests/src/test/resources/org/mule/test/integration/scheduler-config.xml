@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xsi:schemaLocation="
+               http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+               http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+
+    <flow name="echo" processingStrategy="synchronous">
+        <set-payload value="foo"/>
+    </flow>
+
+    <flow name="pollfoo">
+        <scheduler>
+            <scheduling-strategy>
+                <fixed-frequency frequency="1000" timeUnit="MILLISECONDS"/>
+            </scheduling-strategy>
+        </scheduler>
+        <flow-ref name="echo"/>
+        <test:processor>
+            <test:callback class="org.mule.test.integration.SchedulerTestCase$Foo"/>
+        </test:processor>
+    </flow>
+
+    <flow name="pollbar" processingStrategy="synchronous">
+        <scheduler>
+            <scheduling-strategy>
+                <fixed-frequency frequency="1000"/>
+            </scheduling-strategy>
+        </scheduler>
+        <set-payload value="bar"/>
+        <test:processor>
+            <test:callback class="org.mule.test.integration.SchedulerTestCase$Bar"/>
+        </test:processor>
+    </flow>
+
+    <flow name="pollbarNever">
+        <scheduler>
+            <!-- Will not run unless my test takes 200 days -->
+            <scheduling-strategy>
+                <fixed-frequency frequency="4" timeUnit="DAYS" startDelay="200"/>
+            </scheduling-strategy>
+        </scheduler>
+        <set-payload value="barNever"/>
+        <test:processor>
+            <test:callback class="org.mule.test.integration.SchedulerTestCase$Bar"/>
+        </test:processor>
+    </flow>
+
+    <flow name="pollWithRequestContextEvent">
+        <scheduler>
+            <scheduling-strategy>
+                <fixed-frequency frequency="1000" />
+            </scheduling-strategy>
+        </scheduler>
+        <custom-processor class="org.mule.test.integration.SchedulerTestCase$EventWireTrap" />
+        <logger message="hello" />
+    </flow>
+
+</mule>

@@ -2,8 +2,10 @@
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:spring="http://www.springframework.org/schema/beans"
+      xmlns:test="http://www.mulesoft.org/schema/mule/test"
       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
-		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+        http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
     <spring:bean id="objectStore" class="org.mule.runtime.core.util.store.SimpleMemoryObjectStore" />
 
@@ -17,6 +19,8 @@
 
     <flow name="flow2">
         <custom-source class="org.mule.test.routing.SynchronizedFlowRefOnMuleContextStartTestCase$UnblockProcessingSource"/>
-        <component class="org.mule.test.routing.SynchronizedFlowRefOnMuleContextStartTestCase.TestMessageProcessor"/>
+        <test:processor>
+            <test:callback class="org.mule.test.routing.SynchronizedFlowRefOnMuleContextStartTestCase.TestMessageProcessorCallback"/>
+        </test:processor>
     </flow>
 </mule>

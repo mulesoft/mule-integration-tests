@@ -7,12 +7,16 @@
 package org.mule.test.transformers;
 
 import static org.junit.Assert.assertTrue;
-import org.mule.test.AbstractIntegrationTestCase;
+
+import org.mule.functional.api.component.EventCallback;
+import org.mule.runtime.core.api.Event;
+import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.util.concurrent.Latch;
 import org.mule.tck.testmodels.fruit.Apple;
 import org.mule.tck.testmodels.fruit.Banana;
 import org.mule.tck.testmodels.fruit.FruitBasket;
 import org.mule.tck.testmodels.fruit.FruitBowl;
+import org.mule.test.AbstractIntegrationTestCase;
 
 import java.util.concurrent.TimeUnit;
 
@@ -35,11 +39,12 @@ public class AutoTransformerTestCase extends AbstractIntegrationTestCase {
     assertTrue(latch.await(3000, TimeUnit.MILLISECONDS));
   }
 
-  public static class FruitBasketComponent {
+  public static class FruitBasketCallback implements EventCallback {
 
-    public void process(FruitBasket fb) {
-      assertTrue(fb.hasApple());
-      assertTrue(fb.hasBanana());
+    @Override
+    public void eventReceived(Event event, Object component, MuleContext muleContext) throws Exception {
+      assertTrue(((FruitBasket) event.getMessage().getPayload().getValue()).hasApple());
+      assertTrue(((FruitBasket) event.getMessage().getPayload().getValue()).hasBanana());
       latch.countDown();
     }
   }

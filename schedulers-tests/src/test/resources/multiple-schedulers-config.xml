@@ -2,8 +2,10 @@
 
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
-
+      xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xsi:schemaLocation="
+               http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+               http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
     <flow name="poll1" processingStrategy="synchronous">
         <scheduler>
@@ -12,7 +14,9 @@
             </scheduling-strategy>
         </scheduler>
         <set-payload value="poll1"/>
-        <component class="org.mule.test.module.scheduler.cron.MultipleSchedulersTestCase$SynchronizedPollExecutionCounter"/>
+        <test:processor>
+            <test:callback class="org.mule.test.module.scheduler.cron.MultipleSchedulersTestCase$SynchronizedPollExecutionCounter"/>
+        </test:processor>
     </flow>
 
     <flow name="poll2" processingStrategy="synchronous">
@@ -22,6 +26,8 @@
             </scheduling-strategy>
         </scheduler>
         <set-payload value="poll2"/>
-        <component class="org.mule.test.module.scheduler.cron.MultipleSchedulersTestCase$SynchronizedPollExecutionCounter"/>
+        <test:processor>
+            <test:callback class="org.mule.test.module.scheduler.cron.MultipleSchedulersTestCase$SynchronizedPollExecutionCounter"/>
+        </test:processor>
     </flow>
 </mule>
