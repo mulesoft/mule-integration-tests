@@ -9,13 +9,7 @@ package org.mule.test.components;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import org.mule.functional.api.component.SkeletonSource;
-import org.mule.functional.api.component.StartableSkeletonSource;
-import org.mule.runtime.api.exception.MuleException;
-import org.mule.runtime.api.lifecycle.Startable;
-import org.mule.runtime.api.meta.AbstractAnnotatedObject;
 import org.mule.runtime.core.api.construct.Flow;
-import org.mule.runtime.core.api.processor.Processor;
-import org.mule.runtime.core.api.source.MessageSource;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -52,7 +46,7 @@ public class FlowStateTestCase extends AbstractIntegrationTestCase {
     // Flow initially started
     assertTrue(flow.getLifecycleState().isStarted());
     assertFalse(flow.getLifecycleState().isStopped());
-    assertTrue(((StartableSkeletonSource) flow.getSource()).isStarted());
+    assertTrue(((SkeletonSource) flow.getSource()).isStarted());
   }
 
   @Test
@@ -61,12 +55,12 @@ public class FlowStateTestCase extends AbstractIntegrationTestCase {
     // Flow initially stopped
     assertFalse(flow.getLifecycleState().isStarted());
     assertTrue(flow.getLifecycleState().isStopped());
-    assertFalse(((StartableSkeletonSource) flow.getSource()).isStarted());
+    assertFalse(((SkeletonSource) flow.getSource()).isStarted());
 
     flow.start();
     assertTrue(flow.getLifecycleState().isStarted());
     assertFalse(flow.getLifecycleState().isStopped());
-    assertTrue(((StartableSkeletonSource) flow.getSource()).isStarted());
+    assertTrue(((SkeletonSource) flow.getSource()).isStarted());
   }
 
 }
