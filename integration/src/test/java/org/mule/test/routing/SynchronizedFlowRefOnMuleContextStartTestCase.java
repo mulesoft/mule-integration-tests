@@ -14,26 +14,19 @@ import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjecti
 import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.MuleContextStartOrderStory.MULE_CONTEXT_START_ORDER_STORY;
 
 import org.mule.functional.api.component.EventCallback;
-import org.mule.runtime.api.component.location.ComponentLocation;
+import org.mule.functional.api.component.SkeletonSource;
 import org.mule.runtime.api.exception.MuleException;
-import org.mule.runtime.api.lifecycle.Startable;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.store.ObjectStore;
 import org.mule.runtime.api.store.ObjectStoreException;
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.construct.Flow;
-import org.mule.runtime.core.api.processor.Processor;
-import org.mule.runtime.core.api.source.MessageSource;
 import org.mule.runtime.core.api.util.concurrent.Latch;
 import org.mule.tck.probe.PollingProber;
 import org.mule.tck.probe.Probe;
 import org.mule.tck.probe.Prober;
 import org.mule.test.AbstractIntegrationTestCase;
-
-import java.util.Map;
-
-import javax.xml.namespace.QName;
 
 import org.junit.Test;
 
@@ -88,36 +81,11 @@ public class SynchronizedFlowRefOnMuleContextStartTestCase extends AbstractInteg
     objectStore.store(testMuleEvent.getCorrelationId(), testMuleEvent);
   }
 
-  public static class UnblockProcessingSource implements MessageSource, Startable {
+  public static class UnblockProcessingSource extends SkeletonSource {
 
     @Override
     public void start() throws MuleException {
       waitMessageInProgress.release();
-    }
-
-    @Override
-    public Object getAnnotation(QName name) {
-      return null;
-    }
-
-    @Override
-    public Map<QName, Object> getAnnotations() {
-      return null;
-    }
-
-    @Override
-    public void setAnnotations(Map<QName, Object> annotations) {
-
-    }
-
-    @Override
-    public ComponentLocation getLocation() {
-      return null;
-    }
-
-    @Override
-    public void setListener(Processor listener) {
-
     }
   }
 
