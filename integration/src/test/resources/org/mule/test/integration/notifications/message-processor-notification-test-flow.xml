@@ -262,8 +262,8 @@
 
     <flow name="composite-source">
         <composite-source>
-            <test:custom-source class="org.mule.functional.api.component.SkeletonSource"/>
-            <test:custom-source class="org.mule.functional.api.component.SkeletonSource"/>
+            <test:skeleton-source/>
+            <test:skeleton-source/>
         </composite-source>
         <logger level="INFO"/>
     </flow>

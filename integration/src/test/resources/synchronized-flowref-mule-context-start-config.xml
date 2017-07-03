@@ -18,7 +18,7 @@
     </flow>
 
     <flow name="flow2">
-        <test:custom-source class="org.mule.test.routing.SynchronizedFlowRefOnMuleContextStartTestCase$UnblockProcessingSource"/>
+        <test:skeleton-source/>
         <test:processor>
             <test:callback class="org.mule.test.routing.SynchronizedFlowRefOnMuleContextStartTestCase.TestMessageProcessorCallback"/>
         </test:processor>

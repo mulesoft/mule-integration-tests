@@ -33,8 +33,8 @@
 
     <flow name="flow2">
         <composite-source>
-            <test:custom-source class="org.mule.functional.api.component.SkeletonSource"/>
-            <test:custom-source class="org.mule.functional.api.component.SkeletonSource"/>
+            <test:skeleton-source/>
+            <test:skeleton-source/>
         </composite-source>
         <append-string-transformer message="1" />
         <processor ref="composite1" />
