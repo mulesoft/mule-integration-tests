@@ -15,6 +15,10 @@
     <name>Smart Connector using SC(nested scenario)</name>
     <description>A Mule extension done with pure Mule DSL that depends JUST in another Smart Connector (nested scenario)</description>
 
+    <properties>
+        <formatterConfigPath>../../formatter.xml</formatterConfigPath>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.mule.tooling</groupId>

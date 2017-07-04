@@ -15,4 +15,8 @@
     <name>Smart Connector using custom types</name>
     <description>A Mule extension done with pure Mule DSL that depends on JSON schemas to define input and outputs</description>
 
+    <properties>
+        <formatterConfigPath>../../formatter.xml</formatterConfigPath>
+    </properties>
+
 </project>

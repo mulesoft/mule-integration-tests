@@ -15,6 +15,10 @@
     <name>Smart Connector using HTTP Connector</name>
     <description>A Mule extension done with pure Mule DSL that depends on the HTTP Connector (http:requester-config, http:requester, etc. )</description>
 
+    <properties>
+        <formatterConfigPath>../../formatter.xml</formatterConfigPath>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.mule.connectors</groupId>

@@ -13,6 +13,10 @@
     <name>Smart Connectors for test Parent Samples</name>
     <description>Set of Smart Connectors to create plugins to be later used with other modules</description>
 
+    <properties>
+        <formatterConfigPath>../formatter.xml</formatterConfigPath>
+    </properties>
+
     <modules>
         <module>smart-connector-using-core</module>
         <module>smart-connector-using-file</module>
