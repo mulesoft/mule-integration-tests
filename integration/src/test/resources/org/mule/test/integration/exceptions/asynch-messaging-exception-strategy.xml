@@ -25,7 +25,7 @@
     <script:script engine="groovy" name="throwException">
         log.info("Throwing exception...");
         throw new
-        org.mule.runtime.core.component.ComponentException(org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage("dummyException"));
+        org.mule.runtime.core.api.DefaultMuleException(org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage("dummyException"));
     </script:script>
 
     <flow name="TransformerException">

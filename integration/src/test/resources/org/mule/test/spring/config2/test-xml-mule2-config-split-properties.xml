@@ -9,19 +9,7 @@
        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 
 
-    <flow name="testPropertiesComponent">
-        <component>
-            <spring-object bean="prop-test-ref"/>
-        </component>
-    </flow>
-
-
     <spring:bean name="anApple" class="org.mule.tck.testmodels.fruit.Apple"/>
-
-    <spring:bean name="prop-test-ref" class="org.mule.tck.testmodels.fruit.Apple">
-        <spring:property name="bitten" value="true"/>
-        <spring:property name="washed" value="true"/>
-    </spring:bean>
 
     <spring:bean name="factory-test" class="org.mule.tck.testmodels.mule.TestDependentObject"/>
 

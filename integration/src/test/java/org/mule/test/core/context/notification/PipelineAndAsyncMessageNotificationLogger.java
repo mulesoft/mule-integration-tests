@@ -6,6 +6,8 @@
  */
 package org.mule.test.core.context.notification;
 
+import org.mule.tck.core.context.notification.NotificationLogger;
+
 import java.util.LinkedList;
 import java.util.List;
 

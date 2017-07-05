@@ -10,6 +10,7 @@ import static org.junit.Assert.fail;
 
 import org.junit.After;
 import org.mule.runtime.core.api.context.notification.ServerNotification;
+import org.mule.tck.core.context.notification.NotificationLogger;
 import org.mule.tck.probe.JUnitProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.test.AbstractIntegrationTestCase;
