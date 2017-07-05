@@ -88,30 +88,6 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
   }
 
   @Test
-  public void testFlowCompositeSource() throws Exception {
-    final Flow flow = muleContext.getRegistry().lookupObject("flow2");
-    CompositeMessageSource compositeSource = (CompositeMessageSource) flow.getSource();
-    assertThat(compositeSource.getClass().getName(),
-               equalTo("org.mule.runtime.core.internal.source.StartableCompositeMessageSource"));
-    assertEquals(2, flow.getProcessors().size());
-
-    final List<MessageSource> sources = compositeSource.getSources();
-    SkeletonSource source1 = (SkeletonSource) sources.get(0);
-    SkeletonSource source2 = (SkeletonSource) sources.get(1);
-
-    assertEquals("01xyz", getPayloadAsString(source1
-        .getListener().process(Event.builder(DefaultEventContext.create(flow, TEST_CONNECTOR_LOCATION))
-            .message(of("0"))
-            .build())
-        .getMessage()));
-    assertEquals("01xyz", getPayloadAsString(source2
-        .getListener().process(Event.builder(DefaultEventContext.create(flow, TEST_CONNECTOR_LOCATION))
-            .message(of("0"))
-            .build())
-        .getMessage()));
-  }
-
-  @Test
   public void testInOutFlow() throws Exception {
     flowRunner("inout").withPayload("0").run();
     assertEquals("0", getPayloadAsString(muleContext.getClient().request("test://inout-out", RECEIVE_TIMEOUT).getRight().get()));

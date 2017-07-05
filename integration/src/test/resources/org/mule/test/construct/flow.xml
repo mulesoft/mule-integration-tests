@@ -31,15 +31,6 @@
         </processor-chain>
         <append-string-transformer message="3" />
     </flow>
-
-    <flow name="flow2">
-        <composite-source>
-            <test:skeleton-source/>
-            <test:skeleton-source/>
-        </composite-source>
-        <append-string-transformer message="1" />
-        <processor ref="composite1" />
-    </flow>
     
     <flow name="synchronousFlow" processingStrategy="synchronous">
         <custom-processor class="org.mule.test.construct.FlowConfigurationFunctionalTestCase$ThreadSensingMessageProcessor"/>
