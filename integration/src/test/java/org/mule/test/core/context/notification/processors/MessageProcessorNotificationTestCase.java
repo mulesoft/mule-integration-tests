@@ -283,24 +283,6 @@ public class MessageProcessorNotificationTestCase extends AbstractMessageProcess
   }
 
   @Test
-  public void compositeSource() throws Exception {
-    specificationFactory = () -> new Node()
-        .serial(prePost()) // call throw cs1
-        .serial(prePost());
-
-    final Flow flow = (Flow) muleContext.getRegistry().lookupFlowConstruct("composite-source");
-    CompositeMessageSource composite = (CompositeMessageSource) flow.getSource();
-    assertNotNull(((SkeletonSource) composite.getSources().get(0))
-        .getListener().process(Event.builder(DefaultEventContext.create(flow, TEST_CONNECTOR_LOCATION)).message(of(TEST_PAYLOAD))
-            .build()));
-    assertNotNull(((SkeletonSource) composite.getSources().get(1))
-        .getListener().process(Event.builder(DefaultEventContext.create(flow, TEST_CONNECTOR_LOCATION)).message(of(TEST_PAYLOAD))
-            .build()));
-
-    assertNotifications();
-  }
-
-  @Test
   public void firstSuccessful() throws Exception {
     specificationFactory = () -> new Node()
         .serial(prePost()) // logger
