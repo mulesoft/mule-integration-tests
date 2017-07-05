@@ -20,8 +20,8 @@ import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.context.notification.MessageProcessorNotification;
 import org.mule.runtime.core.api.exception.MessagingException;
-import org.mule.runtime.core.api.source.CompositeMessageSource;
 import org.mule.tck.core.context.notification.NotificationLogger;
+
 import org.mule.test.core.context.notification.Node;
 import org.mule.test.core.context.notification.RestrictedNode;
 

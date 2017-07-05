@@ -27,7 +27,6 @@ import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.processor.Processor;
-import org.mule.runtime.core.api.source.CompositeMessageSource;
 import org.mule.runtime.core.api.source.MessageSource;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.tck.testmodels.fruit.Apple;
