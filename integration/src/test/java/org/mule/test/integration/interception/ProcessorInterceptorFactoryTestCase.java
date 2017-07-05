@@ -363,16 +363,16 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     @Override
     public void before(ComponentLocation location, Map<String, Object> parameters, InterceptionEvent event) {
       try {
-        expressionEvaluator.evaluate("variables.addedVar", event.asBindingContext());
+        expressionEvaluator.evaluate("addedVar", event.asBindingContext());
       } catch (ExpressionRuntimeException e) {
         assertThat(e.getMessage(), containsString("Unable to resolve reference of addedVar"));
       }
 
       event.addVariable("addedVar", "value1");
-      assertThat(expressionEvaluator.evaluate("variables.addedVar", event.asBindingContext()).getValue(), is("value1"));
+      assertThat(expressionEvaluator.evaluate("addedVar", event.asBindingContext()).getValue(), is("value1"));
 
       event.addVariable("addedVar", "value2");
-      assertThat(expressionEvaluator.evaluate("variables.addedVar", event.asBindingContext()).getValue(), is("value2"));
+      assertThat(expressionEvaluator.evaluate("addedVar", event.asBindingContext()).getValue(), is("value2"));
     }
 
   }
