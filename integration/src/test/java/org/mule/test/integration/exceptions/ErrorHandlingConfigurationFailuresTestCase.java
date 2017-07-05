@@ -64,6 +64,21 @@ public class ErrorHandlingConfigurationFailuresTestCase extends AbstractMuleTest
   }
 
   @Test(expected = InitialisationException.class)
+  public void sourceErrorResponseFilteringNotAllowed() throws Exception {
+    loadConfiguration("org/mule/test/integration/exceptions/source-error-response-filtering-config.xml");
+  }
+
+  @Test(expected = InitialisationException.class)
+  public void sourceErrorResponseSendFilteringNotAllowed() throws Exception {
+    loadConfiguration("org/mule/test/integration/exceptions/source-error-response-send-filtering-config.xml");
+  }
+
+  @Test(expected = InitialisationException.class)
+  public void sourceErrorResponseGenerateFilteringNotAllowed() throws Exception {
+    loadConfiguration("org/mule/test/integration/exceptions/source-error-response-generate-filtering-config.xml");
+  }
+
+  @Test(expected = InitialisationException.class)
   public void criticalErrorFilteringNotAllowed() throws Exception {
     loadConfiguration("org/mule/test/integration/exceptions/critical-error-filtering-config.xml");
   }
@@ -81,6 +96,41 @@ public class ErrorHandlingConfigurationFailuresTestCase extends AbstractMuleTest
   @Test(expected = ConfigurationException.class)
   public void repeatedMappingsNotAllowed() throws Exception {
     loadConfiguration("org/mule/test/integration/exceptions/repeated-mappings-config.xml");
+  }
+
+  @Test(expected = InitialisationException.class)
+  public void sourceResponseGenerateOnErrorContinue() throws Exception {
+    loadConfiguration("org/mule/test/integration/exceptions/on-error-continue-response-generate.xml");
+  }
+
+  @Test(expected = InitialisationException.class)
+  public void sourceResponseErrorGenerateOnErrorContinue() throws Exception {
+    loadConfiguration("org/mule/test/integration/exceptions/on-error-continue-response-error-generate.xml");
+  }
+
+  @Test(expected = InitialisationException.class)
+  public void sourceResponseSendOnErrorContinue() throws Exception {
+    loadConfiguration("org/mule/test/integration/exceptions/on-error-continue-response-send.xml");
+  }
+
+  @Test(expected = InitialisationException.class)
+  public void sourceResponseErrorSendOnErrorContinue() throws Exception {
+    loadConfiguration("org/mule/test/integration/exceptions/on-error-continue-response-error-send.xml");
+  }
+
+  @Test(expected = InitialisationException.class)
+  public void sourceResponseErrorOnErrorContinue() throws Exception {
+    loadConfiguration("org/mule/test/integration/exceptions/on-error-continue-response-error.xml");
+  }
+
+  @Test(expected = InitialisationException.class)
+  public void sourceErrorOnErrorContinue() throws Exception {
+    loadConfiguration("org/mule/test/integration/exceptions/on-error-continue-source-error.xml");
+  }
+
+  @Test(expected = InitialisationException.class)
+  public void sourceErrorInListOnErrorContinue() throws Exception {
+    loadConfiguration("org/mule/test/integration/exceptions/on-error-continue-source-error-list.xml");
   }
 
   private void loadConfiguration(String configuration) throws MuleException, InterruptedException {

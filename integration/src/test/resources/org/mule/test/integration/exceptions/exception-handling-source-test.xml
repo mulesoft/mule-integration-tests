@@ -17,9 +17,9 @@
         </http:listener>
         <logger/>
         <error-handler>
-            <on-error-continue>
+            <on-error-propagate>
                 <custom-processor class="org.mule.test.integration.exceptions.ExceptionHandlingSourceTestCase$OnErrorCounterProcessor"/>
-            </on-error-continue>
+            </on-error-propagate>
         </error-handler>
     </flow>
 
@@ -30,9 +30,9 @@
         </http:listener>
         <logger/>
         <error-handler>
-            <on-error-continue>
+            <on-error-propagate>
                 <custom-processor class="org.mule.test.integration.exceptions.ExceptionHandlingSourceTestCase$OnErrorCounterProcessor"/>
-            </on-error-continue>
+            </on-error-propagate>
         </error-handler>
     </flow>
 
