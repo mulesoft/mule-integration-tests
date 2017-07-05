@@ -9,14 +9,11 @@ package org.mule.test.spring;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+
 import org.mule.functional.AbstractConfigBuilderTestCase;
-import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.transformer.Transformer;
-import org.mule.tck.testmodels.fruit.Apple;
 import org.mule.tck.testmodels.mule.TestCompressionTransformer;
 import org.mule.test.IntegrationTestCaseRunnerConfig;
-
-import org.junit.Test;
 
 /**
  * This is an extended version of the same test covered in {@link SpringNamespaceConfigBuilderTestCase}. Both are translations of
@@ -39,17 +36,6 @@ public class SpringNamespaceConfigBuilderV2TestCase extends AbstractConfigBuilde
     return new String[] {"org/mule/test/spring/config2/test-xml-mule2-config.xml",
         "org/mule/test/spring/config2/test-xml-mule2-config-split.xml",
         "org/mule/test/spring/config2/test-xml-mule2-config-split-properties.xml"};
-  }
-
-  @Test
-  public void testPropertyTypesConfig() throws Exception {
-    Flow c = (Flow) muleContext.getRegistry().lookupFlowConstruct("testPropertiesComponent");
-    assertNotNull(c);
-    Object obj = getComponent(c);
-    assertNotNull(obj);
-    assertTrue(obj instanceof Apple);
-    assertTrue(((Apple) obj).isBitten());
-    assertTrue(((Apple) obj).isWashed());
   }
 
   @Override
