@@ -55,7 +55,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 @ArtifactClassLoaderRunnerConfig(sharedRuntimeLibs = {"org.apache.derby:derby", "org.apache.activemq:activemq-client",
-    "org.apache.activemq:activemq-broker", "org.apache.activemq:activemq-kahadb-store", "javax.jms:javax.jms-api"})
+    "org.apache.activemq:activemq-broker", "org.apache.activemq:activemq-kahadb-store"})
 public abstract class AbstractElementModelTestCase extends MuleArtifactFunctionalTestCase {
 
   protected static final String DB_CONFIG = "dbConfig";
