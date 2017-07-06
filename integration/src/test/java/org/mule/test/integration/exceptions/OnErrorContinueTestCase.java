@@ -6,13 +6,18 @@
  */
 package org.mule.test.integration.exceptions;
 
+import static java.lang.String.format;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.mule.functional.junit4.matchers.ThrowableCauseMatcher.hasCause;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
+import static org.mule.runtime.http.api.HttpConstants.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.mule.runtime.http.api.HttpConstants.Method.POST;
+import static org.mule.runtime.http.api.HttpConstants.Protocol.HTTP;
+import static org.mule.runtime.http.api.HttpConstants.Protocol.HTTPS;
+import static org.mule.tck.junit4.matcher.IsEmptyOptional.empty;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.exception.MuleRuntimeException;
@@ -23,14 +28,16 @@ import org.mule.runtime.api.streaming.bytes.CursorStreamProvider;
 import org.mule.runtime.api.tls.TlsContextFactory;
 import org.mule.runtime.core.api.DefaultMuleException;
 import org.mule.runtime.core.api.Event;
-import org.mule.runtime.core.api.processor.Processor;
-import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.runtime.core.api.exception.MuleFatalException;
+import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.retry.policy.RetryPolicyExhaustedException;
+import org.mule.runtime.core.api.util.IOUtils;
+import org.mule.runtime.http.api.HttpConstants.Protocol;
 import org.mule.runtime.http.api.HttpService;
 import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;
 import org.mule.runtime.http.api.domain.entity.HttpEntity;
 import org.mule.runtime.http.api.domain.message.request.HttpRequest;
+import org.mule.runtime.http.api.domain.message.response.HttpResponse;
 import org.mule.service.http.TestHttpClient;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -92,12 +99,12 @@ public class OnErrorContinueTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void testHttpJsonErrorResponse() throws Exception {
-    testJsonErrorResponse(String.format("http://localhost:%s/service", dynamicPort1.getNumber()));
+    testJsonErrorResponse(getUrl(HTTP, dynamicPort1, "service"));
   }
 
   @Test
   public void testHttpsJsonErrorResponse() throws Exception {
-    testJsonErrorResponse(String.format("https://localhost:%s/httpsservice", dynamicPort3.getNumber()));
+    testJsonErrorResponse(getUrl(HTTPS, dynamicPort3, "httpsservice"));
   }
 
   @Test
@@ -178,6 +185,20 @@ public class OnErrorContinueTestCase extends AbstractIntegrationTestCase {
     expectedException.expectCause(instanceOf(MuleFatalException.class));
     expectedException.expectCause(hasCause(instanceOf(NoClassDefFoundError.class)));
     flowRunner("failingHandler").run();
+  }
+
+  @Test
+  public void doesNotHandleSourceErrors() throws Exception {
+    HttpRequest request = HttpRequest.builder().setUri(getUrl(HTTP, dynamicPort1, "sourceError")).setMethod(POST)
+        .setEntity(new ByteArrayHttpEntity(TEST_MESSAGE.getBytes())).build();
+    final HttpResponse response = httpClient.send(request, TIMEOUT, false, null);
+
+    assertThat(response.getStatusCode(), is(INTERNAL_SERVER_ERROR.getStatusCode()));
+    assertThat(muleContext.getClient().request("test://out", RECEIVE_TIMEOUT).getRight(), is(empty()));
+  }
+
+  private String getUrl(Protocol protocol, DynamicPort port, String path) {
+    return format("%s://localhost:%s/%s", protocol.getScheme(), port.getNumber(), path);
   }
 
   public static class FailingProcessor implements Processor {

@@ -142,4 +142,16 @@
         </error-handler>
     </flow>
 
+    <flow name="sourceResponseErrorHandler">
+        <http:listener path="sourceError" config-ref="listenerConfig">
+            <http:response statusCode="#['notANumber']"/>
+        </http:listener>
+        <append-string-transformer message=" hey"/>
+        <error-handler>
+            <on-error-continue>
+                <test:queue name="out"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
 </mule>

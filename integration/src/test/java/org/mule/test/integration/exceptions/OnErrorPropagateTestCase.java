@@ -6,27 +6,33 @@
  */
 package org.mule.test.integration.exceptions;
 
+import static java.lang.String.format;
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.mule.functional.junit4.matchers.MessageMatchers.hasPayload;
-import static org.mule.functional.junit4.matchers.ThrowableCauseMatcher.hasCause;
-import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
-import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
-
-import org.mule.functional.api.exception.FunctionalTestException;
-
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
-
+import static org.mule.functional.junit4.matchers.MessageMatchers.hasPayload;
+import static org.mule.functional.junit4.matchers.ThrowableCauseMatcher.hasCause;
+import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
+import static org.mule.runtime.http.api.HttpConstants.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.mule.runtime.http.api.HttpConstants.Method.POST;
+import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
+import org.mule.functional.api.exception.FunctionalTestException;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.Event;
-import org.mule.runtime.core.api.processor.Processor;
-import org.mule.runtime.core.api.routing.RoutingException;
 import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.runtime.core.api.exception.MuleFatalException;
+import org.mule.runtime.core.api.processor.Processor;
+import org.mule.runtime.core.api.routing.RoutingException;
 import org.mule.runtime.core.api.util.concurrent.Latch;
+import org.mule.runtime.http.api.HttpService;
+import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;
+import org.mule.runtime.http.api.domain.message.request.HttpRequest;
+import org.mule.runtime.http.api.domain.message.response.HttpResponse;
+import org.mule.service.http.TestHttpClient;
+import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.util.Optional;
@@ -43,8 +49,16 @@ import ru.yandex.qatools.allure.annotations.Stories;
 @Stories("On Error Propagate")
 public class OnErrorPropagateTestCase extends AbstractIntegrationTestCase {
 
+  private static final String OUT = "test://out";
+
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
+
+  @Rule
+  public DynamicPort port = new DynamicPort("port");
+
+  @Rule
+  public TestHttpClient httpClient = new TestHttpClient.Builder(getService(HttpService.class)).build();
 
   @Override
   protected String getConfigFile() {
@@ -88,10 +102,24 @@ public class OnErrorPropagateTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  public void onErrorContinueFailure() throws Exception {
+  public void onErrorPropagateFailure() throws Exception {
     expectedException.expectCause(Matchers.instanceOf(MuleFatalException.class));
-    expectedException.expectCause(hasCause(Matchers.instanceOf(NoClassDefFoundError.class)));
+    expectedException.expectCause(hasCause(instanceOf(NoClassDefFoundError.class)));
     flowRunner("failingHandler").run();
+  }
+
+  @Test
+  public void handlesSourceErrors() throws Exception {
+    HttpRequest request = HttpRequest.builder().setUri(getUrl()).setMethod(POST)
+        .setEntity(new ByteArrayHttpEntity(TEST_MESSAGE.getBytes())).build();
+    final HttpResponse response = httpClient.send(request, RECEIVE_TIMEOUT, false, null);
+
+    assertThat(response.getStatusCode(), is(INTERNAL_SERVER_ERROR.getStatusCode()));
+    assertThat(muleContext.getClient().request(OUT, RECEIVE_TIMEOUT).getRight().get(), hasPayload(equalTo("Test Message hey")));
+  }
+
+  private String getUrl() {
+    return format("http://localhost:%s/sourceError", port.getNumber());
   }
 
   private void verifyFlow(String flowName, Object payload) throws InterruptedException {

@@ -19,7 +19,7 @@
                 ---
                 {
                     testName1: "testValue1",
-                    testName2: "testValue2",
+                    testName2: "testValue2"
                 }]
             </http:body>
         </http:request>

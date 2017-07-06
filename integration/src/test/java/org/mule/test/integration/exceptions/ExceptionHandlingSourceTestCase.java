@@ -20,11 +20,11 @@ import org.mule.service.http.TestHttpClient;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class ExceptionHandlingSourceTestCase extends AbstractIntegrationTestCase {
 

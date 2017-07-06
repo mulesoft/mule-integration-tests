@@ -59,10 +59,10 @@
         <http:listener config-ref="listenerConfig" path="/exceptionBuildingResponse" responseStreamingMode="NEVER"/>
         <set-payload value="#[mel:inputStreamPayload]"/>
         <error-handler>
-            <on-error-continue type="ANY">
+            <on-error-propagate type="ANY">
                 <custom-processor class="org.mule.test.module.http.functional.listener.AbstractHttpListenerErrorHandlingTestCase$TrackPassageMessageProcessor"/>
                 <set-payload value="#['Exception Handled']"/>
-            </on-error-continue>
+            </on-error-propagate>
         </error-handler>
     </flow>
 
