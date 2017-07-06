@@ -104,7 +104,7 @@ public class OnErrorPropagateTestCase extends AbstractIntegrationTestCase {
   @Test
   public void onErrorPropagateFailure() throws Exception {
     expectedException.expectCause(Matchers.instanceOf(MuleFatalException.class));
-    expectedException.expectCause(hasCause(Matchers.instanceOf(NoClassDefFoundError.class)));
+    expectedException.expectCause(hasCause(instanceOf(NoClassDefFoundError.class)));
     flowRunner("failingHandler").run();
   }
 
@@ -114,7 +114,7 @@ public class OnErrorPropagateTestCase extends AbstractIntegrationTestCase {
         .setEntity(new ByteArrayHttpEntity(TEST_MESSAGE.getBytes())).build();
     final HttpResponse response = httpClient.send(request, RECEIVE_TIMEOUT, false, null);
 
-    assertThat(response.getStatusCode(), Matchers.is(INTERNAL_SERVER_ERROR.getStatusCode()));
+    assertThat(response.getStatusCode(), is(INTERNAL_SERVER_ERROR.getStatusCode()));
     assertThat(muleContext.getClient().request(OUT, RECEIVE_TIMEOUT).getRight().get(), hasPayload(equalTo("Test Message hey")));
   }
 

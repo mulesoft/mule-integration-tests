@@ -22,10 +22,10 @@
         <set-payload value="#[mel:inputStreamPayload]"/>
 
         <error-handler>
-            <on-error-continue>
+            <on-error-propagate>
                 <custom-processor class="org.mule.test.module.http.functional.listener.AbstractHttpListenerErrorHandlingTestCase$TrackPassageMessageProcessor"/>
                 <set-payload value="#[mel:'Exception Handled']"/>
-            </on-error-continue>
+            </on-error-propagate>
         </error-handler>
     </flow>
 
@@ -46,10 +46,10 @@
         <set-payload value="#[mel:inputStreamPayload]"/>
 
         <error-handler>
-            <on-error-continue>
+            <on-error-propagate>
                 <custom-processor class="org.mule.test.module.http.functional.listener.AbstractHttpListenerErrorHandlingTestCase$TrackPassageMessageProcessor"/>
                 <set-payload value="#[mel:inputStreamPayload]"/>
-            </on-error-continue>
+            </on-error-propagate>
         </error-handler>
     </flow>
 
