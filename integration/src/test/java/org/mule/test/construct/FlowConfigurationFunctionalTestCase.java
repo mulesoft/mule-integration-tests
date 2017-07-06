@@ -29,6 +29,7 @@ import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.source.CompositeMessageSource;
 import org.mule.runtime.core.api.source.MessageSource;
+import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.tck.testmodels.fruit.Apple;
 import org.mule.tck.testmodels.fruit.Banana;
 import org.mule.tck.testmodels.fruit.Fruit;
@@ -42,6 +43,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
 
 public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTestCase {

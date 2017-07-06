@@ -13,6 +13,7 @@ import static org.mockito.Answers.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.LIFECYCLE_AND_DEPENDENCY_INJECTION;
 import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.LifecyclePhaseFailureStory.LIFECYCLE_PHASE_FAILURE_STORY;
+import org.mule.functional.api.component.LifecycleObject;
 import org.mule.functional.junit4.ApplicationContextBuilder;
 import org.mule.runtime.api.el.DefaultExpressionLanguageFactoryService;
 import org.mule.runtime.api.el.ExpressionLanguage;
@@ -45,7 +46,7 @@ public class MuleContextLifecycleTestCase extends AbstractMuleTestCase {
   public void failOnStartInvokesStopInOtherComponentsButNotInTheFailedOne() {
     testOnContextLifecycleFailure("org/mule/test/integration/lifecycle/component-failing-during-startup-config.xml",
                                   (failOnStartLifecycleBean) -> {
-                                    LifecycleBean lifecycleBean = failOnStartLifecycleBean.getOtherLifecycleBean();
+                                    LifecycleObject lifecycleBean = failOnStartLifecycleBean.getOtherLifecycleObject();
                                     lifecycleBean.getMuleContext().dispose();
                                     assertThat(lifecycleBean.getLifecycleInvocations(),
                                                contains(Initialisable.PHASE_NAME, Startable.PHASE_NAME, Stoppable.PHASE_NAME,
@@ -59,7 +60,7 @@ public class MuleContextLifecycleTestCase extends AbstractMuleTestCase {
   public void failOnInitialiseInvokesDisposeInOtherComponentsButNotInTheFailedOne() {
     testOnContextLifecycleFailure("org/mule/test/integration/lifecycle/component-failing-during-initialise-config.xml",
                                   (failOnStartLifecycleBean) -> {
-                                    LifecycleBean lifecycleBean = failOnStartLifecycleBean.getOtherLifecycleBean();
+                                    LifecycleObject lifecycleBean = failOnStartLifecycleBean.getOtherLifecycleObject();
                                     assertThat(lifecycleBean.getLifecycleInvocations(),
                                                contains(Initialisable.PHASE_NAME, Disposable.PHASE_NAME));
                                     assertThat(failOnStartLifecycleBean.getLifecycleInvocations(),
@@ -67,7 +68,7 @@ public class MuleContextLifecycleTestCase extends AbstractMuleTestCase {
                                   });
   }
 
-  private void testOnContextLifecycleFailure(String configFile, Consumer<LifecycleBean> failureLifecycleBeanConsumer) {
+  private void testOnContextLifecycleFailure(String configFile, Consumer<LifecycleObject> failureLifecycleBeanConsumer) {
     try {
       new ApplicationContextBuilder() {
 
@@ -100,7 +101,7 @@ public class MuleContextLifecycleTestCase extends AbstractMuleTestCase {
       }).build();
       fail(EXPECTED_A_CONTEXT_START_EXCEPTION_EXCEPTION);
     } catch (LifecycleException e) {
-      LifecycleBean lifecycleBean = (LifecycleBean) e.getComponent();
+      LifecycleObject lifecycleBean = (LifecycleObject) e.getComponent();
       failureLifecycleBeanConsumer.accept(lifecycleBean);
     } catch (Exception e) {
       fail(String.format("Expected a %s exception", LifecycleException.class.getName()));

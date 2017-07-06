@@ -17,7 +17,7 @@ public class MissingParserTestCase extends AbstractBadConfigTestCase {
 
   @Test
   public void testHelpfulErrorMessage() throws Exception {
-    assertErrorContains("Is the module or extension");
+    assertErrorContains("Invalid content was found starting with element 'parsers-test:missing'");
   }
 
 }

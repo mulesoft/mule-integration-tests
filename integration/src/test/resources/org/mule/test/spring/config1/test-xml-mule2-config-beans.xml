@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd">
+
+    <bean name="apple" class="org.mule.tck.testmodels.fruit.Apple"/>
+
+    <bean name="orange" class="org.mule.tck.testmodels.fruit.Orange">
+        <property name="brand" value="Juicy Baby!"/>
+        <property name="segments" value="9"/>
+        <property name="radius" value="4.21"/>
+        <property name="mapProperties">
+            <map>
+                <entry key="prop1" value="prop1"/>
+                <entry key="prop2" value="prop2"/>
+            </map>
+        </property>
+        <property name="listProperties">
+            <list>
+                <value>prop1</value>
+                <value>prop2</value>
+                <value>prop3</value>
+            </list>
+        </property>
+        <property name="arrayProperties">
+            <list>
+                <value>prop4</value>
+                <value>prop5</value>
+                <value>prop6</value>
+            </list>
+        </property>
+    </bean>
+
+</beans>

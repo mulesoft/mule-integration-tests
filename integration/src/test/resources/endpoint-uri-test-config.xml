@@ -1,16 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:spring="http://www.springframework.org/schema/beans"
-       xsi:schemaLocation="
-       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
-       http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 
-    <spring:bean name="bean1" class = "org.mule.test.EndpointURITestCase$Beans">
-        <spring:property name="prop1">
-            <spring:value>apple</spring:value>
-        </spring:property>
-    </spring:bean>
+    <object name="bean1" class = "org.mule.test.EndpointURITestCase$Beans">
+        <property key="prop1" value="apple"/>
+    </object>
     
 </mule>
                 

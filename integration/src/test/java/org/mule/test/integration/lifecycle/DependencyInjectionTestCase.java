@@ -11,6 +11,7 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.ArtifactObjectsDependencyInjectionStory.ARTIFACT_OBJECTS_DEPENDENCY_INJECTION_STORY;
 import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.LIFECYCLE_AND_DEPENDENCY_INJECTION;
+import org.mule.functional.api.component.DependencyInjectionObject;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -29,35 +30,34 @@ public class DependencyInjectionTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void validateInjectedObjectsDefinedInXmlConfig() {
-    DependencyInjectionBean dependencyInjectionBean = muleContext.getRegistry().get("dependencyInjectionBean");
-    validateInjectedObjects(dependencyInjectionBean);
+    DependencyInjectionObject dependencyInjectionObject = muleContext.getRegistry().get("dependencyInjectionBean");
+    validateInjectedObjects(dependencyInjectionObject);
   }
 
   @Test
   public void validateInjectedObjectsUsingInjector() throws MuleException {
-    DependencyInjectionBean dependencyInjectionBean = new DependencyInjectionBean();
-    muleContext.getInjector().inject(dependencyInjectionBean);
-    validateInjectedObjects(dependencyInjectionBean);
+    DependencyInjectionObject dependencyInjectionObject = new DependencyInjectionObject();
+    muleContext.getInjector().inject(dependencyInjectionObject);
+    validateInjectedObjects(dependencyInjectionObject);
   }
 
-  private void validateInjectedObjects(DependencyInjectionBean dependencyInjectionBean) {
-    assertThat(dependencyInjectionBean.getConfigurationComponentLocator(), notNullValue());
-    assertThat(dependencyInjectionBean.getExtensionsClient(), notNullValue());
-    assertThat(dependencyInjectionBean.getExpressionLanguage(), notNullValue());
-    assertThat(dependencyInjectionBean.getMuleExpressionLanguage(), notNullValue());
-    assertThat(dependencyInjectionBean.getTransformationService(), notNullValue());
-    assertThat(dependencyInjectionBean.getObjectSerializer(), notNullValue());
-    assertThat(dependencyInjectionBean.getServerNotificationHandler(), notNullValue());
-    assertThat(dependencyInjectionBean.getTransformationService(), notNullValue());
+  private void validateInjectedObjects(DependencyInjectionObject dependencyInjectionObject) {
+    assertThat(dependencyInjectionObject.getConfigurationComponentLocator(), notNullValue());
+    assertThat(dependencyInjectionObject.getExtensionsClient(), notNullValue());
+    assertThat(dependencyInjectionObject.getExpressionLanguage(), notNullValue());
+    assertThat(dependencyInjectionObject.getMuleExpressionLanguage(), notNullValue());
+    assertThat(dependencyInjectionObject.getTransformationService(), notNullValue());
+    assertThat(dependencyInjectionObject.getObjectSerializer(), notNullValue());
+    assertThat(dependencyInjectionObject.getServerNotificationHandler(), notNullValue());
 
-    assertThat(dependencyInjectionBean.getLocalObjectStoreManager(), notNullValue());
-    assertThat(dependencyInjectionBean.getObjectStoreManager(), notNullValue());
-    assertThat(dependencyInjectionBean.getObjectStoreManager().equals(dependencyInjectionBean.getLocalObjectStoreManager()),
+    assertThat(dependencyInjectionObject.getLocalObjectStoreManager(), notNullValue());
+    assertThat(dependencyInjectionObject.getObjectStoreManager(), notNullValue());
+    assertThat(dependencyInjectionObject.getObjectStoreManager().equals(dependencyInjectionObject.getLocalObjectStoreManager()),
                is(true));
 
-    assertThat(dependencyInjectionBean.getLocalLockFactory(), notNullValue());
-    assertThat(dependencyInjectionBean.getLockFactory(), notNullValue());
-    assertThat(dependencyInjectionBean.getLocalLockFactory().equals(dependencyInjectionBean.getLockFactory()),
+    assertThat(dependencyInjectionObject.getLocalLockFactory(), notNullValue());
+    assertThat(dependencyInjectionObject.getLockFactory(), notNullValue());
+    assertThat(dependencyInjectionObject.getLocalLockFactory().equals(dependencyInjectionObject.getLockFactory()),
                is(true));
   }
 

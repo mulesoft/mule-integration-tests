@@ -7,10 +7,17 @@
 package org.mule.test.spring;
 
 import org.mule.functional.AbstractConfigBuilderTestCase;
+import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.IntegrationTestCaseRunnerConfig;
+
+import org.junit.Rule;
 
 public class SpringNamespaceConfigBuilderTestCase extends AbstractConfigBuilderTestCase implements
     IntegrationTestCaseRunnerConfig {
+
+  @Rule
+  public SystemProperty springConfigFiles =
+      new SystemProperty(SPRING_CONFIG_FILES_PROPERTIES, "org/mule/test/spring/config1/test-xml-mule2-config-beans.xml");
 
   public SpringNamespaceConfigBuilderTestCase() {
     super(false);
@@ -20,6 +27,8 @@ public class SpringNamespaceConfigBuilderTestCase extends AbstractConfigBuilderT
   @Override
   public String[] getConfigFiles() {
     return new String[] {"org/mule/test/spring/config1/test-xml-mule2-config.xml",
-        "org/mule/test/spring/config1/test-xml-mule2-config-split.xml"};
+        "org/mule/test/spring/config1/test-xml-mule2-config-split.xml",
+        MULE_SPRING_CONFIG_FILE};
   }
+
 }

@@ -1,16 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xmlns:spring="http://www.springframework.org/schema/beans"
-      xsi:schemaLocation="
-       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
-       http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 
     <configuration-properties file="derby.properties"/>
 
     <!-- Data Source -->
-    <spring:bean id="jdbcDataSource2" class="org.apache.derby.jdbc.EmbeddedXADataSource" >
-        <spring:property name="databaseName" value="${database.name2}"/>
-    </spring:bean>
+    <object name="jdbcDataSource2" class="org.apache.derby.jdbc.EmbeddedXADataSource" >
+        <property key="databaseName" value="${database.name2}"/>
+    </object>
 
 </mule>

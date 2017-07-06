@@ -22,7 +22,7 @@ public class CustomTransactionManagerTestCase extends AbstractIntegrationTestCas
 
   @Override
   public String[] getConfigFiles() {
-    return new String[] {"test-custom-transaction-manager.xml", "test-custom-transaction-manager-beans.xml"};
+    return new String[] {"test-custom-transaction-manager.xml"};
   }
 
   @Test

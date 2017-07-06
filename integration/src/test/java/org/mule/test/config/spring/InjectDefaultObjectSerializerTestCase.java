@@ -9,20 +9,20 @@ package org.mule.test.config.spring;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.junit.Assert.assertThat;
-import org.mule.runtime.core.api.config.MuleProperties;
-import org.mule.runtime.api.serialization.DefaultObjectSerializer;
+import static org.mule.runtime.api.serialization.ObjectSerializer.DEFAULT_OBJECT_SERIALIZER_NAME;
 import org.mule.runtime.api.serialization.ObjectSerializer;
 import org.mule.runtime.api.serialization.SerializationProtocol;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.runner.RunnerDelegateTo;
 
+import org.junit.Test;
+import org.junit.runners.Parameterized;
+
 import java.util.Arrays;
 import java.util.Collection;
 
 import javax.inject.Inject;
-
-import org.junit.Test;
-import org.junit.runners.Parameterized;
+import javax.inject.Named;
 
 @RunnerDelegateTo(Parameterized.class)
 public class InjectDefaultObjectSerializerTestCase extends AbstractIntegrationTestCase {
@@ -52,13 +52,13 @@ public class InjectDefaultObjectSerializerTestCase extends AbstractIntegrationTe
         muleContext.getInjector().inject(new TestObjectSerializerInjectionTarget());
     assertThat(muleContext.getObjectSerializer(), is(sameInstance(injectionTarget.getObjectSerializer())));
     assertThat(injectionTarget.getObjectSerializer(),
-               is(sameInstance(muleContext.getRegistry().get(MuleProperties.OBJECT_SERIALIZER))));
+               is(sameInstance(muleContext.getRegistry().get(DEFAULT_OBJECT_SERIALIZER_NAME))));
   }
 
   public static class TestObjectSerializerInjectionTarget {
 
     @Inject
-    @DefaultObjectSerializer
+    @Named(DEFAULT_OBJECT_SERIALIZER_NAME)
     private ObjectSerializer objectSerializer;
 
     public ObjectSerializer getObjectSerializer() {

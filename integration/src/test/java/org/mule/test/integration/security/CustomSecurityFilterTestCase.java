@@ -29,7 +29,6 @@ public class CustomSecurityFilterTestCase extends AbstractIntegrationTestCase {
   @Override
   protected String[] getConfigFiles() {
     return new String[] {
-        "org/mule/test/integration/security/custom-security-filter-beans.xml",
         "org/mule/test/integration/security/custom-security-filter-test.xml"
     };
   }

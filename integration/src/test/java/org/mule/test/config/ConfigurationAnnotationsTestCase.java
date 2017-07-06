@@ -40,7 +40,7 @@ public class ConfigurationAnnotationsTestCase extends AbstractIntegrationTestCas
     assertThat(stb, not(nullValue()));
     assertThat(getDocName(stb), is("stb-transformer"));
     assertThat(getDocDescription(stb), is("Convert a String to a Byte Array"));
-    assertThat(getSourceFileLine(stb), is(10));
+    assertThat(getSourceFileLine(stb), is(8));
     assertThat(getSourceElement(stb),
                is("<string-to-byte-array-transformer name=\"StringtoByteArray\" doc:name=\"stb-transformer\">"
                    + lineSeparator() + "<annotations>" + lineSeparator()
@@ -104,7 +104,7 @@ public class ConfigurationAnnotationsTestCase extends AbstractIntegrationTestCas
     Transformer stb = muleContext.getRegistry().lookupTransformer("ManziTransformer");
     assertThat(stb, not(nullValue()));
     assertThat(getDocName(stb), is("manzi-transformer"));
-    assertThat(getSourceFileLine(stb), is(16));
+    assertThat(getSourceFileLine(stb), is(14));
     assertThat(getSourceElement(stb),
                is("<append-string-transformer message=\"Manzi\" name=\"ManziTransformer\" doc:name=\"manzi-transformer\"></append-string-transformer>"));
   }
