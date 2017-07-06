@@ -24,11 +24,13 @@ import org.mule.runtime.api.meta.model.parameter.ParameterizedModel;
 import org.mule.runtime.config.spring.dsl.model.ApplicationModel;
 import org.mule.runtime.config.spring.dsl.model.DslElementModel;
 import org.mule.runtime.config.spring.dsl.model.DslElementModelFactory;
+import org.mule.runtime.core.component.config.ClassLoaderResourceProvider;
 import org.mule.runtime.config.spring.dsl.processor.ArtifactConfig;
 import org.mule.runtime.config.spring.dsl.processor.ConfigFile;
 import org.mule.runtime.config.spring.dsl.processor.ConfigLine;
 import org.mule.runtime.config.spring.dsl.processor.xml.XmlApplicationParser;
 import org.mule.runtime.config.spring.dsl.processor.xml.XmlApplicationServiceRegistry;
+import org.mule.runtime.core.component.config.ResourceProvider;
 import org.mule.runtime.core.registry.SpiServiceRegistry;
 import org.mule.runtime.dsl.api.component.config.ComponentConfiguration;
 import org.mule.runtime.module.extension.internal.resources.MuleExtensionModelProvider;
@@ -178,7 +180,8 @@ public abstract class AbstractElementModelTestCase extends MuleArtifactFunctiona
         .addConfigFile(new ConfigFile(configFile, singletonList(configLine)))
         .build();
 
-    return new ApplicationModel(artifactConfig, new ArtifactDeclaration());
+    ResourceProvider externalResourceProvider = new ClassLoaderResourceProvider(muleContext.getExecutionClassLoader());
+    return new ApplicationModel(artifactConfig, new ArtifactDeclaration(), externalResourceProvider);
   }
 
   protected String write() throws Exception {
