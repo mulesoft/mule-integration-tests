@@ -1,19 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:jee="http://www.springframework.org/schema/jee"
-       xmlns:util="http://www.springframework.org/schema/util"
-    xsi:schemaLocation="
-       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
-       http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-3.1.xsd
-       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-current.xsd">
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:spring="http://www.mulesoft.org/schema/mule/spring"
+      xsi:schemaLocation="
+       http://www.mulesoft.org/schema/mule/spring http://www.mulesoft.org/schema/mule/spring/current/mule-spring.xsd
+       http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 
-    <jee:jndi-lookup id="apple" jndi-name="fruit/apple" environment-ref="jndiEnv"/>
+    <spring:config files="org/mule/test/spring/jndi-functional-test-beans.xml" name="springConfig"/>
 
-    <jee:jndi-lookup id="orange" jndi-name="fruit/orange" environment-ref="jndiEnv"/>
-
-    <util:properties id="jndiEnv">
-        <prop key="java.naming.factory.initial">org.mule.functional.jndi.TestContextFactory</prop>
-    </util:properties>
-
-</beans>
+</mule>

@@ -9,11 +9,13 @@ package org.mule.test.spring;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-
 import org.mule.functional.AbstractConfigBuilderTestCase;
 import org.mule.runtime.core.api.transformer.Transformer;
+import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.tck.testmodels.mule.TestCompressionTransformer;
 import org.mule.test.IntegrationTestCaseRunnerConfig;
+
+import org.junit.Rule;
 
 /**
  * This is an extended version of the same test covered in {@link SpringNamespaceConfigBuilderTestCase}. Both are translations of
@@ -26,6 +28,10 @@ import org.mule.test.IntegrationTestCaseRunnerConfig;
 public class SpringNamespaceConfigBuilderV2TestCase extends AbstractConfigBuilderTestCase implements
     IntegrationTestCaseRunnerConfig {
 
+  @Rule
+  public SystemProperty springConfig =
+      new SystemProperty(SPRING_CONFIG_FILES_PROPERTIES, "org/mule/test/spring/config2/test-xml-mule2-config-beans.xml");
+
   public SpringNamespaceConfigBuilderV2TestCase() {
     super(true);
     setDisposeContextPerClass(true);
@@ -35,7 +41,8 @@ public class SpringNamespaceConfigBuilderV2TestCase extends AbstractConfigBuilde
   public String[] getConfigFiles() {
     return new String[] {"org/mule/test/spring/config2/test-xml-mule2-config.xml",
         "org/mule/test/spring/config2/test-xml-mule2-config-split.xml",
-        "org/mule/test/spring/config2/test-xml-mule2-config-split-properties.xml"};
+        "org/mule/test/spring/config2/test-xml-mule2-config-split-properties.xml",
+        MULE_SPRING_CONFIG_FILE};
   }
 
   @Override

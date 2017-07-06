@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:spring="http://www.springframework.org/schema/beans"
        xsi:schemaLocation="
-               http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
                http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 
     <notifications dynamic="true">
@@ -30,22 +28,22 @@
     
     </notifications>
 
-    <spring:bean name="listener"
+    <object name="listener"
                  class="org.mule.test.config.spring.parsers.specific.ServerNotificationManagerTestCase$TestListener"/>
-    <spring:bean name="listener2"
+    <object name="listener2"
                  class="org.mule.test.config.spring.parsers.specific.ServerNotificationManagerTestCase$TestListener2"/>
-    <spring:bean name="securityListener"
+    <object name="securityListener"
                  class="org.mule.test.config.spring.parsers.specific.ServerNotificationManagerTestCase$TestSecurityListener"/>
 
     <!-- This bean is a listener but will only be registered using explicit configuration above (with subscription) -->
-    <spring:bean name="listener3"
+    <object name="listener3"
                 class="org.mule.test.config.spring.parsers.specific.ServerNotificationManagerTestCase$TestListener2"/>
    
     <!--
          This bean is a listener and will be registered with null subscription automatically because the same listener
          is not defined as a listener explicity above.
     -->
-    <spring:bean name="listener4"
+    <object name="listener4"
                 class="org.mule.test.config.spring.parsers.specific.ServerNotificationManagerTestCase$TestListener2"/>
         
 

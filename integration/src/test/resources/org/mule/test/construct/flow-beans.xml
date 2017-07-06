@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd">
+
+    <bean name="pojo" class="org.mule.test.construct.FlowConfigurationFunctionalTestCase$Pojo"/>
+
+    <bean name="appender" class="org.mule.runtime.core.transformer.simple.StringAppendTransformer">
+        <constructor-arg value="recieved"/>
+    </bean>
+
+    <bean name="test-array-appender" class="org.mule.test.construct.TestStringAppendTransformer">
+        <constructor-arg value="recieved"/>
+    </bean>
+
+</beans>

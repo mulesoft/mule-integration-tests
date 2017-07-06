@@ -7,10 +7,7 @@
 package org.mule.test.config.spring.parsers;
 
 import static org.hamcrest.Matchers.containsString;
-import org.mule.runtime.config.spring.SpringXmlConfigurationBuilder;
 import org.mule.runtime.core.api.MuleContext;
-import org.mule.runtime.core.api.config.ConfigurationBuilder;
-import org.mule.runtime.core.api.context.DefaultMuleContextFactory;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Rule;
@@ -36,10 +33,7 @@ public abstract class AbstractBadConfigTestCase extends AbstractIntegrationTestC
   }
 
   protected void parseConfig() throws Exception {
-    new DefaultMuleContextFactory().createMuleContext(getConfigurationBuilder());
+    super.createMuleContext();
   }
 
-  protected ConfigurationBuilder getConfigurationBuilder() throws Exception {
-    return new SpringXmlConfigurationBuilder(getConfigFile());
-  }
 }

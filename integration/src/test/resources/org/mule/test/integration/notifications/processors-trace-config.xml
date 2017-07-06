@@ -1,17 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
-      xmlns:spring="http://www.springframework.org/schema/beans"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:test="http://www.mulesoft.org/schema/mule/test"
-      xsi:schemaLocation="
-               http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
-               http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
                http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 
-    <spring:beans>
-        <spring:bean id="processorTraceAsserter" name="processorTraceAsserter" class="org.mule.test.core.context.notification.ProcessorsTraceTestCase.ProcessorsTraceAsserter" scope="prototype" />
-        <spring:bean id="processorTraceAsyncAsserter" name="processorTraceAsyncAsserter" class="org.mule.test.core.context.notification.ProcessorsTraceTestCase.ProcessorsTraceAsyncAsserter" scope="prototype" />
-    </spring:beans>
+    <object name="processorTraceAsserter" class="org.mule.test.core.context.notification.ProcessorsTraceTestCase.ProcessorsTraceAsserter" />
+    <object name="processorTraceAsserter2" class="org.mule.test.core.context.notification.ProcessorsTraceTestCase.ProcessorsTraceAsserter" />
+    <object name="processorTraceAsyncAsserter" class="org.mule.test.core.context.notification.ProcessorsTraceTestCase.ProcessorsTraceAsyncAsserter" />
+    <object name="processorTraceAsyncAsserter2" class="org.mule.test.core.context.notification.ProcessorsTraceTestCase.ProcessorsTraceAsyncAsserter" />
 
 
     <sub-flow name="subFlow">
@@ -19,7 +16,7 @@
     </sub-flow>
     
     <flow name="flow">
-        <processor ref="processorTraceAsserter"/>
+        <processor ref="processorTraceAsserter2"/>
     </flow>
 
     <flow name="flowStatic">
@@ -65,7 +62,7 @@
     </sub-flow>
     
     <flow name="flowInAsync">
-        <processor ref="processorTraceAsyncAsserter"/>
+        <processor ref="processorTraceAsyncAsserter2"/>
     </flow>
     
     <flow name="flowStaticWithAsync">
