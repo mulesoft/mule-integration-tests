@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.mule.runtime</groupId>
     <artifactId>mule</artifactId>
-    <version>4.0.0-BETA.2-SNAPSHOT</version>
+    <version>4.0.0-BETA.x-SNAPSHOT</version>
   </parent>
   <groupId>org.mule.tests</groupId>
   <artifactId>mule-extensions-integration-tests</artifactId>
@@ -24,11 +24,11 @@
   </modules>
 
     <properties>
-      <muleSchedulerServiceTestVersion>1.0.0-BETA.2-SNAPSHOT</muleSchedulerServiceTestVersion>
-      <muleHttpServiceTestVersion>1.0.0-BETA.2-SNAPSHOT</muleHttpServiceTestVersion>
-      <muleOAuthServiceTestVersion>1.0.0-BETA.2-SNAPSHOT</muleOAuthServiceTestVersion>
-      <muleSoapServiceTestVersion>1.0.0-BETA.2-SNAPSHOT</muleSoapServiceTestVersion>
-      <muleExtensionTestSoapTestVersion>1.0.0-BETA.2-SNAPSHOT</muleExtensionTestSoapTestVersion>
+      <muleSchedulerServiceTestVersion>1.0.0-BETA.x-SNAPSHOT</muleSchedulerServiceTestVersion>
+      <muleHttpServiceTestVersion>1.0.0-BETA.x-SNAPSHOT</muleHttpServiceTestVersion>
+      <muleOAuthServiceTestVersion>1.0.0-BETA.x-SNAPSHOT</muleOAuthServiceTestVersion>
+      <muleSoapServiceTestVersion>1.0.0-BETA.x-SNAPSHOT</muleSoapServiceTestVersion>
+      <muleExtensionTestSoapTestVersion>1.0.0-BETA.x-SNAPSHOT</muleExtensionTestSoapTestVersion>
 
       <muleValidationModuleTestVersion>0.8.0-SNAPSHOT</muleValidationModuleTestVersion>
       <muleScriptingModuleVersion>0.8.0-SNAPSHOT</muleScriptingModuleVersion>
