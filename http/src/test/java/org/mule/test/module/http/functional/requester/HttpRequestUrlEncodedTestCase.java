@@ -7,13 +7,14 @@
 package org.mule.test.module.http.functional.requester;
 
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.startsWith;
-import static org.junit.Assert.assertThat;
 import static org.mule.functional.junit4.matchers.MessageMatchers.hasPayload;
 import static org.mule.runtime.http.api.HttpHeaders.Values.APPLICATION_X_WWW_FORM_URLENCODED;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HttpStory.URL_ENCODED;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.startsWith;
+import static org.junit.Assert.assertThat;
+
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.http.api.HttpHeaders;
 
@@ -50,7 +51,7 @@ public class HttpRequestUrlEncodedTestCase extends AbstractHttpRequestTestCase {
   public void receivesUrlEncodedBody() throws Exception {
     Event event = flowRunner("formParamInbound").withPayload(TEST_MESSAGE).run();
 
-    assertThat(event.getMessage(), hasPayload(equalTo("testValue1=testValue2")));
+    assertThat(event.getMessage(), hasPayload(equalTo("test=testValue1testValue2")));
   }
 
   @Override

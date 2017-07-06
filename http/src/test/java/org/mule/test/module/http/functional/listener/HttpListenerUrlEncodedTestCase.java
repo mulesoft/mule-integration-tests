@@ -6,10 +6,11 @@
  */
 package org.mule.test.module.http.functional.listener;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HttpStory.URL_ENCODED;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.module.http.functional.AbstractHttpTestCase;
@@ -49,7 +50,7 @@ public class HttpListenerUrlEncodedTestCase extends AbstractHttpTestCase {
         .bodyForm(new BasicNameValuePair(PARAM_1_NAME, PARAM_1_VALUE), new BasicNameValuePair(PARAM_2_NAME, PARAM_2_VALUE))
         .execute();
 
-    assertThat(response.returnContent().asString(), is(PARAM_1_VALUE + "=" + PARAM_2_VALUE));
+    assertThat(response.returnContent().asString(), is("test=" + PARAM_1_VALUE + PARAM_2_VALUE));
   }
 
   @Test

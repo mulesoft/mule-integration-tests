@@ -12,7 +12,7 @@
 
     <flow name="inbound">
         <http:listener config-ref="listenerConfig"  path="receive"/>
-        <set-payload value="#[{payload.param1 : payload.param2}]"/>
+        <set-payload value="#[{test : payload.param1 ++ payload.param2}]"/>
     </flow>
 
     <flow name="outbound">

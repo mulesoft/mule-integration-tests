@@ -28,7 +28,8 @@
 
     <flow name="formParamInbound">
         <http:request config-ref="config" path="testPath" method="GET"/>
-        <set-payload value="#[{payload.testName1 : payload.testName2}]"/>
+        <!--<logger message="#[payload]" level="WARN"/> -->
+        <set-payload value="#[{test : payload.testName1 ++ payload.testName2}]"/>
         <object-to-string-transformer/>
     </flow>
 
