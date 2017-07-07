@@ -18,12 +18,6 @@
 
     <object name="apple" class="org.mule.tck.testmodels.fruit.Apple"/>
 
-    <interceptor-stack name="testInterceptorStack">
-        <logging-interceptor/>
-        <timer-interceptor/>
-        <custom-interceptor class="org.mule.runtime.core.interceptor.LoggingInterceptor"/>
-    </interceptor-stack>
-
     <!-- MULE-3932 Ensure interceptors can be used with shortcut component config -->
     <flow name="MULE3932Service">
         <component class="org.mule.tck.testmodels.fruit.Apple">
