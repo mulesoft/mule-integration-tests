@@ -1,13 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xmlns:spring="http://www.springframework.org/schema/beans"
+      xmlns:transports="http://www.mulesoft.org/schema/mule/transports"
       xmlns="http://www.mulesoft.org/schema/mule/core"
-      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-
-               http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+      xsi:schemaLocation="
+               http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+               http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
+               http://www.mulesoft.org/schema/mule/transports http://www.mulesoft.org/schema/mule/transports/current/mule-transports.xsd">
 
     <object name="testMergeStrategy"
                  class="org.mule.test.routing.ScatterGatherRouterTestCase$TestAggregationStrategy"/>
+
+    <transports:combine-collections-transformer name="combineCollectionsTransformer"/>
 
     <flow name="minimalConfig">
         <scatter-gather>
@@ -317,7 +322,7 @@
     </sub-flow>
 
     <sub-flow name="testRoutes">
-        <combine-collections-transformer/>
+        <processor ref="combineCollectionsTransformer"/>
         <test:assert expression="#[mel:payload[0] == 'apple']"/>
         <test:assert expression="#[mel:payload[1] == 'banana']"/>
         <test:assert expression="#[mel:payload[2] == 'orange']"/>
