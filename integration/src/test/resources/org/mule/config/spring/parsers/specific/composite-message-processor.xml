@@ -8,7 +8,7 @@
         <append-string-transformer message="1" />
         <append-string-transformer message="2" />
         <append-string-transformer message="3" />
-        <custom-interceptor class="org.mule.runtime.core.interceptor.LoggingInterceptor"/>
+        <logging-interceptor/>
     </processor-chain>
 
     <processor-chain name="composite2">
