@@ -7,9 +7,11 @@
 package org.mule.test.module.http.functional.requester;
 
 import static java.lang.String.format;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.extension.http.internal.listener.HttpListener.HTTP_NAMESPACE;
+import static org.mule.functional.junit4.matchers.MessageMatchers.hasPayload;
 import static org.mule.runtime.extension.api.error.MuleErrors.ANY;
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.BAD_REQUEST;
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.EXPECTATION_FAILED;
@@ -77,7 +79,7 @@ public class HttpRequestErrorHandlingTestCase extends AbstractHttpRequestTestCas
 
   @Test
   public void notFound() throws Exception {
-    verifyErrorWhenReceiving(NOT_FOUND, String.format(": not found (404)", httpPort.getValue()));
+    verifyErrorWhenReceiving(NOT_FOUND, format(": not found (404)", httpPort.getValue()));
   }
 
   @Test
@@ -113,7 +115,7 @@ public class HttpRequestErrorHandlingTestCase extends AbstractHttpRequestTestCas
   @Test
   public void notMappedStatus() throws Exception {
     verifyErrorWhenReceiving(EXPECTATION_FAILED, "417 not understood", ANY.name(),
-                             getErrorMessage(EXPECTATION_FAILED, " with status code 417"));
+                             getErrorMessage(" with status code 417"));
   }
 
   @Test
@@ -121,22 +123,26 @@ public class HttpRequestErrorHandlingTestCase extends AbstractHttpRequestTestCas
     timeout = true;
     Event result = getFlowRunner("handled", httpPort.getNumber()).run();
     done.release();
-    assertThat(result.getMessage().getPayload().getValue(), is("Timeout exceeded timeout"));
+    assertThat(result.getMessage(), hasPayload(equalTo(getErrorMessage(": Timeout exceeded") + " timeout")));
   }
 
   @Test
   public void connectivity() throws Exception {
     Event result = getFlowRunner("handled", unusedPort.getNumber()).run();
-    assertThat(result.getMessage().getPayload().getValue(), is("Connection refused connectivity"));
+    assertThat(result.getMessage(), hasPayload(equalTo(getErrorMessage(": Connection refused", unusedPort) + " connectivity")));
   }
 
-  private String getErrorMessage(HttpStatus status, String customMessage) {
-    return String.format("HTTP GET on resource http://localhost:%s/testPath failed%s.", httpPort.getValue(), customMessage);
+  private String getErrorMessage(String customMessage, DynamicPort port) {
+    return format("HTTP GET on resource http://localhost:%s/testPath failed%s.", port.getValue(), customMessage);
+  }
+
+  private String getErrorMessage(String customMessage) {
+    return getErrorMessage(customMessage, httpPort);
   }
 
   void verifyErrorWhenReceiving(HttpStatus status, String expectedMessage) throws Exception {
     verifyErrorWhenReceiving(status, format("%s %s", status.getStatusCode(), status.getReasonPhrase()), status.name(),
-                             getErrorMessage(status, expectedMessage));
+                             getErrorMessage(expectedMessage));
   }
 
   void verifyErrorWhenReceiving(HttpStatus status, Object expectedResult, String expectedError, String expectedMessage)

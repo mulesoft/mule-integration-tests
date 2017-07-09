@@ -24,8 +24,6 @@ import org.mule.functional.junit4.rules.ExpectedError;
 import org.mule.runtime.core.api.Event;
 import org.mule.tck.junit4.rule.DynamicPort;
 
-import java.net.ConnectException;
-
 import org.junit.Rule;
 import org.junit.Test;
 import ru.yandex.qatools.allure.annotations.Features;
@@ -127,7 +125,8 @@ public class HttpRequestDynamicConfigTestCase extends AbstractHttpRequestTestCas
     assertThat(headers.keys(), not(hasItem(TRANSFER_ENCODING)));
 
 
-    expectedError.expectError(HTTP_NAMESPACE.toUpperCase(), CONNECTIVITY, ConnectException.class, "Connection refused");
+    expectedError.expectErrorType(HTTP_NAMESPACE.toUpperCase(), CONNECTIVITY.name());
+    expectedError.expectMessage(containsString("Connection refused."));
     flowRunner("client2")
         .withVariable("parse", false)
         .withVariable("stream", "AUTO")

@@ -28,7 +28,7 @@
         <http:listener path="/" config-ref="persistentConfigCloseHeader" >
             <http:response>
                 <http:headers>
-                    #[mel:['Connection' : 'close']]
+                    #[{'Connection' : 'close'}]
                 </http:headers>
             </http:response>
                 </http:listener>

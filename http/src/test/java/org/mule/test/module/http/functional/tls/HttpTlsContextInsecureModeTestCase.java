@@ -8,6 +8,7 @@ package org.mule.test.module.http.functional.tls;
 
 import static org.apache.http.HttpStatus.SC_INTERNAL_SERVER_ERROR;
 import static org.apache.http.HttpStatus.SC_OK;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mule.test.module.http.functional.matcher.HttpResponseContentStringMatcher.body;
@@ -69,7 +70,7 @@ public class HttpTlsContextInsecureModeTestCase extends AbstractHttpTlsContextTe
     HttpResponse response = executeGetRequest(secureModeInvalidUrl);
 
     assertThat(response, hasStatusCode(SC_INTERNAL_SERVER_ERROR));
-    assertThat(response, body(is(ERROR_RESPONSE)));
+    assertThat(response, body(containsString(ERROR_RESPONSE)));
   }
 
   @Test
@@ -85,7 +86,7 @@ public class HttpTlsContextInsecureModeTestCase extends AbstractHttpTlsContextTe
     HttpResponse response = executeGetRequest(defaultModeInvalidUrl);
 
     assertThat(response, hasStatusCode(SC_INTERNAL_SERVER_ERROR));
-    assertThat(response, body(is(ERROR_RESPONSE)));
+    assertThat(response, body(containsString(ERROR_RESPONSE)));
   }
 
 }

@@ -7,11 +7,14 @@
 package org.mule.test.module.http.functional.requester;
 
 import static java.lang.String.format;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.http.api.HttpConstants.Method.POST;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
+import static org.mule.test.allure.AllureConstants.HttpFeature.HttpStory.HTTPS;
+import org.mule.extension.http.api.error.HttpRequestFailedException;
 import org.mule.functional.junit4.rules.ExpectedError;
 import org.mule.runtime.api.tls.TlsContextFactory;
 import org.mule.runtime.api.tls.TlsContextFactoryBuilder;
@@ -27,19 +30,18 @@ import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.module.http.functional.AbstractHttpTestCase;
 
-import java.io.IOException;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import ru.yandex.qatools.allure.annotations.Description;
 import ru.yandex.qatools.allure.annotations.Features;
+import ru.yandex.qatools.allure.annotations.Stories;
 
-/**
- * Sets up some HTTPS servers and clients with different protocols and ciphers. Verifies only matching configurations are
- * successful interacting with each other.
- */
 @Features(HTTP_EXTENSION)
+@Stories(HTTPS)
+@Description("Sets up some HTTPS servers and clients with different protocols and ciphers. Verifies only matching configurations "
+    + "are successful interacting with each other.")
 public class HttpRestrictedCiphersAndProtocolsTestCase extends AbstractHttpTestCase {
 
   @Rule
@@ -121,13 +123,15 @@ public class HttpRestrictedCiphersAndProtocolsTestCase extends AbstractHttpTestC
 
   @Test
   public void failsWithProtocolMismatch() throws Exception {
-    expectedError.expectCause(instanceOf(IOException.class));
+    expectedError.expectCause(instanceOf(HttpRequestFailedException.class));
+    expectedError.expectMessage(containsString("Remotely closed"));
     flowRunner("12Client1Server").withPayload(TEST_PAYLOAD).run();
   }
 
   @Test
   public void failsWithCipherSuiteMismatch() throws Exception {
-    expectedError.expectCause(instanceOf(IOException.class));
+    expectedError.expectCause(instanceOf(HttpRequestFailedException.class));
+    expectedError.expectMessage(containsString("Remotely closed"));
     flowRunner("12CipherClient1CipherServer").withPayload(TEST_PAYLOAD).run();
   }
 }

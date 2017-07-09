@@ -69,7 +69,7 @@ public class HttpTlsContextCustomProtocolsTestCase extends AbstractHttpTlsContex
   }
 
   @Test
-  @Ignore("MULE-10752")
+  @Ignore("MULE-10752: when the requester and the listener use different protocols it gives a timeout")
   public void testGlobalTlsContextCustomProtocolsRestrictive() throws Exception {
     HttpResponse response = executeGetRequest(customInvalidProtocolsUrl);
 

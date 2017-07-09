@@ -20,7 +20,7 @@
         <http:listener config-ref="httpConf" path="testBuilder">
             <http:response>
                 <http:headers>
-                    #[mel:['content-type' : 'text/plain']]
+                    #[{'content-type' : 'text/plain'}]
                 </http:headers>
             </http:response>
         </http:listener>

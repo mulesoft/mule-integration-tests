@@ -13,7 +13,7 @@
     <flow name="headerList">
         <http:request config-ref="config" path="testPath">
             <http:headers>
-                #[mel:['testName1' : 'testValue1', headerName : headerValue]]
+                #[{'testName1' : 'testValue1', (headerName) : headerValue}]
             </http:headers>
         </http:request>
     </flow>
@@ -53,7 +53,7 @@
     <flow name="hostHeader">
         <http:request config-ref="config" path="testPath">
             <http:headers>
-                #[mel:['Host' : server.systemProperties['host']]]
+                #[{'Host' : server.systemProperties.host}]
             </http:headers>
         </http:request>
     </flow>
@@ -61,7 +61,7 @@
     <flow name="transferEncodingHeader">
         <http:request config-ref="config" path="testPath" method="POST">
             <http:headers>
-                #[mel:['Transfer-Encoding' : server.systemProperties['encoding']]]
+                #[{'Transfer-Encoding' : server.systemProperties.encoding}]
             </http:headers>
         </http:request>
     </flow>

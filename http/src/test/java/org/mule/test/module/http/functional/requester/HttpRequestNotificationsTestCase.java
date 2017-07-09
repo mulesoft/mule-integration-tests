@@ -32,7 +32,7 @@ import org.junit.Test;
 import ru.yandex.qatools.allure.annotations.Features;
 
 //TODO: MULE-10340 - Add notifications to HTTP request
-@Ignore
+@Ignore("MULE-10340: Add notifications to HTTP request")
 @Features(HTTP_EXTENSION)
 public class HttpRequestNotificationsTestCase extends AbstractHttpRequestTestCase {
 

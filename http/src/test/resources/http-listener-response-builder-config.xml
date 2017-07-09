@@ -25,7 +25,7 @@
         <http:listener config-ref="listenerConfig" path="${twoHeadersResponseBuilderPath}">
             <http:response>
                 <http:headers>
-                    #[mel:['content-type' : 'text/x-javascript', 'Content-Type' : 'application/json']]
+                    #[{'content-type' : 'text/x-javascript', 'Content-Type' : 'application/json'}]
                 </http:headers>
             </http:response>
         </http:listener>
@@ -44,7 +44,7 @@
         <http:listener config-ref="listenerConfig" path="${headerResponseBuilderPath}">
             <http:response>
                 <http:headers>
-                    #[mel:['User-Agent' : 'Mule 4.0.0', 'Date' : '2016-06-08T13:34:41.080-03:00']]
+                    #[{'User-Agent' : 'Mule 4.0.0', 'Date' : '2016-06-08T13:34:41.080-03:00'}]
                 </http:headers>
             </http:response>
         </http:listener>
@@ -54,7 +54,7 @@
     <flow name="headersResponseBuilderFlow">
         <http:listener config-ref="listenerConfig" path="${headersResponseBuilderPath}">
             <http:response>
-                <http:headers>#[mel:['User-Agent': 'Mule 4.0.0','Date': server.dateTime.toString()]]</http:headers>
+                <http:headers>#[{'User-Agent': 'Mule 4.0.0','Date': now()}]</http:headers>
             </http:response>
         </http:listener>
         <logger/>
@@ -64,7 +64,7 @@
         <http:listener config-ref="listenerConfig" path="${headersOverrideResponseBuilderPath}">
             <http:response>
                 <http:headers>
-                    #[mel:['User-Agent': 'Mule 4.0.0','Date': server.dateTime.toString()]]
+                    #[{'User-Agent': 'Mule 4.0.0','Date': now()}]
                 </http:headers>
             </http:response>
         </http:listener>
@@ -103,7 +103,7 @@
     <flow name="errorHeaderResponseBuilderFlow">
         <http:listener config-ref="listenerConfig" path="${errorHeaderResponseBuilderPath}">
             <http:error-response>
-                <http:headers>#[mel:['User-Agent': 'Mule 4.0.0','Date': server.dateTime.toString()]]</http:headers>
+                <http:headers>#[{'User-Agent': 'Mule 4.0.0','Date': now()}]</http:headers>
             </http:error-response>
         </http:listener>
         <test:processor throwException="true"/>
@@ -113,7 +113,7 @@
         <http:listener config-ref="listenerConfig" path="${errorHeadersResponseBuilderPath}">
             <http:error-response>
                 <http:headers>
-                    #[mel:['User-Agent': 'Mule 4.0.0','Date': server.dateTime.toString()]]
+                    #[{'User-Agent': 'Mule 4.0.0','Date': now()}]
                 </http:headers>
             </http:error-response>
         </http:listener>
@@ -124,7 +124,7 @@
         <http:listener config-ref="listenerConfig" path="${errorHeadersOverrideResponseBuilderPath}">
             <http:error-response>
                 <http:headers>
-                    #[mel:['User-Agent': 'Mule 4.0.0','Date': server.dateTime.toString()]]
+                    #[{'User-Agent': 'Mule 4.0.0','Date': now()}]
                 </http:headers>
             </http:error-response>
         </http:listener>

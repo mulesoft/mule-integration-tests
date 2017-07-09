@@ -6,18 +6,18 @@
  */
 package org.mule.test.module.http.functional.requester;
 
+import static java.util.Collections.emptyMap;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 import static org.mule.functional.junit4.matchers.MessageMatchers.hasPayload;
 import static org.mule.functional.junit4.matchers.ThatMatcher.that;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HttpStory.ERROR_HANDLING;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HttpStory.ERROR_MAPPINGS;
-import static java.util.Collections.emptyMap;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.module.http.functional.AbstractHttpTestCase;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import ru.yandex.qatools.allure.annotations.Description;
@@ -52,6 +52,7 @@ public class HttpRequestErrorMappingsTestCase extends AbstractHttpTestCase {
     verify("simpleMapping", CONNECT_ERROR_MESSAGE);
   }
 
+  @Ignore("MULE-13009: Operation error mappings are broken.")
   @Test
   @Description("Verifies that a mapped error via a custom matcher is handled. ")
   public void matchingMappedRequest() throws Exception {
@@ -64,6 +65,7 @@ public class HttpRequestErrorMappingsTestCase extends AbstractHttpTestCase {
     verify("complexMapping", UNMATCHED_ERROR_MESSAGE, "Potato!");
   }
 
+  @Ignore("MULE-13009: Operation error mappings are broken.")
   @Test
   @Description("Verifies that each error is correctly handled given an operation with multiple mappings.")
   public void multipleMappingsRequest() throws Exception {

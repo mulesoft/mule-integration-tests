@@ -19,7 +19,7 @@
         <set-payload value="{ &quot;key1&quot; : &quot;value, &quot;key2&quot; : 2 }" mimeType="text/plain" encoding="UTF-8"/>
         <http:request config-ref="requesterConfig" path="testPath" method="GET">
             <http:headers>
-                #[mel:['content-type' : 'application/json; charset=UTF-8']]
+                #[{'content-type' : 'application/json; charset=UTF-8'}]
             </http:headers>
         </http:request>
     </flow>

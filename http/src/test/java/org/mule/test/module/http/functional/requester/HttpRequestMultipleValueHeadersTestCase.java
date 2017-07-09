@@ -26,16 +26,15 @@ import com.google.common.collect.Multimaps;
 import java.util.Collection;
 import java.util.List;
 
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
+import ru.yandex.qatools.allure.annotations.Description;
 import ru.yandex.qatools.allure.annotations.Features;
 import ru.yandex.qatools.allure.annotations.Stories;
 
 
 @Features(HTTP_EXTENSION)
 @Stories(MULTI_MAP)
-@Ignore("MULE-11606: Support a way to have DW handle multimaps")
 public class HttpRequestMultipleValueHeadersTestCase extends AbstractHttpRequestTestCase {
 
   @Rule
@@ -56,7 +55,8 @@ public class HttpRequestMultipleValueHeadersTestCase extends AbstractHttpRequest
   }
 
   @Test
-  public void preservesOrderAndFormatWithMultipleValuedHeader() throws Exception {
+  @Description("Verifies that multiple valued headers sent preserve order and format.")
+  public void sendsMultipleValuedHeader() throws Exception {
     runFlow("out");
 
     assertThat(headers.asMap(), hasKey("multipleHeader"));
@@ -65,6 +65,7 @@ public class HttpRequestMultipleValueHeadersTestCase extends AbstractHttpRequest
   }
 
   @Test
+  @Description("Verifies that multiple valued headers received preserve order and format.")
   public void receivesMultipleValuedHeader() throws Exception {
     Event event = runFlow("in");
 
