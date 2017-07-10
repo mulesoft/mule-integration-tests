@@ -53,7 +53,6 @@ public abstract class HttpListenerResponseStreamingTestCase extends AbstractHttp
 
   public static final String TEST_BODY = RandomStringUtils.randomAlphabetic(100 * 1024);
   public static final String TEST_BODY_MAP = "one=1&two=2";
-  public static final MultiPartPayload TEST_BODY_PARTS = createMultipartPayload();
 
   @Rule
   public SystemProperty stringPayloadLength = new SystemProperty("stringPayloadLength", String.valueOf(TEST_BODY.length()));
