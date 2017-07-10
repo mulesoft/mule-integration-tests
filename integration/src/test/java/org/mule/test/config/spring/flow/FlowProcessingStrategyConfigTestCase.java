@@ -41,14 +41,6 @@ public class FlowProcessingStrategyConfigTestCase extends AbstractIntegrationTes
   }
 
   @Test
-  public void testCustom() throws Exception {
-    ProcessingStrategy processingStrategy = getFlowProcessingStrategy("customProcessingStrategyFlow");
-    assertThat(processingStrategy, instanceOf(new CustomProcessingStrategyFactory().getProcessingStrategyType()));
-
-    assertThat(((CustomProcessingStrategyFactory) processingStrategy).foo, is("bar"));
-  }
-
-  @Test
   public void testDefaultAsync() throws Exception {
     assertThat(getFlowProcessingStrategy("defaultAsync"),
                instanceOf(new TransactionAwareWorkQueueProcessingStrategyFactory().getProcessingStrategyType()));
@@ -58,24 +50,4 @@ public class FlowProcessingStrategyConfigTestCase extends AbstractIntegrationTes
     Flow flow = (Flow) getFlowConstruct(flowName);
     return flow.getProcessingStrategy();
   }
-
-  public static class CustomProcessingStrategyFactory extends AbstractProcessingStrategy implements ProcessingStrategyFactory {
-
-    String foo;
-
-    public void setFoo(String foo) {
-      this.foo = foo;
-    }
-
-    @Override
-    public ProcessingStrategy create(MuleContext muleContext, String schedulersNamePrefix) {
-      return this;
-    }
-
-    @Override
-    public Class<? extends ProcessingStrategy> getProcessingStrategyType() {
-      return getClass();
-    }
-  }
-
 }

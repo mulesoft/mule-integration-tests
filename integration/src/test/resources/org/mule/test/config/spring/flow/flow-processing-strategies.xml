@@ -11,18 +11,10 @@
         <logger />
     </flow>
 
-    <flow name="customProcessingStrategyFlow" processingStrategy="customStrategy">
-        <logger />
-    </flow>
-    
     <flow name="defaultAsync">
         <async>
             <logger />
         </async>
     </flow>
-    
-    <custom-processing-strategy name="customStrategy" class="org.mule.test.config.spring.flow.FlowProcessingStrategyConfigTestCase$CustomProcessingStrategyFactory">
-        <property key="foo" value="bar" />
-    </custom-processing-strategy>
 
 </mule>
