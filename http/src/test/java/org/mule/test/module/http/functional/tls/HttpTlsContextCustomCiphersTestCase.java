@@ -8,8 +8,11 @@ package org.mule.test.module.http.functional.tls;
 
 import static org.apache.http.HttpStatus.SC_INTERNAL_SERVER_ERROR;
 import static org.apache.http.HttpStatus.SC_OK;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
+import static org.mule.test.allure.AllureConstants.HttpFeature.HttpStory.HTTPS;
 import static org.mule.test.module.http.functional.matcher.HttpResponseContentStringMatcher.body;
 import static org.mule.test.module.http.functional.matcher.HttpResponseStatusCodeMatcher.hasStatusCode;
 import org.mule.tck.junit4.rule.DynamicPort;
@@ -18,8 +21,11 @@ import org.mule.tck.junit4.rule.SystemProperty;
 import org.apache.http.HttpResponse;
 import org.junit.ClassRule;
 import org.junit.Test;
+import ru.yandex.qatools.allure.annotations.Features;
+import ru.yandex.qatools.allure.annotations.Stories;
 
-
+@Features(HTTP_EXTENSION)
+@Stories(HTTPS)
 public class HttpTlsContextCustomCiphersTestCase extends AbstractHttpTlsContextTestCase {
 
   @ClassRule
@@ -70,7 +76,7 @@ public class HttpTlsContextCustomCiphersTestCase extends AbstractHttpTlsContextT
     HttpResponse response = executeGetRequest(validProtocolInvalidCipher);
 
     assertThat(response, hasStatusCode(SC_INTERNAL_SERVER_ERROR));
-    assertThat(response, body(is(ERROR_RESPONSE)));
+    assertThat(response, body(containsString(ERROR_RESPONSE)));
   }
 
 }

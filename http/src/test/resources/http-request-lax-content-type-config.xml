@@ -14,14 +14,14 @@
         <http:request-connection host="localhost" port="${httpPort}"/>
     </http:request-config>
 
-    <flow name="requesterInvalidContentTypeClient" >
+    <flow name="requesterInvalidContentTypeClient">
         <http:listener config-ref="httpConf" path="requestClientInvalid"/>
 
         <set-payload value="{ &quot;key1&quot; : &quot;value, &quot;key2&quot; : 2 }"/>
 
         <http:request config-ref="requesterConfig" path="requestServer" method="GET">
             <http:headers>
-                #[mel:['Content-Type' : 'invalidMimeType']]
+                #[{'Content-Type' : 'invalidMimeType'}]
             </http:headers>
         </http:request>
     </flow>
@@ -29,6 +29,6 @@
     <flow name="requesterContentTypeServer" >
         <http:listener config-ref="httpConf" path="requestServer"/>
 
-        <set-payload value="#[mel:message.getAttributes().getHeaders().get('content-type')]"/>
+        <set-payload value="#[attributes.headers.'content-type']"/>
     </flow>
 </mule>

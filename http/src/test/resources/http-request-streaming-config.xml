@@ -33,7 +33,7 @@
     <flow name="streamingAutoBothHeaders">
         <http:request config-ref="requestConfig"  method="POST" path="path">
             <http:headers>
-                #[mel:['Transfer-Encoding' : 'chunked' , 'Content-Length' : '12']]
+                #[{'Transfer-Encoding' : 'chunked' , 'Content-Length' : '12'}]
             </http:headers>
         </http:request>
         <object-to-string-transformer />

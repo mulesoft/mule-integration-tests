@@ -6,6 +6,9 @@
  */
 package org.mule.test.module.http.functional.proxy;
 
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.endsWith;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.startsWith;
@@ -13,7 +16,6 @@ import static org.junit.Assert.assertThat;
 import static org.mule.functional.api.component.FlowAssert.verify;
 import static org.mule.runtime.http.api.HttpHeaders.Names.X_FORWARDED_FOR;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
-
 import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.runtime.core.api.util.concurrent.Latch;
 import org.mule.runtime.http.api.HttpHeaders;
@@ -22,7 +24,14 @@ import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.module.http.functional.TestInputStream;
 import org.mule.test.module.http.functional.requester.AbstractHttpRequestTestCase;
 
+import com.ning.http.client.AsyncHttpClient;
+import com.ning.http.client.AsyncHttpClientConfig;
+import com.ning.http.client.ListenableFuture;
+import com.ning.http.client.generators.InputStreamBodyGenerator;
+import com.ning.http.client.providers.grizzly.GrizzlyAsyncHttpProvider;
+
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -38,13 +47,6 @@ import org.apache.http.entity.ContentType;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
-
-import com.ning.http.client.AsyncHttpClient;
-import com.ning.http.client.AsyncHttpClientConfig;
-import com.ning.http.client.ListenableFuture;
-import com.ning.http.client.generators.InputStreamBodyGenerator;
-import com.ning.http.client.providers.grizzly.GrizzlyAsyncHttpProvider;
-
 import ru.yandex.qatools.allure.annotations.Features;
 
 @Features(HTTP_EXTENSION)
@@ -53,6 +55,8 @@ public class HttpProxyTemplateTestCase extends AbstractHttpRequestTestCase {
   @Rule
   public DynamicPort proxyPort = new DynamicPort("proxyPort");
 
+  private static final String HEADER = "multiple";
+  private static final String MULTIPLE_KEY_QUERY = "/test?key=value&key=value%202";
   private static String SENSING_REQUEST_RESPONSE_PROCESSOR_NAME = "sensingRequestResponseProcessor";
   private RequestHandlerExtender handlerExtender;
   private boolean consumeAllRequest = true;
@@ -248,6 +252,23 @@ public class HttpProxyTemplateTestCase extends AbstractHttpRequestTestCase {
     SensingNullRequestResponseMessageProcessor requestResponseProcessor = getSensingNullRequestResponseMessageProcessor();
     assertThat(requestResponseProcessor.responseThread.getName(), startsWith(IO_THREAD_PREFIX));
     verify();
+  }
+
+  @Test
+  public void forwardsMultipleValuedHeadersAndQueryParams() throws Exception {
+    Response response = Request.Get(getProxyUrl(MULTIPLE_KEY_QUERY))
+        .addHeader(HEADER, "value1")
+        .addHeader(HEADER, "value2")
+        .connectTimeout(RECEIVE_TIMEOUT)
+        .execute();
+    HttpResponse httpResponse = response.returnResponse();
+    assertThat(httpResponse.getStatusLine().getStatusCode(), is(200));
+
+    Collection<String> headerValues = headers.get(HEADER);
+    assertThat(headerValues, hasSize(2));
+    assertThat(headerValues, containsInAnyOrder("value1", "value2"));
+
+    assertThat(uri, endsWith(MULTIPLE_KEY_QUERY));
   }
 
   private SensingNullRequestResponseMessageProcessor getSensingNullRequestResponseMessageProcessor() {

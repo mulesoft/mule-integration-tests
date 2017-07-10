@@ -20,7 +20,6 @@ import static org.mule.runtime.http.api.HttpHeaders.Names.TRANSFER_ENCODING;
 import static org.mule.runtime.http.api.HttpHeaders.Values.CHUNKED;
 import static org.mule.runtime.http.api.HttpHeaders.Values.CLOSE;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
-
 import org.mule.extension.http.api.HttpRequestAttributes;
 import org.mule.runtime.api.util.MultiMap;
 import org.mule.tck.junit4.rule.SystemProperty;
@@ -31,7 +30,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.hamcrest.Matchers;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import ru.yandex.qatools.allure.annotations.Features;
@@ -69,10 +67,9 @@ public class HttpRequestHeadersTestCase extends AbstractHttpRequestTestCase {
     assertThat(getFirstReceivedHeader("testName2"), equalTo("testValue2"));
   }
 
-  @Ignore("MULE-11606: Support a way to have DW handle multimaps")
   @Test
   public void overridesHeaders() throws Exception {
-    Map<String, String> params = new HashMap<>();
+    MultiMap<String, String> params = new MultiMap<>();
     params.put("testName1", "testValueNew");
     params.put("testName2", "testValue2");
     flowRunner("headerOverride").withPayload(TEST_MESSAGE).withVariable("headers", params).run();

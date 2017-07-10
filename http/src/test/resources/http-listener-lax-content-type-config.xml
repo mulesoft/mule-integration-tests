@@ -20,7 +20,7 @@
         <http:listener config-ref="httpConf" path="testInputInvalid">
             <http:response>
                 <http:headers>
-                    #[mel:['Content-Type' : 'invalidMimeType']]
+                    #[{'Content-Type' : 'invalidMimeType'}]
                 </http:headers>
             </http:response>
         </http:listener>

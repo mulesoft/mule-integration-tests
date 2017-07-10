@@ -6,14 +6,13 @@
  */
 package org.mule.test.module.http.functional.requester;
 
-import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import ru.yandex.qatools.allure.annotations.Features;
 
@@ -42,7 +41,6 @@ public class HttpRequestQueryParamsTestCase extends AbstractHttpRequestTestCase 
     assertThat(uri, equalTo("/testPath?testName1=testValue1&testName2=testValue2"));
   }
 
-  @Ignore("MULE-11606: Support a way to have DW handle multimaps")
   @Test
   public void queryParamsOverride() throws Exception {
     Map<String, String> params = new HashMap<>();
@@ -50,7 +48,7 @@ public class HttpRequestQueryParamsTestCase extends AbstractHttpRequestTestCase 
     params.put("testName2", "testValue2");
     flowRunner("multipleQueryParam").withPayload(TEST_MESSAGE).withVariable("params", params).run();
 
-    assertThat(uri, equalTo("/testPath?testName1=testValue1&testName1=testValueNew&testName2=testValue2"));
+    assertThat(uri, equalTo("/testPath?testName1=testValueNew&testName1=testValue1&testName2=testValue2"));
   }
 
   @Test

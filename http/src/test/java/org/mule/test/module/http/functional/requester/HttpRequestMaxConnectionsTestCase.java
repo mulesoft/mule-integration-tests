@@ -6,10 +6,12 @@
  */
 package org.mule.test.module.http.functional.requester;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
+import org.mule.extension.http.api.error.HttpRequestFailedException;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.runtime.core.api.util.concurrent.Latch;
@@ -43,7 +45,9 @@ public class HttpRequestMaxConnectionsTestCase extends AbstractHttpRequestTestCa
     MessagingException e = flowRunner("limitedConnections").runExpectingException();
     // Max connections should be reached
     assertThat(e, instanceOf(MessagingException.class));
-    assertThat(e.getEvent().getError().get().getCause(), instanceOf(IOException.class));
+    Throwable cause = e.getEvent().getError().get().getCause();
+    assertThat(cause, instanceOf(HttpRequestFailedException.class));
+    assertThat(cause.getMessage(), containsString("No slot available"));
 
     messageHold.release();
     t1.join();

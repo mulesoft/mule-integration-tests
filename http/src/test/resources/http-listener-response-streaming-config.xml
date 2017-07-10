@@ -29,7 +29,7 @@
         <http:listener config-ref="listenerConfig" path="/stringWithContentLengthHeader">
             <http:response>
                 <http:headers>
-                    #[mel:['Content-Length' : server.systemProperties['stringPayloadLength']]]
+                    #[{'Content-Length' : server.systemProperties.'stringPayloadLength'}]
                 </http:headers>
             </http:response>
         </http:listener>
@@ -40,7 +40,7 @@
         <http:listener config-ref="listenerConfig" path="/stringWithTransferEncodingHeader">
             <http:response>
                 <http:headers>
-                    #[mel:['Transfer-Encoding' : 'chunked']]
+                    #[{'Transfer-Encoding' : 'chunked'}]
                 </http:headers>
             </http:response>
         </http:listener>
@@ -51,7 +51,7 @@
         <http:listener config-ref="listenerConfig" path="/stringWithTransferEncodingAndContentLengthHeader">
             <http:response>
                 <http:headers>
-                    #[mel:['Transfer-Encoding' : 'chunked', 'Content-Length' : server.systemProperties['stringPayloadLength']]]
+                    #[{'Transfer-Encoding' : 'chunked', 'Content-Length' : server.systemProperties.'stringPayloadLength'}]
                 </http:headers>
             </http:response>
         </http:listener>
@@ -67,7 +67,7 @@
         <http:listener config-ref="listenerConfig" path="/inputStreamWithContentLengthHeader">
             <http:response>
                 <http:headers>
-                    #[mel:['Content-Length' : server.systemProperties['stringPayloadLength']]]
+                    #[{'Content-Length' : server.systemProperties.'stringPayloadLength'}]
                 </http:headers>
             </http:response>
         </http:listener>
@@ -78,7 +78,7 @@
         <http:listener config-ref="listenerConfig" path="/inputStreamWithTransferEncodingHeader">
             <http:response>
                 <http:headers>
-                    #[mel:['Transfer-Encoding' : 'chunked']]
+                    #[{'Transfer-Encoding' : 'chunked'}]
                 </http:headers>
             </http:response>
         </http:listener>
@@ -89,7 +89,7 @@
         <http:listener config-ref="listenerConfig" path="/inputStreamWithTransferEncodingAndContentLengthHeader">
             <http:response>
                 <http:headers>
-                    #[mel:['Transfer-Encoding' : 'chunked', 'Content-Length' : server.systemProperties['stringPayloadLength']]]
+                    #[{'Transfer-Encoding' : 'chunked', 'Content-Length' : server.systemProperties.'stringPayloadLength'}]
                 </http:headers>
             </http:response>
         </http:listener>
@@ -105,7 +105,7 @@
         <http:listener config-ref="listenerConfig" path="/neverStringTransferEncodingHeader" responseStreamingMode="NEVER">
             <http:response>
                 <http:headers>
-                    #[mel:['Transfer-Encoding' : 'chunked']]
+                    #[{'Transfer-Encoding' : 'chunked'}]
                 </http:headers>
             </http:response>
         </http:listener>
@@ -121,7 +121,7 @@
         <http:listener config-ref="listenerConfig" path="/neverInputStreamTransferEncodingHeader"  responseStreamingMode="NEVER">
             <http:response>
                 <http:headers>
-                    #[mel:['Transfer-Encoding' : 'chunked']]
+                    #[{'Transfer-Encoding' : 'chunked'}]
                 </http:headers>
             </http:response>
         </http:listener>
@@ -137,7 +137,7 @@
         <http:listener config-ref="listenerConfig" path="/alwaysStringContentLengthHeader" responseStreamingMode="ALWAYS">
             <http:response>
                 <http:headers>
-                    #[mel:['Content-Length' : server.systemProperties['stringPayloadLength']]]
+                    #[{'Content-Length' : server.systemProperties.'stringPayloadLength'}]
                 </http:headers>
             </http:response>
         </http:listener>
@@ -153,7 +153,7 @@
         <http:listener config-ref="listenerConfig" path="/alwaysInputStreamContentLengthHeader" responseStreamingMode="ALWAYS">
             <http:response>
                 <http:headers>
-                    #[mel:['Content-Length' : server.systemProperties['stringPayloadLength']]]
+                    #[{'Content-Length' : server.systemProperties.'stringPayloadLength'}]
                 </http:headers>
             </http:response>
         </http:listener>
@@ -164,7 +164,7 @@
         <http:listener config-ref="listenerConfig" path="/map">
             <http:response>
                 <http:headers>
-                    #[mel:['Content-Type' : 'application/x-www-form-urlencoded']]
+                    #[{'Content-Type' : 'application/x-www-form-urlencoded'}]
                 </http:headers>
             </http:response>
         </http:listener>
@@ -175,7 +175,7 @@
         <http:listener config-ref="listenerConfig" path="/alwaysMap" responseStreamingMode="ALWAYS">
             <http:response>
                 <http:headers>
-                    #[mel:['Content-Type' : 'application/x-www-form-urlencoded']]
+                    #[{'Content-Type' : 'application/x-www-form-urlencoded'}]
                 </http:headers>
             </http:response>
         </http:listener>
@@ -186,7 +186,7 @@
         <http:listener config-ref="listenerConfig" path="/neverMap" responseStreamingMode="NEVER">
             <http:response>
                 <http:headers>
-                    #[mel:['Content-Type' : 'application/x-www-form-urlencoded']]
+                    #[{'Content-Type' : 'application/x-www-form-urlencoded'}]
                 </http:headers>
             </http:response>
         </http:listener>
