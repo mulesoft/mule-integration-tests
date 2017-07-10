@@ -12,7 +12,6 @@
             <alias name="inputStreamPayload" expression="new ByteArrayInputStream(HttpListenerResponseStreamingTestCase.TEST_BODY.getBytes())"/>
             <alias name="stringPayload" expression="HttpListenerResponseStreamingTestCase.TEST_BODY"/>
             <alias name="mapPayload" expression="HttpListenerResponseStreamingTestCase.TEST_BODY_MAP"/>
-            <alias name="multipartPayload" expression="HttpListenerResponseStreamingTestCase.TEST_BODY_PARTS"/>
         </expression-language>
     </configuration>
 
@@ -191,21 +190,6 @@
             </http:response>
         </http:listener>
         <set-payload value="#[mel:mapPayload]"/>
-    </flow>
-
-    <flow name="partsFlow">
-        <http:listener config-ref="listenerConfig" path="/parts"/>
-        <set-payload value="#[mel:multipartPayload]"/>
-    </flow>
-
-    <flow name="alwaysPartsFlow">
-        <http:listener config-ref="listenerConfig" path="/alwaysParts" responseStreamingMode="ALWAYS"/>
-        <set-payload value="#[mel:multipartPayload]"/>
-    </flow>
-
-    <flow name="neverPartsFlow">
-        <http:listener config-ref="listenerConfig" path="/neverParts" responseStreamingMode="NEVER"/>
-        <set-payload value="#[mel:multipartPayload]"/>
     </flow>
 
 </mule>
