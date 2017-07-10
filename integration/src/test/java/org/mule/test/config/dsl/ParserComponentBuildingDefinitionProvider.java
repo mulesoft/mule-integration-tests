@@ -43,7 +43,7 @@ public class ParserComponentBuildingDefinitionProvider implements ComponentBuild
     ComponentBuildingDefinition.Builder baseBuilder =
         new ComponentBuildingDefinition.Builder().withNamespace(PARSERS_TEST_NAMESACE);
 
-    ComponentBuildingDefinition.Builder baseParameterCollectionParserBuilder = baseBuilder.copy()
+    ComponentBuildingDefinition.Builder baseParameterCollectionParserBuilder = baseBuilder
         .withTypeDefinition(fromType(ParsersTestObject.class)).asNamed()
         .withSetterParameterDefinition("simpleTypeWithConverter", fromChildConfiguration(String.class).build())
         .withSetterParameterDefinition("simpleTypeList",
@@ -100,75 +100,75 @@ public class ParserComponentBuildingDefinitionProvider implements ComponentBuild
                                                                                        .withKey("other-simple-type-child-list-custom-key")
                                                                                        .build()).build());
 
-    definitions.add(baseParameterCollectionParserBuilder.copy().withIdentifier("parameter-collection-parser").build());
+    definitions.add(baseParameterCollectionParserBuilder.withIdentifier("parameter-collection-parser").build());
 
-    definitions.add(baseParameterCollectionParserBuilder.copy().withIdentifier("elementTypeA").build());
+    definitions.add(baseParameterCollectionParserBuilder.withIdentifier("elementTypeA").build());
 
-    definitions.add(baseParameterCollectionParserBuilder.copy().withIdentifier("anotherElementTypeA").build());
+    definitions.add(baseParameterCollectionParserBuilder.withIdentifier("anotherElementTypeA").build());
 
-    definitions.add(baseBuilder.copy().withIdentifier("simple-type-child-list").withTypeDefinition(fromType(List.class)).build());
+    definitions.add(baseBuilder.withIdentifier("simple-type-child-list").withTypeDefinition(fromType(List.class)).build());
 
-    definitions.add(baseBuilder.copy().withIdentifier("simple-type-child-list-with-converter")
+    definitions.add(baseBuilder.withIdentifier("simple-type-child-list-with-converter")
         .withTypeDefinition(fromType(List.class)).build());
 
-    definitions.add(baseBuilder.copy().withIdentifier("other-children-custom-collection-type")
+    definitions.add(baseBuilder.withIdentifier("other-children-custom-collection-type")
         .withTypeDefinition(fromType(LinkedList.class)).build());
 
-    definitions.add(baseBuilder.copy().withIdentifier("other-children").withTypeDefinition(fromType(List.class)).build());
+    definitions.add(baseBuilder.withIdentifier("other-children").withTypeDefinition(fromType(List.class)).build());
 
     definitions
-        .add(baseBuilder.copy().withIdentifier("simple-type-child-set").withTypeDefinition(fromType(TreeSet.class)).build());
+        .add(baseBuilder.withIdentifier("simple-type-child-set").withTypeDefinition(fromType(TreeSet.class)).build());
 
     definitions
-        .add(baseBuilder.copy().withIdentifier("other-simple-type-child-list").withTypeDefinition(fromType(List.class)).build());
+        .add(baseBuilder.withIdentifier("other-simple-type-child-list").withTypeDefinition(fromType(List.class)).build());
 
-    definitions.add(baseBuilder.copy().withIdentifier("simple-type-child").withTypeDefinition(fromType(String.class)).build());
+    definitions.add(baseBuilder.withIdentifier("simple-type-child").withTypeDefinition(fromType(String.class)).build());
 
-    definitions.add(baseBuilder.copy().withIdentifier("simple-type-child-with-converter")
+    definitions.add(baseBuilder.withIdentifier("simple-type-child-with-converter")
         .withTypeDefinition(fromType(String.class)).withTypeConverter(input -> input + "-with-converter").build());
 
-    definitions.add(baseBuilder.copy().withIdentifier("simple-type-map").withTypeDefinition(fromType(TreeMap.class)).build());
+    definitions.add(baseBuilder.withIdentifier("simple-type-map").withTypeDefinition(fromType(TreeMap.class)).build());
 
-    definitions.add(baseBuilder.copy().withIdentifier("simple-type-entry")
+    definitions.add(baseBuilder.withIdentifier("simple-type-entry")
         .withTypeDefinition(fromMapEntryType(String.class, Integer.class))
         .withKeyTypeConverter(input -> input + "-with-converter").withTypeConverter(input -> valueOf((String) input) + 1)
         .build());
 
-    definitions.add(baseBuilder.copy().withIdentifier("simple-list-type-map").withTypeDefinition(fromType(Map.class)).build());
+    definitions.add(baseBuilder.withIdentifier("simple-list-type-map").withTypeDefinition(fromType(Map.class)).build());
 
-    definitions.add(baseBuilder.copy().withIdentifier("simple-list-entry")
+    definitions.add(baseBuilder.withIdentifier("simple-list-entry")
         .withTypeDefinition(fromMapEntryType(String.class, List.class)).build());
 
-    definitions.add(baseBuilder.copy().withIdentifier("complex-type-map").withTypeDefinition(fromType(Map.class)).build());
+    definitions.add(baseBuilder.withIdentifier("complex-type-map").withTypeDefinition(fromType(Map.class)).build());
 
-    definitions.add(baseBuilder.copy().withIdentifier("complex-type-entry")
+    definitions.add(baseBuilder.withIdentifier("complex-type-entry")
         .withTypeDefinition(fromMapEntryType(Long.class, ParsersTestObject.class)).build());
 
-    definitions.add(baseBuilder.copy().withIdentifier("global-element-with-object-factory")
+    definitions.add(baseBuilder.withIdentifier("global-element-with-object-factory")
         .withTypeDefinition(fromType(LifecycleSensingMessageProcessor.class))
         .withObjectFactoryType(LifecycleSensingObjectFactory.class).build());
 
-    definitions.add(baseBuilder.copy().withIdentifier("inner-element-with-object-factory")
+    definitions.add(baseBuilder.withIdentifier("inner-element-with-object-factory")
         .withTypeDefinition(fromType(LifecycleSensingMessageProcessor.class))
         .withObjectFactoryType(LifecycleSensingObjectFactory.class).build());
 
-    definitions.add(baseBuilder.copy().withIdentifier("element-with-attribute-and-child")
+    definitions.add(baseBuilder.withIdentifier("element-with-attribute-and-child")
         .withTypeDefinition(fromType(ParameterAndChildElement.class))
         .withSetterParameterDefinition("simplePojo",
                                        fromSimpleParameter("myPojo", input -> new SimplePojo((String) input))
                                            .withDefaultValue("jose").build())
         .withSetterParameterDefinition("simplePojo", fromChildConfiguration(SimplePojo.class).build()).build());
 
-    definitions.add(baseBuilder.copy().withIdentifier("my-pojo").withTypeDefinition(fromType(SimplePojo.class))
+    definitions.add(baseBuilder.withIdentifier("my-pojo").withTypeDefinition(fromType(SimplePojo.class))
         .withSetterParameterDefinition("someParameter", fromSimpleParameter("someParameter").build()).build());
 
-    definitions.add(baseBuilder.copy().withIdentifier("text-pojo").withTypeDefinition(fromType(SimplePojo.class))
+    definitions.add(baseBuilder.withIdentifier("text-pojo").withTypeDefinition(fromType(SimplePojo.class))
         .withSetterParameterDefinition("someParameter", fromChildConfiguration(String.class).withIdentifier("text").build())
         .build());
 
-    definitions.add(baseBuilder.copy().withIdentifier("text").withTypeDefinition(fromType(String.class)).build());
+    definitions.add(baseBuilder.withIdentifier("text").withTypeDefinition(fromType(String.class)).build());
 
-    definitions.add(baseBuilder.copy().withIdentifier("same-child-type-container")
+    definitions.add(baseBuilder.withIdentifier("same-child-type-container")
         .withTypeDefinition(fromType(PojoWithSameTypeChildren.class))
         .withSetterParameterDefinition("elementTypeA",
                                        fromChildConfiguration(ParsersTestObject.class).withIdentifier("elementTypeA")
@@ -177,10 +177,10 @@ public class ParserComponentBuildingDefinitionProvider implements ComponentBuild
             .withIdentifier("anotherElementTypeA").build())
         .build());
 
-    definitions.add(baseBuilder.copy().withIdentifier("simple-type").withTypeConverter(o -> new SimplePojo((String) o))
+    definitions.add(baseBuilder.withIdentifier("simple-type").withTypeConverter(o -> new SimplePojo((String) o))
         .withTypeDefinition(fromType(String.class)).build());
 
-    definitions.add(baseBuilder.copy().withIdentifier("component-created-with-object-factory")
+    definitions.add(baseBuilder.withIdentifier("component-created-with-object-factory")
         .withObjectFactoryType(TestObjectFactory.class)
         .withTypeDefinition(fromType(TestObject.class)).build());
 
