@@ -133,7 +133,7 @@ public class HttpRequestErrorHandlingTestCase extends AbstractHttpRequestTestCas
   }
 
   private String getErrorMessage(String customMessage, DynamicPort port) {
-    return format("HTTP GET on resource http://localhost:%s/testPath failed%s.", port.getValue(), customMessage);
+    return format("HTTP GET on resource 'http://localhost:%s/testPath' failed%s.", port.getValue(), customMessage);
   }
 
   private String getErrorMessage(String customMessage) {
