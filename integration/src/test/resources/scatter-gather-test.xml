@@ -2,17 +2,14 @@
 <mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:test="http://www.mulesoft.org/schema/mule/test"
       xmlns:spring="http://www.springframework.org/schema/beans"
-      xmlns:transports="http://www.mulesoft.org/schema/mule/transports"
       xmlns="http://www.mulesoft.org/schema/mule/core"
       xsi:schemaLocation="
                http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-               http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
-               http://www.mulesoft.org/schema/mule/transports http://www.mulesoft.org/schema/mule/transports/current/mule-transports.xsd">
+               http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+
 
     <object name="testMergeStrategy"
                  class="org.mule.test.routing.ScatterGatherRouterTestCase$TestAggregationStrategy"/>
-
-    <transports:combine-collections-transformer name="combineCollectionsTransformer"/>
 
     <flow name="minimalConfig">
         <scatter-gather>
@@ -20,8 +17,6 @@
             <set-payload value="banana"/>
             <set-payload value="orange"/>
         </scatter-gather>
-
-        <flow-ref name="testRoutes"/>
     </flow>
 
     <flow name="timeout">
@@ -113,8 +108,6 @@
                 <custom-processor class="org.mule.test.routing.ScatterGatherRouterTestCase$ThreadCaptor" />
             </processor-chain>
         </scatter-gather>
-
-        <flow-ref name="testRoutes"/>
     </flow>
 
     <flow name="exceptionStrategy">
@@ -178,8 +171,6 @@
             <set-payload value="banana"/>
             <set-payload value="orange"/>
         </scatter-gather>
-
-        <flow-ref name="testRoutes"/>
     </flow>
 
     <flow name="oneWayInboundEndpoint">
@@ -188,8 +179,6 @@
             <set-payload value="banana"/>
             <set-payload value="orange"/>
         </scatter-gather>
-
-        <flow-ref name="testRoutes"/>
     </flow>
 
     <flow name="routesWithForeachAndInboundEndpoint">
@@ -204,8 +193,6 @@
                 <set-property propertyName="timeStamp" value="#[mel:server.dateTime]"/>
             </foreach>
         </scatter-gather>
-
-        <flow-ref name="testRoutes"/>
     </flow>
 
     <flow name="oneWayRouteWithSingleResponse">
@@ -229,9 +216,6 @@
                 <flow-ref name="log"/>
             </async>
         </scatter-gather>
-
-        <flow-ref name="testRoutes"/>
-        <test:assert expression="#[mel:payload.size() == 3]"/>
     </flow>
 
     <flow name="oneWayRoutesOnly">
@@ -319,13 +303,6 @@
     <sub-flow name="captureThreadAndWait">
         <custom-processor class="org.mule.test.routing.ScatterGatherRouterTestCase$ThreadCaptor" />
         <expression-component>mel:flowVars['latch'].await()</expression-component>
-    </sub-flow>
-
-    <sub-flow name="testRoutes">
-        <processor ref="combineCollectionsTransformer"/>
-        <test:assert expression="#[mel:payload[0] == 'apple']"/>
-        <test:assert expression="#[mel:payload[1] == 'banana']"/>
-        <test:assert expression="#[mel:payload[2] == 'orange']"/>
     </sub-flow>
 
     <sub-flow name="setEventVariables">
