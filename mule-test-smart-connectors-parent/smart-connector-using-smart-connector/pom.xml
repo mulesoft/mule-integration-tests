@@ -21,7 +21,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.mule.tooling</groupId>
+            <groupId>org.mule.tests</groupId>
             <artifactId>smart-connector-using-core</artifactId>
             <version>${project.version}</version>
             <classifier>mule-plugin</classifier>
