@@ -11,16 +11,10 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.mule.runtime.api.message.Message.of;
 import static org.mule.runtime.core.api.context.notification.MessageProcessorNotification.MESSAGE_PROCESSOR_POST_INVOKE;
-import org.mule.functional.api.component.SkeletonSource;
 import org.mule.functional.api.exception.FunctionalTestException;
-import org.mule.runtime.core.DefaultEventContext;
-import org.mule.runtime.core.api.Event;
-import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.context.notification.MessageProcessorNotification;
 import org.mule.runtime.core.api.exception.MessagingException;
-import org.mule.runtime.core.api.source.CompositeMessageSource;
 import org.mule.tck.core.context.notification.NotificationLogger;
 import org.mule.test.core.context.notification.Node;
 import org.mule.test.core.context.notification.RestrictedNode;
@@ -278,24 +272,6 @@ public class MessageProcessorNotificationTestCase extends AbstractMessageProcess
         .serial(prePost());
 
     assertNotNull(flowRunner("choice-es").withPayload(TEST_PAYLOAD).run());
-
-    assertNotifications();
-  }
-
-  @Test
-  public void compositeSource() throws Exception {
-    specificationFactory = () -> new Node()
-        .serial(prePost()) // call throw cs1
-        .serial(prePost());
-
-    final Flow flow = (Flow) muleContext.getRegistry().lookupFlowConstruct("composite-source");
-    CompositeMessageSource composite = (CompositeMessageSource) flow.getSource();
-    assertNotNull(((SkeletonSource) composite.getSources().get(0))
-        .getListener().process(Event.builder(DefaultEventContext.create(flow, TEST_CONNECTOR_LOCATION)).message(of(TEST_PAYLOAD))
-            .build()));
-    assertNotNull(((SkeletonSource) composite.getSources().get(1))
-        .getListener().process(Event.builder(DefaultEventContext.create(flow, TEST_CONNECTOR_LOCATION)).message(of(TEST_PAYLOAD))
-            .build()));
 
     assertNotifications();
   }

@@ -258,14 +258,6 @@
         </error-handler>
     </flow>
 
-    <flow name="composite-source">
-        <composite-source>
-            <test:skeleton-source/>
-            <test:skeleton-source/>
-        </composite-source>
-        <logger level="INFO"/>
-    </flow>
-
     <flow name="first-successful">
         <logger level="INFO"/>
         <first-successful>

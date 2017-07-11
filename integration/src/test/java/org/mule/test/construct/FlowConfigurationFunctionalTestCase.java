@@ -27,7 +27,6 @@ import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.processor.Processor;
-import org.mule.runtime.core.api.source.CompositeMessageSource;
 import org.mule.runtime.core.api.source.MessageSource;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.tck.testmodels.fruit.Apple;
@@ -86,30 +85,6 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
     Thread thread = (Thread) message.getPayload().getValue();
     assertNotNull(thread);
     assertNotSame(currentThread(), thread);
-  }
-
-  @Test
-  public void testFlowCompositeSource() throws Exception {
-    final Flow flow = muleContext.getRegistry().lookupObject("flow2");
-    CompositeMessageSource compositeSource = (CompositeMessageSource) flow.getSource();
-    assertThat(compositeSource.getClass().getName(),
-               equalTo("org.mule.runtime.core.internal.source.StartableCompositeMessageSource"));
-    assertEquals(2, flow.getProcessors().size());
-
-    final List<MessageSource> sources = compositeSource.getSources();
-    SkeletonSource source1 = (SkeletonSource) sources.get(0);
-    SkeletonSource source2 = (SkeletonSource) sources.get(1);
-
-    assertEquals("01xyz", getPayloadAsString(source1
-        .getListener().process(Event.builder(DefaultEventContext.create(flow, TEST_CONNECTOR_LOCATION))
-            .message(of("0"))
-            .build())
-        .getMessage()));
-    assertEquals("01xyz", getPayloadAsString(source2
-        .getListener().process(Event.builder(DefaultEventContext.create(flow, TEST_CONNECTOR_LOCATION))
-            .message(of("0"))
-            .build())
-        .getMessage()));
   }
 
   @Test
