@@ -91,6 +91,14 @@
             <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.mule.modules</groupId>
+            <artifactId>mule-validation-module</artifactId>
+            <version>${muleValidationModuleVersion}</version>
+            <classifier>mule-plugin</classifier>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- DB Drivers -->
         <dependency>
             <groupId>org.apache.derby</groupId>

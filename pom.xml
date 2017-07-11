@@ -14,7 +14,6 @@
   <modules>
     <module>performance</module>
     <module>integration</module>
-    <module>http</module>
     <module>dsl</module>
     <module>soap-connect</module>
     <module>oauth</module>
@@ -29,6 +28,7 @@
         <muleSoapServiceVersion>1.0.0-SNAPSHOT</muleSoapServiceVersion>
         <muleHttpConnectorVersion>1.0.0-SNAPSHOT</muleHttpConnectorVersion>
         <muleSpringModuleVersion>1.0.0-SNAPSHOT</muleSpringModuleVersion>
+        <muleValidationModuleVersion>1.0.0-SNAPSHOT</muleValidationModuleVersion>
     </properties>
 
   <build>
