@@ -4,24 +4,23 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.test.module.http.functional.listener;
+package org.mule.test.integration.security;
 
+import static java.lang.String.format;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 import static org.mule.runtime.core.api.util.IOUtils.closeQuietly;
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.OK;
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.UNAUTHORIZED;
 import static org.mule.runtime.http.api.HttpHeaders.Names.WWW_AUTHENTICATE;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
-import static org.mule.test.module.http.functional.matcher.HttpResponseReasonPhraseMatcher.hasReasonPhrase;
-import static org.mule.test.module.http.functional.matcher.HttpResponseStatusCodeMatcher.hasStatusCode;
-import static java.lang.String.format;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-
+import static org.mule.test.http.functional.matcher.HttpResponseReasonPhraseMatcher.hasReasonPhrase;
+import static org.mule.test.http.functional.matcher.HttpResponseStatusCodeMatcher.hasStatusCode;
 import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.tck.junit4.rule.DynamicPort;
-import org.mule.test.module.http.functional.AbstractHttpTestCase;
+import org.mule.test.AbstractIntegrationTestCase;
 
 import java.io.IOException;
 
@@ -40,7 +39,7 @@ import org.junit.Test;
 import ru.yandex.qatools.allure.annotations.Features;
 
 @Features(HTTP_EXTENSION)
-public class HttpListenerAuthenticationTestCase extends AbstractHttpTestCase {
+public class HttpListenerAuthenticationTestCase extends AbstractIntegrationTestCase {
 
   private static final String BASIC_REALM_MULE_REALM = "Basic realm=\"mule-realm\"";
   private static final String VALID_USER = "user";
@@ -56,7 +55,7 @@ public class HttpListenerAuthenticationTestCase extends AbstractHttpTestCase {
 
   @Override
   protected String getConfigFile() {
-    return "http-listener-authentication-config.xml";
+    return "org/mule/test/integration/security/http-listener-authentication-config.xml";
   }
 
   @After
@@ -93,7 +92,8 @@ public class HttpListenerAuthenticationTestCase extends AbstractHttpTestCase {
 
     assertThat(httpResponse, hasStatusCode(INTERNAL_SERVER_ERROR.getStatusCode()));
     assertThat(httpResponse, hasReasonPhrase(INTERNAL_SERVER_ERROR.getReasonPhrase()));
-    assertThat(muleContext.getClient().request("test://basicAuthentication", RECEIVE_TIMEOUT).getRight().isPresent(), is(true));
+    assertThat(
+               muleContext.getClient().request("test://basicAuthentication", RECEIVE_TIMEOUT).getRight().isPresent(), is(true));
   }
 
   private void getHttpResponse(CredentialsProvider credsProvider) throws IOException {
