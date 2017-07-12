@@ -13,7 +13,7 @@ import static org.junit.Assert.assertThat;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.processor.DelegateTransactionFactory;
-import org.mule.runtime.core.processor.TryMessageProcessor;
+import org.mule.runtime.core.processor.TryScope;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Test;
@@ -29,9 +29,9 @@ public class TransactionalTryTestCase extends AbstractIntegrationTestCase {
   public void resolvesStandardTransactionFactory() throws Exception {
     Processor processor = ((Flow) getFlowConstruct("standardTry")).getProcessors().get(0);
     assertThat(processor,
-               is(instanceOf(TryMessageProcessor.class)));
+               is(instanceOf(TryScope.class)));
 
-    assertThat(((TryMessageProcessor) processor).getTransactionConfig().getFactory(),
+    assertThat(((TryScope) processor).getTransactionConfig().getFactory(),
                is(instanceOf(DelegateTransactionFactory.class)));
   }
 
