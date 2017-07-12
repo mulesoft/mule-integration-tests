@@ -12,18 +12,19 @@ import static java.util.Optional.of;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.component.ComponentIdentifier.buildFromStringRepresentation;
-import static org.mule.runtime.api.component.TypedComponentIdentifier.builder;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.FLOW;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.INTERCEPTING;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.ON_ERROR;
+import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.OPERATION;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.PROCESSOR;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.ROUTER;
+import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.SCOPE;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.SOURCE;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.UNKNOWN;
+import static org.mule.runtime.api.component.TypedComponentIdentifier.builder;
 import static org.mule.runtime.api.meta.AbstractAnnotatedObject.LOCATION_KEY;
 import static org.mule.runtime.config.spring.dsl.model.ApplicationModel.FLOW_IDENTIFIER;
 import static org.mule.runtime.config.spring.dsl.model.ApplicationModel.SUBFLOW_IDENTIFIER;
-
 import org.mule.runtime.api.component.TypedComponentIdentifier;
 import org.mule.runtime.api.meta.AnnotatedObject;
 import org.mule.runtime.core.api.construct.Flow;
@@ -34,11 +35,11 @@ import org.mule.tck.probe.PollingProber;
 import org.mule.tck.probe.Probe;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import org.junit.Test;
+
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Optional;
-
-import org.junit.Test;
 
 public class ComponentPathTestCase extends AbstractIntegrationTestCase {
 
@@ -141,17 +142,15 @@ public class ComponentPathTestCase extends AbstractIntegrationTestCase {
   private static final Optional<TypedComponentIdentifier> ON_ERROR_CONTINUE =
       of(builder().withIdentifier(buildFromStringRepresentation("mule:on-error-continue")).withType(ON_ERROR).build());
   private static final Optional<TypedComponentIdentifier> VALIDATION_IS_FALSE =
-      of(builder().withIdentifier(buildFromStringRepresentation("validation:is-false")).withType(PROCESSOR).build());
-  private static final Optional<TypedComponentIdentifier> WHEN =
-      of(builder().withIdentifier(buildFromStringRepresentation("mule:when")).withType(UNKNOWN).build());
+      of(builder().withIdentifier(buildFromStringRepresentation("validation:is-false")).withType(OPERATION).build());
   private static final Optional<TypedComponentIdentifier> TEST_PROCESSOR =
       of(builder().withIdentifier(buildFromStringRepresentation("test:processor")).withType(PROCESSOR).build());
   private static final Optional<TypedComponentIdentifier> ON_ERROR_PROPAGATE =
       of(builder().withIdentifier(buildFromStringRepresentation("mule:on-error-propagate")).withType(ON_ERROR).build());
   private static final Optional<TypedComponentIdentifier> TRY =
-      of(builder().withIdentifier(buildFromStringRepresentation("mule:try")).withType(PROCESSOR).build());
+      of(builder().withIdentifier(buildFromStringRepresentation("mule:try")).withType(SCOPE).build());
   private static final Optional<TypedComponentIdentifier> VALIDATION_IS_TRUE =
-      of(builder().withIdentifier(buildFromStringRepresentation("validation:is-true")).withType(PROCESSOR).build());
+      of(builder().withIdentifier(buildFromStringRepresentation("validation:is-true")).withType(OPERATION).build());
   private static final Optional<TypedComponentIdentifier> SKELETON_SOURCE =
       of(builder().withIdentifier(buildFromStringRepresentation("test:skeleton-source")).withType(SOURCE).build());
   private static final Optional<TypedComponentIdentifier> SPLITTER =
@@ -160,14 +159,10 @@ public class ComponentPathTestCase extends AbstractIntegrationTestCase {
       of(builder().withIdentifier(buildFromStringRepresentation("mule:collection-aggregator")).withType(INTERCEPTING).build());
   private static final Optional<TypedComponentIdentifier> SCATTER_GATHER =
       of(builder().withIdentifier(buildFromStringRepresentation("mule:scatter-gather")).withType(ROUTER).build());
-  private static final Optional<TypedComponentIdentifier> WIRE_TAP =
-      of(builder().withIdentifier(buildFromStringRepresentation("mule:wire-tap")).withType(PROCESSOR).build());
   private static final Optional<TypedComponentIdentifier> FLOW_REF =
       of(builder().withIdentifier(buildFromStringRepresentation("mule:flow-ref")).withType(PROCESSOR).build());
-  private static final Optional<TypedComponentIdentifier> PROCESS_CHAIN =
-      of(builder().withIdentifier(buildFromStringRepresentation("mule:processor-chain")).withType(PROCESSOR).build());
   private static final Optional<TypedComponentIdentifier> ASYNC =
-      of(builder().withIdentifier(buildFromStringRepresentation("mule:async")).withType(PROCESSOR).build());
+      of(builder().withIdentifier(buildFromStringRepresentation("mule:async")).withType(SCOPE).build());
 
   @Override
   protected String getConfigFile() {
@@ -220,7 +215,8 @@ public class ComponentPathTestCase extends AbstractIntegrationTestCase {
     assertNextProcessorLocationIs(choiceLocation);
     assertNextProcessorLocationIs(choiceLocation
         .appendRoutePart()
-        .appendLocationPart("0", empty(), empty(), empty())
+        .appendLocationPart("0", of(TypedComponentIdentifier.builder().withType(UNKNOWN)
+            .withIdentifier(buildFromStringRepresentation("mule:route")).build()), empty(), empty())
         .appendProcessorsPart()
         .appendLocationPart("0", TEST_PROCESSOR, CONFIG_FILE_NAME, of(40)));
     assertNextProcessorLocationIs(FLOW_WITH_ERROR_HANDLER
