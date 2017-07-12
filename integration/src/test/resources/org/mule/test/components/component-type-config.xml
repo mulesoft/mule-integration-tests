@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:sc="http://www.mulesoft.org/schema/mule/module-using-core"
+      xsi:schemaLocation="
+       http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+       http://www.mulesoft.org/schema/mule/module-using-core http://www.mulesoft.org/schema/mule/module-using-core/current/mule-module-using-core.xsd
+       http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+
+    <http:request-config name="requestConfig"/>
+
+    <flow name="componentsFlow">
+        <scheduler>
+            <scheduling-strategy>
+                <fixed-frequency frequency="10"/>
+            </scheduling-strategy>
+        </scheduler>
+        <until-successful synchronous="true">
+            <logger/>
+        </until-successful>
+        <first-successful>
+            <logger/>
+        </first-successful>
+        <foreach>
+            <logger/>
+        </foreach>
+        <scatter-gather>
+            <logger/>
+            <logger/>
+        </scatter-gather>
+        <splitter/>
+        <resequencer/>
+        <choice>
+            <when expression="#[true]">
+                <logger/>
+            </when>
+        </choice>
+        <round-robin>
+            <logger/>
+        </round-robin>
+        <enricher>
+            <logger/>
+        </enricher>
+        <async>
+            <logger/>
+        </async>
+        <try>
+            <logger/>
+        </try>
+        <set-payload value="value"/>
+        <set-variable variableName="variableName" value="variableValue"/>
+        <http:request url="mulesoft.com"/>
+        <sc:set-payload-hardcoded/>
+        <error-handler>
+            <on-error-continue/>
+        </error-handler>
+    </flow>
+
+</mule>

@@ -399,7 +399,7 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
                         isFlowStackElement("flow",
                                            "flow/processors/0"),
                         isFlowStackElement("flowForEach",
-                                           "flowForEach/processors/0/processors/1"));
+                                           "flowForEach/processors/0/route/1/processors/0"));
   }
 
   @Test
@@ -412,6 +412,6 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
                         isFlowStackElement("flow",
                                            "flow/processors/0"),
                         isFlowStackElement("flowForEachFilter",
-                                           "flowForEachFilter/processors/0/processors/0"));
+                                           "flowForEachFilter/processors/0/route/0/processors/0"));
   }
 }
