@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+      xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+               http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		       http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+
+    <munit:config name="munitConfig"/>
+
+    <munit:before-suite name="beforeSuite" description="before suite">
+        <logger/>
+        <set-payload value="hola que tal"/>
+    </munit:before-suite>
+
+    <munit:after-suite name="afterSuite" description="after suite">
+        <choice>
+            <when expression="#[true]">
+                <set-payload value="me voy de aca"/>
+            </when>
+        </choice>
+    </munit:after-suite>
+
+    <munit:before-test name="beforeTest" description="before test">
+        <try>
+            <scatter-gather>
+                <logger/>
+                <logger/>
+            </scatter-gather>
+        </try>
+    </munit:before-test>
+
+    <munit:after-test name="afterTest" description="after test">
+        <logger/>
+    </munit:after-test>
+
+    <munit:test name="test" description="Test that the payload set by DW is correct" tags="core,EE">
+        <munit:behavior>
+            <try>
+                <first-successful>
+                    <until-successful synchronous="true">
+                        <logger/>
+                    </until-successful>
+                </first-successful>
+                <error-handler>
+                   <on-error-continue/>
+                </error-handler>
+            </try>
+        </munit:behavior>
+        <munit:execution>
+            <flow-ref name="aFlow"/>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[payload]" is="#[equalTo('EXAMPLE')]"
+                                     message="oops the payload is not as expected"/>
+        </munit:validation>
+    </munit:test>
+
+    <flow name="aFlow">
+        <logger/>
+    </flow>
+
+
+</mule>
