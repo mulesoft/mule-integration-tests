@@ -311,9 +311,9 @@ public class MessageProcessorNotificationTestCase extends AbstractMessageProcess
     specificationFactory = () -> new Node()
         .serial(pre()) // open Splitter, unpacks three messages
         .serial(prePost()) // 1st message on Logger
-        .serial(prePost()) // gets to Aggregator
+        .serial(pre()) // gets to Aggregator
         .serial(prePost()) // 2nd message on Logger
-        .serial(prePost()) // gets to Aggregator
+        .serial(pre()) // gets to Aggregator
         .serial(prePost()) // 3rd message on Logger
         .serial(prePost()) // gets to Aggregator and packs the three messages, then close
         .serial(post()) // close Splitter
@@ -330,11 +330,11 @@ public class MessageProcessorNotificationTestCase extends AbstractMessageProcess
     specificationFactory = () -> new Node()
         .serial(pre()) // start Splitter
         .serial(prePost()) // 1st message on Logger
-        .serial(prePost()) // gets to Aggregator
+        .serial(pre()) // gets to Aggregator
         .serial(prePost()) // 2nd message on Logger
-        .serial(prePost()) // gets to Aggregator
+        .serial(pre()) // gets to Aggregator
         .serial(prePost()) // 3rd message on Logger
-        .serial(prePost()) // gets to Aggregator
+        .serial(pre()) // gets to Aggregator
         .serial(prePost()) // 4th message on Logger
         .serial(pre()) // gets to Aggregator and packs four messages
         .serial(prePost()) // packed message get to the second Logger
