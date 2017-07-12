@@ -106,8 +106,8 @@
             <script:component>
                 <script:script engine="groovy">
                     <![CDATA[
-                    def root = flowVars.rootMessage.payload.value
-                    def key = "key3-" + flowVars.counter
+                    def root = vars.rootMessage.payload.value
+                    def key = "key3-" + vars.counter
                     root.order.items << [(key) : "je"]
                     ]]>
                 </script:script>
@@ -122,9 +122,9 @@
         <foreach>
             <script:component>
                 <script:script engine="groovy">
-                    def loops = flowVars.loops.toInteger()
+                    def loops = vars.loops.toInteger()
                     loops++
-                    flowVars['loops'] = loops + ""
+                    vars['loops'] = loops + ""
                 </script:script>
             </script:component>
         </foreach>
