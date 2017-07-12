@@ -9,13 +9,19 @@ package org.mule.test.munit.component.location;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.component.location.Location.builderFromStringRepresentation;
+import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
+import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.MUnitComponentLocatorStory.MUNIT_COMPONENT_LOCATION;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.api.component.location.ConfigurationComponentLocator;
 
 import javax.inject.Inject;
 
 import org.junit.Test;
+import ru.yandex.qatools.allure.annotations.Features;
+import ru.yandex.qatools.allure.annotations.Stories;
 
+@Features(CONFIGURATION_COMPONENT_LOCATOR)
+@Stories(MUNIT_COMPONENT_LOCATION)
 public class MUnitComponentPathTestCase extends MuleArtifactFunctionalTestCase {
 
   @Inject
