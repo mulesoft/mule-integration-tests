@@ -35,12 +35,6 @@ public class FlowProcessingStrategyConfigTestCase extends AbstractIntegrationTes
   }
 
   @Test
-  public void testSynchronous() throws Exception {
-    assertThat(getFlowProcessingStrategy("synchronousFlow"),
-               instanceOf(new BlockingProcessingStrategyFactory().getProcessingStrategyType()));
-  }
-
-  @Test
   public void testDefaultAsync() throws Exception {
     assertThat(getFlowProcessingStrategy("defaultAsync"),
                instanceOf(new TransactionAwareWorkQueueProcessingStrategyFactory().getProcessingStrategyType()));

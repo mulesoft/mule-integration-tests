@@ -7,10 +7,6 @@
         <logger />
     </flow>
 
-    <flow name="synchronousFlow" processingStrategy="synchronous">
-        <logger />
-    </flow>
-
     <flow name="defaultAsync">
         <async>
             <logger />
