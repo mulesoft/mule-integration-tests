@@ -45,20 +45,6 @@
         <test:assert expression="#[mel:assertPayload()]"/>
     </flow>
 
-    <flow name="childSyncFlow">
-        <test:assert-intercepting responseSameTask="true" responseExpression="#[mel:assertPayload()]"/>
-        <expression-component>mel:flowVars['requestThread'] = Thread.currentThread()</expression-component>
-        <flow-ref name="childSyncFlowChild"/>
-        <test:assert expression="#[mel:assertPayload()]"/>
-        <test:assert expression="#[mel:flowVars['requestThread'] == Thread.currentThread()]"/>
-        <test:assert expression="#[mel:flow.name=='childSyncFlow']"/>
-    </flow>
-    <flow name="childSyncFlowChild" processingStrategy="synchronous">
-        <test:assert-intercepting responseSameTask="true" responseExpression="#[mel:assertPayload()]"/>
-        <test:non-blocking-processor/>
-        <test:assert expression="#[mel:assertPayload()]"/>
-    </flow>
-
     <flow name="childAsyncFlow">
         <flow-ref name="childAsyncFlowChild"/>
     </flow>
