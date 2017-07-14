@@ -14,14 +14,17 @@ import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocator
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.api.component.location.ConfigurationComponentLocator;
 
+import org.junit.Ignore;
+import org.junit.Test;
+
 import javax.inject.Inject;
 
-import org.junit.Test;
 import ru.yandex.qatools.allure.annotations.Features;
 import ru.yandex.qatools.allure.annotations.Stories;
 
 @Features(CONFIGURATION_COMPONENT_LOCATOR)
 @Stories(MUNIT_COMPONENT_LOCATION)
+@Ignore("MULE-13087 - Ignore until munit build works")
 public class MUnitComponentPathTestCase extends MuleArtifactFunctionalTestCase {
 
   @Inject
