@@ -6,10 +6,6 @@
  */
 package org.mule.test.integration.locator;
 
-import static org.mule.runtime.api.component.location.Location.builder;
-import static org.mule.runtime.api.source.SchedulerMessageSource.SCHEDULER_MESSAGE_SOURCE_IDENTIFIER;
-import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
-import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentLocatorStory.SEARCH_CONFIGURATION;
 import static java.util.stream.Collectors.toList;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
@@ -17,6 +13,11 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.mule.runtime.api.component.location.Location.builder;
+import static org.mule.runtime.api.source.SchedulerMessageSource.SCHEDULER_MESSAGE_SOURCE_IDENTIFIER;
+import static org.mule.runtime.dsl.api.component.config.ComponentLocationUtils.getFlowNameFrom;
+import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
+import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentLocatorStory.SEARCH_CONFIGURATION;
 
 import org.mule.runtime.api.component.ComponentIdentifier;
 import org.mule.runtime.api.component.location.Location;
@@ -32,6 +33,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.junit.Test;
+
 import ru.yandex.qatools.allure.annotations.Description;
 import ru.yandex.qatools.allure.annotations.Features;
 import ru.yandex.qatools.allure.annotations.Stories;
@@ -106,7 +108,7 @@ public class ConfigurationComponentLocatorTestCase extends AbstractIntegrationTe
   public void findAllSchedulers() {
     List<AnnotatedObject> components = muleContext.getConfigurationComponentLocator().find(SCHEDULER_MESSAGE_SOURCE_IDENTIFIER);
     assertThat(components, hasSize(2));
-    assertThat(components.stream().map(component -> component.getLocation().getParts().get(0).getPartPath()).collect(toList()),
+    assertThat(components.stream().map(component -> getFlowNameFrom(component.getLocation())).collect(toList()),
                hasItems("myFlow", "anotherFlow"));
   }
 
