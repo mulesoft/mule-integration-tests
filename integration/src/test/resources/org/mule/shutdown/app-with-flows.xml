@@ -6,7 +6,7 @@
     xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
     http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
 
-    <flow name="http" processingStrategy="synchronous">
+    <flow name="http"><!--processingStrategy="synchronous"-->
         <http:listener config-ref="httpListenerConfig" path="/sync" />
         <custom-processor class="org.mule.shutdown.ShutdownAppInDomainTestCase$RetrieveRequestContext"/>
         <logger />

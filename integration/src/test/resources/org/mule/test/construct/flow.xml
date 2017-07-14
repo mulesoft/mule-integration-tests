@@ -31,7 +31,7 @@
         </processor-chain>
         <append-string-transformer message="3" />
     </flow>
-    
+
     <flow name="asynchronousAsync"><!--processingStrategy="synchronous"-->
         <async>
             <custom-processor class="org.mule.test.construct.FlowConfigurationFunctionalTestCase$ThreadSensingMessageProcessor"/>

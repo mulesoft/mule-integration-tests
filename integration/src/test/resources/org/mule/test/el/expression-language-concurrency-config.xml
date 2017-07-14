@@ -4,7 +4,7 @@
        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 
     <!-- TODO MULE-11351 Rework ring-buffer based processing strategy implementations for stream approach -->
-    <flow name="slowRequestHandler" processingStrategy="synchronous">
+    <flow name="slowRequestHandler"><!--processingStrategy="synchronous"-->
         <expression-component>mel:
             Thread.sleep(2000);
         </expression-component>

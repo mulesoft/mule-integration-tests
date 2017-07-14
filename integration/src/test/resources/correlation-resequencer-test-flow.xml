@@ -20,7 +20,7 @@
         <flow-ref name="sorted"/>
     </flow>
 
-    <flow name="sorted" processingStrategy="synchronous">
+    <flow name="sorted"><!--processingStrategy="synchronous"-->
         <test:processor/>
     </flow>
 

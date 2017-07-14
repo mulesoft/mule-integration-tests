@@ -6,7 +6,7 @@
        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
        http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
-    <flow name="exceptionHandlingBlock" processingStrategy="synchronous">
+    <flow name="exceptionHandlingBlock"><!--processingStrategy="synchronous"-->
         <flow-ref name="blockWithOwnExceptionStrategy"/>
         <error-handler>
             <on-error-propagate>
@@ -19,7 +19,7 @@
         </error-handler>
     </flow>
 
-    <flow name="blockWithOwnExceptionStrategy" processingStrategy="synchronous">
+    <flow name="blockWithOwnExceptionStrategy"><!--processingStrategy="synchronous"-->
         <test:processor throwException="true"/>
         <error-handler>
             <on-error-propagate>
