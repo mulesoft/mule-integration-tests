@@ -12,10 +12,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.deployment.management.ComponentInitialStateManager.SERVICE_ID;
-import static org.mule.runtime.dsl.api.component.config.ComponentLocationUtils.getFlowNameFrom;
 import static org.mule.test.allure.AllureConstants.SchedulerServiceFeature.SCHEDULER_SERVICE;
 import static org.mule.test.allure.AllureConstants.SchedulerServiceFeature.SchedulerServiceStory.SOURCE_MANAGEMENT;
-
 import org.mule.runtime.api.component.location.Location;
 import org.mule.runtime.api.deployment.management.ComponentInitialStateManager;
 import org.mule.runtime.api.exception.MuleException;
@@ -36,7 +34,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.junit.Test;
-
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
@@ -68,7 +65,7 @@ public class SchedulerInitialStateTestCase extends AbstractIntegrationTestCase {
           @Override
           public boolean mustStartMessageSource(AnnotatedObject component) {
             recordedOnStartMessageSources.add(component);
-            return getFlowNameFrom(component.getLocation()).equals("runningSchedulerOnStartup");
+            return component.getLocation().getRootContainerName().equals("runningSchedulerOnStartup");
           }
         };
       }
