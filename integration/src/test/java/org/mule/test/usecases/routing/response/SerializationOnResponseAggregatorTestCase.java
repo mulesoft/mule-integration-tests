@@ -45,8 +45,8 @@ public class SerializationOnResponseAggregatorTestCase extends AbstractIntegrati
   public void testSyncResponse() throws Exception {
     muleContext.getRegistry().registerObject(MuleProperties.OBJECT_STORE_DEFAULT_IN_MEMORY_NAME,
                                              new TestObjectStore(muleContext));
-    HttpRequest request = HttpRequest.builder().setUri("http://localhost:" + dynamicPort.getNumber())
-        .setEntity(new ByteArrayHttpEntity("request".getBytes())).setMethod(POST).build();
+    HttpRequest request = HttpRequest.builder().uri("http://localhost:" + dynamicPort.getNumber())
+        .entity(new ByteArrayHttpEntity("request".getBytes())).method(POST).build();
 
     HttpResponse response = httpClient.send(request, RECEIVE_TIMEOUT, false, null);
 

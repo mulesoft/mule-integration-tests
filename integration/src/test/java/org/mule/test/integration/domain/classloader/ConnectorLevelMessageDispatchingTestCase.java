@@ -64,8 +64,8 @@ public class ConnectorLevelMessageDispatchingTestCase extends AbstractFakeMuleSe
     FlowExecutionListener flowExecutionListener = new FlowExecutionListener(applicationContext);
     flowExecutionListener.addListener(source -> executionClassLoader.set(Thread.currentThread().getContextClassLoader()));
     HttpRequest request =
-        HttpRequest.builder().setUri(format(requestUrl, dynamicPort.getNumber())).setMethod(GET)
-            .setEntity(new ByteArrayHttpEntity("test-data".getBytes())).build();
+        HttpRequest.builder().uri(format(requestUrl, dynamicPort.getNumber())).method(GET)
+            .entity(new ByteArrayHttpEntity("test-data".getBytes())).build();
     httpClient.send(request, DEFAULT_TEST_TIMEOUT_SECS, false, null);
     flowExecutionListener.waitUntilFlowIsComplete();
     assertThat(executionClassLoader.get(), is(applicationContext.getExecutionClassLoader()));

@@ -71,8 +71,8 @@ public class TlsSharedContextTestCase extends DomainFunctionalTestCase {
     HttpClient httpClient = new TestHttpClient.Builder().tlsContextFactory(tlsContextFactory).build();
     httpClient.start();
 
-    HttpRequest request = HttpRequest.builder().setUri(format("https://localhost:%s/helloAll", port3.getValue())).setMethod(GET)
-        .setEntity(new ByteArrayHttpEntity(DATA.getBytes())).build();
+    HttpRequest request = HttpRequest.builder().uri(format("https://localhost:%s/helloAll", port3.getValue())).method(GET)
+        .entity(new ByteArrayHttpEntity(DATA.getBytes())).build();
     final HttpResponse response = httpClient.send(request, DEFAULT_TEST_TIMEOUT_SECS, false, null);
 
     httpClient.stop();

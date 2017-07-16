@@ -49,8 +49,8 @@ public class ResponseAggregatorTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void testSyncResponse() throws Exception {
-    HttpRequest request = HttpRequest.builder().setUri(format("http://localhost:%s", port.getNumber()))
-        .setEntity(new ByteArrayHttpEntity("request".getBytes())).setMethod(POST).build();
+    HttpRequest request = HttpRequest.builder().uri(format("http://localhost:%s", port.getNumber()))
+        .entity(new ByteArrayHttpEntity("request".getBytes())).method(POST).build();
 
     HttpResponse response = httpClient.send(request, RECEIVE_TIMEOUT, false, null);
 

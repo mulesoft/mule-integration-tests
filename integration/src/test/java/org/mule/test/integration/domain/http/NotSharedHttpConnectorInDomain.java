@@ -46,7 +46,7 @@ public class NotSharedHttpConnectorInDomain extends DomainFunctionalTestCase {
     String url = format("http://localhost:%d/test", dynamicPort.getNumber());
     MuleContext muleContext = getMuleContextForApp(APP);
 
-    HttpRequest request = HttpRequest.builder().setUri(url).setMethod(GET).build();
+    HttpRequest request = HttpRequest.builder().uri(url).method(GET).build();
     httpClient.send(request, DEFAULT_TEST_TIMEOUT_SECS, false, null);
 
     assertThat(muleContext.getClient().request("test://in", 5000), is(notNullValue()));

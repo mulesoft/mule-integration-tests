@@ -46,9 +46,9 @@ public class HttpTransformTestCase extends AbstractIntegrationTestCase {
   public void testBinary() throws Exception {
     ArrayList<Integer> payload = new ArrayList<>();
     payload.add(42);
-    HttpRequest httpRequest = HttpRequest.builder().setUri(format("http://localhost:%d/RemoteService", httpPort2.getNumber()))
-        .setEntity(new ByteArrayHttpEntity(muleContext.getObjectSerializer().getExternalProtocol().serialize(payload)))
-        .setMethod(POST).build();
+    HttpRequest httpRequest = HttpRequest.builder().uri(format("http://localhost:%d/RemoteService", httpPort2.getNumber()))
+        .entity(new ByteArrayHttpEntity(muleContext.getObjectSerializer().getExternalProtocol().serialize(payload)))
+        .method(POST).build();
     HttpResponse httpResponse = httpClient.send(httpRequest, RECEIVE_TIMEOUT, false, null);
 
     ByteArrayToSerializable transformer = new ByteArrayToSerializable();
