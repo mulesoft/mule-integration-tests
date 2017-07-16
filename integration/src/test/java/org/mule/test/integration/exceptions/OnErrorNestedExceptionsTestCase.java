@@ -18,11 +18,11 @@ import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Test;
-import ru.yandex.qatools.allure.annotations.Features;
-import ru.yandex.qatools.allure.annotations.Stories;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 
-@Features(ERROR_HANDLING)
-@Stories("On Error Nested Exceptions")
+@Feature(ERROR_HANDLING)
+@Story("On Error Nested Exceptions")
 public class OnErrorNestedExceptionsTestCase extends AbstractIntegrationTestCase {
 
   @Override

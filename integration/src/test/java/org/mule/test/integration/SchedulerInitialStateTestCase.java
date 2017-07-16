@@ -37,12 +37,12 @@ import java.util.Optional;
 
 import org.junit.Test;
 
-import ru.yandex.qatools.allure.annotations.Description;
-import ru.yandex.qatools.allure.annotations.Features;
-import ru.yandex.qatools.allure.annotations.Stories;
+import io.qameta.allure.Description;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 
-@Features(SCHEDULER_SERVICE)
-@Stories(SOURCE_MANAGEMENT)
+@Feature(SCHEDULER_SERVICE)
+@Story(SOURCE_MANAGEMENT)
 public class SchedulerInitialStateTestCase extends AbstractIntegrationTestCase {
 
   private List<AnnotatedObject> recordedOnStartMessageSources = new ArrayList<>();

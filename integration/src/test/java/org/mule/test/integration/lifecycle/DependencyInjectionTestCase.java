@@ -16,11 +16,11 @@ import org.mule.runtime.api.exception.MuleException;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Test;
-import ru.yandex.qatools.allure.annotations.Features;
-import ru.yandex.qatools.allure.annotations.Stories;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 
-@Features(LIFECYCLE_AND_DEPENDENCY_INJECTION)
-@Stories(ARTIFACT_OBJECTS_DEPENDENCY_INJECTION_STORY)
+@Feature(LIFECYCLE_AND_DEPENDENCY_INJECTION)
+@Story(ARTIFACT_OBJECTS_DEPENDENCY_INJECTION_STORY)
 public class DependencyInjectionTestCase extends AbstractIntegrationTestCase {
 
   @Override

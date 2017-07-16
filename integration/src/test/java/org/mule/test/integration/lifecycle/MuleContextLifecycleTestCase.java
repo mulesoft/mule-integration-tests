@@ -33,11 +33,11 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import org.junit.Test;
-import ru.yandex.qatools.allure.annotations.Features;
-import ru.yandex.qatools.allure.annotations.Stories;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 
-@Features(LIFECYCLE_AND_DEPENDENCY_INJECTION)
-@Stories(LIFECYCLE_PHASE_FAILURE_STORY)
+@Feature(LIFECYCLE_AND_DEPENDENCY_INJECTION)
+@Story(LIFECYCLE_PHASE_FAILURE_STORY)
 public class MuleContextLifecycleTestCase extends AbstractMuleTestCase {
 
   private static final String EXPECTED_A_CONTEXT_START_EXCEPTION_EXCEPTION = "Expected a ContextStartException exception";

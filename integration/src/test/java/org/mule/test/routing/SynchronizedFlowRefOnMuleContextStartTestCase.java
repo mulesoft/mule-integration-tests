@@ -28,11 +28,11 @@ import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Test;
 
-import ru.yandex.qatools.allure.annotations.Features;
-import ru.yandex.qatools.allure.annotations.Stories;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 
-@Features(LIFECYCLE_AND_DEPENDENCY_INJECTION)
-@Stories(MULE_CONTEXT_START_ORDER_STORY)
+@Feature(LIFECYCLE_AND_DEPENDENCY_INJECTION)
+@Story(MULE_CONTEXT_START_ORDER_STORY)
 public class SynchronizedFlowRefOnMuleContextStartTestCase extends AbstractIntegrationTestCase {
 
   protected static volatile int processedMessageCounter = 0;

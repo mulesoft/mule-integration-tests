@@ -42,11 +42,11 @@ import org.hamcrest.Matchers;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import ru.yandex.qatools.allure.annotations.Features;
-import ru.yandex.qatools.allure.annotations.Stories;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 
-@Features(ERROR_HANDLING)
-@Stories("On Error Propagate")
+@Feature(ERROR_HANDLING)
+@Story("On Error Propagate")
 public class OnErrorPropagateTestCase extends AbstractIntegrationTestCase {
 
   private static final String OUT = "test://out";

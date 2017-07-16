@@ -19,11 +19,11 @@ import org.junit.Test;
 
 import javax.inject.Inject;
 
-import ru.yandex.qatools.allure.annotations.Features;
-import ru.yandex.qatools.allure.annotations.Stories;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 
-@Features(CONFIGURATION_COMPONENT_LOCATOR)
-@Stories(MUNIT_COMPONENT_LOCATION)
+@Feature(CONFIGURATION_COMPONENT_LOCATOR)
+@Story(MUNIT_COMPONENT_LOCATION)
 @Ignore("MULE-13087 - Ignore until munit build works")
 public class MUnitComponentPathTestCase extends MuleArtifactFunctionalTestCase {
 
