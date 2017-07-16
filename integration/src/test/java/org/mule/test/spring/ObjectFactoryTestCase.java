@@ -19,11 +19,11 @@ import org.mule.test.config.spring.parsers.beans.TestObject;
 import org.mule.test.config.spring.parsers.beans.TestObjectFactory;
 
 import org.junit.Test;
-import ru.yandex.qatools.allure.annotations.Features;
-import ru.yandex.qatools.allure.annotations.Stories;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 
-@Features(LIFECYCLE_AND_DEPENDENCY_INJECTION)
-@Stories(OBJECT_FACTORY_INECTION_AND_LIFECYCLE)
+@Feature(LIFECYCLE_AND_DEPENDENCY_INJECTION)
+@Story(OBJECT_FACTORY_INECTION_AND_LIFECYCLE)
 public class ObjectFactoryTestCase extends AbstractIntegrationTestCase {
 
   @Override

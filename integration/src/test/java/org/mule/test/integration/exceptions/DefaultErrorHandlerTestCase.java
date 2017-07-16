@@ -23,11 +23,11 @@ import org.mule.runtime.core.api.retry.policy.RetryPolicyExhaustedException;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Test;
-import ru.yandex.qatools.allure.annotations.Features;
-import ru.yandex.qatools.allure.annotations.Stories;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 
-@Features(ERROR_HANDLING)
-@Stories(DEFAULT_ERROR_HANDLER)
+@Feature(ERROR_HANDLING)
+@Story(DEFAULT_ERROR_HANDLER)
 public class DefaultErrorHandlerTestCase extends AbstractIntegrationTestCase {
 
   private static Exception exception;

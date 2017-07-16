@@ -40,11 +40,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import ru.yandex.qatools.allure.annotations.Features;
-import ru.yandex.qatools.allure.annotations.Stories;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 
-@Features(ERROR_HANDLING)
-@Stories("Error Handler")
+@Feature(ERROR_HANDLING)
+@Story("Error Handler")
 public class ErrorHandlerTestCase extends AbstractIntegrationTestCase {
 
   @Rule

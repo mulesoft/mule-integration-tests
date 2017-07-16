@@ -36,9 +36,9 @@ import org.apache.http.impl.client.HttpClients;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
-import ru.yandex.qatools.allure.annotations.Features;
+import io.qameta.allure.Feature;
 
-@Features(HTTP_EXTENSION)
+@Feature(HTTP_EXTENSION)
 public class HttpListenerAuthenticationTestCase extends AbstractIntegrationTestCase {
 
   private static final String BASIC_REALM_MULE_REALM = "Basic realm=\"mule-realm\"";

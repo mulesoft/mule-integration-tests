@@ -43,11 +43,11 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import ru.yandex.qatools.allure.annotations.Features;
-import ru.yandex.qatools.allure.annotations.Stories;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 
-@Features(ERROR_HANDLING)
-@Stories("Validations")
+@Feature(ERROR_HANDLING)
+@Story("Validations")
 public class ErrorHandlingConfigurationFailuresTestCase extends AbstractMuleTestCase {
 
   @Rule

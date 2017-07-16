@@ -18,11 +18,11 @@ import org.mule.test.AbstractIntegrationTestCase;
 import java.util.Optional;
 
 import org.junit.Test;
-import ru.yandex.qatools.allure.annotations.Features;
-import ru.yandex.qatools.allure.annotations.Stories;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 
-@Features(MULE_DSL)
-@Stories(DSL_PARSING_STORY)
+@Feature(MULE_DSL)
+@Story(DSL_PARSING_STORY)
 public class CustomizedXmlNamespacePrefixTestCase extends AbstractIntegrationTestCase {
 
   @Override

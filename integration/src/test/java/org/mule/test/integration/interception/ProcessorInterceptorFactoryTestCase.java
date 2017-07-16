@@ -55,12 +55,12 @@ import org.junit.Test;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import ru.yandex.qatools.allure.annotations.Description;
-import ru.yandex.qatools.allure.annotations.Features;
-import ru.yandex.qatools.allure.annotations.Stories;
+import io.qameta.allure.Description;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 
-@Features(INTERCEPTION_API)
-@Stories(COMPONENT_INTERCEPTION_STORY)
+@Feature(INTERCEPTION_API)
+@Story(COMPONENT_INTERCEPTION_STORY)
 @RunnerDelegateTo(Parameterized.class)
 public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTestCase {
 

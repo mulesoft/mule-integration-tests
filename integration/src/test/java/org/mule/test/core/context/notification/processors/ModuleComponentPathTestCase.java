@@ -18,8 +18,7 @@ import static org.mule.runtime.api.component.TypedComponentIdentifier.builder;
 import static org.mule.runtime.api.dsl.DslResolvingContext.getDefault;
 import static org.mule.runtime.config.spring.dsl.model.ApplicationModel.FLOW_IDENTIFIER;
 import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.initialiseIfNeeded;
-import org.junit.Assert;
-import org.junit.Test;
+
 import org.mule.runtime.api.component.TypedComponentIdentifier;
 import org.mule.runtime.api.dsl.DslResolvingContext;
 import org.mule.runtime.api.meta.model.ExtensionModel;
@@ -33,7 +32,6 @@ import org.mule.runtime.dsl.api.component.config.DefaultComponentLocation.Defaul
 import org.mule.runtime.extension.internal.loader.XmlExtensionModelLoader;
 import org.mule.runtime.module.extension.internal.manager.DefaultExtensionManager;
 import org.mule.test.AbstractIntegrationTestCase;
-import ru.yandex.qatools.allure.annotations.Description;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -43,7 +41,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-@Description("Test suite to ensure XML connectors do properly generate the paths")
+import org.junit.Assert;
+import org.junit.Test;
+import io.qameta.allure.junit4.DisplayName;
+
+@DisplayName("XML Connectors Path generation")
 public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
 
   private static final String COLON_SEPARATOR = ":";

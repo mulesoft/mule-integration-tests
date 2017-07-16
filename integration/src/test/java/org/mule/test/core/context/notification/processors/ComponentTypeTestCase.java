@@ -30,11 +30,11 @@ import org.junit.Test;
 
 import javax.inject.Inject;
 
-import ru.yandex.qatools.allure.annotations.Features;
-import ru.yandex.qatools.allure.annotations.Stories;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 
-@Features(CONFIGURATION_COMPONENT_LOCATOR)
-@Stories(COMPONENT_CONFIGURATION_TYPE)
+@Feature(CONFIGURATION_COMPONENT_LOCATOR)
+@Story(COMPONENT_CONFIGURATION_TYPE)
 public class ComponentTypeTestCase extends AbstractIntegrationTestCase {
 
   @Inject
