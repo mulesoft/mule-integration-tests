@@ -38,7 +38,6 @@ import org.mule.runtime.core.internal.exception.OnErrorPropagateHandler;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
@@ -172,12 +171,6 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
     MessagingException messagingException =
         flowRunner("errorThrownByOperationInForeach").withPayload(asList("1", "2", "3")).runExpectingException();
     assertThat(messagingException.getCause(), instanceOf(ExpressionRuntimeException.class));
-  }
-
-  private Map<String, Serializable> getMessageProperties() {
-    Map<String, Serializable> props = new HashMap<>();
-    props.put("host", "localhost");
-    return props;
   }
 
   private void testTransactionalScope(String flowName, String expected, Map<String, Serializable> messageProperties)
