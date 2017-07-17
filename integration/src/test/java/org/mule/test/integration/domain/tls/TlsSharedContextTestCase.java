@@ -11,6 +11,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.http.api.HttpConstants.Method.GET;
 
+import io.qameta.allure.Issue;
 import org.mule.functional.junit4.DomainFunctionalTestCase;
 import org.mule.functional.junit4.FlowRunner;
 import org.mule.runtime.api.tls.TlsContextFactory;
@@ -29,6 +30,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 @Ignore("MULE-10633")
+@Issue("MULE-10633")
 public class TlsSharedContextTestCase extends DomainFunctionalTestCase {
 
   private static final String DATA = "data";

@@ -11,6 +11,7 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.http.api.HttpConstants.Method.GET;
 
+import io.qameta.allure.Issue;
 import org.mule.functional.junit4.ApplicationContextBuilder;
 import org.mule.functional.junit4.DomainContextBuilder;
 import org.mule.runtime.core.api.MuleContext;
@@ -28,6 +29,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 @Ignore("MULE-10633")
+@Issue("MULE-10633")
 public class AppAndDomainLifecycleTestCase extends AbstractMuleTestCase {
 
   @Rule

@@ -10,6 +10,7 @@ package org.mule.test.module.extension.ftp;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
+import io.qameta.allure.Issue;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.infrastructure.client.ftp.FTPTestClient;
 import org.mule.test.infrastructure.process.rules.FtpServer;
@@ -25,6 +26,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 @Ignore("MULE-11450: Migrate Contiperf tests to JMH")
+@Issue("MULE-11450")
 public class FtpPerformanceTestCase extends AbstractIsolatedFunctionalPerformanceTestCase {
 
   private static final String DEFAULT_FTP_HOST = "localhost";

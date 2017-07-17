@@ -8,6 +8,7 @@ package org.mule.test.integration.domain.http;
 
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 
+import io.qameta.allure.Issue;
 import org.mule.functional.junit4.ApplicationContextBuilder;
 import org.mule.functional.junit4.DomainContextBuilder;
 import org.mule.runtime.core.api.MuleContext;
@@ -23,6 +24,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 @Ignore("MULE-10633")
+@Issue("MULE-10633")
 public class HttpSharePortSamePathTestCase extends AbstractMuleTestCase {
 
   @Rule

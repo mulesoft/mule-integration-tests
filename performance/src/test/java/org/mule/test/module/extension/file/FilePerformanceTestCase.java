@@ -9,6 +9,7 @@ package org.mule.test.module.extension.file;
 
 import static org.junit.rules.ExpectedException.none;
 
+import io.qameta.allure.Issue;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.performance.util.AbstractIsolatedFunctionalPerformanceTestCase;
 
@@ -28,6 +29,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
 @Ignore("MULE-11450: Migrate Contiperf tests to JMH")
+@Issue("MULE-11450")
 public class FilePerformanceTestCase extends AbstractIsolatedFunctionalPerformanceTestCase {
 
   private static final String HELLO_WORLD = "Hello World!";

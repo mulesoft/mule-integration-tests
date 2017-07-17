@@ -7,6 +7,7 @@
 
 package org.mule.test.core.routing;
 
+import io.qameta.allure.Issue;
 import org.mule.test.performance.util.AbstractIsolatedFunctionalPerformanceTestCase;
 
 import org.databene.contiperf.PerfTest;
@@ -15,6 +16,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 @Ignore("MULE-11450: Migrate Contiperf tests to JMH")
+@Issue("MULE-11450")
 public class ScatterGatherRouterPerformanceTestCase extends AbstractIsolatedFunctionalPerformanceTestCase {
 
   @Override

@@ -6,6 +6,7 @@
  */
 package org.mule.test.integration.domain.http;
 
+import io.qameta.allure.Issue;
 import org.mule.runtime.api.lifecycle.CreateException;
 import org.mule.runtime.api.tls.TlsContextFactory;
 import org.mule.tck.junit4.rule.SystemProperty;
@@ -14,6 +15,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 
 @Ignore("MULE-10633")
+@Issue("MULE-10633")
 public class HttpsSharePortTestCase extends HttpSharePortTestCase {
 
   private TlsContextFactory tlsContextFactory;

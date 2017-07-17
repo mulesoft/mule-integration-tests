@@ -6,12 +6,14 @@
  */
 package org.mule.test.integration.domain.http;
 
+import io.qameta.allure.Issue;
 import org.mule.functional.junit4.DomainFunctionalTestCase;
 
 import org.junit.Ignore;
 import org.junit.Test;
 
 @Ignore("MULE-10633")
+@Issue("MULE-10633")
 public class HttpSharedRequestConfigTestCase extends DomainFunctionalTestCase {
 
   private static final String FIRST_APP_NAME = "app-1";
