@@ -9,8 +9,10 @@
 		class="org.mule.runtime.core.api.store.SimpleMemoryObjectStore" />
 
 	<flow name="retryExhausted">
-		<until-successful objectStore-ref="objectStore" maxRetries="1" secondsBetweenRetries="1">
-			<test:processor throwException="true"/>
-		</until-successful>
+		<async>
+			<until-successful maxRetries="1" millisBetweenRetries="1000">
+				<test:processor throwException="true"/>
+			</until-successful>
+		</async>
 	</flow>
 </mule>

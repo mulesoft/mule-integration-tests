@@ -10,16 +10,20 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.mule.functional.api.component.FlowAssert.verify;
 
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.config.DefaultMuleConfiguration;
 import org.mule.runtime.core.api.context.MuleContextBuilder;
 import org.mule.runtime.core.api.processor.strategy.ProcessingStrategyFactory;
+import org.mule.runtime.core.api.transaction.Transaction;
+import org.mule.runtime.core.api.transaction.TransactionCoordination;
 import org.mule.runtime.core.processor.strategy.TransactionAwareWorkQueueProcessingStrategyFactory;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Test;
+import org.mockito.Mockito;
 
 public class NonBlockingFunctionalTestCase extends AbstractIntegrationTestCase {
 
@@ -198,6 +202,37 @@ public class NonBlockingFunctionalTestCase extends AbstractIntegrationTestCase {
   public void childDefaultFlow() throws Exception {
     flowRunner("childDefaultFlow").withPayload(TEST_MESSAGE).run();
     verify("childDefaultFlowChild");
+  }
+
+  @Test
+  public void untilSuccessfulNoRetry() throws Exception {
+    flowRunner("untilSuccessfulNoRetry").withPayload(TEST_MESSAGE).run();
+  }
+
+  @Test
+  public void untilSuccessfulNoRetryNonBlockingAfterScope() throws Exception {
+    flowRunner("untilSuccessfulNoRetryNonBlockingAfterScope").withPayload(TEST_MESSAGE).run();
+  }
+
+  @Test
+  public void untilSuccessfulWithRetryExceptionBefore() throws Exception {
+    flowRunner("untilSuccessfulWithRetryExceptionBefore").withPayload(TEST_MESSAGE).run();
+  }
+
+  @Test
+  public void untilSuccessfulWithRetryExceptionAfter() throws Exception {
+    flowRunner("untilSuccessfulWithRetryExceptionAfter").withPayload(TEST_MESSAGE).run();
+  }
+
+  @Test
+  public void untilSuccessfulWithRetryNonBlockingAfterScope() throws Exception {
+    flowRunner("untilSuccessfulWithRetryNonBlockingAfterScope").withPayload(TEST_MESSAGE).run();
+  }
+
+  @Test
+  public void untilSuccessfulWithRetryTransactional() throws Exception {
+    TransactionCoordination.getInstance().bindTransaction(mock(Transaction.class));
+    flowRunner("untilSuccessfulWithRetryTransactional").withPayload(TEST_MESSAGE).run();
   }
 
 }
