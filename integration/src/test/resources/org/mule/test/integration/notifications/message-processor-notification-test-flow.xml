@@ -142,14 +142,14 @@
     </flow>
 
     <flow name="until-successful">
-        <until-successful objectStore-ref="objectStore">
+        <until-successful>
             <test:queue name="out-us"/>
         </until-successful>
         <logger message="check1"/>
     </flow>
 
     <flow name="until-successful-with-processor-chain">
-        <until-successful objectStore-ref="objectStore">
+        <until-successful>
             <processor-chain>
                 <logger message="check1"/>
                 <test:queue name="out-us"/>
@@ -159,7 +159,7 @@
     </flow>
 
     <flow name="until-successful-with-enricher">
-        <until-successful objectStore-ref="objectStore">
+        <until-successful>
             <processor-chain>
                 <enricher source="#[payload]" target="#[payload]">
                     <append-string-transformer message="Hello"/>

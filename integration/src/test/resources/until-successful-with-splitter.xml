@@ -3,12 +3,10 @@
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 
-    <object name="objectStore" class="org.mule.runtime.core.api.store.SimpleMemoryObjectStore" />
-
     <flow name="withSplitter">
         <set-payload value="#[mel:['a','b']]" />
         <splitter />
-        <until-successful objectStore-ref="objectStore" maxRetries="2" secondsBetweenRetries="1">
+        <until-successful maxRetries="2" millisBetweenRetries="1000">
             <custom-processor class="org.mule.test.routing.UntilSuccessfulWithSplitterTestCase$FailAtFirstAttempt" />
         </until-successful>
     </flow>

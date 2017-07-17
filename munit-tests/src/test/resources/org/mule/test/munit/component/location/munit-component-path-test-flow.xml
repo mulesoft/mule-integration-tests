@@ -40,7 +40,7 @@
         <munit:behavior>
             <try>
                 <first-successful>
-                    <until-successful synchronous="true">
+                    <until-successful>
                         <logger/>
                     </until-successful>
                 </first-successful>

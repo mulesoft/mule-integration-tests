@@ -16,7 +16,7 @@
                 <fixed-frequency frequency="10"/>
             </scheduling-strategy>
         </scheduler>
-        <until-successful synchronous="true">
+        <until-successful>
             <logger/>
         </until-successful>
         <first-successful>

@@ -6,7 +6,6 @@
  */
 package org.mule.test.routing;
 
-import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -17,64 +16,46 @@ import static org.junit.Assert.assertThat;
 import static org.mule.functional.api.component.FunctionalTestProcessor.getFromFlow;
 import static org.mule.functional.api.component.InvocationCountMessageProcessor.getNumberOfInvocationsFor;
 import static org.mule.functional.junit4.TestLegacyMessageUtils.getExceptionPayload;
+import static org.mule.functional.junit4.matchers.ThrowableCauseMatcher.hasCause;
 
 import org.mule.functional.api.component.FunctionalTestProcessor;
 import org.mule.functional.api.exception.FunctionalTestException;
+import org.mule.functional.junit4.matchers.ThrowableCauseMatcher;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.Event;
+import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.retry.policy.RetryPolicyExhaustedException;
-import org.mule.runtime.core.api.store.AbstractPartitionedObjectStore;
 import org.mule.tck.probe.JUnitLambdaProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.test.AbstractIntegrationTestCase;
-import org.mule.test.runner.RunnerDelegateTo;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.junit.runners.Parameterized;
 
-@RunnerDelegateTo(Parameterized.class)
 public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
 
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
 
-  private final String configFile;
-
   private FunctionalTestProcessor targetMessageProcessor;
-
-  @Parameterized.Parameters
-  public static Collection<Object[]> parameters() {
-    return asList(new Object[][] {{"until-successful-test.xml"}, {"until-successful-seconds-test.xml"}});
-  }
-
-  public UntilSuccessfulTestCase(String configFile) {
-    this.configFile = configFile;
-  }
 
   @Override
   protected String getConfigFile() {
-    return configFile;
+    return "until-successful-test.xml";
   }
 
   @Override
   protected void doSetUp() throws Exception {
     super.doSetUp();
-
     targetMessageProcessor = getFromFlow(muleContext, "target-mp");
-
-    final AbstractPartitionedObjectStore<Serializable> objectStore = muleContext.getRegistry().lookupObject("objectStore");
-    objectStore.disposePartition("DEFAULT_PARTITION");
   }
 
   @Test
@@ -105,7 +86,7 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
     assertThat(error, is(notNullValue()));
     assertThat(error.getCause(), instanceOf(RetryPolicyExhaustedException.class));
     assertThat(error.getCause().getMessage(),
-               containsString("until-successful retries exhausted. Last exception message was: Failure expression positive when processing event"));
+               containsString("'until-successful' retries exhausted. Last exception message was: Failure expression positive when processing event"));
 
     assertThat(error.getCause().getCause(), instanceOf(MuleRuntimeException.class));
     assertThat(error.getCause().getMessage(),
@@ -127,7 +108,9 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
   @Test
   public void executeSynchronously() throws Exception {
     final String payload = RandomStringUtils.randomAlphanumeric(20);
-    expectedException.expectCause(instanceOf(FunctionalTestException.class));
+    expectedException.expect(MessagingException.class);
+    expectedException.expectCause(instanceOf(RetryPolicyExhaustedException.class));
+    expectedException.expectCause(hasCause(instanceOf(FunctionalTestException.class)));
     flowRunner("synchronous").withPayload(payload).run();
   }
 

@@ -290,16 +290,67 @@
     </flow>
 
     <flow name="childDefaultFlow">
-        <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]" message="1"/>
+        <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]"/>
         <expression-component>mel:flowVars['requestThread'] = Thread.currentThread()</expression-component>
         <flow-ref name="childDefaultFlowChild"/>
         <test:assert expression="#[mel:assertPayload()]"/>
         <test:non-blocking-processor/>
     </flow>
-    
+
     <flow name="childDefaultFlowChild" processingStrategy="synchronous">
-        <test:assert-intercepting responseSameTask="true" responseExpression="#[mel:assertPayload()]" message="2"/>
+        <test:assert-intercepting responseSameTask="true" responseExpression="#[mel:assertPayload()]"/>
         <test:non-blocking-processor/>
+        <test:assert expression="#[mel:assertPayload()]"/>
+    </flow>
+
+    <flow name="untilSuccessfulNoRetry">
+        <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]"/>
+        <until-successful>
+            <test:non-blocking-processor/>
+        </until-successful>
+        <test:assert expression="#[mel:assertPayload()]"/>
+    </flow>
+
+    <flow name="untilSuccessfulNoRetryNonBlockingAfterScope">
+        <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]"/>
+        <until-successful>
+            <test:assert expression="#[mel:assertPayload()]"/>
+        </until-successful>
+        <test:non-blocking-processor/>
+    </flow>
+
+    <flow name="untilSuccessfulWithRetryExceptionBefore">
+        <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]"/>
+        <until-successful millisBetweenRetries="1000">
+            <test:throw exception="java.lang.RuntimeException" error="ANY" count="2"/>
+            <test:non-blocking-processor/>
+        </until-successful>
+        <test:assert expression="#[mel:assertPayload()]"/>
+    </flow>
+
+    <flow name="untilSuccessfulWithRetryExceptionAfter">
+        <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]"/>
+        <until-successful millisBetweenRetries="1000">
+            <test:non-blocking-processor/>
+            <test:throw exception="java.lang.RuntimeException" error="ANY" count="2"/>
+        </until-successful>
+        <test:assert expression="#[mel:assertPayload()]"/>
+    </flow>
+
+    <flow name="untilSuccessfulWithRetryNonBlockingAfterScope">
+        <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]"/>
+        <until-successful millisBetweenRetries="1000">
+            <test:throw exception="java.lang.RuntimeException" error="ANY" count="2"/>
+        </until-successful>
+        <test:non-blocking-processor/>
+    </flow>
+
+    <flow name="untilSuccessfulWithRetryTransactional">
+        <test:assert-intercepting responseSameTask="true" responseExpression="#[mel:assertPayload()]"/>
+        <until-successful millisBetweenRetries="1000">
+            <test:throw exception="java.lang.RuntimeException" error="ANY" count="2"/>
+            <test:non-blocking-processor/>
+        </until-successful>
         <test:assert expression="#[mel:assertPayload()]"/>
     </flow>
 

@@ -26,13 +26,9 @@ public class UntilSuccessfulRetryExhaustedTestCase extends AbstractIntegrationTe
   @Test
   public void onRetryExhaustedCallExceptionStrategy() throws Exception {
     final Latch exceptionStrategyCalledLatch = new Latch();
-    muleContext.registerListener(new ExceptionNotificationListener<ExceptionNotification>() {
-
-      @Override
-      public void onNotification(ExceptionNotification notification) {
-        exceptionStrategyCalledLatch.release();
-      }
-    });
+    muleContext
+        .registerListener((ExceptionNotificationListener<ExceptionNotification>) notification -> exceptionStrategyCalledLatch
+            .release());
     flowRunner("retryExhausted").withPayload("message").run();
     if (!exceptionStrategyCalledLatch.await(10000, TimeUnit.MILLISECONDS)) {
       fail("exception strategy was not executed");

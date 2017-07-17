@@ -5,10 +5,8 @@
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
         http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
-    <object name="objectStore" class="org.mule.runtime.core.api.store.SimpleMemoryObjectStore" />
-
     <flow name="flow1">
-        <until-successful maxRetries="0" objectStore-ref="objectStore">
+        <until-successful maxRetries="0">
             <processor-chain>
                 <flow-ref name="flow2"/>
             </processor-chain>
