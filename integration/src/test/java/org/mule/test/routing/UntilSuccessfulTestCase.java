@@ -86,7 +86,7 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
     assertThat(error, is(notNullValue()));
     assertThat(error.getCause(), instanceOf(RetryPolicyExhaustedException.class));
     assertThat(error.getCause().getMessage(),
-               containsString("until-successful retries exhausted. Last exception message was: Failure expression positive when processing event"));
+               containsString("'until-successful' retries exhausted. Last exception message was: Failure expression positive when processing event"));
 
     assertThat(error.getCause().getCause(), instanceOf(MuleRuntimeException.class));
     assertThat(error.getCause().getMessage(),
