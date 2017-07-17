@@ -7,6 +7,8 @@
 package org.mule.shutdown;
 
 import static org.junit.Assert.assertTrue;
+
+import io.qameta.allure.Issue;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.client.MuleClient;
@@ -17,6 +19,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 @Ignore("MULE-11097: Reactor does not handle RejectedExecutionException's")
+@Issue("MULE-11097")
 public class ValidShutdownTimeoutOneWayTestCase extends AbstractShutdownTimeoutRequestResponseTestCase {
 
   @Rule

@@ -9,6 +9,7 @@ package org.mule.shutdown;
 import static org.junit.Assert.assertTrue;
 import static org.mule.runtime.http.api.HttpConstants.Method.GET;
 
+import io.qameta.allure.Issue;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.runtime.http.api.HttpService;
@@ -24,6 +25,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 @Ignore("See MULE-9200")
+@Issue("MULE-9200")
 public class ValidShutdownTimeoutRequestResponseTestCase extends AbstractShutdownTimeoutRequestResponseTestCase {
 
   @Rule

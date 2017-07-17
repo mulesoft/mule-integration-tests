@@ -11,6 +11,8 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.tck.junit4.AbstractMuleContextTestCase.RECEIVE_TIMEOUT;
+
+import io.qameta.allure.Issue;
 import org.mule.functional.junit4.DomainFunctionalTestCase;
 import org.mule.runtime.api.tls.TlsContextFactory;
 import org.mule.runtime.http.api.domain.message.request.HttpRequest;
@@ -24,6 +26,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 @Ignore("MULE-10633")
+@Issue("MULE-10633")
 public class HttpSharePortTestCase extends DomainFunctionalTestCase {
 
   public static final String HELLO_WORLD_SERVICE_APP = "helloWorldServiceApp";

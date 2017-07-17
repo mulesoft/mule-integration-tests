@@ -8,6 +8,8 @@ package org.mule.issues;
 
 import static org.junit.Assert.assertEquals;
 import static org.mule.functional.junit4.TestLegacyMessageUtils.getOutboundProperty;
+
+import io.qameta.allure.Issue;
 import org.mule.functional.junit4.FlowRunner;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.Event;
@@ -26,6 +28,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 @Ignore("See MULE-9195")
+@Issue("MULE-9195")
 public class MessageRootIdPropagationTestCase extends AbstractIntegrationTestCase {
 
   @Rule

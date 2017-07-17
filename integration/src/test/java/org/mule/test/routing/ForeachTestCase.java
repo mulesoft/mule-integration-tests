@@ -29,6 +29,7 @@ import static org.mule.runtime.api.metadata.MediaType.APPLICATION_JSON;
 import static org.mule.runtime.api.metadata.MediaType.APPLICATION_XML;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS_FEATURE;
 
+import io.qameta.allure.Issue;
 import org.mule.functional.api.component.FlowAssert;
 import org.mule.functional.junit4.TestLegacyMessageBuilder;
 import org.mule.runtime.api.exception.MuleException;
@@ -363,6 +364,7 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
   }
 
   @Ignore("MULE-9285")
+  @Issue("MULE-9285")
   @Test
   public void xmlUpdateByteArray() throws Exception {
     xml(sampleXml.getBytes());
