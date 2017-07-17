@@ -38,7 +38,7 @@ public class ConnectorMessageNotificationTestCase extends AbstractNotificationTe
   @Test
   public void doTest() throws Exception {
     HttpRequest request =
-        HttpRequest.builder().setUri(String.format("http://localhost:%s/path", port.getNumber())).setMethod(POST).build();
+        HttpRequest.builder().uri(String.format("http://localhost:%s/path", port.getNumber())).method(POST).build();
 
     httpClient.send(request, TIMEOUT, false, null);
 

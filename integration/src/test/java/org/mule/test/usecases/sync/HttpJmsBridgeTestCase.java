@@ -46,8 +46,8 @@ public class HttpJmsBridgeTestCase extends AbstractIntegrationTestCase {
     final String customHeader = "X-Custom-Header";
     headersMap.put(customHeader, "value");
 
-    HttpRequest request = HttpRequest.builder().setUri(format("http://localhost:%d/in", httpPort.getNumber()))
-        .setEntity(new ByteArrayHttpEntity(payload.getBytes())).setHeaders(headersMap).setMethod(POST).build();
+    HttpRequest request = HttpRequest.builder().uri(format("http://localhost:%d/in", httpPort.getNumber()))
+        .entity(new ByteArrayHttpEntity(payload.getBytes())).headers(headersMap).method(POST).build();
     httpClient.send(request, RECEIVE_TIMEOUT, false, null);
 
     Message msg = muleContext.getClient().request("test://out", RECEIVE_TIMEOUT).getRight().get();

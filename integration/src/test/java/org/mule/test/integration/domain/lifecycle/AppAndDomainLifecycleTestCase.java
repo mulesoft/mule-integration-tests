@@ -16,7 +16,6 @@ import org.mule.functional.junit4.DomainContextBuilder;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;
-import org.mule.runtime.http.api.domain.entity.InputStreamHttpEntity;
 import org.mule.runtime.http.api.domain.message.request.HttpRequest;
 import org.mule.runtime.http.api.domain.message.response.HttpResponse;
 import org.mule.service.http.TestHttpClient;
@@ -53,8 +52,8 @@ public class AppAndDomainLifecycleTestCase extends AbstractMuleTestCase {
           .setDomainContext(domainContext).build();
       firstAppContext.stop();
 
-      HttpRequest request = HttpRequest.builder().setUri("http://localhost:" + dynamicPort.getNumber() + "/service/helloWorld")
-          .setMethod(GET).setEntity(new ByteArrayHttpEntity("test".getBytes())).build();
+      HttpRequest request = HttpRequest.builder().uri("http://localhost:" + dynamicPort.getNumber() + "/service/helloWorld")
+          .method(GET).entity(new ByteArrayHttpEntity("test".getBytes())).build();
       final HttpResponse response = httpClient.send(request, DEFAULT_TEST_TIMEOUT_SECS, false, null);
 
       assertThat(response, notNullValue());

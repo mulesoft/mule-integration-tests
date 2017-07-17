@@ -47,8 +47,8 @@ public class ExceptionHandlingSourceTestCase extends AbstractIntegrationTestCase
   @Test
   public void errorSendingResponse() throws Exception {
     HttpRequest request = HttpRequest.builder()
-        .setUri("http://localhost:" + port.getNumber() + "/errorSendingResponse")
-        .setMethod(GET).build();
+        .uri("http://localhost:" + port.getNumber() + "/errorSendingResponse")
+        .method(GET).build();
 
     HttpResponse response = httpClient.send(request, RECEIVE_TIMEOUT, false, null);
 
@@ -59,8 +59,8 @@ public class ExceptionHandlingSourceTestCase extends AbstractIntegrationTestCase
   @Test
   public void errorSendingErrorResponse() throws Exception {
     HttpRequest request = HttpRequest.builder()
-        .setUri("http://localhost:" + port.getNumber() + "/errorSendingErrorResponse")
-        .setMethod(GET).build();
+        .uri("http://localhost:" + port.getNumber() + "/errorSendingErrorResponse")
+        .method(GET).build();
 
     HttpResponse response = httpClient.send(request, RECEIVE_TIMEOUT, false, null);
 
@@ -71,8 +71,8 @@ public class ExceptionHandlingSourceTestCase extends AbstractIntegrationTestCase
   @Test
   public void errorSendingThrownError() throws Exception {
     HttpRequest request = HttpRequest.builder()
-        .setUri("http://localhost:" + port.getNumber() + "/errorSendingThrownError")
-        .setMethod(GET).build();
+        .uri("http://localhost:" + port.getNumber() + "/errorSendingThrownError")
+        .method(GET).build();
 
     HttpResponse response = httpClient.send(request, RECEIVE_TIMEOUT, false, null);
 
@@ -83,8 +83,8 @@ public class ExceptionHandlingSourceTestCase extends AbstractIntegrationTestCase
   @Test
   public void errorSendingErrorFromHandler() throws Exception {
     HttpRequest request = HttpRequest.builder()
-        .setUri("http://localhost:" + port.getNumber() + "/errorSendingErrorFromHandler")
-        .setMethod(GET).build();
+        .uri("http://localhost:" + port.getNumber() + "/errorSendingErrorFromHandler")
+        .method(GET).build();
 
     HttpResponse response = httpClient.send(request, RECEIVE_TIMEOUT, false, null);
 
@@ -95,8 +95,8 @@ public class ExceptionHandlingSourceTestCase extends AbstractIntegrationTestCase
   @Test
   public void errorSendingPropagatedError() throws Exception {
     HttpRequest request = HttpRequest.builder()
-        .setUri("http://localhost:" + port.getNumber() + "/errorSendingPropagatedError")
-        .setMethod(GET).build();
+        .uri("http://localhost:" + port.getNumber() + "/errorSendingPropagatedError")
+        .method(GET).build();
 
     HttpResponse response = httpClient.send(request, RECEIVE_TIMEOUT, false, null);
 

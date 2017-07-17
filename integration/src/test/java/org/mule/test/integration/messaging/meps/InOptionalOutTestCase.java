@@ -41,15 +41,15 @@ public class InOptionalOutTestCase extends AbstractIntegrationTestCase {
   @Test
   public void testExchange() throws Exception {
     String listenerUrl = format("http://localhost:%s/", port.getNumber());
-    HttpRequest request = HttpRequest.builder().setUri(listenerUrl).setMethod(GET)
-        .setEntity(new ByteArrayHttpEntity("some data".getBytes())).build();
+    HttpRequest request = HttpRequest.builder().uri(listenerUrl).method(GET)
+        .entity(new ByteArrayHttpEntity("some data".getBytes())).build();
     HttpEntity responseEntity = httpClient.send(request, RECEIVE_TIMEOUT, false, null).getEntity();
 
     assertNotNull(responseEntity);
     assertEquals(EMPTY, IOUtils.toString(responseEntity.getContent()));
 
-    request = HttpRequest.builder().setUri(listenerUrl).setMethod(GET).addHeader("foo", "bar")
-        .setEntity(new ByteArrayHttpEntity("some data".getBytes())).build();
+    request = HttpRequest.builder().uri(listenerUrl).method(GET).addHeader("foo", "bar")
+        .entity(new ByteArrayHttpEntity("some data".getBytes())).build();
     responseEntity = httpClient.send(request, RECEIVE_TIMEOUT, false, null).getEntity();
     assertNotNull(responseEntity);
     assertEquals("foo header received", IOUtils.toString(responseEntity.getContent()));

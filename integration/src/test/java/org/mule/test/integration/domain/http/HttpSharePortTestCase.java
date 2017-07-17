@@ -51,7 +51,7 @@ public class HttpSharePortTestCase extends DomainFunctionalTestCase {
   @Test
   public void bothServicesBindCorrectly() throws Exception {
     HttpRequest httpRequest = HttpRequest.builder()
-        .setUri(format("%s://localhost:%d/service/helloWorld", endpointScheme.getValue(), dynamicPort.getNumber())).build();
+        .uri(format("%s://localhost:%d/service/helloWorld", endpointScheme.getValue(), dynamicPort.getNumber())).build();
     HttpResponse httpResponse = httpClient.send(httpRequest, RECEIVE_TIMEOUT, false, null);
 
     String payload =
@@ -59,7 +59,7 @@ public class HttpSharePortTestCase extends DomainFunctionalTestCase {
     assertThat(payload, is("hello world"));
 
     httpRequest = HttpRequest.builder()
-        .setUri(format("%s://localhost:%d/service/helloMule", endpointScheme.getValue(), dynamicPort.getNumber())).build();
+        .uri(format("%s://localhost:%d/service/helloMule", endpointScheme.getValue(), dynamicPort.getNumber())).build();
     httpResponse = httpClient.send(httpRequest, RECEIVE_TIMEOUT, false, null);
 
     payload = org.apache.commons.io.IOUtils.toString(httpResponse.getEntity().getContent(), UTF_8);

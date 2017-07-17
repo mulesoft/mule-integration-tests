@@ -43,8 +43,8 @@ public class HttpMessageProcessorNotificationTestCase extends AbstractMessagePro
 
   @Test
   public void doTest() throws Exception {
-    HttpRequest request = HttpRequest.builder().setUri("http://localhost:" + proxyPort.getValue() + "/in").setMethod(GET)
-        .setEntity(new ByteArrayHttpEntity("test".getBytes())).build();
+    HttpRequest request = HttpRequest.builder().uri("http://localhost:" + proxyPort.getValue() + "/in").method(GET)
+        .entity(new ByteArrayHttpEntity("test".getBytes())).build();
     assertThat(httpClient.send(request, RECEIVE_TIMEOUT, false, null).getEntity(), not(nullValue()));
 
     assertNotifications();

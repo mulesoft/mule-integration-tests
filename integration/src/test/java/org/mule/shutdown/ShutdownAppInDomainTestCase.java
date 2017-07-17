@@ -88,7 +88,7 @@ public class ShutdownAppInDomainTestCase extends DomainFunctionalTestCase {
     MuleContext muleContextForApp = getMuleContextForApp("app-with-flows");
 
     HttpRequest request =
-        HttpRequest.builder().setUri("http://localhost:" + httpPort.getNumber() + "/sync").setMethod(GET).build();
+        HttpRequest.builder().uri("http://localhost:" + httpPort.getNumber() + "/sync").method(GET).build();
     httpClient.send(request, MESSAGE_TIMEOUT, false, null);
 
     muleContextForApp.dispose();
@@ -101,7 +101,7 @@ public class ShutdownAppInDomainTestCase extends DomainFunctionalTestCase {
     MuleContext muleContextForApp = getMuleContextForApp("app-with-flows");
 
     HttpRequest request =
-        HttpRequest.builder().setUri("http://localhost:" + httpPort.getNumber() + "/nonBlocking").setMethod(GET).build();
+        HttpRequest.builder().uri("http://localhost:" + httpPort.getNumber() + "/nonBlocking").method(GET).build();
     httpClient.send(request, MESSAGE_TIMEOUT, false, null);
 
     muleContextForApp.dispose();
@@ -114,7 +114,7 @@ public class ShutdownAppInDomainTestCase extends DomainFunctionalTestCase {
     MuleContext muleContextForApp = getMuleContextForApp("app-with-flows");
 
     HttpRequest request =
-        HttpRequest.builder().setUri("http://localhost:" + httpPort.getNumber() + "/request").setMethod(GET).build();
+        HttpRequest.builder().uri("http://localhost:" + httpPort.getNumber() + "/request").method(GET).build();
     httpClient.send(request, MESSAGE_TIMEOUT, false, null);
     muleContextForApp.dispose();
 

@@ -110,8 +110,8 @@ public class OnErrorPropagateTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void handlesSourceErrors() throws Exception {
-    HttpRequest request = HttpRequest.builder().setUri(getUrl()).setMethod(POST)
-        .setEntity(new ByteArrayHttpEntity(TEST_MESSAGE.getBytes())).build();
+    HttpRequest request = HttpRequest.builder().uri(getUrl()).method(POST)
+        .entity(new ByteArrayHttpEntity(TEST_MESSAGE.getBytes())).build();
     final HttpResponse response = httpClient.send(request, RECEIVE_TIMEOUT, false, null);
 
     assertThat(response.getStatusCode(), is(INTERNAL_SERVER_ERROR.getStatusCode()));

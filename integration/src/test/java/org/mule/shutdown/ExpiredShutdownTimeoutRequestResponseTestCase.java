@@ -59,8 +59,8 @@ public class ExpiredShutdownTimeoutRequestResponseTestCase extends AbstractShutd
       @Override
       public void run() {
         try {
-          HttpRequest request = HttpRequest.builder().setUri(url).setEntity(new ByteArrayHttpEntity(TEST_MESSAGE.getBytes()))
-              .setMethod(POST).build();
+          HttpRequest request = HttpRequest.builder().uri(url).entity(new ByteArrayHttpEntity(TEST_MESSAGE.getBytes()))
+              .method(POST).build();
 
           HttpResponse response = httpClient.send(request, RECEIVE_TIMEOUT, false, null);
 

@@ -121,8 +121,8 @@ public class OnErrorContinueTestCase extends AbstractIntegrationTestCase {
   }
 
   private void testJsonErrorResponse(String endpointUri) throws Exception {
-    HttpRequest request = HttpRequest.builder().setUri(endpointUri).setMethod(POST)
-        .setEntity(new ByteArrayHttpEntity(JSON_REQUEST.getBytes())).build();
+    HttpRequest request = HttpRequest.builder().uri(endpointUri).method(POST)
+        .entity(new ByteArrayHttpEntity(JSON_REQUEST.getBytes())).build();
     final HttpEntity response = httpClient.send(request, TIMEOUT, false, null).getEntity();
 
     assertResponse(response);
@@ -189,8 +189,8 @@ public class OnErrorContinueTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void doesNotHandleSourceErrors() throws Exception {
-    HttpRequest request = HttpRequest.builder().setUri(getUrl(HTTP, dynamicPort1, "sourceError")).setMethod(POST)
-        .setEntity(new ByteArrayHttpEntity(TEST_MESSAGE.getBytes())).build();
+    HttpRequest request = HttpRequest.builder().uri(getUrl(HTTP, dynamicPort1, "sourceError")).method(POST)
+        .entity(new ByteArrayHttpEntity(TEST_MESSAGE.getBytes())).build();
     final HttpResponse response = httpClient.send(request, TIMEOUT, false, null);
 
     assertThat(response.getStatusCode(), is(INTERNAL_SERVER_ERROR.getStatusCode()));
