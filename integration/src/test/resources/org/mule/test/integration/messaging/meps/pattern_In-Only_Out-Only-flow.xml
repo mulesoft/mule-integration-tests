@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xmlns:mule="http://www.mulesoft.org/schema/mule/core"
       xmlns:test="http://www.mulesoft.org/schema/mule/test"
       xmlns:script="http://www.mulesoft.org/schema/mule/scripting"
       xsi:schemaLocation="
@@ -20,7 +19,7 @@
     <flow name="In-Only_Out-Only-Service">
         <script:component>
             <script:script engine="groovy">
-                if (message.getInboundProperty("foo")!=null)
+                if (vars.foo != null)
                     return "foo header received"
                 else
                     return "foo header not received"
@@ -28,12 +27,18 @@
         </script:component>
         
         <async>
-            <mule:wildcard-filter pattern="* header received"/>            
-            <test:queue name="received"/>
+            <choice>
+                <when expression="#[payload == 'foo header received']">
+                    <test:queue name="received"/>
+                </when>
+            </choice>
         </async>
         <async>
-            <mule:wildcard-filter pattern="* header not received"/>            
-            <test:queue name="notReceived"/>
+            <choice>
+                <when expression="#[payload == 'foo header not received']">
+                    <test:queue name="notReceived"/>
+                </when>
+            </choice>
         </async>
     </flow>
     

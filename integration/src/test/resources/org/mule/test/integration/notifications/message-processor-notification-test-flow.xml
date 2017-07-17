@@ -177,14 +177,6 @@
         </async>
     </flow>
 
-    <flow name="filters">
-        <payload-type-filter expectedType="java.lang.String"/>
-        <or-filter>
-            <exception-type-filter expectedType="java.lang.Throwable"/>
-            <payload-type-filter expectedType="java.lang.String"/>
-        </or-filter>
-    </flow>
-
     <flow name="idempotent-msg-filter">
         <idempotent-message-validator idExpression="#[id]" objectStore="objectStore"/>
         <logger level="INFO"/>

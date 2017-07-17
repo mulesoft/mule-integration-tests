@@ -77,53 +77,6 @@
         <test:assert expression="#[mel:assertPayload()]"/>
     </flow>
 
-    <flow name="filterAccepts">
-        <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]"/>
-        <expression-filter expression="#[mel:true]"/>
-        <test:non-blocking-processor/>
-        <test:assert expression="#[mel:assertPayload()]"/>
-    </flow>
-
-    <flow name="filterRejects">
-        <test:assert-intercepting responseCount="0"/>
-        <expression-filter expression="#[mel:false]"/>
-        <test:non-blocking-processor/>
-    </flow>
-
-    <flow name="filterAfterNonBlockingAccepts">
-        <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]"/>
-        <test:non-blocking-processor/>
-        <expression-filter expression="#[mel:true]"/>
-    </flow>
-
-    <flow name="filterAfterNonBlockingRejects">
-        <test:assert-intercepting responseCount="0"/>
-        <test:non-blocking-processor/>
-        <expression-filter expression="#[mel:false]"/>
-    </flow>
-
-    <flow name="filterAfterEnricherBeforeNonBlocking">
-        <test:assert-intercepting responseCount="0"/>
-        <enricher source="#[mel:payload]" target="#[mel:payload]">
-            <set-payload value="#[mel:payload]"/>
-        </enricher>
-        <expression-filter expression="#[mel:false]"/>
-        <test:non-blocking-processor/>
-    </flow>
-
-    <flow name="filterBeforeNonBlockingAccepts">
-        <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]"/>
-        <expression-filter expression="#[mel:true]"/>
-        <test:non-blocking-processor/>
-        <test:assert expression="#[mel:assertPayload()]"/>
-    </flow>
-
-    <flow name="filterBeforeNonBlockingRejects">
-        <test:assert-intercepting responseCount="0"/>
-        <expression-filter expression="#[mel:false]"/>
-        <test:non-blocking-processor/>
-    </flow>
-
     <flow name="security-filter">
         <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]"/>
         <custom-processor class="org.mule.runtime.core.processor.SecurityFilterMessageProcessor"/>
@@ -171,15 +124,6 @@
         </response>
         <test:non-blocking-processor/>
         <test:assert expression="#[mel:assertPayload()]"/>
-    </flow>
-
-    <flow name="responseWithNullEvent">
-        <test:assert-intercepting responseCount="0"/>
-        <response>
-            <test:assert count="0"/>
-        </response>
-        <test:non-blocking-processor/>
-        <expression-filter expression="#[mel:false]"/>
     </flow>
 
     <flow name="enricherIssue">

@@ -9,11 +9,11 @@ package org.mule.test.integration;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mule.runtime.core.api.Event.getCurrentEvent;
 
 import org.mule.functional.api.component.EventCallback;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
@@ -91,7 +91,7 @@ public class SchedulerTestCase extends MuleArtifactFunctionalTestCase {
       assertEquals(events.size(), eventIds.size());
 
       for (int i = 0; i < events.size(); i++) {
-        assertNotNull(events.get(i));
+        assertThat(i + ", " + events.toString(), events.get(i), not(nullValue()));
         assertThat(eventIds.get(i), equalTo(events.get(i).getContext().getId()));
       }
     }
@@ -102,7 +102,7 @@ public class SchedulerTestCase extends MuleArtifactFunctionalTestCase {
     @Override
     public Event process(Event event) throws MuleException {
       synchronized (events) {
-        events.add(getCurrentEvent());
+        events.add(event);
         eventIds.add(event.getContext().getId());
       }
       return event;

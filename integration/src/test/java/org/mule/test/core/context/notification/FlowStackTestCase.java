@@ -10,11 +10,12 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.core.api.config.MuleProperties.MULE_FLOW_TRACE;
-import static org.mule.tck.util.FlowTraceUtils.FlowStackAsserter.stackToAssert;
 import static org.mule.tck.util.FlowTraceUtils.assertStackElements;
 import static org.mule.tck.util.FlowTraceUtils.isFlowStackElement;
-import org.mule.runtime.core.api.context.notification.MessageProcessorNotificationListener;
+import static org.mule.tck.util.FlowTraceUtils.FlowStackAsserter.stackToAssert;
+
 import org.mule.runtime.core.api.context.notification.MessageProcessorNotification;
+import org.mule.runtime.core.api.context.notification.MessageProcessorNotificationListener;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.tck.util.FlowTraceUtils.FlowStackAsyncAsserter;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -364,32 +365,6 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  public void flowChainedFilter() throws Exception {
-    flowRunner("flowChainedFilter").withPayload("payload").run();
-
-    assertThat(stackToAssert, not(nullValue()));
-
-    assertStackElements(stackToAssert,
-                        isFlowStackElement("flow",
-                                           "flow/processors/0"),
-                        isFlowStackElement("flowChainedFilter",
-                                           "flowChainedFilter/processors/0/processors/0"));
-  }
-
-  @Test
-  public void flowChainedFilterManyProcessors() throws Exception {
-    flowRunner("flowChainedFilterManyProcessors").withPayload("payload").run();
-
-    assertThat(stackToAssert, not(nullValue()));
-
-    assertStackElements(stackToAssert,
-                        isFlowStackElement("flow",
-                                           "flow/processors/0"),
-                        isFlowStackElement("flowChainedFilterManyProcessors",
-                                           "flowChainedFilterManyProcessors/processors/0/processors/1"));
-  }
-
-  @Test
   public void flowForEach() throws Exception {
     flowRunner("flowForEach").withPayload("payload").run();
 
@@ -400,18 +375,5 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
                                            "flow/processors/0"),
                         isFlowStackElement("flowForEach",
                                            "flowForEach/processors/0/route/1/processors/0"));
-  }
-
-  @Test
-  public void flowForEachFilter() throws Exception {
-    flowRunner("flowForEachFilter").withPayload("payload").run();
-
-    assertThat(stackToAssert, not(nullValue()));
-
-    assertStackElements(stackToAssert,
-                        isFlowStackElement("flow",
-                                           "flow/processors/0"),
-                        isFlowStackElement("flowForEachFilter",
-                                           "flowForEachFilter/processors/0/route/0/processors/0"));
   }
 }

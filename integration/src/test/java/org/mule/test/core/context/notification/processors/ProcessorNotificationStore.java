@@ -6,9 +6,11 @@
  */
 package org.mule.test.core.context.notification.processors;
 
+import static org.mule.runtime.core.api.context.notification.MessageProcessorNotification.MESSAGE_PROCESSOR_PRE_INVOKE;
+
+import org.mule.runtime.core.api.context.notification.MessageProcessorNotification;
 import org.mule.runtime.core.api.context.notification.MessageProcessorNotificationListener;
 import org.mule.tck.core.context.notification.AbstractNotificationLogger;
-import org.mule.runtime.core.api.context.notification.MessageProcessorNotification;
 
 public class ProcessorNotificationStore extends AbstractNotificationLogger<MessageProcessorNotification>
     implements MessageProcessorNotificationListener<MessageProcessorNotification> {
@@ -22,7 +24,7 @@ public class ProcessorNotificationStore extends AbstractNotificationLogger<Messa
 
   @Override
   public synchronized void onNotification(MessageProcessorNotification notification) {
-    if (!logSingleNotification || notification.getAction() == MessageProcessorNotification.MESSAGE_PROCESSOR_PRE_INVOKE) {
+    if (!logSingleNotification || notification.getAction() == MESSAGE_PROCESSOR_PRE_INVOKE) {
       super.onNotification(notification);
     }
   }

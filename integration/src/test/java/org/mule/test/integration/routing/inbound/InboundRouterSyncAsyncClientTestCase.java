@@ -9,6 +9,7 @@ package org.mule.test.integration.routing.inbound;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -25,14 +26,14 @@ public class InboundRouterSyncAsyncClientTestCase extends AbstractIntegrationTes
   @Test
   public void testSync() throws Exception {
     Message result =
-        flowRunner("SyncAsync").withPayload("testSync").withInboundProperty("messageType", "sync").run().getMessage();
+        flowRunner("SyncAsync").withPayload("testSync").withVariable("messageType", "sync").run().getMessage();
 
     assertThat(result.getPayload().getValue(), is("OK"));
   }
 
   @Test
   public void testAsync() throws Exception {
-    flowRunner("SyncAsync").withPayload("testAsync").withInboundProperty("messageType", "async").run();
+    flowRunner("SyncAsync").withPayload("testAsync").withVariable("messageType", "async").run();
 
     MuleClient client = muleContext.getClient();
     Message result = client.request("test://asyncResponse", RECEIVE_TIMEOUT).getRight().get();
