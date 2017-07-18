@@ -12,11 +12,9 @@ import static org.mule.runtime.api.component.location.Location.builderFromString
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.MUnitComponentLocatorStory.MUNIT_COMPONENT_LOCATION;
 
-import io.qameta.allure.Issue;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.api.component.location.ConfigurationComponentLocator;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.inject.Inject;
@@ -26,8 +24,6 @@ import io.qameta.allure.Story;
 
 @Feature(CONFIGURATION_COMPONENT_LOCATOR)
 @Story(MUNIT_COMPONENT_LOCATION)
-@Ignore("MULE-13087 - Ignore until munit build works")
-@Issue("MULE-13087")
 public class MUnitComponentPathTestCase extends MuleArtifactFunctionalTestCase {
 
   @Inject
