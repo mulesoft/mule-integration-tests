@@ -289,9 +289,4 @@
         <message-chunk-aggregator/>
         <logger message="2"/>
     </flow>
-
-    <flow name="combineCollections">
-        <combine-collections-transformer/>
-        <logger level="INFO"/>
-    </flow>
 </mule>
