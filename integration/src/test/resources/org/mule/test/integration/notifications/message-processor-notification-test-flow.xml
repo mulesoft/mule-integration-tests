@@ -15,7 +15,7 @@
     <http:request-config name="requestConfig">
         <http:request-connection host="localhost"/>
     </http:request-config>
-    
+
     <object name="notificationLogger" class="org.mule.test.core.context.notification.processors.ProcessorNotificationStore"/>
 
     <notifications>
