@@ -6,6 +6,7 @@
  */
 package org.mule.test.integration.exceptions;
 
+import static java.lang.Class.forName;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
 import static org.hamcrest.Matchers.hasSize;
@@ -23,7 +24,6 @@ import static org.mule.runtime.core.api.util.ExceptionUtils.NULL_ERROR_HANDLER;
 import org.mule.functional.api.component.FlowAssert;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.core.AbstractEventContext;
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.EventContext;
 import org.mule.runtime.core.api.client.MuleClient;
@@ -210,7 +210,7 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
     @Override
     public synchronized Event process(Event event) throws MuleException {
       try {
-        Field exceptionHandlerField = AbstractEventContext.class.getDeclaredField("exceptionHandler");
+        Field exceptionHandlerField = forName("org.mule.runtime.core.AbstractEventContext").getDeclaredField("exceptionHandler");
         exceptionHandlerField.setAccessible(true);
         EventContext eventContext = event.getContext();
         effectiveMessagingExceptionHandler = (MessagingExceptionHandler) exceptionHandlerField.get(eventContext);
