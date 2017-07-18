@@ -9,9 +9,10 @@
         <custom-processor class="org.mule.test.service.scheduler.SchedulerServiceTestCase$HasSchedulingService"/>
     </flow>
 
-    <flow name="delaySchedule"><!--processingStrategy="synchronous"-->
+    <flow name="delaySchedule">
         <test:skeleton-source/>
-        <custom-processor class="org.mule.test.service.scheduler.SchedulerServiceTestCase$WaitingProcessor"/>
+        <test:processor throwException="true" exceptionText="JustToBeAbleToInstantiateException"
+                        exceptionToThrow="org.mule.runtime.core.api.scheduler.SchedulerBusyException"/>
     </flow>
 
 </mule>

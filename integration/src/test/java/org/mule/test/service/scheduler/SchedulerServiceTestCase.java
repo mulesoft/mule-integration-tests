@@ -143,21 +143,15 @@ public class SchedulerServiceTestCase extends AbstractIntegrationTestCase {
   @Test
   @Description("Tests that the exception that happens when a thread pool is full is properly handled.")
   public void overloadErrorHandling() throws Exception {
-    for (int i = 0; i < CUSTOM_SCHEDULER_SIZE; ++i) {
-      flowRunner("delaySchedule").run();
-    }
 
-    Scheduler scheduler = muleContext.getSchedulerService().cpuLightScheduler();
 
     MessagingException exception =
-        flowRunner("delaySchedule").withScheduler(scheduler).runExpectingException();
+        flowRunner("delaySchedule").runExpectingException();
 
     assertThat(exception.getEvent().getError().isPresent(), is(true));
     assertThat(exception.getEvent().getError().get().getErrorType().getIdentifier(), is("OVERLOAD"));
     assertThat(exception.getCause(), instanceOf(SchedulerBusyException.class));
 
-    WaitingProcessor.latch.countDown();
-    scheduler.shutdownNow();
   }
 
   @Rule
@@ -169,12 +163,6 @@ public class SchedulerServiceTestCase extends AbstractIntegrationTestCase {
   public void overloadErrorHandlingFromSource() throws Throwable {
     FlowConstruct delayScheduleFlow = getFlowConstruct("delaySchedule");
     MessageSource messageSource = ((Flow) delayScheduleFlow).getSource();
-
-    for (int i = 0; i < CUSTOM_SCHEDULER_SIZE; ++i) {
-      ((SkeletonSource) messageSource).getListener()
-          .process(Event.builder(create(delayScheduleFlow, fromSingleComponent(SchedulerServiceTestCase.class.getSimpleName())))
-              .message(of(null)).build());
-    }
 
     expected.expect(MessagingException.class);
     expected.expect(new TypeSafeMatcher<MessagingException>() {
@@ -192,21 +180,14 @@ public class SchedulerServiceTestCase extends AbstractIntegrationTestCase {
         return "OVERLOAD".equals(errorTypeId);
       }
     });
+
     expected.expectCause(instanceOf(SchedulerBusyException.class));
 
-    Scheduler scheduler = muleContext.getSchedulerService().cpuLightScheduler();
-    try {
-      scheduler.submit(() -> ((SkeletonSource) messageSource).getListener()
-          .process(Event.builder(create(delayScheduleFlow, fromSingleComponent(SchedulerServiceTestCase.class.getSimpleName())))
-              .message(of(null))
-              .build()))
-          .get();
-    } catch (ExecutionException executionException) {
-      throw executionException.getCause();
-    } finally {
-      WaitingProcessor.latch.countDown();
-      scheduler.shutdownNow();
-    }
+    ((SkeletonSource) messageSource).getListener()
+        .process(Event.builder(create(delayScheduleFlow, fromSingleComponent(SchedulerServiceTestCase.class.getSimpleName())))
+            .message(of(null))
+            .build());
+
   }
 
   public static class HasSchedulingService implements Processor, Initialisable, Disposable {
