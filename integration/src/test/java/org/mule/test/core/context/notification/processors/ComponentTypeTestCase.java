@@ -54,7 +54,6 @@ public class ComponentTypeTestCase extends AbstractIntegrationTestCase {
   public void routerComponentTypes() {
     assertThat(getComponentType(buildFromStringRepresentation("until-successful")), is(ROUTER));
     assertThat(getComponentType(buildFromStringRepresentation("first-successful")), is(ROUTER));
-    assertThat(getComponentType(buildFromStringRepresentation("foreach")), is(ROUTER));
     assertThat(getComponentType(buildFromStringRepresentation("scatter-gather")), is(ROUTER));
     assertThat(getComponentType(buildFromStringRepresentation("choice")), is(ROUTER));
     assertThat(getComponentType(buildFromStringRepresentation("round-robin")), is(ROUTER));
@@ -65,6 +64,7 @@ public class ComponentTypeTestCase extends AbstractIntegrationTestCase {
     assertThat(getComponentType(buildFromStringRepresentation("try")), is(SCOPE));
     assertThat(getComponentType(buildFromStringRepresentation("enricher")), is(SCOPE));
     assertThat(getComponentType(buildFromStringRepresentation("async")), is(SCOPE));
+    assertThat(getComponentType(buildFromStringRepresentation("foreach")), is(SCOPE));
   }
 
   @Test

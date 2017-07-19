@@ -25,6 +25,8 @@ import static org.mule.runtime.api.component.TypedComponentIdentifier.builder;
 import static org.mule.runtime.api.meta.AbstractAnnotatedObject.LOCATION_KEY;
 import static org.mule.runtime.config.spring.dsl.model.ApplicationModel.FLOW_IDENTIFIER;
 import static org.mule.runtime.config.spring.dsl.model.ApplicationModel.SUBFLOW_IDENTIFIER;
+import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
+import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentLocationStory.COMPONENT_LOCATION;
 import org.mule.runtime.api.component.TypedComponentIdentifier;
 import org.mule.runtime.api.meta.AnnotatedObject;
 import org.mule.runtime.core.api.construct.Flow;
@@ -41,7 +43,12 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Optional;
 
-public class ComponentPathTestCase extends AbstractIntegrationTestCase {
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
+
+@Feature(CONFIGURATION_COMPONENT_LOCATOR)
+@Story(COMPONENT_LOCATION)
+public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
 
   private static final Optional<TypedComponentIdentifier> FLOW_TYPED_COMPONENT_IDENTIFIER =
       of(builder().withIdentifier(FLOW_IDENTIFIER).withType(FLOW).build());
@@ -400,7 +407,7 @@ public class ComponentPathTestCase extends AbstractIntegrationTestCase {
     ProcessorNotificationStore processorNotificationStore = getNotificationsStore();
     assertThat(processorNotificationStore.getNotifications().isEmpty(), is(false));
     MessageProcessorNotification processorNotification =
-        (MessageProcessorNotification) processorNotificationStore.getNotifications().get(0);
+        processorNotificationStore.getNotifications().get(0);
     processorNotificationStore.getNotifications().remove(0);
     assertThat(processorNotification.getComponent().getLocation().getLocation(), is(componentLocation.getLocation()));
     assertThat(processorNotification.getComponent().getLocation(), is(componentLocation));

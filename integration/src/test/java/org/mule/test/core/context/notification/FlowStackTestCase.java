@@ -20,12 +20,12 @@ import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.tck.util.FlowTraceUtils.FlowStackAsyncAsserter;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 public class FlowStackTestCase extends AbstractIntegrationTestCase {
 
@@ -374,6 +374,6 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
                         isFlowStackElement("flow",
                                            "flow/processors/0"),
                         isFlowStackElement("flowForEach",
-                                           "flowForEach/processors/0/route/1/processors/0"));
+                                           "flowForEach/processors/0/processors/1"));
   }
 }
