@@ -8,7 +8,7 @@ package org.mule.test.module.extension.oauth;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mule.runtime.core.api.config.MuleProperties.DEFAULT_USER_OBJECT_STORE_NAME;
+import static org.mule.runtime.core.api.config.MuleProperties.OBJECT_STORE_DEFAULT_PERSISTENT_NAME;
 import org.mule.runtime.api.store.ObjectStore;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.oauth.TestOAuthConnection;
@@ -57,7 +57,7 @@ public class MultiConfigOAuthExtensionTestCase extends BaseOAuthExtensionTestCas
         .run().getMessage().getPayload().getValue()).getState();
 
     assertConnectionState(connection);
-    assertOAuthStateStored(DEFAULT_USER_OBJECT_STORE_NAME, storedOwnerId, ownerId);
+    assertOAuthStateStored(OBJECT_STORE_DEFAULT_PERSISTENT_NAME, storedOwnerId, ownerId);
 
 
     storedOwnerId = OTHER_RESOLVED_OWNER;
@@ -67,7 +67,7 @@ public class MultiConfigOAuthExtensionTestCase extends BaseOAuthExtensionTestCas
         .run().getMessage().getPayload().getValue()).getState();
 
     assertConnectionState(otherConnection);
-    assertOAuthStateStored(DEFAULT_USER_OBJECT_STORE_NAME, storedOwnerId, ownerId);
+    assertOAuthStateStored(OBJECT_STORE_DEFAULT_PERSISTENT_NAME, storedOwnerId, ownerId);
   }
 
   @Test
@@ -77,7 +77,7 @@ public class MultiConfigOAuthExtensionTestCase extends BaseOAuthExtensionTestCas
     getConnection(callbackPort.getNumber());
 
     flowRunner("unauthorize").run();
-    ObjectStore objectStore = getObjectStore(DEFAULT_USER_OBJECT_STORE_NAME);
+    ObjectStore objectStore = getObjectStore(OBJECT_STORE_DEFAULT_PERSISTENT_NAME);
     assertThat(objectStore.contains(storedOwnerId), is(false));
 
     storedOwnerId = OTHER_RESOLVED_OWNER;
@@ -95,7 +95,7 @@ public class MultiConfigOAuthExtensionTestCase extends BaseOAuthExtensionTestCas
         .run().getMessage().getPayload().getValue()).getState();
 
     assertConnectionState(connection);
-    assertOAuthStateStored(DEFAULT_USER_OBJECT_STORE_NAME, storedOwnerId, ownerId);
+    assertOAuthStateStored(OBJECT_STORE_DEFAULT_PERSISTENT_NAME, storedOwnerId, ownerId);
   }
 
 

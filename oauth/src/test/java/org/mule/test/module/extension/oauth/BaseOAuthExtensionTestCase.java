@@ -21,13 +21,14 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.mule.extension.http.api.HttpHeaders.Names.CONTENT_TYPE;
+import static org.mule.runtime.api.store.ObjectStoreSettings.unmanagedTransient;
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.OK;
 import static org.mule.runtime.http.api.utils.HttpEncoderDecoderUtils.encodeQueryString;
 import static org.mule.service.oauth.internal.OAuthConstants.ACCESS_TOKEN_PARAMETER;
 import static org.mule.service.oauth.internal.OAuthConstants.EXPIRES_IN_PARAMETER;
 import static org.mule.service.oauth.internal.OAuthConstants.REFRESH_TOKEN_PARAMETER;
 import static org.mule.tck.probe.PollingProber.check;
-import org.mule.runtime.core.api.store.ListableObjectStore;
+import org.mule.runtime.api.store.ObjectStore;
 import org.mule.runtime.extension.api.connectivity.oauth.AuthorizationCodeState;
 import org.mule.runtime.oauth.api.state.ResourceOwnerOAuthContext;
 import org.mule.tck.junit4.rule.DynamicPort;
@@ -111,14 +112,14 @@ public abstract class BaseOAuthExtensionTestCase extends AbstractExtensionFuncti
   }
 
   protected void assertOAuthStateStored(String objectStoreName, String expectedKey, String expectedValue) throws Exception {
-    ListableObjectStore objectStore = getObjectStore(objectStoreName);
+    ObjectStore objectStore = getObjectStore(objectStoreName);
 
     ResourceOwnerOAuthContext context = (ResourceOwnerOAuthContext) objectStore.retrieve(expectedKey);
     assertThat(context.getResourceOwnerId(), is(expectedValue));
   }
 
-  protected ListableObjectStore getObjectStore(String objectStoreName) {
-    ListableObjectStore objectStore = muleContext.getObjectStoreManager().getObjectStore(objectStoreName);
+  protected ObjectStore getObjectStore(String objectStoreName) {
+    ObjectStore objectStore = muleContext.getObjectStoreManager().createObjectStore(objectStoreName, unmanagedTransient());
     assertThat(objectStore, is(notNullValue()));
     return objectStore;
   }
