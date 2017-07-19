@@ -56,12 +56,6 @@ public class NonBlockingFunctionalTestCase extends AbstractIntegrationTestCase {
     flowRunner("childFlow").withPayload(TEST_MESSAGE).run();
   }
 
-  @Test
-  public void childSyncFlow() throws Exception {
-    flowRunner("childSyncFlow").withPayload(TEST_MESSAGE).run();
-    verify("childSyncFlowChild");
-  }
-
   public void childAsyncFlow() throws Exception {
     flowRunner("childAsyncFlow").withPayload(TEST_MESSAGE).run();
     verify("childAsyncFlowChild");

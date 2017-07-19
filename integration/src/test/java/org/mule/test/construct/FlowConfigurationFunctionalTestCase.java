@@ -68,16 +68,6 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
   }
 
   @Test
-  public void testFlowSynchronous() throws Exception {
-    flowRunner("synchronousFlow").withPayload("0").run();
-    Message message = muleContext.getClient().request("test://synchronous-out", RECEIVE_TIMEOUT).getRight().get();
-    assertNotNull(message);
-    Thread thread = (Thread) message.getPayload().getValue();
-    assertNotNull(thread);
-    assertEquals(currentThread(), thread);
-  }
-
-  @Test
   public void testAsyncAsynchronous() throws Exception {
     flowRunner("asynchronousAsync").withPayload("0").run();
     Message message = muleContext.getClient().request("test://asynchronous-async-out", RECEIVE_TIMEOUT).getRight().get();
