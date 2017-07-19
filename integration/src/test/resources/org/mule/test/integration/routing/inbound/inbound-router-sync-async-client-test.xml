@@ -12,11 +12,11 @@
 
     <scripting:script engine="groovy" name="testComponent">
         <scripting:text>
-            if(message.getInboundProperty("messageType").equals("sync"))
+            if(vars.messageType.equals("sync"))
             {
                 return "OK"
             }
-            else if(message.getInboundProperty("messageType").equals("async"))
+            else if(vars.messageType.equals("async"))
             {
                 return "Response sent to asyncResponse"
             }
@@ -29,14 +29,20 @@
         <async>
             <flow-ref name="AsyncRequest"/>
         </async>
-        <message-property-filter scope="inbound" pattern="messageType=sync"/>
-        <scripting:component script-ref="testComponent"/>
+        <choice>
+            <when expression="#[messageType == 'sync']">
+                <scripting:component script-ref="testComponent"/>
+            </when>
+        </choice>
     </flow>
 
     <flow name="AsyncRequest">
-        <message-property-filter scope="inbound" pattern="messageType=async"/>
-        <scripting:component script-ref="testComponent"/>
-        <test:queue name="asyncResponse"/>
+        <choice>
+            <when expression="#[messageType == 'async']">
+                <scripting:component script-ref="testComponent"/>
+                <test:queue name="asyncResponse"/>
+            </when>
+        </choice>
     </flow>
 
 </mule>

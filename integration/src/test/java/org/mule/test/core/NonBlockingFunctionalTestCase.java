@@ -8,7 +8,6 @@ package org.mule.test.core;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mule.functional.api.component.FlowAssert.verify;
@@ -74,45 +73,6 @@ public class NonBlockingFunctionalTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  public void filterAccepts() throws Exception {
-    flowRunner("filterAccepts").withPayload(TEST_MESSAGE).run();
-  }
-
-  @Test
-  public void filterRejects() throws Exception {
-    Event result = flowRunner("filterRejects").withPayload(TEST_MESSAGE).run();
-    assertThat(result, is(nullValue()));
-  }
-
-  @Test
-  public void filterAfterNonBlockingAccepts() throws Exception {
-    flowRunner("filterAfterNonBlockingAccepts").withPayload(TEST_MESSAGE).run();
-  }
-
-  @Test
-  public void filterAfterNonBlockingRejects() throws Exception {
-    Event result = flowRunner("filterAfterNonBlockingRejects").withPayload(TEST_MESSAGE).run();
-    assertThat(result, is(nullValue()));
-  }
-
-  @Test
-  public void filterBeforeNonBlockingAccepts() throws Exception {
-    flowRunner("filterAfterNonBlockingAccepts").withPayload(TEST_MESSAGE).run();
-  }
-
-  @Test
-  public void filterBeforeNonBlockingRejects() throws Exception {
-    Event result = flowRunner("filterAfterNonBlockingRejects").withPayload(TEST_MESSAGE).run();
-    assertThat(result, is(nullValue()));
-  }
-
-  @Test
-  public void filterAfterEnricherBeforeNonBlocking() throws Exception {
-    Event result = flowRunner("filterAfterEnricherBeforeNonBlocking").withPayload(TEST_MESSAGE).run();
-    assertThat(result, is(nullValue()));
-  }
-
-  @Test
   public void securityFilter() throws Exception {
     flowRunner("security-filter").withPayload(TEST_MESSAGE).run();
   }
@@ -135,12 +95,6 @@ public class NonBlockingFunctionalTestCase extends AbstractIntegrationTestCase {
   @Test
   public void response() throws Exception {
     flowRunner("response").withPayload(TEST_MESSAGE).run();
-  }
-
-  @Test
-  public void responseWithNullEvent() throws Exception {
-    Event result = flowRunner("responseWithNullEvent").withPayload(TEST_MESSAGE).run();
-    assertThat(result, is(nullValue()));
   }
 
   @Test

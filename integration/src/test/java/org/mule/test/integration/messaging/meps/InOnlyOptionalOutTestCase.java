@@ -9,6 +9,7 @@ package org.mule.test.integration.messaging.meps;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -23,15 +24,22 @@ public class InOnlyOptionalOutTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  public void testExchange() throws Exception {
+  public void testExchangeReceived() throws Exception {
     MuleClient client = muleContext.getClient();
 
-    flowRunner("In-Only_Optional-Out--Service").withPayload("some data").run();
-    flowRunner("In-Only_Optional-Out--Service").withPayload("some data").withInboundProperty("foo", "bar").run();
+    flowRunner("In-Only_Optional-Out--Service").withPayload("some data").withVariable("foo", "bar").run();
 
     Message result = client.request("test://received", RECEIVE_TIMEOUT).getRight().get();
     assertNotNull(result);
     assertThat(getPayloadAsString(result), is("foo header received"));
+  }
+
+  @Test
+  public void testExchangeNotReceived() throws Exception {
+    MuleClient client = muleContext.getClient();
+
+    flowRunner("In-Only_Optional-Out--Service").withPayload("some data").run();
+
     assertThat(client.request("test://notReceived", RECEIVE_TIMEOUT).getRight().isPresent(), is(false));
   }
 }

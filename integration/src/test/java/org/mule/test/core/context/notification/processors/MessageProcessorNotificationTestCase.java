@@ -12,6 +12,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.core.api.context.notification.MessageProcessorNotification.MESSAGE_PROCESSOR_POST_INVOKE;
+
 import org.mule.functional.api.exception.FunctionalTestException;
 import org.mule.runtime.core.api.context.notification.MessageProcessorNotification;
 import org.mule.runtime.core.api.exception.MessagingException;
@@ -177,18 +178,6 @@ public class MessageProcessorNotificationTestCase extends AbstractMessageProcess
         .serial(prePost());
 
     assertNotNull(flowRunner("in-async").withPayload(TEST_PAYLOAD).run());
-
-    assertNotifications();
-  }
-
-  @Test
-  public void filter() throws Exception {
-    specificationFactory = () -> new Node()
-        .serial(pre())
-        .serial(prePost())
-        .serial(post());
-
-    assertNotNull(flowRunner("filters").withPayload(TEST_PAYLOAD).run());
 
     assertNotifications();
   }
