@@ -227,7 +227,7 @@
         <test:non-blocking-processor/>
     </flow>
     
-    <flow name="childDefaultFlowChild"><!--processingStrategy="synchronous"-->
+    <flow name="childDefaultFlowChild">
         <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]" message="2"/>
         <test:non-blocking-processor/>
         <test:assert expression="#[mel:assertPayload()]"/>

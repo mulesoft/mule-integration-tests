@@ -32,7 +32,7 @@
         <append-string-transformer message="3" />
     </flow>
 
-    <flow name="asynchronousAsync"><!--processingStrategy="synchronous"-->
+    <flow name="asynchronousAsync">
         <async>
             <custom-processor class="org.mule.test.construct.FlowConfigurationFunctionalTestCase$ThreadSensingMessageProcessor"/>
             <test:queue name="asynchronous-async-out"/>

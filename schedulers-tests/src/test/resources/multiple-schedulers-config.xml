@@ -7,7 +7,7 @@
                http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
                http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
-    <flow name="poll1"><!--processingStrategy="synchronous"-->
+    <flow name="poll1">
         <scheduler>
             <scheduling-strategy>
                 <cron expression="0/1 0/1 * 1/1 * ? *"/>
@@ -19,7 +19,7 @@
         </test:processor>
     </flow>
 
-    <flow name="poll2"><!--processingStrategy="synchronous"-->
+    <flow name="poll2">
         <scheduler>
             <scheduling-strategy>
                 <cron expression="0/1 0/1 * 1/1 * ? *"/>
