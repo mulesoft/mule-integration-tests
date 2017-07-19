@@ -173,15 +173,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- Test jars -->
-        <dependency>
-            <groupId>org.mule.runtime</groupId>
-            <artifactId>mule-module-spring-security</artifactId>
-            <version>${project.version}</version>
-            <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
-
         <!-- Used by ServerTools.java -->
         <dependency>
             <groupId>org.apache.ant</groupId>
