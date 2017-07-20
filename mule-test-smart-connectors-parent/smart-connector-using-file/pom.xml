@@ -23,7 +23,7 @@
         <dependency>
             <groupId>org.mule.connectors</groupId>
             <artifactId>mule-file-connector</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>${muleFileConnectorTestVersion}</version>
             <classifier>mule-plugin</classifier>
             <scope>compile</scope>
         </dependency>

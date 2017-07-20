@@ -69,7 +69,7 @@
         <dependency>
             <groupId>org.mule.services</groupId>
             <artifactId>mule-service-scheduler</artifactId>
-            <version>${muleSchedulerServiceVersion}</version>
+            <version>${muleSchedulerServiceTestVersion}</version>
             <classifier>mule-service</classifier>
             <scope>provided</scope>
         </dependency>
@@ -84,7 +84,7 @@
         <dependency>
             <groupId>org.mule.services</groupId>
             <artifactId>mule-service-http</artifactId>
-            <version>${muleHttpServiceVersion}</version>
+            <version>${muleHttpServiceTestVersion}</version>
             <classifier>mule-service</classifier>
             <scope>provided</scope>
         </dependency>
@@ -93,7 +93,7 @@
         <dependency>
             <groupId>org.mule.modules</groupId>
             <artifactId>mule-module-file-extension-common</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>${muleFileCommonsTestVersion}</version>
             <classifier>mule-plugin</classifier>
             <scope>test</scope>
         </dependency>
@@ -101,7 +101,7 @@
         <dependency>
             <groupId>org.mule.modules</groupId>
             <artifactId>mule-validation-module</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>${muleValidationModuleTestVersion}</version>
             <classifier>mule-plugin</classifier>
             <scope>test</scope>
         </dependency>
@@ -109,7 +109,7 @@
         <dependency>
             <groupId>org.mule.connectors</groupId>
             <artifactId>mule-file-connector</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>${muleFileConnectorTestVersion}</version>
             <classifier>mule-plugin</classifier>
             <scope>test</scope>
         </dependency>
@@ -117,7 +117,7 @@
         <dependency>
             <groupId>org.mule.connectors</groupId>
             <artifactId>mule-http-connector</artifactId>
-            <version>${muleHttpConnectorVersion}</version>
+            <version>${muleHttpConnectorTestVersion}</version>
             <classifier>mule-plugin</classifier>
             <scope>test</scope>
         </dependency>
@@ -125,7 +125,7 @@
         <dependency>
             <groupId>org.mule.connectors</groupId>
             <artifactId>mule-http-connector</artifactId>
-            <version>${muleHttpConnectorVersion}</version>
+            <version>${muleHttpConnectorTestVersion}</version>
             <classifier>tests</classifier>
             <scope>test</scope>
         </dependency>
@@ -141,7 +141,7 @@
         <dependency>
             <groupId>org.mule.connectors</groupId>
             <artifactId>mule-sockets-connector</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>${muleSocketsConnectorTestVersion}</version>
             <classifier>mule-plugin</classifier>
             <scope>test</scope>
         </dependency>
@@ -345,7 +345,7 @@
         <dependency>
             <groupId>org.mule.services</groupId>
             <artifactId>mule-service-http</artifactId>
-            <version>${muleHttpServiceVersion}</version>
+            <version>${muleHttpServiceTestVersion}</version>
             <scope>test</scope>
             <type>test-jar</type>
         </dependency>
@@ -364,7 +364,7 @@
         <dependency>
             <groupId>org.mule.modules</groupId>
             <artifactId>mule-scripting-module</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>${muleScriptingModuleVersion}</version>
             <classifier>mule-plugin</classifier>
             <scope>test</scope>
             <exclusions>
