@@ -1,22 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:http="http://www.mulesoft.org/schema/mule/http"
-      xmlns:mule-ss="http://www.mulesoft.org/schema/mule/spring-security"
       xmlns:test="http://www.mulesoft.org/schema/mule/test"
       xmlns:spring="http://www.mulesoft.org/schema/mule/spring"
       xmlns="http://www.mulesoft.org/schema/mule/core"
       xsi:schemaLocation="
         http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
         http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
-        http://www.mulesoft.org/schema/mule/spring-security http://www.mulesoft.org/schema/mule/spring-security/current/mule-spring-security.xsd
         http://www.mulesoft.org/schema/mule/spring http://www.mulesoft.org/schema/mule/spring/current/mule-spring.xsd
         http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
     <spring:config name="springConfig" files="org/mule/test/integration/security/http-listener-authentication-config-beans.xml"/>
 
-    <mule-ss:security-manager>
-        <mule-ss:delegate-security-provider name="memory-provider" delegate-ref="authenticationManager"/>
-    </mule-ss:security-manager>
+    <spring:security-manager>
+        <spring:delegate-security-provider name="memory-provider" delegate-ref="authenticationManager"/>
+    </spring:security-manager>
 
 
     <http:listener-config name="listenerConfigBasicAuth">
