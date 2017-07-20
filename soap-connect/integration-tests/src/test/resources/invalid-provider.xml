@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:soap="http://www.mulesoft.org/schema/mule/simple"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+               http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+               http://www.mulesoft.org/schema/mule/simple http://www.mulesoft.org/schema/mule/simple/current/mule-simple.xsd">
+
+    <soap:config name="config-invalid">
+        <soap:test-connection url="${address}?wsdl" service="TestService" port="TestPort" valid="false">
+            <soap:transport>
+                <soap:default-http-message-dispatcher-provider/>
+            </soap:transport>
+        </soap:test-connection>
+    </soap:config>
+
+    <flow name="invalid">
+        <soap:invoke config-ref="config-invalid" service="1" operation="noParams"/>
+    </flow>
+</mule>
