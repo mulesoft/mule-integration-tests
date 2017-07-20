@@ -61,10 +61,10 @@ public class DslConstantsRoutersFlowTestCase extends AbstractIntegrationTestCase
   @Test
   public void testSecureHashIdempotentReceiverRouterError() throws Exception {
     assertThat(flowRunner("IdempotentSecureHashReceiverRouterVar").withVariable("otherId", "123").run()
-                       .getMessage().getPayload().getValue(),
+        .getMessage().getPayload().getValue(),
                is("Not duplicate"));
     assertThat(flowRunner("IdempotentSecureHashReceiverRouterVar").withVariable("otherId", "123").run()
-                       .getMessage().getPayload().getValue(),
+        .getMessage().getPayload().getValue(),
                is("Duplicate"));
   }
 
