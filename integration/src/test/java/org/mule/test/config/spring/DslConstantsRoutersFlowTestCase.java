@@ -67,8 +67,7 @@ public class DslConstantsRoutersFlowTestCase extends AbstractIntegrationTestCase
         .getMessage().getPayload().getValue(),
                is("Duplicate"));
   }
-
-
+  
   protected Processor lookupMessageProcessorFromFlow(String flowName) throws Exception {
     Flow flow = lookupFlow(flowName);
     List<Processor> routers = flow.getProcessors();
