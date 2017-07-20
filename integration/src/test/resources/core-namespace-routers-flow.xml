@@ -9,11 +9,25 @@
             output text/plain
             import dw::Crypto
             ---
-            Crypto::SHA1(payload)"/>
+            Crypto::hashWith(payload,'SHA-256')"/>
     </flow>
 
     <flow name="IdempotentReceiverRouter">
         <idempotent-message-validator idExpression="#[id + '-' + correlationId]"/>
+    </flow>
+
+    <flow name="IdempotentSecureHashReceiverRouterVar">
+        <idempotent-message-validator idExpression="%dw 2.0
+            output text/plain
+            import dw::Crypto
+            ---
+            Crypto::hashWith(variables.otherId,'SHA-256')"/>
+        <set-payload value="Not duplicate" />
+        <error-handler>
+            <on-error-continue type="DUPLICATE_MESSAGE">
+                <set-payload value="Duplicate" />
+            </on-error-continue>
+        </error-handler>
     </flow>
 
     <flow name="IdempotentReceiverRouterVar">

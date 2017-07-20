@@ -58,6 +58,17 @@ public class DslConstantsRoutersFlowTestCase extends AbstractIntegrationTestCase
                is("Duplicate"));
   }
 
+  @Test
+  public void testSecureHashIdempotentReceiverRouterError() throws Exception {
+    assertThat(flowRunner("IdempotentSecureHashReceiverRouterVar").withVariable("otherId", "123").run()
+                       .getMessage().getPayload().getValue(),
+               is("Not duplicate"));
+    assertThat(flowRunner("IdempotentSecureHashReceiverRouterVar").withVariable("otherId", "123").run()
+                       .getMessage().getPayload().getValue(),
+               is("Duplicate"));
+  }
+
+
   protected Processor lookupMessageProcessorFromFlow(String flowName) throws Exception {
     Flow flow = lookupFlow(flowName);
     List<Processor> routers = flow.getProcessors();
