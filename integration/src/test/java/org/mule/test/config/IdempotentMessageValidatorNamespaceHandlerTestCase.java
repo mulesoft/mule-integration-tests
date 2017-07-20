@@ -70,8 +70,8 @@ public class IdempotentMessageValidatorNamespaceHandlerTestCase extends Abstract
     return firstMP;
   }
 
-  private ObjectStore  getObjectStore(Processor router)
-    throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+  private ObjectStore getObjectStore(Processor router)
+      throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
     Method method = router.getClass().getMethod("getObjectStore");
     return (ObjectStore) method.invoke(router);
   }

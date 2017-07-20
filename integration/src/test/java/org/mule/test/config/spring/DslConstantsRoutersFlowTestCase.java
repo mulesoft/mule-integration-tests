@@ -33,7 +33,8 @@ public class DslConstantsRoutersFlowTestCase extends AbstractIntegrationTestCase
   @Test
   public void testIdempotentSecureHashReceiverRouter() throws Exception {
     Processor router = lookupMessageProcessorFromFlow("IdempotentSecureHashReceiverRouter");
-    assertThat(router.getClass().getName(), equalTo("org.mule.runtime.core.internal.routing.IdempotentSecureHashMessageValidator"));
+    assertThat(router.getClass().getName(),
+               equalTo("org.mule.runtime.core.internal.routing.IdempotentSecureHashMessageValidator"));
 
     assertThat(getMessageDigestAlgorithm(router), is("SHA-128"));
     assertThat(getObjectStore(router), not(nullValue()));
@@ -72,19 +73,19 @@ public class DslConstantsRoutersFlowTestCase extends AbstractIntegrationTestCase
   }
 
   private Object getObjectStore(Processor router)
-    throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+      throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
     Method method = router.getClass().getMethod("getObjectStore");
     return method.invoke(router);
   }
 
   private Object getMessageDigestAlgorithm(Processor router)
-    throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+      throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
     Method method = router.getClass().getMethod("getMessageDigestAlgorithm");
     return method.invoke(router);
   }
 
   private Object getIdExpression(Processor router)
-    throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+      throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
     Method method = router.getClass().getMethod("getIdExpression");
     return method.invoke(router);
   }
