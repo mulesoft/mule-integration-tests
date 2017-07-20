@@ -16,6 +16,8 @@
         <skipExportTests>false</skipExportTests>
         <skipTests>${skipIntegrationTests}</skipTests>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
+
+        <springSecurityVersion>4.0.4.RELEASE</springSecurityVersion>
     </properties>
 
     <build>
@@ -382,6 +384,12 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-config</artifactId>
+            <version>${springSecurityVersion}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
