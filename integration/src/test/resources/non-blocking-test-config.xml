@@ -65,7 +65,7 @@
 
     <flow name="security-filter">
         <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]"/>
-        <custom-processor class="org.mule.runtime.core.processor.SecurityFilterMessageProcessor"/>
+        <!--<custom-security-filter ref="customFilter"/>-->
         <test:non-blocking-processor/>
         <test:assert expression="#[mel:assertPayload()]"/>
     </flow>

@@ -10,24 +10,11 @@ import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mule.runtime.api.message.Message.of;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.core.api.Event;
-import org.mule.runtime.core.api.EventContext;
-import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.client.MuleClient;
-import org.mule.runtime.core.api.construct.FlowConstruct;
-import org.mule.runtime.api.store.ObjectStoreException;
-import org.mule.runtime.core.routing.AggregationException;
-import org.mule.runtime.core.routing.EventGroup;
-import org.mule.runtime.core.routing.SimpleCollectionAggregator;
-import org.mule.runtime.core.routing.correlation.CollectionCorrelatorCallback;
-import org.mule.runtime.core.routing.correlation.EventCorrelatorCallback;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.io.ByteArrayOutputStream;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Ignore;

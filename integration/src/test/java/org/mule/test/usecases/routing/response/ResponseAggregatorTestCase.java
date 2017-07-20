@@ -9,27 +9,15 @@ package org.mule.test.usecases.routing.response;
 import static java.lang.String.format;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.mule.runtime.api.message.Message.of;
 import static org.mule.runtime.http.api.HttpConstants.Method.POST;
-
-import org.mule.runtime.api.exception.MuleException;
-import org.mule.runtime.core.api.Event;
-import org.mule.runtime.core.api.MuleContext;
-import org.mule.runtime.core.api.message.GroupCorrelation;
-import org.mule.runtime.core.routing.requestreply.AbstractAsyncRequestReplyRequester;
 import org.mule.runtime.core.api.util.IOUtils;
-import org.mule.runtime.core.api.store.SimpleMemoryObjectStore;
 import org.mule.runtime.http.api.HttpService;
 import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;
 import org.mule.runtime.http.api.domain.message.request.HttpRequest;
 import org.mule.runtime.http.api.domain.message.response.HttpResponse;
 import org.mule.service.http.TestHttpClient;
-import org.mule.tck.SensingNullMessageProcessor;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
-
-import java.util.Map;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -56,43 +44,5 @@ public class ResponseAggregatorTestCase extends AbstractIntegrationTestCase {
 
     String payload = IOUtils.toString(response.getEntity().getContent());
     assertThat(payload, is("Received: request"));
-  }
-
-  @Test
-  public void testResponseEventsCleanedUp() throws Exception {
-    RelaxedAsyncReplyMP mp = new RelaxedAsyncReplyMP(muleContext);
-
-    try {
-      Event event =
-          eventBuilder().message(of("message1")).groupCorrelation(new GroupCorrelation(1, null)).build();
-
-      SensingNullMessageProcessor listener = getSensingNullMessageProcessor();
-      mp.setListener(listener);
-      mp.setReplySource(listener.getMessageSource());
-
-      mp.process(event);
-
-      Map<String, Event> responseEvents = mp.getResponseEvents();
-      assertTrue("Response events should be cleaned up.", responseEvents.isEmpty());
-    } finally {
-      mp.stop();
-    }
-  }
-
-  /**
-   * This class opens up the access to responseEvents map for testing
-   */
-  private static final class RelaxedAsyncReplyMP extends AbstractAsyncRequestReplyRequester {
-
-    private RelaxedAsyncReplyMP(MuleContext muleContext) throws MuleException {
-      store = new SimpleMemoryObjectStore<>();
-      name = "asyncReply";
-      setMuleContext(muleContext);
-      start();
-    }
-
-    public Map<String, Event> getResponseEvents() {
-      return responseEvents;
-    }
   }
 }

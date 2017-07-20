@@ -11,34 +11,26 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mule.functional.api.component.FlowAssert.verify;
-
+import org.mule.runtime.api.lifecycle.InitialisationException;
+import org.mule.runtime.api.security.SecurityProviderNotFoundException;
+import org.mule.runtime.api.security.UnknownAuthenticationTypeException;
 import org.mule.runtime.core.api.Event;
-import org.mule.runtime.core.api.config.DefaultMuleConfiguration;
-import org.mule.runtime.core.api.context.MuleContextBuilder;
-import org.mule.runtime.core.api.processor.strategy.ProcessingStrategyFactory;
+import org.mule.runtime.core.api.security.CryptoFailureException;
+import org.mule.runtime.core.api.security.EncryptionStrategyNotFoundException;
 import org.mule.runtime.core.api.transaction.Transaction;
 import org.mule.runtime.core.api.transaction.TransactionCoordination;
-import org.mule.runtime.core.processor.strategy.TransactionAwareWorkQueueProcessingStrategyFactory;
+import org.mule.runtime.core.security.AbstractAuthenticationFilter;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Test;
-import org.mockito.Mockito;
 
 public class NonBlockingFunctionalTestCase extends AbstractIntegrationTestCase {
 
   public static String FOO = "foo";
-  private ProcessingStrategyFactory processingStrategyFactory = new TransactionAwareWorkQueueProcessingStrategyFactory();
 
   @Override
   protected String getConfigFile() {
     return "non-blocking-test-config.xml";
-  }
-
-  @Override
-  protected void configureMuleContext(MuleContextBuilder contextBuilder) {
-    DefaultMuleConfiguration configuration = new DefaultMuleConfiguration();
-    configuration.setDefaultProcessingStrategyFactory(processingStrategyFactory);
-    contextBuilder.setMuleConfiguration(configuration);
   }
 
   @Test
@@ -183,5 +175,16 @@ public class NonBlockingFunctionalTestCase extends AbstractIntegrationTestCase {
     flowRunner("untilSuccessfulWithRetryTransactional").withPayload(TEST_MESSAGE).run();
   }
 
+  public static class CustomSecurityFilter extends AbstractAuthenticationFilter {
+
+    @Override
+    protected void doInitialise() throws InitialisationException {}
+
+    @Override
+    public Event authenticate(Event event) throws SecurityException, UnknownAuthenticationTypeException,
+        CryptoFailureException, SecurityProviderNotFoundException, EncryptionStrategyNotFoundException, InitialisationException {
+      return event;
+    }
+  }
 }
 
