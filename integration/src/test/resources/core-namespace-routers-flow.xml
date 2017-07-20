@@ -5,7 +5,11 @@
        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 
     <flow name="IdempotentSecureHashReceiverRouter">
-        <idempotent-secure-hash-message-validator messageDigestAlgorithm="SHA-128"/>
+        <idempotent-message-validator idExpression="%dw 2.0
+            output text/plain
+            import dw::Crypto
+            ---
+            Crypto::SHA1(payload)"/>
     </flow>
 
     <flow name="IdempotentReceiverRouter">
