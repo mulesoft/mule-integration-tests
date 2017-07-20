@@ -6,6 +6,8 @@
                http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
                http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
+    <object name="customFilter" class="org.mule.test.core.NonBlockingFunctionalTestCase$CustomSecurityFilter"/>
+
     <configuration>
         <expression-language>
             <global-functions>
@@ -65,7 +67,7 @@
 
     <flow name="security-filter">
         <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]"/>
-        <!--<custom-security-filter ref="customFilter"/>-->
+        <custom-security-filter ref="customFilter"/>
         <test:non-blocking-processor/>
         <test:assert expression="#[mel:assertPayload()]"/>
     </flow>
