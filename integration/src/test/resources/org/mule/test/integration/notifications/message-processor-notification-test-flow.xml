@@ -183,7 +183,11 @@
     </flow>
 
     <flow name="idempotent-secure-hash-msg-filter">
-        <idempotent-secure-hash-message-validator idExpression="#[id]" objectStore="objectStore"/>
+        <idempotent-message-validator idExpression="%dw 2.0
+        output text/plain
+        import dw::Crypto
+        ---
+        Crypto::SHA1(variables.id)" objectStore="objectStore"/>
         <logger level="INFO"/>
     </flow>
 

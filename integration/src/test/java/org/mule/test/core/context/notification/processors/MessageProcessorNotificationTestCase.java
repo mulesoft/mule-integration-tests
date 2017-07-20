@@ -205,7 +205,7 @@ public class MessageProcessorNotificationTestCase extends AbstractMessageProcess
         .serial(post()) // close mf
     ;
 
-    assertNotNull(flowRunner("idempotent-secure-hash-msg-filter").withPayload(TEST_PAYLOAD).run());
+    assertNotNull(flowRunner("idempotent-secure-hash-msg-filter").withPayload(TEST_PAYLOAD).withVariable("id","ID").run());
 
     assertNotifications();
   }
