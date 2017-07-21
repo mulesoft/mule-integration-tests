@@ -7,7 +7,12 @@
 package extension.org.mule.soap.it;
 
 import static java.util.Collections.singletonList;
+import static org.mule.runtime.api.connection.ConnectionValidationResult.failure;
+import static org.mule.runtime.api.connection.ConnectionValidationResult.success;
 import static org.mule.runtime.extension.api.soap.WebServiceDefinition.builder;
+
+import org.mule.runtime.api.connection.ConnectionValidationResult;
+import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
 import org.mule.runtime.extension.api.soap.SoapServiceProvider;
 import org.mule.runtime.extension.api.soap.WebServiceDefinition;
@@ -15,6 +20,8 @@ import org.mule.runtime.extension.api.soap.WebServiceDefinition;
 import java.util.List;
 
 public class TestServiceProvider implements SoapServiceProvider {
+
+  public static final String ERROR_MSG = "ERROR";
 
   @Parameter
   private String url;
@@ -25,7 +32,17 @@ public class TestServiceProvider implements SoapServiceProvider {
   @Parameter
   private String port;
 
+  @Parameter
+  @Optional(defaultValue = "true")
+  private boolean valid;
+
+  @Override
   public List<WebServiceDefinition> getWebServiceDefinitions() {
     return singletonList(builder().withId("1").withWsdlUrl(url).withService(service).withPort(port).build());
+  }
+
+  @Override
+  public ConnectionValidationResult validate() {
+    return valid ? success() : failure(ERROR_MSG, new RuntimeException(ERROR_MSG));
   }
 }
