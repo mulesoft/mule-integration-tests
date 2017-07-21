@@ -42,7 +42,7 @@ public class DslConstantsRoutersFlowTestCase extends AbstractIntegrationTestCase
   @Test
   public void testIdempotentSecureHashReceiverRouter() throws Exception {
     Processor router = lookupMessageProcessorFromFlow("IdempotentSecureHashReceiverRouter");
-    assertThat(router.getClass().getName(), equalTo("org.mule.runtime.core.internal.routing.Idempotent"));
+    assertThat(router.getClass().getName(), equalTo("org.mule.runtime.core.internal.routing.IdempotentMessageValidator"));
 
     assertThat(getObjectStore(router), not(nullValue()));
   }
