@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:http="http://www.mulesoft.org/schema/mule/http"
-       xmlns:spring="http://www.mulesoft.org/schema/mule/spring"
-    xsi:schemaLocation="
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:spring="http://www.mulesoft.org/schema/mule/spring"
+      xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xsi:schemaLocation="
        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
        http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
-       http://www.mulesoft.org/schema/mule/spring http://www.mulesoft.org/schema/mule/spring/current/mule-spring.xsd">
+       http://www.mulesoft.org/schema/mule/spring http://www.mulesoft.org/schema/mule/spring/current/mule-spring.xsd
+       http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
     <spring:config name="springConfig" files="org/mule/test/spring/security/custom-security-manager-test-beans.xml"/>
 
@@ -28,6 +30,12 @@
         <http:listener config-ref="listenerConfig" path="authorize"/>
         <http:basic-security-filter realm="mule-realm"/>
         <spring:authorization-filter requiredAuthorities="ROLE_ADMIN"/>
+        <set-payload value="authorized"/>
         <logger/>
+        <error-handler>
+            <on-error-continue type="NOT_PERMITTED">
+                <set-payload value="unauthorized"/>
+            </on-error-continue>
+        </error-handler>
     </flow>
 </mule>

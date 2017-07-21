@@ -7,12 +7,12 @@
 package org.mule.test.spring.security;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
-import static org.mule.runtime.http.api.HttpConstants.HttpStatus.FORBIDDEN;
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.OK;
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.UNAUTHORIZED;
 import static org.mule.runtime.http.api.HttpHeaders.Names.WWW_AUTHENTICATE;
@@ -24,11 +24,8 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
-
-import io.qameta.allure.Issue;
 
 public class AuthorizationFilterTestCase extends AbstractIntegrationTestCase {
 
@@ -46,20 +43,21 @@ public class AuthorizationFilterTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  @Ignore("MULE-11897: When filter throws exception, the handler loses the reference to the filter")
-  @Issue("MULE-11897")
   public void testAuthenticatedButNotAuthorized() throws Exception {
-    doRequest(null, "localhost", "anon", "anon", getUrl(), false, FORBIDDEN.getStatusCode());
+    String body = doRequest(null, "localhost", "anon", "anon", getUrl(), false, OK.getStatusCode());
+    assertThat(body, equalTo("unauthorized"));
   }
 
   @Test
   public void testAuthorized() throws Exception {
-    doRequest(null, "localhost", "ross", "ross", getUrl(), false, OK.getStatusCode());
+    String body = doRequest(null, "localhost", "ross", "ross", getUrl(), false, OK.getStatusCode());
+    assertThat(body, equalTo("authorized"));
   }
 
   @Test
   public void testAuthorizedInAnotherFlow() throws Exception {
-    doRequest(null, "localhost", "ross", "ross", getUrl(), false, OK.getStatusCode());
+    String body = doRequest(null, "localhost", "ross", "ross", getUrl(), false, OK.getStatusCode());
+    assertThat(body, equalTo("authorized"));
   }
 
   protected String getUrl() {
@@ -79,12 +77,13 @@ public class AuthorizationFilterTestCase extends AbstractIntegrationTestCase {
     }
   }
 
-  private void doRequest(String realm, String host, String user, String pass, String url, boolean handshake, int result)
+  private String doRequest(String realm, String host, String user, String pass, String url, boolean handshake, int result)
       throws Exception {
     HttpClient client = new HttpClient();
     client.getParams().setAuthenticationPreemptive(true);
     client.getState().setCredentials(new AuthScope(host, -1, realm), new UsernamePasswordCredentials(user, pass));
     GetMethod get = new GetMethod(url);
+    String body;
     get.setDoAuthentication(handshake);
 
     try {
@@ -101,8 +100,10 @@ public class AuthorizationFilterTestCase extends AbstractIntegrationTestCase {
       }
       assertEquals(result, status);
     } finally {
+      body = get.getResponseBodyAsString();
       get.releaseConnection();
     }
+    return body;
   }
 
 }
