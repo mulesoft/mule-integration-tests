@@ -13,7 +13,10 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.rules.ExpectedException.none;
+
 import org.mule.runtime.core.api.construct.Flow;
+import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.internal.routing.IdempotentMessageValidator;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -22,7 +25,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 public class DslConstantsRoutersFlowTestCase extends AbstractIntegrationTestCase {
 
@@ -30,6 +35,9 @@ public class DslConstantsRoutersFlowTestCase extends AbstractIntegrationTestCase
   public String getConfigFile() {
     return "core-namespace-routers-flow.xml";
   }
+
+  @Rule
+  public ExpectedException expectedException = none();
 
   @Test
   public void testIdempotentSecureHashReceiverRouter() throws Exception {
@@ -67,7 +75,55 @@ public class DslConstantsRoutersFlowTestCase extends AbstractIntegrationTestCase
         .getMessage().getPayload().getValue(),
                is("Duplicate"));
   }
-  
+
+  @Test
+  public void testNonExistentHashingShouldNotExist() throws Exception {
+    expectedException.expect(MessagingException.class);
+    flowRunner("nonExistentHashFlow").withVariable("otherId", "123").run();
+  }
+
+  @Test
+  public void testMD2HashingShouldExist() throws Exception {
+    //If no exception, then the test should pass
+    flowRunner("md2HashFlow").withVariable("otherId", "123").run();
+  }
+
+  @Test
+  public void testMD5HashingShouldExist() throws Exception {
+    //If no exception, then the test should pass
+    flowRunner("md5HashFlow").withVariable("otherId", "123").run();
+  }
+
+  @Test
+  public void testSHA1HashingShouldExist() throws Exception {
+    //If no exception, then the test should pass
+    flowRunner("sha1HashFlow").withVariable("otherId", "123").run();
+  }
+
+  @Test
+  public void testSHA224HashingShouldExist() throws Exception {
+    //If no exception, then the test should pass
+    flowRunner("sha224HashFlow").withVariable("otherId", "123").run();
+  }
+
+  @Test
+  public void testSHA256HashingShouldExist() throws Exception {
+    //If no exception, then the test should pass
+    flowRunner("sha256HashFlow").withVariable("otherId", "123").run();
+  }
+
+  @Test
+  public void testSHA384HashingShouldExist() throws Exception {
+    //If no exception, then the test should pass
+    flowRunner("sha384HashFlow").withVariable("otherId", "123").run();
+  }
+
+  @Test
+  public void testSHA512HashingShouldExist() throws Exception {
+    //If no exception, then the test should pass
+    flowRunner("sha512HashFlow").withVariable("otherId", "123").run();
+  }
+
   protected Processor lookupMessageProcessorFromFlow(String flowName) throws Exception {
     Flow flow = lookupFlow(flowName);
     List<Processor> routers = flow.getProcessors();
