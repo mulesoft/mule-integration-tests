@@ -56,7 +56,7 @@
             <test:processor/>
             <set-variable variableName="parent2" value="#[vars.parent]" />
         </foreach>
-        <set-property propertyName="parent" value="#[vars.parent2]"/>
+        <test:assert expression="#[payload == variables.parent2.payload]"/>
     </flow>
 
     <flow name="message-collection-config">
@@ -65,7 +65,6 @@
             <set-variable variableName="totalMessages" value="#[mel:counter]"/>
         </foreach>
         <test:assert expression="#[mel:totalMessages==10]" />
-        <set-property propertyName="totalMessages" value="#[mel:totalMessages]"/>
     </flow>
 
     <flow name="message-collection-config-one-way">
@@ -82,7 +81,6 @@
             <test:processor/>
             <set-variable variableName="totalMessages" value="#[vars.counter]" />
         </foreach>
-        <set-property propertyName="totalMessages" value="#[vars.totalMessages]"/>
         <test:assert expression="#[mel:totalMessages == 2]" />
     </flow>
 
@@ -91,7 +89,7 @@
             <test:processor/>
             <set-variable variableName="totalMessages" value="#[vars.counter]" />
         </foreach>
-        <set-property propertyName="totalMessages" value="#[vars.totalMessages]"/>
+        <test:assert expression="#[totalMessages == 3]"/>
     </flow>
 
     <flow name="process-order-update">
@@ -147,7 +145,7 @@
             <test:processor/>
             <set-variable variableName="totalMessages" value="#[vars.counter]" />
         </foreach>
-        <set-property propertyName="msg-total-messages" value="#[vars.totalMessages]"/>
+        <!--<set-property propertyName="msg-total-messages" value="#[totalMessages]"/>-->
     </flow>
 
     <flow name="nested-foreach">
@@ -163,10 +161,10 @@
         <foreach>
             <foreach>
                 <test:processor/>
-                <set-property propertyName="j" value="#[vars.counter]"/>
+                <!--<set-property propertyName="j" value="#[counter]"/>-->
                 <test:queue name="out"/>
             </foreach>
-            <set-property propertyName="i" value="#[vars.counter]"/>
+            <!--<set-property propertyName="i" value="#[counter]"/>-->
             <test:queue name="out"/>
         </foreach>
     </flow>
@@ -305,8 +303,8 @@
 		<set-variable variableName="value1" value="value1" />
 		<set-variable variableName="value2" value="value2" />
 
-		<set-property propertyName="value1" value="value1" />
-		<set-property propertyName="value2" value="value2" />
+		<!--<set-property propertyName="value1" value="value1" />-->
+		<!--<set-property propertyName="value2" value="value2" />-->
 
 		<test:assert expression="#[vars.value1 == 'value1']" />
 		<test:assert expression="#[vars.value2 == 'value2']" />

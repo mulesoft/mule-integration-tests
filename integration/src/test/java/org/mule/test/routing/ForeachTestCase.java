@@ -194,8 +194,6 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
     Collection<?> resultPayload = (Collection<?>) result.getPayload().getValue();
     assertThat(resultPayload, hasSize(2));
     assertSame(payload, resultPayload);
-
-    assertSame(payload, ((Message) getOutboundProperty(result, "parent")).getPayload().getValue());
   }
 
   @Test
@@ -208,7 +206,6 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
     Message msgCollection = of(list);
     Message result = flowRunner("message-collection-config").withPayload(list).run().getMessage();
 
-    assertThat(getOutboundProperty(result, "totalMessages"), is(10));
     assertThat(result.getPayload().getValue(), equalTo(msgCollection.getPayload().getValue()));
     FlowAssert.verify("message-collection-config");
   }
@@ -236,7 +233,6 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
     assertThat(result.getPayload().getValue(), instanceOf(Map.class));
     Map<?, ?> resultPayload = (Map<?, ?>) result.getPayload().getValue();
     assertThat(resultPayload.entrySet(), hasSize(payload.size()));
-    assertThat(getOutboundProperty(result, "totalMessages"), is(payload.size()));
     assertSame(payload, resultPayload);
   }
 
@@ -252,8 +248,6 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
         .run().getMessage();
 
     assertThat(result.getPayload().getValue(), instanceOf(String.class));
-    assertThat(getOutboundProperty(message, "names"), hasSize(names.size()));
-    assertThat(getOutboundProperty(result, "totalMessages"), is(names.size()));
   }
 
   @Test
