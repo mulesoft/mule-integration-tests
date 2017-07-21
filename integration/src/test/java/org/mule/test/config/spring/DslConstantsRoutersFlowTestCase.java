@@ -18,7 +18,6 @@ import static org.junit.rules.ExpectedException.none;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.runtime.core.api.processor.Processor;
-import org.mule.runtime.core.internal.routing.IdempotentMessageValidator;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.lang.reflect.InvocationTargetException;
