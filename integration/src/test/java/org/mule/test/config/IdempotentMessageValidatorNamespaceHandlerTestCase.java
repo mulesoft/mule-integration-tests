@@ -6,20 +6,22 @@
  */
 package org.mule.test.config;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-
+import org.mule.runtime.api.store.ObjectStore;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.construct.FlowConstruct;
 import org.mule.runtime.core.api.processor.Processor;
-import org.mule.runtime.api.store.ObjectStore;
-import org.mule.runtime.core.routing.IdempotentMessageValidator;
 import org.mule.runtime.core.api.store.SimpleMemoryObjectStore;
+import org.mule.runtime.core.internal.routing.IdempotentMessageValidator;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 
 import org.junit.Test;
@@ -45,16 +47,16 @@ public class IdempotentMessageValidatorNamespaceHandlerTestCase extends Abstract
   }
 
   private void testPojoObjectStore(final String flowName) throws Exception {
-    final IdempotentMessageValidator filter = idempotentMessageFilterFromFlow(flowName);
+    final Processor filter = idempotentMessageFilterFromFlow(flowName);
 
-    final ObjectStore<?> store = filter.getObjectStore();
+    final ObjectStore<?> store = getObjectStore(filter);
     assertThat(store, instanceOf(CustomObjectStore.class));
 
     final CustomObjectStore customStore = (CustomObjectStore) store;
     assertEquals("the-value:" + flowName, customStore.getCustomProperty());
   }
 
-  private IdempotentMessageValidator idempotentMessageFilterFromFlow(final String flowName) throws Exception {
+  private Processor idempotentMessageFilterFromFlow(final String flowName) throws Exception {
     final FlowConstruct flow = getFlowConstruct(flowName);
     assertTrue(flow instanceof Flow);
 
@@ -63,9 +65,15 @@ public class IdempotentMessageValidatorNamespaceHandlerTestCase extends Abstract
     assertEquals(1, processors.size());
 
     final Processor firstMP = processors.get(0);
-    assertEquals(IdempotentMessageValidator.class, firstMP.getClass());
+    assertThat(firstMP.getClass().getName(), equalTo("org.mule.runtime.core.internal.routing.IdempotentMessageValidator"));
 
-    return (IdempotentMessageValidator) firstMP;
+    return firstMP;
+  }
+
+  private ObjectStore getObjectStore(Processor router)
+      throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    Method method = router.getClass().getMethod("getObjectStore");
+    return (ObjectStore) method.invoke(router);
   }
 
   public static class CustomObjectStore extends SimpleMemoryObjectStore<Serializable> {

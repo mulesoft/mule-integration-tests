@@ -7,6 +7,7 @@
 package org.mule.test.integration.locator;
 
 import static java.util.stream.Collectors.toList;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
@@ -23,8 +24,6 @@ import org.mule.runtime.api.meta.AnnotatedObject;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.processor.LoggerMessageProcessor;
 import org.mule.runtime.core.api.source.MessageSource;
-import org.mule.runtime.core.processor.AsyncDelegateMessageProcessor;
-import org.mule.runtime.core.processor.simple.SetPayloadMessageProcessor;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.util.List;
@@ -86,14 +85,17 @@ public class ConfigurationComponentLocatorTestCase extends AbstractIntegrationTe
     assertThat(processor.get(), instanceOf(LoggerMessageProcessor.class));
     processor = muleContext.getConfigurationComponentLocator().find(myFlowProcessorsLocationBuilder.addIndexPart(1).build());
     assertThat(processor.isPresent(), is(true));
-    assertThat(processor.get(), instanceOf(SetPayloadMessageProcessor.class));
+    assertThat(processor.get().getClass().getName(),
+               equalTo("org.mule.runtime.core.internal.processor.simple.SetPayloadMessageProcessor"));
     processor = muleContext.getConfigurationComponentLocator().find(myFlowProcessorsLocationBuilder.addIndexPart(2).build());
     assertThat(processor.isPresent(), is(true));
-    assertThat(processor.get(), instanceOf(AsyncDelegateMessageProcessor.class));
+    assertThat(processor.get().getClass().getName(),
+               equalTo("org.mule.runtime.core.internal.processor.AsyncDelegateMessageProcessor"));
     processor = muleContext.getConfigurationComponentLocator()
         .find(myFlowProcessorsLocationBuilder.addIndexPart(2).addProcessorsPart().addIndexPart(0).build());
     assertThat(processor.isPresent(), is(true));
-    assertThat(processor.get(), instanceOf(SetPayloadMessageProcessor.class));
+    assertThat(processor.get().getClass().getName(),
+               equalTo("org.mule.runtime.core.internal.processor.simple.SetPayloadMessageProcessor"));
     processor = muleContext.getConfigurationComponentLocator()
         .find(myFlowProcessorsLocationBuilder.addIndexPart(2).addProcessorsPart().addIndexPart(1).build());
     assertThat(processor.isPresent(), is(true));
