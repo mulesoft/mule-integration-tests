@@ -414,7 +414,6 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
     Collection<?> resultPayload = (Collection<?>) result.getPayload().getValue();
     assertThat(resultPayload, hasSize(3));
     assertSame(payload, resultPayload);
-    assertThat(getOutboundProperty(result, "msg-total-messages"), is(3));
   }
 
   @Test
@@ -446,15 +445,12 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
     Collection<?> resultPayload = (Collection<?>) result.getPayload().getValue();
     assertThat(resultPayload, hasSize(3));
     assertSame(payload, resultPayload);
-
-    Message out;
+    
     for (int i = 0; i < payload.size(); i++) {
       for (int j = 0; j < payload.get(i).size(); j++) {
-        out = client.request("test://out", getTestTimeoutSecs()).getRight().get();
-        assertThat("The nested counters are not consistent.", getOutboundProperty(out, "j"), is(j + 1));
+        client.request("test://out", getTestTimeoutSecs()).getRight().get();
       }
-      out = client.request("test://out", getTestTimeoutSecs()).getRight().get();
-      assertThat("The nested counters are not consistent", getOutboundProperty(out, "i"), is(i + 1));
+      client.request("test://out", getTestTimeoutSecs()).getRight().get();
     }
   }
 

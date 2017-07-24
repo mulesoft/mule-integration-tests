@@ -145,7 +145,7 @@
             <test:processor/>
             <set-variable variableName="totalMessages" value="#[vars.counter]" />
         </foreach>
-        <!--<set-property propertyName="msg-total-messages" value="#[totalMessages]"/>-->
+        <test:assert expression="#[variables.totalMessages == 3]"/>
     </flow>
 
     <flow name="nested-foreach">
@@ -158,13 +158,17 @@
     </flow>
 
     <flow name="nested-foreach-counters">
+        <set-variable variableName="i" value="0"/>
         <foreach>
+            <set-variable variableName="j" value="0"/>
             <foreach>
                 <test:processor/>
-                <!--<set-property propertyName="j" value="#[counter]"/>-->
+                <test:assert expression="(variables.j as Number) + 1 == counter"/>
+                <set-variable variableName="j" value="#[counter]"/>
                 <test:queue name="out"/>
             </foreach>
-            <!--<set-property propertyName="i" value="#[counter]"/>-->
+            <test:assert expression="(variables.i as Number) + 1 == counter"/>
+            <set-variable variableName="i" value="#[counter]"/>
             <test:queue name="out"/>
         </foreach>
     </flow>
