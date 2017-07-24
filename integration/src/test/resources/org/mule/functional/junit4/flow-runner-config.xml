@@ -12,11 +12,11 @@
     <flow name="badFailFlow">
         <test:processor throwException="true"/>
         <error-handler>
-                <on-error-propagate>
-                        <processor-chain>
-                                <test:assert expression="#[false]"/>
-                        </processor-chain>
-                </on-error-propagate>
+            <on-error-propagate>
+                <processor-chain>
+                    <test:assert expression="#[false]"/>
+                </processor-chain>
+            </on-error-propagate>
         </error-handler>
     </flow>
 </mule>
