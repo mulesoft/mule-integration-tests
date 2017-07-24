@@ -11,8 +11,8 @@ import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import org.mule.runtime.api.message.Message;
+import org.mule.runtime.api.store.ObjectStoreManager;
 import org.mule.runtime.core.api.client.MuleClient;
-import org.mule.runtime.core.api.config.MuleProperties;
 import org.mule.runtime.api.serialization.SerializationException;
 import org.mule.runtime.api.store.ObjectStoreException;
 import org.mule.runtime.core.internal.routing.EventGroup;
@@ -35,7 +35,7 @@ public class CollectionAggregatorRouterSerializationTestCase extends AbstractInt
 
   @Test
   public void eventGroupDeserialization() throws Exception {
-    muleContext.getRegistry().registerObject(MuleProperties.OBJECT_STORE_DEFAULT_IN_MEMORY_NAME,
+    muleContext.getRegistry().registerObject(ObjectStoreManager.BASE_IN_MEMORY_OBJECT_STORE_KEY,
                                              new EventGroupSerializerObjectStore());
     List<String> list = Arrays.asList("first", "second");
     flowRunner("splitter").withPayload(list).run();
