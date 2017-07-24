@@ -8,13 +8,13 @@ package org.mule.test.usecases.routing.response;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mule.runtime.api.store.ObjectStoreManager.BASE_IN_MEMORY_OBJECT_STORE_KEY;
 import static org.mule.runtime.http.api.HttpConstants.Method.POST;
+import org.mule.runtime.api.serialization.ObjectSerializer;
 import org.mule.runtime.api.store.ObjectStoreException;
 import org.mule.runtime.core.api.MuleContext;
-import org.mule.runtime.core.api.config.MuleProperties;
-import org.mule.runtime.api.serialization.ObjectSerializer;
-import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.runtime.core.api.store.SimpleMemoryObjectStore;
+import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.runtime.http.api.HttpService;
 import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;
 import org.mule.runtime.http.api.domain.message.request.HttpRequest;
@@ -43,8 +43,7 @@ public class SerializationOnResponseAggregatorTestCase extends AbstractIntegrati
 
   @Test
   public void testSyncResponse() throws Exception {
-    muleContext.getRegistry().registerObject(MuleProperties.OBJECT_STORE_DEFAULT_IN_MEMORY_NAME,
-                                             new TestObjectStore(muleContext));
+    muleContext.getRegistry().registerObject(BASE_IN_MEMORY_OBJECT_STORE_KEY, new TestObjectStore(muleContext));
     HttpRequest request = HttpRequest.builder().uri("http://localhost:" + dynamicPort.getNumber())
         .entity(new ByteArrayHttpEntity("request".getBytes())).method(POST).build();
 
