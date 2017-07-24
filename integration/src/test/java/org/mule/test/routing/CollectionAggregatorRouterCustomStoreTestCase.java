@@ -52,10 +52,10 @@ public class CollectionAggregatorRouterCustomStoreTestCase extends AbstractInteg
     private static Serializable askedForPartition;
 
     @Override
-    public Serializable retrieve(Serializable key, String partitionKey) throws ObjectStoreException {
+    protected Serializable doRetrieve(String key, String partitionName) throws ObjectStoreException {
       askedForKey = key;
-      askedForPartition = partitionKey;
-      return super.retrieve(key, partitionKey);
+      askedForPartition = partitionName;
+      return super.doRetrieve(key, partitionName);
     }
   }
 

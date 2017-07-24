@@ -6,14 +6,15 @@
  */
 package org.mule.test.module.extension.oauth;
 
-import org.mule.runtime.core.api.store.ListableObjectStore;
+import static org.mule.runtime.api.store.ObjectStoreSettings.unmanagedTransient;
+import org.mule.runtime.api.store.ObjectStore;
 
 import org.junit.Test;
 
 public class CustomStoreOAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
 
   private static final String CUSTOM_STORE_NAME = "customStore";
-  private ListableObjectStore objectStore;
+  private ObjectStore objectStore;
 
   @Override
   protected String getConfigFile() {
@@ -24,12 +25,12 @@ public class CustomStoreOAuthExtensionTestCase extends BaseOAuthExtensionTestCas
   protected void doSetUp() throws Exception {
     ownerId = CUSTOM_OWNER_ID;
     storedOwnerId = CUSTOM_OWNER_ID + "-oauth";
-    objectStore = muleContext.getObjectStoreManager().getObjectStore(CUSTOM_STORE_NAME);
+    objectStore = muleContext.getObjectStoreManager().createObjectStore(CUSTOM_STORE_NAME, unmanagedTransient());
   }
 
   @Override
   protected void doTearDown() throws Exception {
-    muleContext.getObjectStoreManager().disposeStore(objectStore);
+    muleContext.getObjectStoreManager().disposeStore(CUSTOM_STORE_NAME);
   }
 
   @Test

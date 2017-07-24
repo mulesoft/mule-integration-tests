@@ -37,7 +37,7 @@ public class RoundRobinTestCase extends AbstractIntegrationTestCase {
   @Test
   public void testRoundRobin() throws Exception {
     client = muleContext.getClient();
-    List<Thread> writers = new ArrayList<Thread>();
+    List<Thread> writers = new ArrayList<>();
     for (int i = 0; i < NUMBER_OF_WRITERS; i++) {
       writers.add(new Thread(new MessageWriter(i)));
     }

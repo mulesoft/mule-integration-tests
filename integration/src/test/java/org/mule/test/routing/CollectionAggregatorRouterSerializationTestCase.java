@@ -36,7 +36,7 @@ public class CollectionAggregatorRouterSerializationTestCase extends AbstractInt
   @Test
   public void eventGroupDeserialization() throws Exception {
     muleContext.getRegistry().registerObject(MuleProperties.OBJECT_STORE_DEFAULT_IN_MEMORY_NAME,
-                                             new EventGroupSerializerObjectStore<Serializable>());
+                                             new EventGroupSerializerObjectStore());
     List<String> list = Arrays.asList("first", "second");
     flowRunner("splitter").withPayload(list).run();
 
@@ -47,10 +47,10 @@ public class CollectionAggregatorRouterSerializationTestCase extends AbstractInt
     assertThat(((List<Message>) request.getPayload().getValue()), hasSize(list.size()));
   }
 
-  private class EventGroupSerializerObjectStore<T extends Serializable> extends SimpleMemoryObjectStore<Serializable> {
+  private class EventGroupSerializerObjectStore extends SimpleMemoryObjectStore<Serializable> {
 
     @Override
-    protected void doStore(Serializable key, Serializable value) throws ObjectStoreException {
+    protected void doStore(String key, Serializable value) throws ObjectStoreException {
       if (value instanceof EventGroup) {
         value = SerializationUtils.serialize(value);
       }
@@ -58,7 +58,7 @@ public class CollectionAggregatorRouterSerializationTestCase extends AbstractInt
     }
 
     @Override
-    protected Serializable doRetrieve(Serializable key) {
+    protected Serializable doRetrieve(String key) throws ObjectStoreException {
       Object value = super.doRetrieve(key);
       if (value instanceof byte[]) {
         try {

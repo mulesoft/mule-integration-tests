@@ -11,7 +11,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
-import static org.mule.runtime.core.api.config.MuleProperties.DEFAULT_USER_OBJECT_STORE_NAME;
+import static org.mule.runtime.core.api.config.MuleProperties.OBJECT_STORE_DEFAULT_PERSISTENT_NAME;
 import static org.mule.runtime.module.extension.internal.util.MuleExtensionUtils.getInitialiserEvent;
 import static org.mule.tck.probe.PollingProber.check;
 import static org.mule.test.module.extension.internal.util.ExtensionsTestUtils.getConfigurationFromRegistry;
@@ -58,7 +58,7 @@ public class OAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
     assertConnectionState(connection);
     assertExternalCallbackUrl(connection.getState());
 
-    assertOAuthStateStored(DEFAULT_USER_OBJECT_STORE_NAME, storedOwnerId, ownerId);
+    assertOAuthStateStored(OBJECT_STORE_DEFAULT_PERSISTENT_NAME, storedOwnerId, ownerId);
   }
 
   @Test
@@ -95,7 +95,7 @@ public class OAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
     receiveAccessTokenAndUserConnection();
 
     flowRunner("unauthorize").withVariable(OWNER_ID_VARIABLE_NAME, ownerId).run();
-    ObjectStore objectStore = getObjectStore(DEFAULT_USER_OBJECT_STORE_NAME);
+    ObjectStore objectStore = getObjectStore(OBJECT_STORE_DEFAULT_PERSISTENT_NAME);
     assertThat(objectStore.contains(storedOwnerId), is(false));
   }
 
