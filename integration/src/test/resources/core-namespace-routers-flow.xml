@@ -31,7 +31,7 @@
     </flow>
 
     <flow name="IdempotentReceiverRouterVar">
-        <idempotent-message-validator idExpression="#[otherId]"/>
+        <idempotent-message-validator idExpression="#[vars.otherId]"/>
         <set-payload value="Not duplicate" />
         <error-handler>
             <on-error-continue type="DUPLICATE_MESSAGE">

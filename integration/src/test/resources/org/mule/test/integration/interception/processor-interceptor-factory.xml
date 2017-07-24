@@ -32,11 +32,11 @@
     </flow>
 
     <flow name="killFromPayload">
-        <heisenberg:kill goodbyeMessage="#[goodbye]"/>
+        <heisenberg:kill goodbyeMessage="#[vars.goodbye]"/>
     </flow>
 
     <flow name="killWithCustomMessage">
-        <heisenberg:kill-with-custom-message victim="T-1000" goodbyeMessage="#[goodbye]"/>
+        <heisenberg:kill-with-custom-message victim="T-1000" goodbyeMessage="#[vars.goodbye]"/>
     </flow>
 
     <flow name="die">
