@@ -21,7 +21,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.mule.extension.http.api.HttpHeaders.Names.CONTENT_TYPE;
-import static org.mule.runtime.api.store.ObjectStoreSettings.unmanagedTransient;
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.OK;
 import static org.mule.runtime.http.api.utils.HttpEncoderDecoderUtils.encodeQueryString;
 import static org.mule.service.oauth.internal.OAuthConstants.ACCESS_TOKEN_PARAMETER;
@@ -119,7 +118,7 @@ public abstract class BaseOAuthExtensionTestCase extends AbstractExtensionFuncti
   }
 
   protected ObjectStore getObjectStore(String objectStoreName) {
-    ObjectStore objectStore = muleContext.getObjectStoreManager().createObjectStore(objectStoreName, unmanagedTransient());
+    ObjectStore objectStore = muleContext.getObjectStoreManager().getObjectStore(objectStoreName);
     assertThat(objectStore, is(notNullValue()));
     return objectStore;
   }
