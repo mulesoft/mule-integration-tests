@@ -445,7 +445,7 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
     Collection<?> resultPayload = (Collection<?>) result.getPayload().getValue();
     assertThat(resultPayload, hasSize(3));
     assertSame(payload, resultPayload);
-    
+
     for (int i = 0; i < payload.size(); i++) {
       for (int j = 0; j < payload.get(i).size(); j++) {
         client.request("test://out", getTestTimeoutSecs()).getRight().get();
