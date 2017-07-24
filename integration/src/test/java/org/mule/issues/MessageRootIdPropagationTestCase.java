@@ -52,7 +52,7 @@ public class MessageRootIdPropagationTestCase extends AbstractIntegrationTestCas
     assertEquals(1, RootIDGatherer.getIds().size());
   }
 
-  static class RootIDGatherer extends AbstractMessageTransformer {
+  public static class RootIDGatherer extends AbstractMessageTransformer {
 
     static int messageCount;
     static Map<String, Message> idMap;
@@ -66,7 +66,7 @@ public class MessageRootIdPropagationTestCase extends AbstractIntegrationTestCas
 
     public static synchronized void process(Message msg) {
       messageCount++;
-      String where = getOutboundProperty(msg, "where");
+      String where = (String)msg.getPayload().getValue();
       if (where == null) {
         where = "location_" + counter++;
       }
