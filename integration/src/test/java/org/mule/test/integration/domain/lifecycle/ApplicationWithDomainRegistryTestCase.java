@@ -7,6 +7,7 @@
 package org.mule.test.integration.domain.lifecycle;
 
 import static java.util.concurrent.Executors.newCachedThreadPool;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertThat;
@@ -15,6 +16,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.withSettings;
+import static org.mule.test.allure.AllureConstants.RegistryFeature.DomainObjectRegistrationStory.OBJECT_REGISTRATION;
+import static org.mule.test.allure.AllureConstants.RegistryFeature.REGISTRY;
 import org.mule.functional.junit4.ApplicationContextBuilder;
 import org.mule.functional.junit4.DomainContextBuilder;
 import org.mule.runtime.api.exception.MuleException;
@@ -27,6 +30,7 @@ import org.mule.runtime.core.api.util.concurrent.Latch;
 import org.mule.tck.junit4.AbstractMuleTestCase;
 import org.mule.tck.probe.JUnitLambdaProbe;
 import org.mule.tck.probe.PollingProber;
+import org.mule.test.allure.AllureConstants;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -36,11 +40,14 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
+
+@Feature(REGISTRY)
 public class ApplicationWithDomainRegistryTestCase extends AbstractMuleTestCase {
 
   public static final String BEAN_KEY = "someBean";
   public static final String ANOTHER_BEAN_KEY = "someOtherBean";
-  public static final String REGISTERY_ID = "someId";
 
   private MuleContext domainContext;
   private MuleContext applicationContext;
@@ -51,28 +58,24 @@ public class ApplicationWithDomainRegistryTestCase extends AbstractMuleTestCase 
     applicationContext = new ApplicationContextBuilder().setDomainContext(domainContext).build();
   }
 
+  @Story(OBJECT_REGISTRATION)
   @Test
   public void lookupByTypeSearchInParentAlso() throws Exception {
     domainContext.getRegistry().registerObject(BEAN_KEY, BEAN_KEY);
     applicationContext.getRegistry().registerObject(ANOTHER_BEAN_KEY, ANOTHER_BEAN_KEY);
     Collection<String> values = applicationContext.getRegistry().lookupObjects(String.class);
-    assertThat(values.size(), is(2));
+    assertThat(values, hasSize(2));
   }
 
+  @Story(OBJECT_REGISTRATION)
   @Test
-  public void lookupByIdReturnsApplicationContextBean() throws Exception {
+  public void lookupByIdReturnsApplicationContextBeanEvenIfSameBeanIsInDomain() throws Exception {
     applicationContext.getRegistry().registerObject(BEAN_KEY, BEAN_KEY);
     domainContext.getRegistry().registerObject(BEAN_KEY, new Integer(10));
     assertThat(applicationContext.getRegistry().get(BEAN_KEY), is(instanceOf(String.class)));
   }
 
-  @Test
-  public void lookupByIdReturnsParentApplicationContextBean() throws Exception {
-    Object value = new Object();
-    applicationContext.getRegistry().registerObject(BEAN_KEY, value);
-    assertThat(applicationContext.getRegistry().get(BEAN_KEY), is(value));
-  }
-
+  @Story(OBJECT_REGISTRATION)
   @Test
   public void lookupByLifecycleReturnsApplicationContextBeanOnly() throws Exception {
     domainContext.getRegistry().registerObject(BEAN_KEY, BEAN_KEY);
@@ -80,6 +83,15 @@ public class ApplicationWithDomainRegistryTestCase extends AbstractMuleTestCase 
     assertThat(applicationContext.getRegistry().lookupObjectsForLifecycle(String.class).size(), is(1));
   }
 
+  @Story(AllureConstants.RegistryFeature.ObjectRegistrationStory.OBJECT_REGISTRATION)
+  @Test
+  public void lookupByIdReturnsParentApplicationContextBean() throws Exception {
+    Object value = new Object();
+    applicationContext.getRegistry().registerObject(BEAN_KEY, value);
+    assertThat(applicationContext.getRegistry().get(BEAN_KEY), is(value));
+  }
+
+  @Story(AllureConstants.RegistryFeature.ObjectRegistrationStory.OBJECT_REGISTRATION)
   @Test
   public void registerObjectAsynchronously() throws MuleException, InterruptedException, ExecutionException {
     final Startable asyncStartableBean = mock(Startable.class, withSettings().extraInterfaces(Disposable.class));
@@ -97,9 +109,7 @@ public class ApplicationWithDomainRegistryTestCase extends AbstractMuleTestCase 
       return null;
     }).when(asyncStartableBean).start();
 
-    ((Disposable) doAnswer(invocation -> {
-      return null;
-    }).when(asyncStartableBean)).dispose();
+    ((Disposable) doAnswer(invocation -> null).when(asyncStartableBean)).dispose();
 
     final ExecutorService threadPool = newCachedThreadPool();
 
