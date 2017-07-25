@@ -266,7 +266,7 @@
         <foreach collection="#[vars.content.users]" batchSize="2">
             <foreach>
                 <test:queue name="splitJsonComplexValueOutQueue" contentJavaType="java.lang.String">
-                    <test:content>#['$(payload.name) $(payload.lastname)']</test:content>
+                    <test:content>#["$(payload.name) $(payload.lastname)"]</test:content>
                 </test:queue>
             </foreach>
         </foreach>
