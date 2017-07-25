@@ -64,7 +64,7 @@
             <test:assert expression="#[mel:message.outboundProperties['out']=='out'+counter]" />
             <set-variable variableName="totalMessages" value="#[mel:counter]"/>
         </foreach>
-        <test:assert expression="#[mel:totalMessages==10]" />
+        <test:assert expression="#[vars.totalMessages==10]" />
     </flow>
 
     <flow name="message-collection-config-one-way">
@@ -73,7 +73,7 @@
             <set-variable variableName="totalMessages" value="#[mel:counter]"/>
         </foreach>
         <logger level="WARN" message="variable:totalMessages: #[mel:flowVars.totalMessages]"/>
-        <test:assert expression="#[mel:totalMessages==10]" />
+        <test:assert expression="#[vars.totalMessages==10]" />
     </flow>
 
     <flow name="map-config">
@@ -81,7 +81,7 @@
             <test:processor/>
             <set-variable variableName="totalMessages" value="#[vars.counter]" />
         </foreach>
-        <test:assert expression="#[mel:totalMessages == 2]" />
+        <test:assert expression="#[vars.totalMessages == 2]" />
     </flow>
 
     <flow name="map-expression-config">
@@ -89,7 +89,7 @@
             <test:processor/>
             <set-variable variableName="totalMessages" value="#[vars.counter]" />
         </foreach>
-        <test:assert expression="#[totalMessages == 3]"/>
+        <test:assert expression="#[vars.totalMessages == 3]"/>
     </flow>
 
     <flow name="process-order-update">
@@ -133,7 +133,7 @@
         <foreach>
             <test:processor/>
         </foreach>
-        <test:assert expression="#[mel:flowVars.counter == null]"/>
+        <test:assert expression="#[vars.counter == null]"/>
     </flow>
 
     <flow name="counter-two-foreach-independence">
