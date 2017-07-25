@@ -7,16 +7,16 @@
 package org.mule.test.integration.messaging.meps;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mule.runtime.api.exception.ExceptionHelper.getRootException;
 
-import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.functional.api.exception.FunctionalTestException;
 import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.runtime.core.api.transformer.TransformerException;
-import org.mule.functional.api.exception.FunctionalTestException;
-import org.mule.runtime.api.exception.ExceptionHelper;
+import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Test;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 
 /**
  * see MULE-4512
@@ -31,18 +31,18 @@ public class SynchronousResponseExceptionTestCase extends AbstractIntegrationTes
   @Test
   public void testComponentException() throws Exception {
     MessagingException e = flowRunner("ComponentException").withPayload("request").runExpectingException();
-    assertThat(ExceptionHelper.getRootException(e), instanceOf(FunctionalTestException.class));
+    assertThat(getRootException(e), instanceOf(FunctionalTestException.class));
   }
 
   @Test
   public void testFlowRefInvalidException() throws Exception {
     MessagingException e = flowRunner("FlowRefInvalidException").withPayload("request").runExpectingException();
-    assertThat(ExceptionHelper.getRootException(e), instanceOf(NoSuchBeanDefinitionException.class));
+    assertThat(getRootException(e).getClass().getName(), is("org.springframework.beans.factory.NoSuchBeanDefinitionException"));
   }
 
   @Test
   public void testTransformerException() throws Exception {
     MessagingException e = flowRunner("TransformerException").withPayload("request").runExpectingException();
-    assertThat(ExceptionHelper.getRootException(e), instanceOf(TransformerException.class));
+    assertThat(getRootException(e), instanceOf(TransformerException.class));
   }
 }

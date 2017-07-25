@@ -8,10 +8,16 @@ package org.mule.test.core.transformers.simple;
 
 import org.mule.test.AbstractIntegrationTestCase;
 
+import org.hamcrest.Description;
+import org.hamcrest.TypeSafeMatcher;
+import org.junit.Rule;
 import org.junit.Test;
-import org.springframework.beans.factory.BeanCreationException;
+import org.junit.rules.ExpectedException;
 
 public class BadTransformationContentTypeTestCase extends AbstractIntegrationTestCase {
+
+  @Rule
+  public ExpectedException expected = ExpectedException.none();
 
   public BadTransformationContentTypeTestCase() {
     setStartContext(false);
@@ -22,9 +28,26 @@ public class BadTransformationContentTypeTestCase extends AbstractIntegrationTes
     return "bad-content-type-setting-transformer-configs.xml";
   }
 
-  @Test(expected = BeanCreationException.class)
+  @Test
   public void testReturnType() throws Exception {
     muleContext.start();
+
+    expected.expect(new TypeSafeMatcher<Exception>() {
+
+      private Exception item;
+
+      @Override
+      protected boolean matchesSafely(Exception item) {
+        this.item = item;
+        return "org.springframework.beans.factory.BeanCreationException".equals(item.getClass().getName());
+      }
+
+      @Override
+      public void describeTo(Description description) {
+        description.appendText("was: ");
+        item.printStackTrace();
+      }
+    });
     muleContext.getRegistry().lookupTransformer("testTransformer");
   }
 }

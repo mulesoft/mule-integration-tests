@@ -35,7 +35,7 @@ import org.mule.extensions.jms.api.connection.caching.NoCachingConfiguration;
 import org.mule.runtime.api.app.declaration.ArtifactDeclaration;
 import org.mule.runtime.api.app.declaration.ParameterElementDeclaration;
 import org.mule.runtime.api.app.declaration.fluent.ElementDeclarer;
-import org.mule.runtime.config.spring.dsl.api.ArtifactDeclarationXmlSerializer;
+import org.mule.runtime.config.spring.api.dsl.ArtifactDeclarationXmlSerializer;
 import org.mule.test.runner.RunnerDelegateTo;
 
 import java.io.IOException;

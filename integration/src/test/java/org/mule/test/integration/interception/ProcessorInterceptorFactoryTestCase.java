@@ -23,6 +23,7 @@ import static org.mule.test.heisenberg.extension.HeisenbergConnectionProvider.ge
 import static org.mule.test.heisenberg.extension.HeisenbergConnectionProvider.getDisconnects;
 
 import org.mule.runtime.api.component.location.ComponentLocation;
+import org.mule.runtime.api.config.custom.ServiceConfigurator;
 import org.mule.runtime.api.el.MuleExpressionLanguage;
 import org.mule.runtime.api.interception.InterceptionAction;
 import org.mule.runtime.api.interception.InterceptionEvent;
@@ -96,6 +97,11 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
         muleContext.getProcessorInterceptorManager()
             .addInterceptorFactory(new HasInjectedAttributesInterceptorFactory(mutateEventBefore));
         muleContext.getProcessorInterceptorManager().addInterceptorFactory(new EvaluatesExpressionInterceptorFactory());
+      }
+
+      @Override
+      public void addServiceConfigurator(ServiceConfigurator serviceConfigurator) {
+        // Nothing to do
       }
     });
   }

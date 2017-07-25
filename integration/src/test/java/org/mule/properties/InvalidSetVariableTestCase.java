@@ -6,7 +6,8 @@
  */
 package org.mule.properties;
 
-import org.mule.runtime.config.spring.SpringXmlConfigurationBuilder;
+import static org.mule.runtime.config.spring.api.SpringXmlConfigurationBuilderFactory.createConfigurationBuilder;
+
 import org.mule.runtime.core.api.config.ConfigurationException;
 import org.mule.runtime.core.api.context.DefaultMuleContextFactory;
 import org.mule.tck.junit4.AbstractMuleTestCase;
@@ -20,6 +21,6 @@ public class InvalidSetVariableTestCase extends AbstractMuleTestCase {
   @Test(expected = ConfigurationException.class)
   public void emptyVariableNameValidatedBySchema() throws Exception {
     // TODO MULE-10061 - Review once the MuleContext lifecycle is clearly defined
-    new DefaultMuleContextFactory().createMuleContext(new SpringXmlConfigurationBuilder(muleConfigPath));
+    new DefaultMuleContextFactory().createMuleContext(createConfigurationBuilder(muleConfigPath));
   }
 }
