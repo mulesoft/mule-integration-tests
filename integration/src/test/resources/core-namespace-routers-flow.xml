@@ -21,7 +21,7 @@
             output text/plain
             import dw::Crypto
             ---
-            Crypto::hashWith(variables.otherId,'SHA-256')"/>
+            Crypto::hashWith(vars.otherId,'SHA-256')"/>
         <set-payload value="Not duplicate" />
         <error-handler>
             <on-error-continue type="DUPLICATE_MESSAGE">
@@ -31,7 +31,7 @@
     </flow>
 
     <flow name="IdempotentReceiverRouterVar">
-        <idempotent-message-validator idExpression="#[otherId]"/>
+        <idempotent-message-validator idExpression="#[vars.otherId]"/>
         <set-payload value="Not duplicate" />
         <error-handler>
             <on-error-continue type="DUPLICATE_MESSAGE">
@@ -45,7 +45,7 @@
             output text/plain
             import dw::Crypto
             ---
-            Crypto::hashWith(variables.otherId,'SOME-HASH-FUNCTION')"/>
+            Crypto::hashWith(vars.otherId,'SOME-HASH-FUNCTION')"/>
     </flow>
 
     <flow name="md2HashFlow">
@@ -53,7 +53,7 @@
             output text/plain
             import dw::Crypto
             ---
-            Crypto::hashWith(variables.otherId,'MD2')"/>
+            Crypto::hashWith(vars.otherId,'MD2')"/>
     </flow>
 
     <flow name="md5HashFlow">
@@ -61,7 +61,7 @@
             output text/plain
             import dw::Crypto
             ---
-            Crypto::hashWith(variables.otherId,'MD5')"/>
+            Crypto::hashWith(vars.otherId,'MD5')"/>
     </flow>
 
     <flow name="sha1HashFlow">
@@ -69,7 +69,7 @@
             output text/plain
             import dw::Crypto
             ---
-            Crypto::hashWith(variables.otherId,'SHA-1')"/>
+            Crypto::hashWith(vars.otherId,'SHA-1')"/>
     </flow>
 
     <flow name="sha224HashFlow">
@@ -77,7 +77,7 @@
             output text/plain
             import dw::Crypto
             ---
-            Crypto::hashWith(variables.otherId,'SHA-224')"/>
+            Crypto::hashWith(vars.otherId,'SHA-224')"/>
     </flow>
 
     <flow name="sha256HashFlow">
@@ -85,7 +85,7 @@
             output text/plain
             import dw::Crypto
             ---
-            Crypto::hashWith(variables.otherId,'SHA-256')"/>
+            Crypto::hashWith(vars.otherId,'SHA-256')"/>
     </flow>
 
     <flow name="sha384HashFlow">
@@ -93,7 +93,7 @@
             output text/plain
             import dw::Crypto
             ---
-            Crypto::hashWith(variables.otherId,'SHA-384')"/>
+            Crypto::hashWith(vars.otherId,'SHA-384')"/>
     </flow>
 
     <flow name="sha512HashFlow">
@@ -101,7 +101,7 @@
             output text/plain
             import dw::Crypto
             ---
-            Crypto::hashWith(variables.otherId,'SHA-512')"/>
+            Crypto::hashWith(vars.otherId,'SHA-512')"/>
     </flow>
 
 </mule>

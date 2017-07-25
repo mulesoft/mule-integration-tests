@@ -30,14 +30,14 @@
     </flow>
 
     <flow name="minimal-config-expression">
-        <foreach collection="#[names]">
+        <foreach collection="#[vars.names]">
             <test:processor/>
             <test:queue name="out"/>
         </foreach>
     </flow>
 
     <flow name="filtered-config">
-        <foreach collection="#[names]" ignoreErrorType="VALIDATION:VALIDATION">
+        <foreach collection="#[vars.names]" ignoreErrorType="VALIDATION:VALIDATION">
             <test:processor/>
             <validation:is-true expression="#[false]"/>
             <test:processor throwException="true" exceptionText="Should not have reached here"/>
@@ -54,9 +54,9 @@
     <flow name="parent-message-config">
         <foreach rootMessageVariableName="parent">
             <test:processor/>
-            <set-variable variableName="parent2" value="#[parent]" />
+            <set-variable variableName="parent2" value="#[vars.parent]" />
         </foreach>
-        <set-property propertyName="parent" value="#[parent2]"/>
+        <set-property propertyName="parent" value="#[vars.parent2]"/>
     </flow>
 
     <flow name="message-collection-config">
@@ -80,23 +80,23 @@
     <flow name="map-config">
         <foreach>
             <test:processor/>
-            <set-variable variableName="totalMessages" value="#[counter]" />
+            <set-variable variableName="totalMessages" value="#[vars.counter]" />
         </foreach>
-        <set-property propertyName="totalMessages" value="#[totalMessages]"/>
+        <set-property propertyName="totalMessages" value="#[vars.totalMessages]"/>
         <test:assert expression="#[mel:totalMessages == 2]" />
     </flow>
 
     <flow name="map-expression-config">
         <foreach collection="#[mel:message.inboundProperties.names]">
             <test:processor/>
-            <set-variable variableName="totalMessages" value="#[counter]" />
+            <set-variable variableName="totalMessages" value="#[vars.counter]" />
         </foreach>
-        <set-property propertyName="totalMessages" value="#[totalMessages]"/>
+        <set-property propertyName="totalMessages" value="#[vars.totalMessages]"/>
     </flow>
 
     <flow name="process-order-update">
         <foreach collection="#[[ payload.PurchaseOrder.Items ]]">
-            <set-variable variableName="total" value="#[counter]" />
+            <set-variable variableName="total" value="#[vars.counter]" />
         </foreach>
     </flow>
 
@@ -128,7 +128,7 @@
                 </script:script>
             </script:component>
         </foreach>
-        <test:assert expression="#[loops == '3']" />
+        <test:assert expression="#[vars.loops == '3']" />
     </flow>
 
     <flow name="counter-scope">
@@ -141,13 +141,13 @@
     <flow name="counter-two-foreach-independence">
         <foreach>
             <test:processor/>
-            <set-variable variableName="totalMessages" value="#[counter]" />
+            <set-variable variableName="totalMessages" value="#[vars.counter]" />
         </foreach>
         <foreach>
             <test:processor/>
-            <set-variable variableName="totalMessages" value="#[counter]" />
+            <set-variable variableName="totalMessages" value="#[vars.counter]" />
         </foreach>
-        <set-property propertyName="msg-total-messages" value="#[totalMessages]"/>
+        <set-property propertyName="msg-total-messages" value="#[vars.totalMessages]"/>
     </flow>
 
     <flow name="nested-foreach">
@@ -163,10 +163,10 @@
         <foreach>
             <foreach>
                 <test:processor/>
-                <set-property propertyName="j" value="#[counter]"/>
+                <set-property propertyName="j" value="#[vars.counter]"/>
                 <test:queue name="out"/>
             </foreach>
-            <set-property propertyName="i" value="#[counter]"/>
+            <set-property propertyName="i" value="#[vars.counter]"/>
             <test:queue name="out"/>
         </foreach>
     </flow>
@@ -263,7 +263,7 @@
     </flow>
 
     <flow name="splitJsonComplexValue">
-        <foreach collection="#[content.users]" batchSize="2">
+        <foreach collection="#[vars.content.users]" batchSize="2">
             <foreach>
                 <test:queue name="splitJsonComplexValueOutQueue" contentJavaType="java.lang.String">
                     <test:content>#["$(payload.name) $(payload.lastname)"]</test:content>
@@ -289,7 +289,7 @@
     <flow name="splitPayload">
         <foreach>
             <choice>
-                <when expression="#[useExpression]">
+                <when expression="#[vars.useExpression]">
                     <test:queue name="splitPayloadOutQueue" contentJavaType="java.lang.String">
                         <test:content>#[payload.name]</test:content>
                     </test:queue>
@@ -308,8 +308,8 @@
 		<set-property propertyName="value1" value="value1" />
 		<set-property propertyName="value2" value="value2" />
 
-		<test:assert expression="#[value1 == 'value1']" />
-		<test:assert expression="#[value2 == 'value2']" />
+		<test:assert expression="#[vars.value1 == 'value1']" />
+		<test:assert expression="#[vars.value2 == 'value2']" />
 		<test:assert expression="#[mel:message.outboundProperties['value1'] == 'value1']" />
 		<test:assert expression="#[mel:message.outboundProperties['value2'] == 'value2']" />
 

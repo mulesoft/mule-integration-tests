@@ -19,7 +19,7 @@
                                                  authorizationUrl="${authorizationUrl}"
                                                  accessTokenUrl="${accessTokenUrl}"
                                                  scopes="${scopes}"
-                                                 resourceOwnerId="#[ownerId]"
+                                                 resourceOwnerId="#[vars.ownerId]"
                                                  before="beforeFlow"
                                                  after="afterFlow" />
             <test-oauth:oauth-callback-config listenerConfig="listenerConfig"

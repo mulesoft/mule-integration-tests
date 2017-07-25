@@ -30,7 +30,7 @@
             <flow-ref name="AsyncRequest"/>
         </async>
         <choice>
-            <when expression="#[messageType == 'sync']">
+            <when expression="#[vars.messageType == 'sync']">
                 <scripting:component script-ref="testComponent"/>
             </when>
         </choice>
@@ -38,7 +38,7 @@
 
     <flow name="AsyncRequest">
         <choice>
-            <when expression="#[messageType == 'async']">
+            <when expression="#[vars.messageType == 'async']">
                 <scripting:component script-ref="testComponent"/>
                 <test:queue name="asyncResponse"/>
             </when>
