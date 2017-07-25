@@ -66,7 +66,7 @@ public class MessageRootIdPropagationTestCase extends AbstractIntegrationTestCas
 
     public static synchronized void process(Message msg) {
       messageCount++;
-      String where = (String)msg.getPayload().getValue();
+      String where = (String) msg.getPayload().getValue();
       if (where == null) {
         where = "location_" + counter++;
       }

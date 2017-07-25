@@ -11,8 +11,7 @@
         <error-handler>
             <on-error-propagate>
                 <processor-chain>
-                    <set-property propertyName="mainEs" value="yes"/>
-                    <set-property propertyName="flowRefEs" value="#[mel:flowVars.flowRefEs]" />
+                    <test:assert expression="#[variables.flowRefEs == 'yes']" />
                     <test:queue name="dlq"/>
                 </processor-chain>
             </on-error-propagate>
