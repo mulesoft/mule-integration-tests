@@ -10,6 +10,7 @@ import static java.lang.String.format;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.mule.functional.api.component.FlowAssert.verify;
 import static org.mule.functional.junit4.TestLegacyMessageUtils.getOutboundProperty;
 import static org.mule.runtime.http.api.HttpConstants.Method.POST;
 
@@ -54,6 +55,6 @@ public class HttpJmsBridgeTestCase extends AbstractIntegrationTestCase {
 
     assertNotNull(msg);
     assertThat(getPayloadAsString(msg), is(payload));
-    assertThat(getOutboundProperty(msg, customHeader), is("value"));
+    verify("bridge");
   }
 }

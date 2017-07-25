@@ -15,17 +15,17 @@
 
     <flow name="flow1">
         <response>
-            <set-property propertyName="where" value="flow1-response"/>
+            <set-payload value="flow1-response"/>
             <custom-transformer class="org.mule.issues.MessageRootIdPropagationTestCase$RootIDGatherer"/>
         </response>
-        <set-property propertyName="where" value="flow1-request"/>
+        <set-payload value="flow1-request"/>
         <custom-transformer class="org.mule.issues.MessageRootIdPropagationTestCase$RootIDGatherer"/>
         <flow-ref name="flow2"/>
         <http:request method="POST" path="foo" config-ref="requestConfig"/>
     </flow>
 
     <flow name="flow2">
-        <set-property propertyName="where" value="flow2-request"/>
+        <set-payload value="flow2-request"/>
         <custom-transformer class="org.mule.issues.MessageRootIdPropagationTestCase$RootIDGatherer"/>
         <logger/>
     </flow>
@@ -33,10 +33,10 @@
     <flow name="flow3">
         <http:listener path="foo" config-ref="listenerConfig"/>
         <response>
-            <set-property propertyName="where" value="flow3-response"/>
+            <set-payload value="flow3-response"/>
             <custom-transformer class="org.mule.issues.MessageRootIdPropagationTestCase$RootIDGatherer"/>
         </response>
-        <set-property propertyName="where" value="flow3-request"/>
+        <set-payload value="flow3-request"/>
         <custom-transformer class="org.mule.issues.MessageRootIdPropagationTestCase$RootIDGatherer"/>
     </flow>
 </mule>

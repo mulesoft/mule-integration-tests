@@ -6,10 +6,8 @@
  */
 package org.mule.test.integration.exceptions;
 
-import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
-import static org.mule.functional.junit4.TestLegacyMessageUtils.getOutboundProperty;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -34,7 +32,5 @@ public class ExceptionStrategyFlowRefTestCase extends AbstractIntegrationTestCas
     Message response = client.request("test://dlq", RECEIVE_TIMEOUT).getRight().get();
 
     assertThat(response, notNullValue());
-    assertThat(getOutboundProperty(response, "mainEs"), is("yes"));
-    assertThat(getOutboundProperty(response, "flowRefEs"), is("yes"));
   }
 }

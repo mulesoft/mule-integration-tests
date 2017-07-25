@@ -56,7 +56,7 @@
             <test:processor/>
             <set-variable variableName="parent2" value="#[vars.parent]" />
         </foreach>
-        <set-property propertyName="parent" value="#[vars.parent2]"/>
+        <test:assert expression="#[payload == vars.parent2.payload]"/>
     </flow>
 
     <flow name="message-collection-config">
@@ -64,8 +64,7 @@
             <test:assert expression="#[mel:message.outboundProperties['out']=='out'+counter]" />
             <set-variable variableName="totalMessages" value="#[mel:counter]"/>
         </foreach>
-        <test:assert expression="#[mel:totalMessages==10]" />
-        <set-property propertyName="totalMessages" value="#[mel:totalMessages]"/>
+        <test:assert expression="#[vars.totalMessages==10]" />
     </flow>
 
     <flow name="message-collection-config-one-way">
@@ -74,7 +73,7 @@
             <set-variable variableName="totalMessages" value="#[mel:counter]"/>
         </foreach>
         <logger level="WARN" message="variable:totalMessages: #[mel:flowVars.totalMessages]"/>
-        <test:assert expression="#[mel:totalMessages==10]" />
+        <test:assert expression="#[vars.totalMessages==10]" />
     </flow>
 
     <flow name="map-config">
@@ -82,8 +81,7 @@
             <test:processor/>
             <set-variable variableName="totalMessages" value="#[vars.counter]" />
         </foreach>
-        <set-property propertyName="totalMessages" value="#[vars.totalMessages]"/>
-        <test:assert expression="#[mel:totalMessages == 2]" />
+        <test:assert expression="#[vars.totalMessages == 2]" />
     </flow>
 
     <flow name="map-expression-config">
@@ -91,7 +89,7 @@
             <test:processor/>
             <set-variable variableName="totalMessages" value="#[vars.counter]" />
         </foreach>
-        <set-property propertyName="totalMessages" value="#[vars.totalMessages]"/>
+        <test:assert expression="#[vars.totalMessages == 3]"/>
     </flow>
 
     <flow name="process-order-update">
@@ -135,7 +133,7 @@
         <foreach>
             <test:processor/>
         </foreach>
-        <test:assert expression="#[mel:flowVars.counter == null]"/>
+        <test:assert expression="#[vars.counter == null]"/>
     </flow>
 
     <flow name="counter-two-foreach-independence">
@@ -147,7 +145,7 @@
             <test:processor/>
             <set-variable variableName="totalMessages" value="#[vars.counter]" />
         </foreach>
-        <set-property propertyName="msg-total-messages" value="#[vars.totalMessages]"/>
+        <test:assert expression="#[vars.totalMessages == 3]"/>
     </flow>
 
     <flow name="nested-foreach">
@@ -160,13 +158,17 @@
     </flow>
 
     <flow name="nested-foreach-counters">
+        <set-variable variableName="i" value="0"/>
         <foreach>
+            <set-variable variableName="j" value="0"/>
             <foreach>
                 <test:processor/>
-                <set-property propertyName="j" value="#[vars.counter]"/>
+                <test:assert expression="(vars.j as Number) + 1 == counter"/>
+                <set-variable variableName="j" value="#[counter]"/>
                 <test:queue name="out"/>
             </foreach>
-            <set-property propertyName="i" value="#[vars.counter]"/>
+            <test:assert expression="(vars.i as Number) + 1 == counter"/>
+            <set-variable variableName="i" value="#[counter]"/>
             <test:queue name="out"/>
         </foreach>
     </flow>
@@ -305,13 +307,8 @@
 		<set-variable variableName="value1" value="value1" />
 		<set-variable variableName="value2" value="value2" />
 
-		<set-property propertyName="value1" value="value1" />
-		<set-property propertyName="value2" value="value2" />
-
 		<test:assert expression="#[vars.value1 == 'value1']" />
 		<test:assert expression="#[vars.value2 == 'value2']" />
-		<test:assert expression="#[mel:message.outboundProperties['value1'] == 'value1']" />
-		<test:assert expression="#[mel:message.outboundProperties['value2'] == 'value2']" />
 
 		<expression-component>mel:flowVars['latch'].countDown()</expression-component>
 	</sub-flow>
