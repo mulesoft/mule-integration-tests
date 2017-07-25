@@ -11,6 +11,7 @@ import static org.junit.Assert.assertNotNull;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.tck.testmodels.fruit.Apple;
 import org.mule.tck.testmodels.fruit.Orange;
+import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
 
 import org.junit.Test;
 

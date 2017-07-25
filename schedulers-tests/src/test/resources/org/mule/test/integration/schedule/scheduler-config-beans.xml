@@ -3,7 +3,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd">
 
     <!-- Example of how a scheduler can be defined as a spring bean, and monitored by mule API -->
-    <bean class="org.mule.test.integration.schedule.MockScheduler" name="testScheduler" />
+    <bean class="org.mule.test.integration.schedule.MockScheduler" name="testScheduler" init-method="start" />
 
 </beans>
 
