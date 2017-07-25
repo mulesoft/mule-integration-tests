@@ -11,7 +11,7 @@
         <error-handler>
             <on-error-propagate>
                 <processor-chain>
-                    <test:assert expression="#[variables.flowRefEs == 'yes']" />
+                    <test:assert expression="#[vars.flowRefEs == 'yes']" />
                     <test:queue name="dlq"/>
                 </processor-chain>
             </on-error-propagate>
