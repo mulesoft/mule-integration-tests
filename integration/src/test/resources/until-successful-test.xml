@@ -56,10 +56,8 @@
 
     <flow name="synchronous-with-retry">
         <until-successful maxRetries="3" millisBetweenRetries="0">
-            <processor-chain>
-                <test:invocation-counter name="untilSuccessful"/>
-                <test:processor throwException="true"/>
-            </processor-chain>
+            <test:invocation-counter name="untilSuccessful"/>
+            <test:processor throwException="true"/>
         </until-successful>
         <error-handler>
             <on-error-propagate>
@@ -70,10 +68,8 @@
 
     <flow name="measureSynchronousWait">
         <until-successful maxRetries="1" millisBetweenRetries="1000">
-            <processor-chain>
-                <custom-processor class="org.mule.test.routing.UntilSuccessfulTestCase$WaitMeasure" />
-                <test:processor throwException="true"/>
-            </processor-chain>
+            <custom-processor class="org.mule.test.routing.UntilSuccessfulTestCase$WaitMeasure" />
+            <test:processor throwException="true"/>
         </until-successful>
     </flow>
 </mule>

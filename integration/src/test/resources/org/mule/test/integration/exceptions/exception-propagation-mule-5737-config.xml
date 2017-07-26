@@ -54,9 +54,9 @@
         </error-handler>
     </flow>
 
-    <processor-chain name="subFlow">
+    <sub-flow name="subFlow">
         <test:processor throwException="true"/>
-    </processor-chain>
+    </sub-flow>
 
     <flow name="childService">
         <test:processor throwException="true"/>

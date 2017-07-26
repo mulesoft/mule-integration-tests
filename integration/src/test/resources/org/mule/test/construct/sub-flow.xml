@@ -4,18 +4,6 @@
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
                http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
-    <flow name="ProcessorChainViaProcessorRef">
-        <append-string-transformer message="1"/>
-        <processor ref="chain"/>
-        <append-string-transformer message="2"/>
-    </flow>
-
-    <flow name="ProcessorChainViaFlowRef">
-        <append-string-transformer message="1"/>
-        <flow-ref name="chain"/>
-        <append-string-transformer message="2"/>
-    </flow>
-
     <flow name="SubFlowViaProcessorRef">
         <append-string-transformer message="1"/>
         <processor ref="sub-flow"/>
@@ -44,9 +32,9 @@
         <flow-ref name="subFlowWithComponent"/>
     </flow>
 
-    <processor-chain name="subFlowWithComponent">
+    <sub-flow name="subFlowWithComponent">
         <logger/>
-    </processor-chain>
+    </sub-flow>
 
     <flow name="flowWithSameSubFlowTwice">
         <flow-ref name="sub-flow"/>
@@ -70,21 +58,21 @@
 
     <!-- Child flows/sub-flows -->
 
-    <processor-chain name="chain">
+    <sub-flow name="chain">
         <custom-processor class="org.mule.tck.core.lifecycle.LifecycleTrackerProcessor"/>
         <append-string-transformer message="x"/>
         <append-string-transformer message="y"/>
         <append-string-transformer message="z"/>
         <logger/>
-    </processor-chain>
+    </sub-flow>
 
-    <processor-chain name="chain-singleton">
+    <sub-flow name="chain-singleton">
         <custom-processor class="org.mule.tck.core.lifecycle.LifecycleTrackerProcessor"/>
         <append-string-transformer message="x"/>
         <append-string-transformer message="y"/>
         <append-string-transformer message="z"/>
         <custom-processor class="org.mule.tck.core.lifecycle.LifecycleTrackerCheckProcessor"/>
-    </processor-chain>
+    </sub-flow>
 
     <sub-flow name="sub-flow">
         <custom-processor class="org.mule.tck.core.lifecycle.LifecycleTrackerProcessor"/>
