@@ -12,8 +12,7 @@ import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Test;
 
-public class ParseTemplateTestCase extends AbstractIntegrationTestCase
-{
+public class ParseTemplateTestCase extends AbstractIntegrationTestCase {
 
   private static final String PARSED_NO_EXPRESSION = "This template does not have any expressions to parse";
   private static final String PARSED_MEL_EXPRESSION = "This template has a MEL expression to parse from mel-expression flow";
@@ -21,32 +20,30 @@ public class ParseTemplateTestCase extends AbstractIntegrationTestCase
 
   @Override
   public String getConfigFile() {
-    return  "org/mule/transformers/parse-template-config.xml";
+    return "org/mule/transformers/parse-template-config.xml";
   }
 
 
   @Test
-  public void testNoExpression() throws Exception{
+  public void testNoExpression() throws Exception {
     Event event = flowRunner("no-expression").run();
-    String msg = (String)event.getMessage().getPayload().getValue();
-    assertEquals(msg,PARSED_NO_EXPRESSION);
+    String msg = (String) event.getMessage().getPayload().getValue();
+    assertEquals(msg, PARSED_NO_EXPRESSION);
   }
 
   @Test
-  public void testMELExpression() throws Exception{
-    Event event = flowRunner("mel-expression").withVariable("flowName","mel-expression").run();
-    String msg = (String)event.getMessage().getPayload().getValue();
-    assertEquals(msg,PARSED_MEL_EXPRESSION);
+  public void testMELExpression() throws Exception {
+    Event event = flowRunner("mel-expression").withVariable("flowName", "mel-expression").run();
+    String msg = (String) event.getMessage().getPayload().getValue();
+    assertEquals(msg, PARSED_MEL_EXPRESSION);
   }
 
   @Test
-  public void testDWExpression() throws Exception{
-    Event event = flowRunner("dw-expression").withVariable("flowName","dw-expression").run();
-    String msg = (String)event.getMessage().getPayload().getValue();
-    assertEquals(msg,PARSED_DW_EXPRESSION);
+  public void testDWExpression() throws Exception {
+    Event event = flowRunner("dw-expression").withVariable("flowName", "dw-expression").run();
+    String msg = (String) event.getMessage().getPayload().getValue();
+    assertEquals(msg, PARSED_DW_EXPRESSION);
   }
-
-
 
 
 
