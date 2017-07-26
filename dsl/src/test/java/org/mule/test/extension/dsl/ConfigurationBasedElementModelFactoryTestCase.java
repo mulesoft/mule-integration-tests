@@ -392,7 +392,7 @@ public class ConfigurationBasedElementModelFactoryTestCase extends AbstractEleme
   private void assertInsertOperationWithMaps(ComponentConfiguration dbInsert) {
     DslElementModel<OperationModel> dbElement = resolve(dbInsert);
 
-    assertThat(dbElement.getContainedElements().size(), is(7));
+    assertThat(dbElement.getContainedElements().size(), is(8));
 
     ComponentConfiguration sql = dbInsert.getNestedComponents().get(0);
     DslElementModel<ParameterModel> sqlElement = getChild(dbElement, sql);
@@ -421,7 +421,7 @@ public class ConfigurationBasedElementModelFactoryTestCase extends AbstractEleme
   protected void assertBulkInsertOperationWithNestedList(ComponentConfiguration dbInsert) {
     DslElementModel<OperationModel> bulkInsertElement = resolve(dbInsert);
 
-    assertThat(bulkInsertElement.getContainedElements().size(), is(6));
+    assertThat(bulkInsertElement.getContainedElements().size(), is(7));
 
     assertValue(bulkInsertElement.findElement("bulkInputParameters").get(), "#[payload]");
 
