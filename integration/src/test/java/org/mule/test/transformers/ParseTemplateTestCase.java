@@ -16,7 +16,8 @@ public class ParseTemplateTestCase extends AbstractIntegrationTestCase {
 
   private static final String PARSED_NO_EXPRESSION = "This template does not have any expressions to parse";
   private static final String PARSED_MEL_EXPRESSION = "This template has a MEL expression to parse from mel-expression flow";
-  private static final String PARSED_DW_EXPRESSION = "This template has a DW expression to parse from dw-expression flow";
+  private static final String PARSED_DW_EXPRESSION =
+      "This template has a DW expression to parse from dw-expression flow. Remember, the name of the flow is dw-expression";
 
   @Override
   public String getConfigFile() {
