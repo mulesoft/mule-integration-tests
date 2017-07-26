@@ -13,12 +13,12 @@
 
     <spring:config name="springConfig" files="org/mule/test/construct/flow-beans.xml"/>
 
-    <processor-chain name="composite1">
+    <sub-flow name="composite1">
         <description>Composite thats appands 'ayz'</description>
         <append-string-transformer message="x" />
         <append-string-transformer message="y" />
         <append-string-transformer message="z" />
-    </processor-chain>
+    </sub-flow>
 
     <flow name="flow">
         <append-string-transformer message="1" />

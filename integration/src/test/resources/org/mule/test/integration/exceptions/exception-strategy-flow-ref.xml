@@ -10,10 +10,8 @@
         <flow-ref name="blockWithOwnExceptionStrategy"/>
         <error-handler>
             <on-error-propagate>
-                <processor-chain>
-                    <test:assert expression="#[vars.flowRefEs == 'yes']" />
-                    <test:queue name="dlq"/>
-                </processor-chain>
+                <test:assert expression="#[vars.flowRefEs == 'yes']" />
+                <test:queue name="dlq"/>
             </on-error-propagate>
         </error-handler>
     </flow>

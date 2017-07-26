@@ -13,9 +13,7 @@
         <test:processor throwException="true"/>
         <error-handler>
             <on-error-propagate>
-                <processor-chain>
-                    <test:assert expression="#[false]"/>
-                </processor-chain>
+                <test:assert expression="#[false]"/>
             </on-error-propagate>
         </error-handler>
     </flow>
