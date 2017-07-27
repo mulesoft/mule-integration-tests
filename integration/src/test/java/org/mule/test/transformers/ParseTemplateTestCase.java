@@ -89,7 +89,7 @@ public class ParseTemplateTestCase extends AbstractIntegrationTestCase {
     Event event = flowRunner("with-different-encoding").run();
     ByteBuffer result = (ByteBuffer) event.getMessage().getPayload().getValue();
     try {
-      Charset.forName("US-ASCII").newDecoder().onMalformedInput(CodingErrorAction.REPORT).decode(result).toString();
+      Charset.forName("US-ASCII").newDecoder().onMalformedInput(CodingErrorAction.REPORT).decode(result);
       fail();
     }catch (Exception e) {
       e.printStackTrace();
