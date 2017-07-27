@@ -13,8 +13,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.http.api.HttpConstants.Method.POST;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.core.api.util.IOUtils;
-import org.mule.runtime.core.transformer.simple.ByteArrayToSerializable;
 import org.mule.runtime.http.api.HttpService;
 import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;
 import org.mule.runtime.http.api.domain.message.request.HttpRequest;
@@ -51,10 +49,7 @@ public class HttpTransformTestCase extends AbstractIntegrationTestCase {
         .method(POST).build();
     HttpResponse httpResponse = httpClient.send(httpRequest, RECEIVE_TIMEOUT, false, null);
 
-    ByteArrayToSerializable transformer = new ByteArrayToSerializable();
-    transformer.setMuleContext(muleContext);
-    byte[] byteArray = IOUtils.toByteArray(httpResponse.getEntity().getContent());
-    Object result = transformer.transform(byteArray);
+    Object result = muleContext.getObjectSerializer().getExternalProtocol().deserialize(httpResponse.getEntity().getContent());
     assertThat(result, is(payload));
   }
 
