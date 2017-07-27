@@ -6,42 +6,46 @@
 
     <flow name="no-expression">
         <parse-template>
-            <content>
-                ${file::org/mule/transformers/no-expression.ptem}
-            </content>
+            <content>${file::org/mule/transformers/no-expression.ptem}</content>
         </parse-template>
     </flow>
 
     <flow name="mel-expression">
         <parse-template>
-            <content>
-                ${file::org/mule/transformers/mel-expression.ptem}
-            </content>
+            <content>${file::org/mule/transformers/mel-expression.ptem}</content>
         </parse-template>
     </flow>
 
     <flow name="dw-expression">
         <parse-template>
-            <content>
-                ${file::org/mule/transformers/dw-expression.ptem}
-            </content>
+            <content>${file::org/mule/transformers/dw-expression.ptem}</content>
         </parse-template>
     </flow>
 
-    <flow name="no-expression">
+    <flow name="no-expression-inline">
         <parse-template>
-            <content>
-                ${file::org/mule/transformers/no-expression.ptem}
-            </content>
+            <content>This template does not have any expressions to parse</content>
+        </parse-template>
+    </flow>
+
+    <flow name="mel-expression-inline">
+        <parse-template>
+            <content>This template has a MEL expression to parse from #[mel:flowVars.flowName] flow</content>
+        </parse-template>
+    </flow>
+
+    <flow name="dw-expression-inline">
+        <parse-template>
+            <content>#['This template has a DW expression to parse from ' ++ vars.flowName ++ ' flow. Remember, the name of the flow is $(vars.flowName)']</content>
         </parse-template>
     </flow>
 
     <flow name="with-target">
-        <parse-template>
-            <content>
-                ${file::org/mule/transformers/dw-expression.ptem}
-            </content>
+        <parse-template target="targetVar">
+            <content>#['This template has a DW expression to parse from ' ++ vars.flowName ++ ' flow. Remember, the name of the flow is $(vars.flowName)']</content>
         </parse-template>
     </flow>
+
+
 
 </mule>
