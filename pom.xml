@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.mule.runtime</groupId>
     <artifactId>mule</artifactId>
-    <version>4.0.0-BETA.x-SNAPSHOT</version>
+    <version>4.0.0-FD.1</version>
   </parent>
   <groupId>org.mule.tests</groupId>
   <artifactId>mule-extensions-integration-tests</artifactId>
@@ -24,24 +24,24 @@
   </modules>
 
     <properties>
-      <muleSchedulerServiceTestVersion>1.0.0-BETA.x-SNAPSHOT</muleSchedulerServiceTestVersion>
-      <muleHttpServiceTestVersion>1.0.0-BETA.x-SNAPSHOT</muleHttpServiceTestVersion>
-      <muleOAuthServiceTestVersion>1.0.0-BETA.x-SNAPSHOT</muleOAuthServiceTestVersion>
-      <muleSoapServiceTestVersion>1.0.0-BETA.x-SNAPSHOT</muleSoapServiceTestVersion>
-      <muleExtensionTestSoapTestVersion>1.0.0-BETA.x-SNAPSHOT</muleExtensionTestSoapTestVersion>
+      <muleSchedulerServiceTestVersion>1.0.0-FD.1</muleSchedulerServiceTestVersion>
+      <muleHttpServiceTestVersion>1.0.0-FD.1</muleHttpServiceTestVersion>
+      <muleOAuthServiceTestVersion>1.0.0-FD.1</muleOAuthServiceTestVersion>
+      <muleSoapServiceTestVersion>1.0.0-FD.1</muleSoapServiceTestVersion>
+      <muleExtensionTestSoapTestVersion>1.0.0-FD.1</muleExtensionTestSoapTestVersion>
 
-      <muleValidationModuleTestVersion>0.8.2-SNAPSHOT</muleValidationModuleTestVersion>
-      <muleScriptingModuleVersion>0.8.2-SNAPSHOT</muleScriptingModuleVersion>
-      <muleFileCommonsTestVersion>0.8.2-SNAPSHOT</muleFileCommonsTestVersion>
+      <muleValidationModuleTestVersion>0.8.1</muleValidationModuleTestVersion>
+      <muleScriptingModuleVersion>0.8.1</muleScriptingModuleVersion>
+      <muleFileCommonsTestVersion>0.8.1</muleFileCommonsTestVersion>
 
-      <muleHttpConnectorTestVersion>0.8.2-SNAPSHOT</muleHttpConnectorTestVersion>
-      <muleDbConnectorTestVersion>0.8.2-SNAPSHOT</muleDbConnectorTestVersion>
-      <muleFtpConnectorTestVersion>0.8.2-SNAPSHOT</muleFtpConnectorTestVersion>
-      <muleFileConnectorTestVersion>0.8.2-SNAPSHOT</muleFileConnectorTestVersion>
-      <muleJmsConnectorTestVersion>0.8.2-SNAPSHOT</muleJmsConnectorTestVersion>
-      <muleWscConnectorTestVersion>0.8.2-SNAPSHOT</muleWscConnectorTestVersion>
-      <muleOauthModuleTestVersion>0.8.2-SNAPSHOT</muleOauthModuleTestVersion>
-      <muleSocketsConnectorTestVersion>0.8.2-SNAPSHOT</muleSocketsConnectorTestVersion>
+      <muleHttpConnectorTestVersion>0.8.1</muleHttpConnectorTestVersion>
+      <muleDbConnectorTestVersion>0.8.1</muleDbConnectorTestVersion>
+      <muleFtpConnectorTestVersion>0.8.1</muleFtpConnectorTestVersion>
+      <muleFileConnectorTestVersion>0.8.1</muleFileConnectorTestVersion>
+      <muleJmsConnectorTestVersion>0.8.1</muleJmsConnectorTestVersion>
+      <muleWscConnectorTestVersion>0.8.1</muleWscConnectorTestVersion>
+      <muleOauthModuleTestVersion>0.8.1</muleOauthModuleTestVersion>
+      <muleSocketsConnectorTestVersion>0.8.1</muleSocketsConnectorTestVersion>
     </properties>
 
   <build>
