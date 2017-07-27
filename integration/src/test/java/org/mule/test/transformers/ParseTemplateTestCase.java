@@ -7,11 +7,17 @@
 package org.mule.test.transformers;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.Event;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.CodingErrorAction;
+
 import org.junit.Test;
+
 
 public class ParseTemplateTestCase extends AbstractIntegrationTestCase {
 
@@ -72,13 +78,23 @@ public class ParseTemplateTestCase extends AbstractIntegrationTestCase {
   public void testWithTargetDefinedInline() throws Exception {
     String startingPayload = "Starting payload";
     Event event = flowRunner("with-target").withPayload(startingPayload).withVariable("flowName", "dw-expression").run();
-    String msg = (String)((Message) event.getVariable("targetVar").getValue()).getPayload().getValue();
+    String msg = (String) ((Message) event.getVariable("targetVar").getValue()).getPayload().getValue();
     String processedPayload = (String) event.getMessage().getPayload().getValue();
     assertEquals(PARSED_DW_EXPRESSION, msg);
     assertEquals(processedPayload, startingPayload);
-
   }
 
-
+  @Test
+  public void testWithDifferentEncoding() throws Exception {
+    Event event = flowRunner("with-different-encoding").run();
+    ByteBuffer result = (ByteBuffer) event.getMessage().getPayload().getValue();
+    try {
+      Charset.forName("US-ASCII").newDecoder().onMalformedInput(CodingErrorAction.REPORT).decode(result).toString();
+      fail();
+    }catch (Exception e) {
+      e.printStackTrace();
+      Charset.forName("UTF-8").decode(result);
+    }
+  }
 
 }
