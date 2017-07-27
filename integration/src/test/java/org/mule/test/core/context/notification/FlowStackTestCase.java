@@ -277,7 +277,7 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
 
     assertStackElements(stackToAssert, isFlowStackElement("flow", "flow/processors/0"),
                         isFlowStackElement("flowStaticWithScatterGather",
-                                           "flowStaticWithScatterGather/processors/0/route/1/processors/0"));
+                                           "flowStaticWithScatterGather/processors/0/route/1/processors/0/processors/0"));
   }
 
   @Test
@@ -289,7 +289,7 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
     assertStackElements(stackToAssert,
                         isFlowStackElement("subFlow", "subFlow/processors/0"),
                         isFlowStackElement("subFlowStaticWithScatterGather",
-                                           "subFlowStaticWithScatterGather/processors/0/route/1/processors/0"));
+                                           "subFlowStaticWithScatterGather/processors/0/route/1/processors/0/processors/0"));
   }
 
   @Test
@@ -300,7 +300,7 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
 
     assertStackElements(stackToAssert, isFlowStackElement("flow", "flow/processors/0"),
                         isFlowStackElement("flowDynamicWithScatterGather",
-                                           "flowDynamicWithScatterGather/processors/0/route/1/processors/0"));
+                                           "flowDynamicWithScatterGather/processors/0/route/1/processors/0/processors/0"));
   }
 
   @Test
@@ -313,7 +313,7 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
                         isFlowStackElement("subFlow",
                                            "subFlow/processors/0"),
                         isFlowStackElement("subFlowDynamicWithScatterGather",
-                                           "subFlowDynamicWithScatterGather/processors/0/route/1/processors/0"));
+                                           "subFlowDynamicWithScatterGather/processors/0/route/1/processors/0/processors/0"));
   }
 
   @Test

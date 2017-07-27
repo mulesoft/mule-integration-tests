@@ -9,11 +9,21 @@
 
     <flow name="test-router">
         <round-robin>
-            <test:queue name="output0"/>
-            <test:queue name="output1"/>
-            <test:queue name="output2"/>
-            <test:queue name="output3"/>
-            <test:queue name="output4"/>
+            <route>
+                <test:queue name="output0"/>
+            </route>
+            <route>
+                <test:queue name="output1"/>
+            </route>
+            <route>
+                <test:queue name="output2"/>
+            </route>
+            <route>
+                <test:queue name="output3"/>
+            </route>
+            <route>
+                <test:queue name="output4"/>
+            </route>
         </round-robin>
     </flow>
 

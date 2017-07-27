@@ -26,8 +26,12 @@
     <munit:before-test name="beforeTest" description="before test">
         <try>
             <scatter-gather>
-                <logger/>
-                <logger/>
+                <route>
+                    <logger/>
+                </route>
+                <route>
+                    <logger/>
+                </route>
             </scatter-gather>
         </try>
     </munit:before-test>
@@ -40,9 +44,11 @@
         <munit:behavior>
             <try>
                 <first-successful>
-                    <until-successful>
-                        <logger/>
-                    </until-successful>
+                    <route>
+                        <until-successful>
+                            <logger/>
+                        </until-successful>
+                    </route>
                 </first-successful>
                 <error-handler>
                    <on-error-continue/>

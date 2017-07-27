@@ -164,29 +164,45 @@
     
     <flow name="flowStaticWithScatterGather">
         <scatter-gather>
-            <test:processor/>
-            <flow-ref name="flow"/>
+            <route>
+                <test:processor/>
+            </route>
+            <route>
+                <flow-ref name="flow"/>
+            </route>
         </scatter-gather>
     </flow>
 
     <flow name="subFlowStaticWithScatterGather">
         <scatter-gather>
-            <test:processor/>
-            <flow-ref name="subFlow"/>
+            <route>
+                <test:processor/>
+            </route>
+            <route>
+                <flow-ref name="subFlow"/>
+            </route>
         </scatter-gather>
     </flow>
 
     <flow name="flowDynamicWithScatterGather">
         <scatter-gather>
-            <test:processor/>
-            <flow-ref name="#[mel:'flow']"/>
+            <route>
+                <test:processor/>
+            </route>
+            <route>
+                <flow-ref name="#[mel:'flow']"/>
+            </route>
         </scatter-gather>
     </flow>
 
     <flow name="subFlowDynamicWithScatterGather">
         <scatter-gather>
-            <test:processor/>
-            <flow-ref name="#[mel:'subFlow']"/>
+            <route>
+                <test:processor/>
+            </route>
+            <route>
+                <flow-ref name="#[mel:'subFlow']"/>
+            </route>
         </scatter-gather>
     </flow>
     
@@ -194,37 +210,45 @@
     
     <flow name="flowStaticWithScatterGatherChain">
         <scatter-gather>
-            <test:processor/>
-            <processor-chain>
+            <route>
+                <flow-ref name="#[mel:'subFlow']"/>
+            </route>
+            <route>
                 <flow-ref name="flow"/>
-            </processor-chain>
+            </route>
         </scatter-gather>
     </flow>
 
     <flow name="subFlowStaticWithScatterGatherChain">
         <scatter-gather>
-            <test:processor/>
-            <processor-chain>
+            <route>
+                <test:processor/>
+            </route>
+            <route>
                 <flow-ref name="subFlow"/>
-            </processor-chain>
+            </route>
         </scatter-gather>
     </flow>
 
     <flow name="flowDynamicWithScatterGatherChain">
         <scatter-gather>
-            <test:processor/>
-            <processor-chain>
+            <route>
+                <test:processor/>
+            </route>
+            <route>
                 <flow-ref name="#[mel:'flow']"/>
-            </processor-chain>
+            </route>
         </scatter-gather>
     </flow>
 
     <flow name="subFlowDynamicWithScatterGatherChain">
         <scatter-gather>
-            <test:processor/>
-            <processor-chain>
+            <route>
+                <test:processor/>
+            </route>
+            <route>
                 <flow-ref name="#[mel:'subFlow']"/>
-            </processor-chain>
+            </route>
         </scatter-gather>
     </flow>
 

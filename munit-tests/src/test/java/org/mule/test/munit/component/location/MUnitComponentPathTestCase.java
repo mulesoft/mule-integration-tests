@@ -64,10 +64,12 @@ public class MUnitComponentPathTestCase extends MuleArtifactFunctionalTestCase {
     assertThat(componentLocator.find(builderFromStringRepresentation("beforeTest/processors/0/processors/0").build()).get(),
                notNullValue());
     assertThat(componentLocator
-        .find(builderFromStringRepresentation("beforeTest/processors/0/processors/0/route/0/processors/0").build()).get(),
+        .find(builderFromStringRepresentation("beforeTest/processors/0/processors/0/route/0/processors/0/processors/0").build())
+        .get(),
                notNullValue());
     assertThat(componentLocator
-        .find(builderFromStringRepresentation("beforeTest/processors/0/processors/0/route/1/processors/0").build()).get(),
+        .find(builderFromStringRepresentation("beforeTest/processors/0/processors/0/route/1/processors/0/processors/0").build())
+        .get(),
                notNullValue());
   }
 
@@ -90,10 +92,10 @@ public class MUnitComponentPathTestCase extends MuleArtifactFunctionalTestCase {
     assertThat(componentLocator.find(builderFromStringRepresentation("test/route/0/processors/0/processors/0").build()).get(),
                notNullValue());
     assertThat(componentLocator
-        .find(builderFromStringRepresentation("test/route/0/processors/0/processors/0/route/0/processors/0").build())
+        .find(builderFromStringRepresentation("test/route/0/processors/0/processors/0/route/0/processors/0/processors/0").build())
         .get(), notNullValue());
     assertThat(componentLocator
-        .find(builderFromStringRepresentation("test/route/0/processors/0/processors/0/route/0/processors/0/route/0/processors/0")
+        .find(builderFromStringRepresentation("test/route/0/processors/0/processors/0/route/0/processors/0/processors/0/route/0/processors/0/")
             .build())
         .get(),
                notNullValue());

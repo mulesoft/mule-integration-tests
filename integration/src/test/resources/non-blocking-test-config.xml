@@ -286,4 +286,5 @@
         <test:assert expression="#[mel:assertPayload()]"/>
     </flow>
 
+
 </mule>

@@ -20,14 +20,20 @@
             <logger/>
         </until-successful>
         <first-successful>
-            <logger/>
+            <route>
+                <logger/>
+            </route>
         </first-successful>
         <foreach>
             <logger/>
         </foreach>
         <scatter-gather>
-            <logger/>
-            <logger/>
+            <route>
+                <logger/>
+            </route>
+            <route>
+                <logger/>
+            </route>
         </scatter-gather>
         <splitter/>
         <resequencer/>
@@ -37,7 +43,9 @@
             </when>
         </choice>
         <round-robin>
-            <logger/>
+            <route>
+                <logger/>
+            </route>
         </round-robin>
         <enricher>
             <logger/>

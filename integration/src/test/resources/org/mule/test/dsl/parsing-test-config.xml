@@ -19,9 +19,15 @@
         <set-payload value="someValue"/>
         <set-payload value="someValue"/>
         <scatter-gather>
-            <set-payload value="someValue"/>
-            <set-payload value="someValue"/>
-            <set-payload value="someValue"/>
+            <route>
+                <set-payload value="someValue"/>
+            </route>
+            <route>
+                <set-payload value="someValue"/>
+            </route>
+            <route>
+                <set-payload value="someValue"/>
+            </route>
         </scatter-gather>
         <set-payload value="someValue"/>
     </flow>
