@@ -46,6 +46,11 @@ public class ParseTemplateTestCase extends AbstractIntegrationTestCase {
     assertEquals(msg, PARSED_DW_EXPRESSION);
   }
 
+  @Test
+  public void testWithTargetDefined() throws Exception {
+    flowRunner("with-target").run();
+  }
+
 
 
 }

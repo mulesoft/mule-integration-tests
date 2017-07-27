@@ -5,16 +5,43 @@
 
 
     <flow name="no-expression">
-        <parse-template location="org/mule/transformers/no-expression.ptem"/>
+        <parse-template>
+            <content>
+                ${file::org/mule/transformers/no-expression.ptem}
+            </content>
+        </parse-template>
     </flow>
 
     <flow name="mel-expression">
-        <parse-template location="org/mule/transformers/mel-expression.ptem"/>
+        <parse-template>
+            <content>
+                ${file::org/mule/transformers/mel-expression.ptem}
+            </content>
+        </parse-template>
     </flow>
 
     <flow name="dw-expression">
-        <parse-template location="org/mule/transformers/dw-expression.ptem"/>
+        <parse-template>
+            <content>
+                ${file::org/mule/transformers/dw-expression.ptem}
+            </content>
+        </parse-template>
     </flow>
 
+    <flow name="no-expression">
+        <parse-template>
+            <content>
+                ${file::org/mule/transformers/no-expression.ptem}
+            </content>
+        </parse-template>
+    </flow>
+
+    <flow name="with-target">
+        <parse-template>
+            <content>
+                ${file::org/mule/transformers/dw-expression.ptem}
+            </content>
+        </parse-template>
+    </flow>
 
 </mule>
