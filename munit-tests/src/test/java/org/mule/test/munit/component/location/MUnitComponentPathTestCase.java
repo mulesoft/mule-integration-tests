@@ -15,6 +15,7 @@ import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocator
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.api.component.location.ConfigurationComponentLocator;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.inject.Inject;
@@ -55,6 +56,7 @@ public class MUnitComponentPathTestCase extends MuleArtifactFunctionalTestCase {
                notNullValue());
   }
 
+  @Ignore("MULE-13213")
   @Test
   public void beforeTestComponentLocations() throws Exception {
     assertThat(componentLocator.find(builderFromStringRepresentation("beforeTest").build()).get(),
@@ -64,12 +66,10 @@ public class MUnitComponentPathTestCase extends MuleArtifactFunctionalTestCase {
     assertThat(componentLocator.find(builderFromStringRepresentation("beforeTest/processors/0/processors/0").build()).get(),
                notNullValue());
     assertThat(componentLocator
-        .find(builderFromStringRepresentation("beforeTest/processors/0/processors/0/route/0/processors/0/processors/0").build())
-        .get(),
+        .find(builderFromStringRepresentation("beforeTest/processors/0/processors/0/route/0/processors/0").build()).get(),
                notNullValue());
     assertThat(componentLocator
-        .find(builderFromStringRepresentation("beforeTest/processors/0/processors/0/route/1/processors/0/processors/0").build())
-        .get(),
+        .find(builderFromStringRepresentation("beforeTest/processors/0/processors/0/route/1/processors/0").build()).get(),
                notNullValue());
   }
 
@@ -81,6 +81,7 @@ public class MUnitComponentPathTestCase extends MuleArtifactFunctionalTestCase {
                notNullValue());
   }
 
+  @Ignore("MULE-13213")
   @Test
   public void testComponentLocations() throws Exception {
     assertThat(componentLocator.find(builderFromStringRepresentation("test").build()).get(),
@@ -92,10 +93,10 @@ public class MUnitComponentPathTestCase extends MuleArtifactFunctionalTestCase {
     assertThat(componentLocator.find(builderFromStringRepresentation("test/route/0/processors/0/processors/0").build()).get(),
                notNullValue());
     assertThat(componentLocator
-        .find(builderFromStringRepresentation("test/route/0/processors/0/processors/0/route/0/processors/0/processors/0").build())
+        .find(builderFromStringRepresentation("test/route/0/processors/0/processors/0/route/0/processors/0").build())
         .get(), notNullValue());
     assertThat(componentLocator
-        .find(builderFromStringRepresentation("test/route/0/processors/0/processors/0/route/0/processors/0/processors/0/route/0/processors/0/")
+        .find(builderFromStringRepresentation("test/route/0/processors/0/processors/0/route/0/processors/0/route/0/processors/0")
             .build())
         .get(),
                notNullValue());
