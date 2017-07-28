@@ -123,7 +123,7 @@ public class DeclarationBasedElementModelFactoryTestCase extends AbstractElement
             .getDeclaration())
         .getDeclaration();
 
-    requestConfig = http.newConfiguration("request-config")
+    requestConfig = http.newConfiguration("requestConfig")
         .withRefName("httpRequester")
         .withConnection(requestConnection)
         .getDeclaration();
