@@ -22,6 +22,18 @@
         </parse-template>
     </flow>
 
+    <flow name="no-expression-from-location">
+        <parse-template location="org/mule/transformers/no-expression.ptem"/>
+    </flow>
+
+    <flow name="mel-expression-from-location">
+        <parse-template location="org/mule/transformers/mel-expression.ptem"/>
+    </flow>
+
+    <flow name="dw-expression-from-location">
+        <parse-template location="org/mule/transformers/dw-expression.ptem"/>
+    </flow>
+
     <flow name="no-expression-inline">
         <parse-template>
             <content>This template does not have any expressions to parse</content>

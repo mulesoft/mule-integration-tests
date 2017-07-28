@@ -75,6 +75,27 @@ public class ParseTemplateTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
+  public void testNoExpressionFromLocation() throws Exception {
+    Event event = flowRunner("no-expression-from-location").run();
+    String msg = (String) event.getMessage().getPayload().getValue();
+    assertEquals(PARSED_NO_EXPRESSION, msg);
+  }
+
+  @Test
+  public void testMELExpressionFromLocation() throws Exception {
+    Event event = flowRunner("mel-expression-from-location").withVariable("flowName", "mel-expression").run();
+    String msg = (String) event.getMessage().getPayload().getValue();
+    assertEquals(PARSED_MEL_EXPRESSION, msg);
+  }
+
+  @Test
+  public void testDWExpressionFromLocation() throws Exception {
+    Event event = flowRunner("dw-expression-from-location").withVariable("flowName", "dw-expression").run();
+    String msg = (String) event.getMessage().getPayload().getValue();
+    assertEquals(PARSED_DW_EXPRESSION, msg);
+  }
+
+  @Test
   public void testWithTargetDefinedInline() throws Exception {
     String startingPayload = "Starting payload";
     Event event = flowRunner("with-target").withPayload(startingPayload).withVariable("flowName", "dw-expression").run();
@@ -91,8 +112,7 @@ public class ParseTemplateTestCase extends AbstractIntegrationTestCase {
     try {
       Charset.forName("US-ASCII").newDecoder().onMalformedInput(CodingErrorAction.REPORT).decode(result);
       fail();
-    }catch (Exception e) {
-      e.printStackTrace();
+    } catch (Exception e) {
       Charset.forName("UTF-8").decode(result);
     }
   }
