@@ -105,16 +105,4 @@ public class ParseTemplateTestCase extends AbstractIntegrationTestCase {
     assertEquals(processedPayload, startingPayload);
   }
 
-  @Test
-  public void testWithDifferentEncoding() throws Exception {
-    Event event = flowRunner("with-different-encoding").run();
-    ByteBuffer result = (ByteBuffer) event.getMessage().getPayload().getValue();
-    try {
-      Charset.forName("US-ASCII").newDecoder().onMalformedInput(CodingErrorAction.REPORT).decode(result);
-      fail();
-    } catch (Exception e) {
-      Charset.forName("UTF-8").decode(result);
-    }
-  }
-
 }

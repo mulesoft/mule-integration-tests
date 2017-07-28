@@ -58,11 +58,4 @@
         </parse-template>
     </flow>
 
-    <flow name="with-different-encoding">
-        <parse-template encoding="UTF-8">
-            <content>Thís is ä teñplate</content>
-        </parse-template>
-    </flow>
-
-
 </mule>
