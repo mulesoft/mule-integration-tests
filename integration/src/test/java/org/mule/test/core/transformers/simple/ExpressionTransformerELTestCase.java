@@ -12,9 +12,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import org.mule.functional.junit4.TestLegacyMessageBuilder;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.core.expression.transformers.BeanBuilderTransformer;
-import org.mule.runtime.core.expression.transformers.ExpressionArgument;
-import org.mule.runtime.core.expression.transformers.ExpressionTransformer;
+import org.mule.runtime.core.api.transformer.Transformer;
 import org.mule.tck.testmodels.fruit.Apple;
 import org.mule.tck.testmodels.fruit.Banana;
 import org.mule.tck.testmodels.fruit.FruitBasket;
@@ -35,53 +33,13 @@ public class ExpressionTransformerELTestCase extends AbstractIntegrationTestCase
     return "org/mule/test/transformers/expression-transformers-el-test.xml";
   }
 
-  private void testTransformerConfig(String name) throws Exception {
-    ExpressionTransformer transformer = (ExpressionTransformer) muleContext.getRegistry().lookupTransformer(name);
-    assertNotNull(transformer);
-    assertNotNull(transformer.getArguments());
-    assertEquals(2, transformer.getArguments().size());
-    ExpressionArgument arg1 = transformer.getArguments().get(0);
-    assertEquals("mel:message.payloadAs(org.mule.tck.testmodels.fruit.FruitBasket)", arg1.getExpression());
-    assertFalse(arg1.isOptional());
-
-    ExpressionArgument arg2 = transformer.getArguments().get(1);
-    assertEquals("mel:['foo' : message.outboundProperties.foo, 'bar' : message.outboundProperties.bar]", arg2.getExpression());
-    assertTrue(arg2.isOptional());
-  }
-
-  @Test
-  public void testTransformerConfig() throws Exception {
-    testTransformerConfig("testTransformer");
-  }
-
-  @Test
-  public void testBeanBuilderTransformerConfig() throws Exception {
-    testBeanBuilderTransformerConfig("testTransformer3");
-  }
-
-  private void testBeanBuilderTransformerConfig(String name) throws Exception {
-    BeanBuilderTransformer transformer = (BeanBuilderTransformer) muleContext.getRegistry().lookupTransformer(name);
-    assertNotNull(transformer);
-    assertNotNull(transformer.getArguments());
-    assertEquals(3, transformer.getArguments().size());
-    ExpressionArgument arg1 = transformer.getArguments().get(0);
-    assertEquals("brand", arg1.getName());
-    assertEquals("payload", arg1.getExpression());
-    assertFalse(arg1.isOptional());
-
-    ExpressionArgument arg2 = transformer.getArguments().get(1);
-    assertEquals("segments", arg2.getName());
-    assertEquals("mel:message.outboundProperties['SEGMENTS']", arg2.getExpression());
-    assertTrue(arg2.isOptional());
-  }
-
   @Test
   public void testExecutionWithCorrectMessage() throws Exception {
     testExecutionWithCorrectMessage("testTransformer");
   }
 
   private void testExecutionWithCorrectMessage(String name) throws Exception {
-    ExpressionTransformer transformer = (ExpressionTransformer) muleContext.getRegistry().lookupTransformer(name);
+    Transformer transformer = muleContext.getRegistry().lookupTransformer(name);
     Map<String, Serializable> props = new HashMap<>();
     props.put("foo", "moo");
     props.put("bar", "mar");
@@ -105,7 +63,7 @@ public class ExpressionTransformerELTestCase extends AbstractIntegrationTestCase
 
   @Test
   public void testExecutionWithPartialMissingOptionalParams() throws Exception {
-    ExpressionTransformer transformer = (ExpressionTransformer) muleContext.getRegistry().lookupTransformer("testTransformer");
+    Transformer transformer = muleContext.getRegistry().lookupTransformer("testTransformer");
     Map<String, Serializable> props = new HashMap<>();
     props.put("foo", "moo");
 
@@ -127,7 +85,7 @@ public class ExpressionTransformerELTestCase extends AbstractIntegrationTestCase
 
   @Test
   public void testTransformerConfigWithSingleArgument() throws Exception {
-    ExpressionTransformer transformer = (ExpressionTransformer) muleContext.getRegistry().lookupTransformer("testTransformer2");
+    Transformer transformer = muleContext.getRegistry().lookupTransformer("testTransformer2");
     Map<String, Serializable> props = new HashMap<>();
     props.put("foo", "moo");
     props.put("bar", "mar");
@@ -150,7 +108,7 @@ public class ExpressionTransformerELTestCase extends AbstractIntegrationTestCase
   }
 
   private void testTransformerConfigWithSingleArgumentShortcutConfig(String name) throws Exception {
-    ExpressionTransformer transformer = (ExpressionTransformer) muleContext.getRegistry().lookupTransformer(name);
+    Transformer transformer = muleContext.getRegistry().lookupTransformer(name);
     Map<String, Serializable> props = new HashMap<>();
     props.put("foo", "moo");
     props.put("bar", "mar");

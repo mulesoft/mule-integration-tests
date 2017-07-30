@@ -13,7 +13,7 @@ import io.qameta.allure.Issue;
 import org.mule.functional.junit4.FlowRunner;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.Event;
-import org.mule.runtime.core.transformer.AbstractMessageTransformer;
+import org.mule.runtime.core.api.transformer.AbstractMessageTransformer;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
 

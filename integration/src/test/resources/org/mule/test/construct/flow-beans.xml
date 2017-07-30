@@ -4,11 +4,11 @@
 
     <bean name="pojo" class="org.mule.test.construct.FlowConfigurationFunctionalTestCase$Pojo"/>
 
-    <bean name="appender" class="org.mule.runtime.core.transformer.simple.StringAppendTransformer">
+    <bean name="appender" class="org.mule.test.construct.StringAppendTransformer">
         <constructor-arg value="recieved"/>
     </bean>
 
-    <bean name="test-array-appender" class="org.mule.test.construct.TestStringAppendTransformer">
+    <bean name="test-array-appender" class="org.mule.test.construct.StringAppendTransformer">
         <constructor-arg value="recieved"/>
     </bean>
 
