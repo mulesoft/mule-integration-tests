@@ -12,8 +12,9 @@ import static org.junit.Assert.assertThat;
 import static org.mule.runtime.http.api.HttpConstants.Method.GET;
 
 import io.qameta.allure.Issue;
+
+import org.mule.functional.api.flow.FlowRunner;
 import org.mule.functional.junit4.DomainFunctionalTestCase;
-import org.mule.functional.junit4.FlowRunner;
 import org.mule.runtime.api.tls.TlsContextFactory;
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.MuleContext;
