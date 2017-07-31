@@ -95,7 +95,6 @@
             <artifactId>mule-module-file-extension-common</artifactId>
             <version>${muleFileCommonsTestVersion}</version>
             <classifier>mule-plugin</classifier>
-            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -103,7 +102,6 @@
             <artifactId>mule-validation-module</artifactId>
             <version>${muleValidationModuleTestVersion}</version>
             <classifier>mule-plugin</classifier>
-            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -111,7 +109,6 @@
             <artifactId>mule-file-connector</artifactId>
             <version>${muleFileConnectorTestVersion}</version>
             <classifier>mule-plugin</classifier>
-            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -135,7 +132,6 @@
             <artifactId>mule-spring-module</artifactId>
             <version>${muleSpringModuleVersion}</version>
             <classifier>mule-plugin</classifier>
-            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -151,7 +147,6 @@
             <artifactId>mule-tests-component-plugin</artifactId>
             <version>${project.version}</version>
             <classifier>mule-plugin</classifier>
-            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -159,7 +154,6 @@
             <artifactId>mule-heisenberg-extension</artifactId>
             <version>${project.version}</version>
             <classifier>mule-plugin</classifier>
-            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -371,7 +365,6 @@
             <artifactId>mule-scripting-module</artifactId>
             <version>${muleScriptingModuleVersion}</version>
             <classifier>mule-plugin</classifier>
-            <scope>test</scope>
             <exclusions>
                 <exclusion>
                     <artifactId>joda-time</artifactId>
