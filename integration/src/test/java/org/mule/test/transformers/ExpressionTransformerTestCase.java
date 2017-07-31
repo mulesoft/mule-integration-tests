@@ -15,8 +15,8 @@ import static org.mule.runtime.core.api.util.ClassUtils.withContextClassLoader;
 import org.mule.runtime.core.internal.message.InternalMessage;
 import org.mule.runtime.core.api.transformer.TransformerException;
 import org.mule.runtime.core.expression.ExpressionConfig;
-import org.mule.runtime.core.expression.transformers.ExpressionArgument;
-import org.mule.runtime.core.expression.transformers.ExpressionTransformer;
+import org.mule.runtime.core.internal.transformer.expression.ExpressionArgument;
+import org.mule.runtime.core.internal.transformer.expression.ExpressionTransformer;
 import org.mule.tck.junit4.AbstractMuleContextTestCase;
 
 import groovyjarjarasm.asm.ClassWriter;

@@ -14,7 +14,7 @@ import org.mule.runtime.api.lifecycle.Disposable;
 import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.transformer.TransformerException;
-import org.mule.runtime.core.transformer.AbstractTransformer;
+import org.mule.runtime.core.api.transformer.AbstractTransformer;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.nio.charset.Charset;
