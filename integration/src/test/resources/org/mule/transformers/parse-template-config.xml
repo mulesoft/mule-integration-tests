@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+
+
+    <flow name="no-expression">
+        <parse-template>
+            <content>${file::org/mule/transformers/no-expression.ptem}</content>
+        </parse-template>
+    </flow>
+
+    <flow name="mel-expression">
+        <parse-template>
+            <content>${file::org/mule/transformers/mel-expression.ptem}</content>
+        </parse-template>
+    </flow>
+
+    <flow name="dw-expression">
+        <parse-template>
+            <content>${file::org/mule/transformers/dw-expression.ptem}</content>
+        </parse-template>
+    </flow>
+
+    <flow name="no-expression-from-location">
+        <parse-template location="org/mule/transformers/no-expression.ptem"/>
+    </flow>
+
+    <flow name="mel-expression-from-location">
+        <parse-template location="org/mule/transformers/mel-expression.ptem"/>
+    </flow>
+
+    <flow name="dw-expression-from-location">
+        <parse-template location="org/mule/transformers/dw-expression.ptem"/>
+    </flow>
+
+    <flow name="no-expression-inline">
+        <parse-template>
+            <content>This template does not have any expressions to parse</content>
+        </parse-template>
+    </flow>
+
+    <flow name="mel-expression-inline">
+        <parse-template>
+            <content>This template has a MEL expression to parse from #[mel:flowVars.flowName] flow</content>
+        </parse-template>
+    </flow>
+
+    <flow name="dw-expression-inline">
+        <parse-template>
+            <content>#['This template has a DW expression to parse from ' ++ vars.flowName ++ ' flow. Remember, the name of the flow is $(vars.flowName)']</content>
+        </parse-template>
+    </flow>
+
+    <flow name="with-target">
+        <parse-template target="targetVar">
+            <content>#['This template has a DW expression to parse from ' ++ vars.flowName ++ ' flow. Remember, the name of the flow is $(vars.flowName)']</content>
+        </parse-template>
+    </flow>
+
+</mule>
