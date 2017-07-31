@@ -51,10 +51,10 @@ import io.qameta.allure.Story;
 public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
 
   private static final Optional<TypedComponentIdentifier> FLOW_TYPED_COMPONENT_IDENTIFIER =
-      of(builder().withIdentifier(FLOW_IDENTIFIER).withType(FLOW).build());
+      of(builder().identifier(FLOW_IDENTIFIER).type(FLOW).build());
 
   private static final Optional<TypedComponentIdentifier> SUB_FLOW_TYPED_COMPONENT_IDENTIFIER =
-      of(builder().withIdentifier(SUBFLOW_IDENTIFIER).withType(PROCESSOR).build());
+      of(builder().identifier(SUBFLOW_IDENTIFIER).type(PROCESSOR).build());
 
   private static final Optional<String> CONFIG_FILE_NAME = of("component-path-test-flow.xml");
 
@@ -133,43 +133,43 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
                                                                   CONFIG_FILE_NAME,
                                                                   of(93))));
   private static final Optional<TypedComponentIdentifier> LOGGER =
-      of(builder().withIdentifier(buildFromStringRepresentation("mule:logger"))
-          .withType(PROCESSOR).build());
+      of(builder().identifier(buildFromStringRepresentation("mule:logger"))
+          .type(PROCESSOR).build());
   private static final Optional<TypedComponentIdentifier> SET_PAYLOAD =
-      of(builder().withIdentifier(buildFromStringRepresentation("mule:set-payload"))
-          .withType(PROCESSOR).build());
+      of(builder().identifier(buildFromStringRepresentation("mule:set-payload"))
+          .type(PROCESSOR).build());
   private static final Optional<TypedComponentIdentifier> OBJECT_TO_STRING_TRANSFORMER =
-      of(builder().withIdentifier(buildFromStringRepresentation("mule:object-to-byte-array-transformer")).withType(PROCESSOR)
+      of(builder().identifier(buildFromStringRepresentation("mule:object-to-byte-array-transformer")).type(PROCESSOR)
           .build());
   private static final Optional<TypedComponentIdentifier> CHOICE =
-      of(builder().withIdentifier(buildFromStringRepresentation("mule:choice")).withType(ROUTER).build());
+      of(builder().identifier(buildFromStringRepresentation("mule:choice")).type(ROUTER).build());
   private static final Optional<TypedComponentIdentifier> ERROR_HANDLER =
-      of(builder().withIdentifier(buildFromStringRepresentation("mule:error-handler"))
-          .withType(TypedComponentIdentifier.ComponentType.ERROR_HANDLER).build());
+      of(builder().identifier(buildFromStringRepresentation("mule:error-handler"))
+          .type(TypedComponentIdentifier.ComponentType.ERROR_HANDLER).build());
   private static final Optional<TypedComponentIdentifier> ON_ERROR_CONTINUE =
-      of(builder().withIdentifier(buildFromStringRepresentation("mule:on-error-continue")).withType(ON_ERROR).build());
+      of(builder().identifier(buildFromStringRepresentation("mule:on-error-continue")).type(ON_ERROR).build());
   private static final Optional<TypedComponentIdentifier> VALIDATION_IS_FALSE =
-      of(builder().withIdentifier(buildFromStringRepresentation("validation:is-false")).withType(OPERATION).build());
+      of(builder().identifier(buildFromStringRepresentation("validation:is-false")).type(OPERATION).build());
   private static final Optional<TypedComponentIdentifier> TEST_PROCESSOR =
-      of(builder().withIdentifier(buildFromStringRepresentation("test:processor")).withType(PROCESSOR).build());
+      of(builder().identifier(buildFromStringRepresentation("test:processor")).type(PROCESSOR).build());
   private static final Optional<TypedComponentIdentifier> ON_ERROR_PROPAGATE =
-      of(builder().withIdentifier(buildFromStringRepresentation("mule:on-error-propagate")).withType(ON_ERROR).build());
+      of(builder().identifier(buildFromStringRepresentation("mule:on-error-propagate")).type(ON_ERROR).build());
   private static final Optional<TypedComponentIdentifier> TRY =
-      of(builder().withIdentifier(buildFromStringRepresentation("mule:try")).withType(SCOPE).build());
+      of(builder().identifier(buildFromStringRepresentation("mule:try")).type(SCOPE).build());
   private static final Optional<TypedComponentIdentifier> VALIDATION_IS_TRUE =
-      of(builder().withIdentifier(buildFromStringRepresentation("validation:is-true")).withType(OPERATION).build());
+      of(builder().identifier(buildFromStringRepresentation("validation:is-true")).type(OPERATION).build());
   private static final Optional<TypedComponentIdentifier> SKELETON_SOURCE =
-      of(builder().withIdentifier(buildFromStringRepresentation("test:skeleton-source")).withType(SOURCE).build());
+      of(builder().identifier(buildFromStringRepresentation("test:skeleton-source")).type(SOURCE).build());
   private static final Optional<TypedComponentIdentifier> SPLITTER =
-      of(builder().withIdentifier(buildFromStringRepresentation("mule:splitter")).withType(INTERCEPTING).build());
+      of(builder().identifier(buildFromStringRepresentation("mule:splitter")).type(INTERCEPTING).build());
   private static final Optional<TypedComponentIdentifier> COLLECTION_AGGREGATOR =
-      of(builder().withIdentifier(buildFromStringRepresentation("mule:collection-aggregator")).withType(INTERCEPTING).build());
+      of(builder().identifier(buildFromStringRepresentation("mule:collection-aggregator")).type(INTERCEPTING).build());
   private static final Optional<TypedComponentIdentifier> SCATTER_GATHER =
-      of(builder().withIdentifier(buildFromStringRepresentation("mule:scatter-gather")).withType(ROUTER).build());
+      of(builder().identifier(buildFromStringRepresentation("mule:scatter-gather")).type(ROUTER).build());
   private static final Optional<TypedComponentIdentifier> FLOW_REF =
-      of(builder().withIdentifier(buildFromStringRepresentation("mule:flow-ref")).withType(PROCESSOR).build());
+      of(builder().identifier(buildFromStringRepresentation("mule:flow-ref")).type(PROCESSOR).build());
   private static final Optional<TypedComponentIdentifier> ASYNC =
-      of(builder().withIdentifier(buildFromStringRepresentation("mule:async")).withType(SCOPE).build());
+      of(builder().identifier(buildFromStringRepresentation("mule:async")).type(SCOPE).build());
 
   @Override
   protected String getConfigFile() {
@@ -222,8 +222,8 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
     assertNextProcessorLocationIs(choiceLocation);
     assertNextProcessorLocationIs(choiceLocation
         .appendRoutePart()
-        .appendLocationPart("0", of(TypedComponentIdentifier.builder().withType(UNKNOWN)
-            .withIdentifier(buildFromStringRepresentation("mule:route")).build()), empty(), empty())
+        .appendLocationPart("0", of(TypedComponentIdentifier.builder().type(UNKNOWN)
+            .identifier(buildFromStringRepresentation("mule:route")).build()), empty(), empty())
         .appendProcessorsPart()
         .appendLocationPart("0", TEST_PROCESSOR, CONFIG_FILE_NAME, of(40)));
     assertNextProcessorLocationIs(FLOW_WITH_ERROR_HANDLER

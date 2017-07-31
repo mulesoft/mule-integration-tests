@@ -83,7 +83,7 @@ public class OnErrorContinueTestCase extends AbstractIntegrationTestCase {
   public TestHttpClient httpClient = new TestHttpClient.Builder(getService(HttpService.class)).tlsContextFactory(() -> {
     try {
       // Configure trust store in the client with the certificate of the server.
-      return TlsContextFactory.builder().setTrustStorePath("ssltest-cacerts.jks").setTrustStorePassword("changeit").build();
+      return TlsContextFactory.builder().trustStorePath("ssltest-cacerts.jks").trustStorePassword("changeit").build();
     } catch (CreateException e) {
       throw new MuleRuntimeException(e);
     }

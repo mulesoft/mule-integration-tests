@@ -63,7 +63,7 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
   private static final Optional<String> MODULE_SIMPLE_FILE_NAME = of(MODULE_SIMPLE_XML);
   private static final Optional<String> MODULE_SIMPLE_PROXY_FILE_NAME = of(MODULE_SIMPLE_PROXY_XML);
   private static final Optional<TypedComponentIdentifier> FLOW_TYPED_COMPONENT_IDENTIFIER =
-      of(builder().withIdentifier(FLOW_IDENTIFIER).withType(FLOW).build());
+      of(builder().identifier(FLOW_IDENTIFIER).type(FLOW).build());
 
   private static final DefaultComponentLocation getFlowLocation(final String flowName, final int flowLineNumber) {
     return new DefaultComponentLocation(of(flowName), asList(new DefaultLocationPart(flowName, FLOW_TYPED_COMPONENT_IDENTIFIER,
@@ -97,8 +97,8 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
   private static Optional<TypedComponentIdentifier> getModuleOperationIdentifier(final String namespace,
                                                                                  final String identifier) {
     return of(builder()
-        .withIdentifier(buildFromStringRepresentation(namespace + COLON_SEPARATOR + identifier))
-        .withType(OPERATION).build());
+        .identifier(buildFromStringRepresentation(namespace + COLON_SEPARATOR + identifier))
+        .type(OPERATION).build());
   }
 
   private static DefaultComponentLocation getModuleOperationLocation(final String operationName,
@@ -161,13 +161,13 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
    * runtime provided MPs
    */
   private static final Optional<TypedComponentIdentifier> LOGGER =
-      of(builder().withIdentifier(buildFromStringRepresentation("mule:logger"))
-          .withType(PROCESSOR).build());
+      of(builder().identifier(buildFromStringRepresentation("mule:logger"))
+          .type(PROCESSOR).build());
 
 
   private static final Optional<TypedComponentIdentifier> SET_PAYLOAD =
-      of(builder().withIdentifier(buildFromStringRepresentation("mule:set-payload"))
-          .withType(PROCESSOR).build());
+      of(builder().identifier(buildFromStringRepresentation("mule:set-payload"))
+          .type(PROCESSOR).build());
 
   final ProcessorNotificationStore listener = new ProcessorNotificationStore();
 
