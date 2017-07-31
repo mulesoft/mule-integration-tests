@@ -139,12 +139,7 @@
             <artifactId>mule-core</artifactId>
             <version>${project.version}</version>
             <type>test-jar</type>
-            <exclusions>
-                <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mule.tests.plugin</groupId>
@@ -156,7 +151,6 @@
             <groupId>org.mule.tests</groupId>
             <artifactId>mule-tests-functional</artifactId>
             <version>${project.version}</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mule.tests</groupId>
