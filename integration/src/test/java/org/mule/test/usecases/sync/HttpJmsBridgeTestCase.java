@@ -10,9 +10,9 @@ import static java.lang.String.format;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.mule.functional.api.component.FlowAssert.verify;
 import static org.mule.functional.junit4.TestLegacyMessageUtils.getOutboundProperty;
 import static org.mule.runtime.http.api.HttpConstants.Method.POST;
+import static org.mule.tck.processor.FlowAssert.verify;
 
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.http.api.HttpService;

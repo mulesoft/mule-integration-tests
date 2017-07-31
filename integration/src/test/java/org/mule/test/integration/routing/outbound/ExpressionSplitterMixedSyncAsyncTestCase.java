@@ -11,8 +11,8 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertThat;
 import static org.mule.functional.junit4.matchers.MessageMatchers.hasPayload;
 
-import org.mule.functional.api.component.FlowAssert;
 import org.mule.runtime.api.message.Message;
+import org.mule.tck.processor.FlowAssert;
 import org.mule.tck.testmodels.fruit.Apple;
 import org.mule.tck.testmodels.fruit.Banana;
 import org.mule.tck.testmodels.fruit.FruitBowl;

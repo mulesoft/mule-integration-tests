@@ -21,7 +21,6 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mule.runtime.core.api.util.ExceptionUtils.NULL_ERROR_HANDLER;
 
-import org.mule.functional.api.component.FlowAssert;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.Event;
@@ -35,6 +34,7 @@ import org.mule.runtime.core.internal.exception.ErrorHandler;
 import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.runtime.core.internal.exception.MessagingExceptionHandlerToSystemAdapter;
 import org.mule.runtime.core.internal.exception.OnErrorPropagateHandler;
+import org.mule.tck.processor.FlowAssert;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.io.Serializable;

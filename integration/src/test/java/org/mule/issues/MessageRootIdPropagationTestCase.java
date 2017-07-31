@@ -9,8 +9,10 @@ package org.mule.issues;
 import static org.junit.Assert.assertEquals;
 import static org.mule.functional.junit4.TestLegacyMessageUtils.getOutboundProperty;
 
+import org.mule.functional.api.flow.FlowRunner;
+
 import io.qameta.allure.Issue;
-import org.mule.functional.junit4.FlowRunner;
+
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.transformer.AbstractMessageTransformer;
