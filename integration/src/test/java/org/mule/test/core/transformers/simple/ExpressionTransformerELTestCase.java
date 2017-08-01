@@ -45,7 +45,7 @@ public class ExpressionTransformerELTestCase extends AbstractIntegrationTestCase
     props.put("bar", "mar");
 
     Message message =
-        new TestLegacyMessageBuilder().payload(new FruitBowl(new Apple(), new Banana())).outboundProperties(props).build();
+        new TestLegacyMessageBuilder().value(new FruitBowl(new Apple(), new Banana())).outboundProperties(props).build();
 
     Object result = transformer.transform(message);
     assertNotNull(result);
@@ -68,7 +68,7 @@ public class ExpressionTransformerELTestCase extends AbstractIntegrationTestCase
     props.put("foo", "moo");
 
     Message message =
-        new TestLegacyMessageBuilder().payload(new FruitBowl(new Apple(), new Banana())).outboundProperties(props).build();
+        new TestLegacyMessageBuilder().value(new FruitBowl(new Apple(), new Banana())).outboundProperties(props).build();
 
     Object result = transformer.transform(message);
     assertNotNull(result);
@@ -91,7 +91,7 @@ public class ExpressionTransformerELTestCase extends AbstractIntegrationTestCase
     props.put("bar", "mar");
 
     Message message =
-        new TestLegacyMessageBuilder().payload(new FruitBowl(new Apple(), new Banana())).outboundProperties(props).build();
+        new TestLegacyMessageBuilder().value(new FruitBowl(new Apple(), new Banana())).outboundProperties(props).build();
 
     Object result = transformer.transform(message);
     assertNotNull(result);
@@ -114,7 +114,7 @@ public class ExpressionTransformerELTestCase extends AbstractIntegrationTestCase
     props.put("bar", "mar");
 
     Message message =
-        new TestLegacyMessageBuilder().payload(new FruitBowl(new Apple(), new Banana())).outboundProperties(props).build();
+        new TestLegacyMessageBuilder().value(new FruitBowl(new Apple(), new Banana())).outboundProperties(props).build();
 
     Object result = transformer.transform(message);
     assertNotNull(result);
