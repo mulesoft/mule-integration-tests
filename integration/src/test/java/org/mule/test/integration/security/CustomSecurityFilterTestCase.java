@@ -9,9 +9,17 @@ package org.mule.test.integration.security;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+import static org.mule.runtime.core.api.config.MuleProperties.OBJECT_EXPRESSION_MANAGER;
 import org.mule.runtime.api.exception.ExceptionHelper;
+import org.mule.runtime.api.lifecycle.InitialisationException;
+import org.mule.runtime.api.security.SecurityProviderNotFoundException;
+import org.mule.runtime.api.security.UnknownAuthenticationTypeException;
 import org.mule.runtime.core.api.Event;
+import org.mule.runtime.core.api.el.ExpressionManager;
 import org.mule.runtime.core.api.exception.MessagingException;
+import org.mule.runtime.core.api.security.CryptoFailureException;
+import org.mule.runtime.core.api.security.EncryptionStrategyNotFoundException;
+import org.mule.runtime.core.api.security.AbstractAuthenticationFilter;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.io.Serializable;
@@ -26,6 +34,8 @@ import org.springframework.security.authentication.BadCredentialsException;
  */
 public class CustomSecurityFilterTestCase extends AbstractIntegrationTestCase {
 
+  private static final String EXPECTED_PASSWORD = "ross";
+
   @Override
   protected String[] getConfigFiles() {
     return new String[] {
@@ -37,7 +47,7 @@ public class CustomSecurityFilterTestCase extends AbstractIntegrationTestCase {
   public void testOutboundAutenticationSend() throws Exception {
     Map<String, Serializable> props = new HashMap<>();
     props.put("username", "ross");
-    props.put("pass", "ross");
+    props.put("pass", EXPECTED_PASSWORD);
 
     Event event = flowRunner("test").withPayload("hi").withInboundProperties(props).run();
 
@@ -47,5 +57,27 @@ public class CustomSecurityFilterTestCase extends AbstractIntegrationTestCase {
 
     MessagingException e = flowRunner("test").withPayload("hi").withInboundProperties(props).runExpectingException();
     assertThat(ExceptionHelper.getRootException(e), instanceOf(BadCredentialsException.class));
+  }
+
+  public static class CustomSecurityFilter extends AbstractAuthenticationFilter {
+
+    private String password;
+
+    @Override
+    public Event authenticate(Event event) throws SecurityException, UnknownAuthenticationTypeException,
+        CryptoFailureException, SecurityProviderNotFoundException, EncryptionStrategyNotFoundException, InitialisationException {
+      ExpressionManager expressionManager = (ExpressionManager) registry.lookupByName(OBJECT_EXPRESSION_MANAGER).get();
+
+      Object passwordEval = expressionManager.evaluate(password, event).getValue();
+      if (!passwordEval.equals(EXPECTED_PASSWORD)) {
+        throw new BadCredentialsException("Bad credentials");
+      }
+
+      return event;
+    }
+
+    public void setPassword(String password) {
+      this.password = password;
+    }
   }
 }

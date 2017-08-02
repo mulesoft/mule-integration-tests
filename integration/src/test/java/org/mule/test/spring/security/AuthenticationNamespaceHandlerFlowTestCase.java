@@ -11,12 +11,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.core.api.config.MuleProperties.OBJECT_SECURITY_MANAGER;
-
 import org.mule.extension.spring.api.security.PreAuthenticatedAuthenticationProvider;
 import org.mule.extension.spring.api.security.SpringProviderAdapter;
 import org.mule.extension.spring.api.security.UserAndPasswordAuthenticationProvider;
+import org.mule.runtime.core.api.security.SecurityManager;
 import org.mule.runtime.core.api.security.SecurityProvider;
-import org.mule.runtime.core.security.DefaultMuleSecurityManager;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -37,7 +36,7 @@ public class AuthenticationNamespaceHandlerFlowTestCase extends AbstractIntegrat
 
   @Test
   public void testSecurityManagerConfigured() {
-    DefaultMuleSecurityManager securityManager = muleContext.getRegistry().lookupObject(OBJECT_SECURITY_MANAGER);
+    SecurityManager securityManager = muleContext.getRegistry().lookupObject(OBJECT_SECURITY_MANAGER);
     assertNotNull(securityManager);
 
     Collection<SecurityProvider> providers = securityManager.getProviders();

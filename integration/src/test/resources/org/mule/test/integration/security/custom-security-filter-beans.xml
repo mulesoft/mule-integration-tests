@@ -8,7 +8,7 @@
 
     <bean class="org.mule.extension.spring.api.security.PreAuthenticatedAuthenticationProvider" name="authenticationProvider"/>
 
-    <bean class="org.mule.runtime.core.security.UsernamePasswordAuthenticationFilter" name="customFilter">
+    <bean class="org.mule.test.integration.security.CustomSecurityFilterTestCase.CustomSecurityFilter" name="customFilter">
         <property name="password" value="#[mel:message.inboundProperties.pass]"/>
     </bean>
 

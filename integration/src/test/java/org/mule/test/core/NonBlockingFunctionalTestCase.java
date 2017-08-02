@@ -20,7 +20,7 @@ import org.mule.runtime.core.api.security.CryptoFailureException;
 import org.mule.runtime.core.api.security.EncryptionStrategyNotFoundException;
 import org.mule.runtime.core.api.transaction.Transaction;
 import org.mule.runtime.core.api.transaction.TransactionCoordination;
-import org.mule.runtime.core.security.AbstractAuthenticationFilter;
+import org.mule.runtime.core.api.security.AbstractAuthenticationFilter;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Test;
