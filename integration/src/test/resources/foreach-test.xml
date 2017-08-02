@@ -21,12 +21,12 @@
             <test:processor/>
             <test:queue name="out"/>
         </foreach>
-        <script:transformer>
+        <script:component>
             <script:script engine="groovy">
             	payload.add("added after foreach")
             	result = payload
             </script:script>
-        </script:transformer>
+        </script:component>
     </flow>
 
     <flow name="minimal-config-expression">

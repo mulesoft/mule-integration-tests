@@ -14,13 +14,13 @@
         <on-error-propagate/>
     </error-handler>
 
-    <script:transformer name="exceptionTransformer">
+    <script:component name="exceptionTransformer">
         <script:script engine="groovy">
             log.info("Throwing exception...");
             throw new
             org.mule.runtime.core.api.transformer.TransformerException(org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage("dummyException"));
         </script:script>
-    </script:transformer>
+    </script:component>
 
     <script:script engine="groovy" name="throwException">
         log.info("Throwing exception...");

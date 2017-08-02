@@ -51,12 +51,12 @@
 
     <flow name="split-aggregate">
         <splitter expression="#[mel:payload.fruit]"/>
-        <script:transformer>
+        <script:component>
             <script:script engine="groovy">
                 ((org.mule.tck.testmodels.fruit.Fruit)payload).bite();
                 return payload;
             </script:script>
-        </script:transformer>
+        </script:component>
         <collection-aggregator />
         <test:queue name="split-aggregate-out"/>
     </flow>
@@ -67,24 +67,24 @@
 
     <flow name="split-aggregate-singleton-list">
         <splitter />
-        <script:transformer>
+        <script:component>
             <script:script engine="groovy">
                 ((org.mule.tck.testmodels.fruit.Fruit)payload).bite();
                 return payload;
             </script:script>
-        </script:transformer>
+        </script:component>
         <collection-aggregator />
         <test:queue name="split-aggregate-singleton-list-out"/>
     </flow>
 
     <flow name="split-aggregate-list">
         <splitter />
-        <script:transformer>
+        <script:component>
             <script:script engine="groovy">
                 ((org.mule.tck.testmodels.fruit.Fruit)payload).bite();
                 return payload;
             </script:script>
-        </script:transformer>
+        </script:component>
         <collection-aggregator />
         <test:queue name="split-aggregate-list-out"/>
     </flow>
@@ -92,33 +92,33 @@
 
     <flow name="split-aggregate-response-singleton-list">
         <splitter />
-        <script:transformer>
+        <script:component>
             <script:script engine="groovy">
                 ((org.mule.tck.testmodels.fruit.Fruit)payload).bite();
                 return payload;
             </script:script>
-        </script:transformer>
+        </script:component>
         <collection-aggregator />
     </flow>
 
     <flow name="split-aggregate-response-list">
         <splitter />
-        <script:transformer>
+        <script:component>
             <script:script engine="groovy">
                 ((org.mule.tck.testmodels.fruit.Fruit)payload).bite();
                 return payload;
             </script:script>
-        </script:transformer>
+        </script:component>
     </flow>
 
     <flow name="split-aggregate-map">
         <splitter/>
-        <script:transformer>
+        <script:component>
             <script:script engine="groovy">
                 ((org.mule.tck.testmodels.fruit.Fruit)payload.getValue()).bite();
                 return payload;
             </script:script>
-        </script:transformer>
+        </script:component>
     </flow>
 
     <flow name="split-filter-aggregate">

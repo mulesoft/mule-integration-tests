@@ -8,13 +8,13 @@
           http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
           http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
 
-    <scripting:transformer name="fooTransformer">
+    <scripting:component name="fooTransformer">
         <scripting:script engine="groovy">
             <scripting:text>
                 return "foo";
             </scripting:text>
         </scripting:script>
-    </scripting:transformer>
+    </scripting:component>
 
     <flow name="Distributor">
         <scatter-gather>
