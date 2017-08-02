@@ -29,25 +29,25 @@ import org.mule.runtime.api.meta.model.operation.OperationModel;
 import org.mule.runtime.api.meta.model.parameter.ParameterModel;
 import org.mule.runtime.api.metadata.MetadataKey;
 import org.mule.runtime.api.metadata.MetadataKeysContainer;
+import org.mule.runtime.api.metadata.MetadataService;
 import org.mule.runtime.api.metadata.descriptor.ComponentMetadataDescriptor;
 import org.mule.runtime.api.metadata.resolving.MetadataFailure;
 import org.mule.runtime.api.metadata.resolving.MetadataResult;
-import org.mule.runtime.core.internal.metadata.MuleMetadataService;
-
-import org.junit.Test;
 
 import java.util.List;
 import java.util.Set;
 
+import org.junit.Test;
+
 public class InvokeMetadataTestCase extends SoapFootballExtensionArtifactFunctionalTestCase {
 
   private static final String INVALID_KEY_ERROR = "The binding operation name [invalidKey] was not found in the current wsdl";
-  private MuleMetadataService metadataService;
+  private MetadataService metadataService;
 
   @Override
   protected void doSetUp() throws Exception {
     super.doSetUp();
-    metadataService = muleContext.getRegistry().lookupObject(MuleMetadataService.class);
+    metadataService = muleContext.getRegistry().lookupObject(MetadataService.class);
   }
 
   @Test

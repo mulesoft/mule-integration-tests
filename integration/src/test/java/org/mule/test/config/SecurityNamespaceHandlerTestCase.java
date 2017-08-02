@@ -6,17 +6,15 @@
  */
 package org.mule.test.config;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.slf4j.LoggerFactory.getLogger;
-
-import org.mule.runtime.config.spring.CustomEncryptionStrategyDelegate;
 import org.mule.runtime.config.spring.CustomSecurityProviderDelegate;
 import org.mule.runtime.core.api.security.EncryptionStrategy;
 import org.mule.runtime.core.api.security.SecurityManager;
 import org.mule.runtime.core.api.security.SecurityProvider;
-import org.mule.runtime.core.security.PasswordBasedEncryptionStrategy;
-import org.mule.runtime.core.security.SecretKeyEncryptionStrategy;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.util.Iterator;
@@ -39,12 +37,15 @@ public class SecurityNamespaceHandlerTestCase extends AbstractIntegrationTestCas
     SecurityProvider dummySecurityProvider = securityManager.getProvider("dummySecurityProvider");
     assertNotNull(dummySecurityProvider);
     assertTrue(dummySecurityProvider instanceof CustomSecurityProviderDelegate);
-    verifyEncryptionStrategy(securityManager, "dummyEncryptionStrategy", CustomEncryptionStrategyDelegate.class);
-    verifyEncryptionStrategy(securityManager, "passwordEncryptionStrategy", PasswordBasedEncryptionStrategy.class);
-    verifyEncryptionStrategy(securityManager, "secretKeyEncryptionStrategy", SecretKeyEncryptionStrategy.class);
+    verifyEncryptionStrategy(securityManager, "dummyEncryptionStrategy",
+                             "org.mule.runtime.config.spring.CustomEncryptionStrategyDelegate");
+    verifyEncryptionStrategy(securityManager, "passwordEncryptionStrategy",
+                             "org.mule.runtime.core.internal.security.PasswordBasedEncryptionStrategy");
+    verifyEncryptionStrategy(securityManager, "secretKeyEncryptionStrategy",
+                             "org.mule.runtime.core.internal.security.SecretKeyEncryptionStrategy");
   }
 
-  private void verifyEncryptionStrategy(SecurityManager securityManager, String name, Class clazz) {
+  private void verifyEncryptionStrategy(SecurityManager securityManager, String name, String className) {
     Iterator strategies = securityManager.getEncryptionStrategies().iterator();
     LOGGER.debug("Listing strategies");
     while (strategies.hasNext()) {
@@ -52,6 +53,6 @@ public class SecurityNamespaceHandlerTestCase extends AbstractIntegrationTestCas
       LOGGER.debug(strategy.getName() + " / " + strategy.toString() + " / " + strategy.getClass());
     }
     assertNotNull(name, securityManager.getEncryptionStrategy(name));
-    assertTrue(securityManager.getEncryptionStrategy(name).getClass().equals(clazz));
+    assertThat(securityManager.getEncryptionStrategy(name).getClass().getName(), equalTo(className));
   }
 }
