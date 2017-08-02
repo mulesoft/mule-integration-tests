@@ -96,7 +96,7 @@ public class MultiuserSecurityTestCase extends AbstractIntegrationTestCase {
       String msg = "user = " + authentication.getPrincipal() + ", logins = " + numberLogins + ", color = " + favoriteColor;
       logger.debug(msg);
 
-      return Event.builder(event).message(Message.builder(event.getMessage()).payload(msg).build()).build();
+      return Event.builder(event).message(Message.builder(event.getMessage()).value(msg).build()).build();
     }
   }
 }

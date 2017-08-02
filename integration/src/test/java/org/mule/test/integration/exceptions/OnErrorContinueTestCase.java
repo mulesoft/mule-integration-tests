@@ -83,7 +83,7 @@ public class OnErrorContinueTestCase extends AbstractIntegrationTestCase {
   public TestHttpClient httpClient = new TestHttpClient.Builder(getService(HttpService.class)).tlsContextFactory(() -> {
     try {
       // Configure trust store in the client with the certificate of the server.
-      return TlsContextFactory.builder().setTrustStorePath("ssltest-cacerts.jks").setTrustStorePassword("changeit").build();
+      return TlsContextFactory.builder().trustStorePath("ssltest-cacerts.jks").trustStorePassword("changeit").build();
     } catch (CreateException e) {
       throw new MuleRuntimeException(e);
     }
@@ -243,7 +243,7 @@ public class OnErrorContinueTestCase extends AbstractIntegrationTestCase {
       NewsResponse newsResponse = new NewsResponse();
       newsResponse.setUserId(newsRequest.getUserId());
       newsResponse.setTitle("News title");
-      return Event.builder(event).message(Message.builder(event.getMessage()).payload(newsResponse).build()).build();
+      return Event.builder(event).message(Message.builder(event.getMessage()).value(newsResponse).build()).build();
     }
 
     private NewsRequest handleInputStream(InputStream payload) throws IOException {
@@ -271,7 +271,7 @@ public class OnErrorContinueTestCase extends AbstractIntegrationTestCase {
         throw new DefaultMuleException(e);
       }
 
-      return Event.builder(event).message(Message.builder(event.getMessage()).payload(writer.toString()).build()).build();
+      return Event.builder(event).message(Message.builder(event.getMessage()).value(writer.toString()).build()).build();
     }
   }
 

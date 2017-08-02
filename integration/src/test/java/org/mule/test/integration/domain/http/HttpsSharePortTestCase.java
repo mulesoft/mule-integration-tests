@@ -24,8 +24,8 @@ public class HttpsSharePortTestCase extends HttpSharePortTestCase {
   public void setup() throws CreateException {
     // Configure trust store in the client with the certificate of the server.
     tlsContextFactory = TlsContextFactory.builder()
-        .setTrustStorePath("ssltest-cacerts.jks")
-        .setTrustStorePassword("changeit")
+        .trustStorePath("ssltest-cacerts.jks")
+        .trustStorePassword("changeit")
         .build();
   }
 

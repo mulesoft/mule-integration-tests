@@ -201,7 +201,7 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
   public void messageCollectionConfiguration() throws Exception {
     List<Message> list = new ArrayList<>();
     for (int i = 0; i < 10; i++) {
-      list.add(new TestLegacyMessageBuilder().payload("message-" + i).addOutboundProperty("out", "out" + (i + 1)).build());
+      list.add(new TestLegacyMessageBuilder().value("message-" + i).addOutboundProperty("out", "out" + (i + 1)).build());
     }
 
     Message msgCollection = of(list);
@@ -215,7 +215,7 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
   public void messageCollectionConfigurationOneWay() throws Exception {
     List<Message> list = new ArrayList<>();
     for (int i = 0; i < 10; i++) {
-      list.add(new TestLegacyMessageBuilder().payload("message-" + i).inboundProperties(singletonMap("out", "out" + (i + 1)))
+      list.add(new TestLegacyMessageBuilder().value("message-" + i).inboundProperties(singletonMap("out", "out" + (i + 1)))
           .build());
     }
     final String flowName = "message-collection-config-one-way";
@@ -244,7 +244,7 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
     names.add("Vasilievich");
     names.add("Rachmaninoff");
 
-    Message message = new TestLegacyMessageBuilder().payload("message payload").addOutboundProperty("names", names).build();
+    Message message = new TestLegacyMessageBuilder().value("message payload").addOutboundProperty("names", names).build();
     Message result = flowRunner("map-expression-config").withPayload("message payload").withInboundProperty("names", names)
         .run().getMessage();
 
@@ -317,8 +317,8 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
   @Test
   public void splitCollectionOfMessages() throws Exception {
     ImmutableList<Message> payload =
-        ImmutableList.<Message>builder().add(Message.builder().payload("1").attributes("one").build())
-            .add(Message.builder().payload("2").attributes("two").build()).build();
+        ImmutableList.<Message>builder().add(Message.builder().value("1").attributesValue("one").build())
+            .add(Message.builder().value("2").attributesValue("two").build()).build();
     flowRunner("splitPayload").withVariable("useExpression", false).withPayload(payload).withMediaType(APPLICATION_JAVA).run();
     assertQueueValueIs("splitPayloadOutQueue", "1");
     assertQueueValueIs("splitPayloadOutQueue", "2");
@@ -330,8 +330,8 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
     String firstPaylaod = "{ \"name\": \"Pepe\", \"lastname\": \"Le Pew\" }";
     String secondPayload = "{ \"name\": \"Chuck\", \"lastname\": \"Jones\" }";
     ImmutableList<Message> payload =
-        ImmutableList.<Message>builder().add(Message.builder().payload(firstPaylaod).mediaType(APPLICATION_JSON).build())
-            .add(Message.builder().payload(secondPayload).mediaType(APPLICATION_JSON).build()).build();
+        ImmutableList.<Message>builder().add(Message.builder().value(firstPaylaod).mediaType(APPLICATION_JSON).build())
+            .add(Message.builder().value(secondPayload).mediaType(APPLICATION_JSON).build()).build();
     flowRunner("splitPayload").withVariable("useExpression", true).withPayload(payload).withMediaType(APPLICATION_JAVA).run();
     assertQueueValueIs("splitPayloadOutQueue", "Pepe");
     assertQueueValueIs("splitPayloadOutQueue", "Chuck");

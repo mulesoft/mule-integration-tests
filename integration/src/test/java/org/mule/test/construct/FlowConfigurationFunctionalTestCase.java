@@ -17,18 +17,13 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mule.functional.api.flow.TransactionConfigEnum.ACTION_ALWAYS_BEGIN;
 import static org.mule.functional.junit4.TestLegacyMessageUtils.getOutboundProperty;
-import static org.mule.runtime.api.message.Message.of;
 import static org.mule.runtime.api.metadata.MediaType.APPLICATION_XML;
-import org.mule.functional.api.component.SkeletonSource;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.core.DefaultEventContext;
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.processor.Processor;
-import org.mule.runtime.core.api.source.MessageSource;
-import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.tck.testmodels.fruit.Apple;
 import org.mule.tck.testmodels.fruit.Banana;
 import org.mule.tck.testmodels.fruit.Fruit;
@@ -42,7 +37,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
 
 public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTestCase {
@@ -477,7 +471,7 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
 
     @Override
     public Event process(Event event) throws MuleException {
-      return Event.builder(event).message(Message.builder(event.getMessage()).payload(currentThread()).build()).build();
+      return Event.builder(event).message(Message.builder(event.getMessage()).value(currentThread()).build()).build();
     }
   }
 

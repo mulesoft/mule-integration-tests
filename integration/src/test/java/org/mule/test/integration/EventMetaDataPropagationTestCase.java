@@ -71,10 +71,10 @@ public class EventMetaDataPropagationTestCase extends AbstractIntegrationTestCas
         props.put("booleanParam", Boolean.TRUE);
 
         return new TestLegacyMessageBuilder()
-            .payload(new DefaultMultiPartPayload(Message.builder().payload(event.getMessageAsString(muleContext))
-                .attributes(BODY_ATTRIBUTES).build(),
-                                                 Message.builder().nullPayload().mediaType(MediaType.TEXT)
-                                                     .attributes(new PartAttributes("test1")).build()))
+            .value(new DefaultMultiPartPayload(Message.builder().value(event.getMessageAsString(muleContext))
+                .attributesValue(BODY_ATTRIBUTES).build(),
+                                               Message.builder().nullValue().mediaType(MediaType.TEXT)
+                                                   .attributesValue(new PartAttributes("test1")).build()))
             .outboundProperties(props).build();
       } else {
         InternalMessage msg = (InternalMessage) event.getMessage();

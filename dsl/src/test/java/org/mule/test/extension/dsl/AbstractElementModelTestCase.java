@@ -139,7 +139,7 @@ public abstract class AbstractElementModelTestCase extends MuleArtifactFunctiona
   }
 
   protected ComponentIdentifier newIdentifier(String name, String ns) {
-    return builder().withName(name).withNamespace(ns).build();
+    return builder().name(name).namespace(ns).build();
   }
 
   protected void assertHasParameter(ParameterizedModel model, String name) {
