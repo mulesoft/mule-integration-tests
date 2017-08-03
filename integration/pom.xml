@@ -17,6 +17,7 @@
         <skipTests>${skipIntegrationTests}</skipTests>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
 
+        <eaioUuidVersion>3.4.0</eaioUuidVersion>
         <springSecurityVersion>4.0.4.RELEASE</springSecurityVersion>
     </properties>
 
@@ -179,6 +180,18 @@
             <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+            <scope>test</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.github.stephenc.eaio-uuid</groupId>
+            <artifactId>uuid</artifactId>
+            <version>${eaioUuidVersion}</version>
+        </dependency>
+
         <!-- Used by ServerTools.java -->
         <dependency>
             <groupId>org.apache.ant</groupId>
@@ -238,6 +251,7 @@
             <artifactId>commons-dbcp</artifactId>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>com.experlog</groupId>
             <artifactId>xapool</artifactId>
@@ -276,26 +290,6 @@
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-server</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <!-- Needed for SpringXmlConfigurationBuilder and TestNamespaceHandler -->
-        <dependency>
-            <groupId>org.mule.runtime</groupId>
-            <artifactId>mule-module-spring-config</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <!-- needed for org.springframework.beans.factory.FactoryBean interface -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-beans</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-aop</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -377,12 +371,6 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-config</artifactId>
-            <version>${springSecurityVersion}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

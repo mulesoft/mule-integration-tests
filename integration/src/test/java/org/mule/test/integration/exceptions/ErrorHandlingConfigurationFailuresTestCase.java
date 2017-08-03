@@ -10,6 +10,7 @@ import static java.lang.String.format;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mule.functional.junit4.matchers.ThrowableMessageMatcher.hasMessage;
+import static org.mule.runtime.config.spring.api.SpringXmlConfigurationBuilderFactory.createConfigurationBuilder;
 import static org.mule.runtime.core.api.exception.Errors.Identifiers.CRITICAL_IDENTIFIER;
 import static org.mule.runtime.core.api.exception.Errors.Identifiers.SOURCE_ERROR_IDENTIFIER;
 import static org.mule.runtime.core.api.exception.Errors.Identifiers.SOURCE_ERROR_RESPONSE_GENERATE_ERROR_IDENTIFIER;
@@ -19,9 +20,9 @@ import static org.mule.runtime.core.api.exception.Errors.Identifiers.SOURCE_RESP
 import static org.mule.runtime.core.api.exception.Errors.Identifiers.SOURCE_RESPONSE_SEND_ERROR_IDENTIFIER;
 import static org.mule.runtime.core.api.exception.Errors.Identifiers.UNKNOWN_ERROR_IDENTIFIER;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
+
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.lifecycle.InitialisationException;
-import org.mule.runtime.config.spring.SpringXmlConfigurationBuilder;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.runtime.core.api.config.ConfigurationException;
@@ -43,6 +44,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
 
@@ -178,7 +180,7 @@ public class ErrorHandlingConfigurationFailuresTestCase extends AbstractMuleTest
   private void loadConfiguration(String configuration) throws MuleException, InterruptedException {
     MuleContextFactory muleContextFactory = new DefaultMuleContextFactory();
     List<ConfigurationBuilder> builders = new ArrayList<>();
-    builders.add(new SpringXmlConfigurationBuilder(configuration));
+    builders.add(createConfigurationBuilder(configuration));
     builders.add(new TestServicesConfigurationBuilder());
     MuleContextBuilder contextBuilder = new DefaultMuleContextBuilder();
     MuleContext muleContext = muleContextFactory.createMuleContext(builders, contextBuilder);

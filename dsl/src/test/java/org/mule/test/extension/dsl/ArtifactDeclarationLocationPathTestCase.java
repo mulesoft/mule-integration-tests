@@ -19,9 +19,9 @@ import org.mule.runtime.api.app.declaration.fluent.ParameterSimpleValue;
 import org.mule.runtime.api.component.location.Location;
 import org.mule.runtime.api.dsl.DslResolvingContext;
 import org.mule.runtime.api.meta.model.ExtensionModel;
-import org.mule.runtime.config.spring.dsl.api.ArtifactDeclarationXmlSerializer;
-import org.mule.runtime.config.spring.dsl.model.DslElementModelFactory;
-import org.mule.runtime.module.extension.internal.resources.MuleExtensionModelProvider;
+import org.mule.runtime.config.spring.api.dsl.ArtifactDeclarationXmlSerializer;
+import org.mule.runtime.config.spring.api.dsl.model.DslElementModelFactory;
+import org.mule.runtime.module.extension.api.resources.MuleExtensionModelProvider;
 
 import com.google.common.collect.ImmutableSet;
 
