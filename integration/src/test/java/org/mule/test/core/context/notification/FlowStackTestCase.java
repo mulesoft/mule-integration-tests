@@ -21,6 +21,7 @@ import org.mule.tck.util.FlowTraceUtils.FlowStackAsyncAsserter;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -269,6 +270,7 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
                                            "subFlowDynamicWithChoice/processors/0/route/0/processors/0"));
   }
 
+  @Ignore("MULE-13213")
   @Test
   public void flowStaticWithScatterGather() throws Exception {
     flowRunner("flowStaticWithScatterGather").withPayload("payload").run();
@@ -280,6 +282,7 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
                                            "flowStaticWithScatterGather/processors/0/route/1/processors/0"));
   }
 
+  @Ignore("MULE-13213")
   @Test
   public void subFlowStaticWithScatterGather() throws Exception {
     flowRunner("subFlowStaticWithScatterGather").withPayload("payload").run();
@@ -292,6 +295,7 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
                                            "subFlowStaticWithScatterGather/processors/0/route/1/processors/0"));
   }
 
+  @Ignore("MULE-13213")
   @Test
   public void flowDynamicWithScatterGather() throws Exception {
     flowRunner("flowDynamicWithScatterGather").withPayload("payload").run();
@@ -303,6 +307,7 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
                                            "flowDynamicWithScatterGather/processors/0/route/1/processors/0"));
   }
 
+  @Ignore("MULE-13213")
   @Test
   public void subFlowDynamicWithScatterGather() throws Exception {
     flowRunner("subFlowDynamicWithScatterGather").withPayload("payload").run();

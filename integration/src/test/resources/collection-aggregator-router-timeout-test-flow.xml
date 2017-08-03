@@ -11,12 +11,16 @@
         <splitter/>
         <!-- round-robin is critical here, otherwise 'aggregator' endpoint is never hit. -->
         <round-robin>
-            <async>
-                <flow-ref name="aggregator"/>
-            </async>
-            <async>
-                <flow-ref name="vortex"/>
-            </async>
+            <route>
+                <async>
+                    <flow-ref name="aggregator"/>
+                </async>
+            </route>
+            <route>
+                <async>
+                    <flow-ref name="vortex"/>
+                </async>
+            </route>
         </round-robin>
     </flow>
 

@@ -97,9 +97,15 @@
 
     <flow name="flowWithScatterGather">
         <scatter-gather>
-            <logger/>
-            <validation:is-true expression="true"/>
-            <validation:is-false expression="false"/>
+            <route>
+                <logger/>
+            </route>
+            <route>
+                <validation:is-true expression="true"/>
+            </route>
+            <route>
+                <validation:is-false expression="false"/>
+            </route>
         </scatter-gather>
     </flow>
 

@@ -18,8 +18,12 @@
 
     <flow name="Distributor">
         <scatter-gather>
-            <flow-ref name="One"/>
-            <flow-ref name="Two"/>
+            <route>
+                <flow-ref name="One"/>
+            </route>
+            <route>
+                <flow-ref name="Two"/>
+            </route>
         </scatter-gather>
         <transformer ref="fooTransformer"/>
     </flow>

@@ -62,8 +62,12 @@
 
     <sub-flow name="sub-flow-SG">
         <scatter-gather>
-            <append-string-transformer message="A" />
-            <append-string-transformer message="B" />
+            <route>
+                <append-string-transformer message="A" />
+            </route>
+            <route>
+                <append-string-transformer message="B" />
+            </route>
         </scatter-gather>
     </sub-flow>
 

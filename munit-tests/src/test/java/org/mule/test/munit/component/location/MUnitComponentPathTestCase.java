@@ -15,6 +15,7 @@ import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocator
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.api.component.location.ConfigurationComponentLocator;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.inject.Inject;
@@ -55,6 +56,7 @@ public class MUnitComponentPathTestCase extends MuleArtifactFunctionalTestCase {
                notNullValue());
   }
 
+  @Ignore("MULE-13213")
   @Test
   public void beforeTestComponentLocations() throws Exception {
     assertThat(componentLocator.find(builderFromStringRepresentation("beforeTest").build()).get(),
@@ -79,6 +81,7 @@ public class MUnitComponentPathTestCase extends MuleArtifactFunctionalTestCase {
                notNullValue());
   }
 
+  @Ignore("MULE-13213")
   @Test
   public void testComponentLocations() throws Exception {
     assertThat(componentLocator.find(builderFromStringRepresentation("test").build()).get(),

@@ -10,35 +10,47 @@
 
     <flow name="test-router">
         <first-successful>
-            <processor-chain>
+            <route>
                 <validation:is-true expression="#[payload is String]"/>
                 <test:processor appendString=" is a string"/>
-            </processor-chain>
-            <processor-chain>
+            </route>
+            <route>
                 <validation:is-true expression="#[payload is Number]"/>
                 <test:processor appendString=" is a number"/>
-            </processor-chain>
+            </route>
         </first-successful>
     </flow>
 
     <flow name="withExpression">
         <first-successful failureExpression="#[payload contains 'is a number']">
-            <test:processor appendString=" is a number" />
-            <test:processor appendString=" is a string" />
+            <route>
+                <test:processor appendString=" is a number" />
+            </route>
+            <route>
+                <test:processor appendString=" is a string" />
+            </route>
         </first-successful>
     </flow>
 
     <flow name="withExpressionAllFail">
         <first-successful failureExpression="#[payload contains 'is a ']">
-            <test:processor appendString=" is a number" />
-            <test:processor appendString=" is a string" />
+            <route>
+                <test:processor appendString=" is a number" />
+            </route>
+            <route>
+                <test:processor appendString=" is a string" />
+            </route>
         </first-successful>
     </flow>
 
     <flow name="withOneWayEndpoints">
         <first-successful>
-            <test:processor throwException="true"/>
-            <flow-ref name="withOneWayEndpoints-handler"/>
+            <route>
+                <test:processor throwException="true"/>
+            </route>
+            <route>
+                <flow-ref name="withOneWayEndpoints-handler"/>
+            </route>
         </first-successful>
     </flow>
 

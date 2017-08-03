@@ -5,7 +5,9 @@
 
     <flow name="onlyOneRoute">
         <scatter-gather>
-            <set-payload value="apple"/>
+            <route>
+                <set-payload value="apple"/>
+            </route>
         </scatter-gather>
     </flow>
 

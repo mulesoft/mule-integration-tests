@@ -112,11 +112,13 @@
 
     <flow name="scatterGather">
         <scatter-gather>
-            <logger message="check1"/>
-            <processor-chain>
+            <route>
+                <logger message="check1"/>
+            </route>
+            <route>
                 <logger message="check2"/>
                 <logger message="check3"/>
-            </processor-chain>
+            </route>
         </scatter-gather>
     </flow>
 
@@ -257,18 +259,32 @@
     <flow name="first-successful">
         <logger level="INFO"/>
         <first-successful>
-            <http:request path="weather-forecast" config-ref="requestConfig"/>
-            <http:request path="weather-forecast" config-ref="requestConfig"/>
-            <http:request path="weather-forecast" config-ref="requestConfig"/>
-            <test:queue name="dead-letter-queue"/>
+            <route>
+                <http:request path="weather-forecast" config-ref="requestConfig"/>
+            </route>
+            <route>
+                <http:request path="weather-forecast" config-ref="requestConfig"/>
+            </route>
+            <route>
+                <http:request path="weather-forecast" config-ref="requestConfig"/>
+            </route>
+            <route>
+                <test:queue name="dead-letter-queue"/>
+            </route>
         </first-successful>
     </flow>
 
     <flow name="round-robin">
         <round-robin>
-            <logger message="First-RRMP"/>
-            <logger message="Second-RRMP"/>
-            <logger message="Third-RRMP"/>
+            <route>
+                <logger message="First-RRMP"/>
+            </route>
+            <route>
+                <logger message="Second-RRMP"/>
+            </route>
+            <route>
+                <logger message="Third-RRMP"/>
+            </route>
         </round-robin>
         <logger level="INFO"/>
     </flow>

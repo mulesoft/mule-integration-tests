@@ -33,23 +33,9 @@ public class ScatterGatherRouterPerformanceTestCase extends AbstractIsolatedFunc
 
   @Test
   @PerfTest(duration = 15000, threads = 1, warmUp = 5000)
-  @Required(throughput = 50, average = 18, percentile90 = 20)
-  public void sequentialProcessing() throws Exception {
-    this.runFlow("sequentialProcessing");
-  }
-
-  @Test
-  @PerfTest(duration = 15000, threads = 1, warmUp = 5000)
   @Required(throughput = 220, average = 5, percentile90 = 6)
   public void parallelHttpProcessing() throws Exception {
     this.runFlow("parallelHttpProcessing");
-  }
-
-  @Test
-  @PerfTest(duration = 15000, threads = 1, warmUp = 5000)
-  @Required(throughput = 200, average = 5, percentile90 = 6)
-  public void sequentialHttpProcessing() throws Exception {
-    this.runFlow("sequentialHttpProcessing");
   }
 
   @Test

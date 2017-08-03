@@ -116,7 +116,7 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
                                    asList(new DefaultLocationPart("flowWithAsync",
                                                                   FLOW_TYPED_COMPONENT_IDENTIFIER,
                                                                   CONFIG_FILE_NAME,
-                                                                  of(106))));
+                                                                  of(112))));
 
   private static final DefaultComponentLocation FLOW_WITH_SUBFLOW =
       new DefaultComponentLocation(of("flowWithSubflow"),
@@ -170,6 +170,8 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
       of(builder().identifier(buildFromStringRepresentation("mule:flow-ref")).type(PROCESSOR).build());
   private static final Optional<TypedComponentIdentifier> ASYNC =
       of(builder().identifier(buildFromStringRepresentation("mule:async")).type(SCOPE).build());
+  private static final Optional<TypedComponentIdentifier> ROUTE =
+      of(builder().identifier(buildFromStringRepresentation("mule:route")).type(PROCESSOR).build());
 
   @Override
   protected String getConfigFile() {
@@ -345,21 +347,27 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
         .appendRoutePart()
         .appendLocationPart("0", empty(), empty(), empty())
         .appendProcessorsPart()
+        .appendLocationPart("0", ROUTE, CONFIG_FILE_NAME, of(100))
+        .appendProcessorsPart()
         .appendLocationPart("0", LOGGER,
-                            CONFIG_FILE_NAME, of(100)));
+                            CONFIG_FILE_NAME, of(101)));
     assertNextProcessorLocationIs(scatterGatherLocation
         .appendRoutePart()
         .appendLocationPart("1", empty(), empty(), empty())
         .appendProcessorsPart()
+        .appendLocationPart("0", ROUTE, CONFIG_FILE_NAME, of(103))
+        .appendProcessorsPart()
         .appendLocationPart("0",
                             VALIDATION_IS_TRUE,
-                            CONFIG_FILE_NAME, of(101)));
+                            CONFIG_FILE_NAME, of(104)));
     assertNextProcessorLocationIs(scatterGatherLocation.appendRoutePart()
         .appendLocationPart("2", empty(), empty(), empty())
         .appendProcessorsPart()
+        .appendLocationPart("0", ROUTE, CONFIG_FILE_NAME, of(106))
+        .appendProcessorsPart()
         .appendLocationPart("0",
                             VALIDATION_IS_FALSE,
-                            CONFIG_FILE_NAME, of(102)));
+                            CONFIG_FILE_NAME, of(107)));
     assertNoNextProcessorNotification();
   }
 
@@ -369,16 +377,16 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
     waitUntilNotificationsArrived(3);
     DefaultComponentLocation flowWithAsyncLocation = FLOW_WITH_ASYNC.appendProcessorsPart();
     DefaultComponentLocation asyncLocation = flowWithAsyncLocation
-        .appendLocationPart("0", ASYNC, CONFIG_FILE_NAME, of(107));
+        .appendLocationPart("0", ASYNC, CONFIG_FILE_NAME, of(113));
     assertNextProcessorLocationIs(asyncLocation);
     DefaultComponentLocation asyncProcessorsLocation = asyncLocation
         .appendProcessorsPart();
     assertNextProcessorLocationIs(asyncProcessorsLocation
         .appendLocationPart("0", LOGGER,
-                            CONFIG_FILE_NAME, of(108)));
+                            CONFIG_FILE_NAME, of(114)));
     assertNextProcessorLocationIs(asyncProcessorsLocation
         .appendLocationPart("1", VALIDATION_IS_TRUE,
-                            CONFIG_FILE_NAME, of(109)));
+                            CONFIG_FILE_NAME, of(115)));
     assertNoNextProcessorNotification();
   }
 
