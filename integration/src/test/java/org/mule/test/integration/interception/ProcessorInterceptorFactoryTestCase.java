@@ -8,7 +8,7 @@ package org.mule.test.integration.interception;
 
 import static java.lang.Math.random;
 import static java.util.Arrays.asList;
-import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.instanceOf;
@@ -17,11 +17,10 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
-import static org.mule.test.allure.AllureConstants.InterceptonApi.INTERCEPTION_API;
 import static org.mule.test.allure.AllureConstants.InterceptonApi.ComponentInterceptionStory.COMPONENT_INTERCEPTION_STORY;
+import static org.mule.test.allure.AllureConstants.InterceptonApi.INTERCEPTION_API;
 import static org.mule.test.heisenberg.extension.HeisenbergConnectionProvider.getConnects;
 import static org.mule.test.heisenberg.extension.HeisenbergConnectionProvider.getDisconnects;
-
 import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.api.config.custom.ServiceConfigurator;
 import org.mule.runtime.api.el.MuleExpressionLanguage;
@@ -51,14 +50,13 @@ import java.util.function.Function;
 
 import javax.inject.Inject;
 
+import io.qameta.allure.Description;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-
-import io.qameta.allure.Description;
-import io.qameta.allure.Feature;
-import io.qameta.allure.Story;
 
 @Feature(INTERCEPTION_API)
 @Story(COMPONENT_INTERCEPTION_STORY)
@@ -139,7 +137,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
 
     InterceptionParameters killInterceptionParameter = interceptionParameters.get(0);
 
-    assertThat(killInterceptionParameter.getParameters().keySet(), contains("targetType", "victim", "goodbyeMessage"));
+    assertThat(killInterceptionParameter.getParameters().keySet(), containsInAnyOrder("targetType", "victim", "goodbyeMessage"));
     assertThat(killInterceptionParameter.getParameters().get("victim"), is("T-1000"));
     assertThat(killInterceptionParameter.getParameters().get("goodbyeMessage"), is("Hasta la vista, baby"));
   }
@@ -153,7 +151,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
 
     InterceptionParameters dieInterceptionParameter = interceptionParameters.get(0);
 
-    assertThat(dieInterceptionParameter.getParameters().keySet(), contains("config-ref", "config"));
+    assertThat(dieInterceptionParameter.getParameters().keySet(), containsInAnyOrder("config-ref", "config"));
     final Object config = dieInterceptionParameter.getParameters().get("config");
     assertThat(config, instanceOf(HeisenbergExtension.class));
     assertThat(((HeisenbergExtension) config).getConfigName(), is("heisenberg"));
@@ -172,7 +170,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     InterceptionParameters killInterceptionParameter = interceptionParameters.get(0);
 
     assertThat(killInterceptionParameter.getParameters().keySet(),
-               contains("targetType", "victim", "goodbyeMessage", "killParameters"));
+               containsInAnyOrder("targetType", "victim", "goodbyeMessage", "killParameters"));
     assertThat(killInterceptionParameter.getParameters().get("victim"), is("T-1000"));
     assertThat(killInterceptionParameter.getParameters().get("goodbyeMessage"), is("Hasta la vista, baby"));
     assertThat(killInterceptionParameter.getParameters().get("killParameters"), is(instanceOf(KillParameters.class)));
@@ -191,7 +189,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
 
     InterceptionParameters killInterceptionParameter = interceptionParameters.get(0);
 
-    assertThat(killInterceptionParameter.getParameters().keySet(), contains("targetType", "config-ref", "connection"));
+    assertThat(killInterceptionParameter.getParameters().keySet(), containsInAnyOrder("targetType", "config-ref", "connection"));
     assertThat(killInterceptionParameter.getParameters().get("config-ref"), is("heisenberg"));
     assertThat(killInterceptionParameter.getParameters().get("connection"), is(instanceOf(HeisenbergConnection.class)));
 
@@ -214,7 +212,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
 
     InterceptionParameters killInterceptionParameter = interceptionParameters.get(0);
 
-    assertThat(killInterceptionParameter.getParameters().keySet(), contains("targetType", "config-ref", "connection"));
+    assertThat(killInterceptionParameter.getParameters().keySet(), containsInAnyOrder("targetType", "config-ref", "connection"));
     assertThat(killInterceptionParameter.getParameters().get("config-ref"), is("heisenberg"));
     assertThat(killInterceptionParameter.getParameters().get("connection"), is(instanceOf(HeisenbergConnection.class)));
 
@@ -241,7 +239,8 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
 
       InterceptionParameters killInterceptionParameter = interceptionParameters.get(0);
 
-      assertThat(killInterceptionParameter.getParameters().keySet(), contains("targetType", "config-ref", "connection"));
+      assertThat(killInterceptionParameter.getParameters().keySet(),
+                 containsInAnyOrder("targetType", "config-ref", "connection"));
       assertThat(killInterceptionParameter.getParameters().get("config-ref"), is("heisenberg"));
       assertThat(killInterceptionParameter.getParameters().get("connection"), is(instanceOf(HeisenbergConnection.class)));
 
