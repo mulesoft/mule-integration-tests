@@ -83,7 +83,7 @@
                 </http:headers>
             </http:response>
         </http:listener>
-      <db:bulk-insert queryTimeout="0" queryTimeoutUnit="SECONDS">
+      <db:bulk-insert queryTimeout="0" queryTimeoutUnit="SECONDS" targetType="PAYLOAD">
             <db:sql>INSERT INTO PLANET(POSITION, NAME) VALUES (:position, :name)</db:sql>
             <db:parameter-types>
                 <db:parameter-type key="name" type="VARCHAR" />
@@ -92,11 +92,13 @@
         </db:bulk-insert>
       <http:request config-ref="httpRequester"
                      method="POST"
-                     path="/nested"/>
+                     path="/nested"
+                     targetType="PAYLOAD"/>
       <db:insert autoGenerateKeys="false"
                  config-ref="dbConfig"
                  queryTimeout="0"
-                 queryTimeoutUnit="SECONDS">
+                 queryTimeoutUnit="SECONDS"
+                 targetType="PAYLOAD">
             <db:sql>INSERT INTO PLANET(POSITION, NAME, DESCRIPTION) VALUES (777, 'Pluto', :description)</db:sql>
             <db:parameter-types>
                 <db:parameter-type key="description" type="CLOB"/>
@@ -106,14 +108,14 @@
             </db:input-parameters>
         </db:insert>
 
-        <sockets:send-and-receive target="myVar">
+        <sockets:send-and-receive target="myVar" targetType="MESSAGE">
             <repeatable-in-memory-stream bufferSizeIncrement="8"
                                          bufferUnit="KB"
                                          initialBufferSize="51"
                                          maxBufferSize="1000"/>
         </sockets:send-and-receive>
 
-        <wsc:consume operation="GetCitiesByCountry">
+        <wsc:consume operation="GetCitiesByCountry" targetType="PAYLOAD">
             <wsc:message>
                 <wsc:body>#[payload]</wsc:body>
                 <wsc:headers>#[{"headers": {con#headerIn: "Header In Value",con#headerInOut: "Header In Out Value"}]</wsc:headers>
