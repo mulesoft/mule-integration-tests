@@ -25,19 +25,15 @@ import org.mule.runtime.api.meta.model.parameter.ParameterizedModel;
 import org.mule.runtime.config.spring.api.dsl.model.ApplicationModel;
 import org.mule.runtime.config.spring.api.dsl.model.DslElementModel;
 import org.mule.runtime.config.spring.api.dsl.model.DslElementModelFactory;
-import org.mule.runtime.config.spring.api.dsl.model.ResourceProvider;
 import org.mule.runtime.config.spring.api.dsl.processor.ArtifactConfig;
 import org.mule.runtime.config.spring.api.dsl.processor.ConfigFile;
 import org.mule.runtime.config.spring.api.dsl.processor.ConfigLine;
 import org.mule.runtime.config.spring.api.dsl.processor.xml.XmlApplicationParser;
 import org.mule.runtime.config.spring.api.dsl.processor.xml.XmlApplicationServiceRegistry;
-import org.mule.runtime.config.spring.internal.dsl.model.ClassLoaderResourceProvider;
 import org.mule.runtime.core.api.registry.SpiServiceRegistry;
 import org.mule.runtime.dsl.api.component.config.ComponentConfiguration;
 import org.mule.runtime.module.extension.api.resources.MuleExtensionModelProvider;
 import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
-
-import com.google.common.collect.ImmutableSet;
 
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -56,6 +52,8 @@ import javax.xml.transform.stream.StreamResult;
 import org.junit.Before;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
+import com.google.common.collect.ImmutableSet;
 
 @ArtifactClassLoaderRunnerConfig(sharedRuntimeLibs = {"org.apache.derby:derby", "org.apache.activemq:activemq-client",
     "org.apache.activemq:activemq-broker", "org.apache.activemq:activemq-kahadb-store"})
@@ -181,8 +179,8 @@ public abstract class AbstractElementModelTestCase extends MuleArtifactFunctiona
         .addConfigFile(new ConfigFile(configFile, singletonList(configLine)))
         .build();
 
-    ResourceProvider externalResourceProvider = new ClassLoaderResourceProvider(muleContext.getExecutionClassLoader());
-    return new ApplicationModel(artifactConfig, new ArtifactDeclaration(), externalResourceProvider);
+    return new ApplicationModel(artifactConfig, new ArtifactDeclaration(),
+                                uri -> muleContext.getExecutionClassLoader().getResourceAsStream(uri));
   }
 
   protected String write() throws Exception {
