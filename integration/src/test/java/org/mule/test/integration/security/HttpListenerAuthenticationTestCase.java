@@ -18,6 +18,7 @@ import static org.mule.runtime.http.api.HttpHeaders.Names.WWW_AUTHENTICATE;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
 import static org.mule.test.http.functional.matcher.HttpResponseReasonPhraseMatcher.hasReasonPhrase;
 import static org.mule.test.http.functional.matcher.HttpResponseStatusCodeMatcher.hasStatusCode;
+
 import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -34,11 +35,14 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
+
 import io.qameta.allure.Feature;
 
 @Feature(HTTP_EXTENSION)
+@Ignore("MULE-13203: This test uses app's spring-security lib which conflicts with the ine included in spring-module")
 public class HttpListenerAuthenticationTestCase extends AbstractIntegrationTestCase {
 
   private static final String BASIC_REALM_MULE_REALM = "Basic realm=\"mule-realm\"";

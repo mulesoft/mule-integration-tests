@@ -10,6 +10,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.core.api.config.MuleProperties.OBJECT_EXPRESSION_MANAGER;
+
 import org.mule.runtime.api.exception.ExceptionHelper;
 import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.api.security.SecurityProviderNotFoundException;
@@ -17,15 +18,16 @@ import org.mule.runtime.api.security.UnknownAuthenticationTypeException;
 import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.el.ExpressionManager;
 import org.mule.runtime.core.api.exception.MessagingException;
+import org.mule.runtime.core.api.security.AbstractAuthenticationFilter;
 import org.mule.runtime.core.api.security.CryptoFailureException;
 import org.mule.runtime.core.api.security.EncryptionStrategyNotFoundException;
-import org.mule.runtime.core.api.security.AbstractAuthenticationFilter;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.security.authentication.BadCredentialsException;
 
@@ -44,6 +46,7 @@ public class CustomSecurityFilterTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
+  @Ignore("MULE-13203: This test uses app's spring-security lib which conflicts with the ine included in spring-module")
   public void testOutboundAutenticationSend() throws Exception {
     Map<String, Serializable> props = new HashMap<>();
     props.put("username", "ross");

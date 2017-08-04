@@ -8,12 +8,15 @@ package org.mule.test.config;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import org.mule.test.AbstractIntegrationTestCase;
+
 import org.mule.tck.testmodels.fruit.Apple;
 import org.mule.tck.testmodels.fruit.Orange;
+import org.mule.test.AbstractIntegrationTestCase;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
+@Ignore("MULE-13203: This test uses a spring namespace, and spring tries to load its handler form the app classloader")
 public class JndiFunctionalTestCase extends AbstractIntegrationTestCase {
 
   @Override
