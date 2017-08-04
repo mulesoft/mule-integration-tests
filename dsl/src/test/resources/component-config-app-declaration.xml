@@ -83,7 +83,7 @@
                 </http:headers>
             </http:response>
         </http:listener>
-      <db:bulk-insert queryTimeout="0" queryTimeoutUnit="SECONDS" targetType="PAYLOAD">
+      <db:bulk-insert queryTimeout="0" queryTimeoutUnit="SECONDS" targetValue="#[payload]">
             <db:sql>INSERT INTO PLANET(POSITION, NAME) VALUES (:position, :name)</db:sql>
             <db:parameter-types>
                 <db:parameter-type key="name" type="VARCHAR" />
@@ -93,12 +93,12 @@
       <http:request config-ref="httpRequester"
                      method="POST"
                      path="/nested"
-                     targetType="PAYLOAD"/>
+                     targetValue="#[payload]"/>
       <db:insert autoGenerateKeys="false"
                  config-ref="dbConfig"
                  queryTimeout="0"
                  queryTimeoutUnit="SECONDS"
-                 targetType="PAYLOAD">
+                 targetValue="#[payload]">
             <db:sql>INSERT INTO PLANET(POSITION, NAME, DESCRIPTION) VALUES (777, 'Pluto', :description)</db:sql>
             <db:parameter-types>
                 <db:parameter-type key="description" type="CLOB"/>
@@ -108,7 +108,7 @@
             </db:input-parameters>
         </db:insert>
 
-        <sockets:send-and-receive target="myVar" targetType="MESSAGE">
+        <sockets:send-and-receive target="myVar" targetValue="#[message]">
             <repeatable-in-memory-stream bufferSizeIncrement="8"
                                          bufferUnit="KB"
                                          initialBufferSize="51"
@@ -116,7 +116,7 @@
         </sockets:send-and-receive>
 
         <try transactionType="LOCAL" transactionalAction="INDIFFERENT">
-            <wsc:consume operation="GetCitiesByCountry" targetType="PAYLOAD">
+            <wsc:consume operation="GetCitiesByCountry" targeValue="#[payload]">
                 <wsc:message>
                     <wsc:body>#[payload]</wsc:body>
                     <wsc:headers>#[{"headers": {con#headerIn: "Header In Value",con#headerInOut: "Header In Out Value"}]
@@ -132,6 +132,13 @@
                                     when="#[e.cause == null]"/>
             </error-handler>
         </try>
+        <wsc:consume operation="GetCitiesByCountry" targetValue="#[payload]">
+            <wsc:message>
+                <wsc:body>#[payload]</wsc:body>
+                <wsc:headers>#[{"headers": {con#headerIn: "Header In Value",con#headerInOut: "Header In Out Value"}]</wsc:headers>
+                <wsc:attachments>#[{}]</wsc:attachments>
+            </wsc:message>
+        </wsc:consume>
     </flow>
 
 </mule>
