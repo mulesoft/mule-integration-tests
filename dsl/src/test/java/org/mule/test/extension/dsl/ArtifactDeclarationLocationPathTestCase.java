@@ -12,16 +12,16 @@ import static org.mule.runtime.api.app.declaration.fluent.ElementDeclarer.newPar
 import static org.mule.runtime.core.api.util.IOUtils.getResourceAsString;
 import static org.mule.test.module.extension.internal.util.ExtensionsTestUtils.compareXML;
 import org.mule.runtime.api.app.declaration.ArtifactDeclaration;
-import org.mule.runtime.api.app.declaration.FlowElementDeclaration;
+import org.mule.runtime.api.app.declaration.ConstructElementDeclaration;
 import org.mule.runtime.api.app.declaration.ParameterElementDeclaration;
 import org.mule.runtime.api.app.declaration.fluent.ElementDeclarer;
 import org.mule.runtime.api.app.declaration.fluent.ParameterSimpleValue;
 import org.mule.runtime.api.component.location.Location;
 import org.mule.runtime.api.dsl.DslResolvingContext;
 import org.mule.runtime.api.meta.model.ExtensionModel;
+import org.mule.runtime.core.api.extension.MuleExtensionModelProvider;
 import org.mule.runtime.config.spring.api.dsl.ArtifactDeclarationXmlSerializer;
 import org.mule.runtime.config.spring.api.dsl.model.DslElementModelFactory;
-import org.mule.runtime.module.extension.api.resources.MuleExtensionModelProvider;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -74,7 +74,7 @@ public class ArtifactDeclarationLocationPathTestCase extends AbstractElementMode
     destination.get().setValue(ParameterSimpleValue.of("updatedDestination"));
 
     final Location flowLocation = Location.builder().globalName("send-payload").build();
-    Optional<FlowElementDeclaration> flow = multiFlowDeclaration.findElement(flowLocation);
+    Optional<ConstructElementDeclaration> flow = multiFlowDeclaration.findElement(flowLocation);
     assertThat(destination.isPresent(), is(true));
     flow.get().addComponent(0, jms.newSource("listener")
         .withConfig("config")
