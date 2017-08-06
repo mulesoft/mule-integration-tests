@@ -8,14 +8,17 @@ package org.mule.test.core.context.notification;
 
 import static org.junit.Assert.fail;
 
-import org.junit.After;
-import org.mule.runtime.core.api.context.notification.ServerNotification;
+import org.mule.runtime.core.api.context.notification.AbstractServerNotification;
+import org.mule.runtime.core.api.context.notification.IntegerAction;
+import org.mule.runtime.core.api.context.notification.Notification.Action;
 import org.mule.tck.core.context.notification.NotificationLogger;
 import org.mule.tck.probe.JUnitProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.util.Iterator;
+
+import org.junit.After;
 
 /**
  * Tests must define a "notificationLogger" listener
@@ -62,7 +65,7 @@ public abstract class AbstractNotificationTestCase extends AbstractIntegrationTe
     final StringBuilder logMessageBuilder = new StringBuilder();
     logMessageBuilder.append("Number of notifications: " + notificationLogger.getNotifications().size() + System.lineSeparator());
     for (Iterator<?> iterator = notificationLogger.getNotifications().iterator(); iterator.hasNext();) {
-      ServerNotification notification = (ServerNotification) iterator.next();
+      AbstractServerNotification notification = (AbstractServerNotification) iterator.next();
       logMessageBuilder.append("\t" + notification + System.lineSeparator());
     }
 
@@ -77,7 +80,7 @@ public abstract class AbstractNotificationTestCase extends AbstractIntegrationTe
   protected void assertExpectedNotifications(String notificationsLog, RestrictedNode spec) {
     int i = 0;
     for (Iterator<?> iterator = notificationLogger.getNotifications().iterator(); iterator.hasNext();) {
-      ServerNotification notification = (ServerNotification) iterator.next();
+      AbstractServerNotification notification = (AbstractServerNotification) iterator.next();
       i++;
       int match = spec.match(notification);
       switch (match) {
@@ -97,13 +100,13 @@ public abstract class AbstractNotificationTestCase extends AbstractIntegrationTe
 
   protected void verifyAllNotifications(RestrictedNode spec, Class<?> clazz, int from, int to) {
     for (int action = from; action <= to; ++action) {
-      if (!spec.contains(clazz, action)) {
+      if (!spec.contains(clazz, new IntegerAction(action))) {
         fail("Specification missed action " + action + " for class " + clazz);
       }
     }
   }
 
-  protected void verifyNotification(RestrictedNode spec, Class<?> clazz, int action) {
+  protected void verifyNotification(RestrictedNode spec, Class<?> clazz, Action action) {
     if (!spec.contains(clazz, action)) {
       fail("Specification missed action " + action + " for class " + clazz);
     }

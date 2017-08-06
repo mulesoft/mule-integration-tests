@@ -7,12 +7,12 @@
 
 package org.mule.test.core.context.notification;
 
-import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.runtime.core.api.context.notification.ExceptionNotification;
 import org.mule.runtime.core.api.context.notification.ExceptionNotificationListener;
-import org.mule.runtime.core.api.context.notification.ServerNotification;
 import org.mule.tck.probe.PollingProber;
 import org.mule.tck.probe.Probe;
 import org.mule.tck.probe.Prober;
+import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Test;
 
@@ -49,7 +49,7 @@ public class FailingNotificationListenerTestCase extends AbstractIntegrationTest
   public static class ExceptionFailingListener implements ExceptionNotificationListener {
 
     @Override
-    public void onNotification(ServerNotification notification) {
+    public void onNotification(ExceptionNotification notification) {
       synchronized (lock) {
         count = count + 1;
       }

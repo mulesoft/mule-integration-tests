@@ -10,6 +10,7 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.junit.Assert.assertTrue;
 
 import org.mule.functional.api.notification.FunctionalTestNotificationListener;
+import org.mule.runtime.core.api.context.notification.NotificationListenerRegistry;
 import org.mule.runtime.core.api.util.concurrent.Latch;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -27,7 +28,8 @@ public class InOnlyTestCase extends AbstractIntegrationTestCase {
   @Test
   public void testExchange() throws Exception {
     final Latch latch = new Latch();
-    muleContext.registerListener((FunctionalTestNotificationListener) notification -> latch.countDown());
+    muleContext.getRegistry().lookupObject(NotificationListenerRegistry.class)
+        .registerListener((FunctionalTestNotificationListener) notification -> latch.countDown());
 
     flowRunner("In-Only-Service").withPayload(TEST_PAYLOAD).run();
     assertTrue(latch.await(TIMEOUT, MILLISECONDS));

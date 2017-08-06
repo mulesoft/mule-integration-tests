@@ -6,20 +6,23 @@
  */
 package org.mule.test.routing;
 
+import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.functional.api.component.FunctionalTestProcessor.getFromFlow;
+import static org.mule.runtime.core.api.context.notification.RoutingNotification.CORRELATION_TIMEOUT;
 
 import org.mule.functional.api.component.FunctionalTestProcessor;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.client.MuleClient;
-import org.mule.runtime.core.api.context.notification.RoutingNotificationListener;
+import org.mule.runtime.core.api.context.notification.IntegerAction;
+import org.mule.runtime.core.api.context.notification.NotificationListenerRegistry;
 import org.mule.runtime.core.api.context.notification.RoutingNotification;
+import org.mule.runtime.core.api.context.notification.RoutingNotificationListener;
 import org.mule.tck.probe.PollingProber;
 import org.mule.tck.probe.Probe;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -36,26 +39,27 @@ public class CollectionAggregatorRouterTimeoutTestCase extends AbstractIntegrati
   public void testNoFailOnTimeout() throws Exception {
     // correlation timeouts should not fire in this scenario, check it
     final AtomicInteger correlationTimeoutCount = new AtomicInteger(0);
-    muleContext.registerListener(new RoutingNotificationListener<RoutingNotification>() {
+    muleContext.getRegistry().lookupObject(NotificationListenerRegistry.class)
+        .registerListener(new RoutingNotificationListener<RoutingNotification>() {
 
-      @Override
-      public boolean isBlocking() {
-        return false;
-      }
+          @Override
+          public boolean isBlocking() {
+            return false;
+          }
 
-      @Override
-      public void onNotification(RoutingNotification notification) {
-        if (notification.getAction() == RoutingNotification.CORRELATION_TIMEOUT) {
-          correlationTimeoutCount.incrementAndGet();
-        }
-      }
-    });
+          @Override
+          public void onNotification(RoutingNotification notification) {
+            if (new IntegerAction(CORRELATION_TIMEOUT).equals(notification.getAction())) {
+              correlationTimeoutCount.incrementAndGet();
+            }
+          }
+        });
 
     FunctionalTestProcessor vortex = getFromFlow(muleContext, "vortex");
     FunctionalTestProcessor aggregator = getFromFlow(muleContext, "aggregator");
 
     MuleClient client = muleContext.getClient();
-    List<String> list = Arrays.asList("first", "second");
+    List<String> list = asList("first", "second");
 
     flowRunner("splitter").withPayload(list).run();
 

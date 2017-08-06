@@ -6,10 +6,13 @@
  */
 package org.mule.test.core.context.notification;
 
+import static java.lang.String.format;
 import static org.mule.runtime.core.api.context.notification.ConnectorMessageNotification.MESSAGE_ERROR_RESPONSE;
 import static org.mule.runtime.core.api.context.notification.ConnectorMessageNotification.MESSAGE_RECEIVED;
 import static org.mule.runtime.http.api.HttpConstants.Method.POST;
+
 import org.mule.runtime.core.api.context.notification.ConnectorMessageNotification;
+import org.mule.runtime.core.api.context.notification.IntegerAction;
 import org.mule.runtime.http.api.HttpService;
 import org.mule.runtime.http.api.domain.message.request.HttpRequest;
 import org.mule.service.http.TestHttpClient;
@@ -37,7 +40,7 @@ public class ConnectorMessageErrorNotificationTestCase extends AbstractNotificat
   @Test
   public void doTest() throws Exception {
     HttpRequest request =
-        HttpRequest.builder().uri(String.format("http://localhost:%s/path", port.getNumber())).method(POST).build();
+        HttpRequest.builder().uri(format("http://localhost:%s/path", port.getNumber())).method(POST).build();
 
     httpClient.send(request, TIMEOUT, false, null);
 
@@ -47,8 +50,8 @@ public class ConnectorMessageErrorNotificationTestCase extends AbstractNotificat
   @Override
   public RestrictedNode getSpecification() {
     return new Node()
-        .parallel(new Node(ConnectorMessageNotification.class, MESSAGE_RECEIVED, FLOW_ID))
-        .parallel(new Node(ConnectorMessageNotification.class, MESSAGE_ERROR_RESPONSE, FLOW_ID));
+        .parallel(new Node(ConnectorMessageNotification.class, new IntegerAction(MESSAGE_RECEIVED), FLOW_ID))
+        .parallel(new Node(ConnectorMessageNotification.class, new IntegerAction(MESSAGE_ERROR_RESPONSE), FLOW_ID));
   }
 
   @Override

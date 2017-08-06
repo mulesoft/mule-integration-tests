@@ -13,12 +13,11 @@ import static org.junit.Assert.assertThat;
 
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
-import org.mule.runtime.core.api.context.notification.ServerNotification;
-import org.mule.runtime.core.api.context.notification.ServerNotificationListener;
-import org.mule.runtime.core.api.context.notification.SynchronousServerEvent;
-import org.mule.runtime.core.api.registry.MuleRegistry;
 import org.mule.runtime.core.api.config.builders.AbstractConfigurationBuilder;
+import org.mule.runtime.core.api.context.notification.AbstractServerNotification;
+import org.mule.runtime.core.api.context.notification.NotificationListener;
 import org.mule.runtime.core.api.context.notification.ServerNotificationManager;
+import org.mule.runtime.core.api.registry.MuleRegistry;
 import org.mule.service.scheduler.internal.DefaultSchedulerService;
 import org.mule.tck.junit4.AbstractMuleContextTestCase;
 import org.mule.tck.probe.JUnitLambdaProbe;
@@ -158,7 +157,7 @@ public class ServerNotificationManagerPerformanceTestCase extends AbstractMuleCo
   }
 
   public static class PerfTestLightServerNotificationListener
-      implements ServerNotificationListener<PerfTestLightServerNotification> {
+      implements NotificationListener<PerfTestLightServerNotification> {
 
     private final AtomicInteger notifications = new AtomicInteger();
 
@@ -181,7 +180,7 @@ public class ServerNotificationManagerPerformanceTestCase extends AbstractMuleCo
     }
   }
 
-  public static class PerfTestIOServerNotificationListener implements ServerNotificationListener<PerfTestIOServerNotification> {
+  public static class PerfTestIOServerNotificationListener implements NotificationListener<PerfTestIOServerNotification> {
 
     private final AtomicInteger notifications = new AtomicInteger();
 
@@ -205,7 +204,7 @@ public class ServerNotificationManagerPerformanceTestCase extends AbstractMuleCo
   }
 
   public static class PerfTestServerSynchronousNotificationListener
-      implements ServerNotificationListener<PerfTestServerSynchronousNotification> {
+      implements NotificationListener<PerfTestServerSynchronousNotification> {
 
     private final AtomicInteger notifications = new AtomicInteger();
 
@@ -228,7 +227,7 @@ public class ServerNotificationManagerPerformanceTestCase extends AbstractMuleCo
     }
   }
 
-  public static class PerfTestIOServerNotification extends ServerNotification {
+  public static class PerfTestIOServerNotification extends AbstractServerNotification {
 
     static {
       registerAction("PerfTestIOServerNotification", CUSTOM_EVENT_ACTION_START_RANGE + 1);
@@ -240,7 +239,7 @@ public class ServerNotificationManagerPerformanceTestCase extends AbstractMuleCo
 
   }
 
-  public static class PerfTestLightServerNotification extends ServerNotification {
+  public static class PerfTestLightServerNotification extends AbstractServerNotification {
 
     static {
       registerAction("PerfTestLightServerNotification", CUSTOM_EVENT_ACTION_START_RANGE + 2);
@@ -252,7 +251,7 @@ public class ServerNotificationManagerPerformanceTestCase extends AbstractMuleCo
 
   }
 
-  public static class PerfTestServerSynchronousNotification extends ServerNotification implements SynchronousServerEvent {
+  public static class PerfTestServerSynchronousNotification extends AbstractServerNotification {
 
     static {
       registerAction("PerfTestServerBlockingNotification", CUSTOM_EVENT_ACTION_START_RANGE + 3);
@@ -262,6 +261,10 @@ public class ServerNotificationManagerPerformanceTestCase extends AbstractMuleCo
       super("", CUSTOM_EVENT_ACTION_START_RANGE + 3);
     }
 
+    @Override
+    public boolean isSynchronous() {
+      return true;
+    }
   }
 
 }

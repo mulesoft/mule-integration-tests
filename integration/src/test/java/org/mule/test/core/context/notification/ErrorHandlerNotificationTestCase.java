@@ -13,6 +13,8 @@ import static org.mule.runtime.core.api.context.notification.ErrorHandlerNotific
 
 import org.mule.functional.api.exception.FunctionalTestException;
 import org.mule.runtime.core.api.context.notification.ErrorHandlerNotification;
+import org.mule.runtime.core.api.context.notification.IntegerAction;
+import org.mule.runtime.core.api.context.notification.Notification.Action;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -42,11 +44,18 @@ public class ErrorHandlerNotificationTestCase extends AbstractNotificationTestCa
 
   @Override
   public RestrictedNode getSpecification() {
-    return new Node().serial(node(PROCESS_START).serial(node(PROCESS_END))).serial(node(PROCESS_START).serial(node(PROCESS_END)))
-        .serial(node(PROCESS_START).serial(node(PROCESS_END))).serial(node(PROCESS_START).serial(node(PROCESS_END)));
+    return new Node()
+        .serial(node(new IntegerAction(PROCESS_START))
+            .serial(node(new IntegerAction(PROCESS_END))))
+        .serial(node(new IntegerAction(PROCESS_START))
+            .serial(node(new IntegerAction(PROCESS_END))))
+        .serial(node(new IntegerAction(PROCESS_START))
+            .serial(node(new IntegerAction(PROCESS_END))))
+        .serial(node(new IntegerAction(PROCESS_START))
+            .serial(node(new IntegerAction(PROCESS_END))));
   }
 
-  private RestrictedNode node(int action) {
+  private RestrictedNode node(Action action) {
     return new Node(ErrorHandlerNotification.class, action);
   }
 

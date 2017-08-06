@@ -6,22 +6,28 @@
  */
 package org.mule.test.config.spring.parsers.specific;
 
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.IsCollectionContaining.hasItem;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 
 import org.mule.runtime.core.api.MuleContext;
+import org.mule.runtime.core.api.context.notification.AbstractServerNotification;
 import org.mule.runtime.core.api.context.notification.ListenerSubscriptionPair;
+import org.mule.runtime.core.api.context.notification.Notification;
+import org.mule.runtime.core.api.context.notification.NotificationListener;
 import org.mule.runtime.core.api.context.notification.SecurityNotification;
 import org.mule.runtime.core.api.context.notification.SecurityNotificationListener;
-import org.mule.runtime.core.api.context.notification.ServerNotification;
-import org.mule.runtime.core.api.context.notification.ServerNotificationListener;
 import org.mule.runtime.core.api.context.notification.ServerNotificationManager;
 import org.mule.runtime.core.api.security.UnauthorisedException;
 import org.mule.tck.probe.JUnitLambdaProbe;
@@ -30,6 +36,9 @@ import org.mule.test.AbstractIntegrationTestCase;
 
 import java.util.Collection;
 
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeMatcher;
 import org.junit.Test;
 
 public class ServerNotificationManagerTestCase extends AbstractIntegrationTestCase {
@@ -77,18 +86,11 @@ public class ServerNotificationManagerTestCase extends AbstractIntegrationTestCa
   @Test
   public void testExplicitlyConiguredNotificationListenerRegistration() throws InterruptedException {
     ServerNotificationManager manager = muleContext.getNotificationManager();
+    assertThat(manager.getListeners(), hasItem(withListener(muleContext.getRegistry().lookupObject("listener"))));
+    assertThat(manager.getListeners(), hasItem(withListener(muleContext.getRegistry().lookupObject("listener2"))));
+    assertThat(manager.getListeners(), hasItem(withListener(muleContext.getRegistry().lookupObject("securityListener"))));
     assertThat(manager.getListeners(),
-               hasItem(new ListenerSubscriptionPair((ServerNotificationListener) muleContext.getRegistry()
-                   .lookupObject("listener"), null)));
-    assertThat(manager.getListeners(),
-               hasItem(new ListenerSubscriptionPair((ServerNotificationListener) muleContext.getRegistry()
-                   .lookupObject("listener2"), null)));
-    assertThat(manager.getListeners(),
-               hasItem(new ListenerSubscriptionPair((ServerNotificationListener) muleContext.getRegistry()
-                   .lookupObject("securityListener"), null)));
-    assertThat(manager.getListeners(),
-               hasItem(new ListenerSubscriptionPair((ServerNotificationListener) muleContext.getRegistry()
-                   .lookupObject("listener3"), "*")));
+               hasItem(allOf(withListener(muleContext.getRegistry().lookupObject("listener3")), withSubscriptionOnlyFor("*"))));
   }
 
   @Test
@@ -98,13 +100,10 @@ public class ServerNotificationManagerTestCase extends AbstractIntegrationTestCa
     // Not registered as ad-hoc listener with null subscription as this is defined
     // explicitly.
     assertThat(manager.getListeners(),
-               not(hasItem(new ListenerSubscriptionPair((ServerNotificationListener) muleContext.getRegistry()
-                   .lookupObject("listener3"), null))));
+               not(hasItem(allOf(withListener(muleContext.getRegistry().lookupObject("listener3")), withNoSubscription()))));
 
     // Registered as configured
-    assertThat(manager.getListeners(),
-               hasItem(new ListenerSubscriptionPair((ServerNotificationListener) muleContext.getRegistry()
-                   .lookupObject("listener4"), null)));
+    assertThat(manager.getListeners(), hasItem(withListener(muleContext.getRegistry().lookupObject("listener4"))));
   }
 
   @Test
@@ -124,11 +123,11 @@ public class ServerNotificationManagerTestCase extends AbstractIntegrationTestCa
     assertThat(adminListener.isCalled(), is(false));
   }
 
-  protected static interface TestInterface extends ServerNotificationListener {
+  protected static interface TestInterface extends NotificationListener<TestEvent> {
     // empty
   }
 
-  protected static interface TestInterface2 extends ServerNotificationListener {
+  protected static interface TestInterface2 extends NotificationListener<Notification> {
     // empty
   }
 
@@ -141,7 +140,7 @@ public class ServerNotificationManagerTestCase extends AbstractIntegrationTestCa
     }
 
     @Override
-    public void onNotification(ServerNotification notification) {
+    public void onNotification(TestEvent notification) {
       called = true;
     }
 
@@ -156,7 +155,7 @@ public class ServerNotificationManagerTestCase extends AbstractIntegrationTestCa
     }
 
     @Override
-    public void onNotification(ServerNotification notification) {
+    public void onNotification(Notification notification) {
       called = true;
     }
 
@@ -182,7 +181,7 @@ public class ServerNotificationManagerTestCase extends AbstractIntegrationTestCa
 
   }
 
-  protected static class TestEvent extends ServerNotification {
+  protected static class TestEvent extends AbstractServerNotification {
 
     public TestEvent() {
       super(new Object(), 0);
@@ -192,10 +191,72 @@ public class ServerNotificationManagerTestCase extends AbstractIntegrationTestCa
 
   protected static class TestSecurityEvent extends SecurityNotification {
 
+    @Override
+    public boolean isSynchronous() {
+      return true;
+    }
+
     public TestSecurityEvent(MuleContext muleContext) throws Exception {
       super(new UnauthorisedException(createStaticMessage("dummy")), 0);
     }
 
   }
 
+  public static ListenerSubscriptionPairMatcher withListener(NotificationListener listener) {
+    return new ListenerSubscriptionPairMatcher(sameInstance(listener), null, anything());
+  }
+
+  public static ListenerSubscriptionPairMatcher withSubscriptionOnlyFor(Object subscription) {
+    return new ListenerSubscriptionPairMatcher(null, subscription, anything());
+  }
+
+  public static ListenerSubscriptionPairMatcher withNoSubscription() {
+    return new ListenerSubscriptionPairMatcher(null, null, nullValue());
+  }
+
+  private static class ListenerSubscriptionPairMatcher<N extends Notification>
+      extends TypeSafeMatcher<ListenerSubscriptionPair<N>> {
+
+    private Matcher<NotificationListener<N>> listenerMatcher;
+    private Object subscription;
+    private Matcher subscriptionMatcher;
+
+    public ListenerSubscriptionPairMatcher(Matcher<NotificationListener<N>> listenerMatcher,
+                                           Object subscription, Matcher subscriptionMatcher) {
+      this.listenerMatcher = listenerMatcher;
+      this.subscription = subscription;
+      this.subscriptionMatcher = subscriptionMatcher;
+    }
+
+    @Override
+    public void describeTo(Description description) {
+      if (listenerMatcher != null) {
+        description.appendText("listener ");
+        listenerMatcher.describeTo(description);
+      }
+      if (subscription != null) {
+        description.appendText("subscription for " + subscription.toString());
+      }
+    }
+
+    @Override
+    protected boolean matchesSafely(ListenerSubscriptionPair<N> item) {
+      boolean match = true;
+      if (listenerMatcher != null) {
+        match = match && listenerMatcher.matches(item.getListener());
+      }
+      match = match && subscriptionMatcher.matches(item.getSelector());
+      if (subscription != null) {
+        final AbstractServerNotification mockNotificationMatches = mock(AbstractServerNotification.class);
+        when(mockNotificationMatches.getResourceIdentifier()).thenReturn(subscription.toString());
+        match = match && item.getSelector().test((N) mockNotificationMatches);
+
+        final AbstractServerNotification mockNotificationNotMatches = mock(AbstractServerNotification.class);
+        when(mockNotificationNotMatches.getResourceIdentifier()).thenReturn("");
+        match = match && !item.getSelector().test((N) mockNotificationNotMatches);
+      }
+      return match;
+    }
+
+  }
 }

@@ -11,6 +11,7 @@ import static org.mule.runtime.core.api.context.notification.ConnectorMessageNot
 import static org.mule.runtime.http.api.HttpConstants.Method.POST;
 
 import org.mule.runtime.core.api.context.notification.ConnectorMessageNotification;
+import org.mule.runtime.core.api.context.notification.IntegerAction;
 import org.mule.runtime.http.api.HttpService;
 import org.mule.runtime.http.api.domain.message.request.HttpRequest;
 import org.mule.service.http.TestHttpClient;
@@ -48,8 +49,8 @@ public class ConnectorMessageNotificationTestCase extends AbstractNotificationTe
   @Override
   public RestrictedNode getSpecification() {
     return new Node()
-        .parallel(new Node(ConnectorMessageNotification.class, MESSAGE_RECEIVED, FLOW_ID))
-        .parallel(new Node(ConnectorMessageNotification.class, MESSAGE_RESPONSE, FLOW_ID));
+        .parallel(new Node(ConnectorMessageNotification.class, new IntegerAction(MESSAGE_RECEIVED), FLOW_ID))
+        .parallel(new Node(ConnectorMessageNotification.class, new IntegerAction(MESSAGE_RESPONSE), FLOW_ID));
   }
 
   @Override

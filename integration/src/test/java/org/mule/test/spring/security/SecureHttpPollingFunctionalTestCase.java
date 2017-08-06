@@ -17,6 +17,7 @@ import static org.mule.runtime.http.api.HttpConstants.HttpStatus.UNAUTHORIZED;
 import org.mule.extension.http.api.HttpResponseAttributes;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.client.MuleClient;
+import org.mule.runtime.core.api.context.notification.NotificationListenerRegistry;
 import org.mule.runtime.core.api.context.notification.SecurityNotification;
 import org.mule.runtime.core.api.context.notification.SecurityNotificationListener;
 import org.mule.runtime.core.api.util.concurrent.Latch;
@@ -43,18 +44,19 @@ public class SecureHttpPollingFunctionalTestCase extends AbstractIntegrationTest
   @Test
   public void testPollingHttpConnectorSentCredentials() throws Exception {
     final Latch latch = new Latch();
-    muleContext.registerListener(new SecurityNotificationListener<SecurityNotification>() {
+    muleContext.getRegistry().lookupObject(NotificationListenerRegistry.class)
+        .registerListener(new SecurityNotificationListener<SecurityNotification>() {
 
-      @Override
-      public boolean isBlocking() {
-        return false;
-      }
+          @Override
+          public boolean isBlocking() {
+            return false;
+          }
 
-      @Override
-      public void onNotification(SecurityNotification notification) {
-        latch.countDown();
-      }
-    });
+          @Override
+          public void onNotification(SecurityNotification notification) {
+            latch.countDown();
+          }
+        });
 
     MuleClient client = muleContext.getClient();
     Message result = client.request("test://toclient", 5000).getRight().get();

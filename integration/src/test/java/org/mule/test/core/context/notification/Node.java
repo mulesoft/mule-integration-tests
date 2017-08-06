@@ -6,8 +6,8 @@
  */
 package org.mule.test.core.context.notification;
 
-import org.mule.runtime.core.api.context.notification.SynchronousServerEvent;
-import org.mule.runtime.core.api.context.notification.ServerNotification;
+import org.mule.runtime.core.api.context.notification.AbstractServerNotification;
+import org.mule.runtime.core.api.context.notification.Notification.Action;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -38,7 +38,7 @@ public class Node implements RestrictedNode {
 
   // the data for this node
   private Class clazz = null;
-  private int action;
+  private Action action;
   private String id;
   private boolean isIdDefined = false; // allow null IDs to be specified
   private boolean nodeOk = false;
@@ -50,13 +50,13 @@ public class Node implements RestrictedNode {
   // only once the parallel are done, this runs
   private LinkedList serial = new LinkedList();
 
-  public Node(Class clazz, int action, String id) {
+  public Node(Class clazz, Action action, String id) {
     this(clazz, action);
     this.id = id;
     isIdDefined = true;
   }
 
-  public Node(Class clazz, int action) {
+  public Node(Class clazz, Action action) {
     this.clazz = clazz;
     this.action = action;
   }
@@ -66,29 +66,12 @@ public class Node implements RestrictedNode {
   }
 
   public Node parallel(RestrictedNode node) {
-    if (null != node.getNotificationClass() && SynchronousServerEvent.class.isAssignableFrom(node.getNotificationClass())) {
-      logger.warn("Registered blocking event as parallel: " + node);
-    }
     parallel.add(node);
     return this;
   }
 
-  /**
-   * Avoid warnings when we need to add a synch event as parallel for other reasons (typically because there's more than one model
-   * generating some event)
-   */
-  public Node parallelSynch(RestrictedNode node) {
-    if (null != node.getNotificationClass() && !SynchronousServerEvent.class.isAssignableFrom(node.getNotificationClass())) {
-      throw new IllegalStateException("Node " + node + " is not a synch event");
-    }
-    parallel.add(node);
-    return this;
-  }
-
+  @Override
   public RestrictedNode serial(RestrictedNode node) {
-    if (null != node.getNotificationClass() && !SynchronousServerEvent.class.isAssignableFrom(node.getNotificationClass())) {
-      logger.warn("Registered non-blocking event as serial: " + node);
-    }
     serial.addLast(node);
     return this;
   }
@@ -97,7 +80,8 @@ public class Node implements RestrictedNode {
    * @param notification
    * @return whether the notification was matched or not (for this node or any child)
    */
-  public int match(ServerNotification notification) {
+  @Override
+  public int match(AbstractServerNotification notification) {
     // if we need to check ourselves, just do that
     if (!nodeOk) {
       if (testLocal(notification)) {
@@ -157,14 +141,15 @@ public class Node implements RestrictedNode {
     }
   }
 
-  private boolean testLocal(ServerNotification notification) {
-    return clazz.equals(notification.getClass()) && action == notification.getAction()
+  private boolean testLocal(AbstractServerNotification notification) {
+    return clazz.equals(notification.getClass()) && action.equals(notification.getAction())
         && (!isIdDefined || (null == id && null == notification.getResourceIdentifier())
             || (null != id && id.equals(notification.getResourceIdentifier())));
   }
 
-  public boolean contains(Class clazz, int action) {
-    if (null != this.clazz && this.clazz.equals(clazz) && this.action == action) {
+  @Override
+  public boolean contains(Class clazz, Action action) {
+    if (null != this.clazz && this.clazz.equals(clazz) && this.action.equals(action)) {
       return true;
     }
     for (Iterator children = parallel.iterator(); children.hasNext();) {
@@ -180,6 +165,7 @@ public class Node implements RestrictedNode {
     return false;
   }
 
+  @Override
   public RestrictedNode getAnyRemaining() {
     if (!nodeOk) {
       return this;
@@ -199,14 +185,17 @@ public class Node implements RestrictedNode {
     return null;
   }
 
+  @Override
   public boolean isExhausted() {
     return null == getAnyRemaining();
   }
 
+  @Override
   public Class getNotificationClass() {
     return clazz;
   }
 
+  @Override
   public String toString() {
     return clazz + ": " + action + (isIdDefined ? ": " + id : "");
   }

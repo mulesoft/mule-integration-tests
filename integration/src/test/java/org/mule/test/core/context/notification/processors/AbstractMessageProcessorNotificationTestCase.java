@@ -6,19 +6,23 @@
  */
 package org.mule.test.core.context.notification.processors;
 
-import org.mule.test.core.context.notification.AbstractNotificationTestCase;
+import static org.mule.runtime.core.api.context.notification.MessageProcessorNotification.MESSAGE_PROCESSOR_POST_INVOKE;
+import static org.mule.runtime.core.api.context.notification.MessageProcessorNotification.MESSAGE_PROCESSOR_PRE_INVOKE;
+
+import org.mule.runtime.core.api.context.notification.IntegerAction;
 import org.mule.runtime.core.api.context.notification.MessageProcessorNotification;
+import org.mule.test.core.context.notification.AbstractNotificationTestCase;
 import org.mule.test.core.context.notification.Node;
 import org.mule.test.core.context.notification.RestrictedNode;
 
 public abstract class AbstractMessageProcessorNotificationTestCase extends AbstractNotificationTestCase {
 
   protected RestrictedNode pre() {
-    return new Node(MessageProcessorNotification.class, MessageProcessorNotification.MESSAGE_PROCESSOR_PRE_INVOKE);
+    return new Node(MessageProcessorNotification.class, new IntegerAction(MESSAGE_PROCESSOR_PRE_INVOKE));
   }
 
   protected RestrictedNode post() {
-    return new Node(MessageProcessorNotification.class, MessageProcessorNotification.MESSAGE_PROCESSOR_POST_INVOKE);
+    return new Node(MessageProcessorNotification.class, new IntegerAction(MESSAGE_PROCESSOR_POST_INVOKE));
   }
 
   protected RestrictedNode prePost() {
