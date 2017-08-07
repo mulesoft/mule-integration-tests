@@ -27,9 +27,13 @@
 
     <flow name="withDefaultHttp">
         <soap:invoke config-ref="default-http" service="1" operation="noParams"/>
+        <set-payload value="#[payload.body]"/>
+        <object-to-string-transformer/>
     </flow>
 
     <flow name="withConfigHttp">
         <soap:invoke config-ref="config-http" service="1" operation="noParams"/>
+        <set-payload value="#[payload.body]"/>
+        <object-to-string-transformer/>
     </flow>
 </mule>

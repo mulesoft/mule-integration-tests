@@ -31,13 +31,19 @@
 
     <flow name="customTransport">
         <ram:invoke config-ref="miniverse" service="ram" operation="getChannels"/>
+        <set-payload value="#[payload.body]"/>
+        <object-to-string-transformer/>
     </flow>
 
     <flow name="customTransportWithParams">
         <ram:invoke config-ref="portal-gun" service="ram" operation="getChannels"/>
+        <set-payload value="#[payload.body]"/>
+        <object-to-string-transformer/>
     </flow>
 
     <flow name="withDefaultHttp">
         <ram:invoke config-ref="http-default" service="ram" operation="getChannels"/>
+        <set-payload value="#[payload.body]"/>
+        <object-to-string-transformer/>
     </flow>
 </mule>

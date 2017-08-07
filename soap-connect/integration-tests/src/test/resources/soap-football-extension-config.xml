@@ -21,14 +21,20 @@
                 <soap:body>#[payload]</soap:body>
             </soap:message>
         </soap:invoke>
+        <set-payload value="#[payload.body]"/>
+        <object-to-string-transformer/>
     </flow>
 
     <flow name="getPresidentInfo">
         <soap:invoke config-ref="leagues" service="leagues" operation="getPresidentInfo"/>
+        <set-payload value="#[payload.body]"/>
+        <object-to-string-transformer/>
     </flow>
 
     <flow name="invalidKey">
         <soap:invoke config-ref="leagues" service="leagues" operation="invalidKey"/>
+        <set-payload value="#[payload.body]"/>
+        <object-to-string-transformer/>
     </flow>
 
     <flow name="getTeams">
@@ -37,6 +43,8 @@
                 <soap:body>#[payload]</soap:body>
             </soap:message>
         </soap:invoke>
+        <set-payload value="#[payload.body]"/>
+        <object-to-string-transformer/>
     </flow>
 
     <flow name="getLeagueTeams">
@@ -55,6 +63,8 @@
                 </soap:headers>
             </soap:message>
         </soap:invoke>
+        <set-payload value="#[payload.body]"/>
+        <object-to-string-transformer/>
     </flow>
 
     <flow name="uploadResult">
@@ -64,5 +74,7 @@
                 <soap:attachments>#[{result: vars.att}]</soap:attachments>
             </soap:message>
         </soap:invoke>
+        <set-payload value="#[payload.body]"/>
+        <object-to-string-transformer/>
     </flow>
 </mule>

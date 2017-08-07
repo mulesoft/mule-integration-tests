@@ -7,10 +7,8 @@
 package org.mule.it.soap.connect;
 
 import static org.mule.service.soap.SoapTestUtils.assertSimilarXml;
-import org.mule.runtime.api.message.Message;
-import org.mule.runtime.api.streaming.bytes.CursorStreamProvider;
 
-import org.apache.commons.io.IOUtils;
+import org.mule.runtime.api.message.Message;
 import org.junit.Test;
 
 public class SoapExtensionWithCustomHeadersTestCase extends AbstractSimpleServiceFunctionalTestCase {
@@ -23,10 +21,9 @@ public class SoapExtensionWithCustomHeadersTestCase extends AbstractSimpleServic
   @Test
   public void useServiceProviderWithCustomHeaders() throws Exception {
     Message m = flowRunner("customHeaders").keepStreamsOpen().run().getMessage();
-    String result = IOUtils.toString(((CursorStreamProvider) m.getPayload().getValue()).openCursor());
     assertSimilarXml("<ns2:noParamsWithHeaderResponse xmlns:ns2=\"http://service.soap.service.mule.org/\">"
         + "<text>OP=noParamsWithHeader</text>"
-        + "</ns2:noParamsWithHeaderResponse>", result);
+        + "</ns2:noParamsWithHeaderResponse>", ((String) m.getPayload().getValue()));
   }
 
 }

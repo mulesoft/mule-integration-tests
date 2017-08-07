@@ -7,10 +7,8 @@
 package org.mule.it.soap.connect;
 
 import static org.mule.service.soap.SoapTestUtils.assertSimilarXml;
-import org.mule.runtime.api.message.Message;
-import org.mule.runtime.api.streaming.bytes.CursorStreamProvider;
 
-import org.apache.commons.io.IOUtils;
+import org.mule.runtime.api.message.Message;
 import org.junit.Test;
 
 public class SoapExtensionWithHttpDispatcher extends AbstractSimpleServiceFunctionalTestCase {
@@ -32,9 +30,8 @@ public class SoapExtensionWithHttpDispatcher extends AbstractSimpleServiceFuncti
 
   private void executeAndAssertSoapCall(String flow) throws Exception {
     Message m = flowRunner(flow).keepStreamsOpen().run().getMessage();
-    String result = IOUtils.toString(((CursorStreamProvider) m.getPayload().getValue()).openCursor());
     assertSimilarXml("<ns2:noParamsResponse xmlns:ns2=\"http://service.soap.service.mule.org/\">"
         + "<text>response</text>"
-        + "</ns2:noParamsResponse>", result);
+        + "</ns2:noParamsResponse>", ((String) m.getPayload().getValue()));
   }
 }
