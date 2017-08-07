@@ -18,7 +18,7 @@ import static org.mule.runtime.api.component.TypedComponentIdentifier.builder;
 import static org.mule.runtime.api.dsl.DslResolvingContext.getDefault;
 import static org.mule.runtime.config.spring.api.dsl.model.ApplicationModel.FLOW_IDENTIFIER;
 import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.initialiseIfNeeded;
-
+import static org.mule.runtime.module.extension.api.util.MuleExtensionUtils.createDefaultExtensionManager;
 import org.mule.runtime.api.component.TypedComponentIdentifier;
 import org.mule.runtime.api.dsl.DslResolvingContext;
 import org.mule.runtime.api.meta.model.ExtensionModel;
@@ -27,10 +27,10 @@ import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.runtime.core.api.config.builders.AbstractConfigurationBuilder;
 import org.mule.runtime.core.api.context.notification.MessageProcessorNotification;
+import org.mule.runtime.core.api.extension.ExtensionManager;
 import org.mule.runtime.dsl.api.component.config.DefaultComponentLocation;
 import org.mule.runtime.dsl.api.component.config.DefaultComponentLocation.DefaultLocationPart;
 import org.mule.runtime.extension.internal.loader.XmlExtensionModelLoader;
-import org.mule.runtime.module.extension.internal.manager.DefaultExtensionManager;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.util.HashMap;
@@ -41,9 +41,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import io.qameta.allure.junit4.DisplayName;
 import org.junit.Assert;
 import org.junit.Test;
-import io.qameta.allure.junit4.DisplayName;
 
 @DisplayName("XML Connectors Path generation")
 public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
@@ -396,18 +396,18 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
 
       @Override
       protected void doConfigure(MuleContext muleContext) throws Exception {
-        DefaultExtensionManager extensionManager;
+        ExtensionManager extensionManager;
         if (muleContext.getExtensionManager() == null) {
-          extensionManager = new DefaultExtensionManager();
+          extensionManager = createDefaultExtensionManager();
           ((DefaultMuleContext) muleContext).setExtensionManager(extensionManager);
         }
-        extensionManager = (DefaultExtensionManager) muleContext.getExtensionManager();
+        extensionManager = muleContext.getExtensionManager();
         initialiseIfNeeded(extensionManager, muleContext);
 
         registerXmlExtensions(extensionManager);
       }
 
-      private void registerXmlExtensions(DefaultExtensionManager extensionManager) {
+      private void registerXmlExtensions(ExtensionManager extensionManager) {
         final Set<ExtensionModel> extensions = new HashSet<>();
         for (String modulePath : getModulePaths()) {
           Map<String, Object> params = new HashMap<>();
