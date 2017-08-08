@@ -82,7 +82,7 @@ public class FlowAsyncBeforeAfterOutboundTestCase extends AbstractIntegrationTes
       }
 
       return Event.builder(event).message(new TestLegacyMessageBuilder(event.getMessage())
-          .addOutboundProperty((String) event.getVariable("property-name").getValue(), requestTaskToken).build()).build();
+          .addOutboundProperty((String) event.getVariables().get("property-name").getValue(), requestTaskToken).build()).build();
     }
 
     protected String generateTaskToken() {

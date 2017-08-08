@@ -9,7 +9,8 @@ package org.mule.test;
 
 import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
 
-@ArtifactClassLoaderRunnerConfig(sharedRuntimeLibs = {"org.mule.tests:mule-tests-unit"})
+@ArtifactClassLoaderRunnerConfig(sharedRuntimeLibs = {"org.mule.tests:mule-tests-unit"},
+    extraPrivilegedArtifacts = {"org.mule.tests:mule-tests-parsers-plugin"})
 public interface IntegrationTestCaseRunnerConfig {
 
 }

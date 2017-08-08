@@ -19,7 +19,7 @@ import org.mule.runtime.core.api.Event;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.security.DefaultMuleCredentials;
 import org.mule.runtime.core.api.security.EncryptionStrategy;
-import org.mule.runtime.core.api.security.SecurityContext;
+import org.mule.runtime.api.security.SecurityContext;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.io.Serializable;

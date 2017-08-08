@@ -6,19 +6,28 @@
  */
 package org.mule.test.routing;
 
+import static java.util.Optional.of;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mule.runtime.api.meta.AbstractAnnotatedObject.ROOT_CONTAINER_NAME_KEY;
 import static org.mule.runtime.config.spring.api.SpringXmlConfigurationBuilderFactory.createConfigurationBuilder;
 import static org.mule.tck.util.MuleContextUtils.mockContextWithServices;
-
+import org.mule.runtime.api.component.location.Location;
 import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.config.ConfigurationException;
+import org.mule.runtime.core.api.construct.FlowConstruct;
 import org.mule.runtime.core.api.context.DefaultMuleContextFactory;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.internal.routing.ScatterGatherRouter;
 import org.mule.tck.junit4.AbstractMuleTestCase;
 
 import java.util.Collections;
+import java.util.HashMap;
+
+import javax.xml.namespace.QName;
 
 import org.junit.After;
 import org.junit.Before;
@@ -48,7 +57,13 @@ public class ScatterGatherOneRouteTestCase extends AbstractMuleTestCase {
 
   @Test(expected = InitialisationException.class)
   public void oneRouteProgramatically() throws Exception {
+    when(context.getConfigurationComponentLocator().find(any(Location.class))).thenReturn(of(mock(FlowConstruct.class)));
+
     ScatterGatherRouter sc = new ScatterGatherRouter();
+    HashMap<QName, Object> annotations = new HashMap<>();
+    annotations.put(ROOT_CONTAINER_NAME_KEY, "fakeRootContainerName");
+    sc.setComponentLocator(context.getConfigurationComponentLocator());
+    sc.setAnnotations(annotations);
     sc.setRoutes(Collections.<Processor>emptyList());
 
     try {

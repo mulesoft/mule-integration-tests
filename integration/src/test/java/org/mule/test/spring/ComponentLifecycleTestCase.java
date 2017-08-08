@@ -8,18 +8,20 @@ package org.mule.test.spring;
 
 import static org.hamcrest.Matchers.hasItems;
 import static org.junit.Assert.assertThat;
-import static org.mule.test.config.dsl.LifecycleAction.DISPOSE;
-import static org.mule.test.config.dsl.LifecycleAction.GET_OBJECT;
-import static org.mule.test.config.dsl.LifecycleAction.INITIALISE;
-import static org.mule.test.config.dsl.LifecycleAction.START;
-import static org.mule.test.config.dsl.LifecycleAction.STOP;
+import static org.mule.tests.parsers.api.LifecycleAction.DISPOSE;
+import static org.mule.tests.parsers.api.LifecycleAction.GET_OBJECT;
+import static org.mule.tests.parsers.api.LifecycleAction.INITIALISE;
+import static org.mule.tests.parsers.api.LifecycleAction.START;
+import static org.mule.tests.parsers.api.LifecycleAction.STOP;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.test.AbstractIntegrationTestCase;
-import org.mule.test.config.dsl.LifecycleSensingMessageProcessor;
-import org.mule.test.config.dsl.LifecycleSensingObjectFactory;
+import org.mule.tests.parsers.api.LifecycleSensingMessageProcessor;
+import org.mule.tests.parsers.api.LifecycleSensingObjectFactory;
+import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
 
 import org.junit.Test;
 
+@ArtifactClassLoaderRunnerConfig(extraPrivilegedArtifacts = {"org.mule.tests:mule-tests-parsers-plugin"})
 public class ComponentLifecycleTestCase extends AbstractIntegrationTestCase {
 
   @Override

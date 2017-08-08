@@ -99,7 +99,7 @@ public class NonBlockingFunctionalTestCase extends AbstractIntegrationTestCase {
   @Test
   public void enricherFlowVar() throws Exception {
     Event result = flowRunner("enricherFlowVar").withPayload(TEST_MESSAGE).run();
-    assertThat(result.getVariable(FOO).getValue(), is(equalTo(TEST_MESSAGE)));
+    assertThat(result.getVariables().get(FOO).getValue(), is(equalTo(TEST_MESSAGE)));
   }
 
   @Test

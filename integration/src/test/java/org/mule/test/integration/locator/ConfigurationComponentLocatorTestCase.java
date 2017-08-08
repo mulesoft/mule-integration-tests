@@ -7,6 +7,7 @@
 package org.mule.test.integration.locator;
 
 import static java.util.stream.Collectors.toList;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
@@ -19,8 +20,10 @@ import static org.mule.runtime.api.source.SchedulerMessageSource.SCHEDULER_MESSA
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentLocatorStory.SEARCH_CONFIGURATION;
 import org.mule.runtime.api.component.ComponentIdentifier;
+import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.api.component.location.Location;
 import org.mule.runtime.api.meta.AnnotatedObject;
+import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.processor.LoggerMessageProcessor;
 import org.mule.runtime.core.api.source.MessageSource;
@@ -119,4 +122,26 @@ public class ConfigurationComponentLocatorTestCase extends AbstractIntegrationTe
     assertThat(components, notNullValue());
     assertThat(components, hasSize(0));
   }
+
+  @Description("Search for all the components in the configuration")
+  @Test
+  public void findAllComponents() {
+    List<AnnotatedObject> annotatedObjects = muleContext.getConfigurationComponentLocator().findAll();
+    List<String> allComponentPaths = annotatedObjects.stream().map(AnnotatedObject::getLocation)
+        .map(ComponentLocation::getLocation).collect(toList());
+    assertThat(allComponentPaths, containsInAnyOrder(
+                                                     "myFlow",
+                                                     "myFlow/source",
+                                                     "myFlow/processors/0",
+                                                     "myFlow/processors/1",
+                                                     "myFlow/processors/2",
+                                                     "myFlow/processors/2/processors/0",
+                                                     "myFlow/processors/2/processors/1",
+                                                     "anotherFlow",
+                                                     "anotherFlow/source",
+                                                     "anotherFlow/processors/0"));
+  }
+
+  @Override
+  protected void createTestFlow(MuleContext context) {}
 }

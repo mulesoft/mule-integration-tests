@@ -18,7 +18,8 @@ import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
  *
  * @since 4.0
  */
-@ArtifactClassLoaderRunnerConfig(sharedRuntimeLibs = {"org.mule.tests:mule-tests-functional"})
+@ArtifactClassLoaderRunnerConfig(sharedRuntimeLibs = {"org.mule.tests:mule-tests-functional"},
+    extraPrivilegedArtifacts = {"org.mule.tests:mule-tests-parsers-plugin"})
 public abstract class AbstractIntegrationTestCase extends MuleArtifactFunctionalTestCase {
 
 }

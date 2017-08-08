@@ -10,7 +10,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.tck.junit4.rule.SystemProperty;
-import org.mule.test.config.spring.parsers.beans.ParsersTestObject;
+import org.mule.tests.parsers.api.ParsersTestObject;
 
 import org.junit.Rule;
 import org.junit.Test;

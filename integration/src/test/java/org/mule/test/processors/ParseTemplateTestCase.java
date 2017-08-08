@@ -99,7 +99,7 @@ public class ParseTemplateTestCase extends AbstractIntegrationTestCase {
   public void testWithTargetDefinedInline() throws Exception {
     String startingPayload = "Starting payload";
     Event event = flowRunner("with-target").withPayload(startingPayload).withVariable("flowName", "dw-expression").run();
-    String msg = (String) ((Message) event.getVariable("targetVar").getValue()).getPayload().getValue();
+    String msg = (String) ((Message) event.getVariables().get("targetVar").getValue()).getPayload().getValue();
     String processedPayload = (String) event.getMessage().getPayload().getValue();
     assertEquals(PARSED_DW_EXPRESSION, msg);
     assertEquals(processedPayload, startingPayload);

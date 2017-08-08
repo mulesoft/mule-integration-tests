@@ -6,9 +6,11 @@
  */
 package org.mule.test.config.spring.parsers;
 
+import org.mule.test.config.dsl.ParsersPluginTest;
+
 import org.junit.Test;
 
-public class MissingParserTestCase extends AbstractBadConfigTestCase {
+public class MissingParserTestCase extends AbstractBadConfigTestCase implements ParsersPluginTest {
 
   @Override
   protected String getConfigFile() {

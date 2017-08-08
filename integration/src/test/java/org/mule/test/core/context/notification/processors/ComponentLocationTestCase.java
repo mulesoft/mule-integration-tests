@@ -29,6 +29,7 @@ import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocator
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentLocationStory.COMPONENT_LOCATION;
 import org.mule.runtime.api.component.TypedComponentIdentifier;
 import org.mule.runtime.api.meta.AnnotatedObject;
+import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.context.notification.MessageProcessorNotification;
 import org.mule.runtime.dsl.api.component.config.DefaultComponentLocation;
@@ -37,14 +38,13 @@ import org.mule.tck.probe.PollingProber;
 import org.mule.tck.probe.Probe;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import org.junit.Test;
-
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Optional;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
+import org.junit.Test;
 
 @Feature(CONFIGURATION_COMPONENT_LOCATOR)
 @Story(COMPONENT_LOCATION)
@@ -54,7 +54,7 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
       of(builder().identifier(FLOW_IDENTIFIER).type(FLOW).build());
 
   private static final Optional<TypedComponentIdentifier> SUB_FLOW_TYPED_COMPONENT_IDENTIFIER =
-      of(builder().identifier(SUBFLOW_IDENTIFIER).type(PROCESSOR).build());
+      of(builder().identifier(SUBFLOW_IDENTIFIER).type(SCOPE).build());
 
   private static final Optional<String> CONFIG_FILE_NAME = of("component-path-test-flow.xml");
 

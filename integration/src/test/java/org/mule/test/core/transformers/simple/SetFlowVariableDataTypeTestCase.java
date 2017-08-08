@@ -42,7 +42,7 @@ public class SetFlowVariableDataTypeTestCase extends AbstractIntegrationTestCase
     @Override
     public Event process(Event event) throws MuleException {
       return Event.builder(event)
-          .message(Message.builder(event.getMessage()).value(event.getVariable("testVariable").getDataType()).build())
+          .message(Message.builder(event.getMessage()).value(event.getVariables().get("testVariable").getDataType()).build())
           .build();
     }
 

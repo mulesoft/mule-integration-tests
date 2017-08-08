@@ -97,7 +97,7 @@ public class OnErrorPropagateTestCase extends AbstractIntegrationTestCase {
     Event errorEvent = me.getEvent();
     assertThat(errorEvent.getError().isPresent(), is(true));
     assertThat(errorEvent.getError().get().getCause(), is(instanceOf(RoutingException.class)));
-    assertThat(errorEvent.getVariable("myVar").getValue(), is("aValue"));
+    assertThat(errorEvent.getVariables().get("myVar").getValue(), is("aValue"));
     assertThat(errorEvent.getMessage(), hasPayload(equalTo("propagated")));
   }
 

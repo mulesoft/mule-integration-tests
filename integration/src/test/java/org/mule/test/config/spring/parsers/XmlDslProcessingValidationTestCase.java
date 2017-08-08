@@ -9,12 +9,13 @@ package org.mule.test.config.spring.parsers;
 import static org.junit.rules.ExpectedException.none;
 import org.mule.functional.junit4.ApplicationContextBuilder;
 import org.mule.tck.junit4.AbstractMuleTestCase;
+import org.mule.test.config.dsl.ParsersPluginTest;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-public class XmlDslProcessingValidationTestCase extends AbstractMuleTestCase {
+public class XmlDslProcessingValidationTestCase extends AbstractMuleTestCase implements ParsersPluginTest {
 
   @Rule
   public ExpectedException expectedException = none();

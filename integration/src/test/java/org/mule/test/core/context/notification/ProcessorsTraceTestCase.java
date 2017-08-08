@@ -47,7 +47,7 @@ public class ProcessorsTraceTestCase extends AbstractIntegrationTestCase {
 
     @Override
     public Event process(Event event) throws MuleException {
-      processorsTraceToAssert = event.getContext().getProcessorsTrace();
+      processorsTraceToAssert = event.getInternalContext().getProcessorsTrace();
       return event;
     }
   }
