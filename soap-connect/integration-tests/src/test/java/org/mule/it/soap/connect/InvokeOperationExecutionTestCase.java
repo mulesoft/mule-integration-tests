@@ -7,12 +7,9 @@
 package org.mule.it.soap.connect;
 
 import static org.mule.service.soap.SoapTestUtils.assertSimilarXml;
+
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.api.streaming.bytes.CursorStreamProvider;
-import org.mule.runtime.core.api.util.IOUtils;
-
 import org.junit.Test;
-
 import java.io.ByteArrayInputStream;
 
 public class InvokeOperationExecutionTestCase extends SoapFootballExtensionArtifactFunctionalTestCase {
@@ -21,7 +18,7 @@ public class InvokeOperationExecutionTestCase extends SoapFootballExtensionArtif
   public void simpleNoParamsOperation() throws Exception {
     Message message = flowRunner("getLeagues").withPayload(getBodyXml("getLeagues", "")).keepStreamsOpen().run().getMessage();
     String response = getBodyXml("getLeaguesResponse", "<league>Calcio</league><league>La Liga</league>");
-    assertSimilarXml(response, IOUtils.toString((CursorStreamProvider) message.getPayload().getValue()));
+    assertSimilarXml(response, (String) message.getPayload().getValue());
   }
 
   @Test
@@ -29,7 +26,7 @@ public class InvokeOperationExecutionTestCase extends SoapFootballExtensionArtif
     String requestBody = getBodyXml("getLeagueTeams", "<name>La Liga</name>");
     Message message = flowRunner("getLeagueTeams").withPayload(requestBody).keepStreamsOpen().run().getMessage();
     String response = getBodyXml("getLeagueTeamsResponse", "<team>Barcelona</team><team>Real Madrid</team><team>Atleti</team>");
-    assertSimilarXml(response, IOUtils.toString((CursorStreamProvider) message.getPayload().getValue()));
+    assertSimilarXml(response, (String) message.getPayload().getValue());
   }
 
   @Test
@@ -40,6 +37,6 @@ public class InvokeOperationExecutionTestCase extends SoapFootballExtensionArtif
         .keepStreamsOpen()
         .run().getMessage();
     String response = getBodyXml("uploadResultResponse", "<message>Ok</message>");
-    assertSimilarXml(response, IOUtils.toString((CursorStreamProvider) message.getPayload().getValue()));
+    assertSimilarXml(response, (String) message.getPayload().getValue());
   }
 }

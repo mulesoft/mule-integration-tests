@@ -18,6 +18,7 @@ import static org.mule.metadata.api.utils.MetadataTypeUtils.getTypeId;
 import static org.mule.runtime.module.extension.soap.internal.loader.SoapInvokeOperationDeclarer.ATTACHMENTS_PARAM;
 import static org.mule.runtime.module.extension.soap.internal.loader.SoapInvokeOperationDeclarer.BODY_PARAM;
 import static org.mule.runtime.module.extension.soap.internal.loader.SoapInvokeOperationDeclarer.HEADERS_PARAM;
+
 import org.mule.metadata.api.model.BinaryType;
 import org.mule.metadata.api.model.BooleanType;
 import org.mule.metadata.api.model.MetadataType;
@@ -31,13 +32,12 @@ import org.mule.runtime.api.metadata.MetadataKey;
 import org.mule.runtime.api.metadata.MetadataKeysContainer;
 import org.mule.runtime.api.metadata.MetadataService;
 import org.mule.runtime.api.metadata.descriptor.ComponentMetadataDescriptor;
-import org.mule.runtime.api.metadata.resolving.MetadataFailure;
 import org.mule.runtime.api.metadata.resolving.MetadataResult;
-
+import org.junit.Test;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-
-import org.junit.Test;
 
 public class InvokeMetadataTestCase extends SoapFootballExtensionArtifactFunctionalTestCase {
 
@@ -68,9 +68,10 @@ public class InvokeMetadataTestCase extends SoapFootballExtensionArtifactFunctio
   public void outputMetadata() {
     OperationModel model = getMetadata("getTeams");
     ObjectType output = toObjectType(model.getOutput().getType());
-    assertThat(getTypeId(output).get(), containsString("getTeamsResponse"));
-    assertThat(output.getFields(), hasSize(1));
-    ObjectType responseType = toObjectType(output.getFields().iterator().next().getValue());
+    ObjectType body = toObjectType(output.getFields().iterator().next().getValue());
+    assertThat(getTypeId(body).get(), containsString("getTeamsResponse"));
+    assertThat(body.getFields(), hasSize(1));
+    ObjectType responseType = toObjectType(body.getFields().iterator().next().getValue());
     assertThat(responseType.getFields(), hasSize(1));
     assertThat(responseType.getFields().iterator().next().getValue(), is(instanceOf(StringType.class)));
   }
@@ -108,15 +109,14 @@ public class InvokeMetadataTestCase extends SoapFootballExtensionArtifactFunctio
   }
 
   @Test
-  public void attributesMetadata() {
+  public void headersMetadata() {
     OperationModel model = getMetadata("getPresidentInfo");
-    ObjectType attributes = toObjectType(model.getOutputAttributes().getType());
-    assertThat(attributes.getFields(), hasSize(2));
-    ObjectFieldType soapHeaders = attributes.getFields().iterator().next();
-    assertThat(soapHeaders.getKey().getName().getLocalPart(), is("headers"));
-    ObjectType headersType = toObjectType(soapHeaders.getValue());
-    assertThat(headersType.getFields(), hasSize(1));
-    ObjectFieldType identity = headersType.getFields().iterator().next();
+    List<ObjectFieldType> outputFields = new ArrayList<>(toObjectType(model.getOutput().getType()).getFields());
+    assertThat(outputFields, hasSize(2));
+    ObjectFieldType headers = outputFields.stream().filter(f -> f.getKey().toString().contains("headers")).findAny().get();
+    Collection<ObjectFieldType> soapHeaders = toObjectType(headers.getValue()).getFields();
+    assertThat(soapHeaders, hasSize(1));
+    ObjectFieldType identity = soapHeaders.iterator().next();
     assertThat(identity.getKey().getName().getLocalPart(), is("identity"));
     assertThat(toObjectType(identity.getValue()).getFields(), hasSize(1));
     assertThat(toObjectType(identity.getValue()).getFields().iterator().next().getValue(), is(instanceOf(StringType.class)));
@@ -127,7 +127,7 @@ public class InvokeMetadataTestCase extends SoapFootballExtensionArtifactFunctio
     Location location = Location.builder().globalName("invalidKey").addProcessorsPart().addIndexPart(0).build();
     MetadataResult<ComponentMetadataDescriptor<OperationModel>> result = metadataService.getOperationMetadata(location);
     assertThat(result.isSuccess(), is(false));
-    assertThat(result.getFailures(), hasSize(5));
+    assertThat(result.getFailures(), hasSize(4));
     result.getFailures().forEach(failure -> assertThat(failure.getReason(), containsString(INVALID_KEY_ERROR)));
   }
 
@@ -143,8 +143,7 @@ public class InvokeMetadataTestCase extends SoapFootballExtensionArtifactFunctio
   private OperationModel getMetadata(String flow) {
     Location location = Location.builder().globalName(flow).addProcessorsPart().addIndexPart(0).build();
     MetadataResult<ComponentMetadataDescriptor<OperationModel>> result = metadataService.getOperationMetadata(location);
-    assertThat(result.getFailures().stream().map(MetadataFailure::getMessage).collect(joining(", \n")),
-               result.isSuccess(), is(true));
+    assertThat(result.getFailures().stream().map(f -> f.getMessage()).collect(joining(", \n")), result.isSuccess(), is(true));
     return result.get().getModel();
   }
 }

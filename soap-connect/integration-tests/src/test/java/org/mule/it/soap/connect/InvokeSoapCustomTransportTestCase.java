@@ -7,17 +7,15 @@
 package org.mule.it.soap.connect;
 
 import static org.mule.service.soap.SoapTestUtils.assertSimilarXml;
+
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.it.soap.connect.services.InterdimentionalCableService;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.api.streaming.bytes.CursorStreamProvider;
-import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.service.soap.server.HttpServer;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.ram.RickAndMortyExtension;
 import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
-
 import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.Rule;
 import org.junit.Test;
@@ -54,14 +52,14 @@ public class InvokeSoapCustomTransportTestCase extends MuleArtifactFunctionalTes
     Message message = flowRunner("customTransport").keepStreamsOpen().run().getMessage();
     String response =
         "<con:ram xmlns:con=\"http://ram.test.mule.org\"><text>" + RickAndMortyExtension.RICKS_PHRASE + "</text></con:ram>";
-    assertSimilarXml(response, IOUtils.toString((CursorStreamProvider) message.getPayload().getValue()));
+    assertSimilarXml(response, (String) message.getPayload().getValue());
   }
 
   @Test
   public void sendThroughCustomTransportWithParams() throws Exception {
     Message message = flowRunner("customTransportWithParams").keepStreamsOpen().run().getMessage();
     String response = "<con:ram xmlns:con=\"http://ram.test.mule.org\"><text>CUSTOM RESPONSE</text></con:ram>";
-    assertSimilarXml(response, IOUtils.toString((CursorStreamProvider) message.getPayload().getValue()));
+    assertSimilarXml(response, (String) message.getPayload().getValue());
   }
 
   @Test
@@ -72,6 +70,6 @@ public class InvokeSoapCustomTransportTestCase extends MuleArtifactFunctionalTes
         + "   <channel>Fake Doors</channel>\n"
         + "   <channel>The Adventures of Stealy</channel>\n"
         + "</ns2:getChannelsResponse>";
-    assertSimilarXml(response, IOUtils.toString((CursorStreamProvider) message.getPayload().getValue()));
+    assertSimilarXml(response, (String) message.getPayload().getValue());
   }
 }
