@@ -115,14 +115,23 @@
                                          maxBufferSize="1000"/>
         </sockets:send-and-receive>
 
-        <wsc:consume operation="GetCitiesByCountry" targetType="PAYLOAD">
-            <wsc:message>
-                <wsc:body>#[payload]</wsc:body>
-                <wsc:headers>#[{"headers": {con#headerIn: "Header In Value",con#headerInOut: "Header In Out Value"}]</wsc:headers>
-                <wsc:attachments>#[{}]</wsc:attachments>
-            </wsc:message>
-        </wsc:consume>
-
+        <try transactionType="LOCAL" transactionalAction="INDIFFERENT">
+            <wsc:consume operation="GetCitiesByCountry" targetType="PAYLOAD">
+                <wsc:message>
+                    <wsc:body>#[payload]</wsc:body>
+                    <wsc:headers>#[{"headers": {con#headerIn: "Header In Value",con#headerInOut: "Header In Out Value"}]
+                    </wsc:headers>
+                    <wsc:attachments>#[{}]</wsc:attachments>
+                </wsc:message>
+            </wsc:consume>
+            <error-handler>
+                <on-error-continue enableNotifications="true" logException="true" type="MULE:ANY">
+                    <logger/>
+                </on-error-continue>
+                <on-error-propagate enableNotifications="true" logException="true" type="WSC:CONNECTIVITY"
+                                    when="#[e.cause == null]"/>
+            </error-handler>
+        </try>
     </flow>
 
 </mule>

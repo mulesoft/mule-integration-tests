@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+    <flow name="flowForscheduler">
+        <scheduler>
+            <scheduling-strategy/>
+        </scheduler>
+    </flow>
+    <flow name="flowForidempotentMessageValidator">
+        <idempotent-message-validator idExpression="#[id]" objectStore="Attribute" storePrefix="Attribute" valueExpression="#[id]"/>
+    </flow>
+    <flow name="flowForlogger">
+        <logger category="Attribute" level="DEBUG" message="Attribute"/>
+    </flow>
+    <flow initialState="started" maxConcurrency="10000" name="globalflow">
+        <logger/>
+    </flow>
+    <flow name="flowForforeach">
+        <foreach batchSize="10000" collection="#[payload]" counterVariableName="counter" ignoreErrorType="Attribute" rootMessageVariableName="rootMessage">
+            <logger/>
+        </foreach>
+    </flow>
+    <flow name="flowForchoice">
+        <choice>
+            <when expression="Attribute">
+                <logger/>
+            </when>
+            <otherwise>
+                <logger/>
+            </otherwise>
+        </choice>
+    </flow>
+    <error-handler name="globalerrorHandler">
+        <on-error-continue enableNotifications="true" logException="true" name="Attribute" type="Attribute" when="Attribute">
+            <logger/>
+        </on-error-continue>
+        <on-error-propagate enableNotifications="true" logException="true" name="Attribute" type="Attribute" when="Attribute">
+            <logger/>
+        </on-error-propagate>
+    </error-handler>
+    <flow name="flowFortry">
+        <try transactionType="LOCAL" transactionalAction="INDIFFERENT">
+            <logger/>
+        </try>
+    </flow>
+    <flow name="flowForasync">
+        <async name="Attribute">
+            <logger/>
+        </async>
+    </flow>
+    <flow name="flowForscatterGather">
+        <scatter-gather timeout="0">
+            <route>
+                <logger/>
+            </route>
+        </scatter-gather>
+    </flow>
+    <configuration defaultErrorHandler-ref="Attribute" defaultObjectSerializer-ref="Attribute" defaultResponseTimeout="10000" defaultTransactionTimeout="30000" maxQueueTransactionFilesSize="500" name="globalconfiguration" shutdownTimeout="5000"/>
+</mule>

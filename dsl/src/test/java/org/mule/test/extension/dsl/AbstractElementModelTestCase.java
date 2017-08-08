@@ -32,7 +32,7 @@ import org.mule.runtime.config.spring.api.dsl.processor.xml.XmlApplicationParser
 import org.mule.runtime.config.spring.api.dsl.processor.xml.XmlApplicationServiceRegistry;
 import org.mule.runtime.core.api.registry.SpiServiceRegistry;
 import org.mule.runtime.dsl.api.component.config.ComponentConfiguration;
-import org.mule.runtime.module.extension.api.resources.MuleExtensionModelProvider;
+import org.mule.runtime.core.api.extension.MuleExtensionModelProvider;
 import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
 
 import java.io.InputStream;

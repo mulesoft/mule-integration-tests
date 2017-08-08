@@ -1,12 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:db="http://www.mulesoft.org/schema/mule/db"
+      xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
       xmlns:http="http://www.mulesoft.org/schema/mule/http"
       xmlns:sockets="http://www.mulesoft.org/schema/mule/sockets"
       xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
       xmlns:wsc="http://www.mulesoft.org/schema/mule/wsc"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd http://www.mulesoft.org/schema/mule/sockets http://www.mulesoft.org/schema/mule/sockets/current/mule-sockets.xsd http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd">
+
+    <configuration defaultErrorHandler-ref="referableHandler"/>
+
+    <error-handler name="referableHandler">
+        <on-error-continue type="MULE:SOURCE_RESPONSE" logException="false" enableNotifications="false">
+            <logger level="TRACE"/>
+        </on-error-continue>
+    </error-handler>
+
     <db:config name="dbConfig">
         <db:derby-connection database="target/muleEmbeddedDB" create="true">
             <db:pooling-profile maxPoolSize="10"/>
@@ -38,8 +48,8 @@
         </http:request-connection>
     </http:request-config>
 
-    <flow name="testFlow" initialState="stopped">
-        <http:listener config-ref="httpListener" path="testBuilder">
+    <flow name="testFlow" initialState="stopped" doc:id="docUUID">
+        <http:listener config-ref="httpListener" path="testBuilder" doc:id="docUUID">
             <redelivery-policy maxRedeliveryCount="2" useSecureHash="true"/>
             <reconnect blocking="true" count="1" frequency="0"/>
             <http:response>

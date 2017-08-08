@@ -10,7 +10,6 @@ import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mule.runtime.api.app.declaration.fluent.ElementDeclarer.newArtifact;
-import static org.mule.runtime.api.app.declaration.fluent.ElementDeclarer.newFlow;
 import static org.mule.runtime.api.app.declaration.fluent.ElementDeclarer.newListValue;
 import static org.mule.runtime.api.app.declaration.fluent.ElementDeclarer.newObjectValue;
 import static org.mule.runtime.api.app.declaration.fluent.ElementDeclarer.newParameterGroup;
@@ -21,8 +20,8 @@ import static org.mule.runtime.extension.api.ExtensionConstants.POOLING_PROFILE_
 import static org.mule.runtime.extension.api.ExtensionConstants.RECONNECTION_STRATEGY_PARAMETER_NAME;
 import static org.mule.runtime.extension.api.ExtensionConstants.REDELIVERY_POLICY_PARAMETER_NAME;
 import static org.mule.runtime.extension.api.ExtensionConstants.STREAMING_STRATEGY_PARAMETER_NAME;
-import static org.mule.runtime.extension.api.ExtensionConstants.TARGET_TYPE_PARAMETER_NAME;
 import static org.mule.runtime.extension.api.ExtensionConstants.TARGET_PARAMETER_NAME;
+import static org.mule.runtime.extension.api.ExtensionConstants.TARGET_TYPE_PARAMETER_NAME;
 import static org.mule.runtime.extension.api.ExtensionConstants.TLS_PARAMETER_NAME;
 import static org.mule.runtime.extension.api.declaration.type.ReconnectionStrategyTypeBuilder.BLOCKING;
 import static org.mule.runtime.extension.api.declaration.type.ReconnectionStrategyTypeBuilder.COUNT;
@@ -129,7 +128,7 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
                     .getDeclaration())
                 .getDeclaration())
             .getDeclaration())
-        .withGlobalElement(newFlow()
+        .withGlobalElement(core.newConstruct("flow")
             .withRefName("send-payload")
             .withComponent(jms.newOperation("publish")
                 .withConfig("config")
@@ -142,7 +141,7 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
                     .getDeclaration())
                 .getDeclaration())
             .getDeclaration())
-        .withGlobalElement(newFlow().withRefName("bridge")
+        .withGlobalElement(core.newConstruct("flow").withRefName("bridge")
             .withComponent(jms.newOperation("consume")
                 .withConfig("config")
                 .withParameterGroup(newParameterGroup()
@@ -150,7 +149,7 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
                     .withParameter("maximumWait", "1000")
                     .getDeclaration())
                 .getDeclaration())
-            .withComponent(core.newScope("foreach")
+            .withComponent(core.newConstruct("foreach")
                 .withComponent(jms.newOperation("publish")
                     .withConfig("config")
                     .withParameterGroup(newParameterGroup()
@@ -174,7 +173,7 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
                     .getDeclaration())
                 .getDeclaration())
             .getDeclaration())
-        .withGlobalElement(newFlow().withRefName("bridge-receiver")
+        .withGlobalElement(core.newConstruct("flow").withRefName("bridge-receiver")
             .withComponent(jms
                 .newOperation("consume")
                 .withConfig("config")
@@ -196,6 +195,23 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
     ElementDeclarer wsc = ElementDeclarer.forExtension("Web Service Consumer");
 
     return newArtifact()
+        .withCustomParameter("xmlns:doc", "http://www.mulesoft.org/schema/mule/documentation")
+        .withGlobalElement(core.newConstruct("configuration")
+            .withParameterGroup(group -> group.withParameter("defaultErrorHandler-ref", "referableHandler"))
+            .getDeclaration())
+        .withGlobalElement(core.newConstruct("errorHandler")
+            .withRefName("referableHandler")
+            .withComponent(core.newRoute("onErrorContinue")
+                .withParameterGroup(group -> group
+                    .withParameter("type", "MULE:SOURCE_RESPONSE")
+                    .withParameter("logException", "false")
+                    .withParameter("enableNotifications", "false"))
+                .withComponent(core.newOperation("logger")
+                    .withParameterGroup(group -> group
+                        .withParameter("level", "TRACE"))
+                    .getDeclaration())
+                .getDeclaration())
+            .getDeclaration())
         .withGlobalElement(db.newConfiguration("config")
             .withRefName("dbConfig")
             .withConnection(db
@@ -230,26 +246,22 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
                             .build())
                         .build())
                     .getDeclaration())
-                .withParameterGroup(newParameterGroup(CONNECTION)
+                .withParameterGroup(group -> group.withName(CONNECTION)
                     .withParameter("host", "localhost")
                     .withParameter("port", "49019")
                     .withParameter("protocol", "HTTPS")
-                    .withParameter(DISABLE_CONNECTION_VALIDATION_PARAMETER_NAME, "true")
-                    .getDeclaration())
+                    .withParameter(DISABLE_CONNECTION_VALIDATION_PARAMETER_NAME, "true"))
                 .getDeclaration())
             .getDeclaration())
         .withGlobalElement(http.newConfiguration("requestConfig")
             .withRefName("httpRequester")
             .withConnection(http.newConnection("request")
-                .withParameterGroup(newParameterGroup()
-                    .withParameter("authentication",
-                                   newObjectValue()
-                                       .ofType(
-                                               "org.mule.extension.http.api.request.authentication.BasicAuthentication")
-                                       .withParameter("username", "user")
-                                       .withParameter("password", "pass")
-                                       .build())
-                    .getDeclaration())
+                .withParameterGroup(group -> group.withParameter("authentication",
+                                                                 newObjectValue()
+                                                                     .ofType("org.mule.extension.http.api.request.authentication.BasicAuthentication")
+                                                                     .withParameter("username", "user")
+                                                                     .withParameter("password", "pass")
+                                                                     .build()))
                 .withParameterGroup(newParameterGroup(CONNECTION)
                     .withParameter("host", "localhost")
                     .withParameter("port", "49020")
@@ -265,12 +277,13 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
                     .getDeclaration())
                 .getDeclaration())
             .getDeclaration())
-        .withGlobalElement(newFlow().withRefName("testFlow")
-            .withParameterGroup(newParameterGroup()
-                .withParameter("initialState", "stopped")
-                .getDeclaration())
+        .withGlobalElement(core.newConstruct("flow")
+            .withRefName("testFlow")
+            .withCustomParameter("doc:id", "docUUID")
+            .withParameterGroup(group -> group.withParameter("initialState", "stopped"))
             .withComponent(http.newSource("listener")
                 .withConfig("httpListener")
+                .withCustomParameter("doc:id", "docUUID")
                 .withParameterGroup(newParameterGroup()
                     .withParameter("path", "testBuilder")
                     .withParameter(REDELIVERY_POLICY_PARAMETER_NAME,
@@ -279,15 +292,14 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
                                        .withParameter(USE_SECURE_HASH, "true")
                                        .build())
                     .getDeclaration())
-                .withParameterGroup(newParameterGroup(CONNECTION)
+                .withParameterGroup(group -> group.withName(CONNECTION)
                     .withParameter(RECONNECTION_STRATEGY_PARAMETER_NAME,
                                    newObjectValue()
                                        .ofType(RECONNECT_ALIAS)
                                        .withParameter(BLOCKING, "true")
                                        .withParameter(COUNT, "1")
                                        .withParameter(FREQUENCY, "0")
-                                       .build())
-                    .getDeclaration())
+                                       .build()))
                 .withParameterGroup(newParameterGroup("Response")
                     .withParameter("headers", "<![CDATA[#[{{'content-type' : 'text/plain'}}]]]>")
                     .withParameter("body",
@@ -316,7 +328,7 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
                                        + "                ]]>")
                     .getDeclaration())
                 .getDeclaration())
-            .withComponent(core.newRouter("choice")
+            .withComponent(core.newConstruct("choice")
                 .withRoute(core.newRoute("when")
                     .withParameterGroup(newParameterGroup()
                         .withParameter("expression", "#[true]")
@@ -340,7 +352,7 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
                         .getDeclaration())
                     .getDeclaration())
                 .withRoute(core.newRoute("otherwise")
-                    .withComponent(core.newScope("foreach")
+                    .withComponent(core.newConstruct("foreach")
                         .withParameterGroup(newParameterGroup()
                             .withParameter("collection", "#[myCollection]")
                             .getDeclaration())
@@ -405,7 +417,7 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
                     .withParameter(TARGET_TYPE_PARAMETER_NAME, "MESSAGE")
                     .getDeclaration())
                 .getDeclaration())
-            .withComponent(core.newScope("try")
+            .withComponent(core.newConstruct("try")
                 .withComponent(wsc.newOperation("consume")
                     .withParameterGroup(newParameterGroup()
                         .withParameter("operation", "GetCitiesByCountry")
@@ -417,14 +429,14 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
                         .withParameter("body", "#[payload]")
                         .getDeclaration())
                     .getDeclaration())
-                .withComponent(core.newScope("errorHandler")
-                    .withComponent(core.newScope("onErrorContinue")
+                .withComponent(core.newConstruct("errorHandler")
+                    .withComponent(core.newRoute("onErrorContinue")
                         .withParameterGroup(newParameterGroup()
                             .withParameter("type", "MULE:ANY")
                             .getDeclaration())
                         .withComponent(core.newOperation("logger").getDeclaration())
                         .getDeclaration())
-                    .withComponent(core.newScope("onErrorPropagate")
+                    .withComponent(core.newRoute("onErrorPropagate")
                         .withParameterGroup(newParameterGroup()
                             .withParameter("type", "WSC:CONNECTIVITY")
                             .withParameter("when", "#[e.cause == null]")
@@ -433,7 +445,7 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
                     .getDeclaration())
                 .getDeclaration())
             .getDeclaration())
-        .withGlobalElement(newFlow().withRefName("schedulerFlow")
+        .withGlobalElement(core.newConstruct("flow").withRefName("schedulerFlow")
             .withComponent(core.newSource("scheduler")
                 .withParameterGroup(newParameterGroup()
                     .withParameter("schedulingStrategy", newObjectValue()
@@ -449,7 +461,7 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
                     .withParameter("message", "#[payload]").getDeclaration())
                 .getDeclaration())
             .getDeclaration())
-        .withGlobalElement(newFlow().withRefName("cronSchedulerFlow")
+        .withGlobalElement(core.newConstruct("flow").withRefName("cronSchedulerFlow")
             .withComponent(core.newSource("scheduler")
                 .withParameterGroup(newParameterGroup()
                     .withParameter("schedulingStrategy", newObjectValue()
@@ -467,6 +479,7 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
   }
 
   private static Object createNoMuleComponentsArtifactDeclaration() {
+    ElementDeclarer core = ElementDeclarer.forExtension("Mule Core");
     ElementDeclarer jms = ElementDeclarer.forExtension("JMS");
     ElementDeclarer http = ElementDeclarer.forExtension("HTTP");
 
@@ -488,7 +501,7 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
         .withGlobalElement(http.newConfiguration("requestConfig")
             .withRefName("httpRequester")
             .withConnection(http.newConnection("request").getDeclaration()).getDeclaration())
-        .withGlobalElement(newFlow()
+        .withGlobalElement(core.newConstruct("flow")
             .withRefName("send-payload")
             .withComponent(jms.newOperation("publish")
                 .withConfig("config")
@@ -510,7 +523,7 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
                     .getDeclaration())
                 .getDeclaration())
             .getDeclaration())
-        .withGlobalElement(newFlow().withRefName("bridge")
+        .withGlobalElement(core.newConstruct("flow").withRefName("bridge")
             .withComponent(jms.newOperation("consume")
                 .withConfig("config")
                 .withParameterGroup(newParameterGroup()
