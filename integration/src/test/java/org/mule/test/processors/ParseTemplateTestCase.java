@@ -101,7 +101,7 @@ public class ParseTemplateTestCase extends AbstractIntegrationTestCase {
   public void testWithTargetDefaultTargetValueDefinedInline() throws Exception {
     String startingPayload = "Starting payload";
     InternalEvent event = flowRunner("with-target").withPayload(startingPayload).withVariable("flowName", "dw-expression").run();
-    String msg = (String) ((Message) event.getVariable("targetVar").getValue()).getPayload().getValue();
+    String msg = (String) ((Message) event.getVariables().get("targetVar").getValue()).getPayload().getValue();
     String previousdPayload = (String) event.getMessage().getPayload().getValue();
     assertEquals(PARSED_DW_EXPRESSION, msg);
     assertEquals(previousdPayload, startingPayload);
@@ -118,7 +118,7 @@ public class ParseTemplateTestCase extends AbstractIntegrationTestCase {
     String startingPayload = "Starting payload";
     InternalEvent event =
         flowRunner("with-custom-target-value").withPayload(startingPayload).withVariable("flowName", "dw-expression").run();
-    String savedPayload = (String) ((TypedValue) event.getVariable("targetVar").getValue()).getValue();
+    String savedPayload = (String) ((TypedValue) event.getVariables().get("targetVar").getValue()).getValue();
     String previousPayload = (String) event.getMessage().getPayload().getValue();
     assertEquals(PARSED_DW_EXPRESSION, savedPayload);
     assertEquals(startingPayload, previousPayload);
@@ -137,7 +137,7 @@ public class ParseTemplateTestCase extends AbstractIntegrationTestCase {
     InternalEvent event =
         flowRunner("with-message-binding-target-value").withPayload(startingPayload).withVariable("flowName", "dw-expression")
             .run();
-    TypedValue savedTypedValue = (TypedValue) event.getVariable("targetVar").getValue();
+    TypedValue savedTypedValue = (TypedValue) event.getVariables().get("targetVar").getValue();
     assertEquals(savedTypedValue.getDataType().getType(), Message.class);
     String previousPayload = (String) event.getMessage().getPayload().getValue();
     assertEquals(PARSED_DW_EXPRESSION, ((Message) savedTypedValue.getValue()).getPayload().getValue());
@@ -150,7 +150,7 @@ public class ParseTemplateTestCase extends AbstractIntegrationTestCase {
     InternalEvent event =
         flowRunner("with-payload-from-message-binding-target-value").withPayload(startingPayload)
             .withVariable("flowName", "dw-expression").run();
-    TypedValue savedTypedValue = (TypedValue) event.getVariable("targetVar").getValue();
+    TypedValue savedTypedValue = (TypedValue) event.getVariables().get("targetVar").getValue();
     String previousPayload = (String) event.getMessage().getPayload().getValue();
     assertEquals(PARSED_DW_EXPRESSION, savedTypedValue.getValue());
     assertEquals(startingPayload, previousPayload);
