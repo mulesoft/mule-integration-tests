@@ -7,12 +7,15 @@
 package org.mule.test.processors;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.InternalEvent;
+import org.mule.runtime.api.metadata.TypedValue;
+import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 
 public class ParseTemplateTestCase extends AbstractIntegrationTestCase {
@@ -21,6 +24,9 @@ public class ParseTemplateTestCase extends AbstractIntegrationTestCase {
   private static final String PARSED_MEL_EXPRESSION = "This template has a MEL expression to parse from mel-expression flow";
   private static final String PARSED_DW_EXPRESSION =
       "This template has a DW expression to parse from dw-expression flow. Remember, the name of the flow is dw-expression";
+
+  @Rule
+  public ExpectedException expectedException = ExpectedException.none();
 
   @Override
   public String getConfigFile() {
@@ -92,13 +98,63 @@ public class ParseTemplateTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  public void testWithTargetDefinedInline() throws Exception {
+  public void testWithTargetDefaultTargetValueDefinedInline() throws Exception {
     String startingPayload = "Starting payload";
     InternalEvent event = flowRunner("with-target").withPayload(startingPayload).withVariable("flowName", "dw-expression").run();
-    String msg = (String) ((Message) event.getVariables().get("targetVar").getValue()).getPayload().getValue();
-    String processedPayload = (String) event.getMessage().getPayload().getValue();
+    String msg = (String) ((Message) event.getVariable("targetVar").getValue()).getPayload().getValue();
+    String previousdPayload = (String) event.getMessage().getPayload().getValue();
     assertEquals(PARSED_DW_EXPRESSION, msg);
-    assertEquals(processedPayload, startingPayload);
+    assertEquals(previousdPayload, startingPayload);
   }
+
+  @Test
+  public void testWithTargetValueButNoTargetShouldRaiseException() throws Exception {
+    expectedException.expect(MessagingException.class);
+    flowRunner("with-target-value-no-target").withVariable("flowName", "dw-expression").run();
+  }
+
+  @Test
+  public void testWithCustomTargetValue() throws Exception {
+    String startingPayload = "Starting payload";
+    InternalEvent event =
+        flowRunner("with-custom-target-value").withPayload(startingPayload).withVariable("flowName", "dw-expression").run();
+    String savedPayload = (String) ((TypedValue) event.getVariable("targetVar").getValue()).getValue();
+    String previousPayload = (String) event.getMessage().getPayload().getValue();
+    assertEquals(PARSED_DW_EXPRESSION, savedPayload);
+    assertEquals(startingPayload, previousPayload);
+  }
+
+  @Test
+  public void testWithWrongTargetValue() throws Exception {
+    expectedException.expect(MessagingException.class);
+    String startingPayload = "Starting payload";
+    flowRunner("with-wrong-target-value").withPayload(startingPayload).withVariable("flowName", "dw-expression").run();
+  }
+
+  @Test
+  public void testWithMessageBindingExpression() throws Exception {
+    String startingPayload = "Starting payload";
+    InternalEvent event =
+        flowRunner("with-message-binding-target-value").withPayload(startingPayload).withVariable("flowName", "dw-expression")
+            .run();
+    TypedValue savedTypedValue = (TypedValue) event.getVariable("targetVar").getValue();
+    assertEquals(savedTypedValue.getDataType().getType(), Message.class);
+    String previousPayload = (String) event.getMessage().getPayload().getValue();
+    assertEquals(PARSED_DW_EXPRESSION, ((Message) savedTypedValue.getValue()).getPayload().getValue());
+    assertEquals(startingPayload, previousPayload);
+  }
+
+  @Test
+  public void testPayloadFromMessageBindingExpression() throws Exception {
+    String startingPayload = "Starting payload";
+    InternalEvent event =
+        flowRunner("with-payload-from-message-binding-target-value").withPayload(startingPayload)
+            .withVariable("flowName", "dw-expression").run();
+    TypedValue savedTypedValue = (TypedValue) event.getVariable("targetVar").getValue();
+    String previousPayload = (String) event.getMessage().getPayload().getValue();
+    assertEquals(PARSED_DW_EXPRESSION, savedTypedValue.getValue());
+    assertEquals(startingPayload, previousPayload);
+  }
+
 
 }
