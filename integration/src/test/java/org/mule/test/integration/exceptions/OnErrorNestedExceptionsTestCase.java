@@ -13,7 +13,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mule.functional.junit4.matchers.MessageMatchers.hasPayload;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
 
-import org.mule.runtime.core.api.Event;
+import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -32,7 +32,7 @@ public class OnErrorNestedExceptionsTestCase extends AbstractIntegrationTestCase
 
   @Test
   public void propagatesToOuterWithoutExceptionAndSucceeds() throws Exception {
-    Event event = flowRunner("propagatesToOuterWithoutExceptionAndSucceeds").run();
+    InternalEvent event = flowRunner("propagatesToOuterWithoutExceptionAndSucceeds").run();
     assertThat(event.getMessage(), hasPayload(equalTo("propagated again")));
   }
 
@@ -45,7 +45,7 @@ public class OnErrorNestedExceptionsTestCase extends AbstractIntegrationTestCase
 
   @Test
   public void propagatesToFlowWithoutExceptionAndSucceeds() throws Exception {
-    Event event = flowRunner("propagatesToFlowWithoutExceptionAndSucceeds").run();
+    InternalEvent event = flowRunner("propagatesToFlowWithoutExceptionAndSucceeds").run();
     assertThat(event.getMessage(), hasPayload(equalTo("propagated again")));
   }
 
@@ -58,7 +58,7 @@ public class OnErrorNestedExceptionsTestCase extends AbstractIntegrationTestCase
 
   @Test
   public void propagatesToOuterWithExceptionAndSucceeds() throws Exception {
-    Event event = flowRunner("propagatesToOuterWithExceptionAndSucceeds").run();
+    InternalEvent event = flowRunner("propagatesToOuterWithExceptionAndSucceeds").run();
     assertThat(event.getMessage(), hasPayload(equalTo("propagated again")));
   }
 
@@ -71,7 +71,7 @@ public class OnErrorNestedExceptionsTestCase extends AbstractIntegrationTestCase
 
   @Test
   public void propagatesToFlowWithExceptionAndSucceeds() throws Exception {
-    Event event = flowRunner("propagatesToFlowWithExceptionAndSucceeds").run();
+    InternalEvent event = flowRunner("propagatesToFlowWithExceptionAndSucceeds").run();
     assertThat(event.getMessage(), hasPayload(equalTo("propagated again")));
   }
 

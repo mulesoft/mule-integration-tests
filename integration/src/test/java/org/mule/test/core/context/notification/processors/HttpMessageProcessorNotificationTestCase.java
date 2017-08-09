@@ -38,7 +38,7 @@ public class HttpMessageProcessorNotificationTestCase extends AbstractMessagePro
 
   @Override
   protected String getConfigFile() {
-    return "org/mule/test/integration/notifications/nonblocking-message-processor-notificatio n-test-flow.xml";
+    return "org/mule/test/integration/notifications/nonblocking-message-processor-notification-test-flow.xml";
   }
 
   @Test

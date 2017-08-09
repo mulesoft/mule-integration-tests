@@ -20,7 +20,7 @@ import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.message.MultiPartPayload;
 import org.mule.runtime.api.meta.AbstractAnnotatedObject;
 import org.mule.runtime.api.metadata.MediaType;
-import org.mule.runtime.core.api.Event;
+import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.message.DefaultMultiPartPayload;
 import org.mule.runtime.core.api.message.PartAttributes;
 import org.mule.runtime.core.api.processor.Processor;
@@ -52,11 +52,11 @@ public class EventMetaDataPropagationTestCase extends AbstractIntegrationTestCas
   public static class DummyComponent extends AbstractAnnotatedObject implements Processor {
 
     @Override
-    public Event process(Event event) throws MuleException {
-      return Event.builder(event).message(doProcess(event)).build();
+    public InternalEvent process(InternalEvent event) throws MuleException {
+      return InternalEvent.builder(event).message(doProcess(event)).build();
     }
 
-    private Message doProcess(Event event) throws MuleException {
+    private Message doProcess(InternalEvent event) throws MuleException {
       if ("component1".equals(getLocation().getRootContainerName())) {
         Map<String, Serializable> props = new HashMap<>();
         props.put("stringParam", "param1");
@@ -96,7 +96,7 @@ public class EventMetaDataPropagationTestCase extends AbstractIntegrationTestCas
   public static class DummyTransformer extends AbstractMessageTransformer {
 
     @Override
-    public Object transformMessage(Event event, Charset outputEncoding) throws TransformerException {
+    public Object transformMessage(InternalEvent event, Charset outputEncoding) throws TransformerException {
       Message msg = event.getMessage();
       assertEquals("param1", getOutboundProperty(msg, "stringParam"));
       final Object o = getOutboundProperty(msg, "objectParam");

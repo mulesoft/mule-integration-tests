@@ -11,7 +11,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.core.api.Event;
+import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -33,7 +33,7 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void twoFlowRefsToSubFlow() throws Exception {
-    final Event muleEvent = flowRunner("flow1").withPayload("0").run();
+    final InternalEvent muleEvent = flowRunner("flow1").withPayload("0").run();
     assertThat(getPayloadAsString(muleEvent.getMessage()), is("012xyzabc312xyzabc3"));
   }
 

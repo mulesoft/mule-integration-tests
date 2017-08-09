@@ -9,7 +9,7 @@ package org.mule.test.transformers;
 import static org.junit.Assert.assertTrue;
 
 import org.mule.functional.api.component.EventCallback;
-import org.mule.runtime.core.api.Event;
+import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.util.concurrent.Latch;
 import org.mule.tck.testmodels.fruit.Apple;
@@ -42,7 +42,7 @@ public class AutoTransformerTestCase extends AbstractIntegrationTestCase {
   public static class FruitBasketCallback implements EventCallback {
 
     @Override
-    public void eventReceived(Event event, Object component, MuleContext muleContext) throws Exception {
+    public void eventReceived(InternalEvent event, Object component, MuleContext muleContext) throws Exception {
       assertTrue(((FruitBasket) event.getMessage().getPayload().getValue()).hasApple());
       assertTrue(((FruitBasket) event.getMessage().getPayload().getValue()).hasBanana());
       latch.countDown();

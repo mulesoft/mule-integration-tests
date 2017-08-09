@@ -18,7 +18,7 @@
             <script:script engine="groovy">
                 import org.mule.functional.api.notification.FunctionalTestNotification
 
-                muleContext.fireNotification(new FunctionalTestNotification(event, rootContainer, src, FunctionalTestNotification.EVENT_RECEIVED));
+                muleContext.fireNotification(new FunctionalTestNotification(event, flow, src, FunctionalTestNotification.EVENT_RECEIVED));
             </script:script>
         </script:component>
     </flow>

@@ -7,7 +7,7 @@
 package org.mule.test.config;
 
 import org.mule.runtime.api.lifecycle.InitialisationException;
-import org.mule.runtime.core.api.Event;
+import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.security.CryptoFailureException;
 import org.mule.runtime.core.api.security.EncryptionStrategyNotFoundException;
 import org.mule.runtime.api.security.SecurityProviderNotFoundException;
@@ -44,7 +44,7 @@ public class SecurityFilterNonBlockingTestCase extends AbstractIntegrationTestCa
     protected void doInitialise() throws InitialisationException {}
 
     @Override
-    public Event authenticate(Event event) throws SecurityException, UnknownAuthenticationTypeException,
+    public InternalEvent authenticate(InternalEvent event) throws SecurityException, UnknownAuthenticationTypeException,
         CryptoFailureException, SecurityProviderNotFoundException, EncryptionStrategyNotFoundException, InitialisationException {
       return event;
     }

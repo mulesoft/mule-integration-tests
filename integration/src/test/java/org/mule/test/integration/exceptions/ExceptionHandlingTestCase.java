@@ -22,8 +22,8 @@ import static org.mockito.Mockito.verify;
 import static org.mule.runtime.core.api.util.ExceptionUtils.NULL_ERROR_HANDLER;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.core.api.Event;
-import org.mule.runtime.core.api.EventContext;
+import org.mule.runtime.core.api.InternalEvent;
+import org.mule.runtime.core.api.InternalEventContext;
 import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.runtime.core.api.exception.MessagingExceptionHandler;
@@ -64,7 +64,7 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void testCustomProcessorInFlow() throws Exception {
-    final Event muleEvent = runFlow("customProcessorInFlow");
+    final InternalEvent muleEvent = runFlow("customProcessorInFlow");
     Message response = muleEvent.getMessage();
 
     assertThat(response, is(notNullValue()));
@@ -101,7 +101,7 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
   public void testCustomProcessorInScope() throws Exception {
     LinkedList<String> list = new LinkedList<>();
     list.add(MESSAGE);
-    final Event muleEvent = flowRunner("customProcessorInScope").withPayload(list).run();
+    final InternalEvent muleEvent = flowRunner("customProcessorInScope").withPayload(list).run();
     Message response = muleEvent.getMessage();
 
     assertNotNull(response);
@@ -197,7 +197,7 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
   public static class ExecutionCountProcessor implements Processor {
 
     @Override
-    public synchronized Event process(Event event) throws MuleException {
+    public synchronized InternalEvent process(InternalEvent event) throws MuleException {
       latch.countDown();
       return event;
     }
@@ -207,14 +207,14 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
       implements Processor {
 
     @Override
-    public synchronized Event process(Event event) throws MuleException {
+    public synchronized InternalEvent process(InternalEvent event) throws MuleException {
       try {
         Field exceptionHandlerField = forName("org.mule.runtime.core.AbstractEventContext").getDeclaredField("exceptionHandler");
         exceptionHandlerField.setAccessible(true);
-        EventContext eventContext = event.getInternalContext();
+        InternalEventContext eventContext = event.getContext();
         effectiveMessagingExceptionHandler = (MessagingExceptionHandler) exceptionHandlerField.get(eventContext);
         while (eventContext.getParentContext().isPresent() && effectiveMessagingExceptionHandler == NULL_ERROR_HANDLER) {
-          eventContext = eventContext.getInternalParentContext().get();
+          eventContext = eventContext.getParentContext().get();
           effectiveMessagingExceptionHandler = (MessagingExceptionHandler) exceptionHandlerField.get(eventContext);
         }
       } catch (Exception e) {

@@ -19,7 +19,7 @@ import org.mule.functional.api.component.EventCallback;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.source.SchedulerMessageSource;
-import org.mule.runtime.core.api.Event;
+import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.construct.FlowConstruct;
@@ -37,7 +37,7 @@ public class SchedulerTestCase extends MuleArtifactFunctionalTestCase {
 
   private static List<String> foo;
   private static List<String> bar;
-  private static List<Event> events;
+  private static List<InternalEvent> events;
   private static List<String> eventIds;
 
   @Override
@@ -100,7 +100,7 @@ public class SchedulerTestCase extends MuleArtifactFunctionalTestCase {
   public static class EventWireTrap implements Processor {
 
     @Override
-    public Event process(Event event) throws MuleException {
+    public InternalEvent process(InternalEvent event) throws MuleException {
       synchronized (events) {
         events.add(event);
         eventIds.add(event.getContext().getId());
@@ -112,7 +112,7 @@ public class SchedulerTestCase extends MuleArtifactFunctionalTestCase {
   public static class Foo implements EventCallback {
 
     @Override
-    public void eventReceived(Event event, Object component, MuleContext muleContext) throws Exception {
+    public void eventReceived(InternalEvent event, Object component, MuleContext muleContext) throws Exception {
       synchronized (foo) {
 
         if (foo.size() < 10) {
@@ -125,7 +125,7 @@ public class SchedulerTestCase extends MuleArtifactFunctionalTestCase {
   public static class Bar implements EventCallback {
 
     @Override
-    public void eventReceived(Event event, Object component, MuleContext muleContext) throws Exception {
+    public void eventReceived(InternalEvent event, Object component, MuleContext muleContext) throws Exception {
       synchronized (bar) {
 
         if (bar.size() < 10) {

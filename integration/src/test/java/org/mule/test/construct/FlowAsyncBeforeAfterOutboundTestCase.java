@@ -16,7 +16,7 @@ import static org.mule.functional.junit4.TestLegacyMessageUtils.getOutboundPrope
 import org.mule.functional.junit4.TestLegacyMessageBuilder;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.core.api.Event;
+import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -72,7 +72,7 @@ public class FlowAsyncBeforeAfterOutboundTestCase extends AbstractIntegrationTes
     private static final ThreadLocal<String> taskTokenInThread = new ThreadLocal<>();
 
     @Override
-    public Event process(Event event) throws MuleException {
+    public InternalEvent process(InternalEvent event) throws MuleException {
       String requestTaskToken;
       if (taskTokenInThread.get() != null) {
         requestTaskToken = taskTokenInThread.get();
@@ -81,7 +81,7 @@ public class FlowAsyncBeforeAfterOutboundTestCase extends AbstractIntegrationTes
         taskTokenInThread.set(requestTaskToken);
       }
 
-      return Event.builder(event).message(new TestLegacyMessageBuilder(event.getMessage())
+      return InternalEvent.builder(event).message(new TestLegacyMessageBuilder(event.getMessage())
           .addOutboundProperty((String) event.getVariables().get("property-name").getValue(), requestTaskToken).build()).build();
     }
 

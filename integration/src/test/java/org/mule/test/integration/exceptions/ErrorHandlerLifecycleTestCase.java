@@ -10,7 +10,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import org.mule.runtime.core.internal.exception.ErrorHandler;
 import org.mule.test.AbstractIntegrationTestCase;
-import org.mule.runtime.core.api.Event;
+import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.core.api.construct.FlowConstruct;
 import org.mule.runtime.api.lifecycle.InitialisationException;
@@ -74,7 +74,7 @@ public class ErrorHandlerLifecycleTestCase extends AbstractIntegrationTestCase {
     private boolean stopped;
 
     @Override
-    public Event process(Event event) throws MuleException {
+    public InternalEvent process(InternalEvent event) throws MuleException {
       return event;
     }
 

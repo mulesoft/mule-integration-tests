@@ -11,7 +11,7 @@ import static org.junit.Assert.assertThat;
 import static org.mule.tck.core.lifecycle.LifecycleTrackerProcessor.FLOW_CONSRUCT_PROPERTY;
 import static org.mule.tck.core.lifecycle.LifecycleTrackerProcessor.LIFECYCLE_TRACKER_PROCESSOR_PROPERTY;
 
-import org.mule.runtime.core.api.Event;
+import org.mule.runtime.core.api.InternalEvent;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Test;
@@ -25,7 +25,7 @@ public class SubFlowTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void testSubFlowViaProcessorRef() throws Exception {
-    Event result = flowRunner("SubFlowViaProcessorRef").withPayload("").run();
+    InternalEvent result = flowRunner("SubFlowViaProcessorRef").withPayload("").run();
     assertThat(result.getMessageAsString(muleContext), is("1xyz2"));
 
     assertThat(result.getVariables().get(LIFECYCLE_TRACKER_PROCESSOR_PROPERTY).getValue(),
@@ -36,7 +36,7 @@ public class SubFlowTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void testSubFlowViaFlowRef() throws Exception {
-    Event result = flowRunner("SubFlowViaFlowRef").withPayload("").run();
+    InternalEvent result = flowRunner("SubFlowViaFlowRef").withPayload("").run();
     assertThat(result.getMessageAsString(muleContext), is("1xyz2"));
 
     assertThat(result.getVariables().get(LIFECYCLE_TRACKER_PROCESSOR_PROPERTY).getValue(),

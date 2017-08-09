@@ -15,11 +15,11 @@ import static org.mule.runtime.core.api.config.MuleProperties.MULE_USER_PROPERTY
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.security.Authentication;
-import org.mule.runtime.core.api.Event;
+import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.security.DefaultMuleCredentials;
 import org.mule.runtime.core.api.security.EncryptionStrategy;
-import org.mule.runtime.api.security.SecurityContext;
+import org.mule.runtime.core.api.security.SecurityContext;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.io.Serializable;
@@ -86,7 +86,7 @@ public class MultiuserSecurityTestCase extends AbstractIntegrationTestCase {
     protected static final Logger logger = LoggerFactory.getLogger(TestSecurityProcessor.class);
 
     @Override
-    public Event process(Event event) throws MuleException {
+    public InternalEvent process(InternalEvent event) throws MuleException {
       SecurityContext securityContext = event.getSession().getSecurityContext();
       Authentication authentication = securityContext.getAuthentication();
 
@@ -96,7 +96,7 @@ public class MultiuserSecurityTestCase extends AbstractIntegrationTestCase {
       String msg = "user = " + authentication.getPrincipal() + ", logins = " + numberLogins + ", color = " + favoriteColor;
       logger.debug(msg);
 
-      return Event.builder(event).message(Message.builder(event.getMessage()).value(msg).build()).build();
+      return InternalEvent.builder(event).message(Message.builder(event.getMessage()).value(msg).build()).build();
     }
   }
 }

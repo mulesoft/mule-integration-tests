@@ -11,7 +11,7 @@ import static junit.framework.Assert.assertEquals;
 
 import org.mule.functional.api.component.EventCallback;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
-import org.mule.runtime.core.api.Event;
+import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.MuleContext;
 
 import java.util.ArrayList;
@@ -43,7 +43,7 @@ public class SynchronousSchedulerTestCase extends MuleArtifactFunctionalTestCase
   public static class Foo implements EventCallback {
 
     @Override
-    public void eventReceived(Event event, Object component, MuleContext muleContext) throws Exception {
+    public void eventReceived(InternalEvent event, Object component, MuleContext muleContext) throws Exception {
       synchronized (foo) {
         foo.add((String) event.getMessage().getPayload().getValue());
         try {

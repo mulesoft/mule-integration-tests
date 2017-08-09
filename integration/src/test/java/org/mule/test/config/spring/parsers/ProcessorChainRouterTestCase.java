@@ -11,6 +11,7 @@ import static org.junit.Assert.assertThat;
 import org.mule.runtime.api.component.location.ConfigurationComponentLocator;
 import org.mule.runtime.api.component.location.Location;
 import org.mule.runtime.api.event.Event;
+import org.mule.runtime.api.event.InputEvent;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.util.ClassUtils;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -36,12 +37,12 @@ public class ProcessorChainRouterTestCase extends AbstractIntegrationTestCase im
   public void compositeProcessorChainRouter() throws Exception {
     Object chainRouter =
         componentLocator.find(Location.builder().globalName("compositeChainRouter").build()).get();
-    Event event = Event.builder().message(Message.builder().value("testPayload").build())
-        .addVariable("customVar", "Value").build();
+    InputEvent event = InputEvent.newInputEvent().message(Message.builder().value("testPayload").build())
+        .addVariable("customVar", "Value");
 
     // TODO MULE-13132 - we need to call this method using reflection because there's no support for being able to access
     // privileged API classes.
-    Method method = ClassUtils.getMethod(chainRouter.getClass(), "process", new Class[] {Event.class});
+    Method method = ClassUtils.getMethod(chainRouter.getClass(), "process", new Class[] {InputEvent.class});
     Event returnedEvent = (Event) method.invoke(chainRouter, event);
     assertThat(returnedEvent.getMessage().getPayload().getValue(), is("testPayload custom"));
     assertThat(returnedEvent.getVariables().get("myVar").getValue(), is("myVarValue"));

@@ -15,7 +15,7 @@ import static org.junit.Assert.assertThat;
 
 import org.mule.functional.api.component.EventCallback;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.core.api.Event;
+import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -66,7 +66,7 @@ public class AggregationTimeoutTestCase extends AbstractIntegrationTestCase {
   public static class BlockExecutionComponent implements EventCallback {
 
     @Override
-    public void eventReceived(Event event, Object component, MuleContext muleContext) throws Exception {
+    public void eventReceived(InternalEvent event, Object component, MuleContext muleContext) throws Exception {
       if (event.getMessage().getPayload().getValue().equals(BLOCK_EVENT)) {
         blockExecution.await();
       }

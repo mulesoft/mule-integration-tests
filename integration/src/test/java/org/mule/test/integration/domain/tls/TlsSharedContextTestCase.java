@@ -16,7 +16,7 @@ import io.qameta.allure.Issue;
 import org.mule.functional.api.flow.FlowRunner;
 import org.mule.functional.junit4.DomainFunctionalTestCase;
 import org.mule.runtime.api.tls.TlsContextFactory;
-import org.mule.runtime.core.api.Event;
+import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.runtime.http.api.client.HttpClient;
@@ -84,7 +84,7 @@ public class TlsSharedContextTestCase extends DomainFunctionalTestCase {
   }
 
   private void testFlowForApp(String flowName, String appName, String expected) throws Exception {
-    Event response = new FlowRunner(getMuleContextForApp(appName), flowName).withPayload(DATA).run();
+    InternalEvent response = new FlowRunner(getMuleContextForApp(appName), flowName).withPayload(DATA).run();
     assertThat(response.getMessageAsString(getMuleContextForApp(appName)), is(expected));
   }
 }

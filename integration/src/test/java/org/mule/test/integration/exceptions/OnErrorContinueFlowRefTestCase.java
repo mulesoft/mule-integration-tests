@@ -12,7 +12,7 @@ import static org.mule.test.integration.exceptions.OnErrorContinueTestCase.JSON_
 import static org.mule.test.integration.exceptions.OnErrorContinueTestCase.JSON_RESPONSE;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.core.api.Event;
+import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.transaction.Transaction;
 import org.mule.runtime.core.api.transaction.TransactionCoordination;
@@ -56,7 +56,7 @@ public class OnErrorContinueFlowRefTestCase extends AbstractIntegrationTestCase 
   public static class VerifyTransactionNotResolvedProcessor implements Processor {
 
     @Override
-    public Event process(Event event) throws MuleException {
+    public InternalEvent process(InternalEvent event) throws MuleException {
       Transaction tx = TransactionCoordination.getInstance().getTransaction();
       assertThat(tx, IsNull.<Object>notNullValue());
       assertThat(tx.isRollbackOnly(), Is.is(false));

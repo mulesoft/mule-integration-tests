@@ -14,7 +14,7 @@ import org.mule.functional.api.flow.FlowRunner;
 import io.qameta.allure.Issue;
 
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.core.api.Event;
+import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.transformer.AbstractMessageTransformer;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -76,7 +76,7 @@ public class MessageRootIdPropagationTestCase extends AbstractIntegrationTestCas
     }
 
     @Override
-    public Object transformMessage(Event event, Charset outputEncoding) {
+    public Object transformMessage(InternalEvent event, Charset outputEncoding) {
       process(event.getMessage());
       return event.getMessage().getPayload().getValue();
     }

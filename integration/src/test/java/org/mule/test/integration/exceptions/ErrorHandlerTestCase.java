@@ -18,7 +18,7 @@ import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.i18n.I18nMessage;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.DefaultMuleException;
-import org.mule.runtime.core.api.Event;
+import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.registry.ResolverException;
@@ -227,7 +227,7 @@ public class ErrorHandlerTestCase extends AbstractIntegrationTestCase {
   public static class ThrowExceptionProcessor implements Processor {
 
     @Override
-    public Event process(Event event) throws MuleException {
+    public InternalEvent process(InternalEvent event) throws MuleException {
       Throwable exception = (Throwable) event.getVariables().get("exception").getValue();
       if (exception instanceof MuleException) {
         if (exception instanceof MessagingException) {
@@ -245,7 +245,7 @@ public class ErrorHandlerTestCase extends AbstractIntegrationTestCase {
   public static class ThrowErrorProcessor implements Processor {
 
     @Override
-    public Event process(Event event) throws MuleException {
+    public InternalEvent process(InternalEvent event) throws MuleException {
       throw new AssertionError("validation failed");
     }
 

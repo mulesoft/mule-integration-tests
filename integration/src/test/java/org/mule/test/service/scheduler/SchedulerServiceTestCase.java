@@ -28,7 +28,7 @@ import org.mule.runtime.api.lifecycle.Disposable;
 import org.mule.runtime.api.lifecycle.Initialisable;
 import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.api.scheduler.Scheduler;
-import org.mule.runtime.core.api.Event;
+import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.runtime.core.api.construct.Flow;
@@ -184,7 +184,8 @@ public class SchedulerServiceTestCase extends AbstractIntegrationTestCase {
     expected.expectCause(instanceOf(SchedulerBusyException.class));
 
     ((SkeletonSource) messageSource).getListener()
-        .process(Event.builder(create(delayScheduleFlow, fromSingleComponent(SchedulerServiceTestCase.class.getSimpleName())))
+        .process(InternalEvent
+            .builder(create(delayScheduleFlow, fromSingleComponent(SchedulerServiceTestCase.class.getSimpleName())))
             .message(of(null))
             .build());
 
@@ -208,7 +209,7 @@ public class SchedulerServiceTestCase extends AbstractIntegrationTestCase {
     }
 
     @Override
-    public Event process(Event event) throws MuleException {
+    public InternalEvent process(InternalEvent event) throws MuleException {
       try {
         // just exercise the scheduler.
         return scheduler.submit(() -> event).get();
@@ -241,7 +242,7 @@ public class SchedulerServiceTestCase extends AbstractIntegrationTestCase {
     }
 
     @Override
-    public Event process(Event event) throws MuleException {
+    public InternalEvent process(InternalEvent event) throws MuleException {
       scheduler.submit(() -> {
         try {
           latch.await(DEFAULT_TEST_TIMEOUT_SECS, SECONDS);
