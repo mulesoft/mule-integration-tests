@@ -58,4 +58,34 @@
         </parse-template>
     </flow>
 
+    <flow name="with-target-value-no-target">
+        <parse-template targetValue="#[payload]">
+            <content>#['This template has a DW expression to parse from ' ++ vars.flowName ++ ' flow. Remember, the name of the flow is $(vars.flowName)']</content>
+        </parse-template>
+    </flow>
+
+    <flow name="with-custom-target-value">
+        <parse-template target="targetVar" targetValue="#[payload]">
+            <content>#['This template has a DW expression to parse from ' ++ vars.flowName ++ ' flow. Remember, the name of the flow is $(vars.flowName)']</content>
+        </parse-template>
+    </flow>
+
+    <flow name="with-wrong-target-value">
+        <parse-template target="targetVar" targetValue="not_an_expression">
+            <content>#['This template has a DW expression to parse from ' ++ vars.flowName ++ ' flow. Remember, the name of the flow is $(vars.flowName)']</content>
+        </parse-template>
+    </flow>
+
+    <flow name="with-message-binding-target-value">
+        <parse-template target="targetVar" targetValue="#[message]">
+            <content>#['This template has a DW expression to parse from ' ++ vars.flowName ++ ' flow. Remember, the name of the flow is $(vars.flowName)']</content>
+        </parse-template>
+    </flow>
+
+    <flow name="with-payload-from-message-binding-target-value">
+        <parse-template target="targetVar" targetValue="#[message.payload]">
+            <content>#['This template has a DW expression to parse from ' ++ vars.flowName ++ ' flow. Remember, the name of the flow is $(vars.flowName)']</content>
+        </parse-template>
+    </flow>
+
 </mule>
