@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.mule.runtime</groupId>
     <artifactId>mule</artifactId>
-    <version>4.0.0-SNAPSHOT</version>
+    <version>4.0.0-rc.cyborg-SNAPSHOT</version>
   </parent>
   <groupId>org.mule.tests</groupId>
   <artifactId>mule-extensions-integration-tests</artifactId>
@@ -24,25 +24,25 @@
   </modules>
 
   <properties>
-    <muleSchedulerServiceTestVersion>1.0.0-SNAPSHOT</muleSchedulerServiceTestVersion>
-    <muleHttpServiceTestVersion>1.0.0-SNAPSHOT</muleHttpServiceTestVersion>
-    <muleOAuthServiceTestVersion>1.0.0-SNAPSHOT</muleOAuthServiceTestVersion>
-    <muleSoapServiceTestVersion>1.0.0-SNAPSHOT</muleSoapServiceTestVersion>
-    <muleExtensionTestSoapTestVersion>1.0.0-SNAPSHOT</muleExtensionTestSoapTestVersion>
+    <muleSchedulerServiceTestVersion>1.0.0-rc.cyborg-SNAPSHOT</muleSchedulerServiceTestVersion>
+    <muleHttpServiceTestVersion>1.0.0-rc.cyborg-SNAPSHOT</muleHttpServiceTestVersion>
+    <muleOAuthServiceTestVersion>1.0.0-rc.cyborg-SNAPSHOT</muleOAuthServiceTestVersion>
+    <muleSoapServiceTestVersion>1.0.0-rc.cyborg-SNAPSHOT</muleSoapServiceTestVersion>
+    <muleExtensionTestSoapTestVersion>1.0.0-rc.cyborg-SNAPSHOT</muleExtensionTestSoapTestVersion>
 
-    <muleSpringModuleVersion>1.0.0-SNAPSHOT</muleSpringModuleVersion>
-    <muleValidationModuleTestVersion>1.0.0-SNAPSHOT</muleValidationModuleTestVersion>
-    <muleScriptingModuleVersion>1.0.0-SNAPSHOT</muleScriptingModuleVersion>
-    <muleFileCommonsTestVersion>1.0.0-SNAPSHOT</muleFileCommonsTestVersion>
+    <muleSpringModuleVersion>0.9.0-rc.cyborg-SNAPSHOT</muleSpringModuleVersion>
+    <muleValidationModuleTestVersion>0.9.0-rc.cyborg-SNAPSHOT</muleValidationModuleTestVersion>
+    <muleScriptingModuleVersion>0.9.0-rc.cyborg-SNAPSHOT</muleScriptingModuleVersion>
+    <muleFileCommonsTestVersion>0.9.0-rc.cyborg-SNAPSHOT</muleFileCommonsTestVersion>
 
-    <muleHttpConnectorTestVersion>1.0.0-SNAPSHOT</muleHttpConnectorTestVersion>
-    <muleDbConnectorTestVersion>1.0.0-SNAPSHOT</muleDbConnectorTestVersion>
-    <muleFtpConnectorTestVersion>1.0.0-SNAPSHOT</muleFtpConnectorTestVersion>
-    <muleFileConnectorTestVersion>1.0.0-SNAPSHOT</muleFileConnectorTestVersion>
-    <muleJmsConnectorTestVersion>1.0.0-SNAPSHOT</muleJmsConnectorTestVersion>
-    <muleWscConnectorTestVersion>1.0.0-SNAPSHOT</muleWscConnectorTestVersion>
-    <muleOauthModuleTestVersion>1.0.0-SNAPSHOT</muleOauthModuleTestVersion>
-    <muleSocketsConnectorTestVersion>1.0.0-SNAPSHOT</muleSocketsConnectorTestVersion>
+    <muleHttpConnectorTestVersion>0.9.0-rc.cyborg-SNAPSHOT</muleHttpConnectorTestVersion>
+    <muleDbConnectorTestVersion>0.9.0-rc.cyborg-SNAPSHOT</muleDbConnectorTestVersion>
+    <muleFtpConnectorTestVersion>0.9.0-rc.cyborg-SNAPSHOT</muleFtpConnectorTestVersion>
+    <muleFileConnectorTestVersion>0.9.0-rc.cyborg-SNAPSHOT</muleFileConnectorTestVersion>
+    <muleJmsConnectorTestVersion>0.9.0-rc.cyborg-SNAPSHOT</muleJmsConnectorTestVersion>
+    <muleWscConnectorTestVersion>0.9.0-rc.cyborg-SNAPSHOT</muleWscConnectorTestVersion>
+    <muleOauthModuleTestVersion>0.9.0-rc.cyborg-SNAPSHOT</muleOauthModuleTestVersion>
+    <muleSocketsConnectorTestVersion>0.9.0-rc.cyborg-SNAPSHOT</muleSocketsConnectorTestVersion>
   </properties>
 
   <build>

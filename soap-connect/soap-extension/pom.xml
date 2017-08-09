@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.mulesoft.mule.extensions</groupId>
         <artifactId>mule-modules-soap-parent</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.0-rc.cyborg-SNAPSHOT</version>
     </parent>
 
     <name>Soap Connect Test Extension</name>
