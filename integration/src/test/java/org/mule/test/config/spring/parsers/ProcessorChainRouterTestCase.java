@@ -37,7 +37,7 @@ public class ProcessorChainRouterTestCase extends AbstractIntegrationTestCase im
   public void compositeProcessorChainRouter() throws Exception {
     Object chainRouter =
         componentLocator.find(Location.builder().globalName("compositeChainRouter").build()).get();
-    InputEvent event = InputEvent.newInputEvent().message(Message.builder().value("testPayload").build())
+    InputEvent event = InputEvent.create().message(Message.builder().value("testPayload").build())
         .addVariable("customVar", "Value");
 
     // TODO MULE-13132 - we need to call this method using reflection because there's no support for being able to access
