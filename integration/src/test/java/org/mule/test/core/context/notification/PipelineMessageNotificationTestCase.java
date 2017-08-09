@@ -7,9 +7,15 @@
 package org.mule.test.core.context.notification;
 
 import static org.junit.Assert.assertNotNull;
+import static org.mule.runtime.core.api.context.notification.AsyncMessageNotification.PROCESS_ASYNC_COMPLETE;
+import static org.mule.runtime.core.api.context.notification.AsyncMessageNotification.PROCESS_ASYNC_SCHEDULED;
+import static org.mule.runtime.core.api.context.notification.PipelineMessageNotification.PROCESS_COMPLETE;
+import static org.mule.runtime.core.api.context.notification.PipelineMessageNotification.PROCESS_END;
+import static org.mule.runtime.core.api.context.notification.PipelineMessageNotification.PROCESS_START;
 
 import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.runtime.core.api.context.notification.AsyncMessageNotification;
+import org.mule.runtime.core.api.context.notification.IntegerAction;
 import org.mule.runtime.core.api.context.notification.PipelineMessageNotification;
 import org.mule.runtime.core.api.exception.MessagingException;
 
@@ -46,31 +52,31 @@ public class PipelineMessageNotificationTestCase extends AbstractNotificationTes
   public RestrictedNode getSpecification() {
     return new Node()
         // Request-Response
-        .serial(new Node(PipelineMessageNotification.class, PipelineMessageNotification.PROCESS_START))
-        .serial(new Node(PipelineMessageNotification.class, PipelineMessageNotification.PROCESS_END))
-        .serial(new Node(PipelineMessageNotification.class, PipelineMessageNotification.PROCESS_COMPLETE))
+        .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_START)))
+        .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_END)))
+        .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_COMPLETE)))
         // Request-Response Request Exception
-        .serial(new Node(PipelineMessageNotification.class, PipelineMessageNotification.PROCESS_START))
-        .serial(new Node(PipelineMessageNotification.class, PipelineMessageNotification.PROCESS_COMPLETE))
+        .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_START)))
+        .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_COMPLETE)))
         // Request-Response Response Exception
-        .serial(new Node(PipelineMessageNotification.class, PipelineMessageNotification.PROCESS_START))
-        .serial(new Node(PipelineMessageNotification.class, PipelineMessageNotification.PROCESS_END))
-        .serial(new Node(PipelineMessageNotification.class, PipelineMessageNotification.PROCESS_COMPLETE))
+        .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_START)))
+        .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_END)))
+        .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_COMPLETE)))
         // One-Way
-        .serial(new Node(PipelineMessageNotification.class, PipelineMessageNotification.PROCESS_START))
-        .serial(new Node(AsyncMessageNotification.class, AsyncMessageNotification.PROCESS_ASYNC_SCHEDULED)
-            .parallel(new Node(PipelineMessageNotification.class, PipelineMessageNotification.PROCESS_COMPLETE))
-            .parallel(new Node(AsyncMessageNotification.class, AsyncMessageNotification.PROCESS_ASYNC_SCHEDULED))
-            .parallel(new Node(PipelineMessageNotification.class, PipelineMessageNotification.PROCESS_END))
-            .parallel(new Node(AsyncMessageNotification.class, AsyncMessageNotification.PROCESS_ASYNC_COMPLETE))
-            .parallel(new Node(AsyncMessageNotification.class, AsyncMessageNotification.PROCESS_ASYNC_COMPLETE)))
+        .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_START)))
+        .serial(new Node(AsyncMessageNotification.class, new IntegerAction(PROCESS_ASYNC_SCHEDULED))
+            .parallel(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_COMPLETE)))
+            .parallel(new Node(AsyncMessageNotification.class, new IntegerAction(PROCESS_ASYNC_SCHEDULED)))
+            .parallel(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_END)))
+            .parallel(new Node(AsyncMessageNotification.class, new IntegerAction(PROCESS_ASYNC_COMPLETE)))
+            .parallel(new Node(AsyncMessageNotification.class, new IntegerAction(PROCESS_ASYNC_COMPLETE))))
         // One-Way Request Exception
-        .serial(new Node(PipelineMessageNotification.class, PipelineMessageNotification.PROCESS_START))
-        .serial(new Node(AsyncMessageNotification.class, AsyncMessageNotification.PROCESS_ASYNC_SCHEDULED)
-            .parallel(new Node(PipelineMessageNotification.class, PipelineMessageNotification.PROCESS_COMPLETE))
-            .parallel(new Node(AsyncMessageNotification.class, AsyncMessageNotification.PROCESS_ASYNC_COMPLETE))
-            .parallel(new Node(AsyncMessageNotification.class, AsyncMessageNotification.PROCESS_ASYNC_SCHEDULED))
-            .parallel(new Node(AsyncMessageNotification.class, AsyncMessageNotification.PROCESS_ASYNC_COMPLETE)));
+        .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_START)))
+        .serial(new Node(AsyncMessageNotification.class, new IntegerAction(PROCESS_ASYNC_SCHEDULED))
+            .parallel(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_COMPLETE)))
+            .parallel(new Node(AsyncMessageNotification.class, new IntegerAction(PROCESS_ASYNC_COMPLETE)))
+            .parallel(new Node(AsyncMessageNotification.class, new IntegerAction(PROCESS_ASYNC_SCHEDULED)))
+            .parallel(new Node(AsyncMessageNotification.class, new IntegerAction(PROCESS_ASYNC_COMPLETE))));
   }
 
   @Override

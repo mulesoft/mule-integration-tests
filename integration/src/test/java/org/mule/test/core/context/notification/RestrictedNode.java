@@ -6,7 +6,8 @@
  */
 package org.mule.test.core.context.notification;
 
-import org.mule.runtime.core.api.context.notification.ServerNotification;
+import org.mule.runtime.core.api.context.notification.AbstractServerNotification;
+import org.mule.runtime.core.api.context.notification.Notification.Action;
 
 /**
  * An implementation detail - this enforces the guarantee that once {@link Node#serial(RestrictedNode)} is called,
@@ -16,9 +17,9 @@ public interface RestrictedNode {
 
   public RestrictedNode serial(RestrictedNode node);
 
-  public int match(ServerNotification notification);
+  public int match(AbstractServerNotification notification);
 
-  public boolean contains(Class clazz, int action);
+  public boolean contains(Class clazz, Action action);
 
   public boolean isExhausted();
 

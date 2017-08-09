@@ -7,10 +7,12 @@
 package org.mule.test.integration.exceptions;
 
 import static java.lang.String.format;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mule.functional.junit4.matchers.ThrowableMessageMatcher.hasMessage;
 import static org.mule.runtime.config.spring.api.SpringXmlConfigurationBuilderFactory.createConfigurationBuilder;
+import static org.mule.runtime.core.api.context.notification.MuleContextNotification.CONTEXT_STARTED;
 import static org.mule.runtime.core.api.exception.Errors.Identifiers.CRITICAL_IDENTIFIER;
 import static org.mule.runtime.core.api.exception.Errors.Identifiers.SOURCE_ERROR_IDENTIFIER;
 import static org.mule.runtime.core.api.exception.Errors.Identifiers.SOURCE_ERROR_RESPONSE_GENERATE_ERROR_IDENTIFIER;
@@ -30,15 +32,16 @@ import org.mule.runtime.core.api.context.DefaultMuleContextBuilder;
 import org.mule.runtime.core.api.context.DefaultMuleContextFactory;
 import org.mule.runtime.core.api.context.MuleContextBuilder;
 import org.mule.runtime.core.api.context.MuleContextFactory;
+import org.mule.runtime.core.api.context.notification.IntegerAction;
 import org.mule.runtime.core.api.context.notification.MuleContextNotification;
 import org.mule.runtime.core.api.context.notification.MuleContextNotificationListener;
+import org.mule.runtime.core.api.context.notification.NotificationListenerRegistry;
 import org.mule.runtime.core.api.util.concurrent.Latch;
 import org.mule.tck.config.TestServicesConfigurationBuilder;
 import org.mule.tck.junit4.AbstractMuleTestCase;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Rule;
@@ -186,22 +189,23 @@ public class ErrorHandlingConfigurationFailuresTestCase extends AbstractMuleTest
     MuleContext muleContext = muleContextFactory.createMuleContext(builders, contextBuilder);
     final AtomicReference<Latch> contextStartedLatch = new AtomicReference<>();
     contextStartedLatch.set(new Latch());
-    muleContext.registerListener(new MuleContextNotificationListener<MuleContextNotification>() {
+    muleContext.getRegistry().lookupObject(NotificationListenerRegistry.class)
+        .registerListener(new MuleContextNotificationListener<MuleContextNotification>() {
 
-      @Override
-      public boolean isBlocking() {
-        return false;
-      }
+          @Override
+          public boolean isBlocking() {
+            return false;
+          }
 
-      @Override
-      public void onNotification(MuleContextNotification notification) {
-        if (notification.getAction() == MuleContextNotification.CONTEXT_STARTED) {
-          contextStartedLatch.get().countDown();
-        }
-      }
-    });
+          @Override
+          public void onNotification(MuleContextNotification notification) {
+            if (new IntegerAction(CONTEXT_STARTED).equals(notification.getAction())) {
+              contextStartedLatch.get().countDown();
+            }
+          }
+        });
     muleContext.start();
-    contextStartedLatch.get().await(20, TimeUnit.SECONDS);
+    contextStartedLatch.get().await(20, SECONDS);
   }
 
 }

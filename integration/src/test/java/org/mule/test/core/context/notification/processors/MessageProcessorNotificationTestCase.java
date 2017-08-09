@@ -14,6 +14,7 @@ import static org.junit.Assert.assertThat;
 import static org.mule.runtime.core.api.context.notification.MessageProcessorNotification.MESSAGE_PROCESSOR_POST_INVOKE;
 
 import org.mule.functional.api.exception.FunctionalTestException;
+import org.mule.runtime.core.api.context.notification.IntegerAction;
 import org.mule.runtime.core.api.context.notification.MessageProcessorNotification;
 import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.tck.core.context.notification.NotificationLogger;
@@ -67,7 +68,7 @@ public class MessageProcessorNotificationTestCase extends AbstractMessageProcess
     NotificationLogger notificationLogger = muleContext.getRegistry().lookupObject("notificationLogger");
     MessageProcessorNotification errorPostNotification =
         ((MessageProcessorNotification) notificationLogger.getNotifications().get(3));
-    assertThat(errorPostNotification.getAction(), equalTo(MESSAGE_PROCESSOR_POST_INVOKE));
+    assertThat(errorPostNotification.getAction(), equalTo(new IntegerAction(MESSAGE_PROCESSOR_POST_INVOKE)));
     assertThat(errorPostNotification.getException(), instanceOf(MessagingException.class));
 
     assertNotifications();
@@ -120,11 +121,11 @@ public class MessageProcessorNotificationTestCase extends AbstractMessageProcess
     specificationFactory = () -> new Node()
         .serial(pre()) // scatter-gather
         .serial(new Node()
-            .parallelSynch(pre() // route 1 chain
+            .parallel(pre() // route 1 chain
                 .serial(prePost()) // route 1 first logger
                 .serial(prePost()) // route 1 second logger
                 .serial(post())) // route 1 chain
-            .parallelSynch(pre() // route 2 chain
+            .parallel(pre() // route 2 chain
                 .serial(prePost()) // route 2 logger
                 .serial(post()))) // route 2 chain
         .serial(post()) // scatter-gather
@@ -341,8 +342,8 @@ public class MessageProcessorNotificationTestCase extends AbstractMessageProcess
     specificationFactory = () -> new Node()
         .serial(pre())
         .serial(new Node()
-            .parallelSynch(prePost())
-            .parallelSynch(post().serial(prePost())));
+            .parallel(prePost())
+            .parallel(post().serial(prePost())));
 
     assertNotNull(flowRunner("until-successful").withPayload(TEST_PAYLOAD).run());
     muleContext.getClient().request("test://out-us", SECONDS.toMillis(getTestTimeoutSecs())).getRight().get();
@@ -356,8 +357,8 @@ public class MessageProcessorNotificationTestCase extends AbstractMessageProcess
     specificationFactory = () -> new Node()
         .serial(pre())
         .serial(new Node()
-            .parallelSynch(pre().serial(prePost()).serial(prePost()).serial(post()))
-            .parallelSynch(post().serial(prePost())));
+            .parallel(pre().serial(prePost()).serial(prePost()).serial(post()))
+            .parallel(post().serial(prePost())));
 
     assertNotNull(flowRunner("until-successful-with-processor-chain").withPayload(TEST_PAYLOAD).run());
     muleContext.getClient().request("test://out-us", SECONDS.toMillis(getTestTimeoutSecs())).getRight().get();
@@ -371,8 +372,8 @@ public class MessageProcessorNotificationTestCase extends AbstractMessageProcess
     specificationFactory = () -> new Node()
         .serial(pre())
         .serial(new Node()
-            .parallelSynch(pre().serial(pre()).serial(prePost()).serial(post()).serial(prePost()).serial(post()))
-            .parallelSynch(post().serial(prePost())));
+            .parallel(pre().serial(pre()).serial(prePost()).serial(post()).serial(prePost()).serial(post()))
+            .parallel(post().serial(prePost())));
 
     assertNotNull(flowRunner("until-successful-with-enricher").withPayload(TEST_PAYLOAD).run());
     muleContext.getClient().request("test://out-us", SECONDS.toMillis(getTestTimeoutSecs())).getRight().get();

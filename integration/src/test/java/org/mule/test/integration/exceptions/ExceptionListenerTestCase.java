@@ -11,13 +11,15 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.mule.runtime.core.api.context.notification.ErrorHandlerNotification.PROCESS_END;
+import static org.mule.runtime.core.api.context.notification.ErrorHandlerNotification.PROCESS_START;
 
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.client.MuleClient;
-import org.mule.runtime.core.api.context.notification.ErrorHandlerNotificationListener;
-import org.mule.runtime.core.api.context.notification.ServerNotification;
 import org.mule.runtime.core.api.context.notification.ErrorHandlerNotification;
+import org.mule.runtime.core.api.context.notification.ErrorHandlerNotificationListener;
+import org.mule.runtime.core.api.context.notification.IntegerAction;
 import org.mule.tck.probe.JUnitProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -30,8 +32,8 @@ public class ExceptionListenerTestCase extends AbstractIntegrationTestCase {
   private static final int POLL_DELAY_MILLIS = 100;
 
   private MuleClient client;
-  private ServerNotification exceptionStrategyStartNotification;
-  private ServerNotification exceptionStrategyEndNotification;
+  private ErrorHandlerNotification exceptionStrategyStartNotification;
+  private ErrorHandlerNotification exceptionStrategyEndNotification;
 
   @Override
   protected String getConfigFile() {
@@ -54,9 +56,9 @@ public class ExceptionListenerTestCase extends AbstractIntegrationTestCase {
 
       @Override
       public void onNotification(ErrorHandlerNotification notification) {
-        if (notification.getAction() == ErrorHandlerNotification.PROCESS_START) {
+        if (new IntegerAction(PROCESS_START).equals(notification.getAction())) {
           exceptionStrategyStartNotification = notification;
-        } else if (notification.getAction() == ErrorHandlerNotification.PROCESS_END) {
+        } else if (new IntegerAction(PROCESS_END).equals(notification.getAction())) {
           exceptionStrategyEndNotification = notification;
         }
       }

@@ -8,11 +8,13 @@ package org.mule.test.core.context.notification;
 
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertNull;
+import static org.mule.runtime.core.api.context.notification.ExceptionNotification.EXCEPTION_ACTION;
 
 import org.mule.functional.api.exception.FunctionalTestException;
 import org.mule.functional.listener.ExceptionListener;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.context.notification.ExceptionNotification;
+import org.mule.runtime.core.api.context.notification.IntegerAction;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -43,12 +45,11 @@ public class ExceptionNotificationTestCase extends AbstractNotificationTestCase 
 
   @Override
   public RestrictedNode getSpecification() {
-    return new Node(ExceptionNotification.class, ExceptionNotification.EXCEPTION_ACTION);
+    return new Node(ExceptionNotification.class, new IntegerAction(EXCEPTION_ACTION));
   }
 
   @Override
   public void validateSpecification(RestrictedNode spec) throws Exception {
-    verifyAllNotifications(spec, ExceptionNotification.class, ExceptionNotification.EXCEPTION_ACTION,
-                           ExceptionNotification.EXCEPTION_ACTION);
+    verifyAllNotifications(spec, ExceptionNotification.class, EXCEPTION_ACTION, EXCEPTION_ACTION);
   }
 }
