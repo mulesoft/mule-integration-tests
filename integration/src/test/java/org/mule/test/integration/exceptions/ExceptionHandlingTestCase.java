@@ -20,18 +20,17 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mule.runtime.core.api.util.ExceptionUtils.NULL_ERROR_HANDLER;
-
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.core.api.Event;
-import org.mule.runtime.core.api.EventContext;
+import org.mule.runtime.core.api.InternalEvent;
+import org.mule.runtime.core.api.InternalEventContext;
 import org.mule.runtime.core.api.client.MuleClient;
+import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.runtime.core.api.exception.MessagingExceptionHandler;
 import org.mule.runtime.core.api.exception.MessagingExceptionHandlerAcceptor;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.internal.exception.ErrorHandler;
-import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.runtime.core.internal.exception.MessagingExceptionHandlerToSystemAdapter;
 import org.mule.runtime.core.internal.exception.OnErrorPropagateHandler;
 import org.mule.tck.processor.FlowAssert;
@@ -65,7 +64,7 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void testCustomProcessorInFlow() throws Exception {
-    final Event muleEvent = runFlow("customProcessorInFlow");
+    final InternalEvent muleEvent = runFlow("customProcessorInFlow");
     Message response = muleEvent.getMessage();
 
     assertThat(response, is(notNullValue()));
@@ -102,7 +101,7 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
   public void testCustomProcessorInScope() throws Exception {
     LinkedList<String> list = new LinkedList<>();
     list.add(MESSAGE);
-    final Event muleEvent = flowRunner("customProcessorInScope").withPayload(list).run();
+    final InternalEvent muleEvent = flowRunner("customProcessorInScope").withPayload(list).run();
     Message response = muleEvent.getMessage();
 
     assertNotNull(response);
@@ -198,7 +197,7 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
   public static class ExecutionCountProcessor implements Processor {
 
     @Override
-    public synchronized Event process(Event event) throws MuleException {
+    public synchronized InternalEvent process(InternalEvent event) throws MuleException {
       latch.countDown();
       return event;
     }
@@ -208,11 +207,11 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
       implements Processor {
 
     @Override
-    public synchronized Event process(Event event) throws MuleException {
+    public synchronized InternalEvent process(InternalEvent event) throws MuleException {
       try {
         Field exceptionHandlerField = forName("org.mule.runtime.core.AbstractEventContext").getDeclaredField("exceptionHandler");
         exceptionHandlerField.setAccessible(true);
-        EventContext eventContext = event.getContext();
+        InternalEventContext eventContext = event.getContext();
         effectiveMessagingExceptionHandler = (MessagingExceptionHandler) exceptionHandlerField.get(eventContext);
         while (eventContext.getParentContext().isPresent() && effectiveMessagingExceptionHandler == NULL_ERROR_HANDLER) {
           eventContext = eventContext.getParentContext().get();

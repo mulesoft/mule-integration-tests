@@ -20,11 +20,10 @@ import static org.mule.functional.junit4.matchers.ThrowableCauseMatcher.hasCause
 
 import org.mule.functional.api.component.FunctionalTestProcessor;
 import org.mule.functional.api.exception.FunctionalTestException;
-import org.mule.functional.junit4.matchers.ThrowableCauseMatcher;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.core.api.Event;
+import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.retry.policy.RetryPolicyExhaustedException;
@@ -161,7 +160,7 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
 
   static class CustomMP implements Processor {
 
-    private static List<Event> processedEvents = new ArrayList<>();
+    private static List<InternalEvent> processedEvents = new ArrayList<>();
 
     public static void clearCount() {
       processedEvents.clear();
@@ -171,12 +170,12 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
       return processedEvents.size();
     }
 
-    public static List<Event> getProcessedEvents() {
+    public static List<InternalEvent> getProcessedEvents() {
       return processedEvents;
     }
 
     @Override
-    public Event process(final Event event) throws MuleException {
+    public InternalEvent process(final InternalEvent event) throws MuleException {
       processedEvents.add(event);
       return event;
     }
@@ -188,7 +187,7 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
     private long firstAttemptTime = 0;
 
     @Override
-    public Event process(Event event) throws MuleException {
+    public InternalEvent process(InternalEvent event) throws MuleException {
       if (firstAttemptTime == 0) {
         firstAttemptTime = System.currentTimeMillis();
       } else {

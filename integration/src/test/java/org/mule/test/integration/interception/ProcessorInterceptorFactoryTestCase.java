@@ -251,7 +251,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
 
   @Test
   public void expressionsInInterception() throws Exception {
-    assertThat(flowRunner("expressionsInInterception").run().getVariable("addedVar").getValue(), is("value2"));
+    assertThat(flowRunner("expressionsInInterception").run().getVariables().get("addedVar").getValue(), is("value2"));
   }
 
   public static class HasInjectedAttributesInterceptorFactory implements ProcessorInterceptorFactory {

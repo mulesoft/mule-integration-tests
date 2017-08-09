@@ -20,7 +20,7 @@ import static org.mule.functional.junit4.TestLegacyMessageUtils.getOutboundPrope
 import static org.mule.runtime.api.metadata.MediaType.APPLICATION_XML;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.core.api.Event;
+import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.processor.Processor;
@@ -227,7 +227,7 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
     map.put("banana", banana);
     map.put("orange", orange);
 
-    Event result = flowRunner("split-aggregate-map").withPayload(map).run();
+    InternalEvent result = flowRunner("split-aggregate-map").withPayload(map).run();
 
     assertNotNull(result);
     assertTrue(result.getMessage().getPayload().getValue() instanceof List);
@@ -312,7 +312,7 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
 
   @Test
   public void testAsyncRequestResponseEndpoint() throws Exception {
-    Event syncResult = flowRunner("async-requestresponse").withPayload("0").run();
+    InternalEvent syncResult = flowRunner("async-requestresponse").withPayload("0").run();
     MuleClient client = muleContext.getClient();
     final Message result = client.request("test://async-requestresponse-out", RECEIVE_TIMEOUT).getRight().get();
     final Message asyncResult =
@@ -323,7 +323,7 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
 
   @Test
   public void testAsyncTransactionalEndpoint() throws Exception {
-    Event syncResult =
+    InternalEvent syncResult =
         flowRunner("async-tx").withPayload("0").transactionally(ACTION_ALWAYS_BEGIN, new TestTransactionFactory()).run();
 
     final MuleClient client = muleContext.getClient();
@@ -470,8 +470,8 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
   public static class ThreadSensingMessageProcessor implements Processor {
 
     @Override
-    public Event process(Event event) throws MuleException {
-      return Event.builder(event).message(Message.builder(event.getMessage()).value(currentThread()).build()).build();
+    public InternalEvent process(InternalEvent event) throws MuleException {
+      return InternalEvent.builder(event).message(Message.builder(event.getMessage()).value(currentThread()).build()).build();
     }
   }
 

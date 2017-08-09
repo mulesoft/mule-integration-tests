@@ -6,7 +6,7 @@
  */
 package org.mule.test.integration.transaction.xa;
 
-import org.mule.runtime.core.api.Event;
+import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.core.api.processor.Processor;
 
@@ -28,7 +28,7 @@ public class FailureGeneratorMessageProcessor implements Processor {
   }
 
   @Override
-  public Event process(Event event) throws MuleException {
+  public InternalEvent process(InternalEvent event) throws MuleException {
     if (numberOfFailures.get() < maximumNumberOfFailures) {
       if (Math.random() < failureRange) {
         numberOfFailures.incrementAndGet();

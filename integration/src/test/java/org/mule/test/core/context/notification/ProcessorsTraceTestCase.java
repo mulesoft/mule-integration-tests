@@ -15,7 +15,7 @@ import static org.junit.Assert.assertThat;
 import static org.mule.runtime.core.api.config.MuleProperties.MULE_FLOW_TRACE;
 
 import org.mule.runtime.api.exception.MuleException;
-import org.mule.runtime.core.api.Event;
+import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.context.notification.MessageProcessorNotificationListener;
 import org.mule.runtime.core.api.context.notification.ProcessorsTrace;
 import org.mule.runtime.core.api.processor.Processor;
@@ -46,7 +46,7 @@ public class ProcessorsTraceTestCase extends AbstractIntegrationTestCase {
     public static ProcessorsTrace processorsTraceToAssert;
 
     @Override
-    public Event process(Event event) throws MuleException {
+    public InternalEvent process(InternalEvent event) throws MuleException {
       processorsTraceToAssert = event.getContext().getProcessorsTrace();
       return event;
     }
@@ -57,7 +57,7 @@ public class ProcessorsTraceTestCase extends AbstractIntegrationTestCase {
     public static CountDownLatch latch;
 
     @Override
-    public Event process(Event event) throws MuleException {
+    public InternalEvent process(InternalEvent event) throws MuleException {
       super.process(event);
       latch.countDown();
       return event;

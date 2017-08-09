@@ -12,7 +12,7 @@ import static org.junit.Assert.assertThat;
 import org.mule.functional.junit4.TestLegacyMessageUtils;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.core.api.Event;
+import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.exception.MessagingException;
@@ -40,7 +40,7 @@ public class ExceptionStrategyWithFlowExceptionTestCase extends AbstractIntegrat
   public static class ExceptionThrower implements Processor {
 
     @Override
-    public Event process(Event event) throws MuleException {
+    public InternalEvent process(InternalEvent event) throws MuleException {
       throw new MessagingException(event, null);
     }
   }

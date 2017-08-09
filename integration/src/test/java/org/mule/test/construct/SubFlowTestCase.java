@@ -11,7 +11,7 @@ import static org.junit.Assert.assertThat;
 import static org.mule.tck.core.lifecycle.LifecycleTrackerProcessor.FLOW_CONSRUCT_PROPERTY;
 import static org.mule.tck.core.lifecycle.LifecycleTrackerProcessor.LIFECYCLE_TRACKER_PROCESSOR_PROPERTY;
 
-import org.mule.runtime.core.api.Event;
+import org.mule.runtime.core.api.InternalEvent;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Test;
@@ -25,23 +25,23 @@ public class SubFlowTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void testSubFlowViaProcessorRef() throws Exception {
-    Event result = flowRunner("SubFlowViaProcessorRef").withPayload("").run();
+    InternalEvent result = flowRunner("SubFlowViaProcessorRef").withPayload("").run();
     assertThat(result.getMessageAsString(muleContext), is("1xyz2"));
 
-    assertThat(result.getVariable(LIFECYCLE_TRACKER_PROCESSOR_PROPERTY).getValue(),
-               is("[setMuleContext, setService, initialise, start]"));
-    assertThat(result.getVariable(FLOW_CONSRUCT_PROPERTY).getValue(),
+    assertThat(result.getVariables().get(LIFECYCLE_TRACKER_PROCESSOR_PROPERTY).getValue(),
+               is("[setMuleContext, initialise, start]"));
+    assertThat(result.getVariables().get(FLOW_CONSRUCT_PROPERTY).getValue(),
                is(muleContext.getRegistry().lookupFlowConstruct("SubFlowViaProcessorRef")));
   }
 
   @Test
   public void testSubFlowViaFlowRef() throws Exception {
-    Event result = flowRunner("SubFlowViaFlowRef").withPayload("").run();
+    InternalEvent result = flowRunner("SubFlowViaFlowRef").withPayload("").run();
     assertThat(result.getMessageAsString(muleContext), is("1xyz2"));
 
-    assertThat(result.getVariable(LIFECYCLE_TRACKER_PROCESSOR_PROPERTY).getValue(),
-               is("[setMuleContext, setService, initialise, start]"));
-    assertThat(result.getVariable(FLOW_CONSRUCT_PROPERTY).getValue(),
+    assertThat(result.getVariables().get(LIFECYCLE_TRACKER_PROCESSOR_PROPERTY).getValue(),
+               is("[setMuleContext, initialise, start]"));
+    assertThat(result.getVariables().get(FLOW_CONSRUCT_PROPERTY).getValue(),
                is(muleContext.getRegistry().lookupFlowConstruct("SubFlowViaFlowRef")));
   }
 

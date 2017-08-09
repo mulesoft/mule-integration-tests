@@ -14,21 +14,19 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mule.functional.junit4.TestLegacyMessageUtils.getOutboundProperty;
 import static org.mule.runtime.core.api.message.DefaultMultiPartPayload.BODY_ATTRIBUTES;
-
 import org.mule.functional.junit4.TestLegacyMessageBuilder;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.message.MultiPartPayload;
+import org.mule.runtime.api.meta.AbstractAnnotatedObject;
 import org.mule.runtime.api.metadata.MediaType;
-import org.mule.runtime.core.api.Event;
-import org.mule.runtime.core.api.construct.FlowConstruct;
-import org.mule.runtime.core.api.construct.FlowConstructAware;
-import org.mule.runtime.core.api.processor.Processor;
-import org.mule.runtime.core.api.transformer.TransformerException;
-import org.mule.runtime.core.internal.message.InternalMessage;
+import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.message.DefaultMultiPartPayload;
 import org.mule.runtime.core.api.message.PartAttributes;
+import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.transformer.AbstractMessageTransformer;
+import org.mule.runtime.core.api.transformer.TransformerException;
+import org.mule.runtime.core.internal.message.InternalMessage;
 import org.mule.tck.testmodels.fruit.Apple;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -51,17 +49,15 @@ public class EventMetaDataPropagationTestCase extends AbstractIntegrationTestCas
     flowRunner("component1").withPayload(TEST_PAYLOAD).run();
   }
 
-  public static class DummyComponent implements Processor, FlowConstructAware {
-
-    private FlowConstruct flowConstruct;
+  public static class DummyComponent extends AbstractAnnotatedObject implements Processor {
 
     @Override
-    public Event process(Event event) throws MuleException {
-      return Event.builder(event).message(doProcess(event)).build();
+    public InternalEvent process(InternalEvent event) throws MuleException {
+      return InternalEvent.builder(event).message(doProcess(event)).build();
     }
 
-    private Message doProcess(Event event) throws MuleException {
-      if ("component1".equals(flowConstruct.getName())) {
+    private Message doProcess(InternalEvent event) throws MuleException {
+      if ("component1".equals(getLocation().getRootContainerName())) {
         Map<String, Serializable> props = new HashMap<>();
         props.put("stringParam", "param1");
         props.put("objectParam", new Apple());
@@ -91,10 +87,6 @@ public class EventMetaDataPropagationTestCase extends AbstractIntegrationTestCas
       return event.getMessage();
     }
 
-    @Override
-    public void setFlowConstruct(FlowConstruct flowConstruct) {
-      this.flowConstruct = flowConstruct;
-    }
   }
 
   /**
@@ -104,7 +96,7 @@ public class EventMetaDataPropagationTestCase extends AbstractIntegrationTestCas
   public static class DummyTransformer extends AbstractMessageTransformer {
 
     @Override
-    public Object transformMessage(Event event, Charset outputEncoding) throws TransformerException {
+    public Object transformMessage(InternalEvent event, Charset outputEncoding) throws TransformerException {
       Message msg = event.getMessage();
       assertEquals("param1", getOutboundProperty(msg, "stringParam"));
       final Object o = getOutboundProperty(msg, "objectParam");

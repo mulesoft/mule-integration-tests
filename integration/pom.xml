@@ -364,6 +364,13 @@
         </dependency>
         <dependency>
             <groupId>org.mule.tests</groupId>
+            <artifactId>mule-tests-parsers-plugin</artifactId>
+            <classifier>mule-plugin</classifier>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.tests</groupId>
             <artifactId>smart-connector-using-core</artifactId>
             <classifier>mule-plugin</classifier>
             <version>${project.version}</version>

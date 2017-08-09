@@ -6,8 +6,9 @@
  */
 package org.mule.test.config.dsl;
 
-public enum LifecycleAction {
+import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
 
-  GET_OBJECT, INITIALISE, START, STOP, DISPOSE
+@ArtifactClassLoaderRunnerConfig(extraPrivilegedArtifacts = {"org.mule.tests:mule-tests-parsers-plugin"})
+public interface ParsersPluginTest {
 
 }

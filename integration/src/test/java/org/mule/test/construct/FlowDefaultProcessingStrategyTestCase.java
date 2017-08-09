@@ -16,7 +16,7 @@ import static org.mule.functional.junit4.TestLegacyMessageUtils.getOutboundPrope
 import org.mule.functional.junit4.TestLegacyMessageBuilder;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.core.api.Event;
+import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.tck.testmodels.mule.TestTransactionFactory;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -73,8 +73,8 @@ public class FlowDefaultProcessingStrategyTestCase extends AbstractIntegrationTe
   public static class ThreadSensingMessageProcessor implements Processor {
 
     @Override
-    public Event process(Event event) throws MuleException {
-      return Event.builder(event).message(new TestLegacyMessageBuilder(event.getMessage())
+    public InternalEvent process(InternalEvent event) throws MuleException {
+      return InternalEvent.builder(event).message(new TestLegacyMessageBuilder(event.getMessage())
           .addOutboundProperty(PROCESSOR_THREAD, currentThread().getName()).build()).build();
     }
   }

@@ -15,7 +15,7 @@ import static org.junit.Assert.assertThat;
 
 import org.mule.functional.api.exception.FunctionalTestException;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.core.api.Event;
+import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -40,7 +40,7 @@ public class ExceptionStrategyReturnMessageTestCase extends AbstractIntegrationT
 
   @Test
   public void testReturnPayloadCustomStrategy() throws Exception {
-    Event event = flowRunner("InputService").withPayload("Test Message").run();
+    InternalEvent event = flowRunner("InputService").withPayload("Test Message").run();
     Message msg = event.getMessage();
 
     assertNotNull(msg);

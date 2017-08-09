@@ -29,12 +29,13 @@ import static org.mule.runtime.api.metadata.MediaType.APPLICATION_JSON;
 import static org.mule.runtime.api.metadata.MediaType.APPLICATION_XML;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS_FEATURE;
 
+import io.qameta.allure.Description;
 import io.qameta.allure.Issue;
 
 import org.mule.functional.junit4.TestLegacyMessageBuilder;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.core.api.Event;
+import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.tck.junit4.rule.SystemProperty;
@@ -52,16 +53,14 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.hamcrest.core.Is;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
-
-import io.qameta.allure.Description;
-import io.qameta.allure.Feature;
-import io.qameta.allure.Story;
 
 @Feature(ROUTERS_FEATURE)
 @Story(AllureConstants.RoutersFeature.ForeachStory.FOR_EACH)
@@ -130,11 +129,11 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
     names.add("residente");
     names.add("visitante");
 
-    Event result = flowRunner("minimal-config-expression").withPayload("message payload")
+    InternalEvent result = flowRunner("minimal-config-expression").withPayload("message payload")
         .withVariable("names", names).run();
 
     assertThat(result.getMessage().getPayload().getValue(), instanceOf(String.class));
-    assertThat((List<String>) result.getVariable("names").getValue(), hasSize(names.size()));
+    assertThat((List<String>) result.getVariables().get("names").getValue(), hasSize(names.size()));
 
     Message out = client.request("test://out", getTestTimeoutSecs()).getRight().get();
     assertThat(out.getPayload().getValue(), instanceOf(String.class));
@@ -151,11 +150,11 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
     names.add("residente");
     names.add("visitante");
 
-    Event result = flowRunner("filtered-config").withPayload("message payload")
+    InternalEvent result = flowRunner("filtered-config").withPayload("message payload")
         .withVariable("names", names).run();
 
     assertThat(result.getMessage().getPayload().getValue(), instanceOf(String.class));
-    assertThat((List<String>) result.getVariable("names").getValue(), hasSize(names.size()));
+    assertThat((List<String>) result.getVariables().get("names").getValue(), hasSize(names.size()));
   }
 
   @Test
@@ -353,8 +352,8 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
       + "</Items></PurchaseOrder>";
 
   private void xml(Object payload) throws Exception {
-    Event result = flowRunner("process-order-update").withPayload(payload).withMediaType(APPLICATION_XML).run();
-    int total = (int) result.getVariable("total").getValue();
+    InternalEvent result = flowRunner("process-order-update").withPayload(payload).withMediaType(APPLICATION_XML).run();
+    int total = (Integer) result.getVariables().get("total").getValue();
     assertThat(total, is(greaterThan(0)));
   }
 

@@ -10,7 +10,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.metadata.DataType;
-import org.mule.runtime.core.api.Event;
+import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.transformer.DiscoverableTransformer;
 import org.mule.runtime.core.api.transformer.TransformerException;
 import org.mule.runtime.core.api.transformer.AbstractTransformer;
@@ -56,7 +56,7 @@ public class GraphTransformerResolutionTestCase extends AbstractIntegrationTestC
 
   @Test
   public void resolvesNonDirectTransformation() throws Exception {
-    final Event muleEvent = flowRunner("stringEchoService").withPayload(new A("Hello")).run();
+    final InternalEvent muleEvent = flowRunner("stringEchoService").withPayload(new A("Hello")).run();
     Message response = muleEvent.getMessage();
     assertTrue(response.getPayload().getValue() instanceof C);
     assertEquals("HelloAFromB", ((C) response.getPayload().getValue()).value);

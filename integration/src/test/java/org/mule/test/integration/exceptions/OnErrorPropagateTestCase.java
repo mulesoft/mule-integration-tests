@@ -21,7 +21,7 @@ import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HA
 import org.mule.functional.api.exception.FunctionalTestException;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.core.api.Event;
+import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.runtime.core.api.exception.MuleFatalException;
 import org.mule.runtime.core.api.processor.Processor;
@@ -94,10 +94,10 @@ public class OnErrorPropagateTestCase extends AbstractIntegrationTestCase {
   @Test
   public void propagateErrorAndMessage() throws Exception {
     MessagingException me = flowRunner("onErrorPropagateMessage").runExpectingException();
-    Event errorEvent = me.getEvent();
+    InternalEvent errorEvent = me.getEvent();
     assertThat(errorEvent.getError().isPresent(), is(true));
     assertThat(errorEvent.getError().get().getCause(), is(instanceOf(RoutingException.class)));
-    assertThat(errorEvent.getVariable("myVar").getValue(), is("aValue"));
+    assertThat(errorEvent.getVariables().get("myVar").getValue(), is("aValue"));
     assertThat(errorEvent.getMessage(), hasPayload(equalTo("propagated")));
   }
 
@@ -140,7 +140,7 @@ public class OnErrorPropagateTestCase extends AbstractIntegrationTestCase {
   public static class ErrorProcessor implements Processor {
 
     @Override
-    public Event process(Event event) throws MuleException {
+    public InternalEvent process(InternalEvent event) throws MuleException {
       throw new NoClassDefFoundError("Test error");
     }
 
@@ -151,7 +151,7 @@ public class OnErrorPropagateTestCase extends AbstractIntegrationTestCase {
     public static Latch latch = new Latch();
 
     @Override
-    public Event process(Event event) throws MuleException {
+    public InternalEvent process(InternalEvent event) throws MuleException {
       latch.release();
       return event;
     }
@@ -160,7 +160,7 @@ public class OnErrorPropagateTestCase extends AbstractIntegrationTestCase {
   public static class FailingProcessor implements Processor {
 
     @Override
-    public Event process(Event event) throws MuleException {
+    public InternalEvent process(InternalEvent event) throws MuleException {
       throw new RoutingException(createStaticMessage("Error."), this);
     }
 

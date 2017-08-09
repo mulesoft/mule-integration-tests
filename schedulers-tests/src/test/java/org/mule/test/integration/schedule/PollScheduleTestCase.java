@@ -14,7 +14,7 @@ import org.mule.functional.api.component.EventCallback;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.source.SchedulerMessageSource;
-import org.mule.runtime.core.api.Event;
+import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.source.MessageSource;
@@ -125,7 +125,7 @@ public class PollScheduleTestCase extends MuleArtifactFunctionalTestCase {
   public static class Foo implements EventCallback {
 
     @Override
-    public void eventReceived(Event event, Object component, MuleContext muleContext) throws Exception {
+    public void eventReceived(InternalEvent event, Object component, MuleContext muleContext) throws Exception {
       synchronized (foo) {
 
         if (foo.size() < 10) {
@@ -138,7 +138,7 @@ public class PollScheduleTestCase extends MuleArtifactFunctionalTestCase {
   public static class Bar implements EventCallback {
 
     @Override
-    public void eventReceived(Event event, Object component, MuleContext muleContext) throws Exception {
+    public void eventReceived(InternalEvent event, Object component, MuleContext muleContext) throws Exception {
       synchronized (bar) {
 
         if (bar.size() < 10) {

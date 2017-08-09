@@ -8,7 +8,7 @@ package org.mule.shutdown;
 
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.runtime.core.api.DefaultMuleException;
-import org.mule.runtime.core.api.Event;
+import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.util.concurrent.Latch;
@@ -33,7 +33,7 @@ public abstract class AbstractShutdownTimeoutRequestResponseTestCase extends Abs
   private static class BlockMessageProcessor implements Processor {
 
     @Override
-    public Event process(Event event) throws MuleException {
+    public InternalEvent process(InternalEvent event) throws MuleException {
       waitLatch.release();
 
       try {

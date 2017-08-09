@@ -15,7 +15,7 @@ import org.mule.runtime.api.exception.ExceptionHelper;
 import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.api.security.SecurityProviderNotFoundException;
 import org.mule.runtime.api.security.UnknownAuthenticationTypeException;
-import org.mule.runtime.core.api.Event;
+import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.el.ExpressionManager;
 import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.runtime.core.api.security.AbstractAuthenticationFilter;
@@ -52,7 +52,7 @@ public class CustomSecurityFilterTestCase extends AbstractIntegrationTestCase {
     props.put("username", "ross");
     props.put("pass", EXPECTED_PASSWORD);
 
-    Event event = flowRunner("test").withPayload("hi").withInboundProperties(props).run();
+    InternalEvent event = flowRunner("test").withPayload("hi").withInboundProperties(props).run();
 
     assertThat(event.getError().isPresent(), is(false));
 
@@ -67,7 +67,7 @@ public class CustomSecurityFilterTestCase extends AbstractIntegrationTestCase {
     private String password;
 
     @Override
-    public Event authenticate(Event event) throws SecurityException, UnknownAuthenticationTypeException,
+    public InternalEvent authenticate(InternalEvent event) throws SecurityException, UnknownAuthenticationTypeException,
         CryptoFailureException, SecurityProviderNotFoundException, EncryptionStrategyNotFoundException, InitialisationException {
       ExpressionManager expressionManager = (ExpressionManager) registry.lookupByName(OBJECT_EXPRESSION_MANAGER).get();
 

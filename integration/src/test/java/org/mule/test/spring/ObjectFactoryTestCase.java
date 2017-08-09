@@ -15,8 +15,8 @@ import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjecti
 import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.ObjectFactoryStory.OBJECT_FACTORY_INECTION_AND_LIFECYCLE;
 import org.mule.runtime.core.api.registry.RegistrationException;
 import org.mule.test.AbstractIntegrationTestCase;
-import org.mule.test.config.spring.parsers.beans.TestObject;
-import org.mule.test.config.spring.parsers.beans.TestObjectFactory;
+import org.mule.tests.parsers.api.TestObject;
+import org.mule.tests.parsers.api.TestObjectFactory;
 
 import org.junit.Test;
 import io.qameta.allure.Feature;
