@@ -45,7 +45,7 @@ updatePropertiesVersion "$VERSION_TO_SERVICES" pom.xml propertiesDepsServices[@]
 propertiesDeps=("muleValidationModuleTestVersion"
                 "muleScriptingModuleVersion"
                 "muleFileCommonsTestVersion"
-                "muleSpringModuleVersion"
+                "muleSpringModuleTestVersion"
 
                 "muleHttpConnectorTestVersion"
                 "muleDbConnectorTestVersion"

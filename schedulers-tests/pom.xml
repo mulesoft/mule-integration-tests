@@ -10,7 +10,6 @@
 
     <properties>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
-        <muleSpringModuleVersion>1.0.0-SNAPSHOT</muleSpringModuleVersion>
     </properties>
 
     <dependencies>
@@ -39,7 +38,7 @@
         <dependency>
             <groupId>org.mule.modules</groupId>
             <artifactId>mule-spring-module</artifactId>
-            <version>${muleSpringModuleVersion}</version>
+            <version>${muleSpringModuleTestVersion}</version>
             <classifier>mule-plugin</classifier>
             <scope>test</scope>
         </dependency>
