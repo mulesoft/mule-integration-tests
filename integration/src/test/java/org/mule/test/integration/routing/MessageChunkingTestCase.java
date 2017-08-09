@@ -61,7 +61,7 @@ public class MessageChunkingTestCase extends AbstractIntegrationTestCase {
     muleContext.getRegistry().lookupObject(NotificationListenerRegistry.class).registerListener(notification -> {
       assertEquals("ChunkingObjectReceiver", ((AbstractServerNotification) notification).getResourceIdentifier());
       // Test that we have received all chunks in the correct order
-      Object reply = ((FunctionalTestNotification) notification).getEvent().getMessage().getPayload().getValue();
+      Object reply = ((FunctionalTestNotification) notification).getMessage().getPayload().getValue();
       // Check if Object is of Correct Type
       assertTrue(reply instanceof SimpleSerializableObject);
       SimpleSerializableObject replySimpleSerializableObject = (SimpleSerializableObject) reply;
