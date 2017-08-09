@@ -46,6 +46,7 @@ propertiesDeps=("muleValidationModuleTestVersion"
                 "muleScriptingModuleVersion"
                 "muleFileCommonsTestVersion"
                 "muleSpringModuleVersion"
+                "muleSpringModuleTestVersion"
 
                 "muleHttpConnectorTestVersion"
                 "muleDbConnectorTestVersion"

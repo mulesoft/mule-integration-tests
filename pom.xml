@@ -43,6 +43,7 @@
     <muleWscConnectorTestVersion>0.9.0-rc.cyborg-SNAPSHOT</muleWscConnectorTestVersion>
     <muleOauthModuleTestVersion>0.9.0-rc.cyborg-SNAPSHOT</muleOauthModuleTestVersion>
     <muleSocketsConnectorTestVersion>0.9.0-rc.cyborg-SNAPSHOT</muleSocketsConnectorTestVersion>
+    <muleSpringModuleTestVersion>0.9.0-rc.cyborg-SNAPSHOT</muleSpringModuleTestVersion>
   </properties>
 
   <build>
