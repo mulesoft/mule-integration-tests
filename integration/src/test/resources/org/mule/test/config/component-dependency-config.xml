@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="
+        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+        http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+        http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd">
+
+    <tls:context name="listenerTlsContext1" >
+        <tls:key-store path="tls/clientServerKeystore" keyPassword="mulepassword" password="mulepassword" alias="muleserver" />
+    </tls:context>
+
+    <http:listener-config name="HTTP_Listener_config1">
+        <http:listener-connection host="localhost" port="${httpPort1}" tlsContext="listenerTlsContext1" protocol="HTTPS"/>
+    </http:listener-config>
+
+    <http:listener-config name="HTTP_Listener_config2">
+        <http:listener-connection host="localhost" port="${httpPort2}" tlsContext="listenerTlsContext2" protocol="HTTPS"/>
+    </http:listener-config>
+
+    <tls:context name="listenerTlsContext2" >
+        <tls:key-store path="tls/clientServerKeystore" keyPassword="mulepassword" password="mulepassword" alias="muleserver" />
+    </tls:context>
+
+    <flow name="testFlow" >
+        <http:listener config-ref="HTTP_Listener_config1" path="/" />
+        <set-payload value="listener1"/>
+    </flow>
+
+    <flow name="testFlow1">
+        <http:listener config-ref="HTTP_Listener_config2" path="/" />
+        <set-payload value="listener2"/>
+    </flow>
+
+    <http:request-config name="requestConfigWithCertificate">
+        <http:request-connection protocol="HTTPS" host="localhost" tlsContext="requestTlsContextWithCertificate"/>
+    </http:request-config>
+
+    <flow name="clientFlow">
+        <http:request config-ref="requestConfigWithCertificate" url="#['https://localhost:$(vars.port)/']" method="POST"/>
+        <object-to-string-transformer />
+    </flow>
+
+    <tls:context name="requestTlsContextWithCertificate" >
+        <tls:trust-store path="tls/trustStore" password="mulepassword" />
+    </tls:context>
+
+</mule>
