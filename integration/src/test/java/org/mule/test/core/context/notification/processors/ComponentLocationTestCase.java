@@ -29,7 +29,6 @@ import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocator
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentLocationStory.COMPONENT_LOCATION;
 import org.mule.runtime.api.component.TypedComponentIdentifier;
 import org.mule.runtime.api.meta.AnnotatedObject;
-import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.context.notification.MessageProcessorNotification;
 import org.mule.runtime.dsl.api.component.config.DefaultComponentLocation;
@@ -56,7 +55,8 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
   private static final Optional<TypedComponentIdentifier> SUB_FLOW_TYPED_COMPONENT_IDENTIFIER =
       of(builder().identifier(SUBFLOW_IDENTIFIER).type(SCOPE).build());
 
-  private static final Optional<String> CONFIG_FILE_NAME = of("component-path-test-flow.xml");
+  private static final Optional<String> CONFIG_FILE_NAME =
+      of("org/mule/test/integration/notifications/component-path-test-flow.xml");
 
   private static final DefaultComponentLocation FLOW_WITH_SINGLE_MP_LOCATION =
       new DefaultComponentLocation(of("flowWithSingleMp"),
@@ -175,7 +175,7 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
 
   @Override
   protected String getConfigFile() {
-    return "org/mule/test/integration/notifications/component-path-test-flow.xml";
+    return CONFIG_FILE_NAME.get();
   }
 
   @Test
