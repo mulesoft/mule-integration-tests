@@ -9,7 +9,7 @@
         http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd">
 
     <tls:context name="listenerTlsContext1" >
-        <tls:key-store path="tls/clientServerKeystore" keyPassword="mulepassword" password="mulepassword" alias="muleserver" />
+        <tls:key-store path="serverKeystore" keyPassword="mulepassword" password="mulepassword" alias="muleserver" />
     </tls:context>
 
     <http:listener-config name="HTTP_Listener_config1">
@@ -21,7 +21,7 @@
     </http:listener-config>
 
     <tls:context name="listenerTlsContext2" >
-        <tls:key-store path="tls/clientServerKeystore" keyPassword="mulepassword" password="mulepassword" alias="muleserver" />
+        <tls:key-store path="serverKeystore" keyPassword="mulepassword" password="mulepassword" alias="muleserver" />
     </tls:context>
 
     <flow name="testFlow" >
@@ -44,7 +44,7 @@
     </flow>
 
     <tls:context name="requestTlsContextWithCertificate" >
-        <tls:trust-store path="tls/trustStore" password="mulepassword" />
+        <tls:trust-store path="trustStore" password="mulepassword" />
     </tls:context>
 
 </mule>
