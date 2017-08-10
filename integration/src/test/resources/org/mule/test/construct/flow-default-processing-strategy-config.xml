@@ -6,7 +6,7 @@
                http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
 
-    <custom-processor name="threadSensingProcessor"
+    <object name="threadSensingProcessor"
         class="org.mule.test.construct.FlowDefaultProcessingStrategyTestCase$ThreadSensingMessageProcessor" />
 
 

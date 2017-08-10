@@ -7,7 +7,8 @@
                http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
                http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
 
-     <custom-processor name="dlq-mp" class="org.mule.test.routing.UntilSuccessfulTestCase$CustomMP"/>
+    <object name="dlq-mp" class="org.mule.test.routing.UntilSuccessfulTestCase$CustomMP"/>
+    <object name="wait-measure" class="org.mule.test.routing.UntilSuccessfulTestCase$WaitMeasure"/>
 
     <flow name="minimal-config">
         <!-- with this configuration, the response from target MP won't be considered an error -->
@@ -70,7 +71,7 @@
 
     <flow name="measureSynchronousWait">
         <until-successful maxRetries="1" millisBetweenRetries="1000">
-            <custom-processor class="org.mule.test.routing.UntilSuccessfulTestCase$WaitMeasure" />
+            <processor ref="wait-measure"/>
             <test:processor throwException="true"/>
         </until-successful>
     </flow>

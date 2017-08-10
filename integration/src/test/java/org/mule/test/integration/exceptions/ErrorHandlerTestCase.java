@@ -6,19 +6,24 @@
  */
 package org.mule.test.integration.exceptions;
 
+import static org.junit.Assert.assertThat;
+import static org.mule.functional.api.component.FunctionalTestProcessor.getFromFlow;
+import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
+import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
+
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
-import static org.junit.Assert.assertThat;
+
 import static org.mockito.Mockito.mock;
-import static org.mule.functional.api.component.FunctionalTestProcessor.getFromFlow;
-import static org.mule.runtime.api.message.Message.of;
-import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
 
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.i18n.I18nMessage;
+import org.mule.runtime.api.lifecycle.Initialisable;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.DefaultMuleException;
 import org.mule.runtime.core.api.InternalEvent;
+import org.mule.runtime.core.api.exception.MessageRedeliveredException;
+import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.registry.ResolverException;
@@ -29,16 +34,13 @@ import org.mule.runtime.core.api.security.UnauthorisedException;
 import org.mule.runtime.core.api.transformer.MessageTransformerException;
 import org.mule.runtime.core.api.transformer.Transformer;
 import org.mule.runtime.core.api.transformer.TransformerException;
-import org.mule.runtime.core.api.config.i18n.CoreMessages;
-import org.mule.runtime.core.api.exception.MessageRedeliveredException;
-import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.test.AbstractIntegrationTestCase;
-
-import java.sql.SQLDataException;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import java.sql.SQLDataException;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
@@ -65,12 +67,12 @@ public class ErrorHandlerTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void testMatchesCorrectExceptionStrategyUsingWrapper() throws Exception {
-    callAndThrowException(new ResolverException(CoreMessages.createStaticMessage(""), new IllegalStateException()), "0 catch-2");
+    callAndThrowException(new ResolverException(createStaticMessage(""), new IllegalStateException()), "0 catch-2");
   }
 
   @Test
   public void testMatchesCorrectExceptionStrategyUsingWrapperAndCause() throws Exception {
-    callAndThrowException(new ResolverException(CoreMessages.createStaticMessage(""),
+    callAndThrowException(new ResolverException(createStaticMessage(""),
                                                 new RuntimeException(new IllegalStateException())),
                           "0 catch-2");
   }
@@ -82,7 +84,7 @@ public class ErrorHandlerTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void testMatchesCorrectExceptionStrategyUsingSubtypeClass() throws Exception {
-    callAndThrowException(new ResolverException(CoreMessages.createStaticMessage(""), new SubtypeException()), "0 catch-4");
+    callAndThrowException(new ResolverException(createStaticMessage(""), new SubtypeException()), "0 catch-4");
   }
 
   @Test
@@ -123,7 +125,7 @@ public class ErrorHandlerTestCase extends AbstractIntegrationTestCase {
   @Test
   public void testMatchesCorrectExceptionUsingNoCause() throws Exception {
     expectedException.expectCause(is(instanceOf(ResolverException.class)));
-    callAndThrowException(new ResolverException(CoreMessages.createStaticMessage("")), null);
+    callAndThrowException(new ResolverException(createStaticMessage("")), null);
   }
 
   @Test
@@ -141,7 +143,7 @@ public class ErrorHandlerTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void connectivity() throws Exception {
-    callTypeAndThrowException(new RetryPolicyExhaustedException(mockMessage, new Object()), "0 connectivity");
+    callTypeAndThrowException(new RetryPolicyExhaustedException(mockMessage, mock(Initialisable.class)), "0 connectivity");
   }
 
   @Test
@@ -158,8 +160,7 @@ public class ErrorHandlerTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void redelivery() throws Exception {
-    MessageRedeliveredException exception =
-        new MessageRedeliveredException("3", 1, 1, eventBuilder().message(of("0")).build(), mockMP);
+    MessageRedeliveredException exception = new MessageRedeliveredException("3", 1, 1);
     callTypeAndThrowException(exception, "0 redelivery");
   }
 
