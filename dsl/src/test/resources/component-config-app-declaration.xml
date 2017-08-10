@@ -29,7 +29,6 @@
    <http:listener-config basePath="/"
                           name="httpListener">
       <http:listener-connection connectionIdleTimeout="30000"
-                                 disableValidation="true"
                                  host="localhost"
                                  port="49019"
                                  protocol="HTTPS"
