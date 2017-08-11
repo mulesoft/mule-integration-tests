@@ -17,7 +17,6 @@ import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.transformer.AbstractMessageTransformer;
 import org.mule.runtime.core.api.transformer.TransformerException;
-import org.mule.runtime.core.internal.message.InternalMessage;
 import org.mule.tck.testmodels.fruit.Apple;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -48,29 +47,17 @@ public class EventMetaDataPropagationTestCase extends AbstractIntegrationTestCas
     }
 
     private Message doProcess(InternalEvent event) throws MuleException {
-            if ("component1".equals(getLocation().getRootContainerName())) {
-              Map<String, Serializable> props = new HashMap<>();
-              props.put("stringParam", "param1");
-              props.put("objectParam", new Apple());
-              props.put("doubleParam", 12345.6);
-              props.put("integerParam", 12345);
-              props.put("longParam", (long) 123456789);
-              props.put("booleanParam", Boolean.TRUE);
+      Map<String, Serializable> props = new HashMap<>();
+      props.put("stringParam", "param1");
+      props.put("objectParam", new Apple());
+      props.put("doubleParam", 12345.6);
+      props.put("integerParam", 12345);
+      props.put("longParam", (long) 123456789);
+      props.put("booleanParam", Boolean.TRUE);
 
-              return new TestLegacyMessageBuilder()
-                  .value(Message.builder().value(event.getMessageAsString(muleContext)).build())
-                  .outboundProperties(props).build();
-            } else {
-              InternalMessage msg = (InternalMessage) event.getMessage();
-              assertEquals("param1", msg.getInboundProperty("stringParam"));
-              final Object o = msg.getInboundProperty("objectParam");
-              assertTrue(o instanceof Apple);
-              assertEquals(12345.6, 12345.6, msg.<Double>getInboundProperty("doubleParam", 0d));
-              assertEquals(12345, msg.<Integer>getInboundProperty("integerParam", 0).intValue());
-              assertEquals(123456789, msg.<Long>getInboundProperty("longParam", 0L).longValue());
-              assertEquals(Boolean.TRUE, msg.getInboundProperty("booleanParam", Boolean.FALSE));
-            }
-      return event.getMessage();
+      return new TestLegacyMessageBuilder()
+          .value(Message.builder().value(event.getMessageAsString(muleContext)).build())
+          .outboundProperties(props).build();
     }
 
   }
