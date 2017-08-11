@@ -13,8 +13,4 @@
         <test:queue name="queue"/>
     </flow>
 
-    <flow name="component2">
-        <custom-processor class="org.mule.test.integration.EventMetaDataPropagationTestCase$DummyComponent"/>
-    </flow>
-
 </mule>
