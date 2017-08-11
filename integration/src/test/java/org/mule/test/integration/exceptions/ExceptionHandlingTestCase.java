@@ -19,7 +19,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
-import static org.mule.runtime.core.api.util.ExceptionUtils.NULL_ERROR_HANDLER;
 import static org.mule.tck.MuleTestUtils.getExceptionListeners;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
@@ -31,9 +30,12 @@ import org.mule.runtime.core.api.exception.MessagingExceptionHandler;
 import org.mule.runtime.core.api.exception.MessagingExceptionHandlerAcceptor;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.runtime.core.api.processor.Processor;
+import org.mule.runtime.core.internal.exception.ErrorHandler;
+import org.mule.runtime.core.api.exception.NullExceptionHandler;
+import org.mule.runtime.core.internal.exception.OnErrorPropagateHandler;
 import org.mule.tck.processor.FlowAssert;
 import org.mule.test.AbstractIntegrationTestCase;
-
+import org.junit.Test;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.LinkedList;
@@ -41,14 +43,13 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Test;
-
 public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
 
   public static final String MESSAGE = "some message";
   private static final String SYTEM_EXCEPTION_HANDLER_CLASSNAME =
       "org.mule.runtime.core.internal.exception.MessagingExceptionHandlerToSystemAdapter";
   private static final String ERROR_HANDLER_CLASSNAME = "org.mule.runtime.core.internal.exception.ErrorHandler";
+  public static final MessagingExceptionHandler HANDLER = NullExceptionHandler.getInstance();
 
   private static MessagingExceptionHandler effectiveMessagingExceptionHandler;
   private static CountDownLatch latch;
@@ -67,7 +68,6 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
   public void testCustomProcessorInFlow() throws Exception {
     final InternalEvent muleEvent = runFlow("customProcessorInFlow");
     Message response = muleEvent.getMessage();
-
     assertThat(response, is(notNullValue()));
     assertThat(effectiveMessagingExceptionHandler.getClass().getName(), equalTo(ERROR_HANDLER_CLASSNAME));
     assertThat(getExceptionListeners(effectiveMessagingExceptionHandler), hasSize(1));
@@ -213,7 +213,7 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
         exceptionHandlerField.setAccessible(true);
         InternalEventContext eventContext = event.getContext();
         effectiveMessagingExceptionHandler = (MessagingExceptionHandler) exceptionHandlerField.get(eventContext);
-        while (eventContext.getParentContext().isPresent() && effectiveMessagingExceptionHandler == NULL_ERROR_HANDLER) {
+        while (eventContext.getParentContext().isPresent() && effectiveMessagingExceptionHandler == HANDLER) {
           eventContext = eventContext.getParentContext().get();
           effectiveMessagingExceptionHandler = (MessagingExceptionHandler) exceptionHandlerField.get(eventContext);
         }
