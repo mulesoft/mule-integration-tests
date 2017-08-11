@@ -25,6 +25,7 @@ import io.qameta.allure.Story;
 
 @Feature(CONFIGURATION_COMPONENT_LOCATOR)
 @Story(MUNIT_COMPONENT_LOCATION)
+@Ignore("MULE-13301")
 public class MUnitComponentPathTestCase extends MuleArtifactFunctionalTestCase {
 
   @Inject
