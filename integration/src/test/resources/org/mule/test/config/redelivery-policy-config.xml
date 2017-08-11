@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
+        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+        http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+
+    <http:listener-config name="dummyConfig">
+        <http:listener-connection host="localhost" port="8080"/>
+    </http:listener-config>
+
+    <flow name="inMemoryStore">
+        <http:listener path="test" config-ref="dummyConfig">
+            <redelivery-policy maxRedeliveryCount="12"/>
+        </http:listener>
+        <test:processor/>
+    </flow>
+
+    <flow name="simpleTextFileStore">
+        <http:listener path="test" config-ref="dummyConfig">
+            <redelivery-policy useSecureHash="false" idExpression="#[mel:message:id]"/>
+        </http:listener>
+        <test:processor/>
+    </flow>
+
+    <flow name="customObjectStore">
+        <http:listener path="test" config-ref="dummyConfig">
+            <redelivery-policy/>
+        </http:listener>
+        <test:processor/>
+    </flow>
+</mule>
+

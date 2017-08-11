@@ -6,32 +6,32 @@
 
     <flow name="no-expression">
         <parse-template>
-            <content>${file::org/mule/transformers/no-expression.ptem}</content>
+            <content>${file::org/mule/processors/no-expression.ptem}</content>
         </parse-template>
     </flow>
 
     <flow name="mel-expression">
         <parse-template>
-            <content>${file::org/mule/transformers/mel-expression.ptem}</content>
+            <content>${file::org/mule/processors/mel-expression.ptem}</content>
         </parse-template>
     </flow>
 
     <flow name="dw-expression">
         <parse-template>
-            <content>${file::org/mule/transformers/dw-expression.ptem}</content>
+            <content>${file::org/mule/processors/dw-expression.ptem}</content>
         </parse-template>
     </flow>
 
     <flow name="no-expression-from-location">
-        <parse-template location="org/mule/transformers/no-expression.ptem"/>
+        <parse-template location="org/mule/processors/no-expression.ptem"/>
     </flow>
 
     <flow name="mel-expression-from-location">
-        <parse-template location="org/mule/transformers/mel-expression.ptem"/>
+        <parse-template location="org/mule/processors/mel-expression.ptem"/>
     </flow>
 
     <flow name="dw-expression-from-location">
-        <parse-template location="org/mule/transformers/dw-expression.ptem"/>
+        <parse-template location="org/mule/processors/dw-expression.ptem"/>
     </flow>
 
     <flow name="no-expression-inline">

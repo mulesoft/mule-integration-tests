@@ -380,5 +380,11 @@
             <artifactId>commons-lang3</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.mule.connectors</groupId>
+            <artifactId>mule-objectstore-connector</artifactId>
+            <classifier>mule-plugin</classifier>
+            <version>${muleObjectStoreConnectorTestVersion}</version>
+        </dependency>
     </dependencies>
 </project>
