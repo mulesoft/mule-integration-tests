@@ -11,6 +11,7 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.http.api.HttpConstants.Method.GET;
 
+import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.http.api.HttpService;
 import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;
 import org.mule.runtime.http.api.domain.message.request.HttpRequest;
@@ -45,7 +46,7 @@ public class HttpMessageProcessorNotificationTestCase extends AbstractMessagePro
   public void doTest() throws Exception {
     HttpRequest request = HttpRequest.builder().uri("http://localhost:" + proxyPort.getValue() + "/in").method(GET)
         .entity(new ByteArrayHttpEntity("test".getBytes())).build();
-    assertThat(httpClient.send(request, RECEIVE_TIMEOUT, false, null).getEntity(), not(nullValue()));
+    assertThat(httpClient.send(request, 10000000, false, null).getEntity(), not(nullValue()));
 
     assertNotifications();
   }

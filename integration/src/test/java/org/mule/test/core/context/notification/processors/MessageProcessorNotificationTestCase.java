@@ -12,7 +12,6 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.core.api.context.notification.MessageProcessorNotification.MESSAGE_PROCESSOR_POST_INVOKE;
-
 import org.mule.functional.api.exception.FunctionalTestException;
 import org.mule.runtime.core.api.context.notification.IntegerAction;
 import org.mule.runtime.core.api.context.notification.MessageProcessorNotification;
@@ -21,14 +20,14 @@ import org.mule.tck.core.context.notification.NotificationLogger;
 import org.mule.test.core.context.notification.Node;
 import org.mule.test.core.context.notification.RestrictedNode;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.apache.commons.collections.Factory;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class MessageProcessorNotificationTestCase extends AbstractMessageProcessorNotificationTestCase {
 
@@ -271,10 +270,18 @@ public class MessageProcessorNotificationTestCase extends AbstractMessageProcess
     specificationFactory = () -> new Node()
         .serial(prePost()) // logger
         .serial(pre()) // first-successful
+        .serial(pre())
         .serial(prePost())
+        .serial(post())
+        .serial(pre())
         .serial(prePost())
+        .serial(post())
+        .serial(pre())
         .serial(prePost())
-        .serial(prePost()) // dlq
+        .serial(post())
+        .serial(pre())
+        .serial(prePost())
+        .serial(post())// dlq
         .serial(post());
 
     assertNotNull(flowRunner("first-successful").withPayload(TEST_PAYLOAD).run());
@@ -286,7 +293,9 @@ public class MessageProcessorNotificationTestCase extends AbstractMessageProcess
   public void roundRobin() throws Exception {
     specificationFactory = () -> new Node()
         .serial(pre()) // round-robin
+        .serial(pre())
         .serial(prePost()) // inner logger
+        .serial(post())
         .serial(post())
         .serial(prePost()) // logger
     ;
