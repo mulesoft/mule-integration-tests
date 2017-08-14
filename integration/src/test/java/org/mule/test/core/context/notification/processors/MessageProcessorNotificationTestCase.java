@@ -265,6 +265,7 @@ public class MessageProcessorNotificationTestCase extends AbstractMessageProcess
     assertNotifications();
   }
 
+  @Ignore("MULE-13310")
   @Test
   public void firstSuccessful() throws Exception {
     specificationFactory = () -> new Node()
