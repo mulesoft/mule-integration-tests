@@ -329,7 +329,7 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
 
     assertStackElements(stackToAssert, isFlowStackElement("flow", "flow/processors/0"),
                         isFlowStackElement("flowStaticWithScatterGatherChain",
-                                           "flowStaticWithScatterGatherChain/processors/0/route/1/processors/0/processors/0"));
+                                           "flowStaticWithScatterGatherChain/processors/0/route/1/processors/0"));
   }
 
   @Test
@@ -342,7 +342,7 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
                         isFlowStackElement("subFlow",
                                            "subFlow/processors/0"),
                         isFlowStackElement("subFlowStaticWithScatterGatherChain",
-                                           "subFlowStaticWithScatterGatherChain/processors/0/route/1/processors/0/processors/0"));
+                                           "subFlowStaticWithScatterGatherChain/processors/0/route/1/processors/0"));
   }
 
   @Test
@@ -353,7 +353,7 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
 
     assertStackElements(stackToAssert, isFlowStackElement("flow", "flow/processors/0"),
                         isFlowStackElement("flowDynamicWithScatterGatherChain",
-                                           "flowDynamicWithScatterGatherChain/processors/0/route/1/processors/0/processors/0"));
+                                           "flowDynamicWithScatterGatherChain/processors/0/route/1/processors/0"));
   }
 
   @Test
@@ -366,7 +366,7 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
                         isFlowStackElement("subFlow",
                                            "subFlow/processors/0"),
                         isFlowStackElement("subFlowDynamicWithScatterGatherChain",
-                                           "subFlowDynamicWithScatterGatherChain/processors/0/route/1/processors/0/processors/0"));
+                                           "subFlowDynamicWithScatterGatherChain/processors/0/route/1/processors/0"));
   }
 
   @Test

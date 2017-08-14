@@ -54,6 +54,7 @@ import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
@@ -176,6 +177,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     assertThat(killInterceptionParameter.getParameters().get("killParameters"), is(instanceOf(KillParameters.class)));
   }
 
+  @Ignore("MULE-13274")
   @Test
   @Description("The connection was fetched on the interceptor, and the operation uses the connection obtained there rather then fetching it again")
   public void resolvedConnectionParam() throws Exception {

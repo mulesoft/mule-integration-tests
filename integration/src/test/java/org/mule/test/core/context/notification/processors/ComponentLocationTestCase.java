@@ -29,7 +29,6 @@ import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocator
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentLocationStory.COMPONENT_LOCATION;
 import org.mule.runtime.api.component.TypedComponentIdentifier;
 import org.mule.runtime.api.meta.AnnotatedObject;
-import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.context.notification.MessageProcessorNotification;
 import org.mule.runtime.dsl.api.component.config.DefaultComponentLocation;
@@ -38,13 +37,14 @@ import org.mule.tck.probe.PollingProber;
 import org.mule.tck.probe.Probe;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import org.junit.Test;
+
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Optional;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
-import org.junit.Test;
 
 @Feature(CONFIGURATION_COMPONENT_LOCATOR)
 @Story(COMPONENT_LOCATION)
@@ -171,7 +171,7 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
   private static final Optional<TypedComponentIdentifier> ASYNC =
       of(builder().identifier(buildFromStringRepresentation("mule:async")).type(SCOPE).build());
   private static final Optional<TypedComponentIdentifier> ROUTE =
-      of(builder().identifier(buildFromStringRepresentation("mule:route")).type(PROCESSOR).build());
+      of(builder().identifier(buildFromStringRepresentation("mule:route")).type(SCOPE).build());
 
   @Override
   protected String getConfigFile() {
@@ -222,10 +222,10 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
     DefaultComponentLocation choiceLocation = FLOW_WITH_ERROR_HANDLER.appendLocationPart("processors", empty(), empty(), empty())
         .appendLocationPart("0", CHOICE, CONFIG_FILE_NAME, of(38));
     assertNextProcessorLocationIs(choiceLocation);
-    assertNextProcessorLocationIs(choiceLocation
+    DefaultComponentLocation choiceRoute0 = choiceLocation
         .appendRoutePart()
-        .appendLocationPart("0", of(TypedComponentIdentifier.builder().type(UNKNOWN)
-            .identifier(buildFromStringRepresentation("mule:route")).build()), empty(), empty())
+        .appendLocationPart("0", ROUTE, CONFIG_FILE_NAME, of(39));
+    assertNextProcessorLocationIs(choiceRoute0
         .appendProcessorsPart()
         .appendLocationPart("0", TEST_PROCESSOR, CONFIG_FILE_NAME, of(40)));
     assertNextProcessorLocationIs(FLOW_WITH_ERROR_HANDLER
@@ -340,34 +340,28 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
     DefaultComponentLocation flowWithSplitterProcessorsLocation =
         FLOW_WITH_SCATTER_GATHER.appendLocationPart("processors", empty(), empty(), empty());
     DefaultComponentLocation scatterGatherLocation =
-        flowWithSplitterProcessorsLocation.appendLocationPart("0", SCATTER_GATHER,
-                                                              CONFIG_FILE_NAME, of(99));
+        flowWithSplitterProcessorsLocation.appendLocationPart("0", SCATTER_GATHER, CONFIG_FILE_NAME, of(99));
     assertNextProcessorLocationIs(scatterGatherLocation);
-    assertNextProcessorLocationIs(scatterGatherLocation
+    DefaultComponentLocation scatterGatherRoute0 = scatterGatherLocation
         .appendRoutePart()
-        .appendLocationPart("0", empty(), empty(), empty())
+        .appendLocationPart("0", ROUTE, CONFIG_FILE_NAME, of(100));
+    assertNextProcessorLocationIs(scatterGatherRoute0);
+    assertNextProcessorLocationIs(scatterGatherRoute0
         .appendProcessorsPart()
-        .appendLocationPart("0", ROUTE, CONFIG_FILE_NAME, of(100))
-        .appendProcessorsPart()
-        .appendLocationPart("0", LOGGER,
-                            CONFIG_FILE_NAME, of(101)));
-    assertNextProcessorLocationIs(scatterGatherLocation
+        .appendLocationPart("0", LOGGER, CONFIG_FILE_NAME, of(101)));
+    DefaultComponentLocation scatterGatherRouter1 = scatterGatherLocation
         .appendRoutePart()
-        .appendLocationPart("1", empty(), empty(), empty())
+        .appendLocationPart("1", ROUTE, CONFIG_FILE_NAME, of(103));
+    assertNextProcessorLocationIs(scatterGatherRouter1);
+    assertNextProcessorLocationIs(scatterGatherRouter1
         .appendProcessorsPart()
-        .appendLocationPart("0", ROUTE, CONFIG_FILE_NAME, of(103))
+        .appendLocationPart("0", VALIDATION_IS_TRUE, CONFIG_FILE_NAME, of(104)));
+    DefaultComponentLocation scatterGatherRouter2 = scatterGatherLocation.appendRoutePart()
+        .appendLocationPart("2", ROUTE, CONFIG_FILE_NAME, of(106));
+    assertNextProcessorLocationIs(scatterGatherRouter2);
+    assertNextProcessorLocationIs(scatterGatherRouter2
         .appendProcessorsPart()
-        .appendLocationPart("0",
-                            VALIDATION_IS_TRUE,
-                            CONFIG_FILE_NAME, of(104)));
-    assertNextProcessorLocationIs(scatterGatherLocation.appendRoutePart()
-        .appendLocationPart("2", empty(), empty(), empty())
-        .appendProcessorsPart()
-        .appendLocationPart("0", ROUTE, CONFIG_FILE_NAME, of(106))
-        .appendProcessorsPart()
-        .appendLocationPart("0",
-                            VALIDATION_IS_FALSE,
-                            CONFIG_FILE_NAME, of(107)));
+        .appendLocationPart("0", VALIDATION_IS_FALSE, CONFIG_FILE_NAME, of(107)));
     assertNoNextProcessorNotification();
   }
 
