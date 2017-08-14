@@ -9,6 +9,7 @@ package org.mule.test.integration.exceptions;
 import static java.lang.Class.forName;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
@@ -16,10 +17,10 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mule.runtime.core.api.util.ExceptionUtils.NULL_ERROR_HANDLER;
+import static org.mule.tck.MuleTestUtils.getExceptionListeners;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.InternalEvent;
@@ -30,9 +31,6 @@ import org.mule.runtime.core.api.exception.MessagingExceptionHandler;
 import org.mule.runtime.core.api.exception.MessagingExceptionHandlerAcceptor;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.runtime.core.api.processor.Processor;
-import org.mule.runtime.core.internal.exception.ErrorHandler;
-import org.mule.runtime.core.internal.exception.MessagingExceptionHandlerToSystemAdapter;
-import org.mule.runtime.core.internal.exception.OnErrorPropagateHandler;
 import org.mule.tck.processor.FlowAssert;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -48,6 +46,9 @@ import org.junit.Test;
 public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
 
   public static final String MESSAGE = "some message";
+  private static final String SYTEM_EXCEPTION_HANDLER_CLASSNAME =
+      "org.mule.runtime.core.internal.exception.MessagingExceptionHandlerToSystemAdapter";
+  private static final String ERROR_HANDLER_CLASSNAME = "org.mule.runtime.core.internal.exception.ErrorHandler";
 
   private static MessagingExceptionHandler effectiveMessagingExceptionHandler;
   private static CountDownLatch latch;
@@ -68,11 +69,10 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
     Message response = muleEvent.getMessage();
 
     assertThat(response, is(notNullValue()));
-    assertThat(effectiveMessagingExceptionHandler, is(instanceOf(ErrorHandler.class)));
-    assertThat(((ErrorHandler) effectiveMessagingExceptionHandler).getExceptionListeners(), hasSize(1));
-    MessagingExceptionHandlerAcceptor handler =
-        ((ErrorHandler) effectiveMessagingExceptionHandler).getExceptionListeners().get(0);
-    assertThat(handler, is(instanceOf(OnErrorPropagateHandler.class)));
+    assertThat(effectiveMessagingExceptionHandler.getClass().getName(), equalTo(ERROR_HANDLER_CLASSNAME));
+    assertThat(getExceptionListeners(effectiveMessagingExceptionHandler), hasSize(1));
+    MessagingExceptionHandlerAcceptor handler = getExceptionListeners(effectiveMessagingExceptionHandler).get(0);
+    assertThat(handler.getClass().getName(), equalTo("org.mule.runtime.core.internal.exception.OnErrorPropagateHandler"));
     assertThat(handler.acceptsAll(), is(true));
   }
 
@@ -83,7 +83,7 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
     MuleClient client = muleContext.getClient();
     Message response = client.request("test://outFlow4", 3000).getRight().get();
     assertNotNull(response);
-    assertThat(effectiveMessagingExceptionHandler, is(instanceOf(ErrorHandler.class)));
+    assertThat(effectiveMessagingExceptionHandler.getClass().getName(), equalTo(ERROR_HANDLER_CLASSNAME));
   }
 
   @Test
@@ -94,7 +94,7 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
     Message response = client.request("test://outFlow5", 3000).getRight().get();
 
     assertNotNull(response);
-    assertThat(effectiveMessagingExceptionHandler, is(instanceOf(ErrorHandler.class)));
+    assertThat(effectiveMessagingExceptionHandler.getClass().getName(), equalTo(ERROR_HANDLER_CLASSNAME));
   }
 
   @Test
@@ -105,7 +105,7 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
     Message response = muleEvent.getMessage();
 
     assertNotNull(response);
-    assertThat(effectiveMessagingExceptionHandler, is(instanceOf(ErrorHandler.class)));
+    assertThat(effectiveMessagingExceptionHandler.getClass().getName(), equalTo(ERROR_HANDLER_CLASSNAME));
   }
 
   @Test
@@ -119,7 +119,7 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
 
     FlowAssert.verify("customProcessorInTransactionalScope");
 
-    assertThat(effectiveMessagingExceptionHandler, is(instanceOf(ErrorHandler.class)));
+    assertThat(effectiveMessagingExceptionHandler.getClass().getName(), equalTo(ERROR_HANDLER_CLASSNAME));
   }
 
   @Test
@@ -130,7 +130,7 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
   @Test
   public void testUntilSuccessfulInTransactionalScope() throws Exception {
     testTransactionalScope("untilSuccessfulInTransactionalScope", "test://outTransactional5", emptyMap());
-    assertThat(effectiveMessagingExceptionHandler, is(instanceOf(ErrorHandler.class)));
+    assertThat(effectiveMessagingExceptionHandler.getClass().getName(), equalTo(ERROR_HANDLER_CLASSNAME));
   }
 
   @Test
@@ -144,25 +144,25 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
 
     FlowAssert.verify("customProcessorInExceptionStrategy");
 
-    assertTrue(effectiveMessagingExceptionHandler instanceof MessagingExceptionHandlerToSystemAdapter);
+    assertThat(effectiveMessagingExceptionHandler.getClass().getName(), equalTo(SYTEM_EXCEPTION_HANDLER_CLASSNAME));
   }
 
   @Test
   public void testAsyncInExceptionStrategy() throws Exception {
     testExceptionStrategy("asyncInExceptionStrategy", emptyMap());
-    assertTrue(effectiveMessagingExceptionHandler instanceof MessagingExceptionHandlerToSystemAdapter);
+    assertThat(effectiveMessagingExceptionHandler.getClass().getName(), equalTo(SYTEM_EXCEPTION_HANDLER_CLASSNAME));
   }
 
   @Test
   public void testUntilSuccessfulInExceptionStrategy() throws Exception {
     testExceptionStrategy("untilSuccessfulInExceptionStrategy", emptyMap());
-    assertThat(effectiveMessagingExceptionHandler, is(instanceOf(MessagingExceptionHandlerToSystemAdapter.class)));
+    assertThat(effectiveMessagingExceptionHandler.getClass().getName(), equalTo(SYTEM_EXCEPTION_HANDLER_CLASSNAME));
   }
 
   @Test
   public void testUntilSuccessfulInExceptionStrategyRollback() throws Exception {
     testExceptionStrategy("untilSuccessfulInExceptionStrategyRollback", emptyMap());
-    assertThat(effectiveMessagingExceptionHandler, is(instanceOf(MessagingExceptionHandlerToSystemAdapter.class)));
+    assertThat(effectiveMessagingExceptionHandler.getClass().getName(), equalTo(SYTEM_EXCEPTION_HANDLER_CLASSNAME));
   }
 
   @Test
