@@ -30,18 +30,18 @@
       <muleSoapServiceTestVersion>1.0.0-BETA.x-SNAPSHOT</muleSoapServiceTestVersion>
       <muleExtensionTestSoapTestVersion>1.0.0-BETA.x-SNAPSHOT</muleExtensionTestSoapTestVersion>
 
-      <muleValidationModuleTestVersion>0.8.2-SNAPSHOT</muleValidationModuleTestVersion>
-      <muleScriptingModuleVersion>0.8.2-SNAPSHOT</muleScriptingModuleVersion>
-      <muleFileCommonsTestVersion>0.8.2-SNAPSHOT</muleFileCommonsTestVersion>
+      <muleValidationModuleTestVersion>0.8.x-SNAPSHOT</muleValidationModuleTestVersion>
+      <muleScriptingModuleVersion>0.8.x-SNAPSHOT</muleScriptingModuleVersion>
+      <muleFileCommonsTestVersion>0.8.x-SNAPSHOT</muleFileCommonsTestVersion>
 
-      <muleHttpConnectorTestVersion>0.8.2-SNAPSHOT</muleHttpConnectorTestVersion>
-      <muleDbConnectorTestVersion>0.8.2-SNAPSHOT</muleDbConnectorTestVersion>
-      <muleFtpConnectorTestVersion>0.8.2-SNAPSHOT</muleFtpConnectorTestVersion>
-      <muleFileConnectorTestVersion>0.8.2-SNAPSHOT</muleFileConnectorTestVersion>
-      <muleJmsConnectorTestVersion>0.8.2-SNAPSHOT</muleJmsConnectorTestVersion>
-      <muleWscConnectorTestVersion>0.8.2-SNAPSHOT</muleWscConnectorTestVersion>
-      <muleOauthModuleTestVersion>0.8.2-SNAPSHOT</muleOauthModuleTestVersion>
-      <muleSocketsConnectorTestVersion>0.8.2-SNAPSHOT</muleSocketsConnectorTestVersion>
+      <muleHttpConnectorTestVersion>0.8.x-SNAPSHOT</muleHttpConnectorTestVersion>
+      <muleDbConnectorTestVersion>0.8.x-SNAPSHOT</muleDbConnectorTestVersion>
+      <muleFtpConnectorTestVersion>0.8.x-SNAPSHOT</muleFtpConnectorTestVersion>
+      <muleFileConnectorTestVersion>0.8.x-SNAPSHOT</muleFileConnectorTestVersion>
+      <muleJmsConnectorTestVersion>0.8.x-SNAPSHOT</muleJmsConnectorTestVersion>
+      <muleWscConnectorTestVersion>0.8.x-SNAPSHOT</muleWscConnectorTestVersion>
+      <muleOauthModuleTestVersion>0.8.x-SNAPSHOT</muleOauthModuleTestVersion>
+      <muleSocketsConnectorTestVersion>0.8.x-SNAPSHOT</muleSocketsConnectorTestVersion>
     </properties>
 
   <build>
