@@ -50,6 +50,23 @@
             </route>
         </scatter-gather>
         <test:assert expression="#[vars.result != null]"/>
+        <set-payload value="#[vars.result]"/>
+        <flow-ref name="testRoutesMap"/>
+    </flow>
+
+    <flow name="minimalConfigTargetMessage">
+        <scatter-gather target="result" targetType="MESSAGE">
+            <route>
+                <set-payload value="apple"/>
+            </route>
+            <route>
+                <set-payload value="banana"/>
+            </route>
+            <route>
+                <set-payload value="orange"/>
+            </route>
+        </scatter-gather>
+        <test:assert expression="#[vars.result != null]"/>
         <set-payload value="#[vars.result.payload]"/>
         <flow-ref name="testRoutesMap"/>
     </flow>
@@ -63,7 +80,7 @@
                 <set-payload value="banana"/>
             </route>
             <route>
-                <expression-component>mel:java.lang.Thread.sleep(10000)</expression-component>
+                <expression-component>java!java::lang::Thread::sleep(10000)</expression-component>
             </route>
         </scatter-gather>
     </flow>
@@ -170,7 +187,7 @@
             </route>
         </scatter-gather>
         <error-handler>
-            <on-error-continue>
+            <on-error-continue type="COMPOSITE_ROUTING">
                 <test:assert expression="#[mel:exception.cause is org.mule.runtime.core.api.routing.CompositeRoutingException]"/>
                 <test:assert expression="#[error.errorMessage.payload.failures['0'] == null]"/>
                 <test:assert expression="#[error.errorMessage.payload.failures['1'] != null]"/>
@@ -237,7 +254,7 @@
     </flow>
 
     <sub-flow name="assertFlowVars">
-        <test:assert expression="#[mel:flowVars.foo.equals('bar')]" />
+        <test:assert expression="#[vars.foo == 'bar']" />
     </sub-flow>
 
     <sub-flow name="captureThreadAndWait">

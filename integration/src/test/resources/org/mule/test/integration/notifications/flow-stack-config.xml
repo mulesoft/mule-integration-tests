@@ -211,7 +211,7 @@
     <flow name="flowStaticWithScatterGatherChain">
         <scatter-gather>
             <route>
-                <flow-ref name="#[mel:'subFlow']"/>
+                <test:processor/>
             </route>
             <route>
                 <flow-ref name="flow"/>

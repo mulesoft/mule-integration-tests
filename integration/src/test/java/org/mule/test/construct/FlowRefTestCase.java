@@ -17,6 +17,7 @@ import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -53,11 +54,11 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void dynamicFlowRefWithScatterGather() throws Exception {
-    List<Message> messageList =
-        (List<Message>) flowRunner("flow2").withPayload("0").withVariable("letter", "SG").run().getMessage()
+    Map<String, Message> messageList =
+        (Map<String, Message>) flowRunner("flow2").withPayload("0").withVariable("letter", "SG").run().getMessage()
             .getPayload().getValue();
 
-    List payloads = messageList.stream().map(msg -> msg.getPayload().getValue()).collect(toList());
+    List payloads = messageList.values().stream().map(msg -> msg.getPayload().getValue()).collect(toList());
     assertEquals("0A", payloads.get(0));
     assertEquals("0B", payloads.get(1));
   }

@@ -291,6 +291,7 @@ public class MessageProcessorNotificationTestCase extends AbstractMessageProcess
   }
 
   @Test
+  @Ignore("MULE-13213")
   public void roundRobin() throws Exception {
     specificationFactory = () -> new Node()
         .serial(pre()) // round-robin

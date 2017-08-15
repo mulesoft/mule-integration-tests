@@ -15,15 +15,17 @@ import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+import static org.junit.rules.ExpectedException.none;
+import static org.mule.functional.junit4.matchers.ThrowableMessageMatcher.hasMessage;
 import static org.mule.runtime.api.metadata.MediaType.ANY;
 import static org.mule.runtime.api.metadata.MediaType.JSON;
 import static org.mule.runtime.api.metadata.MediaType.TEXT;
-import static org.mule.tck.processor.FlowAssert.verify;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS_FEATURE;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ScatterGatherStory.SCATTER_GATHER;
 
 import org.mule.functional.api.exception.FunctionalTestException;
 import org.mule.runtime.api.exception.MuleException;
+import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.message.Error;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.meta.AbstractAnnotatedObject;
@@ -45,7 +47,9 @@ import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
 import org.hamcrest.Matchers;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 @Feature(ROUTERS_FEATURE)
 @Story(SCATTER_GATHER)
@@ -53,6 +57,9 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
 
   private static final String EXCEPTION_MESSAGE_TITLE_PREFIX = "Exception(s) were found for route(s): " + LINE_SEPARATOR;
   private static Set<Thread> capturedThreads;
+
+  @Rule
+  public ExpectedException expectedException = none();
 
   @Override
   protected String getConfigFile() {
@@ -71,28 +78,38 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  @Description("Minimal configuration with default collect-map strategy and target configured..")
+  @Description("Minimal configuration with default collect-map strategy and target configured.")
   public void minimalConfigurationTarget() throws Exception {
     flowRunner("minimalConfigTarget").run();
   }
 
   @Test
-  @Description("Minimal configuration with default with collect-list strategy configured..")
+  @Description("Minimal configuration with default collect-map strategy and target configured with targetType Message.")
+  public void minimalConfigurationTargetMessage() throws Exception {
+    flowRunner("minimalConfigTargetMessage").run();
+  }
+
+  @Test
+  @Description("Minimal configuration with default with collect-list strategy configured.")
   public void minimalConfigurationCollectList() throws Exception {
     flowRunner("minimalConfigCollectList").run();
   }
 
-  @Test(expected = MessagingException.class)
-  @Description("RoutingPairs are created for each route configured. Each RoutingPair has the same input event.")
+  @Test
+  @Description("Router request fails with runtime exception is payload is consumable.")
   public void consumablePayload() throws Exception {
+    expectedException.expect(MessagingException.class);
+    expectedException.expectCause(instanceOf(MuleRuntimeException.class));
+    expectedException.expectCause(hasMessage(startsWith("Cannot copy message with a stream payload")));
     flowRunner("minimalConfig").withPayload(new ByteArrayInputStream("hello world".getBytes())).run();
   }
 
-  @Test(expected = MessagingException.class)
-  @Description("Router times out if routes take longer than the timeout configured to complete..")
+  @Test
+  @Description("Router times out if routes take longer than the timeout configured to complete.")
   public void timeout() throws Exception {
+    expectedException.expect(MessagingException.class);
+    expectedException.expectCause(instanceOf(CompositeRoutingException.class));
     flowRunner("timeout").run();
-    fail("Was expecting a timeout");
   }
 
   @Test
