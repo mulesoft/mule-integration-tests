@@ -30,7 +30,7 @@ import org.mule.runtime.core.api.context.notification.MessageProcessorNotificati
 import org.mule.runtime.core.api.extension.ExtensionManager;
 import org.mule.runtime.dsl.api.component.config.DefaultComponentLocation;
 import org.mule.runtime.dsl.api.component.config.DefaultComponentLocation.DefaultLocationPart;
-import org.mule.runtime.extension.internal.loader.XmlExtensionModelLoader;
+import org.mule.runtime.extension.api.loader.xml.XmlExtensionModelLoader;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.util.HashMap;

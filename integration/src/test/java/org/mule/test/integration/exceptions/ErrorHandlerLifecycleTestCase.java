@@ -8,15 +8,15 @@ package org.mule.test.integration.exceptions;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import org.mule.runtime.core.internal.exception.ErrorHandler;
-import org.mule.test.AbstractIntegrationTestCase;
-import org.mule.runtime.core.api.InternalEvent;
+import static org.mule.tck.MuleTestUtils.getExceptionListeners;
 import org.mule.runtime.api.exception.MuleException;
-import org.mule.runtime.core.api.construct.FlowConstruct;
 import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.api.lifecycle.Lifecycle;
+import org.mule.runtime.core.api.InternalEvent;
+import org.mule.runtime.core.api.construct.FlowConstruct;
+import org.mule.runtime.core.api.exception.AbstractExceptionListener;
 import org.mule.runtime.core.api.processor.Processor;
-import org.mule.runtime.core.internal.exception.TemplateOnErrorHandler;
+import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Test;
 
@@ -31,10 +31,10 @@ public class ErrorHandlerLifecycleTestCase extends AbstractIntegrationTestCase {
   public void testLifecycle() throws Exception {
     FlowConstruct flowA = getFlowConstruct("flowA");
     FlowConstruct flowB = getFlowConstruct("flowB");
-    TemplateOnErrorHandler flowAExceptionStrategy =
-        (TemplateOnErrorHandler) ((ErrorHandler) flowA.getExceptionListener()).getExceptionListeners().get(0);
-    TemplateOnErrorHandler flowBExceptionStrategy =
-        (TemplateOnErrorHandler) ((ErrorHandler) flowB.getExceptionListener()).getExceptionListeners().get(0);
+    AbstractExceptionListener flowAExceptionStrategy =
+        (AbstractExceptionListener) getExceptionListeners(flowA.getExceptionListener()).get(0);
+    AbstractExceptionListener flowBExceptionStrategy =
+        (AbstractExceptionListener) getExceptionListeners(flowB.getExceptionListener()).get(0);
     LifecycleCheckerMessageProcessor lifecycleCheckerMessageProcessorFlowA =
         (LifecycleCheckerMessageProcessor) flowAExceptionStrategy.getMessageProcessors().get(0);
     LifecycleCheckerMessageProcessor lifecycleCheckerMessageProcessorFlowB =
@@ -49,10 +49,10 @@ public class ErrorHandlerLifecycleTestCase extends AbstractIntegrationTestCase {
 
     FlowConstruct flowC = getFlowConstruct("flowC");
     FlowConstruct flowD = getFlowConstruct("flowD");
-    TemplateOnErrorHandler flowCExceptionStrategy =
-        (TemplateOnErrorHandler) ((ErrorHandler) flowC.getExceptionListener()).getExceptionListeners().get(0);
-    TemplateOnErrorHandler flowDExceptionStrategy =
-        (TemplateOnErrorHandler) ((ErrorHandler) flowD.getExceptionListener()).getExceptionListeners().get(0);
+    AbstractExceptionListener flowCExceptionStrategy =
+        (AbstractExceptionListener) getExceptionListeners(flowC.getExceptionListener()).get(0);
+    AbstractExceptionListener flowDExceptionStrategy =
+        (AbstractExceptionListener) getExceptionListeners(flowD.getExceptionListener()).get(0);
     LifecycleCheckerMessageProcessor lifecycleCheckerMessageProcessorFlowC =
         (LifecycleCheckerMessageProcessor) flowCExceptionStrategy.getMessageProcessors().get(0);
     LifecycleCheckerMessageProcessor lifecycleCheckerMessageProcessorFlowD =
