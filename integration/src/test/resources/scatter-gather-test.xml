@@ -55,7 +55,7 @@
     </flow>
 
     <flow name="minimalConfigTargetMessage">
-        <scatter-gather target="result" targetType="MESSAGE">
+        <scatter-gather target="result" targetValue="#[message]">
             <route>
                 <set-payload value="apple"/>
             </route>
