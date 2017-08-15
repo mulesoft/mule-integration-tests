@@ -20,8 +20,8 @@ import static org.mule.runtime.extension.api.ExtensionConstants.POOLING_PROFILE_
 import static org.mule.runtime.extension.api.ExtensionConstants.RECONNECTION_STRATEGY_PARAMETER_NAME;
 import static org.mule.runtime.extension.api.ExtensionConstants.REDELIVERY_POLICY_PARAMETER_NAME;
 import static org.mule.runtime.extension.api.ExtensionConstants.STREAMING_STRATEGY_PARAMETER_NAME;
+import static org.mule.runtime.extension.api.ExtensionConstants.TARGET_VALUE_PARAMETER_NAME;
 import static org.mule.runtime.extension.api.ExtensionConstants.TARGET_PARAMETER_NAME;
-import static org.mule.runtime.extension.api.ExtensionConstants.TARGET_TYPE_PARAMETER_NAME;
 import static org.mule.runtime.extension.api.ExtensionConstants.TLS_PARAMETER_NAME;
 import static org.mule.runtime.extension.api.declaration.type.ReconnectionStrategyTypeBuilder.BLOCKING;
 import static org.mule.runtime.extension.api.declaration.type.ReconnectionStrategyTypeBuilder.COUNT;
@@ -414,7 +414,7 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
                     .getDeclaration())
                 .withParameterGroup(newParameterGroup("Output")
                     .withParameter(TARGET_PARAMETER_NAME, "myVar")
-                    .withParameter(TARGET_TYPE_PARAMETER_NAME, "MESSAGE")
+                    .withParameter(TARGET_VALUE_PARAMETER_NAME, "#[message]")
                     .getDeclaration())
                 .getDeclaration())
             .withComponent(core.newConstruct("try")

@@ -117,7 +117,7 @@
             </db:input-parameters>
         </db:insert>
 
-        <sockets:send-and-receive target="myVar" targetType="MESSAGE">
+        <sockets:send-and-receive target="myVar" targetValue="#[message]">
             <repeatable-in-memory-stream bufferSizeIncrement="8"
                                          bufferUnit="KB"
                                          initialBufferSize="51"
