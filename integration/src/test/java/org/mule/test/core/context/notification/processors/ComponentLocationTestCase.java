@@ -37,6 +37,7 @@ import org.mule.tck.probe.PollingProber;
 import org.mule.tck.probe.Probe;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -334,6 +335,7 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
+  @Ignore("MULE-13213")
   public void flowWithScatterGather() throws Exception {
     flowRunner("flowWithScatterGather").run();
     waitUntilNotificationsArrived(4);
