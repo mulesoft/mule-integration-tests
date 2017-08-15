@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
       xmlns:test="http://www.mulesoft.org/schema/mule/test"
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-               http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+               http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
+               http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
 
      <custom-processor name="dlq-mp" class="org.mule.test.routing.UntilSuccessfulTestCase$CustomMP"/>
 
     <flow name="minimal-config">
-        <!-- with this configuration, the response from target MP won't be considered an error (no failureExpression) -->
+        <!-- with this configuration, the response from target MP won't be considered an error -->
         <until-successful>
             <flow-ref name="target-mp" />
         </until-successful>
@@ -16,10 +18,10 @@
 
     <flow name="full-config-with-mp">
         <async>
-            <until-successful failureExpression="#[mel:regex('(?i).*error')]"
-                              maxRetries="2"
+            <until-successful maxRetries="2"
                               millisBetweenRetries="1000">
                 <flow-ref name="target-mp" />
+                <validation:is-true expression="#[mel:regex('(?i).*error').length > 0]"/>
             </until-successful>
         </async>
         <set-payload value="#['ACK']"/>
@@ -32,10 +34,10 @@
 
     <flow name="retry-endpoint-config">
         <async>
-            <until-successful failureExpression="#[mel:regex('(?i).*error')]"
-                              maxRetries="2"
+            <until-successful maxRetries="2"
                               millisBetweenRetries="1000">
                 <flow-ref name="target-flow"/>
+                <validation:is-true expression="#[mel:regex('(?i).*error').length > 0]"/>
             </until-successful>
         </async>
     </flow>
