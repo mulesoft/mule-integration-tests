@@ -48,7 +48,7 @@
         </async>
     </flow>
     <flow name="flowForscatterGather">
-        <scatter-gather timeout="0">
+        <scatter-gather maxConcurrency="2147483647" target="Attribute" targetValue="#[payload]" timeout="9223372036854775807">
             <route>
                 <logger/>
             </route>

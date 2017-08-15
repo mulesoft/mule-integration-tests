@@ -116,7 +116,7 @@
         </sockets:send-and-receive>
 
         <try transactionType="LOCAL" transactionalAction="INDIFFERENT">
-            <wsc:consume operation="GetCitiesByCountry" targeValue="#[payload]">
+            <wsc:consume operation="GetCitiesByCountry" targetValue="#[payload]">
                 <wsc:message>
                     <wsc:body>#[payload]</wsc:body>
                     <wsc:headers>#[{"headers": {con#headerIn: "Header In Value",con#headerInOut: "Header In Out Value"}]
