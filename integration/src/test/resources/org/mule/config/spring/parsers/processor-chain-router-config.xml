@@ -2,9 +2,11 @@
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:parsers-test="http://www.mulesoft.org/schema/mule/parsers-test"
+       xmlns:test="http://www.mulesoft.org/schema/mule/test"
        xsi:schemaLocation="
        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-       http://www.mulesoft.org/schema/mule/parsers-test http://www.mulesoft.org/schema/mule/parsers-test/current/mule-parsers-test.xsd">
+       http://www.mulesoft.org/schema/mule/parsers-test http://www.mulesoft.org/schema/mule/parsers-test/current/mule-parsers-test.xsd
+       http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
     <parsers-test:composite-processor-chain-router name="compositeChainRouter">
         <parsers-test:chain>
@@ -24,8 +26,24 @@
         </parsers-test:chain>
     </parsers-test:composite-processor-chain-router>
 
+    <parsers-test:composite-processor-chain-router name="compositeChainRouterError">
+        <parsers-test:chain>
+            <set-variable variableName="myVar" value="#['myVar' ++ vars.customVar]"/>
+        </parsers-test:chain>
+        <parsers-test:chain>
+            <set-variable variableName="mySecondVar" value="mySecondVarValue"/>
+        </parsers-test:chain>
+        <parsers-test:chain>
+            <test:throw exception="java.lang.IllegalStateException" error="CLIENT_SECURITY"/>
+        </parsers-test:chain>
+    </parsers-test:composite-processor-chain-router>
+
     <parsers-test:processor-chain-router name="chainRouter">
         <set-payload value="#[]"/>
     </parsers-test:processor-chain-router>
+
+    <flow name="byPassFlow">
+        <set-payload value="#[payload]"/>
+    </flow>
 
 </mule>

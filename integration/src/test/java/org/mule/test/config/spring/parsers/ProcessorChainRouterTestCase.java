@@ -7,26 +7,39 @@
 package org.mule.test.config.spring.parsers;
 
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.notNullValue;
+import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
-import org.mule.runtime.api.component.location.ConfigurationComponentLocator;
-import org.mule.runtime.api.component.location.Location;
+import org.mule.runtime.api.component.ExecutableComponent;
 import org.mule.runtime.api.event.Event;
 import org.mule.runtime.api.event.InputEvent;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.core.api.util.ClassUtils;
+import org.mule.runtime.api.util.Reference;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.config.dsl.ParsersPluginTest;
 
-import java.lang.reflect.Method;
+import java.util.concurrent.CompletableFuture;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
+import org.hamcrest.core.Is;
 import org.junit.Test;
 
 public class ProcessorChainRouterTestCase extends AbstractIntegrationTestCase implements ParsersPluginTest {
 
   @Inject
-  private ConfigurationComponentLocator componentLocator;
+  @Named("compositeChainRouter")
+  private ExecutableComponent chainRouter;
+
+  @Inject
+  @Named("compositeChainRouterError")
+  private ExecutableComponent chainRouterError;
+
+  @Inject
+  @Named("byPassFlow")
+  private ExecutableComponent byPassFlow;
+
 
   @Override
   protected String getConfigFile() {
@@ -34,20 +47,45 @@ public class ProcessorChainRouterTestCase extends AbstractIntegrationTestCase im
   }
 
   @Test
-  public void compositeProcessorChainRouter() throws Exception {
-    Object chainRouter =
-        componentLocator.find(Location.builder().globalName("compositeChainRouter").build()).get();
-    InputEvent event = InputEvent.create().message(Message.builder().value("testPayload").build())
-        .addVariable("customVar", "Value");
+  public void executeUsingInputEvent() throws Exception {
+    InputEvent event = createInputEvent();
 
-    // TODO MULE-13132 - we need to call this method using reflection because there's no support for being able to access
-    // privileged API classes.
-    Method method = ClassUtils.getMethod(chainRouter.getClass(), "process", new Class[] {InputEvent.class});
-    Event returnedEvent = (Event) method.invoke(chainRouter, event);
+    CompletableFuture<Event> completableFuture = chainRouter.execute(event);
+    Event returnedEvent = completableFuture.get();
+    assertProcessorChainResult(returnedEvent);
+  }
+
+  @Test
+  public void executeUsingEvent() throws Exception {
+    InputEvent event = createInputEvent();
+    Event flowResultEvent = byPassFlow.execute(event).get();
+
+    CompletableFuture<Event> completableFuture = chainRouter.execute(flowResultEvent);
+    Event returnedEvent = completableFuture.get();
+    assertProcessorChainResult(returnedEvent);
+  }
+
+  @Test
+  public void executeWithError() throws Exception {
+    InputEvent event = createInputEvent();
+
+    CompletableFuture<Event> completableFuture = chainRouterError.execute(event);
+    Event returnedEvent = completableFuture.get();
+    assertThat(returnedEvent, notNullValue());
+    assertThat(returnedEvent.getError().isPresent(), is(true));
+    assertThat(returnedEvent.getError().get().getErrorType().getIdentifier(), is("CLIENT_SECURITY"));
+  }
+
+  private void assertProcessorChainResult(Event returnedEvent) {
     assertThat(returnedEvent.getMessage().getPayload().getValue(), is("testPayload custom"));
     assertThat(returnedEvent.getVariables().get("myVar").getValue(), is("myVarValue"));
     assertThat(returnedEvent.getVariables().get("mySecondVar").getValue(), is("mySecondVarValue"));
     assertThat(returnedEvent.getVariables().get("myThirdVar").getValue(), is("myThirdVarValue"));
+  }
+
+  private InputEvent createInputEvent() {
+    return InputEvent.create().message(Message.builder().value("testPayload").build())
+        .addVariable("customVar", "Value");
   }
 
   @Override
