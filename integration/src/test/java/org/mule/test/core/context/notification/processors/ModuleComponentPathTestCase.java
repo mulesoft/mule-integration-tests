@@ -56,10 +56,10 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
 
   @Override
   protected String getConfigFile() {
-    return BASE_PATH_XML_MODULES + FLOWS_USING_MODULE_SIMPLE_XML;
+    return CONFIG_FILE_NAME.get();
   }
 
-  private static final Optional<String> CONFIG_FILE_NAME = of(FLOWS_USING_MODULE_SIMPLE_XML);
+  private static final Optional<String> CONFIG_FILE_NAME = of(BASE_PATH_XML_MODULES + FLOWS_USING_MODULE_SIMPLE_XML);
   private static final Optional<String> MODULE_SIMPLE_FILE_NAME = of(MODULE_SIMPLE_XML);
   private static final Optional<String> MODULE_SIMPLE_PROXY_FILE_NAME = of(MODULE_SIMPLE_PROXY_XML);
   private static final Optional<TypedComponentIdentifier> FLOW_TYPED_COMPONENT_IDENTIFIER =
