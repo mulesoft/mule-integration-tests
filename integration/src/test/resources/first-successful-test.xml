@@ -21,28 +21,6 @@
         </first-successful>
     </flow>
 
-    <flow name="withExpression">
-        <first-successful failureExpression="#[payload contains 'is a number']">
-            <route>
-                <test:processor appendString=" is a number" />
-            </route>
-            <route>
-                <test:processor appendString=" is a string" />
-            </route>
-        </first-successful>
-    </flow>
-
-    <flow name="withExpressionAllFail">
-        <first-successful failureExpression="#[payload contains 'is a ']">
-            <route>
-                <test:processor appendString=" is a number" />
-            </route>
-            <route>
-                <test:processor appendString=" is a string" />
-            </route>
-        </first-successful>
-    </flow>
-
     <flow name="withOneWayEndpoints">
         <first-successful>
             <route>

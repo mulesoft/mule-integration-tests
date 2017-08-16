@@ -14,8 +14,6 @@ import static org.junit.Assert.assertThat;
 import org.mule.extension.validation.api.ValidationException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.client.MuleClient;
-import org.mule.runtime.core.api.routing.CouldNotRouteOutboundMessageException;
-import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Rule;
@@ -45,18 +43,6 @@ public class FirstSuccessfulTestCase extends AbstractIntegrationTestCase {
 
     expected.expectCause(instanceOf(ValidationException.class));
     flowRunner("test-router").withPayload(Boolean.TRUE).run().getMessage();
-  }
-
-  @Test
-  public void firstSuccessfulWithExpression() throws Exception {
-    Message response = flowRunner("withExpression").withPayload("XYZ").run().getMessage();
-    assertThat(getPayloadAsString(response), is("XYZ is a string"));
-  }
-
-  @Test
-  public void firstSuccessfulWithExpressionAllFail() throws Exception {
-    MessagingException e = flowRunner("withExpressionAllFail").withPayload("XYZ").runExpectingException();
-    assertThat(e.getCause(), instanceOf(CouldNotRouteOutboundMessageException.class));
   }
 
   @Test
