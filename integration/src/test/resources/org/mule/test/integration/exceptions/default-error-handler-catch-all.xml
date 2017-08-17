@@ -1,19 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:test="http://www.mulesoft.org/schema/mule/test"
       xsi:schemaLocation="
-       http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+       http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+       http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
-    <configuration defaultErrorHandler-ref="invalidErrorHandler"/>
+    <configuration defaultErrorHandler-ref="noCatchAllErrorHandler"/>
 
-    <error-handler name="invalidErrorHandler">
+    <error-handler name="noCatchAllErrorHandler">
         <on-error-continue type="CONNECTIVITY">
             <append-string-transformer message="append"/>
         </on-error-continue>
     </error-handler>
 
-    <flow name="test">
-        <append-string-transformer message="append"/>
+    <flow name="connectivity">
+        <test:throw exception="java.lang.RuntimeException" error="CONNECTIVITY"/>
+    </flow>
+
+    <flow name="expression">
+        <test:throw exception="java.lang.RuntimeException" error="EXPRESSION"/>
     </flow>
 
 </mule>

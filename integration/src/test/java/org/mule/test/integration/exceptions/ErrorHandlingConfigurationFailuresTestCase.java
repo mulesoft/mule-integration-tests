@@ -74,12 +74,6 @@ public class ErrorHandlingConfigurationFailuresTestCase extends AbstractMuleTest
     loadConfiguration("org/mule/test/integration/exceptions/default-error-handler-reference-non-existent-es.xml");
   }
 
-  // TODO: MULE-13004 - StackOverflowError when default error handler is missing catch all
-  @Test(expected = InitialisationException.class)
-  public void defaultErrorHandlerMustHaveCatchAll() throws Exception {
-    loadConfiguration("org/mule/test/integration/exceptions/default-error-handler-catch-all.xml");
-  }
-
   @Test
   public void xaTransactionalBlockNotAllowed() throws Exception {
     expectedException.expect(InitialisationException.class);
