@@ -7,6 +7,9 @@
        http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
        http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
 
+    <object name="throw-exception" class="org.mule.test.integration.exceptions.ErrorHandlerTestCase$ThrowExceptionProcessor"/>
+    <object name="throw-error" class="org.mule.test.integration.exceptions.ErrorHandlerTestCase$ThrowErrorProcessor"/>
+
     <flow name="matchesHandlerUsingWhen">
         <test:processor/>
         <error-handler>
@@ -48,7 +51,7 @@
     </flow>
 
     <flow name="matchesHandlerUsingType">
-        <custom-processor class="org.mule.test.integration.exceptions.ErrorHandlerTestCase$ThrowExceptionProcessor"/>
+        <processor ref="throw-exception"/>
         <error-handler>
             <on-error-continue type="TRANSFORMATION">
                 <append-string-transformer message=" transformation"/>
@@ -76,7 +79,7 @@
 
     <flow name="propagatesCriticalErrors">
         <append-string-transformer message=" critical"/>
-        <custom-processor class="org.mule.test.integration.exceptions.ErrorHandlerTestCase$ThrowErrorProcessor"/>
+        <processor ref="throw-error"/>
         <error-handler>
             <on-error-continue type="ANY">
                 <append-string-transformer message=" nope"/>

@@ -23,34 +23,39 @@
         </http:listener-connection>
     </http:listener-config>
 
+    <object name="failing" class="org.mule.test.integration.exceptions.OnErrorContinueTestCase$FailingProcessor"/>
+    <object name="error" class="org.mule.test.integration.exceptions.OnErrorContinueTestCase$ErrorProcessor"/>
+    <object name="load-news" class="org.mule.test.integration.exceptions.OnErrorContinueTestCase$LoadNewsProcessor"/>
+    <object name="news" class="org.mule.test.integration.exceptions.OnErrorContinueTestCase$NewsErrorProcessor"/>
+
     <flow name="httpContinueProcessingActualMessage">
         <http:listener path="service" config-ref="listenerConfig"/>
-        <custom-processor class="org.mule.test.integration.exceptions.OnErrorContinueTestCase$LoadNewsProcessor"/>
+        <processor ref="load-news"/>
         <test:processor throwException="true"/>
         <error-handler>
             <on-error-continue>
-                <custom-processor class="org.mule.test.integration.exceptions.OnErrorContinueTestCase$NewsErrorProcessor"/>
+                <processor ref="news"/>
             </on-error-continue>
         </error-handler>
     </flow>
 
     <flow name="httpsContinueProcessingActualMessage">
         <http:listener config-ref="listenerConfigHttps" path="httpsservice"/>
-        <custom-processor class="org.mule.test.integration.exceptions.OnErrorContinueTestCase$LoadNewsProcessor"/>
+        <processor ref="load-news"/>
         <test:processor throwException="true"/>
         <error-handler>
             <on-error-continue>
-                <custom-processor class="org.mule.test.integration.exceptions.OnErrorContinueTestCase$NewsErrorProcessor"/>
+                <processor ref="news"/>
             </on-error-continue>
         </error-handler>
     </flow>
 
     <flow name="continueProcessingActualMessage">
-        <custom-processor class="org.mule.test.integration.exceptions.OnErrorContinueTestCase$LoadNewsProcessor"/>
+        <processor ref="load-news"/>
         <test:processor throwException="true"/>
         <error-handler>
             <on-error-continue>
-                <custom-processor class="org.mule.test.integration.exceptions.OnErrorContinueTestCase$NewsErrorProcessor"/>
+                <processor ref="news"/>
             </on-error-continue>
         </error-handler>
     </flow>
@@ -85,7 +90,7 @@
 
     <flow name="onErrorTypeMatch">
         <append-string-transformer message=" apt1"/>
-        <custom-processor class="org.mule.test.integration.exceptions.OnErrorContinueTestCase$FailingProcessor"/>
+        <processor ref="failing"/>
         <error-handler>
             <on-error-continue type="EXPRESSION">
                 <append-string-transformer message=" nope"/>
@@ -116,7 +121,7 @@
         <choice>
             <when expression="#[mel:payload]">
                 <append-string-transformer message=" apt1"/>
-                <custom-processor class="org.mule.test.integration.exceptions.OnErrorContinueTestCase$FailingProcessor"/>
+                <processor ref="failing"/>
             </when>
             <otherwise>
                 <append-string-transformer message=" apt1"/>
@@ -137,7 +142,7 @@
         <test:processor throwException="true"/>
         <error-handler>
             <on-error-continue>
-                <custom-processor class="org.mule.test.integration.exceptions.OnErrorContinueTestCase$ErrorProcessor"/>
+                <processor ref="error"/>
             </on-error-continue>
         </error-handler>
     </flow>

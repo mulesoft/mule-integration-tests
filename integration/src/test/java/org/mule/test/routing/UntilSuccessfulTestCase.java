@@ -6,17 +6,18 @@
  */
 package org.mule.test.routing;
 
+import static org.junit.Assert.assertThat;
+import static org.mule.functional.api.component.FunctionalTestProcessor.getFromFlow;
+import static org.mule.functional.api.component.InvocationCountMessageProcessor.getNumberOfInvocationsFor;
+import static org.mule.functional.junit4.TestLegacyMessageUtils.getExceptionPayload;
+import static org.mule.functional.junit4.matchers.ThrowableCauseMatcher.hasCause;
+
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-import static org.mule.functional.api.component.FunctionalTestProcessor.getFromFlow;
-import static org.mule.functional.api.component.InvocationCountMessageProcessor.getNumberOfInvocationsFor;
-import static org.mule.functional.junit4.TestLegacyMessageUtils.getExceptionPayload;
-import static org.mule.functional.junit4.matchers.ThrowableCauseMatcher.hasCause;
 
 import org.mule.functional.api.component.FunctionalTestProcessor;
 import org.mule.functional.api.exception.FunctionalTestException;
@@ -31,13 +32,13 @@ import org.mule.tck.probe.JUnitLambdaProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
 
@@ -158,7 +159,7 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
     }));
   }
 
-  static class CustomMP implements Processor {
+  public static class CustomMP implements Processor {
 
     private static List<InternalEvent> processedEvents = new ArrayList<>();
 
@@ -181,7 +182,7 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
     }
   }
 
-  static class WaitMeasure implements Processor {
+  public static class WaitMeasure implements Processor {
 
     public static long totalWait;
     private long firstAttemptTime = 0;

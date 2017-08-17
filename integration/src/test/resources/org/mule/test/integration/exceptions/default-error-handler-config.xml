@@ -14,8 +14,10 @@
         </on-error-continue>
     </error-handler>
 
+    <object name="throw" class="org.mule.test.integration.exceptions.DefaultErrorHandlerTestCase$ThrowExceptionProcessor"/>
+
     <flow name="test">
-        <custom-processor class="org.mule.test.integration.exceptions.DefaultErrorHandlerTestCase$ThrowExceptionProcessor"/>
+        <processor ref="throw"/> 
         <error-handler>
             <on-error-continue type="RETRY_EXHAUSTED">
                 <append-string-transformer message="innerEH"/>

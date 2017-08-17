@@ -6,25 +6,28 @@
  */
 package org.mule.test.spring.security;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.core.api.config.MuleProperties.OBJECT_SECURITY_MANAGER;
 
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+
 import org.mule.extension.spring.api.security.PreAuthenticatedAuthenticationProvider;
 import org.mule.extension.spring.api.security.SpringProviderAdapter;
 import org.mule.extension.spring.api.security.UserAndPasswordAuthenticationProvider;
+import org.mule.runtime.api.meta.AnnotatedObject;
 import org.mule.runtime.core.api.security.SecurityManager;
 import org.mule.runtime.core.api.security.SecurityProvider;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import java.util.Collection;
-
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
+
+import java.util.Collection;
 
 @Ignore("MULE-13203: This test uses app's spring-security lib which conflicts with the ine included in spring-module")
 public class AuthenticationNamespaceHandlerFlowTestCase extends AbstractIntegrationTestCase {
@@ -43,7 +46,7 @@ public class AuthenticationNamespaceHandlerFlowTestCase extends AbstractIntegrat
     assertNotNull(securityManager);
 
     Collection<SecurityProvider> providers = securityManager.getProviders();
-    assertEquals(2, providers.size());
+    assertThat(providers, hasSize(2));
 
     assertThat(containsSecurityProvider(providers, UserAndPasswordAuthenticationProvider.class), is(true));
     assertThat(containsSecurityProvider(providers, PreAuthenticatedAuthenticationProvider.class), is(true));
@@ -51,8 +54,10 @@ public class AuthenticationNamespaceHandlerFlowTestCase extends AbstractIntegrat
 
   private boolean containsSecurityProvider(Collection<SecurityProvider> providers, Class authenticationProviderClass) {
     for (SecurityProvider provider : providers) {
-      assertEquals(SpringProviderAdapter.class, provider.getClass());
-      if (authenticationProviderClass.equals(((SpringProviderAdapter) provider).getAuthenticationProvider().getClass())) {
+      assertThat(provider, instanceOf(SpringProviderAdapter.class));
+      assertThat(provider, instanceOf(AnnotatedObject.class));
+      if (authenticationProviderClass
+          .isAssignableFrom(((SpringProviderAdapter) provider).getAuthenticationProvider().getClass())) {
         return true;
       }
     }

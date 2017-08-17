@@ -3,11 +3,13 @@
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 
+    <object name="failAtFirstAttempt" class="org.mule.test.routing.UntilSuccessfulWithSplitterTestCase$FailAtFirstAttempt" />
+
     <flow name="withSplitter">
         <set-payload value="#[mel:['a','b']]" />
         <splitter />
         <until-successful maxRetries="2" millisBetweenRetries="1000">
-            <custom-processor class="org.mule.test.routing.UntilSuccessfulWithSplitterTestCase$FailAtFirstAttempt" />
+            <processor ref="failAtFirstAttempt" />
         </until-successful>
     </flow>
 
