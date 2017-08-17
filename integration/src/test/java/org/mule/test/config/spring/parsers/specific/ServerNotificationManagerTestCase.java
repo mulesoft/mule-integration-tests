@@ -101,11 +101,6 @@ public class ServerNotificationManagerTestCase extends AbstractIntegrationTestCa
   public void testAdhocNotificationListenerRegistrations() throws InterruptedException {
     ServerNotificationManager manager = muleContext.getNotificationManager();
 
-    // Not registered as ad-hoc listener with null subscription as this is defined
-    // explicitly.
-    assertThat(manager.getListeners(),
-               not(hasItem(allOf(withListener(muleContext.getRegistry().lookupObject("listener3")), withNoSubscription()))));
-
     // Registered as configured
     assertThat(manager.getListeners(), hasItem(withListener(muleContext.getRegistry().lookupObject("listener4"))));
   }
