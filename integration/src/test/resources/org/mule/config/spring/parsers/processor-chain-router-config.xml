@@ -39,7 +39,12 @@
     </parsers-test:composite-processor-chain-router>
 
     <parsers-test:processor-chain-router name="chainRouter">
-        <set-payload value="#[]"/>
+        <set-payload value="testPayload custom"/>
+    </parsers-test:processor-chain-router>
+
+    <parsers-test:processor-chain-router name="chainRouterError">
+        <set-payload value="testPayload custom"/>
+        <test:throw exception="java.lang.IllegalStateException" error="CLIENT_SECURITY"/>
     </parsers-test:processor-chain-router>
 
     <flow name="byPassFlow">

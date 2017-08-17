@@ -8,38 +8,46 @@ package org.mule.test.config.spring.parsers;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
-import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
-import org.mule.runtime.api.component.ExecutableComponent;
+import static org.junit.Assert.fail;
+import org.mule.runtime.api.component.execution.ComponentExecutionException;
+import org.mule.runtime.api.component.execution.ExecutableComponent;
 import org.mule.runtime.api.event.Event;
 import org.mule.runtime.api.event.InputEvent;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.api.util.Reference;
+import org.mule.runtime.core.api.MuleContext;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.config.dsl.ParsersPluginTest;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.hamcrest.core.Is;
 import org.junit.Test;
 
 public class ProcessorChainRouterTestCase extends AbstractIntegrationTestCase implements ParsersPluginTest {
 
   @Inject
   @Named("compositeChainRouter")
-  private ExecutableComponent chainRouter;
+  private ExecutableComponent compositeChainRouter;
 
   @Inject
   @Named("compositeChainRouterError")
+  private ExecutableComponent compositeChainRouterError;
+
+  @Inject
+  @Named("chainRouter")
+  private ExecutableComponent chainRouter;
+
+  @Inject
+  @Named("chainRouterError")
   private ExecutableComponent chainRouterError;
 
   @Inject
   @Named("byPassFlow")
   private ExecutableComponent byPassFlow;
-
 
   @Override
   protected String getConfigFile() {
@@ -47,33 +55,66 @@ public class ProcessorChainRouterTestCase extends AbstractIntegrationTestCase im
   }
 
   @Test
-  public void executeUsingInputEvent() throws Exception {
+  public void executeCompositeRouterUsingInputEvent() throws Exception {
+    InputEvent event = createInputEvent();
+
+    CompletableFuture<Event> completableFuture = compositeChainRouter.execute(event);
+    Event returnedEvent = completableFuture.get();
+    assertProcessorChainResult(returnedEvent);
+  }
+
+  @Test
+  public void executeCompositeRouterUsingEvent() throws Exception {
+    InputEvent event = createInputEvent();
+    Event flowResultEvent = byPassFlow.execute(event).get();
+
+    CompletableFuture<Event> completableFuture = compositeChainRouter.execute(flowResultEvent);
+    Event returnedEvent = completableFuture.get();
+    assertProcessorChainResult(returnedEvent);
+  }
+
+  @Test
+  public void executeCompositeRouterWithError() throws Exception {
+    InputEvent event = createInputEvent();
+
+    CompletableFuture<Event> completableFuture = compositeChainRouterError.execute(event);
+    try {
+      completableFuture.get();
+      fail();
+    } catch (ExecutionException e) {
+      ComponentExecutionException componentExecutionException = (ComponentExecutionException) e.getCause();
+      Event returnedEvent = componentExecutionException.getEvent();
+      assertThat(returnedEvent, notNullValue());
+      assertThat(returnedEvent.getError().isPresent(), is(true));
+      assertThat(returnedEvent.getError().get().getErrorType().getIdentifier(), is("CLIENT_SECURITY"));
+    }
+  }
+
+  @Test
+  public void executeChainUsingInputEvent() throws Exception {
     InputEvent event = createInputEvent();
 
     CompletableFuture<Event> completableFuture = chainRouter.execute(event);
     Event returnedEvent = completableFuture.get();
-    assertProcessorChainResult(returnedEvent);
+    assertThat(returnedEvent, notNullValue());
+    assertThat(returnedEvent.getMessage().getPayload().getValue(), is("testPayload custom"));
   }
 
   @Test
-  public void executeUsingEvent() throws Exception {
-    InputEvent event = createInputEvent();
-    Event flowResultEvent = byPassFlow.execute(event).get();
-
-    CompletableFuture<Event> completableFuture = chainRouter.execute(flowResultEvent);
-    Event returnedEvent = completableFuture.get();
-    assertProcessorChainResult(returnedEvent);
-  }
-
-  @Test
-  public void executeWithError() throws Exception {
+  public void executeChainWithError() throws Exception {
     InputEvent event = createInputEvent();
 
     CompletableFuture<Event> completableFuture = chainRouterError.execute(event);
-    Event returnedEvent = completableFuture.get();
-    assertThat(returnedEvent, notNullValue());
-    assertThat(returnedEvent.getError().isPresent(), is(true));
-    assertThat(returnedEvent.getError().get().getErrorType().getIdentifier(), is("CLIENT_SECURITY"));
+    Event returnedEvent;
+    try {
+      completableFuture.get();
+      fail();
+    } catch (ExecutionException e) {
+      ComponentExecutionException componentExecutionException = (ComponentExecutionException) e.getCause();
+      returnedEvent = componentExecutionException.getEvent();
+      assertThat(returnedEvent, notNullValue());
+      assertThat(returnedEvent.getMessage().getPayload().getValue(), is("testPayload custom"));
+    }
   }
 
   private void assertProcessorChainResult(Event returnedEvent) {
