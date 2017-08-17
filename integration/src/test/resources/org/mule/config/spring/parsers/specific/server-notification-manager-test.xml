@@ -24,6 +24,8 @@
         <notification-listener ref="securityListener"/>
 
         <notification-listener ref="listener3" subscription="*"/>
+
+        <notification-listener ref="listener5" subscription="customResource"/>
             
     
     </notifications>
@@ -44,6 +46,8 @@
          is not defined as a listener explicity above.
     -->
     <object name="listener4"
+                class="org.mule.test.config.spring.parsers.specific.ServerNotificationManagerTestCase$TestListener2"/>
+    <object name="listener5"
                 class="org.mule.test.config.spring.parsers.specific.ServerNotificationManagerTestCase$TestListener2"/>
         
 

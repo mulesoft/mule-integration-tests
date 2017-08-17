@@ -6,8 +6,10 @@
  */
 package org.mule.test.config.spring.parsers.specific;
 
+import static org.junit.Assert.assertThat;
+import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
+
 import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
@@ -16,10 +18,9 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.IsCollectionContaining.hasItem;
-import static org.junit.Assert.assertThat;
+
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.context.notification.AbstractServerNotification;
@@ -34,12 +35,12 @@ import org.mule.tck.probe.JUnitLambdaProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import java.util.Collection;
-
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.Test;
+
+import java.util.Collection;
 
 public class ServerNotificationManagerTestCase extends AbstractIntegrationTestCase {
 
@@ -90,7 +91,10 @@ public class ServerNotificationManagerTestCase extends AbstractIntegrationTestCa
     assertThat(manager.getListeners(), hasItem(withListener(muleContext.getRegistry().lookupObject("listener2"))));
     assertThat(manager.getListeners(), hasItem(withListener(muleContext.getRegistry().lookupObject("securityListener"))));
     assertThat(manager.getListeners(),
-               hasItem(allOf(withListener(muleContext.getRegistry().lookupObject("listener3")), withSubscriptionOnlyFor("*"))));
+               hasItem(allOf(withListener(muleContext.getRegistry().lookupObject("listener3")), withNoSubscription())));
+    assertThat(manager.getListeners(),
+               hasItem(allOf(withListener(muleContext.getRegistry().lookupObject("listener5")),
+                             withSubscriptionOnlyFor("customResource"))));
   }
 
   @Test
@@ -203,15 +207,18 @@ public class ServerNotificationManagerTestCase extends AbstractIntegrationTestCa
   }
 
   public static ListenerSubscriptionPairMatcher withListener(NotificationListener listener) {
-    return new ListenerSubscriptionPairMatcher(sameInstance(listener), null, anything());
+    return new ListenerSubscriptionPairMatcher(sameInstance(listener), null);
   }
 
   public static ListenerSubscriptionPairMatcher withSubscriptionOnlyFor(Object subscription) {
-    return new ListenerSubscriptionPairMatcher(null, subscription, anything());
+    return new ListenerSubscriptionPairMatcher(null, subscription);
   }
 
+  /**
+   * This applies also for the case when the subscription is "*", which is a catch-all
+   */
   public static ListenerSubscriptionPairMatcher withNoSubscription() {
-    return new ListenerSubscriptionPairMatcher(null, null, nullValue());
+    return new ListenerSubscriptionPairMatcher(null, null);
   }
 
   private static class ListenerSubscriptionPairMatcher<N extends Notification>
@@ -219,13 +226,11 @@ public class ServerNotificationManagerTestCase extends AbstractIntegrationTestCa
 
     private Matcher<NotificationListener<N>> listenerMatcher;
     private Object subscription;
-    private Matcher subscriptionMatcher;
 
     public ListenerSubscriptionPairMatcher(Matcher<NotificationListener<N>> listenerMatcher,
-                                           Object subscription, Matcher subscriptionMatcher) {
+                                           Object subscription) {
       this.listenerMatcher = listenerMatcher;
       this.subscription = subscription;
-      this.subscriptionMatcher = subscriptionMatcher;
     }
 
     @Override
@@ -245,7 +250,6 @@ public class ServerNotificationManagerTestCase extends AbstractIntegrationTestCa
       if (listenerMatcher != null) {
         match = match && listenerMatcher.matches(item.getListener());
       }
-      match = match && subscriptionMatcher.matches(item.getSelector());
       if (subscription != null) {
         final AbstractServerNotification mockNotificationMatches = mock(AbstractServerNotification.class);
         when(mockNotificationMatches.getResourceIdentifier()).thenReturn(subscription.toString());
