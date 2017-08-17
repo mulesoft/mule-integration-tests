@@ -9,7 +9,6 @@
 
     <flow name="willSchedule">
         <processor ref="hasSchedulingService"/>
-<!--         <custom-processor class="org.mule.test.service.scheduler.SchedulerServiceTestCase$HasSchedulingService"/> -->
     </flow>
 
     <flow name="delaySchedule">
