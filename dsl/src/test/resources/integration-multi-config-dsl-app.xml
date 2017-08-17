@@ -19,7 +19,7 @@
     </db:config>
 
     <http:listener-config name="httpListener" basePath="/">
-        <http:listener-connection host="localhost" port="49019" protocol="HTTPS" disableValidation="true">
+        <http:listener-connection host="localhost" port="49019" protocol="HTTPS">
             <tls:context>
                 <tls:key-store path="ssltest-keystore.jks" keyPassword="changeit" password="changeit"/>
             </tls:context>
@@ -42,7 +42,7 @@
     <flow name="testFlow" initialState="stopped">
         <http:listener config-ref="httpListener" path="testBuilder">
             <redelivery-policy maxRedeliveryCount="2" useSecureHash="true"/>
-            <reconnect blocking="true" count="1" frequency="0"/>
+            <reconnect count="1" frequency="0"/>
             <http:response>
                 <http:body>#[{'my': 'map'}]</http:body>
                 <http:headers>

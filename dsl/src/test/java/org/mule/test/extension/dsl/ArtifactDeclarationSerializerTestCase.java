@@ -15,17 +15,17 @@ import static org.mule.runtime.api.app.declaration.fluent.ElementDeclarer.newObj
 import static org.mule.runtime.api.app.declaration.fluent.ElementDeclarer.newParameterGroup;
 import static org.mule.runtime.api.meta.model.parameter.ParameterGroupModel.CONNECTION;
 import static org.mule.runtime.core.api.util.IOUtils.getResourceAsString;
-import static org.mule.runtime.extension.api.ExtensionConstants.DISABLE_CONNECTION_VALIDATION_PARAMETER_NAME;
 import static org.mule.runtime.extension.api.ExtensionConstants.POOLING_PROFILE_PARAMETER_NAME;
+import static org.mule.runtime.extension.api.ExtensionConstants.RECONNECTION_CONFIG_PARAMETER_NAME;
 import static org.mule.runtime.extension.api.ExtensionConstants.RECONNECTION_STRATEGY_PARAMETER_NAME;
 import static org.mule.runtime.extension.api.ExtensionConstants.REDELIVERY_POLICY_PARAMETER_NAME;
 import static org.mule.runtime.extension.api.ExtensionConstants.STREAMING_STRATEGY_PARAMETER_NAME;
 import static org.mule.runtime.extension.api.ExtensionConstants.TARGET_VALUE_PARAMETER_NAME;
 import static org.mule.runtime.extension.api.ExtensionConstants.TARGET_PARAMETER_NAME;
 import static org.mule.runtime.extension.api.ExtensionConstants.TLS_PARAMETER_NAME;
-import static org.mule.runtime.extension.api.declaration.type.ReconnectionStrategyTypeBuilder.BLOCKING;
 import static org.mule.runtime.extension.api.declaration.type.ReconnectionStrategyTypeBuilder.COUNT;
 import static org.mule.runtime.extension.api.declaration.type.ReconnectionStrategyTypeBuilder.FREQUENCY;
+import static org.mule.runtime.extension.api.declaration.type.ReconnectionStrategyTypeBuilder.RECONNECTION_CONFIG;
 import static org.mule.runtime.extension.api.declaration.type.ReconnectionStrategyTypeBuilder.RECONNECT_ALIAS;
 import static org.mule.runtime.extension.api.declaration.type.RedeliveryPolicyTypeBuilder.MAX_REDELIVERY_COUNT;
 import static org.mule.runtime.extension.api.declaration.type.RedeliveryPolicyTypeBuilder.USE_SECURE_HASH;
@@ -123,9 +123,6 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
                                        .ofType(NoCachingConfiguration.class.getName())
                                        .build())
                     .getDeclaration())
-                .withParameterGroup(newParameterGroup(CONNECTION)
-                    .withParameter("disableValidation", "true")
-                    .getDeclaration())
                 .getDeclaration())
             .getDeclaration())
         .withGlobalElement(core.newConstruct("flow")
@@ -215,8 +212,7 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
         .withGlobalElement(db.newConfiguration("config")
             .withRefName("dbConfig")
             .withConnection(db
-                .newConnection("derby")
-                .withParameterGroup(newParameterGroup()
+                .newConnection("derby").withParameterGroup(newParameterGroup()
                     .withParameter(POOLING_PROFILE_PARAMETER_NAME, newObjectValue()
                         .withParameter("maxPoolSize", "10")
                         .build())
@@ -226,6 +222,15 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
                         .withParameter("first", "propertyOne")
                         .withParameter("second", "propertyTwo")
                         .build())
+                .withParameter(RECONNECTION_CONFIG_PARAMETER_NAME, newObjectValue()
+                    .ofType(RECONNECTION_CONFIG)
+                    .withParameter("failsDeployment", "true")
+                    .withParameter("reconnectionStrategy", newObjectValue()
+                        .ofType(RECONNECT_ALIAS)
+                        .withParameter(COUNT, "1")
+                        .withParameter(FREQUENCY, "0")
+                        .build())
+                    .build())
                     .withParameter("database", "target/muleEmbeddedDB")
                     .withParameter("create", "true")
                     .getDeclaration())
@@ -249,8 +254,7 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
                 .withParameterGroup(group -> group.withName(CONNECTION)
                     .withParameter("host", "localhost")
                     .withParameter("port", "49019")
-                    .withParameter("protocol", "HTTPS")
-                    .withParameter(DISABLE_CONNECTION_VALIDATION_PARAMETER_NAME, "true"))
+                    .withParameter("protocol", "HTTPS"))
                 .getDeclaration())
             .getDeclaration())
         .withGlobalElement(http.newConfiguration("requestConfig")
@@ -296,7 +300,6 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
                     .withParameter(RECONNECTION_STRATEGY_PARAMETER_NAME,
                                    newObjectValue()
                                        .ofType(RECONNECT_ALIAS)
-                                       .withParameter(BLOCKING, "true")
                                        .withParameter(COUNT, "1")
                                        .withParameter(FREQUENCY, "0")
                                        .build()))
@@ -492,9 +495,6 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
                                    newObjectValue()
                                        .ofType(NoCachingConfiguration.class.getName())
                                        .build())
-                    .getDeclaration())
-                .withParameterGroup(newParameterGroup(CONNECTION)
-                    .withParameter("disableValidation", "true")
                     .getDeclaration())
                 .getDeclaration())
             .getDeclaration())
