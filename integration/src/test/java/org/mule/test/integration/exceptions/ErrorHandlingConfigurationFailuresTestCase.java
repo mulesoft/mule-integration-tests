@@ -22,7 +22,6 @@ import static org.mule.runtime.core.api.exception.Errors.Identifiers.SOURCE_RESP
 import static org.mule.runtime.core.api.exception.Errors.Identifiers.SOURCE_RESPONSE_SEND_ERROR_IDENTIFIER;
 import static org.mule.runtime.core.api.exception.Errors.Identifiers.UNKNOWN_ERROR_IDENTIFIER;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
-
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.core.api.MuleContext;
@@ -39,17 +38,15 @@ import org.mule.runtime.core.api.context.notification.NotificationListenerRegist
 import org.mule.runtime.core.api.util.concurrent.Latch;
 import org.mule.tck.config.TestServicesConfigurationBuilder;
 import org.mule.tck.junit4.AbstractMuleTestCase;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
-
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import io.qameta.allure.Feature;
-import io.qameta.allure.Story;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Feature(ERROR_HANDLING)
 @Story("Validations")
@@ -83,7 +80,7 @@ public class ErrorHandlingConfigurationFailuresTestCase extends AbstractMuleTest
   @Test
   public void xaTransactionalBlockNotAllowed() throws Exception {
     expectedException.expect(InitialisationException.class);
-    expectedException.expectMessage(containsString("No factory available for transaction type XA"));
+    expectedException.expectMessage(containsString("Unable to create Try Scope with a Transaction Type: [XA]"));
     loadConfiguration("org/mule/test/integration/transaction/xa-transactional-try-config.xml");
   }
 
