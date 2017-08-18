@@ -20,17 +20,14 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mule.functional.junit4.TestLegacyMessageUtils.getOutboundProperty;
 import static org.mule.runtime.api.exception.MuleException.INFO_LOCATION_KEY;
 import static org.mule.runtime.api.message.Message.of;
 import static org.mule.runtime.api.metadata.DataType.JSON_STRING;
 import static org.mule.runtime.api.metadata.MediaType.APPLICATION_JAVA;
 import static org.mule.runtime.api.metadata.MediaType.APPLICATION_JSON;
 import static org.mule.runtime.api.metadata.MediaType.APPLICATION_XML;
+import static org.mule.test.allure.AllureConstants.RoutersFeature.ForeachStory.FOR_EACH;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS_FEATURE;
-
-import io.qameta.allure.Description;
-import io.qameta.allure.Issue;
 
 import org.mule.functional.junit4.TestLegacyMessageBuilder;
 import org.mule.runtime.api.exception.MuleException;
@@ -39,11 +36,7 @@ import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.tck.junit4.rule.SystemProperty;
-import org.mule.tck.processor.FlowAssert;
 import org.mule.test.AbstractIntegrationTestCase;
-import org.mule.test.allure.AllureConstants;
-
-import com.google.common.collect.ImmutableList;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -53,7 +46,10 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import com.google.common.collect.ImmutableList;
+import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.hamcrest.core.Is;
@@ -63,7 +59,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 @Feature(ROUTERS_FEATURE)
-@Story(AllureConstants.RoutersFeature.ForeachStory.FOR_EACH)
+@Story(FOR_EACH)
 public class ForeachTestCase extends AbstractIntegrationTestCase {
 
   @Rule
@@ -145,19 +141,6 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  public void filteredConfiguration() throws Exception {
-    final List<String> names = new ArrayList<>();
-    names.add("residente");
-    names.add("visitante");
-
-    InternalEvent result = flowRunner("filtered-config").withPayload("message payload")
-        .withVariable("names", names).run();
-
-    assertThat(result.getMessage().getPayload().getValue(), instanceOf(String.class));
-    assertThat((List<String>) result.getVariables().get("names").getValue(), hasSize(names.size()));
-  }
-
-  @Test
   public void partitionedConfiguration() throws Exception {
     final Collection<String> payload = new ArrayList<>();
     payload.add("gulp");
@@ -207,19 +190,6 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
     Message result = flowRunner("message-collection-config").withPayload(list).run().getMessage();
 
     assertThat(result.getPayload().getValue(), equalTo(msgCollection.getPayload().getValue()));
-    FlowAssert.verify("message-collection-config");
-  }
-
-  @Test
-  public void messageCollectionConfigurationOneWay() throws Exception {
-    List<Message> list = new ArrayList<>();
-    for (int i = 0; i < 10; i++) {
-      list.add(new TestLegacyMessageBuilder().value("message-" + i).inboundProperties(singletonMap("out", "out" + (i + 1)))
-          .build());
-    }
-    final String flowName = "message-collection-config-one-way";
-    flowRunner(flowName).withPayload(list).run();
-    FlowAssert.verify(flowName);
   }
 
   @Test
@@ -280,6 +250,7 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
 
   @Description("Splits a JSON into other JSON objects and executed expressions over each object")
   @Test
+  @Ignore("MDF-276")
   public void splitJsonComplexValue() throws Exception {
     String jsonUsers = "{ \"users\": [" +
         "{ \"name\": \"Pepe\", \"lastname\": \"Le Pew\" }," +
@@ -374,7 +345,6 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
     order.put("email", "ellen.mail.com");
     order.put("items", items);
     flowRunner("process-json-update").withPayload(singletonMap("order", order)).run();
-    FlowAssert.verify("process-json-update");
   }
 
   @Test
@@ -386,7 +356,6 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
     String[] resultPayload = (String[]) result.getPayload().getValue();
     assertThat(resultPayload, arrayWithSize(payload.length));
     assertSame(payload, resultPayload);
-    FlowAssert.verify("array-expression-config");
   }
 
   @Test
@@ -397,8 +366,6 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
     payload.add("roque");
 
     flowRunner("counter-scope").withPayload(payload).run();
-
-    FlowAssert.verify("counter-scope");
   }
 
   @Test
@@ -481,7 +448,6 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
     String[] resultPayload = (String[]) result.getPayload().getValue();
     assertThat(resultPayload, arrayWithSize(payload.length));
     assertSame(payload, resultPayload);
-    FlowAssert.verify("foreach-properties-restored");
   }
 
   @Test
@@ -550,7 +516,6 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
     String outPayload = (String) out.getPayload().getValue();
 
     assertThat(outPayload, is("foo"));
-    FlowAssert.verify(flowName);
 
     out = client.request("test://out", getTestTimeoutSecs()).getRight().get();
     assertThat(out.getPayload().getValue(), instanceOf(String.class));

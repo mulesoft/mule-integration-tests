@@ -6,6 +6,7 @@
  */
 package org.mule.test.core;
 
+import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -174,6 +175,11 @@ public class NonBlockingFunctionalTestCase extends AbstractIntegrationTestCase {
   public void untilSuccessfulWithRetryTransactional() throws Exception {
     TransactionCoordination.getInstance().bindTransaction(mock(Transaction.class));
     flowRunner("untilSuccessfulWithRetryTransactional").withPayload(TEST_MESSAGE).run();
+  }
+
+  @Test
+  public void foreach() throws Exception {
+    flowRunner("foreach").withPayload(asList(new String[] {"1", "2", "3"}, new String[] {"a", "b", "c"})).run();
   }
 
   public static class CustomSecurityFilter extends AbstractAuthenticationFilter {
