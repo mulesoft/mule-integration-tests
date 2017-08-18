@@ -36,14 +36,6 @@
         </foreach>
     </flow>
 
-    <flow name="filtered-config">
-        <foreach collection="#[vars.names]" ignoreErrorType="VALIDATION:VALIDATION">
-            <test:processor/>
-            <validation:is-true expression="#[false]"/>
-            <test:processor throwException="true" exceptionText="Should not have reached here"/>
-        </foreach>
-    </flow>
-
     <flow name="partitioned-config">
         <foreach batchSize="${batch.size}">
             <test:processor/>
@@ -64,15 +56,6 @@
             <test:assert expression="#[mel:message.outboundProperties['out']=='out'+counter]" />
             <set-variable variableName="totalMessages" value="#[mel:counter]"/>
         </foreach>
-        <test:assert expression="#[vars.totalMessages==10]" />
-    </flow>
-
-    <flow name="message-collection-config-one-way">
-        <foreach>
-            <test:assert expression="#[mel:message.inboundProperties['out']=='out'+counter]" />
-            <set-variable variableName="totalMessages" value="#[mel:counter]"/>
-        </foreach>
-        <logger level="WARN" message="variable:totalMessages: #[mel:flowVars.totalMessages]"/>
         <test:assert expression="#[vars.totalMessages==10]" />
     </flow>
 

@@ -286,5 +286,17 @@
         <test:assert expression="#[mel:assertPayload()]"/>
     </flow>
 
+    <flow name="foreach">
+        <test:assert-intercepting responseSameTask="false"/>
+        <foreach>
+            <test:assert-intercepting responseSameTask="false" count="2"/>
+            <test:non-blocking-processor/>
+            <foreach>
+                <test:assert-intercepting responseSameTask="false" count="6"/>
+                <test:non-blocking-processor/>
+            </foreach>
+        </foreach>
+    </flow>
+
 
 </mule>
