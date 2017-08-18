@@ -13,6 +13,7 @@ import static org.mule.runtime.api.app.declaration.fluent.ElementDeclarer.newObj
 import static org.mule.runtime.api.meta.ExpressionSupport.REQUIRED;
 import static org.mule.runtime.core.api.util.IOUtils.getResourceAsString;
 import static org.mule.runtime.extension.api.util.ExtensionMetadataTypeUtils.getAlias;
+import static org.mule.runtime.extension.api.util.ExtensionMetadataTypeUtils.getId;
 import static org.mule.runtime.extension.api.util.ExtensionModelUtils.isContent;
 import static org.mule.runtime.extension.api.util.ExtensionModelUtils.isText;
 import static org.mule.test.module.extension.internal.util.ExtensionsTestUtils.compareXML;
@@ -53,7 +54,6 @@ import org.mule.runtime.api.meta.model.util.ExtensionWalker;
 import org.mule.runtime.config.spring.api.dsl.ArtifactDeclarationXmlSerializer;
 import org.mule.runtime.config.spring.api.dsl.model.DslElementModelFactory;
 import org.mule.runtime.core.api.extension.MuleExtensionModelProvider;
-import org.mule.runtime.extension.api.util.ExtensionMetadataTypeUtils;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -245,8 +245,8 @@ public class BulkArtifactDeclarationTestCase extends AbstractElementModelTestCas
           return;
         }
 
-        ParameterObjectValue.Builder objectValue = newObjectValue()
-            .ofType(ExtensionMetadataTypeUtils.getId(objectType));
+        ParameterObjectValue.Builder objectValue = newObjectValue();
+        getId(objectType).ifPresent(objectValue::ofType);
 
         objectType.getFields()
             .forEach(field -> addParameter(field.getValue(), false, false,
