@@ -10,6 +10,7 @@ import static java.lang.Math.random;
 import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
@@ -17,10 +18,12 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
-import static org.mule.test.allure.AllureConstants.InterceptonApi.ComponentInterceptionStory.COMPONENT_INTERCEPTION_STORY;
 import static org.mule.test.allure.AllureConstants.InterceptonApi.INTERCEPTION_API;
+import static org.mule.test.allure.AllureConstants.InterceptonApi.ComponentInterceptionStory.COMPONENT_INTERCEPTION_STORY;
+import static org.mule.test.heisenberg.extension.HeisenbergConnectionProvider.getActiveConnections;
 import static org.mule.test.heisenberg.extension.HeisenbergConnectionProvider.getConnects;
 import static org.mule.test.heisenberg.extension.HeisenbergConnectionProvider.getDisconnects;
+
 import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.api.config.custom.ServiceConfigurator;
 import org.mule.runtime.api.el.MuleExpressionLanguage;
@@ -40,6 +43,11 @@ import org.mule.test.heisenberg.extension.HeisenbergExtension;
 import org.mule.test.heisenberg.extension.model.KillParameters;
 import org.mule.test.runner.RunnerDelegateTo;
 
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -53,11 +61,6 @@ import javax.inject.Inject;
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
 
 @Feature(INTERCEPTION_API)
 @Story(COMPONENT_INTERCEPTION_STORY)
@@ -107,6 +110,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
 
   @Before
   public void before() {
+    getActiveConnections().clear();
     HasInjectedAttributesInterceptor.actioner = action -> action.proceed();
     HasInjectedAttributesInterceptor.interceptionParameters.clear();
   }
@@ -177,7 +181,6 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     assertThat(killInterceptionParameter.getParameters().get("killParameters"), is(instanceOf(KillParameters.class)));
   }
 
-  @Ignore("MULE-13274")
   @Test
   @Description("The connection was fetched on the interceptor, and the operation uses the connection obtained there rather then fetching it again")
   public void resolvedConnectionParam() throws Exception {
@@ -195,6 +198,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     assertThat(killInterceptionParameter.getParameters().get("config-ref"), is("heisenberg"));
     assertThat(killInterceptionParameter.getParameters().get("connection"), is(instanceOf(HeisenbergConnection.class)));
 
+    assertThat(getActiveConnections(), empty());
     assertThat(getConnects() - connectsBefore, is(mutateEventBefore ? 2 : 1));
     assertThat(getDisconnects() - disconnectsBefore, is(mutateEventBefore ? 2 : 1));
   }
@@ -218,6 +222,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     assertThat(killInterceptionParameter.getParameters().get("config-ref"), is("heisenberg"));
     assertThat(killInterceptionParameter.getParameters().get("connection"), is(instanceOf(HeisenbergConnection.class)));
 
+    assertThat(getActiveConnections(), empty());
     assertThat(getConnects() - connectsBefore, is(mutateEventBefore ? 2 : 1));
     assertThat(getDisconnects() - disconnectsBefore, is(mutateEventBefore ? 2 : 1));
   }
@@ -246,6 +251,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
       assertThat(killInterceptionParameter.getParameters().get("config-ref"), is("heisenberg"));
       assertThat(killInterceptionParameter.getParameters().get("connection"), is(instanceOf(HeisenbergConnection.class)));
 
+      assertThat(getActiveConnections(), empty());
       assertThat(getConnects() - connectsBefore, is(mutateEventBefore ? 2 : 1));
       assertThat(getDisconnects() - disconnectsBefore, is(mutateEventBefore ? 2 : 1));
     }
