@@ -15,7 +15,7 @@
         <logger/>
     </flow>
     <flow name="flowForforeach">
-        <foreach batchSize="10000" collection="#[payload]" counterVariableName="counter" ignoreErrorType="Attribute" rootMessageVariableName="rootMessage">
+        <foreach batchSize="10000" collection="#[payload]" counterVariableName="counter" rootMessageVariableName="rootMessage">
             <logger/>
         </foreach>
     </flow>
