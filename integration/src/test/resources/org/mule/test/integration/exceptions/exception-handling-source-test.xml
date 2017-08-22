@@ -68,4 +68,12 @@
         </error-handler>
     </flow>
 
+    <flow name="errorInHandlerHasOrigin">
+        <test:processor throwException="true"/>
+        <error-handler>
+            <on-error-propagate>
+                <test:processor throwException="true" id="insideHandler"/>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
 </mule>
