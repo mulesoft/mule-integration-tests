@@ -12,6 +12,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.core.api.context.notification.MessageProcessorNotification.MESSAGE_PROCESSOR_POST_INVOKE;
+
 import org.mule.functional.api.exception.FunctionalTestException;
 import org.mule.runtime.core.api.context.notification.IntegerAction;
 import org.mule.runtime.core.api.context.notification.MessageProcessorNotification;
@@ -291,13 +292,10 @@ public class MessageProcessorNotificationTestCase extends AbstractMessageProcess
   }
 
   @Test
-  @Ignore("MULE-13213")
   public void roundRobin() throws Exception {
     specificationFactory = () -> new Node()
         .serial(pre()) // round-robin
-        .serial(pre())
         .serial(prePost()) // inner logger
-        .serial(post())
         .serial(post())
         .serial(prePost()) // logger
     ;
