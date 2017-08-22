@@ -31,6 +31,7 @@ import org.mule.runtime.api.interception.InterceptionAction;
 import org.mule.runtime.api.interception.InterceptionEvent;
 import org.mule.runtime.api.interception.ProcessorInterceptor;
 import org.mule.runtime.api.interception.ProcessorInterceptorFactory;
+import org.mule.runtime.api.interception.ProcessorParameterValue;
 import org.mule.runtime.api.lock.LockFactory;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
@@ -129,8 +130,8 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     InterceptionParameters splitterInterceptionParameter = interceptionParameters.get(2);
 
     assertThat(loggerInterceptionParameter.getParameters().isEmpty(), is(true));
-    assertThat(flowRefInterceptionParameter.getParameters().get("name"), is("anotherFlow"));
-    assertThat(splitterInterceptionParameter.getParameters().get("expression"), is(payload));
+    assertThat(flowRefInterceptionParameter.getParameters().get("name").resolveValue(), is("anotherFlow"));
+    assertThat(splitterInterceptionParameter.getParameters().get("expression").resolveValue(), is(payload));
   }
 
   @Test
@@ -143,8 +144,8 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     InterceptionParameters killInterceptionParameter = interceptionParameters.get(0);
 
     assertThat(killInterceptionParameter.getParameters().keySet(), containsInAnyOrder("targetValue", "victim", "goodbyeMessage"));
-    assertThat(killInterceptionParameter.getParameters().get("victim"), is("T-1000"));
-    assertThat(killInterceptionParameter.getParameters().get("goodbyeMessage"), is("Hasta la vista, baby"));
+    assertThat(killInterceptionParameter.getParameters().get("victim").resolveValue(), is("T-1000"));
+    assertThat(killInterceptionParameter.getParameters().get("goodbyeMessage").resolveValue(), is("Hasta la vista, baby"));
   }
 
   @Test
@@ -157,11 +158,11 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     InterceptionParameters dieInterceptionParameter = interceptionParameters.get(0);
 
     assertThat(dieInterceptionParameter.getParameters().keySet(), containsInAnyOrder("config-ref", "config"));
-    final Object config = dieInterceptionParameter.getParameters().get("config");
+    final Object config = dieInterceptionParameter.getParameters().get("config").resolveValue();
     assertThat(config, instanceOf(HeisenbergExtension.class));
     assertThat(((HeisenbergExtension) config).getConfigName(), is("heisenberg"));
 
-    final Object configRef = dieInterceptionParameter.getParameters().get("config-ref");
+    final Object configRef = dieInterceptionParameter.getParameters().get("config-ref").resolveValue();
     assertThat(configRef, is("heisenberg"));
   }
 
@@ -176,9 +177,10 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
 
     assertThat(killInterceptionParameter.getParameters().keySet(),
                containsInAnyOrder("targetValue", "victim", "goodbyeMessage", "killParameters"));
-    assertThat(killInterceptionParameter.getParameters().get("victim"), is("T-1000"));
-    assertThat(killInterceptionParameter.getParameters().get("goodbyeMessage"), is("Hasta la vista, baby"));
-    assertThat(killInterceptionParameter.getParameters().get("killParameters"), is(instanceOf(KillParameters.class)));
+    assertThat(killInterceptionParameter.getParameters().get("victim").resolveValue(), is("T-1000"));
+    assertThat(killInterceptionParameter.getParameters().get("goodbyeMessage").resolveValue(), is("Hasta la vista, baby"));
+    assertThat(killInterceptionParameter.getParameters().get("killParameters").resolveValue(),
+               is(instanceOf(KillParameters.class)));
   }
 
   @Test
@@ -195,8 +197,9 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     InterceptionParameters killInterceptionParameter = interceptionParameters.get(0);
 
     assertThat(killInterceptionParameter.getParameters().keySet(), containsInAnyOrder("targetValue", "config-ref", "connection"));
-    assertThat(killInterceptionParameter.getParameters().get("config-ref"), is("heisenberg"));
-    assertThat(killInterceptionParameter.getParameters().get("connection"), is(instanceOf(HeisenbergConnection.class)));
+    assertThat(killInterceptionParameter.getParameters().get("config-ref").resolveValue(), is("heisenberg"));
+    assertThat(killInterceptionParameter.getParameters().get("connection").resolveValue(),
+               is(instanceOf(HeisenbergConnection.class)));
 
     assertThat(getActiveConnections(), empty());
     assertThat(getConnects() - connectsBefore, is(mutateEventBefore ? 2 : 1));
@@ -219,8 +222,9 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     InterceptionParameters killInterceptionParameter = interceptionParameters.get(0);
 
     assertThat(killInterceptionParameter.getParameters().keySet(), containsInAnyOrder("targetValue", "config-ref", "connection"));
-    assertThat(killInterceptionParameter.getParameters().get("config-ref"), is("heisenberg"));
-    assertThat(killInterceptionParameter.getParameters().get("connection"), is(instanceOf(HeisenbergConnection.class)));
+    assertThat(killInterceptionParameter.getParameters().get("config-ref").resolveValue(), is("heisenberg"));
+    assertThat(killInterceptionParameter.getParameters().get("connection").resolveValue(),
+               is(instanceOf(HeisenbergConnection.class)));
 
     assertThat(getActiveConnections(), empty());
     assertThat(getConnects() - connectsBefore, is(mutateEventBefore ? 2 : 1));
@@ -248,8 +252,9 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
 
       assertThat(killInterceptionParameter.getParameters().keySet(),
                  containsInAnyOrder("targetValue", "config-ref", "connection"));
-      assertThat(killInterceptionParameter.getParameters().get("config-ref"), is("heisenberg"));
-      assertThat(killInterceptionParameter.getParameters().get("connection"), is(instanceOf(HeisenbergConnection.class)));
+      assertThat(killInterceptionParameter.getParameters().get("config-ref").resolveValue(), is("heisenberg"));
+      assertThat(killInterceptionParameter.getParameters().get("connection").resolveValue(),
+                 is(instanceOf(HeisenbergConnection.class)));
 
       assertThat(getActiveConnections(), empty());
       assertThat(getConnects() - connectsBefore, is(mutateEventBefore ? 2 : 1));
@@ -305,7 +310,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     }
 
     @Override
-    public void before(ComponentLocation location, Map<String, Object> parameters, InterceptionEvent event) {
+    public void before(ComponentLocation location, Map<String, ProcessorParameterValue> parameters, InterceptionEvent event) {
       interceptionParameters.add(new InterceptionParameters(location, parameters, event));
       assertThat(expressionEvaluator, not(nullValue()));
       assertThat(lockFactory, not(nullValue()));
@@ -317,7 +322,8 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     }
 
     @Override
-    public CompletableFuture<InterceptionEvent> around(ComponentLocation location, Map<String, Object> parameters,
+    public CompletableFuture<InterceptionEvent> around(ComponentLocation location,
+                                                       Map<String, ProcessorParameterValue> parameters,
                                                        InterceptionEvent event, InterceptionAction action) {
       return actioner.apply(action);
     }
@@ -326,10 +332,11 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
   public static class InterceptionParameters {
 
     private ComponentLocation location;
-    private Map<String, Object> parameters;
+    private Map<String, ProcessorParameterValue> parameters;
     private InterceptionEvent event;
 
-    public InterceptionParameters(ComponentLocation location, Map<String, Object> parameters, InterceptionEvent event) {
+    public InterceptionParameters(ComponentLocation location, Map<String, ProcessorParameterValue> parameters,
+                                  InterceptionEvent event) {
       this.location = location;
       this.parameters = parameters;
       this.event = event;
@@ -339,7 +346,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
       return location;
     }
 
-    public Map<String, Object> getParameters() {
+    public Map<String, ProcessorParameterValue> getParameters() {
       return parameters;
     }
 
@@ -375,7 +382,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     }
 
     @Override
-    public void before(ComponentLocation location, Map<String, Object> parameters, InterceptionEvent event) {
+    public void before(ComponentLocation location, Map<String, ProcessorParameterValue> parameters, InterceptionEvent event) {
       try {
         expressionEvaluator.evaluate("vars.addedVar", event.asBindingContext());
       } catch (ExpressionRuntimeException e) {
