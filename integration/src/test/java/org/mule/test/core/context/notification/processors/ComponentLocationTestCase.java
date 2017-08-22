@@ -12,6 +12,7 @@ import static java.util.Optional.of;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.component.ComponentIdentifier.buildFromStringRepresentation;
+import static org.mule.runtime.api.component.TypedComponentIdentifier.builder;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.FLOW;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.INTERCEPTING;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.ON_ERROR;
@@ -20,13 +21,12 @@ import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentT
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.ROUTER;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.SCOPE;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.SOURCE;
-import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.UNKNOWN;
-import static org.mule.runtime.api.component.TypedComponentIdentifier.builder;
 import static org.mule.runtime.api.meta.AbstractAnnotatedObject.LOCATION_KEY;
 import static org.mule.runtime.config.spring.api.dsl.model.ApplicationModel.FLOW_IDENTIFIER;
 import static org.mule.runtime.config.spring.api.dsl.model.ApplicationModel.SUBFLOW_IDENTIFIER;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentLocationStory.COMPONENT_LOCATION;
+
 import org.mule.runtime.api.component.TypedComponentIdentifier;
 import org.mule.runtime.api.meta.AnnotatedObject;
 import org.mule.runtime.core.api.construct.Flow;
@@ -37,7 +37,6 @@ import org.mule.tck.probe.PollingProber;
 import org.mule.tck.probe.Probe;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -336,7 +335,6 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  @Ignore("MULE-13213")
   public void flowWithScatterGather() throws Exception {
     flowRunner("flowWithScatterGather").run();
     waitUntilNotificationsArrived(4);
@@ -348,20 +346,17 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
     DefaultComponentLocation scatterGatherRoute0 = scatterGatherLocation
         .appendRoutePart()
         .appendLocationPart("0", ROUTE, CONFIG_FILE_NAME, of(100));
-    assertNextProcessorLocationIs(scatterGatherRoute0);
     assertNextProcessorLocationIs(scatterGatherRoute0
         .appendProcessorsPart()
         .appendLocationPart("0", LOGGER, CONFIG_FILE_NAME, of(101)));
     DefaultComponentLocation scatterGatherRouter1 = scatterGatherLocation
         .appendRoutePart()
         .appendLocationPart("1", ROUTE, CONFIG_FILE_NAME, of(103));
-    assertNextProcessorLocationIs(scatterGatherRouter1);
     assertNextProcessorLocationIs(scatterGatherRouter1
         .appendProcessorsPart()
         .appendLocationPart("0", VALIDATION_IS_TRUE, CONFIG_FILE_NAME, of(104)));
     DefaultComponentLocation scatterGatherRouter2 = scatterGatherLocation.appendRoutePart()
         .appendLocationPart("2", ROUTE, CONFIG_FILE_NAME, of(106));
-    assertNextProcessorLocationIs(scatterGatherRouter2);
     assertNextProcessorLocationIs(scatterGatherRouter2
         .appendProcessorsPart()
         .appendLocationPart("0", VALIDATION_IS_FALSE, CONFIG_FILE_NAME, of(107)));

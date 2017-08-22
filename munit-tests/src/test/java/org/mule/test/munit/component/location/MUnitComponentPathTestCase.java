@@ -57,7 +57,6 @@ public class MUnitComponentPathTestCase extends MuleArtifactFunctionalTestCase {
                notNullValue());
   }
 
-  @Ignore("MULE-13213")
   @Test
   public void beforeTestComponentLocations() throws Exception {
     assertThat(componentLocator.find(builderFromStringRepresentation("beforeTest").build()).get(),
@@ -82,7 +81,6 @@ public class MUnitComponentPathTestCase extends MuleArtifactFunctionalTestCase {
                notNullValue());
   }
 
-  @Ignore("MULE-13213")
   @Test
   public void testComponentLocations() throws Exception {
     assertThat(componentLocator.find(builderFromStringRepresentation("test").build()).get(),
