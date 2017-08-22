@@ -47,6 +47,20 @@
         <test:throw exception="java.lang.IllegalStateException" error="CLIENT_SECURITY"/>
     </parsers-test:processor-chain-router>
 
+    <parsers-test:processor-chain-router name="chainRouterComponents">
+        <async>
+            <test:queue name="asyncQueue"/>
+        </async>
+        <scatter-gather>
+            <route>
+                <test:queue name="sgRoute1Queue"/>
+            </route>
+            <route>
+                <test:queue name="sgRoute2Queue"/>
+            </route>
+        </scatter-gather>
+    </parsers-test:processor-chain-router>
+
     <flow name="byPassFlow">
         <set-payload value="#[payload]"/>
     </flow>

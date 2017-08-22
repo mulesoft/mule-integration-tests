@@ -15,7 +15,7 @@ import org.mule.runtime.api.component.execution.ExecutableComponent;
 import org.mule.runtime.api.event.Event;
 import org.mule.runtime.api.event.InputEvent;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.core.api.MuleContext;
+import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.config.dsl.ParsersPluginTest;
 
@@ -44,6 +44,10 @@ public class ProcessorChainRouterTestCase extends AbstractIntegrationTestCase im
   @Inject
   @Named("chainRouterError")
   private ExecutableComponent chainRouterError;
+
+  @Inject
+  @Named("chainRouterComponents")
+  private ExecutableComponent chainRouterComponents;
 
   @Inject
   @Named("byPassFlow")
@@ -115,6 +119,18 @@ public class ProcessorChainRouterTestCase extends AbstractIntegrationTestCase im
       assertThat(returnedEvent, notNullValue());
       assertThat(returnedEvent.getMessage().getPayload().getValue(), is("testPayload custom"));
     }
+  }
+
+  @Test
+  public void executeChainFlowConstructDependantComponents() throws Exception {
+    InputEvent event = createInputEvent();
+    CompletableFuture<Event> completableFuture = chainRouterComponents.execute(event);
+    Event returnedEvent = completableFuture.get();
+    assertThat(returnedEvent, notNullValue());
+    MuleClient muleClient = muleContext.getClient();
+    assertThat(muleClient.request("test://asyncQueue", RECEIVE_TIMEOUT).isRight(), is(true));
+    assertThat(muleClient.request("test://sgRoute1Queue", RECEIVE_TIMEOUT).isRight(), is(true));
+    assertThat(muleClient.request("test://sgRoute2Queue", RECEIVE_TIMEOUT).isRight(), is(true));
   }
 
   private void assertProcessorChainResult(Event returnedEvent) {
