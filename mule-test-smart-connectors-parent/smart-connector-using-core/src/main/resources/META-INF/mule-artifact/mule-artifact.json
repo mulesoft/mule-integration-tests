@@ -8,11 +8,11 @@
   "name": "module-using-core",
   "minMuleVersion": "4.0.0",
   "classLoaderModelLoaderDescriptor": {
-    "id": "maven",
+    "id": "mule",
     "attributes": {}
   },
   "bundleDescriptorLoader": {
-    "id": "maven",
+    "id": "mule",
     "attributes": {}
   }
 }
