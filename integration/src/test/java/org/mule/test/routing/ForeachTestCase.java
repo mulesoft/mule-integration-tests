@@ -18,6 +18,7 @@ import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.rules.ExpectedException.none;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mule.runtime.api.exception.MuleException.INFO_LOCATION_KEY;
@@ -40,6 +41,7 @@ import org.mule.test.AbstractIntegrationTestCase;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,6 +59,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 @Feature(ROUTERS_FEATURE)
 @Story(FOR_EACH)
@@ -64,6 +67,9 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
 
   @Rule
   public SystemProperty systemProperty = new SystemProperty("batch.size", "3");
+
+  @Rule
+  public ExpectedException expectedException = none();
 
   private MuleClient client;
 
@@ -344,6 +350,8 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
     order.put("name", "Ellen");
     order.put("email", "ellen.mail.com");
     order.put("items", items);
+    expectedException.expect(MessagingException.class);
+    expectedException.expectCause(is(ConcurrentModificationException.class));
     flowRunner("process-json-update").withPayload(singletonMap("order", order)).run();
   }
 
