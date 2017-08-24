@@ -33,18 +33,18 @@ public class IdempotentMessageValidatorTestCase extends AbstractIntegrationTestC
   public void validateWithGlobalObjectStore() throws Exception {
     String payload = "payload";
     InternalEvent response = flowRunner("validate-global").withPayload(payload).run();
+    assertThat(response.getMessage().getPayload().getValue(), is(equalTo(payload)));
     expectedException.expect(MessagingException.class);
     flowRunner("validate-global").withPayload(payload).run();
-    assertThat(response.getMessage().getPayload().getValue(), is(equalTo(payload)));
   }
 
   @Test
   public void validateWithGlobalObjectStoreFromDifferentValidators() throws Exception {
     String payload = "payload";
     InternalEvent response = flowRunner("validate-global").withPayload(payload).run();
+    assertThat(response.getMessage().getPayload().getValue(), is(equalTo(payload)));
     expectedException.expect(MessagingException.class);
     flowRunner("validate-global2").withPayload(payload).run();
-    assertThat(response.getMessage().getPayload().getValue(), is(equalTo(payload)));
   }
 
   @Test
@@ -53,14 +53,14 @@ public class IdempotentMessageValidatorTestCase extends AbstractIntegrationTestC
     String privatePayload = "private-payload";
     InternalEvent globalResponse = flowRunner("validate-global").withPayload(globalPayload).run();
     InternalEvent privateResponse = flowRunner("validate-private").withPayload(privatePayload).run();
+    assertThat(globalResponse.getMessage().getPayload().getValue(), is(equalTo(globalPayload)));
+    assertThat(privateResponse.getMessage().getPayload().getValue(), is(equalTo(privatePayload)));
     try {
       flowRunner("validate-global").withPayload(globalPayload).run();
     } catch (MessagingException e) {
       expectedException.expect(MessagingException.class);
       flowRunner("validate-private").withPayload(privatePayload).run();
     }
-    assertThat(globalResponse.getMessage().getPayload().getValue(), is(equalTo(globalPayload)));
-    assertThat(privateResponse.getMessage().getPayload().getValue(), is(equalTo(privatePayload)));
   }
 
   @Test
@@ -69,14 +69,14 @@ public class IdempotentMessageValidatorTestCase extends AbstractIntegrationTestC
     String implicitPayload = "implicit-payload";
     InternalEvent globalResponse = flowRunner("validate-global").withPayload(globalPayload).run();
     InternalEvent implicitResponse = flowRunner("validate-implicit").withPayload(implicitPayload).run();
+    assertThat(globalResponse.getMessage().getPayload().getValue(), is(equalTo(globalPayload)));
+    assertThat(implicitResponse.getMessage().getPayload().getValue(), is(equalTo(implicitPayload)));
     try {
       flowRunner("validate-global").withPayload(globalPayload).run();
     } catch (MessagingException e) {
       expectedException.expect(MessagingException.class);
       flowRunner("validate-implicit").withPayload(implicitPayload).run();
     }
-    assertThat(globalResponse.getMessage().getPayload().getValue(), is(equalTo(globalPayload)));
-    assertThat(implicitResponse.getMessage().getPayload().getValue(), is(equalTo(implicitPayload)));
   }
 
 }
