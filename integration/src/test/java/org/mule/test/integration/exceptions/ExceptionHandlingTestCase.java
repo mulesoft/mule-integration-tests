@@ -121,11 +121,6 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  public void testAsyncInTransactionalScope() throws Exception {
-    testTransactionalScope("asyncInTransactionalScope", "test://outTransactional4", emptyMap());
-  }
-
-  @Test
   public void testUntilSuccessfulInTransactionalScope() throws Exception {
     testTransactionalScope("untilSuccessfulInTransactionalScope", "test://outTransactional5", emptyMap());
     assertThat(effectiveMessagingExceptionHandler.getClass().getName(), equalTo(ERROR_HANDLER_CLASSNAME));

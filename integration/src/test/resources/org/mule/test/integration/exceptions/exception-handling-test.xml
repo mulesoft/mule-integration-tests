@@ -13,14 +13,16 @@
 
     <flow name="asyncInFlow">
         <async>
-            <custom-processor class="org.mule.test.integration.exceptions.ExceptionHandlingTestCase$ExceptionHandlerVerifierProcessor" />
-            <test:processor throwException="true"/>
+            <try>
+                <custom-processor class="org.mule.test.integration.exceptions.ExceptionHandlingTestCase$ExceptionHandlerVerifierProcessor" />
+                <test:processor throwException="true"/>
+                <error-handler>
+                    <on-error-continue>
+                        <test:queue name="outFlow4"/>
+                    </on-error-continue>
+                </error-handler>
+            </try>
         </async>
-        <error-handler>
-            <on-error-continue>
-                <test:queue name="outFlow4"/>
-            </on-error-continue>
-        </error-handler>
     </flow>
 
     <flow name="untilSuccessfulInFlow">
@@ -53,20 +55,6 @@
             <error-handler>
                 <on-error-continue>
                     <test:queue name="outTransactional1"/>
-                </on-error-continue>
-            </error-handler>
-        </try>
-    </flow>
-
-    <flow name="asyncInTransactionalScope">
-        <try>
-            <async>
-                <custom-processor class="org.mule.test.integration.exceptions.ExceptionHandlingTestCase$ExceptionHandlerVerifierProcessor" />
-                <test:processor throwException="true"/>
-            </async>
-            <error-handler>
-                <on-error-continue>
-                    <test:queue name="outTransactional4"/>
                 </on-error-continue>
             </error-handler>
         </try>
