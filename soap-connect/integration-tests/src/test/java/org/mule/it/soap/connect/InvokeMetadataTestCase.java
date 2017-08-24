@@ -14,11 +14,10 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.core.Is.is;
-import static org.mule.metadata.api.utils.MetadataTypeUtils.getTypeId;
+import static org.mule.runtime.extension.api.util.ExtensionMetadataTypeUtils.getId;
 import static org.mule.runtime.module.extension.soap.internal.loader.SoapInvokeOperationDeclarer.ATTACHMENTS_PARAM;
 import static org.mule.runtime.module.extension.soap.internal.loader.SoapInvokeOperationDeclarer.BODY_PARAM;
 import static org.mule.runtime.module.extension.soap.internal.loader.SoapInvokeOperationDeclarer.HEADERS_PARAM;
-
 import org.mule.metadata.api.model.BinaryType;
 import org.mule.metadata.api.model.BooleanType;
 import org.mule.metadata.api.model.MetadataType;
@@ -33,11 +32,13 @@ import org.mule.runtime.api.metadata.MetadataKeysContainer;
 import org.mule.runtime.api.metadata.MetadataService;
 import org.mule.runtime.api.metadata.descriptor.ComponentMetadataDescriptor;
 import org.mule.runtime.api.metadata.resolving.MetadataResult;
-import org.junit.Test;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+
+import org.junit.Test;
 
 public class InvokeMetadataTestCase extends SoapFootballExtensionArtifactFunctionalTestCase {
 
@@ -69,7 +70,7 @@ public class InvokeMetadataTestCase extends SoapFootballExtensionArtifactFunctio
     OperationModel model = getMetadata("getTeams");
     ObjectType output = toObjectType(model.getOutput().getType());
     ObjectType body = toObjectType(output.getFields().iterator().next().getValue());
-    assertThat(getTypeId(body).get(), containsString("getTeamsResponse"));
+    assertThat(getId(body).get(), containsString("getTeamsResponse"));
     assertThat(body.getFields(), hasSize(1));
     ObjectType responseType = toObjectType(body.getFields().iterator().next().getValue());
     assertThat(responseType.getFields(), hasSize(1));
@@ -83,7 +84,7 @@ public class InvokeMetadataTestCase extends SoapFootballExtensionArtifactFunctio
     assertThat(headers.getFields(), hasSize(1));
     ObjectType auth = toObjectType(headers.getFields().iterator().next().getValue());
     assertThat(auth.getFields(), hasSize(1));
-    assertThat(getTypeId(auth).get(), containsString("auth"));
+    assertThat(getId(auth).get(), containsString("auth"));
     assertThat(auth.getFields(), hasSize(1));
     assertThat(auth.getFields().iterator().next().getValue(), is(instanceOf(StringType.class)));
   }
