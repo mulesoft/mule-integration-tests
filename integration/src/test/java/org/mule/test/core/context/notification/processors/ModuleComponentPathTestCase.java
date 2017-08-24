@@ -19,6 +19,9 @@ import static org.mule.runtime.api.dsl.DslResolvingContext.getDefault;
 import static org.mule.runtime.config.spring.api.dsl.model.ApplicationModel.FLOW_IDENTIFIER;
 import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.initialiseIfNeeded;
 import static org.mule.runtime.module.extension.api.util.MuleExtensionUtils.createDefaultExtensionManager;
+import io.qameta.allure.junit4.DisplayName;
+import org.junit.Assert;
+import org.junit.Test;
 import org.mule.runtime.api.component.TypedComponentIdentifier;
 import org.mule.runtime.api.dsl.DslResolvingContext;
 import org.mule.runtime.api.meta.model.ExtensionModel;
@@ -41,10 +44,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import io.qameta.allure.junit4.DisplayName;
-import org.junit.Assert;
-import org.junit.Test;
-
 @DisplayName("XML Connectors Path generation")
 public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
 
@@ -60,8 +59,8 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
   }
 
   private static final Optional<String> CONFIG_FILE_NAME = of(BASE_PATH_XML_MODULES + FLOWS_USING_MODULE_SIMPLE_XML);
-  private static final Optional<String> MODULE_SIMPLE_FILE_NAME = of(MODULE_SIMPLE_XML);
-  private static final Optional<String> MODULE_SIMPLE_PROXY_FILE_NAME = of(MODULE_SIMPLE_PROXY_XML);
+  private static final Optional<String> MODULE_SIMPLE_FILE_NAME = of(BASE_PATH_XML_MODULES + MODULE_SIMPLE_XML);
+  private static final Optional<String> MODULE_SIMPLE_PROXY_FILE_NAME = of(BASE_PATH_XML_MODULES + MODULE_SIMPLE_PROXY_XML);
   private static final Optional<TypedComponentIdentifier> FLOW_TYPED_COMPONENT_IDENTIFIER =
       of(builder().identifier(FLOW_IDENTIFIER).type(FLOW).build());
 
