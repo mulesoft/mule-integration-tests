@@ -11,6 +11,7 @@ import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
@@ -18,14 +19,19 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+import static org.mule.functional.junit4.rules.ExpectedError.none;
+import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
 import static org.mule.test.allure.AllureConstants.InterceptonApi.INTERCEPTION_API;
 import static org.mule.test.allure.AllureConstants.InterceptonApi.ComponentInterceptionStory.COMPONENT_INTERCEPTION_STORY;
 import static org.mule.test.heisenberg.extension.HeisenbergConnectionProvider.getActiveConnections;
 import static org.mule.test.heisenberg.extension.HeisenbergConnectionProvider.getConnects;
 import static org.mule.test.heisenberg.extension.HeisenbergConnectionProvider.getDisconnects;
+import static org.mule.test.heisenberg.extension.HeisenbergOperations.CALL_GUS_MESSAGE;
 
+import org.mule.functional.junit4.rules.ExpectedError;
 import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.api.config.custom.ServiceConfigurator;
+import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.el.MuleExpressionLanguage;
 import org.mule.runtime.api.interception.InterceptionAction;
 import org.mule.runtime.api.interception.InterceptionEvent;
@@ -41,10 +47,12 @@ import org.mule.runtime.http.api.HttpService;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.heisenberg.extension.HeisenbergConnection;
 import org.mule.test.heisenberg.extension.HeisenbergExtension;
+import org.mule.test.heisenberg.extension.exception.HeisenbergException;
 import org.mule.test.heisenberg.extension.model.KillParameters;
 import org.mule.test.runner.RunnerDelegateTo;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
@@ -54,7 +62,10 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import javax.inject.Inject;
@@ -67,6 +78,9 @@ import io.qameta.allure.Story;
 @Story(COMPONENT_INTERCEPTION_STORY)
 @RunnerDelegateTo(Parameterized.class)
 public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTestCase {
+
+  @Rule
+  public ExpectedError expectedError = none();
 
   private final boolean mutateEventBefore;
 
@@ -97,6 +111,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
 
       @Override
       public void configure(MuleContext muleContext) throws ConfigurationException {
+        muleContext.getProcessorInterceptorManager().addInterceptorFactory(() -> new AfterWithCallbackInterceptor());
         muleContext.getProcessorInterceptorManager()
             .addInterceptorFactory(new HasInjectedAttributesInterceptorFactory(mutateEventBefore));
         muleContext.getProcessorInterceptorManager().addInterceptorFactory(new EvaluatesExpressionInterceptorFactory());
@@ -114,6 +129,8 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     getActiveConnections().clear();
     HasInjectedAttributesInterceptor.actioner = action -> action.proceed();
     HasInjectedAttributesInterceptor.interceptionParameters.clear();
+    AfterWithCallbackInterceptor.callback = (event, thrown) -> {
+    };
   }
 
   @Description("Logger, flow-ref and splitter components are intercepted in order and the parameters are correctly sent")
@@ -263,6 +280,29 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
   }
 
   @Test
+  @Description("The errorType set by an operation is preserved if an interceptor is applied")
+  public void failingOperationErrorTypePreserved() throws Exception {
+    AtomicBoolean afterCallbackCalled = new AtomicBoolean(false);
+
+    AfterWithCallbackInterceptor.callback = (event, thrown) -> {
+      assertThat(thrown.get(), instanceOf(ConnectionException.class));
+      assertThat(thrown.get().getCause(), instanceOf(HeisenbergException.class));
+      assertThat(thrown.get().getMessage(), endsWith(CALL_GUS_MESSAGE));
+
+      assertThat(event.getError().get().getErrorType(), errorType("HEISENBERG", "CONNECTIVITY"));
+
+      afterCallbackCalled.set(true);
+    };
+
+    expectedError.expectErrorType("HEISENBERG", "CONNECTIVITY");
+    try {
+      flowRunner("callGusFring").run();
+    } finally {
+      assertThat(afterCallbackCalled.get(), is(true));
+    }
+  }
+
+  @Test
   public void expressionsInInterception() throws Exception {
     assertThat(flowRunner("expressionsInInterception").run().getVariables().get("addedVar").getValue(), is("value2"));
   }
@@ -396,6 +436,16 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
       assertThat(expressionEvaluator.evaluate("vars.addedVar", event.asBindingContext()).getValue(), is("value2"));
     }
 
+  }
+
+  public static class AfterWithCallbackInterceptor implements ProcessorInterceptor {
+
+    private static BiConsumer<InterceptionEvent, Optional<Throwable>> callback;
+
+    @Override
+    public void after(ComponentLocation location, InterceptionEvent event, Optional<Throwable> thrown) {
+      callback.accept(event, thrown);
+    }
   }
 
 }
