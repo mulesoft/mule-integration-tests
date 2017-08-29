@@ -20,8 +20,7 @@
     <flow name="full-config-with-mp">
         <async>
             <try>
-                <until-successful maxRetries="2"
-                                  millisBetweenRetries="1000">
+                <until-successful maxRetries="2" millisBetweenRetries="1000">
                     <flow-ref name="target-mp" />
                     <validation:is-true expression="#[mel:regex('(?i).*error').length > 0]"/>
                 </until-successful>
