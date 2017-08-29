@@ -19,18 +19,19 @@
 
     <flow name="full-config-with-mp">
         <async>
-            <until-successful maxRetries="2"
-                              millisBetweenRetries="1000">
-                <flow-ref name="target-mp" />
-                <validation:is-true expression="#[mel:regex('(?i).*error').length > 0]"/>
-            </until-successful>
+            <try>
+                <until-successful maxRetries="2" millisBetweenRetries="1000">
+                    <flow-ref name="target-mp" />
+                    <validation:is-true expression="#[mel:regex('(?i).*error').length > 0]"/>
+                </until-successful>
+                <error-handler>
+                    <on-error-continue>
+                        <processor ref="dlq-mp"/>
+                    </on-error-continue>
+                </error-handler>
+            </try>
         </async>
         <set-payload value="#['ACK']"/>
-        <error-handler>
-            <on-error-continue>
-                <processor ref="dlq-mp"/>
-            </on-error-continue>
-        </error-handler>
     </flow>
 
     <flow name="retry-endpoint-config">
