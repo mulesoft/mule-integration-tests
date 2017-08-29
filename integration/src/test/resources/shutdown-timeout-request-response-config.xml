@@ -18,9 +18,9 @@
     <flow name="scriptComponentFlow">
         <http:listener path="scriptComponent" config-ref="listenerConfig"/>
         <custom-processor class="org.mule.shutdown.AbstractShutdownTimeoutRequestResponseTestCase$BlockMessageProcessor"/>
-        <script:component>
-            <script:script engine="groovy">return &quot;scriptComponentResponse&quot;;</script:script>
-        </script:component>
+        <script:execute engine="groovy">
+            <script:text>return &quot;scriptComponentResponse&quot;;</script:text>
+        </script:execute>
     </flow>
 
     <flow name="expressionTransformerFlow">

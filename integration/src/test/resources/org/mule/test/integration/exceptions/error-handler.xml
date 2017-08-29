@@ -38,11 +38,11 @@
                 <append-string-transformer message=" catch-8"/>
             </on-error-continue>
             <on-error-continue when="#[mel:exception.causeMatches('(.*?)FinishesWithSomethingElse')]">
-		        <script:component>
-		            <script:script engine="groovy">
+		        <script:execute engine="groovy">
+		            <script:text>
 		                return "$payload groovified"
-		            </script:script>
-		        </script:component>
+		            </script:text>
+		        </script:execute>
             </on-error-continue>
             <on-error-continue when="#[mel:exception.causeMatches('.*') &amp;&amp; !exception.causedBy(java.lang.ArithmeticException) &amp;&amp; !exception.causedBy(org.mule.runtime.core.api.registry.ResolverException)]">
                 <append-string-transformer message=" catch-9"/>

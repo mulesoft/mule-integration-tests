@@ -14,27 +14,19 @@
         <on-error-propagate/>
     </error-handler>
 
-    <script:component name="exceptionTransformer">
-        <script:script engine="groovy">
-            log.info("Throwing exception...");
-            throw new
-            org.mule.runtime.core.api.transformer.TransformerException(org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage("dummyException"));
-        </script:script>
-    </script:component>
-
-    <script:script engine="groovy" name="throwException">
-        log.info("Throwing exception...");
-        throw new
-        org.mule.runtime.core.api.DefaultMuleException(org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage("dummyException"));
-    </script:script>
-
     <flow name="Transformer">
-        <transformer ref="exceptionTransformer"/>
+        <custom-transformer class="org.mule.test.integration.exceptions.SynchronousMessagingExceptionStrategyTestCase$ThrowTransformer"/>
         <logger/>
     </flow>
 
     <flow name="Component">
-        <script:component script-ref="throwException"/>
+        <script:execute engine="groovy">
+            <script:text>
+                log.info("Throwing exception...");
+                throw new
+                org.mule.runtime.core.api.transformer.TransformerException(org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage("dummyException"));
+            </script:text>
+        </script:execute>
     </flow>
 
     <flow name="ProcessorInboundRouter">

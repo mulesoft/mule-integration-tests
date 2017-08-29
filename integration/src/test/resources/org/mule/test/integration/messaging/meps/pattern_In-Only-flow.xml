@@ -14,13 +14,13 @@
 
 
     <flow name="In-Only-Service">
-        <script:component>
-            <script:script engine="groovy">
+        <script:execute engine="groovy">
+            <script:text>
                 import org.mule.functional.api.notification.FunctionalTestNotification
 
                 _muleNotificationDispatcher.dispatch(new FunctionalTestNotification(message, flow, payload, FunctionalTestNotification.EVENT_RECEIVED));
-            </script:script>
-        </script:component>
+            </script:text>
+        </script:execute>
     </flow>
     
     <!--// END SNIPPET: full-config -->

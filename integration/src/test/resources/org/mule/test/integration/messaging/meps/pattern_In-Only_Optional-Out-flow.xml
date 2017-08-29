@@ -15,14 +15,14 @@
     </description>
 
     <flow name="In-Only_Optional-Out--Service">
-        <script:component>
-            <script:script engine="groovy">
+        <script:execute engine="groovy">
+            <script:text>
                 if (vars.foo != null)
                     return "foo header received"
                 else
                     return null
-            </script:script>
-        </script:component>
+            </script:text>
+        </script:execute>
         
         <async>
             <choice>
