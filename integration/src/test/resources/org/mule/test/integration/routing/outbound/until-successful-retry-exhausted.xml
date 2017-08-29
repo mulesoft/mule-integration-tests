@@ -10,9 +10,14 @@
 
 	<flow name="retryExhausted">
 		<async>
-			<until-successful maxRetries="1" millisBetweenRetries="1000">
-				<test:processor throwException="true"/>
-			</until-successful>
+			<try>
+				<until-successful maxRetries="1" millisBetweenRetries="1000">
+					<test:processor throwException="true"/>
+				</until-successful>
+				<error-handler>
+					<on-error-continue/>
+				</error-handler>
+			</try>
 		</async>
 	</flow>
 </mule>
