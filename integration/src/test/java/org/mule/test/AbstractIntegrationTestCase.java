@@ -18,7 +18,14 @@ import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
  *
  * @since 4.0
  */
-@ArtifactClassLoaderRunnerConfig(sharedRuntimeLibs = {"org.mule.tests:mule-tests-functional"},
+@ArtifactClassLoaderRunnerConfig(sharedRuntimeLibs = {
+    "org.mule.tests:mule-tests-functional",
+    "org.springframework:spring-core",
+    "org.springframework:spring-beans",
+    "org.springframework:spring-context",
+    "org.springframework.security:spring-security-core",
+    "org.springframework.security:spring-security-config"
+},
     extraPrivilegedArtifacts = {"org.mule.tests:mule-tests-parsers-plugin"})
 public abstract class AbstractIntegrationTestCase extends MuleArtifactFunctionalTestCase {
 

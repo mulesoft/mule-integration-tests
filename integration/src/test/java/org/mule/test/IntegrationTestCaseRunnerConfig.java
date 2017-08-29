@@ -9,7 +9,14 @@ package org.mule.test;
 
 import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
 
-@ArtifactClassLoaderRunnerConfig(sharedRuntimeLibs = {"org.mule.tests:mule-tests-unit"},
+@ArtifactClassLoaderRunnerConfig(sharedRuntimeLibs = {
+    "org.mule.tests:mule-tests-unit",
+    "org.springframework:spring-core",
+    "org.springframework:spring-beans",
+    "org.springframework:spring-context",
+    "org.springframework.security:spring-security-core",
+    "org.springframework.security:spring-security-config"
+},
     extraPrivilegedArtifacts = {"org.mule.tests:mule-tests-parsers-plugin"})
 public interface IntegrationTestCaseRunnerConfig {
 

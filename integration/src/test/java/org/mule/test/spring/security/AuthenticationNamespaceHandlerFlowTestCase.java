@@ -6,13 +6,12 @@
  */
 package org.mule.test.spring.security;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.mule.runtime.core.api.config.MuleProperties.OBJECT_SECURITY_MANAGER;
-
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.mule.runtime.core.api.config.MuleProperties.OBJECT_SECURITY_MANAGER;
 
 import org.mule.extension.spring.api.security.PreAuthenticatedAuthenticationProvider;
 import org.mule.extension.spring.api.security.SpringProviderAdapter;
@@ -23,13 +22,11 @@ import org.mule.runtime.core.api.security.SecurityProvider;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
 import java.util.Collection;
 
-@Ignore("MULE-13203: This test uses app's spring-security lib which conflicts with the ine included in spring-module")
 public class AuthenticationNamespaceHandlerFlowTestCase extends AbstractIntegrationTestCase {
 
   @Rule

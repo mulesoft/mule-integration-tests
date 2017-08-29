@@ -23,13 +23,12 @@ import org.mule.runtime.core.api.security.CryptoFailureException;
 import org.mule.runtime.core.api.security.EncryptionStrategyNotFoundException;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import org.junit.Test;
+import org.springframework.security.authentication.BadCredentialsException;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.junit.Ignore;
-import org.junit.Test;
-import org.springframework.security.authentication.BadCredentialsException;
 
 /**
  * See MULE-4916: spring beans inside a security filter
@@ -46,7 +45,6 @@ public class CustomSecurityFilterTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  @Ignore("MULE-13203: This test uses app's spring-security lib which conflicts with the ine included in spring-module")
   public void testOutboundAutenticationSend() throws Exception {
     Map<String, Serializable> props = new HashMap<>();
     props.put("username", "ross");
