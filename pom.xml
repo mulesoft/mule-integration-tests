@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.mule.runtime</groupId>
     <artifactId>mule</artifactId>
-    <version>4.0.0-rc.darkseid-SNAPSHOT</version>
+    <version>4.0.0-rc.darkseid</version>
   </parent>
   <groupId>org.mule.tests</groupId>
   <artifactId>mule-extensions-integration-tests</artifactId>
@@ -24,26 +24,26 @@
   </modules>
 
   <properties>
-    <muleSchedulerServiceTestVersion>1.0.0-rc.darkseid-SNAPSHOT</muleSchedulerServiceTestVersion>
-    <muleHttpServiceTestVersion>1.0.0-rc.darkseid-SNAPSHOT</muleHttpServiceTestVersion>
-    <muleOAuthServiceTestVersion>1.0.0-rc.darkseid-SNAPSHOT</muleOAuthServiceTestVersion>
-    <muleSoapServiceTestVersion>1.0.0-rc.darkseid-SNAPSHOT</muleSoapServiceTestVersion>
-    <muleExtensionTestSoapTestVersion>1.0.0-rc.darkseid-SNAPSHOT</muleExtensionTestSoapTestVersion>
+    <muleSchedulerServiceTestVersion>1.0.0-rc.darkseid</muleSchedulerServiceTestVersion>
+    <muleHttpServiceTestVersion>1.0.0-rc.darkseid</muleHttpServiceTestVersion>
+    <muleOAuthServiceTestVersion>1.0.0-rc.darkseid</muleOAuthServiceTestVersion>
+    <muleSoapServiceTestVersion>1.0.0-rc.darkseid</muleSoapServiceTestVersion>
+    <muleExtensionTestSoapTestVersion>1.0.0-rc.darkseid</muleExtensionTestSoapTestVersion>
 
     <muleSpringModuleVersion>1.0.0-SNAPSHOT</muleSpringModuleVersion>
-    <muleValidationModuleTestVersion>0.9.0-rc.darkseid-SNAPSHOT</muleValidationModuleTestVersion>
-    <muleScriptingModuleVersion>0.9.0-rc.darkseid-SNAPSHOT</muleScriptingModuleVersion>
-    <muleFileCommonsTestVersion>0.9.0-rc.darkseid-SNAPSHOT</muleFileCommonsTestVersion>
+    <muleValidationModuleTestVersion>0.9.0-rc.darkseid</muleValidationModuleTestVersion>
+    <muleScriptingModuleVersion>0.9.0-rc.darkseid</muleScriptingModuleVersion>
+    <muleFileCommonsTestVersion>0.9.0-rc.darkseid</muleFileCommonsTestVersion>
     
-    <muleHttpConnectorTestVersion>0.9.0-rc.darkseid-SNAPSHOT</muleHttpConnectorTestVersion>
-    <muleDbConnectorTestVersion>0.9.0-rc.darkseid-SNAPSHOT</muleDbConnectorTestVersion>
-    <muleFtpConnectorTestVersion>0.9.0-rc.darkseid-SNAPSHOT</muleFtpConnectorTestVersion>
-    <muleFileConnectorTestVersion>0.9.0-rc.darkseid-SNAPSHOT</muleFileConnectorTestVersion>
-    <muleJmsConnectorTestVersion>0.9.0-rc.darkseid-SNAPSHOT</muleJmsConnectorTestVersion>
-    <muleWscConnectorTestVersion>0.9.0-rc.darkseid-SNAPSHOT</muleWscConnectorTestVersion>
-    <muleOauthModuleTestVersion>0.9.0-rc.darkseid-SNAPSHOT</muleOauthModuleTestVersion>
-    <muleSocketsConnectorTestVersion>0.9.0-rc.darkseid-SNAPSHOT</muleSocketsConnectorTestVersion>
-    <muleSpringModuleTestVersion>0.9.0-rc.darkseid-SNAPSHOT</muleSpringModuleTestVersion>
+    <muleHttpConnectorTestVersion>0.9.0-rc.darkseid</muleHttpConnectorTestVersion>
+    <muleDbConnectorTestVersion>0.9.0-rc.darkseid</muleDbConnectorTestVersion>
+    <muleFtpConnectorTestVersion>0.9.0-rc.darkseid</muleFtpConnectorTestVersion>
+    <muleFileConnectorTestVersion>0.9.0-rc.darkseid</muleFileConnectorTestVersion>
+    <muleJmsConnectorTestVersion>0.9.0-rc.darkseid</muleJmsConnectorTestVersion>
+    <muleWscConnectorTestVersion>0.9.0-rc.darkseid</muleWscConnectorTestVersion>
+    <muleOauthModuleTestVersion>0.9.0-rc.darkseid</muleOauthModuleTestVersion>
+    <muleSocketsConnectorTestVersion>0.9.0-rc.darkseid</muleSocketsConnectorTestVersion>
+    <muleSpringModuleTestVersion>0.9.0-rc.darkseid</muleSpringModuleTestVersion>
   </properties>
 
   <build>
