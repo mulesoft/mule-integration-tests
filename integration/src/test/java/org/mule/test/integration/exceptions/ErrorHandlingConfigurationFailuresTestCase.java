@@ -199,6 +199,7 @@ public class ErrorHandlingConfigurationFailuresTestCase extends AbstractMuleTest
     MuleContextFactory muleContextFactory = new DefaultMuleContextFactory();
     List<ConfigurationBuilder> builders = new ArrayList<>();
     builders.add(new AbstractConfigurationBuilder() {
+
       @Override
       protected void doConfigure(MuleContext muleContext) throws Exception {
         DefaultExtensionManager defaultExtensionManager = new DefaultExtensionManager();
