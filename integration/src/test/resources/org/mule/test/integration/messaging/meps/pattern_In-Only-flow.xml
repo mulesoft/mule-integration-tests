@@ -15,11 +15,11 @@
 
     <flow name="In-Only-Service">
         <script:execute engine="groovy">
-            <script:text>
+            <script:code>
                 import org.mule.functional.api.notification.FunctionalTestNotification
 
                 _muleNotificationDispatcher.dispatch(new FunctionalTestNotification(message, flow, payload, FunctionalTestNotification.EVENT_RECEIVED));
-            </script:text>
+            </script:code>
         </script:execute>
     </flow>
     

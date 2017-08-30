@@ -18,12 +18,12 @@
 
     <flow name="In-Only_Out-Only-Service">
         <script:execute engine="groovy">
-            <script:text>
+            <script:code>
                 if (vars.foo != null)
                     return "foo header received"
                 else
                     return "foo header not received"
-            </script:text>
+            </script:code>
         </script:execute>
         
         <async>

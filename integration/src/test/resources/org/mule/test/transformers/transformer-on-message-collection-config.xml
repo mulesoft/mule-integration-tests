@@ -10,9 +10,9 @@
         <splitter/>
         <collection-aggregator/>
         <scripting:execute engine="groovy">
-            <scripting:text>
+            <scripting:code>
                 return "foo";
-            </scripting:text>
+            </scripting:code>
         </scripting:execute>
     </flow>
 </mule>

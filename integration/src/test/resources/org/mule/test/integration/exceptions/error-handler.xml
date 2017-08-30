@@ -39,9 +39,9 @@
             </on-error-continue>
             <on-error-continue when="#[mel:exception.causeMatches('(.*?)FinishesWithSomethingElse')]">
 		        <script:execute engine="groovy">
-		            <script:text>
+		            <script:code>
 		                return "$payload groovified"
-		            </script:text>
+		            </script:code>
 		        </script:execute>
             </on-error-continue>
             <on-error-continue when="#[mel:exception.causeMatches('.*') &amp;&amp; !exception.causedBy(java.lang.ArithmeticException) &amp;&amp; !exception.causedBy(org.mule.runtime.core.api.registry.ResolverException)]">

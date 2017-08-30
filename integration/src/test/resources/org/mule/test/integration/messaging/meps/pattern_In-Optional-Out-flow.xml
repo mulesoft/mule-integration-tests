@@ -26,12 +26,12 @@
         <http:listener config-ref="listenerConfig" path="*" />
 
         <script:execute engine="groovy">
-            <script:text>
+            <script:code>
                 if (message.getAttributes().getValue().getHeaders().get("foo"))
                     return "foo header received"
                 else
                     return null
-            </script:text>
+            </script:code>
         </script:execute>
     
     </flow>

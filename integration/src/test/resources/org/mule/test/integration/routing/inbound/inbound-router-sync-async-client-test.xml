@@ -12,7 +12,7 @@
 
     <sub-flow name="testComponent">
         <scripting:execute engine="groovy">
-            <scripting:text>
+            <scripting:code>
                 if(vars.messageType.equals("sync"))
                 {
                     return "OK"
@@ -23,7 +23,7 @@
                 }
 
                 return null
-            </scripting:text>
+            </scripting:code>
         </scripting:execute>
     </sub-flow>
 

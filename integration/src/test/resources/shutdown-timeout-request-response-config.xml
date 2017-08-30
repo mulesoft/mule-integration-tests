@@ -19,7 +19,7 @@
         <http:listener path="scriptComponent" config-ref="listenerConfig"/>
         <custom-processor class="org.mule.shutdown.AbstractShutdownTimeoutRequestResponseTestCase$BlockMessageProcessor"/>
         <script:execute engine="groovy">
-            <script:text>return &quot;scriptComponentResponse&quot;;</script:text>
+            <script:code>return &quot;scriptComponentResponse&quot;;</script:code>
         </script:execute>
     </flow>
 

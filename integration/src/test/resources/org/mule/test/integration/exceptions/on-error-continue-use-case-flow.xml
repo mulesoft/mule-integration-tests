@@ -65,9 +65,9 @@
       <error-handler>
         <on-error-continue>
             <script:execute engine="groovy">
-                <script:text>
+                <script:code>
                     return "$payload Caught"
-                </script:text>
+                </script:code>
             </script:execute>
         </on-error-continue>
        </error-handler>
@@ -80,9 +80,9 @@
             <on-error-continue>
                 <append-string-transformer message=" apt2"/>
                 <script:execute engine="groovy">
-                    <script:text>
+                    <script:code>
                         return "$payload groovified"
-                    </script:text>
+                    </script:code>
                 </script:execute>
             </on-error-continue>
         </error-handler>

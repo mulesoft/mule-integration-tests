@@ -21,11 +21,11 @@
 
     <flow name="ScriptComponentException">
         <script:execute engine="groovy">
-            <script:text>
+            <script:code>
                 log.info("Throwing exception...");
                 throw new
                 org.mule.runtime.core.api.transformer.TransformerException(org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage("dummyException"));
-            </script:text>
+            </script:code>
         </script:execute>
     </flow>
 

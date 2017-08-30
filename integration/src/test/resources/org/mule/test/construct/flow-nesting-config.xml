@@ -12,9 +12,9 @@
         <choice>
             <when expression="mel:payload is org.mule.tck.testmodels.fruit.Apple">
                 <script:execute engine="groovy">
-                    <script:text>
+                    <script:code>
                         return ""
-                    </script:text>
+                    </script:code>
                 </script:execute>
                 <append-string-transformer message="A"/>
                 <choice>

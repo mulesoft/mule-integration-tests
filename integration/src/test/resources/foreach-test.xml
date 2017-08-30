@@ -22,10 +22,10 @@
             <test:queue name="out"/>
         </foreach>
         <script:execute engine="groovy">
-            <script:text>
+            <script:code>
             	payload.add("added after foreach")
             	result = payload
-            </script:text>
+            </script:code>
         </script:execute>
     </flow>
 
@@ -85,13 +85,13 @@
         <test:assert expression="#[mel:payload.order.items.size() == 2]" />
         <foreach collection="#[mel:payload.order.items]">
             <script:execute engine="groovy">
-                <script:text>
+                <script:code>
                     <![CDATA[
                     def root = vars.rootMessage.payload.value
                     def key = "key3-" + vars.counter
                     root.order.items << [(key) : "je"]
                     ]]>
-                </script:text>
+                </script:code>
             </script:execute>
         </foreach>
         <test:assert expression="#[mel:payload is Map]" />
@@ -102,11 +102,11 @@
         <set-variable variableName="loops" value="0" />
         <foreach>
             <script:execute  engine="groovy">
-                <script:text>
+                <script:code>
                     def loops = vars.loops.toInteger()
                     loops++
                     vars['loops'] = loops + ""
-                </script:text>
+                </script:code>
             </script:execute>
         </foreach>
         <test:assert expression="#[vars.loops == '3']" />
