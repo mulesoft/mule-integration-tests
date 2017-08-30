@@ -30,7 +30,7 @@
     <muleSoapServiceTestVersion>1.0.0-rc.darkseid</muleSoapServiceTestVersion>
     <muleExtensionTestSoapTestVersion>1.0.0-rc.darkseid</muleExtensionTestSoapTestVersion>
 
-    <muleSpringModuleVersion>1.0.0-SNAPSHOT</muleSpringModuleVersion>
+    <muleSpringModuleVersion>0.9.0-rc.darkseid</muleSpringModuleVersion>
     <muleValidationModuleTestVersion>0.9.0-rc.darkseid</muleValidationModuleTestVersion>
     <muleScriptingModuleVersion>0.9.0-rc.darkseid</muleScriptingModuleVersion>
     <muleFileCommonsTestVersion>0.9.0-rc.darkseid</muleFileCommonsTestVersion>
