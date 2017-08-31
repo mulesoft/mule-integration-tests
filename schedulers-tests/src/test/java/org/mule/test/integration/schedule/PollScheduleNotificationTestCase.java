@@ -14,14 +14,14 @@ import org.mule.tck.probe.PollingProber;
 import org.mule.tck.probe.Probe;
 import org.mule.tck.probe.Prober;
 
+import org.junit.Test;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
-
 public class PollScheduleNotificationTestCase extends MuleArtifactFunctionalTestCase {
 
-  private Prober prober = new PollingProber(5000, 100l);
+  private Prober prober = new PollingProber(RECEIVE_TIMEOUT, 100l);
 
   @Override
   protected String getConfigFile() {

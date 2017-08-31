@@ -7,17 +7,20 @@
 package org.mule.test.module.scheduler.cron;
 
 
-import static junit.framework.Assert.assertEquals;
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
+import static org.junit.Assert.assertThat;
 
 import org.mule.functional.api.component.EventCallback;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.MuleContext;
+import org.mule.tck.probe.JUnitLambdaProbe;
+import org.mule.tck.probe.PollingProber;
+
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.junit.Test;
 
 /**
  * <p>
@@ -26,7 +29,7 @@ import org.junit.Test;
  */
 public class SynchronousSchedulerTestCase extends MuleArtifactFunctionalTestCase {
 
-  private static List<String> foo = new ArrayList<String>();
+  private static List<String> foo = new ArrayList<>();
 
   @Override
   protected String getConfigFile() {
@@ -35,9 +38,10 @@ public class SynchronousSchedulerTestCase extends MuleArtifactFunctionalTestCase
 
   @Test
   public void test() throws InterruptedException {
-    Thread.sleep(6000);
-
-    assertEquals(1, foo.size());
+    new PollingProber(7000, 100).check(new JUnitLambdaProbe(() -> {
+      assertThat(foo, hasSize(1));
+      return true;
+    }));
   }
 
   public static class Foo implements EventCallback {

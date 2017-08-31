@@ -7,19 +7,21 @@
 
 package org.mule.test.module.scheduler.cron;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+
 import org.mule.functional.api.component.EventCallback;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.util.concurrent.Latch;
+import org.mule.tck.probe.JUnitLambdaProbe;
 import org.mule.tck.probe.PollingProber;
-import org.mule.tck.probe.Probe;
+
+import org.junit.Before;
+import org.junit.Test;
 
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-
-import org.junit.Test;
 
 public class MultipleSchedulersTestCase extends MuleArtifactFunctionalTestCase {
 
@@ -32,28 +34,22 @@ public class MultipleSchedulersTestCase extends MuleArtifactFunctionalTestCase {
     return "multiple-schedulers-config.xml";
   }
 
+  @Before
+  public void before() {
+    counter = 0;
+  }
+
   @Test
   public void schedulersAreNotSharedAcrossPollers() throws Exception {
-    firstRequest.await(getTestTimeoutSecs(), TimeUnit.SECONDS);
+    firstRequest.await(getTestTimeoutSecs(), SECONDS);
 
     Flow poll1 = (Flow) muleContext.getRegistry().lookupFlowConstruct("poll1");
     poll1.stop();
 
     stoppedFlowLatch.countDown();
 
-    PollingProber pollingProber = new PollingProber(5000, 100);
-    pollingProber.check(new Probe() {
-
-      @Override
-      public boolean isSatisfied() {
-        return counter == 2;
-      }
-
-      @Override
-      public String describeFailure() {
-        return "Poll2 was not executed after stopping Poll1 flow";
-      }
-    });
+    new PollingProber(RECEIVE_TIMEOUT, 100)
+        .check(new JUnitLambdaProbe(() -> counter == 2, () -> "Poll2 was not executed after stopping Poll1 flow"));
 
   }
 

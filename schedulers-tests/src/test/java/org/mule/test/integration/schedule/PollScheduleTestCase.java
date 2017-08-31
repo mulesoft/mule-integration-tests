@@ -7,7 +7,9 @@
 package org.mule.test.integration.schedule;
 
 
+import static java.lang.Thread.sleep;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertThat;
 
 import org.mule.functional.api.component.EventCallback;
@@ -23,11 +25,11 @@ import org.mule.tck.probe.JUnitLambdaProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.tck.probe.Probe;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.ClassRule;
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This is a test for poll with schedulers. It validates that the polls can be executed, stopped, run.
@@ -73,9 +75,9 @@ public class PollScheduleTestCase extends MuleArtifactFunctionalTestCase {
 
     int fooElementsAfterStopping = foo.size();
 
-    waitForPollElements();
+    sleep(2000);
 
-    assertThat(foo.size(), is(fooElementsAfterStopping));
+    assertThat(foo, hasSize(fooElementsAfterStopping));
 
     startSchedulers();
     runSchedulersOnce();
@@ -86,12 +88,6 @@ public class PollScheduleTestCase extends MuleArtifactFunctionalTestCase {
       return true;
     }));
   }
-
-  private void waitForPollElements() throws InterruptedException {
-    Thread.sleep(2000);
-  }
-
-
 
   private boolean checkCollectionValues(List<String> coll, String value) {
     for (String s : coll) {

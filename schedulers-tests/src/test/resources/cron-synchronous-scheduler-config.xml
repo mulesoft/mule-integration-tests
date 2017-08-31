@@ -10,7 +10,7 @@
     <flow name="pollfoo">
         <scheduler>
             <scheduling-strategy>
-                <cron expression="0/1 * * * * ?"/>
+                <cron expression="0/2 * * * * ?"/>
             </scheduling-strategy>
         </scheduler>
         <set-payload value="testString"/>
