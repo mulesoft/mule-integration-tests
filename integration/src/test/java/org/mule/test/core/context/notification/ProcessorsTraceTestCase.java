@@ -38,7 +38,6 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
-@Ignore("MULE-12569: Fix tests")
 public class ProcessorsTraceTestCase extends AbstractIntegrationTestCase {
 
   public static class ProcessorsTraceAsserter implements Processor {
@@ -88,7 +87,7 @@ public class ProcessorsTraceTestCase extends AbstractIntegrationTestCase {
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert, not(nullValue()));
 
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert,
-               hasExecutedProcessors("/flowStatic/processors/0", "/flow/processors/0"));
+               hasExecutedProcessors("flowStatic/processors/0", "flow/processors/0"));
   }
 
   @Test
@@ -98,7 +97,7 @@ public class ProcessorsTraceTestCase extends AbstractIntegrationTestCase {
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert, not(nullValue()));
 
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert,
-               hasExecutedProcessors("/subFlowStatic/processors/0", "/subFlowStatic/processors/0/subFlow/subprocessors/0"));
+               hasExecutedProcessors("subFlowStatic/processors/0", "subFlow/processors/0"));
   }
 
   @Test
@@ -108,7 +107,7 @@ public class ProcessorsTraceTestCase extends AbstractIntegrationTestCase {
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert, not(nullValue()));
 
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert,
-               hasExecutedProcessors("/flowDynamic/processors/0", "/flow/processors/0"));
+               hasExecutedProcessors("flowDynamic/processors/0", "flow/processors/0"));
   }
 
   @Test
@@ -118,7 +117,7 @@ public class ProcessorsTraceTestCase extends AbstractIntegrationTestCase {
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert, not(nullValue()));
 
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert,
-               hasExecutedProcessors("/subFlowDynamic/processors/0", "/subFlowDynamic/processors/0/subFlow/subprocessors/0"));
+               hasExecutedProcessors("subFlowDynamic/processors/0", "subFlow/processors/0"));
   }
 
   @Test
@@ -128,8 +127,8 @@ public class ProcessorsTraceTestCase extends AbstractIntegrationTestCase {
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert, not(nullValue()));
 
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert,
-               hasExecutedProcessors("/secondFlowStatic/processors/0", "/flow/processors/0", "/secondFlowStatic/processors/1",
-                                     "/flow/processors/0"));
+               hasExecutedProcessors("secondFlowStatic/processors/0", "flow/processors/0", "secondFlowStatic/processors/1",
+                                     "flow/processors/0"));
   }
 
   @Test
@@ -139,10 +138,10 @@ public class ProcessorsTraceTestCase extends AbstractIntegrationTestCase {
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert, not(nullValue()));
 
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert,
-               hasExecutedProcessors("/secondSubFlowStatic/processors/0",
-                                     "/secondSubFlowStatic/processors/0/subFlow/subprocessors/0",
-                                     "/secondSubFlowStatic/processors/1",
-                                     "/secondSubFlowStatic/processors/1/subFlow/subprocessors/0"));
+               hasExecutedProcessors("secondSubFlowStatic/processors/0",
+                                     "subFlow/processors/0",
+                                     "secondSubFlowStatic/processors/1",
+                                     "subFlow/processors/0"));
   }
 
   @Test
@@ -152,8 +151,8 @@ public class ProcessorsTraceTestCase extends AbstractIntegrationTestCase {
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert, not(nullValue()));
 
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert,
-               hasExecutedProcessors("/secondFlowDynamic/processors/0", "/flow/processors/0", "/secondFlowDynamic/processors/1",
-                                     "/flow/processors/0"));
+               hasExecutedProcessors("secondFlowDynamic/processors/0", "flow/processors/0", "secondFlowDynamic/processors/1",
+                                     "flow/processors/0"));
   }
 
   @Test
@@ -163,10 +162,10 @@ public class ProcessorsTraceTestCase extends AbstractIntegrationTestCase {
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert, not(nullValue()));
 
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert,
-               hasExecutedProcessors("/secondSubFlowDynamic/processors/0",
-                                     "/secondSubFlowDynamic/processors/0/subFlow/subprocessors/0",
-                                     "/secondSubFlowDynamic/processors/1",
-                                     "/secondSubFlowDynamic/processors/1/subFlow/subprocessors/0"));
+               hasExecutedProcessors("secondSubFlowDynamic/processors/0",
+                                     "subFlow/processors/0",
+                                     "secondSubFlowDynamic/processors/1",
+                                     "subFlow/processors/0"));
   }
 
   @Test
@@ -178,8 +177,8 @@ public class ProcessorsTraceTestCase extends AbstractIntegrationTestCase {
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert, not(nullValue()));
 
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert,
-               hasExecutedProcessors("/flowStaticWithAsync/processors/0", "/flowStaticWithAsync/processors/0/0",
-                                     "/flowInAsync/processors/0"));
+               hasExecutedProcessors("flowStaticWithAsync/processors/0", "flowStaticWithAsync/processors/0/processors/0",
+                                     "flowInAsync/processors/0"));
   }
 
   @Test
@@ -191,8 +190,8 @@ public class ProcessorsTraceTestCase extends AbstractIntegrationTestCase {
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert, not(nullValue()));
 
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert,
-               hasExecutedProcessors("/subFlowStaticWithAsync/processors/0", "/subFlowStaticWithAsync/processors/0/0",
-                                     "/subFlowStaticWithAsync/processors/0/0/subFlowInAsync/subprocessors/0"));
+               hasExecutedProcessors("subFlowStaticWithAsync/processors/0", "subFlowStaticWithAsync/processors/0/processors/0",
+                                     "subFlowInAsync/processors/0"));
   }
 
   @Test
@@ -204,8 +203,8 @@ public class ProcessorsTraceTestCase extends AbstractIntegrationTestCase {
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert, not(nullValue()));
 
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert,
-               hasExecutedProcessors("/flowDynamicWithAsync/processors/0", "/flowDynamicWithAsync/processors/0/0",
-                                     "/flowInAsync/processors/0"));
+               hasExecutedProcessors("flowDynamicWithAsync/processors/0", "flowDynamicWithAsync/processors/0/processors/0",
+                                     "flowInAsync/processors/0"));
   }
 
   @Test
@@ -217,8 +216,8 @@ public class ProcessorsTraceTestCase extends AbstractIntegrationTestCase {
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert, not(nullValue()));
 
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert,
-               hasExecutedProcessors("/subFlowDynamicWithAsync/processors/0", "/subFlowDynamicWithAsync/processors/0/0",
-                                     "/subFlowDynamicWithAsync/processors/0/0/subFlowInAsync/subprocessors/0"));
+               hasExecutedProcessors("subFlowDynamicWithAsync/processors/0", "subFlowDynamicWithAsync/processors/0/processors/0",
+                                     "subFlowInAsync/processors/0"));
   }
 
   @Test
@@ -228,8 +227,8 @@ public class ProcessorsTraceTestCase extends AbstractIntegrationTestCase {
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert, not(nullValue()));
 
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert,
-               hasExecutedProcessors("/flowStaticWithEnricher/processors/0", "/flowStaticWithEnricher/processors/0/0",
-                                     "/flow/processors/0"));
+               hasExecutedProcessors("flowStaticWithEnricher/processors/0", "flowStaticWithEnricher/processors/0/processors/0",
+                                     "flow/processors/0"));
   }
 
   @Test
@@ -239,8 +238,9 @@ public class ProcessorsTraceTestCase extends AbstractIntegrationTestCase {
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert, not(nullValue()));
 
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert,
-               hasExecutedProcessors("/subFlowStaticWithEnricher/processors/0", "/subFlowStaticWithEnricher/processors/0/0",
-                                     "/subFlowStaticWithEnricher/processors/0/0/subFlow/subprocessors/0"));
+               hasExecutedProcessors("subFlowStaticWithEnricher/processors/0",
+                                     "subFlowStaticWithEnricher/processors/0/processors/0",
+                                     "subFlow/processors/0"));
   }
 
   @Test
@@ -250,8 +250,8 @@ public class ProcessorsTraceTestCase extends AbstractIntegrationTestCase {
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert, not(nullValue()));
 
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert,
-               hasExecutedProcessors("/flowDynamicWithEnricher/processors/0", "/flowDynamicWithEnricher/processors/0/0",
-                                     "/flow/processors/0"));
+               hasExecutedProcessors("flowDynamicWithEnricher/processors/0", "flowDynamicWithEnricher/processors/0/processors/0",
+                                     "flow/processors/0"));
   }
 
   @Test
@@ -261,8 +261,9 @@ public class ProcessorsTraceTestCase extends AbstractIntegrationTestCase {
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert, not(nullValue()));
 
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert,
-               hasExecutedProcessors("/subFlowDynamicWithEnricher/processors/0", "/subFlowDynamicWithEnricher/processors/0/0",
-                                     "/subFlowDynamicWithEnricher/processors/0/0/subFlow/subprocessors/0"));
+               hasExecutedProcessors("subFlowDynamicWithEnricher/processors/0",
+                                     "subFlowDynamicWithEnricher/processors/0/processors/0",
+                                     "subFlow/processors/0"));
   }
 
   @Test
@@ -272,8 +273,9 @@ public class ProcessorsTraceTestCase extends AbstractIntegrationTestCase {
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert, not(nullValue()));
 
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert,
-               hasExecutedProcessors("/flowStaticWithChoice/processors/0", "/flowStaticWithChoice/processors/0/0/0",
-                                     "/flow/processors/0"));
+               hasExecutedProcessors("flowStaticWithChoice/processors/0",
+                                     "flowStaticWithChoice/processors/0/route/0/processors/0",
+                                     "flow/processors/0"));
   }
 
   @Test
@@ -283,8 +285,9 @@ public class ProcessorsTraceTestCase extends AbstractIntegrationTestCase {
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert, not(nullValue()));
 
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert,
-               hasExecutedProcessors("/subFlowStaticWithChoice/processors/0", "/subFlowStaticWithChoice/processors/0/0/0",
-                                     "/subFlowStaticWithChoice/processors/0/0/0/subFlow/subprocessors/0"));
+               hasExecutedProcessors("subFlowStaticWithChoice/processors/0",
+                                     "subFlowStaticWithChoice/processors/0/route/0/processors/0",
+                                     "subFlow/processors/0"));
   }
 
   @Test
@@ -294,8 +297,9 @@ public class ProcessorsTraceTestCase extends AbstractIntegrationTestCase {
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert, not(nullValue()));
 
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert,
-               hasExecutedProcessors("/flowDynamicWithChoice/processors/0", "/flowDynamicWithChoice/processors/0/0/0",
-                                     "/flow/processors/0"));
+               hasExecutedProcessors("flowDynamicWithChoice/processors/0",
+                                     "flowDynamicWithChoice/processors/0/route/0/processors/0",
+                                     "flow/processors/0"));
   }
 
   @Test
@@ -305,8 +309,9 @@ public class ProcessorsTraceTestCase extends AbstractIntegrationTestCase {
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert, not(nullValue()));
 
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert,
-               hasExecutedProcessors("/subFlowDynamicWithChoice/processors/0", "/subFlowDynamicWithChoice/processors/0/0/0",
-                                     "/subFlowDynamicWithChoice/processors/0/0/0/subFlow/subprocessors/0"));
+               hasExecutedProcessors("subFlowDynamicWithChoice/processors/0",
+                                     "subFlowDynamicWithChoice/processors/0/route/0/processors/0",
+                                     "subFlow/processors/0"));
   }
 
   @Test
@@ -316,11 +321,10 @@ public class ProcessorsTraceTestCase extends AbstractIntegrationTestCase {
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert, not(nullValue()));
 
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert,
-               hasExecutedProcessorsNoOrder("/flowStaticWithScatterGather/processors/0",
-                                            "/flowStaticWithScatterGather/processors/0/0",
-                                            "/flowStaticWithScatterGather/processors/0/0/0",
-                                            "/flowStaticWithScatterGather/processors/0/1",
-                                            "/flowStaticWithScatterGather/processors/0/1/0", "/flow/processors/0"));
+               hasExecutedProcessorsNoOrder("flowStaticWithScatterGather/processors/0",
+                                            "flowStaticWithScatterGather/processors/0/route/0/processors/0",
+                                            "flowStaticWithScatterGather/processors/0/route/1/processors/0",
+                                            "flow/processors/0"));
   }
 
   @Test
@@ -330,12 +334,10 @@ public class ProcessorsTraceTestCase extends AbstractIntegrationTestCase {
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert, not(nullValue()));
 
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert,
-               hasExecutedProcessorsNoOrder("/subFlowStaticWithScatterGather/processors/0",
-                                            "/subFlowStaticWithScatterGather/processors/0/0",
-                                            "/subFlowStaticWithScatterGather/processors/0/0/0",
-                                            "/subFlowStaticWithScatterGather/processors/0/1",
-                                            "/subFlowStaticWithScatterGather/processors/0/1/0",
-                                            "/subFlowStaticWithScatterGather/processors/0/1/0/subFlow/subprocessors/0"));
+               hasExecutedProcessorsNoOrder("subFlowStaticWithScatterGather/processors/0",
+                                            "subFlowStaticWithScatterGather/processors/0/route/0/processors/0",
+                                            "subFlowStaticWithScatterGather/processors/0/route/1/processors/0",
+                                            "subFlow/processors/0"));
   }
 
   @Ignore("MULE-6926: flaky test")
@@ -346,11 +348,10 @@ public class ProcessorsTraceTestCase extends AbstractIntegrationTestCase {
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert, not(nullValue()));
 
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert,
-               hasExecutedProcessorsNoOrder("/flowDynamicWithScatterGather/processors/0",
-                                            "/flowDynamicWithScatterGather/processors/0/0",
-                                            "/flowDynamicWithScatterGather/processors/0/0/0",
-                                            "/flowDynamicWithScatterGather/processors/0/1",
-                                            "/flowDynamicWithScatterGather/processors/0/1/0", "/flow/processors/0"));
+               hasExecutedProcessorsNoOrder("flowDynamicWithScatterGather/processors/0",
+                                            "flowDynamicWithScatterGather/processors/0/route/0/processors/0",
+                                            "flowDynamicWithScatterGather/processors/0/route/1/processors/0",
+                                            "flow/processors/0"));
   }
 
   @Test
@@ -360,12 +361,10 @@ public class ProcessorsTraceTestCase extends AbstractIntegrationTestCase {
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert, not(nullValue()));
 
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert,
-               hasExecutedProcessorsNoOrder("/subFlowDynamicWithScatterGather/processors/0",
-                                            "/subFlowDynamicWithScatterGather/processors/0/0",
-                                            "/subFlowDynamicWithScatterGather/processors/0/0/0",
-                                            "/subFlowDynamicWithScatterGather/processors/0/1",
-                                            "/subFlowDynamicWithScatterGather/processors/0/1/0",
-                                            "/subFlowDynamicWithScatterGather/processors/0/1/0/subFlow/subprocessors/0"));
+               hasExecutedProcessorsNoOrder("subFlowDynamicWithScatterGather/processors/0",
+                                            "subFlowDynamicWithScatterGather/processors/0/route/0/processors/0",
+                                            "subFlowDynamicWithScatterGather/processors/0/route/1/processors/0",
+                                            "subFlow/processors/0"));
   }
 
   @Test
@@ -375,11 +374,10 @@ public class ProcessorsTraceTestCase extends AbstractIntegrationTestCase {
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert, not(nullValue()));
 
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert,
-               hasExecutedProcessorsNoOrder("/flowStaticWithScatterGatherChain/processors/0",
-                                            "/flowStaticWithScatterGatherChain/processors/0/0",
-                                            "/flowStaticWithScatterGatherChain/processors/0/0/0",
-                                            "/flowStaticWithScatterGatherChain/processors/0/1",
-                                            "/flowStaticWithScatterGatherChain/processors/0/1/0", "/flow/processors/0"));
+               hasExecutedProcessorsNoOrder("flowStaticWithScatterGatherChain/processors/0",
+                                            "flowStaticWithScatterGatherChain/processors/0/route/0/processors/0",
+                                            "flowStaticWithScatterGatherChain/processors/0/route/1/processors/0",
+                                            "flow/processors/0"));
   }
 
   @Ignore("MULE-6926: flaky test")
@@ -390,12 +388,10 @@ public class ProcessorsTraceTestCase extends AbstractIntegrationTestCase {
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert, not(nullValue()));
 
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert,
-               hasExecutedProcessorsNoOrder("/subFlowStaticWithScatterGatherChain/processors/0",
-                                            "/subFlowStaticWithScatterGatherChain/processors/0/0",
-                                            "/subFlowStaticWithScatterGatherChain/processors/0/0/0",
-                                            "/subFlowStaticWithScatterGatherChain/processors/0/1",
-                                            "/subFlowStaticWithScatterGatherChain/processors/0/1/0",
-                                            "/subFlowStaticWithScatterGatherChain/processors/0/1/0/subFlow/subprocessors/0"));
+               hasExecutedProcessorsNoOrder("subFlowStaticWithScatterGatherChain/processors/0",
+                                            "subFlowStaticWithScatterGatherChain/processors/0/route/0/processors/0",
+                                            "subFlowStaticWithScatterGatherChain/processors/0/route/1/processors/0",
+                                            "subFlow/processors/0"));
   }
 
   @Test
@@ -405,11 +401,10 @@ public class ProcessorsTraceTestCase extends AbstractIntegrationTestCase {
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert, not(nullValue()));
 
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert,
-               hasExecutedProcessorsNoOrder("/flowDynamicWithScatterGatherChain/processors/0",
-                                            "/flowDynamicWithScatterGatherChain/processors/0/0",
-                                            "/flowDynamicWithScatterGatherChain/processors/0/0/0",
-                                            "/flowDynamicWithScatterGatherChain/processors/0/1",
-                                            "/flowDynamicWithScatterGatherChain/processors/0/1/0", "/flow/processors/0"));
+               hasExecutedProcessorsNoOrder("flowDynamicWithScatterGatherChain/processors/0",
+                                            "flowDynamicWithScatterGatherChain/processors/0/route/0/processors/0",
+                                            "flowDynamicWithScatterGatherChain/processors/0/route/1/processors/0",
+                                            "flow/processors/0"));
   }
 
   @Test
@@ -419,12 +414,10 @@ public class ProcessorsTraceTestCase extends AbstractIntegrationTestCase {
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert, not(nullValue()));
 
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert,
-               hasExecutedProcessorsNoOrder("/subFlowDynamicWithScatterGatherChain/processors/0",
-                                            "/subFlowDynamicWithScatterGatherChain/processors/0/0",
-                                            "/subFlowDynamicWithScatterGatherChain/processors/0/0/0",
-                                            "/subFlowDynamicWithScatterGatherChain/processors/0/1",
-                                            "/subFlowDynamicWithScatterGatherChain/processors/0/1/0",
-                                            "/subFlowDynamicWithScatterGatherChain/processors/0/1/0/subFlow/subprocessors/0"));
+               hasExecutedProcessorsNoOrder("subFlowDynamicWithScatterGatherChain/processors/0",
+                                            "subFlowDynamicWithScatterGatherChain/processors/0/route/0/processors/0",
+                                            "subFlowDynamicWithScatterGatherChain/processors/0/route/1/processors/0",
+                                            "subFlow/processors/0"));
   }
 
   private abstract class ProcessorsMatcher extends TypeSafeMatcher<ProcessorsTrace> {
