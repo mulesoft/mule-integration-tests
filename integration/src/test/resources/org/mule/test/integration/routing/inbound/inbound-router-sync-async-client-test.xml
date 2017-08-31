@@ -10,20 +10,22 @@
         Junit test: for MuleSupport Portal: Case 00001692
     </description>
 
-    <scripting:script engine="groovy" name="testComponent">
-        <scripting:text>
-            if(vars.messageType.equals("sync"))
-            {
-                return "OK"
-            }
-            else if(vars.messageType.equals("async"))
-            {
-                return "Response sent to asyncResponse"
-            }
+    <sub-flow name="testComponent">
+        <scripting:execute engine="groovy">
+            <scripting:code>
+                if(vars.messageType.equals("sync"))
+                {
+                    return "OK"
+                }
+                else if(vars.messageType.equals("async"))
+                {
+                    return "Response sent to asyncResponse"
+                }
 
-            return null
-        </scripting:text>
-    </scripting:script>
+                return null
+            </scripting:code>
+        </scripting:execute>
+    </sub-flow>
 
     <flow name="SyncAsync">
         <async>
@@ -31,7 +33,7 @@
         </async>
         <choice>
             <when expression="#[vars.messageType == 'sync']">
-                <scripting:component script-ref="testComponent"/>
+                <flow-ref name="testComponent"/>
             </when>
         </choice>
     </flow>
@@ -39,7 +41,7 @@
     <flow name="AsyncRequest">
         <choice>
             <when expression="#[vars.messageType == 'async']">
-                <scripting:component script-ref="testComponent"/>
+                <flow-ref name="testComponent"/>
                 <test:queue name="asyncResponse"/>
             </when>
         </choice>

@@ -28,16 +28,16 @@
     </description>
     
     <flow name="In-Out_Out-Only-Async-Service">
-        <script:component>
-            <script:script engine="groovy">
+        <script:execute engine="groovy">
+            <script:code>
                 if (message.getInboundProperty("foo") != null)
                     return message
                 else
                 {
                     return null
                 }
-            </script:script>
-        </script:component>
+            </script:code>
+        </script:execute>
         
         <choice>
             <when expression="#[payload != null]">

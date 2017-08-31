@@ -22,9 +22,9 @@
     <flow name="scriptComponentFlow">
 
         <custom-processor class="org.mule.shutdown.AbstractShutdownTimeoutRequestResponseTestCase$BlockMessageProcessor"/>
-        <script:component>
-            <script:script engine="groovy">return &quot;scriptComponentResponse&quot;;</script:script>
-        </script:component>
+        <script:execute engine="groovy">
+            <script:code>return &quot;scriptComponentResponse&quot;;</script:code>
+        </script:execute>
 
         <test:queue name="response"/>
     </flow>

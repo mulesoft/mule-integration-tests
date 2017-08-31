@@ -8,14 +8,6 @@
           http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
           http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
 
-    <scripting:component name="fooTransformer">
-        <scripting:script engine="groovy">
-            <scripting:text>
-                return "foo";
-            </scripting:text>
-        </scripting:script>
-    </scripting:component>
-
     <flow name="Distributor">
         <scatter-gather>
             <route>
@@ -25,7 +17,7 @@
                 <flow-ref name="Two"/>
             </route>
         </scatter-gather>
-        <transformer ref="fooTransformer"/>
+        <custom-transformer class="org.mule.test.integration.transformer.response.ResponseTransformerOnMessageCollectionTestCase$ReturnFooTransformer"/>
     </flow>
 
     <flow name="One">

@@ -16,14 +16,14 @@
 
     <flow name="In-Out_Out-Only-Service">
         <!-- Note: auto formating this file might break the test if the script's indentation is not preserved. -->
-        <script:component>
-            <script:script engine="groovy">
+        <script:execute engine="groovy">
+            <script:code>
                 if (vars.foo != null)
                     return "foo header received"
                 else
                     return "foo header not received"
-            </script:script>
-        </script:component>            
+            </script:code>
+        </script:execute>
         
         <async>
             <choice>

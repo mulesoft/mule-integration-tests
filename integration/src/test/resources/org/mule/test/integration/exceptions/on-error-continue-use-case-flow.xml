@@ -64,11 +64,11 @@
       <test:processor throwException="true"/>
       <error-handler>
         <on-error-continue>
-            <script:component>
-                <script:script engine="groovy">
+            <script:execute engine="groovy">
+                <script:code>
                     return "$payload Caught"
-                </script:script>
-            </script:component>
+                </script:code>
+            </script:execute>
         </on-error-continue>
        </error-handler>
     </flow>
@@ -79,11 +79,11 @@
         <error-handler>
             <on-error-continue>
                 <append-string-transformer message=" apt2"/>
-                <script:component>
-                    <script:script engine="groovy">
+                <script:execute engine="groovy">
+                    <script:code>
                         return "$payload groovified"
-                    </script:script>
-                </script:component>
+                    </script:code>
+                </script:execute>
             </on-error-continue>
         </error-handler>
     </flow>

@@ -9,13 +9,10 @@
     <flow name="test">
         <splitter/>
         <collection-aggregator/>
-
-        <scripting:component>
-            <scripting:script engine="groovy">
-                <scripting:text>
-                    return "foo";
-                </scripting:text>
-            </scripting:script>
-        </scripting:component>
+        <scripting:execute engine="groovy">
+            <scripting:code>
+                return "foo";
+            </scripting:code>
+        </scripting:execute>
     </flow>
 </mule>

@@ -16,14 +16,14 @@
     </description>
 
     <flow name="In-Optional-Out_Out-Only-Service">
-        <script:component>
-            <script:script engine="groovy">
+        <script:execute engine="groovy">
+            <script:code>
                 if (message.getInboundProperty("foo") != null)
                     return "foo header received"
                 else
                     return null
-            </script:script>
-        </script:component>
+            </script:code>
+        </script:execute>
                 
         <mule:logger />
     </flow>

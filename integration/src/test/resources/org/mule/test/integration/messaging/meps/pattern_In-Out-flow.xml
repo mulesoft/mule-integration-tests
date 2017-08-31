@@ -24,14 +24,14 @@
         <http:listener path="*" config-ref="listenerConfig"/>
 
         <!-- Note: auto formating this file might break the test if the script's indentation is not preserved. -->
-        <script:component>
-            <script:script engine="groovy">
+        <script:execute engine="groovy">
+            <script:code>
                 if (message.getAttributes().getValue().getHeaders().get("foo"))
                     return "foo header received"
                 else
                     return "foo header not received"
-            </script:script>
-        </script:component>
+            </script:code>
+        </script:execute>
 
         <logger />
     </flow>
