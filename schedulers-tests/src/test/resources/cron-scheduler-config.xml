@@ -16,7 +16,7 @@
     <flow name="pollfoo">
         <scheduler doc:name="watermark">
             <scheduling-strategy>
-                <cron expression="0/1 * * * * ?"/>
+                <cron expression="0/2 * * * * ?"/>
             </scheduling-strategy>
         </scheduler>
         <flow-ref name="echo"/>

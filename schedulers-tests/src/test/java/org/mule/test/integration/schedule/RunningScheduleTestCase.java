@@ -7,7 +7,8 @@
 package org.mule.test.integration.schedule;
 
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
@@ -46,9 +47,10 @@ public class RunningScheduleTestCase extends MuleArtifactFunctionalTestCase {
 
     int count = scheduler.getCount();
 
-    Thread.sleep(2000);
-
-    assertEquals(count, scheduler.getCount());
+    new PollingProber(2000, 100).check(new JUnitLambdaProbe(() -> {
+      assertThat(scheduler.getCount(), is(count));
+      return true;
+    }));
   }
 
   private void stopSchedulers() throws MuleException {

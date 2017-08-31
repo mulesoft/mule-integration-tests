@@ -6,7 +6,8 @@
  */
 package org.mule.test.module.scheduler.cron;
 
-import static org.hamcrest.CoreMatchers.is;
+import static java.lang.Thread.sleep;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -23,11 +24,12 @@ import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.tck.probe.JUnitLambdaProbe;
 import org.mule.tck.probe.PollingProber;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -41,40 +43,42 @@ public class CronSchedulerTestCase extends MuleArtifactFunctionalTestCase {
   private static List<String> bar = new ArrayList<>();
 
   @ClassRule
-  public static SystemProperty days = new SystemProperty("expression.property", "0/1 * * * * ?");
+  public static SystemProperty days = new SystemProperty("expression.property", "0/2 * * * * ?");
 
   @Override
   protected String getConfigFile() {
     return "cron-scheduler-config.xml";
   }
 
+  @Before
+  public void before() {
+    foo.clear();
+    bar.clear();
+  }
+
   @Test
   public void test() throws Exception {
-    waitForPollElements();
-
-    checkForFooCollectionToBeFilled();
-    checkForBarCollectionToBeFilled();
+    new PollingProber(3000, 100).check(new JUnitLambdaProbe(() -> {
+      checkForFooCollectionToBeFilled();
+      checkForBarCollectionToBeFilled();
+      return true;
+    }));
 
     stopSchedulers();
 
     int fooElementsAfterStopping = foo.size();
 
-    waitForPollElements();
-
-    assertThat(foo.size(), is(fooElementsAfterStopping));
+    sleep(3000);
+    assertThat(foo, hasSize(fooElementsAfterStopping));
 
     startSchedulers();
     runSchedulersOnce();
 
-    new PollingProber(2000, 100).check(new JUnitLambdaProbe(() -> {
+    new PollingProber(3000, 100).check(new JUnitLambdaProbe(() -> {
       // One for the scheduler run and another for the on-demand one
-      assertThat(foo.size(), is(fooElementsAfterStopping + 2));
+      assertThat(foo, hasSize(fooElementsAfterStopping + 2));
       return true;
     }));
-  }
-
-  private void waitForPollElements() throws InterruptedException {
-    Thread.sleep(2000);
   }
 
   private void checkForFooCollectionToBeFilled() {
@@ -120,7 +124,6 @@ public class CronSchedulerTestCase extends MuleArtifactFunctionalTestCase {
     @Override
     public void eventReceived(InternalEvent event, Object component, MuleContext muleContext) throws Exception {
       synchronized (foo) {
-
         if (foo.size() < 10) {
           foo.add((String) event.getMessage().getPayload().getValue());
         }
