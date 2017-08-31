@@ -63,7 +63,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -105,7 +104,6 @@ public class ErrorHandlingConfigurationFailuresTestCase extends AbstractMuleTest
     loadConfiguration("org/mule/test/integration/exceptions/unknown-error-filtering-config.xml");
   }
 
-  @Ignore("MULE-13422")
   @Test
   public void sourceErrorResponseFilteringNotAllowed() throws Exception {
     expectedException.expect(InitialisationException.class);
@@ -113,7 +111,6 @@ public class ErrorHandlingConfigurationFailuresTestCase extends AbstractMuleTest
     loadConfiguration("org/mule/test/integration/exceptions/source-error-response-filtering-config.xml");
   }
 
-  @Ignore("MULE-13422")
   @Test
   public void sourceErrorResponseSendFilteringNotAllowed() throws Exception {
     expectedException.expect(InitialisationException.class);
@@ -121,7 +118,6 @@ public class ErrorHandlingConfigurationFailuresTestCase extends AbstractMuleTest
     loadConfiguration("org/mule/test/integration/exceptions/source-error-response-send-filtering-config.xml");
   }
 
-  @Ignore("MULE-13422")
   @Test
   public void sourceErrorResponseGenerateFilteringNotAllowed() throws Exception {
     expectedException.expect(InitialisationException.class);
