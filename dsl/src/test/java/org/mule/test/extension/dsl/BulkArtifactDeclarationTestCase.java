@@ -41,7 +41,7 @@ import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.api.meta.model.config.ConfigurationModel;
 import org.mule.runtime.api.meta.model.construct.ConstructModel;
 import org.mule.runtime.api.meta.model.construct.HasConstructModels;
-import org.mule.runtime.api.meta.model.nested.NestableElementModelVisistor;
+import org.mule.runtime.api.meta.model.nested.NestableElementModelVisitor;
 import org.mule.runtime.api.meta.model.nested.NestedChainModel;
 import org.mule.runtime.api.meta.model.nested.NestedComponentModel;
 import org.mule.runtime.api.meta.model.nested.NestedRouteModel;
@@ -124,7 +124,7 @@ public class BulkArtifactDeclarationTestCase extends AbstractElementModelTestCas
         populateParameterized(model, declarer);
 
         model.getNestedComponents().forEach(nestedPlaceholder -> {
-          nestedPlaceholder.accept(new NestableElementModelVisistor() {
+          nestedPlaceholder.accept(new NestableElementModelVisitor() {
 
             @Override
             public void visit(NestedComponentModel component) {
