@@ -16,7 +16,7 @@ import org.mule.runtime.api.meta.AbstractAnnotatedObject;
 import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.transformer.AbstractMessageTransformer;
-import org.mule.runtime.core.api.transformer.TransformerException;
+import org.mule.runtime.core.api.transformer.MessageTransformerException;
 import org.mule.tck.testmodels.fruit.Apple;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -69,7 +69,7 @@ public class EventMetaDataPropagationTestCase extends AbstractIntegrationTestCas
   public static class DummyTransformer extends AbstractMessageTransformer {
 
     @Override
-    public Object transformMessage(InternalEvent event, Charset outputEncoding) throws TransformerException {
+    public Object transformMessage(InternalEvent event, Charset outputEncoding) throws MessageTransformerException {
       Message msg = event.getMessage();
       assertEquals("param1", getOutboundProperty(msg, "stringParam"));
       final Object o = getOutboundProperty(msg, "objectParam");

@@ -6,17 +6,14 @@
  */
 package org.mule.test.integration.exceptions;
 
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.withSettings;
 import static org.mule.functional.api.component.FunctionalTestProcessor.getFromFlow;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
-
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsInstanceOf.instanceOf;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.withSettings;
-
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.i18n.I18nMessage;
 import org.mule.runtime.api.lifecycle.Initialisable;
@@ -38,14 +35,13 @@ import org.mule.runtime.core.api.transformer.Transformer;
 import org.mule.runtime.core.api.transformer.TransformerException;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-
 import java.sql.SQLDataException;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 @Feature(ERROR_HANDLING)
 @Story("Error Handler")
@@ -134,7 +130,7 @@ public class ErrorHandlerTestCase extends AbstractIntegrationTestCase {
   public void transformation() throws Exception {
     String expectedMessage = "0 transformation";
     Transformer mockTransformer = mock(Transformer.class);
-    callTypeAndThrowException(new MessageTransformerException(mockMessage, mockTransformer), expectedMessage);
+    callTypeAndThrowException(new MessageTransformerException(mockMessage, mockTransformer, null), expectedMessage);
     callTypeAndThrowException(new TransformerException(mockMessage, mockTransformer), expectedMessage);
   }
 
