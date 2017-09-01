@@ -30,7 +30,7 @@ public class ParseTemplateTestCase extends AbstractIntegrationTestCase {
 
   @Override
   public String getConfigFile() {
-    return "org/mule/transformers/parse-template-config.xml";
+    return "org/mule/processors/parse-template-config.xml";
   }
 
 
