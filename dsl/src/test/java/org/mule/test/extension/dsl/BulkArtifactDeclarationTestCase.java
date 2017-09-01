@@ -54,6 +54,8 @@ import org.mule.runtime.api.meta.model.util.ExtensionWalker;
 import org.mule.runtime.config.spring.api.dsl.ArtifactDeclarationXmlSerializer;
 import org.mule.runtime.config.spring.api.dsl.model.DslElementModelFactory;
 import org.mule.runtime.core.api.extension.MuleExtensionModelProvider;
+import org.mule.runtime.extension.api.dsl.syntax.DslElementSyntax;
+import org.mule.runtime.extension.api.dsl.syntax.resolver.DslSyntaxResolver;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -68,6 +70,7 @@ public class BulkArtifactDeclarationTestCase extends AbstractElementModelTestCas
 
 
   private ArtifactDeclarationXmlSerializer serializer;
+  private DslSyntaxResolver dslResolver;
 
   @Override
   protected String[] getConfigFiles() {
@@ -90,6 +93,7 @@ public class BulkArtifactDeclarationTestCase extends AbstractElementModelTestCas
     ExtensionModel extensionModel = MuleExtensionModelProvider.getExtensionModel();
     ElementDeclarer core = ElementDeclarer.forExtension(extensionModel.getName());
     ArtifactDeclarer artifactDeclarer = newArtifact();
+    dslResolver = DslSyntaxResolver.getDefault(extensionModel, dslContext);
 
     new ExtensionWalker() {
 
@@ -206,7 +210,6 @@ public class BulkArtifactDeclarationTestCase extends AbstractElementModelTestCas
 
   private void addParameter(MetadataType type, boolean isContent, boolean isText, Optional<Object> defaultValue,
                             Consumer<ParameterValue> valueConsumer) {
-
     type.accept(new MetadataTypeVisitor() {
 
       @Override
@@ -240,7 +243,7 @@ public class BulkArtifactDeclarationTestCase extends AbstractElementModelTestCas
 
       @Override
       public void visitObject(ObjectType objectType) {
-        if (isContent) {
+        if (isContent || !supportsInlineDeclaration(objectType)) {
           defaultVisit(objectType);
           return;
         }
@@ -256,5 +259,9 @@ public class BulkArtifactDeclarationTestCase extends AbstractElementModelTestCas
         valueConsumer.accept(objectValue.build());
       }
     });
+  }
+
+  private Boolean supportsInlineDeclaration(ObjectType objectType) {
+    return dslResolver.resolve(objectType).map(DslElementSyntax::supportsChildDeclaration).orElse(false);
   }
 }

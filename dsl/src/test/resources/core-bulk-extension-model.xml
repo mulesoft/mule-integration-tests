@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
     <flow name="flowForscheduler">
-        <scheduler>
-            <scheduling-strategy/>
-        </scheduler>
+        <scheduler schedulingStrategy="Attribute"/>
     </flow>
     <flow name="flowForidempotentMessageValidator">
         <idempotent-message-validator idExpression="#[id]" objectStore="Attribute" storePrefix="Attribute" valueExpression="#[id]"/>
