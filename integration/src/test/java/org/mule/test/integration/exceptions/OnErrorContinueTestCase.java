@@ -28,7 +28,7 @@ import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.lifecycle.CreateException;
 import org.mule.runtime.api.lifecycle.Initialisable;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.api.meta.AbstractAnnotatedObject;
+import org.mule.runtime.api.meta.AbstractComponent;
 import org.mule.runtime.api.streaming.bytes.CursorStreamProvider;
 import org.mule.runtime.api.tls.TlsContextFactory;
 import org.mule.runtime.core.api.DefaultMuleException;
@@ -225,7 +225,7 @@ public class OnErrorContinueTestCase extends AbstractIntegrationTestCase {
 
   }
 
-  public static class LoadNewsProcessor extends AbstractAnnotatedObject implements Processor {
+  public static class LoadNewsProcessor extends AbstractComponent implements Processor {
 
     @Override
     public InternalEvent process(InternalEvent event) throws MuleException {
@@ -262,7 +262,7 @@ public class OnErrorContinueTestCase extends AbstractIntegrationTestCase {
     }
   }
 
-  public static class NewsErrorProcessor extends AbstractAnnotatedObject implements Processor {
+  public static class NewsErrorProcessor extends AbstractComponent implements Processor {
 
     @Override
     public InternalEvent process(InternalEvent event) throws MuleException {

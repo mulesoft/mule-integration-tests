@@ -18,7 +18,7 @@ import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.i18n.I18nMessage;
 import org.mule.runtime.api.lifecycle.Initialisable;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.api.meta.AnnotatedObject;
+import org.mule.runtime.api.component.Component;
 import org.mule.runtime.core.api.DefaultMuleException;
 import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.exception.MessageRedeliveredException;
@@ -143,7 +143,7 @@ public class ErrorHandlerTestCase extends AbstractIntegrationTestCase {
   public void connectivity() throws Exception {
     callTypeAndThrowException(new RetryPolicyExhaustedException(mockMessage,
                                                                 mock(Initialisable.class,
-                                                                     withSettings().extraInterfaces(AnnotatedObject.class))),
+                                                                     withSettings().extraInterfaces(Component.class))),
                               "0 connectivity");
   }
 

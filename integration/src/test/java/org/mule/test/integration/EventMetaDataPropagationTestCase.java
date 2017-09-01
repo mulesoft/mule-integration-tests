@@ -12,7 +12,7 @@ import static org.mule.functional.junit4.TestLegacyMessageUtils.getOutboundPrope
 import org.mule.functional.junit4.TestLegacyMessageBuilder;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.api.meta.AbstractAnnotatedObject;
+import org.mule.runtime.api.meta.AbstractComponent;
 import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.transformer.AbstractMessageTransformer;
@@ -39,7 +39,7 @@ public class EventMetaDataPropagationTestCase extends AbstractIntegrationTestCas
     flowRunner("component1").withPayload(TEST_PAYLOAD).run();
   }
 
-  public static class DummyComponent extends AbstractAnnotatedObject implements Processor {
+  public static class DummyComponent extends AbstractComponent implements Processor {
 
     @Override
     public InternalEvent process(InternalEvent event) throws MuleException {
