@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xsi:schemaLocation="
+       http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+       http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+
+    <flow name="customError">
+        <raise-error type="APP:MY_TYPE"/>
+    </flow>
+
+    <flow name="existingError">
+        <raise-error type="CONNECTIVITY"/>
+    </flow>
+
+    <flow name="descriptionString">
+        <raise-error type="ROUTING" description="This is a routing error."/>
+    </flow>
+
+    <flow name="descriptionExpression">
+        <raise-error type="APP:MY_TYPE" description="#['The error was caused by: ' ++ payload]"/>
+    </flow>
+
+    <flow name="continueOverride">
+        <test:processor throwException="true"/>
+        <error-handler>
+            <on-error-continue>
+                <raise-error type="APP:MY_TYPE"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="propagateOverride">
+        <test:processor throwException="true"/>
+        <error-handler>
+            <on-error-propagate>
+                <raise-error type="APP:MY_TYPE"/>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+
+    <flow name="handled">
+        <raise-error type="APP:MY_TYPE" description="Fatal error."/>
+        <error-handler>
+            <on-error-continue type="APP:MY_TYPE">
+                <set-payload value="#[output text/plain --- error.description]"/>
+            </on-error-continue>
+            <on-error-continue>
+                <set-payload value="Couldn't match error."/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="try">
+        <test:processor/>
+        <try>
+            <choice>
+                <when expression="#[vars.continue]">
+                    <raise-error type="CUSTOM:HANDLE" description="Try error was handled."/>
+                </when>
+                <otherwise>
+                    <raise-error type="CUSTOM:DONT_HANDLE" description="Try error was propagated."/>
+                </otherwise>
+            </choice>
+            <error-handler>
+                <on-error-continue type="CUSTOM:HANDLE">
+                    <set-payload value="#[output text/plain --- error.description]"/>
+                </on-error-continue>
+                <on-error-propagate type="CUSTOM:DONT_HANDLE"/>
+                <on-error-continue>
+                    <set-payload value="Couldn't match try error."/>
+                </on-error-continue>
+            </error-handler>
+        </try>
+        <error-handler>
+            <on-error-continue type="CUSTOM:DONT_HANDLE">
+                <set-payload value="#[output text/plain --- error.description]"/>
+            </on-error-continue>
+            <on-error-continue>
+                <set-payload value="Couldn't match flow error."/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="foreach">
+        <foreach>
+            <test:processor/>
+            <raise-error type="APP:MY_TYPE" description="For each failed."/>
+        </foreach>
+        <error-handler>
+            <on-error-continue type="APP:MY_TYPE">
+                <set-payload value="#[output text/plain --- error.description]"/>
+            </on-error-continue>
+            <on-error-continue>
+                <set-payload value="Couldn't match error."/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="scatter">
+        <scatter-gather>
+            <route>
+                <test:processor/>
+            </route>
+            <route>
+                <raise-error type="APP:MY_TYPE" description="Scatter gather route failed."/>
+            </route>
+            <route>
+                <test:processor/>
+            </route>
+            <collect-list/>
+        </scatter-gather>
+        <error-handler>
+            <on-error-continue type="COMPOSITE_ROUTING">
+                <set-payload value="#[output text/plain --- error.childErrors[0].description]"/>
+            </on-error-continue>
+            <on-error-continue>
+                <set-payload value="Couldn't match error."/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+</mule>

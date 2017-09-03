@@ -29,7 +29,6 @@ import static org.mule.runtime.core.api.exception.Errors.Identifiers.UNKNOWN_ERR
 import static org.mule.runtime.module.extension.api.loader.AbstractJavaExtensionModelLoader.TYPE_PROPERTY_NAME;
 import static org.mule.runtime.module.extension.api.loader.AbstractJavaExtensionModelLoader.VERSION;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
-
 import org.mule.extension.http.internal.temporary.HttpConnector;
 import org.mule.extension.socket.api.SocketsExtension;
 import org.mule.runtime.api.dsl.DslResolvingContext;
@@ -53,10 +52,6 @@ import org.mule.runtime.module.extension.internal.manager.DefaultExtensionManage
 import org.mule.tck.config.TestServicesConfigurationBuilder;
 import org.mule.tck.junit4.AbstractMuleTestCase;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -68,6 +63,9 @@ import javax.inject.Inject;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 @Feature(ERROR_HANDLING)
 @Story("Validations")
@@ -80,7 +78,7 @@ public class ErrorHandlingConfigurationFailuresTestCase extends AbstractMuleTest
   public ExpectedException expectedException = ExpectedException.none();
 
   @Test
-  public void errorHandlerCantHaveMiddleExceptionStrategyWithoutExpression() throws Exception {
+  public void errorHandlerCantHaveOnErrorWithoutTypeOrExpression() throws Exception {
     expectedException.expect(ConfigurationException.class);
     expectedException
         .expectMessage(containsString("Every handler (except for the last one) within an 'error-handler' must specify a 'when' or 'type' attribute."));
@@ -96,7 +94,7 @@ public class ErrorHandlingConfigurationFailuresTestCase extends AbstractMuleTest
   }
 
   @Test
-  public void xaTransactionalBlockNotAllowed() throws Exception {
+  public void xaTransactionalTryNotAllowed() throws Exception {
     expectedException.expect(InitialisationException.class);
     expectedException.expectMessage(containsString("Unable to create Try Scope with a Transaction Type: [XA]"));
     loadConfiguration("org/mule/test/integration/transaction/xa-transactional-try-config.xml");
@@ -145,6 +143,13 @@ public class ErrorHandlingConfigurationFailuresTestCase extends AbstractMuleTest
   }
 
   @Test
+  public void nonExistingSourceMappingNotAllowed() throws Exception {
+    expectedException.expect(InitialisationException.class);
+    expectedException.expectMessage(containsString("Could not find error 'NON_EXISTING'."));
+    loadConfiguration("org/mule/test/integration/exceptions/non-existing-source-mapping-config.xml");
+  }
+
+  @Test
   public void middleAnyMappingsNotAllowed() throws Exception {
     expectedException.expect(ConfigurationException.class);
     expectedException.expectMessage(containsString("Only the last error mapping can have 'ANY' or an empty source type."));
@@ -157,6 +162,34 @@ public class ErrorHandlingConfigurationFailuresTestCase extends AbstractMuleTest
     expectedException
         .expectMessage(containsString("Repeated source types are not allowed. Offending types are 'ROUTING', 'EXPRESSION'."));
     loadConfiguration("org/mule/test/integration/exceptions/repeated-mappings-config.xml");
+  }
+
+  @Test
+  public void nonExistingCoreMappingsNotAllowed() throws Exception {
+    expectedException.expect(InitialisationException.class);
+    expectedException.expectMessage(containsString("There's no MULE error named 'NON_EXISTING'."));
+    loadConfiguration("org/mule/test/integration/exceptions/non-existent-core-mapping-config.xml");
+  }
+
+  @Test
+  public void usedNamespaceMappingsNotAllowed() throws Exception {
+    expectedException.expect(InitialisationException.class);
+    expectedException.expectMessage(containsString("Cannot use error type 'HTTP:NOT_FOUND': namespace already exists."));
+    loadConfiguration("org/mule/test/integration/exceptions/used-namespace-mappings-config.xml");
+  }
+
+  @Test
+  public void nonExistingCoreErrorCannotBeRaised() throws Exception {
+    expectedException.expect(InitialisationException.class);
+    expectedException.expectMessage(containsString("There's no MULE error named 'NONEXISTENT'."));
+    loadConfiguration("org/mule/test/integration/exceptions/non-existent-core-raise-error-config.xml");
+  }
+
+  @Test
+  public void usedNamespaceErrorCannotBeRaised() throws Exception {
+    expectedException.expect(InitialisationException.class);
+    expectedException.expectMessage(containsString("Cannot use error type 'HTTP:TIMEOUT': namespace already exists."));
+    loadConfiguration("org/mule/test/integration/exceptions/used-namespace-raise-error-config.xml");
   }
 
   @Test
