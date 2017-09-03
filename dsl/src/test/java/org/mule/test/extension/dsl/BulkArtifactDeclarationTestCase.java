@@ -25,6 +25,7 @@ import org.mule.metadata.api.model.UnionType;
 import org.mule.metadata.api.visitor.MetadataTypeVisitor;
 import org.mule.runtime.api.app.declaration.ParameterValue;
 import org.mule.runtime.api.app.declaration.fluent.ArtifactDeclarer;
+import org.mule.runtime.api.app.declaration.fluent.ComponentElementDeclarer;
 import org.mule.runtime.api.app.declaration.fluent.ConfigurationElementDeclarer;
 import org.mule.runtime.api.app.declaration.fluent.ConnectionElementDeclarer;
 import org.mule.runtime.api.app.declaration.fluent.ConstructElementDeclarer;
@@ -37,6 +38,7 @@ import org.mule.runtime.api.app.declaration.fluent.ParameterizedElementDeclarer;
 import org.mule.runtime.api.app.declaration.fluent.RouteElementDeclarer;
 import org.mule.runtime.api.app.declaration.fluent.SourceElementDeclarer;
 import org.mule.runtime.api.dsl.DslResolvingContext;
+import org.mule.runtime.api.meta.model.ComponentModel;
 import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.api.meta.model.config.ConfigurationModel;
 import org.mule.runtime.api.meta.model.construct.ConstructModel;
@@ -127,6 +129,43 @@ public class BulkArtifactDeclarationTestCase extends AbstractElementModelTestCas
         ConstructElementDeclarer declarer = core.newConstruct(model.getName());
         populateParameterized(model, declarer);
 
+        populateNested(model, declarer);
+
+        if (model.allowsTopLevelDeclaration()) {
+          artifactDeclarer.withGlobalElement(declarer.withRefName("global" + model.getName()).getDeclaration());
+        } else {
+          artifactDeclarer.withGlobalElement(core.newConstruct("flow")
+              .withRefName("flowFor" + model.getName())
+              .withComponent(declarer.getDeclaration())
+              .getDeclaration());
+        }
+      }
+
+      @Override
+      protected void onOperation(HasOperationModels owner, OperationModel model) {
+        if (model.getName().equals("flowRef")) {
+          return;
+        }
+        OperationElementDeclarer declarer = core.newOperation(model.getName());
+        populateParameterized(model, declarer);
+        populateNested(model, declarer);
+        artifactDeclarer.withGlobalElement(core.newConstruct("flow")
+            .withRefName("flowFor" + model.getName())
+            .withComponent(declarer.getDeclaration())
+            .getDeclaration());
+      }
+
+      @Override
+      protected void onSource(HasSourceModels owner, SourceModel model) {
+        SourceElementDeclarer declarer = core.newSource(model.getName());
+        populateParameterized(model, declarer);
+        artifactDeclarer.withGlobalElement(core.newConstruct("flow")
+            .withRefName("flowFor" + model.getName())
+            .withComponent(declarer.getDeclaration())
+            .getDeclaration());
+      }
+
+      private void populateNested(ComponentModel model, ComponentElementDeclarer declarer) {
         model.getNestedComponents().forEach(nestedPlaceholder -> {
           nestedPlaceholder.accept(new NestableElementModelVisitor() {
 
@@ -151,38 +190,6 @@ public class BulkArtifactDeclarationTestCase extends AbstractElementModelTestCas
             }
           });
         });
-
-        if (model.allowsTopLevelDeclaration()) {
-          artifactDeclarer.withGlobalElement(declarer.withRefName("global" + model.getName()).getDeclaration());
-        } else {
-          artifactDeclarer.withGlobalElement(core.newConstruct("flow")
-              .withRefName("flowFor" + model.getName())
-              .withComponent(declarer.getDeclaration())
-              .getDeclaration());
-        }
-      }
-
-      @Override
-      protected void onOperation(HasOperationModels owner, OperationModel model) {
-        if (model.getName().equals("flowRef")) {
-          return;
-        }
-        OperationElementDeclarer declarer = core.newOperation(model.getName());
-        populateParameterized(model, declarer);
-        artifactDeclarer.withGlobalElement(core.newConstruct("flow")
-            .withRefName("flowFor" + model.getName())
-            .withComponent(declarer.getDeclaration())
-            .getDeclaration());
-      }
-
-      @Override
-      protected void onSource(HasSourceModels owner, SourceModel model) {
-        SourceElementDeclarer declarer = core.newSource(model.getName());
-        populateParameterized(model, declarer);
-        artifactDeclarer.withGlobalElement(core.newConstruct("flow")
-            .withRefName("flowFor" + model.getName())
-            .withComponent(declarer.getDeclaration())
-            .getDeclaration());
       }
     }.walk(extensionModel);
 
