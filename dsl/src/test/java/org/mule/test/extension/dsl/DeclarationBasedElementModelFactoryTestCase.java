@@ -229,7 +229,7 @@ public class DeclarationBasedElementModelFactoryTestCase extends AbstractElement
   public void resolveConfigWithParameters() throws Exception {
     DslElementModel<ConfigurationModel> configElement = resolve(listenerConfig);
 
-    assertElementName(configElement, "listenerConfig");
+    assertElementName(configElement, "listener-config");
     assertHasParameter(configElement.getModel(), "basePath");
     assertAttributeIsPresent(configElement, "basePath");
 

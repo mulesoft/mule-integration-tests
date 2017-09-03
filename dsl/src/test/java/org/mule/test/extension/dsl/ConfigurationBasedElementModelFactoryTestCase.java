@@ -178,7 +178,7 @@ public class ConfigurationBasedElementModelFactoryTestCase extends AbstractEleme
     ComponentConfiguration config = getAppElement(applicationModel, HTTP_LISTENER_CONFIG);
     DslElementModel<ConfigurationModel> configElement = resolve(config);
 
-    assertElementName(configElement, "listenerConfig");
+    assertElementName(configElement, "listener-config");
     assertHasParameter(configElement.getModel(), "basePath");
     assertAttributeIsPresent(configElement, "basePath");
 

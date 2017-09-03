@@ -3,6 +3,16 @@
     <flow name="flowForscheduler">
         <scheduler schedulingStrategy="Attribute"/>
     </flow>
+    <flow name="flowForasync">
+        <async name="Attribute">
+            <logger/>
+        </async>
+    </flow>
+    <flow name="flowForforeach">
+        <foreach batchSize="10000" collection="#[payload]" counterVariableName="counter" rootMessageVariableName="rootMessage">
+            <logger/>
+        </foreach>
+    </flow>
     <flow name="flowForidempotentMessageValidator">
         <idempotent-message-validator idExpression="#[id]" objectStore="Attribute" storePrefix="Attribute" valueExpression="#[id]"/>
     </flow>
@@ -11,11 +21,6 @@
     </flow>
     <flow initialState="started" maxConcurrency="10000" name="globalflow">
         <logger/>
-    </flow>
-    <flow name="flowForforeach">
-        <foreach batchSize="10000" collection="#[payload]" counterVariableName="counter" rootMessageVariableName="rootMessage">
-            <logger/>
-        </foreach>
     </flow>
     <flow name="flowForchoice">
         <choice>
@@ -39,11 +44,6 @@
         <try transactionType="LOCAL" transactionalAction="INDIFFERENT">
             <logger/>
         </try>
-    </flow>
-    <flow name="flowForasync">
-        <async name="Attribute">
-            <logger/>
-        </async>
     </flow>
     <flow name="flowForscatterGather">
         <scatter-gather maxConcurrency="2147483647" target="Attribute" targetValue="#[payload]" timeout="9223372036854775807">
