@@ -90,7 +90,7 @@ public class DeclarationBasedElementModelFactoryTestCase extends AbstractElement
             .getDeclaration())
         .getDeclaration();
 
-    listenerConfig = http.newConfiguration("listener-config")
+    listenerConfig = http.newConfiguration("listenerConfig")
         .withRefName("httpListener")
         .withParameterGroup(newParameterGroup()
             .withParameter("basePath", "/")
@@ -229,7 +229,7 @@ public class DeclarationBasedElementModelFactoryTestCase extends AbstractElement
   public void resolveConfigWithParameters() throws Exception {
     DslElementModel<ConfigurationModel> configElement = resolve(listenerConfig);
 
-    assertElementName(configElement, "listener-config");
+    assertElementName(configElement, "listenerConfig");
     assertHasParameter(configElement.getModel(), "basePath");
     assertAttributeIsPresent(configElement, "basePath");
 

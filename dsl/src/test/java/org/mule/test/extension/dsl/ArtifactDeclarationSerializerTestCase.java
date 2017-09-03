@@ -20,8 +20,8 @@ import static org.mule.runtime.extension.api.ExtensionConstants.RECONNECTION_CON
 import static org.mule.runtime.extension.api.ExtensionConstants.RECONNECTION_STRATEGY_PARAMETER_NAME;
 import static org.mule.runtime.extension.api.ExtensionConstants.REDELIVERY_POLICY_PARAMETER_NAME;
 import static org.mule.runtime.extension.api.ExtensionConstants.STREAMING_STRATEGY_PARAMETER_NAME;
-import static org.mule.runtime.extension.api.ExtensionConstants.TARGET_VALUE_PARAMETER_NAME;
 import static org.mule.runtime.extension.api.ExtensionConstants.TARGET_PARAMETER_NAME;
+import static org.mule.runtime.extension.api.ExtensionConstants.TARGET_VALUE_PARAMETER_NAME;
 import static org.mule.runtime.extension.api.ExtensionConstants.TLS_PARAMETER_NAME;
 import static org.mule.runtime.extension.api.declaration.type.ReconnectionStrategyTypeBuilder.COUNT;
 import static org.mule.runtime.extension.api.declaration.type.ReconnectionStrategyTypeBuilder.FREQUENCY;
@@ -146,7 +146,7 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
                     .withParameter("maximumWait", "1000")
                     .getDeclaration())
                 .getDeclaration())
-            .withComponent(core.newConstruct("foreach")
+            .withComponent(core.newOperation("foreach")
                 .withComponent(jms.newOperation("publish")
                     .withConfig("config")
                     .withParameterGroup(newParameterGroup()
@@ -236,7 +236,7 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
                     .getDeclaration())
                 .getDeclaration())
             .getDeclaration())
-        .withGlobalElement(http.newConfiguration("listener-config")
+        .withGlobalElement(http.newConfiguration("listenerConfig")
             .withRefName("httpListener")
             .withParameterGroup(newParameterGroup()
                 .withParameter("basePath", "/")
@@ -355,7 +355,7 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
                         .getDeclaration())
                     .getDeclaration())
                 .withRoute(core.newRoute("otherwise")
-                    .withComponent(core.newConstruct("foreach")
+                    .withComponent(core.newOperation("foreach")
                         .withParameterGroup(newParameterGroup()
                             .withParameter("collection", "#[myCollection]")
                             .getDeclaration())
