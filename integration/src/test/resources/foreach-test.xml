@@ -60,7 +60,7 @@
     </flow>
 
     <flow name="map-config">
-        <foreach>
+        <foreach collection="#[dw:dw::core::Objects::entrySet(payload)]">
             <test:processor/>
             <set-variable variableName="totalMessages" value="#[vars.counter]" />
         </foreach>
