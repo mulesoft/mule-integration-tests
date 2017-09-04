@@ -24,7 +24,6 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
-@Ignore("MULE-13203: This test uses app's spring-security lib which conflicts with the ine included in spring-module")
 public class CustomSecManagerHttpFilterFunctionalTestCase extends AbstractIntegrationTestCase {
 
   @Rule

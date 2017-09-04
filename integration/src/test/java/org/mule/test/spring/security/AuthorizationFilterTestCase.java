@@ -24,11 +24,9 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
-@Ignore("MULE-13203: This test uses app's spring-security lib which conflicts with the ine included in spring-module")
 public class AuthorizationFilterTestCase extends AbstractIntegrationTestCase {
 
   @Rule
