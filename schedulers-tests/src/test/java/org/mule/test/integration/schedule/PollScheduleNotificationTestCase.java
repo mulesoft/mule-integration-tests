@@ -7,19 +7,19 @@
 package org.mule.test.integration.schedule;
 
 
-import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.core.api.context.notification.ConnectorMessageNotification;
 import org.mule.runtime.core.api.context.notification.ConnectorMessageNotificationListener;
 import org.mule.tck.probe.PollingProber;
 import org.mule.tck.probe.Probe;
 import org.mule.tck.probe.Prober;
-
-import org.junit.Test;
+import org.mule.test.AbstractSchedulerTestCase;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class PollScheduleNotificationTestCase extends MuleArtifactFunctionalTestCase {
+import org.junit.Test;
+
+public class PollScheduleNotificationTestCase extends AbstractSchedulerTestCase {
 
   private Prober prober = new PollingProber(RECEIVE_TIMEOUT, 100l);
 
