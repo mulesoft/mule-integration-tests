@@ -10,11 +10,10 @@ package org.mule.test.integration.schedule;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-
-import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.tck.probe.JUnitLambdaProbe;
 import org.mule.tck.probe.PollingProber;
+import org.mule.test.AbstractSchedulerTestCase;
 
 import org.junit.Test;
 
@@ -24,7 +23,7 @@ import org.junit.Test;
  *
  * It also shows the way users can add a new Scheduler as a spring bean.
  */
-public class RunningScheduleTestCase extends MuleArtifactFunctionalTestCase {
+public class RunningScheduleTestCase extends AbstractSchedulerTestCase {
 
   public static final String SCHEDULER_NAME = "testScheduler";
 

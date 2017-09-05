@@ -11,9 +11,7 @@ import static java.lang.Thread.sleep;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertThat;
-
 import org.mule.functional.api.component.EventCallback;
-import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.source.SchedulerMessageSource;
 import org.mule.runtime.core.api.InternalEvent;
@@ -24,17 +22,18 @@ import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.tck.probe.JUnitLambdaProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.tck.probe.Probe;
-
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.mule.test.AbstractSchedulerTestCase;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.ClassRule;
+import org.junit.Test;
+
 /**
  * This is a test for poll with schedulers. It validates that the polls can be executed, stopped, run.
  */
-public class PollScheduleTestCase extends MuleArtifactFunctionalTestCase {
+public class PollScheduleTestCase extends AbstractSchedulerTestCase {
 
   private static List<String> foo = new ArrayList<>();
   private static List<String> bar = new ArrayList<>();
