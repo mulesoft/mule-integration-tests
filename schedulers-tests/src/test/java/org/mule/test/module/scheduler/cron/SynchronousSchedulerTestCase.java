@@ -9,25 +9,24 @@ package org.mule.test.module.scheduler.cron;
 
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertThat;
-
 import org.mule.functional.api.component.EventCallback;
-import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.tck.probe.JUnitLambdaProbe;
 import org.mule.tck.probe.PollingProber;
-
-import org.junit.Test;
+import org.mule.test.AbstractSchedulerTestCase;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.junit.Test;
 
 /**
  * <p>
  * Validates that a synchronous flow processing strategy implies a synchronous poll execution
  * </p>
  */
-public class SynchronousSchedulerTestCase extends MuleArtifactFunctionalTestCase {
+public class SynchronousSchedulerTestCase extends AbstractSchedulerTestCase {
 
   private static List<String> foo = new ArrayList<>();
 

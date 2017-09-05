@@ -14,9 +14,7 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-
 import org.mule.functional.api.component.EventCallback;
-import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.source.SchedulerMessageSource;
 import org.mule.runtime.core.api.InternalEvent;
@@ -27,13 +25,14 @@ import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.source.MessageSource;
 import org.mule.tck.probe.JUnitLambdaProbe;
 import org.mule.tck.probe.PollingProber;
+import org.mule.test.AbstractSchedulerTestCase;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
 
-public class SchedulerTestCase extends MuleArtifactFunctionalTestCase {
+public class SchedulerTestCase extends AbstractSchedulerTestCase {
 
   private static List<String> foo;
   private static List<String> bar;

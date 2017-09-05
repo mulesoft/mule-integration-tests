@@ -8,22 +8,21 @@
 package org.mule.test.module.scheduler.cron;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
-
 import org.mule.functional.api.component.EventCallback;
-import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.util.concurrent.Latch;
 import org.mule.tck.probe.JUnitLambdaProbe;
 import org.mule.tck.probe.PollingProber;
+import org.mule.test.AbstractSchedulerTestCase;
+
+import java.util.concurrent.CountDownLatch;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.concurrent.CountDownLatch;
-
-public class MultipleSchedulersTestCase extends MuleArtifactFunctionalTestCase {
+public class MultipleSchedulersTestCase extends AbstractSchedulerTestCase {
 
   private static CountDownLatch firstRequest = new CountDownLatch(2);
   private static Latch stoppedFlowLatch = new Latch();

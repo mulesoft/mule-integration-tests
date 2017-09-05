@@ -11,9 +11,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-
 import org.mule.functional.api.component.EventCallback;
-import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.source.SchedulerMessageSource;
 import org.mule.runtime.core.api.InternalEvent;
@@ -23,13 +21,14 @@ import org.mule.runtime.core.api.source.MessageSource;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.tck.probe.JUnitLambdaProbe;
 import org.mule.tck.probe.PollingProber;
+import org.mule.test.AbstractSchedulerTestCase;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 /**
@@ -37,7 +36,7 @@ import java.util.List;
  * Uses the API to stop and start cron schedulers.
  * </p>
  */
-public class CronSchedulerTestCase extends MuleArtifactFunctionalTestCase {
+public class CronSchedulerTestCase extends AbstractSchedulerTestCase {
 
   private static List<String> foo = new ArrayList<>();
   private static List<String> bar = new ArrayList<>();
