@@ -10,7 +10,22 @@
         <test:processor/>
         <test:throw exception="java.lang.RuntimeException" error="ANY"/>
         <error-handler>
-            <test:on-error-assert/>
+            <test:on-error-assert>
+                <test:check-stacktrace>
+                    <test:method-call class="something" method="otherThing" package="lala.lelel.lolo" lineNumber="65"/>
+                </test:check-stacktrace>
+                <test:check-equals filterLog="false">
+                    <![CDATA[
+                        ********************************************************************************
+                        Message               : null (java.lang.RuntimeException).
+                        Element               : test/processors/1 @ OnErrorAssertTestCase#tryIt:error-assert.xml:11
+                        Element XML           : <test:throw exception="java.lang.RuntimeException" error="ANY"></test:throw>
+                        Error Type            : MULE:ANY
+                        (set debug level logging or '-Dmule.verbose.exceptions=true' for everything)
+                        ********************************************************************************
+                        ]]>
+                </test:check-equals>
+            </test:on-error-assert>
         </error-handler>
     </flow>
 
