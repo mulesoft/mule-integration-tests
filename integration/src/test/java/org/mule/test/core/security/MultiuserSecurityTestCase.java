@@ -22,14 +22,14 @@ import org.mule.runtime.core.api.security.EncryptionStrategy;
 import org.mule.runtime.core.api.security.SecurityContext;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Tests multi-user security against a security provider which only authenticates a single user at a time (i.e., authentication of
@@ -87,7 +87,7 @@ public class MultiuserSecurityTestCase extends AbstractIntegrationTestCase {
 
     @Override
     public InternalEvent process(InternalEvent event) throws MuleException {
-      SecurityContext securityContext = event.getSession().getSecurityContext();
+      SecurityContext securityContext = event.getSecurityContext();
       Authentication authentication = securityContext.getAuthentication();
 
       int numberLogins = (Integer) authentication.getProperties().get(PROPERTY_NUMBER_LOGINS);
