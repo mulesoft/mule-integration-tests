@@ -7,13 +7,20 @@
 package org.mule.test.integration.el;
 
 import static org.junit.Assert.assertSame;
-
 import org.mule.functional.api.component.EventCallback;
+import org.mule.runtime.api.component.location.ComponentLocation;
+import org.mule.runtime.api.el.BindingContext;
 import org.mule.runtime.api.el.MuleExpressionLanguage;
+import org.mule.runtime.api.el.ValidationResult;
+import org.mule.runtime.api.metadata.DataType;
+import org.mule.runtime.api.metadata.TypedValue;
 import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.MuleContext;
-import org.mule.runtime.core.el.mvel.MVELExpressionLanguage;
+import org.mule.runtime.core.api.el.ExtendedExpressionLanguageAdaptor;
+import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.test.AbstractIntegrationTestCase;
+
+import java.util.Iterator;
 
 import org.junit.Test;
 
@@ -39,14 +46,78 @@ public class ExpressionLanguageExtensionTestCase extends AbstractIntegrationTest
 
     @Override
     public void eventReceived(InternalEvent event, Object component, MuleContext muleContext) throws Exception {
-      new TestExpressionLanguage(muleContext);
+      new TestExpressionLanguage();
     }
   }
 
-  public static class TestExpressionLanguage extends MVELExpressionLanguage {
+  public static class TestExpressionLanguage implements ExtendedExpressionLanguageAdaptor {
 
-    public TestExpressionLanguage(MuleContext muleContext) {
-      super(muleContext);
+    @Override
+    public void addGlobalBindings(BindingContext bindingContext) {
+
+    }
+
+    @Override
+    public TypedValue evaluate(String expression, InternalEvent event, ComponentLocation componentLocation,
+                               BindingContext bindingContext)
+        throws ExpressionRuntimeException {
+      return null;
+    }
+
+    @Override
+    public TypedValue evaluate(String expression, InternalEvent event, BindingContext context)
+        throws ExpressionRuntimeException {
+      return null;
+    }
+
+    @Override
+    public TypedValue evaluate(String expression, DataType expectedOutputType, InternalEvent event, BindingContext context)
+        throws ExpressionRuntimeException {
+      return null;
+    }
+
+    @Override
+    public TypedValue evaluate(String expression, DataType expectedOutputType, InternalEvent event,
+                               ComponentLocation componentLocation, BindingContext context, boolean failOnNull)
+        throws ExpressionRuntimeException {
+      return null;
+    }
+
+    @Override
+    public ValidationResult validate(String expression) {
+      return null;
+    }
+
+    @Override
+    public Iterator<TypedValue<?>> split(String expression, InternalEvent event, ComponentLocation componentLocation,
+                                         BindingContext bindingContext)
+        throws ExpressionRuntimeException {
+      return null;
+    }
+
+    @Override
+    public Iterator<TypedValue<?>> split(String expression, InternalEvent event, BindingContext bindingContext)
+        throws ExpressionRuntimeException {
+      return null;
+    }
+
+    @Override
+    public TypedValue evaluate(String expression, InternalEvent event, InternalEvent.Builder eventBuilder,
+                               ComponentLocation componentLocation, BindingContext bindingContext)
+        throws ExpressionRuntimeException {
+      return null;
+    }
+
+    @Override
+    public void enrich(String expression, InternalEvent event, InternalEvent.Builder eventBuilder,
+                       ComponentLocation componentLocation, Object object) {
+
+    }
+
+    @Override
+    public void enrich(String expression, InternalEvent event, InternalEvent.Builder eventBuilder,
+                       ComponentLocation componentLocation, TypedValue value) {
+
     }
   }
 }
