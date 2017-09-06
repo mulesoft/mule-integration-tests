@@ -11,6 +11,7 @@ import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+import static org.mule.runtime.api.component.AbstractComponent.LOCATION_KEY;
 import static org.mule.runtime.api.component.ComponentIdentifier.buildFromStringRepresentation;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.FLOW;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.INTERCEPTING;
@@ -21,13 +22,12 @@ import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentT
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.SCOPE;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.SOURCE;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.builder;
-import static org.mule.runtime.api.meta.AbstractAnnotatedObject.LOCATION_KEY;
 import static org.mule.runtime.config.spring.api.dsl.model.ApplicationModel.FLOW_IDENTIFIER;
 import static org.mule.runtime.config.spring.api.dsl.model.ApplicationModel.SUBFLOW_IDENTIFIER;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentLocationStory.COMPONENT_LOCATION;
 import org.mule.runtime.api.component.TypedComponentIdentifier;
-import org.mule.runtime.api.meta.AnnotatedObject;
+import org.mule.runtime.api.component.Component;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.context.notification.MessageProcessorNotification;
 import org.mule.runtime.dsl.api.component.config.DefaultComponentLocation;
@@ -274,9 +274,9 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
                                             CONFIG_FILE_NAME, of(71));
     Flow flowWithSource = (Flow) getFlowConstruct("flowWithSource");
     DefaultComponentLocation sourceLocation =
-        (DefaultComponentLocation) ((AnnotatedObject) flowWithSource.getSource()).getAnnotation(LOCATION_KEY);
+        (DefaultComponentLocation) ((Component) flowWithSource.getSource()).getAnnotation(LOCATION_KEY);
     assertThat(sourceLocation, is(expectedSourceLocation));
-    assertThat(((AnnotatedObject) flowWithSource.getProcessors().get(0)).getAnnotation(LOCATION_KEY), is(FLOW_WITH_SOURCE
+    assertThat(((Component) flowWithSource.getProcessors().get(0)).getAnnotation(LOCATION_KEY), is(FLOW_WITH_SOURCE
         .appendLocationPart("processors", empty(), empty(), empty())
         .appendLocationPart("0", LOGGER, CONFIG_FILE_NAME, of(72))));
   }

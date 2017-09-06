@@ -21,7 +21,7 @@ import org.mule.runtime.api.deployment.management.ComponentInitialStateManager;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Error;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.api.meta.AnnotatedObject;
+import org.mule.runtime.api.component.Component;
 import org.mule.runtime.api.source.SchedulerMessageSource;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
@@ -45,7 +45,7 @@ import io.qameta.allure.Story;
 @Story(SOURCE_MANAGEMENT)
 public class SchedulerInitialStateTestCase extends AbstractIntegrationTestCase {
 
-  private List<AnnotatedObject> recordedOnStartMessageSources = new ArrayList<>();
+  private List<Component> recordedOnStartMessageSources = new ArrayList<>();
 
   @Override
   protected String getConfigFile() {
@@ -66,7 +66,7 @@ public class SchedulerInitialStateTestCase extends AbstractIntegrationTestCase {
         return new ComponentInitialStateManager() {
 
           @Override
-          public boolean mustStartMessageSource(AnnotatedObject component) {
+          public boolean mustStartMessageSource(Component component) {
             recordedOnStartMessageSources.add(component);
             return component.getLocation().getRootContainerName().equals("runningSchedulerOnStartup");
           }

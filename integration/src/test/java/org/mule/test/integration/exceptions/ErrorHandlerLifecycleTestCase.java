@@ -14,7 +14,7 @@ import static org.hamcrest.core.Is.is;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.api.lifecycle.Lifecycle;
-import org.mule.runtime.api.meta.AbstractAnnotatedObject;
+import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.construct.FlowConstruct;
 import org.mule.runtime.core.api.exception.AbstractExceptionListener;
@@ -69,7 +69,7 @@ public class ErrorHandlerLifecycleTestCase extends AbstractIntegrationTestCase {
     assertThat(lifecycleCheckerMessageProcessorFlowD.isStopped(), is(false));
   }
 
-  public static class LifecycleCheckerMessageProcessor extends AbstractAnnotatedObject implements Processor, Lifecycle {
+  public static class LifecycleCheckerMessageProcessor extends AbstractComponent implements Processor, Lifecycle {
 
     private boolean initialized;
     private boolean disposed;

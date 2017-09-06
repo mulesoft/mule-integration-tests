@@ -19,7 +19,7 @@ import static org.mockito.Mockito.withSettings;
 
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.lifecycle.Initialisable;
-import org.mule.runtime.api.meta.AnnotatedObject;
+import org.mule.runtime.api.component.Component;
 import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.runtime.core.api.processor.Processor;
@@ -56,7 +56,7 @@ public class DefaultErrorHandlerTestCase extends AbstractIntegrationTestCase {
   public void flowIsUsedWhenCatchAllIsMissingButMatchFound() throws Exception {
     verifyWithException(new RetryPolicyExhaustedException(createStaticMessage("Error"),
                                                           mock(Initialisable.class,
-                                                               withSettings().extraInterfaces(AnnotatedObject.class))),
+                                                               withSettings().extraInterfaces(Component.class))),
                         "innerEH");
   }
 

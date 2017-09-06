@@ -12,7 +12,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
-import org.mule.runtime.api.meta.AnnotatedObject;
+import org.mule.runtime.api.component.Component;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.construct.FlowConstruct;
 import org.mule.runtime.core.api.processor.LoggerMessageProcessor;
@@ -103,16 +103,16 @@ public class ConfigurationAnnotationsTestCase extends AbstractIntegrationTestCas
   }
 
   protected String getDocName(Object obj) {
-    return (String) ((AnnotatedObject) obj).getAnnotation(new QName("http://www.mulesoft.org/schema/mule/documentation", "name"));
+    return (String) ((Component) obj).getAnnotation(new QName("http://www.mulesoft.org/schema/mule/documentation", "name"));
   }
 
   protected String getDocDescription(Object obj) {
-    return (String) ((AnnotatedObject) obj)
+    return (String) ((Component) obj)
         .getAnnotation(new QName("http://www.mulesoft.org/schema/mule/documentation", "description"));
   }
 
   protected String getSourceElement(Object obj) {
-    return (String) ((AnnotatedObject) obj)
+    return (String) ((Component) obj)
         .getAnnotation(new QName("http://www.mulesoft.org/schema/mule/documentation", "sourceElement"));
   }
 }

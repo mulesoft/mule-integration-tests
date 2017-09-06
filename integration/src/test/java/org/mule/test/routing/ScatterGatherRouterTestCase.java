@@ -28,7 +28,7 @@ import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.message.Error;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.api.meta.AbstractAnnotatedObject;
+import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
@@ -209,7 +209,7 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
     assertThat(messageList.get("2").getPayload().getDataType().getMediaType(), is(ANY));
   }
 
-  public static class ThreadCaptor extends AbstractAnnotatedObject implements Processor {
+  public static class ThreadCaptor extends AbstractComponent implements Processor {
 
     @Override
     public InternalEvent process(InternalEvent event) throws MuleException {

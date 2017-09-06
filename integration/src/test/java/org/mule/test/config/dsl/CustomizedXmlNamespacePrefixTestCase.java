@@ -12,7 +12,7 @@ import static org.mule.runtime.api.component.ComponentIdentifier.buildFromString
 import static org.mule.test.allure.AllureConstants.MuleDsl.DslParsingStory.DSL_PARSING_STORY;
 import static org.mule.test.allure.AllureConstants.MuleDsl.MULE_DSL;
 import org.mule.runtime.api.component.location.Location;
-import org.mule.runtime.api.meta.AnnotatedObject;
+import org.mule.runtime.api.component.Component;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.util.Optional;
@@ -32,7 +32,7 @@ public class CustomizedXmlNamespacePrefixTestCase extends AbstractIntegrationTes
 
   @Test
   public void validateThatACustomXmlNamespacePrefixCanBeUsed() {
-    Optional<AnnotatedObject> httpRequesterOptional = muleContext.getConfigurationComponentLocator()
+    Optional<Component> httpRequesterOptional = muleContext.getConfigurationComponentLocator()
         .find(Location.builder().globalName("flow").addProcessorsPart().addIndexPart(0).build());
     assertThat(httpRequesterOptional.isPresent(), is(true));
     assertThat(httpRequesterOptional.get().getLocation().getComponentIdentifier().getIdentifier(),

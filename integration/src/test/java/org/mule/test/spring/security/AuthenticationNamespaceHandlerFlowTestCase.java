@@ -16,7 +16,7 @@ import static org.mule.runtime.core.api.config.MuleProperties.OBJECT_SECURITY_MA
 import org.mule.extension.spring.api.security.PreAuthenticatedAuthenticationProvider;
 import org.mule.extension.spring.api.security.SpringProviderAdapter;
 import org.mule.extension.spring.api.security.UserAndPasswordAuthenticationProvider;
-import org.mule.runtime.api.meta.AnnotatedObject;
+import org.mule.runtime.api.component.Component;
 import org.mule.runtime.core.api.security.SecurityManager;
 import org.mule.runtime.core.api.security.SecurityProvider;
 import org.mule.tck.junit4.rule.DynamicPort;
@@ -52,7 +52,7 @@ public class AuthenticationNamespaceHandlerFlowTestCase extends AbstractIntegrat
   private boolean containsSecurityProvider(Collection<SecurityProvider> providers, Class authenticationProviderClass) {
     for (SecurityProvider provider : providers) {
       assertThat(provider, instanceOf(SpringProviderAdapter.class));
-      assertThat(provider, instanceOf(AnnotatedObject.class));
+      assertThat(provider, instanceOf(Component.class));
       if (authenticationProviderClass
           .isAssignableFrom(((SpringProviderAdapter) provider).getAuthenticationProvider().getClass())) {
         return true;
