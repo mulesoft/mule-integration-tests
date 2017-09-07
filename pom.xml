@@ -30,7 +30,7 @@
     <muleSoapServiceTestVersion>1.0.0-rc-SNAPSHOT</muleSoapServiceTestVersion>
     <muleExtensionTestSoapTestVersion>1.0.0-rc-SNAPSHOT</muleExtensionTestSoapTestVersion>
 
-    <muleSpringModuleVersion>1.0.0-SNAPSHOT</muleSpringModuleVersion>
+    <muleSpringModuleVersion>0.9.0-SNAPSHOT</muleSpringModuleVersion>
     <muleValidationModuleTestVersion>0.9.0-SNAPSHOT</muleValidationModuleTestVersion>
     <muleScriptingModuleVersion>0.9.0-SNAPSHOT</muleScriptingModuleVersion>
     <muleFileCommonsTestVersion>0.9.0-SNAPSHOT</muleFileCommonsTestVersion>
