@@ -14,9 +14,9 @@ import org.mule.runtime.api.el.MuleExpressionLanguage;
 import org.mule.runtime.api.el.ValidationResult;
 import org.mule.runtime.api.metadata.DataType;
 import org.mule.runtime.api.metadata.TypedValue;
-import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.el.ExtendedExpressionLanguageAdaptor;
+import org.mule.runtime.core.api.event.BaseEvent;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -45,7 +45,7 @@ public class ExpressionLanguageExtensionTestCase extends AbstractIntegrationTest
   public static class ExpressionLanguageFactory implements EventCallback {
 
     @Override
-    public void eventReceived(InternalEvent event, Object component, MuleContext muleContext) throws Exception {
+    public void eventReceived(BaseEvent event, Object component, MuleContext muleContext) throws Exception {
       new TestExpressionLanguage();
     }
   }
@@ -58,26 +58,26 @@ public class ExpressionLanguageExtensionTestCase extends AbstractIntegrationTest
     }
 
     @Override
-    public TypedValue evaluate(String expression, InternalEvent event, ComponentLocation componentLocation,
+    public TypedValue evaluate(String expression, BaseEvent event, ComponentLocation componentLocation,
                                BindingContext bindingContext)
         throws ExpressionRuntimeException {
       return null;
     }
 
     @Override
-    public TypedValue evaluate(String expression, InternalEvent event, BindingContext context)
+    public TypedValue evaluate(String expression, BaseEvent event, BindingContext context)
         throws ExpressionRuntimeException {
       return null;
     }
 
     @Override
-    public TypedValue evaluate(String expression, DataType expectedOutputType, InternalEvent event, BindingContext context)
+    public TypedValue evaluate(String expression, DataType expectedOutputType, BaseEvent event, BindingContext context)
         throws ExpressionRuntimeException {
       return null;
     }
 
     @Override
-    public TypedValue evaluate(String expression, DataType expectedOutputType, InternalEvent event,
+    public TypedValue evaluate(String expression, DataType expectedOutputType, BaseEvent event,
                                ComponentLocation componentLocation, BindingContext context, boolean failOnNull)
         throws ExpressionRuntimeException {
       return null;
@@ -89,33 +89,33 @@ public class ExpressionLanguageExtensionTestCase extends AbstractIntegrationTest
     }
 
     @Override
-    public Iterator<TypedValue<?>> split(String expression, InternalEvent event, ComponentLocation componentLocation,
+    public Iterator<TypedValue<?>> split(String expression, BaseEvent event, ComponentLocation componentLocation,
                                          BindingContext bindingContext)
         throws ExpressionRuntimeException {
       return null;
     }
 
     @Override
-    public Iterator<TypedValue<?>> split(String expression, InternalEvent event, BindingContext bindingContext)
+    public Iterator<TypedValue<?>> split(String expression, BaseEvent event, BindingContext bindingContext)
         throws ExpressionRuntimeException {
       return null;
     }
 
     @Override
-    public TypedValue evaluate(String expression, InternalEvent event, InternalEvent.Builder eventBuilder,
+    public TypedValue evaluate(String expression, BaseEvent event, BaseEvent.Builder eventBuilder,
                                ComponentLocation componentLocation, BindingContext bindingContext)
         throws ExpressionRuntimeException {
       return null;
     }
 
     @Override
-    public void enrich(String expression, InternalEvent event, InternalEvent.Builder eventBuilder,
+    public void enrich(String expression, BaseEvent event, BaseEvent.Builder eventBuilder,
                        ComponentLocation componentLocation, Object object) {
 
     }
 
     @Override
-    public void enrich(String expression, InternalEvent event, InternalEvent.Builder eventBuilder,
+    public void enrich(String expression, BaseEvent event, BaseEvent.Builder eventBuilder,
                        ComponentLocation componentLocation, TypedValue value) {
 
     }

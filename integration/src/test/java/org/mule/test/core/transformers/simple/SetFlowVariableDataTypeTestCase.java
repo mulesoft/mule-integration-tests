@@ -15,7 +15,7 @@ import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.metadata.DataType;
 import org.mule.runtime.api.metadata.MediaType;
-import org.mule.runtime.core.api.InternalEvent;
+import org.mule.runtime.core.api.event.BaseEvent;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -30,7 +30,7 @@ public class SetFlowVariableDataTypeTestCase extends AbstractIntegrationTestCase
 
   @Test
   public void setsPropertyDataType() throws Exception {
-    final InternalEvent muleEvent = flowRunner("main").withPayload(TEST_MESSAGE).run();
+    final BaseEvent muleEvent = flowRunner("main").withPayload(TEST_MESSAGE).run();
 
     Message response = muleEvent.getMessage();
     DataType dataType = (DataType) response.getPayload().getValue();
@@ -40,8 +40,8 @@ public class SetFlowVariableDataTypeTestCase extends AbstractIntegrationTestCase
   public static class FlowVariableDataTypeAccessor implements Processor {
 
     @Override
-    public InternalEvent process(InternalEvent event) throws MuleException {
-      return InternalEvent.builder(event)
+    public BaseEvent process(BaseEvent event) throws MuleException {
+      return BaseEvent.builder(event)
           .message(Message.builder(event.getMessage()).value(event.getVariables().get("testVariable").getDataType()).build())
           .build();
     }

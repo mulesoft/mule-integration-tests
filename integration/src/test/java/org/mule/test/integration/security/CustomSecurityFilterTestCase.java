@@ -15,12 +15,13 @@ import org.mule.runtime.api.exception.ExceptionHelper;
 import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.api.security.SecurityProviderNotFoundException;
 import org.mule.runtime.api.security.UnknownAuthenticationTypeException;
-import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.el.ExpressionManager;
+import org.mule.runtime.core.api.event.BaseEvent;
 import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.runtime.core.api.security.AbstractAuthenticationFilter;
 import org.mule.runtime.core.api.security.CryptoFailureException;
 import org.mule.runtime.core.api.security.EncryptionStrategyNotFoundException;
+import org.mule.runtime.core.api.security.SecurityContext;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Test;
@@ -50,7 +51,7 @@ public class CustomSecurityFilterTestCase extends AbstractIntegrationTestCase {
     props.put("username", "ross");
     props.put("pass", EXPECTED_PASSWORD);
 
-    InternalEvent event = flowRunner("test").withPayload("hi").withInboundProperties(props).run();
+    BaseEvent event = flowRunner("test").withPayload("hi").withInboundProperties(props).run();
 
     assertThat(event.getError().isPresent(), is(false));
 
@@ -65,7 +66,7 @@ public class CustomSecurityFilterTestCase extends AbstractIntegrationTestCase {
     private String password;
 
     @Override
-    public InternalEvent authenticate(InternalEvent event) throws SecurityException, UnknownAuthenticationTypeException,
+    public SecurityContext authenticate(BaseEvent event) throws SecurityException, UnknownAuthenticationTypeException,
         CryptoFailureException, SecurityProviderNotFoundException, EncryptionStrategyNotFoundException, InitialisationException {
       ExpressionManager expressionManager = (ExpressionManager) registry.lookupByName(OBJECT_EXPRESSION_MANAGER).get();
 
@@ -74,7 +75,7 @@ public class CustomSecurityFilterTestCase extends AbstractIntegrationTestCase {
         throw new BadCredentialsException("Bad credentials");
       }
 
-      return event;
+      return event.getSecurityContext();
     }
 
     public void setPassword(String password) {

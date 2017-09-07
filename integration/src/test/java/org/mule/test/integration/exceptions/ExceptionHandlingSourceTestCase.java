@@ -15,7 +15,7 @@ import static org.mule.runtime.http.api.HttpConstants.HttpStatus.INTERNAL_SERVER
 import static org.mule.runtime.http.api.HttpConstants.Method.GET;
 
 import org.mule.runtime.api.exception.MuleException;
-import org.mule.runtime.core.api.InternalEvent;
+import org.mule.runtime.core.api.event.BaseEvent;
 import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.http.api.HttpService;
@@ -122,7 +122,7 @@ public class ExceptionHandlingSourceTestCase extends AbstractIntegrationTestCase
     private static AtomicInteger count = new AtomicInteger(0);
 
     @Override
-    public InternalEvent process(InternalEvent event) throws MuleException {
+    public BaseEvent process(BaseEvent event) throws MuleException {
       count.incrementAndGet();
       return event;
     }

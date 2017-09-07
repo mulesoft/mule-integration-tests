@@ -11,14 +11,13 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.http.api.HttpConstants.Method.GET;
 
-import io.qameta.allure.Issue;
-
 import org.mule.functional.api.flow.FlowRunner;
 import org.mule.functional.junit4.DomainFunctionalTestCase;
 import org.mule.runtime.api.tls.TlsContextFactory;
-import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.MuleContext;
+import org.mule.runtime.core.api.event.BaseEvent;
 import org.mule.runtime.core.api.util.IOUtils;
+import org.mule.runtime.core.privileged.event.PrivilegedEvent;
 import org.mule.runtime.http.api.client.HttpClient;
 import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;
 import org.mule.runtime.http.api.domain.message.request.HttpRequest;
@@ -29,6 +28,8 @@ import org.mule.tck.junit4.rule.DynamicPort;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
+
+import io.qameta.allure.Issue;
 
 @Ignore("MULE-10633")
 @Issue("MULE-10633")
@@ -84,7 +85,7 @@ public class TlsSharedContextTestCase extends DomainFunctionalTestCase {
   }
 
   private void testFlowForApp(String flowName, String appName, String expected) throws Exception {
-    InternalEvent response = new FlowRunner(getMuleContextForApp(appName), flowName).withPayload(DATA).run();
-    assertThat(response.getMessageAsString(getMuleContextForApp(appName)), is(expected));
+    BaseEvent response = new FlowRunner(getMuleContextForApp(appName), flowName).withPayload(DATA).run();
+    assertThat(((PrivilegedEvent) response).getMessageAsString(getMuleContextForApp(appName)), is(expected));
   }
 }

@@ -11,7 +11,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.core.api.InternalEvent;
+import org.mule.runtime.core.api.event.BaseEvent;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.transformers.GraphTransformerResolutionTestCase.A;
 import org.mule.test.transformers.GraphTransformerResolutionTestCase.B;
@@ -27,7 +27,7 @@ public class SpringPrototypesLifecycleTestCase extends AbstractIntegrationTestCa
 
   @Test
   public void registersTransformerOnce() throws Exception {
-    final InternalEvent muleEvent = flowRunner("testFlow").withPayload(new A(TEST_MESSAGE)).run();
+    final BaseEvent muleEvent = flowRunner("testFlow").withPayload(new A(TEST_MESSAGE)).run();
     final Message response = muleEvent.getMessage();
 
     assertThat(response.getPayload().getValue(), is(instanceOf(B.class)));
@@ -35,7 +35,7 @@ public class SpringPrototypesLifecycleTestCase extends AbstractIntegrationTestCa
 
   @Test
   public void exceptionHandlerWithTransformerInEndpoint() throws Exception {
-    final InternalEvent muleEvent =
+    final BaseEvent muleEvent =
         flowRunner("testExceptionHandlerWithTransformerInEndpointFlow").withPayload(new A(TEST_MESSAGE)).run();
     final Message response = muleEvent.getMessage();
 

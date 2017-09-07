@@ -8,6 +8,7 @@ package org.mule.test.integration.exceptions;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.instanceOf;
@@ -18,29 +19,27 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
+import static org.mule.functional.api.event.EventTestUtils.getEffectiveExceptionHandler;
 import static org.mule.tck.MuleTestUtils.getExceptionListeners;
+
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.core.api.InternalEvent;
-import org.mule.runtime.core.api.InternalEventContext;
 import org.mule.runtime.core.api.client.MuleClient;
+import org.mule.runtime.core.api.event.BaseEvent;
 import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.runtime.core.api.exception.MessagingExceptionHandler;
 import org.mule.runtime.core.api.exception.MessagingExceptionHandlerAcceptor;
-import org.mule.runtime.core.api.exception.NullExceptionHandler;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.tck.processor.FlowAssert;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import org.junit.Test;
+
 import java.io.Serializable;
-import java.lang.reflect.Field;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-
-import org.junit.Test;
 
 public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
 
@@ -48,7 +47,6 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
   private static final String SYTEM_EXCEPTION_HANDLER_CLASSNAME =
       "org.mule.runtime.core.internal.exception.MessagingExceptionHandlerToSystemAdapter";
   private static final String ERROR_HANDLER_CLASSNAME = "org.mule.runtime.core.internal.exception.ErrorHandler";
-  public static final MessagingExceptionHandler HANDLER = NullExceptionHandler.getInstance();
 
   private static MessagingExceptionHandler effectiveMessagingExceptionHandler;
   private static CountDownLatch latch;
@@ -65,7 +63,7 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void testCustomProcessorInFlow() throws Exception {
-    final InternalEvent muleEvent = runFlow("customProcessorInFlow");
+    final BaseEvent muleEvent = runFlow("customProcessorInFlow");
     Message response = muleEvent.getMessage();
     assertThat(response, is(notNullValue()));
     assertThat(effectiveMessagingExceptionHandler.getClass().getName(), equalTo(ERROR_HANDLER_CLASSNAME));
@@ -100,7 +98,7 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
   public void testCustomProcessorInScope() throws Exception {
     LinkedList<String> list = new LinkedList<>();
     list.add(MESSAGE);
-    final InternalEvent muleEvent = flowRunner("customProcessorInScope").withPayload(list).run();
+    final BaseEvent muleEvent = flowRunner("customProcessorInScope").withPayload(list).run();
     Message response = muleEvent.getMessage();
 
     assertNotNull(response);
@@ -184,37 +182,24 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
       // do nothing
     }
 
-    assertFalse(latch.await(3, TimeUnit.SECONDS));
+    assertFalse(latch.await(3, SECONDS));
     verify(latch).countDown();
   }
 
   public static class ExecutionCountProcessor implements Processor {
 
     @Override
-    public synchronized InternalEvent process(InternalEvent event) throws MuleException {
+    public synchronized BaseEvent process(BaseEvent event) throws MuleException {
       latch.countDown();
       return event;
     }
   }
 
-  public static class ExceptionHandlerVerifierProcessor
-      implements Processor {
+  public static class ExceptionHandlerVerifierProcessor implements Processor {
 
     @Override
-    public synchronized InternalEvent process(InternalEvent event) throws MuleException {
-      try {
-        Field exceptionHandlerField = event.getContext().getClass().getSuperclass().getDeclaredField("exceptionHandler");
-        exceptionHandlerField.setAccessible(true);
-        InternalEventContext eventContext = event.getContext();
-
-        effectiveMessagingExceptionHandler = (MessagingExceptionHandler) exceptionHandlerField.get(eventContext);
-        while (eventContext.getParentContext().isPresent() && effectiveMessagingExceptionHandler == HANDLER) {
-          eventContext = eventContext.getParentContext().get();
-          effectiveMessagingExceptionHandler = (MessagingExceptionHandler) exceptionHandlerField.get(eventContext);
-        }
-      } catch (Exception e) {
-        throw new RuntimeException(e);
-      }
+    public synchronized BaseEvent process(BaseEvent event) throws MuleException {
+      effectiveMessagingExceptionHandler = getEffectiveExceptionHandler(event);
       return event;
     }
 

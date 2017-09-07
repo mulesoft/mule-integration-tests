@@ -10,17 +10,17 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import org.mule.runtime.api.exception.MuleException;
-import org.mule.runtime.core.api.InternalEvent;
+import org.mule.runtime.core.api.event.BaseEvent;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.test.AbstractIntegrationTestCase;
+
+import org.junit.Test;
 
 import com.google.common.collect.ConcurrentHashMultiset;
 import com.google.common.collect.Multiset;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-
-import org.junit.Test;
 
 public class UntilSuccessfulWithSplitterTestCase extends AbstractIntegrationTestCase {
 
@@ -51,8 +51,8 @@ public class UntilSuccessfulWithSplitterTestCase extends AbstractIntegrationTest
   public static class FailAtFirstAttempt implements Processor {
 
     @Override
-    public InternalEvent process(InternalEvent event) throws MuleException {
-      final String payload = event.getMessageAsString(muleContext);
+    public BaseEvent process(BaseEvent event) throws MuleException {
+      final String payload = event.getMessage().getPayload().getValue().toString();
       seenPayloads.add(payload);
 
       if (seenPayloads.count(payload) == 1) {
