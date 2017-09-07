@@ -9,7 +9,6 @@ package org.mule.shutdown;
 import static org.junit.Assert.assertTrue;
 import static org.mule.runtime.http.api.HttpConstants.Method.GET;
 
-import io.qameta.allure.Issue;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.runtime.http.api.HttpService;
@@ -20,12 +19,9 @@ import org.mule.service.http.TestHttpClient;
 import org.mule.tck.junit4.rule.SystemProperty;
 
 import org.junit.After;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
-@Ignore("See MULE-9200")
-@Issue("MULE-9200")
 public class ValidShutdownTimeoutRequestResponseTestCase extends AbstractShutdownTimeoutRequestResponseTestCase {
 
   @Rule
@@ -47,11 +43,6 @@ public class ValidShutdownTimeoutRequestResponseTestCase extends AbstractShutdow
   @Override
   protected String getConfigFile() {
     return "shutdown-timeout-request-response-config.xml";
-  }
-
-  @Test
-  public void testStaticComponent() throws Exception {
-    doShutDownTest("staticComponentResponse", "http://localhost:" + httpPort.getNumber() + "/staticComponent");
   }
 
   @Test
