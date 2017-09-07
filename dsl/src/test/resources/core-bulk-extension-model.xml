@@ -19,9 +19,6 @@
     <flow name="flowForlogger">
         <logger category="Attribute" level="DEBUG" message="Attribute"/>
     </flow>
-    <flow initialState="started" maxConcurrency="10000" name="globalflow">
-        <logger/>
-    </flow>
     <flow name="flowForchoice">
         <choice>
             <when expression="Attribute">
@@ -32,6 +29,7 @@
             </otherwise>
         </choice>
     </flow>
+    <configuration defaultErrorHandler-ref="Attribute" defaultObjectSerializer-ref="Attribute" defaultResponseTimeout="10000" defaultTransactionTimeout="30000" maxQueueTransactionFilesSize="500" name="globalconfiguration" shutdownTimeout="5000"/>
     <error-handler name="globalerrorHandler">
         <on-error-continue enableNotifications="true" logException="true" name="Attribute" type="Attribute" when="Attribute">
             <logger/>
@@ -40,10 +38,8 @@
             <logger/>
         </on-error-propagate>
     </error-handler>
-    <flow name="flowFortry">
-        <try transactionType="LOCAL" transactionalAction="INDIFFERENT">
+    <flow initialState="started" maxConcurrency="10000" name="globalflow">
             <logger/>
-        </try>
     </flow>
     <flow name="flowForscatterGather">
         <scatter-gather maxConcurrency="2147483647" target="Attribute" targetValue="#[payload]" timeout="9223372036854775807">
@@ -52,5 +48,9 @@
             </route>
         </scatter-gather>
     </flow>
-    <configuration defaultErrorHandler-ref="Attribute" defaultObjectSerializer-ref="Attribute" defaultResponseTimeout="10000" defaultTransactionTimeout="30000" maxQueueTransactionFilesSize="500" name="globalconfiguration" shutdownTimeout="5000"/>
+    <flow name="flowFortry">
+        <try transactionType="LOCAL" transactionalAction="INDIFFERENT">
+            <logger/>
+        </try>
+    </flow>
 </mule>

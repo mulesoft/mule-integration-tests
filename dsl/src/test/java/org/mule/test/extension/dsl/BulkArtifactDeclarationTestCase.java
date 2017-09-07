@@ -70,7 +70,6 @@ import org.junit.Test;
 
 public class BulkArtifactDeclarationTestCase extends AbstractElementModelTestCase {
 
-
   private ArtifactDeclarationXmlSerializer serializer;
   private DslSyntaxResolver dslResolver;
 
