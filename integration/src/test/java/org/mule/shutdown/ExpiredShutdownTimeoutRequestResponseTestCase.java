@@ -18,11 +18,9 @@ import org.mule.runtime.http.api.domain.message.response.HttpResponse;
 import org.mule.service.http.TestHttpClient;
 import org.mule.tck.junit4.rule.SystemProperty;
 
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
-@Ignore("See MULE-9200")
 public class ExpiredShutdownTimeoutRequestResponseTestCase extends AbstractShutdownTimeoutRequestResponseTestCase {
 
   @Rule
@@ -34,11 +32,6 @@ public class ExpiredShutdownTimeoutRequestResponseTestCase extends AbstractShutd
   @Override
   protected String getConfigFile() {
     return "shutdown-timeout-request-response-config.xml";
-  }
-
-  @Test
-  public void testStaticComponent() throws Exception {
-    doShutDownTest("http://localhost:" + httpPort.getNumber() + "/staticComponent");
   }
 
   @Test
