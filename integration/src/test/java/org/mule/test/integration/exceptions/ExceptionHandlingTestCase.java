@@ -6,7 +6,6 @@
  */
 package org.mule.test.integration.exceptions;
 
-import static java.lang.Class.forName;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
 import static org.hamcrest.Matchers.equalTo;
@@ -28,18 +27,20 @@ import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.runtime.core.api.exception.MessagingExceptionHandler;
 import org.mule.runtime.core.api.exception.MessagingExceptionHandlerAcceptor;
+import org.mule.runtime.core.api.exception.NullExceptionHandler;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.runtime.core.api.processor.Processor;
-import org.mule.runtime.core.api.exception.NullExceptionHandler;
 import org.mule.tck.processor.FlowAssert;
 import org.mule.test.AbstractIntegrationTestCase;
-import org.junit.Test;
+
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+
+import org.junit.Test;
 
 public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
 
@@ -202,9 +203,10 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
     @Override
     public synchronized InternalEvent process(InternalEvent event) throws MuleException {
       try {
-        Field exceptionHandlerField = forName("org.mule.runtime.core.AbstractEventContext").getDeclaredField("exceptionHandler");
+        Field exceptionHandlerField = event.getContext().getClass().getSuperclass().getDeclaredField("exceptionHandler");
         exceptionHandlerField.setAccessible(true);
         InternalEventContext eventContext = event.getContext();
+
         effectiveMessagingExceptionHandler = (MessagingExceptionHandler) exceptionHandlerField.get(eventContext);
         while (eventContext.getParentContext().isPresent() && effectiveMessagingExceptionHandler == HANDLER) {
           eventContext = eventContext.getParentContext().get();
