@@ -19,7 +19,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
-import static org.mule.functional.api.event.EventTestUtils.getEffectiveExceptionHandler;
+import static org.mule.functional.api.event.TestLegacyEventUtils.getEffectiveExceptionHandler;
 import static org.mule.tck.MuleTestUtils.getExceptionListeners;
 
 import org.mule.runtime.api.exception.MuleException;

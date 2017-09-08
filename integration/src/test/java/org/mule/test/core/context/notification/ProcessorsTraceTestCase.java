@@ -12,7 +12,7 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertThat;
-import static org.mule.functional.api.event.EventTestUtils.getProcessorsTrace;
+import static org.mule.functional.api.event.TestLegacyEventUtils.getProcessorsTrace;
 import static org.mule.runtime.core.api.config.MuleProperties.MULE_FLOW_TRACE;
 
 import org.mule.runtime.api.exception.MuleException;
