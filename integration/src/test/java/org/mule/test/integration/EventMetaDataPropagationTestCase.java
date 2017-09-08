@@ -9,23 +9,25 @@ package org.mule.test.integration;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mule.functional.junit4.TestLegacyMessageUtils.getOutboundProperty;
+
 import org.mule.functional.junit4.TestLegacyMessageBuilder;
+import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.api.component.AbstractComponent;
-import org.mule.runtime.core.api.InternalEvent;
+import org.mule.runtime.api.metadata.DataType;
+import org.mule.runtime.core.api.event.BaseEvent;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.transformer.AbstractMessageTransformer;
 import org.mule.runtime.core.api.transformer.MessageTransformerException;
 import org.mule.tck.testmodels.fruit.Apple;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import org.junit.Test;
+
 import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.junit.Test;
 
 public class EventMetaDataPropagationTestCase extends AbstractIntegrationTestCase {
 
@@ -42,11 +44,11 @@ public class EventMetaDataPropagationTestCase extends AbstractIntegrationTestCas
   public static class DummyComponent extends AbstractComponent implements Processor {
 
     @Override
-    public InternalEvent process(InternalEvent event) throws MuleException {
-      return InternalEvent.builder(event).message(doProcess(event)).build();
+    public BaseEvent process(BaseEvent event) throws MuleException {
+      return BaseEvent.builder(event).message(doProcess(event)).build();
     }
 
-    private Message doProcess(InternalEvent event) throws MuleException {
+    private Message doProcess(BaseEvent event) throws MuleException {
       Map<String, Serializable> props = new HashMap<>();
       props.put("stringParam", "param1");
       props.put("objectParam", new Apple());
@@ -56,7 +58,7 @@ public class EventMetaDataPropagationTestCase extends AbstractIntegrationTestCas
       props.put("booleanParam", Boolean.TRUE);
 
       return new TestLegacyMessageBuilder()
-          .value(Message.builder().value(event.getMessageAsString(muleContext)).build())
+          .value(muleContext.getTransformationService().transform(event.getMessage(), DataType.STRING))
           .outboundProperties(props).build();
     }
 
@@ -69,7 +71,7 @@ public class EventMetaDataPropagationTestCase extends AbstractIntegrationTestCas
   public static class DummyTransformer extends AbstractMessageTransformer {
 
     @Override
-    public Object transformMessage(InternalEvent event, Charset outputEncoding) throws MessageTransformerException {
+    public Object transformMessage(BaseEvent event, Charset outputEncoding) throws MessageTransformerException {
       Message msg = event.getMessage();
       assertEquals("param1", getOutboundProperty(msg, "stringParam"));
       final Object o = getOutboundProperty(msg, "objectParam");

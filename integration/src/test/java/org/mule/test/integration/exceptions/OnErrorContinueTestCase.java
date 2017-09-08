@@ -32,7 +32,7 @@ import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.streaming.bytes.CursorStreamProvider;
 import org.mule.runtime.api.tls.TlsContextFactory;
 import org.mule.runtime.core.api.DefaultMuleException;
-import org.mule.runtime.core.api.InternalEvent;
+import org.mule.runtime.core.api.event.BaseEvent;
 import org.mule.runtime.core.api.exception.MuleFatalException;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.retry.policy.RetryPolicyExhaustedException;
@@ -210,7 +210,7 @@ public class OnErrorContinueTestCase extends AbstractIntegrationTestCase {
   public static class FailingProcessor implements Processor {
 
     @Override
-    public InternalEvent process(InternalEvent event) throws MuleException {
+    public BaseEvent process(BaseEvent event) throws MuleException {
       throw new RetryPolicyExhaustedException(createStaticMessage("Error."), mock(Initialisable.class));
     }
 
@@ -219,7 +219,7 @@ public class OnErrorContinueTestCase extends AbstractIntegrationTestCase {
   public static class ErrorProcessor implements Processor {
 
     @Override
-    public InternalEvent process(InternalEvent event) throws MuleException {
+    public BaseEvent process(BaseEvent event) throws MuleException {
       throw new NoClassDefFoundError("Test error");
     }
 
@@ -228,7 +228,7 @@ public class OnErrorContinueTestCase extends AbstractIntegrationTestCase {
   public static class LoadNewsProcessor extends AbstractComponent implements Processor {
 
     @Override
-    public InternalEvent process(InternalEvent event) throws MuleException {
+    public BaseEvent process(BaseEvent event) throws MuleException {
       NewsRequest newsRequest;
 
       try {
@@ -249,7 +249,7 @@ public class OnErrorContinueTestCase extends AbstractIntegrationTestCase {
       NewsResponse newsResponse = new NewsResponse();
       newsResponse.setUserId(newsRequest.getUserId());
       newsResponse.setTitle("News title");
-      return InternalEvent.builder(event).message(Message.builder(event.getMessage()).value(newsResponse).build()).build();
+      return BaseEvent.builder(event).message(Message.builder(event.getMessage()).value(newsResponse).build()).build();
     }
 
     private NewsRequest handleInputStream(InputStream payload) throws IOException {
@@ -265,7 +265,7 @@ public class OnErrorContinueTestCase extends AbstractIntegrationTestCase {
   public static class NewsErrorProcessor extends AbstractComponent implements Processor {
 
     @Override
-    public InternalEvent process(InternalEvent event) throws MuleException {
+    public BaseEvent process(BaseEvent event) throws MuleException {
 
       NewsResponse newsResponse = (NewsResponse) event.getMessage().getPayload().getValue();
       newsResponse.setErrorMessage(ERROR_PROCESSING_NEWS);
@@ -277,7 +277,7 @@ public class OnErrorContinueTestCase extends AbstractIntegrationTestCase {
         throw new DefaultMuleException(e);
       }
 
-      return InternalEvent.builder(event).message(Message.builder(event.getMessage()).value(writer.toString()).build()).build();
+      return BaseEvent.builder(event).message(Message.builder(event.getMessage()).value(writer.toString()).build()).build();
     }
   }
 

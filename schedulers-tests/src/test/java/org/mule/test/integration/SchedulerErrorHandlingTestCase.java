@@ -11,8 +11,8 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
 import org.mule.functional.api.component.EventCallback;
-import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.MuleContext;
+import org.mule.runtime.core.api.event.BaseEvent;
 import org.mule.runtime.core.api.util.concurrent.Latch;
 import org.mule.test.AbstractSchedulerTestCase;
 
@@ -38,7 +38,7 @@ public class SchedulerErrorHandlingTestCase extends AbstractSchedulerTestCase {
   public static class VerifyExecutionCallback implements EventCallback {
 
     @Override
-    public void eventReceived(InternalEvent event, Object component, MuleContext muleContext) throws Exception {
+    public void eventReceived(BaseEvent event, Object component, MuleContext muleContext) throws Exception {
       latch.release();
     }
 

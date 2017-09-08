@@ -9,9 +9,9 @@ package org.mule.test.module.scheduler.cron;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import org.mule.functional.api.component.EventCallback;
-import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.construct.Flow;
+import org.mule.runtime.core.api.event.BaseEvent;
 import org.mule.runtime.core.api.util.concurrent.Latch;
 import org.mule.tck.probe.JUnitLambdaProbe;
 import org.mule.tck.probe.PollingProber;
@@ -55,7 +55,7 @@ public class MultipleSchedulersTestCase extends AbstractSchedulerTestCase {
   public static class SynchronizedPollExecutionCounter implements EventCallback {
 
     @Override
-    public void eventReceived(InternalEvent event, Object component, MuleContext muleContext) throws Exception {
+    public void eventReceived(BaseEvent event, Object component, MuleContext muleContext) throws Exception {
       if ("poll2".equals(event.getMessage().getPayload().getValue())) {
         counter++;
       }

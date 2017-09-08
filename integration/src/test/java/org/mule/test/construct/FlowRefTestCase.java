@@ -10,17 +10,18 @@ import static java.util.stream.Collectors.toList;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.core.api.InternalEvent;
+import org.mule.runtime.core.api.event.BaseEvent;
 import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import java.util.List;
-import java.util.Map;
-
 import org.junit.Rule;
 import org.junit.Test;
+
+import java.util.List;
+import java.util.Map;
 
 public class FlowRefTestCase extends AbstractIntegrationTestCase {
 
@@ -34,22 +35,22 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void twoFlowRefsToSubFlow() throws Exception {
-    final InternalEvent muleEvent = flowRunner("flow1").withPayload("0").run();
+    final BaseEvent muleEvent = flowRunner("flow1").withPayload("0").run();
     assertThat(getPayloadAsString(muleEvent.getMessage()), is("012xyzabc312xyzabc3"));
   }
 
   @Test
   public void dynamicFlowRef() throws Exception {
-    assertEquals("0A",
-                 flowRunner("flow2").withPayload("0").withVariable("letter", "A").run().getMessageAsString(muleContext));
-    assertEquals("0B",
-                 flowRunner("flow2").withPayload("0").withVariable("letter", "B").run().getMessageAsString(muleContext));
+    assertThat(flowRunner("flow2").withPayload("0").withVariable("letter", "A").run().getMessage().getPayload().getValue(),
+               is("0A"));
+    assertThat(flowRunner("flow2").withPayload("0").withVariable("letter", "B").run().getMessage().getPayload().getValue(),
+               is("0B"));
   }
 
   @Test
   public void dynamicFlowRefWithChoice() throws Exception {
-    assertEquals("0A",
-                 flowRunner("flow2").withPayload("0").withVariable("letter", "C").run().getMessageAsString(muleContext));
+    assertThat(flowRunner("flow2").withPayload("0").withVariable("letter", "C").run().getMessage().getPayload().getValue(),
+               is("0A"));
   }
 
   @Test
@@ -65,8 +66,8 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
 
   @Test(expected = MessagingException.class)
   public void flowRefNotFound() throws Exception {
-    assertEquals("0C",
-                 flowRunner("flow2").withPayload("0").withVariable("letter", "Z").run().getMessageAsString(muleContext));
+    assertThat(flowRunner("flow2").withPayload("0").withVariable("letter", "Z").run().getMessage().getPayload().getValue(),
+               is("0C"));
   }
 
 }

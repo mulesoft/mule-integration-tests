@@ -12,8 +12,8 @@ import static org.junit.Assert.assertThat;
 
 import org.mule.functional.api.component.EventCallback;
 import org.mule.functional.api.exception.FunctionalTestException;
-import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.MuleContext;
+import org.mule.runtime.core.api.event.BaseEvent;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Before;
@@ -75,7 +75,7 @@ public class ExceptionPropagationMule5737TestCase extends AbstractIntegrationTes
     static boolean caught;
 
     @Override
-    public void eventReceived(InternalEvent event, Object component, MuleContext muleContext) throws Exception {
+    public void eventReceived(BaseEvent event, Object component, MuleContext muleContext) throws Exception {
       caught = true;
     }
   }
@@ -85,7 +85,7 @@ public class ExceptionPropagationMule5737TestCase extends AbstractIntegrationTes
     static boolean caught;
 
     @Override
-    public void eventReceived(InternalEvent event, Object component, MuleContext muleContext) throws Exception {
+    public void eventReceived(BaseEvent event, Object component, MuleContext muleContext) throws Exception {
       caught = true;
     }
   }

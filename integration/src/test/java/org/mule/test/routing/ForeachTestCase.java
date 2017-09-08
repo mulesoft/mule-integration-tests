@@ -33,8 +33,8 @@ import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS_FEATUR
 import org.mule.functional.junit4.TestLegacyMessageBuilder;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.client.MuleClient;
+import org.mule.runtime.core.api.event.BaseEvent;
 import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -131,7 +131,7 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
     names.add("residente");
     names.add("visitante");
 
-    InternalEvent result = flowRunner("minimal-config-expression").withPayload("message payload")
+    BaseEvent result = flowRunner("minimal-config-expression").withPayload("message payload")
         .withVariable("names", names).run();
 
     assertThat(result.getMessage().getPayload().getValue(), instanceOf(String.class));
@@ -329,7 +329,7 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
       + "</Items></PurchaseOrder>";
 
   private void xml(Object payload) throws Exception {
-    InternalEvent result = flowRunner("process-order-update").withPayload(payload).withMediaType(APPLICATION_XML).run();
+    BaseEvent result = flowRunner("process-order-update").withPayload(payload).withMediaType(APPLICATION_XML).run();
     int total = (Integer) result.getVariables().get("total").getValue();
     assertThat(total, is(greaterThan(0)));
   }

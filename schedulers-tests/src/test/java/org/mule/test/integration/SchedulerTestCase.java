@@ -17,10 +17,10 @@ import static org.junit.Assert.assertTrue;
 import org.mule.functional.api.component.EventCallback;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.source.SchedulerMessageSource;
-import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.construct.FlowConstruct;
+import org.mule.runtime.core.api.event.BaseEvent;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.source.MessageSource;
 import org.mule.tck.probe.JUnitLambdaProbe;
@@ -36,7 +36,7 @@ public class SchedulerTestCase extends AbstractSchedulerTestCase {
 
   private static List<String> foo;
   private static List<String> bar;
-  private static List<InternalEvent> events;
+  private static List<BaseEvent> events;
   private static List<String> eventIds;
 
   @Override
@@ -99,7 +99,7 @@ public class SchedulerTestCase extends AbstractSchedulerTestCase {
   public static class EventWireTrap implements Processor {
 
     @Override
-    public InternalEvent process(InternalEvent event) throws MuleException {
+    public BaseEvent process(BaseEvent event) throws MuleException {
       synchronized (events) {
         events.add(event);
         eventIds.add(event.getContext().getId());
@@ -111,7 +111,7 @@ public class SchedulerTestCase extends AbstractSchedulerTestCase {
   public static class Foo implements EventCallback {
 
     @Override
-    public void eventReceived(InternalEvent event, Object component, MuleContext muleContext) throws Exception {
+    public void eventReceived(BaseEvent event, Object component, MuleContext muleContext) throws Exception {
       synchronized (foo) {
 
         if (foo.size() < 10) {
@@ -124,7 +124,7 @@ public class SchedulerTestCase extends AbstractSchedulerTestCase {
   public static class Bar implements EventCallback {
 
     @Override
-    public void eventReceived(InternalEvent event, Object component, MuleContext muleContext) throws Exception {
+    public void eventReceived(BaseEvent event, Object component, MuleContext muleContext) throws Exception {
       synchronized (bar) {
 
         if (bar.size() < 10) {

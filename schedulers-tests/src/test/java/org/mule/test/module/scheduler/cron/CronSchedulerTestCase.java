@@ -14,9 +14,9 @@ import static org.junit.Assert.assertTrue;
 import org.mule.functional.api.component.EventCallback;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.source.SchedulerMessageSource;
-import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.construct.Flow;
+import org.mule.runtime.core.api.event.BaseEvent;
 import org.mule.runtime.core.api.source.MessageSource;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.tck.probe.JUnitLambdaProbe;
@@ -121,7 +121,7 @@ public class CronSchedulerTestCase extends AbstractSchedulerTestCase {
   public static class Foo implements EventCallback {
 
     @Override
-    public void eventReceived(InternalEvent event, Object component, MuleContext muleContext) throws Exception {
+    public void eventReceived(BaseEvent event, Object component, MuleContext muleContext) throws Exception {
       synchronized (foo) {
         if (foo.size() < 10) {
           foo.add((String) event.getMessage().getPayload().getValue());
@@ -133,7 +133,7 @@ public class CronSchedulerTestCase extends AbstractSchedulerTestCase {
   public static class Bar implements EventCallback {
 
     @Override
-    public void eventReceived(InternalEvent event, Object component, MuleContext muleContext) throws Exception {
+    public void eventReceived(BaseEvent event, Object component, MuleContext muleContext) throws Exception {
       synchronized (bar) {
 
         if (bar.size() < 10) {

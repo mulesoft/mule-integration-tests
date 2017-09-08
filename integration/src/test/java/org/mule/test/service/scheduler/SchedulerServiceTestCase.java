@@ -16,8 +16,8 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.rules.ExpectedException.none;
 import static org.mule.runtime.api.message.Message.of;
-import static org.mule.runtime.core.api.InternalEventContext.create;
 import static org.mule.runtime.core.api.config.MuleProperties.OBJECT_SCHEDULER_BASE_CONFIG;
+import static org.mule.runtime.core.api.event.BaseEventContext.create;
 import static org.mule.runtime.dsl.api.component.config.DefaultComponentLocation.fromSingleComponent;
 import static org.mule.test.allure.AllureConstants.SchedulerServiceFeature.SCHEDULER_SERVICE;
 
@@ -28,11 +28,11 @@ import org.mule.runtime.api.lifecycle.Disposable;
 import org.mule.runtime.api.lifecycle.Initialisable;
 import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.api.scheduler.Scheduler;
-import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.construct.FlowConstruct;
+import org.mule.runtime.core.api.event.BaseEvent;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.scheduler.SchedulerBusyException;
 import org.mule.runtime.core.api.scheduler.SchedulerConfig;
@@ -184,7 +184,7 @@ public class SchedulerServiceTestCase extends AbstractIntegrationTestCase {
     expected.expectCause(instanceOf(SchedulerBusyException.class));
 
     ((SkeletonSource) messageSource).getListener()
-        .process(InternalEvent
+        .process(BaseEvent
             .builder(create(delayScheduleFlow, fromSingleComponent(SchedulerServiceTestCase.class.getSimpleName())))
             .message(of(null))
             .build());
@@ -209,7 +209,7 @@ public class SchedulerServiceTestCase extends AbstractIntegrationTestCase {
     }
 
     @Override
-    public InternalEvent process(InternalEvent event) throws MuleException {
+    public BaseEvent process(BaseEvent event) throws MuleException {
       try {
         // just exercise the scheduler.
         return scheduler.submit(() -> event).get();
@@ -242,7 +242,7 @@ public class SchedulerServiceTestCase extends AbstractIntegrationTestCase {
     }
 
     @Override
-    public InternalEvent process(InternalEvent event) throws MuleException {
+    public BaseEvent process(BaseEvent event) throws MuleException {
       scheduler.submit(() -> {
         try {
           latch.await(DEFAULT_TEST_TIMEOUT_SECS, SECONDS);

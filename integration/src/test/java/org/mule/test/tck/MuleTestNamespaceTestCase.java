@@ -15,8 +15,8 @@ import static org.mule.functional.api.component.FunctionalTestProcessor.getFromF
 
 import org.mule.functional.api.component.EventCallback;
 import org.mule.functional.api.component.FunctionalTestProcessor;
-import org.mule.runtime.core.api.InternalEvent;
 import org.mule.runtime.core.api.MuleContext;
+import org.mule.runtime.core.api.event.BaseEvent;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Test;
@@ -54,7 +54,7 @@ public class MuleTestNamespaceTestCase extends AbstractIntegrationTestCase {
   public static final class TestCallback implements EventCallback {
 
     @Override
-    public void eventReceived(InternalEvent event, Object component, MuleContext muleContext) throws Exception {
+    public void eventReceived(BaseEvent event, Object component, MuleContext muleContext) throws Exception {
       // Nothing to do
     }
 

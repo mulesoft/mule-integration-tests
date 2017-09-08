@@ -16,12 +16,13 @@ import static org.mule.tck.processor.FlowAssert.verify;
 import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.api.security.SecurityProviderNotFoundException;
 import org.mule.runtime.api.security.UnknownAuthenticationTypeException;
-import org.mule.runtime.core.api.InternalEvent;
+import org.mule.runtime.core.api.event.BaseEvent;
+import org.mule.runtime.core.api.security.AbstractAuthenticationFilter;
 import org.mule.runtime.core.api.security.CryptoFailureException;
 import org.mule.runtime.core.api.security.EncryptionStrategyNotFoundException;
+import org.mule.runtime.core.api.security.SecurityContext;
 import org.mule.runtime.core.api.transaction.Transaction;
 import org.mule.runtime.core.api.transaction.TransactionCoordination;
-import org.mule.runtime.core.api.security.AbstractAuthenticationFilter;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Test;
@@ -87,19 +88,19 @@ public class NonBlockingFunctionalTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void enricherIssue() throws Exception {
-    InternalEvent result = flowRunner("enricherIssue").withPayload(TEST_MESSAGE).run();
-    assertThat(result.getMessageAsString(muleContext), is(equalTo(TEST_MESSAGE)));
+    BaseEvent result = flowRunner("enricherIssue").withPayload(TEST_MESSAGE).run();
+    assertThat(result.getMessage().getPayload().getValue(), is(equalTo(TEST_MESSAGE)));
   }
 
   @Test
   public void enricherIssueNonBlocking() throws Exception {
-    InternalEvent result = flowRunner("enricherIssueNonBlocking").withPayload(TEST_MESSAGE).run();
-    assertThat(result.getMessageAsString(muleContext), is(equalTo(TEST_MESSAGE)));
+    BaseEvent result = flowRunner("enricherIssueNonBlocking").withPayload(TEST_MESSAGE).run();
+    assertThat(result.getMessage().getPayload().getValue(), is(equalTo(TEST_MESSAGE)));
   }
 
   @Test
   public void enricherFlowVar() throws Exception {
-    InternalEvent result = flowRunner("enricherFlowVar").withPayload(TEST_MESSAGE).run();
+    BaseEvent result = flowRunner("enricherFlowVar").withPayload(TEST_MESSAGE).run();
     assertThat(result.getVariables().get(FOO).getValue(), is(equalTo(TEST_MESSAGE)));
   }
 
@@ -188,9 +189,9 @@ public class NonBlockingFunctionalTestCase extends AbstractIntegrationTestCase {
     protected void doInitialise() throws InitialisationException {}
 
     @Override
-    public InternalEvent authenticate(InternalEvent event) throws SecurityException, UnknownAuthenticationTypeException,
+    public SecurityContext authenticate(BaseEvent event) throws SecurityException, UnknownAuthenticationTypeException,
         CryptoFailureException, SecurityProviderNotFoundException, EncryptionStrategyNotFoundException, InitialisationException {
-      return event;
+      return event.getSecurityContext();
     }
   }
 }
