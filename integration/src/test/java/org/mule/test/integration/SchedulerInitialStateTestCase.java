@@ -74,11 +74,6 @@ public class SchedulerInitialStateTestCase extends AbstractIntegrationTestCase {
       }
 
       @Override
-      public boolean isConfigured() {
-        return false;
-      }
-
-      @Override
       public void addServiceConfigurator(ServiceConfigurator serviceConfigurator) {
         // Nothing to do
       }

@@ -19,13 +19,9 @@ import static org.mule.runtime.api.dsl.DslResolvingContext.getDefault;
 import static org.mule.runtime.config.spring.api.dsl.model.ApplicationModel.FLOW_IDENTIFIER;
 import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.initialiseIfNeeded;
 import static org.mule.runtime.module.extension.api.util.MuleExtensionUtils.createDefaultExtensionManager;
-import io.qameta.allure.junit4.DisplayName;
-import org.junit.Assert;
-import org.junit.Test;
 import org.mule.runtime.api.component.TypedComponentIdentifier;
 import org.mule.runtime.api.dsl.DslResolvingContext;
 import org.mule.runtime.api.meta.model.ExtensionModel;
-import org.mule.runtime.core.DefaultMuleContext;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.runtime.core.api.config.builders.AbstractConfigurationBuilder;
@@ -43,6 +39,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+
+import io.qameta.allure.junit4.DisplayName;
+import org.junit.Assert;
+import org.junit.Test;
 
 @DisplayName("XML Connectors Path generation")
 public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
@@ -398,7 +398,7 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
         ExtensionManager extensionManager;
         if (muleContext.getExtensionManager() == null) {
           extensionManager = createDefaultExtensionManager();
-          ((DefaultMuleContext) muleContext).setExtensionManager(extensionManager);
+          muleContext.setExtensionManager(extensionManager);
         }
         extensionManager = muleContext.getExtensionManager();
         initialiseIfNeeded(extensionManager, muleContext);

@@ -105,11 +105,6 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     builders.add(new ConfigurationBuilder() {
 
       @Override
-      public boolean isConfigured() {
-        return false;
-      }
-
-      @Override
       public void configure(MuleContext muleContext) throws ConfigurationException {
         muleContext.getProcessorInterceptorManager().addInterceptorFactory(() -> new AfterWithCallbackInterceptor());
         muleContext.getProcessorInterceptorManager()
