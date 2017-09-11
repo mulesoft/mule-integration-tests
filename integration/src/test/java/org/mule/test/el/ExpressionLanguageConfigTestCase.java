@@ -11,13 +11,14 @@ import static org.mule.runtime.api.message.Message.of;
 import static org.mule.tck.MuleTestUtils.getTestFlow;
 
 import org.mule.runtime.core.api.el.ExpressionManager;
+import org.mule.runtime.core.api.event.BaseEvent;
 import org.mule.test.AbstractIntegrationTestCase;
-
-import java.text.DateFormat;
-import java.util.Locale;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import java.text.DateFormat;
+import java.util.Locale;
 
 public class ExpressionLanguageConfigTestCase extends AbstractIntegrationTestCase {
 
@@ -68,14 +69,14 @@ public class ExpressionLanguageConfigTestCase extends AbstractIntegrationTestCas
 
   @Test
   public void testExpressionLanguageGlobalFunctionUsingMessageContext() throws Exception {
-    assertEquals("123appended", el.evaluate("mel:appendPayload()", eventBuilder().message(of("123")).build(),
+    assertEquals("123appended", el.evaluate("mel:appendPayload()", BaseEvent.builder(testEvent()).message(of("123")).build(),
                                             getTestFlow(muleContext).getLocation())
         .getValue());
   }
 
   @Test
   public void testExpressionLanguageGlobalFunctionUsingMessageContextAndImport() throws Exception {
-    assertEquals("321", el.evaluate("mel:reversePayload()", eventBuilder().message(of("123")).build(),
+    assertEquals("321", el.evaluate("mel:reversePayload()", BaseEvent.builder(testEvent()).message(of("123")).build(),
                                     getTestFlow(muleContext).getLocation())
         .getValue());
   }
