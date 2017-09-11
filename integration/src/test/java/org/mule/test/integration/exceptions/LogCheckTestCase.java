@@ -5,7 +5,6 @@
  * LICENSE.txt file.
  */
 package org.mule.test.integration.exceptions;
-import static org.junit.Assert.fail;
 import org.mule.runtime.core.api.construct.FlowConstruct;
 import org.mule.test.AbstractIntegrationTestCase;
 

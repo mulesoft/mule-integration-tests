@@ -143,5 +143,39 @@
         </error-handler>
     </flow>
 
+    <flow name="errorInScatterGather">
+        <test:skeleton-source/>
+        <set-payload value="#[
+            %dw 2.0
+            output application/java
+            var arr = [1,2,3,4]
+            ---
+            arr
+        ]"/>
+        <scatter-gather>
+            <route>
+                <set-payload value="#[notexistentvariable]"/>
+            </route>
+            <route>
+                <set-payload value="#[payload]"/>
+            </route>
+        </scatter-gather>
+        <error-handler>
+            <test:on-error-assert>
+                <test:check-equals>
+                    <![CDATA[
+                        Message               : "Script 'notexistentvariable ' has errors:
+                                                 Unable to resolve reference of notexistentvariable. at 1 : 1" evaluating expression: "notexistentvariable". (org.mule.runtime.core.api.expression.ExpressionRuntimeException).
+                        Element               : realErrorInsideForEach/processors/1/processors/0 @ LogCheckTestCase#assertAllFlows:org/mule/test/integration/exceptions/log-check-config.xml:128
+                        Element XML           : <set-payload value="#[notexistentvariable]"></set-payload>
+                        Error type            : MULE:EXPRESSION
+                        (set debug level logging or '-Dmule.verbose.exceptions=true' for everything)
+                    ]]>
+                </test:check-equals>
+            </test:on-error-assert>
+        </error-handler>
+    </flow>
+
+
 
 </mule>
