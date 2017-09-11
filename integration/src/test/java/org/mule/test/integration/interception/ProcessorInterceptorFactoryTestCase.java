@@ -21,13 +21,20 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mule.functional.junit4.rules.ExpectedError.none;
 import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
-import static org.mule.test.allure.AllureConstants.InterceptonApi.INTERCEPTION_API;
 import static org.mule.test.allure.AllureConstants.InterceptonApi.ComponentInterceptionStory.COMPONENT_INTERCEPTION_STORY;
+import static org.mule.test.allure.AllureConstants.InterceptonApi.INTERCEPTION_API;
 import static org.mule.test.heisenberg.extension.HeisenbergConnectionProvider.getActiveConnections;
 import static org.mule.test.heisenberg.extension.HeisenbergConnectionProvider.getConnects;
 import static org.mule.test.heisenberg.extension.HeisenbergConnectionProvider.getDisconnects;
 import static org.mule.test.heisenberg.extension.HeisenbergOperations.CALL_GUS_MESSAGE;
-
+import io.qameta.allure.Description;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 import org.mule.functional.junit4.rules.ExpectedError;
 import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.api.config.custom.ServiceConfigurator;
@@ -51,12 +58,7 @@ import org.mule.test.heisenberg.extension.exception.HeisenbergException;
 import org.mule.test.heisenberg.extension.model.KillParameters;
 import org.mule.test.runner.RunnerDelegateTo;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
-
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -67,12 +69,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
-
-import javax.inject.Inject;
-
-import io.qameta.allure.Description;
-import io.qameta.allure.Feature;
-import io.qameta.allure.Story;
 
 @Feature(INTERCEPTION_API)
 @Story(COMPONENT_INTERCEPTION_STORY)
@@ -300,6 +296,78 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
   @Test
   public void expressionsInInterception() throws Exception {
     assertThat(flowRunner("expressionsInInterception").run().getVariables().get("addedVar").getValue(), is("value2"));
+  }
+
+  @Description("Smart Connector simple operation without parameters")
+  @Test
+  public void scOperation() throws Exception {
+    flowRunner("scOperation").run();
+
+    List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
+    assertThat(interceptionParameters, hasSize(2));
+
+    InterceptionParameters moduleOperationChain = interceptionParameters.get(0);
+    InterceptionParameters setPayloadOperation = interceptionParameters.get(1);
+
+    assertThat(moduleOperationChain.getParameters().keySet(), containsInAnyOrder("moduleName", "moduleOperation"));
+    assertThat(moduleOperationChain.getParameters().get("moduleName").resolveValue(), is("module-using-core"));
+    assertThat(moduleOperationChain.getParameters().get("moduleOperation").resolveValue(), is("set-payload-hardcoded"));
+
+    assertThat(setPayloadOperation.getParameters().keySet(), containsInAnyOrder("value", "mimeType", "encoding"));
+    assertThat(setPayloadOperation.getParameters().get("value").resolveValue(), is("Wubba Lubba Dub Dub"));
+    assertThat(setPayloadOperation.getParameters().get("mimeType").resolveValue(), is("text/plain"));
+    assertThat(setPayloadOperation.getParameters().get("encoding").resolveValue(), is("UTF-8"));
+  }
+
+  @Description("Smart Connector simple operation with parameters")
+  @Test
+  public void scEchoOperation() throws Exception {
+    final String variableValue = "echo message for the win";
+    flowRunner("scEchoOperation").withVariable("variable", variableValue).run();
+
+    List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
+    assertThat(interceptionParameters, hasSize(2));
+
+    InterceptionParameters moduleOperationChain = interceptionParameters.get(0);
+    InterceptionParameters setPayloadOperation = interceptionParameters.get(1);
+
+    assertThat(moduleOperationChain.getParameters().keySet(), containsInAnyOrder("moduleName", "moduleOperation"));
+    assertThat(moduleOperationChain.getParameters().get("moduleName").resolveValue(), is("module-using-core"));
+    assertThat(moduleOperationChain.getParameters().get("moduleOperation").resolveValue(), is("echo-set-payload"));
+
+    assertThat(setPayloadOperation.getParameters().keySet(), containsInAnyOrder("value", "mimeType", "encoding"));
+    assertThat(setPayloadOperation.getEvent().getParameters().get("echoMessage").getValue(), is(variableValue));
+    assertThat(setPayloadOperation.getParameters().get("value").providedValue(), is("#[parameters.echoMessage]"));
+    assertThat(setPayloadOperation.getParameters().get("value").resolveValue(), is(variableValue));
+    assertThat(setPayloadOperation.getParameters().get("mimeType").resolveValue(), is("text/plain"));
+    assertThat(setPayloadOperation.getParameters().get("encoding").resolveValue(), is("UTF-8"));
+  }
+
+  @Description("Smart Connector that uses a Smart Connector operation without parameters")
+  @Test
+  public void scUsingScOperation() throws Exception {
+    flowRunner("scUsingScOperation").run();
+
+    List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
+    assertThat(interceptionParameters, hasSize(3));
+
+    InterceptionParameters proxyModuleOperationChain = interceptionParameters.get(0);
+    InterceptionParameters innerModuleOperationChain = interceptionParameters.get(1);
+    InterceptionParameters setPayloadOperation = interceptionParameters.get(2);
+
+    assertThat(proxyModuleOperationChain.getParameters().keySet(), containsInAnyOrder("moduleName", "moduleOperation"));
+    assertThat(proxyModuleOperationChain.getParameters().get("moduleName").resolveValue(), is("module-using-sc"));
+    assertThat(proxyModuleOperationChain.getParameters().get("moduleOperation").resolveValue(),
+               is("proxy-set-payload-hardcoded"));
+
+    assertThat(innerModuleOperationChain.getParameters().keySet(), containsInAnyOrder("moduleName", "moduleOperation"));
+    assertThat(innerModuleOperationChain.getParameters().get("moduleName").resolveValue(), is("module-using-core"));
+    assertThat(innerModuleOperationChain.getParameters().get("moduleOperation").resolveValue(), is("set-payload-hardcoded"));
+
+    assertThat(setPayloadOperation.getParameters().keySet(), containsInAnyOrder("value", "mimeType", "encoding"));
+    assertThat(setPayloadOperation.getParameters().get("value").resolveValue(), is("Wubba Lubba Dub Dub"));
+    assertThat(setPayloadOperation.getParameters().get("mimeType").resolveValue(), is("text/plain"));
+    assertThat(setPayloadOperation.getParameters().get("encoding").resolveValue(), is("UTF-8"));
   }
 
   public static class HasInjectedAttributesInterceptorFactory implements ProcessorInterceptorFactory {
