@@ -16,6 +16,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mule.functional.junit4.matchers.ThrowableMessageMatcher.hasMessage;
 import static org.mule.runtime.config.spring.api.SpringXmlConfigurationBuilderFactory.createConfigurationBuilder;
+import static org.mule.runtime.core.api.config.bootstrap.ArtifactType.APP;
 import static org.mule.runtime.core.api.context.notification.MuleContextNotification.CONTEXT_STARTED;
 import static org.mule.runtime.core.api.exception.Errors.Identifiers.CRITICAL_IDENTIFIER;
 import static org.mule.runtime.core.api.exception.Errors.Identifiers.SOURCE_ERROR_IDENTIFIER;
@@ -28,19 +29,16 @@ import static org.mule.runtime.core.api.exception.Errors.Identifiers.UNKNOWN_ERR
 import static org.mule.runtime.module.extension.api.loader.AbstractJavaExtensionModelLoader.TYPE_PROPERTY_NAME;
 import static org.mule.runtime.module.extension.api.loader.AbstractJavaExtensionModelLoader.VERSION;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
-
 import org.mule.extension.http.internal.temporary.HttpConnector;
 import org.mule.extension.socket.api.SocketsExtension;
 import org.mule.runtime.api.dsl.DslResolvingContext;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.api.meta.model.ExtensionModel;
-import org.mule.runtime.core.DefaultMuleContext;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.runtime.core.api.config.ConfigurationException;
 import org.mule.runtime.core.api.config.builders.AbstractConfigurationBuilder;
-import org.mule.runtime.core.api.context.DefaultMuleContextBuilder;
 import org.mule.runtime.core.api.context.DefaultMuleContextFactory;
 import org.mule.runtime.core.api.context.MuleContextBuilder;
 import org.mule.runtime.core.api.context.MuleContextFactory;
@@ -202,12 +200,12 @@ public class ErrorHandlingConfigurationFailuresTestCase extends AbstractMuleTest
         defaultExtensionManager.setMuleContext(muleContext);
         defaultExtensionManager.initialise();
         getRequiredExtensions().forEach(defaultExtensionManager::registerExtension);
-        ((DefaultMuleContext) muleContext).setExtensionManager(defaultExtensionManager);
+        muleContext.setExtensionManager(defaultExtensionManager);
       }
     });
     builders.add(createConfigurationBuilder(configuration));
     builders.add(new TestServicesConfigurationBuilder());
-    MuleContextBuilder contextBuilder = new DefaultMuleContextBuilder();
+    MuleContextBuilder contextBuilder = MuleContextBuilder.builder(APP);
     MuleContext muleContext = muleContextFactory.createMuleContext(builders, contextBuilder);
     final AtomicReference<Latch> contextStartedLatch = new AtomicReference<>();
     contextStartedLatch.set(new Latch());

@@ -13,14 +13,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mule.runtime.core.api.config.MuleProperties.SYSTEM_PROPERTY_PREFIX;
-
+import static org.mule.runtime.core.api.config.bootstrap.ArtifactType.APP;
 import org.mule.runtime.core.api.MuleContext;
-import org.mule.runtime.core.api.config.MuleConfiguration;
-import org.mule.runtime.core.api.context.MuleContextBuilder;
 import org.mule.runtime.core.api.config.DefaultMuleConfiguration;
+import org.mule.runtime.core.api.config.MuleConfiguration;
 import org.mule.runtime.core.api.config.builders.DefaultsConfigurationBuilder;
-import org.mule.runtime.core.api.context.DefaultMuleContextBuilder;
 import org.mule.runtime.core.api.context.DefaultMuleContextFactory;
+import org.mule.runtime.core.api.context.MuleContextBuilder;
 import org.mule.tck.config.TestServicesConfigurationBuilder;
 import org.mule.tck.junit4.AbstractMuleTestCase;
 
@@ -61,7 +60,7 @@ public class MuleConfigurationTestCase extends AbstractMuleTestCase {
     config.setMaxQueueTransactionFilesSize(500);
     config.setAutoWrapMessageAwareTransform(false);
 
-    MuleContextBuilder contextBuilder = new DefaultMuleContextBuilder();
+    MuleContextBuilder contextBuilder = MuleContextBuilder.builder(APP);
     contextBuilder.setMuleConfiguration(config);
     muleContext = new DefaultMuleContextFactory()
         .createMuleContext(asList(testServicesConfigurationBuilder, new DefaultsConfigurationBuilder()), contextBuilder);
