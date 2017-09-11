@@ -2,13 +2,12 @@
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:heisenberg="http://www.mulesoft.org/schema/mule/heisenberg"
       xmlns:sc="http://www.mulesoft.org/schema/mule/module-using-core"
-      xmlns:sc-using-sc="http://www.mulesoft.org/schema/mule/module-using-smart-connector"
+      xmlns:sc-using-sc="http://www.mulesoft.org/schema/mule/module-using-sc"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
                http://www.mulesoft.org/schema/mule/heisenberg http://www.mulesoft.org/schema/mule/heisenberg/current/mule-heisenberg.xsd
                http://www.mulesoft.org/schema/mule/module-using-core http://www.mulesoft.org/schema/mule/module-using-core/current/mule-module-using-core.xsd
-               http://www.mulesoft.org/schema/mule/module-using-smart-connector http://www.mulesoft.org/schema/mule/module-using-smart-connector/current/mule-module-using-smart-connector.xsd
-">
+               http://www.mulesoft.org/schema/mule/module-using-sc http://www.mulesoft.org/schema/mule/module-using-sc/current/mule-module-using-sc.xsd">
 
     <heisenberg:config name="heisenberg"
                        cancer="true"
@@ -62,6 +61,10 @@
 
     <flow name="scOperation">
         <sc:set-payload-hardcoded/>
+    </flow>
+
+    <flow name="scEchoOperation">
+        <sc:echo-set-payload echoMessage="#[vars.variable]"/>
     </flow>
 
     <flow name="scUsingScOperation">

@@ -20,6 +20,16 @@
         <output type="string" doc:description="Payload's output"/>
     </operation>
 
+    <operation name="echo-set-payload" doc:description="Sets the payload to parametrized value">
+        <parameters>
+            <parameter name="echoMessage" type="string"/>
+        </parameters>
+        <body>
+            <mule:set-payload value="#[parameters.echoMessage]" mimeType="text/plain" encoding="UTF-8"/>
+        </body>
+        <output type="string" doc:description="Payload's output"/>
+    </operation>
+
     <operation name="set-payload-railing-through-internal-calls" doc:description="Sets the payload to the the parameterized value adding lots of breadcrumbs through operations callings">
         <parameters>
             <parameter name="op1Parameter" type="string"/>
