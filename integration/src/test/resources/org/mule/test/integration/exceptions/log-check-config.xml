@@ -8,15 +8,140 @@
     <flow name="messagingExceptionErrorTypeIsLogged">
         <test:skeleton-source/>
         <test:processor/>
-        <test:throw exception="org.mule.runtime.core.api.exception.MessagingException" error="ANY"/>
+        <test:throw exception="java.lang.RuntimeException" error="ANY"/>
         <error-handler>
             <test:on-error-assert>
                 <test:check-equals>
                     <![CDATA[
-
+                        Message               : null (java.lang.RuntimeException).
+                        Element               : messagingExceptionErrorTypeIsLogged/processors/1 @ LogCheckTestCase#assertAllFlows:org/mule/test/integration/exceptions/log-check-config.xml:11
+                        Element XML           : <test:throw exception="java.lang.RuntimeException" error="ANY"></test:throw>
+                        Error type            : MULE:ANY
+                        (set debug level logging or '-Dmule.verbose.exceptions=true' for everything)
                     ]]>
                 </test:check-equals>
             </test:on-error-assert>
         </error-handler>
     </flow>
+
+    <flow name="wrongExpressionLogsExpressionErrorType">
+        <test:skeleton-source/>
+        <set-payload value="#[notexistentvariable]"/>
+        <error-handler>
+            <test:on-error-assert>
+                <test:check-equals>
+                    <![CDATA[
+                        Message               : "Script 'notexistentvariable ' has errors:
+                                                 Unable to resolve reference of notexistentvariable. at 1 : 1" evaluating expression: "notexistentvariable". (org.mule.runtime.core.api.expression.ExpressionRuntimeException).
+                        Element               : wrongExpressionLogsExpressionErrorType/processors/0 @ LogCheckTestCase#assertAllFlows:org/mule/test/integration/exceptions/log-check-config.xml:29
+                        Element XML           : <set-payload value="#[notexistentvariable]"></set-payload>
+                        Error type            : MULE:EXPRESSION
+                        (set debug level logging or '-Dmule.verbose.exceptions=true' for everything)
+                    ]]>
+                </test:check-equals>
+            </test:on-error-assert>
+        </error-handler>
+    </flow>
+
+    <sub-flow name="errorSource">
+        <test:throw exception="java.lang.RuntimeException" error="ANY"/>
+    </sub-flow>
+
+    <flow name="flowRefErrorElementIsProperlyLogged">
+        <test:skeleton-source/>
+        <flow-ref name="errorSource"/>
+        <error-handler>
+            <test:on-error-assert>
+                <test:check-equals>
+                    <![CDATA[
+                        Message               : null (java.lang.RuntimeException).
+                        Element               : errorSource/processors/0 @ LogCheckTestCase#assertAllFlows:org/mule/test/integration/exceptions/log-check-config.xml:47
+                        Element XML           : <test:throw exception="java.lang.RuntimeException" error="ANY"></test:throw>
+                        Error type            : MULE:ANY
+                        (set debug level logging or '-Dmule.verbose.exceptions=true' for everything)
+                    ]]>
+                </test:check-equals>
+            </test:on-error-assert>
+        </error-handler>
+    </flow>
+
+    <flow name="emptyForEach">
+        <test:skeleton-source/>
+        <foreach>
+            <test:processor/>
+        </foreach>
+        <error-handler>
+            <test:on-error-assert>
+                <test:check-equals>
+                    <![CDATA[
+                        Message               : "Expecting Array or Object but got Null." evaluating expression: "payload". (org.mule.runtime.core.api.expression.ExpressionRuntimeException).
+                        Element               : emptyForEach/processors/0 @ LogCheckTestCase#assertAllFlows:org/mule/test/integration/exceptions/log-check-config.xml:70
+                        Element XML           : <foreach>
+                                                    <test:processor></test:processor>
+                                                </foreach>
+                        Error type            : MULE:EXPRESSION
+                        (set debug level logging or '-Dmule.verbose.exceptions=true' for everything)
+                    ]]>
+                </test:check-equals>
+            </test:on-error-assert>
+        </error-handler>
+    </flow>
+
+    <flow name="errorInsideForEach">
+        <test:skeleton-source/>
+        <set-payload value="#[
+            %dw 2.0
+            output application/java
+            var arr = [1,2,3,4]
+            ---
+            arr
+        ]"/>
+        <foreach>
+            <test:throw exception="java.lang.RuntimeException" error="ANY"/>
+        </foreach>
+        <error-handler>
+            <test:on-error-assert>
+                <test:check-equals>
+                    <![CDATA[
+                        Message               : null (java.lang.RuntimeException).
+                        Element               : errorInsideForEach/processors/1/processors/0 @ LogCheckTestCase#assertAllFlows:org/mule/test/integration/exceptions/log-check-config.xml:100
+                        Element XML           : <test:throw exception="java.lang.RuntimeException" error="ANY"></test:throw>
+                        Error type            : MULE:ANY
+                        (set debug level logging or '-Dmule.verbose.exceptions=true' for everything)
+                    ]]>
+                </test:check-equals>
+            </test:on-error-assert>
+        </error-handler>
+    </flow>
+
+
+    <flow name="realErrorInsideForEach">
+        <test:skeleton-source/>
+        <set-payload value="#[
+            %dw 2.0
+            output application/java
+            var arr = [1,2,3,4]
+            ---
+            arr
+        ]"/>
+        <foreach>
+            <set-payload value="#[notexistentvariable]"/>
+        </foreach>
+        <error-handler>
+            <test:on-error-assert>
+                <test:check-equals>
+                    <![CDATA[
+                        Message               : "Script 'notexistentvariable ' has errors:
+                                                 Unable to resolve reference of notexistentvariable. at 1 : 1" evaluating expression: "notexistentvariable". (org.mule.runtime.core.api.expression.ExpressionRuntimeException).
+                        Element               : realErrorInsideForEach/processors/1/processors/0 @ LogCheckTestCase#assertAllFlows:org/mule/test/integration/exceptions/log-check-config.xml:128
+                        Element XML           : <set-payload value="#[notexistentvariable]"></set-payload>
+                        Error type            : MULE:EXPRESSION
+                        (set debug level logging or '-Dmule.verbose.exceptions=true' for everything)
+                    ]]>
+                </test:check-equals>
+            </test:on-error-assert>
+        </error-handler>
+    </flow>
+
+
 </mule>

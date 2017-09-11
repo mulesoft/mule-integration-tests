@@ -5,8 +5,12 @@
  * LICENSE.txt file.
  */
 package org.mule.test.integration.exceptions;
+import static org.junit.Assert.fail;
+import org.mule.runtime.core.api.construct.FlowConstruct;
 import org.mule.test.AbstractIntegrationTestCase;
 
+
+import java.util.Collection;
 
 import org.junit.Test;
 
@@ -18,8 +22,12 @@ public class LogCheckTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  public void messagingExceptionErrorTypeIsLogged() throws Exception {
-    flowRunner("messagingExceptionErrorTypeIsLogged").run();
+  public void assertAllFlows() throws Exception{
+    Collection<FlowConstruct> flows = muleContext.getRegistry().lookupFlowConstructs();
+    for ( FlowConstruct flow : flows) {
+      flowRunner(flow.getName()).run();
+    }
   }
+
 
 }
