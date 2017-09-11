@@ -407,6 +407,12 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.mule.tests</groupId>
+            <artifactId>smart-connector-using-smart-connector</artifactId>
+            <classifier>mule-plugin</classifier>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <scope>test</scope>
