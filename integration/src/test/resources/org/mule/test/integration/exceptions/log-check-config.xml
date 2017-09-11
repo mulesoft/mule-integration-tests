@@ -164,12 +164,7 @@
             <test:on-error-assert>
                 <test:check-equals>
                     <![CDATA[
-                        Message               : "Script 'notexistentvariable ' has errors:
-                                                 Unable to resolve reference of notexistentvariable. at 1 : 1" evaluating expression: "notexistentvariable". (org.mule.runtime.core.api.expression.ExpressionRuntimeException).
-                        Element               : realErrorInsideForEach/processors/1/processors/0 @ LogCheckTestCase#assertAllFlows:org/mule/test/integration/exceptions/log-check-config.xml:128
-                        Element XML           : <set-payload value="#[notexistentvariable]"></set-payload>
-                        Error type            : MULE:EXPRESSION
-                        (set debug level logging or '-Dmule.verbose.exceptions=true' for everything)
+                       
                     ]]>
                 </test:check-equals>
             </test:on-error-assert>
