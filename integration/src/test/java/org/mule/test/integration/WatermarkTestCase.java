@@ -36,7 +36,7 @@ public class WatermarkTestCase extends AbstractIntegrationTestCase {
     public BaseEvent process(BaseEvent event) throws MuleException {
       final int top = 5;
       List<Integer> numbers = new ArrayList<>(top);
-      for (int i = ID; i < top + ID ; i++) {
+      for (int i = ID; i < top + ID; i++) {
         numbers.add(i);
       }
 
@@ -44,8 +44,8 @@ public class WatermarkTestCase extends AbstractIntegrationTestCase {
 
       return BaseEvent.builder(event)
           .message(Message.builder(event.getMessage())
-                       .payload(TypedValue.of(numbers))
-                       .build())
+              .payload(TypedValue.of(numbers))
+              .build())
           .build();
     }
   }
