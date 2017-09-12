@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xsi:schemaLocation="
+        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+        http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+        http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+
+    <http:listener-config name="listener-config">
+        <http:listener-connection host="localhost" port="${port}"/>
+    </http:listener-config>
+
+    <http:request-config name="request-config">
+        <http:request-connection host="localhost" port="${port}"/>
+    </http:request-config>
+
+
+    <flow name="expressionParams">
+        <set-payload value="#[lookup(vars.flow, payload)]"/>
+    </flow>
+
+    <flow name="staticParams">
+        <set-payload value="#[lookup('callApi', 'data')]"/>
+    </flow>
+
+    <flow name="composition">
+        <set-payload value="#[lookup('callApi', 'data').name ++ ' from ' ++ lookup('callApi', 'data').location]"/>
+    </flow>
+
+    <flow name="fromErrorHandler">
+        <test:throw exception="java.io.IOException" error="CONNECTIVITY"/>
+        <error-handler>
+            <on-error-continue>
+                <set-payload value="#[lookup('propagation', payload)]"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="propagation">
+        <test:assert expression="payload.key == 'value'"/>
+        <test:assert expression="vars.text.^mimeType == 'text/plain'"/>
+        <test:assert expression="vars.text == 'some text'"/>
+        <test:assert expression="attributes[0] == 'first' and attributes[1] == 'second'"/>
+        <test:assert expression="error.errorType.identifier == 'CONNECTIVITY'"/>
+        <set-payload value="#[output text/plain --- 'Propagation was successful']"/>
+    </flow>
+
+    <flow name="failingFlow">
+        <test:processor throwException="true"/>
+    </flow>
+
+    <flow name="failureHandledFlow">
+        <test:processor throwException="true"/>
+        <error-handler>
+            <on-error-continue>
+                <set-payload value="Flow failed but lets move on"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="callApi">
+        <http:request path="#[vars.status default '200']" config-ref="request-config"/>
+        <error-handler>
+            <on-error-continue type="HTTP:UNAUTHORIZED">
+                <set-payload value="Request was unauthorized but lets move on"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="api">
+        <http:listener path="*" config-ref="listener-config">
+            <http:response statusCode="#[attributes.requestUri[1 to -1]]"/>
+        </http:listener>
+        <set-payload value="#[output application/json --- {name: 'Ana', location : 'BA'}]"/>
+    </flow>
+
+</mule>
