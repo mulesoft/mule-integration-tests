@@ -27,5 +27,12 @@
         <logger/>
     </flow>
 
+    <flow name="flowWithSubflow">
+        <flow-ref name="mySubFlow"/>
+    </flow>
+
+    <sub-flow name="mySubFlow">
+        <logger/>
+    </sub-flow>
 </mule>
 

@@ -59,7 +59,7 @@
     <!-- Child flows/sub-flows -->
 
     <sub-flow name="chain">
-        <custom-processor class="org.mule.tck.core.lifecycle.LifecycleTrackerProcessor"/>
+        <test:lifecycle-tracker/>
         <append-string-transformer message="x"/>
         <append-string-transformer message="y"/>
         <append-string-transformer message="z"/>
@@ -67,15 +67,15 @@
     </sub-flow>
 
     <sub-flow name="chain-singleton">
-        <custom-processor class="org.mule.tck.core.lifecycle.LifecycleTrackerProcessor"/>
+        <test:lifecycle-tracker/>
         <append-string-transformer message="x"/>
         <append-string-transformer message="y"/>
         <append-string-transformer message="z"/>
-        <custom-processor class="org.mule.tck.core.lifecycle.LifecycleTrackerCheckProcessor"/>
+        <test:lifecycle-tracker-check/>
     </sub-flow>
 
     <sub-flow name="sub-flow">
-        <custom-processor class="org.mule.tck.core.lifecycle.LifecycleTrackerProcessor"/>
+        <test:lifecycle-tracker/>
         <append-string-transformer message="x"/>
         <append-string-transformer message="y"/>
         <append-string-transformer message="z"/>
@@ -83,7 +83,7 @@
     </sub-flow>
 
     <flow name="childFlow">
-        <custom-processor class="org.mule.tck.core.lifecycle.LifecycleTrackerProcessor"/>
+        <test:lifecycle-tracker/>
         <append-string-transformer message="x"/>
         <append-string-transformer message="y"/>
         <append-string-transformer message="z"/>
@@ -91,11 +91,11 @@
     </flow>
 
     <sub-flow name="sub-flow-singleton">
-        <custom-processor class="org.mule.tck.core.lifecycle.LifecycleTrackerProcessor"/>
+        <test:lifecycle-tracker/>
         <append-string-transformer message="x"/>
         <append-string-transformer message="y"/>
         <append-string-transformer message="z"/>
-        <custom-processor class="org.mule.tck.core.lifecycle.LifecycleTrackerCheckProcessor"/>
+        <test:lifecycle-tracker-check/>
     </sub-flow>
 
     <flow name="service">
