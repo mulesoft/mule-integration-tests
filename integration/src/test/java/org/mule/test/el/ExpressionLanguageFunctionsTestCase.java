@@ -104,8 +104,13 @@ public class ExpressionLanguageFunctionsTestCase extends AbstractIntegrationTest
   public void failsWhenCalledFlowThrowsError() throws Exception {
     expectedError.expectErrorType("MULE", "EXPRESSION");
     expectedError.expectCause(both(isA(ExpressionRuntimeException.class))
-        .and(hasMessage(equalTo(("\"Flow 'failingFlow' has failed with error 'MULE:UNKNOWN' (Functional Test Service Exception)\""
-            + " evaluating expression: \"lookup(vars.flow, payload)\".")))));
+        .and(hasMessage(equalTo(("\"Exception while executing lookup(\"failingFlow\" as String {class: \"java.lang.String\", "
+            + "encoding: \"UTF-8\", mimeType: \"*/*\"},\"test\" as String {class: \"java.lang.String\", encoding: \"UTF-8\", "
+            + "mimeType: \"*/*\"}) cause: Flow 'failingFlow' has failed with error 'MULE:UNKNOWN' (Functional Test Service Exception) \n"
+            + "\n"
+            + "Trace:\n"
+            + "  at 'lookup' in (anonymous:1:1)\n"
+            + "  at 'main'   in (anonymous:1:1)\" evaluating expression: \"lookup(vars.flow, payload)\".")))));
     flowRunner("expressionParams")
         .withVariable("flow", "failingFlow")
         .withPayload(TEST_PAYLOAD)
@@ -126,9 +131,13 @@ public class ExpressionLanguageFunctionsTestCase extends AbstractIntegrationTest
   public void failsWhenCalledFlowThrowsConnectorError() throws Exception {
     expectedError.expectErrorType("MULE", "EXPRESSION");
     expectedError.expectCause(both(isA(ExpressionRuntimeException.class))
-        .and(hasMessage(equalTo(format("\"Flow 'callApi' has failed with error 'HTTP:METHOD_NOT_ALLOWED'"
-            + " (HTTP GET on resource 'http://localhost:%s/405' failed: method not allowed (405).)\" "
-            + "evaluating expression: \"lookup('callApi', 'data')\".", port.getValue())))));
+        .and(hasMessage(equalTo(format("\"Exception while executing lookup(\"callApi\",\"data\") cause: Flow 'callApi' has failed "
+            + "with error 'HTTP:METHOD_NOT_ALLOWED' (HTTP GET on resource 'http://localhost:%s/405' "
+            + "failed: method not allowed (405).) \n"
+            + "\n"
+            + "Trace:\n"
+            + "  at 'lookup' in (anonymous:1:1)\n"
+            + "  at 'main'   in (anonymous:1:1)\" evaluating expression: \"lookup('callApi', 'data')\".", port.getValue())))));
     flowRunner("staticParams").withVariable("status", SC_METHOD_NOT_ALLOWED).run();
   }
 
@@ -136,7 +145,13 @@ public class ExpressionLanguageFunctionsTestCase extends AbstractIntegrationTest
   public void failsWhenFlowDoesNotExist() throws Exception {
     expectedError.expectErrorType("MULE", "EXPRESSION");
     expectedError.expectCause(both(isA(ExpressionRuntimeException.class))
-        .and(hasMessage(equalTo(("\"There is no component named 'non-existent'.\" evaluating expression: \"lookup(vars.flow, payload)\".")))));
+        .and(hasMessage(equalTo(("\"Exception while executing lookup(\"non-existent\" as String {class: \"java.lang.String\", "
+            + "encoding: \"UTF-8\", mimeType: \"*/*\"},\"test\" as String {class: \"java.lang.String\", encoding: \"UTF-8\", "
+            + "mimeType: \"*/*\"}) cause: There is no component named 'non-existent'. \n"
+            + "\n"
+            + "Trace:\n"
+            + "  at 'lookup' in (anonymous:1:1)\n"
+            + "  at 'main'   in (anonymous:1:1)\" evaluating expression: \"lookup(vars.flow, payload)\".")))));
     flowRunner("expressionParams").withVariable("flow", "non-existent").withPayload(TEST_PAYLOAD).run();
   }
 
@@ -144,7 +159,13 @@ public class ExpressionLanguageFunctionsTestCase extends AbstractIntegrationTest
   public void failsWhenReferenceIsNotAFlow() throws Exception {
     expectedError.expectErrorType("MULE", "EXPRESSION");
     expectedError.expectCause(both(isA(ExpressionRuntimeException.class))
-        .and(hasMessage(equalTo(("\"Component 'request-config' is not a flow.\" evaluating expression: \"lookup(vars.flow, payload)\".")))));
+        .and(hasMessage(equalTo(("\"Exception while executing lookup(\"request-config\" as String {class: \"java.lang.String\", "
+            + "encoding: \"UTF-8\", mimeType: \"*/*\"},\"test\" as String {class: \"java.lang.String\", encoding: \"UTF-8\", "
+            + "mimeType: \"*/*\"}) cause: Component 'request-config' is not a flow. \n"
+            + "\n"
+            + "Trace:\n"
+            + "  at 'lookup' in (anonymous:1:1)\n"
+            + "  at 'main'   in (anonymous:1:1)\" evaluating expression: \"lookup(vars.flow, payload)\".")))));
     flowRunner("expressionParams").withVariable("flow", "request-config").withPayload(TEST_PAYLOAD).run();
   }
 
