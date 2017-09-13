@@ -15,19 +15,22 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.mule.runtime.api.component.ComponentIdentifier.buildFromStringRepresentation;
 import static org.mule.runtime.api.component.location.Location.builder;
 import static org.mule.runtime.api.source.SchedulerMessageSource.SCHEDULER_MESSAGE_SOURCE_IDENTIFIER;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentLocatorStory.SEARCH_CONFIGURATION;
-import org.mule.runtime.api.component.ComponentIdentifier;
+
+import org.mule.runtime.api.component.Component;
 import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.api.component.location.Location;
-import org.mule.runtime.api.component.Component;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.processor.LoggerMessageProcessor;
 import org.mule.runtime.core.api.source.MessageSource;
 import org.mule.test.AbstractIntegrationTestCase;
+
+import org.junit.Test;
 
 import java.util.List;
 import java.util.Optional;
@@ -35,7 +38,6 @@ import java.util.Optional;
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
-import org.junit.Test;
 
 @Feature(CONFIGURATION_COMPONENT_LOCATOR)
 @Story(SEARCH_CONFIGURATION)
@@ -117,8 +119,8 @@ public class ConfigurationComponentLocatorTestCase extends AbstractIntegrationTe
   @Description("Search by ComponentIdentifier returns empty collection when no elements could be found")
   @Test
   public void notFoundComponentByComponentIdentifierReturnsEmptyCollection() {
-    List<Component> components = muleContext.getConfigurationComponentLocator()
-        .find(ComponentIdentifier.buildFromStringRepresentation("mule:nonExistent"));
+    List<Component> components =
+        muleContext.getConfigurationComponentLocator().find(buildFromStringRepresentation("mule:nonExistent"));
     assertThat(components, notNullValue());
     assertThat(components, hasSize(0));
   }
@@ -126,9 +128,8 @@ public class ConfigurationComponentLocatorTestCase extends AbstractIntegrationTe
   @Description("Search for all the components in the configuration")
   @Test
   public void findAllComponents() {
-    List<Component> components = muleContext.getConfigurationComponentLocator().findAll();
-    List<String> allComponentPaths = components.stream().map(Component::getLocation)
-        .map(ComponentLocation::getLocation).collect(toList());
+    List<ComponentLocation> componentLocs = muleContext.getConfigurationComponentLocator().findAllLocations();
+    List<String> allComponentPaths = componentLocs.stream().map(ComponentLocation::getLocation).collect(toList());
     assertThat(allComponentPaths, containsInAnyOrder(
                                                      "myFlow",
                                                      "myFlow/source",
@@ -139,7 +140,11 @@ public class ConfigurationComponentLocatorTestCase extends AbstractIntegrationTe
                                                      "myFlow/processors/2/processors/1",
                                                      "anotherFlow",
                                                      "anotherFlow/source",
-                                                     "anotherFlow/processors/0"));
+                                                     "anotherFlow/processors/0",
+                                                     "flowWithSubflow",
+                                                     "flowWithSubflow/processors/0",
+                                                     "mySubFlow",
+                                                     "mySubFlow/processors/0"));
   }
 
   @Override
