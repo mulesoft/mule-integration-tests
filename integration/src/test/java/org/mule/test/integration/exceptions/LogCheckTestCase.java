@@ -60,7 +60,7 @@ public class LogCheckTestCase extends AbstractIntegrationTestCase {
       }catch (AssertionError e) {
         continue;
       }
-      fail(String.format("flow \"%s\ was expected to fail but succeeded",flowName));
+      fail(String.format("flow \"%s\" was expected to fail but succeeded",flowName));
     }
   }
 
