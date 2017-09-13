@@ -25,7 +25,7 @@
                     <validation:is-true expression="#[mel:regex('(?i).*error').length > 0]"/>
                 </until-successful>
                 <error-handler>
-                    <on-error-continue>
+                    <on-error-continue type="RETRY_EXHAUSTED">
                         <processor ref="dlq-mp"/>
                     </on-error-continue>
                 </error-handler>
@@ -64,7 +64,7 @@
             <test:processor throwException="true"/>
         </until-successful>
         <error-handler>
-            <on-error-propagate>
+            <on-error-propagate type="RETRY_EXHAUSTED">
                 <test:invocation-counter name="exceptionStrategy"/>
             </on-error-propagate>
         </error-handler>

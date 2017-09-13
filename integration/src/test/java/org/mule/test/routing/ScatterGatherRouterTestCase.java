@@ -20,7 +20,7 @@ import static org.mule.functional.junit4.matchers.ThrowableMessageMatcher.hasMes
 import static org.mule.runtime.api.metadata.MediaType.ANY;
 import static org.mule.runtime.api.metadata.MediaType.JSON;
 import static org.mule.runtime.api.metadata.MediaType.TEXT;
-import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS_FEATURE;
+import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ScatterGatherStory.SCATTER_GATHER;
 
 import org.mule.functional.api.exception.FunctionalTestException;
@@ -51,7 +51,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-@Feature(ROUTERS_FEATURE)
+@Feature(ROUTERS)
 @Story(SCATTER_GATHER)
 public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
 

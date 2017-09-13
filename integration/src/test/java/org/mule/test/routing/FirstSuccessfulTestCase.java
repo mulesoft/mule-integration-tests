@@ -8,22 +8,27 @@ package org.mule.test.routing;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
-
+import static org.mule.test.allure.AllureConstants.RoutersFeature.FirstSuccessfulStory.FIRST_SUCCESSFUL;
+import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 import org.mule.extension.validation.api.ValidationException;
+import org.mule.functional.junit4.rules.ExpectedError;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
+@Feature(ROUTERS)
+@Story(FIRST_SUCCESSFUL)
 public class FirstSuccessfulTestCase extends AbstractIntegrationTestCase {
 
   @Rule
-  public ExpectedException expected = ExpectedException.none();
+  public ExpectedError expected = ExpectedError.none();
 
   @Override
   protected String getConfigFile() {
@@ -31,27 +36,35 @@ public class FirstSuccessfulTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  public void firstSuccessful() throws Exception {
+  public void firstRouteWorks() throws Exception {
     Message response = flowRunner("test-router").withPayload("XYZ").run().getMessage();
     assertThat(getPayloadAsString(response), is("XYZ is a string"));
+  }
 
-    response = flowRunner("test-router").withPayload(Integer.valueOf(9)).run().getMessage();
+  @Test
+  public void secondRouteWorks() throws Exception {
+    Message response = flowRunner("test-router").withPayload(Integer.valueOf(9)).run().getMessage();
     assertThat(getPayloadAsString(response), is("9 is a number"));
 
     response = flowRunner("test-router").withPayload(Long.valueOf(42)).run().getMessage();
     assertThat(getPayloadAsString(response), is("42 is a number"));
+  }
 
+  @Test
+  public void allRoutesFail() throws Exception {
     expected.expectCause(instanceOf(ValidationException.class));
+    expected.expectErrorType("VALIDATION", "INVALID_BOOLEAN");
     flowRunner("test-router").withPayload(Boolean.TRUE).run().getMessage();
   }
 
   @Test
-  public void firstSuccessfulWithOneWayEndpoints() throws Exception {
+  public void oneWayEndpoints() throws Exception {
     flowRunner("withOneWayEndpoints").withPayload(TEST_MESSAGE).run();
 
     MuleClient client = muleContext.getClient();
     Message response = client.request("test://WithOneWayEndpoints.out", RECEIVE_TIMEOUT).getRight().get();
-    assertNotNull(response);
+    assertThat(response, is(notNullValue()));
     assertThat(response.getPayload().getValue(), is(TEST_MESSAGE));
   }
+
 }
