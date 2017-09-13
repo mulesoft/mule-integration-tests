@@ -8,13 +8,12 @@ package org.mule.test.routing;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-
+import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
+import static org.mule.test.allure.AllureConstants.RoutersFeature.UntilSuccessfulStory.UNTIL_SUCCESSFUL;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.core.api.event.BaseEvent;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.test.AbstractIntegrationTestCase;
-
-import org.junit.Test;
 
 import com.google.common.collect.ConcurrentHashMultiset;
 import com.google.common.collect.Multiset;
@@ -22,6 +21,12 @@ import com.google.common.collect.Multiset;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
+import org.junit.Test;
+
+@Feature(ROUTERS)
+@Story(UNTIL_SUCCESSFUL)
 public class UntilSuccessfulWithSplitterTestCase extends AbstractIntegrationTestCase {
 
   private static final int TIMEOUT = 5;

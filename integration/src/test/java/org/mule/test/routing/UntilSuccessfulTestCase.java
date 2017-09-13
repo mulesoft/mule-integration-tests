@@ -6,19 +6,19 @@
  */
 package org.mule.test.routing;
 
-import static org.junit.Assert.assertThat;
-import static org.mule.functional.api.component.FunctionalTestProcessor.getFromFlow;
-import static org.mule.functional.api.component.InvocationCountMessageProcessor.getNumberOfInvocationsFor;
-import static org.mule.functional.junit4.TestLegacyMessageUtils.getExceptionPayload;
-import static org.mule.functional.junit4.matchers.ThrowableCauseMatcher.hasCause;
-
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.Is.is;
-
+import static org.junit.Assert.assertThat;
+import static org.mule.functional.api.component.FunctionalTestProcessor.getFromFlow;
+import static org.mule.functional.api.component.InvocationCountMessageProcessor.getNumberOfInvocationsFor;
+import static org.mule.functional.junit4.TestLegacyMessageUtils.getExceptionPayload;
+import static org.mule.functional.junit4.matchers.ThrowableCauseMatcher.hasCause;
+import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
+import static org.mule.test.allure.AllureConstants.RoutersFeature.UntilSuccessfulStory.UNTIL_SUCCESSFUL;
 import org.mule.functional.api.component.FunctionalTestProcessor;
 import org.mule.functional.api.exception.FunctionalTestException;
 import org.mule.runtime.api.exception.MuleException;
@@ -32,14 +32,18 @@ import org.mule.tck.probe.JUnitLambdaProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.util.ArrayList;
-import java.util.List;
-
+@Feature(ROUTERS)
+@Story(UNTIL_SUCCESSFUL)
 public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
 
   @Rule
@@ -59,7 +63,7 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  public void testDefaultConfiguration() throws Exception {
+  public void defaultConfiguration() throws Exception {
     final String payload = RandomStringUtils.randomAlphanumeric(20);
     flowRunner("minimal-config").withPayload(payload).run();
 
@@ -69,7 +73,7 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  public void testFullConfigurationMP() throws Exception {
+  public void fullConfigurationMP() throws Exception {
     final String payload = RandomStringUtils.randomAlphanumeric(20);
     final Message response = flowRunner("full-config-with-mp").withPayload(payload).run().getMessage();
     assertThat(getPayloadAsString(response), is("ACK"));
@@ -94,7 +98,7 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  public void testRetryOnEndpoint() throws Exception {
+  public void retryOnEndpoint() throws Exception {
     final String payload = RandomStringUtils.randomAlphanumeric(20);
     flowRunner("retry-endpoint-config").withPayload(payload).run();
 

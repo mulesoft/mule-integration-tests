@@ -7,6 +7,8 @@
 package org.mule.test.routing;
 
 import static org.junit.Assert.assertNotNull;
+import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
+import static org.mule.test.allure.AllureConstants.RoutersFeature.RoundRobinStory.ROUND_ROBIN;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import org.mule.runtime.api.message.Message;
@@ -16,9 +18,13 @@ import org.mule.test.AbstractIntegrationTestCase;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 import org.junit.Test;
 import org.slf4j.Logger;
 
+@Feature(ROUTERS)
+@Story(ROUND_ROBIN)
 public class RoundRobinTestCase extends AbstractIntegrationTestCase {
 
   private static final Logger LOGGER = getLogger(RoundRobinTestCase.class);

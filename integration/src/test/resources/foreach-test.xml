@@ -286,6 +286,17 @@
         </foreach>
     </flow>
 
+    <flow name="error-handler">
+        <foreach>
+            <test:throw exception="java.io.IOException" error="CONNECTIVITY"/>
+        </foreach>
+        <error-handler>
+            <on-error-continue type="CONNECTIVITY">
+                <set-payload value="handled"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
     <sub-flow name="setTestProperties">
 		<set-variable variableName="value1" value="value1" />
 		<set-variable variableName="value2" value="value2" />

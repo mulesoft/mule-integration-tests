@@ -6,15 +6,22 @@
  */
 package org.mule.test.integration.routing;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-
+import static org.mule.functional.junit4.matchers.MessageMatchers.hasPayload;
+import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
+import static org.mule.test.allure.AllureConstants.ScopeFeature.ChoiceStory.CHOICE;
 import org.mule.functional.api.component.InvocationCountMessageProcessor;
 import org.mule.runtime.api.message.Message;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 import org.junit.Test;
 
+@Feature(ROUTERS)
+@Story(CHOICE)
 public class ChoiceRouterTestCase extends AbstractIntegrationTestCase {
 
   @Override
@@ -30,5 +37,12 @@ public class ChoiceRouterTestCase extends AbstractIntegrationTestCase {
     assertThat(InvocationCountMessageProcessor.getNumberOfInvocationsFor("whenRouteCounter"), is(0));
     assertThat(InvocationCountMessageProcessor.getNumberOfInvocationsFor("afterRouteMpCounter"), is(1));
   }
+
+  @Test
+  public void errorsWithinRouteArePropagated() throws Exception {
+    Message message = flowRunner("error-handler").withPayload(TEST_PAYLOAD).run().getMessage();
+    assertThat(message, hasPayload(equalTo("handled")));
+  }
+
 }
 

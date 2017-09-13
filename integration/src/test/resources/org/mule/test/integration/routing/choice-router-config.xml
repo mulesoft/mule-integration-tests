@@ -14,4 +14,17 @@
         <test:invocation-counter name="afterRouteMpCounter"/>
     </flow>
 
+    <flow name="error-handler">
+        <choice>
+            <when expression="#[true]">
+                <test:throw exception="java.io.IOException" error="CONNECTIVITY"/>
+            </when>
+        </choice>
+        <error-handler>
+            <on-error-continue type="CONNECTIVITY">
+                <set-payload value="handled"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
 </mule>

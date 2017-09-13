@@ -21,6 +21,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.rules.ExpectedException.none;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mule.functional.junit4.matchers.MessageMatchers.hasPayload;
 import static org.mule.runtime.api.exception.MuleException.INFO_LOCATION_KEY;
 import static org.mule.runtime.api.message.Message.of;
 import static org.mule.runtime.api.metadata.DataType.JSON_STRING;
@@ -28,8 +29,7 @@ import static org.mule.runtime.api.metadata.MediaType.APPLICATION_JAVA;
 import static org.mule.runtime.api.metadata.MediaType.APPLICATION_JSON;
 import static org.mule.runtime.api.metadata.MediaType.APPLICATION_XML;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ForeachStory.FOR_EACH;
-import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS_FEATURE;
-
+import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 import org.mule.functional.junit4.TestLegacyMessageBuilder;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
@@ -38,6 +38,8 @@ import org.mule.runtime.core.api.event.BaseEvent;
 import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
+
+import com.google.common.collect.ImmutableList;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -48,7 +50,6 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import com.google.common.collect.ImmutableList;
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Issue;
@@ -61,7 +62,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-@Feature(ROUTERS_FEATURE)
+@Feature(ROUTERS)
 @Story(FOR_EACH)
 public class ForeachTestCase extends AbstractIntegrationTestCase {
 
@@ -566,5 +567,11 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
   @Test
   public void initializesForeachOnSubFLow() throws Exception {
     getSubFlow("sub-flow-with-foreach");
+  }
+
+  @Test
+  public void errorsWithinArePropagated() throws Exception {
+    Message message = flowRunner("error-handler").withPayload(new String[] {TEST_PAYLOAD}).run().getMessage();
+    assertThat(message, hasPayload(equalTo("handled")));
   }
 }
