@@ -5,6 +5,7 @@
  * LICENSE.txt file.
  */
 package org.mule.test.integration.exceptions;
+
 import static org.junit.Assert.fail;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -15,9 +16,10 @@ public class LogCheckTestCase extends AbstractIntegrationTestCase {
 
   private static final String VERBOSE_EXCEPTIONS_PROPERTY = "mule.verbose.exceptions";
   private static final String[] FLOWS_EXPECTING_FAILURE_NO_VERBOSE_EXCEPTIONS = {"checkStacktrace",};
-  private static final String[] FLOWS_EXPECTING_SUCCESS_NO_VERBOSE_EXCEPTIONS = {"checkEquals","checkSummary"};
+  private static final String[] FLOWS_EXPECTING_SUCCESS_NO_VERBOSE_EXCEPTIONS = {"checkEquals", "checkSummary"};
   private static final String[] FLOWS_EXPECTING_FAILURE_WITH_VERBOSE_EXCEPTIONS = {};
-  private static final String[] FLOWS_EXPECTING_SUCCESS_WITH_VERBOSE_EXCEPTIONS = {"checkEqualsVerbose","checkStacktrace","checkSummary","allChecksTogetherNoneFailing"};
+  private static final String[] FLOWS_EXPECTING_SUCCESS_WITH_VERBOSE_EXCEPTIONS =
+      {"checkEqualsVerbose", "checkStacktrace", "checkSummary", "allChecksTogetherNoneFailing"};
 
   @Override
   protected String getConfigFile() {
@@ -44,23 +46,23 @@ public class LogCheckTestCase extends AbstractIntegrationTestCase {
     runFailures(false, FLOWS_EXPECTING_FAILURE_NO_VERBOSE_EXCEPTIONS);
   }
 
-  private void runSuccesses(boolean verboseExceptions, String[] flowNames) throws Exception{
+  private void runSuccesses(boolean verboseExceptions, String[] flowNames) throws Exception {
     setVerboseExceptions(verboseExceptions);
-    for(String flowName : flowNames) {
+    for (String flowName : flowNames) {
       flowRunner(flowName).run();
     }
 
   }
 
-  private void runFailures(boolean verboseExceptions, String[] flowNames) throws Exception{
+  private void runFailures(boolean verboseExceptions, String[] flowNames) throws Exception {
     setVerboseExceptions(verboseExceptions);
-    for(String flowName : flowNames) {
+    for (String flowName : flowNames) {
       try {
         flowRunner(flowName).run();
-      }catch (AssertionError e) {
+      } catch (AssertionError e) {
         continue;
       }
-      fail(String.format("flow \"%s\" was expected to fail but succeeded",flowName));
+      fail(String.format("flow \"%s\" was expected to fail but succeeded", flowName));
     }
   }
 
