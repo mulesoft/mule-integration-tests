@@ -128,7 +128,7 @@ public class ConfigurationComponentLocatorTestCase extends AbstractIntegrationTe
   @Description("Search for all the components in the configuration")
   @Test
   public void findAllComponents() {
-    List<ComponentLocation> componentLocs = muleContext.getConfigurationComponentLocator().findAll();
+    List<ComponentLocation> componentLocs = muleContext.getConfigurationComponentLocator().findAllLocations();
     List<String> allComponentPaths = componentLocs.stream().map(ComponentLocation::getLocation).collect(toList());
     assertThat(allComponentPaths, containsInAnyOrder(
                                                      "myFlow",
