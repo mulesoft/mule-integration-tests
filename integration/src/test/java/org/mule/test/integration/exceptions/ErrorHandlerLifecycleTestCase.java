@@ -35,9 +35,9 @@ public class ErrorHandlerLifecycleTestCase extends AbstractIntegrationTestCase {
     FlowConstruct flowA = getFlowConstruct("flowA");
     FlowConstruct flowB = getFlowConstruct("flowB");
     AbstractExceptionListener flowAExceptionStrategy =
-        (AbstractExceptionListener) getExceptionListeners(flowA.getExceptionListener()).get(0);
+        (AbstractExceptionListener) getExceptionListeners(flowA.getExceptionListener()).get(1);
     AbstractExceptionListener flowBExceptionStrategy =
-        (AbstractExceptionListener) getExceptionListeners(flowB.getExceptionListener()).get(0);
+        (AbstractExceptionListener) getExceptionListeners(flowB.getExceptionListener()).get(1);
     LifecycleCheckerMessageProcessor lifecycleCheckerMessageProcessorFlowA =
         (LifecycleCheckerMessageProcessor) flowAExceptionStrategy.getMessageProcessors().get(0);
     LifecycleCheckerMessageProcessor lifecycleCheckerMessageProcessorFlowB =
@@ -53,9 +53,9 @@ public class ErrorHandlerLifecycleTestCase extends AbstractIntegrationTestCase {
     FlowConstruct flowC = getFlowConstruct("flowC");
     FlowConstruct flowD = getFlowConstruct("flowD");
     AbstractExceptionListener flowCExceptionStrategy =
-        (AbstractExceptionListener) getExceptionListeners(flowC.getExceptionListener()).get(0);
+        (AbstractExceptionListener) getExceptionListeners(flowC.getExceptionListener()).get(1);
     AbstractExceptionListener flowDExceptionStrategy =
-        (AbstractExceptionListener) getExceptionListeners(flowD.getExceptionListener()).get(0);
+        (AbstractExceptionListener) getExceptionListeners(flowD.getExceptionListener()).get(1);
     LifecycleCheckerMessageProcessor lifecycleCheckerMessageProcessorFlowC =
         (LifecycleCheckerMessageProcessor) flowCExceptionStrategy.getMessageProcessors().get(0);
     LifecycleCheckerMessageProcessor lifecycleCheckerMessageProcessorFlowD =

@@ -21,7 +21,6 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mule.functional.api.event.TestLegacyEventUtils.getEffectiveExceptionHandler;
 import static org.mule.tck.MuleTestUtils.getExceptionListeners;
-
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.client.MuleClient;
@@ -34,12 +33,12 @@ import org.mule.runtime.core.api.processor.Processor;
 import org.mule.tck.processor.FlowAssert;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import org.junit.Test;
-
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
+
+import org.junit.Test;
 
 public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
 
@@ -67,8 +66,8 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
     Message response = muleEvent.getMessage();
     assertThat(response, is(notNullValue()));
     assertThat(effectiveMessagingExceptionHandler.getClass().getName(), equalTo(ERROR_HANDLER_CLASSNAME));
-    assertThat(getExceptionListeners(effectiveMessagingExceptionHandler), hasSize(1));
-    MessagingExceptionHandlerAcceptor handler = getExceptionListeners(effectiveMessagingExceptionHandler).get(0);
+    assertThat(getExceptionListeners(effectiveMessagingExceptionHandler), hasSize(2));
+    MessagingExceptionHandlerAcceptor handler = getExceptionListeners(effectiveMessagingExceptionHandler).get(1);
     assertThat(handler.getClass().getName(), equalTo("org.mule.runtime.core.internal.exception.OnErrorPropagateHandler"));
     assertThat(handler.acceptsAll(), is(true));
   }
