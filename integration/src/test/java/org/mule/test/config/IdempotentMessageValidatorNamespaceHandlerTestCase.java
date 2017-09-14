@@ -15,7 +15,7 @@ import org.mule.runtime.api.store.ObjectStore;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.construct.FlowConstruct;
 import org.mule.runtime.core.api.processor.Processor;
-import org.mule.runtime.core.api.store.SimpleMemoryObjectStore;
+import org.mule.runtime.api.store.SimpleMemoryObjectStore;
 import org.mule.runtime.core.internal.routing.IdempotentMessageValidator;
 import org.mule.test.AbstractIntegrationTestCase;
 

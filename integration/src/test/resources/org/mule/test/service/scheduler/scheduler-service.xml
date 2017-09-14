@@ -16,7 +16,7 @@
     <flow name="delaySchedule">
         <test:skeleton-source/>
         <test:processor throwException="true" exceptionText="JustToBeAbleToInstantiateException"
-                        exceptionToThrow="org.mule.runtime.core.api.scheduler.SchedulerBusyException"/>
+                        exceptionToThrow="org.mule.runtime.api.scheduler.SchedulerBusyException"/>
     </flow>
 
 </mule>

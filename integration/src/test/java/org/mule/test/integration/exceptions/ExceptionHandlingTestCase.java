@@ -27,7 +27,6 @@ import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.runtime.core.api.event.BaseEvent;
 import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.runtime.core.api.exception.MessagingExceptionHandler;
-import org.mule.runtime.core.api.exception.MessagingExceptionHandlerAcceptor;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.tck.processor.FlowAssert;
@@ -67,9 +66,8 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
     assertThat(response, is(notNullValue()));
     assertThat(effectiveMessagingExceptionHandler.getClass().getName(), equalTo(ERROR_HANDLER_CLASSNAME));
     assertThat(getExceptionListeners(effectiveMessagingExceptionHandler), hasSize(2));
-    MessagingExceptionHandlerAcceptor handler = getExceptionListeners(effectiveMessagingExceptionHandler).get(1);
+    MessagingExceptionHandler handler = getExceptionListeners(effectiveMessagingExceptionHandler).get(1);
     assertThat(handler.getClass().getName(), equalTo("org.mule.runtime.core.internal.exception.OnErrorPropagateHandler"));
-    assertThat(handler.acceptsAll(), is(true));
   }
 
   @Test
