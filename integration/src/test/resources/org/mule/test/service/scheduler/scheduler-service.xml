@@ -6,9 +6,11 @@
               http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
 	<object name="hasSchedulingService" class="org.mule.test.service.scheduler.SchedulerServiceTestCase$HasSchedulingService"/> 
+	<object name="recordThreadName" class="org.mule.test.service.scheduler.SchedulerServiceTestCase$RecordThreadName"/> 
 
     <flow name="willSchedule">
         <processor ref="hasSchedulingService"/>
+        <processor ref="recordThreadName"/>
     </flow>
 
     <flow name="delaySchedule">

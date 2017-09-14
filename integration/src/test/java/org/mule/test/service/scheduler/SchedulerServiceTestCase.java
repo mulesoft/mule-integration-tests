@@ -8,15 +8,15 @@ package org.mule.test.service.scheduler;
 
 import static java.lang.System.currentTimeMillis;
 import static java.lang.Thread.currentThread;
-import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.startsWith;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.rules.ExpectedException.none;
 import static org.mule.runtime.api.message.Message.of;
-import static org.mule.runtime.core.api.config.MuleProperties.OBJECT_SCHEDULER_BASE_CONFIG;
 import static org.mule.runtime.core.api.event.BaseEventContext.create;
 import static org.mule.runtime.dsl.api.component.config.DefaultComponentLocation.fromSingleComponent;
 import static org.mule.test.allure.AllureConstants.SchedulerServiceFeature.SCHEDULER_SERVICE;
@@ -30,38 +30,34 @@ import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.api.scheduler.Scheduler;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
+import org.mule.runtime.core.api.config.DefaultMuleConfiguration;
+import org.mule.runtime.core.api.config.builders.AbstractConfigurationBuilder;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.construct.FlowConstruct;
 import org.mule.runtime.core.api.event.BaseEvent;
+import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.scheduler.SchedulerBusyException;
-import org.mule.runtime.core.api.scheduler.SchedulerConfig;
 import org.mule.runtime.core.api.scheduler.SchedulerService;
 import org.mule.runtime.core.api.source.MessageSource;
 import org.mule.runtime.core.api.util.concurrent.Latch;
-import org.mule.runtime.core.api.config.DefaultMuleConfiguration;
-import org.mule.runtime.core.api.config.builders.AbstractConfigurationBuilder;
-import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.test.AbstractIntegrationTestCase;
-
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-
-import javax.inject.Inject;
-import javax.inject.Named;
 
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+
+import javax.inject.Inject;
+
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 
 @Feature(SCHEDULER_SERVICE)
 public class SchedulerServiceTestCase extends AbstractIntegrationTestCase {
-
-  private static final int CUSTOM_SCHEDULER_SIZE = 4;
 
   @Override
   protected String getConfigFile() {
@@ -143,8 +139,6 @@ public class SchedulerServiceTestCase extends AbstractIntegrationTestCase {
   @Test
   @Description("Tests that the exception that happens when a thread pool is full is properly handled.")
   public void overloadErrorHandling() throws Exception {
-
-
     MessagingException exception =
         flowRunner("delaySchedule").runExpectingException();
 
@@ -191,6 +185,17 @@ public class SchedulerServiceTestCase extends AbstractIntegrationTestCase {
 
   }
 
+  @Test
+  @Description("Test that the name of a thread executing a processor has excution context information about its flow")
+  public void flowProcessingThreadName() throws Exception {
+    flowRunner("willSchedule").run();
+
+    assertThat(RecordThreadName.threadName,
+               allOf(startsWith("[MuleRuntime].io."),
+                     // [appName].flowName.processingStrategy
+                     containsString("[SchedulerServiceTestCase#flowProcessingThreadName].willSchedule.BLOCKING @")));
+  }
+
   public static class HasSchedulingService implements Processor, Initialisable, Disposable {
 
     @Inject
@@ -222,40 +227,16 @@ public class SchedulerServiceTestCase extends AbstractIntegrationTestCase {
     }
   }
 
-  public static class WaitingProcessor implements Processor, Initialisable, Disposable {
+  public static class RecordThreadName implements Processor {
 
-    public static Latch latch = new Latch();
-
-    @Inject
-    @Named(OBJECT_SCHEDULER_BASE_CONFIG)
-    private SchedulerConfig config;
-
-    @Inject
-    private SchedulerService schedulerService;
-
-    private volatile Scheduler scheduler;
-
-    @Override
-    public void initialise() throws InitialisationException {
-      latch = new Latch();
-      scheduler = schedulerService.customScheduler(config.withMaxConcurrentTasks(CUSTOM_SCHEDULER_SIZE));
-    }
+    public static String threadName;
 
     @Override
     public BaseEvent process(BaseEvent event) throws MuleException {
-      scheduler.submit(() -> {
-        try {
-          latch.await(DEFAULT_TEST_TIMEOUT_SECS, SECONDS);
-        } catch (InterruptedException e) {
-          currentThread().interrupt();
-        }
-      });
+      threadName = currentThread().getName();
       return event;
     }
 
-    @Override
-    public void dispose() {
-      scheduler.shutdownNow();
-    }
   }
+
 }
