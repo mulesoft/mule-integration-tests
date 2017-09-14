@@ -8,6 +8,15 @@
       xmlns:sockets="http://www.mulesoft.org/schema/mule/sockets"
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd http://www.mulesoft.org/schema/mule/sockets http://www.mulesoft.org/schema/mule/sockets/current/mule-sockets.xsd http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd">
 
+
+    <wsc:config name="wsc-config">
+        <wsc:connection wsdlLocation="wsdl" service="service" port="port"/>
+    </wsc:config>
+
+    <sockets:request-config name="sockets-config">
+        <sockets:tcp-requester-connection host="localhost" port="11111"/>
+    </sockets:request-config>
+
     <db:config name="dbConfig">
         <db:derby-connection database="target/muleEmbeddedDB" create="true">
             <db:pooling-profile maxPoolSize="10"/>
@@ -71,14 +80,14 @@
             </db:input-parameters>
         </db:insert>
 
-        <sockets:send-and-receive target="myVar" targetValue="#[message]">
+        <sockets:send-and-receive config-ref="sockets-config" target="myVar" targetValue="#[message]">
          <repeatable-in-memory-stream bufferSizeIncrement="8"
                                       bufferUnit="KB"
                                       initialBufferSize="51"
                                       maxBufferSize="1000"/>
         </sockets:send-and-receive>
 
-        <wsc:consume operation="GetCitiesByCountry">
+        <wsc:consume config-ref="wsc-config" operation="GetCitiesByCountry">
             <wsc:message>
                 <wsc:body>#['modified' ++ payload]</wsc:body>
                 <wsc:headers>#[{"headers": {con#headerIn: "Header In Value",con#headerInOut: "Header In Out Value"}]</wsc:headers>
@@ -86,7 +95,7 @@
             </wsc:message>
         </wsc:consume>
 
-        <wsc:consume operation="GetCitiesByCountry"/>
+        <wsc:consume config-ref="wsc-config" operation="GetCitiesByCountry"/>
 
     </flow>
 

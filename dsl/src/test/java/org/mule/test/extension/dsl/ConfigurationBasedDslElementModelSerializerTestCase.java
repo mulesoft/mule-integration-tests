@@ -57,6 +57,8 @@ public class ConfigurationBasedDslElementModelSerializerTestCase extends Abstrac
     doc.getDocumentElement().appendChild(converter.asXml(resolve(getAppElement(applicationModel, DB_CONFIG))));
     doc.getDocumentElement().appendChild(converter.asXml(resolve(getAppElement(applicationModel, HTTP_LISTENER_CONFIG))));
     doc.getDocumentElement().appendChild(converter.asXml(resolve(getAppElement(applicationModel, HTTP_REQUESTER_CONFIG))));
+    doc.getDocumentElement().appendChild(converter.asXml(resolve(getAppElement(applicationModel, "sockets-config"))));
+    doc.getDocumentElement().appendChild(converter.asXml(resolve(getAppElement(applicationModel, "wsc-config"))));
 
     ComponentConfiguration componentsFlow = getAppElement(applicationModel, COMPONENTS_FLOW);
     Element httpListenerSource = converter.asXml(resolve(componentsFlow.getNestedComponents().get(LISTENER_PATH)));
