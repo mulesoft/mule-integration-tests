@@ -9,7 +9,7 @@
         <test:skeleton-source/>
         <test:throw exception="java.lang.RuntimeException" error="ANY"/>
         <error-handler>
-            <test:on-error-assert>
+            <test:on-error-check-log>
                 <test:check-equals>
                     <![CDATA[
                         Message               : null.
@@ -19,7 +19,7 @@
                         (set debug level logging or '-Dmule.verbose.exceptions=true' for everything)
                     ]]>
                 </test:check-equals>
-            </test:on-error-assert>
+            </test:on-error-check-log>
         </error-handler>
     </flow>
 
@@ -27,7 +27,7 @@
         <test:skeleton-source/>
         <test:throw exception="java.lang.RuntimeException" error="ANY"/>
         <error-handler>
-            <test:on-error-assert>
+            <test:on-error-check-log>
                 <test:check-equals>
                     <![CDATA[
                         Message               : null.
@@ -38,7 +38,7 @@
                         Element XML           : <test:throw exception="java.lang.RuntimeException" error="ANY"></test:throw>
                     ]]>
                 </test:check-equals>
-            </test:on-error-assert>
+            </test:on-error-check-log>
         </error-handler>
     </flow>
 
@@ -46,12 +46,12 @@
         <test:skeleton-source/>
         <test:throw exception="java.lang.RuntimeException" error="ANY"/>
         <error-handler>
-            <test:on-error-assert>
+            <test:on-error-check-log>
                 <test:check-stacktrace>
                     <test:method-call package="java.lang" class="Thread" method="run"/>
                     <test:cause exception="java.lang.RuntimeException"/>
                 </test:check-stacktrace>
-            </test:on-error-assert>
+            </test:on-error-check-log>
         </error-handler>
     </flow>
 
@@ -59,11 +59,11 @@
         <test:skeleton-source/>
         <test:throw exception="java.lang.RuntimeException" error="ANY"/>
         <error-handler>
-            <test:on-error-assert>
+            <test:on-error-check-log>
                 <test:check-summary>
                     <test:summary-info key="Error type" value="MULE:ANY"/>
                 </test:check-summary>
-            </test:on-error-assert>
+            </test:on-error-check-log>
         </error-handler>
     </flow>
 
@@ -71,7 +71,7 @@
         <test:skeleton-source/>
         <test:throw exception="java.lang.RuntimeException" error="ANY"/>
         <error-handler>
-            <test:on-error-assert>
+            <test:on-error-check-log>
                 <test:check-equals>
                     <![CDATA[
                         Message               : null.
@@ -89,7 +89,7 @@
                     <test:method-call package="java.lang" class="Thread" method="run"/>
                     <test:cause exception="java.lang.RuntimeException"/>
                 </test:check-stacktrace>
-            </test:on-error-assert>
+            </test:on-error-check-log>
         </error-handler>
     </flow>
 

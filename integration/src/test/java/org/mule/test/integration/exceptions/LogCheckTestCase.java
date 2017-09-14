@@ -7,6 +7,7 @@
 package org.mule.test.integration.exceptions;
 
 import static org.junit.Assert.fail;
+import static org.mule.runtime.api.exception.MuleException.MULE_VERBOSE_EXCEPTIONS;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -14,7 +15,6 @@ import org.junit.Test;
 
 public class LogCheckTestCase extends AbstractIntegrationTestCase {
 
-  private static final String VERBOSE_EXCEPTIONS_PROPERTY = "mule.verbose.exceptions";
   private static final String[] FLOWS_EXPECTING_FAILURE_NO_VERBOSE_EXCEPTIONS = {"checkStacktrace",};
   private static final String[] FLOWS_EXPECTING_SUCCESS_NO_VERBOSE_EXCEPTIONS = {"checkEquals", "checkSummary"};
   private static final String[] FLOWS_EXPECTING_FAILURE_WITH_VERBOSE_EXCEPTIONS = {};
@@ -67,7 +67,7 @@ public class LogCheckTestCase extends AbstractIntegrationTestCase {
   }
 
   private void setVerboseExceptions(boolean value) {
-    System.setProperty(VERBOSE_EXCEPTIONS_PROPERTY, Boolean.toString(value));
+    System.setProperty(MULE_VERBOSE_EXCEPTIONS, Boolean.toString(value));
     MuleException.refreshVerboseExceptions();
   }
 
