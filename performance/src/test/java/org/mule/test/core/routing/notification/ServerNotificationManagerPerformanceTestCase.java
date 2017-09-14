@@ -11,19 +11,16 @@ import static java.lang.Thread.sleep;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-import org.mule.runtime.core.api.MuleContext;
-import org.mule.runtime.core.api.config.ConfigurationBuilder;
-import org.mule.runtime.core.api.config.builders.AbstractConfigurationBuilder;
 import org.mule.runtime.core.api.context.notification.AbstractServerNotification;
 import org.mule.runtime.core.api.context.notification.NotificationListener;
 import org.mule.runtime.core.api.context.notification.ServerNotificationManager;
-import org.mule.runtime.core.api.registry.MuleRegistry;
 import org.mule.service.scheduler.internal.DefaultSchedulerService;
 import org.mule.tck.junit4.AbstractMuleContextTestCase;
 import org.mule.tck.probe.JUnitLambdaProbe;
 import org.mule.tck.probe.PollingProber;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.databene.contiperf.PerfTest;
@@ -75,15 +72,10 @@ public class ServerNotificationManagerPerformanceTestCase extends AbstractMuleCo
   }
 
   @Override
-  protected void addBuilders(List<ConfigurationBuilder> builders) {
-    builders.add(new AbstractConfigurationBuilder() {
-
-      @Override
-      protected void doConfigure(MuleContext muleContext) throws Exception {
-        MuleRegistry registry = muleContext.getRegistry();
-        registry.registerObject(schedulerService.getName(), schedulerService);
-      }
-    });
+  protected Map<String, Object> getStartUpRegistryObjects() {
+    Map<String, Object> registryObjects = new HashMap<>();
+    registryObjects.put(schedulerService.getName(), schedulerService);
+    return registryObjects;
   }
 
   @Override

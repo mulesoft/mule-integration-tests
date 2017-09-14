@@ -16,13 +16,19 @@ import org.mule.runtime.core.api.context.notification.NotificationListenerRegist
 import org.mule.runtime.core.api.util.concurrent.Latch;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import org.junit.Test;
+
+import javax.inject.Inject;
+
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
-import org.junit.Test;
 
 @Feature(ROUTERS)
 @Story(UNTIL_SUCCESSFUL)
 public class UntilSuccessfulRetryExhaustedTestCase extends AbstractIntegrationTestCase {
+
+  @Inject
+  private NotificationListenerRegistry notificationRegistry;
 
   @Override
   protected String getConfigFile() {
@@ -32,8 +38,7 @@ public class UntilSuccessfulRetryExhaustedTestCase extends AbstractIntegrationTe
   @Test
   public void onRetryExhaustedCallExceptionStrategy() throws Exception {
     final Latch exceptionStrategyCalledLatch = new Latch();
-    muleContext.getRegistry().lookupObject(NotificationListenerRegistry.class)
-        .registerListener((ExceptionNotificationListener) notification -> exceptionStrategyCalledLatch.release());
+    notificationRegistry.registerListener((ExceptionNotificationListener) notification -> exceptionStrategyCalledLatch.release());
     flowRunner("retryExhausted").withPayload("message").run();
     if (!exceptionStrategyCalledLatch.await(10000, MILLISECONDS)) {
       fail("exception strategy was not executed");

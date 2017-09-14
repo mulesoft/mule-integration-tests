@@ -8,6 +8,7 @@ package org.mule.test.integration;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.metadata.TypedValue;
@@ -17,11 +18,11 @@ import org.mule.runtime.core.api.event.BaseEvent;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import org.junit.Test;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.junit.Test;
 
 public class WatermarkTestCase extends AbstractIntegrationTestCase {
 
@@ -60,7 +61,7 @@ public class WatermarkTestCase extends AbstractIntegrationTestCase {
   @Override
   protected void doSetUp() throws Exception {
     reset();
-    objectStoreManager = muleContext.getRegistry().lookupObject(ObjectStoreManager.class);
+    objectStoreManager = registry.<ObjectStoreManager>lookup(ObjectStoreManager.class).get();
   }
 
   @Override

@@ -16,9 +16,9 @@ import org.mule.tck.probe.JUnitProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import java.util.Iterator;
-
 import org.junit.After;
+
+import java.util.Iterator;
 
 /**
  * Tests must define a "notificationLogger" listener
@@ -35,7 +35,7 @@ public abstract class AbstractNotificationTestCase extends AbstractIntegrationTe
   }
 
   public final void assertNotifications() throws Exception {
-    notificationLogger = muleContext.getRegistry().lookupObject("notificationLogger");
+    notificationLogger = registry.<NotificationLogger>lookupByName("notificationLogger").get();
 
     // Need to explicitly dispose manager here to get disposal notifications
     muleContext.dispose();
@@ -74,7 +74,7 @@ public abstract class AbstractNotificationTestCase extends AbstractIntegrationTe
 
   /**
    * This is destructive - do not use spec after calling this routine
-   * 
+   *
    * @param notificationsLog
    */
   protected void assertExpectedNotifications(String notificationsLog, RestrictedNode spec) {

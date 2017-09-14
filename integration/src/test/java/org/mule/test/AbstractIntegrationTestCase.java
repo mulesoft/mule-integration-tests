@@ -8,8 +8,12 @@
 package org.mule.test;
 
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
+import org.mule.runtime.api.artifact.Registry;
+import org.mule.runtime.api.component.location.ConfigurationComponentLocator;
 import org.mule.test.runner.ArtifactClassLoaderRunner;
 import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
+
+import javax.inject.Inject;
 
 /**
  * Base {@link Class} for functional integration tests, it will run the functional test case with
@@ -29,4 +33,14 @@ import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
     extraPrivilegedArtifacts = {"org.mule.tests:mule-tests-parsers-plugin"})
 public abstract class AbstractIntegrationTestCase extends MuleArtifactFunctionalTestCase {
 
+  @Inject
+  protected Registry registry;
+
+  @Inject
+  protected ConfigurationComponentLocator locator;
+
+  @Override
+  protected boolean doTestClassInjection() {
+    return true;
+  }
 }

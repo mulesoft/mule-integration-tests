@@ -8,8 +8,11 @@ package org.mule.test.components;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mule.runtime.api.component.location.Location.builderFromStringRepresentation;
+
 import org.mule.functional.api.component.SkeletonSource;
-import org.mule.runtime.core.api.construct.Flow;
+import org.mule.runtime.api.lifecycle.Startable;
+import org.mule.runtime.core.api.lifecycle.LifecycleStateEnabled;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -42,25 +45,29 @@ public class FlowStateTestCase extends AbstractIntegrationTestCase {
   }
 
   protected void doTestStarted(String flowName) throws Exception {
-    Flow flow = (Flow) muleContext.getRegistry().lookupFlowConstruct(flowName + "Flow");
+    LifecycleStateEnabled flow = registry.<LifecycleStateEnabled>lookupByName(flowName + "Flow").get();
     // Flow initially started
     assertTrue(flow.getLifecycleState().isStarted());
     assertFalse(flow.getLifecycleState().isStopped());
-    assertTrue(((SkeletonSource) flow.getSource()).isStarted());
+
+    assertTrue(((SkeletonSource) locator.find(builderFromStringRepresentation(flowName + "Flow/source").build()).get())
+        .isStarted());
   }
 
   @Test
   public void testInitialStateStopped() throws Exception {
-    Flow flow = (Flow) muleContext.getRegistry().lookupFlowConstruct("stoppedFlow");
+    LifecycleStateEnabled flow = registry.<LifecycleStateEnabled>lookupByName("stoppedFlow").get();
     // Flow initially stopped
     assertFalse(flow.getLifecycleState().isStarted());
     assertTrue(flow.getLifecycleState().isStopped());
-    assertFalse(((SkeletonSource) flow.getSource()).isStarted());
 
-    flow.start();
+    SkeletonSource source = (SkeletonSource) locator.find(builderFromStringRepresentation("stoppedFlow/source").build()).get();
+    assertFalse(source.isStarted());
+
+    registry.<Startable>lookupByName("stoppedFlow").get().start();
     assertTrue(flow.getLifecycleState().isStarted());
     assertFalse(flow.getLifecycleState().isStopped());
-    assertTrue(((SkeletonSource) flow.getSource()).isStarted());
+    assertTrue(source.isStarted());
   }
 
 }

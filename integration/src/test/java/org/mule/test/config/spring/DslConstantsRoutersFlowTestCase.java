@@ -11,7 +11,6 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.rules.ExpectedException.none;
 
@@ -20,13 +19,13 @@ import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.List;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.List;
 
 public class DslConstantsRoutersFlowTestCase extends AbstractIntegrationTestCase {
 
@@ -131,9 +130,7 @@ public class DslConstantsRoutersFlowTestCase extends AbstractIntegrationTestCase
   }
 
   protected Flow lookupFlow(String flowName) {
-    Flow flow = muleContext.getRegistry().lookupObject(flowName);
-    assertNotNull(flow);
-    return flow;
+    return registry.<Flow>lookupByName(flowName).get();
   }
 
   private Object getObjectStore(Processor router)

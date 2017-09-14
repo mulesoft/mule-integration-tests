@@ -9,28 +9,28 @@ package org.mule.test.integration;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mule.runtime.api.component.ComponentIdentifier.buildFromStringRepresentation;
+
 import org.mule.functional.api.component.EventCallback;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.source.SchedulerMessageSource;
 import org.mule.runtime.core.api.MuleContext;
-import org.mule.runtime.core.api.construct.Flow;
-import org.mule.runtime.core.api.construct.FlowConstruct;
 import org.mule.runtime.core.api.event.BaseEvent;
 import org.mule.runtime.core.api.processor.Processor;
-import org.mule.runtime.core.api.source.MessageSource;
 import org.mule.tck.probe.JUnitLambdaProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.test.AbstractSchedulerTestCase;
 
+import org.junit.Test;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import org.junit.Test;
 
 public class SchedulerTestCase extends AbstractSchedulerTestCase {
 
@@ -55,15 +55,8 @@ public class SchedulerTestCase extends AbstractSchedulerTestCase {
 
   @Test
   public void testPolling() throws Exception {
-    int schedulers = 0;
-    for (FlowConstruct flowConstruct : muleContext.getRegistry().lookupFlowConstructs()) {
-      Flow flow = (Flow) flowConstruct;
-      MessageSource flowSource = flow.getSource();
-      if (flowSource instanceof SchedulerMessageSource) {
-        schedulers++;
-      }
-    }
-    assertEquals(4, schedulers);
+    assertThat(locator.find(buildFromStringRepresentation("scheduler")).stream()
+        .filter(source -> source instanceof SchedulerMessageSource).count(), is(4L));
 
     new PollingProber(100, RECEIVE_TIMEOUT).check(new JUnitLambdaProbe(() -> {
       assertThat(foo, hasSize(greaterThan(0)));

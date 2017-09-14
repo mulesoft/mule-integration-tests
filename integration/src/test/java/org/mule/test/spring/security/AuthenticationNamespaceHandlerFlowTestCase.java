@@ -39,7 +39,7 @@ public class AuthenticationNamespaceHandlerFlowTestCase extends AbstractIntegrat
 
   @Test
   public void testSecurityManagerConfigured() {
-    SecurityManager securityManager = muleContext.getRegistry().lookupObject(OBJECT_SECURITY_MANAGER);
+    SecurityManager securityManager = registry.<SecurityManager>lookupByName(OBJECT_SECURITY_MANAGER).get();
     assertNotNull(securityManager);
 
     Collection<SecurityProvider> providers = securityManager.getProviders();

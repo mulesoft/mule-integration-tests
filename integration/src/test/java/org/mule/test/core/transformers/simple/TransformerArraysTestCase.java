@@ -8,6 +8,7 @@ package org.mule.test.core.transformers.simple;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+
 import org.mule.runtime.core.api.transformer.Transformer;
 import org.mule.tck.testmodels.fruit.Orange;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -24,7 +25,7 @@ public class TransformerArraysTestCase extends AbstractIntegrationTestCase {
   @Test
   public void testArrayReturnType() throws Exception {
 
-    Transformer trans = muleContext.getRegistry().lookupTransformer("testTrans");
+    Transformer trans = registry.<Transformer>lookupByName("testTrans").get();
 
     assertNotNull(trans);
     assertEquals(Orange[].class, trans.getReturnDataType().getType());

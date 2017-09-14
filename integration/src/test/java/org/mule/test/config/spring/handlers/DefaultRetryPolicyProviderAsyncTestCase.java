@@ -12,9 +12,10 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.core.api.config.MuleProperties.OBJECT_DEFAULT_RETRY_POLICY_TEMPLATE;
-import org.mule.test.AbstractIntegrationTestCase;
+
 import org.mule.runtime.core.api.retry.async.AsynchronousRetryTemplate;
 import org.mule.runtime.core.api.retry.policy.SimpleRetryPolicyTemplate;
+import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Test;
 
@@ -27,7 +28,7 @@ public class DefaultRetryPolicyProviderAsyncTestCase extends AbstractIntegration
 
   @Test
   public void testPolicyRegistration() throws Exception {
-    Object obj = muleContext.getRegistry().lookupObject(OBJECT_DEFAULT_RETRY_POLICY_TEMPLATE);
+    Object obj = registry.lookupByName(OBJECT_DEFAULT_RETRY_POLICY_TEMPLATE).get();
     assertThat(obj, not(nullValue()));
     assertThat(obj, instanceOf(AsynchronousRetryTemplate.class));
     assertThat(((SimpleRetryPolicyTemplate) ((AsynchronousRetryTemplate) obj).getDelegate()).getCount(), is(3));

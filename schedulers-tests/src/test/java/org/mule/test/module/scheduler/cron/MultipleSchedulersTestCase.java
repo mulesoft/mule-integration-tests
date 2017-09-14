@@ -8,19 +8,20 @@
 package org.mule.test.module.scheduler.cron;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
+
 import org.mule.functional.api.component.EventCallback;
+import org.mule.runtime.api.lifecycle.Stoppable;
 import org.mule.runtime.core.api.MuleContext;
-import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.event.BaseEvent;
 import org.mule.runtime.core.api.util.concurrent.Latch;
 import org.mule.tck.probe.JUnitLambdaProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.test.AbstractSchedulerTestCase;
 
-import java.util.concurrent.CountDownLatch;
-
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.concurrent.CountDownLatch;
 
 public class MultipleSchedulersTestCase extends AbstractSchedulerTestCase {
 
@@ -42,8 +43,7 @@ public class MultipleSchedulersTestCase extends AbstractSchedulerTestCase {
   public void schedulersAreNotSharedAcrossPollers() throws Exception {
     firstRequest.await(getTestTimeoutSecs(), SECONDS);
 
-    Flow poll1 = (Flow) muleContext.getRegistry().lookupFlowConstruct("poll1");
-    poll1.stop();
+    registry.<Stoppable>lookupByName("poll1").get().stop();
 
     stoppedFlowLatch.countDown();
 

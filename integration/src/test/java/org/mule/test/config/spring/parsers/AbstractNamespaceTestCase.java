@@ -15,11 +15,11 @@ import org.mule.runtime.core.api.util.ClassUtils;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.config.spring.parsers.beans.AbstractBean;
 
-import java.util.List;
-import java.util.Map;
-
 import org.junit.Test;
 import org.slf4j.Logger;
+
+import java.util.List;
+import java.util.Map;
 
 public abstract class AbstractNamespaceTestCase extends AbstractIntegrationTestCase {
 
@@ -31,7 +31,7 @@ public abstract class AbstractNamespaceTestCase extends AbstractIntegrationTestC
   }
 
   protected Object assertBeanExists(String name, Class clazz) {
-    Object bean = muleContext.getRegistry().lookupObject(name);
+    Object bean = registry.lookupByName(name).get();
     assertNotNull(name + " bean missing", bean);
     assertTrue(bean.getClass().equals(clazz));
     LOGGER.debug("found bean " + name + "/" + ClassUtils.getSimpleName(bean.getClass()));

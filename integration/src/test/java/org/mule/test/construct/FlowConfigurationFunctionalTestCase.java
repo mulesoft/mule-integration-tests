@@ -18,6 +18,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mule.functional.api.flow.TransactionConfigEnum.ACTION_ALWAYS_BEGIN;
 import static org.mule.functional.junit4.TestLegacyMessageUtils.getOutboundProperty;
 import static org.mule.runtime.api.metadata.MediaType.APPLICATION_XML;
+
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.client.MuleClient;
@@ -32,20 +33,16 @@ import org.mule.tck.testmodels.fruit.Orange;
 import org.mule.tck.testmodels.mule.TestTransactionFactory;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import org.junit.Ignore;
+import org.junit.Test;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Ignore;
-import org.junit.Test;
-
 public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTestCase {
 
   private static final String EXPECTED_ARRAY_IN_ARGS_RESULT = "testtestrecieved";
-
-  public FlowConfigurationFunctionalTestCase() {
-    setDisposeContextPerClass(true);
-  }
 
   @Override
   protected String getConfigFile() {
@@ -54,7 +51,7 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
 
   @Test
   public void testFlow() throws Exception {
-    final Flow flow = muleContext.getRegistry().lookupObject("flow");
+    final Flow flow = registry.<Flow>lookupByName("flow").get();
     assertEquals(5, flow.getProcessors().size());
     assertNotNull(flow.getExceptionListener());
 
@@ -463,7 +460,7 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
 
   @Test
   public void customMaxConcurrency() throws Exception {
-    Flow flow = (Flow) muleContext.getRegistry().lookupFlowConstruct("customMaxConcurrency");
+    Flow flow = registry.<Flow>lookupByName("customMaxConcurrency").get();
     assertThat(flow.getMaxConcurrency(), equalTo(1));
   }
 

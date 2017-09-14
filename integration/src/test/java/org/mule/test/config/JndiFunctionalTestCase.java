@@ -26,11 +26,11 @@ public class JndiFunctionalTestCase extends AbstractIntegrationTestCase {
   public void testJndi() {
     Object obj;
 
-    obj = muleContext.getRegistry().lookupObject(new String("apple"));
+    obj = registry.lookupByName("apple").get();
     assertNotNull(obj);
     assertEquals(Apple.class, obj.getClass());
 
-    obj = muleContext.getRegistry().lookupObject(new String("orange"));
+    obj = registry.lookupByName("orange").get();
     assertNotNull(obj);
     assertEquals(Orange.class, obj.getClass());
     assertEquals(new Integer(8), ((Orange) obj).getSegments());

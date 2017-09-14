@@ -13,8 +13,8 @@ import static org.mule.runtime.http.api.HttpConstants.Method.GET;
 
 import org.mule.functional.api.flow.FlowRunner;
 import org.mule.functional.junit4.DomainFunctionalTestCase;
+import org.mule.runtime.api.artifact.Registry;
 import org.mule.runtime.api.tls.TlsContextFactory;
-import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.event.BaseEvent;
 import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.runtime.core.privileged.event.PrivilegedEvent;
@@ -25,6 +25,11 @@ import org.mule.runtime.http.api.domain.message.response.HttpResponse;
 import org.mule.service.http.TestHttpClient;
 import org.mule.tck.junit4.rule.DynamicPort;
 
+import java.util.Collections;
+import java.util.Map;
+
+import javax.inject.Inject;
+
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,6 +39,15 @@ import io.qameta.allure.Issue;
 @Ignore("MULE-10633")
 @Issue("MULE-10633")
 public class TlsSharedContextTestCase extends DomainFunctionalTestCase {
+
+  public class RegistryHolder {
+
+    @Inject
+    public void setRegistry(Registry registry) {
+      TlsSharedContextTestCase.this.domainRegistry = registry;
+    }
+
+  }
 
   private static final String DATA = "data";
   private static final String FIRST_APP = "firstApp";
@@ -46,9 +60,16 @@ public class TlsSharedContextTestCase extends DomainFunctionalTestCase {
   @Rule
   public DynamicPort port3 = new DynamicPort("port3");
 
+  private Registry domainRegistry;
+
   @Override
   protected String getDomainConfig() {
     return "domain/tls/tls-domain-config.xml";
+  }
+
+  @Override
+  protected Map<String, Object> getDomainStartUpRegistryObjects() {
+    return Collections.singletonMap("RegistryHolder", new RegistryHolder());
   }
 
   @Override
@@ -69,8 +90,7 @@ public class TlsSharedContextTestCase extends DomainFunctionalTestCase {
 
   @Test
   public void muleClientUsingSharedTlsContextToListenerUsingSharedTlsContext() throws Exception {
-    MuleContext domainContext = getMuleContextForDomain();
-    TlsContextFactory tlsContextFactory = domainContext.getRegistry().lookupObject("sharedTlsContext2");
+    TlsContextFactory tlsContextFactory = domainRegistry.<TlsContextFactory>lookupByName("sharedTlsContext2").get();
 
     HttpClient httpClient = new TestHttpClient.Builder().tlsContextFactory(tlsContextFactory).build();
     httpClient.start();

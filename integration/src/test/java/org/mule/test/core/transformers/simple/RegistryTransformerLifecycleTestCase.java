@@ -8,13 +8,12 @@ package org.mule.test.core.transformers.simple;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mule.runtime.core.api.construct.Flow.builder;
 
 import org.mule.runtime.api.lifecycle.Disposable;
 import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.core.api.construct.Flow;
-import org.mule.runtime.core.api.transformer.TransformerException;
 import org.mule.runtime.core.api.transformer.AbstractTransformer;
+import org.mule.runtime.core.api.transformer.TransformerException;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.nio.charset.Charset;
@@ -36,8 +35,7 @@ public class RegistryTransformerLifecycleTestCase extends AbstractIntegrationTes
 
   @Test
   public void testLifecycleInSpring() throws Exception {
-    TransformerLifecycleTracker transformer =
-        (TransformerLifecycleTracker) muleContext.getRegistry().lookupTransformer("lifecycle");
+    TransformerLifecycleTracker transformer = (TransformerLifecycleTracker) registry.lookupByName("lifecycle").get();
     assertNotNull(transformer);
     muleContext.dispose();
     assertInitialise(transformer);
@@ -45,32 +43,10 @@ public class RegistryTransformerLifecycleTestCase extends AbstractIntegrationTes
 
   @Test
   public void testLifecycleInFlowInSpring() throws Exception {
-    Flow flow = (Flow) muleContext.getRegistry().lookupFlowConstruct("flow");
+    Flow flow = registry.<Flow>lookupByName("flow").get();
     TransformerLifecycleTracker transformer = (TransformerLifecycleTracker) flow.getProcessors().get(0);
 
     assertNotNull(transformer);
-
-    muleContext.dispose();
-    assertLifecycle(transformer);
-  }
-
-  @Test
-  public void testLifecycleInTransientRegistry() throws Exception {
-    TransformerLifecycleTracker transformer = new TransformerLifecycleTracker();
-    transformer.setProperty("foo");
-    muleContext.getRegistry().registerTransformer(transformer);
-    muleContext.dispose();
-    // MULE-5829 Artifacts excluded from lifecycle in MuleContextLifecyclePhases
-    // gets lifecycle when an object is registered.
-    // assertNoLifecycle(transformer);
-  }
-
-  @Test
-  public void testLifecycleInFlowTransientRegistry() throws Exception {
-    TransformerLifecycleTracker transformer = new TransformerLifecycleTracker();
-    transformer.setProperty("foo");
-    Flow flow = builder("flow", muleContext).processors(transformer).build();
-    muleContext.getRegistry().registerFlowConstruct(flow);
 
     muleContext.dispose();
     assertLifecycle(transformer);

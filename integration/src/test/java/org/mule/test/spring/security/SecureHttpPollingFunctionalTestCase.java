@@ -27,7 +27,12 @@ import org.mule.test.AbstractIntegrationTestCase;
 import org.junit.Rule;
 import org.junit.Test;
 
+import javax.inject.Inject;
+
 public class SecureHttpPollingFunctionalTestCase extends AbstractIntegrationTestCase {
+
+  @Inject
+  private NotificationListenerRegistry notificationListenerRegistry;
 
   @Rule
   public DynamicPort port1 = new DynamicPort("port1");
@@ -42,19 +47,18 @@ public class SecureHttpPollingFunctionalTestCase extends AbstractIntegrationTest
   @Test
   public void testPollingHttpConnectorSentCredentials() throws Exception {
     final Latch latch = new Latch();
-    muleContext.getRegistry().lookupObject(NotificationListenerRegistry.class)
-        .registerListener(new SecurityNotificationListener<SecurityNotification>() {
+    notificationListenerRegistry.registerListener(new SecurityNotificationListener<SecurityNotification>() {
 
-          @Override
-          public boolean isBlocking() {
-            return false;
-          }
+      @Override
+      public boolean isBlocking() {
+        return false;
+      }
 
-          @Override
-          public void onNotification(SecurityNotification notification) {
-            latch.countDown();
-          }
-        });
+      @Override
+      public void onNotification(SecurityNotification notification) {
+        latch.countDown();
+      }
+    });
 
     MuleClient client = muleContext.getClient();
     Message result = client.request("test://toclient", 5000).getRight().get();

@@ -31,6 +31,7 @@ public class BadTransformationContentTypeTestCase extends AbstractIntegrationTes
   @Test
   public void testReturnType() throws Exception {
     muleContext.start();
+    muleContext.getInjector().inject(this);
 
     expected.expect(new TypeSafeMatcher<Exception>() {
 
@@ -48,6 +49,6 @@ public class BadTransformationContentTypeTestCase extends AbstractIntegrationTes
         item.printStackTrace();
       }
     });
-    muleContext.getRegistry().lookupTransformer("testTransformer");
+    registry.lookupByName("testTransformer").get();
   }
 }

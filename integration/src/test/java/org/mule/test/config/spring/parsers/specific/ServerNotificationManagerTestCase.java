@@ -6,9 +6,6 @@
  */
 package org.mule.test.config.spring.parsers.specific;
 
-import static org.junit.Assert.assertThat;
-import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
-
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.instanceOf;
@@ -18,9 +15,10 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.IsCollectionContaining.hasItem;
-
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.context.notification.AbstractServerNotification;
@@ -35,14 +33,39 @@ import org.mule.tck.probe.JUnitLambdaProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import java.util.Collection;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.Test;
 
-import java.util.Collection;
-
 public class ServerNotificationManagerTestCase extends AbstractIntegrationTestCase {
+
+  @Inject
+  private TestListener listener;
+
+  @Inject
+  @Named("listener2")
+  private TestListener2 listener2;
+
+  @Inject
+  @Named("listener3")
+  private TestListener2 listener3;
+
+  @Inject
+  @Named("listener4")
+  private TestListener2 listener4;
+
+  @Inject
+  @Named("listener5")
+  private TestListener2 listener5;
+
+  @Inject
+  private TestSecurityListener securityListener;
 
   @Override
   protected String getConfigFile() {
@@ -75,9 +98,9 @@ public class ServerNotificationManagerTestCase extends AbstractIntegrationTestCa
     Collection<ListenerSubscriptionPair> listeners = manager.getListeners();
     // Now all transformers are registered as listeners in order to get a context disposing notification
     assertThat(listeners, hasSize(greaterThan(5)));
-    TestListener listener = (TestListener) muleContext.getRegistry().lookupObject("listener");
     assertThat(listener, not(nullValue()));
     assertThat(listener.isCalled(), is(false));
+
     manager.fireNotification(new TestEvent());
 
     // asynch events
@@ -87,13 +110,13 @@ public class ServerNotificationManagerTestCase extends AbstractIntegrationTestCa
   @Test
   public void testExplicitlyConiguredNotificationListenerRegistration() throws InterruptedException {
     ServerNotificationManager manager = muleContext.getNotificationManager();
-    assertThat(manager.getListeners(), hasItem(withListener(muleContext.getRegistry().lookupObject("listener"))));
-    assertThat(manager.getListeners(), hasItem(withListener(muleContext.getRegistry().lookupObject("listener2"))));
-    assertThat(manager.getListeners(), hasItem(withListener(muleContext.getRegistry().lookupObject("securityListener"))));
+    assertThat(manager.getListeners(), hasItem(withListener(listener)));
+    assertThat(manager.getListeners(), hasItem(withListener(listener2)));
+    assertThat(manager.getListeners(), hasItem(withListener(securityListener)));
     assertThat(manager.getListeners(),
-               hasItem(allOf(withListener(muleContext.getRegistry().lookupObject("listener3")), withNoSubscription())));
+               hasItem(allOf(withListener(listener3), withNoSubscription())));
     assertThat(manager.getListeners(),
-               hasItem(allOf(withListener(muleContext.getRegistry().lookupObject("listener5")),
+               hasItem(allOf(withListener(listener5),
                              withSubscriptionOnlyFor("customResource"))));
   }
 
@@ -102,7 +125,7 @@ public class ServerNotificationManagerTestCase extends AbstractIntegrationTestCa
     ServerNotificationManager manager = muleContext.getNotificationManager();
 
     // Registered as configured
-    assertThat(manager.getListeners(), hasItem(withListener(muleContext.getRegistry().lookupObject("listener4"))));
+    assertThat(manager.getListeners(), hasItem(withListener(listener4)));
   }
 
   @Test
@@ -111,15 +134,15 @@ public class ServerNotificationManagerTestCase extends AbstractIntegrationTestCa
     Collection<ListenerSubscriptionPair> listeners = manager.getListeners();
     // Now all transformers are registered as listeners in order to get a context disposing notification
     assertThat(listeners, hasSize(greaterThan(5)));
-    TestListener2 listener2 = muleContext.getRegistry().lookupObject("listener2");
     assertThat(listener2, not(nullValue()));
     assertThat(listener2.isCalled(), is(false));
-    TestSecurityListener adminListener = muleContext.getRegistry().lookupObject("securityListener");
-    assertThat(adminListener, not(nullValue()));
-    assertThat(adminListener.isCalled(), is(false));
+
+    assertThat(securityListener, not(nullValue()));
+    assertThat(securityListener.isCalled(), is(false));
+
     manager.fireNotification(new TestSecurityEvent(muleContext));
     new PollingProber(2000, 100).check(new JUnitLambdaProbe(() -> listener2.isCalled(), "listener2 should be notified"));
-    assertThat(adminListener.isCalled(), is(false));
+    assertThat(securityListener.isCalled(), is(false));
   }
 
   protected static interface TestInterface extends NotificationListener<TestEvent> {
@@ -130,7 +153,7 @@ public class ServerNotificationManagerTestCase extends AbstractIntegrationTestCa
     // empty
   }
 
-  protected static class TestListener implements TestInterface {
+  public static class TestListener implements TestInterface {
 
     private boolean called = false;
 
@@ -145,7 +168,7 @@ public class ServerNotificationManagerTestCase extends AbstractIntegrationTestCa
 
   }
 
-  protected static class TestListener2 implements TestInterface2 {
+  public static class TestListener2 implements TestInterface2 {
 
     private boolean called = false;
 
@@ -160,7 +183,7 @@ public class ServerNotificationManagerTestCase extends AbstractIntegrationTestCa
 
   }
 
-  protected static class TestSecurityListener implements SecurityNotificationListener<SecurityNotification> {
+  public static class TestSecurityListener implements SecurityNotificationListener<SecurityNotification> {
 
     private boolean called = false;
 

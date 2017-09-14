@@ -28,7 +28,7 @@ public class InOnlyTestCase extends AbstractIntegrationTestCase {
   @Test
   public void testExchange() throws Exception {
     final Latch latch = new Latch();
-    muleContext.getRegistry().lookupObject(NotificationListenerRegistry.class)
+    registry.lookup(NotificationListenerRegistry.class).get()
         .registerListener((FunctionalTestNotificationListener) notification -> latch.countDown());
 
     flowRunner("In-Only-Service").withPayload(TEST_PAYLOAD).run();
