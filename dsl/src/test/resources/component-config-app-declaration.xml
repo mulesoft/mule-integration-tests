@@ -40,6 +40,7 @@
             </tls:context>
         </http:listener-connection>
     </http:listener-config>
+
    <http:request-config basePath="/"
                          enableCookies="true"
                          followRedirects="true"
@@ -69,6 +70,13 @@
             </http:client-socket-properties>
         </http:request-connection>
     </http:request-config>
+    <sockets:request-config name="sockets-config">
+        <sockets:tcp-requester-connection connectionTimeout="30000" failOnUnresolvedHost="true" host="localhost" keepAlive="false"
+                                          port="11111" reuseAddress="true" sendTcpNoDelay="true"/>
+    </sockets:request-config>
+    <wsc:config name="wsc-config">
+        <wsc:connection mtomEnabled="false" port="port" service="service" soapVersion="SOAP11" wsdlLocation="wsdl"/>
+    </wsc:config>
    <flow initialState="stopped" name="testFlow">
       <http:listener config-ref="httpListener"
                       path="testBuilder"
@@ -107,7 +115,7 @@
             </db:input-parameters>
         </db:insert>
 
-        <sockets:send-and-receive target="myVar" targetValue="#[message]">
+        <sockets:send-and-receive config-ref="sockets-config" target="myVar" targetValue="#[message]">
             <repeatable-in-memory-stream bufferSizeIncrement="8"
                                          bufferUnit="KB"
                                          initialBufferSize="51"
@@ -115,7 +123,7 @@
         </sockets:send-and-receive>
 
         <try transactionType="LOCAL" transactionalAction="INDIFFERENT">
-            <wsc:consume operation="GetCitiesByCountry" targetValue="#[payload]">
+            <wsc:consume config-ref="wsc-config" operation="GetCitiesByCountry" targetValue="#[payload]">
                 <wsc:message>
                     <wsc:body>#[payload]</wsc:body>
                     <wsc:headers>#[{"headers": {con#headerIn: "Header In Value",con#headerInOut: "Header In Out Value"}]
@@ -131,7 +139,7 @@
                                     when="#[e.cause == null]"/>
             </error-handler>
         </try>
-        <wsc:consume operation="GetCitiesByCountry" targetValue="#[payload]">
+        <wsc:consume config-ref="wsc-config" operation="GetCitiesByCountry" targetValue="#[payload]">
             <wsc:message>
                 <wsc:body>#[payload]</wsc:body>
                 <wsc:headers>#[{"headers": {con#headerIn: "Header In Value",con#headerInOut: "Header In Out Value"}]</wsc:headers>
