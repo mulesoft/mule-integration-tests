@@ -53,6 +53,10 @@ public class ProcessorChainRouterTestCase extends AbstractIntegrationTestCase im
   @Named("byPassFlow")
   private ExecutableComponent byPassFlow;
 
+  @Inject
+  @Named("flowRefCompositeChainRouter")
+  private ExecutableComponent flowRefCompositeChainRouter;
+
   @Override
   protected String getConfigFile() {
     return "org/mule/config/spring/parsers/processor-chain-router-config.xml";
@@ -73,6 +77,15 @@ public class ProcessorChainRouterTestCase extends AbstractIntegrationTestCase im
     Event flowResultEvent = byPassFlow.execute(event).get();
 
     CompletableFuture<Event> completableFuture = compositeChainRouter.execute(flowResultEvent);
+    Event returnedEvent = completableFuture.get();
+    assertProcessorChainResult(returnedEvent);
+  }
+
+  @Test
+  public void nestedFlowRefUsingInputEvent() throws Exception {
+    InputEvent event = createInputEvent();
+
+    CompletableFuture<Event> completableFuture = flowRefCompositeChainRouter.execute(event);
     Event returnedEvent = completableFuture.get();
     assertProcessorChainResult(returnedEvent);
   }

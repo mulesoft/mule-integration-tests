@@ -61,8 +61,26 @@
         </scatter-gather>
     </parsers-test:processor-chain-router>
 
+    <parsers-test:composite-processor-chain-router name="flowRefCompositeChainRouter">
+        <parsers-test:chain>
+            <set-variable variableName="myVar" value="#['myVar' ++ vars.customVar]"/>
+        </parsers-test:chain>
+        <parsers-test:chain>
+            <set-variable variableName="mySecondVar" value="mySecondVarValue"/>
+        </parsers-test:chain>
+        <parsers-test:chain>
+            <flow-ref name="otherFlow"/>
+        </parsers-test:chain>
+    </parsers-test:composite-processor-chain-router>
+
     <flow name="byPassFlow">
         <set-payload value="#[payload]"/>
+    </flow>
+
+    <flow name="otherFlow">
+        <flow-ref name="byPassFlow"/>
+        <set-payload value="#[payload ++ ' custom']"/>
+        <set-variable variableName="myThirdVar" value="myThirdVarValue"/>
     </flow>
 
 </mule>
