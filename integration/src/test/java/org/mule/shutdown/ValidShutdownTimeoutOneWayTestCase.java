@@ -9,9 +9,10 @@ package org.mule.shutdown;
 import static org.junit.Assert.assertTrue;
 
 import io.qameta.allure.Issue;
+
+import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.tck.junit4.rule.SystemProperty;
 
 import org.junit.Ignore;
@@ -51,7 +52,7 @@ public class ValidShutdownTimeoutOneWayTestCase extends AbstractShutdownTimeoutR
   }
 
   private void doShutDownTest(final String payload, final String flowName) throws MuleException, InterruptedException {
-    final MuleClient client = muleContext.getClient();
+    final TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(muleContext);
     final boolean[] results = new boolean[] {false};
 
     Thread t = new Thread() {
@@ -61,7 +62,7 @@ public class ValidShutdownTimeoutOneWayTestCase extends AbstractShutdownTimeoutR
         try {
           flowRunner(flowName).withPayload(payload).dispatch();
 
-          Message response = client.request("test://response", RECEIVE_TIMEOUT).getRight().get();
+          Message response = queueHandler.read("response", RECEIVE_TIMEOUT).getMessage();
           results[0] = payload.equals(getPayloadAsString(response));
         } catch (Exception e) {
           // Ignore

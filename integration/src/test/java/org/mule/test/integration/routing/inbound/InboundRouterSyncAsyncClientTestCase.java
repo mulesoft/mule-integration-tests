@@ -10,8 +10,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
+import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Test;
@@ -35,8 +35,8 @@ public class InboundRouterSyncAsyncClientTestCase extends AbstractIntegrationTes
   public void testAsync() throws Exception {
     flowRunner("SyncAsync").withPayload("testAsync").withVariable("messageType", "async").run();
 
-    MuleClient client = muleContext.getClient();
-    Message result = client.request("test://asyncResponse", RECEIVE_TIMEOUT).getRight().get();
+    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(muleContext);
+    Message result = queueHandler.read("asyncResponse", RECEIVE_TIMEOUT).getMessage();
     assertNotNull(result);
     assertThat(result.getPayload().getValue(), is("Response sent to asyncResponse"));
   }

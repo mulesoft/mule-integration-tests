@@ -12,11 +12,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.store.ObjectStoreManager.BASE_IN_MEMORY_OBJECT_STORE_KEY;
 
+import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.serialization.SerializationException;
 import org.mule.runtime.api.store.ObjectStoreException;
 import org.mule.runtime.api.store.SimpleMemoryObjectStore;
-import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.runtime.core.internal.routing.EventGroup;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -50,8 +50,8 @@ public class CollectionAggregatorRouterSerializationTestCase extends AbstractInt
     List<String> list = Arrays.asList("first", "second");
     flowRunner("splitter").withPayload(list).run();
 
-    MuleClient client = muleContext.getClient();
-    Message request = client.request("test://out", RECEIVE_TIMEOUT).getRight().get();
+    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(muleContext);
+    Message request = queueHandler.read("out", RECEIVE_TIMEOUT).getMessage();
     assertNotNull(request);
     assertThat(request.getPayload().getValue(), instanceOf(List.class));
     assertThat(((List<Message>) request.getPayload().getValue()), hasSize(list.size()));

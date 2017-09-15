@@ -9,8 +9,8 @@ package org.mule.test.construct;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.testmodels.fruit.Apple;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -24,8 +24,16 @@ import org.junit.Test;
 
 public class FlowNestingTestCase extends AbstractIntegrationTestCase {
 
+  private TestConnectorQueueHandler queueHandler;
+
   @Rule
   public DynamicPort dynamicPort = new DynamicPort("port1");
+
+  @Override
+  protected void doSetUp() throws Exception {
+    super.doSetUp();
+    queueHandler = new TestConnectorQueueHandler(muleContext);
+  }
 
   @Override
   protected String getConfigFile() {
@@ -39,8 +47,7 @@ public class FlowNestingTestCase extends AbstractIntegrationTestCase {
     inboundProperties.put("Amount", "4999");
     flowRunner("NestedChoice").withPayload(new Apple()).withInboundProperties(inboundProperties).run();
 
-    MuleClient client = muleContext.getClient();
-    Message result = client.request("test://outChoice", RECEIVE_TIMEOUT).getRight().get();
+    Message result = queueHandler.read("outChoice", RECEIVE_TIMEOUT).getMessage();
     assertNotNull(result);
     assertEquals("ABC", getPayloadAsString(result));
   }
@@ -52,8 +59,7 @@ public class FlowNestingTestCase extends AbstractIntegrationTestCase {
     inboundProperties.put("Amount", "5000");
     flowRunner("NestedChoice").withPayload(new Apple()).withInboundProperties(inboundProperties).run();
 
-    MuleClient client = muleContext.getClient();
-    Message result = client.request("test://outChoice", RECEIVE_TIMEOUT).getRight().get();
+    Message result = queueHandler.read("outChoice", RECEIVE_TIMEOUT).getMessage();
     assertNotNull(result);
     assertEquals("AB", getPayloadAsString(result));
   }

@@ -14,6 +14,8 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mule.functional.api.flow.TransactionConfigEnum.ACTION_ALWAYS_BEGIN;
 import static org.mule.functional.junit4.TestLegacyMessageUtils.getOutboundProperty;
+
+import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.functional.junit4.TestLegacyMessageBuilder;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
@@ -31,17 +33,24 @@ public class FlowDefaultProcessingStrategyTestCase extends AbstractIntegrationTe
 
   private static final String PROCESSOR_THREAD = "processor-thread";
   private static final String FLOW_NAME = "Flow";
+  private TestConnectorQueueHandler queueHandler;
 
   @Override
   protected String getConfigFile() {
     return "org/mule/test/construct/flow-default-processing-strategy-config.xml";
   }
 
+  @Override
+  protected void doSetUp() throws Exception {
+    super.doSetUp();
+    queueHandler = new TestConnectorQueueHandler(muleContext);
+  }
+
   @Test
   public void requestResponse() throws Exception {
     Message response = flowRunner(FLOW_NAME).withPayload(TEST_PAYLOAD).run().getMessage();
     assertThat(response.getPayload().getValue().toString(), is(TEST_PAYLOAD));
-    Message message = muleContext.getClient().request("test://out", RECEIVE_TIMEOUT).getRight().get();
+    Message message = queueHandler.read("out", RECEIVE_TIMEOUT).getMessage();
 
     assertThat(getOutboundProperty(message, PROCESSOR_THREAD), is(not(currentThread().getName())));
   }
@@ -49,7 +58,7 @@ public class FlowDefaultProcessingStrategyTestCase extends AbstractIntegrationTe
   @Test
   public void oneWay() throws Exception {
     flowRunner(FLOW_NAME).withPayload(TEST_PAYLOAD).run();
-    Message message = muleContext.getClient().request("test://out", RECEIVE_TIMEOUT).getRight().get();
+    Message message = queueHandler.read("out", RECEIVE_TIMEOUT).getMessage();
 
     assertThat(getOutboundProperty(message, PROCESSOR_THREAD), is(not(currentThread().getName())));
   }
@@ -62,7 +71,7 @@ public class FlowDefaultProcessingStrategyTestCase extends AbstractIntegrationTe
       flowRunner("Flow").withPayload(TEST_PAYLOAD).transactionally(ACTION_ALWAYS_BEGIN, new TestTransactionFactory(transaction))
           .run();
 
-      Message message = muleContext.getClient().request("test://out", RECEIVE_TIMEOUT).getRight().get();
+      Message message = queueHandler.read("out", RECEIVE_TIMEOUT).getMessage();
 
       assertThat(getOutboundProperty(message, PROCESSOR_THREAD), is(currentThread().getName()));
     } finally {
@@ -79,7 +88,7 @@ public class FlowDefaultProcessingStrategyTestCase extends AbstractIntegrationTe
                                                                                                                    transaction))
           .run();
 
-      Message message = muleContext.getClient().request("test://out", RECEIVE_TIMEOUT).getRight().get();
+      Message message = queueHandler.read("out", RECEIVE_TIMEOUT).getMessage();
 
       assertThat(getOutboundProperty(message, PROCESSOR_THREAD), is(currentThread().getName()));
     } finally {

@@ -13,9 +13,9 @@ import static org.junit.Assert.assertThat;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.FirstSuccessfulStory.FIRST_SUCCESSFUL;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 import org.mule.extension.validation.api.ValidationException;
+import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.functional.junit4.rules.ExpectedError;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import io.qameta.allure.Feature;
@@ -61,8 +61,8 @@ public class FirstSuccessfulTestCase extends AbstractIntegrationTestCase {
   public void oneWayEndpoints() throws Exception {
     flowRunner("withOneWayEndpoints").withPayload(TEST_MESSAGE).run();
 
-    MuleClient client = muleContext.getClient();
-    Message response = client.request("test://WithOneWayEndpoints.out", RECEIVE_TIMEOUT).getRight().get();
+    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(muleContext);
+    Message response = queueHandler.read("WithOneWayEndpoints.out", RECEIVE_TIMEOUT).getMessage();
     assertThat(response, is(notNullValue()));
     assertThat(response.getPayload().getValue(), is(TEST_MESSAGE));
   }

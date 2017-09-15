@@ -8,8 +8,8 @@ package org.mule.test.integration.exceptions;
 
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
+import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Test;
@@ -27,9 +27,9 @@ public class ExceptionStrategyFlowRefTestCase extends AbstractIntegrationTestCas
   @Test
   public void testExceptionInFlowCalledWithFlowRef() throws Exception {
     flowRunner("exceptionHandlingBlock").runExpectingException();
-    MuleClient client = muleContext.getClient();
+    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(muleContext);
 
-    Message response = client.request("test://dlq", RECEIVE_TIMEOUT).getRight().get();
+    Message response = queueHandler.read("dlq", RECEIVE_TIMEOUT).getMessage();
 
     assertThat(response, notNullValue());
   }

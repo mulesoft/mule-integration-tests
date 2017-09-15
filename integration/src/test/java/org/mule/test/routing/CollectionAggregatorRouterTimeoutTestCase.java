@@ -13,11 +13,11 @@ import static org.mule.functional.api.component.FunctionalTestProcessor.getFromF
 import static org.mule.runtime.api.notification.RoutingNotification.CORRELATION_TIMEOUT;
 
 import org.mule.functional.api.component.FunctionalTestProcessor;
+import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.notification.IntegerAction;
 import org.mule.runtime.api.notification.RoutingNotification;
 import org.mule.runtime.api.notification.RoutingNotificationListener;
-import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.tck.probe.PollingProber;
 import org.mule.tck.probe.Probe;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -56,7 +56,6 @@ public class CollectionAggregatorRouterTimeoutTestCase extends AbstractIntegrati
     FunctionalTestProcessor vortex = getFromFlow(locator, "vortex");
     FunctionalTestProcessor aggregator = getFromFlow(locator, "aggregator");
 
-    MuleClient client = muleContext.getClient();
     List<String> list = asList("first", "second");
 
     flowRunner("splitter").withPayload(list).run();
@@ -95,6 +94,7 @@ public class CollectionAggregatorRouterTimeoutTestCase extends AbstractIntegrati
       }
     });
 
-    assertThat(client.request("test://out", RECEIVE_TIMEOUT).getRight().isPresent(), is(true));
+    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(muleContext);
+    assertThat(queueHandler.read("out", RECEIVE_TIMEOUT).getMessage(), is(true));
   }
 }

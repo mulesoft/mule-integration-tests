@@ -7,6 +7,7 @@
 package org.mule.test.integration.exceptions;
 
 import static java.lang.String.format;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mule.functional.junit4.matchers.ThrowableCauseMatcher.hasCause;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
@@ -23,6 +24,7 @@ import static org.hamcrest.Matchers.notNullValue;
 
 import static org.mockito.Mockito.mock;
 
+import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.lifecycle.CreateException;
@@ -200,7 +202,8 @@ public class OnErrorContinueTestCase extends AbstractIntegrationTestCase {
     final HttpResponse response = httpClient.send(request, TIMEOUT, false, null);
 
     assertThat(response.getStatusCode(), is(INTERNAL_SERVER_ERROR.getStatusCode()));
-    assertThat(muleContext.getClient().request("test://out", RECEIVE_TIMEOUT).getRight(), is(empty()));
+    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(muleContext);
+    assertThat(queueHandler.read("out", RECEIVE_TIMEOUT), is(nullValue()));
   }
 
   private String getUrl(Protocol protocol, DynamicPort port, String path) {

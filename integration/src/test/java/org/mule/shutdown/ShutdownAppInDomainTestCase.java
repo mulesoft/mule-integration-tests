@@ -126,8 +126,8 @@ public class ShutdownAppInDomainTestCase extends DomainFunctionalTestCase {
   public void jms() throws MuleException {
     final MuleContext muleContextForApp = getMuleContextForApp("app-with-flows");
 
-    muleContextForApp.getClient().dispatch("jms://in?connector=sharedJmsConnector", of("payload"));
-    muleContextForApp.getClient().request("jms://out?connector=sharedJmsConnector", MESSAGE_TIMEOUT);
+    //muleContextForApp.getClient().dispatch("jms://in?connector=sharedJmsConnector", of("payload"));
+    //muleContextForApp.getClient().request("jms://out?connector=sharedJmsConnector", MESSAGE_TIMEOUT);
 
     muleContextForApp.dispose();
 

@@ -15,12 +15,11 @@ import static org.junit.Assert.assertThat;
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.UNAUTHORIZED;
 
 import org.mule.extension.http.api.HttpResponseAttributes;
+import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.util.concurrent.Latch;
-import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.runtime.api.notification.SecurityNotification;
 import org.mule.runtime.api.notification.SecurityNotificationListener;
-import org.mule.runtime.api.util.concurrent.Latch;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -55,12 +54,12 @@ public class SecureHttpPollingFunctionalTestCase extends AbstractIntegrationTest
       }
     });
 
-    MuleClient client = muleContext.getClient();
-    Message result = client.request("test://toclient", 5000).getRight().get();
+    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(muleContext);
+    Message result = queueHandler.read("toclient", 5000).getMessage();
     assertThat(result, not(nullValue()));
     assertThat(result.getPayload().getValue(), is("foo"));
 
-    result = client.request("test://toclient2", 1000).getRight().get();
+    result = queueHandler.read("toclient2", 1000).getMessage();
     // This seems a little odd that we forward the exception to the outbound endpoint, but I guess users
     // can just add a filter
     assertThat(result, not(nullValue()));

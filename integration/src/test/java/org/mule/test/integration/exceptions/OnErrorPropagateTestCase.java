@@ -9,6 +9,7 @@ package org.mule.test.integration.exceptions;
 import static java.lang.String.format;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
@@ -19,10 +20,11 @@ import static org.mule.runtime.http.api.HttpConstants.HttpStatus.INTERNAL_SERVER
 import static org.mule.runtime.http.api.HttpConstants.Method.POST;
 import static org.mule.tck.junit4.matcher.HasClassInHierarchy.withClassName;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
+import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.functional.api.exception.FunctionalTestException;
+import org.mule.runtime.api.event.Event;
 import org.mule.runtime.api.exception.DefaultMuleException;
 import org.mule.runtime.api.exception.MuleException;
-import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.runtime.api.exception.MuleFatalException;
@@ -36,7 +38,6 @@ import org.mule.service.http.TestHttpClient;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import io.qameta.allure.Feature;
@@ -50,7 +51,7 @@ import org.junit.rules.ExpectedException;
 @Story("On Error Propagate")
 public class OnErrorPropagateTestCase extends AbstractIntegrationTestCase {
 
-  private static final String OUT = "test://out";
+  private static TestConnectorQueueHandler queueHandler;
 
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
@@ -66,30 +67,36 @@ public class OnErrorPropagateTestCase extends AbstractIntegrationTestCase {
     return "org/mule/test/integration/exceptions/on-error-propagate-use-case-config.xml";
   }
 
+  @Override
+  protected void doSetUp() throws Exception {
+    super.doSetUp();
+    queueHandler = new TestConnectorQueueHandler(muleContext);
+  }
+
   @Test
   public void typeMatch() throws Exception {
     verifyFlow("onErrorPropagateTypeMatch");
-    Optional<Message> customPath = muleContext.getClient().request("queue://custom1", RECEIVE_TIMEOUT).getRight();
-    assertThat(customPath.isPresent(), is(false));
-    Optional<Message> anyPath = muleContext.getClient().request("queue://any1", RECEIVE_TIMEOUT).getRight();
-    assertThat(anyPath.isPresent(), is(false));
+    Event customPath = queueHandler.read("custom1", RECEIVE_TIMEOUT);
+    assertThat(customPath, is(nullValue()));
+    Event anyPath = queueHandler.read("any1", RECEIVE_TIMEOUT);
+    assertThat(anyPath, is(nullValue()));
   }
 
   @Test
   public void typeMatchAny() throws Exception {
     verifyFlow("onErrorPropagateTypeMatchAny");
-    Optional<Message> customPath = muleContext.getClient().request("queue://custom2", RECEIVE_TIMEOUT).getRight();
-    assertThat(customPath.isPresent(), is(false));
+    Event customPath = queueHandler.read("custom2", RECEIVE_TIMEOUT);
+    assertThat(customPath, is(nullValue()));
   }
 
   @Test
   public void typeMatchSeveral() throws Exception {
     verifyFlow("onErrorPropagateTypeMatchSeveral", true);
-    Optional<Message> anyPath = muleContext.getClient().request("queue://any", RECEIVE_TIMEOUT).getRight();
-    assertThat(anyPath.isPresent(), is(false));
+    Event anyPath = queueHandler.read("any", RECEIVE_TIMEOUT);
+    assertThat(anyPath, is(nullValue()));
     verifyFlow("onErrorPropagateTypeMatchSeveral", false);
-    anyPath = muleContext.getClient().request("queue://any", RECEIVE_TIMEOUT).getRight();
-    assertThat(anyPath.isPresent(), is(false));
+    anyPath = queueHandler.read("any", RECEIVE_TIMEOUT);
+    assertThat(anyPath, is(nullValue()));
   }
 
   @Test
@@ -117,7 +124,7 @@ public class OnErrorPropagateTestCase extends AbstractIntegrationTestCase {
     final HttpResponse response = httpClient.send(request, RECEIVE_TIMEOUT, false, null);
 
     assertThat(response.getStatusCode(), is(INTERNAL_SERVER_ERROR.getStatusCode()));
-    assertThat(muleContext.getClient().request(OUT, RECEIVE_TIMEOUT).getRight().get(), hasPayload(equalTo("Test Message hey")));
+    assertThat(queueHandler.read("out", RECEIVE_TIMEOUT).getMessage(), hasPayload(equalTo("Test Message hey")));
   }
 
   private String getUrl() {

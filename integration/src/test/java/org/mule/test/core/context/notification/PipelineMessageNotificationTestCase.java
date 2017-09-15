@@ -13,7 +13,7 @@ import static org.mule.runtime.api.notification.PipelineMessageNotification.PROC
 import static org.mule.runtime.api.notification.PipelineMessageNotification.PROCESS_END;
 import static org.mule.runtime.api.notification.PipelineMessageNotification.PROCESS_START;
 
-import org.mule.runtime.core.api.client.MuleClient;
+import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.notification.AsyncMessageNotification;
 import org.mule.runtime.api.notification.IntegerAction;
 import org.mule.runtime.api.notification.PipelineMessageNotification;
@@ -35,15 +35,15 @@ public class PipelineMessageNotificationTestCase extends AbstractNotificationTes
 
   @Test
   public void doTest() throws Exception {
-    MuleClient client = muleContext.getClient();
+    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(muleContext);
     assertNotNull(flowRunner("service-1").withPayload("hello sweet world").run());
     expectedException.expect(MessagingException.class);
     assertNotNull(flowRunner("service-2").withPayload("hello sweet world").run());
     assertNotNull(flowRunner("service-3").withPayload("hello sweet world").run());
     flowRunner("service-4").withPayload("goodbye cruel world").run();
-    client.request("test://ow-out", RECEIVE_TIMEOUT);
+    queueHandler.read("ow-out", RECEIVE_TIMEOUT);
     flowRunner("service-5").withPayload("goodbye cruel world").withInboundProperty("fail", "true").run();
-    client.request("test://owException-out", RECEIVE_TIMEOUT);
+    queueHandler.read("owException-out", RECEIVE_TIMEOUT);
 
     assertNotifications();
   }

@@ -10,8 +10,8 @@ import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.io.ByteArrayOutputStream;
@@ -36,10 +36,10 @@ public class AggregationTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void testCollectionAggregator() throws Exception {
-    MuleClient client = muleContext.getClient();
+    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(muleContext);
 
     flowRunner("SplitterFlow").withPayload(PAYLOAD).run();
-    Message msg = client.request("test://collectionCreated", RECEIVE_TIMEOUT).getRight().get();
+    Message msg = queueHandler.read("collectionCreated", RECEIVE_TIMEOUT).getMessage();
     assertNotNull(msg);
     assertTrue(msg.getPayload().getValue() instanceof List);
 
