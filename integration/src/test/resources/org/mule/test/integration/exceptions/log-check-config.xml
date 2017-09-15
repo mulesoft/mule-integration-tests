@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+               http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+
+    <flow name="checkEquals">
+        <test:skeleton-source/>
+        <test:throw exception="java.lang.RuntimeException" error="ANY"/>
+        <error-handler>
+            <test:on-error-check-log>
+                <test:check-equals>
+                    <![CDATA[
+                        Message               : null.
+                        Error type            : MULE:ANY
+                        Element               : checkEquals/processors/0 @ LogCheckTestCase#runSuccessesNoVerboseExceptions:org/mule/test/integration/exceptions/log-check-config.xml:10
+                        Element XML           : <test:throw exception="java.lang.RuntimeException" error="ANY"></test:throw>
+                        (set debug level logging or '-Dmule.verbose.exceptions=true' for everything)
+                    ]]>
+                </test:check-equals>
+            </test:on-error-check-log>
+        </error-handler>
+    </flow>
+
+    <flow name="checkEqualsVerbose">
+        <test:skeleton-source/>
+        <test:throw exception="java.lang.RuntimeException" error="ANY"/>
+        <error-handler>
+            <test:on-error-check-log>
+                <test:check-equals>
+                    <![CDATA[
+                        Message               : null.
+                        Error type            : MULE:ANY
+                        Payload               : null
+                        Payload Type          : null
+                        Element               : checkEqualsVerbose/processors/0 @ LogCheckTestCase#runSuccessesVerboseExceptions:org/mule/test/integration/exceptions/log-check-config.xml:28
+                        Element XML           : <test:throw exception="java.lang.RuntimeException" error="ANY"></test:throw>
+                    ]]>
+                </test:check-equals>
+            </test:on-error-check-log>
+        </error-handler>
+    </flow>
+
+    <flow name="checkStacktrace">
+        <test:skeleton-source/>
+        <test:throw exception="java.lang.RuntimeException" error="ANY"/>
+        <error-handler>
+            <test:on-error-check-log>
+                <test:check-stacktrace>
+                    <test:method-call package="java.lang" class="Thread" method="run"/>
+                    <test:cause exception="java.lang.RuntimeException"/>
+                </test:check-stacktrace>
+            </test:on-error-check-log>
+        </error-handler>
+    </flow>
+
+    <flow name="checkSummary">
+        <test:skeleton-source/>
+        <test:throw exception="java.lang.RuntimeException" error="ANY"/>
+        <error-handler>
+            <test:on-error-check-log>
+                <test:check-summary>
+                    <test:summary-info key="Error type" value="MULE:ANY"/>
+                </test:check-summary>
+            </test:on-error-check-log>
+        </error-handler>
+    </flow>
+
+    <flow name="allChecksTogetherNoneFailing">
+        <test:skeleton-source/>
+        <test:throw exception="java.lang.RuntimeException" error="ANY"/>
+        <error-handler>
+            <test:on-error-check-log>
+                <test:check-equals>
+                    <![CDATA[
+                        Message               : null.
+                        Error type            : MULE:ANY
+                        Payload               : null
+                        Payload Type          : null
+                        Element               : allChecksTogetherNoneFailing/processors/0 @ LogCheckTestCase#runSuccessesVerboseExceptions:org/mule/test/integration/exceptions/log-check-config.xml:72
+                        Element XML           : <test:throw exception="java.lang.RuntimeException" error="ANY"></test:throw>
+                    ]]>
+                </test:check-equals>
+                <test:check-summary>
+                    <test:summary-info key="Error type" value="MULE:ANY"/>
+                </test:check-summary>
+                <test:check-stacktrace>
+                    <test:method-call package="java.lang" class="Thread" method="run"/>
+                    <test:cause exception="java.lang.RuntimeException"/>
+                </test:check-stacktrace>
+            </test:on-error-check-log>
+        </error-handler>
+    </flow>
+
+</mule>
