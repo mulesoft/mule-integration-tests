@@ -6,7 +6,7 @@
                http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
                http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
-    <object name="processed-groups-object-store" class="org.mule.runtime.core.api.store.SimpleMemoryObjectStore"/>
+    <object name="processed-groups-object-store" class="org.mule.runtime.api.store.SimpleMemoryObjectStore"/>
     <object name="event-groups-object-store" class="org.mule.test.routing.CollectionAggregatorRouterCustomStoreTestCase.CustomPartitionableObjectStore"/>
 
     <flow name="splitter">

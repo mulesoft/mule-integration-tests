@@ -6,7 +6,7 @@
         http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
     <object name="objectStore"
-            class="org.mule.runtime.core.api.store.SimpleMemoryObjectStore"/>
+            class="org.mule.runtime.api.store.SimpleMemoryObjectStore"/>
 
     <flow name="retryExhausted">
         <async>

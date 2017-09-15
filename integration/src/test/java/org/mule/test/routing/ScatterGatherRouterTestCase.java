@@ -8,6 +8,7 @@
 package org.mule.test.routing;
 
 import static java.lang.Thread.currentThread;
+import static java.util.concurrent.ConcurrentHashMap.newKeySet;
 import static org.apache.commons.io.IOUtils.LINE_SEPARATOR;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -22,20 +23,18 @@ import static org.mule.runtime.api.metadata.MediaType.JSON;
 import static org.mule.runtime.api.metadata.MediaType.TEXT;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ScatterGatherStory.SCATTER_GATHER;
-
 import org.mule.functional.api.exception.FunctionalTestException;
+import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.message.Error;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.core.api.event.BaseEvent;
 import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.runtime.core.api.processor.Processor;
-import org.mule.runtime.core.api.util.concurrent.ConcurrentHashSet;
-import org.mule.runtime.core.api.util.concurrent.Latch;
 import org.mule.runtime.core.api.routing.CompositeRoutingException;
+import org.mule.runtime.core.api.util.concurrent.Latch;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.io.ByteArrayInputStream;
@@ -68,7 +67,7 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
 
   @Override
   protected void doSetUp() throws Exception {
-    capturedThreads = new ConcurrentHashSet();
+    capturedThreads = newKeySet();
   }
 
   @Test

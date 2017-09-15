@@ -15,13 +15,13 @@ import static org.junit.Assert.assertThat;
 import org.mule.runtime.api.component.Component;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.construct.FlowConstruct;
-import org.mule.runtime.core.api.processor.LoggerMessageProcessor;
+import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.transformer.Transformer;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import org.junit.Test;
-
 import javax.xml.namespace.QName;
+
+import org.junit.Test;
 
 /**
  * Test that configuration-based annotations are propagated to the appropriate runtime objects
@@ -89,7 +89,7 @@ public class ConfigurationAnnotationsTestCase extends AbstractIntegrationTestCas
   @Test
   public void testJavaComponentAnnotations() {
     Flow flow = (Flow) muleContext.getRegistry().lookupFlowConstruct("Bridge");
-    LoggerMessageProcessor logger = (LoggerMessageProcessor) flow.getProcessors().get(0);
+    Processor logger = flow.getProcessors().get(0);
     assertThat(getSourceElement(logger), is("<logger doc:name=\"echo\">" + "</logger>"));
   }
 

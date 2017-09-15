@@ -7,7 +7,7 @@
 package org.mule.shutdown;
 
 import org.mule.test.AbstractIntegrationTestCase;
-import org.mule.runtime.core.api.DefaultMuleException;
+import org.mule.runtime.api.exception.DefaultMuleException;
 import org.mule.runtime.core.api.event.BaseEvent;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.core.api.processor.Processor;

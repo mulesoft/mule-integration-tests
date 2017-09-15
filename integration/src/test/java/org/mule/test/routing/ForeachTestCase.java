@@ -565,11 +565,6 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  public void initializesForeachOnSubFLow() throws Exception {
-    getSubFlow("sub-flow-with-foreach");
-  }
-
-  @Test
   public void errorsWithinArePropagated() throws Exception {
     Message message = flowRunner("error-handler").withPayload(new String[] {TEST_PAYLOAD}).run().getMessage();
     assertThat(message, hasPayload(equalTo("handled")));

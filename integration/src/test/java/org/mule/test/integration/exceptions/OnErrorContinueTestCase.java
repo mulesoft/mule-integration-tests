@@ -31,7 +31,7 @@ import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.streaming.bytes.CursorStreamProvider;
 import org.mule.runtime.api.tls.TlsContextFactory;
-import org.mule.runtime.core.api.DefaultMuleException;
+import org.mule.runtime.api.exception.DefaultMuleException;
 import org.mule.runtime.core.api.event.BaseEvent;
 import org.mule.runtime.core.api.exception.MuleFatalException;
 import org.mule.runtime.core.api.processor.Processor;
