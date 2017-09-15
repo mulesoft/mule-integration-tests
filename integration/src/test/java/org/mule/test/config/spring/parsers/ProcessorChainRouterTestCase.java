@@ -73,8 +73,7 @@ public class ProcessorChainRouterTestCase extends AbstractIntegrationTestCase im
 
   @Test
   public void executeCompositeRouterUsingEvent() throws Exception {
-    InputEvent event = createInputEvent();
-    Event flowResultEvent = byPassFlow.execute(event).get();
+    Event flowResultEvent = byPassFlow.execute(createInputEvent()).get();
 
     CompletableFuture<Event> completableFuture = compositeChainRouter.execute(flowResultEvent);
     Event returnedEvent = completableFuture.get();
@@ -86,6 +85,21 @@ public class ProcessorChainRouterTestCase extends AbstractIntegrationTestCase im
     InputEvent event = createInputEvent();
 
     CompletableFuture<Event> completableFuture = flowRefCompositeChainRouter.execute(event);
+
+    // Ensure that when composite processor chain is used with more complex/async components such as nested flow-ref there are no
+    // dead-locks.
+    Event returnedEvent = completableFuture.get();
+    assertProcessorChainResult(returnedEvent);
+  }
+
+  @Test
+  public void nestedFlowRefUsingEvent() throws Exception {
+    Event flowResultEvent = byPassFlow.execute(createInputEvent()).get();
+
+    CompletableFuture<Event> completableFuture = flowRefCompositeChainRouter.execute(flowResultEvent);
+
+    // Ensure that when composite processor chain is used with more complex/async components such as nested flow-ref there are no
+    // dead-locks.
     Event returnedEvent = completableFuture.get();
     assertProcessorChainResult(returnedEvent);
   }
