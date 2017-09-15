@@ -11,8 +11,8 @@ import static org.junit.Assert.assertTrue;
 
 import org.mule.functional.api.notification.FunctionalTestNotification;
 import org.mule.functional.listener.FlowExecutionListener;
-import org.mule.runtime.core.api.context.notification.AbstractServerNotification;
-import org.mule.runtime.core.api.context.notification.NotificationListenerRegistry;
+import org.mule.runtime.api.notification.AbstractServerNotification;
+import org.mule.runtime.api.notification.NotificationListenerRegistry;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.util.concurrent.atomic.AtomicInteger;

@@ -6,8 +6,8 @@
  */
 package org.mule.test.core.context.notification;
 
-import org.mule.runtime.core.api.context.notification.ExceptionNotification;
-import org.mule.runtime.core.api.context.notification.ExceptionNotificationListener;
+import org.mule.runtime.api.notification.ExceptionNotification;
+import org.mule.runtime.api.notification.ExceptionNotificationListener;
 import org.mule.tck.core.context.notification.AbstractNotificationLogger;
 
 public class ExceptionNotificationLogger extends AbstractNotificationLogger<ExceptionNotification>

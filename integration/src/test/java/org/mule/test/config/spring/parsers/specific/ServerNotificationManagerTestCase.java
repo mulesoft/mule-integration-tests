@@ -21,12 +21,12 @@ import static org.mockito.Mockito.when;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 
 import org.mule.runtime.core.api.MuleContext;
-import org.mule.runtime.core.api.context.notification.AbstractServerNotification;
+import org.mule.runtime.api.notification.AbstractServerNotification;
 import org.mule.runtime.core.api.context.notification.ListenerSubscriptionPair;
-import org.mule.runtime.core.api.context.notification.Notification;
-import org.mule.runtime.core.api.context.notification.NotificationListener;
-import org.mule.runtime.core.api.context.notification.SecurityNotification;
-import org.mule.runtime.core.api.context.notification.SecurityNotificationListener;
+import org.mule.runtime.api.notification.Notification;
+import org.mule.runtime.api.notification.NotificationListener;
+import org.mule.runtime.api.notification.SecurityNotification;
+import org.mule.runtime.api.notification.SecurityNotificationListener;
 import org.mule.runtime.core.api.context.notification.ServerNotificationManager;
 import org.mule.runtime.api.security.UnauthorisedException;
 import org.mule.tck.probe.JUnitLambdaProbe;

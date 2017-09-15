@@ -6,8 +6,8 @@
  */
 package org.mule.test.core.context.notification;
 
-import org.mule.runtime.core.api.context.notification.AbstractServerNotification;
-import org.mule.runtime.core.api.context.notification.Notification.Action;
+import org.mule.runtime.api.notification.AbstractServerNotification;
+import org.mule.runtime.api.notification.Notification.Action;
 
 /**
  * An implementation detail - this enforces the guarantee that once {@link Node#serial(RestrictedNode)} is called,

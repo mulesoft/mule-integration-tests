@@ -30,7 +30,7 @@ import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocator
 import org.mule.runtime.api.component.Component;
 import org.mule.runtime.api.component.TypedComponentIdentifier;
 import org.mule.runtime.core.api.construct.Flow;
-import org.mule.runtime.core.api.context.notification.MessageProcessorNotification;
+import org.mule.runtime.api.notification.MessageProcessorNotification;
 import org.mule.runtime.dsl.api.component.config.DefaultComponentLocation;
 import org.mule.runtime.dsl.api.component.config.DefaultComponentLocation.DefaultLocationPart;
 import org.mule.tck.probe.PollingProber;

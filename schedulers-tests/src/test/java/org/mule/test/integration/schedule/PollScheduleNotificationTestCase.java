@@ -7,8 +7,8 @@
 package org.mule.test.integration.schedule;
 
 
-import org.mule.runtime.core.api.context.notification.ConnectorMessageNotification;
-import org.mule.runtime.core.api.context.notification.ConnectorMessageNotificationListener;
+import org.mule.runtime.api.notification.ConnectorMessageNotification;
+import org.mule.runtime.api.notification.ConnectorMessageNotificationListener;
 import org.mule.tck.probe.PollingProber;
 import org.mule.tck.probe.Probe;
 import org.mule.tck.probe.Prober;

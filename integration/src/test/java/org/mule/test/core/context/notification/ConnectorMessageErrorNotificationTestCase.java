@@ -7,12 +7,12 @@
 package org.mule.test.core.context.notification;
 
 import static java.lang.String.format;
-import static org.mule.runtime.core.api.context.notification.ConnectorMessageNotification.MESSAGE_ERROR_RESPONSE;
-import static org.mule.runtime.core.api.context.notification.ConnectorMessageNotification.MESSAGE_RECEIVED;
+import static org.mule.runtime.api.notification.ConnectorMessageNotification.MESSAGE_ERROR_RESPONSE;
+import static org.mule.runtime.api.notification.ConnectorMessageNotification.MESSAGE_RECEIVED;
 import static org.mule.runtime.http.api.HttpConstants.Method.POST;
 
-import org.mule.runtime.core.api.context.notification.ConnectorMessageNotification;
-import org.mule.runtime.core.api.context.notification.IntegerAction;
+import org.mule.runtime.api.notification.ConnectorMessageNotification;
+import org.mule.runtime.api.notification.IntegerAction;
 import org.mule.runtime.http.api.HttpService;
 import org.mule.runtime.http.api.domain.message.request.HttpRequest;
 import org.mule.service.http.TestHttpClient;

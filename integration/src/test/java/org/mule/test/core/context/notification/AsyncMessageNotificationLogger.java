@@ -6,9 +6,9 @@
  */
 package org.mule.test.core.context.notification;
 
-import org.mule.runtime.core.api.context.notification.AsyncMessageNotificationListener;
+import org.mule.runtime.api.notification.AsyncMessageNotificationListener;
 import org.mule.tck.core.context.notification.NotificationLogger;
-import org.mule.runtime.core.api.context.notification.AsyncMessageNotification;
+import org.mule.runtime.api.notification.AsyncMessageNotification;
 
 import java.util.List;
 
