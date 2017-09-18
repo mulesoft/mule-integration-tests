@@ -28,7 +28,7 @@ public class InOnlyTestCase extends AbstractIntegrationTestCase {
   @Test
   public void testExchange() throws Exception {
     final Latch latch = new Latch();
-    registry.lookup(NotificationListenerRegistry.class).get()
+    registry.lookupByType(NotificationListenerRegistry.class).get()
         .registerListener((FunctionalTestNotificationListener) notification -> latch.countDown());
 
     flowRunner("In-Only-Service").withPayload(TEST_PAYLOAD).run();

@@ -18,7 +18,8 @@
             <script:code>
                 import org.mule.functional.api.notification.FunctionalTestNotification
 
-                _muleNotificationDispatcher.dispatch(new FunctionalTestNotification(message, flow, payload, FunctionalTestNotification.EVENT_RECEIVED));
+                registry.lookupByName("_muleNotificationDispatcher").get()
+                    .dispatch(new FunctionalTestNotification(message, flow, payload, FunctionalTestNotification.EVENT_RECEIVED));
             </script:code>
         </script:execute>
     </flow>

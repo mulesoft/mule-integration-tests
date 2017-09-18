@@ -15,12 +15,12 @@ import org.mule.runtime.core.api.context.notification.AbstractServerNotification
 import org.mule.runtime.core.api.context.notification.NotificationListenerRegistry;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import org.apache.commons.lang3.SerializationUtils;
-import org.junit.Test;
-
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.inject.Inject;
+
+import org.apache.commons.lang3.SerializationUtils;
+import org.junit.Test;
 
 public class MessageChunkingTestCase extends AbstractIntegrationTestCase {
 
@@ -90,7 +90,7 @@ public class MessageChunkingTestCase extends AbstractIntegrationTestCase {
     final AtomicInteger messagePartsCount = new AtomicInteger(0);
 
     // Listen to events fired by the ChunkingReceiver service
-    registry.lookup(NotificationListenerRegistry.class).get().registerListener(notification -> {
+    registry.lookupByType(NotificationListenerRegistry.class).get().registerListener(notification -> {
       assertEquals("ChunkingReceiver", ((AbstractServerNotification) notification).getResourceIdentifier());
 
       // Test that we have received all chunks in the correct order

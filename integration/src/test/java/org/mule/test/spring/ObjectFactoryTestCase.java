@@ -35,7 +35,7 @@ public class ObjectFactoryTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void validateInjectionAndLifecycleOverObjectFactoryAndTheObjectCreatedByIt() throws RegistrationException {
-    TestObject testObject = registry.<TestObject>lookup(TestObject.class).get();
+    TestObject testObject = registry.<TestObject>lookupByType(TestObject.class).get();
     assertThat(testObject, notNullValue());
 
     TestObjectFactory objectFactory = testObject.getObjectFactory();
