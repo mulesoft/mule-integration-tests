@@ -21,14 +21,12 @@ import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentT
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.UNKNOWN;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentTypeStore.COMPONENT_CONFIGURATION_TYPE;
+
 import org.mule.runtime.api.component.ComponentIdentifier;
 import org.mule.runtime.api.component.TypedComponentIdentifier;
-import org.mule.runtime.api.component.location.ConfigurationComponentLocator;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Test;
-
-import javax.inject.Inject;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
@@ -37,17 +35,9 @@ import io.qameta.allure.Story;
 @Story(COMPONENT_CONFIGURATION_TYPE)
 public class ComponentTypeTestCase extends AbstractIntegrationTestCase {
 
-  @Inject
-  private ConfigurationComponentLocator configurationComponentLocator;
-
   @Override
   protected String getConfigFile() {
     return "org/mule/test/components/component-type-config.xml";
-  }
-
-  @Override
-  protected boolean doTestClassInjection() {
-    return true;
   }
 
   @Test
@@ -107,7 +97,7 @@ public class ComponentTypeTestCase extends AbstractIntegrationTestCase {
   }
 
   private TypedComponentIdentifier.ComponentType getComponentType(ComponentIdentifier componentIdentifier) {
-    return configurationComponentLocator.find(componentIdentifier).get(0).getLocation().getComponentIdentifier().getType();
+    return locator.find(componentIdentifier).get(0).getLocation().getComponentIdentifier().getType();
   }
 
 }

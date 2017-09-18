@@ -40,7 +40,7 @@ public class GracefulShutdownTimeoutTestCase extends AbstractIntegrationTestCase
   public void testGracefulShutdownTimeout() throws Exception {
     final Latch latch = new Latch();
     FlowConstruct flowConstruct = registry.<FlowConstruct>lookupByName("TestService").get();
-    getFromFlow(muleContext, flowConstruct.getName()).setEventCallback((context, component, muleContext) -> {
+    getFromFlow(locator, flowConstruct.getName()).setEventCallback((context, component, muleContext) -> {
       Thread.sleep(5500);
       latch.countDown();
 

@@ -13,14 +13,11 @@ import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocator
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.MUnitComponentLocatorStory.MUNIT_COMPONENT_LOCATION;
 
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
-import org.mule.runtime.api.component.location.ConfigurationComponentLocator;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
 
 import org.junit.Rule;
 import org.junit.Test;
-
-import javax.inject.Inject;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
@@ -32,9 +29,6 @@ public class MUnitComponentPathTestCase extends MuleArtifactFunctionalTestCase {
   @Rule
   public SystemProperty munitServerPort = new DynamicPort("munit.server.port");
 
-  @Inject
-  private ConfigurationComponentLocator componentLocator;
-
   @Override
   protected String getConfigFile() {
     return "org/mule/test/munit/component/location/munit-component-path-test-flow.xml";
@@ -42,88 +36,83 @@ public class MUnitComponentPathTestCase extends MuleArtifactFunctionalTestCase {
 
   @Test
   public void beforeSuiteComponentLocations() throws Exception {
-    assertThat(componentLocator.find(builderFromStringRepresentation("beforeSuite").build()).get(),
+    assertThat(locator.find(builderFromStringRepresentation("beforeSuite").build()).get(),
                notNullValue());
-    assertThat(componentLocator.find(builderFromStringRepresentation("beforeSuite/processors/0").build()).get(),
+    assertThat(locator.find(builderFromStringRepresentation("beforeSuite/processors/0").build()).get(),
                notNullValue());
-    assertThat(componentLocator.find(builderFromStringRepresentation("beforeSuite/processors/1").build()).get(),
+    assertThat(locator.find(builderFromStringRepresentation("beforeSuite/processors/1").build()).get(),
                notNullValue());
   }
 
   @Test
   public void afterSuiteComponentLocations() throws Exception {
-    assertThat(componentLocator.find(builderFromStringRepresentation("afterSuite").build()).get(),
+    assertThat(locator.find(builderFromStringRepresentation("afterSuite").build()).get(),
                notNullValue());
-    assertThat(componentLocator.find(builderFromStringRepresentation("afterSuite/processors/0").build()).get(),
+    assertThat(locator.find(builderFromStringRepresentation("afterSuite/processors/0").build()).get(),
                notNullValue());
-    assertThat(componentLocator.find(builderFromStringRepresentation("afterSuite/processors/0/route/0/processors/0").build())
+    assertThat(locator.find(builderFromStringRepresentation("afterSuite/processors/0/route/0/processors/0").build())
         .get(),
                notNullValue());
   }
 
   @Test
   public void beforeTestComponentLocations() throws Exception {
-    assertThat(componentLocator.find(builderFromStringRepresentation("beforeTest").build()).get(),
+    assertThat(locator.find(builderFromStringRepresentation("beforeTest").build()).get(),
                notNullValue());
-    assertThat(componentLocator.find(builderFromStringRepresentation("beforeTest/processors/0").build()).get(),
+    assertThat(locator.find(builderFromStringRepresentation("beforeTest/processors/0").build()).get(),
                notNullValue());
-    assertThat(componentLocator.find(builderFromStringRepresentation("beforeTest/processors/0/processors/0").build()).get(),
+    assertThat(locator.find(builderFromStringRepresentation("beforeTest/processors/0/processors/0").build()).get(),
                notNullValue());
-    assertThat(componentLocator
+    assertThat(locator
         .find(builderFromStringRepresentation("beforeTest/processors/0/processors/0/route/0/processors/0").build()).get(),
                notNullValue());
-    assertThat(componentLocator
+    assertThat(locator
         .find(builderFromStringRepresentation("beforeTest/processors/0/processors/0/route/1/processors/0").build()).get(),
                notNullValue());
   }
 
   @Test
   public void afterTestComponentLocations() throws Exception {
-    assertThat(componentLocator.find(builderFromStringRepresentation("afterTest").build()).get(),
+    assertThat(locator.find(builderFromStringRepresentation("afterTest").build()).get(),
                notNullValue());
-    assertThat(componentLocator.find(builderFromStringRepresentation("afterTest/processors/0").build()).get(),
+    assertThat(locator.find(builderFromStringRepresentation("afterTest/processors/0").build()).get(),
                notNullValue());
   }
 
   @Test
   public void testComponentLocations() throws Exception {
-    assertThat(componentLocator.find(builderFromStringRepresentation("test").build()).get(),
+    assertThat(locator.find(builderFromStringRepresentation("test").build()).get(),
                notNullValue());
-    assertThat(componentLocator.find(builderFromStringRepresentation("test/route/0").build()).get(),
+    assertThat(locator.find(builderFromStringRepresentation("test/route/0").build()).get(),
                notNullValue());
-    assertThat(componentLocator.find(builderFromStringRepresentation("test/route/0/processors/0").build()).get(),
+    assertThat(locator.find(builderFromStringRepresentation("test/route/0/processors/0").build()).get(),
                notNullValue());
-    assertThat(componentLocator.find(builderFromStringRepresentation("test/route/0/processors/0/processors/0").build()).get(),
+    assertThat(locator.find(builderFromStringRepresentation("test/route/0/processors/0/processors/0").build()).get(),
                notNullValue());
-    assertThat(componentLocator
+    assertThat(locator
         .find(builderFromStringRepresentation("test/route/0/processors/0/processors/0/route/0/processors/0").build())
         .get(), notNullValue());
-    assertThat(componentLocator
+    assertThat(locator
         .find(builderFromStringRepresentation("test/route/0/processors/0/processors/0/route/0/processors/0/route/0/processors/0")
             .build())
         .get(), notNullValue());
-    assertThat(componentLocator
+    assertThat(locator
         .find(builderFromStringRepresentation("test/route/0/processors/0/processors/0/route/0").build())
         .get(), notNullValue());
-    assertThat(componentLocator.find(builderFromStringRepresentation("test/route/0/processors/0/errorHandler").build()).get(),
+    assertThat(locator.find(builderFromStringRepresentation("test/route/0/processors/0/errorHandler").build()).get(),
                notNullValue());
-    assertThat(componentLocator.find(builderFromStringRepresentation("test/route/0/processors/0/errorHandler/0").build()).get(),
-               notNullValue());
-
-    assertThat(componentLocator.find(builderFromStringRepresentation("test/route/1").build()).get(),
-               notNullValue());
-    assertThat(componentLocator.find(builderFromStringRepresentation("test/route/1/processors/0").build()).get(),
+    assertThat(locator.find(builderFromStringRepresentation("test/route/0/processors/0/errorHandler/0").build()).get(),
                notNullValue());
 
-    assertThat(componentLocator.find(builderFromStringRepresentation("test/route/2").build()).get(),
+    assertThat(locator.find(builderFromStringRepresentation("test/route/1").build()).get(),
                notNullValue());
-    assertThat(componentLocator.find(builderFromStringRepresentation("test/route/2/processors/0").build()).get(),
+    assertThat(locator.find(builderFromStringRepresentation("test/route/1/processors/0").build()).get(),
                notNullValue());
-  }
 
-  @Override
-  protected boolean doTestClassInjection() {
-    return true;
+    assertThat(locator.find(builderFromStringRepresentation("test/route/2").build()).get(),
+               notNullValue());
+    assertThat(locator.find(builderFromStringRepresentation("test/route/2/processors/0").build()).get(),
+               notNullValue());
   }
 
 }

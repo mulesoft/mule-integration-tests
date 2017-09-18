@@ -10,17 +10,25 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.transaction.DelegateTransactionFactory;
 import org.mule.runtime.core.api.transaction.MuleTransactionConfig;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import java.lang.reflect.Method;
-
 import org.junit.Test;
 
+import java.lang.reflect.Method;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+
 public class TransactionalTryTestCase extends AbstractIntegrationTestCase {
+
+  @Inject
+  @Named("standardTry")
+  private Flow standardTryFlow;
 
   @Override
   protected String getConfigFile() {
@@ -29,7 +37,7 @@ public class TransactionalTryTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void resolvesStandardTransactionFactory() throws Exception {
-    Processor processor = ((Flow) getFlowConstruct("standardTry")).getProcessors().get(0);
+    Processor processor = standardTryFlow.getProcessors().get(0);
     assertThat(processor.getClass().getName(), equalTo("org.mule.runtime.core.internal.processor.TryScope"));
 
     Method getTransactionConfigMethod = processor.getClass().getMethod("getTransactionConfig");

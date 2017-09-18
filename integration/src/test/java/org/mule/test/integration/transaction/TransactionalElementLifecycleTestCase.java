@@ -58,7 +58,7 @@ public class TransactionalElementLifecycleTestCase extends AbstractIntegrationTe
     muleContext.getNotificationManager().addListener(listener);
 
     final Latch endDlqFlowLatch = new Latch();
-    getFromFlow(muleContext, "dlq-out").setEventCallback((context, component, muleContext) -> endDlqFlowLatch.release());
+    getFromFlow(locator, "dlq-out").setEventCallback((context, component, muleContext) -> endDlqFlowLatch.release());
     flowRunner("in-flow").withPayload("message").run();
     if (!endDlqFlowLatch.await(RECEIVE_TIMEOUT, TimeUnit.MILLISECONDS)) {
       fail("message wasn't received by dlq flow");

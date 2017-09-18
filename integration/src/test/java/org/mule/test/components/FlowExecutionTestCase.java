@@ -11,6 +11,7 @@ import static java.util.Optional.of;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+
 import org.mule.runtime.api.component.execution.ComponentExecutionException;
 import org.mule.runtime.api.component.execution.ExecutableComponent;
 import org.mule.runtime.api.event.Event;
@@ -19,13 +20,13 @@ import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.metadata.TypedValue;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import org.junit.Test;
+
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-
-import org.junit.Test;
 
 public class FlowExecutionTestCase extends AbstractIntegrationTestCase {
 
@@ -84,10 +85,5 @@ public class FlowExecutionTestCase extends AbstractIntegrationTestCase {
         .addVariable("myVar", 2)
         .message(Message.builder().payload(TypedValue.of(1))
             .build());
-  }
-
-  @Override
-  protected boolean doTestClassInjection() {
-    return true;
   }
 }

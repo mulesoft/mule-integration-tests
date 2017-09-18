@@ -9,17 +9,29 @@ package org.mule.test.config.dsl;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
+
 import org.mule.runtime.core.api.construct.Flow;
-import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.tck.junit4.rule.SystemProperty;
+import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Rule;
 import org.junit.Test;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 
 public class ConfigurationProcessingTestCase extends AbstractIntegrationTestCase {
 
   @Rule
   public SystemProperty frequency = new SystemProperty("frequency", "1000");
+
+  @Inject
+  @Named("simpleFlow")
+  private Flow simpleFlow;
+
+  @Inject
+  @Named("complexFlow")
+  private Flow complexFlow;
 
   @Override
   protected String getConfigFile() {
@@ -28,18 +40,14 @@ public class ConfigurationProcessingTestCase extends AbstractIntegrationTestCase
 
   @Test
   public void simpleFlowConfiguration() throws Exception {
-    Flow flow = (Flow) getFlowConstruct("simpleFlow");
-    assertThat(flow, notNullValue());
-    assertThat(flow.getProcessors(), notNullValue());
-    assertThat(flow.getProcessors().size(), is(1));
+    assertThat(simpleFlow.getProcessors(), notNullValue());
+    assertThat(simpleFlow.getProcessors().size(), is(1));
   }
 
   @Test
   public void complexFlowConfiguration() throws Exception {
-    Flow flow = (Flow) getFlowConstruct("complexFlow");
-    assertThat(flow, notNullValue());
-    assertThat(flow.getSource(), notNullValue());
-    assertThat(flow.getProcessors(), notNullValue());
-    assertThat(flow.getProcessors().size(), is(4));
+    assertThat(complexFlow.getSource(), notNullValue());
+    assertThat(complexFlow.getProcessors(), notNullValue());
+    assertThat(complexFlow.getProcessors().size(), is(4));
   }
 }

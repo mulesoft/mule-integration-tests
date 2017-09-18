@@ -59,8 +59,8 @@ public class CollectionAggregatorRouterTimeoutTestCase extends AbstractIntegrati
       }
     });
 
-    FunctionalTestProcessor vortex = getFromFlow(muleContext, "vortex");
-    FunctionalTestProcessor aggregator = getFromFlow(muleContext, "aggregator");
+    FunctionalTestProcessor vortex = getFromFlow(locator, "vortex");
+    FunctionalTestProcessor aggregator = getFromFlow(locator, "aggregator");
 
     MuleClient client = muleContext.getClient();
     List<String> list = asList("first", "second");

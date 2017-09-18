@@ -44,6 +44,9 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Optional;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
 
@@ -175,6 +178,10 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
   private static final Optional<TypedComponentIdentifier> ROUTE =
       of(builder().identifier(buildFromStringRepresentation("mule:route")).type(SCOPE).build());
 
+  @Inject
+  @Named("flowWithSource")
+  private Flow flowWithSource;
+
   @Override
   protected String getConfigFile() {
     return CONFIG_FILE_NAME.get();
@@ -274,7 +281,6 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
     DefaultComponentLocation expectedSourceLocation =
         FLOW_WITH_SOURCE.appendLocationPart("source", SKELETON_SOURCE,
                                             CONFIG_FILE_NAME, of(71));
-    Flow flowWithSource = (Flow) getFlowConstruct("flowWithSource");
     DefaultComponentLocation sourceLocation =
         (DefaultComponentLocation) ((Component) flowWithSource.getSource()).getAnnotation(LOCATION_KEY);
     assertThat(sourceLocation, is(expectedSourceLocation));

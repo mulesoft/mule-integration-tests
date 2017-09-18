@@ -11,30 +11,26 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+
 import org.mule.runtime.api.store.ObjectStore;
+import org.mule.runtime.api.store.SimpleMemoryObjectStore;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.construct.FlowConstruct;
 import org.mule.runtime.core.api.processor.Processor;
-import org.mule.runtime.api.store.SimpleMemoryObjectStore;
 import org.mule.runtime.core.internal.routing.IdempotentMessageValidator;
 import org.mule.test.AbstractIntegrationTestCase;
+
+import org.junit.Test;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import org.junit.Test;
-
 /**
  * Tests for all object stores that can be configured on an {@link IdempotentMessageValidator}.
  */
 public class IdempotentMessageValidatorNamespaceHandlerTestCase extends AbstractIntegrationTestCase {
-
-  public IdempotentMessageValidatorNamespaceHandlerTestCase() {
-    // we just test the wiring of the objects, no need to start the MuleContext
-    setStartContext(false);
-  }
 
   @Override
   protected String getConfigFile() {
@@ -57,7 +53,7 @@ public class IdempotentMessageValidatorNamespaceHandlerTestCase extends Abstract
   }
 
   private Processor idempotentMessageFilterFromFlow(final String flowName) throws Exception {
-    final FlowConstruct flow = getFlowConstruct(flowName);
+    final FlowConstruct flow = registry.<FlowConstruct>lookupByName(flowName).get();
     assertTrue(flow instanceof Flow);
 
     final Flow simpleFlow = (Flow) flow;

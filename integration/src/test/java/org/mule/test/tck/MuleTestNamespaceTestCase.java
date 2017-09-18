@@ -30,7 +30,7 @@ public class MuleTestNamespaceTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void testComponent1Config() throws Exception {
-    FunctionalTestProcessor ftc = getFromFlow(muleContext, "testService1");
+    FunctionalTestProcessor ftc = getFromFlow(locator, "testService1");
 
     assertFalse(ftc.isEnableMessageHistory());
     assertFalse(ftc.isEnableNotifications());
@@ -42,7 +42,7 @@ public class MuleTestNamespaceTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void testComponent3Config() throws Exception {
-    FunctionalTestProcessor ftc = getFromFlow(muleContext, "testService3");
+    FunctionalTestProcessor ftc = getFromFlow(locator, "testService3");
 
     assertFalse(ftc.isEnableMessageHistory());
     assertTrue(ftc.isEnableNotifications());

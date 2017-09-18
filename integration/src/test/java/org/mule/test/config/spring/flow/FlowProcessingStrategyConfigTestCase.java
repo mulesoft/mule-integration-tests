@@ -8,6 +8,7 @@ package org.mule.test.config.spring.flow;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
+
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.processor.strategy.ProcessingStrategy;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -34,7 +35,6 @@ public class FlowProcessingStrategyConfigTestCase extends AbstractIntegrationTes
   }
 
   private ProcessingStrategy getFlowProcessingStrategy(String flowName) throws Exception {
-    Flow flow = (Flow) getFlowConstruct(flowName);
-    return flow.getProcessingStrategy();
+    return registry.<Flow>lookupByName(flowName).get().getProcessingStrategy();
   }
 }

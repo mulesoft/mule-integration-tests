@@ -16,6 +16,7 @@ import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.rules.ExpectedException.none;
+import static org.mule.runtime.api.component.location.Location.builderFromStringRepresentation;
 import static org.mule.runtime.api.message.Message.of;
 import static org.mule.runtime.core.api.event.BaseEventContext.create;
 import static org.mule.runtime.dsl.api.component.config.DefaultComponentLocation.fromSingleComponent;
@@ -28,19 +29,17 @@ import org.mule.runtime.api.lifecycle.Disposable;
 import org.mule.runtime.api.lifecycle.Initialisable;
 import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.api.scheduler.Scheduler;
+import org.mule.runtime.api.scheduler.SchedulerBusyException;
+import org.mule.runtime.api.scheduler.SchedulerService;
+import org.mule.runtime.api.util.concurrent.Latch;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.runtime.core.api.config.DefaultMuleConfiguration;
 import org.mule.runtime.core.api.config.builders.AbstractConfigurationBuilder;
-import org.mule.runtime.core.api.construct.Flow;
-import org.mule.runtime.core.api.construct.FlowConstruct;
 import org.mule.runtime.core.api.event.BaseEvent;
 import org.mule.runtime.core.api.exception.MessagingException;
+import org.mule.runtime.core.api.exception.NullExceptionHandler;
 import org.mule.runtime.core.api.processor.Processor;
-import org.mule.runtime.api.scheduler.SchedulerBusyException;
-import org.mule.runtime.api.scheduler.SchedulerService;
-import org.mule.runtime.core.api.source.MessageSource;
-import org.mule.runtime.api.util.concurrent.Latch;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.hamcrest.TypeSafeMatcher;
@@ -155,8 +154,8 @@ public class SchedulerServiceTestCase extends AbstractIntegrationTestCase {
   @Description("Tests that an OVERLOAD error is handled only by the message source."
       + " This assumes org.mule.test.integration.exceptions.ErrorHandlerTestCase#criticalNotHandled")
   public void overloadErrorHandlingFromSource() throws Throwable {
-    FlowConstruct delayScheduleFlow = getFlowConstruct("delaySchedule");
-    MessageSource messageSource = ((Flow) delayScheduleFlow).getSource();
+    SkeletonSource messageSource =
+        (SkeletonSource) locator.find(builderFromStringRepresentation("delaySchedule/source").build()).get();
 
     expected.expect(MessagingException.class);
     expected.expect(new TypeSafeMatcher<MessagingException>() {
@@ -177,9 +176,10 @@ public class SchedulerServiceTestCase extends AbstractIntegrationTestCase {
 
     expected.expectCause(instanceOf(SchedulerBusyException.class));
 
-    ((SkeletonSource) messageSource).getListener()
+    messageSource.getListener()
         .process(BaseEvent
-            .builder(create(delayScheduleFlow, fromSingleComponent(SchedulerServiceTestCase.class.getSimpleName())))
+            .builder(create("id", "serverd", fromSingleComponent(SchedulerServiceTestCase.class.getSimpleName()),
+                            NullExceptionHandler.getInstance()))
             .message(of(null))
             .build());
 
