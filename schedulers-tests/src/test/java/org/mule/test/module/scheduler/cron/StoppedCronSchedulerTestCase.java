@@ -9,21 +9,23 @@ package org.mule.test.module.scheduler.cron;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertThat;
+import static org.mule.runtime.api.component.location.Location.builderFromStringRepresentation;
+
 import org.mule.functional.api.component.EventCallback;
+import org.mule.runtime.api.lifecycle.Startable;
+import org.mule.runtime.api.lifecycle.Stoppable;
 import org.mule.runtime.api.source.SchedulerMessageSource;
 import org.mule.runtime.core.api.MuleContext;
-import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.event.BaseEvent;
-import org.mule.runtime.core.api.source.MessageSource;
 import org.mule.tck.probe.JUnitLambdaProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.test.AbstractSchedulerTestCase;
 
+import org.junit.Test;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
-
-import org.junit.Test;
 
 
 public class StoppedCronSchedulerTestCase extends AbstractSchedulerTestCase {
@@ -57,16 +59,13 @@ public class StoppedCronSchedulerTestCase extends AbstractSchedulerTestCase {
   }
 
   private void runSchedulersOnce(Supplier<Void> assertionSupplier) throws Exception {
-    Flow flow = (Flow) (muleContext.getRegistry().lookupFlowConstruct("pollfoo"));
-    flow.start();
+    registry.<Startable>lookupByName("pollfoo").get().start();
     try {
-      MessageSource flowSource = flow.getSource();
-      if (flowSource instanceof SchedulerMessageSource) {
-        ((SchedulerMessageSource) flowSource).trigger();
-      }
+      locator.find(builderFromStringRepresentation("pollfoo/source").build()).map(source -> (SchedulerMessageSource) source)
+          .ifPresent(SchedulerMessageSource::trigger);
       assertionSupplier.get();
     } finally {
-      flow.stop();
+      registry.<Stoppable>lookupByName("pollfoo").get().stop();
     }
   }
 }

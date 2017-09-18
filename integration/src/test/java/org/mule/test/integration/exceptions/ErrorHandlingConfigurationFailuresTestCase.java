@@ -29,6 +29,7 @@ import static org.mule.runtime.core.api.exception.Errors.Identifiers.UNKNOWN_ERR
 import static org.mule.runtime.module.extension.api.loader.AbstractJavaExtensionModelLoader.TYPE_PROPERTY_NAME;
 import static org.mule.runtime.module.extension.api.loader.AbstractJavaExtensionModelLoader.VERSION;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
+
 import org.mule.extension.http.internal.temporary.HttpConnector;
 import org.mule.extension.socket.api.SocketsExtension;
 import org.mule.runtime.api.dsl.DslResolvingContext;
@@ -52,6 +53,10 @@ import org.mule.runtime.module.extension.internal.manager.DefaultExtensionManage
 import org.mule.tck.config.TestServicesConfigurationBuilder;
 import org.mule.tck.junit4.AbstractMuleTestCase;
 
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -59,15 +64,17 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
+import javax.inject.Inject;
+
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 @Feature(ERROR_HANDLING)
 @Story("Validations")
 public class ErrorHandlingConfigurationFailuresTestCase extends AbstractMuleTestCase {
+
+  @Inject
+  private NotificationListenerRegistry notificationListenerRegistry;
 
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
@@ -209,21 +216,20 @@ public class ErrorHandlingConfigurationFailuresTestCase extends AbstractMuleTest
     MuleContext muleContext = muleContextFactory.createMuleContext(builders, contextBuilder);
     final AtomicReference<Latch> contextStartedLatch = new AtomicReference<>();
     contextStartedLatch.set(new Latch());
-    muleContext.getRegistry().lookupObject(NotificationListenerRegistry.class)
-        .registerListener(new MuleContextNotificationListener<MuleContextNotification>() {
+    notificationListenerRegistry.registerListener(new MuleContextNotificationListener<MuleContextNotification>() {
 
-          @Override
-          public boolean isBlocking() {
-            return false;
-          }
+      @Override
+      public boolean isBlocking() {
+        return false;
+      }
 
-          @Override
-          public void onNotification(MuleContextNotification notification) {
-            if (new IntegerAction(CONTEXT_STARTED).equals(notification.getAction())) {
-              contextStartedLatch.get().countDown();
-            }
-          }
-        });
+      @Override
+      public void onNotification(MuleContextNotification notification) {
+        if (new IntegerAction(CONTEXT_STARTED).equals(notification.getAction())) {
+          contextStartedLatch.get().countDown();
+        }
+      }
+    });
     muleContext.start();
     contextStartedLatch.get().await(20, SECONDS);
   }

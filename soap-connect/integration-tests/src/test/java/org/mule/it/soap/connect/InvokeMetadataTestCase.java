@@ -18,6 +18,7 @@ import static org.mule.runtime.extension.api.util.ExtensionMetadataTypeUtils.get
 import static org.mule.runtime.module.extension.soap.internal.loader.SoapInvokeOperationDeclarer.ATTACHMENTS_PARAM;
 import static org.mule.runtime.module.extension.soap.internal.loader.SoapInvokeOperationDeclarer.BODY_PARAM;
 import static org.mule.runtime.module.extension.soap.internal.loader.SoapInvokeOperationDeclarer.HEADERS_PARAM;
+
 import org.mule.metadata.api.model.BinaryType;
 import org.mule.metadata.api.model.BooleanType;
 import org.mule.metadata.api.model.MetadataType;
@@ -33,22 +34,25 @@ import org.mule.runtime.api.metadata.MetadataService;
 import org.mule.runtime.api.metadata.descriptor.ComponentMetadataDescriptor;
 import org.mule.runtime.api.metadata.resolving.MetadataResult;
 
+import org.junit.Test;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Test;
+import javax.inject.Inject;
 
 public class InvokeMetadataTestCase extends SoapFootballExtensionArtifactFunctionalTestCase {
 
   private static final String INVALID_KEY_ERROR = "The binding operation name [invalidKey] was not found in the current wsdl";
+
+  @Inject
   private MetadataService metadataService;
 
   @Override
-  protected void doSetUp() throws Exception {
-    super.doSetUp();
-    metadataService = muleContext.getRegistry().lookupObject(MetadataService.class);
+  protected boolean doTestClassInjection() {
+    return true;
   }
 
   @Test

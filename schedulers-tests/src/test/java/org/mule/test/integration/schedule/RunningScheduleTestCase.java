@@ -10,6 +10,7 @@ package org.mule.test.integration.schedule;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.tck.probe.JUnitLambdaProbe;
 import org.mule.tck.probe.PollingProber;
@@ -57,6 +58,6 @@ public class RunningScheduleTestCase extends AbstractSchedulerTestCase {
   }
 
   private MockScheduler findScheduler(String schedulerName) {
-    return (MockScheduler) muleContext.getRegistry().lookupObject(schedulerName);
+    return (MockScheduler) registry.lookupByName(schedulerName).get();
   }
 }

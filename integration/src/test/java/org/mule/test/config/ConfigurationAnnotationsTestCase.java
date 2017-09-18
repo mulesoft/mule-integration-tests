@@ -12,6 +12,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
+
 import org.mule.runtime.api.component.Component;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.construct.FlowConstruct;
@@ -19,9 +20,9 @@ import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.transformer.Transformer;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import javax.xml.namespace.QName;
-
 import org.junit.Test;
+
+import javax.xml.namespace.QName;
 
 /**
  * Test that configuration-based annotations are propagated to the appropriate runtime objects
@@ -35,7 +36,7 @@ public class ConfigurationAnnotationsTestCase extends AbstractIntegrationTestCas
 
   @Test
   public void testTransformerAnnotations() {
-    Transformer stb = muleContext.getRegistry().lookupTransformer("StringtoByteArray");
+    Transformer stb = registry.<Transformer>lookupByName("StringtoByteArray").get();
     assertThat(stb, not(nullValue()));
     assertThat(getDocName(stb), is("stb-transformer"));
     assertThat(getDocDescription(stb), is("Convert a String to a Byte Array"));
@@ -48,7 +49,7 @@ public class ConfigurationAnnotationsTestCase extends AbstractIntegrationTestCas
 
   @Test
   public void testFlowAnnotations() {
-    FlowConstruct flow = muleContext.getRegistry().lookupFlowConstruct("Bridge");
+    FlowConstruct flow = registry.<FlowConstruct>lookupByName("Bridge").get();
     assertThat(flow, not(nullValue()));
     assertThat(getDocName(flow), is("Bridge flow"));
     assertThat(getDocDescription(flow), is("Main flow"));
@@ -61,7 +62,7 @@ public class ConfigurationAnnotationsTestCase extends AbstractIntegrationTestCas
 
   @Test
   public void testFlowWithExceptionStrategyAnnotations() {
-    FlowConstruct flow = muleContext.getRegistry().lookupFlowConstruct("WithRefExceptionStrategy");
+    FlowConstruct flow = registry.<FlowConstruct>lookupByName("WithRefExceptionStrategy").get();
     assertThat(flow, not(nullValue()));
     assertThat(getDocName(flow), is("With Referenced Exception Strategy"));
     assertThat(getDocDescription(flow), is(nullValue()));
@@ -78,7 +79,7 @@ public class ConfigurationAnnotationsTestCase extends AbstractIntegrationTestCas
 
   @Test
   public void testDefaultAnnotationsInNotAnnotatedObject() {
-    FlowConstruct flow = muleContext.getRegistry().lookupFlowConstruct("NotAnnotatedBridge");
+    FlowConstruct flow = registry.<FlowConstruct>lookupByName("NotAnnotatedBridge").get();
     assertThat(flow, not(nullValue()));
     assertThat(getDocName(flow), is(nullValue()));
     assertThat(getDocDescription(flow), is(nullValue()));
@@ -88,14 +89,14 @@ public class ConfigurationAnnotationsTestCase extends AbstractIntegrationTestCas
 
   @Test
   public void testJavaComponentAnnotations() {
-    Flow flow = (Flow) muleContext.getRegistry().lookupFlowConstruct("Bridge");
+    Flow flow = (Flow) registry.<FlowConstruct>lookupByName("Bridge").get();
     Processor logger = flow.getProcessors().get(0);
     assertThat(getSourceElement(logger), is("<logger doc:name=\"echo\">" + "</logger>"));
   }
 
   @Test
   public void testInsideSpringBeansAnnotations() {
-    Transformer stb = muleContext.getRegistry().lookupTransformer("ManziTransformer");
+    Transformer stb = registry.<Transformer>lookupByName("ManziTransformer").get();
     assertThat(stb, not(nullValue()));
     assertThat(getDocName(stb), is("manzi-transformer"));
     assertThat(getSourceElement(stb),

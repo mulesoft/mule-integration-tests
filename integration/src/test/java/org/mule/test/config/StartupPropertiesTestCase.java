@@ -8,9 +8,11 @@ package org.mule.test.config;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+
 import org.mule.test.AbstractIntegrationTestCase;
 
-import java.util.Properties;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Test;
 
@@ -27,17 +29,17 @@ public class StartupPropertiesTestCase extends AbstractIntegrationTestCase {
   }
 
   @Override
-  protected Properties getStartUpProperties() {
-    Properties p = new Properties();
-    p.setProperty(STARTUP_PROPERTY_1_KEY, STARTUP_PROPERTY_1_VALUE);
-    p.setProperty(STARTUP_PROPERTY_2_KEY, STARTUP_PROPERTY_2_VALUE);
-    return p;
+  protected Map<String, Object> getStartUpRegistryObjects() {
+    Map<String, Object> registryObjects = new HashMap<>();
+    registryObjects.put(STARTUP_PROPERTY_1_KEY, STARTUP_PROPERTY_1_VALUE);
+    registryObjects.put(STARTUP_PROPERTY_2_KEY, STARTUP_PROPERTY_2_VALUE);
+    return registryObjects;
   }
 
   @Test
   public void testStartProperties() {
-    Object property1 = muleContext.getRegistry().lookupObject(STARTUP_PROPERTY_1_KEY);
-    Object property2 = muleContext.getRegistry().lookupObject(STARTUP_PROPERTY_2_KEY);
+    Object property1 = registry.lookupByName(STARTUP_PROPERTY_1_KEY).get();
+    Object property2 = registry.lookupByName(STARTUP_PROPERTY_2_KEY).get();
     assertNotNull(property1);
     assertNotNull(property2);
     assertEquals(STARTUP_PROPERTY_1_VALUE, property1);

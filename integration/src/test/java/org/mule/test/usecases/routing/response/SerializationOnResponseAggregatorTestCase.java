@@ -10,9 +10,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.store.ObjectStoreManager.BASE_IN_MEMORY_OBJECT_STORE_KEY;
 import static org.mule.runtime.http.api.HttpConstants.Method.POST;
+
 import org.mule.runtime.api.serialization.ObjectSerializer;
 import org.mule.runtime.api.store.ObjectStoreException;
-import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.api.store.SimpleMemoryObjectStore;
 import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.runtime.http.api.HttpService;
@@ -24,6 +24,10 @@ import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.inject.Inject;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -41,9 +45,15 @@ public class SerializationOnResponseAggregatorTestCase extends AbstractIntegrati
     return "org/mule/test/usecases/routing/response/serialization-on-response-router-config.xml";
   }
 
+  @Override
+  protected Map<String, Object> getStartUpRegistryObjects() {
+    Map<String, Object> registryObjects = new HashMap<>();
+    registryObjects.put(BASE_IN_MEMORY_OBJECT_STORE_KEY, new TestObjectStore());
+    return registryObjects;
+  }
+
   @Test
   public void testSyncResponse() throws Exception {
-    muleContext.getRegistry().registerObject(BASE_IN_MEMORY_OBJECT_STORE_KEY, new TestObjectStore(muleContext));
     HttpRequest request = HttpRequest.builder().uri("http://localhost:" + dynamicPort.getNumber())
         .entity(new ByteArrayHttpEntity("request".getBytes())).method(POST).build();
 
@@ -55,11 +65,8 @@ public class SerializationOnResponseAggregatorTestCase extends AbstractIntegrati
 
   private static class TestObjectStore extends SimpleMemoryObjectStore<Serializable> {
 
+    @Inject
     private ObjectSerializer serializer;
-
-    private TestObjectStore(MuleContext muleContext) {
-      serializer = muleContext.getObjectSerializer();
-    }
 
     @Override
     protected void doStore(String key, Serializable value) throws ObjectStoreException {

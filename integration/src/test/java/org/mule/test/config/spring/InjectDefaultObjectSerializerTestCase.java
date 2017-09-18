@@ -10,6 +10,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.serialization.ObjectSerializer.DEFAULT_OBJECT_SERIALIZER_NAME;
+
 import org.mule.runtime.api.serialization.ObjectSerializer;
 import org.mule.runtime.api.serialization.SerializationProtocol;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -26,6 +27,10 @@ import javax.inject.Named;
 
 @RunnerDelegateTo(Parameterized.class)
 public class InjectDefaultObjectSerializerTestCase extends AbstractIntegrationTestCase {
+
+  @Inject
+  @Named(DEFAULT_OBJECT_SERIALIZER_NAME)
+  private ObjectSerializer defaultSerializer;
 
   @Parameterized.Parameters(name = "{0}")
   public static Collection<Object[]> data() {
@@ -51,8 +56,7 @@ public class InjectDefaultObjectSerializerTestCase extends AbstractIntegrationTe
     TestObjectSerializerInjectionTarget injectionTarget =
         muleContext.getInjector().inject(new TestObjectSerializerInjectionTarget());
     assertThat(muleContext.getObjectSerializer(), is(sameInstance(injectionTarget.getObjectSerializer())));
-    assertThat(injectionTarget.getObjectSerializer(),
-               is(sameInstance(muleContext.getRegistry().get(DEFAULT_OBJECT_SERIALIZER_NAME))));
+    assertThat(injectionTarget.getObjectSerializer(), is(sameInstance(defaultSerializer)));
   }
 
   public static class TestObjectSerializerInjectionTarget {

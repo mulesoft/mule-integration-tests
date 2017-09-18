@@ -31,7 +31,7 @@ public class SubFlowTestCase extends AbstractIntegrationTestCase {
     assertThat(result.getVariables().get(LIFECYCLE_TRACKER_PROCESSOR_PROPERTY).getValue(),
                is("[setMuleContext, initialise, start]"));
     assertThat(result.getVariables().get(FLOW_CONSRUCT_PROPERTY).getValue(),
-               is(muleContext.getRegistry().lookupFlowConstruct("SubFlowViaProcessorRef")));
+               is(registry.lookupByName("SubFlowViaProcessorRef").get()));
   }
 
   @Test
@@ -42,7 +42,7 @@ public class SubFlowTestCase extends AbstractIntegrationTestCase {
     assertThat(result.getVariables().get(LIFECYCLE_TRACKER_PROCESSOR_PROPERTY).getValue(),
                is("[setMuleContext, initialise, start]"));
     assertThat(result.getVariables().get(FLOW_CONSRUCT_PROPERTY).getValue(),
-               is(muleContext.getRegistry().lookupFlowConstruct("SubFlowViaFlowRef")));
+               is(registry.lookupByName("SubFlowViaFlowRef").get()));
   }
 
   @Test

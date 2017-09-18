@@ -9,6 +9,7 @@ package org.mule.test.spring;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+
 import org.mule.runtime.api.component.ConfigurationProperties;
 import org.mule.runtime.core.api.registry.RegistrationException;
 import org.mule.tck.junit4.rule.SystemProperty;
@@ -17,10 +18,15 @@ import org.mule.test.AbstractIntegrationTestCase;
 import org.junit.Rule;
 import org.junit.Test;
 
+import javax.inject.Inject;
+
 public class PropertyPlaceholderMule2150TestCase extends AbstractIntegrationTestCase {
 
   @Rule
   public SystemProperty systemProperty = new SystemProperty("systemProperty", "org");
+
+  @Inject
+  private ConfigurationProperties configurationProperties;
 
   @Override
   protected String getConfigFile() {
@@ -28,7 +34,6 @@ public class PropertyPlaceholderMule2150TestCase extends AbstractIntegrationTest
   }
 
   protected String getProperty(String propertyName) throws RegistrationException {
-    ConfigurationProperties configurationProperties = muleContext.getRegistry().lookupObject(ConfigurationProperties.class);
     String value = configurationProperties.resolveStringProperty(propertyName).get();
     assertNotNull(propertyName, value);
     return value;

@@ -23,12 +23,17 @@ import org.mule.tck.probe.PollingProber;
 import org.mule.tck.probe.Probe;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import org.junit.Test;
+
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Test;
+import javax.inject.Inject;
 
 public class CollectionAggregatorRouterTimeoutTestCase extends AbstractIntegrationTestCase {
+
+  @Inject
+  private NotificationListenerRegistry notificationsregistry;
 
   @Override
   protected String getConfigFile() {
@@ -39,21 +44,20 @@ public class CollectionAggregatorRouterTimeoutTestCase extends AbstractIntegrati
   public void testNoFailOnTimeout() throws Exception {
     // correlation timeouts should not fire in this scenario, check it
     final AtomicInteger correlationTimeoutCount = new AtomicInteger(0);
-    muleContext.getRegistry().lookupObject(NotificationListenerRegistry.class)
-        .registerListener(new RoutingNotificationListener<RoutingNotification>() {
+    notificationsregistry.registerListener(new RoutingNotificationListener<RoutingNotification>() {
 
-          @Override
-          public boolean isBlocking() {
-            return false;
-          }
+      @Override
+      public boolean isBlocking() {
+        return false;
+      }
 
-          @Override
-          public void onNotification(RoutingNotification notification) {
-            if (new IntegerAction(CORRELATION_TIMEOUT).equals(notification.getAction())) {
-              correlationTimeoutCount.incrementAndGet();
-            }
-          }
-        });
+      @Override
+      public void onNotification(RoutingNotification notification) {
+        if (new IntegerAction(CORRELATION_TIMEOUT).equals(notification.getAction())) {
+          correlationTimeoutCount.incrementAndGet();
+        }
+      }
+    });
 
     FunctionalTestProcessor vortex = getFromFlow(muleContext, "vortex");
     FunctionalTestProcessor aggregator = getFromFlow(muleContext, "aggregator");

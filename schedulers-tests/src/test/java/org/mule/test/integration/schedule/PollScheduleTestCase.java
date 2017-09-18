@@ -11,24 +11,26 @@ import static java.lang.Thread.sleep;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertThat;
+import static org.mule.runtime.api.component.location.Location.builderFromStringRepresentation;
+
 import org.mule.functional.api.component.EventCallback;
 import org.mule.runtime.api.exception.MuleException;
+import org.mule.runtime.api.lifecycle.Startable;
+import org.mule.runtime.api.lifecycle.Stoppable;
 import org.mule.runtime.api.source.SchedulerMessageSource;
 import org.mule.runtime.core.api.MuleContext;
-import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.event.BaseEvent;
-import org.mule.runtime.core.api.source.MessageSource;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.tck.probe.JUnitLambdaProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.tck.probe.Probe;
 import org.mule.test.AbstractSchedulerTestCase;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.ClassRule;
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This is a test for poll with schedulers. It validates that the polls can be executed, stopped, run.
@@ -100,21 +102,16 @@ public class PollScheduleTestCase extends AbstractSchedulerTestCase {
 
 
   private void runSchedulersOnce() throws Exception {
-    Flow flow = (Flow) (muleContext.getRegistry().lookupFlowConstruct("pollfoo"));
-    MessageSource flowSource = flow.getSource();
-    if (flowSource instanceof SchedulerMessageSource) {
-      ((SchedulerMessageSource) flowSource).trigger();
-    }
+    locator.find(builderFromStringRepresentation("pollfoo/source").build()).map(source -> (SchedulerMessageSource) source)
+        .ifPresent(SchedulerMessageSource::trigger);
   }
 
   private void stopSchedulers() throws MuleException {
-    Flow flow = (Flow) (muleContext.getRegistry().lookupFlowConstruct("pollfoo"));
-    flow.stop();
+    registry.<Stoppable>lookupByName("pollfoo").get().stop();
   }
 
   private void startSchedulers() throws MuleException {
-    Flow flow = (Flow) (muleContext.getRegistry().lookupFlowConstruct("pollfoo"));
-    flow.start();
+    registry.<Startable>lookupByName("pollfoo").get().start();
   }
 
   public static class Foo implements EventCallback {

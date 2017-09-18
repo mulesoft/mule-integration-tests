@@ -12,6 +12,7 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertThat;
+
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.config.dsl.ParsersPluginTest;
 import org.mule.tests.parsers.api.ParameterAndChildElement;
@@ -19,13 +20,13 @@ import org.mule.tests.parsers.api.ParsersTestObject;
 import org.mule.tests.parsers.api.PojoWithSameTypeChildren;
 import org.mule.tests.parsers.api.SimplePojo;
 
+import org.junit.Test;
+
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
-
-import org.junit.Test;
 
 public class XmlDslProcessingTestCase extends AbstractIntegrationTestCase implements ParsersPluginTest {
 
@@ -40,7 +41,7 @@ public class XmlDslProcessingTestCase extends AbstractIntegrationTestCase implem
 
   @Test
   public void onlySimpleParametersInSingleAttribute() {
-    ParsersTestObject parsersTestObject = muleContext.getRegistry().get("onlySimpleParametersObject");
+    ParsersTestObject parsersTestObject = registry.<ParsersTestObject>lookupByName("onlySimpleParametersObject").get();
     Map<Object, Object> simpleParameters = parsersTestObject.getSimpleParameters();
     assertThat(simpleParameters.size(), is(3));
     assertPabloChildParameters(simpleParameters);
@@ -48,7 +49,7 @@ public class XmlDslProcessingTestCase extends AbstractIntegrationTestCase implem
 
   @Test
   public void firstComplexChildUsingWrapper() {
-    ParsersTestObject parsersTestObject = muleContext.getRegistry().get("onlyComplexFirstChildParameterObject");
+    ParsersTestObject parsersTestObject = registry.<ParsersTestObject>lookupByName("onlyComplexFirstChildParameterObject").get();
     Map<Object, Object> simpleParameters = parsersTestObject.getSimpleParameters();
     assertThat(simpleParameters.size(), is(1));
     assertPabloChildParameters(((ParsersTestObject) simpleParameters.get("first-child")).getSimpleParameters());
@@ -56,7 +57,7 @@ public class XmlDslProcessingTestCase extends AbstractIntegrationTestCase implem
 
   @Test
   public void secondComplexChildUsingWrapper() {
-    ParsersTestObject parsersTestObject = muleContext.getRegistry().get("onlyComplexSecondChildParameterObject");
+    ParsersTestObject parsersTestObject = registry.<ParsersTestObject>lookupByName("onlyComplexSecondChildParameterObject").get();
     Map<Object, Object> simpleParameters = parsersTestObject.getSimpleParameters();
     assertThat(simpleParameters.size(), is(1));
     assertMarianoChildParameters(((ParsersTestObject) simpleParameters.get("second-child")).getSimpleParameters());
@@ -64,7 +65,8 @@ public class XmlDslProcessingTestCase extends AbstractIntegrationTestCase implem
 
   @Test
   public void complexChildrenListUsingWrapper() {
-    ParsersTestObject parsersTestObject = muleContext.getRegistry().get("onlyComplexChildrenListParameterObject");
+    ParsersTestObject parsersTestObject =
+        registry.<ParsersTestObject>lookupByName("onlyComplexChildrenListParameterObject").get();
     Map<Object, Object> simpleParameters = parsersTestObject.getSimpleParameters();
     assertThat(simpleParameters.size(), is(1));
     assertCollectionChildrenContent((List<ParsersTestObject>) simpleParameters.get("other-children"));
@@ -72,7 +74,7 @@ public class XmlDslProcessingTestCase extends AbstractIntegrationTestCase implem
 
   @Test
   public void completeParametersObject() {
-    ParsersTestObject parsersTestObject = muleContext.getRegistry().get("completeParametersObject");
+    ParsersTestObject parsersTestObject = registry.<ParsersTestObject>lookupByName("completeParametersObject").get();
     Map<Object, Object> simpleParameters = parsersTestObject.getSimpleParameters();
     assertThat(simpleParameters.size(), is(6));
     assertPabloChildParameters(simpleParameters);
@@ -83,7 +85,7 @@ public class XmlDslProcessingTestCase extends AbstractIntegrationTestCase implem
 
   @Test
   public void customCollectionTypeObject() {
-    ParsersTestObject parsersTestObject = muleContext.getRegistry().get("customCollectionTypeObject");
+    ParsersTestObject parsersTestObject = registry.<ParsersTestObject>lookupByName("customCollectionTypeObject").get();
     Map<Object, Object> simpleParameters = parsersTestObject.getSimpleParameters();
     assertThat(simpleParameters.size(), is(1));
     List<ParsersTestObject> collectionObject =
@@ -94,7 +96,7 @@ public class XmlDslProcessingTestCase extends AbstractIntegrationTestCase implem
 
   @Test
   public void simpleTypeObject() {
-    ParsersTestObject parsersTestObject = muleContext.getRegistry().get("simpleTypeObject");
+    ParsersTestObject parsersTestObject = registry.<ParsersTestObject>lookupByName("simpleTypeObject").get();
     assertSimpleTypeCollectionValues(parsersTestObject.getSimpleTypeList());
     assertThat(parsersTestObject.getSimpleTypeSet(), instanceOf(TreeSet.class));
     assertSimpleTypeCollectionValues(parsersTestObject.getSimpleTypeSet());
@@ -105,7 +107,7 @@ public class XmlDslProcessingTestCase extends AbstractIntegrationTestCase implem
 
   @Test
   public void simpleTypeChildListWithConverter() {
-    ParsersTestObject parsersTestObject = muleContext.getRegistry().get("simpleTypeObjectWithConverter");
+    ParsersTestObject parsersTestObject = registry.<ParsersTestObject>lookupByName("simpleTypeObjectWithConverter").get();
     List<String> simpleTypeListWithConverter = parsersTestObject.getSimpleTypeListWithConverter();
     assertThat(simpleTypeListWithConverter.size(), is(2));
     assertThat(simpleTypeListWithConverter, hasItems("value1-with-converter", "value2-with-converter"));
@@ -113,14 +115,14 @@ public class XmlDslProcessingTestCase extends AbstractIntegrationTestCase implem
 
   @Test
   public void simpleTypeMapObject() {
-    ParsersTestObject parsersTestObject = muleContext.getRegistry().get("simpleTypeMapObject");
+    ParsersTestObject parsersTestObject = registry.<ParsersTestObject>lookupByName("simpleTypeMapObject").get();
     Map<String, Integer> simpleTypeMap = parsersTestObject.getSimpleTypeMap();
     assertThat(simpleTypeMap.size(), is(2));
   }
 
   @Test
   public void simpleListTypeMapObject() {
-    ParsersTestObject parsersTestObject = muleContext.getRegistry().get("simpleTypeCollectionMapObject");
+    ParsersTestObject parsersTestObject = registry.<ParsersTestObject>lookupByName("simpleTypeCollectionMapObject").get();
     Map<String, List<String>> simpleListTypeMap = parsersTestObject.getSimpleListTypeMap();
     assertThat(simpleListTypeMap.size(), is(2));
     List<String> firstCollection = simpleListTypeMap.get("1");
@@ -131,7 +133,7 @@ public class XmlDslProcessingTestCase extends AbstractIntegrationTestCase implem
 
   @Test
   public void complexTypeMapObject() {
-    ParsersTestObject parsersTestObject = muleContext.getRegistry().get("complexTypeMapObject");
+    ParsersTestObject parsersTestObject = registry.<ParsersTestObject>lookupByName("complexTypeMapObject").get();
     Map<Long, ParsersTestObject> simpleTypeMap = parsersTestObject.getComplexTypeMap();
     assertThat(simpleTypeMap.size(), is(2));
     assertPabloChildParameters(simpleTypeMap.get(1l).getSimpleParameters());
@@ -140,39 +142,42 @@ public class XmlDslProcessingTestCase extends AbstractIntegrationTestCase implem
 
   @Test
   public void pojoWithDefaultValue() {
-    ParameterAndChildElement parameterAndChildElement = muleContext.getRegistry().get("pojoWithDefaultValue");
+    ParameterAndChildElement parameterAndChildElement =
+        registry.<ParameterAndChildElement>lookupByName("pojoWithDefaultValue").get();
     assertThat(parameterAndChildElement.getSimplePojo().equals(new SimplePojo("jose")), is(true));
   }
 
   @Test
   public void pojoFromConfiguraitonParameter() {
-    ParameterAndChildElement parameterAndChildElement = muleContext.getRegistry().get("pojoWithAttribute");
+    ParameterAndChildElement parameterAndChildElement =
+        registry.<ParameterAndChildElement>lookupByName("pojoWithAttribute").get();
     assertThat(parameterAndChildElement.getSimplePojo().equals(new SimplePojo("pepe")), is(true));
   }
 
   @Test
   public void pojoFromChildConfiguration() {
-    ParameterAndChildElement parameterAndChildElement = muleContext.getRegistry().get("pojoWithChild");
+    ParameterAndChildElement parameterAndChildElement = registry.<ParameterAndChildElement>lookupByName("pojoWithChild").get();
     assertThat(parameterAndChildElement.getSimplePojo().equals(new SimplePojo("pepe")), is(true));
   }
 
   @Test
   public void objectWithTwoChildrenOfSameTypeWithoutWrapper() {
-    PojoWithSameTypeChildren pojoWithSameTypeChildren = muleContext.getRegistry().get("sameChildTypesObject");
+    PojoWithSameTypeChildren pojoWithSameTypeChildren =
+        registry.<PojoWithSameTypeChildren>lookupByName("sameChildTypesObject").get();
     assertPabloChildParameters(pojoWithSameTypeChildren.getElementTypeA().getSimpleParameters());
     assertMarianoChildParameters(pojoWithSameTypeChildren.getAnotherElementTypeA().getSimpleParameters());
   }
 
   @Test
   public void textPojo() {
-    SimplePojo pojo = muleContext.getRegistry().get("textPojo");
+    SimplePojo pojo = registry.<SimplePojo>lookupByName("textPojo").get();
     assertThat(pojo, is(notNullValue()));
     assertThat(pojo.getSomeParameter(), is("select * from PLANET"));
   }
 
   @Test
   public void simpleTypeWithConverterObject() {
-    ParsersTestObject parsersTestObject = muleContext.getRegistry().get("simpleTypeWithConverterObject");
+    ParsersTestObject parsersTestObject = registry.<ParsersTestObject>lookupByName("simpleTypeWithConverterObject").get();
     assertThat(parsersTestObject.getSimpleTypeWithConverter(), is(new SimplePojo("5")));
   }
 

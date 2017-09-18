@@ -13,11 +13,12 @@ import static org.mule.tests.parsers.api.LifecycleAction.GET_OBJECT;
 import static org.mule.tests.parsers.api.LifecycleAction.INITIALISE;
 import static org.mule.tests.parsers.api.LifecycleAction.START;
 import static org.mule.tests.parsers.api.LifecycleAction.STOP;
+
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
 import org.mule.tests.parsers.api.LifecycleSensingMessageProcessor;
 import org.mule.tests.parsers.api.LifecycleSensingObjectFactory;
-import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
 
 import org.junit.Test;
 
@@ -31,13 +32,14 @@ public class ComponentLifecycleTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void globalElementLifecycle() {
-    LifecycleSensingMessageProcessor lifecycleSensingMessageProcessor = muleContext.getRegistry().get("globalElement");
+    LifecycleSensingMessageProcessor lifecycleSensingMessageProcessor =
+        registry.<LifecycleSensingMessageProcessor>lookupByName("globalElement").get();
     assertObjectFactoryAndMessageProcessorLifecycle(lifecycleSensingMessageProcessor);
   }
 
   @Test
   public void innerElementLifecycle() {
-    Flow flow = muleContext.getRegistry().get("flow");
+    Flow flow = registry.<Flow>lookupByName("flow").get();
     LifecycleSensingMessageProcessor lifecycleSensingMessageProcessor =
         (LifecycleSensingMessageProcessor) flow.getProcessors().get(0);
     assertObjectFactoryAndMessageProcessorLifecycle(lifecycleSensingMessageProcessor);
