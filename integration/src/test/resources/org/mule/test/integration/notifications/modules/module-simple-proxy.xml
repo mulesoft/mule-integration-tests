@@ -16,7 +16,7 @@
     </operation>
 
     <operation name="proxy-set-payload-hardcoded-value-and-logger">
-`        <body>
+        <body>
             <simple-prefix:set-payload-hardcoded-value />
             <mule:logger message="check"/>
         </body>
