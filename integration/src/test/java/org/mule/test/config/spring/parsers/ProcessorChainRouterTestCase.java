@@ -10,6 +10,9 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+import static org.mule.test.allure.AllureConstants.RoutersFeature.ProcessorChainRouterStory.PROCESSOR_CHAIN_ROUTER;
+import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
+
 import org.mule.runtime.api.component.execution.ComponentExecutionException;
 import org.mule.runtime.api.component.execution.ExecutableComponent;
 import org.mule.runtime.api.event.Event;
@@ -25,8 +28,13 @@ import java.util.concurrent.ExecutionException;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import io.qameta.allure.Description;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 import org.junit.Test;
 
+@Feature(ROUTERS)
+@Story(PROCESSOR_CHAIN_ROUTER)
 public class ProcessorChainRouterTestCase extends AbstractIntegrationTestCase implements ParsersPluginTest {
 
   @Inject
@@ -53,6 +61,10 @@ public class ProcessorChainRouterTestCase extends AbstractIntegrationTestCase im
   @Named("byPassFlow")
   private ExecutableComponent byPassFlow;
 
+  @Inject
+  @Named("flowRefCompositeChainRouter")
+  private ExecutableComponent flowRefCompositeChainRouter;
+
   @Override
   protected String getConfigFile() {
     return "org/mule/config/spring/parsers/processor-chain-router-config.xml";
@@ -69,10 +81,31 @@ public class ProcessorChainRouterTestCase extends AbstractIntegrationTestCase im
 
   @Test
   public void executeCompositeRouterUsingEvent() throws Exception {
-    InputEvent event = createInputEvent();
-    Event flowResultEvent = byPassFlow.execute(event).get();
+    Event flowResultEvent = byPassFlow.execute(createInputEvent()).get();
 
     CompletableFuture<Event> completableFuture = compositeChainRouter.execute(flowResultEvent);
+    Event returnedEvent = completableFuture.get();
+    assertProcessorChainResult(returnedEvent);
+  }
+
+  @Test
+  @Description("Ensure that when composite processor chain is used with more complex/async components such as nested flow-ref there are no dead-locks.")
+  public void nestedFlowRefUsingInputEvent() throws Exception {
+    InputEvent event = createInputEvent();
+
+    CompletableFuture<Event> completableFuture = flowRefCompositeChainRouter.execute(event);
+
+    Event returnedEvent = completableFuture.get();
+    assertProcessorChainResult(returnedEvent);
+  }
+
+  @Test
+  @Description("Ensure that when composite processor chain is used with more complex/async components such as nested flow-ref there are no dead-locks.")
+  public void nestedFlowRefUsingEvent() throws Exception {
+    Event flowResultEvent = byPassFlow.execute(createInputEvent()).get();
+
+    CompletableFuture<Event> completableFuture = flowRefCompositeChainRouter.execute(flowResultEvent);
+
     Event returnedEvent = completableFuture.get();
     assertProcessorChainResult(returnedEvent);
   }
