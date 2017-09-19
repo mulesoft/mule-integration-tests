@@ -14,12 +14,13 @@ import static org.mockito.Mockito.withSettings;
 import static org.mule.functional.api.component.FunctionalTestProcessor.getFromFlow;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
+import org.mule.runtime.api.component.Component;
+import org.mule.runtime.api.exception.DefaultMuleException;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.i18n.I18nMessage;
 import org.mule.runtime.api.lifecycle.Initialisable;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.api.component.Component;
-import org.mule.runtime.api.exception.DefaultMuleException;
+import org.mule.runtime.api.security.UnauthorisedException;
 import org.mule.runtime.core.api.event.BaseEvent;
 import org.mule.runtime.core.api.exception.MessageRedeliveredException;
 import org.mule.runtime.core.api.exception.MessagingException;
@@ -27,9 +28,6 @@ import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.registry.ResolverException;
 import org.mule.runtime.core.api.retry.policy.RetryPolicyExhaustedException;
-import org.mule.runtime.core.api.routing.ResponseTimeoutException;
-import org.mule.runtime.core.api.routing.RoutingException;
-import org.mule.runtime.core.api.security.UnauthorisedException;
 import org.mule.runtime.core.api.transformer.MessageTransformerException;
 import org.mule.runtime.core.api.transformer.Transformer;
 import org.mule.runtime.core.api.transformer.TransformerException;
@@ -150,13 +148,6 @@ public class ErrorHandlerTestCase extends AbstractIntegrationTestCase {
   @Test
   public void security() throws Exception {
     callTypeAndThrowException(new UnauthorisedException(mockMessage), "0 security");
-  }
-
-  @Test
-  public void routing() throws Exception {
-    String expectedMessage = "0 routing";
-    callTypeAndThrowException(new RoutingException(mockMP), expectedMessage);
-    callTypeAndThrowException(new ResponseTimeoutException(mockMessage, mockMP), expectedMessage);
   }
 
   @Test

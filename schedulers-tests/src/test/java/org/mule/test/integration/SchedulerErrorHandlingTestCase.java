@@ -13,7 +13,7 @@ import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HA
 import org.mule.functional.api.component.EventCallback;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.event.BaseEvent;
-import org.mule.runtime.core.api.util.concurrent.Latch;
+import org.mule.runtime.api.util.concurrent.Latch;
 import org.mule.test.AbstractSchedulerTestCase;
 
 import io.qameta.allure.Story;

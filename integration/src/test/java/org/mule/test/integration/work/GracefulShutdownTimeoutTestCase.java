@@ -12,7 +12,7 @@ import static org.mule.functional.api.component.FunctionalTestProcessor.getFromF
 
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.construct.FlowConstruct;
-import org.mule.runtime.core.api.util.concurrent.Latch;
+import org.mule.runtime.api.util.concurrent.Latch;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Test;

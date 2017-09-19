@@ -40,7 +40,7 @@ import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.api.scheduler.SchedulerBusyException;
 import org.mule.runtime.api.scheduler.SchedulerService;
 import org.mule.runtime.core.api.source.MessageSource;
-import org.mule.runtime.core.api.util.concurrent.Latch;
+import org.mule.runtime.api.util.concurrent.Latch;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.hamcrest.TypeSafeMatcher;

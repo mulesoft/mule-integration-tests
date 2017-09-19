@@ -188,7 +188,7 @@
         </scatter-gather>
         <error-handler>
             <on-error-continue type="COMPOSITE_ROUTING">
-                <test:assert expression="#[mel:exception.cause is org.mule.runtime.core.api.routing.CompositeRoutingException]"/>
+                <test:assert expression="#[mel:exception.cause.getClass().getName().equals('org.mule.runtime.core.privileged.routing.CompositeRoutingException')]"/>
                 <test:assert expression="#[error.errorMessage.payload.failures['0'] == null]"/>
                 <test:assert expression="#[error.errorMessage.payload.failures['1'] != null]"/>
                 <test:assert expression="#[error.errorMessage.payload.failures['2'] != null]"/>
