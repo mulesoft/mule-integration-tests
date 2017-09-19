@@ -18,11 +18,11 @@ import org.mule.runtime.core.api.event.BaseEvent;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import org.junit.Test;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.junit.Test;
 
 public class WatermarkTestCase extends AbstractIntegrationTestCase {
 
@@ -61,7 +61,7 @@ public class WatermarkTestCase extends AbstractIntegrationTestCase {
   @Override
   protected void doSetUp() throws Exception {
     reset();
-    objectStoreManager = registry.<ObjectStoreManager>lookup(ObjectStoreManager.class).get();
+    objectStoreManager = registry.<ObjectStoreManager>lookupByType(ObjectStoreManager.class).get();
   }
 
   @Override
