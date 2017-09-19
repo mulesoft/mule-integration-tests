@@ -7,6 +7,7 @@
 package org.mule.test.extension.dsl;
 
 import static java.util.Arrays.asList;
+import static java.util.concurrent.TimeUnit.MINUTES;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mule.runtime.api.app.declaration.fluent.ElementDeclarer.newArtifact;
@@ -15,6 +16,7 @@ import static org.mule.runtime.api.app.declaration.fluent.ElementDeclarer.newObj
 import static org.mule.runtime.api.app.declaration.fluent.ElementDeclarer.newParameterGroup;
 import static org.mule.runtime.api.meta.model.parameter.ParameterGroupModel.CONNECTION;
 import static org.mule.runtime.core.api.util.IOUtils.getResourceAsString;
+import static org.mule.runtime.extension.api.ExtensionConstants.EXPIRATION_POLICY_PARAMETER_NAME;
 import static org.mule.runtime.extension.api.ExtensionConstants.POOLING_PROFILE_PARAMETER_NAME;
 import static org.mule.runtime.extension.api.ExtensionConstants.RECONNECTION_CONFIG_PARAMETER_NAME;
 import static org.mule.runtime.extension.api.ExtensionConstants.RECONNECTION_STRATEGY_PARAMETER_NAME;
@@ -36,6 +38,7 @@ import org.mule.runtime.api.app.declaration.ArtifactDeclaration;
 import org.mule.runtime.api.app.declaration.ParameterElementDeclaration;
 import org.mule.runtime.api.app.declaration.fluent.ElementDeclarer;
 import org.mule.runtime.config.spring.api.dsl.ArtifactDeclarationXmlSerializer;
+import org.mule.runtime.extension.api.runtime.ExpirationPolicy;
 import org.mule.test.runner.RunnerDelegateTo;
 
 import java.io.IOException;
@@ -211,6 +214,13 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
             .getDeclaration())
         .withGlobalElement(wsc.newConfiguration("config")
             .withRefName("wscConfig")
+            .withParameterGroup(newParameterGroup()
+                .withParameter(EXPIRATION_POLICY_PARAMETER_NAME, newObjectValue()
+                    .ofType(ExpirationPolicy.class.getName())
+                    .withParameter("maxIdleTime", "1")
+                    .withParameter("timeUnit", MINUTES.name())
+                    .build())
+                .getDeclaration())
             .withConnection(wsc.newConnection("connection")
                 .withParameterGroup(newParameterGroup()
                     .withParameter("wsdlLocation", "http://www.webservicex.com/globalweather.asmx?WSDL")

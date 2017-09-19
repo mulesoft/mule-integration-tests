@@ -29,7 +29,13 @@
             </otherwise>
         </choice>
     </flow>
-    <configuration defaultErrorHandler-ref="Attribute" defaultObjectSerializer-ref="Attribute" defaultResponseTimeout="10000" defaultTransactionTimeout="30000" maxQueueTransactionFilesSize="500" name="globalconfiguration" shutdownTimeout="5000"/>
+    <configuration defaultErrorHandler-ref="Attribute" defaultObjectSerializer-ref="Attribute"
+                   defaultResponseTimeout="10000" defaultTransactionTimeout="30000" maxQueueTransactionFilesSize="500"
+                   name="globalconfiguration" shutdownTimeout="5000">
+        <dynamic-config-expiration frequency="5" timeUnit="MINUTES">
+            <expiration-policy maxIdleTime="5" timeUnit="MINUTES"/>
+        </dynamic-config-expiration>
+    </configuration>
     <configuration-properties file="Attribute" name="globalconfigurationProperties"/>
     <error-handler name="globalerrorHandler">
         <on-error-continue enableNotifications="true" logException="true" name="Attribute" type="Attribute" when="Attribute">

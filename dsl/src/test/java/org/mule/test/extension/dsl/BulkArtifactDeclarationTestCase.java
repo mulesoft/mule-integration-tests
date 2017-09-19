@@ -259,7 +259,7 @@ public class BulkArtifactDeclarationTestCase extends AbstractElementModelTestCas
 
         objectType.getFields()
             .forEach(field -> addParameter(field.getValue(), false, false,
-                                           Optional.ofNullable(getDefaultValue(field).orElse(null)),
+                                           Optional.ofNullable(getDefaultValue(field.getValue()).orElse(null)),
                                            fieldValue -> objectValue.withParameter(getAlias(field), fieldValue)));
 
         valueConsumer.accept(objectValue.build());
