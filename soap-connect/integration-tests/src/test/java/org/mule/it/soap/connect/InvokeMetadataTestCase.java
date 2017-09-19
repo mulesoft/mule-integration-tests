@@ -34,8 +34,6 @@ import org.mule.runtime.api.metadata.MetadataService;
 import org.mule.runtime.api.metadata.descriptor.ComponentMetadataDescriptor;
 import org.mule.runtime.api.metadata.resolving.MetadataResult;
 
-import org.junit.Test;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -43,9 +41,11 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import org.junit.Test;
+
 public class InvokeMetadataTestCase extends SoapFootballExtensionArtifactFunctionalTestCase {
 
-  private static final String INVALID_KEY_ERROR = "The binding operation name [invalidKey] was not found in the current wsdl";
+  private static final String INVALID_KEY_ERROR = "The operation name [invalidKey] was not found in the current wsdl file";
 
   @Inject
   private MetadataService metadataService;
