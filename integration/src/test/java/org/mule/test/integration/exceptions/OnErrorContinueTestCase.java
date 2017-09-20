@@ -33,7 +33,7 @@ import org.mule.runtime.api.streaming.bytes.CursorStreamProvider;
 import org.mule.runtime.api.tls.TlsContextFactory;
 import org.mule.runtime.api.exception.DefaultMuleException;
 import org.mule.runtime.core.api.event.BaseEvent;
-import org.mule.runtime.core.api.exception.MuleFatalException;
+import org.mule.runtime.api.exception.MuleFatalException;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.retry.policy.RetryPolicyExhaustedException;
 import org.mule.runtime.core.api.util.IOUtils;

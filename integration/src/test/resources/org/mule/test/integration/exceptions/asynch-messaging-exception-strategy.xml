@@ -31,7 +31,7 @@
 
     <flow name="CustomProcessorException">
         <logger/>
-        <test:processor throwException="true" exceptionText="dummyException" exceptionToThrow="org.mule.runtime.core.api.routing.RoutingException"/>
+        <test:processor throwException="true" exceptionText="dummyException" exceptionToThrow="org.mule.runtime.api.exception.DefaultMuleException"/>
     </flow>
 
 </mule>

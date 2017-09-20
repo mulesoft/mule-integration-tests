@@ -11,7 +11,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.mule.functional.api.notification.FunctionalTestNotificationListener;
 import org.mule.runtime.core.api.context.notification.NotificationListenerRegistry;
-import org.mule.runtime.core.api.util.concurrent.Latch;
+import org.mule.runtime.api.util.concurrent.Latch;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Test;

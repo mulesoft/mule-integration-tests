@@ -11,25 +11,24 @@ import static org.junit.Assert.assertNotNull;
 import static org.mule.functional.security.TestSingleUserSecurityProvider.PROPERTY_FAVORITE_COLOR;
 import static org.mule.functional.security.TestSingleUserSecurityProvider.PROPERTY_NUMBER_LOGINS;
 import static org.mule.runtime.core.api.config.MuleProperties.MULE_USER_PROPERTY;
-
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.security.Authentication;
+import org.mule.runtime.api.security.SecurityContext;
 import org.mule.runtime.core.api.event.BaseEvent;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.security.DefaultMuleCredentials;
 import org.mule.runtime.core.api.security.EncryptionStrategy;
-import org.mule.runtime.core.api.security.SecurityContext;
 import org.mule.test.AbstractIntegrationTestCase;
+
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Tests multi-user security against a security provider which only authenticates a single user at a time (i.e., authentication of
