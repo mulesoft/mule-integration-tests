@@ -14,7 +14,6 @@
 
     <properties>
         <skipExportTests>false</skipExportTests>
-        <skipTests>${skipIntegrationTests}</skipTests>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
 
         <eaioUuidVersion>3.4.0</eaioUuidVersion>
