@@ -31,11 +31,11 @@
                 <test:check-equals>
                     <![CDATA[
                         Message               : null.
+                        Element               : checkEqualsVerbose/processors/0 @ LogCheckTestCase#runSuccessesVerboseExceptions:org/mule/test/integration/exceptions/log-check-config.xml:28
+                        Element XML           : <test:throw exception="java.lang.RuntimeException" error="ANY"></test:throw>
                         Error type            : MULE:ANY
                         Payload               : null
                         Payload Type          : null
-                        Element               : checkEqualsVerbose/processors/0 @ LogCheckTestCase#runSuccessesVerboseExceptions:org/mule/test/integration/exceptions/log-check-config.xml:28
-                        Element XML           : <test:throw exception="java.lang.RuntimeException" error="ANY"></test:throw>
                     ]]>
                 </test:check-equals>
             </test:on-error-check-log>
@@ -75,11 +75,11 @@
                 <test:check-equals>
                     <![CDATA[
                         Message               : null.
+                        Element               : allChecksTogetherNoneFailing/processors/0 @ LogCheckTestCase#runSuccessesVerboseExceptions:org/mule/test/integration/exceptions/log-check-config.xml:72
+                        Element XML           : <test:throw exception="java.lang.RuntimeException" error="ANY"></test:throw>
                         Error type            : MULE:ANY
                         Payload               : null
                         Payload Type          : null
-                        Element               : allChecksTogetherNoneFailing/processors/0 @ LogCheckTestCase#runSuccessesVerboseExceptions:org/mule/test/integration/exceptions/log-check-config.xml:72
-                        Element XML           : <test:throw exception="java.lang.RuntimeException" error="ANY"></test:throw>
                     ]]>
                 </test:check-equals>
                 <test:check-summary>
