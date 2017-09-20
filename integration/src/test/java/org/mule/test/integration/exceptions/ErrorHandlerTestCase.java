@@ -185,7 +185,7 @@ public class ErrorHandlerTestCase extends AbstractIntegrationTestCase {
 
   private void callAndThrowException(Object payload, final Exception exceptionToThrow, final String expectedMessage)
       throws Exception {
-    getFromFlow(muleContext, "matchesHandlerUsingWhen").setEventCallback((context, component, muleContext) -> {
+    getFromFlow(locator, "matchesHandlerUsingWhen").setEventCallback((context, component, muleContext) -> {
       throw exceptionToThrow;
     });
     Message response =

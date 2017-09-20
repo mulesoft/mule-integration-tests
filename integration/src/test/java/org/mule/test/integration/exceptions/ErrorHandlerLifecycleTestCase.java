@@ -6,15 +6,14 @@
  */
 package org.mule.test.integration.exceptions;
 
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.tck.MuleTestUtils.getExceptionListeners;
 
-import static org.hamcrest.core.Is.is;
-
+import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.api.lifecycle.Lifecycle;
-import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.core.api.construct.FlowConstruct;
 import org.mule.runtime.core.api.event.BaseEvent;
 import org.mule.runtime.core.api.exception.AbstractExceptionListener;
@@ -23,6 +22,9 @@ import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Test;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
 public class ErrorHandlerLifecycleTestCase extends AbstractIntegrationTestCase {
 
   @Override
@@ -30,10 +32,24 @@ public class ErrorHandlerLifecycleTestCase extends AbstractIntegrationTestCase {
     return "org/mule/test/integration/exceptions/default-error-handler-lifecycle.xml";
   }
 
+  @Inject
+  @Named("flowA")
+  private FlowConstruct flowA;
+
+  @Inject
+  @Named("flowB")
+  private FlowConstruct flowB;
+
+  @Inject
+  @Named("flowC")
+  private FlowConstruct flowC;
+
+  @Inject
+  @Named("flowD")
+  private FlowConstruct flowD;
+
   @Test
   public void testLifecycle() throws Exception {
-    FlowConstruct flowA = getFlowConstruct("flowA");
-    FlowConstruct flowB = getFlowConstruct("flowB");
     AbstractExceptionListener flowAExceptionStrategy =
         (AbstractExceptionListener) getExceptionListeners(flowA.getExceptionListener()).get(1);
     AbstractExceptionListener flowBExceptionStrategy =
@@ -50,8 +66,6 @@ public class ErrorHandlerLifecycleTestCase extends AbstractIntegrationTestCase {
     assertThat(lifecycleCheckerMessageProcessorFlowA.isStopped(), is(true));
     assertThat(lifecycleCheckerMessageProcessorFlowB.isStopped(), is(false));
 
-    FlowConstruct flowC = getFlowConstruct("flowC");
-    FlowConstruct flowD = getFlowConstruct("flowD");
     AbstractExceptionListener flowCExceptionStrategy =
         (AbstractExceptionListener) getExceptionListeners(flowC.getExceptionListener()).get(1);
     AbstractExceptionListener flowDExceptionStrategy =

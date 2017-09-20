@@ -50,11 +50,6 @@ public class InvokeMetadataTestCase extends SoapFootballExtensionArtifactFunctio
   @Inject
   private MetadataService metadataService;
 
-  @Override
-  protected boolean doTestClassInjection() {
-    return true;
-  }
-
   @Test
   public void metadataKeys() {
     Location location = Location.builder().globalName("getLeagues").addProcessorsPart().addIndexPart(1).build();

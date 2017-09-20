@@ -10,8 +10,8 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
-import static org.mule.test.allure.AllureConstants.RoutersFeature.ProcessorChainRouterStory.PROCESSOR_CHAIN_ROUTER;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
+import static org.mule.test.allure.AllureConstants.RoutersFeature.ProcessorChainRouterStory.PROCESSOR_CHAIN_ROUTER;
 
 import org.mule.runtime.api.component.execution.ComponentExecutionException;
 import org.mule.runtime.api.component.execution.ExecutableComponent;
@@ -22,6 +22,8 @@ import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.config.dsl.ParsersPluginTest;
 
+import org.junit.Test;
+
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -31,7 +33,6 @@ import javax.inject.Named;
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
-import org.junit.Test;
 
 @Feature(ROUTERS)
 @Story(PROCESSOR_CHAIN_ROUTER)
@@ -178,8 +179,4 @@ public class ProcessorChainRouterTestCase extends AbstractIntegrationTestCase im
         .addVariable("customVar", "Value");
   }
 
-  @Override
-  protected boolean doTestClassInjection() {
-    return true;
-  }
 }

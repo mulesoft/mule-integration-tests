@@ -19,6 +19,7 @@ import static org.mule.functional.junit4.TestLegacyMessageUtils.getExceptionPayl
 import static org.mule.functional.junit4.matchers.ThrowableCauseMatcher.hasCause;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.UntilSuccessfulStory.UNTIL_SUCCESSFUL;
+
 import org.mule.functional.api.component.FunctionalTestProcessor;
 import org.mule.functional.api.exception.FunctionalTestException;
 import org.mule.runtime.api.exception.MuleException;
@@ -32,15 +33,16 @@ import org.mule.tck.probe.JUnitLambdaProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import org.apache.commons.lang3.RandomStringUtils;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
-import org.apache.commons.lang3.RandomStringUtils;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 @Feature(ROUTERS)
 @Story(UNTIL_SUCCESSFUL)
@@ -59,7 +61,8 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
   @Override
   protected void doSetUp() throws Exception {
     super.doSetUp();
-    targetMessageProcessor = getFromFlow(muleContext, "target-mp");
+
+    targetMessageProcessor = getFromFlow(locator, "target-mp");
   }
 
   @Test

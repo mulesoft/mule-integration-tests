@@ -18,10 +18,10 @@ import static org.mule.tck.junit4.matcher.EventMatcher.hasMessage;
 import org.mule.functional.api.component.FunctionalTestProcessor;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import org.junit.Test;
+
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-
-import org.junit.Test;
 
 public class CorrelationResequencerTestCase extends AbstractIntegrationTestCase {
 
@@ -36,14 +36,14 @@ public class CorrelationResequencerTestCase extends AbstractIntegrationTestCase 
   protected void doSetUp() throws Exception {
     super.doSetUp();
 
-    getFromFlow(muleContext, "sorted").setEventCallback((context, component, muleContext) -> receiveLatch.countDown());
+    getFromFlow(locator, "sorted").setEventCallback((context, component, muleContext) -> receiveLatch.countDown());
   }
 
   @Test
   public void testResequencer() throws Exception {
     flowRunner("splitter").withPayload(asList("a", "b", "c", "d", "e", "f")).run();
 
-    FunctionalTestProcessor resequencer = getFromFlow(muleContext, "sorted");
+    FunctionalTestProcessor resequencer = getFromFlow(locator, "sorted");
 
     assertTrue(receiveLatch.await(3000, TimeUnit.SECONDS));
 
