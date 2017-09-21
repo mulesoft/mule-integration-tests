@@ -25,14 +25,14 @@ import org.mule.runtime.http.api.domain.message.response.HttpResponse;
 import org.mule.service.http.TestHttpClient;
 import org.mule.tck.junit4.rule.DynamicPort;
 
+import org.junit.Ignore;
+import org.junit.Rule;
+import org.junit.Test;
+
 import java.util.Collections;
 import java.util.Map;
 
 import javax.inject.Inject;
-
-import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.Test;
 
 import io.qameta.allure.Issue;
 
@@ -105,7 +105,7 @@ public class TlsSharedContextTestCase extends DomainFunctionalTestCase {
   }
 
   private void testFlowForApp(String flowName, String appName, String expected) throws Exception {
-    BaseEvent response = new FlowRunner(getMuleContextForApp(appName), flowName).withPayload(DATA).run();
+    BaseEvent response = new FlowRunner(getInfrastructureForApp(appName).getRegistry(), flowName).withPayload(DATA).run();
     assertThat(((PrivilegedEvent) response).getMessageAsString(getMuleContextForApp(appName)), is(expected));
   }
 }

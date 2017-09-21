@@ -7,6 +7,7 @@
 package org.mule.test.config.spring.parsers;
 
 import static org.hamcrest.Matchers.containsString;
+
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -20,6 +21,11 @@ public abstract class AbstractBadConfigTestCase extends AbstractIntegrationTestC
 
   @Rule
   public ExpectedException expected = ExpectedException.none();
+
+  @Override
+  protected boolean doTestClassInjection() {
+    return false;
+  }
 
   @Override
   protected MuleContext createMuleContext() throws Exception {

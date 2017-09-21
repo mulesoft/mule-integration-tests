@@ -11,6 +11,7 @@ import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.slf4j.LoggerFactory.getLogger;
+
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -23,6 +24,11 @@ public class AbstractConfigurationErrorTestCase extends AbstractIntegrationTestC
 
   public AbstractConfigurationErrorTestCase() {
     setStartContext(false);
+  }
+
+  @Override
+  protected boolean doTestClassInjection() {
+    return false;
   }
 
   @Override

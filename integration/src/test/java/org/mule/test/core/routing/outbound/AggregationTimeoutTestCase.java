@@ -7,6 +7,7 @@
 
 package org.mule.test.core.routing.outbound;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static java.util.stream.Collectors.toList;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
@@ -20,11 +21,11 @@ import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.runtime.core.api.event.BaseEvent;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import org.junit.Test;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
-
-import org.junit.Test;
 
 public class AggregationTimeoutTestCase extends AbstractIntegrationTestCase {
 
@@ -48,7 +49,8 @@ public class AggregationTimeoutTestCase extends AbstractIntegrationTestCase {
       MuleClient client = muleContext.getClient();
 
       // Need to return control to test case as soon as message is sent, and not wait for response.
-      flowRunner("main").withPayload(inputData).dispatchAsync();
+      flowRunner("main").withPayload(inputData).dispatchAsync(muleContext.getSchedulerService()
+          .ioScheduler(muleContext.getSchedulerBaseConfig().withShutdownTimeout(0, SECONDS)));
 
       Message response = client.request("test://testOut", RECEIVE_TIMEOUT).getRight().get();
       assertThat(response.getPayload().getValue(), instanceOf(List.class));

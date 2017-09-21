@@ -13,10 +13,10 @@ import org.mule.functional.api.flow.FlowRunner;
 import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import org.junit.Test;
+
 import java.io.IOException;
 import java.io.InputStream;
-
-import org.junit.Test;
 
 public class ExceptionMappingTestCase extends AbstractIntegrationTestCase {
 
@@ -27,7 +27,7 @@ public class ExceptionMappingTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void transformationError() throws Exception {
-    MessagingException messagingException = new FlowRunner(muleContext, "transformationErrorFlow")
+    MessagingException messagingException = new FlowRunner(registry, "transformationErrorFlow")
         .withPayload(new InputStream() {
 
           @Override
@@ -40,7 +40,7 @@ public class ExceptionMappingTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void expressionError() throws Exception {
-    MessagingException messagingException = new FlowRunner(muleContext, "expressionErrorFlow").runExpectingException();
+    MessagingException messagingException = new FlowRunner(registry, "expressionErrorFlow").runExpectingException();
     assertThat(messagingException.getEvent().getError().get().getErrorType().getIdentifier(), is("EXPRESSION"));
   }
 

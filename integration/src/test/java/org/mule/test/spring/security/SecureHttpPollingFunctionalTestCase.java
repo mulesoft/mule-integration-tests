@@ -16,8 +16,8 @@ import static org.mule.runtime.http.api.HttpConstants.HttpStatus.UNAUTHORIZED;
 
 import org.mule.extension.http.api.HttpResponseAttributes;
 import org.mule.runtime.api.message.Message;
+import org.mule.runtime.api.util.concurrent.Latch;
 import org.mule.runtime.core.api.client.MuleClient;
-import org.mule.runtime.api.notification.NotificationListenerRegistry;
 import org.mule.runtime.api.notification.SecurityNotification;
 import org.mule.runtime.api.notification.SecurityNotificationListener;
 import org.mule.runtime.api.util.concurrent.Latch;
@@ -27,12 +27,7 @@ import org.mule.test.AbstractIntegrationTestCase;
 import org.junit.Rule;
 import org.junit.Test;
 
-import javax.inject.Inject;
-
 public class SecureHttpPollingFunctionalTestCase extends AbstractIntegrationTestCase {
-
-  @Inject
-  private NotificationListenerRegistry notificationListenerRegistry;
 
   @Rule
   public DynamicPort port1 = new DynamicPort("port1");

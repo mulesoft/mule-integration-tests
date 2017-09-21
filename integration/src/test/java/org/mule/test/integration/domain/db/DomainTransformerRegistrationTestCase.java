@@ -37,7 +37,7 @@ public class DomainTransformerRegistrationTestCase extends DomainFunctionalTestC
   @Test
   public void registerTransformerOnce() throws Exception {
     final Message response =
-        new FlowRunner(getMuleContextForApp(APP1), "main").withPayload(TRUE.toString()).run().getMessage();
+        new FlowRunner(getInfrastructureForApp(APP1).getRegistry(), "main").withPayload(TRUE.toString()).run().getMessage();
     assertThat(response.getPayload().getValue(), instanceOf(Boolean.class));
   }
 }

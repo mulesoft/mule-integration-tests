@@ -19,8 +19,8 @@ public abstract class AbstractExceptionStrategyTestCase extends AbstractIntegrat
   protected void doSetUp() throws Exception {
     super.doSetUp();
 
-    exceptionListener = new ExceptionListener(muleContext);
-    systemExceptionListener = new SystemExceptionListener(muleContext);
+    exceptionListener = new ExceptionListener(notificationListenerRegistry);
+    systemExceptionListener = new SystemExceptionListener(muleContext, notificationListenerRegistry);
   }
 
 }
