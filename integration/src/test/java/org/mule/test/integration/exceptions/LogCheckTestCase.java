@@ -8,9 +8,11 @@ package org.mule.test.integration.exceptions;
 
 import static org.junit.Assert.fail;
 import static org.mule.runtime.api.exception.MuleException.MULE_VERBOSE_EXCEPTIONS;
+import static org.mule.runtime.core.api.config.MuleProperties.MULE_FLOW_TRACE;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class LogCheckTestCase extends AbstractIntegrationTestCase {
@@ -24,6 +26,11 @@ public class LogCheckTestCase extends AbstractIntegrationTestCase {
   @Override
   protected String getConfigFile() {
     return "org/mule/test/integration/exceptions/log-check-config.xml";
+  }
+
+  @BeforeClass
+  public static void disableFlowStackLog() {
+    System.setProperty(MULE_FLOW_TRACE, Boolean.toString(false));
   }
 
   @Test
