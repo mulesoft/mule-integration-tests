@@ -18,6 +18,7 @@
     </error-handler>
 
     <wsc:config name="wscConfig">
+        <expiration-policy maxIdleTime="1" timeUnit="MINUTES" />
         <wsc:connection address="http://www.webservicex.com/globalweather.asmx"
                         mtomEnabled="false"
                         port="GlobalWeatherSoap"
