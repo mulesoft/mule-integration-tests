@@ -30,7 +30,7 @@ public class ExceptionStrategyWithFlowExceptionTestCase extends AbstractIntegrat
   @Test
   public void testFlowExceptionExceptionStrategy() throws Exception {
     flowRunner("customException").withPayload(TEST_MESSAGE).dispatch();
-    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(muleContext);
+    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
     Message message = queueHandler.read("out", RECEIVE_TIMEOUT).getMessage();
 
     assertThat(message, is(notNullValue()));

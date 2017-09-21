@@ -52,7 +52,7 @@ public class ValidShutdownTimeoutOneWayTestCase extends AbstractShutdownTimeoutR
   }
 
   private void doShutDownTest(final String payload, final String flowName) throws MuleException, InterruptedException {
-    final TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(muleContext);
+    final TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
     final boolean[] results = new boolean[] {false};
 
     Thread t = new Thread() {

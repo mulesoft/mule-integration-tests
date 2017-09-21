@@ -51,7 +51,7 @@ public class HttpJmsBridgeTestCase extends AbstractIntegrationTestCase {
         .entity(new ByteArrayHttpEntity(payload.getBytes())).headers(headersMap).method(POST).build();
     httpClient.send(request, RECEIVE_TIMEOUT, false, null);
 
-    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(muleContext);
+    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
     Message msg = queueHandler.read("out", RECEIVE_TIMEOUT).getMessage();
 
     assertNotNull(msg);

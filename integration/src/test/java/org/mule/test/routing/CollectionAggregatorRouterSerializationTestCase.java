@@ -50,7 +50,7 @@ public class CollectionAggregatorRouterSerializationTestCase extends AbstractInt
     List<String> list = Arrays.asList("first", "second");
     flowRunner("splitter").withPayload(list).run();
 
-    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(muleContext);
+    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
     Message request = queueHandler.read("out", RECEIVE_TIMEOUT).getMessage();
     assertNotNull(request);
     assertThat(request.getPayload().getValue(), instanceOf(List.class));

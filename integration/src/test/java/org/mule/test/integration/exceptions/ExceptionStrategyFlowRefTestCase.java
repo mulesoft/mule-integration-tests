@@ -27,7 +27,7 @@ public class ExceptionStrategyFlowRefTestCase extends AbstractIntegrationTestCas
   @Test
   public void testExceptionInFlowCalledWithFlowRef() throws Exception {
     flowRunner("exceptionHandlingBlock").runExpectingException();
-    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(muleContext);
+    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
 
     Message response = queueHandler.read("dlq", RECEIVE_TIMEOUT).getMessage();
 

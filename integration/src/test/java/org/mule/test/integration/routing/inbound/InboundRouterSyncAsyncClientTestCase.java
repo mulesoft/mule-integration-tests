@@ -35,7 +35,7 @@ public class InboundRouterSyncAsyncClientTestCase extends AbstractIntegrationTes
   public void testAsync() throws Exception {
     flowRunner("SyncAsync").withPayload("testAsync").withVariable("messageType", "async").run();
 
-    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(muleContext);
+    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
     Message result = queueHandler.read("asyncResponse", RECEIVE_TIMEOUT).getMessage();
     assertNotNull(result);
     assertThat(result.getPayload().getValue(), is("Response sent to asyncResponse"));

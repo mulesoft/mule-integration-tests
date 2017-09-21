@@ -50,7 +50,7 @@ public class NotSharedHttpConnectorInDomain extends DomainFunctionalTestCase {
     HttpRequest request = HttpRequest.builder().uri(url).method(GET).build();
     httpClient.send(request, DEFAULT_TEST_TIMEOUT_SECS, false, null);
 
-    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(muleContext);
+    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
     assertThat(queueHandler.read("in", 5000).getMessage(), is(notNullValue()));
   }
 }

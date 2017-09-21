@@ -61,7 +61,7 @@ public class FirstSuccessfulTestCase extends AbstractIntegrationTestCase {
   public void oneWayEndpoints() throws Exception {
     flowRunner("withOneWayEndpoints").withPayload(TEST_MESSAGE).run();
 
-    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(muleContext);
+    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
     Message response = queueHandler.read("WithOneWayEndpoints.out", RECEIVE_TIMEOUT).getMessage();
     assertThat(response, is(notNullValue()));
     assertThat(response.getPayload().getValue(), is(TEST_MESSAGE));

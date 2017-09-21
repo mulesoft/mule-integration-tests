@@ -58,7 +58,7 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
   @Override
   protected void doSetUp() throws Exception {
     effectiveMessagingExceptionHandler = null;
-    queueHandler = new TestConnectorQueueHandler(muleContext);
+    queueHandler = new TestConnectorQueueHandler(registry);
   }
 
   @Test

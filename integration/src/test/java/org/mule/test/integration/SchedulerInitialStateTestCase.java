@@ -98,7 +98,7 @@ public class SchedulerInitialStateTestCase extends AbstractIntegrationTestCase {
         .find(Location.builder().globalName("notRunningSchedulerOnStartup").addSourcePart().build()).get();
     assertThat(schedulerMessageSource.isStarted(), is(false));
 
-    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(muleContext);
+    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
 
     new PollingProber(10000, 100).check(new Probe() {
 

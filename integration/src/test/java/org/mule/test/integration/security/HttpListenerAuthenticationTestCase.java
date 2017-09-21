@@ -76,7 +76,7 @@ public class HttpListenerAuthenticationTestCase extends AbstractIntegrationTestC
     Header authHeader = httpResponse.getFirstHeader(WWW_AUTHENTICATE);
     assertThat(authHeader, is(notNullValue()));
     assertThat(authHeader.getValue(), is(BASIC_REALM_MULE_REALM));
-    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(muleContext);
+    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
     assertThat(queueHandler.read("basicAuthentication", RECEIVE_TIMEOUT).getMessage(), is(notNullValue()));
   }
 
@@ -96,7 +96,7 @@ public class HttpListenerAuthenticationTestCase extends AbstractIntegrationTestC
 
     assertThat(httpResponse, hasStatusCode(INTERNAL_SERVER_ERROR.getStatusCode()));
     assertThat(httpResponse, hasReasonPhrase(INTERNAL_SERVER_ERROR.getReasonPhrase()));
-    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(muleContext);
+    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
     assertThat(queueHandler.read("basicAuthentication", RECEIVE_TIMEOUT).getMessage(), is(notNullValue()));
   }
 

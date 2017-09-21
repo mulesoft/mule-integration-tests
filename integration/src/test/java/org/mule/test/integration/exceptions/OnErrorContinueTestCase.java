@@ -202,7 +202,7 @@ public class OnErrorContinueTestCase extends AbstractIntegrationTestCase {
     final HttpResponse response = httpClient.send(request, TIMEOUT, false, null);
 
     assertThat(response.getStatusCode(), is(INTERNAL_SERVER_ERROR.getStatusCode()));
-    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(muleContext);
+    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
     assertThat(queueHandler.read("out", RECEIVE_TIMEOUT), is(nullValue()));
   }
 

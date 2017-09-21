@@ -28,7 +28,7 @@ public class AsyncExceptionHandlingTestCase extends AbstractIntegrationTestCase 
 
   @Test
   public void testAsyncExceptionHandlingTestCase() throws Exception {
-    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(muleContext);
+    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
     flowRunner("SearchWebServiceBridge").runExpectingException();
     assertNotNull(queueHandler.read("back-channel", RECEIVE_TIMEOUT));
   }

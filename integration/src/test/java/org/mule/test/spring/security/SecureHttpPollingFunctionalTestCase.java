@@ -54,7 +54,7 @@ public class SecureHttpPollingFunctionalTestCase extends AbstractIntegrationTest
       }
     });
 
-    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(muleContext);
+    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
     Message result = queueHandler.read("toclient", 5000).getMessage();
     assertThat(result, not(nullValue()));
     assertThat(result.getPayload().getValue(), is("foo"));

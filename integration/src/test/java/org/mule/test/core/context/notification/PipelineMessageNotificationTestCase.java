@@ -35,7 +35,7 @@ public class PipelineMessageNotificationTestCase extends AbstractNotificationTes
 
   @Test
   public void doTest() throws Exception {
-    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(muleContext);
+    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
     assertNotNull(flowRunner("service-1").withPayload("hello sweet world").run());
     expectedException.expect(MessagingException.class);
     assertNotNull(flowRunner("service-2").withPayload("hello sweet world").run());

@@ -24,7 +24,7 @@ public class InOnlyOptionalOutTestCase extends AbstractIntegrationTestCase {
   @Override
   protected void doSetUp() throws Exception {
     super.doSetUp();
-    queueHandler = new TestConnectorQueueHandler(muleContext);
+    queueHandler = new TestConnectorQueueHandler(registry);
   }
 
   @Override

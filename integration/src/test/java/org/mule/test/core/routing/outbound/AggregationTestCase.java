@@ -36,7 +36,7 @@ public class AggregationTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void testCollectionAggregator() throws Exception {
-    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(muleContext);
+    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
 
     flowRunner("SplitterFlow").withPayload(PAYLOAD).run();
     Message msg = queueHandler.read("collectionCreated", RECEIVE_TIMEOUT).getMessage();

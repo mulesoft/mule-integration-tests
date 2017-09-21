@@ -38,7 +38,7 @@ public class CollectionAggregatorRouterCustomStoreTestCase extends AbstractInteg
 
     flowRunner("splitter").withPayload(list).run();
 
-    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(muleContext);
+    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
     Message request = queueHandler.read("out", 10000).getMessage();
     assertNotNull(request);
     assertEquals(list.size(), ((List) request.getPayload().getValue()).size());

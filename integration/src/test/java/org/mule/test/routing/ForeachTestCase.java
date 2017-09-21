@@ -76,7 +76,7 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
 
   @Before
   public void setUp() throws Exception {
-    queueHandler = new TestConnectorQueueHandler(muleContext);
+    queueHandler = new TestConnectorQueueHandler(registry);
   }
 
   @Override

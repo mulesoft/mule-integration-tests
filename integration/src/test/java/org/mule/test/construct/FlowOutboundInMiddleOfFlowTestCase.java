@@ -22,7 +22,7 @@ public class FlowOutboundInMiddleOfFlowTestCase extends AbstractIntegrationTestC
 
   @Test
   public void testOutboundInMiddleOfFlow() throws Exception {
-    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(muleContext);
+    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
 
     flowRunner("flowTest").withPayload("message").run();
 

@@ -163,7 +163,7 @@ public class ProcessorChainRouterTestCase extends AbstractIntegrationTestCase im
     CompletableFuture<ExecutionResult> completableFuture = chainRouterComponents.execute(event);
     Event returnedEvent = completableFuture.get().getEvent();
     assertThat(returnedEvent, notNullValue());
-    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(muleContext);
+    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
     assertThat(queueHandler.read("asyncQueue", RECEIVE_TIMEOUT) != null, is(true));
     assertThat(queueHandler.read("sgRoute1Queue", RECEIVE_TIMEOUT) != null, is(true));
     assertThat(queueHandler.read("sgRoute2Queue", RECEIVE_TIMEOUT) != null, is(true));

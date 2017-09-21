@@ -46,7 +46,7 @@ public class AggregationTimeoutTestCase extends AbstractIntegrationTestCase {
     inputData.add(BLOCK_EVENT);
 
     try {
-      TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(muleContext);
+      TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
 
       // Need to return control to test case as soon as message is sent, and not wait for response.
       flowRunner("main").withPayload(inputData).dispatchAsync(muleContext.getSchedulerService()

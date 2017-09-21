@@ -43,7 +43,7 @@ public class ExceptionListenerTestCase extends AbstractIntegrationTestCase {
   @Override
   protected void doSetUp() throws Exception {
     super.doSetUp();
-    queueHandler = new TestConnectorQueueHandler(muleContext);
+    queueHandler = new TestConnectorQueueHandler(registry);
 
     exceptionStrategyStartNotification = null;
     exceptionStrategyEndNotification = null;

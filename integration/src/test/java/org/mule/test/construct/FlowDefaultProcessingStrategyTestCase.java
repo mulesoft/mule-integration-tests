@@ -43,7 +43,7 @@ public class FlowDefaultProcessingStrategyTestCase extends AbstractIntegrationTe
   @Override
   protected void doSetUp() throws Exception {
     super.doSetUp();
-    queueHandler = new TestConnectorQueueHandler(muleContext);
+    queueHandler = new TestConnectorQueueHandler(registry);
   }
 
   @Test

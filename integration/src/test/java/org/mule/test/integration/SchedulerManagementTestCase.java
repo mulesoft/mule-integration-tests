@@ -46,7 +46,7 @@ public class SchedulerManagementTestCase extends AbstractIntegrationTestCase {
         .find(builder().globalName("neverRunningScheduler").addSourcePart().build()).get();
     scheduler.trigger();
 
-    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(muleContext);
+    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
 
     new PollingProber(10000, 100).check(new Probe() {
 
