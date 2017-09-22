@@ -15,7 +15,7 @@ import static org.junit.Assert.fail;
 import org.mule.runtime.api.component.execution.ComponentExecutionException;
 import org.mule.runtime.api.component.execution.ExecutableComponent;
 import org.mule.runtime.api.event.Event;
-import org.mule.runtime.api.event.InputEvent;
+import org.mule.runtime.api.component.execution.InputEvent;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.metadata.TypedValue;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -67,7 +67,7 @@ public class FlowExecutionTestCase extends AbstractIntegrationTestCase {
     Event resultEvent;
     try {
       resultEvent = executableComponent.execute(createInputEvent())
-          .get();
+          .get().getEvent();
       errorIdentifierExpected.ifPresent(error -> fail());
     } catch (ExecutionException e) {
       resultEvent = ((ComponentExecutionException) e.getCause()).getEvent();
