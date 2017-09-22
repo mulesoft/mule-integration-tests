@@ -16,7 +16,8 @@ import static org.mule.test.allure.AllureConstants.RoutersFeature.ProcessorChain
 import org.mule.runtime.api.component.execution.ComponentExecutionException;
 import org.mule.runtime.api.component.execution.ExecutableComponent;
 import org.mule.runtime.api.event.Event;
-import org.mule.runtime.api.event.InputEvent;
+import org.mule.runtime.api.component.execution.InputEvent;
+import org.mule.runtime.api.component.execution.ExecutionResult;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -75,14 +76,14 @@ public class ProcessorChainRouterTestCase extends AbstractIntegrationTestCase im
   public void executeCompositeRouterUsingInputEvent() throws Exception {
     InputEvent event = createInputEvent();
 
-    CompletableFuture<Event> completableFuture = compositeChainRouter.execute(event);
-    Event returnedEvent = completableFuture.get();
+    CompletableFuture<ExecutionResult> completableFuture = compositeChainRouter.execute(event);
+    Event returnedEvent = completableFuture.get().getEvent();
     assertProcessorChainResult(returnedEvent);
   }
 
   @Test
   public void executeCompositeRouterUsingEvent() throws Exception {
-    Event flowResultEvent = byPassFlow.execute(createInputEvent()).get();
+    Event flowResultEvent = byPassFlow.execute(createInputEvent()).get().getEvent();
 
     CompletableFuture<Event> completableFuture = compositeChainRouter.execute(flowResultEvent);
     Event returnedEvent = completableFuture.get();
@@ -94,16 +95,16 @@ public class ProcessorChainRouterTestCase extends AbstractIntegrationTestCase im
   public void nestedFlowRefUsingInputEvent() throws Exception {
     InputEvent event = createInputEvent();
 
-    CompletableFuture<Event> completableFuture = flowRefCompositeChainRouter.execute(event);
+    CompletableFuture<ExecutionResult> completableFuture = flowRefCompositeChainRouter.execute(event);
 
-    Event returnedEvent = completableFuture.get();
+    Event returnedEvent = completableFuture.get().getEvent();
     assertProcessorChainResult(returnedEvent);
   }
 
   @Test
   @Description("Ensure that when composite processor chain is used with more complex/async components such as nested flow-ref there are no dead-locks.")
   public void nestedFlowRefUsingEvent() throws Exception {
-    Event flowResultEvent = byPassFlow.execute(createInputEvent()).get();
+    Event flowResultEvent = byPassFlow.execute(createInputEvent()).get().getEvent();
 
     CompletableFuture<Event> completableFuture = flowRefCompositeChainRouter.execute(flowResultEvent);
 
@@ -115,9 +116,9 @@ public class ProcessorChainRouterTestCase extends AbstractIntegrationTestCase im
   public void executeCompositeRouterWithError() throws Exception {
     InputEvent event = createInputEvent();
 
-    CompletableFuture<Event> completableFuture = compositeChainRouterError.execute(event);
+    CompletableFuture<ExecutionResult> completableFuture = compositeChainRouterError.execute(event);
     try {
-      completableFuture.get();
+      completableFuture.get().getEvent();
       fail();
     } catch (ExecutionException e) {
       ComponentExecutionException componentExecutionException = (ComponentExecutionException) e.getCause();
@@ -132,8 +133,8 @@ public class ProcessorChainRouterTestCase extends AbstractIntegrationTestCase im
   public void executeChainUsingInputEvent() throws Exception {
     InputEvent event = createInputEvent();
 
-    CompletableFuture<Event> completableFuture = chainRouter.execute(event);
-    Event returnedEvent = completableFuture.get();
+    CompletableFuture<ExecutionResult> completableFuture = chainRouter.execute(event);
+    Event returnedEvent = completableFuture.get().getEvent();
     assertThat(returnedEvent, notNullValue());
     assertThat(returnedEvent.getMessage().getPayload().getValue(), is("testPayload custom"));
   }
@@ -142,7 +143,7 @@ public class ProcessorChainRouterTestCase extends AbstractIntegrationTestCase im
   public void executeChainWithError() throws Exception {
     InputEvent event = createInputEvent();
 
-    CompletableFuture<Event> completableFuture = chainRouterError.execute(event);
+    CompletableFuture<ExecutionResult> completableFuture = chainRouterError.execute(event);
     Event returnedEvent;
     try {
       completableFuture.get();
@@ -158,8 +159,8 @@ public class ProcessorChainRouterTestCase extends AbstractIntegrationTestCase im
   @Test
   public void executeChainFlowConstructDependantComponents() throws Exception {
     InputEvent event = createInputEvent();
-    CompletableFuture<Event> completableFuture = chainRouterComponents.execute(event);
-    Event returnedEvent = completableFuture.get();
+    CompletableFuture<ExecutionResult> completableFuture = chainRouterComponents.execute(event);
+    Event returnedEvent = completableFuture.get().getEvent();
     assertThat(returnedEvent, notNullValue());
     MuleClient muleClient = muleContext.getClient();
     assertThat(muleClient.request("test://asyncQueue", RECEIVE_TIMEOUT).isRight(), is(true));
