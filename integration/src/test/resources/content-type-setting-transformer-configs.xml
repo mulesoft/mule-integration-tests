@@ -3,5 +3,7 @@
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 
-    <hex-string-to-byte-array-transformer name="testTransformer" mimeType="text/plain" encoding="iso-8859-1"/>
+    <flow name="test">
+        <hex-string-to-byte-array-transformer name="testTransformer" mimeType="text/plain" encoding="iso-8859-1"/>
+    </flow>
 </mule>
