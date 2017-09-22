@@ -8,6 +8,7 @@ package org.mule.test.routing;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.mule.functional.api.component.FunctionalTestProcessor.getFromFlow;
 import static org.mule.runtime.api.notification.RoutingNotification.CORRELATION_TIMEOUT;
@@ -95,6 +96,6 @@ public class CollectionAggregatorRouterTimeoutTestCase extends AbstractIntegrati
     });
 
     TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
-    assertThat(queueHandler.read("out", RECEIVE_TIMEOUT).getMessage(), is(true));
+    assertThat(queueHandler.read("out", RECEIVE_TIMEOUT), is(notNullValue()));
   }
 }
