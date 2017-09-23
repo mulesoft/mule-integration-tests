@@ -15,16 +15,19 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
 import static org.mule.functional.api.flow.TransactionConfigEnum.ACTION_ALWAYS_BEGIN;
 import static org.mule.functional.junit4.TestLegacyMessageUtils.getOutboundProperty;
 import static org.mule.runtime.api.metadata.MediaType.APPLICATION_XML;
-
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
+import org.mule.runtime.core.api.transaction.Transaction;
+import org.mule.runtime.core.api.transaction.TransactionCoordination;
 import org.mule.tck.testmodels.fruit.Apple;
 import org.mule.tck.testmodels.fruit.Banana;
 import org.mule.tck.testmodels.fruit.Fruit;
@@ -33,12 +36,12 @@ import org.mule.tck.testmodels.fruit.Orange;
 import org.mule.tck.testmodels.mule.TestTransactionFactory;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import org.junit.Ignore;
-import org.junit.Test;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.junit.Ignore;
+import org.junit.Test;
 
 public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTestCase {
 
@@ -320,16 +323,27 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
 
   @Test
   public void testAsyncTransactionalEndpoint() throws Exception {
-    CoreEvent syncResult =
-        flowRunner("async-tx").withPayload("0").transactionally(ACTION_ALWAYS_BEGIN, new TestTransactionFactory()).run();
+    Transaction transaction = mock(Transaction.class);
+    doAnswer((invocationOnMock -> {
+      TransactionCoordination.getInstance().bindTransaction(transaction);
+      return null;
+    })).when(transaction).begin();
 
-    final MuleClient client = muleContext.getClient();
-    final Message result =
-        client.request("test://async-tx-out", RECEIVE_TIMEOUT).getRight().get();
-    final Message asyncResult =
-        client.request("test://async-async-tx-out", RECEIVE_TIMEOUT).getRight().get();
+    try {
+      CoreEvent syncResult =
+          flowRunner("async-tx").withPayload("0").transactionally(ACTION_ALWAYS_BEGIN, new TestTransactionFactory(transaction))
+              .run();
 
-    assertAsync(syncResult.getMessage(), result, asyncResult);
+      final MuleClient client = muleContext.getClient();
+      final Message result =
+          client.request("test://async-tx-out", RECEIVE_TIMEOUT).getRight().get();
+      final Message asyncResult =
+          client.request("test://async-async-tx-out", RECEIVE_TIMEOUT).getRight().get();
+
+      assertAsync(syncResult.getMessage(), result, asyncResult);
+    } finally {
+      TransactionCoordination.getInstance().unbindTransaction(transaction);
+    }
   }
 
   private void assertAsync(Message syncResult, Message result, Message asyncResult) throws Exception {

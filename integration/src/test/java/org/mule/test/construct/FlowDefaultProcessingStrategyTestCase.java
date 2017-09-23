@@ -10,14 +10,18 @@ import static java.lang.Thread.currentThread;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
 import static org.mule.functional.api.flow.TransactionConfigEnum.ACTION_ALWAYS_BEGIN;
 import static org.mule.functional.junit4.TestLegacyMessageUtils.getOutboundProperty;
-
 import org.mule.functional.junit4.TestLegacyMessageBuilder;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
+import org.mule.runtime.api.tx.TransactionException;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
+import org.mule.runtime.core.api.transaction.Transaction;
+import org.mule.runtime.core.api.transaction.TransactionCoordination;
 import org.mule.tck.testmodels.mule.TestTransactionFactory;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -25,8 +29,8 @@ import org.junit.Test;
 
 public class FlowDefaultProcessingStrategyTestCase extends AbstractIntegrationTestCase {
 
-  protected static final String PROCESSOR_THREAD = "processor-thread";
-  protected static final String FLOW_NAME = "Flow";
+  private static final String PROCESSOR_THREAD = "processor-thread";
+  private static final String FLOW_NAME = "Flow";
 
   @Override
   protected String getConfigFile() {
@@ -52,22 +56,44 @@ public class FlowDefaultProcessingStrategyTestCase extends AbstractIntegrationTe
 
   @Test
   public void requestResponseTransacted() throws Exception {
-    flowRunner("Flow").withPayload(TEST_PAYLOAD).transactionally(ACTION_ALWAYS_BEGIN, new TestTransactionFactory())
-        .run();
+    Transaction transaction = createTransactionMock();
 
-    Message message = muleContext.getClient().request("test://out", RECEIVE_TIMEOUT).getRight().get();
+    try {
+      flowRunner("Flow").withPayload(TEST_PAYLOAD).transactionally(ACTION_ALWAYS_BEGIN, new TestTransactionFactory(transaction))
+          .run();
 
-    assertThat(getOutboundProperty(message, PROCESSOR_THREAD), is(currentThread().getName()));
+      Message message = muleContext.getClient().request("test://out", RECEIVE_TIMEOUT).getRight().get();
+
+      assertThat(getOutboundProperty(message, PROCESSOR_THREAD), is(currentThread().getName()));
+    } finally {
+      TransactionCoordination.getInstance().unbindTransaction(transaction);
+    }
   }
 
   @Test
   public void oneWayTransacted() throws Exception {
-    flowRunner("Flow").withPayload(TEST_PAYLOAD).transactionally(ACTION_ALWAYS_BEGIN, new TestTransactionFactory())
-        .run();
+    Transaction transaction = createTransactionMock();
 
-    Message message = muleContext.getClient().request("test://out", RECEIVE_TIMEOUT).getRight().get();
+    try {
+      flowRunner("Flow").withPayload(TEST_PAYLOAD).transactionally(ACTION_ALWAYS_BEGIN, new TestTransactionFactory(
+                                                                                                                   transaction))
+          .run();
 
-    assertThat(getOutboundProperty(message, PROCESSOR_THREAD), is(currentThread().getName()));
+      Message message = muleContext.getClient().request("test://out", RECEIVE_TIMEOUT).getRight().get();
+
+      assertThat(getOutboundProperty(message, PROCESSOR_THREAD), is(currentThread().getName()));
+    } finally {
+      TransactionCoordination.getInstance().unbindTransaction(transaction);
+    }
+  }
+
+  private Transaction createTransactionMock() throws TransactionException {
+    Transaction transaction = mock(Transaction.class);
+    doAnswer((invocationOnMock -> {
+      TransactionCoordination.getInstance().bindTransaction(transaction);
+      return null;
+    })).when(transaction).begin();
+    return transaction;
   }
 
   public static class ThreadSensingMessageProcessor implements Processor {
