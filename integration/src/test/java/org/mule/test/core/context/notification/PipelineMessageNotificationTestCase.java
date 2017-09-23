@@ -7,16 +7,16 @@
 package org.mule.test.core.context.notification;
 
 import static org.junit.Assert.assertNotNull;
-import static org.mule.runtime.core.api.context.notification.AsyncMessageNotification.PROCESS_ASYNC_COMPLETE;
-import static org.mule.runtime.core.api.context.notification.AsyncMessageNotification.PROCESS_ASYNC_SCHEDULED;
-import static org.mule.runtime.core.api.context.notification.PipelineMessageNotification.PROCESS_COMPLETE;
-import static org.mule.runtime.core.api.context.notification.PipelineMessageNotification.PROCESS_END;
-import static org.mule.runtime.core.api.context.notification.PipelineMessageNotification.PROCESS_START;
+import static org.mule.runtime.api.notification.AsyncMessageNotification.PROCESS_ASYNC_COMPLETE;
+import static org.mule.runtime.api.notification.AsyncMessageNotification.PROCESS_ASYNC_SCHEDULED;
+import static org.mule.runtime.api.notification.PipelineMessageNotification.PROCESS_COMPLETE;
+import static org.mule.runtime.api.notification.PipelineMessageNotification.PROCESS_END;
+import static org.mule.runtime.api.notification.PipelineMessageNotification.PROCESS_START;
 
 import org.mule.runtime.core.api.client.MuleClient;
-import org.mule.runtime.core.api.context.notification.AsyncMessageNotification;
-import org.mule.runtime.core.api.context.notification.IntegerAction;
-import org.mule.runtime.core.api.context.notification.PipelineMessageNotification;
+import org.mule.runtime.api.notification.AsyncMessageNotification;
+import org.mule.runtime.api.notification.IntegerAction;
+import org.mule.runtime.api.notification.PipelineMessageNotification;
 import org.mule.runtime.core.api.exception.MessagingException;
 
 import org.junit.Rule;

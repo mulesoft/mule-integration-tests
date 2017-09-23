@@ -14,8 +14,8 @@ import static org.mule.tck.util.FlowTraceUtils.assertStackElements;
 import static org.mule.tck.util.FlowTraceUtils.isFlowStackElement;
 import static org.mule.tck.util.FlowTraceUtils.FlowStackAsserter.stackToAssert;
 
-import org.mule.runtime.core.api.context.notification.MessageProcessorNotification;
-import org.mule.runtime.core.api.context.notification.MessageProcessorNotificationListener;
+import org.mule.runtime.api.notification.MessageProcessorNotification;
+import org.mule.runtime.api.notification.MessageProcessorNotificationListener;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.tck.util.FlowTraceUtils.FlowStackAsyncAsserter;
 import org.mule.test.AbstractIntegrationTestCase;

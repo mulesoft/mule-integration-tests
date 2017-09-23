@@ -12,9 +12,9 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mule.functional.api.component.FunctionalTestProcessor.getFromFlow;
 
-import org.mule.runtime.core.api.context.notification.TransactionNotificationListener;
+import org.mule.runtime.api.notification.TransactionNotificationListener;
 import org.mule.runtime.api.util.concurrent.Latch;
-import org.mule.runtime.core.api.context.notification.TransactionNotification;
+import org.mule.runtime.api.notification.TransactionNotification;
 import org.mule.tck.probe.JUnitProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.test.AbstractIntegrationTestCase;

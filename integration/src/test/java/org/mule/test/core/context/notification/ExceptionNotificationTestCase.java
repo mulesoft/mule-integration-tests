@@ -8,13 +8,13 @@ package org.mule.test.core.context.notification;
 
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertNull;
-import static org.mule.runtime.core.api.context.notification.ExceptionNotification.EXCEPTION_ACTION;
+import static org.mule.runtime.api.notification.ExceptionNotification.EXCEPTION_ACTION;
 
 import org.mule.functional.api.exception.FunctionalTestException;
 import org.mule.functional.listener.ExceptionListener;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.core.api.context.notification.ExceptionNotification;
-import org.mule.runtime.core.api.context.notification.IntegerAction;
+import org.mule.runtime.api.notification.ExceptionNotification;
+import org.mule.runtime.api.notification.IntegerAction;
 
 import org.junit.Rule;
 import org.junit.Test;

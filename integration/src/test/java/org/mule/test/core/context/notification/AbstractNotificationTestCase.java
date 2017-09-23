@@ -8,9 +8,9 @@ package org.mule.test.core.context.notification;
 
 import static org.junit.Assert.fail;
 
-import org.mule.runtime.core.api.context.notification.AbstractServerNotification;
-import org.mule.runtime.core.api.context.notification.IntegerAction;
-import org.mule.runtime.core.api.context.notification.Notification.Action;
+import org.mule.runtime.api.notification.AbstractServerNotification;
+import org.mule.runtime.api.notification.IntegerAction;
+import org.mule.runtime.api.notification.Notification.Action;
 import org.mule.tck.core.context.notification.NotificationLogger;
 import org.mule.tck.probe.JUnitProbe;
 import org.mule.tck.probe.PollingProber;

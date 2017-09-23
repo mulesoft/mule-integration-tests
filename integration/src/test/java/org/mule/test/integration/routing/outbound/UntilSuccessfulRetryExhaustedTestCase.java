@@ -11,8 +11,8 @@ import static org.junit.Assert.fail;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.UntilSuccessfulStory.UNTIL_SUCCESSFUL;
 
-import org.mule.runtime.core.api.context.notification.ExceptionNotificationListener;
-import org.mule.runtime.core.api.context.notification.NotificationListenerRegistry;
+import org.mule.runtime.api.notification.ExceptionNotificationListener;
+import org.mule.runtime.api.notification.NotificationListenerRegistry;
 import org.mule.runtime.api.util.concurrent.Latch;
 import org.mule.test.AbstractIntegrationTestCase;
 

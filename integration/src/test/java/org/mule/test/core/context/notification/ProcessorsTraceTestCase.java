@@ -16,8 +16,8 @@ import static org.mule.functional.api.event.TestLegacyEventUtils.getProcessorsTr
 import static org.mule.runtime.core.api.config.MuleProperties.MULE_FLOW_TRACE;
 
 import org.mule.runtime.api.exception.MuleException;
-import org.mule.runtime.core.api.context.notification.MessageProcessorNotification;
-import org.mule.runtime.core.api.context.notification.MessageProcessorNotificationListener;
+import org.mule.runtime.api.notification.MessageProcessorNotification;
+import org.mule.runtime.api.notification.MessageProcessorNotificationListener;
 import org.mule.runtime.core.api.context.notification.ProcessorsTrace;
 import org.mule.runtime.core.api.event.BaseEvent;
 import org.mule.runtime.core.api.processor.Processor;
