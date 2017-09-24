@@ -15,7 +15,7 @@ import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.security.Authentication;
 import org.mule.runtime.api.security.SecurityContext;
-import org.mule.runtime.core.api.event.BaseEvent;
+import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.security.DefaultMuleCredentials;
 import org.mule.runtime.core.api.security.EncryptionStrategy;
@@ -85,7 +85,7 @@ public class MultiuserSecurityTestCase extends AbstractIntegrationTestCase {
     protected static final Logger logger = LoggerFactory.getLogger(TestSecurityProcessor.class);
 
     @Override
-    public BaseEvent process(BaseEvent event) throws MuleException {
+    public CoreEvent process(CoreEvent event) throws MuleException {
       SecurityContext securityContext = event.getSecurityContext();
       Authentication authentication = securityContext.getAuthentication();
 
@@ -95,7 +95,7 @@ public class MultiuserSecurityTestCase extends AbstractIntegrationTestCase {
       String msg = "user = " + authentication.getPrincipal() + ", logins = " + numberLogins + ", color = " + favoriteColor;
       logger.debug(msg);
 
-      return BaseEvent.builder(event).message(Message.builder(event.getMessage()).value(msg).build()).build();
+      return CoreEvent.builder(event).message(Message.builder(event.getMessage()).value(msg).build()).build();
     }
   }
 }

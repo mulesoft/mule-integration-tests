@@ -11,7 +11,7 @@ import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertThat;
 import org.mule.functional.api.component.EventCallback;
 import org.mule.runtime.core.api.MuleContext;
-import org.mule.runtime.core.api.event.BaseEvent;
+import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.tck.probe.JUnitLambdaProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.test.AbstractSchedulerTestCase;
@@ -46,7 +46,7 @@ public class SynchronousSchedulerTestCase extends AbstractSchedulerTestCase {
   public static class Foo implements EventCallback {
 
     @Override
-    public void eventReceived(BaseEvent event, Object component, MuleContext muleContext) throws Exception {
+    public void eventReceived(CoreEvent event, Object component, MuleContext muleContext) throws Exception {
       synchronized (foo) {
         foo.add((String) event.getMessage().getPayload().getValue());
         try {

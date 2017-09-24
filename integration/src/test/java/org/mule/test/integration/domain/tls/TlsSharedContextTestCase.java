@@ -15,7 +15,7 @@ import org.mule.functional.api.flow.FlowRunner;
 import org.mule.functional.junit4.DomainFunctionalTestCase;
 import org.mule.runtime.api.artifact.Registry;
 import org.mule.runtime.api.tls.TlsContextFactory;
-import org.mule.runtime.core.api.event.BaseEvent;
+import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.runtime.core.privileged.event.PrivilegedEvent;
 import org.mule.runtime.http.api.client.HttpClient;
@@ -105,7 +105,7 @@ public class TlsSharedContextTestCase extends DomainFunctionalTestCase {
   }
 
   private void testFlowForApp(String flowName, String appName, String expected) throws Exception {
-    BaseEvent response = new FlowRunner(getInfrastructureForApp(appName).getRegistry(), flowName).withPayload(DATA).run();
+    CoreEvent response = new FlowRunner(getInfrastructureForApp(appName).getRegistry(), flowName).withPayload(DATA).run();
     assertThat(((PrivilegedEvent) response).getMessageAsString(getMuleContextForApp(appName)), is(expected));
   }
 }

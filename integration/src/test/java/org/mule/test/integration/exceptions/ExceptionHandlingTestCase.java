@@ -24,7 +24,7 @@ import static org.mule.tck.MuleTestUtils.getExceptionListeners;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.client.MuleClient;
-import org.mule.runtime.core.api.event.BaseEvent;
+import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.runtime.core.api.exception.MessagingExceptionHandler;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
@@ -61,7 +61,7 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void testCustomProcessorInFlow() throws Exception {
-    final BaseEvent muleEvent = runFlow("customProcessorInFlow");
+    final CoreEvent muleEvent = runFlow("customProcessorInFlow");
     Message response = muleEvent.getMessage();
     assertThat(response, is(notNullValue()));
     assertThat(effectiveMessagingExceptionHandler.getClass().getName(), equalTo(ERROR_HANDLER_CLASSNAME));
@@ -95,7 +95,7 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
   public void testCustomProcessorInScope() throws Exception {
     LinkedList<String> list = new LinkedList<>();
     list.add(MESSAGE);
-    final BaseEvent muleEvent = flowRunner("customProcessorInScope").withPayload(list).run();
+    final CoreEvent muleEvent = flowRunner("customProcessorInScope").withPayload(list).run();
     Message response = muleEvent.getMessage();
 
     assertNotNull(response);
@@ -186,7 +186,7 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
   public static class ExecutionCountProcessor implements Processor {
 
     @Override
-    public synchronized BaseEvent process(BaseEvent event) throws MuleException {
+    public synchronized CoreEvent process(CoreEvent event) throws MuleException {
       latch.countDown();
       return event;
     }
@@ -195,7 +195,7 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
   public static class ExceptionHandlerVerifierProcessor implements Processor {
 
     @Override
-    public synchronized BaseEvent process(BaseEvent event) throws MuleException {
+    public synchronized CoreEvent process(CoreEvent event) throws MuleException {
       effectiveMessagingExceptionHandler = getEffectiveExceptionHandler(event);
       return event;
     }

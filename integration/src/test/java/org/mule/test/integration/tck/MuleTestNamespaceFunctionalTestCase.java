@@ -12,7 +12,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.core.api.event.BaseEvent;
+import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -29,7 +29,7 @@ public class MuleTestNamespaceFunctionalTestCase extends AbstractIntegrationTest
 
   @Test
   public void testService1() throws Exception {
-    BaseEvent event = flowRunner("testService1").withPayload("foo").run();
+    CoreEvent event = flowRunner("testService1").withPayload("foo").run();
     Message message = event.getMessage();
 
     assertNotNull(message);
@@ -39,7 +39,7 @@ public class MuleTestNamespaceFunctionalTestCase extends AbstractIntegrationTest
 
   @Test
   public void testService2() throws Exception {
-    BaseEvent event = flowRunner("testService2").withPayload("foo").run();
+    CoreEvent event = flowRunner("testService2").withPayload("foo").run();
     Message message = event.getMessage();
     assertNotNull(message);
     assertThat(event.getError().isPresent(), is(false));
@@ -48,7 +48,7 @@ public class MuleTestNamespaceFunctionalTestCase extends AbstractIntegrationTest
 
   @Test
   public void testService3() throws Exception {
-    BaseEvent event = flowRunner("testService3").withPayload("foo").run();
+    CoreEvent event = flowRunner("testService3").withPayload("foo").run();
     Message message = event.getMessage();
     assertNotNull(message);
     assertThat(event.getError().isPresent(), is(false));

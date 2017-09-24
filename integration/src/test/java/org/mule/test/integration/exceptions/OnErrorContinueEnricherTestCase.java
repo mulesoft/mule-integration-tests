@@ -11,7 +11,7 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import org.mule.runtime.api.exception.MuleException;
-import org.mule.runtime.core.api.event.BaseEvent;
+import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -24,7 +24,7 @@ public class OnErrorContinueEnricherTestCase extends AbstractIntegrationTestCase
     private static Throwable handled;
 
     @Override
-    public BaseEvent process(BaseEvent event) throws MuleException {
+    public CoreEvent process(CoreEvent event) throws MuleException {
       handled = event.getError().get().getCause();
       return event;
     }
@@ -37,7 +37,7 @@ public class OnErrorContinueEnricherTestCase extends AbstractIntegrationTestCase
 
   @Test
   public void testFlowRefHandlingException() throws Exception {
-    BaseEvent event = flowRunner("enricherExceptionFlow").withPayload(TEST_PAYLOAD).run();
+    CoreEvent event = flowRunner("enricherExceptionFlow").withPayload(TEST_PAYLOAD).run();
     event.getMessage();
     assertThat(ErrorProcessor.handled, not(nullValue()));
     assertThat(event.getError().isPresent(), is(false));

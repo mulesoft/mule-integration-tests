@@ -10,7 +10,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
-import org.mule.runtime.core.api.event.BaseEvent;
+import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -33,7 +33,7 @@ public class IdempotentMessageValidatorTestCase extends AbstractIntegrationTestC
   @Test
   public void validateWithGlobalObjectStore() throws Exception {
     String payload = "payload";
-    BaseEvent response = flowRunner("validate-global").withPayload(payload).run();
+    CoreEvent response = flowRunner("validate-global").withPayload(payload).run();
     assertThat(response.getMessage().getPayload().getValue(), is(equalTo(payload)));
     expectedException.expect(MessagingException.class);
     flowRunner("validate-global").withPayload(payload).run();
@@ -42,7 +42,7 @@ public class IdempotentMessageValidatorTestCase extends AbstractIntegrationTestC
   @Test
   public void validateWithGlobalObjectStoreFromDifferentValidators() throws Exception {
     String payload = "payload";
-    BaseEvent response = flowRunner("validate-global").withPayload(payload).run();
+    CoreEvent response = flowRunner("validate-global").withPayload(payload).run();
     assertThat(response.getMessage().getPayload().getValue(), is(equalTo(payload)));
     expectedException.expect(MessagingException.class);
     flowRunner("validate-global2").withPayload(payload).run();
@@ -52,8 +52,8 @@ public class IdempotentMessageValidatorTestCase extends AbstractIntegrationTestC
   public void validateWithPrivateObjectStoreUsesADifferentObjectStore() throws Exception {
     String globalPayload = "global-payload";
     String privatePayload = "private-payload";
-    BaseEvent globalResponse = flowRunner("validate-global").withPayload(globalPayload).run();
-    BaseEvent privateResponse = flowRunner("validate-private").withPayload(privatePayload).run();
+    CoreEvent globalResponse = flowRunner("validate-global").withPayload(globalPayload).run();
+    CoreEvent privateResponse = flowRunner("validate-private").withPayload(privatePayload).run();
     assertThat(globalResponse.getMessage().getPayload().getValue(), is(equalTo(globalPayload)));
     assertThat(privateResponse.getMessage().getPayload().getValue(), is(equalTo(privatePayload)));
     try {
@@ -68,8 +68,8 @@ public class IdempotentMessageValidatorTestCase extends AbstractIntegrationTestC
   public void validateWithImplicitObjectStoreUsesADifferentObjectStore() throws Exception {
     String globalPayload = "global-payload";
     String implicitPayload = "implicit-payload";
-    BaseEvent globalResponse = flowRunner("validate-global").withPayload(globalPayload).run();
-    BaseEvent implicitResponse = flowRunner("validate-implicit").withPayload(implicitPayload).run();
+    CoreEvent globalResponse = flowRunner("validate-global").withPayload(globalPayload).run();
+    CoreEvent implicitResponse = flowRunner("validate-implicit").withPayload(implicitPayload).run();
     assertThat(globalResponse.getMessage().getPayload().getValue(), is(equalTo(globalPayload)));
     assertThat(implicitResponse.getMessage().getPayload().getValue(), is(equalTo(implicitPayload)));
     try {

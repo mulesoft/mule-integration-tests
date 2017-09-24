@@ -16,7 +16,7 @@ import static org.mule.runtime.module.extension.api.util.MuleExtensionUtils.getI
 import static org.mule.tck.probe.PollingProber.check;
 import static org.mule.test.module.extension.internal.util.ExtensionsTestUtils.getConfigurationFromRegistry;
 import org.mule.runtime.api.store.ObjectStore;
-import org.mule.runtime.core.api.event.BaseEvent;
+import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.extension.api.connectivity.oauth.AuthCodeRequest;
 import org.mule.runtime.extension.api.connectivity.oauth.AuthorizationCodeState;
 import org.mule.test.oauth.TestOAuthConnection;
@@ -75,7 +75,7 @@ public class OAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
     authorizeAndStartDancingBaby();
     receiveAccessTokenAndUserConnection();
 
-    TestOAuthExtension config = getConfigurationFromRegistry("oauth", BaseEvent.builder(getInitialiserEvent())
+    TestOAuthExtension config = getConfigurationFromRegistry("oauth", CoreEvent.builder(getInitialiserEvent())
         .addVariable(OWNER_ID_VARIABLE_NAME, CUSTOM_OWNER_ID)
         .build(), muleContext);
 

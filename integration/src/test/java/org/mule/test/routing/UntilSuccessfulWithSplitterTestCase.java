@@ -11,7 +11,7 @@ import static org.junit.Assert.assertThat;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.UntilSuccessfulStory.UNTIL_SUCCESSFUL;
 import org.mule.runtime.api.exception.MuleException;
-import org.mule.runtime.core.api.event.BaseEvent;
+import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -56,7 +56,7 @@ public class UntilSuccessfulWithSplitterTestCase extends AbstractIntegrationTest
   public static class FailAtFirstAttempt implements Processor {
 
     @Override
-    public BaseEvent process(BaseEvent event) throws MuleException {
+    public CoreEvent process(CoreEvent event) throws MuleException {
       final String payload = event.getMessage().getPayload().getValue().toString();
       seenPayloads.add(payload);
 

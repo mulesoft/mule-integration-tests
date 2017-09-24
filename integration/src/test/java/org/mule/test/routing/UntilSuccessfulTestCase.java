@@ -25,7 +25,7 @@ import org.mule.functional.api.exception.FunctionalTestException;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.core.api.event.BaseEvent;
+import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.retry.policy.RetryPolicyExhaustedException;
@@ -168,7 +168,7 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
 
   public static class CustomMP implements Processor {
 
-    private static List<BaseEvent> processedEvents = new ArrayList<>();
+    private static List<CoreEvent> processedEvents = new ArrayList<>();
 
     public static void clearCount() {
       processedEvents.clear();
@@ -178,12 +178,12 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
       return processedEvents.size();
     }
 
-    public static List<BaseEvent> getProcessedEvents() {
+    public static List<CoreEvent> getProcessedEvents() {
       return processedEvents;
     }
 
     @Override
-    public BaseEvent process(final BaseEvent event) throws MuleException {
+    public CoreEvent process(final CoreEvent event) throws MuleException {
       processedEvents.add(event);
       return event;
     }
@@ -195,7 +195,7 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
     private long firstAttemptTime = 0;
 
     @Override
-    public BaseEvent process(BaseEvent event) throws MuleException {
+    public CoreEvent process(CoreEvent event) throws MuleException {
       if (firstAttemptTime == 0) {
         firstAttemptTime = System.currentTimeMillis();
       } else {

@@ -23,7 +23,7 @@ import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.runtime.core.api.construct.Flow;
-import org.mule.runtime.core.api.event.BaseEvent;
+import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.tck.testmodels.fruit.Apple;
 import org.mule.tck.testmodels.fruit.Banana;
@@ -224,7 +224,7 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
     map.put("banana", banana);
     map.put("orange", orange);
 
-    BaseEvent result = flowRunner("split-aggregate-map").withPayload(map).run();
+    CoreEvent result = flowRunner("split-aggregate-map").withPayload(map).run();
 
     assertNotNull(result);
     assertTrue(result.getMessage().getPayload().getValue() instanceof List);
@@ -309,7 +309,7 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
 
   @Test
   public void testAsyncRequestResponseEndpoint() throws Exception {
-    BaseEvent syncResult = flowRunner("async-requestresponse").withPayload("0").run();
+    CoreEvent syncResult = flowRunner("async-requestresponse").withPayload("0").run();
     MuleClient client = muleContext.getClient();
     final Message result = client.request("test://async-requestresponse-out", RECEIVE_TIMEOUT).getRight().get();
     final Message asyncResult =
@@ -320,7 +320,7 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
 
   @Test
   public void testAsyncTransactionalEndpoint() throws Exception {
-    BaseEvent syncResult =
+    CoreEvent syncResult =
         flowRunner("async-tx").withPayload("0").transactionally(ACTION_ALWAYS_BEGIN, new TestTransactionFactory()).run();
 
     final MuleClient client = muleContext.getClient();
@@ -467,8 +467,8 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
   public static class ThreadSensingMessageProcessor implements Processor {
 
     @Override
-    public BaseEvent process(BaseEvent event) throws MuleException {
-      return BaseEvent.builder(event).message(Message.builder(event.getMessage()).value(currentThread()).build()).build();
+    public CoreEvent process(CoreEvent event) throws MuleException {
+      return CoreEvent.builder(event).message(Message.builder(event.getMessage()).value(currentThread()).build()).build();
     }
   }
 
