@@ -14,11 +14,10 @@ import static org.mule.runtime.api.notification.RoutingNotification.CORRELATION_
 
 import org.mule.functional.api.component.FunctionalTestProcessor;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.runtime.api.notification.IntegerAction;
-import org.mule.runtime.api.notification.NotificationListenerRegistry;
 import org.mule.runtime.api.notification.RoutingNotification;
 import org.mule.runtime.api.notification.RoutingNotificationListener;
+import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.tck.probe.PollingProber;
 import org.mule.tck.probe.Probe;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -28,12 +27,7 @@ import org.junit.Test;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.inject.Inject;
-
 public class CollectionAggregatorRouterTimeoutTestCase extends AbstractIntegrationTestCase {
-
-  @Inject
-  private NotificationListenerRegistry notificationsregistry;
 
   @Override
   protected String getConfigFile() {
@@ -44,7 +38,7 @@ public class CollectionAggregatorRouterTimeoutTestCase extends AbstractIntegrati
   public void testNoFailOnTimeout() throws Exception {
     // correlation timeouts should not fire in this scenario, check it
     final AtomicInteger correlationTimeoutCount = new AtomicInteger(0);
-    notificationsregistry.registerListener(new RoutingNotificationListener<RoutingNotification>() {
+    notificationListenerRegistry.registerListener(new RoutingNotificationListener<RoutingNotification>() {
 
       @Override
       public boolean isBlocking() {

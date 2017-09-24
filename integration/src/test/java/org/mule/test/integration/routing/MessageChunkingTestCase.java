@@ -15,12 +15,12 @@ import org.mule.runtime.api.notification.AbstractServerNotification;
 import org.mule.runtime.api.notification.NotificationListenerRegistry;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import org.apache.commons.lang3.SerializationUtils;
+import org.junit.Test;
+
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.inject.Inject;
-
-import org.apache.commons.lang3.SerializationUtils;
-import org.junit.Test;
 
 public class MessageChunkingTestCase extends AbstractIntegrationTestCase {
 
@@ -78,7 +78,8 @@ public class MessageChunkingTestCase extends AbstractIntegrationTestCase {
 
     // Listen to Message Notifications on the Chunking receiver so we can
     // determine how many message parts have been received
-    FlowExecutionListener flowExecutionListener = new FlowExecutionListener("ChunkingObjectReceiver", muleContext);
+    FlowExecutionListener flowExecutionListener =
+        new FlowExecutionListener("ChunkingObjectReceiver", notificationListenerRegistry);
     flowExecutionListener.addListener(source -> messagePartsCount.getAndIncrement());
 
     flowRunner("ObjectReceiver").withPayload(simpleSerializableObject).run();
@@ -90,7 +91,7 @@ public class MessageChunkingTestCase extends AbstractIntegrationTestCase {
     final AtomicInteger messagePartsCount = new AtomicInteger(0);
 
     // Listen to events fired by the ChunkingReceiver service
-    registry.lookupByType(NotificationListenerRegistry.class).get().registerListener(notification -> {
+    notificationListenerRegistry.registerListener(notification -> {
       assertEquals("ChunkingReceiver", ((AbstractServerNotification) notification).getResourceIdentifier());
 
       // Test that we have received all chunks in the correct order
@@ -100,7 +101,7 @@ public class MessageChunkingTestCase extends AbstractIntegrationTestCase {
 
     // Listen to Message Notifications on the Chunking receiver so we can
     // determine how many message parts have been received
-    FlowExecutionListener flowExecutionListener = new FlowExecutionListener("ChunkingReceiver", muleContext);
+    FlowExecutionListener flowExecutionListener = new FlowExecutionListener("ChunkingReceiver", notificationListenerRegistry);
     flowExecutionListener.addListener(notificationInfo -> messagePartsCount.getAndIncrement());
     flowRunner("Receiver").withPayload(data).run();
     // Ensure we processed expected number of message parts

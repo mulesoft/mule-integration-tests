@@ -12,13 +12,10 @@ import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.UntilSuccessfulStory.UNTIL_SUCCESSFUL;
 
 import org.mule.runtime.api.notification.ExceptionNotificationListener;
-import org.mule.runtime.api.notification.NotificationListenerRegistry;
 import org.mule.runtime.api.util.concurrent.Latch;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Test;
-
-import javax.inject.Inject;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
@@ -26,9 +23,6 @@ import io.qameta.allure.Story;
 @Feature(ROUTERS)
 @Story(UNTIL_SUCCESSFUL)
 public class UntilSuccessfulRetryExhaustedTestCase extends AbstractIntegrationTestCase {
-
-  @Inject
-  private NotificationListenerRegistry notificationRegistry;
 
   @Override
   protected String getConfigFile() {
@@ -38,7 +32,8 @@ public class UntilSuccessfulRetryExhaustedTestCase extends AbstractIntegrationTe
   @Test
   public void onRetryExhaustedCallExceptionStrategy() throws Exception {
     final Latch exceptionStrategyCalledLatch = new Latch();
-    notificationRegistry.registerListener((ExceptionNotificationListener) notification -> exceptionStrategyCalledLatch.release());
+    notificationListenerRegistry
+        .registerListener((ExceptionNotificationListener) notification -> exceptionStrategyCalledLatch.release());
     flowRunner("retryExhausted").withPayload("message").run();
     if (!exceptionStrategyCalledLatch.await(10000, MILLISECONDS)) {
       fail("exception strategy was not executed");
