@@ -12,13 +12,12 @@
         <http:listener-connection host="localhost" port="${port}"/>
     </http:listener-config>
 
-    <object name="failing" class="org.mule.test.integration.exceptions.OnErrorPropagateTestCase$FailingProcessor"/>
     <object name="call" class="org.mule.test.integration.exceptions.OnErrorPropagateTestCase$CallMessageProcessor"/>
     <object name="error" class="org.mule.test.integration.exceptions.OnErrorPropagateTestCase$ErrorProcessor"/>
     
     <flow name="onErrorPropagateTypeMatch">
         <append-string-transformer message=" apt1"/>
-        <processor ref="failing"/>
+        <flow-ref name="raiseRoutingErrorFlow"/>
         <error-handler>
             <on-error-propagate type="REDELIVERY_EXHAUSTED">
                 <test:queue name="custom1"/>
@@ -49,7 +48,7 @@
         <choice>
             <when expression="#[mel:payload]">
                 <append-string-transformer message=" apt1"/>
-                <processor ref="failing"/>
+                <flow-ref name="raiseRoutingErrorFlow"/>
             </when>
             <otherwise>
                 <append-string-transformer message=" apt1"/>
@@ -68,7 +67,7 @@
 
     <flow name="onErrorPropagateMessage">
         <append-string-transformer message=" apt1"/>
-        <processor ref="failing"/>
+        <flow-ref name="raiseRoutingErrorFlow"/>
         <error-handler>
             <on-error-propagate>
                 <set-payload value="propagated"/>
@@ -96,6 +95,10 @@
                 <test:queue name="out"/>
             </on-error-propagate>
         </error-handler>
+    </flow>
+
+    <flow name="raiseRoutingErrorFlow">
+        <raise-error type="ROUTING" description="This is a routing error."/>
     </flow>
 
 </mule>

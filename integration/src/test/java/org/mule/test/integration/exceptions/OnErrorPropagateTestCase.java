@@ -166,13 +166,4 @@ public class OnErrorPropagateTestCase extends AbstractIntegrationTestCase {
     }
   }
 
-  public static class FailingProcessor implements Processor {
-
-    @Override
-    public CoreEvent process(CoreEvent event) throws MuleException {
-      throw new DefaultMuleException(createStaticMessage("Error."));
-    }
-
-  }
-
 }
