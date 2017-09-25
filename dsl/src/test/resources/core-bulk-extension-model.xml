@@ -19,6 +19,9 @@
     <flow name="flowForlogger">
         <logger category="Attribute" level="DEBUG" message="Attribute"/>
     </flow>
+    <flow name="flowForraiseError">
+        <raise-error type="Attribute" description="Attribute"/>
+    </flow>
     <flow name="flowForchoice">
         <choice>
             <when expression="Attribute">
