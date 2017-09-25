@@ -29,7 +29,7 @@ import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.core.api.event.BaseEvent;
+import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.runtime.core.api.processor.Processor;
@@ -210,7 +210,7 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
   public static class ThreadCaptor extends AbstractComponent implements Processor {
 
     @Override
-    public BaseEvent process(BaseEvent event) throws MuleException {
+    public CoreEvent process(CoreEvent event) throws MuleException {
       capturedThreads.add(currentThread());
       if (capturedThreads.size() > 2) {
         Latch latch = (Latch) event.getVariables().get("latch").getValue();

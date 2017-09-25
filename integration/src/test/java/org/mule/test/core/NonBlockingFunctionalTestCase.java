@@ -16,7 +16,7 @@ import static org.mule.tck.processor.FlowAssert.verify;
 import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.api.security.SecurityProviderNotFoundException;
 import org.mule.runtime.api.security.UnknownAuthenticationTypeException;
-import org.mule.runtime.core.api.event.BaseEvent;
+import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.security.AbstractAuthenticationFilter;
 import org.mule.runtime.core.api.security.CryptoFailureException;
 import org.mule.runtime.core.api.security.EncryptionStrategyNotFoundException;
@@ -88,19 +88,19 @@ public class NonBlockingFunctionalTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void enricherIssue() throws Exception {
-    BaseEvent result = flowRunner("enricherIssue").withPayload(TEST_MESSAGE).run();
+    CoreEvent result = flowRunner("enricherIssue").withPayload(TEST_MESSAGE).run();
     assertThat(result.getMessage().getPayload().getValue(), is(equalTo(TEST_MESSAGE)));
   }
 
   @Test
   public void enricherIssueNonBlocking() throws Exception {
-    BaseEvent result = flowRunner("enricherIssueNonBlocking").withPayload(TEST_MESSAGE).run();
+    CoreEvent result = flowRunner("enricherIssueNonBlocking").withPayload(TEST_MESSAGE).run();
     assertThat(result.getMessage().getPayload().getValue(), is(equalTo(TEST_MESSAGE)));
   }
 
   @Test
   public void enricherFlowVar() throws Exception {
-    BaseEvent result = flowRunner("enricherFlowVar").withPayload(TEST_MESSAGE).run();
+    CoreEvent result = flowRunner("enricherFlowVar").withPayload(TEST_MESSAGE).run();
     assertThat(result.getVariables().get(FOO).getValue(), is(equalTo(TEST_MESSAGE)));
   }
 
@@ -189,7 +189,7 @@ public class NonBlockingFunctionalTestCase extends AbstractIntegrationTestCase {
     protected void doInitialise() throws InitialisationException {}
 
     @Override
-    public SecurityContext authenticate(BaseEvent event) throws SecurityException, UnknownAuthenticationTypeException,
+    public SecurityContext authenticate(CoreEvent event) throws SecurityException, UnknownAuthenticationTypeException,
         CryptoFailureException, SecurityProviderNotFoundException, EncryptionStrategyNotFoundException, InitialisationException {
       return event.getSecurityContext();
     }

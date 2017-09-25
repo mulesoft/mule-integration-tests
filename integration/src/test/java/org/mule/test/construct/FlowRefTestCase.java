@@ -12,7 +12,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.core.api.event.BaseEvent;
+import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -35,7 +35,7 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void twoFlowRefsToSubFlow() throws Exception {
-    final BaseEvent muleEvent = flowRunner("flow1").withPayload("0").run();
+    final CoreEvent muleEvent = flowRunner("flow1").withPayload("0").run();
     assertThat(getPayloadAsString(muleEvent.getMessage()), is("012xyzabc312xyzabc3"));
   }
 

@@ -36,7 +36,7 @@ import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.runtime.core.api.config.DefaultMuleConfiguration;
 import org.mule.runtime.core.api.config.builders.AbstractConfigurationBuilder;
-import org.mule.runtime.core.api.event.BaseEvent;
+import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.runtime.core.api.exception.NullExceptionHandler;
 import org.mule.runtime.core.api.processor.Processor;
@@ -177,7 +177,7 @@ public class SchedulerServiceTestCase extends AbstractIntegrationTestCase {
     expected.expectCause(instanceOf(SchedulerBusyException.class));
 
     messageSource.getListener()
-        .process(BaseEvent
+        .process(CoreEvent
             .builder(create("id", "serverd", fromSingleComponent(SchedulerServiceTestCase.class.getSimpleName()),
                             NullExceptionHandler.getInstance()))
             .message(of(null))
@@ -214,7 +214,7 @@ public class SchedulerServiceTestCase extends AbstractIntegrationTestCase {
     }
 
     @Override
-    public BaseEvent process(BaseEvent event) throws MuleException {
+    public CoreEvent process(CoreEvent event) throws MuleException {
       try {
         // just exercise the scheduler.
         return scheduler.submit(() -> event).get();
@@ -232,7 +232,7 @@ public class SchedulerServiceTestCase extends AbstractIntegrationTestCase {
     public static String threadName;
 
     @Override
-    public BaseEvent process(BaseEvent event) throws MuleException {
+    public CoreEvent process(CoreEvent event) throws MuleException {
       threadName = currentThread().getName();
       return event;
     }

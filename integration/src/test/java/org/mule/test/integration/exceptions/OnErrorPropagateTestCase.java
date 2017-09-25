@@ -23,7 +23,7 @@ import org.mule.functional.api.exception.FunctionalTestException;
 import org.mule.runtime.api.exception.DefaultMuleException;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.core.api.event.BaseEvent;
+import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.runtime.api.exception.MuleFatalException;
 import org.mule.runtime.core.api.processor.Processor;
@@ -95,7 +95,7 @@ public class OnErrorPropagateTestCase extends AbstractIntegrationTestCase {
   @Test
   public void propagateErrorAndMessage() throws Exception {
     MessagingException me = flowRunner("onErrorPropagateMessage").runExpectingException();
-    BaseEvent errorEvent = me.getEvent();
+    CoreEvent errorEvent = me.getEvent();
     assertThat(errorEvent.getError().isPresent(), is(true));
     assertThat(errorEvent.getError().get().getCause(),
                withClassName("org.mule.runtime.api.exception.DefaultMuleException"));
@@ -142,7 +142,7 @@ public class OnErrorPropagateTestCase extends AbstractIntegrationTestCase {
   public static class ErrorProcessor implements Processor {
 
     @Override
-    public BaseEvent process(BaseEvent event) throws MuleException {
+    public CoreEvent process(CoreEvent event) throws MuleException {
       throw new NoClassDefFoundError("Test error");
     }
 
@@ -153,7 +153,7 @@ public class OnErrorPropagateTestCase extends AbstractIntegrationTestCase {
     public static Latch latch = new Latch();
 
     @Override
-    public BaseEvent process(BaseEvent event) throws MuleException {
+    public CoreEvent process(CoreEvent event) throws MuleException {
       latch.release();
       return event;
     }
@@ -162,7 +162,7 @@ public class OnErrorPropagateTestCase extends AbstractIntegrationTestCase {
   public static class FailingProcessor implements Processor {
 
     @Override
-    public BaseEvent process(BaseEvent event) throws MuleException {
+    public CoreEvent process(CoreEvent event) throws MuleException {
       throw new DefaultMuleException(createStaticMessage("Error."));
     }
 

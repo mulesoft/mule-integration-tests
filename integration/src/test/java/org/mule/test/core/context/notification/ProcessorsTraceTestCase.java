@@ -19,7 +19,7 @@ import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.notification.MessageProcessorNotification;
 import org.mule.runtime.api.notification.MessageProcessorNotificationListener;
 import org.mule.runtime.core.api.context.notification.ProcessorsTrace;
-import org.mule.runtime.core.api.event.BaseEvent;
+import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -46,7 +46,7 @@ public class ProcessorsTraceTestCase extends AbstractIntegrationTestCase {
     public static ProcessorsTrace processorsTraceToAssert;
 
     @Override
-    public BaseEvent process(BaseEvent event) throws MuleException {
+    public CoreEvent process(CoreEvent event) throws MuleException {
       processorsTraceToAssert = getProcessorsTrace(event);
       return event;
     }
@@ -57,7 +57,7 @@ public class ProcessorsTraceTestCase extends AbstractIntegrationTestCase {
     public static CountDownLatch latch;
 
     @Override
-    public BaseEvent process(BaseEvent event) throws MuleException {
+    public CoreEvent process(CoreEvent event) throws MuleException {
       super.process(event);
       latch.countDown();
       return event;

@@ -14,7 +14,7 @@ import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.metadata.TypedValue;
 import org.mule.runtime.api.store.ObjectStore;
 import org.mule.runtime.api.store.ObjectStoreManager;
-import org.mule.runtime.core.api.event.BaseEvent;
+import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -34,7 +34,7 @@ public class WatermarkTestCase extends AbstractIntegrationTestCase {
     private static int ID = 0;
 
     @Override
-    public BaseEvent process(BaseEvent event) throws MuleException {
+    public CoreEvent process(CoreEvent event) throws MuleException {
       final int top = 5;
       List<Integer> numbers = new ArrayList<>(top);
       for (int i = ID; i < top + ID; i++) {
@@ -43,7 +43,7 @@ public class WatermarkTestCase extends AbstractIntegrationTestCase {
 
       ID += top;
 
-      return BaseEvent.builder(event)
+      return CoreEvent.builder(event)
           .message(Message.builder(event.getMessage())
               .payload(TypedValue.of(numbers))
               .build())

@@ -15,7 +15,7 @@ import static org.mule.runtime.http.api.HttpConstants.Method.GET;
 import org.mule.functional.junit4.DomainFunctionalTestCase;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.core.api.MuleContext;
-import org.mule.runtime.core.api.event.BaseEvent;
+import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.http.api.domain.message.request.HttpRequest;
 import org.mule.service.http.TestHttpClient;
@@ -49,12 +49,12 @@ public class ShutdownAppInDomainTestCase extends DomainFunctionalTestCase {
   @Rule
   public HeapDumpOnFailure heapDumpOnFailure = new HeapDumpOnFailure();
 
-  private static final Set<PhantomReference<BaseEvent>> requestContextRefs = new HashSet<>();
+  private static final Set<PhantomReference<CoreEvent>> requestContextRefs = new HashSet<>();
 
   public static class RetrieveRequestContext implements Processor {
 
     @Override
-    public BaseEvent process(BaseEvent event) throws MuleException {
+    public CoreEvent process(CoreEvent event) throws MuleException {
       requestContextRefs.add(new PhantomReference<>(getCurrentEvent(), new ReferenceQueue<>()));
       return event;
     }
@@ -140,7 +140,7 @@ public class ShutdownAppInDomainTestCase extends DomainFunctionalTestCase {
       @Override
       protected boolean test() throws Exception {
         System.gc();
-        for (PhantomReference<BaseEvent> phantomReference : requestContextRefs) {
+        for (PhantomReference<CoreEvent> phantomReference : requestContextRefs) {
           assertThat(phantomReference.isEnqueued(), is(true));
         }
         return true;

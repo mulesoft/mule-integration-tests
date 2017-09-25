@@ -10,7 +10,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.core.api.event.BaseEvent;
+import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.runtime.core.api.util.compression.GZipCompression;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -38,7 +38,7 @@ public class GZipTransformerFunctionalTestCase extends AbstractIntegrationTestCa
     byte[] testDataByteArray = TEST_DATA.getBytes();
 
     // Compress input.
-    BaseEvent muleEvent = flowRunner("compressInput").withPayload(testDataByteArray).run();
+    CoreEvent muleEvent = flowRunner("compressInput").withPayload(testDataByteArray).run();
     Message compressedResponse = muleEvent.getMessage();
     assertNotNull(compressedResponse);
     assertTrue(compressedResponse.getPayload().getValue() instanceof byte[]);
@@ -58,7 +58,7 @@ public class GZipTransformerFunctionalTestCase extends AbstractIntegrationTestCa
     ByteArrayInputStream bis = new ByteArrayInputStream(TEST_DATA.getBytes());
 
     // Compress input.
-    BaseEvent muleEvent = flowRunner("compressInput").withPayload(bis).run();
+    CoreEvent muleEvent = flowRunner("compressInput").withPayload(bis).run();
     Message compressedResponse = muleEvent.getMessage();
     assertNotNull(compressedResponse);
     assertTrue(compressedResponse.getPayload().getValue() instanceof InputStream);
@@ -77,7 +77,7 @@ public class GZipTransformerFunctionalTestCase extends AbstractIntegrationTestCa
   @Test
   public void testCompressDecompressString() throws Exception {
     // Compress input.
-    BaseEvent muleEvent = flowRunner("compressInput").withPayload(TEST_DATA).run();
+    CoreEvent muleEvent = flowRunner("compressInput").withPayload(TEST_DATA).run();
     Message compressedResponse = muleEvent.getMessage();
     assertNotNull(compressedResponse);
     assertTrue(compressedResponse.getPayload().getValue() instanceof byte[]);

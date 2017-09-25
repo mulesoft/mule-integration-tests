@@ -13,7 +13,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mule.functional.junit4.matchers.MessageMatchers.hasPayload;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
 
-import org.mule.runtime.core.api.event.BaseEvent;
+import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -32,7 +32,7 @@ public class OnErrorNestedExceptionsTestCase extends AbstractIntegrationTestCase
 
   @Test
   public void propagatesToOuterWithoutExceptionAndSucceeds() throws Exception {
-    BaseEvent event = flowRunner("propagatesToOuterWithoutExceptionAndSucceeds").run();
+    CoreEvent event = flowRunner("propagatesToOuterWithoutExceptionAndSucceeds").run();
     assertThat(event.getMessage(), hasPayload(equalTo("propagated again")));
   }
 
@@ -45,7 +45,7 @@ public class OnErrorNestedExceptionsTestCase extends AbstractIntegrationTestCase
 
   @Test
   public void propagatesToFlowWithoutExceptionAndSucceeds() throws Exception {
-    BaseEvent event = flowRunner("propagatesToFlowWithoutExceptionAndSucceeds").run();
+    CoreEvent event = flowRunner("propagatesToFlowWithoutExceptionAndSucceeds").run();
     assertThat(event.getMessage(), hasPayload(equalTo("propagated again")));
   }
 
@@ -58,7 +58,7 @@ public class OnErrorNestedExceptionsTestCase extends AbstractIntegrationTestCase
 
   @Test
   public void propagatesToOuterWithExceptionAndSucceeds() throws Exception {
-    BaseEvent event = flowRunner("propagatesToOuterWithExceptionAndSucceeds").run();
+    CoreEvent event = flowRunner("propagatesToOuterWithExceptionAndSucceeds").run();
     assertThat(event.getMessage(), hasPayload(equalTo("propagated again")));
   }
 
@@ -71,7 +71,7 @@ public class OnErrorNestedExceptionsTestCase extends AbstractIntegrationTestCase
 
   @Test
   public void propagatesToFlowWithExceptionAndSucceeds() throws Exception {
-    BaseEvent event = flowRunner("propagatesToFlowWithExceptionAndSucceeds").run();
+    CoreEvent event = flowRunner("propagatesToFlowWithExceptionAndSucceeds").run();
     assertThat(event.getMessage(), hasPayload(equalTo("propagated again")));
   }
 

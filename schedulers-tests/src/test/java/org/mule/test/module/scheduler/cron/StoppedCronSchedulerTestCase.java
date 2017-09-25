@@ -16,7 +16,7 @@ import org.mule.runtime.api.lifecycle.Startable;
 import org.mule.runtime.api.lifecycle.Stoppable;
 import org.mule.runtime.api.source.SchedulerMessageSource;
 import org.mule.runtime.core.api.MuleContext;
-import org.mule.runtime.core.api.event.BaseEvent;
+import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.tck.probe.JUnitLambdaProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.test.AbstractSchedulerTestCase;
@@ -51,7 +51,7 @@ public class StoppedCronSchedulerTestCase extends AbstractSchedulerTestCase {
   public static class Foo implements EventCallback {
 
     @Override
-    public void eventReceived(BaseEvent event, Object component, MuleContext muleContext) throws Exception {
+    public void eventReceived(CoreEvent event, Object component, MuleContext muleContext) throws Exception {
       synchronized (foo) {
         foo.add((String) event.getMessage().getPayload().getValue());
       }
