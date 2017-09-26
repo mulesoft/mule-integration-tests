@@ -335,10 +335,10 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
               .run();
 
 
-    final Message result =
-        queueHandler.read("async-tx-out", RECEIVE_TIMEOUT).getMessage();
-    final Message asyncResult =
-        queueHandler.read("async-async-tx-out", RECEIVE_TIMEOUT).getMessage();
+      final Message result =
+          queueHandler.read("async-tx-out", RECEIVE_TIMEOUT).getMessage();
+      final Message asyncResult =
+          queueHandler.read("async-async-tx-out", RECEIVE_TIMEOUT).getMessage();
 
       assertAsync(syncResult.getMessage(), result, asyncResult);
     } finally {

@@ -51,10 +51,11 @@ public class RoundRobinTestCase extends AbstractIntegrationTestCase {
       writer.join();
     }
 
+    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
+
     for (int i = 0, j = 0; i < NUMBER_OF_WRITERS * NUMBER_OF_MESSAGES; i++) {
       // Message should be disrtibuted uniformly among endpoints
       String path = "output" + j;
-      TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
       Message msg = queueHandler.read(path, 0).getMessage();
       assertNotNull(msg);
       LOGGER.debug(path + ": " + getPayloadAsString(msg));
