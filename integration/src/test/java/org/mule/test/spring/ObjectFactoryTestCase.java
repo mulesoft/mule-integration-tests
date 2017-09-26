@@ -14,7 +14,6 @@ import static org.junit.Assert.assertThat;
 import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.LIFECYCLE_AND_DEPENDENCY_INJECTION;
 import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.ObjectFactoryStory.OBJECT_FACTORY_INECTION_AND_LIFECYCLE;
 
-import org.mule.runtime.core.api.registry.RegistrationException;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.tests.parsers.api.TestObject;
 import org.mule.tests.parsers.api.TestObjectFactory;
@@ -34,7 +33,7 @@ public class ObjectFactoryTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  public void validateInjectionAndLifecycleOverObjectFactoryAndTheObjectCreatedByIt() throws RegistrationException {
+  public void validateInjectionAndLifecycleOverObjectFactoryAndTheObjectCreatedByIt() {
     TestObject testObject = registry.<TestObject>lookupByType(TestObject.class).get();
     assertThat(testObject, notNullValue());
 
