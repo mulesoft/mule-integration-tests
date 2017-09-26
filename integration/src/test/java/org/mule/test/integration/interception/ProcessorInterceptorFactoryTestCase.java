@@ -20,35 +20,27 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mule.functional.junit4.rules.ExpectedError.none;
+import static org.mule.runtime.api.interception.ProcessorInterceptorFactory.INTERCEPTORS_ORDER_REGISTRY_KEY;
 import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
-import static org.mule.test.allure.AllureConstants.InterceptonApi.ComponentInterceptionStory.COMPONENT_INTERCEPTION_STORY;
 import static org.mule.test.allure.AllureConstants.InterceptonApi.INTERCEPTION_API;
+import static org.mule.test.allure.AllureConstants.InterceptonApi.ComponentInterceptionStory.COMPONENT_INTERCEPTION_STORY;
 import static org.mule.test.heisenberg.extension.HeisenbergConnectionProvider.getActiveConnections;
 import static org.mule.test.heisenberg.extension.HeisenbergConnectionProvider.getConnects;
 import static org.mule.test.heisenberg.extension.HeisenbergConnectionProvider.getDisconnects;
 import static org.mule.test.heisenberg.extension.HeisenbergOperations.CALL_GUS_MESSAGE;
-import io.qameta.allure.Description;
-import io.qameta.allure.Feature;
-import io.qameta.allure.Story;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+
 import org.mule.functional.junit4.rules.ExpectedError;
 import org.mule.runtime.api.component.location.ComponentLocation;
-import org.mule.runtime.api.config.custom.ServiceConfigurator;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.el.MuleExpressionLanguage;
+import org.mule.runtime.api.exception.ErrorTypeRepository;
 import org.mule.runtime.api.interception.InterceptionAction;
 import org.mule.runtime.api.interception.InterceptionEvent;
 import org.mule.runtime.api.interception.ProcessorInterceptor;
 import org.mule.runtime.api.interception.ProcessorInterceptorFactory;
+import org.mule.runtime.api.interception.ProcessorInterceptorFactory.ProcessorInterceptorOrder;
 import org.mule.runtime.api.interception.ProcessorParameterValue;
 import org.mule.runtime.api.lock.LockFactory;
-import org.mule.runtime.core.api.MuleContext;
-import org.mule.runtime.core.api.config.ConfigurationBuilder;
-import org.mule.runtime.core.api.config.ConfigurationException;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.runtime.http.api.HttpService;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -56,11 +48,20 @@ import org.mule.test.heisenberg.extension.HeisenbergConnection;
 import org.mule.test.heisenberg.extension.HeisenbergExtension;
 import org.mule.test.heisenberg.extension.exception.HeisenbergException;
 import org.mule.test.heisenberg.extension.model.KillParameters;
+import org.mule.test.integration.interception.ProcessorInterceptorFactoryTestCase.AfterWithCallbackInterceptorFactory;
+import org.mule.test.integration.interception.ProcessorInterceptorFactoryTestCase.EvaluatesExpressionInterceptorFactory;
+import org.mule.test.integration.interception.ProcessorInterceptorFactoryTestCase.HasInjectedAttributesInterceptorFactory;
 import org.mule.test.runner.RunnerDelegateTo;
 
-import javax.inject.Inject;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
+
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -69,6 +70,12 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+
+import javax.inject.Inject;
+
+import io.qameta.allure.Description;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 
 @Feature(INTERCEPTION_API)
 @Story(COMPONENT_INTERCEPTION_STORY)
@@ -95,24 +102,26 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
   }
 
   @Override
-  protected void addBuilders(List<ConfigurationBuilder> builders) {
-    super.addBuilders(builders);
+  protected Map<String, Object> getStartUpRegistryObjects() {
+    Map<String, Object> objects = new HashMap<>();
 
-    builders.add(new ConfigurationBuilder() {
+    objects.put("_AfterWithCallbackInterceptorFactory", new AfterWithCallbackInterceptorFactory());
+    objects.put("_HasInjectedAttributesInterceptorFactory",
+                new HasInjectedAttributesInterceptorFactory(mutateEventBefore));
+    objects.put("_EvaluatesExpressionInterceptorFactory", new EvaluatesExpressionInterceptorFactory());
 
-      @Override
-      public void configure(MuleContext muleContext) throws ConfigurationException {
-        muleContext.getProcessorInterceptorManager().addInterceptorFactory(() -> new AfterWithCallbackInterceptor());
-        muleContext.getProcessorInterceptorManager()
-            .addInterceptorFactory(new HasInjectedAttributesInterceptorFactory(mutateEventBefore));
-        muleContext.getProcessorInterceptorManager().addInterceptorFactory(new EvaluatesExpressionInterceptorFactory());
-      }
+    // objects.put(INTERCEPTORS_ORDER_REGISTRY_KEY, asList(AfterWithCallbackInterceptorFactory.class.getName(),
+    // HasInjectedAttributesInterceptorFactory.class.getName(),
+    // ProcessorInterceptorFactory.class.getName()));
+    objects.put(INTERCEPTORS_ORDER_REGISTRY_KEY,
+                (ProcessorInterceptorOrder) () -> asList(AfterWithCallbackInterceptorFactory.class.getName(),
+                                                         HasInjectedAttributesInterceptorFactory.class.getName(),
+                                                         EvaluatesExpressionInterceptorFactory.class.getName()));
+    // objects.put(INTERCEPTORS_ORDER_REGISTRY_KEY, asList(AfterWithCallbackInterceptorFactory.class.getName(),
+    // HasInjectedAttributesInterceptorFactory.class.getName(),
+    // EvaluatesExpressionInterceptorFactory.class.getName()));
 
-      @Override
-      public void addServiceConfigurator(ServiceConfigurator serviceConfigurator) {
-        // Nothing to do
-      }
-    });
+    return objects;
   }
 
   @Before
@@ -381,6 +390,9 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     @Inject
     private HttpService httpService;
 
+    @Inject
+    private ErrorTypeRepository errorTypeRepository;
+
     private boolean mutateEventBefore;
 
     public HasInjectedAttributesInterceptorFactory(boolean mutateEventBefore) {
@@ -389,7 +401,8 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
 
     @Override
     public ProcessorInterceptor get() {
-      return new HasInjectedAttributesInterceptor(expressionEvaluator, lockFactory, httpService, mutateEventBefore);
+      return new HasInjectedAttributesInterceptor(expressionEvaluator, lockFactory, httpService, errorTypeRepository,
+                                                  mutateEventBefore);
     }
   }
 
@@ -401,14 +414,17 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     private MuleExpressionLanguage expressionEvaluator;
     private LockFactory lockFactory;
     private HttpService httpService;
+    private ErrorTypeRepository errorTypeRepository;
 
     private boolean mutateEventBefore;
 
     public HasInjectedAttributesInterceptor(MuleExpressionLanguage expressionEvaluator, LockFactory lockFactory,
-                                            HttpService httpService, boolean mutateEventBefore) {
+                                            HttpService httpService, ErrorTypeRepository errorTypeRepository,
+                                            boolean mutateEventBefore) {
       this.expressionEvaluator = expressionEvaluator;
       this.lockFactory = lockFactory;
       this.httpService = httpService;
+      this.errorTypeRepository = errorTypeRepository;
       this.mutateEventBefore = mutateEventBefore;
     }
 
@@ -418,6 +434,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
       assertThat(expressionEvaluator, not(nullValue()));
       assertThat(lockFactory, not(nullValue()));
       assertThat(httpService, not(nullValue()));
+      assertThat(errorTypeRepository, not(nullValue()));
 
       if (mutateEventBefore) {
         event.addVariable("mutated", random());
@@ -499,6 +516,14 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
       assertThat(expressionEvaluator.evaluate("vars.addedVar", event.asBindingContext()).getValue(), is("value2"));
     }
 
+  }
+
+  public static class AfterWithCallbackInterceptorFactory implements ProcessorInterceptorFactory {
+
+    @Override
+    public ProcessorInterceptor get() {
+      return new AfterWithCallbackInterceptor();
+    }
   }
 
   public static class AfterWithCallbackInterceptor implements ProcessorInterceptor {
