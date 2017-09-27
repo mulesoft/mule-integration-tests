@@ -13,10 +13,10 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mule.functional.junit4.TestLegacyMessageUtils.getInboundProperty;
 import static org.mule.functional.junit4.TestLegacyMessageUtils.getOutboundProperty;
+import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.functional.junit4.TestLegacyMessageBuilder;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -27,6 +27,14 @@ import org.junit.Test;
 
 public class FlowAsyncBeforeAfterOutboundTestCase extends AbstractIntegrationTestCase {
 
+  private TestConnectorQueueHandler queueHandler;
+
+  @Override
+  protected void doSetUp() throws Exception {
+    super.doSetUp();
+    queueHandler = new TestConnectorQueueHandler(registry);
+  }
+
   @Override
   protected String getConfigFile() {
     return "org/mule/test/construct/flow-async-before-after-outbound.xml";
@@ -34,22 +42,18 @@ public class FlowAsyncBeforeAfterOutboundTestCase extends AbstractIntegrationTes
 
   @Test
   public void testAsyncBefore() throws Exception {
-    MuleClient client = muleContext.getClient();
-
     Message msgSync = flowRunner("test-async-block-before-outbound").withPayload("message").run().getMessage();
-    Message msgAsync = client.request("test://test.before.async.out", RECEIVE_TIMEOUT).getRight().get();
-    Message msgOut = client.request("test://test.before.out", RECEIVE_TIMEOUT).getRight().get();
+    Message msgAsync = queueHandler.read("test.before.async.out", RECEIVE_TIMEOUT).getMessage();
+    Message msgOut = queueHandler.read("test.before.out", RECEIVE_TIMEOUT).getMessage();
 
     assertCorrectThreads(msgSync, msgAsync, msgOut);
   }
 
   @Test
   public void testAsyncAfter() throws Exception {
-    MuleClient client = muleContext.getClient();
-
     Message msgSync = flowRunner("test-async-block-after-outbound").withPayload("message").run().getMessage();
-    Message msgAsync = client.request("test://test.after.async.out", RECEIVE_TIMEOUT).getRight().get();
-    Message msgOut = client.request("test://test.after.out", RECEIVE_TIMEOUT).getRight().get();
+    Message msgAsync = queueHandler.read("test.after.async.out", RECEIVE_TIMEOUT).getMessage();
+    Message msgOut = queueHandler.read("test.after.out", RECEIVE_TIMEOUT).getMessage();
 
     assertCorrectThreads(msgSync, msgAsync, msgOut);
   }

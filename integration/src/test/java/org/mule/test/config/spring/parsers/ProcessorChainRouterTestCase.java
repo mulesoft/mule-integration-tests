@@ -10,8 +10,9 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
-import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
+import org.mule.functional.api.component.TestConnectorQueueHandler;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ProcessorChainRouterStory.PROCESSOR_CHAIN_ROUTER;
+import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 
 import org.mule.runtime.api.component.execution.ComponentExecutionException;
 import org.mule.runtime.api.component.execution.ExecutableComponent;
@@ -19,7 +20,7 @@ import org.mule.runtime.api.event.Event;
 import org.mule.runtime.api.component.execution.InputEvent;
 import org.mule.runtime.api.component.execution.ExecutionResult;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.core.api.client.MuleClient;
+
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.config.dsl.ParsersPluginTest;
 
@@ -162,10 +163,10 @@ public class ProcessorChainRouterTestCase extends AbstractIntegrationTestCase im
     CompletableFuture<ExecutionResult> completableFuture = chainRouterComponents.execute(event);
     Event returnedEvent = completableFuture.get().getEvent();
     assertThat(returnedEvent, notNullValue());
-    MuleClient muleClient = muleContext.getClient();
-    assertThat(muleClient.request("test://asyncQueue", RECEIVE_TIMEOUT).isRight(), is(true));
-    assertThat(muleClient.request("test://sgRoute1Queue", RECEIVE_TIMEOUT).isRight(), is(true));
-    assertThat(muleClient.request("test://sgRoute2Queue", RECEIVE_TIMEOUT).isRight(), is(true));
+    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
+    assertThat(queueHandler.read("asyncQueue", RECEIVE_TIMEOUT) != null, is(true));
+    assertThat(queueHandler.read("sgRoute1Queue", RECEIVE_TIMEOUT) != null, is(true));
+    assertThat(queueHandler.read("sgRoute2Queue", RECEIVE_TIMEOUT) != null, is(true));
   }
 
   private void assertProcessorChainResult(Event returnedEvent) {

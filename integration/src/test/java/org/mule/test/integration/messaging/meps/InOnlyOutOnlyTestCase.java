@@ -10,37 +10,41 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
+import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Test;
 
 public class InOnlyOutOnlyTestCase extends AbstractIntegrationTestCase {
 
+  private static TestConnectorQueueHandler queueHandler;
+
   @Override
   protected String getConfigFile() {
     return "org/mule/test/integration/messaging/meps/pattern_In-Only_Out-Only-flow.xml";
   }
 
+  @Override
+  protected void doSetUp() throws Exception {
+    super.doSetUp();
+    queueHandler = new TestConnectorQueueHandler(registry);
+  }
+
   @Test
   public void testExchangeReceived() throws Exception {
-    MuleClient client = muleContext.getClient();
-
     flowRunner("In-Only_Out-Only-Service").withPayload("some data").withVariable("foo", "bar").run();
 
-    Message result = client.request("test://received", RECEIVE_TIMEOUT).getRight().get();
+    Message result = queueHandler.read("received", RECEIVE_TIMEOUT).getMessage();
     assertNotNull(result);
     assertThat(getPayloadAsString(result), is("foo header received"));
   }
 
   @Test
   public void testExchangeNotReceived() throws Exception {
-    MuleClient client = muleContext.getClient();
-
     flowRunner("In-Only_Out-Only-Service").withPayload("some data").run();
 
-    Message result = client.request("test://notReceived", RECEIVE_TIMEOUT).getRight().get();
+    Message result = queueHandler.read("notReceived", RECEIVE_TIMEOUT).getMessage();
     assertNotNull(result);
     assertThat(getPayloadAsString(result), is("foo header not received"));
   }

@@ -12,8 +12,8 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.http.api.HttpConstants.Method.GET;
 
+import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.functional.junit4.DomainFunctionalTestCase;
-import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.http.api.domain.message.request.HttpRequest;
 import org.mule.service.http.TestHttpClient;
 import org.mule.tck.junit4.rule.DynamicPort;
@@ -44,11 +44,11 @@ public class NotSharedHttpConnectorInDomain extends DomainFunctionalTestCase {
   @Test
   public void sendMessageToNotSharedConnectorInDomain() throws Exception {
     String url = format("http://localhost:%d/test", dynamicPort.getNumber());
-    MuleContext muleContext = getMuleContextForApp(APP);
 
     HttpRequest request = HttpRequest.builder().uri(url).method(GET).build();
     httpClient.send(request, DEFAULT_TEST_TIMEOUT_SECS, false, null);
 
-    assertThat(muleContext.getClient().request("test://in", 5000), is(notNullValue()));
+    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(this.getInfrastructureForApp(APP).getRegistry());
+    assertThat(queueHandler.read("in", 5000).getMessage(), is(notNullValue()));
   }
 }

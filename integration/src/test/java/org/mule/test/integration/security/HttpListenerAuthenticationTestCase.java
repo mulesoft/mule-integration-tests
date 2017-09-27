@@ -19,6 +19,7 @@ import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
 import static org.mule.test.http.functional.matcher.HttpResponseReasonPhraseMatcher.hasReasonPhrase;
 import static org.mule.test.http.functional.matcher.HttpResponseStatusCodeMatcher.hasStatusCode;
 
+import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -75,7 +76,8 @@ public class HttpListenerAuthenticationTestCase extends AbstractIntegrationTestC
     Header authHeader = httpResponse.getFirstHeader(WWW_AUTHENTICATE);
     assertThat(authHeader, is(notNullValue()));
     assertThat(authHeader.getValue(), is(BASIC_REALM_MULE_REALM));
-    assertThat(muleContext.getClient().request("test://basicAuthentication", RECEIVE_TIMEOUT).getRight().isPresent(), is(true));
+    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
+    assertThat(queueHandler.read("basicAuthentication", RECEIVE_TIMEOUT).getMessage(), is(notNullValue()));
   }
 
   @Test
@@ -94,8 +96,8 @@ public class HttpListenerAuthenticationTestCase extends AbstractIntegrationTestC
 
     assertThat(httpResponse, hasStatusCode(INTERNAL_SERVER_ERROR.getStatusCode()));
     assertThat(httpResponse, hasReasonPhrase(INTERNAL_SERVER_ERROR.getReasonPhrase()));
-    assertThat(
-               muleContext.getClient().request("test://basicAuthentication", RECEIVE_TIMEOUT).getRight().isPresent(), is(true));
+    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
+    assertThat(queueHandler.read("basicAuthentication", RECEIVE_TIMEOUT).getMessage(), is(notNullValue()));
   }
 
   private void getHttpResponse(CredentialsProvider credsProvider) throws IOException {

@@ -10,10 +10,10 @@ import static java.lang.String.format;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.mule.functional.junit4.TestLegacyMessageUtils.getOutboundProperty;
 import static org.mule.runtime.http.api.HttpConstants.Method.POST;
 import static org.mule.tck.processor.FlowAssert.verify;
 
+import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.http.api.HttpService;
 import org.mule.runtime.api.util.MultiMap;
@@ -51,7 +51,8 @@ public class HttpJmsBridgeTestCase extends AbstractIntegrationTestCase {
         .entity(new ByteArrayHttpEntity(payload.getBytes())).headers(headersMap).method(POST).build();
     httpClient.send(request, RECEIVE_TIMEOUT, false, null);
 
-    Message msg = muleContext.getClient().request("test://out", RECEIVE_TIMEOUT).getRight().get();
+    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
+    Message msg = queueHandler.read("out", RECEIVE_TIMEOUT).getMessage();
 
     assertNotNull(msg);
     assertThat(getPayloadAsString(msg), is(payload));

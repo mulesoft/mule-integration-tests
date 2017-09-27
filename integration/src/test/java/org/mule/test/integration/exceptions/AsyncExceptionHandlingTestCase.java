@@ -7,8 +7,8 @@
 package org.mule.test.integration.exceptions;
 
 import static org.junit.Assert.assertNotNull;
+import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.test.AbstractIntegrationTestCase;
-import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.tck.junit4.rule.DynamicPort;
 
 import org.junit.Rule;
@@ -28,8 +28,8 @@ public class AsyncExceptionHandlingTestCase extends AbstractIntegrationTestCase 
 
   @Test
   public void testAsyncExceptionHandlingTestCase() throws Exception {
-    MuleClient client = muleContext.getClient();
+    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
     flowRunner("SearchWebServiceBridge").runExpectingException();
-    assertNotNull(client.request("test://back-channel", RECEIVE_TIMEOUT));
+    assertNotNull(queueHandler.read("back-channel", RECEIVE_TIMEOUT));
   }
 }

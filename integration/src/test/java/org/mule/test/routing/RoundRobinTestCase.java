@@ -11,8 +11,8 @@ import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.RoundRobinStory.ROUND_ROBIN;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.util.ArrayList;
@@ -33,8 +33,6 @@ public class RoundRobinTestCase extends AbstractIntegrationTestCase {
   private static final int NUMBER_OF_WRITERS = 10;
   private static final int NUMBER_OF_ENDPOINTS = 5;
 
-  private MuleClient client;
-
   @Override
   protected String getConfigFile() {
     return "round-robin-test.xml";
@@ -42,7 +40,6 @@ public class RoundRobinTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void testRoundRobin() throws Exception {
-    client = muleContext.getClient();
     List<Thread> writers = new ArrayList<>();
     for (int i = 0; i < NUMBER_OF_WRITERS; i++) {
       writers.add(new Thread(new MessageWriter(i)));
@@ -54,10 +51,12 @@ public class RoundRobinTestCase extends AbstractIntegrationTestCase {
       writer.join();
     }
 
+    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
+
     for (int i = 0, j = 0; i < NUMBER_OF_WRITERS * NUMBER_OF_MESSAGES; i++) {
       // Message should be disrtibuted uniformly among endpoints
-      String path = "test://output" + j;
-      Message msg = client.request(path, 0).getRight().get();
+      String path = "output" + j;
+      Message msg = queueHandler.read(path, 0).getMessage();
       assertNotNull(msg);
       LOGGER.debug(path + ": " + getPayloadAsString(msg));
       j = (j + 1) % NUMBER_OF_ENDPOINTS;

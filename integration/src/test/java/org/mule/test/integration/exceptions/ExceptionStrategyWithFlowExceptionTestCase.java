@@ -9,10 +9,10 @@ package org.mule.test.integration.exceptions;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.functional.junit4.TestLegacyMessageUtils;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.exception.MessagingException;
@@ -30,8 +30,8 @@ public class ExceptionStrategyWithFlowExceptionTestCase extends AbstractIntegrat
   @Test
   public void testFlowExceptionExceptionStrategy() throws Exception {
     flowRunner("customException").withPayload(TEST_MESSAGE).dispatch();
-    MuleClient client = muleContext.getClient();
-    Message message = client.request("test://out", RECEIVE_TIMEOUT).getRight().get();
+    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
+    Message message = queueHandler.read("out", RECEIVE_TIMEOUT).getMessage();
 
     assertThat(message, is(notNullValue()));
     assertThat(TestLegacyMessageUtils.getExceptionPayload(message), is(notNullValue()));

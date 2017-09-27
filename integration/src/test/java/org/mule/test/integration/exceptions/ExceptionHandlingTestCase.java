@@ -21,9 +21,9 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mule.functional.api.event.TestLegacyEventUtils.getEffectiveExceptionHandler;
 import static org.mule.tck.MuleTestUtils.getExceptionListeners;
+import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.runtime.core.api.exception.MessagingExceptionHandler;
@@ -48,6 +48,7 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
 
   private static MessagingExceptionHandler effectiveMessagingExceptionHandler;
   private static CountDownLatch latch;
+  private static TestConnectorQueueHandler queueHandler;
 
   @Override
   protected String getConfigFile() {
@@ -57,6 +58,7 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
   @Override
   protected void doSetUp() throws Exception {
     effectiveMessagingExceptionHandler = null;
+    queueHandler = new TestConnectorQueueHandler(registry);
   }
 
   @Test
@@ -74,8 +76,7 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
   public void testAsyncInFlow() throws Exception {
     flowRunner("asyncInFlow").withPayload(MESSAGE).dispatch();
 
-    MuleClient client = muleContext.getClient();
-    Message response = client.request("test://outFlow4", 3000).getRight().get();
+    Message response = queueHandler.read("outFlow4", 3000).getMessage();
     assertNotNull(response);
     assertThat(effectiveMessagingExceptionHandler.getClass().getName(), equalTo(ERROR_HANDLER_CLASSNAME));
   }
@@ -84,8 +85,7 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
   public void testUntilSuccessfulInFlow() throws Exception {
     flowRunner("untilSuccessfulInFlow").withPayload(MESSAGE).dispatch();
 
-    MuleClient client = muleContext.getClient();
-    Message response = client.request("test://outFlow5", 3000).getRight().get();
+    Message response = queueHandler.read("outFlow5", 3000).getMessage();
 
     assertNotNull(response);
     assertThat(effectiveMessagingExceptionHandler.getClass().getName(), equalTo(ERROR_HANDLER_CLASSNAME));
@@ -106,8 +106,7 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
   public void testCustomProcessorInTransactionalScope() throws Exception {
     flowRunner("customProcessorInTransactionalScope").withPayload(MESSAGE).dispatch();
 
-    MuleClient client = muleContext.getClient();
-    Message response = client.request("test://outTransactional1", 3000).getRight().get();
+    Message response = queueHandler.read("outTransactional1", 3000).getMessage();
 
     assertNotNull(response);
 
@@ -118,7 +117,7 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void testUntilSuccessfulInTransactionalScope() throws Exception {
-    testTransactionalScope("untilSuccessfulInTransactionalScope", "test://outTransactional5", emptyMap());
+    testTransactionalScope("untilSuccessfulInTransactionalScope", "outTransactional5", emptyMap());
     assertThat(effectiveMessagingExceptionHandler.getClass().getName(), equalTo(ERROR_HANDLER_CLASSNAME));
   }
 
@@ -126,8 +125,7 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
   public void testCustomProcessorInExceptionStrategy() throws Exception {
     flowRunner("customProcessorInExceptionStrategy").withPayload(MESSAGE).dispatch();
 
-    MuleClient client = muleContext.getClient();
-    Message response = client.request("test://outStrategy1", 3000).getRight().get();
+    Message response = queueHandler.read("outStrategy1", 3000).getMessage();
 
     assertNotNull(response);
 
@@ -165,8 +163,7 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
       throws Exception {
     flowRunner(flowName).withPayload(MESSAGE).withInboundProperties(messageProperties).dispatch();
 
-    MuleClient client = muleContext.getClient();
-    Message response = client.request(expected, 3000).getRight().get();
+    Message response = queueHandler.read(expected, 3000).getMessage();
 
     assertNotNull(response);
   }

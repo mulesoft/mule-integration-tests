@@ -7,8 +7,8 @@
 package org.mule.test.construct;
 
 import static org.junit.Assert.assertEquals;
+import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Test;
@@ -22,17 +22,17 @@ public class FlowOutboundInMiddleOfFlowTestCase extends AbstractIntegrationTestC
 
   @Test
   public void testOutboundInMiddleOfFlow() throws Exception {
-    MuleClient client = muleContext.getClient();
+    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
 
     flowRunner("flowTest").withPayload("message").run();
 
-    Message msg = client.request("test://test.out.1", 1000).getRight().get();
+    Message msg = queueHandler.read("test.out.1", 1000).getMessage();
     assertEquals("messagehello", getPayloadAsString(msg));
 
-    Message msg2 = client.request("test://test.out.2", RECEIVE_TIMEOUT).getRight().get();
+    Message msg2 = queueHandler.read("test.out.2", RECEIVE_TIMEOUT).getMessage();
     assertEquals("messagebye", getPayloadAsString(msg2));
 
-    Message msg3 = client.request("test://test.out.3", RECEIVE_TIMEOUT).getRight().get();
+    Message msg3 = queueHandler.read("test.out.3", RECEIVE_TIMEOUT).getMessage();
     assertEquals("egassem", getPayloadAsString(msg3));
   }
 }

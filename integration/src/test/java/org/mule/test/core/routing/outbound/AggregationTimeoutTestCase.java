@@ -15,9 +15,9 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
 import org.mule.functional.api.component.EventCallback;
+import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.MuleContext;
-import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -46,13 +46,13 @@ public class AggregationTimeoutTestCase extends AbstractIntegrationTestCase {
     inputData.add(BLOCK_EVENT);
 
     try {
-      MuleClient client = muleContext.getClient();
+      TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
 
       // Need to return control to test case as soon as message is sent, and not wait for response.
       flowRunner("main").withPayload(inputData).dispatchAsync(muleContext.getSchedulerService()
           .ioScheduler(muleContext.getSchedulerBaseConfig().withShutdownTimeout(0, SECONDS)));
 
-      Message response = client.request("test://testOut", RECEIVE_TIMEOUT).getRight().get();
+      Message response = queueHandler.read("testOut", RECEIVE_TIMEOUT).getMessage();
       assertThat(response.getPayload().getValue(), instanceOf(List.class));
 
       List<String> payloads = ((List<Message>) response.getPayload().getValue()).stream()

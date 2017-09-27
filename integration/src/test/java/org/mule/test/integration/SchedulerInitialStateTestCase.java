@@ -9,31 +9,30 @@ package org.mule.test.integration;
 import static java.util.stream.Collectors.toList;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.deployment.management.ComponentInitialStateManager.SERVICE_ID;
 import static org.mule.test.allure.AllureConstants.SchedulerServiceFeature.SCHEDULER_SERVICE;
 import static org.mule.test.allure.AllureConstants.SchedulerServiceFeature.SchedulerServiceStory.SOURCE_MANAGEMENT;
 
+import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.component.location.Location;
 import org.mule.runtime.api.config.custom.ServiceConfigurator;
 import org.mule.runtime.api.deployment.management.ComponentInitialStateManager;
+import org.mule.runtime.api.event.Event;
 import org.mule.runtime.api.exception.MuleException;
-import org.mule.runtime.api.message.Error;
-import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.component.Component;
 import org.mule.runtime.api.source.SchedulerMessageSource;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.runtime.core.api.config.ConfigurationException;
-import org.mule.runtime.core.api.functional.Either;
 import org.mule.tck.probe.PollingProber;
 import org.mule.tck.probe.Probe;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.junit.Test;
 
@@ -99,17 +98,14 @@ public class SchedulerInitialStateTestCase extends AbstractIntegrationTestCase {
         .find(Location.builder().globalName("notRunningSchedulerOnStartup").addSourcePart().build()).get();
     assertThat(schedulerMessageSource.isStarted(), is(false));
 
+    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
+
     new PollingProber(10000, 100).check(new Probe() {
 
       @Override
       public boolean isSatisfied() {
-        try {
-          Either<Error, Optional<Message>> response =
-              muleContext.getClient().request("test://runningSchedulerOnStartupQueue", 100);
-          return response.isRight() && response.getRight().isPresent();
-        } catch (MuleException e) {
-          return false;
-        }
+        Event response = queueHandler.read("runningSchedulerOnStartupQueue", 100);
+        return response != null;
       }
 
       @Override
@@ -118,9 +114,7 @@ public class SchedulerInitialStateTestCase extends AbstractIntegrationTestCase {
       }
     });
 
-    Either<Error, Optional<Message>> response =
-        muleContext.getClient().request("test://notRunningSchedulerOnStartupQueue", 100);
-    assertThat(response.isRight(), is(true));
-    assertThat(response.getRight().isPresent(), is(false));
+    Event response = queueHandler.read("notRunningSchedulerOnStartupQueue", 100);
+    assertThat(response, is(nullValue()));
   }
 }

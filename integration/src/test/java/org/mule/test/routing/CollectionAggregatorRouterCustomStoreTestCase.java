@@ -11,8 +11,8 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.core.api.client.MuleClient;
 import org.mule.runtime.api.store.ObjectStoreException;
 import org.mule.runtime.core.internal.store.PartitionedInMemoryObjectStore;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -34,12 +34,12 @@ public class CollectionAggregatorRouterCustomStoreTestCase extends AbstractInteg
 
   @Test
   public void eventGroupWithCustomStore() throws Exception {
-    MuleClient client = muleContext.getClient();
     List<String> list = Arrays.asList("first", "second");
 
     flowRunner("splitter").withPayload(list).run();
 
-    Message request = client.request("test://out", 10000).getRight().get();
+    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
+    Message request = queueHandler.read("out", 10000).getMessage();
     assertNotNull(request);
     assertEquals(list.size(), ((List) request.getPayload().getValue()).size());
 
