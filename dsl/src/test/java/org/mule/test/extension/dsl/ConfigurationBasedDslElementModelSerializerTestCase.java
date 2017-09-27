@@ -10,8 +10,8 @@ import static org.mule.runtime.core.api.util.IOUtils.getResourceAsString;
 import static org.mule.runtime.internal.dsl.DslConstants.REDELIVERY_POLICY_ELEMENT_IDENTIFIER;
 import static org.mule.test.module.extension.internal.util.ExtensionsTestUtils.compareXML;
 import org.mule.runtime.api.meta.NamedObject;
-import org.mule.runtime.config.spring.api.dsl.model.DslElementModel;
-import org.mule.runtime.config.spring.api.dsl.model.XmlDslElementModelConverter;
+import org.mule.runtime.config.api.dsl.model.DslElementModel;
+import org.mule.runtime.config.api.dsl.model.XmlDslElementModelConverter;
 import org.mule.runtime.dsl.api.component.config.ComponentConfiguration;
 
 import java.io.IOException;
