@@ -22,13 +22,12 @@ import static org.junit.Assert.fail;
 import static org.mule.functional.junit4.rules.ExpectedError.none;
 import static org.mule.runtime.api.interception.ProcessorInterceptorFactory.INTERCEPTORS_ORDER_REGISTRY_KEY;
 import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
-import static org.mule.test.allure.AllureConstants.InterceptonApi.INTERCEPTION_API;
 import static org.mule.test.allure.AllureConstants.InterceptonApi.ComponentInterceptionStory.COMPONENT_INTERCEPTION_STORY;
+import static org.mule.test.allure.AllureConstants.InterceptonApi.INTERCEPTION_API;
 import static org.mule.test.heisenberg.extension.HeisenbergConnectionProvider.getActiveConnections;
 import static org.mule.test.heisenberg.extension.HeisenbergConnectionProvider.getConnects;
 import static org.mule.test.heisenberg.extension.HeisenbergConnectionProvider.getDisconnects;
 import static org.mule.test.heisenberg.extension.HeisenbergOperations.CALL_GUS_MESSAGE;
-
 import org.mule.functional.junit4.rules.ExpectedError;
 import org.mule.runtime.api.artifact.Registry;
 import org.mule.runtime.api.component.location.ComponentLocation;
@@ -52,12 +51,6 @@ import org.mule.test.heisenberg.extension.exception.HeisenbergException;
 import org.mule.test.heisenberg.extension.model.KillParameters;
 import org.mule.test.runner.RunnerDelegateTo;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -75,6 +68,11 @@ import javax.inject.Inject;
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 @Feature(INTERCEPTION_API)
 @Story(COMPONENT_INTERCEPTION_STORY)
