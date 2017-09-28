@@ -48,9 +48,6 @@ import org.mule.test.heisenberg.extension.HeisenbergConnection;
 import org.mule.test.heisenberg.extension.HeisenbergExtension;
 import org.mule.test.heisenberg.extension.exception.HeisenbergException;
 import org.mule.test.heisenberg.extension.model.KillParameters;
-import org.mule.test.integration.interception.ProcessorInterceptorFactoryTestCase.AfterWithCallbackInterceptorFactory;
-import org.mule.test.integration.interception.ProcessorInterceptorFactoryTestCase.EvaluatesExpressionInterceptorFactory;
-import org.mule.test.integration.interception.ProcessorInterceptorFactoryTestCase.HasInjectedAttributesInterceptorFactory;
 import org.mule.test.runner.RunnerDelegateTo;
 
 import org.junit.Before;
@@ -110,16 +107,10 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
                 new HasInjectedAttributesInterceptorFactory(mutateEventBefore));
     objects.put("_EvaluatesExpressionInterceptorFactory", new EvaluatesExpressionInterceptorFactory());
 
-    // objects.put(INTERCEPTORS_ORDER_REGISTRY_KEY, asList(AfterWithCallbackInterceptorFactory.class.getName(),
-    // HasInjectedAttributesInterceptorFactory.class.getName(),
-    // ProcessorInterceptorFactory.class.getName()));
     objects.put(INTERCEPTORS_ORDER_REGISTRY_KEY,
                 (ProcessorInterceptorOrder) () -> asList(AfterWithCallbackInterceptorFactory.class.getName(),
                                                          HasInjectedAttributesInterceptorFactory.class.getName(),
                                                          EvaluatesExpressionInterceptorFactory.class.getName()));
-    // objects.put(INTERCEPTORS_ORDER_REGISTRY_KEY, asList(AfterWithCallbackInterceptorFactory.class.getName(),
-    // HasInjectedAttributesInterceptorFactory.class.getName(),
-    // EvaluatesExpressionInterceptorFactory.class.getName()));
 
     return objects;
   }
