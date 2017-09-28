@@ -30,6 +30,7 @@ import static org.mule.test.heisenberg.extension.HeisenbergConnectionProvider.ge
 import static org.mule.test.heisenberg.extension.HeisenbergOperations.CALL_GUS_MESSAGE;
 
 import org.mule.functional.junit4.rules.ExpectedError;
+import org.mule.runtime.api.artifact.Registry;
 import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.el.MuleExpressionLanguage;
@@ -41,6 +42,7 @@ import org.mule.runtime.api.interception.ProcessorInterceptorFactory;
 import org.mule.runtime.api.interception.ProcessorInterceptorFactory.ProcessorInterceptorOrder;
 import org.mule.runtime.api.interception.ProcessorParameterValue;
 import org.mule.runtime.api.lock.LockFactory;
+import org.mule.runtime.api.scheduler.SchedulerService;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.runtime.http.api.HttpService;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -384,6 +386,12 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     @Inject
     private ErrorTypeRepository errorTypeRepository;
 
+    @Inject
+    private SchedulerService schedulerService;
+
+    @Inject
+    private Registry registry;
+
     private boolean mutateEventBefore;
 
     public HasInjectedAttributesInterceptorFactory(boolean mutateEventBefore) {
@@ -393,7 +401,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     @Override
     public ProcessorInterceptor get() {
       return new HasInjectedAttributesInterceptor(expressionEvaluator, lockFactory, httpService, errorTypeRepository,
-                                                  mutateEventBefore);
+                                                  schedulerService, registry, mutateEventBefore);
     }
   }
 
@@ -406,16 +414,20 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     private LockFactory lockFactory;
     private HttpService httpService;
     private ErrorTypeRepository errorTypeRepository;
+    private SchedulerService schedulerService;
+    private Registry registry;
 
     private boolean mutateEventBefore;
 
     public HasInjectedAttributesInterceptor(MuleExpressionLanguage expressionEvaluator, LockFactory lockFactory,
                                             HttpService httpService, ErrorTypeRepository errorTypeRepository,
-                                            boolean mutateEventBefore) {
+                                            SchedulerService schedulerService, Registry registry, boolean mutateEventBefore) {
       this.expressionEvaluator = expressionEvaluator;
       this.lockFactory = lockFactory;
       this.httpService = httpService;
       this.errorTypeRepository = errorTypeRepository;
+      this.schedulerService = schedulerService;
+      this.registry = registry;
       this.mutateEventBefore = mutateEventBefore;
     }
 
@@ -426,6 +438,8 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
       assertThat(lockFactory, not(nullValue()));
       assertThat(httpService, not(nullValue()));
       assertThat(errorTypeRepository, not(nullValue()));
+      assertThat(schedulerService, not(nullValue()));
+      assertThat(registry, not(nullValue()));
 
       if (mutateEventBefore) {
         event.addVariable("mutated", random());
