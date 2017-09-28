@@ -6,7 +6,7 @@
  */
 package org.mule.properties;
 
-import static org.mule.runtime.config.spring.api.SpringXmlConfigurationBuilderFactory.createConfigurationBuilder;
+import static org.mule.runtime.config.api.SpringXmlConfigurationBuilderFactory.createConfigurationBuilder;
 
 import org.mule.runtime.core.api.config.ConfigurationException;
 import org.mule.runtime.core.api.context.DefaultMuleContextFactory;

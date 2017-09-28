@@ -36,9 +36,9 @@ public class SecurityNamespaceHandlerTestCase extends AbstractIntegrationTestCas
     SecurityProvider dummySecurityProvider = securityManager.getProvider("dummySecurityProvider");
     assertNotNull(dummySecurityProvider);
     assertThat(dummySecurityProvider.getClass().getName(),
-               is("org.mule.runtime.config.spring.internal.CustomSecurityProviderDelegate"));
+               is("org.mule.runtime.config.internal.CustomSecurityProviderDelegate"));
     verifyEncryptionStrategy(securityManager, "dummyEncryptionStrategy",
-                             "org.mule.runtime.config.spring.internal.CustomEncryptionStrategyDelegate");
+                             "org.mule.runtime.config.internal.CustomEncryptionStrategyDelegate");
     verifyEncryptionStrategy(securityManager, "passwordEncryptionStrategy",
                              "org.mule.runtime.core.internal.security.PasswordBasedEncryptionStrategy");
     verifyEncryptionStrategy(securityManager, "secretKeyEncryptionStrategy",

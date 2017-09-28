@@ -16,12 +16,12 @@ import org.mule.runtime.app.declaration.api.ConstructElementDeclaration;
 import org.mule.runtime.app.declaration.api.ParameterElementDeclaration;
 import org.mule.runtime.app.declaration.api.fluent.ElementDeclarer;
 import org.mule.runtime.app.declaration.api.fluent.ParameterSimpleValue;
+import org.mule.runtime.config.api.dsl.ArtifactDeclarationXmlSerializer;
+import org.mule.runtime.config.api.dsl.model.DslElementModelFactory;
 import org.mule.runtime.app.declaration.api.component.location.Location;
 import org.mule.runtime.api.dsl.DslResolvingContext;
 import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.core.api.extension.MuleExtensionModelProvider;
-import org.mule.runtime.config.spring.api.dsl.ArtifactDeclarationXmlSerializer;
-import org.mule.runtime.config.spring.api.dsl.model.DslElementModelFactory;
 
 import com.google.common.collect.ImmutableSet;
 

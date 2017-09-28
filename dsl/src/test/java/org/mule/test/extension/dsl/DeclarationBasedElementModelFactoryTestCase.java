@@ -28,12 +28,12 @@ import org.mule.runtime.app.declaration.api.ConnectionElementDeclaration;
 import org.mule.runtime.app.declaration.api.OperationElementDeclaration;
 import org.mule.runtime.app.declaration.api.SourceElementDeclaration;
 import org.mule.runtime.app.declaration.api.fluent.ElementDeclarer;
+import org.mule.runtime.config.api.dsl.model.DslElementModel;
 import org.mule.runtime.api.meta.model.config.ConfigurationModel;
 import org.mule.runtime.api.meta.model.connection.ConnectionProviderModel;
 import org.mule.runtime.api.meta.model.operation.OperationModel;
 import org.mule.runtime.api.meta.model.parameter.ParameterModel;
 import org.mule.runtime.api.meta.model.source.SourceModel;
-import org.mule.runtime.config.spring.api.dsl.model.DslElementModel;
 import org.mule.runtime.dsl.api.component.config.ComponentConfiguration;
 
 import org.junit.Before;
