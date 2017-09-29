@@ -10,9 +10,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.exception.ExceptionHelper.getRootException;
-
 import org.mule.functional.api.exception.FunctionalTestException;
-import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.runtime.core.api.transformer.TransformerException;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -30,19 +28,19 @@ public class SynchronousResponseExceptionTestCase extends AbstractIntegrationTes
 
   @Test
   public void testComponentException() throws Exception {
-    MessagingException e = flowRunner("ComponentException").withPayload("request").runExpectingException();
+    Exception e = flowRunner("ComponentException").withPayload("request").runExpectingException();
     assertThat(getRootException(e), instanceOf(FunctionalTestException.class));
   }
 
   @Test
   public void testFlowRefInvalidException() throws Exception {
-    MessagingException e = flowRunner("FlowRefInvalidException").withPayload("request").runExpectingException();
+    Exception e = flowRunner("FlowRefInvalidException").withPayload("request").runExpectingException();
     assertThat(getRootException(e).getClass().getName(), is("org.springframework.beans.factory.NoSuchBeanDefinitionException"));
   }
 
   @Test
   public void testTransformerException() throws Exception {
-    MessagingException e = flowRunner("TransformerException").withPayload("request").runExpectingException();
+    Exception e = flowRunner("TransformerException").withPayload("request").runExpectingException();
     assertThat(getRootException(e), instanceOf(TransformerException.class));
   }
 }

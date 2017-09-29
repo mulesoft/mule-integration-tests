@@ -25,7 +25,7 @@ import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.event.CoreEvent;
-import org.mule.runtime.core.api.exception.MessagingException;
+import org.mule.runtime.core.api.exception.EventProcessingException;
 import org.mule.runtime.core.api.exception.MessagingExceptionHandler;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.runtime.core.api.processor.Processor;
@@ -154,9 +154,9 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void errorThrownByOperationInForeach() throws Exception {
-    MessagingException messagingException =
+    EventProcessingException eventProcessingException =
         flowRunner("errorThrownByOperationInForeach").withPayload(asList("1", "2", "3")).runExpectingException();
-    assertThat(messagingException.getCause(), instanceOf(ExpressionRuntimeException.class));
+    assertThat(eventProcessingException.getCause(), instanceOf(ExpressionRuntimeException.class));
   }
 
   private void testTransactionalScope(String flowName, String expected, Map<String, Serializable> messageProperties)

@@ -13,7 +13,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.event.CoreEvent;
-import org.mule.runtime.core.api.exception.MessagingException;
+import org.mule.runtime.core.api.exception.EventProcessingException;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.io.FileNotFoundException;
@@ -62,7 +62,7 @@ public class MuleTestNamespaceFunctionalTestCase extends AbstractIntegrationTest
 
   @Test
   public void testService5() throws Exception {
-    MessagingException e = flowRunner("testService5").withPayload("foo").runExpectingException();
+    EventProcessingException e = flowRunner("testService5").withPayload("foo").runExpectingException();
     assertTrue(getRootCause(e) instanceof FileNotFoundException);
   }
 }

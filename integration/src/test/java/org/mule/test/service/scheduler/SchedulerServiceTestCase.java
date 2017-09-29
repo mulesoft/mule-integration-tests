@@ -21,7 +21,6 @@ import static org.mule.runtime.api.message.Message.of;
 import static org.mule.runtime.core.api.event.BaseEventContext.create;
 import static org.mule.runtime.dsl.api.component.config.DefaultComponentLocation.fromSingleComponent;
 import static org.mule.test.allure.AllureConstants.SchedulerServiceFeature.SCHEDULER_SERVICE;
-
 import org.mule.functional.api.component.SkeletonSource;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.exception.MuleRuntimeException;
@@ -37,15 +36,11 @@ import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.runtime.core.api.config.DefaultMuleConfiguration;
 import org.mule.runtime.core.api.config.builders.AbstractConfigurationBuilder;
 import org.mule.runtime.core.api.event.CoreEvent;
+import org.mule.runtime.core.api.exception.EventProcessingException;
 import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.runtime.core.api.exception.NullExceptionHandler;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.test.AbstractIntegrationTestCase;
-
-import org.hamcrest.TypeSafeMatcher;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -54,6 +49,10 @@ import javax.inject.Inject;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
+import org.hamcrest.TypeSafeMatcher;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 @Feature(SCHEDULER_SERVICE)
 public class SchedulerServiceTestCase extends AbstractIntegrationTestCase {
@@ -138,8 +137,7 @@ public class SchedulerServiceTestCase extends AbstractIntegrationTestCase {
   @Test
   @Description("Tests that the exception that happens when a thread pool is full is properly handled.")
   public void overloadErrorHandling() throws Exception {
-    MessagingException exception =
-        flowRunner("delaySchedule").runExpectingException();
+    EventProcessingException exception = flowRunner("delaySchedule").runExpectingException();
 
     assertThat(exception.getEvent().getError().isPresent(), is(true));
     assertThat(exception.getEvent().getError().get().getErrorType().getIdentifier(), is("OVERLOAD"));
