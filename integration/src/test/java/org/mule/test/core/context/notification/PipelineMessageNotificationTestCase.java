@@ -6,18 +6,18 @@
  */
 package org.mule.test.core.context.notification;
 
+import static org.hamcrest.Matchers.isA;
 import static org.junit.Assert.assertNotNull;
 import static org.mule.runtime.api.notification.AsyncMessageNotification.PROCESS_ASYNC_COMPLETE;
 import static org.mule.runtime.api.notification.AsyncMessageNotification.PROCESS_ASYNC_SCHEDULED;
 import static org.mule.runtime.api.notification.PipelineMessageNotification.PROCESS_COMPLETE;
 import static org.mule.runtime.api.notification.PipelineMessageNotification.PROCESS_END;
 import static org.mule.runtime.api.notification.PipelineMessageNotification.PROCESS_START;
-
 import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.notification.AsyncMessageNotification;
 import org.mule.runtime.api.notification.IntegerAction;
 import org.mule.runtime.api.notification.PipelineMessageNotification;
-import org.mule.runtime.core.api.exception.MessagingException;
+import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -37,7 +37,7 @@ public class PipelineMessageNotificationTestCase extends AbstractNotificationTes
   public void doTest() throws Exception {
     TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
     assertNotNull(flowRunner("service-1").withPayload("hello sweet world").run());
-    expectedException.expect(MessagingException.class);
+    expectedException.expectCause(isA(ExpressionRuntimeException.class));
     assertNotNull(flowRunner("service-2").withPayload("hello sweet world").run());
     assertNotNull(flowRunner("service-3").withPayload("hello sweet world").run());
     flowRunner("service-4").withPayload("goodbye cruel world").run();

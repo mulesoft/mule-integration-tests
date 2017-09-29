@@ -19,30 +19,27 @@ import static org.mule.functional.junit4.TestLegacyMessageUtils.getExceptionPayl
 import static org.mule.functional.junit4.matchers.ThrowableCauseMatcher.hasCause;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.UntilSuccessfulStory.UNTIL_SUCCESSFUL;
-
 import org.mule.functional.api.component.FunctionalTestProcessor;
 import org.mule.functional.api.exception.FunctionalTestException;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.event.CoreEvent;
-import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.retry.policy.RetryPolicyExhaustedException;
 import org.mule.tck.probe.JUnitLambdaProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import org.apache.commons.lang3.RandomStringUtils;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 @Feature(ROUTERS)
 @Story(UNTIL_SUCCESSFUL)
@@ -115,7 +112,6 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
   @Test
   public void executeSynchronously() throws Exception {
     final String payload = RandomStringUtils.randomAlphanumeric(20);
-    expectedException.expect(MessagingException.class);
     expectedException.expectCause(instanceOf(RetryPolicyExhaustedException.class));
     expectedException.expectCause(hasCause(instanceOf(FunctionalTestException.class)));
     flowRunner("synchronous").withPayload(payload).run();

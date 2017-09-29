@@ -8,24 +8,24 @@ package org.mule.test.config.spring;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.rules.ExpectedException.none;
-
 import org.mule.runtime.core.api.construct.Flow;
-import org.mule.runtime.core.api.exception.MessagingException;
+import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.test.AbstractIntegrationTestCase;
-
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
+
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 public class DslConstantsRoutersFlowTestCase extends AbstractIntegrationTestCase {
 
@@ -76,7 +76,7 @@ public class DslConstantsRoutersFlowTestCase extends AbstractIntegrationTestCase
 
   @Test
   public void testNonExistentHashingShouldNotExist() throws Exception {
-    expectedException.expect(MessagingException.class);
+    expectedException.expectCause(isA(ExpressionRuntimeException.class));
     flowRunner("nonExistentHashFlow").withVariable("otherId", "123").run();
   }
 
