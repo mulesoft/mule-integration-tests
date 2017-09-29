@@ -8,18 +8,13 @@ package org.mule.test.core.transformers.simple;
 
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.mule.runtime.api.message.Message.of;
 
-import org.mule.runtime.api.message.Message;
-import org.mule.runtime.core.api.transformer.Transformer;
+import org.mule.runtime.core.api.event.CoreEvent;
+
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Test;
-
-import java.util.Arrays;
-import java.util.List;
 
 public class TransformationContentTypeTestCase extends AbstractIntegrationTestCase {
 
@@ -30,15 +25,11 @@ public class TransformationContentTypeTestCase extends AbstractIntegrationTestCa
 
   @Test
   public void testReturnType() throws Exception {
-    Transformer trans = registry.<Transformer>lookupByName("testTransformer").get();
-    assertNotNull(trans);
     String inputMessage = "ABCDEF";
-
-    Message message = of(inputMessage);
-    List<Transformer> transformers = Arrays.asList(new Transformer[] {trans});
-    message = muleContext.getTransformationService().applyTransformers(message, null, transformers);
-    assertThat(message.getPayload().getDataType().getMediaType().getPrimaryType(), is("text"));
-    assertThat(message.getPayload().getDataType().getMediaType().getSubType(), is("plain"));
-    assertThat(message.getPayload().getDataType().getMediaType().getCharset().get(), is(ISO_8859_1));
+    CoreEvent event = flowRunner("test").withPayload(inputMessage).run();
+    assertThat(event.getMessage().getPayload().getDataType().getMediaType().getPrimaryType(), is("text"));
+    assertThat(event.getMessage().getPayload().getDataType().getMediaType().getSubType(), is("plain"));
+    assertThat(event.getMessage().getPayload().getDataType().getMediaType().getCharset().get(), is(ISO_8859_1));
   }
+
 }
