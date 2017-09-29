@@ -14,6 +14,7 @@ import static org.mule.functional.junit4.matchers.MessageMatchers.hasPayload;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
 
 import org.mule.runtime.core.api.event.CoreEvent;
+import org.mule.runtime.core.api.exception.EventProcessingException;
 import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -38,9 +39,9 @@ public class OnErrorNestedExceptionsTestCase extends AbstractIntegrationTestCase
 
   @Test
   public void propagatesToOuterWithoutExceptionAndFails() throws Exception {
-    MessagingException exception = flowRunner("propagatesToOuterWithoutExceptionAndFails").runExpectingException();
+    EventProcessingException exception = flowRunner("propagatesToOuterWithoutExceptionAndFails").runExpectingException();
     assertThat(exception.getEvent().getMessage(), hasPayload(equalTo("propagated again")));
-    assertFalse(exception.inErrorHandler());
+    assertFalse(((MessagingException) exception).inErrorHandler());
   }
 
   @Test
@@ -51,9 +52,9 @@ public class OnErrorNestedExceptionsTestCase extends AbstractIntegrationTestCase
 
   @Test
   public void propagatesToFlowWithoutExceptionAndFails() throws Exception {
-    MessagingException exception = flowRunner("propagatesToFlowWithoutExceptionAndFails").runExpectingException();
+    EventProcessingException exception = flowRunner("propagatesToFlowWithoutExceptionAndFails").runExpectingException();
     assertThat(exception.getEvent().getMessage(), hasPayload(equalTo("propagated again")));
-    assertFalse(exception.inErrorHandler());
+    assertFalse(((MessagingException) exception).inErrorHandler());
   }
 
   @Test
@@ -64,9 +65,9 @@ public class OnErrorNestedExceptionsTestCase extends AbstractIntegrationTestCase
 
   @Test
   public void propagatesToOuterWithExceptionAndFails() throws Exception {
-    MessagingException exception = flowRunner("propagatesToOuterWithExceptionAndFails").runExpectingException();
+    EventProcessingException exception = flowRunner("propagatesToOuterWithExceptionAndFails").runExpectingException();
     assertThat(exception.getEvent().getMessage(), hasPayload(equalTo("propagated again")));
-    assertFalse(exception.inErrorHandler());
+    assertFalse(((MessagingException) exception).inErrorHandler());
   }
 
   @Test
@@ -77,28 +78,28 @@ public class OnErrorNestedExceptionsTestCase extends AbstractIntegrationTestCase
 
   @Test
   public void propagatesToFlowWithExceptionAndFails() throws Exception {
-    MessagingException exception = flowRunner("propagatesToFlowWithExceptionAndFails").runExpectingException();
+    EventProcessingException exception = flowRunner("propagatesToFlowWithExceptionAndFails").runExpectingException();
     assertThat(exception.getEvent().getMessage(), hasPayload(equalTo("propagated again")));
-    assertFalse(exception.inErrorHandler());
+    assertFalse(((MessagingException) exception).inErrorHandler());
   }
 
   @Test
   public void exceptionInErrorHandlerFlowIsMarked() throws Exception {
-    MessagingException exception = flowRunner("exceptionInErrorHandlerFlow").runExpectingException();
+    EventProcessingException exception = flowRunner("exceptionInErrorHandlerFlow").runExpectingException();
     assertThat(exception.getEvent().getMessage(), hasPayload(equalTo("propagated")));
-    assertTrue(exception.inErrorHandler());
+    assertTrue(((MessagingException) exception).inErrorHandler());
   }
 
   @Test
   public void exceptionInErrorHandlerTryIsMarked() throws Exception {
-    MessagingException exception = flowRunner("exceptionInErrorHandlerTry").runExpectingException();
+    EventProcessingException exception = flowRunner("exceptionInErrorHandlerTry").runExpectingException();
     assertThat(exception.getEvent().getMessage(), hasPayload(equalTo("propagated")));
     //assertTrue(exception.inErrorHandler());
   }
 
   @Test
   public void exceptionInErrorHandlerNestedTryIsMarked() throws Exception {
-    MessagingException exception = flowRunner("exceptionInErrorHandlerNestedTry").runExpectingException();
+    EventProcessingException exception = flowRunner("exceptionInErrorHandlerNestedTry").runExpectingException();
     assertThat(exception.getEvent().getMessage(), hasPayload(equalTo("propagated")));
     //assertTrue(exception.inErrorHandler());
   }

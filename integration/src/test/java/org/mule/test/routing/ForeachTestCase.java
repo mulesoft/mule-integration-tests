@@ -35,7 +35,7 @@ import org.mule.functional.junit4.TestLegacyMessageBuilder;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.event.CoreEvent;
-import org.mule.runtime.core.api.exception.MessagingException;
+import org.mule.runtime.core.api.exception.EventProcessingException;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -351,7 +351,6 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
     order.put("name", "Ellen");
     order.put("email", "ellen.mail.com");
     order.put("items", items);
-    expectedException.expect(MessagingException.class);
     expectedException.expectCause(is(ConcurrentModificationException.class));
     flowRunner("process-json-update").withPayload(singletonMap("order", order)).run();
   }
@@ -544,7 +543,7 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void mvelError() throws Exception {
-    MessagingException me = flowRunner("mvel-error").runExpectingException();
+    EventProcessingException me = flowRunner("mvel-error").runExpectingException();
     assertThat((String) me.getInfo().get(INFO_LOCATION_KEY), startsWith("mvel-error/processors/0 @"));
   }
 

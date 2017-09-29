@@ -13,10 +13,8 @@ import static org.mule.runtime.api.exception.MuleException.INFO_LOCATION_KEY;
 import static org.mule.runtime.api.exception.MuleException.INFO_SOURCE_XML_KEY;
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.mule.runtime.http.api.HttpConstants.Method.GET;
-
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.core.api.event.CoreEvent;
-import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.http.api.HttpService;
 import org.mule.runtime.http.api.domain.message.request.HttpRequest;
@@ -111,7 +109,7 @@ public class ExceptionHandlingSourceTestCase extends AbstractIntegrationTestCase
 
   @Test
   public void errorInHandlerHasOrigin() throws Exception {
-    MessagingException exception = flowRunner("errorInHandlerHasOrigin").runExpectingException();
+    MuleException exception = flowRunner("errorInHandlerHasOrigin").runExpectingException();
 
     assertThat((String) exception.getInfo().get(INFO_LOCATION_KEY), containsString("errorHandler/0/processors/0"));
     assertThat((String) exception.getInfo().get(INFO_SOURCE_XML_KEY), containsString("insideHandler"));

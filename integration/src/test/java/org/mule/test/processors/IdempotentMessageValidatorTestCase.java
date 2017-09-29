@@ -9,33 +9,32 @@ package org.mule.test.processors;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-
+import static org.mule.runtime.core.api.exception.Errors.CORE_NAMESPACE_NAME;
+import static org.mule.runtime.core.api.exception.Errors.Identifiers.DUPLICATE_MESSAGE_ERROR_IDENTIFIER;
+import org.mule.functional.junit4.rules.ExpectedError;
 import org.mule.runtime.core.api.event.CoreEvent;
-import org.mule.runtime.core.api.exception.MessagingException;
+import org.mule.runtime.core.api.exception.EventProcessingException;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 public class IdempotentMessageValidatorTestCase extends AbstractIntegrationTestCase {
 
-
   @Rule
-  public ExpectedException expectedException = ExpectedException.none();
+  public ExpectedError expectedError = ExpectedError.none();
 
   @Override
   public String getConfigFile() {
     return "org/mule/processors/idempotent-message-validator-config.xml";
   }
 
-
   @Test
   public void validateWithGlobalObjectStore() throws Exception {
     String payload = "payload";
     CoreEvent response = flowRunner("validate-global").withPayload(payload).run();
     assertThat(response.getMessage().getPayload().getValue(), is(equalTo(payload)));
-    expectedException.expect(MessagingException.class);
+    expectedError.expectErrorType(CORE_NAMESPACE_NAME, DUPLICATE_MESSAGE_ERROR_IDENTIFIER);
     flowRunner("validate-global").withPayload(payload).run();
   }
 
@@ -44,7 +43,7 @@ public class IdempotentMessageValidatorTestCase extends AbstractIntegrationTestC
     String payload = "payload";
     CoreEvent response = flowRunner("validate-global").withPayload(payload).run();
     assertThat(response.getMessage().getPayload().getValue(), is(equalTo(payload)));
-    expectedException.expect(MessagingException.class);
+    expectedError.expectErrorType(CORE_NAMESPACE_NAME, DUPLICATE_MESSAGE_ERROR_IDENTIFIER);
     flowRunner("validate-global2").withPayload(payload).run();
   }
 
@@ -58,8 +57,9 @@ public class IdempotentMessageValidatorTestCase extends AbstractIntegrationTestC
     assertThat(privateResponse.getMessage().getPayload().getValue(), is(equalTo(privatePayload)));
     try {
       flowRunner("validate-global").withPayload(globalPayload).run();
-    } catch (MessagingException e) {
-      expectedException.expect(MessagingException.class);
+    } catch (EventProcessingException e) {
+      assertThat(e.getEvent().getError().get().getErrorType().getIdentifier(), is(DUPLICATE_MESSAGE_ERROR_IDENTIFIER));
+      expectedError.expectErrorType(CORE_NAMESPACE_NAME, DUPLICATE_MESSAGE_ERROR_IDENTIFIER);
       flowRunner("validate-private").withPayload(privatePayload).run();
     }
   }
@@ -74,8 +74,9 @@ public class IdempotentMessageValidatorTestCase extends AbstractIntegrationTestC
     assertThat(implicitResponse.getMessage().getPayload().getValue(), is(equalTo(implicitPayload)));
     try {
       flowRunner("validate-global").withPayload(globalPayload).run();
-    } catch (MessagingException e) {
-      expectedException.expect(MessagingException.class);
+    } catch (EventProcessingException e) {
+      assertThat(e.getEvent().getError().get().getErrorType().getIdentifier(), is(DUPLICATE_MESSAGE_ERROR_IDENTIFIER));
+      expectedError.expectErrorType(CORE_NAMESPACE_NAME, DUPLICATE_MESSAGE_ERROR_IDENTIFIER);
       flowRunner("validate-implicit").withPayload(implicitPayload).run();
     }
   }

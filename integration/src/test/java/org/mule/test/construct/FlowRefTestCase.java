@@ -7,23 +7,26 @@
 package org.mule.test.construct;
 
 import static java.util.stream.Collectors.toList;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
-
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.event.CoreEvent;
-import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
-
-import org.junit.Rule;
-import org.junit.Test;
 
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+
 public class FlowRefTestCase extends AbstractIntegrationTestCase {
+
+  @Rule
+  public ExpectedException expectedException = ExpectedException.none();
 
   @Rule
   public DynamicPort port = new DynamicPort("port");
@@ -64,8 +67,9 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
     assertEquals("0B", payloads.get(1));
   }
 
-  @Test(expected = MessagingException.class)
+  @Test
   public void flowRefNotFound() throws Exception {
+    expectedException.expectMessage(containsString("No bean named 'sub-flow-Z' is defined"));
     assertThat(flowRunner("flow2").withPayload("0").withVariable("letter", "Z").run().getMessage().getPayload().getValue(),
                is("0C"));
   }

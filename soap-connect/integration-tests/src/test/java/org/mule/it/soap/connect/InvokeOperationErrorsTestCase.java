@@ -12,7 +12,7 @@ import static org.mule.runtime.soap.api.exception.error.SoapErrors.BAD_REQUEST;
 import static org.mule.runtime.soap.api.exception.error.SoapErrors.SOAP_FAULT;
 import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
 import org.mule.runtime.api.message.Error;
-import org.mule.runtime.core.api.exception.MessagingException;
+import org.mule.runtime.core.api.exception.EventProcessingException;
 
 import org.junit.Test;
 
@@ -20,7 +20,8 @@ public class InvokeOperationErrorsTestCase extends SoapFootballExtensionArtifact
 
   @Test
   public void badRequest() throws Exception {
-    MessagingException e = flowRunner("getLeagues").withPayload("not a valid XML").keepStreamsOpen().runExpectingException();
+    EventProcessingException e = flowRunner("getLeagues")
+        .withPayload("not a valid XML").keepStreamsOpen().runExpectingException();
     Error error = e.getEvent().getError().get();
     assertThat(error.getDescription(), containsString("the request body is not a valid XML"));
     assertThat(error.getErrorType(), errorType("SOAP", BAD_REQUEST.toString()));
@@ -28,7 +29,8 @@ public class InvokeOperationErrorsTestCase extends SoapFootballExtensionArtifact
 
   @Test
   public void commonSoapFault() throws Exception {
-    MessagingException e = flowRunner("getLeagues").withPayload(getBodyXml("noOp", "")).keepStreamsOpen().runExpectingException();
+    EventProcessingException e = flowRunner("getLeagues")
+        .withPayload(getBodyXml("noOp", "")).keepStreamsOpen().runExpectingException();
     Error error = e.getEvent().getError().get();
     assertThat(error.getDescription(), containsString("noOp was not recognized."));
     assertThat(error.getErrorType(), errorType("SOAP", SOAP_FAULT.toString()));

@@ -95,7 +95,6 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
   @Test
   @Description("Router request fails with runtime exception is payload is consumable.")
   public void consumablePayload() throws Exception {
-    expectedException.expect(MessagingException.class);
     expectedException.expectCause(instanceOf(MuleRuntimeException.class));
     expectedException.expectCause(hasMessage(startsWith("Cannot copy message with a stream payload")));
     flowRunner("minimalConfig").withPayload(new ByteArrayInputStream("hello world".getBytes())).run();
@@ -104,7 +103,6 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
   @Test
   @Description("Router times out if routes take longer than the timeout configured to complete.")
   public void timeout() throws Exception {
-    expectedException.expect(MessagingException.class);
     expectedException.expectCause(withClassName("org.mule.runtime.core.privileged.routing.CompositeRoutingException"));
     flowRunner("timeout").run();
   }

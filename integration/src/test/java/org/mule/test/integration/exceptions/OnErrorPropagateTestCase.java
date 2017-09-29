@@ -15,7 +15,6 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mule.functional.junit4.matchers.MessageMatchers.hasPayload;
 import static org.mule.functional.junit4.matchers.ThrowableCauseMatcher.hasCause;
-import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.mule.runtime.http.api.HttpConstants.Method.POST;
 import static org.mule.tck.junit4.matcher.HasClassInHierarchy.withClassName;
@@ -23,13 +22,12 @@ import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HA
 import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.functional.api.exception.FunctionalTestException;
 import org.mule.runtime.api.event.Event;
-import org.mule.runtime.api.exception.DefaultMuleException;
 import org.mule.runtime.api.exception.MuleException;
-import org.mule.runtime.core.api.event.CoreEvent;
-import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.runtime.api.exception.MuleFatalException;
-import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.api.util.concurrent.Latch;
+import org.mule.runtime.core.api.event.CoreEvent;
+import org.mule.runtime.core.api.exception.EventProcessingException;
+import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.http.api.HttpService;
 import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;
 import org.mule.runtime.http.api.domain.message.request.HttpRequest;
@@ -101,7 +99,7 @@ public class OnErrorPropagateTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void propagateErrorAndMessage() throws Exception {
-    MessagingException me = flowRunner("onErrorPropagateMessage").runExpectingException();
+    EventProcessingException me = flowRunner("onErrorPropagateMessage").runExpectingException();
     CoreEvent errorEvent = me.getEvent();
     assertThat(errorEvent.getError().isPresent(), is(true));
     assertThat(errorEvent.getError().get().getCause(),

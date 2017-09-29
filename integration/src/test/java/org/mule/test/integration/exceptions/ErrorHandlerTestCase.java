@@ -22,6 +22,7 @@ import org.mule.runtime.api.lifecycle.Initialisable;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.security.UnauthorisedException;
 import org.mule.runtime.core.api.event.CoreEvent;
+import org.mule.runtime.core.api.exception.EventProcessingException;
 import org.mule.runtime.core.api.exception.MessageRedeliveredException;
 import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
@@ -165,7 +166,7 @@ public class ErrorHandlerTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void criticalNotHandled() throws Exception {
-    MessagingException exception = flowRunner("propagatesCriticalErrors").runExpectingException();
+    EventProcessingException exception = flowRunner("propagatesCriticalErrors").runExpectingException();
     assertThat(exception.getEvent().getError().isPresent(), is(true));
     assertThat(exception.getEvent().getError().get().getErrorType().getIdentifier(), is("CRITICAL"));
   }

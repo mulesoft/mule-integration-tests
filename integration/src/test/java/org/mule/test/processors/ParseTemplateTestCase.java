@@ -6,11 +6,12 @@
  */
 package org.mule.test.processors;
 
+import static org.hamcrest.Matchers.isA;
 import static org.junit.Assert.assertEquals;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.metadata.TypedValue;
 import org.mule.runtime.core.api.event.CoreEvent;
-import org.mule.runtime.core.api.exception.MessagingException;
+import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Rule;
@@ -109,7 +110,7 @@ public class ParseTemplateTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void testWithTargetValueButNoTargetShouldRaiseException() throws Exception {
-    expectedException.expect(MessagingException.class);
+    expectedException.expectCause(isA(IllegalArgumentException.class));
     flowRunner("with-target-value-no-target").withVariable("flowName", "dw-expression").run();
   }
 
@@ -126,7 +127,7 @@ public class ParseTemplateTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void testWithWrongTargetValue() throws Exception {
-    expectedException.expect(MessagingException.class);
+    expectedException.expectCause(isA(ExpressionRuntimeException.class));
     String startingPayload = "Starting payload";
     flowRunner("with-wrong-target-value").withPayload(startingPayload).withVariable("flowName", "dw-expression").run();
   }
