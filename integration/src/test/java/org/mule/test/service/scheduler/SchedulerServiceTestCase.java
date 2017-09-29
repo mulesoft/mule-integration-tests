@@ -16,9 +16,11 @@ import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.rules.ExpectedException.none;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 import static org.mule.runtime.api.component.location.Location.builderFromStringRepresentation;
 import static org.mule.runtime.api.message.Message.of;
-import static org.mule.runtime.core.api.event.BaseEventContext.create;
 import static org.mule.runtime.dsl.api.component.config.DefaultComponentLocation.fromSingleComponent;
 import static org.mule.test.allure.AllureConstants.SchedulerServiceFeature.SCHEDULER_SERVICE;
 import org.mule.functional.api.component.SkeletonSource;
@@ -35,6 +37,7 @@ import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.runtime.core.api.config.DefaultMuleConfiguration;
 import org.mule.runtime.core.api.config.builders.AbstractConfigurationBuilder;
+import org.mule.runtime.core.api.construct.FlowConstruct;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.exception.EventProcessingException;
 import org.mule.runtime.core.api.exception.MessagingException;
@@ -43,6 +46,7 @@ import org.mule.runtime.core.api.processor.Processor;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
 import javax.inject.Inject;
@@ -174,12 +178,8 @@ public class SchedulerServiceTestCase extends AbstractIntegrationTestCase {
 
     expected.expectCause(instanceOf(SchedulerBusyException.class));
 
-    messageSource.getListener()
-        .process(CoreEvent
-            .builder(create("id", "serverd", fromSingleComponent(SchedulerServiceTestCase.class.getSimpleName()),
-                            NullExceptionHandler.getInstance()))
-            .message(of(null))
-            .build());
+    //Use any flowName just to get a valid event creation.
+    messageSource.getListener().process(flowRunner("delaySchedule").withPayload(null).buildEvent());
 
   }
 
