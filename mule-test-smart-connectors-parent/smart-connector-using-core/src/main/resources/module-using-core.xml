@@ -24,7 +24,7 @@
             <parameter name="echoMessage" type="string"/>
         </parameters>
         <body>
-            <mule:set-payload value="#[parameters.echoMessage]" mimeType="text/plain" encoding="UTF-8"/>
+            <mule:set-payload value="#[vars.echoMessage]" mimeType="text/plain" encoding="UTF-8"/>
         </body>
         <output type="string" doc:description="Payload's output"/>
     </operation>
@@ -34,7 +34,7 @@
             <parameter name="op1Parameter" type="string"/>
         </parameters>
         <body>
-            <tns:internal-op2 op2Parameter="#[parameters.op1Parameter]"/>
+            <tns:internal-op2 op2Parameter="#[vars.op1Parameter]"/>
         </body>
         <output type="string"/>
     </operation>
@@ -44,7 +44,7 @@
             <parameter name="op2Parameter" type="string"/>
         </parameters>
         <body>
-            <tns:internal-op3 op3Parameter="#[parameters.op2Parameter]"/>
+            <tns:internal-op3 op3Parameter="#[vars.op2Parameter]"/>
         </body>
         <output type="string"/>
     </operation>
@@ -54,7 +54,7 @@
             <parameter name="op3Parameter" type="string"/>
         </parameters>
         <body>
-            <mule:set-payload value="#[parameters.op3Parameter]" mimeType="text/plain" encoding="UTF-8"/>
+            <mule:set-payload value="#[vars.op3Parameter]" mimeType="text/plain" encoding="UTF-8"/>
         </body>
         <output type="string"/>
     </operation>
