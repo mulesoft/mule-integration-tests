@@ -44,6 +44,7 @@
         <http:listener-connection host="localhost" port="49019" protocol="HTTPS">
             <tls:context>
                 <tls:key-store path="ssltest-keystore.jks" keyPassword="changeit" password="changeit"/>
+                <tls:trust-store insecure="true"/>
             </tls:context>
         </http:listener-connection>
     </http:listener-config>
