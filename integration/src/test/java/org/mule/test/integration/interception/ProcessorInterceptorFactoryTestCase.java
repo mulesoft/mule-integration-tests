@@ -338,7 +338,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     assertThat(moduleOperationChain.getParameters().get("moduleOperation").resolveValue(), is("echo-set-payload"));
 
     assertThat(setPayloadOperation.getParameters().keySet(), containsInAnyOrder("value", "mimeType", "encoding"));
-    assertThat(setPayloadOperation.getParameters().get("value").providedValue(), is("#[parameters.echoMessage]"));
+    assertThat(setPayloadOperation.getParameters().get("value").providedValue(), is("#[vars.echoMessage]"));
     assertThat(setPayloadOperation.getParameters().get("value").resolveValue(), is(variableValue));
     assertThat(setPayloadOperation.getParameters().get("mimeType").resolveValue(), is("text/plain"));
     assertThat(setPayloadOperation.getParameters().get("encoding").resolveValue(), is("UTF-8"));
