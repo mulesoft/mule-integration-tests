@@ -9,13 +9,14 @@ package org.mule.test.integration.exceptions;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
+
 import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.functional.junit4.TestLegacyMessageUtils;
+import org.mule.runtime.api.exception.DefaultMuleException;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
-import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Test;
@@ -41,7 +42,7 @@ public class ExceptionStrategyWithFlowExceptionTestCase extends AbstractIntegrat
 
     @Override
     public CoreEvent process(CoreEvent event) throws MuleException {
-      throw new MessagingException(event, null);
+      throw new DefaultMuleException(new Exception());
     }
   }
 }

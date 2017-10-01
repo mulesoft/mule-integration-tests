@@ -24,29 +24,32 @@ import static org.mule.runtime.api.metadata.MediaType.TEXT;
 import static org.mule.tck.junit4.matcher.HasClassInHierarchy.withClassName;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ScatterGatherStory.SCATTER_GATHER;
+
 import org.mule.functional.api.exception.FunctionalTestException;
 import org.mule.runtime.api.component.AbstractComponent;
+import org.mule.runtime.api.exception.ComposedErrorException;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.message.Message;
+import org.mule.runtime.api.util.concurrent.Latch;
 import org.mule.runtime.core.api.event.CoreEvent;
-import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.runtime.core.api.processor.Processor;
-import org.mule.runtime.api.util.concurrent.Latch;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import org.hamcrest.Matchers;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+
 import java.io.ByteArrayInputStream;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
-import org.hamcrest.Matchers;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 @Feature(ROUTERS)
 @Story(SCATTER_GATHER)
@@ -154,16 +157,15 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
     try {
       flowRunner(flow).run();
       fail("Was expecting a failure");
-    } catch (MessagingException e) {
+    } catch (Exception e) {
       assertThat(e.getCause(), withClassName("org.mule.runtime.core.privileged.routing.CompositeRoutingException"));
 
       Throwable compositeRoutingException = e.getCause();
       assertThat(compositeRoutingException.getMessage(), startsWith(exceptionMessageStart));
 
-      // TODO(pablo.kraan): MULE-13545 - add these assertions
-      //List<Error> exceptions = compositeRoutingException.getErrors();
-      //assertThat(1, is(exceptions.size()));
-      //assertThat(exceptions.get(0).getCause(), instanceOf(exceptionType));
+      List<org.mule.runtime.api.message.Error> exceptions = ((ComposedErrorException) compositeRoutingException).getErrors();
+      assertThat(1, is(exceptions.size()));
+      assertThat(exceptions.get(0).getCause(), instanceOf(exceptionType));
     }
   }
 

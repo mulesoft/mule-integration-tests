@@ -10,7 +10,7 @@
         <append-string-transformer message=" with some text added"/>
         <test:processor throwException="true"/>
         <error-handler>
-            <on-error-continue/>
+            <on-error-propagate/>
         </error-handler>
     </flow>
 

@@ -21,23 +21,23 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mule.functional.api.event.TestLegacyEventUtils.getEffectiveExceptionHandler;
 import static org.mule.tck.MuleTestUtils.getExceptionListeners;
+
 import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.event.CoreEvent;
-import org.mule.runtime.core.api.exception.EventProcessingException;
-import org.mule.runtime.core.api.exception.MessagingExceptionHandler;
+import org.mule.runtime.core.api.exception.FlowExceptionHandler;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.tck.processor.FlowAssert;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import org.junit.Test;
+
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
-
-import org.junit.Test;
 
 public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
 
@@ -46,7 +46,7 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
       "org.mule.runtime.core.internal.exception.MessagingExceptionHandlerToSystemAdapter";
   private static final String ERROR_HANDLER_CLASSNAME = "org.mule.runtime.core.internal.exception.ErrorHandler";
 
-  private static MessagingExceptionHandler effectiveMessagingExceptionHandler;
+  private static FlowExceptionHandler effectiveMessagingExceptionHandler;
   private static CountDownLatch latch;
   private static TestConnectorQueueHandler queueHandler;
 
@@ -68,7 +68,7 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
     assertThat(response, is(notNullValue()));
     assertThat(effectiveMessagingExceptionHandler.getClass().getName(), equalTo(ERROR_HANDLER_CLASSNAME));
     assertThat(getExceptionListeners(effectiveMessagingExceptionHandler), hasSize(2));
-    MessagingExceptionHandler handler = getExceptionListeners(effectiveMessagingExceptionHandler).get(1);
+    FlowExceptionHandler handler = getExceptionListeners(effectiveMessagingExceptionHandler).get(1);
     assertThat(handler.getClass().getName(), equalTo("org.mule.runtime.core.internal.exception.OnErrorPropagateHandler"));
   }
 
@@ -154,7 +154,7 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void errorThrownByOperationInForeach() throws Exception {
-    EventProcessingException eventProcessingException =
+    Exception eventProcessingException =
         flowRunner("errorThrownByOperationInForeach").withPayload(asList("1", "2", "3")).runExpectingException();
     assertThat(eventProcessingException.getCause(), instanceOf(ExpressionRuntimeException.class));
   }

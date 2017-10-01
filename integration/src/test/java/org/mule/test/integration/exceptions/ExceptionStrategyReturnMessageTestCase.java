@@ -6,17 +6,17 @@
  */
 package org.mule.test.integration.exceptions;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.mule.functional.junit4.matchers.MessageMatchers.hasPayload;
+import static org.mule.tck.junit4.matcher.EventMatcher.hasMessage;
 
 import org.mule.functional.api.exception.FunctionalTestException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.event.CoreEvent;
-import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Test;
@@ -30,12 +30,8 @@ public class ExceptionStrategyReturnMessageTestCase extends AbstractIntegrationT
 
   @Test
   public void testReturnPayloadDefaultStrategy() throws Exception {
-    try {
-      flowRunner("InputService2").withPayload("Test Message").run();
-    } catch (MessagingException e) {
-      assertThat(e.getCause(), is(instanceOf(FunctionalTestException.class)));
-      assertThat(e.getEvent().getMessage().getPayload().getValue(), is(notNullValue()));
-    }
+    flowRunner("InputService2").withPayload("Test Message")
+        .runExpectingException(instanceOf(FunctionalTestException.class), hasMessage(hasPayload(not(nullValue(String.class)))));
   }
 
   @Test

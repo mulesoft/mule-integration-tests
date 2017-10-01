@@ -7,7 +7,7 @@
 package org.mule.functional.junit4;
 
 import static org.junit.Assert.assertNotNull;
-import org.mule.runtime.core.api.exception.EventProcessingException;
+
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Rule;
@@ -34,7 +34,7 @@ public class FlowRunnerTestCase extends AbstractIntegrationTestCase {
   public void flowRunFailsEvenWhenExpectingException() throws Exception {
     exception.expect(AssertionError.class);
     exception.expectMessage("evaluated false");
-    final EventProcessingException exception = flowRunner("badFailFlow").runExpectingException();
+    final Exception exception = flowRunner("badFailFlow").runExpectingException();
     throw exception;
   }
 
