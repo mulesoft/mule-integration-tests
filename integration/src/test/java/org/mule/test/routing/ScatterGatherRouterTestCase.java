@@ -164,7 +164,7 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
       assertThat(compositeRoutingException.getMessage(), startsWith(exceptionMessageStart));
 
       List<org.mule.runtime.api.message.Error> exceptions = ((ComposedErrorException) compositeRoutingException).getErrors();
-      assertThat(1, is(exceptions.size()));
+      assertThat(exceptions, hasSize(1));
       assertThat(exceptions.get(0).getCause(), instanceOf(exceptionType));
     }
   }

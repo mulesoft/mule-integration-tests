@@ -39,7 +39,6 @@ public class OnErrorNestedExceptionsTestCase extends AbstractIntegrationTestCase
   public void propagatesToOuterWithoutExceptionAndFails() throws Exception {
     flowRunner("propagatesToOuterWithoutExceptionAndFails")
         .runExpectingException(hasMessage(hasPayload(equalTo("propagated again"))));
-    // assertFalse(((MessagingException) exception).inErrorHandler());
   }
 
   @Test
@@ -52,7 +51,6 @@ public class OnErrorNestedExceptionsTestCase extends AbstractIntegrationTestCase
   public void propagatesToFlowWithoutExceptionAndFails() throws Exception {
     flowRunner("propagatesToFlowWithoutExceptionAndFails")
         .runExpectingException(hasMessage(hasPayload(equalTo("propagated again"))));
-    // assertFalse(((MessagingException) exception).inErrorHandler());
   }
 
   @Test
@@ -65,7 +63,6 @@ public class OnErrorNestedExceptionsTestCase extends AbstractIntegrationTestCase
   public void propagatesToOuterWithExceptionAndFails() throws Exception {
     flowRunner("propagatesToOuterWithExceptionAndFails")
         .runExpectingException(hasMessage(hasPayload(equalTo("propagated again"))));
-    // assertFalse(((MessagingException) exception).inErrorHandler());
   }
 
   @Test
@@ -78,24 +75,20 @@ public class OnErrorNestedExceptionsTestCase extends AbstractIntegrationTestCase
   public void propagatesToFlowWithExceptionAndFails() throws Exception {
     flowRunner("propagatesToFlowWithExceptionAndFails")
         .runExpectingException(hasMessage(hasPayload(equalTo("propagated again"))));
-    //    assertFalse(((MessagingException) exception).inErrorHandler());
   }
 
   @Test
   public void exceptionInErrorHandlerFlowIsMarked() throws Exception {
     flowRunner("exceptionInErrorHandlerFlow").runExpectingException(hasMessage(hasPayload(equalTo("propagated"))));
-    // assertTrue(((MessagingException) exception).inErrorHandler());
   }
 
   @Test
   public void exceptionInErrorHandlerTryIsMarked() throws Exception {
     flowRunner("exceptionInErrorHandlerTry").runExpectingException(hasMessage(hasPayload(equalTo("propagated"))));
-    //assertTrue(exception.inErrorHandler());
   }
 
   @Test
   public void exceptionInErrorHandlerNestedTryIsMarked() throws Exception {
     flowRunner("exceptionInErrorHandlerNestedTry").runExpectingException(hasMessage(hasPayload(equalTo("propagated"))));
-    //assertTrue(exception.inErrorHandler());
   }
 }
