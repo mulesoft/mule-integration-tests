@@ -11,14 +11,14 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.event.CoreEvent;
-import org.mule.runtime.core.api.exception.EventProcessingException;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import java.io.FileNotFoundException;
-
 import org.junit.Test;
+
+import java.io.FileNotFoundException;
 
 public class MuleTestNamespaceFunctionalTestCase extends AbstractIntegrationTestCase {
 
@@ -62,7 +62,7 @@ public class MuleTestNamespaceFunctionalTestCase extends AbstractIntegrationTest
 
   @Test
   public void testService5() throws Exception {
-    EventProcessingException e = flowRunner("testService5").withPayload("foo").runExpectingException();
+    Exception e = flowRunner("testService5").withPayload("foo").runExpectingException();
     assertTrue(getRootCause(e) instanceof FileNotFoundException);
   }
 }

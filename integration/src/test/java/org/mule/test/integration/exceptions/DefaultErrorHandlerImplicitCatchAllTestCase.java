@@ -11,7 +11,8 @@ import static org.junit.Assert.assertThat;
 import static org.mule.functional.junit4.matchers.MessageMatchers.hasPayload;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ErrorHandlingStory.DEFAULT_ERROR_HANDLER;
-import org.mule.functional.junit4.rules.ExpectedError;
+
+import org.mule.functional.api.exception.ExpectedError;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import io.qameta.allure.Feature;

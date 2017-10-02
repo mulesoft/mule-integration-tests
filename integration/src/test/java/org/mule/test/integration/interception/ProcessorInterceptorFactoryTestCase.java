@@ -19,7 +19,7 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
-import static org.mule.functional.junit4.rules.ExpectedError.none;
+import static org.mule.functional.api.exception.ExpectedError.none;
 import static org.mule.runtime.api.interception.ProcessorInterceptorFactory.INTERCEPTORS_ORDER_REGISTRY_KEY;
 import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
 import static org.mule.test.allure.AllureConstants.InterceptonApi.INTERCEPTION_API;
@@ -29,7 +29,7 @@ import static org.mule.test.heisenberg.extension.HeisenbergConnectionProvider.ge
 import static org.mule.test.heisenberg.extension.HeisenbergConnectionProvider.getDisconnects;
 import static org.mule.test.heisenberg.extension.HeisenbergOperations.CALL_GUS_MESSAGE;
 
-import org.mule.functional.junit4.rules.ExpectedError;
+import org.mule.functional.api.exception.ExpectedError;
 import org.mule.runtime.api.artifact.Registry;
 import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.api.connection.ConnectionException;

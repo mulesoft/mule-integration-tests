@@ -13,7 +13,8 @@ import static org.mule.functional.junit4.matchers.MessageMatchers.hasPayload;
 import static org.mule.runtime.api.metadata.MediaType.TEXT;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ErrorHandlingStory.RAISE_ERROR;
-import org.mule.functional.junit4.rules.ExpectedError;
+
+import org.mule.functional.api.exception.ExpectedError;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.util.LinkedList;

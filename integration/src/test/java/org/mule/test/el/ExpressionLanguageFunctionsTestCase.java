@@ -19,7 +19,8 @@ import static org.mule.functional.junit4.matchers.ThrowableMessageMatcher.hasMes
 import static org.mule.runtime.api.metadata.DataType.TEXT_STRING;
 import static org.mule.test.allure.AllureConstants.ExpressionLanguageFeature.EXPRESSION_LANGUAGE;
 import static org.mule.test.allure.AllureConstants.ExpressionLanguageFeature.ExpressionLanguageStory.SUPPORT_FUNCTIONS;
-import org.mule.functional.junit4.rules.ExpectedError;
+
+import org.mule.functional.api.exception.ExpectedError;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.tck.junit4.rule.DynamicPort;

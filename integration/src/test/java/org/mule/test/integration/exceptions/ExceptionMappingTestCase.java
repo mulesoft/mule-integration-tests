@@ -6,18 +6,23 @@
  */
 package org.mule.test.integration.exceptions;
 
+import static org.hamcrest.Matchers.any;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
+
+import org.mule.functional.api.exception.ExpectedError;
 import org.mule.functional.api.flow.FlowRunner;
-import org.mule.runtime.core.api.exception.EventProcessingException;
 import org.mule.test.AbstractIntegrationTestCase;
+
+import org.junit.Rule;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.junit.Test;
-
 public class ExceptionMappingTestCase extends AbstractIntegrationTestCase {
+
+  @Rule
+  public ExpectedError expected = ExpectedError.none();
 
   @Override
   protected String getConfigFile() {
@@ -26,21 +31,21 @@ public class ExceptionMappingTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void transformationError() throws Exception {
-    EventProcessingException processingException = new FlowRunner(registry, "transformationErrorFlow")
-        .withPayload(new InputStream() {
+    expected.expectErrorType(any(String.class), is("TRANSFORMATION"));
 
-          @Override
-          public int read() throws IOException {
-            throw new IOException();
-          }
-        }).runExpectingException();
-    assertThat(processingException.getEvent().getError().get().getErrorType().getIdentifier(), is("TRANSFORMATION"));
+    new FlowRunner(registry, "transformationErrorFlow").withPayload(new InputStream() {
+
+      @Override
+      public int read() throws IOException {
+        throw new IOException();
+      }
+    }).run();
   }
 
   @Test
   public void expressionError() throws Exception {
-    EventProcessingException messagingException = new FlowRunner(registry, "expressionErrorFlow").runExpectingException();
-    assertThat(messagingException.getEvent().getError().get().getErrorType().getIdentifier(), is("EXPRESSION"));
+    expected.expectErrorType(any(String.class), is("EXPRESSION"));
+    new FlowRunner(registry, "expressionErrorFlow").run();
   }
 
 }

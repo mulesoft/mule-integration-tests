@@ -11,9 +11,10 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.mule.runtime.core.api.exception.Errors.CORE_NAMESPACE_NAME;
 import static org.mule.runtime.core.api.exception.Errors.Identifiers.DUPLICATE_MESSAGE_ERROR_IDENTIFIER;
-import org.mule.functional.junit4.rules.ExpectedError;
+import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
+
+import org.mule.functional.api.exception.ExpectedError;
 import org.mule.runtime.core.api.event.CoreEvent;
-import org.mule.runtime.core.api.exception.EventProcessingException;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Rule;
@@ -55,13 +56,11 @@ public class IdempotentMessageValidatorTestCase extends AbstractIntegrationTestC
     CoreEvent privateResponse = flowRunner("validate-private").withPayload(privatePayload).run();
     assertThat(globalResponse.getMessage().getPayload().getValue(), is(equalTo(globalPayload)));
     assertThat(privateResponse.getMessage().getPayload().getValue(), is(equalTo(privatePayload)));
-    try {
-      flowRunner("validate-global").withPayload(globalPayload).run();
-    } catch (EventProcessingException e) {
-      assertThat(e.getEvent().getError().get().getErrorType().getIdentifier(), is(DUPLICATE_MESSAGE_ERROR_IDENTIFIER));
-      expectedError.expectErrorType(CORE_NAMESPACE_NAME, DUPLICATE_MESSAGE_ERROR_IDENTIFIER);
-      flowRunner("validate-private").withPayload(privatePayload).run();
-    }
+
+    flowRunner("validate-global").withPayload(globalPayload)
+        .runExpectingException(errorType(CORE_NAMESPACE_NAME, DUPLICATE_MESSAGE_ERROR_IDENTIFIER));
+    flowRunner("validate-private").withPayload(privatePayload)
+        .runExpectingException(errorType(CORE_NAMESPACE_NAME, DUPLICATE_MESSAGE_ERROR_IDENTIFIER));
   }
 
   @Test
@@ -72,13 +71,11 @@ public class IdempotentMessageValidatorTestCase extends AbstractIntegrationTestC
     CoreEvent implicitResponse = flowRunner("validate-implicit").withPayload(implicitPayload).run();
     assertThat(globalResponse.getMessage().getPayload().getValue(), is(equalTo(globalPayload)));
     assertThat(implicitResponse.getMessage().getPayload().getValue(), is(equalTo(implicitPayload)));
-    try {
-      flowRunner("validate-global").withPayload(globalPayload).run();
-    } catch (EventProcessingException e) {
-      assertThat(e.getEvent().getError().get().getErrorType().getIdentifier(), is(DUPLICATE_MESSAGE_ERROR_IDENTIFIER));
-      expectedError.expectErrorType(CORE_NAMESPACE_NAME, DUPLICATE_MESSAGE_ERROR_IDENTIFIER);
-      flowRunner("validate-implicit").withPayload(implicitPayload).run();
-    }
+
+    flowRunner("validate-global").withPayload(globalPayload)
+        .runExpectingException(errorType(CORE_NAMESPACE_NAME, DUPLICATE_MESSAGE_ERROR_IDENTIFIER));
+    flowRunner("validate-implicit").withPayload(implicitPayload)
+        .runExpectingException(errorType(CORE_NAMESPACE_NAME, DUPLICATE_MESSAGE_ERROR_IDENTIFIER));
   }
 
 }

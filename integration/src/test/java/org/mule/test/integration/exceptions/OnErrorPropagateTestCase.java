@@ -10,23 +10,30 @@ import static java.lang.String.format;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.collection.IsMapContaining.hasEntry;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+import static org.mule.functional.api.exception.ExpectedError.none;
 import static org.mule.functional.junit4.matchers.MessageMatchers.hasPayload;
 import static org.mule.functional.junit4.matchers.ThrowableCauseMatcher.hasCause;
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.mule.runtime.http.api.HttpConstants.Method.POST;
+import static org.mule.tck.junit4.matcher.EventMatcher.hasMessage;
+import static org.mule.tck.junit4.matcher.EventMatcher.hasVariables;
 import static org.mule.tck.junit4.matcher.HasClassInHierarchy.withClassName;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
+
 import org.mule.functional.api.component.TestConnectorQueueHandler;
+import org.mule.functional.api.exception.ExpectedError;
 import org.mule.functional.api.exception.FunctionalTestException;
 import org.mule.runtime.api.event.Event;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.exception.MuleFatalException;
+import org.mule.runtime.api.metadata.TypedValue;
 import org.mule.runtime.api.util.concurrent.Latch;
 import org.mule.runtime.core.api.event.CoreEvent;
-import org.mule.runtime.core.api.exception.EventProcessingException;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.http.api.HttpService;
 import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;
@@ -36,14 +43,14 @@ import org.mule.service.http.TestHttpClient;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import org.hamcrest.Matcher;
+import org.junit.Rule;
+import org.junit.Test;
+
 import java.util.concurrent.TimeUnit;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
-import org.hamcrest.Matchers;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 @Feature(ERROR_HANDLING)
 @Story("On Error Propagate")
@@ -52,7 +59,7 @@ public class OnErrorPropagateTestCase extends AbstractIntegrationTestCase {
   private static TestConnectorQueueHandler queueHandler;
 
   @Rule
-  public ExpectedException expectedException = ExpectedException.none();
+  public ExpectedError expectedError = none();
 
   @Rule
   public DynamicPort port = new DynamicPort("port");
@@ -99,19 +106,17 @@ public class OnErrorPropagateTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void propagateErrorAndMessage() throws Exception {
-    EventProcessingException me = flowRunner("onErrorPropagateMessage").runExpectingException();
-    CoreEvent errorEvent = me.getEvent();
-    assertThat(errorEvent.getError().isPresent(), is(true));
-    assertThat(errorEvent.getError().get().getCause(),
-               withClassName("org.mule.runtime.api.exception.DefaultMuleException"));
-    assertThat(errorEvent.getVariables().get("myVar").getValue(), is("aValue"));
-    assertThat(errorEvent.getMessage(), hasPayload(equalTo("propagated")));
+    expectedError.expectCause(withClassName("org.mule.runtime.api.exception.DefaultMuleException"));
+    Matcher hasEntry = hasEntry("myVar", TypedValue.of("aValue"));
+    expectedError.expectEvent(allOf(hasVariables(hasEntry), hasMessage(hasPayload(equalTo("propagated")))));
+
+    flowRunner("onErrorPropagateMessage").run();
   }
 
   @Test
   public void onErrorPropagateFailure() throws Exception {
-    expectedException.expectCause(Matchers.instanceOf(MuleFatalException.class));
-    expectedException.expectCause(hasCause(instanceOf(NoClassDefFoundError.class)));
+    expectedError.expectCause(instanceOf(MuleFatalException.class));
+    expectedError.expectCause(hasCause(instanceOf(NoClassDefFoundError.class)));
     flowRunner("failingHandler").run();
   }
 

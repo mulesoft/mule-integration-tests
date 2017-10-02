@@ -6,13 +6,12 @@
  */
 package org.mule.test.integration.exceptions;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
+import static org.mule.functional.junit4.matchers.MessageMatchers.hasPayload;
+import static org.mule.tck.junit4.matcher.EventMatcher.hasMessage;
 
 import org.mule.functional.api.exception.FunctionalTestException;
-import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -54,13 +53,8 @@ public class ExceptionStrategyCommonScenariosTestCase extends AbstractIntegratio
 
   @Test
   public void testPreservePayloadExceptionStrategy() throws Exception {
-    try {
-      flowRunner("PreservePayloadExceptionStrategy").withPayload(MESSAGE_TO_SEND).run();
-    } catch (MessagingException e) {
-      assertThat(e.getCause(), is(instanceOf(FunctionalTestException.class)));
-      assertThat(e.getEvent().getMessage(), notNullValue());
-      assertThat(getPayloadAsString(e.getEvent().getMessage()), is(MESSAGE_MODIFIED));
-    }
+    flowRunner("PreservePayloadExceptionStrategy").withPayload(MESSAGE_TO_SEND)
+        .runExpectingException(instanceOf(FunctionalTestException.class), hasMessage(hasPayload(is(MESSAGE_MODIFIED))));
   }
 
 }

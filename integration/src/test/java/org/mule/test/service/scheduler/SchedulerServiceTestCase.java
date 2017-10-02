@@ -11,17 +11,19 @@ import static java.lang.Thread.currentThread;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.any;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.rules.ExpectedException.none;
 import static org.mule.runtime.api.component.location.Location.builderFromStringRepresentation;
+import static org.mule.runtime.api.message.Message.of;
+import static org.mule.runtime.core.api.event.EventContextFactory.create;
 import static org.mule.runtime.dsl.api.component.config.DefaultComponentLocation.fromSingleComponent;
 import static org.mule.test.allure.AllureConstants.SchedulerServiceFeature.SCHEDULER_SERVICE;
-import static org.mule.runtime.core.api.event.EventContextFactory.create;
-import static org.mule.runtime.api.message.Message.of;
+
 import org.mule.functional.api.component.SkeletonSource;
+import org.mule.functional.api.exception.ExpectedError;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.lifecycle.Disposable;
@@ -36,11 +38,12 @@ import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.runtime.core.api.config.DefaultMuleConfiguration;
 import org.mule.runtime.core.api.config.builders.AbstractConfigurationBuilder;
 import org.mule.runtime.core.api.event.CoreEvent;
-import org.mule.runtime.core.api.exception.EventProcessingException;
-import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.runtime.core.api.exception.NullExceptionHandler;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.test.AbstractIntegrationTestCase;
+
+import org.junit.Rule;
+import org.junit.Test;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -49,13 +52,12 @@ import javax.inject.Inject;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
-import org.hamcrest.TypeSafeMatcher;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 @Feature(SCHEDULER_SERVICE)
 public class SchedulerServiceTestCase extends AbstractIntegrationTestCase {
+
+  @Rule
+  public ExpectedError expectedError = ExpectedError.none();
 
   @Override
   protected String getConfigFile() {
@@ -137,16 +139,11 @@ public class SchedulerServiceTestCase extends AbstractIntegrationTestCase {
   @Test
   @Description("Tests that the exception that happens when a thread pool is full is properly handled.")
   public void overloadErrorHandling() throws Exception {
-    EventProcessingException exception = flowRunner("delaySchedule").runExpectingException();
+    expectedError.expectErrorType(any(String.class), is("OVERLOAD"));
+    expectedError.expectCause(instanceOf(SchedulerBusyException.class));
 
-    assertThat(exception.getEvent().getError().isPresent(), is(true));
-    assertThat(exception.getEvent().getError().get().getErrorType().getIdentifier(), is("OVERLOAD"));
-    assertThat(exception.getCause(), instanceOf(SchedulerBusyException.class));
-
+    flowRunner("delaySchedule").run();
   }
-
-  @Rule
-  public ExpectedException expected = none();
 
   @Test
   @Description("Tests that an OVERLOAD error is handled only by the message source."
@@ -155,24 +152,8 @@ public class SchedulerServiceTestCase extends AbstractIntegrationTestCase {
     SkeletonSource messageSource =
         (SkeletonSource) locator.find(builderFromStringRepresentation("delaySchedule/source").build()).get();
 
-    expected.expect(MessagingException.class);
-    expected.expect(new TypeSafeMatcher<MessagingException>() {
-
-      private String errorTypeId;
-
-      @Override
-      public void describeTo(org.hamcrest.Description description) {
-        description.appendValue(errorTypeId);
-      }
-
-      @Override
-      protected boolean matchesSafely(MessagingException item) {
-        errorTypeId = item.getEvent().getError().get().getErrorType().getIdentifier();
-        return "OVERLOAD".equals(errorTypeId);
-      }
-    });
-
-    expected.expectCause(instanceOf(SchedulerBusyException.class));
+    expectedError.expectErrorType("MULE", "OVERLOAD");
+    expectedError.expectCause(instanceOf(SchedulerBusyException.class));
 
     messageSource.getListener()
         .process(CoreEvent

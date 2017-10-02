@@ -11,15 +11,17 @@ import static org.junit.Assert.assertThat;
 import static org.mule.tck.MuleTestUtils.getExceptionListeners;
 
 import org.mule.runtime.api.component.AbstractComponent;
+import org.mule.runtime.api.component.location.Location;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.api.lifecycle.Lifecycle;
 import org.mule.runtime.core.api.construct.FlowConstruct;
 import org.mule.runtime.core.api.event.CoreEvent;
-import org.mule.runtime.core.api.exception.AbstractExceptionListener;
 import org.mule.runtime.core.api.processor.Processor;
+import org.mule.runtime.core.privileged.exception.AbstractExceptionListener;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.inject.Inject;
@@ -49,23 +51,24 @@ public class ErrorHandlerLifecycleTestCase extends AbstractIntegrationTestCase {
   private FlowConstruct flowD;
 
   @Test
-  public void testLifecycle() throws Exception {
-    AbstractExceptionListener flowAExceptionStrategy =
-        (AbstractExceptionListener) getExceptionListeners(flowA.getExceptionListener()).get(1);
-    AbstractExceptionListener flowBExceptionStrategy =
-        (AbstractExceptionListener) getExceptionListeners(flowB.getExceptionListener()).get(1);
+  public void testLifecycleErrorHandlerInfLow() throws Exception {
     LifecycleCheckerMessageProcessor lifecycleCheckerMessageProcessorFlowA =
-        (LifecycleCheckerMessageProcessor) flowAExceptionStrategy.getMessageProcessors().get(0);
+        (LifecycleCheckerMessageProcessor) locator.find(Location.builder().globalName(flowA.getName()).addErrorHandlerPart()
+            .addIndexPart(0).addProcessorsPart().addIndexPart(0).build()).get();
     LifecycleCheckerMessageProcessor lifecycleCheckerMessageProcessorFlowB =
-        (LifecycleCheckerMessageProcessor) flowBExceptionStrategy.getMessageProcessors().get(0);
+        (LifecycleCheckerMessageProcessor) locator.find(Location.builder().globalName(flowB.getName()).addErrorHandlerPart()
+            .addIndexPart(0).addProcessorsPart().addIndexPart(0).build()).get();
+
     assertThat(lifecycleCheckerMessageProcessorFlowA.isInitialized(), is(true));
     assertThat(lifecycleCheckerMessageProcessorFlowB.isInitialized(), is(true));
-    assertThat(flowAExceptionStrategy.isInitialised(), is(true));
-    assertThat(flowBExceptionStrategy.isInitialised(), is(true));
     ((Lifecycle) flowA).stop();
     assertThat(lifecycleCheckerMessageProcessorFlowA.isStopped(), is(true));
     assertThat(lifecycleCheckerMessageProcessorFlowB.isStopped(), is(false));
+  }
 
+  @Test
+  @Ignore("MULE-13675")
+  public void testLifecycleDefaultErrorHandler() throws Exception {
     AbstractExceptionListener flowCExceptionStrategy =
         (AbstractExceptionListener) getExceptionListeners(flowC.getExceptionListener()).get(1);
     AbstractExceptionListener flowDExceptionStrategy =
@@ -74,6 +77,7 @@ public class ErrorHandlerLifecycleTestCase extends AbstractIntegrationTestCase {
         (LifecycleCheckerMessageProcessor) flowCExceptionStrategy.getMessageProcessors().get(0);
     LifecycleCheckerMessageProcessor lifecycleCheckerMessageProcessorFlowD =
         (LifecycleCheckerMessageProcessor) flowDExceptionStrategy.getMessageProcessors().get(0);
+
     assertThat(lifecycleCheckerMessageProcessorFlowC.isInitialized(), is(true));
     assertThat(lifecycleCheckerMessageProcessorFlowD.isInitialized(), is(true));
     assertThat(flowCExceptionStrategy.isInitialised(), is(true));

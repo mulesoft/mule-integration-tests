@@ -14,7 +14,7 @@ import static org.mule.test.allure.AllureConstants.RoutersFeature.FirstSuccessfu
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 import org.mule.extension.validation.api.ValidationException;
 import org.mule.functional.api.component.TestConnectorQueueHandler;
-import org.mule.functional.junit4.rules.ExpectedError;
+import org.mule.functional.api.exception.ExpectedError;
 import org.mule.runtime.api.message.Message;
 import org.mule.test.AbstractIntegrationTestCase;
 

@@ -13,7 +13,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.withSettings;
 import static org.mule.functional.api.component.FunctionalTestProcessor.getFromFlow;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
+import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
+
 import org.mule.runtime.api.component.Component;
 import org.mule.runtime.api.exception.DefaultMuleException;
 import org.mule.runtime.api.exception.MuleException;
@@ -22,9 +24,7 @@ import org.mule.runtime.api.lifecycle.Initialisable;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.security.UnauthorisedException;
 import org.mule.runtime.core.api.event.CoreEvent;
-import org.mule.runtime.core.api.exception.EventProcessingException;
 import org.mule.runtime.core.api.exception.MessageRedeliveredException;
-import org.mule.runtime.core.api.exception.MessagingException;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.registry.ResolverException;
@@ -34,13 +34,15 @@ import org.mule.runtime.core.api.transformer.Transformer;
 import org.mule.runtime.core.api.transformer.TransformerException;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import org.hamcrest.Matchers;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+
 import java.sql.SQLDataException;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 @Feature(ERROR_HANDLING)
 @Story("Error Handler")
@@ -166,9 +168,7 @@ public class ErrorHandlerTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void criticalNotHandled() throws Exception {
-    EventProcessingException exception = flowRunner("propagatesCriticalErrors").runExpectingException();
-    assertThat(exception.getEvent().getError().isPresent(), is(true));
-    assertThat(exception.getEvent().getError().get().getErrorType().getIdentifier(), is("CRITICAL"));
+    flowRunner("propagatesCriticalErrors").runExpectingException(errorType(Matchers.any(String.class), is("CRITICAL")));
   }
 
   private void callTypeAndThrowException(Exception exception, String expectedMessage) throws Exception {
@@ -224,9 +224,6 @@ public class ErrorHandlerTestCase extends AbstractIntegrationTestCase {
     public CoreEvent process(CoreEvent event) throws MuleException {
       Throwable exception = (Throwable) event.getVariables().get("exception").getValue();
       if (exception instanceof MuleException) {
-        if (exception instanceof MessagingException) {
-          exception = new MessagingException(event, exception);
-        }
         throw (MuleException) exception;
       } else if (exception instanceof RuntimeException) {
         throw (RuntimeException) exception;

@@ -6,33 +6,33 @@
  */
 package org.mule.it.soap.connect;
 
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.mule.runtime.soap.api.exception.error.SoapErrors.BAD_REQUEST;
 import static org.mule.runtime.soap.api.exception.error.SoapErrors.SOAP_FAULT;
-import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
-import org.mule.runtime.api.message.Error;
-import org.mule.runtime.core.api.exception.EventProcessingException;
 
+import org.mule.functional.api.exception.ExpectedError;
+
+import org.junit.Rule;
 import org.junit.Test;
 
 public class InvokeOperationErrorsTestCase extends SoapFootballExtensionArtifactFunctionalTestCase {
 
+  @Rule
+  public ExpectedError expected = ExpectedError.none();
+
   @Test
   public void badRequest() throws Exception {
-    EventProcessingException e = flowRunner("getLeagues")
-        .withPayload("not a valid XML").keepStreamsOpen().runExpectingException();
-    Error error = e.getEvent().getError().get();
-    assertThat(error.getDescription(), containsString("the request body is not a valid XML"));
-    assertThat(error.getErrorType(), errorType("SOAP", BAD_REQUEST.toString()));
+    expected.expectErrorType("SOAP", BAD_REQUEST.toString());
+    expected.expectMessage(containsString("the request body is not a valid XML"));
+
+    flowRunner("getLeagues").withPayload("not a valid XML").keepStreamsOpen().run();
   }
 
   @Test
   public void commonSoapFault() throws Exception {
-    EventProcessingException e = flowRunner("getLeagues")
-        .withPayload(getBodyXml("noOp", "")).keepStreamsOpen().runExpectingException();
-    Error error = e.getEvent().getError().get();
-    assertThat(error.getDescription(), containsString("noOp was not recognized."));
-    assertThat(error.getErrorType(), errorType("SOAP", SOAP_FAULT.toString()));
+    expected.expectErrorType("SOAP", SOAP_FAULT.toString());
+    expected.expectMessage(containsString("noOp was not recognized."));
+
+    flowRunner("getLeagues").withPayload(getBodyXml("noOp", "")).keepStreamsOpen().run();
   }
 }
