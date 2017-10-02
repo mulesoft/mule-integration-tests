@@ -17,7 +17,10 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.rules.ExpectedException.none;
 import static org.mule.runtime.api.component.location.Location.builderFromStringRepresentation;
+import static org.mule.runtime.dsl.api.component.config.DefaultComponentLocation.fromSingleComponent;
 import static org.mule.test.allure.AllureConstants.SchedulerServiceFeature.SCHEDULER_SERVICE;
+import static org.mule.runtime.core.api.event.EventContextFactory.create;
+import static org.mule.runtime.api.message.Message.of;
 import org.mule.functional.api.component.SkeletonSource;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.exception.MuleRuntimeException;
@@ -35,6 +38,7 @@ import org.mule.runtime.core.api.config.builders.AbstractConfigurationBuilder;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.exception.EventProcessingException;
 import org.mule.runtime.core.api.exception.MessagingException;
+import org.mule.runtime.core.api.exception.NullExceptionHandler;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -170,8 +174,12 @@ public class SchedulerServiceTestCase extends AbstractIntegrationTestCase {
 
     expected.expectCause(instanceOf(SchedulerBusyException.class));
 
-    //Use any flowName just to get a valid event creation.
-    messageSource.getListener().process(flowRunner("delaySchedule").withPayload(null).buildEvent());
+    messageSource.getListener()
+        .process(CoreEvent
+            .builder(create("id", "serverd", fromSingleComponent(SchedulerServiceTestCase.class.getSimpleName()),
+                            NullExceptionHandler.getInstance()))
+            .message(of(null))
+            .build());
 
   }
 
