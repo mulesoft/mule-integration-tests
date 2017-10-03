@@ -41,10 +41,10 @@
     </configuration>
     <configuration-properties file="Attribute" name="globalconfigurationProperties"/>
     <error-handler name="globalerrorHandler">
-        <on-error-continue enableNotifications="true" logException="true" name="Attribute" type="Attribute" when="Attribute">
+        <on-error-continue enableNotifications="true" logException="true" type="Attribute" when="Attribute">
             <logger/>
         </on-error-continue>
-        <on-error-propagate enableNotifications="true" logException="true" name="Attribute" type="Attribute" when="Attribute">
+        <on-error-propagate enableNotifications="true" logException="true" type="Attribute" when="Attribute">
             <logger/>
         </on-error-propagate>
     </error-handler>
