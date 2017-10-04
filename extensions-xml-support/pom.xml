@@ -4,13 +4,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>mule-modules</artifactId>
-        <groupId>org.mule.runtime</groupId>
+        <groupId>org.mule.tests</groupId>
+        <artifactId>mule-extensions-integration-tests</artifactId>
         <version>4.0.0-SNAPSHOT</version>
     </parent>
-    <artifactId>mule-module-extensions-xml-support</artifactId>
-    <name>Mule Extensions XML Support</name>
-    <packaging>jar</packaging>
+    <artifactId>mule-module-extensions-xml-support-integrations-tests</artifactId>
+    <name>Mule Extensions XML Support Integration Tests</name>
     <description>
         Default implementation of the Mule Extension XML API.
     </description>
@@ -19,56 +18,24 @@
         <activemq.version>5.14.5</activemq.version>
         <javaxJmsApiVersion>2.0.1</javaxJmsApiVersion>
 
-        <formatterConfigPath>../../formatter.xml</formatterConfigPath>
+        <formatterConfigPath>../formatter.xml</formatterConfigPath>
     </properties>
 
     <dependencies>
-        <!-- Mule Dependencies -->
         <dependency>
             <groupId>org.mule.runtime</groupId>
-            <artifactId>mule-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.mule.runtime</groupId>
-            <artifactId>mule-metadata-model-catalog</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.mule.runtime</groupId>
-            <artifactId>mule-extensions-api</artifactId>
-        </dependency>
-        <dependency>
-            <!-- TODO(fernandezlautaro): MULE-11009 needed dependency as we heavily rely  org.mule.runtime.module.extension.internal.introspection.DefaultExtensionFactory to generate an ExtensionModel from a Describer -->
-            <groupId>org.mule.runtime</groupId>
-            <artifactId>mule-module-extensions-support</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <!-- TODO(fernandezlautaro): MULE-9646 + MULE-9637 needed dependency as we heavily rely on org.mule.runtime.config.api.dsl.model.ComponentModel and org.mule.runtime.config.api.dsl.processor.xml.XmlApplicationParser to make templating work -->
-            <groupId>org.mule.runtime</groupId>
-            <artifactId>mule-module-spring-config</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.mule.runtime</groupId>
-            <artifactId>mule-service-http-api</artifactId>
+            <artifactId>mule-module-extensions-xml-support</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
-
-        <!--Test Dependencies-->
         <dependency>
-        <!-- TODO(fernandezlautaro): needed dependency as we heavily rely on org.mule.runtime.config.api.dsl.model.ComponentModel and org.mule.runtime.config.api.dsl.processor.xml.XmlApplicationParser to make templating work -->
             <groupId>org.mule.runtime</groupId>
-            <artifactId>mule-module-extensions-spring-support</artifactId>
+            <artifactId>mule-module-extensions-xml-support</artifactId>
             <version>${project.version}</version>
+            <type>test-jar</type>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>xmlunit</groupId>
-            <artifactId>xmlunit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <!--Functional test dependencies-->
+
         <dependency>
             <groupId>org.mule.tests</groupId>
             <artifactId>mule-tests-runner</artifactId>
@@ -99,15 +66,8 @@
             <artifactId>jetty-server</artifactId>
             <scope>test</scope>
         </dependency>
-        <!-- Dependencies needed for the test runner -->
-        <dependency>
-            <groupId>org.mule.connectors</groupId>
-            <artifactId>mule-sockets-connector</artifactId>
-            <version>${muleSocketsConnectorTestVersion}</version>
-            <classifier>mule-plugin</classifier>
-            <scope>test</scope>
-        </dependency>
 
+        <!-- Dependencies needed for the test runner -->
         <dependency>
             <groupId>org.mule.services</groupId>
             <artifactId>mule-service-weave</artifactId>
@@ -115,7 +75,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- TODO MULE-12471 Move to Integration tests repository the tests that need these conectors and services -->
         <dependency>
             <groupId>org.mule.services</groupId>
             <artifactId>mule-service-http</artifactId>
@@ -123,7 +82,6 @@
             <classifier>mule-service</classifier>
             <scope>provided</scope>
         </dependency>
-        <!-- TODO MULE-12471 Move to Integration tests repository the tests that need these conectors and services -->
         <dependency>
             <groupId>org.mule.services</groupId>
             <artifactId>mule-service-scheduler</artifactId>
@@ -131,7 +89,13 @@
             <classifier>mule-service</classifier>
             <scope>provided</scope>
         </dependency>
-        <!-- TODO MULE-12471 Move to Integration tests repository the tests that need these conectors and services -->
+        <dependency>
+            <groupId>org.mule.connectors</groupId>
+            <artifactId>mule-sockets-connector</artifactId>
+            <version>${muleSocketsConnectorTestVersion}</version>
+            <classifier>mule-plugin</classifier>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.mule.connectors</groupId>
             <artifactId>mule-http-connector</artifactId>
@@ -139,7 +103,6 @@
             <classifier>mule-plugin</classifier>
             <scope>test</scope>
         </dependency>
-        <!-- TODO MULE-12471 Move to Integration tests repository the tests that need these conectors and services -->
         <dependency>
             <groupId>org.mule.modules</groupId>
             <artifactId>mule-module-file-extension-common</artifactId>
@@ -147,7 +110,6 @@
             <classifier>mule-plugin</classifier>
             <scope>test</scope>
         </dependency>
-        <!-- TODO MULE-12471 Move to Integration tests repository the tests that need these conectors and services -->
         <dependency>
             <groupId>org.mule.connectors</groupId>
             <artifactId>mule-file-connector</artifactId>
@@ -155,7 +117,6 @@
             <classifier>mule-plugin</classifier>
             <scope>test</scope>
         </dependency>
-        <!-- TODO MULE-12471 Move to Integration tests repository the tests that need these conectors and services -->
         <dependency>
             <groupId>org.mule.connectors</groupId>
             <artifactId>mule-jms-connector</artifactId>
@@ -163,13 +124,7 @@
             <classifier>mule-plugin</classifier>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.mule.tests</groupId>
-            <artifactId>mule-petstore-extension</artifactId>
-            <version>${project.version}</version>
-            <classifier>mule-plugin</classifier>
-            <scope>test</scope>
-        </dependency>
+
         <dependency>
             <groupId>org.mule.tests</groupId>
             <artifactId>mule-tests-allure</artifactId>

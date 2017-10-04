@@ -21,6 +21,7 @@
     <module>schedulers-tests</module>
     <module>mule-test-smart-connectors-parent</module>
     <module>munit-tests</module>
+    <module>extensions-xml-support</module>
   </modules>
 
   <properties>
