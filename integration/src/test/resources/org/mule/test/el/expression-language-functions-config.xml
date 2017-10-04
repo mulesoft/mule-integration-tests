@@ -76,4 +76,19 @@
         <set-payload value="#[output application/json --- {name: 'Ana', location : 'BA'}]"/>
     </flow>
 
+    <flow name="matchDataTypes">
+        <test:assert expression="#[java!org::mule::runtime::api::metadata::DataType::match(vars.matching1,vars.matching2,true)]"/>
+        <test:assert expression="#[java!org::mule::runtime::api::metadata::DataType::match(vars.matching1,vars.nonMatching,true) == false]"/>
+        <test:assert expression="#[java!org::mule::runtime::api::metadata::DataType::match(vars.matching2,vars.nonMatching,true) == false]"/>
+    </flow>
+
+    <flow name="checkCompatibleDataTypes">
+        <test:assert expression="#[java!org::mule::runtime::api::metadata::DataType::areCompatible(vars.compatible1,vars.compatible2)]"/>
+        <test:assert expression="#[java!org::mule::runtime::api::metadata::DataType::areCompatible(vars.compatible2,vars.compatible1) == false]"/>
+        <test:assert expression="#[java!org::mule::runtime::api::metadata::DataType::areCompatible(vars.compatible1,vars.nonCompatible) == false]"/>
+        <test:assert expression="#[java!org::mule::runtime::api::metadata::DataType::areCompatible(vars.compatible2,vars.nonCompatible) == false]"/>
+        <test:assert expression="#[java!org::mule::runtime::api::metadata::DataType::areCompatible(vars.nonCompatible,vars.compatible1) == false]"/>
+        <test:assert expression="#[java!org::mule::runtime::api::metadata::DataType::areCompatible(vars.nonCompatible,vars.compatible2) == false]"/>
+    </flow>
+
 </mule>

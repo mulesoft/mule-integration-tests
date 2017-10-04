@@ -71,7 +71,7 @@
         <error-handler>
             <on-error-propagate>
                 <set-payload value="propagated"/>
-                <set-variable variableName="myVar" value="aValue"/>
+                <set-variable variableName="myVar" value="aValue" mimeType="text/plain"/>
             </on-error-propagate>
         </error-handler>
     </flow>

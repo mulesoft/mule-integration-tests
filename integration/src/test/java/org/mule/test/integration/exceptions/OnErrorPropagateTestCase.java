@@ -24,6 +24,8 @@ import static org.mule.tck.junit4.matcher.EventMatcher.hasMessage;
 import static org.mule.tck.junit4.matcher.EventMatcher.hasVariables;
 import static org.mule.tck.junit4.matcher.HasClassInHierarchy.withClassName;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.mule.runtime.api.metadata.MediaType.TEXT;
 
 import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.functional.api.exception.ExpectedError;
@@ -31,6 +33,7 @@ import org.mule.functional.api.exception.FunctionalTestException;
 import org.mule.runtime.api.event.Event;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.exception.MuleFatalException;
+import org.mule.runtime.api.metadata.DataType;
 import org.mule.runtime.api.metadata.TypedValue;
 import org.mule.runtime.api.util.concurrent.Latch;
 import org.mule.runtime.core.api.event.CoreEvent;
@@ -107,7 +110,11 @@ public class OnErrorPropagateTestCase extends AbstractIntegrationTestCase {
   @Test
   public void propagateErrorAndMessage() throws Exception {
     expectedError.expectCause(withClassName("org.mule.runtime.api.exception.DefaultMuleException"));
-    Matcher hasEntry = hasEntry("myVar", TypedValue.of("aValue"));
+    Matcher hasEntry =
+        hasEntry("myVar",
+                 new TypedValue<>("aValue",
+                                  DataType.builder().type(String.class).mediaType(TEXT).charset(UTF_8)
+                                      .build()));
     expectedError.expectEvent(allOf(hasVariables(hasEntry), hasMessage(hasPayload(equalTo("propagated")))));
 
     flowRunner("onErrorPropagateMessage").run();

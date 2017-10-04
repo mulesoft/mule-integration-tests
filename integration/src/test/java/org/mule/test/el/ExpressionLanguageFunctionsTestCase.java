@@ -22,6 +22,8 @@ import static org.mule.test.allure.AllureConstants.ExpressionLanguageFeature.Exp
 
 import org.mule.functional.api.exception.ExpectedError;
 import org.mule.runtime.api.message.Message;
+import org.mule.runtime.api.metadata.DataType;
+import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -168,6 +170,23 @@ public class ExpressionLanguageFunctionsTestCase extends AbstractIntegrationTest
             + "  at 'lookup' in (anonymous:1:1)\n"
             + "  at 'main'   in (anonymous:1:1)\" evaluating expression: \"lookup(vars.flow, payload)\".")))));
     flowRunner("expressionParams").withVariable("flow", "request-config").withPayload(TEST_PAYLOAD).run();
+  }
+
+  @Test
+  public void checkCompatibleDataTypes() throws Exception {
+    DataType compatible1 = DataType.builder().type(Parent.class).mediaType(MediaType.ANY).build();
+    DataType compatible2 = DataType.builder().type(Child.class).mediaType(MediaType.APPLICATION_JAVA).build();
+    DataType nonCompatible = DataType.STRING;
+    flowRunner("checkCompatibleDataTypes").withVariable("compatible1", compatible1).withVariable("compatible2", compatible2)
+        .withVariable("nonCompatible", nonCompatible).run().getMessage();
+  }
+
+  private static class Parent {
+
+  }
+
+  private static class Child extends Parent {
+
   }
 
 }
