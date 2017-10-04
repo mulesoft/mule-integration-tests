@@ -13,7 +13,7 @@
             <when expression="mel:payload is org.mule.tck.testmodels.fruit.Apple">
                 <script:execute engine="groovy">
                     <script:code>
-                        return ""
+                        return new org.mule.functional.junit4.TestLegacyMessageBuilder(message).value("").build()
                     </script:code>
                 </script:execute>
                 <append-string-transformer message="A"/>

@@ -101,11 +101,11 @@
     <flow name="array-expression-config">
         <set-variable variableName="loops" value="0" />
         <foreach>
-            <script:execute  engine="groovy">
+            <script:execute engine="groovy" target="loops">
                 <script:code>
                     def loops = vars.loops.toInteger()
                     loops++
-                    vars['loops'] = loops + ""
+                    return loops + ""
                 </script:code>
             </script:execute>
         </foreach>
