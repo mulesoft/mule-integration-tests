@@ -7,11 +7,14 @@
 package org.mule.test.integration.messaging.meps;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.exception.ExceptionHelper.getRootException;
+import static org.mule.runtime.core.api.exception.Errors.CORE_NAMESPACE_NAME;
+import static org.mule.runtime.core.api.exception.Errors.Identifiers.ROUTING_ERROR_IDENTIFIER;
+import static org.mule.runtime.core.api.exception.Errors.Identifiers.TRANSFORMATION_ERROR_IDENTIFIER;
+import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
+
 import org.mule.functional.api.exception.FunctionalTestException;
-import org.mule.runtime.core.api.transformer.TransformerException;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Test;
@@ -34,13 +37,13 @@ public class SynchronousResponseExceptionTestCase extends AbstractIntegrationTes
 
   @Test
   public void testFlowRefInvalidException() throws Exception {
-    Exception e = flowRunner("FlowRefInvalidException").withPayload("request").runExpectingException();
-    assertThat(getRootException(e).getClass().getName(), is("org.springframework.beans.factory.NoSuchBeanDefinitionException"));
+    flowRunner("FlowRefInvalidException").withPayload("request")
+        .runExpectingException(errorType(CORE_NAMESPACE_NAME, ROUTING_ERROR_IDENTIFIER));
   }
 
   @Test
   public void testTransformerException() throws Exception {
-    Exception e = flowRunner("TransformerException").withPayload("request").runExpectingException();
-    assertThat(getRootException(e), instanceOf(TransformerException.class));
+    flowRunner("TransformerException").withPayload("request")
+        .runExpectingException(errorType(CORE_NAMESPACE_NAME, TRANSFORMATION_ERROR_IDENTIFIER));
   }
 }

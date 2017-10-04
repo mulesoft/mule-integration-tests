@@ -61,7 +61,7 @@ public class HttpFilterFunctionalTestCase extends AbstractIntegrationTestCase {
     doRequest(null, "localhost", "anonX", "anonX", getUrl(), false, SC_UNAUTHORIZED);
   }
 
-  @Ignore // TODO Realm validataion seems to be completely ignored
+  @Ignore("MULE-13709 - Realm validation seems to be completely ignored")
   @Test
   public void testAuthenticationFailureBadRealm() throws Exception {
     doRequest("blah", "localhost", "anon", "anon", getUrl(), false, SC_UNAUTHORIZED);
@@ -77,7 +77,7 @@ public class HttpFilterFunctionalTestCase extends AbstractIntegrationTestCase {
     doRequest(null, "localhost", "anon", "anon", getUrl(), true, SC_OK);
   }
 
-  @Ignore // TODO Realm validataion seems to be completely ignored
+  @Ignore("MULE-13709 - Realm validation seems to be completely ignored")
   @Test
   public void testAuthenticationAuthorisedWithHandshakeAndBadRealm() throws Exception {
     doRequest("blah", "localhost", "anon", "anon", getUrl(), true, SC_UNAUTHORIZED);
