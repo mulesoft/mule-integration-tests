@@ -38,7 +38,7 @@
     </sub-flow>
 
     <flow name="flow2">
-        <flow-ref name="sub-flow-#[mel:letter]" />
+        <flow-ref name="#['sub-flow-' ++ vars.letter]" />
     </flow>
 
     <sub-flow name="sub-flow-A">
@@ -51,7 +51,7 @@
 
     <sub-flow name="sub-flow-C">
         <choice>
-            <when expression="#[mel:true]">
+            <when expression="#[true]">
                 <append-string-transformer message="A" />
             </when>
             <otherwise>
