@@ -1,0 +1,4 @@
+myProp: "myEnvValue"
+fileProp: ${basicValue}-filePropValue
+http:
+  url: http://localhost/${http.path}

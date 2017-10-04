@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+
+    <global-property name="env" value="my-env"/>
+
+    <configuration-properties file="${env}.yaml"/>
+
+    <global-property name="basicValue" value="value1"/>
+    <global-property name="complexValue" value="value2-${basicValue}"/>
+    <global-property name="anotherComplexValue" value="${fileProp}"/>
+
+    <configuration-properties file="properties.yaml"/>
+
+
+</mule>
