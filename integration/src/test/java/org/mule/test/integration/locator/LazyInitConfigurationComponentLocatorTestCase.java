@@ -53,13 +53,13 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
     return configurationBuilder;
   }
 
-  @Description("Lazy init should not initialize until an operation is done")
+  @Description("Lazy init should not create components until an operation is done")
   @Test
   public void lazyInitDoesNotCalculateLocations() {
     assertThat(muleContext.getConfigurationComponentLocator().findAllLocations(), hasSize(0));
   }
 
-  @Description("sarasa")
+  @Description("Lazy init should create components when operation is done")
   @Test
   public void lazyMuleContextInitializesLocation() {
     metadataService.getMetadataKeys(builder().globalName("myFlow").build());
@@ -77,7 +77,7 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
                                                      "myFlow/processors/2/processors/1"));
   }
 
-  @Description("sarasa")
+  @Description("Lazy init should refresh the ConfigurationComponentLocator when initilize is done")
   @Test
   public void lazyMuleContextRefreshesConfigurationComponentLoader() {
     metadataService.getMetadataKeys(builder().globalName("myFlow").build());
