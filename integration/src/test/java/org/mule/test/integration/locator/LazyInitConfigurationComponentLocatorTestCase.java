@@ -38,7 +38,6 @@ import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocator
 @Story(SEARCH_CONFIGURATION)
 public class LazyInitConfigurationComponentLocatorTestCase extends AbstractIntegrationTestCase {
 
-  private ApplicationModel applicationModel;
   @Inject
   @Named(value = "_muleMetadataService")
   private MetadataService metadataService;
