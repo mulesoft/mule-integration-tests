@@ -20,8 +20,7 @@ import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
 import org.junit.Test;
 import org.mule.runtime.api.component.location.ComponentLocation;
-import org.mule.runtime.api.metadata.MetadataService;
-import org.mule.runtime.config.api.dsl.model.ApplicationModel;
+import org.mule.runtime.config.api.LazyComponentInitializer;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -30,6 +29,7 @@ import javax.inject.Named;
 
 import java.util.List;
 
+import static org.mule.runtime.config.api.LazyComponentInitializer.LAZY_COMPONENT_INITIALIZER_SERVICE_KEY;
 import static org.mule.runtime.config.api.SpringXmlConfigurationBuilderFactory.createConfigurationBuilder;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentLocatorStory.SEARCH_CONFIGURATION;
@@ -39,8 +39,8 @@ import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocator
 public class LazyInitConfigurationComponentLocatorTestCase extends AbstractIntegrationTestCase {
 
   @Inject
-  @Named(value = "_muleMetadataService")
-  private MetadataService metadataService;
+  @Named(value = LAZY_COMPONENT_INITIALIZER_SERVICE_KEY)
+  private LazyComponentInitializer lazyComponentInitializer;
 
   @Override
   protected String getConfigFile() {
@@ -64,7 +64,7 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
   @Description("Lazy init should create components when operation is done")
   @Test
   public void lazyMuleContextInitializesLocation() {
-    metadataService.getMetadataKeys(builder().globalName("myFlow").build());
+    lazyComponentInitializer.initializeComponent(builder().globalName("myFlow").build());
     List<ComponentLocation> componentLocs = muleContext.getConfigurationComponentLocator().findAllLocations();
     List<String> allComponentPaths = componentLocs.stream().map(ComponentLocation::getLocation).collect(toList());
     assertThat(allComponentPaths, containsInAnyOrder(
@@ -84,10 +84,10 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
   @Description("Lazy init should refresh the ConfigurationComponentLocator when initialize is done")
   @Test
   public void lazyMuleContextRefreshesConfigurationComponentLoader() {
-    metadataService.getMetadataKeys(builder().globalName("myFlow").build());
+    lazyComponentInitializer.initializeComponent(builder().globalName("myFlow").build());
     assertThat(muleContext.getConfigurationComponentLocator().findAllLocations(), hasSize(9));
 
-    metadataService.getMetadataKeys(builder().globalName("anotherFlow").build());
+    lazyComponentInitializer.initializeComponent(builder().globalName("anotherFlow").build());
     List<ComponentLocation> componentLocs = muleContext.getConfigurationComponentLocator().findAllLocations();
     List<String> allComponentPaths = componentLocs.stream().map(ComponentLocation::getLocation).collect(toList());
     assertThat(allComponentPaths, containsInAnyOrder(
