@@ -429,9 +429,26 @@ public class XmlExtensionLoaderTestCase extends AbstractMuleTestCase {
     Map<String, Object> parameters = new HashMap<>();
     parameters.put(RESOURCE_XML, modulePath);
     parameters.put(XmlExtensionModelLoader.VALIDATE_XML, validateXml);
-    return new XmlExtensionModelLoader().loadExtensionModel(getClass().getClassLoader(),
-                                                            getDefault(getDependencyExtensions()),
-                                                            parameters);
+    final ExtensionModel extensionModel = new XmlExtensionModelLoader().loadExtensionModel(getClass().getClassLoader(),
+                                                                                           getDefault(getDependencyExtensions()),
+                                                                                           parameters);
+    assertNoReconnectionIsAdded(extensionModel);
+    return extensionModel;
+  }
+
+  private void assertNoReconnectionIsAdded(ExtensionModel extensionModel) {
+    new ExtensionWalker() {
+
+      @Override
+      protected void onParameter(ParameterizedModel owner, ParameterGroupModel groupModel, ParameterModel model) {
+
+        model.getType().getAnnotation(TypeIdAnnotation.class).ifPresent(typeIdAnnotation -> {
+          if (ReconnectionStrategyTypeBuilder.RECONNECTION_CONFIG.equals(typeIdAnnotation.getValue())) {
+            fail("Reconnection element is not allowed in Smart Connectors");
+          }
+        });
+      }
+    }.walk(extensionModel);
   }
 
   private Set<ExtensionModel> getDependencyExtensions() {
