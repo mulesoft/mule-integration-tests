@@ -30,6 +30,7 @@ import static org.mule.test.heisenberg.extension.HeisenbergConnectionProvider.ge
 import static org.mule.test.heisenberg.extension.HeisenbergOperations.CALL_GUS_MESSAGE;
 
 import org.mule.functional.api.exception.ExpectedError;
+import org.mule.functional.api.exception.FunctionalTestException;
 import org.mule.runtime.api.artifact.Registry;
 import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.api.connection.ConnectionException;
@@ -369,6 +370,29 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     assertThat(setPayloadOperation.getParameters().get("value").resolveValue(), is("Wubba Lubba Dub Dub"));
     assertThat(setPayloadOperation.getParameters().get("mimeType").resolveValue(), is("text/plain"));
     assertThat(setPayloadOperation.getParameters().get("encoding").resolveValue(), is("UTF-8"));
+  }
+
+  @Test
+  @Description("Errors in sub-flows are handled correctly")
+  public void failingSubFlow() throws Exception {
+    expectedError.expectCause(instanceOf(FunctionalTestException.class));
+
+    try {
+      flowRunner("flowWithFailingSubFlowRef").run();
+    } finally {
+      List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
+      assertThat(interceptionParameters, hasSize(2));
+
+      InterceptionParameters flowRefParameter = interceptionParameters.get(0);
+
+      assertThat(flowRefParameter.getParameters().keySet(), containsInAnyOrder("name"));
+      assertThat(flowRefParameter.getParameters().get("name").resolveValue(), is("failing-sub-flow"));
+
+      InterceptionParameters failParameter = interceptionParameters.get(1);
+
+      assertThat(failParameter.getParameters().keySet(), containsInAnyOrder("throwException"));
+      assertThat(failParameter.getParameters().get("throwException").resolveValue(), is("true"));
+    }
   }
 
   public static class HasInjectedAttributesInterceptorFactory implements ProcessorInterceptorFactory {
