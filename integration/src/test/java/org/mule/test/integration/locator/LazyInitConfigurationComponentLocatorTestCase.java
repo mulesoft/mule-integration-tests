@@ -7,10 +7,12 @@
 package org.mule.test.integration.locator;
 
 import static java.util.stream.Collectors.toList;
+import static java.util.Optional.empty;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.mule.runtime.api.component.location.Location.builder;
 
 import io.qameta.allure.Description;
@@ -57,6 +59,7 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
   @Test
   public void lazyInitDoesNotCalculateLocations() {
     assertThat(muleContext.getConfigurationComponentLocator().findAllLocations(), hasSize(0));
+    assertThat(muleContext.getConfigurationComponentLocator().find(builder().globalName("myFlow").build()), is(empty()));
   }
 
   @Description("Lazy init should create components when operation is done")
@@ -75,9 +78,11 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
                                                      "myFlow/processors/2",
                                                      "myFlow/processors/2/processors/0",
                                                      "myFlow/processors/2/processors/1"));
+    assertThat(muleContext.getConfigurationComponentLocator().find(builder().globalName("myFlow").build()), is(not(empty())));
+    assertThat(muleContext.getConfigurationComponentLocator().find(builder().globalName("anotherFlow").build()), is(empty()));
   }
 
-  @Description("Lazy init should refresh the ConfigurationComponentLocator when initilize is done")
+  @Description("Lazy init should refresh the ConfigurationComponentLocator when initialize is done")
   @Test
   public void lazyMuleContextRefreshesConfigurationComponentLoader() {
     metadataService.getMetadataKeys(builder().globalName("myFlow").build());
@@ -92,6 +97,9 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
                                                      "anotherFlow/source/0",
                                                      "anotherFlow/source/0/0",
                                                      "anotherFlow/processors/0"));
+    assertThat(muleContext.getConfigurationComponentLocator().find(builder().globalName("myFlow").build()), is(empty()));
+    assertThat(muleContext.getConfigurationComponentLocator().find(builder().globalName("anotherFlow").build()),
+               is(not(empty())));
   }
 
 }
