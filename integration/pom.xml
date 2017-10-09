@@ -216,7 +216,21 @@
             <artifactId>commons-collections</artifactId>
             <scope>test</scope>
         </dependency>
-        
+
+        <dependency>
+            <groupId>org.mule.connectors</groupId>
+            <artifactId>mule-db-connector</artifactId>
+            <version>${muleDbConnectorTestVersion}</version>
+            <classifier>mule-plugin</classifier>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derby</artifactId>
+            <scope>test</scope>
+        </dependency>
+
         <dependency>
             <groupId>com.github.stephenc.eaio-uuid</groupId>
             <artifactId>uuid</artifactId>
