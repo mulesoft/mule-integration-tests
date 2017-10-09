@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="
+       http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+
+    <flow name="flowLvl0">
+        <flow-ref name="flowLvl1"/>
+    </flow>
+
+    <flow name="flowLvl1">
+        <flow-ref name="subFlowLvl0"/>
+    </flow>
+
+    <sub-flow name="subFlowLvl0">
+        <logger message="message"/>
+    </sub-flow>
+</mule>
+

@@ -20,6 +20,8 @@ import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
 import org.junit.Test;
 import org.mule.runtime.api.component.location.ComponentLocation;
+import org.mule.runtime.app.declaration.api.ConfigurationElementDeclaration;
+import org.mule.runtime.app.declaration.api.ConnectionElementDeclaration;
 import org.mule.runtime.config.api.LazyComponentInitializer;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -29,6 +31,7 @@ import javax.inject.Named;
 
 import java.util.List;
 
+import static org.mule.runtime.app.declaration.api.fluent.ElementDeclarer.newParameterGroup;
 import static org.mule.runtime.config.api.LazyComponentInitializer.LAZY_COMPONENT_INITIALIZER_SERVICE_KEY;
 import static org.mule.runtime.config.api.SpringXmlConfigurationBuilderFactory.createConfigurationBuilder;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
@@ -38,6 +41,9 @@ import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocator
 @Story(SEARCH_CONFIGURATION)
 public class LazyInitConfigurationComponentLocatorTestCase extends AbstractIntegrationTestCase {
 
+  private ConfigurationElementDeclaration dbConfig;
+  private ConnectionElementDeclaration derbyConnection;
+
   @Inject
   @Named(value = LAZY_COMPONENT_INITIALIZER_SERVICE_KEY)
   private LazyComponentInitializer lazyComponentInitializer;
@@ -46,7 +52,8 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
   protected String[] getConfigFiles() {
     // TODO (MULE-13666): add config "org/mule/test/integration/locator/component-locator-spring-config.xml"
     // Cannot add it until MULE-13666 is not fixed, since lazy init will throw NPE
-    return new String[] {"org/mule/test/integration/locator/component-locator-config.xml"};
+    return new String[] {"org/mule/test/integration/locator/component-locator-config.xml",
+        "org/mule/test/integration/locator/component-locator-levels-config.xml"};
   }
 
   @Override
@@ -101,6 +108,21 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
     assertThat(muleContext.getConfigurationComponentLocator().find(builder().globalName("myFlow").build()), is(empty()));
     assertThat(muleContext.getConfigurationComponentLocator().find(builder().globalName("anotherFlow").build()),
                is(not(empty())));
+  }
+
+  @Test
+  public void lazyMuleContextWithDeeperLevelConfig() {
+    lazyComponentInitializer.initializeComponent(builder().globalName("flowLvl0").build());
+    List<ComponentLocation> componentLocs = muleContext.getConfigurationComponentLocator().findAllLocations();
+    List<String> allComponentPaths = componentLocs.stream().map(ComponentLocation::getLocation).collect(toList());
+
+    assertThat(allComponentPaths, containsInAnyOrder(
+                                                     "flowLvl0",
+                                                     "flowLvl0/processors/0",
+                                                     "flowLvl1",
+                                                     "flowLvl1/processors/0",
+                                                     "subFlowLvl0",
+                                                     "subFlowLvl0/processors/0"));
   }
 
 }
