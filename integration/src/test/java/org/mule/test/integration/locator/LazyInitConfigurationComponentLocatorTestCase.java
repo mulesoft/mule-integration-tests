@@ -44,8 +44,8 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
 
   @Override
   protected String[] getConfigFiles() {
-    // TODO (MULE-13705): add config "org/mule/test/integration/locator/component-locator-spring-config.xml"
-    // Cannot add it until MULE-13705 is not fixed, since lazy init will throw NPE
+    // TODO (MULE-13666): add config "org/mule/test/integration/locator/component-locator-spring-config.xml"
+    // Cannot add it until MULE-13666 is not fixed, since lazy init will throw NPE
     return new String[] {"org/mule/test/integration/locator/component-locator-config.xml"};
   }
 
