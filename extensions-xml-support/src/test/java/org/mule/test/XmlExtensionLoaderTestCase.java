@@ -308,6 +308,10 @@ public class XmlExtensionLoaderTestCase extends AbstractMuleTestCase {
     assertThat(operationModelOptional.isPresent(), is(true));
     final OperationModel operationModel = operationModelOptional.get();
     assertThat(operationModel.getDescription(), is("Documentation for the operation"));
+    assertThat(operationModel.getDisplayModel().isPresent(), is(true));
+    assertThat(operationModel.getDisplayModel().get().getDisplayName(), is("A pretty name for the operation"));
+    assertThat(operationModel.getDisplayModel().get().getSummary(), is("a summary tooltip operation"));
+    assertThat(operationModel.getDisplayModel().get().getExample(), is("SOME_OPERATION_SAMPLE_DATA"));
 
     final List<ParameterModel> allParameterModels = operationModel.getAllParameterModels();
     assertThat(allParameterModels.size(), is(6));
