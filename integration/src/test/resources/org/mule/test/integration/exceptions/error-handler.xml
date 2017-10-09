@@ -56,9 +56,6 @@
             <on-error-continue type="TRANSFORMATION">
                 <append-string-transformer message=" transformation"/>
             </on-error-continue>
-            <on-error-continue type="REDELIVERY_EXHAUSTED">
-                <append-string-transformer message=" redelivery"/>
-            </on-error-continue>
             <on-error-continue type="EXPRESSION">
                 <append-string-transformer message=" expression"/>
             </on-error-continue>

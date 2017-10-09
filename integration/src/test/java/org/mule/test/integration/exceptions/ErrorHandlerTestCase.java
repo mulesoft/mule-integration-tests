@@ -24,7 +24,6 @@ import org.mule.runtime.api.lifecycle.Initialisable;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.security.UnauthorisedException;
 import org.mule.runtime.core.api.event.CoreEvent;
-import org.mule.runtime.core.api.exception.MessageRedeliveredException;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.registry.ResolverException;
@@ -151,12 +150,6 @@ public class ErrorHandlerTestCase extends AbstractIntegrationTestCase {
   @Test
   public void security() throws Exception {
     callTypeAndThrowException(new UnauthorisedException(mockMessage), "0 security");
-  }
-
-  @Test
-  public void redelivery() throws Exception {
-    MessageRedeliveredException exception = new MessageRedeliveredException("3", 1, 1);
-    callTypeAndThrowException(exception, "0 redelivery");
   }
 
   @Test
