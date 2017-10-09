@@ -18,10 +18,9 @@ import static org.mule.runtime.api.component.location.Location.builder;
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mule.runtime.api.component.location.ComponentLocation;
-import org.mule.runtime.app.declaration.api.ConfigurationElementDeclaration;
-import org.mule.runtime.app.declaration.api.ConnectionElementDeclaration;
 import org.mule.runtime.config.api.LazyComponentInitializer;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -31,7 +30,6 @@ import javax.inject.Named;
 
 import java.util.List;
 
-import static org.mule.runtime.app.declaration.api.fluent.ElementDeclarer.newParameterGroup;
 import static org.mule.runtime.config.api.LazyComponentInitializer.LAZY_COMPONENT_INITIALIZER_SERVICE_KEY;
 import static org.mule.runtime.config.api.SpringXmlConfigurationBuilderFactory.createConfigurationBuilder;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
@@ -40,9 +38,6 @@ import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocator
 @Feature(CONFIGURATION_COMPONENT_LOCATOR)
 @Story(SEARCH_CONFIGURATION)
 public class LazyInitConfigurationComponentLocatorTestCase extends AbstractIntegrationTestCase {
-
-  private ConfigurationElementDeclaration dbConfig;
-  private ConnectionElementDeclaration derbyConnection;
 
   @Inject
   @Named(value = LAZY_COMPONENT_INITIALIZER_SERVICE_KEY)
@@ -110,6 +105,7 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
                is(not(empty())));
   }
 
+  @Ignore("MULE-13705: This test reproduce the issue (uncomment when fixed)")
   @Test
   public void lazyMuleContextWithDeeperLevelConfig() {
     lazyComponentInitializer.initializeComponent(builder().globalName("flowLvl0").build());
