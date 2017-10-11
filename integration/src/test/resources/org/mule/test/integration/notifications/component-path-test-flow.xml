@@ -8,7 +8,7 @@
                http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
                http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
 
-
+    <configuration defaultErrorHandler-ref="defaultErrorHandler"/>
 
 
 
@@ -115,5 +115,11 @@
             <validation:is-true expression="true"/>
         </async>
     </flow>
+
+    <error-handler name="defaultErrorHandler">
+        <on-error-continue>
+            <logger/>
+        </on-error-continue>
+    </error-handler>
 
 </mule>

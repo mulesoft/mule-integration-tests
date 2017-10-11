@@ -13,7 +13,6 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.component.AbstractComponent.LOCATION_KEY;
 import static org.mule.runtime.api.component.ComponentIdentifier.buildFromStringRepresentation;
-import static org.mule.runtime.api.component.TypedComponentIdentifier.builder;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.FLOW;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.INTERCEPTING;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.ON_ERROR;
@@ -22,23 +21,22 @@ import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentT
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.ROUTER;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.SCOPE;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.SOURCE;
+import static org.mule.runtime.api.component.TypedComponentIdentifier.builder;
 import static org.mule.runtime.config.api.dsl.model.ApplicationModel.FLOW_IDENTIFIER;
 import static org.mule.runtime.config.api.dsl.model.ApplicationModel.SUBFLOW_IDENTIFIER;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentLocationStory.COMPONENT_LOCATION;
-
 import org.mule.runtime.api.component.Component;
 import org.mule.runtime.api.component.TypedComponentIdentifier;
-import org.mule.runtime.core.api.construct.Flow;
+import org.mule.runtime.api.component.location.ConfigurationComponentLocator;
+import org.mule.runtime.api.component.location.Location;
 import org.mule.runtime.api.notification.MessageProcessorNotification;
+import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.dsl.api.component.config.DefaultComponentLocation;
 import org.mule.runtime.dsl.api.component.config.DefaultComponentLocation.DefaultLocationPart;
 import org.mule.tck.probe.PollingProber;
 import org.mule.tck.probe.Probe;
 import org.mule.test.AbstractIntegrationTestCase;
-
-import org.junit.Ignore;
-import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -49,6 +47,8 @@ import javax.inject.Named;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
+import org.junit.Ignore;
+import org.junit.Test;
 
 @Feature(CONFIGURATION_COMPONENT_LOCATOR)
 @Story(COMPONENT_LOCATION)
@@ -181,6 +181,9 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
   @Inject
   @Named("flowWithSource")
   private Flow flowWithSource;
+
+  @Inject
+  private ConfigurationComponentLocator configurationComponentLocator;
 
   @Override
   protected String getConfigFile() {
@@ -388,6 +391,21 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
         .appendLocationPart("1", VALIDATION_IS_TRUE,
                             CONFIG_FILE_NAME, of(115)));
     assertNoNextProcessorNotification();
+  }
+
+  @Test
+  public void defaultErrorHandlerFromFlowCannotBeAccesed() throws Exception {
+    Location defaultErrorHandlerLoggerLocation = Location.builder().globalName("flowWithSingleMp").addErrorHandlerPart()
+        .addIndexPart(0).addProcessorsPart().addIndexPart(0).build();
+    Optional<Component> component = configurationComponentLocator.find(defaultErrorHandlerLoggerLocation);
+    assertThat(component.isPresent(), is(false));
+  }
+
+  @Test
+  public void defaultErrorHandler() throws Exception {
+    Location defaultErrorHandlerLoggerLocation = Location.builder().globalName("defaultErrorHandler").build();
+    Optional<Component> component = configurationComponentLocator.find(defaultErrorHandlerLoggerLocation);
+    assertThat(component.isPresent(), is(false));
   }
 
   private void waitUntilNotificationsArrived(int minimumRequiredNotifications) {
