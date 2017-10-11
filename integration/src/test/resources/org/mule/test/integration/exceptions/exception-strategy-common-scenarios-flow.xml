@@ -6,11 +6,19 @@
        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
        http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
-    <flow name="PreservePayloadExceptionStrategy">
+    <flow name="PreservePayloadPropagate">
         <append-string-transformer message=" with some text added"/>
         <test:processor throwException="true"/>
         <error-handler>
             <on-error-propagate/>
+        </error-handler>
+    </flow>
+
+    <flow name="PreservePayloadContinue">
+        <append-string-transformer message=" with some text added"/>
+        <test:processor throwException="true"/>
+        <error-handler>
+            <on-error-continue/>
         </error-handler>
     </flow>
 
