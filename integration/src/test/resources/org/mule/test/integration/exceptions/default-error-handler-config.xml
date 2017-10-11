@@ -6,6 +6,9 @@
     <configuration defaultErrorHandler-ref="catchAllErrorHandler"/>
 
     <error-handler name="catchAllErrorHandler">
+        <on-error-continue type="RETRY_EXHAUSTED">
+            <append-string-transformer message="innerEH"/>
+        </on-error-continue>
         <on-error-continue type="EXPRESSION">
             <append-string-transformer message="defaultEH-custom"/>
         </on-error-continue>
@@ -18,11 +21,6 @@
 
     <flow name="test">
         <processor ref="throw"/> 
-        <error-handler>
-            <on-error-continue type="RETRY_EXHAUSTED">
-                <append-string-transformer message="innerEH"/>
-            </on-error-continue>
-        </error-handler>
     </flow>
 
 </mule>

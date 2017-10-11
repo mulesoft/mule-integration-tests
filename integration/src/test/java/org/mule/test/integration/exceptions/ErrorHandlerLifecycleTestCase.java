@@ -9,6 +9,7 @@ package org.mule.test.integration.exceptions;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.tck.MuleTestUtils.getExceptionListeners;
+import static org.mule.tck.MuleTestUtils.getMessageProcessors;
 
 import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.component.location.Location;
@@ -17,6 +18,7 @@ import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.api.lifecycle.Lifecycle;
 import org.mule.runtime.core.api.construct.FlowConstruct;
 import org.mule.runtime.core.api.event.CoreEvent;
+import org.mule.runtime.core.api.processor.AbstractMessageProcessorOwner;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.privileged.exception.AbstractExceptionListener;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -67,21 +69,18 @@ public class ErrorHandlerLifecycleTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  @Ignore("MULE-13675")
   public void testLifecycleDefaultErrorHandler() throws Exception {
-    AbstractExceptionListener flowCExceptionStrategy =
-        (AbstractExceptionListener) getExceptionListeners(flowC.getExceptionListener()).get(1);
-    AbstractExceptionListener flowDExceptionStrategy =
-        (AbstractExceptionListener) getExceptionListeners(flowD.getExceptionListener()).get(1);
+    AbstractMessageProcessorOwner flowCExceptionStrategy =
+        (AbstractMessageProcessorOwner) getExceptionListeners(flowC.getExceptionListener()).get(1);
+    AbstractMessageProcessorOwner flowDExceptionStrategy =
+        (AbstractMessageProcessorOwner) getExceptionListeners(flowD.getExceptionListener()).get(1);
     LifecycleCheckerMessageProcessor lifecycleCheckerMessageProcessorFlowC =
-        (LifecycleCheckerMessageProcessor) flowCExceptionStrategy.getMessageProcessors().get(0);
+        (LifecycleCheckerMessageProcessor) getMessageProcessors(flowCExceptionStrategy).get(0);
     LifecycleCheckerMessageProcessor lifecycleCheckerMessageProcessorFlowD =
-        (LifecycleCheckerMessageProcessor) flowDExceptionStrategy.getMessageProcessors().get(0);
+        (LifecycleCheckerMessageProcessor) getMessageProcessors(flowDExceptionStrategy).get(0);
 
     assertThat(lifecycleCheckerMessageProcessorFlowC.isInitialized(), is(true));
     assertThat(lifecycleCheckerMessageProcessorFlowD.isInitialized(), is(true));
-    assertThat(flowCExceptionStrategy.isInitialised(), is(true));
-    assertThat(flowDExceptionStrategy.isInitialised(), is(true));
     ((Lifecycle) flowC).stop();
     assertThat(lifecycleCheckerMessageProcessorFlowC.isStopped(), is(true));
     assertThat(lifecycleCheckerMessageProcessorFlowD.isStopped(), is(false));
