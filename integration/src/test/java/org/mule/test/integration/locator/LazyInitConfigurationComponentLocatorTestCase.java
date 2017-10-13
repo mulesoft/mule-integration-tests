@@ -105,7 +105,6 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
                is(not(empty())));
   }
 
-  @Ignore("MULE-13705: This test reproduce the issue (uncomment when fixed)")
   @Test
   public void lazyMuleContextWithDeeperLevelConfig() {
     lazyComponentInitializer.initializeComponent(builder().globalName("flowLvl0").build());
@@ -117,8 +116,11 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
                                                      "flowLvl0/processors/0",
                                                      "flowLvl1",
                                                      "flowLvl1/processors/0",
-                                                     "subFlowLvl0",
-                                                     "subFlowLvl0/processors/0"));
+                                                     "flowLvl2",
+                                                     "flowLvl2/processors/0",
+                                                     "flowLvl2/processors/0/0",
+                                                     "dbConfig/0",
+                                                     "dbConfig"));
   }
 
 }

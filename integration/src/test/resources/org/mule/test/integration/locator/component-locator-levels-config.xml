@@ -15,13 +15,13 @@
     </flow>
 
     <flow name="flowLvl1">
-        <flow-ref name="subFlowLvl0"/>
+        <flow-ref name="flowLvl2"/>
     </flow>
 
-    <sub-flow name="subFlowLvl0">
+    <flow name="flowLvl2">
         <db:select config-ref="dbConfig">
             <db:sql>#['SELECT * FROM sometable']</db:sql>
         </db:select>
-    </sub-flow>
+    </flow>
 </mule>
 
