@@ -119,8 +119,13 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
                                                      "flowLvl2",
                                                      "flowLvl2/processors/0",
                                                      "flowLvl2/processors/0/0",
+                                                     "flowLvl2/processors/1",
+                                                     "dbConfig",
                                                      "dbConfig/0",
-                                                     "dbConfig"));
+                                                     "requestConfig",
+                                                     "requestConfig/0",
+                                                     "tlsContextRef",
+                                                     "tlsContextRef/0"));
   }
 
 }
