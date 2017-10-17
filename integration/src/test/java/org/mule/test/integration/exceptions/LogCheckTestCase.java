@@ -6,23 +6,28 @@
  */
 package org.mule.test.integration.exceptions;
 
-import static org.junit.Assert.fail;
 import static org.mule.runtime.api.exception.MuleException.MULE_VERBOSE_EXCEPTIONS;
+import static org.mule.runtime.api.exception.MuleException.refreshVerboseExceptions;
 import static org.mule.runtime.core.api.config.MuleProperties.MULE_FLOW_TRACE;
-import org.mule.runtime.api.exception.MuleException;
+
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import org.junit.AfterClass;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
 public class LogCheckTestCase extends AbstractIntegrationTestCase {
 
-  private static final String[] FLOWS_EXPECTING_FAILURE_NO_VERBOSE_EXCEPTIONS = {"checkStacktrace",};
-  private static final String[] FLOWS_EXPECTING_SUCCESS_NO_VERBOSE_EXCEPTIONS = {"checkEquals", "checkSummary"};
-  private static final String[] FLOWS_EXPECTING_FAILURE_WITH_VERBOSE_EXCEPTIONS = {};
-  private static final String[] FLOWS_EXPECTING_SUCCESS_WITH_VERBOSE_EXCEPTIONS =
-      {"checkEqualsVerbose", "checkStacktrace", "checkSummary", "allChecksTogetherNoneFailing"};
+  // Just to ensure the previous value is set after the test
+  @ClassRule
+  public static SystemProperty verboseExceptions = new SystemProperty(MULE_VERBOSE_EXCEPTIONS, Boolean.toString(false));
+
+  @AfterClass
+  public static void afterClass() {
+    refreshVerboseExceptions();
+  }
 
   @Override
   protected String getConfigFile() {
@@ -32,50 +37,50 @@ public class LogCheckTestCase extends AbstractIntegrationTestCase {
   @Rule
   public SystemProperty logFlowStack = new SystemProperty(MULE_FLOW_TRACE, Boolean.toString(false));
 
-
   @Test
-  public void runSuccessesVerboseExceptions() throws Exception {
-    runSuccesses(true, FLOWS_EXPECTING_SUCCESS_WITH_VERBOSE_EXCEPTIONS);
-  }
-
-  @Test
-  public void runSuccessesNoVerboseExceptions() throws Exception {
-    runSuccesses(false, FLOWS_EXPECTING_SUCCESS_NO_VERBOSE_EXCEPTIONS);
+  public void runVerboseCheckEqualsVerbose() throws Exception {
+    runSuccesses(true, "checkEqualsVerbose");
   }
 
   @Test
-  public void runFailuresVerboseExceptions() throws Exception {
-    runFailures(true, FLOWS_EXPECTING_FAILURE_WITH_VERBOSE_EXCEPTIONS);
+  public void runVerboseCheckStacktrace() throws Exception {
+    runSuccesses(true, "checkStacktrace");
   }
 
   @Test
-  public void runFailuresNoVerboseExceptions() throws Exception {
-    runFailures(false, FLOWS_EXPECTING_FAILURE_NO_VERBOSE_EXCEPTIONS);
+  public void runVerboseCheckSummary() throws Exception {
+    runSuccesses(true, "checkSummary");
   }
 
-  private void runSuccesses(boolean verboseExceptions, String[] flowNames) throws Exception {
-    setVerboseExceptions(verboseExceptions);
-    for (String flowName : flowNames) {
-      flowRunner(flowName).run();
-    }
-
+  @Test
+  public void runVerboseAllChecksTogetherNoneFailing() throws Exception {
+    runSuccesses(true, "allChecksTogetherNoneFailing");
   }
 
-  private void runFailures(boolean verboseExceptions, String[] flowNames) throws Exception {
-    setVerboseExceptions(verboseExceptions);
-    for (String flowName : flowNames) {
-      try {
-        flowRunner(flowName).run();
-      } catch (AssertionError e) {
-        continue;
-      }
-      fail(String.format("flow \"%s\" was expected to fail but succeeded", flowName));
-    }
+  @Test
+  public void checkNonVerboseEquals() throws Exception {
+    runSuccesses(false, "checkSummary");
   }
 
-  private void setVerboseExceptions(boolean value) {
-    System.setProperty(MULE_VERBOSE_EXCEPTIONS, Boolean.toString(value));
-    MuleException.refreshVerboseExceptions();
+  @Test
+  public void checkNonVerboseSummary() throws Exception {
+    runSuccesses(false, "checkSummary");
+  }
+
+  @Test
+  public void unknownSummaryShowsFilteredStack() throws Exception {
+    runSuccesses(false, "unknownFiltered");
+  }
+
+  @Test
+  public void unknownVerboseShowsFullStack() throws Exception {
+    runSuccesses(true, "unknownFull");
+  }
+
+  private void runSuccesses(boolean verboseExceptions, String flowName) throws Exception {
+    System.setProperty(MULE_VERBOSE_EXCEPTIONS, Boolean.toString(verboseExceptions));
+    refreshVerboseExceptions();
+    flowRunner(flowName).run();
   }
 
 }

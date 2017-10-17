@@ -31,7 +31,7 @@
                 <test:check-equals>
                     <![CDATA[
                         Message               : null.
-                        Element               : checkEqualsVerbose/processors/0 @ LogCheckTestCase#runSuccessesVerboseExceptions:org/mule/test/integration/exceptions/log-check-config.xml:28
+                        Element               : checkEqualsVerbose/processors/0 @ LogCheckTestCase#runVerboseCheckEqualsVerbose:org/mule/test/integration/exceptions/log-check-config.xml:28
                         Element XML           : <test:throw exception="java.lang.RuntimeException" error="ANY"></test:throw>
                         Error type            : MULE:ANY
                         Payload               : null
@@ -67,6 +67,38 @@
         </error-handler>
     </flow>
 
+    <flow name="unknownFiltered">
+        <test:skeleton-source/>
+        <test:processor throwException="true" exceptionToThrow="java.lang.NullPointerException"/>
+        <error-handler>
+            <test:on-error-check-log>
+                <test:check-summary>
+                    <test:summary-info key="Error type" value="MULE:UNKNOWN"/>
+                </test:check-summary>
+                <test:check-stacktrace>
+                    <test:method-call package="reactor.core" class="277" method=""/>
+                    <test:cause exception="java.lang.NullPointerException"/>
+                </test:check-stacktrace>
+            </test:on-error-check-log>
+        </error-handler>
+    </flow>
+
+    <flow name="unknownFull">
+        <test:skeleton-source/>
+        <test:processor throwException="true" exceptionToThrow="java.lang.NullPointerException"/>
+        <error-handler>
+            <test:on-error-check-log>
+                <test:check-summary>
+                    <test:summary-info key="Error type" value="MULE:UNKNOWN"/>
+                </test:check-summary>
+                <test:check-stacktrace>
+                    <test:method-call package="reactor.core.publisher" class="FluxHandle$HandleSubscriber" method="onNext"/>
+                    <test:cause exception="java.lang.NullPointerException"/>
+                </test:check-stacktrace>
+            </test:on-error-check-log>
+        </error-handler>
+    </flow>
+
     <flow name="allChecksTogetherNoneFailing">
         <test:skeleton-source/>
         <test:throw exception="java.lang.RuntimeException" error="ANY"/>
@@ -75,7 +107,7 @@
                 <test:check-equals>
                     <![CDATA[
                         Message               : null.
-                        Element               : allChecksTogetherNoneFailing/processors/0 @ LogCheckTestCase#runSuccessesVerboseExceptions:org/mule/test/integration/exceptions/log-check-config.xml:72
+                        Element               : allChecksTogetherNoneFailing/processors/0 @ LogCheckTestCase#runVerboseAllChecksTogetherNoneFailing:org/mule/test/integration/exceptions/log-check-config.xml:104
                         Element XML           : <test:throw exception="java.lang.RuntimeException" error="ANY"></test:throw>
                         Error type            : MULE:ANY
                         Payload               : null
