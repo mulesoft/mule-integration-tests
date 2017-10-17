@@ -13,7 +13,6 @@ import static org.hamcrest.core.Is.is;
 import static org.mule.runtime.api.component.ComponentIdentifier.buildFromStringRepresentation;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.FLOW;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.OPERATION;
-import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.PROCESSOR;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.builder;
 import static org.mule.runtime.api.dsl.DslResolvingContext.getDefault;
 import static org.mule.runtime.config.api.dsl.model.ApplicationModel.FLOW_IDENTIFIER;
@@ -161,12 +160,12 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
    */
   private static final Optional<TypedComponentIdentifier> LOGGER =
       of(builder().identifier(buildFromStringRepresentation("mule:logger"))
-          .type(PROCESSOR).build());
+          .type(OPERATION).build());
 
 
   private static final Optional<TypedComponentIdentifier> SET_PAYLOAD =
       of(builder().identifier(buildFromStringRepresentation("mule:set-payload"))
-          .type(PROCESSOR).build());
+          .type(OPERATION).build());
 
   final ProcessorNotificationStore listener = new ProcessorNotificationStore();
 

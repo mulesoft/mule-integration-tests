@@ -68,21 +68,21 @@
     </flow>
 
     <flow name="flowWithSource">
-        <test:skeleton-source/>
+        <scheduler>
+            <scheduling-strategy>
+                <fixed-frequency frequency="10000" startDelay="10000000"/>
+            </scheduling-strategy>
+        </scheduler>
         <logger/>
     </flow>
 
-    <flow name="flowWithSplitter">
-        <splitter/>
-        <logger message="check"/>
-        <logger message="check"/>
-    </flow>
 
-    <flow name="flowWithAggregator">
-        <splitter/>
-        <logger level="INFO"/>
-        <collection-aggregator failOnTimeout="false" timeout="3600"/>
-    </flow>
+
+
+
+
+
+
 
     <flow name="flowWithSubflow">
         <logger/>

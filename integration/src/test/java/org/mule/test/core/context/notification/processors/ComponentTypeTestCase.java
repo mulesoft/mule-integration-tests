@@ -11,25 +11,21 @@ import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.component.ComponentIdentifier.buildFromStringRepresentation;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.ERROR_HANDLER;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.FLOW;
-import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.INTERCEPTING;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.ON_ERROR;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.OPERATION;
-import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.PROCESSOR;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.ROUTER;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.SCOPE;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.SOURCE;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.UNKNOWN;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentTypeStore.COMPONENT_CONFIGURATION_TYPE;
-
 import org.mule.runtime.api.component.ComponentIdentifier;
 import org.mule.runtime.api.component.TypedComponentIdentifier;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import org.junit.Test;
-
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
+import org.junit.Test;
 
 @Feature(CONFIGURATION_COMPONENT_LOCATOR)
 @Story(COMPONENT_CONFIGURATION_TYPE)
@@ -42,7 +38,6 @@ public class ComponentTypeTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void routerComponentTypes() {
-    assertThat(getComponentType(buildFromStringRepresentation("until-successful")), is(ROUTER));
     assertThat(getComponentType(buildFromStringRepresentation("first-successful")), is(ROUTER));
     assertThat(getComponentType(buildFromStringRepresentation("scatter-gather")), is(ROUTER));
     assertThat(getComponentType(buildFromStringRepresentation("choice")), is(ROUTER));
@@ -52,25 +47,19 @@ public class ComponentTypeTestCase extends AbstractIntegrationTestCase {
   @Test
   public void scopeComponentTypes() {
     assertThat(getComponentType(buildFromStringRepresentation("try")), is(SCOPE));
-    assertThat(getComponentType(buildFromStringRepresentation("enricher")), is(SCOPE));
+    assertThat(getComponentType(buildFromStringRepresentation("until-successful")), is(SCOPE));
     assertThat(getComponentType(buildFromStringRepresentation("async")), is(SCOPE));
     assertThat(getComponentType(buildFromStringRepresentation("foreach")), is(SCOPE));
   }
 
   @Test
-  public void interceptingComponentTypes() {
-    assertThat(getComponentType(buildFromStringRepresentation("splitter")), is(INTERCEPTING));
-    assertThat(getComponentType(buildFromStringRepresentation("resequencer")), is(INTERCEPTING));
-  }
-
-  @Test
-  public void processorComponentTypes() {
-    assertThat(getComponentType(buildFromStringRepresentation("set-payload")), is(PROCESSOR));
-    assertThat(getComponentType(buildFromStringRepresentation("set-variable")), is(PROCESSOR));
-  }
-
-  @Test
   public void operationsComponentTypes() {
+    assertThat(getComponentType(buildFromStringRepresentation("set-payload")), is(OPERATION));
+    assertThat(getComponentType(buildFromStringRepresentation("set-variable")), is(OPERATION));
+    assertThat(getComponentType(buildFromStringRepresentation("remove-variable")), is(OPERATION));
+    assertThat(getComponentType(buildFromStringRepresentation("parse-template")), is(OPERATION));
+    assertThat(getComponentType(buildFromStringRepresentation("idempotent-message-validator")), is(OPERATION));
+    assertThat(getComponentType(buildFromStringRepresentation("raise-error")), is(OPERATION));
     assertThat(getComponentType(buildFromStringRepresentation("http:request")), is(OPERATION));
     assertThat(getComponentType(buildFromStringRepresentation("module-using-core:set-payload-hardcoded")), is(OPERATION));
   }
