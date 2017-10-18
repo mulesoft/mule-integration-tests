@@ -21,7 +21,7 @@ import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.api.meta.model.parameter.ParameterizedModel;
 import org.mule.runtime.app.declaration.api.ArtifactDeclaration;
 import org.mule.runtime.app.declaration.api.ElementDeclaration;
-import org.mule.runtime.config.api.dsl.model.ApplicationModel;
+import org.mule.runtime.config.internal.model.ApplicationModel;
 import org.mule.runtime.config.api.dsl.model.DslElementModel;
 import org.mule.runtime.config.api.dsl.model.DslElementModelFactory;
 import org.mule.runtime.config.api.dsl.processor.ArtifactConfig;
