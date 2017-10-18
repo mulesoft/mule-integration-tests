@@ -45,7 +45,7 @@ import org.junit.Test;
 
 public class InvokeMetadataTestCase extends SoapFootballExtensionArtifactFunctionalTestCase {
 
-  private static final String INVALID_KEY_ERROR = "The operation name [invalidKey] was not found in the current wsdl file";
+  private static final String INVALID_KEY_ERROR = "operation [invalidKey] was not found in the current wsdl file";
 
   @Inject
   private MetadataService metadataService;
