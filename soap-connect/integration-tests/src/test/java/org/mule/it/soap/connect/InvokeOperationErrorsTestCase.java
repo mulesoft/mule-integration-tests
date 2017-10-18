@@ -31,7 +31,7 @@ public class InvokeOperationErrorsTestCase extends SoapFootballExtensionArtifact
   @Test
   public void commonSoapFault() throws Exception {
     expected.expectErrorType("SOAP", SOAP_FAULT.toString());
-    expected.expectMessage(containsString("noOp was not recognized."));
+    expected.expectMessage(containsString("Unexpected wrapper element {http://services.connect.soap.it.mule.org/}noOp found"));
 
     flowRunner("getLeagues").withPayload(getBodyXml("noOp", "")).keepStreamsOpen().run();
   }
