@@ -60,6 +60,12 @@
         <set-variable variableName="variableName" value="variableValue"/>
         <http:request url="mulesoft.com"/>
         <sc:set-payload-hardcoded/>
+        <remove-variable variableName="varName"/>
+        <parse-template>
+            <content>#['lala']</content>
+        </parse-template>
+        <idempotent-message-validator/>
+        <raise-error type="CLIENT_SECURITY"/>
         <error-handler>
             <on-error-continue/>
         </error-handler>

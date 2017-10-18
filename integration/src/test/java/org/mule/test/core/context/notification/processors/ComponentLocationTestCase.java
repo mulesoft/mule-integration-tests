@@ -14,13 +14,12 @@ import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.component.AbstractComponent.LOCATION_KEY;
 import static org.mule.runtime.api.component.ComponentIdentifier.buildFromStringRepresentation;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.FLOW;
-import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.INTERCEPTING;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.ON_ERROR;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.OPERATION;
-import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.PROCESSOR;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.ROUTER;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.SCOPE;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.SOURCE;
+import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.UNKNOWN;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.builder;
 import static org.mule.runtime.config.api.dsl.model.ApplicationModel.FLOW_IDENTIFIER;
 import static org.mule.runtime.config.api.dsl.model.ApplicationModel.SUBFLOW_IDENTIFIER;
@@ -38,7 +37,6 @@ import org.mule.tck.probe.PollingProber;
 import org.mule.tck.probe.Probe;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Optional;
 
@@ -139,12 +137,12 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
                                                                   of(93))));
   private static final Optional<TypedComponentIdentifier> LOGGER =
       of(builder().identifier(buildFromStringRepresentation("mule:logger"))
-          .type(PROCESSOR).build());
+          .type(OPERATION).build());
   private static final Optional<TypedComponentIdentifier> SET_PAYLOAD =
       of(builder().identifier(buildFromStringRepresentation("mule:set-payload"))
-          .type(PROCESSOR).build());
+          .type(OPERATION).build());
   private static final Optional<TypedComponentIdentifier> OBJECT_TO_STRING_TRANSFORMER =
-      of(builder().identifier(buildFromStringRepresentation("mule:object-to-byte-array-transformer")).type(PROCESSOR)
+      of(builder().identifier(buildFromStringRepresentation("mule:object-to-byte-array-transformer")).type(UNKNOWN)
           .build());
   private static final Optional<TypedComponentIdentifier> CHOICE =
       of(builder().identifier(buildFromStringRepresentation("mule:choice")).type(ROUTER).build());
@@ -156,23 +154,19 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
   private static final Optional<TypedComponentIdentifier> VALIDATION_IS_FALSE =
       of(builder().identifier(buildFromStringRepresentation("validation:is-false")).type(OPERATION).build());
   private static final Optional<TypedComponentIdentifier> TEST_PROCESSOR =
-      of(builder().identifier(buildFromStringRepresentation("test:processor")).type(PROCESSOR).build());
+      of(builder().identifier(buildFromStringRepresentation("test:processor")).type(UNKNOWN).build());
   private static final Optional<TypedComponentIdentifier> ON_ERROR_PROPAGATE =
       of(builder().identifier(buildFromStringRepresentation("mule:on-error-propagate")).type(ON_ERROR).build());
   private static final Optional<TypedComponentIdentifier> TRY =
       of(builder().identifier(buildFromStringRepresentation("mule:try")).type(SCOPE).build());
   private static final Optional<TypedComponentIdentifier> VALIDATION_IS_TRUE =
       of(builder().identifier(buildFromStringRepresentation("validation:is-true")).type(OPERATION).build());
-  private static final Optional<TypedComponentIdentifier> SKELETON_SOURCE =
-      of(builder().identifier(buildFromStringRepresentation("test:skeleton-source")).type(SOURCE).build());
-  private static final Optional<TypedComponentIdentifier> SPLITTER =
-      of(builder().identifier(buildFromStringRepresentation("mule:splitter")).type(INTERCEPTING).build());
-  private static final Optional<TypedComponentIdentifier> COLLECTION_AGGREGATOR =
-      of(builder().identifier(buildFromStringRepresentation("mule:collection-aggregator")).type(INTERCEPTING).build());
+  private static final Optional<TypedComponentIdentifier> SCHEDULER_SOURCE =
+      of(builder().identifier(buildFromStringRepresentation("mule:scheduler")).type(SOURCE).build());
   private static final Optional<TypedComponentIdentifier> SCATTER_GATHER =
       of(builder().identifier(buildFromStringRepresentation("mule:scatter-gather")).type(ROUTER).build());
   private static final Optional<TypedComponentIdentifier> FLOW_REF =
-      of(builder().identifier(buildFromStringRepresentation("mule:flow-ref")).type(PROCESSOR).build());
+      of(builder().identifier(buildFromStringRepresentation("mule:flow-ref")).type(OPERATION).build());
   private static final Optional<TypedComponentIdentifier> ASYNC =
       of(builder().identifier(buildFromStringRepresentation("mule:async")).type(SCOPE).build());
   private static final Optional<TypedComponentIdentifier> ROUTE =
@@ -282,43 +276,14 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
   @Test
   public void flowWithSource() throws Exception {
     DefaultComponentLocation expectedSourceLocation =
-        FLOW_WITH_SOURCE.appendLocationPart("source", SKELETON_SOURCE,
+        FLOW_WITH_SOURCE.appendLocationPart("source", SCHEDULER_SOURCE,
                                             CONFIG_FILE_NAME, of(71));
     DefaultComponentLocation sourceLocation =
         (DefaultComponentLocation) ((Component) flowWithSource.getSource()).getAnnotation(LOCATION_KEY);
     assertThat(sourceLocation, is(expectedSourceLocation));
     assertThat(((Component) flowWithSource.getProcessors().get(0)).getAnnotation(LOCATION_KEY), is(FLOW_WITH_SOURCE
         .appendLocationPart("processors", empty(), empty(), empty())
-        .appendLocationPart("0", LOGGER, CONFIG_FILE_NAME, of(72))));
-  }
-
-  @Test
-  public void flowWithSplitter() throws Exception {
-    flowRunner("flowWithSplitter").withPayload(Arrays.asList("item")).run();
-    DefaultComponentLocation flowWithSplitterProcessorsLocation =
-        FLOW_WITH_SPLITTER.appendLocationPart("processors", empty(), empty(), empty());
-    assertNextProcessorLocationIs(flowWithSplitterProcessorsLocation
-        .appendLocationPart("0", SPLITTER, CONFIG_FILE_NAME,
-                            of(76)));
-    assertNextProcessorLocationIs(flowWithSplitterProcessorsLocation
-        .appendLocationPart("1", LOGGER, CONFIG_FILE_NAME, of(77)));
-    assertNextProcessorLocationIs(flowWithSplitterProcessorsLocation
-        .appendLocationPart("2", LOGGER, CONFIG_FILE_NAME, of(78)));
-    assertNoNextProcessorNotification();
-  }
-
-  @Test
-  public void flowWithAggregator() throws Exception {
-    flowRunner("flowWithAggregator").withPayload(Arrays.asList("item")).run();
-    DefaultComponentLocation flowWithSplitterProcessorsLocation =
-        FLOW_WITH_AGGREGATOR.appendLocationPart("processors", empty(), empty(), empty());
-    assertNextProcessorLocationIs(flowWithSplitterProcessorsLocation
-        .appendLocationPart("0", SPLITTER, CONFIG_FILE_NAME, of(82)));
-    assertNextProcessorLocationIs(flowWithSplitterProcessorsLocation
-        .appendLocationPart("1", LOGGER, CONFIG_FILE_NAME, of(83)));
-    assertNextProcessorLocationIs(flowWithSplitterProcessorsLocation
-        .appendLocationPart("2", COLLECTION_AGGREGATOR, CONFIG_FILE_NAME, of(84)));
-    assertNoNextProcessorNotification();
+        .appendLocationPart("0", LOGGER, CONFIG_FILE_NAME, of(76))));
   }
 
   @Test
