@@ -114,7 +114,7 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
 
   private static ArtifactDeclaration createMultiFlowArtifactDeclaration() {
     ElementDeclarer jms = ElementDeclarer.forExtension("JMS");
-    ElementDeclarer core = ElementDeclarer.forExtension("Mule Core");
+    ElementDeclarer core = ElementDeclarer.forExtension("mule");
 
     return newArtifact()
         .withGlobalElement(jms.newConfiguration("config")
@@ -149,7 +149,7 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
                     .withParameter("maximumWait", "1000")
                     .getDeclaration())
                 .getDeclaration())
-            .withComponent(core.newOperation("foreach")
+            .withComponent(core.newConstruct("foreach")
                 .withComponent(jms.newOperation("publish")
                     .withConfig("config")
                     .withParameterGroup(newParameterGroup()
@@ -191,7 +191,7 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
     ElementDeclarer db = ElementDeclarer.forExtension("Database");
     ElementDeclarer http = ElementDeclarer.forExtension("HTTP");
     ElementDeclarer sockets = ElementDeclarer.forExtension("Sockets");
-    ElementDeclarer core = ElementDeclarer.forExtension("Mule Core");
+    ElementDeclarer core = ElementDeclarer.forExtension("mule");
     ElementDeclarer wsc = ElementDeclarer.forExtension("Web Service Consumer");
 
     return newArtifact()
@@ -383,7 +383,7 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
                         .getDeclaration())
                     .getDeclaration())
                 .withRoute(core.newRoute("otherwise")
-                    .withComponent(core.newOperation("foreach")
+                    .withComponent(core.newConstruct("foreach")
                         .withParameterGroup(newParameterGroup()
                             .withParameter("collection", "#[myCollection]")
                             .getDeclaration())
@@ -510,7 +510,7 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
   }
 
   private static Object createNoMuleComponentsArtifactDeclaration() {
-    ElementDeclarer core = ElementDeclarer.forExtension("Mule Core");
+    ElementDeclarer core = ElementDeclarer.forExtension("mule");
     ElementDeclarer jms = ElementDeclarer.forExtension("JMS");
     ElementDeclarer http = ElementDeclarer.forExtension("HTTP");
 

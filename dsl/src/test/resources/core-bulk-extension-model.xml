@@ -3,24 +3,33 @@
     <flow name="flowForscheduler">
         <scheduler schedulingStrategy="Attribute"/>
     </flow>
-    <flow name="flowForasync">
-        <async name="Attribute">
-            <logger/>
-        </async>
-    </flow>
-    <flow name="flowForforeach">
-        <foreach batchSize="10000" collection="#[payload]" counterVariableName="counter" rootMessageVariableName="rootMessage">
-            <logger/>
-        </foreach>
-    </flow>
     <flow name="flowForidempotentMessageValidator">
         <idempotent-message-validator idExpression="#[id]" objectStore="Attribute" storePrefix="Attribute" valueExpression="#[id]"/>
     </flow>
     <flow name="flowForlogger">
         <logger category="Attribute" level="DEBUG" message="Attribute"/>
     </flow>
+    <flow name="flowForparseTemplate">
+        <parse-template location="Attribute" target="Attribute" targetValue="#[payload]">
+            <content>#['ExpressionAttribute']</content>
+        </parse-template>
+    </flow>
     <flow name="flowForraiseError">
-        <raise-error type="Attribute" description="Attribute"/>
+        <raise-error description="Attribute" type="Attribute"/>
+    </flow>
+    <flow name="flowForremoveVariable">
+        <remove-variable variableName="Attribute"/>
+    </flow>
+    <flow name="flowForsetPayload">
+        <set-payload encoding="Attribute" mimeType="Attribute" value="Attribute"/>
+    </flow>
+    <flow name="flowForsetVariable">
+        <set-variable encoding="Attribute" mimeType="Attribute" value="Attribute" variableName="Attribute"/>
+    </flow>
+    <flow name="flowForasync">
+        <async name="Attribute">
+            <logger/>
+        </async>
     </flow>
     <flow name="flowForchoice">
         <choice>
@@ -32,9 +41,7 @@
             </otherwise>
         </choice>
     </flow>
-    <configuration defaultErrorHandler-ref="Attribute" defaultObjectSerializer-ref="Attribute"
-                   defaultResponseTimeout="10000" defaultTransactionTimeout="30000" maxQueueTransactionFilesSize="500"
-                   name="globalconfiguration" shutdownTimeout="5000">
+    <configuration defaultErrorHandler-ref="Attribute" defaultObjectSerializer-ref="Attribute" defaultResponseTimeout="10000" defaultTransactionTimeout="30000" maxQueueTransactionFilesSize="500" name="globalconfiguration" shutdownTimeout="5000">
         <dynamic-config-expiration frequency="5" timeUnit="MINUTES">
             <expiration-policy maxIdleTime="5" timeUnit="MINUTES"/>
         </dynamic-config-expiration>
@@ -48,8 +55,27 @@
             <logger/>
         </on-error-propagate>
     </error-handler>
+    <flow name="flowForfirstSuccessful">
+        <first-successful>
+            <route>
+                <logger/>
+            </route>
+        </first-successful>
+    </flow>
     <flow initialState="started" maxConcurrency="10000" name="globalflow">
+        <logger/>
+    </flow>
+    <flow name="flowForforeach">
+        <foreach batchSize="10000" collection="#[payload]" counterVariableName="counter" rootMessageVariableName="rootMessage">
             <logger/>
+        </foreach>
+    </flow>
+    <flow name="flowForroundRobin">
+        <round-robin>
+            <route>
+                <logger/>
+            </route>
+        </round-robin>
     </flow>
     <flow name="flowForscatterGather">
         <scatter-gather maxConcurrency="2147483647" target="Attribute" targetValue="#[payload]" timeout="9223372036854775807">
@@ -58,9 +84,17 @@
             </route>
         </scatter-gather>
     </flow>
+    <sub-flow name="globalsub-flow">
+        <logger/>
+    </sub-flow>
     <flow name="flowFortry">
         <try transactionType="LOCAL" transactionalAction="INDIFFERENT">
             <logger/>
         </try>
+    </flow>
+    <flow name="flowForuntilSuccessful">
+        <until-successful maxRetries="5" millisBetweenRetries="60000">
+            <logger/>
+        </until-successful>
     </flow>
 </mule>
