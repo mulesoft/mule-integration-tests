@@ -93,20 +93,6 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
                                                                   CONFIG_FILE_NAME,
                                                                   of(70))));
 
-  private static final DefaultComponentLocation FLOW_WITH_SPLITTER =
-      new DefaultComponentLocation(of("flowWithSplitter"),
-                                   asList(new DefaultLocationPart("flowWithSplitter",
-                                                                  FLOW_TYPED_COMPONENT_IDENTIFIER,
-                                                                  CONFIG_FILE_NAME,
-                                                                  of(75))));
-
-  private static final DefaultComponentLocation FLOW_WITH_AGGREGATOR =
-      new DefaultComponentLocation(of("flowWithAggregator"),
-                                   asList(new DefaultLocationPart("flowWithAggregator",
-                                                                  FLOW_TYPED_COMPONENT_IDENTIFIER,
-                                                                  CONFIG_FILE_NAME,
-                                                                  of(81))));
-
   private static final DefaultComponentLocation FLOW_WITH_SCATTER_GATHER =
       new DefaultComponentLocation(of("flowWithScatterGather"),
                                    asList(new DefaultLocationPart("flowWithScatterGather",
