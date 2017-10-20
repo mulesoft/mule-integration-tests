@@ -10,21 +10,17 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
-import org.mule.functional.api.component.TestConnectorQueueHandler;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ProcessorChainRouterStory.PROCESSOR_CHAIN_ROUTER;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
-
+import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.component.execution.ComponentExecutionException;
 import org.mule.runtime.api.component.execution.ExecutableComponent;
-import org.mule.runtime.api.event.Event;
-import org.mule.runtime.api.component.execution.InputEvent;
 import org.mule.runtime.api.component.execution.ExecutionResult;
+import org.mule.runtime.api.component.execution.InputEvent;
+import org.mule.runtime.api.event.Event;
 import org.mule.runtime.api.message.Message;
-
 import org.mule.test.AbstractIntegrationTestCase;
-import org.mule.test.config.dsl.ParsersPluginTest;
-
-import org.junit.Test;
+import org.mule.test.IntegrationTestCaseRunnerConfig;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -35,10 +31,11 @@ import javax.inject.Named;
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
+import org.junit.Test;
 
 @Feature(ROUTERS)
 @Story(PROCESSOR_CHAIN_ROUTER)
-public class ProcessorChainRouterTestCase extends AbstractIntegrationTestCase implements ParsersPluginTest {
+public class ProcessorChainRouterTestCase extends AbstractIntegrationTestCase implements IntegrationTestCaseRunnerConfig {
 
   @Inject
   @Named("compositeChainRouter")
