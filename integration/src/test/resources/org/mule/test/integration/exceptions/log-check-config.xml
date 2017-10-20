@@ -76,7 +76,7 @@
                     <test:summary-info key="Error type" value="MULE:UNKNOWN"/>
                 </test:check-summary>
                 <test:check-stacktrace>
-                    <test:method-call package="reactor.core" class="277" method=""/>
+                    <test:method-call package="reactor.core" method=""/>
                     <test:cause exception="java.lang.NullPointerException"/>
                 </test:check-stacktrace>
             </test:on-error-check-log>
