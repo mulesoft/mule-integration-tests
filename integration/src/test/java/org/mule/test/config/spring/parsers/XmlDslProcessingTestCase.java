@@ -12,15 +12,12 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertThat;
-
 import org.mule.test.AbstractIntegrationTestCase;
-import org.mule.test.config.dsl.ParsersPluginTest;
+import org.mule.test.IntegrationTestCaseRunnerConfig;
 import org.mule.tests.parsers.api.ParameterAndChildElement;
 import org.mule.tests.parsers.api.ParsersTestObject;
 import org.mule.tests.parsers.api.PojoWithSameTypeChildren;
 import org.mule.tests.parsers.api.SimplePojo;
-
-import org.junit.Test;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -28,7 +25,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
-public class XmlDslProcessingTestCase extends AbstractIntegrationTestCase implements ParsersPluginTest {
+import org.junit.Test;
+
+public class XmlDslProcessingTestCase extends AbstractIntegrationTestCase implements IntegrationTestCaseRunnerConfig {
 
   private static final String FIRST_NAME_ATTRIBUTE = "firstname";
   private static final String LAST_NAME_ATTRIBUTE = "lastname";

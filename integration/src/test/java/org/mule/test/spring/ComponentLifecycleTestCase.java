@@ -13,16 +13,13 @@ import static org.mule.tests.parsers.api.LifecycleAction.GET_OBJECT;
 import static org.mule.tests.parsers.api.LifecycleAction.INITIALISE;
 import static org.mule.tests.parsers.api.LifecycleAction.START;
 import static org.mule.tests.parsers.api.LifecycleAction.STOP;
-
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.test.AbstractIntegrationTestCase;
-import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
 import org.mule.tests.parsers.api.LifecycleSensingMessageProcessor;
 import org.mule.tests.parsers.api.LifecycleSensingObjectFactory;
 
 import org.junit.Test;
 
-@ArtifactClassLoaderRunnerConfig(extraPrivilegedArtifacts = {"org.mule.tests:mule-tests-parsers-plugin"})
 public class ComponentLifecycleTestCase extends AbstractIntegrationTestCase {
 
   @Override
