@@ -31,9 +31,9 @@
     <muleSoapServiceTestVersion>1.0.0-SNAPSHOT</muleSoapServiceTestVersion>
     <muleExtensionTestSoapTestVersion>1.0.0-SNAPSHOT</muleExtensionTestSoapTestVersion>
 
-    <muleSpringModuleVersion>1.0.0-SNAPSHOT</muleSpringModuleVersion>
+    <muleSpringModuleTestVersion>1.0.0-SNAPSHOT</muleSpringModuleTestVersion>
     <muleValidationModuleTestVersion>1.0.0-SNAPSHOT</muleValidationModuleTestVersion>
-    <muleScriptingModuleVersion>1.0.0-SNAPSHOT</muleScriptingModuleVersion>
+    <muleScriptingModuleTestVersion>1.0.0-SNAPSHOT</muleScriptingModuleTestVersion>
     <muleFileCommonsTestVersion>1.0.0-SNAPSHOT</muleFileCommonsTestVersion>
     
     <muleHttpConnectorTestVersion>1.0.0-SNAPSHOT</muleHttpConnectorTestVersion>
@@ -45,7 +45,6 @@
     <muleWscConnectorTestVersion>1.0.0-SNAPSHOT</muleWscConnectorTestVersion>
     <muleOauthModuleTestVersion>1.0.0-SNAPSHOT</muleOauthModuleTestVersion>
     <muleSocketsConnectorTestVersion>1.0.0-SNAPSHOT</muleSocketsConnectorTestVersion>
-    <muleSpringModuleTestVersion>1.0.0-SNAPSHOT</muleSpringModuleTestVersion>
 
     <springVersion>4.1.9.RELEASE</springVersion>
     <springSecurityVersion>4.0.4.RELEASE</springSecurityVersion>
