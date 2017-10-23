@@ -84,7 +84,7 @@
             </route>
         </scatter-gather>
     </flow>
-    <sub-flow name="globalsub-flow">
+    <sub-flow name="globalsubFlow">
         <logger/>
     </sub-flow>
     <flow name="flowFortry">
