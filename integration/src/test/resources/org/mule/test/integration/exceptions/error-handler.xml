@@ -44,7 +44,7 @@
 		            </script:code>
 		        </script:execute>
             </on-error-continue>
-            <on-error-continue when="#[mel:exception.causeMatches('.*') &amp;&amp; !exception.causedBy(java.lang.ArithmeticException) &amp;&amp; !exception.causedBy(org.mule.runtime.core.api.registry.ResolverException)]">
+            <on-error-continue when="#[mel:exception.causeMatches('.*') &amp;&amp; !exception.causedBy(java.lang.ArithmeticException) &amp;&amp; !exception.causedBy(org.mule.test.integration.exceptions.ErrorHandlerTestCase$GenericMuleException)]">
                 <append-string-transformer message=" catch-9"/>
             </on-error-continue>
         </error-handler>

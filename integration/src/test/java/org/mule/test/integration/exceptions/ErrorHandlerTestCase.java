@@ -26,7 +26,6 @@ import org.mule.runtime.api.security.UnauthorisedException;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.runtime.core.api.processor.Processor;
-import org.mule.runtime.core.api.registry.ResolverException;
 import org.mule.runtime.core.api.retry.policy.RetryPolicyExhaustedException;
 import org.mule.runtime.core.api.transformer.MessageTransformerException;
 import org.mule.runtime.core.api.transformer.Transformer;
@@ -65,13 +64,13 @@ public class ErrorHandlerTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void testMatchesCorrectExceptionStrategyUsingWrapper() throws Exception {
-    callAndThrowException(new ResolverException(createStaticMessage(""), new IllegalStateException()), "0 catch-2");
+    callAndThrowException(new GenericMuleException(createStaticMessage(""), new IllegalStateException()), "0 catch-2");
   }
 
   @Test
   public void testMatchesCorrectExceptionStrategyUsingWrapperAndCause() throws Exception {
-    callAndThrowException(new ResolverException(createStaticMessage(""),
-                                                new RuntimeException(new IllegalStateException())),
+    callAndThrowException(new GenericMuleException(createStaticMessage(""),
+                                                   new RuntimeException(new IllegalStateException())),
                           "0 catch-2");
   }
 
@@ -82,7 +81,7 @@ public class ErrorHandlerTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void testMatchesCorrectExceptionStrategyUsingSubtypeClass() throws Exception {
-    callAndThrowException(new ResolverException(createStaticMessage(""), new SubtypeException()), "0 catch-4");
+    callAndThrowException(new GenericMuleException(createStaticMessage(""), new SubtypeException()), "0 catch-4");
   }
 
   @Test
@@ -122,8 +121,8 @@ public class ErrorHandlerTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void testMatchesCorrectExceptionUsingNoCause() throws Exception {
-    expectedException.expectCause(is(instanceOf(ResolverException.class)));
-    callAndThrowException(new ResolverException(createStaticMessage("")), null);
+    expectedException.expectCause(is(instanceOf(GenericMuleException.class)));
+    callAndThrowException(new GenericMuleException(createStaticMessage("")), null);
   }
 
   @Test
@@ -209,6 +208,17 @@ public class ErrorHandlerTestCase extends AbstractIntegrationTestCase {
   }
 
   public static class AnotherTotallyDifferentKindOfException extends Exception {
+  }
+
+  public static class GenericMuleException extends MuleException {
+
+    public GenericMuleException(I18nMessage message) {
+      super(message);
+    }
+
+    public GenericMuleException(I18nMessage message, Throwable cause) {
+      super(message, cause);
+    }
   }
 
   public static class ThrowExceptionProcessor implements Processor {
