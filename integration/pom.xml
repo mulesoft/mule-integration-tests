@@ -156,7 +156,7 @@
         <dependency>
             <groupId>org.mule.modules</groupId>
             <artifactId>mule-spring-module</artifactId>
-            <version>${muleSpringModuleVersion}</version>
+            <version>${muleSpringModuleTestVersion}</version>
             <classifier>mule-plugin</classifier>
         </dependency>
         <dependency>
@@ -169,7 +169,7 @@
         <dependency>
             <groupId>org.mule.modules</groupId>
             <artifactId>mule-scripting-module</artifactId>
-            <version>${muleScriptingModuleVersion}</version>
+            <version>${muleScriptingModuleTestVersion}</version>
             <classifier>mule-plugin</classifier>
             <exclusions>
                 <exclusion>
