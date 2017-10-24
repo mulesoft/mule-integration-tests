@@ -15,16 +15,16 @@ import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentT
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.OPERATION;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.builder;
 import static org.mule.runtime.api.dsl.DslResolvingContext.getDefault;
-import static org.mule.runtime.config.internal.model.ApplicationModel.FLOW_IDENTIFIER;
+import static org.mule.runtime.config.api.dsl.CoreDslConstants.FLOW_IDENTIFIER;
 import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.initialiseIfNeeded;
 import static org.mule.runtime.module.extension.api.util.MuleExtensionUtils.createDefaultExtensionManager;
 import org.mule.runtime.api.component.TypedComponentIdentifier;
 import org.mule.runtime.api.dsl.DslResolvingContext;
 import org.mule.runtime.api.meta.model.ExtensionModel;
+import org.mule.runtime.api.notification.MessageProcessorNotification;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.runtime.core.api.config.builders.AbstractConfigurationBuilder;
-import org.mule.runtime.api.notification.MessageProcessorNotification;
 import org.mule.runtime.core.api.extension.ExtensionManager;
 import org.mule.runtime.dsl.api.component.config.DefaultComponentLocation;
 import org.mule.runtime.dsl.api.component.config.DefaultComponentLocation.DefaultLocationPart;
@@ -178,7 +178,7 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void flowWithSingleMp() throws Exception {
-    //simple test to be sure the macro expansion doesn't mess up the a flow that has no modifications
+    // simple test to be sure the macro expansion doesn't mess up the a flow that has no modifications
     flowRunner("flowWithSingleMp").run();
     assertNextProcessorLocationIs(FLOW_WITH_SINGLE_MP_LOCATION
         .appendLocationPart("processors", empty(), empty(), empty())
@@ -256,7 +256,7 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
     assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_TWO_TIMES_SECOND_MP
         .appendLocationPart("processors", empty(), empty(), empty())
         .appendLocationPart("1", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(31)));
-    //assertion on the second call of the OP
+    // assertion on the second call of the OP
     assertNextProcessorLocationIs(FLOW_WITH_SET_PAYLOAD_TWO_TIMES_TWICE
         .appendLocationPart("processors", empty(), empty(), empty())
         .appendLocationPart("1", MODULE_SET_PAYLOAD_TWO_TIMES, CONFIG_FILE_NAME, of(38)));
@@ -272,7 +272,7 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
   @Test
   public void flowWithProxySetPayloadHardcoded() throws Exception {
     flowRunner("flowWithProxySetPayloadHardcoded").run();
-    //flow assertion
+    // flow assertion
     assertNextProcessorLocationIs(FLOW_WITH_PROXY_SET_PAYLOAD_HARDCODED
         .appendLocationPart("processors", empty(), empty(), empty())
         .appendLocationPart("0", MODULE_PROXY_SET_PAYLOAD, CONFIG_FILE_NAME, of(42)));
@@ -307,7 +307,7 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
   public void flowWithProxyAndSimpleModuleAndLogger() throws Exception {
     flowRunner("flowWithProxyAndSimpleModuleAndLogger").run();
 
-    //first MP from within the flow
+    // first MP from within the flow
     assertNextProcessorLocationIs(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER
         .appendLocationPart("processors", empty(), empty(), empty())
         .appendLocationPart("0", MODULE_PROXY_SET_PAYLOAD_AND_LOGGER, CONFIG_FILE_NAME, of(50)));
@@ -321,14 +321,14 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
         .appendLocationPart("processors", empty(), empty(), empty())
         .appendLocationPart("1", LOGGER, MODULE_SIMPLE_PROXY_FILE_NAME, of(21)));
 
-    //second MP from within the flow
+    // second MP from within the flow
     assertNextProcessorLocationIs(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER
         .appendLocationPart("processors", empty(), empty(), empty())
         .appendLocationPart("1", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(51)));
     assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
         .appendLocationPart("processors", empty(), empty(), empty())
         .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13)));
-    //third MP from within the flow
+    // third MP from within the flow
     assertNextProcessorLocationIs(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER
         .appendLocationPart("processors", empty(), empty(), empty())
         .appendLocationPart("2", LOGGER, CONFIG_FILE_NAME, of(52)));
@@ -338,12 +338,12 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
   @Test
   public void flowWithProxyAndSimpleModuleAndLoggerReverse() throws Exception {
     flowRunner("flowWithProxyAndSimpleModuleAndLoggerReverse").run();
-    //first MP from within the flow
+    // first MP from within the flow
     assertNextProcessorLocationIs(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_REVERSE
         .appendLocationPart("processors", empty(), empty(), empty())
         .appendLocationPart("0", LOGGER, CONFIG_FILE_NAME, of(56)));
 
-    //second MP from within the flow
+    // second MP from within the flow
     assertNextProcessorLocationIs(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_REVERSE
         .appendLocationPart("processors", empty(), empty(), empty())
         .appendLocationPart("1", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(57)));
@@ -351,7 +351,7 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
         .appendLocationPart("processors", empty(), empty(), empty())
         .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13)));
 
-    //third MP from within the flow
+    // third MP from within the flow
     assertNextProcessorLocationIs(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_REVERSE
         .appendLocationPart("processors", empty(), empty(), empty())
         .appendLocationPart("2", MODULE_PROXY_SET_PAYLOAD_AND_LOGGER, CONFIG_FILE_NAME, of(58)));
