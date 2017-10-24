@@ -15,7 +15,7 @@ import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentT
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.OPERATION;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.builder;
 import static org.mule.runtime.api.dsl.DslResolvingContext.getDefault;
-import static org.mule.runtime.config.api.dsl.model.ApplicationModel.FLOW_IDENTIFIER;
+import static org.mule.runtime.config.internal.model.ApplicationModel.FLOW_IDENTIFIER;
 import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.initialiseIfNeeded;
 import static org.mule.runtime.module.extension.api.util.MuleExtensionUtils.createDefaultExtensionManager;
 import org.mule.runtime.api.component.TypedComponentIdentifier;
