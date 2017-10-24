@@ -8,7 +8,6 @@ package org.mule.test.integration.locator;
 
 import static java.util.Optional.empty;
 import static java.util.stream.Collectors.toList;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -16,18 +15,26 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.hamcrest.core.IsCollectionContaining.hasItem;
+import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.component.location.Location.builder;
 import static org.mule.runtime.api.component.location.Location.builderFromStringRepresentation;
 import static org.mule.runtime.config.api.LazyComponentInitializer.LAZY_COMPONENT_INITIALIZER_SERVICE_KEY;
 import static org.mule.runtime.config.api.SpringXmlConfigurationBuilderFactory.createConfigurationBuilder;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentLocatorStory.SEARCH_CONFIGURATION;
+
 import org.mule.extension.spring.api.SpringConfig;
+import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.artifact.Registry;
 import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.config.api.LazyComponentInitializer;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.test.AbstractIntegrationTestCase;
+
+import org.apache.commons.lang3.reflect.FieldUtils;
+import org.junit.Test;
+
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -35,8 +42,6 @@ import javax.inject.Named;
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
-import org.apache.commons.lang3.reflect.FieldUtils;
-import org.junit.Test;
 
 @Feature(CONFIGURATION_COMPONENT_LOCATOR)
 @Story(SEARCH_CONFIGURATION)
@@ -71,11 +76,12 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
   @Description("Lazy init should not create components until an operation is done")
   @Test
   public void lazyInitCalculatesLocations() {
-    assertThat(locator
+    List<String> allLocations = locator
         .findAllLocations()
         .stream()
         .map(ComponentLocation::getLocation)
-        .collect(toList()),
+        .collect(toList());
+    assertThat(allLocations.toString(), allLocations,
                containsInAnyOrder("myFlow",
                                   "myFlow/source",
                                   "myFlow/source/0",
@@ -96,6 +102,14 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
                                   "flowWithSubflow/processors/0",
                                   "mySubFlow",
                                   "mySubFlow/processors/0",
+
+                                  // TODO MULE-13877 componentModel name not set for configuration elements
+                                  "null",
+                                  "globalErrorHandler",
+                                  "globalErrorHandler/0",
+                                  "globalErrorHandler/0/processors/0",
+                                  "flowFailing",
+                                  "flowFailing/processors/0",
 
                                   "flowLvl0",
                                   "flowLvl0/processors/0",
@@ -134,10 +148,10 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
   @Test
   public void lazyMuleContextRefreshesConfigurationComponentLoader() {
     lazyComponentInitializer.initializeComponent(builder().globalName("myFlow").build());
-    assertThat(locator.findAllLocations(), hasSize(33));
+    assertThat(locator.findAllLocations(), hasSize(39));
 
     lazyComponentInitializer.initializeComponent(builder().globalName("anotherFlow").build());
-    assertThat(locator.findAllLocations(), hasSize(33));
+    assertThat(locator.findAllLocations(), hasSize(39));
 
     assertThat(locator.find(builder().globalName("myFlow").build()), is(empty()));
     assertThat(locator.find(builder().globalName("anotherFlow").build()),
@@ -151,7 +165,7 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
       String location = componentLocation.getLocation();
       return location.equals("myFlow/source/0") || location.equals("myFlow/processors/2/processors/0");
     });
-    assertThat(muleContext.getConfigurationComponentLocator().findAllLocations(), hasSize(33));
+    assertThat(muleContext.getConfigurationComponentLocator().findAllLocations(), hasSize(39));
 
     lazyComponentInitializer.initializeComponents(componentLocation -> {
       String location = componentLocation.getLocation();
@@ -218,5 +232,15 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
     assertThat("springConfig was not configured", secondAppContext, notNullValue());
 
     assertThat(firstObj, not(sameInstance(secondObj)));
+  }
+
+  @Test
+  public void globalErrorHandlerApplied() throws Exception {
+    lazyComponentInitializer.initializeComponent(builder().globalName("flowFailing").build());
+
+    flowRunner("flowFailing").runExpectingException();
+
+    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
+    assertThat(queueHandler.read("globalErrorHandlerQueue", 5000), is(notNullValue()));
   }
 }
