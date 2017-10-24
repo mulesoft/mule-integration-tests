@@ -1,4 +1,4 @@
- #!/bin/sh
+#!/bin/sh
 
 set -o nounset
 
@@ -43,7 +43,7 @@ propertiesDepsServices=("muleSchedulerServiceTestVersion"
 updatePropertiesVersion "$VERSION_TO_SERVICES" pom.xml propertiesDepsServices[@]
 
 propertiesDeps=("muleValidationModuleTestVersion"
-                "muleScriptingModuleTestVersion"
+                "muleScriptingModuleVersion"
                 "muleFileCommonsTestVersion"
                 "muleSpringModuleTestVersion"
 
@@ -54,8 +54,7 @@ propertiesDeps=("muleValidationModuleTestVersion"
                 "muleJmsConnectorTestVersion"
                 "muleWscConnectorTestVersion"
                 "muleOauthModuleTestVersion"
-                "muleSocketsConnectorTestVersion"
-                "muleObjectStoreConnectorTestVersion")
+                "muleSocketsConnectorTestVersion")
 
 updatePropertiesVersion "$VERSION_TO_CONNECTORS" pom.xml propertiesDeps[@]
 
