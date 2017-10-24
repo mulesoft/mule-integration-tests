@@ -7,10 +7,10 @@
 package org.mule.test.module.scheduler.cron;
 
 import static java.lang.Thread.sleep;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mule.runtime.api.component.location.Location.builderFromStringRepresentation;
 
 import org.mule.functional.api.component.EventCallback;
@@ -85,7 +85,7 @@ public class CronSchedulerTestCase extends AbstractSchedulerTestCase {
   private void checkForFooCollectionToBeFilled() {
     synchronized (foo) {
       foo.size();
-      assertTrue(foo.size() > 0);
+      assertThat(foo, hasSize(greaterThan(0)));
       for (String s : foo) {
         assertEquals("foo", s);
       }
@@ -95,7 +95,7 @@ public class CronSchedulerTestCase extends AbstractSchedulerTestCase {
   private void checkForBarCollectionToBeFilled() {
     synchronized (bar) {
       bar.size();
-      assertTrue(bar.size() > 0);
+      assertThat(bar, hasSize(greaterThan(0)));
       for (String s : bar) {
         assertEquals("bar", s);
       }
