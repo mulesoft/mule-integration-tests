@@ -8,7 +8,6 @@ package org.mule.test.integration.schedule;
 
 
 import static java.lang.Thread.sleep;
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.component.location.Location.builderFromStringRepresentation;
@@ -85,7 +84,7 @@ public class PollScheduleTestCase extends AbstractSchedulerTestCase {
 
     new PollingProber(200, 10).check(new JUnitLambdaProbe(() -> {
       // One for the scheduler run and another for the on-demand one
-      assertThat(foo.size(), is(fooElementsAfterStopping + 2));
+      assertThat(foo, hasSize(fooElementsAfterStopping + 2));
       return true;
     }));
   }

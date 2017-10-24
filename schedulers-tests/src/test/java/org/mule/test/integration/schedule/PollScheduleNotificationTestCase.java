@@ -7,17 +7,22 @@
 package org.mule.test.integration.schedule;
 
 
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+
 import org.mule.runtime.api.notification.ConnectorMessageNotification;
 import org.mule.runtime.api.notification.ConnectorMessageNotificationListener;
+import org.mule.tck.probe.JUnitLambdaProbe;
 import org.mule.tck.probe.PollingProber;
-import org.mule.tck.probe.Probe;
 import org.mule.tck.probe.Prober;
 import org.mule.test.AbstractSchedulerTestCase;
 
+import org.junit.Test;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import org.junit.Test;
 
 public class PollScheduleNotificationTestCase extends AbstractSchedulerTestCase {
 
@@ -32,20 +37,12 @@ public class PollScheduleNotificationTestCase extends AbstractSchedulerTestCase 
   public void validateNotificationsAreSent() throws Exception {
     final MyListener listener = new MyListener();
     muleContext.getNotificationManager().addListener(listener);
-    prober.check(new Probe() {
+    prober.check(new JUnitLambdaProbe(() -> {
+      assertThat(listener.getNotifications(), hasSize(greaterThan(1)));
+      assertThat(listener.getNotifications().get(0).getLocationUri(), is("pollfoo/scheduler"));
 
-      @Override
-      public boolean isSatisfied() {
-        return listener.getNotifications().size() > 1
-            && "pollfoo/scheduler".equals(listener.getNotifications().get(0).getLocationUri());
-      }
-
-      @Override
-      public String describeFailure() {
-        return "The notification was never sent";
-      }
-    });
-
+      return true;
+    }));
   }
 
   class MyListener implements ConnectorMessageNotificationListener<ConnectorMessageNotification> {
