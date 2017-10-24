@@ -43,7 +43,7 @@ propertiesDepsServices=("muleSchedulerServiceTestVersion"
 updatePropertiesVersion "$VERSION_TO_SERVICES" pom.xml propertiesDepsServices[@]
 
 propertiesDeps=("muleValidationModuleTestVersion"
-                "muleScriptingModuleVersion"
+                "muleScriptingModuleTestVersion"
                 "muleFileCommonsTestVersion"
                 "muleSpringModuleTestVersion"
 
@@ -54,7 +54,8 @@ propertiesDeps=("muleValidationModuleTestVersion"
                 "muleJmsConnectorTestVersion"
                 "muleWscConnectorTestVersion"
                 "muleOauthModuleTestVersion"
-                "muleSocketsConnectorTestVersion")
+                "muleSocketsConnectorTestVersion"
+                "muleObjectStoreConnectorTestVersion")
 
 updatePropertiesVersion "$VERSION_TO_CONNECTORS" pom.xml propertiesDeps[@]
 
