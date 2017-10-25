@@ -5,7 +5,7 @@
     <flow name="EchoService">
         <logger />
         <custom-transformer
-            class="org.mule.test.integration.transformer.LifecycleTrackerTransformer">
+            class="org.mule.tck.integration.transformer.LifecycleTrackerTransformer">
             <property key="property" value="ltt" />
         </custom-transformer>
     </flow>

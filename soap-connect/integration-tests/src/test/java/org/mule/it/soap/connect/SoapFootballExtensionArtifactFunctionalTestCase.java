@@ -12,10 +12,9 @@ import org.mule.it.soap.connect.services.LaLigaService;
 import org.mule.service.soap.server.HttpServer;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
-import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
+
 import org.junit.Rule;
 
-@ArtifactClassLoaderRunnerConfig(sharedRuntimeLibs = {"org.mule.tests:mule-tests-unit"})
 public abstract class SoapFootballExtensionArtifactFunctionalTestCase extends MuleArtifactFunctionalTestCase {
 
   private static final String SOAP_CONFIG = "soap-football-extension-config.xml";
