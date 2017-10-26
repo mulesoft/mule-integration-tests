@@ -8,6 +8,7 @@ package org.mule.test.integration.interception;
 
 import static java.lang.Math.random;
 import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.empty;
@@ -68,6 +69,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
@@ -257,7 +259,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
       // expected
     } finally {
       List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
-      assertThat(interceptionParameters, hasSize(1));
+      assertThat(interceptionParameters, hasSize(2));
 
       InterceptionParameters killInterceptionParameter = interceptionParameters.get(0);
 
@@ -270,6 +272,8 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
       assertThat(getActiveConnections(), empty());
       assertThat(getConnects() - connectsBefore, is(mutateEventBefore ? 2 : 1));
       assertThat(getDisconnects() - disconnectsBefore, is(mutateEventBefore ? 2 : 1));
+
+      // the 2nd one is for the global error handler, it is tested separately
     }
   }
 
@@ -381,7 +385,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
       flowRunner("flowWithFailingSubFlowRef").run();
     } finally {
       List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
-      assertThat(interceptionParameters, hasSize(2));
+      assertThat(interceptionParameters, hasSize(3));
 
       InterceptionParameters flowRefParameter = interceptionParameters.get(0);
 
@@ -392,6 +396,93 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
 
       assertThat(failParameter.getParameters().keySet(), containsInAnyOrder("throwException"));
       assertThat(failParameter.getParameters().get("throwException").resolveValue(), is("true"));
+
+      // the 3rd one is for the global error handler, it is tested separately
+    }
+  }
+
+  @Test
+  @Description("Processors in error handlers are intercepted correctly")
+  public void errorHandler() throws Exception {
+    expectedError.expectCause(instanceOf(FunctionalTestException.class));
+
+    AtomicBoolean afterCallbackCalledForFailingMP = new AtomicBoolean(false);
+    AtomicBoolean afterCallbackCalledForErrorHandlingMp = new AtomicBoolean(false);
+
+    AfterWithCallbackInterceptor.callback = (event, thrown) -> {
+      if (!afterCallbackCalledForFailingMP.getAndSet(true)) {
+        assertThat(thrown.get(), instanceOf(FunctionalTestException.class));
+      } else {
+        afterCallbackCalledForErrorHandlingMp.set(true);
+      }
+    };
+
+    try {
+      flowRunner("flowFailingWithErrorHandler").run();
+    } finally {
+      assertThat(afterCallbackCalledForFailingMP.get(), is(true));
+      assertThat(afterCallbackCalledForErrorHandlingMp.get(), is(true));
+
+      List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
+      assertThat(interceptionParameters, hasSize(2));
+
+      InterceptionParameters mpInGlobalErrorHandler = interceptionParameters.get(1);
+      assertThat(mpInGlobalErrorHandler.getLocation().getLocation(),
+                 is("flowFailingWithErrorHandler/errorHandler/0/processors/0"));
+    }
+  }
+
+  @Test
+  @Description("Processors in global error handlers are intercepted correctly")
+  public void globalErrorHandler() throws Exception {
+    expectedError.expectCause(instanceOf(FunctionalTestException.class));
+
+    AtomicBoolean afterCallbackCalledForFailingMP = new AtomicBoolean(false);
+    AtomicBoolean afterCallbackCalledForErrorHandlingMp = new AtomicBoolean(false);
+
+    AfterWithCallbackInterceptor.callback = (event, thrown) -> {
+      if (!afterCallbackCalledForFailingMP.getAndSet(true)) {
+        assertThat(thrown.get(), instanceOf(FunctionalTestException.class));
+      } else {
+        afterCallbackCalledForErrorHandlingMp.set(true);
+      }
+    };
+
+    try {
+      flowRunner("flowFailing").run();
+    } finally {
+      assertThat(afterCallbackCalledForFailingMP.get(), is(true));
+      assertThat(afterCallbackCalledForErrorHandlingMp.get(), is(true));
+
+      List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
+      assertThat(interceptionParameters, hasSize(2));
+
+      InterceptionParameters mpInGlobalErrorHandler = interceptionParameters.get(1);
+      assertThat(mpInGlobalErrorHandler.getLocation().getLocation(), is("globalErrorHandler/0/processors/0"));
+    }
+  }
+
+  @Test
+  @Description("Processors in global error handlers are intercepted correctly when error is in referenced flow")
+  public void globalErrorHandlerWithFlowRef() throws Exception {
+    expectedError.expectCause(instanceOf(FunctionalTestException.class));
+
+    AtomicInteger afters = new AtomicInteger(0);
+
+    AfterWithCallbackInterceptor.callback = (event, thrown) -> {
+      afters.incrementAndGet();
+    };
+
+    try {
+      flowRunner("flowWithFailingFlowRef").run();
+    } finally {
+      // The MP in the global error handler is ran twice, once for the called flow and another for tha caller flow.
+
+      List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
+      assertThat(interceptionParameters.stream().map(ip -> ip.getLocation().getLocation()).collect(toList()).toString(),
+                 interceptionParameters, hasSize(4));
+
+      assertThat(afters.get(), is(4));
     }
   }
 

@@ -15,7 +15,7 @@
     </db:config>
 
     <tls:context name="tlsContextRef">
-        <tls:trust-store  path="trustStore" password="mulepassword"/>
+        <tls:trust-store path="trustStore" password="mulepassword"/>
     </tls:context>
 
     <http:request-config name="requestConfig">
