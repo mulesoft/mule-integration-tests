@@ -8,7 +8,7 @@
     </flow>
 
     <flow name="Receiver">
-        <custom-processor class="org.mule.functional.testmodels.services.TestReceiver"/>
+        <custom-processor class="org.mule.tck.TestReceiver"/>
     </flow>
 
 </mule>

@@ -7,7 +7,6 @@
 package org.mule.it.soap.connect;
 
 import static org.mule.service.soap.SoapTestUtils.assertSimilarXml;
-
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.it.soap.connect.services.InterdimentionalCableService;
 import org.mule.runtime.api.message.Message;
@@ -15,12 +14,11 @@ import org.mule.service.soap.server.HttpServer;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.ram.RickAndMortyExtension;
-import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
+
 import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.Rule;
 import org.junit.Test;
 
-@ArtifactClassLoaderRunnerConfig(sharedRuntimeLibs = {"org.mule.tests:mule-tests-unit"})
 public class InvokeSoapCustomTransportTestCase extends MuleArtifactFunctionalTestCase {
 
   @Rule

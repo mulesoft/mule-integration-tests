@@ -11,11 +11,10 @@ import org.mule.service.soap.server.HttpServer;
 import org.mule.service.soap.service.Soap11Service;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
-import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
+
 import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.Rule;
 
-@ArtifactClassLoaderRunnerConfig(sharedRuntimeLibs = {"org.mule.tests:mule-tests-unit"})
 public abstract class AbstractSimpleServiceFunctionalTestCase extends MuleArtifactFunctionalTestCase {
 
   @Rule

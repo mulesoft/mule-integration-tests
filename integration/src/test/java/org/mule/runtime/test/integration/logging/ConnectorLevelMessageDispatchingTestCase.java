@@ -4,36 +4,33 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.runtime.module.launcher.logging;
+package org.mule.runtime.test.integration.logging;
 
 import static java.lang.String.format;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.core.privileged.registry.LegacyRegistryUtils.lookupObject;
 import static org.mule.runtime.http.api.HttpConstants.Method.GET;
-
 import org.mule.functional.listener.FlowExecutionListener;
 import org.mule.runtime.api.notification.NotificationListenerRegistry;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.privileged.registry.RegistrationException;
 import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;
 import org.mule.runtime.http.api.domain.message.request.HttpRequest;
-import org.mule.runtime.module.launcher.logging.rule.UseMuleLog4jContextFactory;
 import org.mule.service.http.TestHttpClient;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.infrastructure.deployment.AbstractFakeMuleServerTestCase;
 import org.mule.test.infrastructure.deployment.FakeMuleServer;
 
-import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.Test;
-
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.qameta.allure.Issue;
+import org.junit.Ignore;
+import org.junit.Rule;
+import org.junit.Test;
 
 @Ignore("MULE-10633, also, this uses FakeMuleServer which does not support loading extensions")
 @Issue("MULE-10633")

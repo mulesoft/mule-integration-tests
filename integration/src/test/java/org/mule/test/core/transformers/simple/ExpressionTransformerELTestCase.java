@@ -10,7 +10,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-
 import org.mule.functional.junit4.TestLegacyMessageBuilder;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.transformer.Transformer;
@@ -20,12 +19,12 @@ import org.mule.tck.testmodels.fruit.FruitBasket;
 import org.mule.tck.testmodels.fruit.FruitBowl;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import org.junit.Test;
-
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.junit.Test;
 
 public class ExpressionTransformerELTestCase extends AbstractIntegrationTestCase {
 
