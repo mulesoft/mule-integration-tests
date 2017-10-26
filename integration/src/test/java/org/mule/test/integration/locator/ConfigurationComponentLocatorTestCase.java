@@ -28,14 +28,13 @@ import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.source.MessageSource;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import org.junit.Test;
-
 import java.util.List;
 import java.util.Optional;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
+import org.junit.Test;
 
 @Feature(CONFIGURATION_COMPONENT_LOCATOR)
 @Story(SEARCH_CONFIGURATION)
@@ -142,6 +141,12 @@ public class ConfigurationComponentLocatorTestCase extends AbstractIntegrationTe
                                                      "flowWithSubflow",
                                                      "flowWithSubflow/processors/0",
                                                      "mySubFlow",
-                                                     "mySubFlow/processors/0"));
+                                                     "mySubFlow/processors/0",
+                                                     "flowFailing",
+                                                     "flowFailing/processors/0",
+                                                     "_muleConfiguration",
+                                                     "globalErrorHandler",
+                                                     "globalErrorHandler/0",
+                                                     "globalErrorHandler/0/processors/0"));
   }
 }

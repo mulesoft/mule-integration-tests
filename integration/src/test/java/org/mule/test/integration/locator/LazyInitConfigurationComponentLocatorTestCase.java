@@ -31,9 +31,6 @@ import org.mule.runtime.config.api.LazyComponentInitializer;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import org.apache.commons.lang3.reflect.FieldUtils;
-import org.junit.Test;
-
 import java.util.List;
 
 import javax.inject.Inject;
@@ -42,6 +39,8 @@ import javax.inject.Named;
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
+import org.apache.commons.lang3.reflect.FieldUtils;
+import org.junit.Test;
 
 @Feature(CONFIGURATION_COMPONENT_LOCATOR)
 @Story(SEARCH_CONFIGURATION)
@@ -103,8 +102,7 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
                                   "mySubFlow",
                                   "mySubFlow/processors/0",
 
-                                  // TODO MULE-13877 componentModel name not set for configuration elements
-                                  "null",
+                                  "_muleConfiguration",
                                   "globalErrorHandler",
                                   "globalErrorHandler/0",
                                   "globalErrorHandler/0/processors/0",
