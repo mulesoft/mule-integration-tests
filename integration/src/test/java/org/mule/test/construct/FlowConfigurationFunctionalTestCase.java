@@ -486,4 +486,12 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
     }
   }
 
+  public static class CustomAppender extends StringAppendTransformer {
+
+    public CustomAppender() {
+      super("recieved");
+    }
+
+  }
+
 }

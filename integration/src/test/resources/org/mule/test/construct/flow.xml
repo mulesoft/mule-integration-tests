@@ -13,6 +13,9 @@
 
     <spring:config name="springConfig" files="org/mule/test/construct/flow-beans.xml"/>
 
+    <custom-processor class="org.mule.test.construct.FlowConfigurationFunctionalTestCase.CustomAppender" name="appender"/>
+    <custom-processor class="org.mule.test.construct.FlowConfigurationFunctionalTestCase.CustomAppender" name="test-array-appender"/>
+
     <sub-flow name="composite1">
         <description>Composite thats appands 'ayz'</description>
         <append-string-transformer message="x" />

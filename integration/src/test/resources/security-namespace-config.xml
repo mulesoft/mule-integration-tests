@@ -6,6 +6,7 @@
     <object name="dummySecurityProvider" class="org.mule.functional.security.TestSingleUserSecurityProvider"/>
     <object name="dummyEncryptionStrategy" class="org.mule.functional.security.MockEncryptionStrategy"/>
     <object name="dummyKeyFactory" class="org.mule.functional.security.MockKeyFactory"/>
+    <object name="initializableSecurityProvider" class="org.mule.test.config.SecurityNamespaceHandlerTestCase.InitTrackerSecurityProvider"/>
 
     <security-manager>
         <custom-security-provider name="dummySecurityProvider" provider-ref="dummySecurityProvider"/>
@@ -13,6 +14,10 @@
         <secret-key-encryption-strategy name="secretKeyEncryptionStrategy" keyFactory-ref="dummyKeyFactory"/>
         <password-encryption-strategy name="passwordEncryptionStrategy" password="password" salt="saltsalt"
                                       iterationCount="2"/>
+    </security-manager>
+
+    <security-manager>
+        <custom-security-provider name="initializableProvider" provider-ref="initializableSecurityProvider"/>
     </security-manager>
 
 </mule>
