@@ -209,6 +209,10 @@ public class ServerNotificationManagerTestCase extends AbstractIntegrationTestCa
       super(new Object(), 0);
     }
 
+    @Override
+    public String getEventName() {
+      return "TestEvent";
+    }
   }
 
   protected static class TestSecurityEvent extends SecurityNotification {
@@ -222,6 +226,10 @@ public class ServerNotificationManagerTestCase extends AbstractIntegrationTestCa
       super(new UnauthorisedException(createStaticMessage("dummy")), 0);
     }
 
+    @Override
+    public String getEventName() {
+      return "TestSecurityEvent";
+    }
   }
 
   public static ListenerSubscriptionPairMatcher withListener(NotificationListener listener) {

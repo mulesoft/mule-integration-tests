@@ -229,6 +229,10 @@ public class ServerNotificationManagerPerformanceTestCase extends AbstractMuleCo
       super("", CUSTOM_EVENT_ACTION_START_RANGE + 1);
     }
 
+    @Override
+    public String getEventName() {
+      return "PerfTestIOServerNotification";
+    }
   }
 
   public static class PerfTestLightServerNotification extends AbstractServerNotification {
@@ -241,6 +245,11 @@ public class ServerNotificationManagerPerformanceTestCase extends AbstractMuleCo
       super("", CUSTOM_EVENT_ACTION_START_RANGE + 2);
     }
 
+    @Override
+    public String getEventName()
+    {
+      return "PerfTestLightServerNotification";
+    }
   }
 
   public static class PerfTestServerSynchronousNotification extends AbstractServerNotification {
@@ -256,6 +265,11 @@ public class ServerNotificationManagerPerformanceTestCase extends AbstractMuleCo
     @Override
     public boolean isSynchronous() {
       return true;
+    }
+
+    @Override
+    public String getEventName() {
+      return "PerfTestServerSynchronousNotification";
     }
   }
 
