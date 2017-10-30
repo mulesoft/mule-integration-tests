@@ -246,8 +246,7 @@ public class ServerNotificationManagerPerformanceTestCase extends AbstractMuleCo
     }
 
     @Override
-    public String getEventName()
-    {
+    public String getEventName() {
       return "PerfTestLightServerNotification";
     }
   }
