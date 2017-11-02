@@ -125,4 +125,77 @@
         </error-handler>
     </flow>
 
+    <flow name="exceptionInTry">
+        <try>
+            <try>
+                <test:throw exception="org.mule.test.integration.exceptions.LogCheckTestCase.CustomException" error="ANY"/>
+                <error-handler>
+                    <test:on-error-check-log>
+                        <test:check-equals>
+                            <![CDATA[
+                                Error
+                            ]]>
+                        </test:check-equals>
+                    </test:on-error-check-log>
+                </error-handler>
+            </try>
+        </try>
+    </flow>
+
+    <flow name="sameExceptionInTry">
+        <try>
+            <try>
+                <test:throw exception="org.mule.test.integration.exceptions.LogCheckTestCase.CustomException" error="ANY"/>
+                <error-handler>
+                    <test:on-error-check-log propagate="true">
+                        <test:check-equals>
+                            <![CDATA[
+                                Error
+                            ]]>
+                        </test:check-equals>
+                    </test:on-error-check-log>
+                </error-handler>
+            </try>
+            <error-handler>
+                <test:on-error-check-log propagate="false">
+                    <test:check-equals>
+                        <!--This should not be logged and it should fail-->
+                        <![CDATA[
+                            Error
+                        ]]>
+                    </test:check-equals>
+                </test:on-error-check-log>
+            </error-handler>
+        </try>
+    </flow>
+
+    <flow name="differentExceptionsInTry">
+        <try>
+            <try>
+                <test:throw exception="org.mule.test.integration.exceptions.LogCheckTestCase.CustomException"
+                            error="TRANSFORMATION"/>
+                <error-handler>
+                    <test:on-error-check-log propagate="false">
+                        <test:check-equals>
+                            <![CDATA[
+                                    Error
+                                ]]>
+                        </test:check-equals>
+                    </test:on-error-check-log>
+                </error-handler>
+            </try>
+            <test:throw exception="org.mule.test.integration.exceptions.LogCheckTestCase.CustomException"
+                        error="EXPRESSION"/>
+            <error-handler>
+                <test:on-error-check-log propagate="false">
+                    <test:check-equals>
+                        <![CDATA[
+                               Error
+                           ]]>
+                    </test:check-equals>
+                </test:on-error-check-log>
+            </error-handler>
+        </try>
+    </flow>
+
 </mule>

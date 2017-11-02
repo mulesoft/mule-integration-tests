@@ -10,6 +10,7 @@ import static org.mule.runtime.api.exception.MuleException.MULE_VERBOSE_EXCEPTIO
 import static org.mule.runtime.api.exception.MuleException.refreshVerboseExceptions;
 import static org.mule.runtime.core.api.config.MuleProperties.MULE_FLOW_TRACE;
 
+import org.mule.runtime.api.exception.MuleException;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -17,12 +18,16 @@ import org.junit.AfterClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 public class LogCheckTestCase extends AbstractIntegrationTestCase {
 
   // Just to ensure the previous value is set after the test
   @ClassRule
   public static SystemProperty verboseExceptions = new SystemProperty(MULE_VERBOSE_EXCEPTIONS, Boolean.toString(false));
+
+  @Rule
+  public ExpectedException expectedException = ExpectedException.none();
 
   @AfterClass
   public static void afterClass() {
@@ -77,10 +82,46 @@ public class LogCheckTestCase extends AbstractIntegrationTestCase {
     runSuccesses(true, "unknownFull");
   }
 
+  @Test
+  public void exceptionInTryIsLogged() throws Exception {
+    runSuccesses(false, "exceptionInTry");
+  }
+
+  @Test
+  public void sameExceptionIsNotLoggedMoreThanOnceInTryScope() throws Exception {
+    expectedException.expect(AssertionError.class);
+    expectedException.expectMessage("Could not check exception because it was never logged");
+    runSuccesses(false, "sameExceptionInTry");
+  }
+
+  @Test
+  public void differentExceptionsAreLoggedInTryScope() throws Exception {
+    runSuccesses(false, "differentExceptionsInTry");
+  }
+
   private void runSuccesses(boolean verboseExceptions, String flowName) throws Exception {
     System.setProperty(MULE_VERBOSE_EXCEPTIONS, Boolean.toString(verboseExceptions));
     refreshVerboseExceptions();
     flowRunner(flowName).run();
   }
 
+  public static class CustomException extends MuleException {
+
+    private static final String MESSAGE = "Error";
+
+    @Override
+    public String getDetailedMessage() {
+      return MESSAGE;
+    }
+
+    @Override
+    public String getVerboseMessage() {
+      return MESSAGE;
+    }
+
+    @Override
+    public String getSummaryMessage() {
+      return MESSAGE;
+    }
+  }
 }
