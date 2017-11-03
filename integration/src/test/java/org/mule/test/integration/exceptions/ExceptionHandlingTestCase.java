@@ -32,18 +32,16 @@ import org.mule.runtime.core.api.processor.Processor;
 import org.mule.tck.processor.FlowAssert;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import org.junit.Test;
-
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
+import org.junit.Test;
+
 public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
 
   public static final String MESSAGE = "some message";
-  private static final String SYTEM_EXCEPTION_HANDLER_CLASSNAME =
-      "org.mule.runtime.core.internal.exception.MessagingExceptionHandlerToSystemAdapter";
   private static final String ERROR_HANDLER_CLASSNAME = "org.mule.runtime.core.internal.exception.ErrorHandler";
 
   private static FlowExceptionHandler effectiveMessagingExceptionHandler;
@@ -131,25 +129,25 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
 
     FlowAssert.verify("customProcessorInExceptionStrategy");
 
-    assertThat(effectiveMessagingExceptionHandler.getClass().getName(), equalTo(SYTEM_EXCEPTION_HANDLER_CLASSNAME));
+    assertThat(effectiveMessagingExceptionHandler.getClass().getName(), equalTo(ERROR_HANDLER_CLASSNAME));
   }
 
   @Test
   public void testAsyncInExceptionStrategy() throws Exception {
     testExceptionStrategy("asyncInExceptionStrategy", emptyMap());
-    assertThat(effectiveMessagingExceptionHandler.getClass().getName(), equalTo(SYTEM_EXCEPTION_HANDLER_CLASSNAME));
+    assertThat(effectiveMessagingExceptionHandler.getClass().getName(), equalTo(ERROR_HANDLER_CLASSNAME));
   }
 
   @Test
   public void testUntilSuccessfulInExceptionStrategy() throws Exception {
     testExceptionStrategy("untilSuccessfulInExceptionStrategy", emptyMap());
-    assertThat(effectiveMessagingExceptionHandler.getClass().getName(), equalTo(SYTEM_EXCEPTION_HANDLER_CLASSNAME));
+    assertThat(effectiveMessagingExceptionHandler.getClass().getName(), equalTo(ERROR_HANDLER_CLASSNAME));
   }
 
   @Test
   public void testUntilSuccessfulInExceptionStrategyRollback() throws Exception {
     testExceptionStrategy("untilSuccessfulInExceptionStrategyRollback", emptyMap());
-    assertThat(effectiveMessagingExceptionHandler.getClass().getName(), equalTo(SYTEM_EXCEPTION_HANDLER_CLASSNAME));
+    assertThat(effectiveMessagingExceptionHandler.getClass().getName(), equalTo(ERROR_HANDLER_CLASSNAME));
   }
 
   @Test
