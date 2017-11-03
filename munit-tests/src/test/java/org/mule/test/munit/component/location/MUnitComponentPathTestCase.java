@@ -93,7 +93,7 @@ public class MUnitComponentPathTestCase extends MuleArtifactFunctionalTestCase {
         .find(builderFromStringRepresentation("test/route/0/processors/0/processors/0/route/0/processors/0").build())
         .get(), notNullValue());
     assertThat(locator
-        .find(builderFromStringRepresentation("test/route/0/processors/0/processors/0/route/0/processors/0/route/0/processors/0")
+        .find(builderFromStringRepresentation("test/route/0/processors/0/processors/0/route/0/processors/0/processors/0")
             .build())
         .get(), notNullValue());
     assertThat(locator
