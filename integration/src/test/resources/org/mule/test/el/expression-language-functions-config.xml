@@ -25,6 +25,10 @@
         <set-payload value="#[lookup('callApi', 'data')]"/>
     </flow>
 
+    <flow name="complex">
+        <set-payload value="#[output application/java --- ['oh', lookup('echo', payload.hey)]]"/>
+    </flow>
+
     <flow name="composition">
         <set-payload value="#[lookup('callApi', 'data').name ++ ' from ' ++ lookup('callApi', 'data').location]"/>
     </flow>
@@ -83,6 +87,10 @@
         <test:assert expression="#[java!org::mule::runtime::api::metadata::DataType::areCompatible(vars.compatible2,vars.nonCompatible) == false]"/>
         <test:assert expression="#[java!org::mule::runtime::api::metadata::DataType::areCompatible(vars.nonCompatible,vars.compatible1) == false]"/>
         <test:assert expression="#[java!org::mule::runtime::api::metadata::DataType::areCompatible(vars.nonCompatible,vars.compatible2) == false]"/>
+    </flow>
+
+    <flow name="echo">
+        <logger message="Oops"/>
     </flow>
 
 </mule>

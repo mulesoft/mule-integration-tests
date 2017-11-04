@@ -7,27 +7,32 @@
 package org.mule.test.el;
 
 import static java.lang.String.format;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.http.HttpStatus.SC_METHOD_NOT_ALLOWED;
 import static org.apache.http.HttpStatus.SC_UNAUTHORIZED;
 import static org.hamcrest.Matchers.both;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.hamcrest.core.IsCollectionContaining.hasItems;
 import static org.junit.Assert.assertThat;
 import static org.mule.functional.junit4.matchers.MessageMatchers.hasPayload;
 import static org.mule.functional.junit4.matchers.ThrowableMessageMatcher.hasMessage;
 import static org.mule.runtime.api.metadata.DataType.TEXT_STRING;
+import static org.mule.runtime.api.metadata.MediaType.APPLICATION_JAVA;
+import static org.mule.runtime.api.metadata.MediaType.JSON;
 import static org.mule.test.allure.AllureConstants.ExpressionLanguageFeature.EXPRESSION_LANGUAGE;
 import static org.mule.test.allure.AllureConstants.ExpressionLanguageFeature.ExpressionLanguageStory.SUPPORT_FUNCTIONS;
-
 import org.mule.functional.api.exception.ExpectedError;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.metadata.DataType;
 import org.mule.runtime.api.metadata.MediaType;
+import org.mule.runtime.api.metadata.TypedValue;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -57,6 +62,19 @@ public class ExpressionLanguageFunctionsTestCase extends AbstractIntegrationTest
   public void callsFlow() throws Exception {
     assertThat(flowRunner("staticParams").keepStreamsOpen().run().getMessage(),
                hasPayload(equalTo(API_RESPONSE)));
+  }
+
+  @Test
+  public void usesJavaTypeRegardlessOfMessageType() throws Exception {
+    TypedValue result = flowRunner("complex")
+        .withPayload("{\"hey\" : \"there\"}")
+        .withMediaType(JSON)
+        .keepStreamsOpen()
+        .run().getMessage().getPayload();
+
+    Collection<String> value = (Collection<String>) result.getValue();
+    assertThat(value, hasItems("oh", "there"));
+    assertThat(result.getDataType().getMediaType(), is(APPLICATION_JAVA.withCharset(UTF_8)));
   }
 
   @Test
