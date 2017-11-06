@@ -89,14 +89,24 @@ public class LogCheckTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void sameExceptionIsNotLoggedMoreThanOnceInTryScope() throws Exception {
-    expectedException.expect(AssertionError.class);
-    expectedException.expectMessage("Could not check exception because it was never logged");
     runSuccesses(false, "sameExceptionInTry");
   }
 
   @Test
   public void differentExceptionsAreLoggedInTryScope() throws Exception {
     runSuccesses(false, "differentExceptionsInTry");
+  }
+
+  @Test
+  public void noLoggingFailsIfFlagIsNotSet() throws Exception {
+    expectedException.expect(AssertionError.class);
+    expectedException.expectMessage("Could not check exception because it was never logged");
+    runSuccesses(false, "noLogFlowFlagNotSet");
+  }
+
+  @Test
+  public void noLoggingSucceedsIfFlagIsSet() throws Exception {
+    runSuccesses(false, "noLogFlowFlagSet");
   }
 
   private void runSuccesses(boolean verboseExceptions, String flowName) throws Exception {
