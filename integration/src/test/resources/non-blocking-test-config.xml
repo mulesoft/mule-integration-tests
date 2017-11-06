@@ -35,10 +35,8 @@
 
     <flow name="childFlow">
         <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]"/>
-        <expression-component>mel:flowVars['requestThread'] = Thread.currentThread()</expression-component>
         <flow-ref name="childFlowChild"/>
         <test:assert expression="#[mel:assertPayload()]"/>
-        <test:assert expression="#[mel:flowVars['requestThread'] != Thread.currentThread()]"/>
         <test:assert count="1" expression="#[mel:flow.name=='childFlow']"/>
     </flow>
     <flow name="childFlowChild">
@@ -223,7 +221,6 @@
 
     <flow name="childDefaultFlow">
         <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]"/>
-        <expression-component>mel:flowVars['requestThread'] = Thread.currentThread()</expression-component>
         <flow-ref name="childDefaultFlowChild"/>
         <test:assert expression="#[mel:assertPayload()]"/>
         <test:non-blocking-processor/>
