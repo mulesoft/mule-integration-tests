@@ -192,13 +192,32 @@
     </flow>
 
     <flow name="noLogFlowFlagNotSet">
-        <test:processor/>
+        <try>
+            <test:throw exception="java.lang.AssertionError" error="TRANSFORMATION"/>
+            <error-handler>
+                <!--To log error-->
+                <on-error-propagate/>
+            </error-handler>
+        </try>
         <error-handler>
             <test:on-error-check-log/>
         </error-handler>
     </flow>
     
     <flow name="noLogFlowFlagSet">
+        <try>
+            <test:throw exception="java.lang.AssertionError" error="TRANSFORMATION"/>
+            <error-handler>
+                <!--To log error-->
+                <on-error-propagate/>
+            </error-handler>
+        </try>
+        <error-handler>
+            <test:on-error-check-log succeedIfNoLog="true"/>
+        </error-handler>
+    </flow>
+
+    <flow name="noExceptionFlow">
         <test:processor/>
         <error-handler>
             <test:on-error-check-log succeedIfNoLog="true"/>

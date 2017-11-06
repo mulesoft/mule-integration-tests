@@ -109,6 +109,13 @@ public class LogCheckTestCase extends AbstractIntegrationTestCase {
     runSuccesses(false, "noLogFlowFlagSet");
   }
 
+  @Test
+  public void assertFailsIfNoException() throws Exception {
+    expectedException.expect(AssertionError.class);
+    expectedException.expectMessage("Handler could not check any exception log because no exception was raise");
+    runSuccesses(false, "noExceptionFlow");
+  }
+
   private void runSuccesses(boolean verboseExceptions, String flowName) throws Exception {
     System.setProperty(MULE_VERBOSE_EXCEPTIONS, Boolean.toString(verboseExceptions));
     refreshVerboseExceptions();
