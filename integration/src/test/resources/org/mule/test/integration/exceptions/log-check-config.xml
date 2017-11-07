@@ -157,14 +157,7 @@
                 </error-handler>
             </try>
             <error-handler>
-                <test:on-error-check-log propagate="false">
-                    <test:check-equals>
-                        <!--This should not be logged and it should fail-->
-                        <![CDATA[
-                            Error
-                        ]]>
-                    </test:check-equals>
-                </test:on-error-check-log>
+                <test:on-error-check-log propagate="false" succeedIfNoLog="true"/>
             </error-handler>
         </try>
     </flow>
@@ -196,6 +189,39 @@
                 </test:on-error-check-log>
             </error-handler>
         </try>
+    </flow>
+
+    <flow name="noLogFlowFlagNotSet">
+        <try>
+            <test:throw exception="java.lang.AssertionError" error="TRANSFORMATION"/>
+            <error-handler>
+                <!--To log error-->
+                <on-error-propagate/>
+            </error-handler>
+        </try>
+        <error-handler>
+            <test:on-error-check-log/>
+        </error-handler>
+    </flow>
+    
+    <flow name="noLogFlowFlagSet">
+        <try>
+            <test:throw exception="java.lang.AssertionError" error="TRANSFORMATION"/>
+            <error-handler>
+                <!--To log error-->
+                <on-error-propagate/>
+            </error-handler>
+        </try>
+        <error-handler>
+            <test:on-error-check-log succeedIfNoLog="true"/>
+        </error-handler>
+    </flow>
+
+    <flow name="noExceptionFlow">
+        <test:processor/>
+        <error-handler>
+            <test:on-error-check-log succeedIfNoLog="true"/>
+        </error-handler>
     </flow>
 
 </mule>
