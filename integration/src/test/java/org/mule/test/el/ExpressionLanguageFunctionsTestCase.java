@@ -199,6 +199,11 @@ public class ExpressionLanguageFunctionsTestCase extends AbstractIntegrationTest
         .withVariable("nonCompatible", nonCompatible).run().getMessage();
   }
 
+  @Test
+  public void registryBinding() throws Exception {
+    flowRunner("registryBinding").run();
+  }
+
   private static class Parent {
 
   }

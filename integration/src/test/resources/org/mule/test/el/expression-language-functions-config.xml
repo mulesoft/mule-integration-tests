@@ -93,4 +93,10 @@
         <logger message="Oops"/>
     </flow>
 
+    <flow name="registryBinding">
+        <set-payload value="HOLA!!!"/>
+        <logger message="#[registry.muleContext.config.systemModelType]" level="ERROR"/>
+        <logger message="#[message.privateField]" level="ERROR"/>
+    </flow>
+
 </mule>
