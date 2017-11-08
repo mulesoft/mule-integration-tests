@@ -177,6 +177,11 @@ public class ExpressionLanguageFunctionsTestCase extends AbstractIntegrationTest
   }
 
   @Test
+  public void accessObjectsFromRegistryBinding() throws Exception {
+    flowRunner("registryBindingFlow").run();
+  }
+
+  @Test
   public void failsWhenReferenceIsNotAFlow() throws Exception {
     expectedError.expectErrorType("MULE", "EXPRESSION");
     expectedError.expectCause(both(isA(ExpressionRuntimeException.class))
@@ -197,11 +202,6 @@ public class ExpressionLanguageFunctionsTestCase extends AbstractIntegrationTest
     DataType nonCompatible = DataType.STRING;
     flowRunner("checkCompatibleDataTypes").withVariable("compatible1", compatible1).withVariable("compatible2", compatible2)
         .withVariable("nonCompatible", nonCompatible).run().getMessage();
-  }
-
-  @Test
-  public void registryBinding() throws Exception {
-    flowRunner("registryBinding").run();
   }
 
   private static class Parent {
