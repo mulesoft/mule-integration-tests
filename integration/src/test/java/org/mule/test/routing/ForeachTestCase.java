@@ -258,7 +258,6 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
 
   @Description("Splits a JSON into other JSON objects and executed expressions over each object")
   @Test
-  @Ignore("MDF-276")
   public void splitJsonComplexValue() throws Exception {
     String jsonUsers = "{ \"users\": [" +
         "{ \"name\": \"Pepe\", \"lastname\": \"Le Pew\" }," +
