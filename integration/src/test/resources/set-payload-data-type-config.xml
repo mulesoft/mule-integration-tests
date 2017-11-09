@@ -7,4 +7,16 @@
     <flow name="setPayload">
         <set-payload value="#[mel:'test']" encoding="UTF-16" mimeType="text/xml"/>
     </flow>
+
+    <flow name="setPayloadWithDefaultMediaType">
+        <set-payload value="#[mel:'test']"/>
+    </flow>
+
+    <flow name="setPayloadWithDW">
+        <set-payload value="#['test']" mimeType="text/xml"/>
+    </flow>
+
+    <flow name="setPayloadWithDWsettingMediaType">
+        <set-payload value="#[output text/json --- { root: {node: 'value'} } ]"/>
+    </flow>
 </mule>

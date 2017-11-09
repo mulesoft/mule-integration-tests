@@ -7,6 +7,6 @@
         <set-variable variableName="var1" value="test" mimeType="text/xml"/>
         <set-variable variableName="var2" value="test"/>
         <set-variable variableName="var3" value="#['test']" mimeType="text/xml"/>
-        <set-variable variableName="var4" value="#[output text/xml --- { root: {node: 'value'} } ]"/>
+        <set-variable variableName="var4" value="#[output text/json --- { root: {node: 'value'} } ]"/>
     </flow>
 </mule>

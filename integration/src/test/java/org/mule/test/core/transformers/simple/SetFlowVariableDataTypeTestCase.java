@@ -11,6 +11,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mule.runtime.api.metadata.MediaType.ANY;
+import static org.mule.runtime.api.metadata.MediaType.JSON;
 import static org.mule.runtime.api.metadata.MediaType.XML;
 import static org.mule.tck.junit4.matcher.DataTypeMatcher.like;
 
@@ -41,9 +42,9 @@ public class SetFlowVariableDataTypeTestCase extends AbstractIntegrationTestCase
     assertThat(dataType2, like(String.class, ANY, UTF_8));
     assertThat(dataType3, like(String.class, XML, UTF_8));
 
-    final MediaType XML_UTF8 = MediaType.create(XML.getPrimaryType(), XML.getSubType(), UTF_8);
+    final MediaType JSON_UTF8 = MediaType.create(JSON.getPrimaryType(), JSON.getSubType(), UTF_8);
     assertThat(CursorStreamProvider.class.isAssignableFrom(dataType4.getType()), is(true));
-    assertThat(dataType4.getMediaType(), is(XML_UTF8));
+    assertThat(dataType4.getMediaType(), is(JSON_UTF8));
   }
 
 }
