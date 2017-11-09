@@ -93,4 +93,9 @@
         <logger message="Oops"/>
     </flow>
 
+    <flow name="registryBindingFlow">
+        <test:assert expression="#[app.registry.ObjectToXmlString != null]"/>
+        <test:assert expression="#[app.registry.'_muleContext' != null]"/>
+    </flow>
+
 </mule>
