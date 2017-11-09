@@ -177,6 +177,11 @@ public class ExpressionLanguageFunctionsTestCase extends AbstractIntegrationTest
   }
 
   @Test
+  public void accessObjectsFromRegistryBinding() throws Exception {
+    flowRunner("registryBindingFlow").run();
+  }
+
+  @Test
   public void failsWhenReferenceIsNotAFlow() throws Exception {
     expectedError.expectErrorType("MULE", "EXPRESSION");
     expectedError.expectCause(both(isA(ExpressionRuntimeException.class))
