@@ -37,7 +37,7 @@ public abstract class AbstractShutdownTimeoutRequestResponseTestCase extends Abs
     waitLatch = new Latch();
   }
 
-  private static class BlockMessageProcessor implements Processor,Component {
+  private static class BlockMessageProcessor implements Processor, Component {
 
     @Override
     public CoreEvent process(CoreEvent event) throws MuleException {
