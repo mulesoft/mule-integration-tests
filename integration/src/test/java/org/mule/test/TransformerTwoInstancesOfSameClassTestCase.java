@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) MuleSoft, Inc.  All rights reserved.  http://www.mulesoft.com
+ * The software in this package is published under the terms of the CPAL v1.0
+ * license, a copy of which has been included with this distribution in the
+ * LICENSE.txt file.
+ */
 package org.mule.test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -21,8 +27,8 @@ public class TransformerTwoInstancesOfSameClassTestCase extends AbstractIntegrat
     final CustomTransformer appendStringA = (CustomTransformer) registry.lookupByName("appendStringA").get();
     final CustomTransformer appendStringB = (CustomTransformer) registry.lookupByName("appendStringB").get();
 
-    assertThat(appendStringA.getMessage(), is(" A"));
-    assertThat(appendStringB.getMessage(), is(" B"));
+    assertThat(appendStringA.getMessage(), is("A"));
+    assertThat(appendStringB.getMessage(), is("B"));
   }
 
   public static class CustomTransformer extends AbstractTransformer {

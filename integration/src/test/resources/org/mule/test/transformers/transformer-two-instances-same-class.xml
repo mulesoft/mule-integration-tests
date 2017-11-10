@@ -5,11 +5,11 @@
 
 
     <custom-transformer name="appendStringA" class="org.mule.test.TransformerTwoInstancesOfSameClassTestCase$CustomTransformer">
-        <property key="message" value=" A"/>
+        <property key="message" value="A"/>
     </custom-transformer>
 
     <custom-transformer name="appendStringB" class="org.mule.test.TransformerTwoInstancesOfSameClassTestCase$CustomTransformer">
-        <property key="message" value=" B"/>
+        <property key="message" value="B"/>
     </custom-transformer>
 
 </mule>
