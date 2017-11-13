@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.mule.runtime</groupId>
     <artifactId>mule</artifactId>
-    <version>4.0.0-SNAPSHOT</version>
+    <version>4.0.0</version>
   </parent>
   <groupId>org.mule.tests</groupId>
   <artifactId>mule-extensions-integration-tests</artifactId>
@@ -25,26 +25,26 @@
   </modules>
 
   <properties>
-    <muleSchedulerServiceTestVersion>1.0.0-SNAPSHOT</muleSchedulerServiceTestVersion>
-    <muleHttpServiceTestVersion>1.0.0-SNAPSHOT</muleHttpServiceTestVersion>
-    <muleOAuthServiceTestVersion>1.0.0-SNAPSHOT</muleOAuthServiceTestVersion>
-    <muleSoapServiceTestVersion>1.0.0-SNAPSHOT</muleSoapServiceTestVersion>
-    <muleExtensionTestSoapTestVersion>1.0.0-SNAPSHOT</muleExtensionTestSoapTestVersion>
+    <muleSchedulerServiceTestVersion>1.0.0</muleSchedulerServiceTestVersion>
+    <muleHttpServiceTestVersion>1.0.0</muleHttpServiceTestVersion>
+    <muleOAuthServiceTestVersion>1.0.0</muleOAuthServiceTestVersion>
+    <muleSoapServiceTestVersion>1.0.0</muleSoapServiceTestVersion>
+    <muleExtensionTestSoapTestVersion>1.0.0</muleExtensionTestSoapTestVersion>
 
-    <muleSpringModuleTestVersion>1.0.0-SNAPSHOT</muleSpringModuleTestVersion>
-    <muleValidationModuleTestVersion>1.0.0-SNAPSHOT</muleValidationModuleTestVersion>
-    <muleScriptingModuleTestVersion>1.0.0-SNAPSHOT</muleScriptingModuleTestVersion>
-    <muleFileCommonsTestVersion>1.0.0-SNAPSHOT</muleFileCommonsTestVersion>
+    <muleSpringModuleTestVersion>1.0.0</muleSpringModuleTestVersion>
+    <muleValidationModuleTestVersion>1.0.0</muleValidationModuleTestVersion>
+    <muleScriptingModuleTestVersion>1.0.0</muleScriptingModuleTestVersion>
+    <muleFileCommonsTestVersion>1.0.0</muleFileCommonsTestVersion>
     
-    <muleHttpConnectorTestVersion>1.0.0-SNAPSHOT</muleHttpConnectorTestVersion>
-    <muleObjectStoreConnectorTestVersion>1.0.0-SNAPSHOT</muleObjectStoreConnectorTestVersion>
-    <muleDbConnectorTestVersion>1.0.0-SNAPSHOT</muleDbConnectorTestVersion>
-    <muleFtpConnectorTestVersion>1.0.0-SNAPSHOT</muleFtpConnectorTestVersion>
-    <muleFileConnectorTestVersion>1.0.0-SNAPSHOT</muleFileConnectorTestVersion>
-    <muleJmsConnectorTestVersion>1.0.0-SNAPSHOT</muleJmsConnectorTestVersion>
-    <muleWscConnectorTestVersion>1.0.0-SNAPSHOT</muleWscConnectorTestVersion>
-    <muleOauthModuleTestVersion>1.0.0-SNAPSHOT</muleOauthModuleTestVersion>
-    <muleSocketsConnectorTestVersion>1.0.0-SNAPSHOT</muleSocketsConnectorTestVersion>
+    <muleHttpConnectorTestVersion>1.0.0</muleHttpConnectorTestVersion>
+    <muleObjectStoreConnectorTestVersion>1.0.0</muleObjectStoreConnectorTestVersion>
+    <muleDbConnectorTestVersion>1.0.0</muleDbConnectorTestVersion>
+    <muleFtpConnectorTestVersion>1.0.0</muleFtpConnectorTestVersion>
+    <muleFileConnectorTestVersion>1.0.0</muleFileConnectorTestVersion>
+    <muleJmsConnectorTestVersion>1.0.0</muleJmsConnectorTestVersion>
+    <muleWscConnectorTestVersion>1.0.0</muleWscConnectorTestVersion>
+    <muleOauthModuleTestVersion>1.0.0</muleOauthModuleTestVersion>
+    <muleSocketsConnectorTestVersion>1.0.0</muleSocketsConnectorTestVersion>
 
     <springVersion>4.1.9.RELEASE</springVersion>
     <springSecurityVersion>4.0.4.RELEASE</springSecurityVersion>
