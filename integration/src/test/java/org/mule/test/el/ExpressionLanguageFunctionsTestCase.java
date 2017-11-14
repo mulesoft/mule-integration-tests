@@ -11,6 +11,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.http.HttpStatus.SC_METHOD_NOT_ALLOWED;
 import static org.apache.http.HttpStatus.SC_UNAUTHORIZED;
 import static org.hamcrest.Matchers.both;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
@@ -59,13 +60,13 @@ public class ExpressionLanguageFunctionsTestCase extends AbstractIntegrationTest
   }
 
   @Test
-  public void callsFlow() throws Exception {
+  public void lookupCallsFlow() throws Exception {
     assertThat(flowRunner("staticParams").keepStreamsOpen().run().getMessage(),
                hasPayload(equalTo(API_RESPONSE)));
   }
 
   @Test
-  public void usesJavaTypeRegardlessOfMessageType() throws Exception {
+  public void lookupUsesJavaTypeRegardlessOfMessageType() throws Exception {
     TypedValue result = flowRunner("complex")
         .withPayload("{\"hey\" : \"there\"}")
         .withMediaType(JSON)
@@ -78,7 +79,7 @@ public class ExpressionLanguageFunctionsTestCase extends AbstractIntegrationTest
   }
 
   @Test
-  public void callsFlowThroughExpressions() throws Exception {
+  public void lookupCallsFlowThroughExpressions() throws Exception {
     assertThat(flowRunner("expressionParams")
         .withVariable("flow", "callApi")
         .withPayload(TEST_PAYLOAD)
@@ -89,14 +90,14 @@ public class ExpressionLanguageFunctionsTestCase extends AbstractIntegrationTest
   }
 
   @Test
-  public void resultCanBeManipulated() throws Exception {
+  public void lookupResultCanBeManipulated() throws Exception {
     assertThat(flowRunner("composition").keepStreamsOpen().run().getMessage(),
                hasPayload(equalTo("Ana from BA")));
   }
 
   @Test
   @Description("Verifies that variables, attributes and errors are propagated forward, the established payload used and that the result payload is propagated back including it's type.")
-  public void dataIsPropagatedInBothDirections() throws Exception {
+  public void lookupDataIsPropagatedInBothDirections() throws Exception {
     Map<String, String> payload = new HashMap<>();
     payload.put("key", "value");
 
@@ -111,7 +112,7 @@ public class ExpressionLanguageFunctionsTestCase extends AbstractIntegrationTest
   }
 
   @Test
-  public void callsFlowThatHandlesError() throws Exception {
+  public void lookupCallsFlowThatHandlesError() throws Exception {
     assertThat(flowRunner("expressionParams")
         .withVariable("flow", "failureHandledFlow")
         .withPayload(TEST_PAYLOAD)
@@ -122,7 +123,7 @@ public class ExpressionLanguageFunctionsTestCase extends AbstractIntegrationTest
   }
 
   @Test
-  public void failsWhenCalledFlowThrowsError() throws Exception {
+  public void lookupFailsWhenCalledFlowThrowsError() throws Exception {
     expectedError.expectErrorType("MULE", "EXPRESSION");
     expectedError.expectCause(both(isA(ExpressionRuntimeException.class))
         .and(hasMessage(equalTo(("\"Exception while executing lookup(\"failingFlow\" as String {class: \"java.lang.String\", "
@@ -139,7 +140,7 @@ public class ExpressionLanguageFunctionsTestCase extends AbstractIntegrationTest
   }
 
   @Test
-  public void callsFlowThatHandlesConnectorError() throws Exception {
+  public void lookupCallsFlowThatHandlesConnectorError() throws Exception {
     assertThat(flowRunner("staticParams")
         .withVariable("status", SC_UNAUTHORIZED)
         .keepStreamsOpen()
@@ -149,7 +150,7 @@ public class ExpressionLanguageFunctionsTestCase extends AbstractIntegrationTest
   }
 
   @Test
-  public void failsWhenCalledFlowThrowsConnectorError() throws Exception {
+  public void lookupFailsWhenCalledFlowThrowsConnectorError() throws Exception {
     expectedError.expectErrorType("MULE", "EXPRESSION");
     expectedError.expectCause(both(isA(ExpressionRuntimeException.class))
         .and(hasMessage(equalTo(format("\"Exception while executing lookup(\"callApi\",\"data\") cause: Flow 'callApi' has failed "
@@ -163,7 +164,7 @@ public class ExpressionLanguageFunctionsTestCase extends AbstractIntegrationTest
   }
 
   @Test
-  public void failsWhenFlowDoesNotExist() throws Exception {
+  public void lookupFailsWhenFlowDoesNotExist() throws Exception {
     expectedError.expectErrorType("MULE", "EXPRESSION");
     expectedError.expectCause(both(isA(ExpressionRuntimeException.class))
         .and(hasMessage(equalTo(("\"Exception while executing lookup(\"non-existent\" as String {class: \"java.lang.String\", "
@@ -177,12 +178,7 @@ public class ExpressionLanguageFunctionsTestCase extends AbstractIntegrationTest
   }
 
   @Test
-  public void accessObjectsFromRegistryBinding() throws Exception {
-    flowRunner("registryBindingFlow").run();
-  }
-
-  @Test
-  public void failsWhenReferenceIsNotAFlow() throws Exception {
+  public void lookupFailsWhenReferenceIsNotAFlow() throws Exception {
     expectedError.expectErrorType("MULE", "EXPRESSION");
     expectedError.expectCause(both(isA(ExpressionRuntimeException.class))
         .and(hasMessage(equalTo(("\"Exception while executing lookup(\"request-config\" as String {class: \"java.lang.String\", "
@@ -196,12 +192,48 @@ public class ExpressionLanguageFunctionsTestCase extends AbstractIntegrationTest
   }
 
   @Test
+  public void accessObjectsFromRegistryBinding() throws Exception {
+    flowRunner("registryBindingFlow").run();
+  }
+
+  @Test
   public void checkCompatibleDataTypes() throws Exception {
     DataType compatible1 = DataType.builder().type(Parent.class).mediaType(MediaType.ANY).build();
     DataType compatible2 = DataType.builder().type(Child.class).mediaType(MediaType.APPLICATION_JAVA).build();
     DataType nonCompatible = DataType.STRING;
     flowRunner("checkCompatibleDataTypes").withVariable("compatible1", compatible1).withVariable("compatible2", compatible2)
         .withVariable("nonCompatible", nonCompatible).run().getMessage();
+  }
+
+  @Test
+  public void causedBySameType() throws Exception {
+    assertThat(flowRunner("sameType").run().getMessage(), hasPayload(equalTo("A connection failed.")));
+  }
+
+  @Test
+  public void causedByParentType() throws Exception {
+    assertThat(flowRunner("subType").run().getMessage(), hasPayload(equalTo("A connection failed.")));
+  }
+
+  @Test
+  public void causedByNonExistingType() throws Exception {
+    expectedError.expectErrorType("MULE", "EXPRESSION");
+    expectedError.expectMessage(containsString("Could not find error type 'ZARAZA'"));
+    flowRunner("nonExistentType").run();
+  }
+
+  @Test
+  public void causedByNullType() throws Exception {
+    expectedError.expectErrorType("MULE", "EXPRESSION");
+    expectedError.expectMessage(containsString("identifier cannot be an empty string or null"));
+    flowRunner("nullType").run();
+  }
+
+  @Test
+  public void causedByWithoutError() throws Exception {
+    expectedError.expectErrorType("MULE", "EXPRESSION");
+    expectedError.expectMessage(containsString("There's no error to match against"));
+    flowRunner("noError").run();
   }
 
   private static class Parent {

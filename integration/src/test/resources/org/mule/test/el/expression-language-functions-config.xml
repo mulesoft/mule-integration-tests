@@ -98,4 +98,58 @@
         <test:assert expression="#[app.registry.'_muleContext' != null]"/>
     </flow>
 
+    <flow name="sameType">
+        <raise-error type="CONNECTIVITY"/>
+        <error-handler>
+            <on-error-continue>
+                <flow-ref name="errorHandling"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="subType">
+        <raise-error type="RETRY_EXHAUSTED"/>
+        <error-handler>
+            <on-error-continue>
+                <flow-ref name="errorHandling"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="nonExistentType">
+        <raise-error type="EXPRESSION"/>
+        <error-handler>
+            <on-error-continue>
+                <set-payload value="#['Your statement is ' ++ causedBy('ZARAZA')]"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="nullType">
+        <raise-error type="EXPRESSION"/>
+        <error-handler>
+            <on-error-continue>
+                <set-payload value="#['Your statement is ' ++ causedBy(null)]"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="noError">
+        <set-payload value="#[causedBy('CONNECTIVITY')]"/>
+    </flow>
+
+    <flow name="errorHandling">
+        <choice>
+            <when expression="#[error causedBy 'EXPRESSION']">
+                <set-payload value="An expression failed."/>
+            </when>
+            <when expression="#[causedBy('CONNECTIVITY')]">
+                <set-payload value="A connection failed."/>
+            </when>
+            <otherwise>
+                <set-payload value="Something failed."/>
+            </otherwise>
+        </choice>
+    </flow>
+
 </mule>
