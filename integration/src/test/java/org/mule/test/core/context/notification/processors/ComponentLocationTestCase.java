@@ -6,11 +6,13 @@
  */
 package org.mule.test.core.context.notification.processors;
 
+import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import static org.mule.runtime.api.component.AbstractComponent.LOCATION_KEY;
 import static org.mule.runtime.api.component.ComponentIdentifier.buildFromStringRepresentation;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.FLOW;
@@ -38,6 +40,7 @@ import org.mule.tck.probe.Probe;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 
 import javax.inject.Inject;
@@ -45,7 +48,6 @@ import javax.inject.Named;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
-import org.junit.Ignore;
 import org.junit.Test;
 
 @Feature(CONFIGURATION_COMPONENT_LOCATOR)
@@ -304,28 +306,36 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
     DefaultComponentLocation scatterGatherLocation =
         flowWithSplitterProcessorsLocation.appendLocationPart("0", SCATTER_GATHER, CONFIG_FILE_NAME, of(99));
     assertNextProcessorLocationIs(scatterGatherLocation);
+
     DefaultComponentLocation scatterGatherRoute0 = scatterGatherLocation
         .appendRoutePart()
         .appendLocationPart("0", ROUTE, CONFIG_FILE_NAME, of(100));
-    assertNextProcessorLocationIs(scatterGatherRoute0
-        .appendProcessorsPart()
-        .appendLocationPart("0", LOGGER, CONFIG_FILE_NAME, of(101)));
     DefaultComponentLocation scatterGatherRouter1 = scatterGatherLocation
         .appendRoutePart()
         .appendLocationPart("1", ROUTE, CONFIG_FILE_NAME, of(103));
-    assertNextProcessorLocationIs(scatterGatherRouter1
-        .appendProcessorsPart()
-        .appendLocationPart("0", VALIDATION_IS_TRUE, CONFIG_FILE_NAME, of(104)));
-    DefaultComponentLocation scatterGatherRouter2 = scatterGatherLocation.appendRoutePart()
+    DefaultComponentLocation scatterGatherRouter2 = scatterGatherLocation
+        .appendRoutePart()
         .appendLocationPart("2", ROUTE, CONFIG_FILE_NAME, of(106));
-    assertNextProcessorLocationIs(scatterGatherRouter2
-        .appendProcessorsPart()
-        .appendLocationPart("0", VALIDATION_IS_FALSE, CONFIG_FILE_NAME, of(107)));
+
+    List<DefaultComponentLocation> nextLocations = asList(
+                                                          scatterGatherRoute0
+                                                              .appendProcessorsPart()
+                                                              .appendLocationPart("0", LOGGER, CONFIG_FILE_NAME,
+                                                                                  of(101)),
+                                                          scatterGatherRouter1
+                                                              .appendProcessorsPart()
+                                                              .appendLocationPart("0", VALIDATION_IS_TRUE, CONFIG_FILE_NAME,
+                                                                                  of(104)),
+                                                          scatterGatherRouter2
+                                                              .appendProcessorsPart()
+                                                              .appendLocationPart("0", VALIDATION_IS_FALSE, CONFIG_FILE_NAME,
+                                                                                  of(107)));
+
+    assertNextProcessorLocationsAre(nextLocations);
     assertNoNextProcessorNotification();
   }
 
   @Test
-  @Ignore("MULE-13456")
   public void flowWithAsync() throws Exception {
     flowRunner("flowWithAsync").run();
     waitUntilNotificationsArrived(3);
@@ -385,9 +395,29 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
     assertThat(processorNotificationStore.getNotifications().isEmpty(), is(false));
     MessageProcessorNotification processorNotification =
         processorNotificationStore.getNotifications().get(0);
-    processorNotificationStore.getNotifications().remove(0);
     assertThat(processorNotification.getComponent().getLocation().getLocation(), is(componentLocation.getLocation()));
     assertThat(processorNotification.getComponent().getLocation(), is(componentLocation));
+    processorNotificationStore.getNotifications().remove(0);
+  }
+
+  //Check in any order
+  private void assertNextProcessorLocationsAre(List<DefaultComponentLocation> componentLocations) {
+    StringBuilder errors = new StringBuilder();
+    for (int i = 0; i < componentLocations.size(); i++) {
+      for (DefaultComponentLocation componentLocation : componentLocations) {
+        try {
+          assertNextProcessorLocationIs(componentLocation);
+          errors = new StringBuilder();
+          break;
+        } catch (AssertionError e) {
+          errors.append(e.getMessage());
+        }
+      }
+      String errorString = errors.toString();
+      if (!errorString.isEmpty()) {
+        fail(format("Not every componentLocation was found in the notification list. %s", errorString));
+      }
+    }
   }
 
   private ProcessorNotificationStore getNotificationsStore() {
