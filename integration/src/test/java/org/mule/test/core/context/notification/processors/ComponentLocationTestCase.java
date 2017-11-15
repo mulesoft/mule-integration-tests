@@ -35,9 +35,12 @@ import org.mule.runtime.api.notification.MessageProcessorNotification;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.dsl.api.component.config.DefaultComponentLocation;
 import org.mule.runtime.dsl.api.component.config.DefaultComponentLocation.DefaultLocationPart;
+import org.mule.tck.junit4.FlakinessDetectorTestRunner;
+import org.mule.tck.junit4.FlakyTest;
 import org.mule.tck.probe.PollingProber;
 import org.mule.tck.probe.Probe;
 import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.test.runner.RunnerDelegateTo;
 
 import java.util.Iterator;
 import java.util.List;
@@ -170,6 +173,11 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
   @Override
   protected String getConfigFile() {
     return CONFIG_FILE_NAME.get();
+  }
+
+  @Override
+  protected boolean isGracefulShutdown() {
+    return true;
   }
 
   @Test
