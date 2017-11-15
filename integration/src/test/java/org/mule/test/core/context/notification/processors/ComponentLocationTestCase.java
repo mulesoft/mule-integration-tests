@@ -35,12 +35,9 @@ import org.mule.runtime.api.notification.MessageProcessorNotification;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.dsl.api.component.config.DefaultComponentLocation;
 import org.mule.runtime.dsl.api.component.config.DefaultComponentLocation.DefaultLocationPart;
-import org.mule.tck.junit4.FlakinessDetectorTestRunner;
-import org.mule.tck.junit4.FlakyTest;
 import org.mule.tck.probe.PollingProber;
 import org.mule.tck.probe.Probe;
 import org.mule.test.AbstractIntegrationTestCase;
-import org.mule.test.runner.RunnerDelegateTo;
 
 import java.util.Iterator;
 import java.util.List;
@@ -55,8 +52,6 @@ import org.junit.Test;
 
 @Feature(CONFIGURATION_COMPONENT_LOCATOR)
 @Story(COMPONENT_LOCATION)
-@RunnerDelegateTo(FlakinessDetectorTestRunner.class)
-@FlakyTest
 public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
 
   private static final Optional<TypedComponentIdentifier> FLOW_TYPED_COMPONENT_IDENTIFIER =
