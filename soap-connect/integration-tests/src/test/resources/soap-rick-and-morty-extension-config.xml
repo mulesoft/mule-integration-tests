@@ -24,7 +24,7 @@
     <ram:config name="http-default">
          <ram:rick-and-morty-connection wsdlUrl="${serviceAddress}?wsdl" service="CableService" port="CablePort">
              <ram:transport>
-                 <ram:default-http-message-dispatcher-provider />
+                 <ram:test-http-message-dispatcher-provider />
              </ram:transport>
          </ram:rick-and-morty-connection>
     </ram:config>
@@ -41,9 +41,4 @@
         <object-to-string-transformer/>
     </flow>
 
-    <flow name="withDefaultHttp">
-        <ram:invoke config-ref="http-default" service="ram" operation="getChannels"/>
-        <set-payload value="#[payload.body]"/>
-        <object-to-string-transformer/>
-    </flow>
 </mule>
