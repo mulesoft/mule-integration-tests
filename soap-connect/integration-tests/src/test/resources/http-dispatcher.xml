@@ -10,7 +10,7 @@
     <soap:config name="config-http">
         <soap:test-connection url="${address}?wsdl" service="TestService" port="TestPort">
             <soap:transport>
-                <soap:default-http-message-dispatcher-provider/>
+                <soap:test-http-dispatcher-provider/>
             </soap:transport>
         </soap:test-connection>
     </soap:config>
@@ -20,7 +20,7 @@
     <soap:config name="default-http">
         <soap:test-connection url="${address}?wsdl" service="TestService" port="TestPort">
             <soap:transport>
-                <soap:default-http-message-dispatcher-provider requesterConfig="httpConfig"/>
+                <soap:test-http-dispatcher-provider requesterConfig="httpConfig"/>
             </soap:transport>
         </soap:test-connection>
     </soap:config>

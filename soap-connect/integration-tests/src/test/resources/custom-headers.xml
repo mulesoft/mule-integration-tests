@@ -8,7 +8,7 @@
     <soap:config name="config">
         <soap:custom-headers-connection url="${address}?wsdl" service="TestService" port="TestPort">
             <soap:transport>
-                <soap:default-http-message-dispatcher-provider/>
+                <soap:test-http-dispatcher-provider/>
             </soap:transport>
         </soap:custom-headers-connection>
     </soap:config>
