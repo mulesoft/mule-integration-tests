@@ -59,15 +59,4 @@ public class InvokeSoapCustomTransportTestCase extends MuleArtifactFunctionalTes
     String response = "<con:ram xmlns:con=\"http://ram.test.mule.org\"><text>CUSTOM RESPONSE</text></con:ram>";
     assertSimilarXml(response, (String) message.getPayload().getValue());
   }
-
-  @Test
-  public void withDefaultHttp() throws Exception {
-    Message message = flowRunner("withDefaultHttp").keepStreamsOpen().run().getMessage();
-    String response = "<ns2:getChannelsResponse xmlns:ns2=\"http://services.connect.soap.it.mule.org/\">\n"
-        + "   <channel>Two Brothers</channel>\n"
-        + "   <channel>Fake Doors</channel>\n"
-        + "   <channel>The Adventures of Stealy</channel>\n"
-        + "</ns2:getChannelsResponse>";
-    assertSimilarXml(response, (String) message.getPayload().getValue());
-  }
 }
