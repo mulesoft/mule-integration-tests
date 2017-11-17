@@ -172,11 +172,6 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
     return CONFIG_FILE_NAME.get();
   }
 
-  @Override
-  protected boolean isGracefulShutdown() {
-    return true;
-  }
-
   @Test
   public void flowWithSingleMp() throws Exception {
     flowRunner("flowWithSingleMp").run();

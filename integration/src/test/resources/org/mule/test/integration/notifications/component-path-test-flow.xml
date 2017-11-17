@@ -8,7 +8,7 @@
                http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
                http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
 
-    <configuration defaultErrorHandler-ref="defaultErrorHandler" shutdownTimeout="5000"/>
+    <configuration defaultErrorHandler-ref="defaultErrorHandler"/>
 
 
 
