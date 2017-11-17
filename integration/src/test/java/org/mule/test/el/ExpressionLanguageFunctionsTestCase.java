@@ -126,13 +126,7 @@ public class ExpressionLanguageFunctionsTestCase extends AbstractIntegrationTest
   public void lookupFailsWhenCalledFlowThrowsError() throws Exception {
     expectedError.expectErrorType("MULE", "EXPRESSION");
     expectedError.expectCause(both(isA(ExpressionRuntimeException.class))
-        .and(hasMessage(equalTo(("\"Exception while executing lookup(\"failingFlow\" as String {class: \"java.lang.String\", "
-            + "encoding: \"UTF-8\", mimeType: \"*/*\"},\"test\" as String {class: \"java.lang.String\", encoding: \"UTF-8\", "
-            + "mimeType: \"*/*\"}) cause: Flow 'failingFlow' has failed with error 'MULE:UNKNOWN' (Functional Test Service Exception) \n"
-            + "\n"
-            + "Trace:\n"
-            + "  at 'lookup' in (anonymous:1:1)\n"
-            + "  at 'main'   in (anonymous:1:1)\" evaluating expression: \"lookup(vars.flow, payload)\".")))));
+        .and(hasMessage(containsString(("Flow 'failingFlow' has failed with error 'MULE:UNKNOWN' (Functional Test Service Exception)")))));
     flowRunner("expressionParams")
         .withVariable("flow", "failingFlow")
         .withPayload(TEST_PAYLOAD)
@@ -167,13 +161,7 @@ public class ExpressionLanguageFunctionsTestCase extends AbstractIntegrationTest
   public void lookupFailsWhenFlowDoesNotExist() throws Exception {
     expectedError.expectErrorType("MULE", "EXPRESSION");
     expectedError.expectCause(both(isA(ExpressionRuntimeException.class))
-        .and(hasMessage(equalTo(("\"Exception while executing lookup(\"non-existent\" as String {class: \"java.lang.String\", "
-            + "encoding: \"UTF-8\", mimeType: \"*/*\"},\"test\" as String {class: \"java.lang.String\", encoding: \"UTF-8\", "
-            + "mimeType: \"*/*\"}) cause: There is no component named 'non-existent'. \n"
-            + "\n"
-            + "Trace:\n"
-            + "  at 'lookup' in (anonymous:1:1)\n"
-            + "  at 'main'   in (anonymous:1:1)\" evaluating expression: \"lookup(vars.flow, payload)\".")))));
+        .and(hasMessage(containsString(("There is no component named 'non-existent'.")))));
     flowRunner("expressionParams").withVariable("flow", "non-existent").withPayload(TEST_PAYLOAD).run();
   }
 
@@ -181,13 +169,7 @@ public class ExpressionLanguageFunctionsTestCase extends AbstractIntegrationTest
   public void lookupFailsWhenReferenceIsNotAFlow() throws Exception {
     expectedError.expectErrorType("MULE", "EXPRESSION");
     expectedError.expectCause(both(isA(ExpressionRuntimeException.class))
-        .and(hasMessage(equalTo(("\"Exception while executing lookup(\"request-config\" as String {class: \"java.lang.String\", "
-            + "encoding: \"UTF-8\", mimeType: \"*/*\"},\"test\" as String {class: \"java.lang.String\", encoding: \"UTF-8\", "
-            + "mimeType: \"*/*\"}) cause: Component 'request-config' is not a flow. \n"
-            + "\n"
-            + "Trace:\n"
-            + "  at 'lookup' in (anonymous:1:1)\n"
-            + "  at 'main'   in (anonymous:1:1)\" evaluating expression: \"lookup(vars.flow, payload)\".")))));
+        .and(hasMessage(containsString(("Component 'request-config' is not a flow.")))));
     flowRunner("expressionParams").withVariable("flow", "request-config").withPayload(TEST_PAYLOAD).run();
   }
 
