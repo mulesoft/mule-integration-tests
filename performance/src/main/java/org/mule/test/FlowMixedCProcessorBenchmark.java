@@ -6,6 +6,8 @@
  */
 package org.mule.test;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+
 import org.mule.runtime.core.api.processor.Processor;
 
 import java.util.ArrayList;
@@ -14,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.openjdk.jmh.annotations.OutputTimeUnit;
 
-@OutputTimeUnit(TimeUnit.MILLISECONDS)
+@OutputTimeUnit(MILLISECONDS)
 public class FlowMixedCProcessorBenchmark extends AbstractFlowBenchmark {
 
   @Override

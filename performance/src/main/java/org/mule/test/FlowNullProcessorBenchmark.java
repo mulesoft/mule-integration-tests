@@ -7,7 +7,6 @@
 package org.mule.test;
 
 import static java.util.Collections.singletonList;
-import static org.mule.runtime.core.api.event.EventContextFactory.create;
 
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.core.api.event.CoreEvent;

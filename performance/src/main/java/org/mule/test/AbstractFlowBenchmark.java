@@ -14,6 +14,7 @@ import static org.mule.runtime.core.api.event.EventContextFactory.create;
 import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.stopIfNeeded;
 import static org.mule.runtime.core.privileged.registry.LegacyRegistryUtils.lookupObject;
 import static org.mule.runtime.core.privileged.registry.LegacyRegistryUtils.registerObject;
+import static org.openjdk.jmh.annotations.Scope.Benchmark;
 import static org.openjdk.jmh.infra.Blackhole.consumeCPU;
 
 import org.mule.AbstractBenchmark;
@@ -51,7 +52,7 @@ import org.openjdk.jmh.annotations.TearDown;
 import org.openjdk.jmh.annotations.Warmup;
 import reactor.core.publisher.Mono;
 
-@State(Scope.Benchmark)
+@State(Benchmark)
 @Warmup(iterations = 10)
 @Measurement(iterations = 10)
 public abstract class AbstractFlowBenchmark extends AbstractBenchmark {
