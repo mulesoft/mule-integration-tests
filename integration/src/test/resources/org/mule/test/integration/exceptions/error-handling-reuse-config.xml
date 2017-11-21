@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+
+    <object name="throw-exception" class="org.mule.test.integration.exceptions.ThrowExceptionProcessor"/>
+
+    <error-handler name="sharedErrorHandler">
+        <on-error-continue type="TRANSFORMATION">
+            <append-string-transformer message=" transformation"/>
+        </on-error-continue>
+        <on-error ref="sharedExpressionErrorHandler"/>
+        <on-error-continue type="CONNECTIVITY">
+            <append-string-transformer message=" connectivity"/>
+        </on-error-continue>
+        <on-error-continue type="ROUTING">
+            <append-string-transformer message=" routing"/>
+        </on-error-continue>
+        <on-error-continue type="SECURITY">
+            <append-string-transformer message=" security"/>
+        </on-error-continue>
+        <on-error ref="sharedDefaultHandler"/>
+    </error-handler>
+
+    <on-error-propagate name="sharedDefaultHandler">
+        <append-string-transformer message=" any shared"/>
+    </on-error-propagate>
+
+    <on-error-continue type="EXPRESSION" name="sharedExpressionErrorHandler">
+        <append-string-transformer message=" expression"/>
+    </on-error-continue>
+
+    <flow name="withSharedHandler">
+        <processor ref="throw-exception"/>
+        <error-handler ref="sharedErrorHandler"/>
+    </flow>
+
+    <flow name="withSharedHandlersInline">
+        <processor ref="throw-exception"/>
+        <error-handler>
+            <on-error ref="sharedExpressionErrorHandler"/>
+            <on-error-continue type="ROUTING">
+                <append-string-transformer message=" routing"/>
+            </on-error-continue>
+            <on-error-propagate>
+                <append-string-transformer message=" any"/>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+
+    <flow name="withTryAndSharedHandler">
+        <append-string-transformer message=" hey"/>
+        <try>
+            <processor ref="throw-exception"/>
+            <error-handler ref="sharedErrorHandler"/>
+        </try>
+    </flow>
+
+    <flow name="withTryAndSharedHandlersInline">
+        <append-string-transformer message=" hey"/>
+        <try>
+            <processor ref="throw-exception"/>
+            <error-handler>
+                <on-error ref="sharedExpressionErrorHandler"/>
+                <on-error-continue type="ROUTING">
+                    <append-string-transformer message=" routing"/>
+                </on-error-continue>
+                <on-error-propagate>
+                    <append-string-transformer message=" any"/>
+                </on-error-propagate>
+            </error-handler>
+        </try>
+    </flow>
+
+</mule>
