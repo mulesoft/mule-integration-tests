@@ -18,7 +18,6 @@ import org.mule.runtime.http.api.domain.message.response.HttpResponse;
 import org.mule.service.http.TestHttpClient;
 import org.mule.tck.junit4.rule.SystemProperty;
 
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -35,13 +34,11 @@ public class ExpiredShutdownTimeoutRequestResponseTestCase extends AbstractShutd
     return "shutdown-timeout-request-response-config.xml";
   }
 
-  @Ignore("MULE-13600")
   @Test
   public void testScriptComponent() throws Exception {
     doShutDownTest("http://localhost:" + httpPort.getNumber() + "/scriptComponent");
   }
 
-  @Ignore("MULE-13600")
   @Test
   public void testExpressionTransformer() throws Exception {
     doShutDownTest("http://localhost:" + httpPort.getNumber() + "/expressionTransformer");
