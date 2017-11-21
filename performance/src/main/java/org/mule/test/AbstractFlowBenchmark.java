@@ -8,6 +8,7 @@ package org.mule.test;
 
 import static java.lang.Class.forName;
 import static java.lang.Thread.sleep;
+import static java.lang.reflect.Proxy.newProxyInstance;
 import static org.mule.runtime.api.message.Message.of;
 import static org.mule.runtime.core.api.construct.Flow.builder;
 import static org.mule.runtime.core.api.event.EventContextFactory.create;
@@ -38,6 +39,8 @@ import org.mule.service.scheduler.internal.DefaultSchedulerService;
 import org.mule.tck.TriggerableMessageSource;
 import org.mule.weave.v2.el.WeaveDefaultExpressionLanguageFactoryService;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -45,7 +48,6 @@ import java.util.concurrent.CountDownLatch;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Measurement;
 import org.openjdk.jmh.annotations.Param;
-import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.TearDown;
@@ -133,7 +135,9 @@ public abstract class AbstractFlowBenchmark extends AbstractBenchmark {
       protected void doConfigure(MuleContext muleContext) throws Exception {
         DefaultSchedulerService schedulerService = new DefaultSchedulerService();
         schedulerService.start();
-        registerObject(muleContext, schedulerService.getName(), schedulerService);
+        registerObject(muleContext, schedulerService.getName(),
+                       newProxyInstance(getClass().getClassLoader(), new Class[] {SchedulerService.class},
+                                        new PassThroughInvocationHandler(schedulerService)));
         DefaultExpressionLanguageFactoryService weaveExpressionExecutor = new WeaveDefaultExpressionLanguageFactoryService();
         registerObject(muleContext, weaveExpressionExecutor.getName(), weaveExpressionExecutor);
       }
@@ -190,6 +194,20 @@ public abstract class AbstractFlowBenchmark extends AbstractBenchmark {
     }
     latch.await();
     return latch;
+  }
+
+  private static class PassThroughInvocationHandler implements InvocationHandler {
+
+    private final Object target;
+
+    public PassThroughInvocationHandler(Object target) {
+      this.target = target;
+    }
+
+    @Override
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+      return method.invoke(target, args);
+    }
   }
 
 }
