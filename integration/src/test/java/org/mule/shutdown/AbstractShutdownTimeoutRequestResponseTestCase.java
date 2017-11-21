@@ -6,9 +6,6 @@
  */
 package org.mule.shutdown;
 
-import org.mule.runtime.api.component.Component;
-import org.mule.runtime.api.component.location.ComponentLocation;
-import org.mule.runtime.api.component.location.Location;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.runtime.api.exception.DefaultMuleException;
 import org.mule.runtime.core.api.event.CoreEvent;
@@ -16,10 +13,6 @@ import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.api.util.concurrent.Latch;
 import org.mule.tck.junit4.rule.DynamicPort;
-
-import java.util.Map;
-
-import javax.xml.namespace.QName;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -37,7 +30,7 @@ public abstract class AbstractShutdownTimeoutRequestResponseTestCase extends Abs
     waitLatch = new Latch();
   }
 
-  private static class BlockMessageProcessor implements Processor, Component {
+  private static class BlockMessageProcessor implements Processor {
 
     @Override
     public CoreEvent process(CoreEvent event) throws MuleException {
@@ -51,31 +44,6 @@ public abstract class AbstractShutdownTimeoutRequestResponseTestCase extends Abs
       }
 
       return event;
-    }
-
-    @Override
-    public Object getAnnotation(QName name) {
-      return null;
-    }
-
-    @Override
-    public Map<QName, Object> getAnnotations() {
-      return null;
-    }
-
-    @Override
-    public void setAnnotations(Map<QName, Object> annotations) {
-
-    }
-
-    @Override
-    public ComponentLocation getLocation() {
-      return null;
-    }
-
-    @Override
-    public Location getRootContainerLocation() {
-      return null;
     }
   }
 }
