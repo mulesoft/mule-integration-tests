@@ -12,8 +12,12 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
+import org.mule.runtime.api.config.custom.ServiceConfigurator;
 import org.mule.runtime.api.notification.ConnectorMessageNotification;
 import org.mule.runtime.api.notification.ConnectorMessageNotificationListener;
+import org.mule.runtime.core.api.MuleContext;
+import org.mule.runtime.core.api.config.ConfigurationBuilder;
+import org.mule.runtime.core.api.config.ConfigurationException;
 import org.mule.tck.probe.JUnitLambdaProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.tck.probe.Prober;
@@ -27,16 +31,32 @@ import java.util.List;
 public class PollScheduleNotificationTestCase extends AbstractSchedulerTestCase {
 
   private Prober prober = new PollingProber(RECEIVE_TIMEOUT, 100l);
+  private MyListener listener = new MyListener();
 
   @Override
   protected String getConfigFile() {
     return "org/mule/test/integration/schedule/poll-notifications-config.xml";
   }
 
+  @Override
+  protected void addBuilders(List<ConfigurationBuilder> builders) {
+    builders.add(new ConfigurationBuilder() {
+
+      @Override
+      public void configure(MuleContext muleContext) throws ConfigurationException {
+        muleContext.getNotificationManager().addListener(listener);
+      }
+
+      @Override
+      public void addServiceConfigurator(ServiceConfigurator serviceConfigurator) {
+        // Nothing to do
+      }
+    });
+  }
+
+
   @Test
   public void validateNotificationsAreSent() throws Exception {
-    final MyListener listener = new MyListener();
-    muleContext.getNotificationManager().addListener(listener);
     prober.check(new JUnitLambdaProbe(() -> {
       assertThat(listener.getNotifications(), hasSize(greaterThan(1)));
       assertThat(listener.getNotifications().get(0).getLocationUri(), is("pollfoo/scheduler"));
