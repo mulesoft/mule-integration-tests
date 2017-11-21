@@ -47,7 +47,10 @@
         </dynamic-config-expiration>
     </configuration>
     <configuration-properties file="Attribute" name="globalconfigurationProperties"/>
-    <error-handler name="globalerrorHandler">
+    <error-handler name="globalerrorHandler" ref="Attribute">
+        <on-error ref="Attribute">
+            <logger/>
+        </on-error>
         <on-error-continue enableNotifications="true" logException="true" type="Attribute" when="Attribute">
             <logger/>
         </on-error-continue>

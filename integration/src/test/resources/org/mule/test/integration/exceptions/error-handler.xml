@@ -7,7 +7,7 @@
        http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
        http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
 
-    <object name="throw-exception" class="org.mule.test.integration.exceptions.ErrorHandlerTestCase$ThrowExceptionProcessor"/>
+    <object name="throw-exception" class="org.mule.test.integration.exceptions.ThrowExceptionProcessor"/>
     <object name="throw-error" class="org.mule.test.integration.exceptions.ErrorHandlerTestCase$ThrowErrorProcessor"/>
 
     <flow name="matchesHandlerUsingWhen">

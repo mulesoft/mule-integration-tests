@@ -85,12 +85,27 @@ public class ErrorHandlingConfigurationFailuresTestCase extends AbstractMuleTest
     loadConfiguration("org/mule/test/integration/exceptions/exception-strategy-in-choice-without-expression.xml");
   }
 
+  @Test
+  public void onErrorReferenceMustHaveTypeOrExpression() throws Exception {
+    expectedException.expect(ConfigurationException.class);
+    expectedException
+        .expectMessage(containsString("Every handler (except for the last one) within an 'error-handler' must specify a 'when' or 'type' attribute."));
+    loadConfiguration("org/mule/test/integration/exceptions/on-error-ref-without-matcher-config.xml");
+  }
+
   // TODO MULE-10061 - Review once the MuleContext lifecycle is clearly defined
   @Test
-  public void defaultExceptionStrategyReferencesNonExistentExceptionStrategy() throws Exception {
+  public void defaultErrorHandlerReferencesNonExistentErrorHandler() throws Exception {
     expectedException.expect(InitialisationException.class);
     expectedException.expectMessage(containsString("No global error handler defined with name 'nonExistentEh'."));
     loadConfiguration("org/mule/test/integration/exceptions/default-error-handler-reference-non-existent-es.xml");
+  }
+
+  @Test
+  public void errorHandlerReferenceAndDefinitionNotAllowed() throws Exception {
+    expectedException.expect(ConfigurationException.class);
+    expectedException.expectMessage(containsString("A reference error-handler cannot have on-errors."));
+    loadConfiguration("org/mule/test/integration/exceptions/error-handler-reference-and-definition-config.xml");
   }
 
   @Test

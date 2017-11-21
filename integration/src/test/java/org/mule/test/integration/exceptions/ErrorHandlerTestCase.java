@@ -15,7 +15,6 @@ import static org.mule.functional.api.component.FunctionalTestProcessor.getFromF
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
-
 import org.mule.runtime.api.component.Component;
 import org.mule.runtime.api.exception.DefaultMuleException;
 import org.mule.runtime.api.exception.MuleException;
@@ -32,15 +31,14 @@ import org.mule.runtime.core.api.transformer.Transformer;
 import org.mule.runtime.core.api.transformer.TransformerException;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import org.hamcrest.Matchers;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-
 import java.sql.SQLDataException;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
+import org.hamcrest.Matchers;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 @Feature(ERROR_HANDLING)
 @Story("Error Handler")
@@ -219,21 +217,6 @@ public class ErrorHandlerTestCase extends AbstractIntegrationTestCase {
     public GenericMuleException(I18nMessage message, Throwable cause) {
       super(message, cause);
     }
-  }
-
-  public static class ThrowExceptionProcessor implements Processor {
-
-    @Override
-    public CoreEvent process(CoreEvent event) throws MuleException {
-      Throwable exception = (Throwable) event.getVariables().get("exception").getValue();
-      if (exception instanceof MuleException) {
-        throw (MuleException) exception;
-      } else if (exception instanceof RuntimeException) {
-        throw (RuntimeException) exception;
-      }
-      return event;
-    }
-
   }
 
   public static class ThrowErrorProcessor implements Processor {
