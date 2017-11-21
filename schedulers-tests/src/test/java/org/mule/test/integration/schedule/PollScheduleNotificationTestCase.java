@@ -41,6 +41,7 @@ public class PollScheduleNotificationTestCase extends AbstractSchedulerTestCase 
   @Override
   protected void addBuilders(List<ConfigurationBuilder> builders) {
     builders.add(new ConfigurationBuilder() {
+
       @Override
       public void configure(MuleContext muleContext) throws ConfigurationException {
         muleContext.getNotificationManager().addListener(listener);
