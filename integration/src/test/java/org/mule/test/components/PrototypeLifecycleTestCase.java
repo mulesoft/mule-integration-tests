@@ -7,28 +7,22 @@
 package org.mule.test.components;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.sameInstance;
-import static org.hamcrest.core.IsNot.not;
+
 import org.mule.runtime.api.component.AbstractComponent;
-import org.mule.runtime.api.component.Component;
-import org.mule.runtime.api.component.execution.ExecutableComponent;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.lifecycle.Initialisable;
 import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.api.lifecycle.Startable;
-import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import java.util.Collection;
+import org.junit.Test;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import org.junit.Test;
 
 public class PrototypeLifecycleTestCase extends AbstractIntegrationTestCase {
 
@@ -47,29 +41,6 @@ public class PrototypeLifecycleTestCase extends AbstractIntegrationTestCase {
 
     assertThat(trackers.size(), is(1));
     assertCountersAreAllOne();
-
-
-    //Ask for the flow in the registry and check that the tracker is different and no one was applied the lifecycle twice
-    Object subFlow = registry.lookupByName("subFlow").get();
-
-    assertThat(trackers.size(), is(2)); //There should be 2 different trackers
-    assertCountersAreAllOne();
-
-    //Do the same asking for the object in the registry with a different method
-    Collection components = registry.lookupAllByType(ExecutableComponent.class);
-    Component subFlow2 = (Component) components.stream().filter(component -> !(component instanceof Flow)).findFirst().get();
-
-    //Check that both subFlows are of the same type
-    assertThat(subFlow, is(instanceOf(subFlow2.getClass())));
-    assertThat(subFlow2, is(instanceOf(subFlow.getClass())));
-
-    //Check that subflow found is different from the previous one
-    assertThat(subFlow, is(not(sameInstance(subFlow2))));
-
-    //Check that no subflow was applied a lifecycle phase more than once.
-    assertThat(trackers.size(), is(3));
-    assertCountersAreAllOne();
-
   }
 
   private void assertCountersAreAllOne() {
