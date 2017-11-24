@@ -24,13 +24,13 @@ import static org.mule.test.allure.AllureConstants.SchedulerServiceFeature.SCHED
 
 import org.mule.functional.api.component.SkeletonSource;
 import org.mule.functional.api.exception.ExpectedError;
+import org.mule.runtime.api.exception.FlowOverloadException;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.lifecycle.Disposable;
 import org.mule.runtime.api.lifecycle.Initialisable;
 import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.api.scheduler.Scheduler;
-import org.mule.runtime.api.scheduler.SchedulerBusyException;
 import org.mule.runtime.api.scheduler.SchedulerService;
 import org.mule.runtime.api.util.concurrent.Latch;
 import org.mule.runtime.core.api.MuleContext;
@@ -42,9 +42,6 @@ import org.mule.runtime.core.api.exception.NullExceptionHandler;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import org.junit.Rule;
-import org.junit.Test;
-
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -52,6 +49,8 @@ import javax.inject.Inject;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
+import org.junit.Rule;
+import org.junit.Test;
 
 @Feature(SCHEDULER_SERVICE)
 public class SchedulerServiceTestCase extends AbstractIntegrationTestCase {
@@ -139,8 +138,8 @@ public class SchedulerServiceTestCase extends AbstractIntegrationTestCase {
   @Test
   @Description("Tests that the exception that happens when a thread pool is full is properly handled.")
   public void overloadErrorHandling() throws Exception {
-    expectedError.expectErrorType(any(String.class), is("OVERLOAD"));
-    expectedError.expectCause(instanceOf(SchedulerBusyException.class));
+    expectedError.expectErrorType(any(String.class), is("FLOW_OVERLOAD"));
+    expectedError.expectCause(instanceOf(FlowOverloadException.class));
 
     flowRunner("delaySchedule").run();
   }
@@ -152,8 +151,8 @@ public class SchedulerServiceTestCase extends AbstractIntegrationTestCase {
     SkeletonSource messageSource =
         (SkeletonSource) locator.find(builderFromStringRepresentation("delaySchedule/source").build()).get();
 
-    expectedError.expectErrorType("MULE", "OVERLOAD");
-    expectedError.expectCause(instanceOf(SchedulerBusyException.class));
+    expectedError.expectErrorType("MULE", "FLOW_OVERLOAD");
+    expectedError.expectCause(instanceOf(FlowOverloadException.class));
 
     messageSource.getListener()
         .process(CoreEvent
