@@ -46,6 +46,8 @@
     <muleOauthModuleTestVersion>1.1.0-SNAPSHOT</muleOauthModuleTestVersion>
     <muleSocketsConnectorTestVersion>1.1.0-SNAPSHOT</muleSocketsConnectorTestVersion>
 
+    <apacheHttpCoreVersion>4.4.6</apacheHttpCoreVersion>
+    <apacheHttpClientVersion>4.5.3</apacheHttpClientVersion>
     <springVersion>4.1.9.RELEASE</springVersion>
     <springSecurityVersion>4.0.4.RELEASE</springSecurityVersion>
   </properties>
