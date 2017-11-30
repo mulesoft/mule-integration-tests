@@ -15,18 +15,20 @@ import static org.mule.runtime.api.store.ObjectStoreManager.BASE_PERSISTENT_OBJE
 import static org.mule.runtime.module.extension.api.util.MuleExtensionUtils.getInitialiserEvent;
 import static org.mule.tck.probe.PollingProber.check;
 import static org.mule.test.module.extension.internal.util.ExtensionsTestUtils.getConfigurationFromRegistry;
+
 import org.mule.runtime.api.store.ObjectStore;
 import org.mule.runtime.core.api.event.CoreEvent;
+import org.mule.runtime.core.privileged.event.BaseEventContext;
 import org.mule.runtime.extension.api.connectivity.oauth.AuthCodeRequest;
 import org.mule.runtime.extension.api.connectivity.oauth.AuthorizationCodeState;
 import org.mule.test.oauth.TestOAuthConnection;
 import org.mule.test.oauth.TestOAuthConnectionState;
 import org.mule.test.oauth.TestOAuthExtension;
 
-import com.github.tomakehurst.wiremock.client.WireMock;
-
 import org.junit.Before;
 import org.junit.Test;
+
+import com.github.tomakehurst.wiremock.client.WireMock;
 
 public class OAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
 
@@ -75,18 +77,26 @@ public class OAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
     authorizeAndStartDancingBaby();
     receiveAccessTokenAndUserConnection();
 
-    TestOAuthExtension config = getConfigurationFromRegistry("oauth", CoreEvent.builder(getInitialiserEvent())
-        .addVariable(OWNER_ID_VARIABLE_NAME, CUSTOM_OWNER_ID)
-        .build(), muleContext);
+    CoreEvent initialiserEvent = null;
+    try {
+      initialiserEvent = getInitialiserEvent(muleContext);
+      TestOAuthExtension config = getConfigurationFromRegistry("oauth", CoreEvent.builder(initialiserEvent)
+          .addVariable(OWNER_ID_VARIABLE_NAME, CUSTOM_OWNER_ID)
+          .build(), muleContext);
 
-    check(REQUEST_TIMEOUT, 500, () -> {
-      assertThat(config.getCapturedAuthCodeRequests(), hasSize(1));
-      assertThat(config.getCapturedAuthCodeStates(), hasSize(1));
-      return true;
-    });
+      check(REQUEST_TIMEOUT, 500, () -> {
+        assertThat(config.getCapturedAuthCodeRequests(), hasSize(1));
+        assertThat(config.getCapturedAuthCodeStates(), hasSize(1));
+        return true;
+      });
 
-    assertBeforeCallbackPayload(config);
-    assertAfterCallbackPayload(config);
+      assertBeforeCallbackPayload(config);
+      assertAfterCallbackPayload(config);
+    } finally {
+      if (initialiserEvent != null) {
+        ((BaseEventContext) initialiserEvent.getContext()).success();
+      }
+    }
   }
 
   @Test

@@ -14,10 +14,14 @@ import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertThat;
 
 import org.mule.functional.api.component.EventCallback;
+import org.mule.runtime.api.component.location.Location;
+import org.mule.runtime.api.exception.MuleException;
+import org.mule.runtime.api.source.SchedulerMessageSource;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.test.AbstractSchedulerTestCase;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -44,6 +48,11 @@ public class SynchronousSchedulerTestCase extends AbstractSchedulerTestCase {
   @Override
   protected String getConfigFile() {
     return "cron-synchronous-scheduler-config.xml";
+  }
+
+  @After
+  public void after() throws MuleException {
+    ((SchedulerMessageSource) locator.find(Location.builder().globalName("pollfoo").addSourcePart().build()).get()).stop();
   }
 
   @Test
