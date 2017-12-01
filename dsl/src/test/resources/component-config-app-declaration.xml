@@ -6,7 +6,8 @@
       xmlns:wsc="http://www.mulesoft.org/schema/mule/wsc"
       xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
       xmlns:sockets="http://www.mulesoft.org/schema/mule/sockets"
-      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd http://www.mulesoft.org/schema/mule/sockets http://www.mulesoft.org/schema/mule/sockets/current/mule-sockets.xsd http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd">
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd
+  http://www.mulesoft.org/schema/mule/sockets http://www.mulesoft.org/schema/mule/sockets/current/mule-sockets.xsd http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd">
 
     <db:config name="dbConfig">
       <db:derby-connection create="true"
@@ -34,9 +35,13 @@
                                  protocol="HTTPS"
                                  usePersistentConnections="true">
             <tls:context>
-            <tls:key-store keyPassword="changeit"
-                           password="changeit"
-                           path="ssltest-keystore.jks"/>
+                <tls:trust-store algorithm="PKIX" insecure="false"/>
+                <tls:key-store keyPassword="changeit"
+                               password="changeit"
+                                path="ssltest-keystore.jks"/>
+                <tls:revocation-check>
+                    <tls:standard-revocation-check noFallback="true"/>
+                </tls:revocation-check>
             </tls:context>
         </http:listener-connection>
     </http:listener-config>
