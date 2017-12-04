@@ -52,7 +52,10 @@ public class SynchronousSchedulerTestCase extends AbstractSchedulerTestCase {
 
   @After
   public void after() throws MuleException {
-    ((SchedulerMessageSource) locator.find(Location.builder().globalName("pollfoo").addSourcePart().build()).get()).stop();
+    ((SchedulerMessageSource) locator.find(Location.builder().globalName("nonSynchronousPoll").addSourcePart().build()).get())
+        .stop();
+    ((SchedulerMessageSource) locator.find(Location.builder().globalName("synchronousPoll").addSourcePart().build()).get())
+        .stop();
   }
 
   @Test
