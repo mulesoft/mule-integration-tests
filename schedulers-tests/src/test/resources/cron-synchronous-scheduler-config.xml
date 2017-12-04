@@ -20,7 +20,7 @@
     </flow>
 
     <flow name="synchronousPoll">
-        <scheduler synchronous="true">
+        <scheduler disallowConcurrentExecution="true">
             <scheduling-strategy>
                 <cron expression="0/2 * * * * ?"/>
             </scheduling-strategy>
