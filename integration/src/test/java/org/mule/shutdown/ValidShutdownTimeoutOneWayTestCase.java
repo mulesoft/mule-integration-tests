@@ -8,19 +8,14 @@ package org.mule.shutdown;
 
 import static org.junit.Assert.assertTrue;
 
-import io.qameta.allure.Issue;
-
 import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
 import org.mule.tck.junit4.rule.SystemProperty;
 
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
-@Ignore("MULE-11097: Reactor does not handle RejectedExecutionException's")
-@Issue("MULE-11097")
 public class ValidShutdownTimeoutOneWayTestCase extends AbstractShutdownTimeoutRequestResponseTestCase {
 
   @Rule
@@ -55,20 +50,16 @@ public class ValidShutdownTimeoutOneWayTestCase extends AbstractShutdownTimeoutR
     final TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
     final boolean[] results = new boolean[] {false};
 
-    Thread t = new Thread() {
+    Thread t = new Thread(() -> {
+      try {
+        flowRunner(flowName).withPayload(payload).dispatch();
 
-      @Override
-      public void run() {
-        try {
-          flowRunner(flowName).withPayload(payload).dispatch();
-
-          Message response = queueHandler.read("response", RECEIVE_TIMEOUT).getMessage();
-          results[0] = payload.equals(getPayloadAsString(response));
-        } catch (Exception e) {
-          // Ignore
-        }
+        Message response = queueHandler.read("response", RECEIVE_TIMEOUT).getMessage();
+        results[0] = payload.equals(getPayloadAsString(response));
+      } catch (Exception e) {
+        // Ignore
       }
-    };
+    });
     t.start();
 
     // Make sure to give the request enough time to get to the waiting portion of the feed.

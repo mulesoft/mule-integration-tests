@@ -47,22 +47,18 @@ public class ExpiredShutdownTimeoutRequestResponseTestCase extends AbstractShutd
   private void doShutDownTest(final String url) throws MuleException, InterruptedException {
     final boolean[] results = new boolean[] {false};
 
-    Thread t = new Thread() {
+    Thread t = new Thread(() -> {
+      try {
+        HttpRequest request = HttpRequest.builder().uri(url).entity(new ByteArrayHttpEntity(TEST_MESSAGE.getBytes()))
+            .method(POST).build();
 
-      @Override
-      public void run() {
-        try {
-          HttpRequest request = HttpRequest.builder().uri(url).entity(new ByteArrayHttpEntity(TEST_MESSAGE.getBytes()))
-              .method(POST).build();
+        HttpResponse response = httpClient.send(request, RECEIVE_TIMEOUT, false, null);
 
-          HttpResponse response = httpClient.send(request, RECEIVE_TIMEOUT, false, null);
-
-          results[0] = response.getStatusCode() != OK.getStatusCode();
-        } catch (Exception e) {
-          // Ignore
-        }
+        results[0] = response.getStatusCode() != OK.getStatusCode();
+      } catch (Exception e) {
+        // Ignore
       }
-    };
+    });
     t.start();
 
     // Make sure to give the request enough time to get to the waiting portion of the feed.

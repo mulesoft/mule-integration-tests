@@ -6,6 +6,7 @@
  */
 package org.mule.shutdown;
 
+import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.runtime.api.exception.DefaultMuleException;
 import org.mule.runtime.core.api.event.CoreEvent;
@@ -30,7 +31,7 @@ public abstract class AbstractShutdownTimeoutRequestResponseTestCase extends Abs
     waitLatch = new Latch();
   }
 
-  private static class BlockMessageProcessor implements Processor {
+  private static class BlockMessageProcessor extends AbstractComponent implements Processor {
 
     @Override
     public CoreEvent process(CoreEvent event) throws MuleException {
