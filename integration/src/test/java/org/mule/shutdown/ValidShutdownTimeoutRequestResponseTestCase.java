@@ -58,20 +58,16 @@ public class ValidShutdownTimeoutRequestResponseTestCase extends AbstractShutdow
   private void doShutDownTest(final String payload, final String url) throws MuleException, InterruptedException {
     final boolean[] results = new boolean[] {false};
 
-    Thread t = new Thread() {
-
-      @Override
-      public void run() {
-        try {
-          HttpRequest request =
-              HttpRequest.builder().uri(url).method(GET).entity(new ByteArrayHttpEntity(payload.getBytes())).build();
-          final HttpResponse response = httpClient.send(request, RECEIVE_TIMEOUT, false, null);
-          results[0] = payload.equals(IOUtils.toString(response.getEntity().getContent()));
-        } catch (Exception e) {
-          // Ignore
-        }
+    Thread t = new Thread(() -> {
+      try {
+        HttpRequest request =
+            HttpRequest.builder().uri(url).method(GET).entity(new ByteArrayHttpEntity(payload.getBytes())).build();
+        final HttpResponse response = httpClient.send(request, RECEIVE_TIMEOUT, false, null);
+        results[0] = payload.equals(IOUtils.toString(response.getEntity().getContent()));
+      } catch (Exception e) {
+        // Ignore
       }
-    };
+    });
     t.start();
 
     // Make sure to give the request enough time to get to the waiting portion of the feed.

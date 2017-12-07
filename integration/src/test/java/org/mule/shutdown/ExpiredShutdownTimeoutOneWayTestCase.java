@@ -8,18 +8,13 @@ package org.mule.shutdown;
 
 import static org.junit.Assert.assertTrue;
 
-import io.qameta.allure.Issue;
-
 import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.tck.junit4.rule.SystemProperty;
 
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
-@Ignore("MULE-11097: Reactor does not handle RejectedExecutionException's")
-@Issue("MULE-11097")
 public class ExpiredShutdownTimeoutOneWayTestCase extends AbstractShutdownTimeoutRequestResponseTestCase {
 
   @Rule
@@ -49,19 +44,15 @@ public class ExpiredShutdownTimeoutOneWayTestCase extends AbstractShutdownTimeou
     final TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
     final boolean[] results = new boolean[] {false};
 
-    Thread t = new Thread() {
-
-      @Override
-      public void run() {
-        try {
-          flowRunner(flowName).withPayload(TEST_MESSAGE).dispatch();
-          results[0] = queueHandler.read("response", RECEIVE_TIMEOUT) == null;
-        } catch (Exception e) {
-          e.printStackTrace();
-          // Ignore
-        }
+    Thread t = new Thread(() -> {
+      try {
+        flowRunner(flowName).withPayload(TEST_MESSAGE).dispatch();
+        results[0] = queueHandler.read("response", RECEIVE_TIMEOUT) == null;
+      } catch (Exception e) {
+        e.printStackTrace();
+        // Ignore
       }
-    };
+    });
     t.start();
 
     // Make sure to give the request enough time to get to the waiting portion of the feed.
