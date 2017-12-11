@@ -372,7 +372,7 @@ public class ConfigurationBasedElementModelFactoryTestCase extends AbstractEleme
   }
 
   private void assertConnectionLoaded(DslElementModel<ConfigurationModel> config) {
-    assertThat(config.getContainedElements().size(), is(4));
+    assertThat(config.getContainedElements().size(), is(5));
     assertThat(config.findElement("active-mq").isPresent(), is(true));
     assertThat(config.findElement("active-mq").get().getContainedElements().size(), is(2));
 
@@ -383,6 +383,12 @@ public class ConfigurationBasedElementModelFactoryTestCase extends AbstractEleme
     assertThat(config.findElement(newIdentifier("producer-config", "jms")).get().getContainedElements().size(), is(7));
 
     assertThat(config.findElement(newIdentifier("no-caching", "jms")).isPresent(), is(true));
+
+    assertThat(config.getContainedElements()
+        .stream()
+        .filter(element -> element.getDsl().getAttributeName().equals("sendCorrelationId"))
+        .findAny()
+        .isPresent(), is(true));
   }
 
   private ParameterModel findParameter(String name, ParameterizedModel model) {
