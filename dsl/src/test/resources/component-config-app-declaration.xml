@@ -46,11 +46,12 @@
         </http:listener-connection>
     </http:listener-config>
 
-   <http:request-config basePath="/"
+    <http:request-config basePath="/"
                          enableCookies="true"
                          followRedirects="true"
                          name="httpRequester"
                          requestStreamingMode="AUTO"
+                         sendCorrelationId="NEVER"
                          sendBodyMode="AUTO">
       <http:request-connection connectionIdleTimeout="30000"
                                 host="localhost"
