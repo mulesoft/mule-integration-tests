@@ -84,4 +84,25 @@
         </error-handler>
     </flow>
 
+    <flow name="propagatesErrorHandlingRoutingErrors">
+        <flow-ref name="onErrorFails"/>
+        <error-handler>
+            <on-error-continue type="EXPRESSION">
+                <append-string-transformer message=" expression"/>
+            </on-error-continue>
+            <on-error-continue type="ANY">
+                <append-string-transformer message=" any"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="onErrorFails">
+        <raise-error type="ROUTING"/>
+        <error-handler>
+            <on-error-propagate when="#[lookup('zaraza', payload)]">
+                <append-string-transformer message=" routing"/>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+
 </mule>

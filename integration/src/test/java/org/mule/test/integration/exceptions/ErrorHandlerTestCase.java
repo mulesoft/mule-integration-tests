@@ -6,12 +6,14 @@
  */
 package org.mule.test.integration.exceptions;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.withSettings;
 import static org.mule.functional.api.component.FunctionalTestProcessor.getFromFlow;
+import static org.mule.functional.junit4.matchers.MessageMatchers.hasPayload;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
@@ -159,6 +161,17 @@ public class ErrorHandlerTestCase extends AbstractIntegrationTestCase {
   @Test
   public void criticalNotHandled() throws Exception {
     flowRunner("propagatesCriticalErrors").runExpectingException(errorType(Matchers.any(String.class), is("CRITICAL")));
+  }
+
+  @Test
+  public void innerRoutingErrorPropagated() throws Exception {
+    flowRunner("onErrorFails").withPayload(TEST_PAYLOAD).runExpectingException(errorType("MULE", "EXPRESSION"));
+  }
+
+  @Test
+  public void innerRoutingErrorHandled() throws Exception {
+    assertThat(flowRunner("propagatesErrorHandlingRoutingErrors").withPayload(TEST_PAYLOAD).run().getMessage(),
+               hasPayload(equalTo(TEST_PAYLOAD + " expression")));
   }
 
   private void callTypeAndThrowException(Exception exception, String expectedMessage) throws Exception {
