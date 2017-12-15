@@ -8,34 +8,34 @@ package org.mule.test;
 
 import static java.util.Collections.singletonList;
 import static java.util.concurrent.TimeUnit.MICROSECONDS;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+
+import java.util.List;
 
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
 
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Warmup;
 
-@OutputTimeUnit(MICROSECONDS)
-public class FlowCPULightProcessorBenchmark extends AbstractFlowBenchmark {
+@OutputTimeUnit(MILLISECONDS)
+public class FlowIOSmallProcessorBenchmark extends AbstractFlowBenchmark {
 
   @Override
   protected List<Processor> getMessageProcessors() {
-    return singletonList(cpuLightProcessor);
-  }
-
-  @Benchmark
-  public CoreEvent processor() throws MuleException {
-
-    return cpuLightProcessor.process(createEvent(flow));
+    return singletonList(blockingProcessor);
   }
 
   @Override
   protected int getStreamIterations() {
     return 1000;
+  }
+
+  @Benchmark
+  public CoreEvent processor() throws MuleException {
+    return iorwSmall.process(createEvent(flow));
   }
 
 }

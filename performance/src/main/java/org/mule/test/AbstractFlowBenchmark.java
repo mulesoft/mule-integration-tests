@@ -9,10 +9,12 @@ package org.mule.test;
 import static java.lang.Class.forName;
 import static java.lang.Thread.sleep;
 import static java.lang.reflect.Proxy.newProxyInstance;
+import static java.util.concurrent.locks.LockSupport.parkNanos;
 import static org.mule.runtime.api.message.Message.of;
 import static org.mule.runtime.core.api.construct.Flow.builder;
 import static org.mule.runtime.core.api.event.EventContextFactory.create;
 import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.stopIfNeeded;
+import static org.mule.runtime.core.api.processor.ReactiveProcessor.ProcessingType.BLOCKING;
 import static org.mule.runtime.core.privileged.registry.LegacyRegistryUtils.lookupObject;
 import static org.mule.runtime.core.privileged.registry.LegacyRegistryUtils.registerObject;
 import static org.openjdk.jmh.annotations.Scope.Benchmark;
@@ -44,6 +46,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.locks.LockSupport;
 
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Measurement;
@@ -55,15 +58,15 @@ import org.openjdk.jmh.annotations.Warmup;
 import reactor.core.publisher.Mono;
 
 @State(Benchmark)
-@Warmup(iterations = 10)
+@Warmup(iterations = 5)
 @Measurement(iterations = 10)
 public abstract class AbstractFlowBenchmark extends AbstractBenchmark {
 
   static final Processor nullProcessor = event -> event;
 
   static final Processor cpuLightProcessor = event -> {
-    // Roughly 50uS on modern CPU.
-    consumeCPU(25000);
+    // Roughly 20uS on modern CPU.
+    consumeCPU(1000);
     return event;
   };
 
@@ -85,7 +88,7 @@ public abstract class AbstractFlowBenchmark extends AbstractBenchmark {
   static final Processor blockingProcessor = new Processor() {
 
     @Override
-    public CoreEvent process(CoreEvent event) throws MuleException {
+    public CoreEvent process(CoreEvent event) {
       try {
         sleep(20);
       } catch (InterruptedException e) {
@@ -96,24 +99,75 @@ public abstract class AbstractFlowBenchmark extends AbstractBenchmark {
 
     @Override
     public ProcessingType getProcessingType() {
-      return ProcessingType.BLOCKING;
+      return BLOCKING;
     }
   };
+
+  static final Processor iorwSmall = new Processor() {
+
+    @Override
+    public CoreEvent process(CoreEvent event) {
+      consumeCPU(1000);
+      return event;
+    }
+
+    @Override
+    public ProcessingType getProcessingType() {
+      return BLOCKING;
+    }
+  };
+
+  static final Processor iorwMedium = new Processor() {
+
+    @Override
+    public CoreEvent process(CoreEvent event) {
+      for (int i = 0; i < 10; i++) {
+        consumeCPU(1000);
+        parkNanos(50000);
+      }
+      return event;
+    }
+
+    @Override
+    public ProcessingType getProcessingType() {
+      return BLOCKING;
+    }
+  };
+
+  static final Processor iorwLarge = new Processor() {
+
+    @Override
+    public CoreEvent process(CoreEvent event) {
+      for (int i = 0; i < 50; i++) {
+        consumeCPU(1000);
+        parkNanos(50000);
+      }
+      return event;
+    }
+
+    @Override
+    public ProcessingType getProcessingType() {
+      return BLOCKING;
+    }
+  };
+
 
   protected MuleContext muleContext;
   protected Flow flow;
   protected TriggerableMessageSource source;
 
+  private DefaultSchedulerService schedulerService;
+
   @Param({
-      "org.mule.runtime.core.internal.processor.strategy.DirectProcessingStrategyFactory",
-      "org.mule.runtime.core.internal.processor.strategy.DirectStreamPerThreadProcessingStrategyFactory",
+      // "org.mule.runtime.core.internal.processor.strategy.DirectProcessingStrategyFactory",
+      // "org.mule.runtime.core.internal.processor.strategy.DirectStreamPerThreadProcessingStrategyFactory",
       "org.mule.runtime.core.internal.processor.strategy.ReactorProcessingStrategyFactory",
-      "org.mule.runtime.core.internal.processor.strategy.ReactorStreamProcessingStrategyFactory",
-      "org.mule.runtime.core.processor.strategy.DefaultFlowProcessingStrategyFactory",
-      "org.mule.runtime.core.processor.strategy.TransactionAwareProactorStreamProcessingStrategyFactory",
-      "org.mule.runtime.core.internal.processor.strategy.WorkQueueProcessingStrategyFactory",
-      // Skipping due MULE-12662.
-      // "org.mule.runtime.core.internal.processor.strategy.WorkQueueStreamProcessingStrategyFactory",
+      "org.mule.runtime.core.internal.processor.strategy.ReactorStreamProcessingStrategyFactory", // Stream unico + cpuLight pool
+      "org.mule.runtime.core.internal.processor.strategy.ProactorStreamProcessingStrategyFactory", // Stream unico + cpuLight pool
+      // + IO pool for blocking
+      "org.mule.runtime.core.internal.processor.strategy.WorkQueueProcessingStrategyFactory", // 4.0
+      "org.mule.runtime.core.internal.processor.strategy.WorkQueueStreamProcessingStrategyFactory", // Stream unico + IO pool
+      "org.mule.runtime.core.internal.processor.strategy.WorkQueueMultiStreamProcessingStrategyFactory"
   })
   public String processingStrategyFactory;
 
@@ -133,7 +187,7 @@ public abstract class AbstractFlowBenchmark extends AbstractBenchmark {
 
       @Override
       protected void doConfigure(MuleContext muleContext) throws Exception {
-        DefaultSchedulerService schedulerService = new DefaultSchedulerService();
+        schedulerService = new DefaultSchedulerService();
         schedulerService.start();
         registerObject(muleContext, schedulerService.getName(),
                        newProxyInstance(getClass().getClassLoader(), new Class[] {SchedulerService.class},
@@ -173,19 +227,18 @@ public abstract class AbstractFlowBenchmark extends AbstractBenchmark {
 
   @TearDown
   public void teardown() throws MuleException {
-    SchedulerService schedulerService = lookupObject(muleContext, SchedulerService.class);
     muleContext.dispose();
-    stopIfNeeded(schedulerService);
+    schedulerService.stop();
   }
 
-  @Benchmark
-  public CoreEvent processSourceBlocking() throws MuleException {
-    return source.trigger(CoreEvent.builder(create(flow, AbstractBenchmark.CONNECTOR_LOCATION))
-        .message(of(AbstractBenchmark.PAYLOAD)).build());
-  }
+  // @Benchmark
+  // public CoreEvent processSourceBlocking() throws MuleException {
+  // return source.trigger(CoreEvent.builder(create(flow, AbstractBenchmark.CONNECTOR_LOCATION))
+  // .message(of(AbstractBenchmark.PAYLOAD)).build());
+  // }
 
   @Benchmark
-  public CountDownLatch processSourceStream() throws MuleException, InterruptedException {
+  public CountDownLatch processSourceStream() throws InterruptedException {
     CountDownLatch latch = new CountDownLatch(getStreamIterations());
     for (int i = 0; i < getStreamIterations(); i++) {
       Mono.just(CoreEvent.builder(create(flow, AbstractBenchmark.CONNECTOR_LOCATION))
