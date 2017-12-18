@@ -37,6 +37,24 @@
         <append-string-transformer message="z" />
     </sub-flow>
 
+    <!-- 'Target' tests -->
+    <flow name="targetToFlow">
+        <flow-ref name="nestedTargetFlow" target="flowRefResult" targetValue="#[payload[0]]"/>
+    </flow>
+
+    <flow name="nestedTargetFlow">
+        <flow-ref name="nestedTargetSubFlow"/>
+    </flow>
+
+    <flow name="targetToSubFlow">
+        <flow-ref name="nestedTargetSubFlow" target="flowRefResult" targetValue="#[payload[0]]"/>
+    </flow>
+    
+    <sub-flow name="nestedTargetSubFlow">
+        <set-payload value="#[['result']]"/>
+    </sub-flow>
+    <!-- End 'Target' tests -->
+
     <flow name="flow2">
         <flow-ref name="#['sub-flow-' ++ vars.letter]" />
     </flow>
