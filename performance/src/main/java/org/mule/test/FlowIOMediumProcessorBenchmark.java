@@ -24,7 +24,7 @@ public class FlowIOMediumProcessorBenchmark extends AbstractFlowBenchmark {
 
   @Override
   protected List<Processor> getMessageProcessors() {
-    return singletonList(blockingProcessor);
+    return singletonList(iorwMedium);
   }
 
   @Override

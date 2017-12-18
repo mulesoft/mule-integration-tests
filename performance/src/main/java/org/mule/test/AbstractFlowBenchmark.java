@@ -58,7 +58,7 @@ import org.openjdk.jmh.annotations.Warmup;
 import reactor.core.publisher.Mono;
 
 @State(Benchmark)
-@Warmup(iterations = 5)
+@Warmup(iterations = 10)
 @Measurement(iterations = 10)
 public abstract class AbstractFlowBenchmark extends AbstractBenchmark {
 
@@ -66,7 +66,13 @@ public abstract class AbstractFlowBenchmark extends AbstractBenchmark {
 
   static final Processor cpuLightProcessor = event -> {
     // Roughly 20uS on modern CPU.
-    consumeCPU(1000);
+    consumeCPU(10000);
+    return event;
+  };
+
+  static final Processor cpuLight2Processor = event -> {
+    // Roughly 50uS on modern CPU.
+    consumeCPU(25000);
     return event;
   };
 
@@ -90,7 +96,25 @@ public abstract class AbstractFlowBenchmark extends AbstractBenchmark {
     @Override
     public CoreEvent process(CoreEvent event) {
       try {
-        sleep(20);
+        sleep(1);
+      } catch (InterruptedException e) {
+        throw new RuntimeException(e);
+      }
+      return event;
+    }
+
+    @Override
+    public ProcessingType getProcessingType() {
+      return BLOCKING;
+    }
+  };
+
+  static final Processor blocking2Processor = new Processor() {
+
+    @Override
+    public CoreEvent process(CoreEvent event) {
+      try {
+        sleep(5);
       } catch (InterruptedException e) {
         throw new RuntimeException(e);
       }
@@ -107,7 +131,12 @@ public abstract class AbstractFlowBenchmark extends AbstractBenchmark {
 
     @Override
     public CoreEvent process(CoreEvent event) {
-      consumeCPU(1000);
+      for (int i = 0; i < 5; i++) {
+        // 10uS
+        consumeCPU(5000);
+        // 0.1ms
+        parkNanos(100000);
+      }
       return event;
     }
 
@@ -121,9 +150,11 @@ public abstract class AbstractFlowBenchmark extends AbstractBenchmark {
 
     @Override
     public CoreEvent process(CoreEvent event) {
-      for (int i = 0; i < 10; i++) {
-        consumeCPU(1000);
-        parkNanos(50000);
+      for (int i = 0; i < 20; i++) {
+        // 10uS
+        consumeCPU(5000);
+        // 0.1ms
+        parkNanos(100000);
       }
       return event;
     }
@@ -138,9 +169,11 @@ public abstract class AbstractFlowBenchmark extends AbstractBenchmark {
 
     @Override
     public CoreEvent process(CoreEvent event) {
-      for (int i = 0; i < 50; i++) {
-        consumeCPU(1000);
-        parkNanos(50000);
+      for (int i = 0; i < 100; i++) {
+        // 10uS
+        consumeCPU(5000);
+        // 0.1ms
+        parkNanos(100000);
       }
       return event;
     }
@@ -159,15 +192,12 @@ public abstract class AbstractFlowBenchmark extends AbstractBenchmark {
   private DefaultSchedulerService schedulerService;
 
   @Param({
-      // "org.mule.runtime.core.internal.processor.strategy.DirectProcessingStrategyFactory",
-      // "org.mule.runtime.core.internal.processor.strategy.DirectStreamPerThreadProcessingStrategyFactory",
+      "org.mule.runtime.core.internal.processor.strategy.DirectProcessingStrategyFactory",
       "org.mule.runtime.core.internal.processor.strategy.ReactorProcessingStrategyFactory",
-      "org.mule.runtime.core.internal.processor.strategy.ReactorStreamProcessingStrategyFactory", // Stream unico + cpuLight pool
-      "org.mule.runtime.core.internal.processor.strategy.ProactorStreamProcessingStrategyFactory", // Stream unico + cpuLight pool
-      // + IO pool for blocking
-      "org.mule.runtime.core.internal.processor.strategy.WorkQueueProcessingStrategyFactory", // 4.0
-      "org.mule.runtime.core.internal.processor.strategy.WorkQueueStreamProcessingStrategyFactory", // Stream unico + IO pool
-      "org.mule.runtime.core.internal.processor.strategy.WorkQueueMultiStreamProcessingStrategyFactory"
+      "org.mule.runtime.core.internal.processor.strategy.ReactorStreamProcessingStrategyFactory",
+      "org.mule.runtime.core.internal.processor.strategy.ProactorStreamProcessingStrategyFactory",
+      "org.mule.runtime.core.internal.processor.strategy.WorkQueueProcessingStrategyFactory",
+      "org.mule.runtime.core.internal.processor.strategy.WorkQueueStreamProcessingStrategyFactory",
   })
   public String processingStrategyFactory;
 
@@ -206,9 +236,6 @@ public abstract class AbstractFlowBenchmark extends AbstractBenchmark {
     muleContext.start();
 
     ProcessingStrategyFactory factory = (ProcessingStrategyFactory) forName(processingStrategyFactory).newInstance();
-    if (factory instanceof AbstractProcessingStrategyFactory) {
-      ((AbstractProcessingStrategyFactory) factory).setMaxConcurrency(maxConcurrency);
-    }
     if (factory instanceof ReactorStreamProcessingStrategyFactory) {
       ((ReactorStreamProcessingStrategyFactory) factory).setBufferSize(bufferSize);
       ((ReactorStreamProcessingStrategyFactory) factory).setSubscriberCount(subscribers);
@@ -217,7 +244,7 @@ public abstract class AbstractFlowBenchmark extends AbstractBenchmark {
 
     source = new TriggerableMessageSource();
     flow = builder(AbstractBenchmark.FLOW_NAME, muleContext).processors(getMessageProcessors()).source(source)
-        .processingStrategyFactory(factory).build();
+        .processingStrategyFactory(factory).maxConcurrency(maxConcurrency).build();
     registerObject(muleContext, AbstractBenchmark.FLOW_NAME, flow, FlowConstruct.class);
   }
 
@@ -231,11 +258,11 @@ public abstract class AbstractFlowBenchmark extends AbstractBenchmark {
     schedulerService.stop();
   }
 
-  // @Benchmark
-  // public CoreEvent processSourceBlocking() throws MuleException {
-  // return source.trigger(CoreEvent.builder(create(flow, AbstractBenchmark.CONNECTOR_LOCATION))
-  // .message(of(AbstractBenchmark.PAYLOAD)).build());
-  // }
+  @Benchmark
+  public CoreEvent processSourceBlocking() throws MuleException {
+    return source.trigger(CoreEvent.builder(create(flow, AbstractBenchmark.CONNECTOR_LOCATION))
+        .message(of(AbstractBenchmark.PAYLOAD)).build());
+  }
 
   @Benchmark
   public CountDownLatch processSourceStream() throws InterruptedException {

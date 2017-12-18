@@ -7,36 +7,33 @@
 package org.mule.test;
 
 import static java.util.Collections.singletonList;
-import static org.mule.runtime.api.message.Message.of;
-import static org.mule.runtime.core.api.event.EventContextFactory.create;
+import static java.util.concurrent.TimeUnit.MICROSECONDS;
 
-import org.mule.AbstractBenchmark;
+import java.util.List;
+
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
 
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
-
 import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.Threads;
-import reactor.core.publisher.Mono;
-@Threads(1)
-public class FlowNullProcessorBenchmark extends AbstractFlowBenchmark {
+import org.openjdk.jmh.annotations.OutputTimeUnit;
+
+@OutputTimeUnit(MICROSECONDS)
+public class FlowCPULight2ProcessorBenchmark extends AbstractFlowBenchmark {
 
   @Override
   protected List<Processor> getMessageProcessors() {
-    return singletonList(nullProcessor);
+    return singletonList(cpuLight2Processor);
+  }
+
+  @Benchmark
+  public CoreEvent processor() throws MuleException {
+    return cpuLight2Processor.process(createEvent(flow));
   }
 
   @Override
   protected int getStreamIterations() {
     return 1000;
-  }
-
-  @Benchmark
-  public CoreEvent processor() throws MuleException {
-    return nullProcessor.process(createEvent(flow));
   }
 
 }
