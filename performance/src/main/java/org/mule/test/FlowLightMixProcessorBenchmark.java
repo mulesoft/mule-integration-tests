@@ -38,8 +38,7 @@ public class FlowLightMixProcessorBenchmark extends AbstractFlowBenchmark {
   }
 
   @Benchmark
-  public CoreEvent processor() throws MuleException
-  {
+  public CoreEvent processor() throws MuleException {
     return iorwSmall.process(createEvent(flow));
   }
 }
