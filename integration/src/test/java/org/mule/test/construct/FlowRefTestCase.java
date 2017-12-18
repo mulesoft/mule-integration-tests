@@ -61,6 +61,16 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
+  public void flowRefTargetToFlow() throws Exception {
+    assertThat(flowRunner("targetToFlow").run().getVariables().get("flowRefResult").getValue(), is("result"));
+  }
+
+  @Test
+  public void flowRefTargetToSubFlow() throws Exception {
+    assertThat(flowRunner("targetToSubFlow").run().getVariables().get("flowRefResult").getValue(), is("result"));
+  }
+
+  @Test
   public void dynamicFlowRefWithScatterGather() throws Exception {
     Map<String, Message> messageList =
         (Map<String, Message>) flowRunner("flow2").withPayload("0").withVariable("letter", "SG").run().getMessage()

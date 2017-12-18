@@ -389,7 +389,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
 
       InterceptionParameters flowRefParameter = interceptionParameters.get(0);
 
-      assertThat(flowRefParameter.getParameters().keySet(), containsInAnyOrder("name"));
+      assertThat(flowRefParameter.getParameters().keySet(), containsInAnyOrder("name", "targetValue"));
       assertThat(flowRefParameter.getParameters().get("name").resolveValue(), is("failing-sub-flow"));
 
       InterceptionParameters failParameter = interceptionParameters.get(1);
