@@ -32,9 +32,4 @@ public class FlowBlockingProcessorBenchmark extends AbstractFlowBenchmark {
     return 100;
   }
 
-  @Benchmark
-  public CoreEvent processor() throws MuleException {
-    return blockingProcessor.process(createEvent(flow));
-  }
-
 }

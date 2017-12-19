@@ -127,6 +127,20 @@ public abstract class AbstractFlowBenchmark extends AbstractBenchmark {
     }
   };
 
+  static final Processor iorwXSmall = new Processor() {
+
+    @Override
+    public CoreEvent process(CoreEvent event) {
+      consumeCPU(5000);
+      return event;
+    }
+
+    @Override
+    public ProcessingType getProcessingType() {
+      return BLOCKING;
+    }
+  };
+
   static final Processor iorwSmall = new Processor() {
 
     @Override

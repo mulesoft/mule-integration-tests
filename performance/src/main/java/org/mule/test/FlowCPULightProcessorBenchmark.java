@@ -28,11 +28,6 @@ public class FlowCPULightProcessorBenchmark extends AbstractFlowBenchmark {
     return singletonList(cpuLightProcessor);
   }
 
-  @Benchmark
-  public CoreEvent processor() throws MuleException {
-    return cpuLightProcessor.process(createEvent(flow));
-  }
-
   @Override
   protected int getStreamIterations() {
     return 1000;

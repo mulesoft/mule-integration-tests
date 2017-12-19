@@ -39,9 +39,4 @@ public class FlowIOSmallProcessorBenchmark extends AbstractFlowBenchmark {
     return 1000;
   }
 
-  @Benchmark
-  public CoreEvent processor() throws MuleException {
-    return iorwSmall.process(createEvent(flow));
-  }
-
 }

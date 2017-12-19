@@ -21,7 +21,7 @@ import java.util.concurrent.CountDownLatch;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Threads;
 import reactor.core.publisher.Mono;
-@Threads(1)
+
 public class FlowNullProcessorBenchmark extends AbstractFlowBenchmark {
 
   @Override
@@ -32,11 +32,6 @@ public class FlowNullProcessorBenchmark extends AbstractFlowBenchmark {
   @Override
   protected int getStreamIterations() {
     return 1000;
-  }
-
-  @Benchmark
-  public CoreEvent processor() throws MuleException {
-    return nullProcessor.process(createEvent(flow));
   }
 
 }

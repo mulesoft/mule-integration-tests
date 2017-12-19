@@ -31,9 +31,4 @@ public class FlowCPUIntensiveProcessorBenchmark extends AbstractFlowBenchmark {
     return 200;
   }
 
-  @Benchmark
-  public CoreEvent processor() throws MuleException {
-    return cpuIntensiveProcessor.process(createEvent(flow));
-  }
-
 }
