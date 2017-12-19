@@ -116,7 +116,8 @@ public class SchedulerServiceTestCase extends AbstractIntegrationTestCase {
     final long stopRequestTime = currentTimeMillis();
     scheduler.stop();
 
-    assertThat("gracefultShutdown flag in test not honored", muleContext.getConfiguration().getShutdownTimeout(), is(0L));
+    assertThat("gracefultShutdown flag in test not honored", muleContext.getConfiguration().getShutdownTimeout(),
+               is(NON_GRACEFUL_SHUTDOWN_TIMEOUT));
     // check for the actual timeout plus some margin
     assertThat(currentTimeMillis() - stopRequestTime, lessThan(1000L));
   }
@@ -169,9 +170,9 @@ public class SchedulerServiceTestCase extends AbstractIntegrationTestCase {
     flowRunner("willSchedule").run();
 
     assertThat(RecordThreadName.threadName,
-               allOf(startsWith("[MuleRuntime].io."),
+               allOf(startsWith("[MuleRuntime].cpuLight."),
                      // [appName].flowName.processingStrategy
-                     containsString("[SchedulerServiceTestCase#flowProcessingThreadName].willSchedule.BLOCKING @")));
+                     containsString("[SchedulerServiceTestCase#flowProcessingThreadName].willSchedule.CPU_LITE @")));
   }
 
   public static class HasSchedulingService implements Processor, Initialisable, Disposable {
