@@ -27,24 +27,29 @@ import java.util.Collection;
 @RunnerDelegateTo(Parameterized.class)
 public class FlowErrorStatisticsTestCase extends AbstractIntegrationTestCase {
 
-  @Parameters(name = "{0}")
-  public static Collection<Object> data() {
-    return asList(new Object[] {
-        "defaultErrorHandler", "referencedErrorHandler", "innerErrorHandler"
+  @Parameters(name = "{1}")
+  public static Collection<Object[]> data() {
+    return asList(new Object[][] {
+        {"flow-error-statistics-config.xml", "defaultErrorHandlerFlow"},
+        {"flow-error-statistics-default-config.xml", "defaultConfigErrorHandlerFlow"},
+        {"flow-error-statistics-config.xml", "referencedErrorHandlerFlow"},
+        {"flow-error-statistics-config.xml", "innerErrorHandlerFlow"}
     });
   }
 
+  private String configFile;
   private String flowName;
 
   boolean statisticsEnabledOriginal;
 
-  public FlowErrorStatisticsTestCase(String flowName) {
+  public FlowErrorStatisticsTestCase(String configFile, String flowName) {
+    this.configFile = configFile;
     this.flowName = flowName;
   }
 
   @Override
   protected String getConfigFile() {
-    return "org/mule/test/integration/exceptions/flow-error-statistics-config.xml";
+    return "org/mule/test/integration/exceptions/" + configFile;
   }
 
   @Before

@@ -5,28 +5,16 @@
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
                http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
-    <flow name="defaultErrorHandlerFlow">
-        <test:processor throwException="true"/>
-    </flow>
+    <configuration defaultErrorHandler-ref="configDefaultErrorHandler"/>
 
-    <error-handler name="sharedErrorHandler">
+    <error-handler name="configDefaultErrorHandler">
         <on-error-propagate type="ANY">
             <logger/>
         </on-error-propagate>
     </error-handler>
 
-    <flow name="referencedErrorHandlerFlow">
+    <flow name="defaultConfigErrorHandlerFlow">
         <test:processor throwException="true"/>
-        <error-handler ref="sharedErrorHandler"/>
-    </flow>
-
-    <flow name="innerErrorHandlerFlow">
-        <test:processor throwException="true"/>
-        <error-handler>
-            <on-error-propagate type="ANY">
-                <logger/>
-            </on-error-propagate>
-        </error-handler>
     </flow>
 
 </mule>
