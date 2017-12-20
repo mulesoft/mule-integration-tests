@@ -18,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Threads;
 
 @OutputTimeUnit(MICROSECONDS)
 public class FlowCPULightProcessorBenchmark extends AbstractFlowBenchmark {
@@ -25,11 +26,6 @@ public class FlowCPULightProcessorBenchmark extends AbstractFlowBenchmark {
   @Override
   protected List<Processor> getMessageProcessors() {
     return singletonList(cpuLightProcessor);
-  }
-
-  @Benchmark
-  public CoreEvent processor() throws MuleException {
-    return cpuLightProcessor.process(createEvent(flow));
   }
 
   @Override

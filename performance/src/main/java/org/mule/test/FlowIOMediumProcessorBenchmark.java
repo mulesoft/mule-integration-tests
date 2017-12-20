@@ -6,34 +6,30 @@
  */
 package org.mule.test;
 
+import static java.util.Collections.singletonList;
+import static java.util.concurrent.TimeUnit.MICROSECONDS;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
+import java.util.List;
+
+import org.mule.runtime.api.exception.MuleException;
+import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
+import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
 
 @OutputTimeUnit(MILLISECONDS)
-public class FlowMixedCProcessorBenchmark extends AbstractFlowBenchmark {
+public class FlowIOMediumProcessorBenchmark extends AbstractFlowBenchmark {
 
   @Override
   protected List<Processor> getMessageProcessors() {
-    List<Processor> processors = new ArrayList<>();
-    processors.add(cpuLightProcessor);
-    processors.add(cpuLightProcessor);
-    processors.add(cpuIntensiveProcessor);
-    processors.add(cpuLightProcessor);
-    processors.add(cpuLightProcessor);
-    processors.add(cpuLightProcessor);
-    return processors;
+    return singletonList(iorwMedium);
   }
 
   @Override
   protected int getStreamIterations() {
-    return 50;
+    return 1000;
   }
 
 }

@@ -8,32 +8,33 @@ package org.mule.test;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
-import org.mule.runtime.core.api.processor.Processor;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
+import org.mule.runtime.api.exception.MuleException;
+import org.mule.runtime.core.api.event.CoreEvent;
+import org.mule.runtime.core.api.processor.Processor;
+
+import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
 
 @OutputTimeUnit(MILLISECONDS)
-public class FlowMixedBProcessorBenchmark extends AbstractFlowBenchmark {
+public class FlowHeavyMixProcessorBenchmark extends AbstractFlowBenchmark {
 
   @Override
   protected List<Processor> getMessageProcessors() {
     List<Processor> processors = new ArrayList<>();
     processors.add(cpuLightProcessor);
+    processors.add(cpuLightProcessor);
+    processors.add(iorwLarge);
     processors.add(blockingProcessor);
     processors.add(cpuLightProcessor);
-    processors.add(blockingProcessor);
-    processors.add(cpuLightProcessor);
-    processors.add(blockingProcessor);
     return processors;
   }
 
   @Override
   protected int getStreamIterations() {
-    return 50;
+    return 100;
   }
 
 }

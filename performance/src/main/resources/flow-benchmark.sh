@@ -3,7 +3,7 @@
 ##############################################
 # Null Processor
 ##############################################
-echo "org.mule.FlowNullProcessorBenchmark (Null Processor)"
+echo "org.mule.test.FlowNullProcessorBenchmark (Null Processor)"
 
 java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowNullProcessorBenchmark -t 1
 java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowNullProcessorBenchmark -t 2
@@ -11,13 +11,11 @@ java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.F
 java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowNullProcessorBenchmark -t 8
 java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowNullProcessorBenchmark -t 16
 java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowNullProcessorBenchmark -t 32
-java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowNullProcessorBenchmark -t 64
-java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowNullProcessorBenchmark -t 128
 
 ##############################################
 # CPU Light Processor
 ##############################################
-echo "org.mule.FlowNullProcessorBenchmark (CPU Light Processor)"
+echo "org.mule.test.FlowCPULightProcessorBenchmark (CPU Light Processor)"
 
 java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowCPULightProcessorBenchmark -t 1
 java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowCPULightProcessorBenchmark -t 2
@@ -25,25 +23,23 @@ java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.F
 java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowCPULightProcessorBenchmark -t 8
 java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowCPULightProcessorBenchmark -t 16
 java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowCPULightProcessorBenchmark -t 32
-java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowCPULightProcessorBenchmark -t 64
 
 ##############################################
-# CPU Intensive Processor
+# CPU Light 2 Processor
 ##############################################
-echo "org.mule.FlowNullProcessorBenchmark (CPU Light Processor)"
+echo "org.mule.test.FlowCPULight2ProcessorBenchmark (CPU Light 2 Processor)"
 
-java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowCPULightProcessorBenchmark -t 1
-java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowCPULightProcessorBenchmark -t 2
-java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowCPULightProcessorBenchmark -t 4
-java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowCPULightProcessorBenchmark -t 8
-java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowCPULightProcessorBenchmark -t 16
-java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowCPULightProcessorBenchmark -t 32
-java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowCPULightProcessorBenchmark -t 64
+java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowCPULight2ProcessorBenchmark -t 1
+java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowCPULight2ProcessorBenchmark -t 2
+java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowCPULight2ProcessorBenchmark -t 4
+java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowCPULight2ProcessorBenchmark -t 8
+java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowCPULight2ProcessorBenchmark -t 16
+java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowCPULight2ProcessorBenchmark -t 32
 
 ##############################################
 # Blocking Processor
 ##############################################
-echo "org.mule.FlowNullProcessorBenchmark (CPU Light Processor)"
+echo "org.mule.test.FlowBlockingProcessorBenchmark (Blocking Processor)"
 
 java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowBlockingProcessorBenchmark -t 1
 java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowBlockingProcessorBenchmark -t 2
@@ -51,71 +47,82 @@ java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.F
 java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowBlockingProcessorBenchmark -t 8
 java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowBlockingProcessorBenchmark -t 16
 java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowBlockingProcessorBenchmark -t 32
-java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowBlockingProcessorBenchmark -t 64
 
 ##############################################
-# Mixed Processors A
+# Blocking 2 Processor
 ##############################################
-echo "org.mule.FlowMixedAProcessorBenchmark (Mix)"
+echo "org.mule.test.FlowBlocking2ProcessorBenchmark (Blocking 2 Processor)"
 
-java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowMixedAProcessorBenchmark -t 1
-java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowMixedAProcessorBenchmark -t 2
-java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowMixedAProcessorBenchmark -t 4
-java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowMixedAProcessorBenchmark -t 8
-java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowMixedAProcessorBenchmark -t 16
-java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowMixedAProcessorBenchmark -t 32
-java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowMixedAProcessorBenchmark -t 64
-
-##############################################
-# Mixed Processors A
-##############################################
-echo "org.mule.FlowMixedAProcessorBenchmark (Mix)"
-
-java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowMixedAProcessorBenchmark -t 1
-java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowMixedAProcessorBenchmark -t 2
-java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowMixedAProcessorBenchmark -t 4
-java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowMixedAProcessorBenchmark -t 8
-java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowMixedAProcessorBenchmark -t 16
-java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowMixedAProcessorBenchmark -t 32
-java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowMixedAProcessorBenchmark -t 64
-
+java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowBlocking2ProcessorBenchmark -t 1
+java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowBlocking2ProcessorBenchmark -t 2
+java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowBlocking2ProcessorBenchmark -t 4
+java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowBlocking2ProcessorBenchmark -t 8
+java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowBlocking2ProcessorBenchmark -t 16
+java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowBlocking2ProcessorBenchmark -t 32
 
 ##############################################
-# Mixed Processors A
+# IO Small Processor
 ##############################################
-echo "org.mule.FlowMixedAProcessorBenchmark (Mix A)"
+echo "org.mule.test.FlowIOSmallProcessorBenchmark (IO Small Processor)"
 
-java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowMixedAProcessorBenchmark -t 1
-java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowMixedAProcessorBenchmark -t 2
-java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowMixedAProcessorBenchmark -t 4
-java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowMixedAProcessorBenchmark -t 8
-java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowMixedAProcessorBenchmark -t 16
-java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowMixedAProcessorBenchmark -t 32
-java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowMixedAProcessorBenchmark -t 64
+java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowIOSmallProcessorBenchmark -t 1
+java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowIOSmallProcessorBenchmark -t 2
+java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowIOSmallProcessorBenchmark -t 4
+java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowIOSmallProcessorBenchmark -t 8
+java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowIOSmallProcessorBenchmark -t 16
+java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowIOSmallProcessorBenchmark -t 32
 
 ##############################################
-# Mixed Processors B
+# IO Medium Processor
 ##############################################
-echo "org.mule.FlowMixedBProcessorBenchmark (Mix B)"
+echo "org.mule.test.FlowIOMediumProcessorBenchmark (IO Medium Processor)"
 
-java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowMixedBProcessorBenchmark -t 1
-java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowMixedBProcessorBenchmark -t 2
-java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowMixedBProcessorBenchmark -t 4
-java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowMixedBProcessorBenchmark -t 8
-java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowMixedBProcessorBenchmark -t 16
-java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowMixedBProcessorBenchmark -t 32
-java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowMixedBProcessorBenchmark -t 64
+java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowIOMediumProcessorBenchmark -t 1
+java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowIOMediumProcessorBenchmark -t 2
+java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowIOMediumProcessorBenchmark -t 4
+java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowIOMediumProcessorBenchmark -t 8
+java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowIOMediumProcessorBenchmark -t 16
+java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowIOMediumProcessorBenchmark -t 32
 
 
 ##############################################
-# Mixed Processors C
+# IO Large Processor
 ##############################################
-echo "org.mule.FlowMixedCProcessorBenchmark (Mix C)"
+echo "org.mule.test.FlowIOLargeProcessorBenchmark (IO Large Processor)"
 
-java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowMixedCProcessorBenchmark -t 1
-java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowMixedCProcessorBenchmark -t 2
-java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowMixedCProcessorBenchmark -t 4
-java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowMixedCProcessorBenchmark -t 8
-java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowMixedCProcessorBenchmark -t 16
-java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowMixedCProcessorBenchmark -t 32
-java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowMixedCProcessorBenchmark -t 64
+java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowIOLargeProcessorBenchmark -t 1
+java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowIOLargeProcessorBenchmark -t 2
+java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowIOLargeProcessorBenchmark -t 4
+java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowIOLargeProcessorBenchmark -t 8
+java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowIOLargeProcessorBenchmark -t 16
+java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowIOLargeProcessorBenchmark -t 32
+
+
+##############################################
+# Mix Light
+##############################################
+echo "org.mule.test.FlowLightMixProcessorBenchmark (Mix Light)"
+
+java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowLightMixProcessorBenchmark -t 1
+java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowLightMixProcessorBenchmark -t 2
+java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowLightMixProcessorBenchmark -t 4
+java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowLightMixProcessorBenchmark -t 8
+java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowLightMixProcessorBenchmark -t 16
+java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowLightMixProcessorBenchmark -t 32
+
+
+##############################################
+# Mix Heavy
+##############################################
+echo "org.mule.test.FlowHeavyMixProcessorBenchmark (Mix Heavy)"
+
+java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowHeavyMixProcessorBenchmark -t 1
+java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowHeavyMixProcessorBenchmark -t 2
+java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowHeavyMixProcessorBenchmark -t 4
+java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowHeavyMixProcessorBenchmark -t 8
+java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowHeavyMixProcessorBenchmark -t 16
+java -jar mule-runtime-integration-benchmarks-4.1.0-SNAPSHOT.jar org.mule.test.FlowHeavyMixProcessorBenchmark -t 32
+
+
+
+

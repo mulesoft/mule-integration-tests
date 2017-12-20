@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Threads;
 
 @OutputTimeUnit(MILLISECONDS)
 public class FlowBlockingProcessorBenchmark extends AbstractFlowBenchmark {
@@ -28,12 +29,7 @@ public class FlowBlockingProcessorBenchmark extends AbstractFlowBenchmark {
 
   @Override
   protected int getStreamIterations() {
-    return 50;
-  }
-
-  @Benchmark
-  public CoreEvent processor() throws MuleException {
-    return blockingProcessor.process(createEvent(flow));
+    return 100;
   }
 
 }
