@@ -11,6 +11,9 @@
                 <reconnect count="2" frequency="5" />
             </reconnection>
         </petstore:invalid-connection>
+        <petstore:pets>
+            <petstore:pet value="Lassie" />
+        </petstore:pets>
     </petstore:config>
 
     <petstore:config name="petstore-invalid-fails-deployment" cashierName="jim">
@@ -19,6 +22,9 @@
                 <reconnect count="2" frequency="5" />
             </reconnection>
         </petstore:invalid-connection>
+        <petstore:pets>
+            <petstore:pet value="Lassie" />
+        </petstore:pets>
     </petstore:config>
 
     <flow name="skipOperationFlowInvalidConfig">
