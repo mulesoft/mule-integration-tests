@@ -27,8 +27,7 @@
             </db:connection-properties>
         </db:derby-connection>
     </db:config>
-   <http:listener-config basePath="/"
-                          name="httpListener">
+   <http:listener-config basePath="/" name="httpListener">
       <http:listener-connection connectionIdleTimeout="30000"
                                  host="localhost"
                                  port="49019"
@@ -85,9 +84,10 @@
     </wsc:config>
    <flow initialState="stopped" name="testFlow">
       <http:listener config-ref="httpListener"
-                      path="testBuilder"
-                      backPressureStrategy="WAIT"
-                      responseStreamingMode="AUTO">
+                     primaryNodeOnly="true"
+                     path="testBuilder"
+                     backPressureStrategy="DROP"
+                     responseStreamingMode="AUTO">
             <redelivery-policy maxRedeliveryCount="2" useSecureHash="true"/>
             <reconnect blocking="true" count="1" frequency="0"/>
             <http:response>
