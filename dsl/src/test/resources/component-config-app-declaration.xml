@@ -86,6 +86,7 @@
    <flow initialState="stopped" name="testFlow">
       <http:listener config-ref="httpListener"
                       path="testBuilder"
+                      backPressureStrategy="WAIT"
                       responseStreamingMode="AUTO">
             <redelivery-policy maxRedeliveryCount="2" useSecureHash="true"/>
             <reconnect blocking="true" count="1" frequency="0"/>
@@ -96,7 +97,7 @@
                 </http:headers>
             </http:response>
         </http:listener>
-      <db:bulk-insert queryTimeout="0" queryTimeoutUnit="SECONDS" targetValue="#[payload]">
+      <db:bulk-insert queryTimeout="0" queryTimeoutUnit="SECONDS" targetValue="#[payload]" transactionalAction="JOIN_IF_POSSIBLE">
             <db:sql>INSERT INTO PLANET(POSITION, NAME) VALUES (:position, :name)</db:sql>
             <db:parameter-types>
                 <db:parameter-type key="name" type="VARCHAR" />
@@ -111,6 +112,7 @@
                  config-ref="dbConfig"
                  queryTimeout="0"
                  queryTimeoutUnit="SECONDS"
+                 transactionalAction="JOIN_IF_POSSIBLE"
                  targetValue="#[payload]">
             <db:sql>INSERT INTO PLANET(POSITION, NAME, DESCRIPTION) VALUES (777, 'Pluto', :description)</db:sql>
             <db:parameter-types>
