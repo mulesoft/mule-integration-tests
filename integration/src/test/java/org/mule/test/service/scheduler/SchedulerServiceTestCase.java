@@ -24,7 +24,6 @@ import static org.mule.test.allure.AllureConstants.SchedulerServiceFeature.SCHED
 
 import org.mule.functional.api.component.SkeletonSource;
 import org.mule.functional.api.exception.ExpectedError;
-import org.mule.runtime.api.exception.FlowOverloadException;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.lifecycle.Disposable;
@@ -44,6 +43,7 @@ import org.mule.test.AbstractIntegrationTestCase;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.RejectedExecutionException;
 
 import javax.inject.Inject;
 
@@ -140,7 +140,7 @@ public class SchedulerServiceTestCase extends AbstractIntegrationTestCase {
   @Description("Tests that the exception that happens when a thread pool is full is properly handled.")
   public void overloadErrorHandling() throws Exception {
     expectedError.expectErrorType(any(String.class), is("FLOW_OVERLOAD"));
-    expectedError.expectCause(instanceOf(FlowOverloadException.class));
+    expectedError.expectCause(instanceOf(RejectedExecutionException.class));
 
     flowRunner("delaySchedule").run();
   }
@@ -153,7 +153,7 @@ public class SchedulerServiceTestCase extends AbstractIntegrationTestCase {
         (SkeletonSource) locator.find(builderFromStringRepresentation("delaySchedule/source").build()).get();
 
     expectedError.expectErrorType("MULE", "FLOW_OVERLOAD");
-    expectedError.expectCause(instanceOf(FlowOverloadException.class));
+    expectedError.expectCause(instanceOf(RejectedExecutionException.class));
 
     messageSource.getListener()
         .process(CoreEvent
