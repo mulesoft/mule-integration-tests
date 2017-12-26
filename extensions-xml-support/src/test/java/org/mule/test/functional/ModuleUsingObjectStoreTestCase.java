@@ -30,7 +30,7 @@ public class ModuleUsingObjectStoreTestCase extends AbstractXmlExtensionMuleArti
 
   @Test
   @Description("Ensures that references to global elements are be properly initialized, such as the object store under the name"
-    + "of 'os-config'.")
+      + "of 'os-config'.")
   public void testContains() throws Exception {
     assertContains(FIRST_CONFIGURATION, false);
     assertContains(SECOND_CONFIGURATION, false);
