@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:module-using-os="http://www.mulesoft.org/schema/mule/module-using-os"
+      xsi:schemaLocation="
+       http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+       http://www.mulesoft.org/schema/mule/module-using-os http://www.mulesoft.org/schema/mule/module-using-os/current/mule-module-using-os.xsd">
+
+    <module-using-os:config name="firstConfiguration"/>
+    <module-using-os:config name="secondConfiguration"/>
+
+    <flow name="contains-firstConfiguration-flow">
+        <module-using-os:do-contains config-ref="firstConfiguration" daKey="someKey"/>
+    </flow>
+
+    <flow name="store-firstConfiguration-flow">
+        <module-using-os:do-store config-ref="firstConfiguration" daKey="someKey" content="someContent"/>
+    </flow>
+
+    <flow name="remove-firstConfiguration-flow">
+        <module-using-os:do-remove config-ref="firstConfiguration" daKey="someKey"/>
+    </flow>
+
+
+    <flow name="contains-secondConfiguration-flow">
+        <module-using-os:do-contains config-ref="secondConfiguration" daKey="someKey"/>
+    </flow>
+
+    <flow name="store-secondConfiguration-flow">
+        <module-using-os:do-store config-ref="secondConfiguration" daKey="someKey" content="someContent"/>
+    </flow>
+
+</mule>
