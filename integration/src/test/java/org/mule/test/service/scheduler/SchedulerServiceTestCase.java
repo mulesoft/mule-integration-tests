@@ -139,7 +139,7 @@ public class SchedulerServiceTestCase extends AbstractIntegrationTestCase {
   @Test
   @Description("Tests that the exception that happens when a thread pool is full is properly handled.")
   public void overloadErrorHandling() throws Exception {
-    expectedError.expectErrorType(any(String.class), is("FLOW_OVERLOAD"));
+    expectedError.expectErrorType(any(String.class), is("OVERLOAD"));
     expectedError.expectCause(instanceOf(RejectedExecutionException.class));
 
     flowRunner("delaySchedule").run();
@@ -152,7 +152,7 @@ public class SchedulerServiceTestCase extends AbstractIntegrationTestCase {
     SkeletonSource messageSource =
         (SkeletonSource) locator.find(builderFromStringRepresentation("delaySchedule/source").build()).get();
 
-    expectedError.expectErrorType("MULE", "FLOW_OVERLOAD");
+    expectedError.expectErrorType("MULE", "OVERLOAD");
     expectedError.expectCause(instanceOf(RejectedExecutionException.class));
 
     messageSource.getListener()
