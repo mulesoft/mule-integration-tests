@@ -4,7 +4,7 @@
         <scheduler schedulingStrategy="Attribute"/>
     </flow>
     <flow name="flowForidempotentMessageValidator">
-        <idempotent-message-validator idExpression="#[id]" objectStore="Attribute" storePrefix="Attribute" valueExpression="#[id]"/>
+        <idempotent-message-validator idExpression="#[id]" objectStore="OS:OBJECT_STORE" storePrefix="Attribute" valueExpression="#[id]"/>
     </flow>
     <flow name="flowForlogger">
         <logger category="Attribute" level="DEBUG" message="Attribute"/>
@@ -47,16 +47,14 @@
         </dynamic-config-expiration>
     </configuration>
     <configuration-properties file="Attribute" name="globalconfigurationProperties"/>
-    <error-handler name="globalerrorHandler" ref="Attribute">
-        <on-error ref="Attribute">
-            <logger/>
-        </on-error>
+    <error-handler name="globalerrorHandler" ref="MULE:ERROR_HANDLER">
         <on-error-continue enableNotifications="true" logException="true" type="Attribute" when="Attribute">
             <logger/>
         </on-error-continue>
         <on-error-propagate enableNotifications="true" logException="true" type="Attribute" when="Attribute">
             <logger/>
         </on-error-propagate>
+        <logger/>
     </error-handler>
     <flow name="flowForfirstSuccessful">
         <first-successful>
@@ -72,6 +70,9 @@
         <foreach batchSize="10000" collection="#[payload]" counterVariableName="counter" rootMessageVariableName="rootMessage">
             <logger/>
         </foreach>
+    </flow>
+    <flow name="flowForonError">
+        <on-error ref="Attribute"/>
     </flow>
     <flow name="flowForroundRobin">
         <round-robin>
