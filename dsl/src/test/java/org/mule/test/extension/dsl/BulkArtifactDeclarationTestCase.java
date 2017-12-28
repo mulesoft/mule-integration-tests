@@ -6,11 +6,12 @@
  */
 package org.mule.test.extension.dsl;
 
+import static java.util.Collections.emptyList;
 import static org.mule.metadata.api.utils.MetadataTypeUtils.getDefaultValue;
+import static org.mule.runtime.api.meta.ExpressionSupport.REQUIRED;
 import static org.mule.runtime.app.declaration.api.fluent.ElementDeclarer.newArtifact;
 import static org.mule.runtime.app.declaration.api.fluent.ElementDeclarer.newListValue;
 import static org.mule.runtime.app.declaration.api.fluent.ElementDeclarer.newObjectValue;
-import static org.mule.runtime.api.meta.ExpressionSupport.REQUIRED;
 import static org.mule.runtime.core.api.util.IOUtils.getResourceAsString;
 import static org.mule.runtime.extension.api.util.ExtensionMetadataTypeUtils.getAlias;
 import static org.mule.runtime.extension.api.util.ExtensionMetadataTypeUtils.getId;
@@ -23,6 +24,23 @@ import org.mule.metadata.api.model.NumberType;
 import org.mule.metadata.api.model.ObjectType;
 import org.mule.metadata.api.model.UnionType;
 import org.mule.metadata.api.visitor.MetadataTypeVisitor;
+import org.mule.runtime.api.dsl.DslResolvingContext;
+import org.mule.runtime.api.meta.model.ComponentModel;
+import org.mule.runtime.api.meta.model.ExtensionModel;
+import org.mule.runtime.api.meta.model.config.ConfigurationModel;
+import org.mule.runtime.api.meta.model.construct.ConstructModel;
+import org.mule.runtime.api.meta.model.construct.HasConstructModels;
+import org.mule.runtime.api.meta.model.nested.NestableElementModelVisitor;
+import org.mule.runtime.api.meta.model.nested.NestedChainModel;
+import org.mule.runtime.api.meta.model.nested.NestedComponentModel;
+import org.mule.runtime.api.meta.model.nested.NestedRouteModel;
+import org.mule.runtime.api.meta.model.operation.HasOperationModels;
+import org.mule.runtime.api.meta.model.operation.OperationModel;
+import org.mule.runtime.api.meta.model.parameter.ParameterizedModel;
+import org.mule.runtime.api.meta.model.source.HasSourceModels;
+import org.mule.runtime.api.meta.model.source.SourceModel;
+import org.mule.runtime.api.meta.model.stereotype.StereotypeModel;
+import org.mule.runtime.api.meta.model.util.ExtensionWalker;
 import org.mule.runtime.app.declaration.api.ParameterValue;
 import org.mule.runtime.app.declaration.api.fluent.ArtifactDeclarer;
 import org.mule.runtime.app.declaration.api.fluent.ComponentElementDeclarer;
@@ -39,31 +57,17 @@ import org.mule.runtime.app.declaration.api.fluent.RouteElementDeclarer;
 import org.mule.runtime.app.declaration.api.fluent.SourceElementDeclarer;
 import org.mule.runtime.config.api.dsl.ArtifactDeclarationXmlSerializer;
 import org.mule.runtime.config.api.dsl.model.DslElementModelFactory;
-import org.mule.runtime.api.dsl.DslResolvingContext;
-import org.mule.runtime.api.meta.model.ComponentModel;
-import org.mule.runtime.api.meta.model.ExtensionModel;
-import org.mule.runtime.api.meta.model.config.ConfigurationModel;
-import org.mule.runtime.api.meta.model.construct.ConstructModel;
-import org.mule.runtime.api.meta.model.construct.HasConstructModels;
-import org.mule.runtime.api.meta.model.nested.NestableElementModelVisitor;
-import org.mule.runtime.api.meta.model.nested.NestedChainModel;
-import org.mule.runtime.api.meta.model.nested.NestedComponentModel;
-import org.mule.runtime.api.meta.model.nested.NestedRouteModel;
-import org.mule.runtime.api.meta.model.operation.HasOperationModels;
-import org.mule.runtime.api.meta.model.operation.OperationModel;
-import org.mule.runtime.api.meta.model.parameter.ParameterizedModel;
-import org.mule.runtime.api.meta.model.source.HasSourceModels;
-import org.mule.runtime.api.meta.model.source.SourceModel;
-import org.mule.runtime.api.meta.model.util.ExtensionWalker;
 import org.mule.runtime.core.api.extension.MuleExtensionModelProvider;
 import org.mule.runtime.extension.api.dsl.syntax.DslElementSyntax;
 import org.mule.runtime.extension.api.dsl.syntax.resolver.DslSyntaxResolver;
 
 import com.google.common.collect.ImmutableSet;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -210,11 +214,13 @@ public class BulkArtifactDeclarationTestCase extends AbstractElementModelTestCas
                                              isContent(param) || param.getExpressionSupport().equals(REQUIRED),
                                              isText(param),
                                              Optional.ofNullable(param.getDefaultValue()),
+                                             param.getAllowedStereotypes(),
                                              value -> groupDeclarer.withParameter(param.getName(), value)));
         }));
   }
 
   private void addParameter(MetadataType type, boolean isContent, boolean isText, Optional<Object> defaultValue,
+                            List<StereotypeModel> allowedStereotypes,
                             Consumer<ParameterValue> valueConsumer) {
     type.accept(new MetadataTypeVisitor() {
 
@@ -225,7 +231,9 @@ public class BulkArtifactDeclarationTestCase extends AbstractElementModelTestCas
         } else if (isText) {
           valueConsumer.accept(ParameterSimpleValue.cdata(String.valueOf(defaultValue.orElse("Attribute\nText"))));
         } else {
-          valueConsumer.accept(ParameterSimpleValue.of(String.valueOf(defaultValue.orElse("Attribute"))));
+          String fallback = allowedStereotypes.isEmpty() ? "Attribute"
+              : allowedStereotypes.stream().map(Object::toString).collect(Collectors.joining("|"));
+          valueConsumer.accept(ParameterSimpleValue.of(String.valueOf(defaultValue.orElse(fallback))));
         }
       }
 
@@ -242,8 +250,8 @@ public class BulkArtifactDeclarationTestCase extends AbstractElementModelTestCas
         }
 
         ParameterListValue.Builder listValue = newListValue();
-        addParameter(arrayType.getType(), false, false, null, listValue::withValue);
-        addParameter(arrayType.getType(), false, false, null, listValue::withValue);
+        addParameter(arrayType.getType(), false, false, null, emptyList(), listValue::withValue);
+        addParameter(arrayType.getType(), false, false, null, emptyList(), listValue::withValue);
         valueConsumer.accept(listValue.build());
       }
 
@@ -260,6 +268,7 @@ public class BulkArtifactDeclarationTestCase extends AbstractElementModelTestCas
         objectType.getFields()
             .forEach(field -> addParameter(field.getValue(), false, false,
                                            Optional.ofNullable(getDefaultValue(field.getValue()).orElse(null)),
+                                           emptyList(),
                                            fieldValue -> objectValue.withParameter(getAlias(field), fieldValue)));
 
         valueConsumer.accept(objectValue.build());
