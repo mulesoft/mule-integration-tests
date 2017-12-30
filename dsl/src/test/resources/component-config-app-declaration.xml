@@ -86,7 +86,6 @@
       <http:listener config-ref="httpListener"
                      primaryNodeOnly="true"
                      path="testBuilder"
-                     backPressureStrategy="DROP"
                      responseStreamingMode="AUTO">
             <redelivery-policy maxRedeliveryCount="2" useSecureHash="true"/>
             <reconnect blocking="true" count="1" frequency="0"/>
