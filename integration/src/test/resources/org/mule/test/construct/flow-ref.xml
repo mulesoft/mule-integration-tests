@@ -94,4 +94,20 @@
         <logger/>
     </flow>
 
+    <flow name="flowRefFlowErrorNotifications">
+        <flow-ref name="errorFlow"/>
+    </flow>
+
+    <flow name="errorFlow">
+        <test:processor throwException="true" exceptionToThrow="java.lang.IllegalStateException"/>
+    </flow>
+
+    <flow name="flowRefSubFlowErrorNotifications">
+        <flow-ref name="errorSubFlow"/>
+    </flow>
+
+    <sub-flow name="errorSubFlow">
+        <test:processor throwException="true" exceptionToThrow="java.lang.IllegalStateException" />
+    </sub-flow>
+
 </mule>
