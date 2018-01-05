@@ -28,9 +28,18 @@ public class ExtensionWithObjectStoreTestCase extends AbstractIntegrationTestCas
 
   @Test
   public void storeOnGlobalStore() throws Exception {
-    flowRunner("storeMoneyOnGlobalStore").run();
+    assertStoreValue("storeMoneyOnGlobalStore", "bank");
+  }
 
-    ObjectStore<Long> objectStore = objectStoreManager.getObjectStore("bank");
+  @Test
+  public void storeOnPrivateStore() throws Exception {
+    assertStoreValue("storeMoneyOnPrivateStore", "burriedBarrel");
+  }
+
+  private void assertStoreValue(String flowName, String osName) throws Exception {
+    flowRunner(flowName).run();
+
+    ObjectStore<Long> objectStore = objectStoreManager.getObjectStore(osName);
     assertThat(objectStore.retrieve("money"), equalTo(1234L));
   }
 }
