@@ -8,14 +8,21 @@ package org.mule.test.components;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.mule.test.allure.AllureConstants.ObjectStoreFeature.OS_EXTENSION;
+import static org.mule.test.allure.AllureConstants.ObjectStoreFeature.ObjectStoreStory.OBJECT_STORE_AS_OPERATION_PARAMETER;
 import org.mule.runtime.api.store.ObjectStore;
 import org.mule.runtime.api.store.ObjectStoreManager;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import javax.inject.Inject;
 
+import io.qameta.allure.Description;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 import org.junit.Test;
 
+@Feature(OS_EXTENSION)
+@Story(OBJECT_STORE_AS_OPERATION_PARAMETER)
 public class ExtensionWithObjectStoreTestCase extends AbstractIntegrationTestCase {
 
   @Inject
@@ -27,11 +34,13 @@ public class ExtensionWithObjectStoreTestCase extends AbstractIntegrationTestCas
   }
 
   @Test
+  @Description("Operation has a parameter which points to a globally defined object store")
   public void storeOnGlobalStore() throws Exception {
     assertStoreValue("storeMoneyOnGlobalStore", "bank");
   }
 
   @Test
+  @Description("Operation has a parameter which points to a private ObjectStore defined inline")
   public void storeOnPrivateStore() throws Exception {
     assertStoreValue("storeMoneyOnPrivateStore", "burriedBarrel");
   }
