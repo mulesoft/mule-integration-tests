@@ -10,11 +10,14 @@ import static java.util.Collections.singletonList;
 import static org.mule.runtime.extension.api.soap.WebServiceDefinition.builder;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
 import org.mule.runtime.extension.api.soap.SoapServiceProvider;
+import org.mule.runtime.extension.api.soap.SoapServiceProviderConfigurationException;
 import org.mule.runtime.extension.api.soap.WebServiceDefinition;
 
 import java.util.List;
 
 public class TestServiceProvider implements SoapServiceProvider {
+
+  private static final String ERROR_PORT = "ERROR_PORT";
 
   @Parameter
   private String url;
@@ -28,4 +31,12 @@ public class TestServiceProvider implements SoapServiceProvider {
   public List<WebServiceDefinition> getWebServiceDefinitions() {
     return singletonList(builder().withId("1").withWsdlUrl(url).withService(service).withPort(port).build());
   }
+
+  @Override
+  public void validateConfiguration() throws SoapServiceProviderConfigurationException {
+    if (port.equals(ERROR_PORT)) {
+      throw new SoapServiceProviderConfigurationException("Error");
+    }
+  }
+
 }
