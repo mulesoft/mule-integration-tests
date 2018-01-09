@@ -9,13 +9,21 @@ package org.mule.test.integration.connection;
 import static java.util.Optional.of;
 import static org.mule.runtime.core.api.config.MuleDeploymentProperties.MULE_LAZY_CONNECTIONS_DEPLOYMENT_PROPERTY;
 import static org.mule.runtime.core.api.exception.Errors.Identifiers.CONNECTIVITY_ERROR_IDENTIFIER;
+import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
 import static org.mule.test.allure.AllureConstants.DeploymentConfiguration.DEPLOYMENT_CONFIGURATION;
 import static org.mule.test.allure.AllureConstants.DeploymentConfiguration.LazyConnectionsStory.LAZY_CONNECTIONS;
-import org.mule.tck.junit4.matcher.ErrorTypeMatcher;
+import org.mule.runtime.api.component.location.ComponentLocation;
+import org.mule.runtime.api.interception.InterceptionAction;
+import org.mule.runtime.api.interception.InterceptionEvent;
+import org.mule.runtime.api.interception.ProcessorInterceptor;
+import org.mule.runtime.api.interception.ProcessorInterceptorFactory;
+import org.mule.runtime.api.interception.ProcessorParameterValue;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.concurrent.CompletableFuture;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
@@ -32,13 +40,22 @@ public class LazyConnectionsTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void executedOperationThrowsConnectivityError() throws Exception {
-    testFlow("skipOperationFlowInvalidConfig");
-    testFlow("skipOperationFlowInvalidConfigFailsDeployment");
+    testPetStoreFlow("skipOperationFlowInvalidConfig");
+    testPetStoreFlow("skipOperationFlowInvalidConfigFailsDeployment");
   }
 
-  private void testFlow(String skipOperationFlowInvalidConfig) throws Exception {
-    flowRunner(skipOperationFlowInvalidConfig).withVariable("execute", true)
-        .runExpectingException(ErrorTypeMatcher.errorType("PETSTORE", CONNECTIVITY_ERROR_IDENTIFIER));
+  @Test
+  public void executeDbOperation() throws Exception {
+    testDbFlow("dbOperationFlow");
+  }
+
+  private void testPetStoreFlow(String flowName) throws Exception {
+    flowRunner(flowName).withVariable("execute", true)
+        .runExpectingException(errorType("PETSTORE", CONNECTIVITY_ERROR_IDENTIFIER));
+  }
+
+  private void testDbFlow(String flowName) throws Exception {
+    flowRunner(flowName).withVariable("execute", true).run();
   }
 
   @Override
@@ -46,5 +63,24 @@ public class LazyConnectionsTestCase extends AbstractIntegrationTestCase {
     Properties properties = new Properties();
     properties.put(MULE_LAZY_CONNECTIONS_DEPLOYMENT_PROPERTY, "true");
     return of(properties);
+  }
+
+  public static class TestInterceptorFactory implements ProcessorInterceptorFactory {
+
+    @Override
+    public ProcessorInterceptor get() {
+      return new ProcessorInterceptor() {
+
+        @Override
+        public CompletableFuture<InterceptionEvent> around(ComponentLocation location,
+                                                           Map<String, ProcessorParameterValue> parameters,
+                                                           InterceptionEvent event, InterceptionAction action) {
+          if (location.getComponentIdentifier().getIdentifier().getNamespace().equalsIgnoreCase("db")) {
+            return action.skip();
+          }
+          return action.proceed();
+        }
+      };
+    }
   }
 }

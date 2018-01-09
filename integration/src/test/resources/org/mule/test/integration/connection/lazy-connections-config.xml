@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:petstore="http://www.mulesoft.org/schema/mule/petstore"
+      xmlns:db="http://www.mulesoft.org/schema/mule/db"
       xmlns="http://www.mulesoft.org/schema/mule/core"
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+               http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
                http://www.mulesoft.org/schema/mule/petstore http://www.mulesoft.org/schema/mule/petstore/current/mule-petstore.xsd">
+
+
+    <object class="org.mule.test.integration.connection.LazyConnectionsTestCase$TestInterceptorFactory"/>
 
     <petstore:config name="petstore-invalid" cashierName="jim">
         <petstore:invalid-connection username="john" password="doe">
@@ -34,5 +39,16 @@
     <flow name="skipOperationFlowInvalidConfigFailsDeployment">
         <petstore:fail-connection config-ref="petstore-invalid-fails-deployment"/>
     </flow>
+
+    <db:config name="Database_Config" >
+        <db:my-sql-connection host="localhost" port="3036" user="test" password="test" database="fake_db" />
+    </db:config>
+
+    <flow name="dbOperationFlow" >
+        <db:select config-ref="Database_Config">
+            <db:sql >SELECT * FROM users;</db:sql>
+        </db:select>
+    </flow>
+
 
 </mule>
