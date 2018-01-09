@@ -16,6 +16,7 @@ import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
 import org.mule.runtime.extension.api.soap.SoapServiceProvider;
+import org.mule.runtime.extension.api.soap.SoapServiceProviderConfigurationException;
 import org.mule.runtime.extension.api.soap.WebServiceDefinition;
 
 import java.util.List;

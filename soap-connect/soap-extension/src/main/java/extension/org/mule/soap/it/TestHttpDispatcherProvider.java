@@ -7,6 +7,7 @@
 
 package extension.org.mule.soap.it;
 
+import static org.mule.runtime.api.connection.ConnectionValidationResult.failure;
 import static org.mule.runtime.api.connection.ConnectionValidationResult.success;
 import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.disposeIfNeeded;
 
@@ -34,6 +35,7 @@ import org.slf4j.LoggerFactory;
 public class TestHttpDispatcherProvider implements MessageDispatcherProvider<MessageDispatcher>, Lifecycle {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TestHttpDispatcherProvider.class);
+  private static final String INVALID_REQUESTER_NAME = "invalid";
 
   @Inject
   private HttpService httpService;
@@ -61,6 +63,9 @@ public class TestHttpDispatcherProvider implements MessageDispatcherProvider<Mes
 
   @Override
   public ConnectionValidationResult validate(MessageDispatcher connection) {
+    if (INVALID_REQUESTER_NAME.equals(requesterConfig)) {
+      return failure("invalid requester name", new Exception());
+    }
     return success();
   }
 
