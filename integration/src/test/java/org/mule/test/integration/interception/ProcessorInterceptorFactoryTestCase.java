@@ -547,6 +547,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
 
     @Override
     public void before(ComponentLocation location, Map<String, ProcessorParameterValue> parameters, InterceptionEvent event) {
+      parameters.values().forEach(ProcessorParameterValue::resolveValue);
       interceptionParameters.add(new InterceptionParameters(location, parameters, event));
       assertThat(expressionEvaluator, not(nullValue()));
       assertThat(lockFactory, not(nullValue()));
@@ -564,6 +565,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     public CompletableFuture<InterceptionEvent> around(ComponentLocation location,
                                                        Map<String, ProcessorParameterValue> parameters,
                                                        InterceptionEvent event, InterceptionAction action) {
+      parameters.values().forEach(ProcessorParameterValue::resolveValue);
       return actioner.apply(action);
     }
   }
@@ -622,6 +624,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
 
     @Override
     public void before(ComponentLocation location, Map<String, ProcessorParameterValue> parameters, InterceptionEvent event) {
+      parameters.values().forEach(ProcessorParameterValue::resolveValue);
       try {
         expressionEvaluator.evaluate("vars.addedVar", event.asBindingContext());
       } catch (ExpressionRuntimeException e) {
