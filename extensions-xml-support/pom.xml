@@ -129,6 +129,15 @@
             <artifactId>mule-objectstore-connector</artifactId>
             <version>${muleObjectStoreConnectorTestVersion}</version>
             <classifier>mule-plugin</classifier>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mule.module</groupId>
+            <artifactId>mule-java-module</artifactId>
+            <version>${muleJavaModuleTestVersion}</version>
+            <classifier>mule-plugin</classifier>
+            <scope>test</scope>
         </dependency>
 
         <dependency>

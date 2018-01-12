@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="module-using-java"
+        xmlns="http://www.mulesoft.org/schema/mule/module"
+        xmlns:java="http://www.mulesoft.org/schema/mule/java"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+           http://www.mulesoft.org/schema/mule/module http://www.mulesoft.org/schema/mule/module/current/mule-module.xsd
+           http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd">
+
+    <operation name="invoke-static-method">
+        <parameters>
+            <parameter name="class" type="string"/>
+            <parameter name="method" type="string"/>
+        </parameters>
+        <body>
+            <java:invoke-static class="#[vars.class]" method="#[vars.method]"/>
+        </body>
+        <output type="any"/>
+    </operation>
+
+    <operation name="invoke-method">
+        <parameters>
+            <parameter name="class" type="string"/>
+            <parameter name="method" type="string"/>
+            <parameter name="instance" type="string"/>
+        </parameters>
+        <body>
+            <java:invoke class="#[vars.class]" method="#[vars.method]" instance="#[vars.instance]"/>
+        </body>
+        <output type="any"/>
+    </operation>
+
+    <operation name="invoke-method-with-args">
+        <parameters>
+            <parameter name="class" type="string"/>
+            <parameter name="method" type="string"/>
+            <parameter name="instance" type="string"/>
+            <parameter name="args" type="string" use="OPTIONAL"/>
+        </parameters>
+        <body>
+            <java:invoke class="#[vars.class]" method="#[vars.method]" instance="#[vars.instance]">
+                <java:args>#[vars.args]</java:args>
+            </java:invoke>
+        </body>
+        <output type="any"/>
+    </operation>
+
+    <operation name="new-method">
+        <parameters>
+            <parameter name="class" type="string"/>
+            <parameter name="constructor" type="string"/>
+        </parameters>
+        <body>
+            <java:new class="#[vars.class]" constructor="#[vars.constructor]" />
+        </body>
+        <output type="any"/>
+    </operation>
+</module>
