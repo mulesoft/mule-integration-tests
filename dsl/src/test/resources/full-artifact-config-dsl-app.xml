@@ -2,20 +2,36 @@
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:db="http://www.mulesoft.org/schema/mule/db"
       xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+      xmlns:file="http://www.mulesoft.org/schema/mule/file"
       xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:os="http://www.mulesoft.org/schema/mule/os"
       xmlns:sockets="http://www.mulesoft.org/schema/mule/sockets"
       xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
       xmlns:wsc="http://www.mulesoft.org/schema/mule/wsc"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd http://www.mulesoft.org/schema/mule/sockets http://www.mulesoft.org/schema/mule/sockets/current/mule-sockets.xsd">
-
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd http://www.mulesoft.org/schema/mule/sockets http://www.mulesoft.org/schema/mule/sockets/current/mule-sockets.xsd">
     <configuration defaultErrorHandler-ref="referableHandler"/>
 
     <error-handler name="referableHandler">
-        <on-error-continue type="MULE:SOURCE_RESPONSE" logException="false" enableNotifications="false">
+        <on-error-continue enableNotifications="false" logException="false" type="MULE:SOURCE_RESPONSE">
             <logger level="TRACE"/>
         </on-error-continue>
     </error-handler>
+
+    <os:object-store name="persistentStore"
+                     entryTtl="1"
+                     entryTtlUnit="HOURS"
+                     maxEntries="10"
+                     persistent="true"
+                     expirationInterval="2"
+                     expirationIntervalUnit="HOURS"
+                     config-ref="persistentConfig"/>
+
+    <os:config name="persistentConfig" />
+
+    <file:config name="fileConfig">
+        <file:connection/>
+    </file:config>
 
     <wsc:config name="wscConfig">
         <expiration-policy maxIdleTime="1" timeUnit="MINUTES" />
@@ -28,7 +44,7 @@
     </wsc:config>
 
     <db:config name="dbConfig">
-        <db:derby-connection database="target/muleEmbeddedDB" create="true">
+        <db:derby-connection create="true" database="target/muleEmbeddedDB">
             <reconnection failsDeployment="true">
                  <reconnect count="1" frequency="0" />
             </reconnection>
@@ -40,10 +56,10 @@
         </db:derby-connection>
     </db:config>
 
-    <http:listener-config name="httpListener" basePath="/">
+    <http:listener-config basePath="/" name="httpListener">
         <http:listener-connection host="localhost" port="49019" protocol="HTTPS">
             <tls:context>
-                <tls:key-store path="ssltest-keystore.jks" keyPassword="changeit" password="changeit"/>
+                <tls:key-store keyPassword="changeit" password="changeit" path="ssltest-keystore.jks"/>
                 <tls:trust-store insecure="true"/>
                 <tls:revocation-check>
                     <tls:standard-revocation-check onlyEndEntities="true"/>
@@ -55,7 +71,7 @@
     <http:request-config name="httpRequester">
         <http:request-connection host="localhost" port="49020">
             <http:authentication>
-                <http:basic-authentication username="user" password="pass"/>
+                <http:basic-authentication password="pass" username="user"/>
             </http:authentication>
             <http:client-socket-properties>
                 <sockets:tcp-client-socket-properties connectionTimeout="1000" keepAlive="true"
@@ -65,8 +81,8 @@
         </http:request-connection>
     </http:request-config>
 
-    <flow name="testFlow" initialState="stopped" doc:id="docUUID">
-        <http:listener config-ref="httpListener" path="testBuilder" doc:id="docUUID">
+    <flow doc:id="docUUID" initialState="stopped" name="testFlow">
+        <http:listener config-ref="httpListener" doc:id="docUUID" path="testBuilder">
             <redelivery-policy maxRedeliveryCount="2" useSecureHash="true"/>
             <reconnect count="1" frequency="0"/>
             <http:response>
@@ -122,7 +138,7 @@
             </db:parameter-types>
         </db:bulk-insert>
 
-        <http:request config-ref="httpRequester" path="/nested" method="POST"/>
+        <http:request config-ref="httpRequester" method="POST" path="/nested"/>
 
         <db:insert config-ref="dbConfig">
             <db:sql>INSERT INTO PLANET(POSITION, NAME, DESCRIPTION) VALUES (777, 'Pluto', :description)</db:sql>
@@ -174,5 +190,18 @@
             </scheduling-strategy>
         </scheduler>
         <logger message="#[payload]"/>
+    </flow>
+
+    <flow name="fileListenerToObjectStore">
+        <file:listener config-ref="fileConfig">
+            <scheduling-strategy>
+                <fixed-frequency frequency="1" timeUnit="MINUTES"/>
+            </scheduling-strategy>
+        </file:listener>
+        <os:store failOnNullValue="#[vars.failOnNullValue]" key="key" objectStore="persistentStore">
+            <os:value>
+                #[payload]
+            </os:value>
+        </os:store>
     </flow>
 </mule>

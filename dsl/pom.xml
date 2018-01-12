@@ -61,6 +61,22 @@
 
         <dependency>
             <groupId>org.mule.connectors</groupId>
+            <artifactId>mule-objectstore-connector</artifactId>
+            <version>${muleObjectStoreConnectorTestVersion}</version>
+            <classifier>mule-plugin</classifier>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mule.connectors</groupId>
+            <artifactId>mule-file-connector</artifactId>
+            <version>${muleHttpConnectorTestVersion}</version>
+            <classifier>mule-plugin</classifier>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mule.connectors</groupId>
             <artifactId>mule-jms-connector</artifactId>
             <version>${muleJmsConnectorTestVersion}</version>
             <classifier>mule-plugin</classifier>

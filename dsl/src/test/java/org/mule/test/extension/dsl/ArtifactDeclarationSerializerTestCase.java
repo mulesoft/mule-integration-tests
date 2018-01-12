@@ -33,7 +33,6 @@ import static org.mule.runtime.extension.api.declaration.type.RedeliveryPolicyTy
 import static org.mule.runtime.extension.api.declaration.type.RedeliveryPolicyTypeBuilder.USE_SECURE_HASH;
 import static org.mule.runtime.extension.api.declaration.type.StreamingStrategyTypeBuilder.REPEATABLE_IN_MEMORY_BYTES_STREAM_ALIAS;
 import static org.mule.test.module.extension.internal.util.ExtensionsTestUtils.compareXML;
-
 import org.mule.extensions.jms.api.connection.caching.NoCachingConfiguration;
 import org.mule.runtime.app.declaration.api.ArtifactDeclaration;
 import org.mule.runtime.app.declaration.api.ParameterElementDeclaration;
@@ -83,7 +82,7 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
   }
 
   @Test
-  public void loadCustomConfigParameters() throws Exception {
+  public void loadCustomConfigParameters() {
     InputStream configIs = Thread.currentThread().getContextClassLoader().getResourceAsStream(configFile);
     ArtifactDeclarationXmlSerializer serializer = ArtifactDeclarationXmlSerializer.getDefault(dslContext);
 
@@ -189,11 +188,13 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
 
   private static ArtifactDeclaration createFullArtifactDeclaration() {
 
+    ElementDeclarer core = ElementDeclarer.forExtension("mule");
     ElementDeclarer db = ElementDeclarer.forExtension("Database");
     ElementDeclarer http = ElementDeclarer.forExtension("HTTP");
     ElementDeclarer sockets = ElementDeclarer.forExtension("Sockets");
-    ElementDeclarer core = ElementDeclarer.forExtension("mule");
     ElementDeclarer wsc = ElementDeclarer.forExtension("Web Service Consumer");
+    ElementDeclarer file = ElementDeclarer.forExtension("File");
+    ElementDeclarer os = ElementDeclarer.forExtension("ObjectStore");
 
     return newArtifact()
         .withCustomParameter("xmlns:doc", "http://www.mulesoft.org/schema/mule/documentation")
@@ -212,6 +213,26 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
                         .withParameter("level", "TRACE"))
                     .getDeclaration())
                 .getDeclaration())
+            .getDeclaration())
+        .withGlobalElement(os.newGlobalParameter("objectStore")
+            .withRefName("persistentStore")
+            .withValue(newObjectValue()
+                .ofType("org.mule.extension.objectstore.api.TopLevelObjectStore")
+                .withParameter("entryTtl", "1")
+                .withParameter("entryTtlUnit", "HOURS")
+                .withParameter("maxEntries", "10")
+                .withParameter("persistent", "true")
+                .withParameter("expirationInterval", "2")
+                .withParameter("expirationIntervalUnit", "HOURS")
+                .withParameter("config-ref", "persistentConfig")
+                .build())
+            .getDeclaration())
+        .withGlobalElement(os.newConfiguration("config")
+            .withRefName("persistentConfig")
+            .getDeclaration())
+        .withGlobalElement(file.newConfiguration("config")
+            .withRefName("fileConfig")
+            .withConnection(file.newConnection("connection").getDeclaration())
             .getDeclaration())
         .withGlobalElement(wsc.newConfiguration("config")
             .withRefName("wscConfig")
@@ -510,6 +531,20 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
             .withComponent(core.newOperation("logger")
                 .withParameterGroup(newParameterGroup()
                     .withParameter("message", "#[payload]").getDeclaration())
+                .getDeclaration())
+            .getDeclaration())
+        .withGlobalElement(core.newConstruct("flow").withRefName("fileListenerToObjectStore")
+            .withComponent(file.newSource("listener")
+                .withConfig("fileConfig")
+                // TODO Missing scheduling strategy on purpose to test automatic default. Add once EE-5855 is done
+                .getDeclaration())
+            .withComponent(os.newOperation("store")
+                .withParameterGroup(newParameterGroup()
+                    .withParameter("key", "key")
+                    .withParameter("failOnNullValue", "#[vars.failOnNullValue]")
+                    .withParameter("objectStore", "persistentStore")
+                    .withParameter("value", "#[payload]")
+                    .getDeclaration())
                 .getDeclaration())
             .getDeclaration())
         .getDeclaration();
