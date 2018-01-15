@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:aggregators="http://www.mulesoft.org/schema/mule/aggregators"
+      xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xmlns:os="http://www.mulesoft.org/schema/mule/os"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+      http://www.mulesoft.org/schema/mule/aggregators http://www.mulesoft.org/schema/mule/aggregators/current/mule-aggregators.xsd
+      http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
+      http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd">
+
+    <os:object-store name="globalObjectStore"
+                     persistent="true"/>
+
+    <flow name="globalObjectStoreAggregatorFlow">
+        <aggregators:group-based-aggregator name="globalObjectStoreAggregator" content="#[payload]" groupId="#[vars.gid]" groupSize="10" objectStore="globalObjectStore">
+            <aggregators:aggregation-complete>
+                <test:processor/>
+            </aggregators:aggregation-complete>
+        </aggregators:group-based-aggregator>
+    </flow>
+
+    <flow name="aggregatorWithMaxSizeFlow">
+        <aggregators:time-based-aggregator name="aggregatorWithMaxSize" content="#[payload]" period="1000" maxSize="3"/>
+        <logger/>
+    </flow>
+
+    <flow name="aggregatorWithMaxSizeListenerFlow">
+        <aggregators:aggregator-listener aggregatorName="aggregatorWithMaxSize" includeTimedOutGroups="false"/>
+        <flow-ref name="aggregatorOnListenerFlow"/>
+    </flow>
+
+    <flow name="aggregatorOnListenerFlow">
+        <logger/>
+    </flow>
+</mule>

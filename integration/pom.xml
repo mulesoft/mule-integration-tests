@@ -190,6 +190,13 @@
             <classifier>mule-plugin</classifier>
             <version>${muleObjectStoreConnectorTestVersion}</version>
         </dependency>
+        <dependency>
+            <groupId>org.mule.modules</groupId>
+            <artifactId>mule-aggregators-module</artifactId>
+            <classifier>mule-plugin</classifier>
+            <version>${muleAggregatorsModuleTestVersion}</version>
+            <scope>provided</scope>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework</groupId>
