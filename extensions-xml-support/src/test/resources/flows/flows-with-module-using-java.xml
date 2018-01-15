@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:module-using-java="http://www.mulesoft.org/schema/mule/module-using-java"
+      xsi:schemaLocation="
+       http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+       http://www.mulesoft.org/schema/mule/module-using-java http://www.mulesoft.org/schema/mule/module-using-java/current/mule-module-using-java.xsd">
+
+    <flow name="invoke-static-method-flow">
+        <module-using-java:invoke-static-method class="java.util.Collections" method="emptySet()" />
+    </flow>
+    
+    <flow name="invoke-method-flow">
+        <module-using-java:invoke-method class="java.util.HashMap" method="#[vars.method]" instance="#[vars.instance]" />
+    </flow>
+
+    <flow name="invoke-method-with-args-flow">
+        <module-using-java:invoke-method-with-args class="java.util.HashMap" method="#[vars.method]" args="#[vars.args]" instance="#[vars.instance]" />
+    </flow>
+
+    <flow name="new-method-flow">
+        <module-using-java:new-method class="java.util.HashMap" constructor="HashMap()" />
+    </flow>
+
+    <flow name="new-method-custom-class-flow">
+        <module-using-java:new-method class="org.mule.test.functional.model.TestElement" constructor="TestElement()" />
+    </flow>
+
+    <flow name="invoke-method-custom-class-flow">
+        <module-using-java:invoke-method class="org.mule.test.functional.model.TestElement" method="#[vars.method]" instance="#[vars.instance]" />
+    </flow>
+</mule>
