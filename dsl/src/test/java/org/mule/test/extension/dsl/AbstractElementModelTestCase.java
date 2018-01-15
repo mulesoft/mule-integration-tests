@@ -107,7 +107,7 @@ public abstract class AbstractElementModelTestCase extends MuleArtifactFunctiona
     assertThat(component.isPresent(), is(true));
     return component.get();
   }
-    
+
   protected <T> DslElementModel<T> getChild(DslElementModel<? extends NamedObject> parent, ComponentConfiguration component) {
     return getChild(parent, component.getIdentifier());
   }
