@@ -22,6 +22,7 @@
 
     <flow name="aggregatorWithMaxSizeFlow">
         <aggregators:time-based-aggregator name="aggregatorWithMaxSize" content="#[payload]" period="1000" maxSize="3"/>
+        <logger/>
     </flow>
 
     <flow name="aggregatorWithMaxSizeListenerFlow">
