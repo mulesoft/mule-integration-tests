@@ -46,7 +46,7 @@ import org.junit.Test;
 @Story(SEARCH_CONFIGURATION)
 public class LazyInitConfigurationComponentLocatorTestCase extends AbstractIntegrationTestCase {
 
-  private static final int TOTAL_NUMBER_OF_LOCATIONS = 52;
+  private static final int TOTAL_NUMBER_OF_LOCATIONS = 54;
   @Inject
   private Registry registry;
 
@@ -138,7 +138,10 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
                                   "aggregatorWithMaxSizeListenerFlow/processors/0",
                                   "aggregatorOnListenerFlow",
                                   "aggregatorOnListenerFlow/processors/0",
-                                  "aggregatorWithMaxSizeFlow/processors/1"));
+                                  "aggregatorWithMaxSizeFlow/processors/1",
+
+                                  "justAnotherFlowThatShouldNotBeInitialized",
+                                  "justAnotherFlowThatShouldNotBeInitialized/processors/0"));
     assertThat(locator.find(builder().globalName("myFlow").build()), is(empty()));
     assertThat(locator.find(builder().globalName("anotherFlow").build()), is(empty()));
   }
@@ -208,6 +211,14 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
     assertThat(locator.find(builder().globalName("tlsContextRef").build()), is(not(empty())));
   }
 
+  @Test
+  public void lazyMuleContextShouldInitializeOnlyTheProcessorRequested() {
+    lazyComponentInitializer.initializeComponent(builder().globalName("flowLvl2").addProcessorsPart().addIndexPart(1).build());
+
+    assertThat(locator.find(builder().globalName("flowLvl2").build()), is(not(empty())));
+    assertThat(locator.find(builder().globalName("flowLvl2").addProcessorsPart().addIndexPart(0).build()), is(empty()));
+    assertThat(locator.find(builder().globalName("flowLvl2").addProcessorsPart().addIndexPart(1).build()), is(not(empty())));
+  }
 
   @Description("Lazy init should create spring components without dependencies")
   @Test
@@ -257,6 +268,8 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
 
     assertThat(locator.find(builder().globalName("aggregatorWithMaxSizeFlow").addProcessorsPart().addIndexPart(1).build()),
                is(empty()));
+
+    assertThat(locator.find(builder().globalName("justAnotherFlowThatShouldNotBeInitialized").build()), is(empty()));
   }
 
   @Test
