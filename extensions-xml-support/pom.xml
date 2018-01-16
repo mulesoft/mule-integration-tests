@@ -137,7 +137,8 @@
             <artifactId>mule-java-module</artifactId>
             <version>${muleJavaModuleTestVersion}</version>
             <classifier>mule-plugin</classifier>
-            <scope>test</scope>
+            <!-- TODO MULE-14466: BeanCreationException could not autowire JavaModuleLoadingCache -->
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
