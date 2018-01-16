@@ -88,4 +88,14 @@
         </parse-template>
     </flow>
 
+    <flow name="nestedExpressionsFlow">
+        <parse-template>
+            <content>Eran #[vars.quantity] #[vars.individuals] que venian de la #[vars.origin]</content>
+        </parse-template>
+    </flow>
+
+    <flow name="nestedExpressionsFlowFromFile">
+        <parse-template location="org/mule/processors/song.ptem"/>
+    </flow>
+
 </mule>

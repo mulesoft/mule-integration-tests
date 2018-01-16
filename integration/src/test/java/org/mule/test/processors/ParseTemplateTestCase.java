@@ -6,6 +6,8 @@
  */
 package org.mule.test.processors;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.Assert.assertEquals;
 import org.mule.runtime.api.message.Message;
@@ -155,6 +157,20 @@ public class ParseTemplateTestCase extends AbstractIntegrationTestCase {
     String previousPayload = (String) event.getMessage().getPayload().getValue();
     assertEquals(PARSED_DW_EXPRESSION, savedTypedValue.getValue());
     assertEquals(startingPayload, previousPayload);
+  }
+
+  @Test
+  public void testNestedExpressions() throws Exception {
+    CoreEvent event = flowRunner("nestedExpressionsFlow").withVariable("individuals", "alpinos").withVariable("quantity", "3")
+        .withVariable("origin", "guerra").run();
+    assertThat(event.getMessage().getPayload().getValue(), equalTo("Eran 3 alpinos que venian de la guerra"));
+
+  }
+
+  @Test
+  public void testNestedExpressionsFromFile() throws Exception {
+    CoreEvent event = flowRunner("nestedExpressionsFlowFromFile").withVariable("chorusPhrase", "tiaitai rataplam").run();
+    assertThat(event.getMessage().getPayload().getValue(), equalTo("tiaitai rataplam, que venian de la guerra"));
   }
 
 
