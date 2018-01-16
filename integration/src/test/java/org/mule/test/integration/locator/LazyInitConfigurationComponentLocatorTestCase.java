@@ -46,6 +46,7 @@ import org.junit.Test;
 @Story(SEARCH_CONFIGURATION)
 public class LazyInitConfigurationComponentLocatorTestCase extends AbstractIntegrationTestCase {
 
+  private static final int TOTAL_NUMBER_OF_LOCATIONS = 54;
   @Inject
   private Registry registry;
 
@@ -57,7 +58,8 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
   protected String[] getConfigFiles() {
     return new String[] {"org/mule/test/integration/locator/component-locator-config.xml",
         "org/mule/test/integration/locator/component-locator-levels-config.xml",
-        "org/mule/test/integration/locator/component-locator-spring-config.xml"};
+        "org/mule/test/integration/locator/component-locator-spring-config.xml",
+        "org/mule/test/integration/locator/component-locator-reference-component-models.xml"};
   }
 
   @Override
@@ -123,7 +125,23 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
                                   "requestConfig/0",
                                   "tlsContextRef",
                                   "tlsContextRef/0",
-                                  "springConfig"));
+                                  "springConfig",
+                                  "globalObjectStore",
+                                  "globalObjectStoreAggregatorFlow",
+                                  "globalObjectStoreAggregatorFlow/processors/0",
+                                  "globalObjectStoreAggregatorFlow/processors/0/route/0",
+                                  "globalObjectStoreAggregatorFlow/processors/0/route/0/processors/0",
+                                  "aggregatorWithMaxSizeFlow",
+                                  "aggregatorWithMaxSizeFlow/processors/0",
+                                  "aggregatorWithMaxSizeListenerFlow",
+                                  "aggregatorWithMaxSizeListenerFlow/source",
+                                  "aggregatorWithMaxSizeListenerFlow/processors/0",
+                                  "aggregatorOnListenerFlow",
+                                  "aggregatorOnListenerFlow/processors/0",
+                                  "aggregatorWithMaxSizeFlow/processors/1",
+
+                                  "justAnotherFlowThatShouldNotBeInitialized",
+                                  "justAnotherFlowThatShouldNotBeInitialized/processors/0"));
     assertThat(locator.find(builder().globalName("myFlow").build()), is(empty()));
     assertThat(locator.find(builder().globalName("anotherFlow").build()), is(empty()));
   }
@@ -146,10 +164,10 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
   @Test
   public void lazyMuleContextRefreshesConfigurationComponentLoader() {
     lazyComponentInitializer.initializeComponent(builder().globalName("myFlow").build());
-    assertThat(locator.findAllLocations(), hasSize(39));
+    assertThat(locator.findAllLocations(), hasSize(TOTAL_NUMBER_OF_LOCATIONS));
 
     lazyComponentInitializer.initializeComponent(builder().globalName("anotherFlow").build());
-    assertThat(locator.findAllLocations(), hasSize(39));
+    assertThat(locator.findAllLocations(), hasSize(TOTAL_NUMBER_OF_LOCATIONS));
 
     assertThat(locator.find(builder().globalName("myFlow").build()), is(empty()));
     assertThat(locator.find(builder().globalName("anotherFlow").build()),
@@ -163,7 +181,7 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
       String location = componentLocation.getLocation();
       return location.equals("myFlow/source/0") || location.equals("myFlow/processors/2/processors/0");
     });
-    assertThat(muleContext.getConfigurationComponentLocator().findAllLocations(), hasSize(39));
+    assertThat(muleContext.getConfigurationComponentLocator().findAllLocations(), hasSize(TOTAL_NUMBER_OF_LOCATIONS));
 
     lazyComponentInitializer.initializeComponents(componentLocation -> {
       String location = componentLocation.getLocation();
@@ -193,6 +211,14 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
     assertThat(locator.find(builder().globalName("tlsContextRef").build()), is(not(empty())));
   }
 
+  @Test
+  public void lazyMuleContextShouldInitializeOnlyTheProcessorRequested() {
+    lazyComponentInitializer.initializeComponent(builder().globalName("flowLvl2").addProcessorsPart().addIndexPart(1).build());
+
+    assertThat(locator.find(builder().globalName("flowLvl2").build()), is(not(empty())));
+    assertThat(locator.find(builder().globalName("flowLvl2").addProcessorsPart().addIndexPart(0).build()), is(empty()));
+    assertThat(locator.find(builder().globalName("flowLvl2").addProcessorsPart().addIndexPart(1).build()), is(not(empty())));
+  }
 
   @Description("Lazy init should create spring components without dependencies")
   @Test
@@ -230,6 +256,20 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
     assertThat("springConfig was not configured", secondAppContext, notNullValue());
 
     assertThat(firstObj, not(sameInstance(secondObj)));
+  }
+
+  @Description("Lazy init should create components that are references by other components, when the reference is not a top level element")
+  @Test
+  public void componentModelReferencesToNonTopLevelElement() {
+    lazyComponentInitializer.initializeComponent(builder().globalName("aggregatorWithMaxSizeListenerFlow").build());
+    assertThat(locator.find(builder().globalName("aggregatorWithMaxSizeFlow").build()), is(not(empty())));
+    assertThat(locator.find(builder().globalName("aggregatorWithMaxSizeFlow").addProcessorsPart().addIndexPart(0).build()),
+               is(not(empty())));
+
+    assertThat(locator.find(builder().globalName("aggregatorWithMaxSizeFlow").addProcessorsPart().addIndexPart(1).build()),
+               is(empty()));
+
+    assertThat(locator.find(builder().globalName("justAnotherFlowThatShouldNotBeInitialized").build()), is(empty()));
   }
 
   @Test
