@@ -45,7 +45,7 @@
     <muleDbConnectorTestVersion>1.2.0-SNAPSHOT</muleDbConnectorTestVersion>
     <muleFtpConnectorTestVersion>1.2.0-SNAPSHOT</muleFtpConnectorTestVersion>
     <muleFileConnectorTestVersion>1.2.0-SNAPSHOT</muleFileConnectorTestVersion>
-    <muleJmsConnectorTestVersion>1.1.0-SNAPSHOT</muleJmsConnectorTestVersion>
+    <muleJmsConnectorTestVersion>1.2.0-SNAPSHOT</muleJmsConnectorTestVersion>
     <muleWscConnectorTestVersion>1.1.0-SNAPSHOT</muleWscConnectorTestVersion>
     <muleOauthModuleTestVersion>1.2.0-SNAPSHOT</muleOauthModuleTestVersion>
     <muleSocketsConnectorTestVersion>1.2.0-SNAPSHOT</muleSocketsConnectorTestVersion>
