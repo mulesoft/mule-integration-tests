@@ -37,7 +37,7 @@
     <muleScriptingModuleTestVersion>1.2.0-SNAPSHOT</muleScriptingModuleTestVersion>
     <muleFileCommonsTestVersion>1.2.0-SNAPSHOT</muleFileCommonsTestVersion>
     
-    <muleHttpConnectorTestVersion>1.1.0-SNAPSHOT</muleHttpConnectorTestVersion>
+    <muleHttpConnectorTestVersion>1.2.0-SNAPSHOT</muleHttpConnectorTestVersion>
     <muleFileConnectorTestVersion>1.1.0-SNAPSHOT</muleFileConnectorTestVersion>
     <muleObjectStoreConnectorTestVersion>1.1.0-SNAPSHOT</muleObjectStoreConnectorTestVersion>
     <muleJavaModuleTestVersion>1.0.0-SNAPSHOT</muleJavaModuleTestVersion>
