@@ -11,7 +11,6 @@ import static org.mule.runtime.api.connection.ConnectionValidationResult.failure
 import static org.mule.runtime.api.connection.ConnectionValidationResult.success;
 import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.disposeIfNeeded;
 
-import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.lifecycle.InitialisationException;
@@ -19,7 +18,8 @@ import org.mule.runtime.api.lifecycle.Lifecycle;
 import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
 import org.mule.runtime.extension.api.client.ExtensionsClient;
-import org.mule.runtime.extension.api.soap.MessageDispatcherProvider;
+import org.mule.runtime.extension.api.soap.ContextAwareMessageDispatcherProvider;
+import org.mule.runtime.extension.api.soap.DispatchingContext;
 import org.mule.runtime.extension.api.soap.message.MessageDispatcher;
 import org.mule.runtime.http.api.HttpService;
 import org.mule.runtime.http.api.client.HttpClient;
@@ -32,16 +32,13 @@ import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TestHttpDispatcherProvider implements MessageDispatcherProvider<MessageDispatcher>, Lifecycle {
+public class TestHttpDispatcherProvider extends ContextAwareMessageDispatcherProvider<MessageDispatcher> implements Lifecycle {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TestHttpDispatcherProvider.class);
   private static final String INVALID_REQUESTER_NAME = "invalid";
 
   @Inject
   private HttpService httpService;
-
-  @Inject
-  private ExtensionsClient client;
 
   private HttpClient httpClient;
 
@@ -50,10 +47,10 @@ public class TestHttpDispatcherProvider implements MessageDispatcherProvider<Mes
   private String requesterConfig;
 
   @Override
-  public MessageDispatcher connect() throws ConnectionException {
+  public MessageDispatcher connect(DispatchingContext ctx) {
     return requesterConfig == null ?
              new DefaultHttpMessageDispatcher(httpClient) :
-             new HttpConfigBasedMessageDispatcher(requesterConfig, client);
+             new HttpConfigBasedMessageDispatcher(requesterConfig, ctx.getExtensionsClient());
   }
 
   @Override
