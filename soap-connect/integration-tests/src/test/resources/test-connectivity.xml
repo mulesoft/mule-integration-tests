@@ -16,7 +16,7 @@
     <soap:config name="failureOnDispatcherProvider">
         <soap:test-connection url="${address}?wsdl" service="TestService" port="TestPort">
             <soap:transport>
-                <soap:test-http-dispatcher-provider requesterConfig="invalid"/>
+                <soap:http-extensions-client-provider requesterConfig="invalid"/>
             </soap:transport>
         </soap:test-connection>
     </soap:config>

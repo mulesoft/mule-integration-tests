@@ -15,9 +15,9 @@ import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.api.lifecycle.Lifecycle;
+import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
-import org.mule.runtime.extension.api.client.ExtensionsClient;
 import org.mule.runtime.extension.api.soap.ContextAwareMessageDispatcherProvider;
 import org.mule.runtime.extension.api.soap.DispatchingContext;
 import org.mule.runtime.extension.api.soap.message.MessageDispatcher;
@@ -32,18 +32,18 @@ import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TestHttpDispatcherProvider extends ContextAwareMessageDispatcherProvider<MessageDispatcher> implements Lifecycle {
+@Alias("http-extensions-client-provider")
+public class TestExtensionsClientHttpDispatcherProvider extends ContextAwareMessageDispatcherProvider<MessageDispatcher> {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(TestHttpDispatcherProvider.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(TestExtensionsClientHttpDispatcherProvider.class);
+  private static final String INVALID_REQUESTER_NAME = "invalid";
 
-  @Inject
-  private HttpService httpService;
-
-  private HttpClient httpClient;
+  @Parameter
+  private String requesterConfig;
 
   @Override
   public MessageDispatcher connect(DispatchingContext ctx) {
-     return new DefaultHttpMessageDispatcher(httpClient);
+    return new HttpConfigBasedMessageDispatcher(requesterConfig, ctx.getExtensionsClient());
   }
 
   @Override
@@ -53,28 +53,9 @@ public class TestHttpDispatcherProvider extends ContextAwareMessageDispatcherPro
 
   @Override
   public ConnectionValidationResult validate(MessageDispatcher connection) {
+    if (INVALID_REQUESTER_NAME.equals(requesterConfig)) {
+      return failure("invalid requester name", new Exception());
+    }
     return success();
-  }
-
-  @Override
-  public void dispose() {
-    // Do nothing
-  }
-
-  @Override
-  public void initialise() throws InitialisationException {
-    httpClient = httpService.getClientFactory().create(new HttpClientConfiguration.Builder()
-                                                         .setName("workday")
-                                                         .build());
-  }
-
-  @Override
-  public void stop() throws MuleException {
-    httpClient.stop();
-  }
-
-  @Override
-  public void start() throws MuleException {
-    httpClient.start();
   }
 }
