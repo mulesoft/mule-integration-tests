@@ -34,5 +34,4 @@ public class SoapExtensionWithCustomHeadersTestCase extends AbstractSimpleServic
   public void serviceProviderWithEnumParameter() throws Exception {
     assertThat(TestServiceProviderWithCustomHeaders.ENVIRONMENT, is(PROD));
   }
-
 }
