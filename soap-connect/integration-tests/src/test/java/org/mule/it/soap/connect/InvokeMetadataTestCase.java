@@ -14,11 +14,11 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.fail;
 import static org.mule.runtime.extension.api.util.ExtensionMetadataTypeUtils.getId;
 import static org.mule.runtime.module.extension.soap.internal.loader.SoapInvokeOperationDeclarer.ATTACHMENTS_PARAM;
 import static org.mule.runtime.module.extension.soap.internal.loader.SoapInvokeOperationDeclarer.BODY_PARAM;
 import static org.mule.runtime.module.extension.soap.internal.loader.SoapInvokeOperationDeclarer.HEADERS_PARAM;
-
 import org.mule.metadata.api.model.BinaryType;
 import org.mule.metadata.api.model.BooleanType;
 import org.mule.metadata.api.model.MetadataType;
@@ -37,6 +37,7 @@ import org.mule.runtime.api.metadata.resolving.MetadataResult;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -57,8 +58,13 @@ public class InvokeMetadataTestCase extends SoapFootballExtensionArtifactFunctio
     assertThat(result.isSuccess(), is(true));
     Set<MetadataKey> keys = result.get().getKeysByCategory().values().iterator().next();
     assertThat(keys, hasSize(2));
-    MetadataKey leaguesService = keys.iterator().next();
-    assertThat(leaguesService.getId(), is("leagues"));
+    Optional<MetadataKey> service = keys.stream().filter(key -> key.getId().equals("leagues"))
+        .findFirst();
+    if (!service.isPresent()) {
+      fail("Expected service with id [leagues] but none was found");
+    }
+
+    MetadataKey leaguesService = service.get();
     assertThat(leaguesService.getChilds(), hasSize(3));
     List<String> operationKeysNames = leaguesService.getChilds().stream().map(MetadataKey::getId).collect(toList());
     assertThat(operationKeysNames, containsInAnyOrder("getLeagues", "getLeagueTeams", "getPresidentInfo"));
