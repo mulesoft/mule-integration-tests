@@ -43,7 +43,7 @@
     <muleJavaModuleTestVersion>1.0.0</muleJavaModuleTestVersion>
     <muleAggregatorsModuleTestVersion>1.0.0</muleAggregatorsModuleTestVersion>
     <muleDbConnectorTestVersion>1.2.0</muleDbConnectorTestVersion>
-    <muleFtpConnectorTestVersion>1.1.0-SNAPSHOT</muleFtpConnectorTestVersion>
+    <muleFtpConnectorTestVersion>1.1.0</muleFtpConnectorTestVersion>
     <muleFileConnectorTestVersion>1.1.0</muleFileConnectorTestVersion>
     <muleJmsConnectorTestVersion>1.1.0-SNAPSHOT</muleJmsConnectorTestVersion>
     <muleWscConnectorTestVersion>1.1.0-SNAPSHOT</muleWscConnectorTestVersion>
