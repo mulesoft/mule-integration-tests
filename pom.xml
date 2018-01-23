@@ -126,6 +126,7 @@
                           <exclude>org.mule.services:*</exclude>
                           <exclude>org.mule.tools.maven:mule-classloader-model</exclude>
                           <exclude>org.mule.modules:mule-module-cors-kernel</exclude>
+                          <exclude>org.mule.modules:mule-aggregators-module</exclude>
                       </excludes>
                     </requireReleaseDeps>
                     <requireReleaseVersion>
