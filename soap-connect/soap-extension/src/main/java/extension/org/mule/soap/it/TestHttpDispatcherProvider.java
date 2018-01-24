@@ -35,13 +35,9 @@ import org.slf4j.LoggerFactory;
 public class TestHttpDispatcherProvider implements MessageDispatcherProvider<MessageDispatcher>, Lifecycle {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TestHttpDispatcherProvider.class);
-  private static final String INVALID_REQUESTER_NAME = "invalid";
 
   @Inject
   private HttpService httpService;
-
-  @Inject
-  private ExtensionsClient client;
 
   private HttpClient httpClient;
 
@@ -51,22 +47,12 @@ public class TestHttpDispatcherProvider implements MessageDispatcherProvider<Mes
 
   @Override
   public MessageDispatcher connect() throws ConnectionException {
-    return requesterConfig == null ?
-             new DefaultHttpMessageDispatcher(httpClient) :
-             new HttpConfigBasedMessageDispatcher(requesterConfig, client);
+    return new DefaultHttpMessageDispatcher(httpClient);
   }
 
   @Override
   public void disconnect(MessageDispatcher connection) {
     disposeIfNeeded(connection, LOGGER);
-  }
-
-  @Override
-  public ConnectionValidationResult validate(MessageDispatcher connection) {
-    if (INVALID_REQUESTER_NAME.equals(requesterConfig)) {
-      return failure("invalid requester name", new Exception());
-    }
-    return success();
   }
 
   @Override

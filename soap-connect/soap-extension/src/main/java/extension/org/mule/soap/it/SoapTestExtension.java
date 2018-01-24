@@ -12,7 +12,7 @@ import org.mule.runtime.extension.api.soap.annotation.SoapMessageDispatcherProvi
 import org.mule.runtime.module.extension.soap.api.runtime.connection.transport.DefaultHttpMessageDispatcherProvider;
 
 @Soap({TestServiceProvider.class, TestServiceProviderWithCustomHeaders.class})
-@SoapMessageDispatcherProviders(TestHttpDispatcherProvider.class)
+@SoapMessageDispatcherProviders({TestHttpDispatcherProvider.class, TestExtensionsClientHttpDispatcherProvider.class})
 @Extension(name = "simple")
 public class SoapTestExtension {
 
