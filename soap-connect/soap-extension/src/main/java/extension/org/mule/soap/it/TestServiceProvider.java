@@ -39,4 +39,7 @@ public class TestServiceProvider implements SoapServiceProvider {
     }
   }
 
+  public String getPort() {
+    return port;
+  }
 }

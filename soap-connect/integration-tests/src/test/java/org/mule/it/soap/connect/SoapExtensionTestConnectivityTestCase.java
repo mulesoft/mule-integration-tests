@@ -60,6 +60,14 @@ public class SoapExtensionTestConnectivityTestCase extends AbstractSimpleService
     ConnectionValidationResult result =
         service.testConnection(Location.builder().globalName("failureOnDispatcherProvider").build());
     assertThat(result.isValid(), is(false));
-    assertThat(result.getMessage(), containsString("invalid"));
+    assertThat(result.getMessage(), containsString("invalid requester name"));
+  }
+
+  @Test
+  public void failureOnDispatcherProviderWithServiceProvider() {
+    ConnectionValidationResult result =
+        service.testConnection(Location.builder().globalName("failureOnDispatcherProviderUsingService").build());
+    assertThat(result.isValid(), is(false));
+    assertThat(result.getMessage(), containsString("invalid port name"));
   }
 }
