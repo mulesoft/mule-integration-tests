@@ -20,6 +20,7 @@ import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
 import org.mule.runtime.extension.api.soap.ContextAwareMessageDispatcherProvider;
 import org.mule.runtime.extension.api.soap.DispatchingContext;
+import org.mule.runtime.extension.api.soap.SoapServiceProvider;
 import org.mule.runtime.extension.api.soap.message.MessageDispatcher;
 import org.mule.runtime.http.api.HttpService;
 import org.mule.runtime.http.api.client.HttpClient;
@@ -52,9 +53,14 @@ public class TestExtensionsClientHttpDispatcherProvider extends ContextAwareMess
   }
 
   @Override
-  public ConnectionValidationResult validate(MessageDispatcher connection) {
+  public ConnectionValidationResult validate(MessageDispatcher connection, SoapServiceProvider provider) {
     if (INVALID_REQUESTER_NAME.equals(requesterConfig)) {
       return failure("invalid requester name", new Exception());
+    }
+    if (provider instanceof TestServiceProvider) {
+      if (((TestServiceProvider) provider).getPort().equals("invalidPort")) {
+        return failure("invalid port name", new Exception());
+      }
     }
     return success();
   }

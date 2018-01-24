@@ -51,12 +51,6 @@ public class TestHttpDispatcherProvider extends ContextAwareMessageDispatcherPro
     disposeIfNeeded(connection, LOGGER);
   }
 
-  @Override
-  public ConnectionValidationResult validate(MessageDispatcher connection) {
-    return success();
-  }
-
-  @Override
   public void dispose() {
     // Do nothing
   }
