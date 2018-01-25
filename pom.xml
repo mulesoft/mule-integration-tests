@@ -32,7 +32,7 @@
     <muleSoapServiceTestVersion>1.1.1-SNAPSHOT</muleSoapServiceTestVersion>
     <muleExtensionTestSoapTestVersion>1.1.1-SNAPSHOT</muleExtensionTestSoapTestVersion>
 
-    <muleSpringModuleTestVersion>1.1.0-SNAPSHOT</muleSpringModuleTestVersion>
+    <muleSpringModuleTestVersion>1.1.1-SNAPSHOT</muleSpringModuleTestVersion>
     <muleValidationModuleTestVersion>1.1.1-SNAPSHOT</muleValidationModuleTestVersion>
     <muleScriptingModuleTestVersion>1.1.1-SNAPSHOT</muleScriptingModuleTestVersion>
     <muleFileCommonsTestVersion>1.1.1-SNAPSHOT</muleFileCommonsTestVersion>
