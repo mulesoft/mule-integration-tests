@@ -51,7 +51,8 @@
                          name="httpRequester"
                          requestStreamingMode="AUTO"
                          sendCorrelationId="NEVER"
-                         sendBodyMode="AUTO">
+                         sendBodyMode="AUTO"
+                         preserveHeadersCase="false">
       <http:request-connection connectionIdleTimeout="30000"
                                 host="localhost"
                                 maxConnections="-1"
