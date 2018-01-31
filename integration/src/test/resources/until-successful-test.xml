@@ -20,7 +20,7 @@
     <flow name="full-config-with-mp">
         <async>
             <try>
-                <until-successful maxRetries="2" millisBetweenRetries="1000">
+                <until-successful maxRetries="2" millisBetweenRetries="100">
                     <flow-ref name="target-mp" />
                     <validation:is-true expression="#[mel:regex('(?i).*error').length > 0]"/>
                 </until-successful>
@@ -37,7 +37,7 @@
     <flow name="retry-endpoint-config">
         <async>
             <until-successful maxRetries="2"
-                              millisBetweenRetries="1000">
+                              millisBetweenRetries="100">
                 <flow-ref name="target-flow"/>
                 <validation:is-true expression="#[mel:regex('(?i).*error').length > 0]"/>
             </until-successful>
@@ -53,7 +53,7 @@
     </flow>
 
     <flow name="synchronous">
-        <until-successful millisBetweenRetries="1000">
+        <until-successful millisBetweenRetries="100">
             <test:processor throwException="true"/>
         </until-successful>
     </flow>

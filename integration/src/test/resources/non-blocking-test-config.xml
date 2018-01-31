@@ -250,7 +250,7 @@
 
     <flow name="untilSuccessfulWithRetryExceptionBefore">
         <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]"/>
-        <until-successful millisBetweenRetries="1000">
+        <until-successful millisBetweenRetries="100">
             <test:throw exception="java.lang.RuntimeException" error="ANY" count="2"/>
             <test:non-blocking-processor/>
         </until-successful>
@@ -259,7 +259,7 @@
 
     <flow name="untilSuccessfulWithRetryExceptionAfter">
         <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]"/>
-        <until-successful millisBetweenRetries="1000">
+        <until-successful millisBetweenRetries="100">
             <test:non-blocking-processor/>
             <test:throw exception="java.lang.RuntimeException" error="ANY" count="2"/>
         </until-successful>
@@ -268,7 +268,7 @@
 
     <flow name="untilSuccessfulWithRetryNonBlockingAfterScope">
         <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]"/>
-        <until-successful millisBetweenRetries="1000">
+        <until-successful millisBetweenRetries="100">
             <test:throw exception="java.lang.RuntimeException" error="ANY" count="2"/>
         </until-successful>
         <test:non-blocking-processor/>
@@ -276,7 +276,7 @@
 
     <flow name="untilSuccessfulWithRetryTransactional">
         <test:assert-intercepting responseSameTask="true" responseExpression="#[mel:assertPayload()]"/>
-        <until-successful millisBetweenRetries="1000">
+        <until-successful millisBetweenRetries="100">
             <test:throw exception="java.lang.RuntimeException" error="ANY" count="2"/>
             <test:non-blocking-processor/>
         </until-successful>
