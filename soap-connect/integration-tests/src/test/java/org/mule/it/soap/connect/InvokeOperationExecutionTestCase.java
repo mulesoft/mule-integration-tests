@@ -30,6 +30,33 @@ public class InvokeOperationExecutionTestCase extends SoapFootballExtensionArtif
   }
 
   @Test
+  public void operationWithImplicitBody() throws Exception {
+    Message message =
+        flowRunner("getBestLeague").withPayload(getBodyXml("getBestLeague", "<name>Best League</name>")).keepStreamsOpen().run()
+            .getMessage();
+    String response = getBodyXml("getBestLeagueResponse", "<league>La Liga</league>");
+    assertSimilarXml(response, (String) message.getPayload().getValue());
+  }
+
+  @Test
+  public void operationWithImplicitBodyButExplicitMessage() throws Exception {
+    Message message =
+        flowRunner("getBestLeagueWithExplicitMessage").withPayload(getBodyXml("getBestLeague", "<name>Best League</name>"))
+            .keepStreamsOpen().run()
+            .getMessage();
+    String response = getBodyXml("getBestLeagueResponse", "<league>La Liga</league>");
+    assertSimilarXml(response, (String) message.getPayload().getValue());
+  }
+
+  @Test
+  public void operationWithImplicitBodyWithHeaders() throws Exception {
+    String requestBody = getBodyXml("getLeagueTeams", "<name>La Liga</name>");
+    Message message = flowRunner("getLeagueTeamsWithImplicitBody").withPayload(requestBody).keepStreamsOpen().run().getMessage();
+    String response = getBodyXml("getLeagueTeamsResponse", "<team>Barcelona</team><team>Real Madrid</team><team>Atleti</team>");
+    assertSimilarXml(response, (String) message.getPayload().getValue());
+  }
+
+  @Test
   public void uploadAttachment() throws Exception {
     Message message = flowRunner("uploadResult")
         .withPayload(getBodyXml("uploadResult", ""))

@@ -25,6 +25,41 @@
         <object-to-string-transformer/>
     </flow>
 
+    <flow name="getBestLeague">
+        <logger message="#[payload]" level="ERROR"/>
+        <soap:invoke config-ref="leagues" service="leagues" operation="getBestLeague"/>
+        <set-payload value="#[payload.body]"/>
+        <object-to-string-transformer/>
+    </flow>
+
+    <flow name="getBestLeagueWithExplicitMessage">
+        <logger message="#[payload]" level="ERROR"/>
+        <soap:invoke config-ref="leagues" service="leagues" operation="getBestLeague">
+            <soap:message/>
+        </soap:invoke>
+        <set-payload value="#[payload.body]"/>
+        <object-to-string-transformer/>
+    </flow>
+
+    <flow name="getLeagueTeamsWithImplicitBody">
+        <soap:invoke config-ref="leagues" service="leagues" operation="getLeagueTeams">
+            <soap:message>
+                <soap:headers>
+                    #[
+                    %dw 2.0
+                    output application/xml
+                    ns con http://services.connect.soap.it.mule.org/
+                    ---
+                    "headers": {
+                    con#auth: "Authorized"
+                    }]
+                </soap:headers>
+            </soap:message>
+        </soap:invoke>
+        <set-payload value="#[payload.body]"/>
+        <object-to-string-transformer/>
+    </flow>
+
     <flow name="getPresidentInfo">
         <soap:invoke config-ref="leagues" service="leagues" operation="getPresidentInfo"/>
         <set-payload value="#[payload.body]"/>
