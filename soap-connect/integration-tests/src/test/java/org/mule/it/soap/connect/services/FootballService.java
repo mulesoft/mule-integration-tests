@@ -63,6 +63,12 @@ public class FootballService {
   }
 
   @WebResult(name = "league")
+  @WebMethod(action = "getBestLeague")
+  public List<String> getBestLeague(@WebParam(name = "name") String name) {
+    return asList(LA_LIGA);
+  }
+
+  @WebResult(name = "league")
   @WebMethod(action = "getLeagues")
   public List<String> getLeagues() {
     return asList(CALCIO_FRIENDLY_NAME, LA_LIGA);
