@@ -65,9 +65,9 @@ public class InvokeMetadataTestCase extends SoapFootballExtensionArtifactFunctio
     }
 
     MetadataKey leaguesService = service.get();
-    assertThat(leaguesService.getChilds(), hasSize(3));
+    assertThat(leaguesService.getChilds(), hasSize(4));
     List<String> operationKeysNames = leaguesService.getChilds().stream().map(MetadataKey::getId).collect(toList());
-    assertThat(operationKeysNames, containsInAnyOrder("getLeagues", "getLeagueTeams", "getPresidentInfo"));
+    assertThat(operationKeysNames, containsInAnyOrder("getLeagues", "getLeagueTeams", "getPresidentInfo", "getBestLeague"));
   }
 
   @Test
