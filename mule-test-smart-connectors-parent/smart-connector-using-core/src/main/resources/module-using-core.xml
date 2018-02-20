@@ -59,4 +59,11 @@
         <output type="string"/>
     </operation>
 
+    <operation name="raise-error-op">
+        <body>
+            <mule:raise-error type="MODULE-USING-CORE:RAISED" description="Expected error" />
+        </body>
+        <output type="string"/>
+    </operation>
+
  </module>

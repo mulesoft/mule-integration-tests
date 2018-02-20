@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
     xmlns:test="http://www.mulesoft.org/schema/mule/test"
+    xmlns:http="http://www.mulesoft.org/schema/mule/http"
     xmlns:heisenberg="http://www.mulesoft.org/schema/mule/heisenberg"
     xmlns:sc="http://www.mulesoft.org/schema/mule/module-using-core"
     xmlns:sc-using-sc="http://www.mulesoft.org/schema/mule/module-using-sc"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+               http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
                http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
                http://www.mulesoft.org/schema/mule/heisenberg http://www.mulesoft.org/schema/mule/heisenberg/current/mule-heisenberg.xsd
                http://www.mulesoft.org/schema/mule/module-using-core http://www.mulesoft.org/schema/mule/module-using-core/current/mule-module-using-core.xsd
@@ -18,6 +20,8 @@
             <logger message="error handled globally"/>
         </on-error-propagate>
     </error-handler>
+
+    <http:request-config name="HTTP_Request_configuration"/>
 
     <heisenberg:config name="heisenberg" cancer="true" money="1000000" finalHealth="CANCER">
         <heisenberg:enemies>
@@ -62,6 +66,15 @@
         <heisenberg:call-gus-fring />
     </flow>
 
+    <flow name="flowFailingOperation">
+        <heisenberg:cure-cancer />
+    </flow>
+
+    <flow name="flowUnknownStatusCodeHttpRequest">
+        <http:request method="GET" config-ref="HTTP_Request_configuration" url="https://httpbin.org/status/418"/>
+    </flow>
+
+
     <flow name="expressionsInInterception">
         <logger />
     </flow>
@@ -78,8 +91,16 @@
         <sc-using-sc:proxy-set-payload-hardcoded />
     </flow>
 
+    <flow name="scFailingOperation">
+        <sc:raise-error-op/>
+    </flow>
+
     <flow name="flowFailing">
         <test:processor throwException="true"/>
+    </flow>
+
+    <flow name="flowRaise">
+        <raise-error type="MULE:CONNECTIVITY" description="Expected error" />
     </flow>
 
     <flow name="flowFailingWithErrorHandler">

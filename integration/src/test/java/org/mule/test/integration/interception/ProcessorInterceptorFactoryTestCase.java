@@ -11,7 +11,6 @@ import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.instanceOf;
@@ -19,25 +18,23 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 import static org.mule.functional.api.exception.ExpectedError.none;
 import static org.mule.runtime.api.interception.ProcessorInterceptorFactory.INTERCEPTORS_ORDER_REGISTRY_KEY;
 import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
 import static org.mule.test.allure.AllureConstants.InterceptonApi.INTERCEPTION_API;
 import static org.mule.test.allure.AllureConstants.InterceptonApi.ComponentInterceptionStory.COMPONENT_INTERCEPTION_STORY;
 import static org.mule.test.heisenberg.extension.HeisenbergConnectionProvider.getActiveConnections;
-import static org.mule.test.heisenberg.extension.HeisenbergConnectionProvider.getConnects;
-import static org.mule.test.heisenberg.extension.HeisenbergConnectionProvider.getDisconnects;
 import static org.mule.test.heisenberg.extension.HeisenbergOperations.CALL_GUS_MESSAGE;
 
+import org.mule.extension.http.api.request.validator.ResponseValidatorException;
 import org.mule.functional.api.exception.ExpectedError;
 import org.mule.functional.api.exception.FunctionalTestException;
 import org.mule.runtime.api.artifact.Registry;
 import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.el.MuleExpressionLanguage;
+import org.mule.runtime.api.exception.DefaultMuleException;
 import org.mule.runtime.api.exception.ErrorTypeRepository;
-import org.mule.runtime.api.interception.InterceptionAction;
 import org.mule.runtime.api.interception.InterceptionEvent;
 import org.mule.runtime.api.interception.ProcessorInterceptor;
 import org.mule.runtime.api.interception.ProcessorInterceptorFactory;
@@ -48,30 +45,23 @@ import org.mule.runtime.api.scheduler.SchedulerService;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.runtime.http.api.HttpService;
 import org.mule.test.AbstractIntegrationTestCase;
-import org.mule.test.heisenberg.extension.HeisenbergConnection;
 import org.mule.test.heisenberg.extension.HeisenbergExtension;
 import org.mule.test.heisenberg.extension.exception.HeisenbergException;
 import org.mule.test.heisenberg.extension.model.KillParameters;
-import org.mule.test.runner.RunnerDelegateTo;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
-import java.util.function.Function;
 
 import javax.inject.Inject;
 
@@ -81,22 +71,10 @@ import io.qameta.allure.Story;
 
 @Feature(INTERCEPTION_API)
 @Story(COMPONENT_INTERCEPTION_STORY)
-@RunnerDelegateTo(Parameterized.class)
 public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTestCase {
 
   @Rule
   public ExpectedError expectedError = none();
-
-  private final boolean mutateEventBefore;
-
-  public ProcessorInterceptorFactoryTestCase(boolean mutateEventBefore) {
-    this.mutateEventBefore = mutateEventBefore;
-  }
-
-  @Parameters(name = "{0}")
-  public static Collection<Object> data() {
-    return asList(true, false);
-  }
 
   @Override
   protected String getConfigFile() {
@@ -108,8 +86,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     Map<String, Object> objects = new HashMap<>();
 
     objects.put("_AfterWithCallbackInterceptorFactory", new AfterWithCallbackInterceptorFactory());
-    objects.put("_HasInjectedAttributesInterceptorFactory",
-                new HasInjectedAttributesInterceptorFactory(mutateEventBefore));
+    objects.put("_HasInjectedAttributesInterceptorFactory", new HasInjectedAttributesInterceptorFactory(false));
     objects.put("_EvaluatesExpressionInterceptorFactory", new EvaluatesExpressionInterceptorFactory());
 
     objects.put(INTERCEPTORS_ORDER_REGISTRY_KEY,
@@ -123,7 +100,6 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
   @Before
   public void before() {
     getActiveConnections().clear();
-    HasInjectedAttributesInterceptor.actioner = action -> action.proceed();
     HasInjectedAttributesInterceptor.interceptionParameters.clear();
     AfterWithCallbackInterceptor.callback = (event, thrown) -> {
     };
@@ -194,87 +170,6 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     assertThat(killInterceptionParameter.getParameters().get("goodbyeMessage").resolveValue(), is("Hasta la vista, baby"));
     assertThat(killInterceptionParameter.getParameters().get("killParameters").resolveValue(),
                is(instanceOf(KillParameters.class)));
-  }
-
-  @Test
-  @Description("The connection was fetched on the interceptor, and the operation uses the connection obtained there rather then fetching it again")
-  public void resolvedConnectionParam() throws Exception {
-    int connectsBefore = getConnects();
-    int disconnectsBefore = getDisconnects();
-
-    flowRunner("callSaul").run();
-
-    List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
-    assertThat(interceptionParameters, hasSize(1));
-
-    InterceptionParameters killInterceptionParameter = interceptionParameters.get(0);
-
-    assertThat(killInterceptionParameter.getParameters().keySet(), containsInAnyOrder("targetValue", "config-ref", "connection"));
-    assertThat(killInterceptionParameter.getParameters().get("config-ref").resolveValue(), is("heisenberg"));
-    assertThat(killInterceptionParameter.getParameters().get("connection").resolveValue(),
-               is(instanceOf(HeisenbergConnection.class)));
-
-    assertThat(getActiveConnections(), empty());
-    assertThat(getConnects() - connectsBefore, is(mutateEventBefore ? 2 : 1));
-    assertThat(getDisconnects() - disconnectsBefore, is(mutateEventBefore ? 2 : 1));
-  }
-
-  @Test
-  @Description("The connection was fetched on the interceptor, and released by the interceptor")
-  public void resolvedConnectionParamSkips() throws Exception {
-    int connectsBefore = getConnects();
-    int disconnectsBefore = getDisconnects();
-
-    HasInjectedAttributesInterceptor.actioner = action -> action.skip();
-
-    flowRunner("callSaul").run();
-
-    List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
-    assertThat(interceptionParameters, hasSize(1));
-
-    InterceptionParameters killInterceptionParameter = interceptionParameters.get(0);
-
-    assertThat(killInterceptionParameter.getParameters().keySet(), containsInAnyOrder("targetValue", "config-ref", "connection"));
-    assertThat(killInterceptionParameter.getParameters().get("config-ref").resolveValue(), is("heisenberg"));
-    assertThat(killInterceptionParameter.getParameters().get("connection").resolveValue(),
-               is(instanceOf(HeisenbergConnection.class)));
-
-    assertThat(getActiveConnections(), empty());
-    assertThat(getConnects() - connectsBefore, is(mutateEventBefore ? 2 : 1));
-    assertThat(getDisconnects() - disconnectsBefore, is(mutateEventBefore ? 2 : 1));
-  }
-
-  @Test
-  @Description("The connection was fetched on the interceptor, and released by the interceptor")
-  public void resolvedConnectionParamFails() throws Exception {
-    int connectsBefore = getConnects();
-    int disconnectsBefore = getDisconnects();
-
-    HasInjectedAttributesInterceptor.actioner = action -> action.fail(new RuntimeException());
-
-    try {
-      flowRunner("callSaul").run();
-      fail("Expected an exception. Refer to ReactiveInterceptorAdapterTestCase");
-    } catch (Exception e) {
-      // expected
-    } finally {
-      List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
-      assertThat(interceptionParameters, hasSize(2));
-
-      InterceptionParameters killInterceptionParameter = interceptionParameters.get(0);
-
-      assertThat(killInterceptionParameter.getParameters().keySet(),
-                 containsInAnyOrder("targetValue", "config-ref", "connection"));
-      assertThat(killInterceptionParameter.getParameters().get("config-ref").resolveValue(), is("heisenberg"));
-      assertThat(killInterceptionParameter.getParameters().get("connection").resolveValue(),
-                 is(instanceOf(HeisenbergConnection.class)));
-
-      assertThat(getActiveConnections(), empty());
-      assertThat(getConnects() - connectsBefore, is(mutateEventBefore ? 2 : 1));
-      assertThat(getDisconnects() - disconnectsBefore, is(mutateEventBefore ? 2 : 1));
-
-      // the 2nd one is for the global error handler, it is tested separately
-    }
   }
 
   @Test
@@ -463,6 +358,126 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
   }
 
   @Test
+  @Description("Processors in global error handlers are intercepted correctly when raise-error is used")
+  public void globalErrorHandlerRaise() throws Exception {
+    expectedError.expectCause(instanceOf(DefaultMuleException.class));
+
+    AtomicBoolean afterCallbackCalledForFailingMP = new AtomicBoolean(false);
+    AtomicBoolean afterCallbackCalledForErrorHandlingMp = new AtomicBoolean(false);
+
+    AfterWithCallbackInterceptor.callback = (event, thrown) -> {
+      if (!afterCallbackCalledForFailingMP.getAndSet(true)) {
+        assertThat(thrown.get(), instanceOf(DefaultMuleException.class));
+      } else {
+        afterCallbackCalledForErrorHandlingMp.set(true);
+      }
+    };
+
+    try {
+      flowRunner("flowRaise").run();
+    } finally {
+      assertThat(afterCallbackCalledForFailingMP.get(), is(true));
+      assertThat(afterCallbackCalledForErrorHandlingMp.get(), is(true));
+
+      List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
+      assertThat(interceptionParameters, hasSize(2));
+
+      InterceptionParameters mpInGlobalErrorHandler = interceptionParameters.get(1);
+      assertThat(mpInGlobalErrorHandler.getLocation().getLocation(), is("globalErrorHandler/0/processors/0"));
+    }
+  }
+
+  @Test
+  @Description("Processors in global error handlers are intercepted correctly for errors in operations")
+  public void globalErrorHandlerOperation() throws Exception {
+    expectedError.expectCause(instanceOf(HeisenbergException.class));
+
+    AtomicBoolean afterCallbackCalledForFailingMP = new AtomicBoolean(false);
+    AtomicBoolean afterCallbackCalledForErrorHandlingMp = new AtomicBoolean(false);
+
+    AfterWithCallbackInterceptor.callback = (event, thrown) -> {
+      if (!afterCallbackCalledForFailingMP.getAndSet(true)) {
+        assertThat(thrown.get(), instanceOf(HeisenbergException.class));
+      } else {
+        afterCallbackCalledForErrorHandlingMp.set(true);
+      }
+    };
+
+    try {
+      flowRunner("flowFailingOperation").run();
+    } finally {
+      assertThat(afterCallbackCalledForFailingMP.get(), is(true));
+      assertThat(afterCallbackCalledForErrorHandlingMp.get(), is(true));
+
+      List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
+      assertThat(interceptionParameters, hasSize(2));
+
+      InterceptionParameters mpInGlobalErrorHandler = interceptionParameters.get(1);
+      assertThat(mpInGlobalErrorHandler.getLocation().getLocation(), is("globalErrorHandler/0/processors/0"));
+    }
+  }
+
+  @Test
+  @Description("Processors in global error handlers are intercepted correctly for an unknown status code errors in http request")
+  public void globalErrorHandlerUnknownStatusCodeHttpRequest() throws Exception {
+    expectedError.expectCause(instanceOf(ResponseValidatorException.class));
+
+    AtomicBoolean afterCallbackCalledForFailingMP = new AtomicBoolean(false);
+    AtomicBoolean afterCallbackCalledForErrorHandlingMp = new AtomicBoolean(false);
+
+    AfterWithCallbackInterceptor.callback = (event, thrown) -> {
+      if (!afterCallbackCalledForFailingMP.getAndSet(true)) {
+        assertThat(thrown.get(), instanceOf(ResponseValidatorException.class));
+      } else {
+        afterCallbackCalledForErrorHandlingMp.set(true);
+      }
+    };
+
+    try {
+      flowRunner("flowUnknownStatusCodeHttpRequest").run();
+    } finally {
+      assertThat(afterCallbackCalledForFailingMP.get(), is(true));
+      assertThat(afterCallbackCalledForErrorHandlingMp.get(), is(true));
+
+      List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
+      assertThat(interceptionParameters, hasSize(2));
+
+      InterceptionParameters mpInGlobalErrorHandler = interceptionParameters.get(1);
+      assertThat(mpInGlobalErrorHandler.getLocation().getLocation(), is("globalErrorHandler/0/processors/0"));
+    }
+  }
+
+  @Test
+  @Description("Processors in global error handlers are intercepted correctly for errors in XML SDK operations")
+  public void globalErrorHandlerScOperation() throws Exception {
+    expectedError.expectErrorType("MODULE-USING-CORE", "RAISED");
+
+    AtomicBoolean afterCallbackCalledForFailingMP = new AtomicBoolean(false);
+    AtomicBoolean afterCallbackCalledForErrorHandlingMp = new AtomicBoolean(false);
+
+    AfterWithCallbackInterceptor.callback = (event, thrown) -> {
+      if (!afterCallbackCalledForFailingMP.getAndSet(true)) {
+        assertThat(thrown.get(), instanceOf(DefaultMuleException.class));
+      } else {
+        afterCallbackCalledForErrorHandlingMp.set(true);
+      }
+    };
+
+    try {
+      flowRunner("scFailingOperation").run();
+    } finally {
+      assertThat(afterCallbackCalledForFailingMP.get(), is(true));
+      assertThat(afterCallbackCalledForErrorHandlingMp.get(), is(true));
+
+      List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
+      assertThat(interceptionParameters, hasSize(3));
+
+      InterceptionParameters mpInGlobalErrorHandler = interceptionParameters.get(2);
+      assertThat(mpInGlobalErrorHandler.getLocation().getLocation(), is("globalErrorHandler/0/processors/0"));
+    }
+  }
+
+  @Test
   @Description("Processors in global error handlers are intercepted correctly when error is in referenced flow")
   public void globalErrorHandlerWithFlowRef() throws Exception {
     expectedError.expectCause(instanceOf(FunctionalTestException.class));
@@ -521,8 +536,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
 
   public static class HasInjectedAttributesInterceptor implements ProcessorInterceptor {
 
-    private static Function<InterceptionAction, CompletableFuture<InterceptionEvent>> actioner = action -> action.proceed();
-    private static final List<InterceptionParameters> interceptionParameters = new LinkedList<>();
+    static final List<InterceptionParameters> interceptionParameters = new LinkedList<>();
 
     private MuleExpressionLanguage expressionEvaluator;
     private LockFactory lockFactory;
@@ -561,13 +575,6 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
       }
     }
 
-    @Override
-    public CompletableFuture<InterceptionEvent> around(ComponentLocation location,
-                                                       Map<String, ProcessorParameterValue> parameters,
-                                                       InterceptionEvent event, InterceptionAction action) {
-      parameters.values().forEach(ProcessorParameterValue::resolveValue);
-      return actioner.apply(action);
-    }
   }
 
   public static class InterceptionParameters {
@@ -650,7 +657,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
 
   public static class AfterWithCallbackInterceptor implements ProcessorInterceptor {
 
-    private static BiConsumer<InterceptionEvent, Optional<Throwable>> callback;
+    static BiConsumer<InterceptionEvent, Optional<Throwable>> callback;
 
     @Override
     public void after(ComponentLocation location, InterceptionEvent event, Optional<Throwable> thrown) {
