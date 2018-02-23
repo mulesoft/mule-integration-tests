@@ -66,6 +66,12 @@
         <heisenberg:call-gus-fring />
     </flow>
 
+    <flow name="executeKillWithClient">
+        <heisenberg:execute-remote-kill extension="HTTP" configName="HTTP_Request_configuration" operation="request" >
+            <heisenberg:parameters>#[{'url': 'https://httpbin.org/status/200'}]</heisenberg:parameters>
+        </heisenberg:execute-remote-kill>
+    </flow>
+
     <flow name="flowFailingOperation">
         <heisenberg:cure-cancer />
     </flow>
@@ -123,4 +129,5 @@
     <sub-flow name="failing-sub-flow">
         <test:processor throwException="true"/>
     </sub-flow>
+
 </mule>

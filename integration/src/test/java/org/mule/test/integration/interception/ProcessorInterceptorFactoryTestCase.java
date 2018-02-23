@@ -156,6 +156,14 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
   }
 
   @Test
+  public void operationThatUsesExtensionsClientInternally() throws Exception {
+    assertThat(flowRunner("executeKillWithClient").run().getMessage().getPayload().getValue().toString(),
+               is("Now he sleeps with the fishes."));
+
+    assertThat(HasInjectedAttributesInterceptor.interceptionParameters.size(), is(1));
+  }
+
+  @Test
   public void resolvedComplexParametersOperationParameters() throws Exception {
     flowRunner("killWithCustomMessage").withVariable("goodbye", "Hasta la vista, baby").run();
 
