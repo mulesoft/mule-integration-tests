@@ -38,13 +38,13 @@
     <muleFileCommonsTestVersion>1.1.1-SNAPSHOT</muleFileCommonsTestVersion>
     
     <muleHttpConnectorTestVersion>1.1.1-SNAPSHOT</muleHttpConnectorTestVersion>
-    <muleFileConnectorTestVersion>1.1.1-SNAPSHOT</muleFileConnectorTestVersion>
+    <muleFileConnectorTestVersion>1.1.2-SNAPSHOT</muleFileConnectorTestVersion>
     <muleObjectStoreConnectorTestVersion>1.1.1-SNAPSHOT</muleObjectStoreConnectorTestVersion>
     <muleJavaModuleTestVersion>1.0.0-SNAPSHOT</muleJavaModuleTestVersion>
     <muleAggregatorsModuleTestVersion>1.0.0-SNAPSHOT</muleAggregatorsModuleTestVersion>
     <muleDbConnectorTestVersion>1.2.2-SNAPSHOT</muleDbConnectorTestVersion>
     <muleFtpConnectorTestVersion>1.1.1-SNAPSHOT</muleFtpConnectorTestVersion>
-    <muleFileConnectorTestVersion>1.1.1-SNAPSHOT</muleFileConnectorTestVersion>
+    <muleFileConnectorTestVersion>1.1.2-SNAPSHOT</muleFileConnectorTestVersion>
     <muleJmsConnectorTestVersion>1.1.1-SNAPSHOT</muleJmsConnectorTestVersion>
     <muleWscConnectorTestVersion>1.1.1-SNAPSHOT</muleWscConnectorTestVersion>
     <muleOauthModuleTestVersion>1.1.1-SNAPSHOT</muleOauthModuleTestVersion>
