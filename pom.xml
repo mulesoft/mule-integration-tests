@@ -26,7 +26,7 @@
   </modules>
 
   <properties>
-    <muleSchedulerServiceTestVersion>1.1.1-SNAPSHOT</muleSchedulerServiceTestVersion>
+    <muleSchedulerServiceTestVersion>1.1.2-SNAPSHOT</muleSchedulerServiceTestVersion>
     <muleHttpServiceTestVersion>1.1.1-SNAPSHOT</muleHttpServiceTestVersion>
     <muleOAuthServiceTestVersion>1.1.1-SNAPSHOT</muleOAuthServiceTestVersion>
     <muleSoapServiceTestVersion>1.1.1-SNAPSHOT</muleSoapServiceTestVersion>
