@@ -17,7 +17,7 @@ public class StaticOAuthExtensionTestCase extends OAuthExtensionTestCase {
 
   @Before
   public void setOwnerId() throws Exception {
-    ownerId = CUSTOM_OWNER_ID;
-    storedOwnerId = CUSTOM_OWNER_ID + "-oauth";
+    ownerId = getCustomOwnerId();
+    storedOwnerId = getCustomOwnerId() + "-oauth";
   }
 }

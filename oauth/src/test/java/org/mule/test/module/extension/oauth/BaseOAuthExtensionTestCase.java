@@ -27,6 +27,7 @@ import static org.mule.service.oauth.internal.OAuthConstants.ACCESS_TOKEN_PARAME
 import static org.mule.service.oauth.internal.OAuthConstants.EXPIRES_IN_PARAMETER;
 import static org.mule.service.oauth.internal.OAuthConstants.REFRESH_TOKEN_PARAMETER;
 import static org.mule.tck.probe.PollingProber.check;
+
 import org.mule.runtime.api.store.ObjectStore;
 import org.mule.runtime.extension.api.connectivity.oauth.AuthorizationCodeState;
 import org.mule.runtime.oauth.api.state.ResourceOwnerOAuthContext;
@@ -35,12 +36,11 @@ import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.module.extension.AbstractExtensionFunctionalTestCase;
 import org.mule.test.oauth.TestOAuthConnectionState;
 
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import com.google.common.collect.ImmutableMap;
-
 import java.io.IOException;
 import java.util.Map;
 
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.google.common.collect.ImmutableMap;
 import org.apache.http.client.fluent.Response;
 import org.junit.Rule;
 
@@ -50,7 +50,6 @@ public abstract class BaseOAuthExtensionTestCase extends AbstractExtensionFuncti
   protected static final String LOCAL_AUTH_PATH = "dance";
   protected static final String CALLBACK_PATH = "callback";
   protected static final String OWNER_ID_VARIABLE_NAME = "ownerId";
-  protected static final String CUSTOM_OWNER_ID = "MG";
   protected static final String DEFAULT_OWNER_ID = "default";
   protected static final String TOKEN_PATH = "token";
   protected static final String STATE = "myState";
@@ -129,8 +128,11 @@ public abstract class BaseOAuthExtensionTestCase extends AbstractExtensionFuncti
 
   protected void simulateDanceStart(int port) throws IOException {
     wireMock.stubFor(get(urlMatching("/" + LOCAL_AUTH_PATH)).willReturn(aResponse().withStatus(OK.getStatusCode())));
-    Map<String, String> queryParams = ImmutableMap.<String, String>builder()
-        .put("resourceOwnerId", ownerId)
+    ImmutableMap.Builder<String, String> queryParamsBuilder = ImmutableMap.builder();
+    if (ownerId != null) {
+      queryParamsBuilder.put("resourceOwnerId", ownerId);
+    }
+    Map<String, String> queryParams = queryParamsBuilder
         .put("state", STATE)
         .build();
 
@@ -146,8 +148,12 @@ public abstract class BaseOAuthExtensionTestCase extends AbstractExtensionFuncti
   protected void simulateCallback(int port) {
     final String authCode = "chu chu ua, chu chu ua";
 
-    Map<String, String> queryParams = ImmutableMap.<String, String>builder()
-        .put(STATE_PARAMETER, String.format("%s:resourceOwnerId=%s", STATE, ownerId))
+    ImmutableMap.Builder<String, String> queryParamsBuilder = ImmutableMap.builder();
+    if (ownerId != null) {
+      queryParamsBuilder.put(STATE_PARAMETER, String.format("%s:resourceOwnerId=%s", STATE, ownerId));
+    }
+
+    Map<String, String> queryParams = queryParamsBuilder
         .put(CODE_PARAMETER, authCode)
         .build();
 
@@ -210,5 +216,9 @@ public abstract class BaseOAuthExtensionTestCase extends AbstractExtensionFuncti
     assertThat(state.getRefreshToken().get(), is(REFRESH_TOKEN));
     assertThat(state.getState().get(), is(STATE));
     assertThat(state.getResourceOwnerId(), is(ownerId));
+  }
+
+  protected String getCustomOwnerId() {
+    return "MG";
   }
 }

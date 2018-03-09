@@ -21,4 +21,8 @@ public class DefaultOwnerOAuthExtensionTestCase extends OAuthExtensionTestCase {
     storedOwnerId = DEFAULT_OWNER_ID + "-oauth";
   }
 
+  @Override
+  protected String getCustomOwnerId() {
+    return null;
+  }
 }
