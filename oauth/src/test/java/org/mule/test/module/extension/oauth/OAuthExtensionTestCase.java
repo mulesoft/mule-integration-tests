@@ -25,10 +25,9 @@ import org.mule.test.oauth.TestOAuthConnection;
 import org.mule.test.oauth.TestOAuthConnectionState;
 import org.mule.test.oauth.TestOAuthExtension;
 
+import com.github.tomakehurst.wiremock.client.WireMock;
 import org.junit.Before;
 import org.junit.Test;
-
-import com.github.tomakehurst.wiremock.client.WireMock;
 
 public class OAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
 
@@ -39,8 +38,8 @@ public class OAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
 
   @Before
   public void setOwnerId() throws Exception {
-    ownerId = CUSTOM_OWNER_ID;
-    storedOwnerId = CUSTOM_OWNER_ID + "-oauth";
+    ownerId = getCustomOwnerId();
+    storedOwnerId = getCustomOwnerId() + "-oauth";
   }
 
   @Test
@@ -54,7 +53,7 @@ public class OAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
     simulateCallback();
 
     TestOAuthConnectionState connection = ((TestOAuthConnection) flowRunner("getConnection")
-        .withVariable(OWNER_ID_VARIABLE_NAME, CUSTOM_OWNER_ID)
+        .withVariable(OWNER_ID_VARIABLE_NAME, getCustomOwnerId())
         .run().getMessage().getPayload().getValue()).getState();
 
     assertConnectionState(connection);
@@ -68,7 +67,7 @@ public class OAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
     receiveAccessTokenAndUserConnection();
     WireMock.reset();
     stubTokenUrl(accessTokenContent(ACCESS_TOKEN + "-refreshed"));
-    flowRunner("refreshToken").withVariable(OWNER_ID_VARIABLE_NAME, CUSTOM_OWNER_ID).run();
+    flowRunner("refreshToken").withVariable(OWNER_ID_VARIABLE_NAME, getCustomOwnerId()).run();
     wireMock.verify(postRequestedFor(urlPathEqualTo("/" + TOKEN_PATH)));
   }
 
@@ -81,7 +80,7 @@ public class OAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
     try {
       initialiserEvent = getInitialiserEvent(muleContext);
       TestOAuthExtension config = getConfigurationFromRegistry("oauth", CoreEvent.builder(initialiserEvent)
-          .addVariable(OWNER_ID_VARIABLE_NAME, CUSTOM_OWNER_ID)
+          .addVariable(OWNER_ID_VARIABLE_NAME, getCustomOwnerId())
           .build(), muleContext);
 
       check(REQUEST_TIMEOUT, 500, () -> {
