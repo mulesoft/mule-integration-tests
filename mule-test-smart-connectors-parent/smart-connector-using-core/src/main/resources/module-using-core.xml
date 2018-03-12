@@ -66,4 +66,11 @@
         <output type="string"/>
     </operation>
 
+    <operation name="flow-stack-store">
+        <body>
+            <mule:flow-ref name="subFlow"/>
+        </body>
+        <output type="string"/>
+    </operation>
+
  </module>

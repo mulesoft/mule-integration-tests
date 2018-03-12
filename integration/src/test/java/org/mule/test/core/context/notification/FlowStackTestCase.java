@@ -376,4 +376,45 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
                         isFlowStackElement("flowForEach",
                                            "flowForEach/processors/0/processors/1"));
   }
+
+  @Test
+  public void xmlSdkOperation() throws Exception {
+    flowRunner("xmlSdkOperation").withPayload("payload").run();
+
+    assertThat(stackToAssert, not(nullValue()));
+
+    assertStackElements(stackToAssert,
+                        isFlowStackElement("subFlow",
+                                           "subFlow/processors/0"),
+                        isFlowStackElement("xmlSdkOperation",
+                                           "flow-stack-store/processors/0"),
+                        isFlowStackElement("xmlSdkOperation",
+                                           "xmlSdkOperation/processors/0"));
+  }
+
+  @Test
+  public void xmlSdkOperationAfter() throws Exception {
+    flowRunner("xmlSdkOperationAfter").withPayload("payload").run();
+
+    assertThat(stackToAssert, not(nullValue()));
+
+    assertStackElements(stackToAssert,
+                        isFlowStackElement("subFlow",
+                                           "subFlow/processors/0"),
+                        isFlowStackElement("xmlSdkOperationAfter",
+                                           "xmlSdkOperationAfter/processors/1"));
+  }
+
+  @Test
+  public void xmlSdkOperationError() throws Exception {
+    flowRunner("xmlSdkOperationError").withPayload("payload").run();
+
+    assertThat(stackToAssert, not(nullValue()));
+
+    assertStackElements(stackToAssert,
+                        isFlowStackElement("subFlow",
+                                           "subFlow/processors/0"),
+                        isFlowStackElement("xmlSdkOperationError",
+                                           "xmlSdkOperationError/processors/1"));
+  }
 }
