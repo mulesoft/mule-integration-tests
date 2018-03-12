@@ -147,13 +147,9 @@ public class ExpressionLanguageFunctionsTestCase extends AbstractIntegrationTest
   public void lookupFailsWhenCalledFlowThrowsConnectorError() throws Exception {
     expectedError.expectErrorType("MULE", "EXPRESSION");
     expectedError.expectCause(both(isA(ExpressionRuntimeException.class))
-        .and(hasMessage(equalTo(format("\"Exception while executing lookup(\"callApi\",\"data\") cause: Flow 'callApi' has failed "
+        .and(hasMessage(containsString(format("\"Exception while executing lookup(\"callApi\",\"data\") cause: Flow 'callApi' has failed "
             + "with error 'HTTP:METHOD_NOT_ALLOWED' (HTTP GET on resource 'http://localhost:%s/405' "
-            + "failed: method not allowed (405).) \n"
-            + "\n"
-            + "Trace:\n"
-            + "  at 'lookup' in (anonymous:1:1)\n"
-            + "  at 'main'   in (anonymous:1:1)\" evaluating expression: \"lookup('callApi', 'data')\".", port.getValue())))));
+            + "failed: method not allowed (405).) \n", port.getValue())))));
     flowRunner("staticParams").withVariable("status", SC_METHOD_NOT_ALLOWED).run();
   }
 
