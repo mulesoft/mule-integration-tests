@@ -11,6 +11,7 @@ import static org.junit.Assert.assertThat;
 import static org.mule.test.allure.AllureConstants.ConfigurationProperties.CONFIGURATION_PROPERTIES;
 import static org.mule.test.allure.AllureConstants.ConfigurationProperties.ComponentConfigurationAttributesStory.CONFIGURATION_PROPERTIES_RESOLVER_STORY;
 import org.mule.runtime.api.component.ConfigurationProperties;
+import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import javax.inject.Inject;
@@ -18,11 +19,17 @@ import javax.inject.Inject;
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 
 @Feature(CONFIGURATION_PROPERTIES)
 @Story(CONFIGURATION_PROPERTIES_RESOLVER_STORY)
 public class ConfigurationPropertiesTestCase extends AbstractIntegrationTestCase {
+
+  @ClassRule
+  public static SystemProperty globalPropertySystemProperty = new SystemProperty("globalPropertyValue", "global-property-value");
 
   @Inject
   private ConfigurationProperties configurationProperties;
@@ -45,5 +52,12 @@ public class ConfigurationPropertiesTestCase extends AbstractIntegrationTestCase
     assertThat(configurationProperties.resolveStringProperty("anotherComplexValue").get(), is("value1-filePropValue"));
     assertThat(configurationProperties.resolveStringProperty("http.path").get(), is("myEnvValue"));
     assertThat(configurationProperties.resolveStringProperty("http.url").get(), is("http://localhost/myEnvValue"));
+  }
+
+  @Description("Configuration properties file attribute value using placeholder pointing to global property that is configured using a system property")
+  @Test
+  public void configPropertiesFileFromGlobalPropertyWithSystemPropertyValue() {
+    assertThat(configurationProperties.resolveStringProperty("global.property.value.key").get(),
+               is("globalPropertyValueKeyValue"));
   }
 }
