@@ -12,5 +12,10 @@
 
     <configuration-properties file="properties.yaml"/>
 
+    <!-- Use global property with value from system property that will later be used for the conf. properties file -->
+    <global-property name="globalPropertyFromSystemProperty" value="${globalPropertyValue}" />
+
+    <configuration-properties file="${globalPropertyFromSystemProperty}.properties" />
+
 
 </mule>
