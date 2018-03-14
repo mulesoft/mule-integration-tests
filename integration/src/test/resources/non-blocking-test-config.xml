@@ -295,5 +295,30 @@
         </foreach>
     </flow>
 
+    <flow name="scatterGather">
+        <test:assert-intercepting responseSameTask="false"/>
+        <scatter-gather>
+            <route>
+                <test:assert-intercepting responseSameTask="false"/>
+                <test:non-blocking-processor/>
+            </route>
+            <route>
+                <test:assert-intercepting responseSameTask="false"/>
+                <test:non-blocking-processor/>
+            </route>
+        </scatter-gather>
+    </flow>
+
+    <flow name="splitAggregate">
+        <test:assert-intercepting responseSameTask="false"/>
+        <split-aggregate>
+            <test:assert-intercepting responseSameTask="false" count="2"/>
+            <test:non-blocking-processor/>
+            <split-aggregate>
+                <test:assert-intercepting responseSameTask="false" count="6"/>
+                <test:non-blocking-processor/>
+            </split-aggregate>
+        </split-aggregate>
+    </flow>
 
 </mule>

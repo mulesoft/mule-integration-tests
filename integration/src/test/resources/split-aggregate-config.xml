@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xsi:schemaLocation="
+               http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+               http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+
+    <flow name="minimalConfig">
+        <split-aggregate>
+            <set-payload value="#[payload ++ '-result']"/>
+            <test:assert count="3"/>
+        </split-aggregate>
+        <flow-ref name="testListAggregation"/>
+    </flow>
+
+    <flow name="minimalConfigNested">
+        <split-aggregate>
+            <split-aggregate>
+                <test:assert count="12"/>
+            </split-aggregate>
+            <test:assert expression="#[sizeOf(payload) == 4]" count="3"/>
+        </split-aggregate>
+        <test:assert expression="#[sizeOf(payload) == 3]"/>
+    </flow>
+
+    <flow name="minimalConfigurationCollectionExpression">
+        <split-aggregate>
+            <collection>
+                ['apple', 'banana', 'orange']
+            </collection>
+            <set-payload value="#[payload ++ '-result']"/>
+            <test:assert count="3"/>
+        </split-aggregate>
+        <flow-ref name="testListAggregation"/>
+    </flow>
+
+    <flow name="minimalConfigTarget">
+        <split-aggregate target="result">
+            <set-payload value="#[payload ++ '-result']"/>
+            <test:assert count="3"/>
+        </split-aggregate>
+        <test:assert expression="#[vars.result != null]"/>
+        <set-payload value="#[vars.result]"/>
+        <flow-ref name="testListAggregation"/>
+    </flow>
+
+    <flow name="minimalConfigTargetMessage">
+        <split-aggregate target="result" targetValue="#[message]">
+            <set-payload value="#[payload ++ '-result']"/>
+            <test:assert count="3"/>
+        </split-aggregate>
+        <test:assert expression="#[vars.result != null]"/>
+        <set-payload value="#[vars.result.payload]"/>
+        <flow-ref name="testListAggregation"/>
+    </flow>
+
+    <flow name="timeout">
+        <split-aggregate timeout="1000">
+            <test:assert count="3"/>
+            <choice>
+                <when expression="#[payload == 'orange']">
+                    <expression-component>java!java::lang::Thread::sleep(10000)</expression-component>
+                </when>
+                <otherwise>
+                    <set-payload value="#[payload ++ '-result']"/>
+                </otherwise>
+            </choice>
+        </split-aggregate>
+    </flow>
+
+    <flow name="routeWithException">
+        <split-aggregate>
+            <test:assert count="3"/>
+            <choice>
+                <when expression="#[payload == 'banana']">
+                    <test:processor throwException="true"/>
+                </when>
+                <otherwise>
+                    <set-payload value="#[payload ++ '-result']"/>
+                </otherwise>
+            </choice>
+        </split-aggregate>
+    </flow>
+
+    <flow name="routeWithExceptionWithMessage">
+        <split-aggregate>
+            <test:assert count="3"/>
+            <choice>
+                <when expression="#[payload == 'banana']">
+                    <test:processor throwException="true" exceptionText="I'm a message"/>
+                </when>
+                <otherwise>
+                    <set-payload value="#[payload ++ '-result']"/>
+                </otherwise>
+            </choice>
+        </split-aggregate>
+    </flow>
+
+    <flow name="routeWithNonMuleException">
+        <split-aggregate>
+            <test:assert count="3"/>
+            <choice>
+                <when expression="#[payload == 'banana']">
+                    <test:processor throwException="true" exceptionToThrow="java.lang.NullPointerException"
+                                    exceptionText="nonMule"/>
+                </when>
+                <otherwise>
+                    <set-payload value="#[payload ++ '-result']"/>
+                </otherwise>
+            </choice>
+        </split-aggregate>
+    </flow>
+
+    <flow name="routeWithExpressionException">
+        <split-aggregate>
+            <test:assert count="3"/>
+            <choice>
+                <when expression="#[payload == 'banana']">
+                    <set-payload value="#[invalidExpr]"/>
+                </when>
+                <otherwise>
+                    <set-payload value="#[payload ++ '-result']"/>
+                </otherwise>
+            </choice>
+        </split-aggregate>
+    </flow>
+
+    <flow name="routeWithExceptionInSequentialProcessing">
+        <split-aggregate maxConcurrency="1">
+            <test:assert count="3"/>
+            <choice>
+                <when expression="#[payload == 'banana']">
+                    <test:processor throwException="true"/>
+                </when>
+                <otherwise>
+                    <set-payload value="#[payload ++ '-result']"/>
+                </otherwise>
+            </choice>
+        </split-aggregate>
+    </flow>
+
+    <flow name="sequentialProcessing">
+        <split-aggregate maxConcurrency="1">
+            <set-payload value="#[payload ++ '-result']"/>
+            <custom-processor class="org.mule.test.routing.SplitAggregateScopeTestCase$ThreadCaptor"/>
+            <test:assert count="3"/>
+        </split-aggregate>
+        <flow-ref name="testListAggregation"/>
+    </flow>
+
+    <flow name="errorHandler">
+        <split-aggregate>
+            <test:assert count="3"/>
+            <choice>
+                <when expression="#[payload == 'banana']">
+                    <test:processor throwException="true"/>
+                </when>
+                <when expression="#[payload == 'orange']">
+                    <test:processor throwException="true"/>
+                </when>
+                <otherwise>
+                    <set-payload value="#[payload ++ '-result']"/>
+                </otherwise>
+            </choice>
+        </split-aggregate>
+        <error-handler>
+            <on-error-continue type="COMPOSITE_ROUTING">
+                <test:assert
+                        expression="#[mel:exception.cause.getClass().getName().equals('org.mule.runtime.core.privileged.routing.CompositeRoutingException')]"/>
+                <test:assert expression="#[error.errorMessage.payload.failures['0'] == null]"/>
+                <test:assert expression="#[error.errorMessage.payload.failures['1'] != null]"/>
+                <test:assert expression="#[error.errorMessage.payload.failures['2'] != null]"/>
+                <test:assert expression="#[error.errorMessage.payload.results['0'] != null]"/>
+                <test:assert expression="#[error.errorMessage.payload.results['1'] == null]"/>
+                <test:assert expression="#[error.errorMessage.payload.results['2'] == null]"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="variables">
+        <set-variable variableName="var1" value="var"/>
+        <set-variable variableName="var2" value="var"/>
+        <split-aggregate>
+            <choice>
+                <when expression="#[payload == 'apple']">
+                    <set-variable variableName="var2" value="newValue"/>
+                    <set-variable variableName="var3" value="var"/>
+                    <set-variable variableName="var4" value="val1"/>
+                </when>
+                <when expression="#[payload == 'banana']">
+                    <set-variable variableName="var4" value="val2"/>
+                </when>
+                <otherwise>
+                    <set-variable variableName="var4" value="val3"/>
+                </otherwise>
+            </choice>
+            <test:assert count="3"/>
+        </split-aggregate>
+        <test:assert expression="#[vars.var1 == 'var']"/>
+        <test:assert expression="#[vars.var2 == 'newValue']"/>
+        <test:assert expression="#[vars.var3 == 'var']"/>
+        <test:assert expression="#[vars.var4 == ['val1','val2','val3']]"/>
+    </flow>
+
+    <flow name="concurrent">
+        <split-aggregate>
+            <flow-ref name="captureThreadAndWait"/>
+            <set-payload value="#[payload ++ '-result']"/>
+            <test:assert count="3"/>
+        </split-aggregate>
+    </flow>
+
+    <sub-flow name="captureThreadAndWait">
+        <custom-processor class="org.mule.test.routing.SplitAggregateScopeTestCase$ThreadCaptor"/>
+        <expression-component>mel:flowVars['latch'].await()</expression-component>
+    </sub-flow>
+
+    <sub-flow name="testListAggregation">
+        <test:assert expression="#[payload[0].payload == 'apple-result']"/>
+        <test:assert expression="#[payload[1].payload == 'banana-result']"/>
+        <test:assert expression="#[payload[2].payload == 'orange-result']"/>
+    </sub-flow>
+
+</mule>
