@@ -417,4 +417,16 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
                         isFlowStackElement("xmlSdkOperationError",
                                            "xmlSdkOperationError/processors/1"));
   }
+
+  @Test
+  public void flowSplitAggregate() throws Exception {
+    flowRunner("flowSplitAggregate").run();
+    assertThat(stackToAssert, not(nullValue()));
+
+    assertStackElements(stackToAssert,
+                        isFlowStackElement("flow",
+                                           "flow/processors/0"),
+                        isFlowStackElement("flowSplitAggregate",
+                                           "flowSplitAggregate/processors/0/processors/1"));
+  }
 }

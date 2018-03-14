@@ -262,6 +262,16 @@
             <flow-ref name="flow"/>
         </foreach>
     </flow>
+
+    <flow name="flowSplitAggregate">
+        <split-aggregate>
+            <collection>
+                ['foo', 'bar']
+            </collection>
+            <test:processor/>
+            <flow-ref name="flow"/>
+        </split-aggregate>
+    </flow>
     
     <!-- XML SDK -->
 

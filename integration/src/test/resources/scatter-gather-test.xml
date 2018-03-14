@@ -9,12 +9,15 @@
     <flow name="minimalConfig">
         <scatter-gather>
             <route>
+                <test:assert count="1"/>
                 <set-payload value="apple"/>
             </route>
             <route>
+                <test:assert count="1"/>
                 <set-payload value="banana"/>
             </route>
             <route>
+                <test:assert count="1"/>
                 <set-payload value="orange"/>
             </route>
         </scatter-gather>
@@ -24,9 +27,11 @@
     <flow name="minimalConfigCollectList">
         <scatter-gather>
             <route>
+                <test:assert count="1"/>
                 <set-payload value="apple"/>
             </route>
             <route>
+                <test:assert count="1"/>
                 <set-payload value="banana"/>
             </route>
             <route>
@@ -229,14 +234,18 @@
         <scatter-gather>
             <route>
                 <flow-ref name="captureThreadAndWait" />
+                <test:assert count="1"/>
             </route>
             <route>
                 <flow-ref name="captureThreadAndWait" />
+                <test:assert count="1"/>
             </route>
             <route>
                 <flow-ref name="captureThreadAndWait" />
+                <test:assert count="1"/>
             </route>
         </scatter-gather>
+        <test:assert expression="#[sizeOf(payload) == 3]"/>
     </flow>
 
     <flow name="dataType">
@@ -263,12 +272,14 @@
     </sub-flow>
 
     <sub-flow name="testRoutesMap">
+        <test:assert expression="#[sizeOf(payload) == 3]"/>
         <test:assert expression="#[payload['0'].payload == 'apple']"/>
         <test:assert expression="#[payload['1'].payload == 'banana']"/>
         <test:assert expression="#[payload['2'].payload == 'orange']"/>
     </sub-flow>
 
     <sub-flow name="testRoutesList">
+        <test:assert expression="#[sizeOf(payload) == 3]"/>
         <test:assert expression="#[payload[0].payload == 'apple']"/>
         <test:assert expression="#[payload[1].payload == 'banana']"/>
         <test:assert expression="#[payload[2].payload == 'orange']"/>

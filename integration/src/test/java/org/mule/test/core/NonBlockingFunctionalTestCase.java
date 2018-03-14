@@ -183,14 +183,20 @@ public class NonBlockingFunctionalTestCase extends AbstractIntegrationTestCase {
     flowRunner("foreach").withPayload(asList(new String[] {"1", "2", "3"}, new String[] {"a", "b", "c"})).run();
   }
 
+  @Test
+  public void scatterGather() throws Exception {
+    flowRunner("scatterGather").run();
+  }
+
+  @Test
+  public void splitAggregate() throws Exception {
+    flowRunner("splitAggregate").withPayload(asList(new String[] {"1", "2", "3"}, new String[] {"a", "b", "c"})).run();
+  }
+
   public static class CustomSecurityFilter extends AbstractAuthenticationFilter {
 
     @Override
-    protected void doInitialise() throws InitialisationException {}
-
-    @Override
-    public SecurityContext authenticate(CoreEvent event) throws SecurityException, UnknownAuthenticationTypeException,
-        CryptoFailureException, SecurityProviderNotFoundException, EncryptionStrategyNotFoundException, InitialisationException {
+    public SecurityContext authenticate(CoreEvent event) throws SecurityException {
       return event.getSecurityContext();
     }
   }

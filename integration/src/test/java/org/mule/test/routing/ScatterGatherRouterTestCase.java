@@ -35,7 +35,10 @@ import org.mule.runtime.api.util.concurrent.Latch;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.runtime.core.api.processor.Processor;
+import org.mule.tck.junit4.FlakinessDetectorTestRunner;
+import org.mule.tck.junit4.FlakyTest;
 import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.test.runner.RunnerDelegateTo;
 
 import org.hamcrest.Matchers;
 import org.junit.Rule;
@@ -71,10 +74,15 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
     capturedThreads = newKeySet();
   }
 
+  @Override
+  protected void doTearDown() throws Exception {
+    capturedThreads = null;
+  }
+
   @Test
   @Description("Minimal configuration with default collect-map strategy.")
   public void minimalConfiguration() throws Exception {
-    flowRunner("minimalConfig").run();
+    flowRunner("minimalConfig").withPayload("foo").run();
   }
 
   @Test
