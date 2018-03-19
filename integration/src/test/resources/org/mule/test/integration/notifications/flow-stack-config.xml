@@ -279,6 +279,24 @@
         <sc:flow-stack-store />
     </flow>
     
+    <flow name="xmlSdkOperationInSubflow">
+        <flow-ref name="xmlSdkOperation"/>
+    </flow>
+    
+    <flow name="xmlSdkOperationFailAfter">
+        <sc:set-payload-hardcoded />
+        <test:processor throwException="true"/>
+        <error-handler>
+            <on-error-continue>
+                <flow-ref name="subFlow"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+    
+    <flow name="xmlSdkOperationFailAfterSubFlow">
+        <flow-ref name="xmlSdkOperationFailAfter"/>
+    </flow>
+
     <flow name="xmlSdkOperationAfter">
         <sc:set-payload-hardcoded />
         <flow-ref name="subFlow"/>
@@ -292,6 +310,10 @@
             </error-handler>
         </try>
         <flow-ref name="subFlow"/>
+    </flow>
+    
+    <flow name="xmlSdkOperationErrorInSubflow">
+        <flow-ref name="xmlSdkOperationError"/>
     </flow>
     
 </mule>
