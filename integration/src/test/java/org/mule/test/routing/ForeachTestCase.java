@@ -51,6 +51,7 @@ import com.google.common.collect.ImmutableList;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -350,6 +351,7 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
     order.put("name", "Ellen");
     order.put("email", "ellen.mail.com");
     order.put("items", items);
+    expectedException.expectCause(is(ConcurrentModificationException.class));
     flowRunner("process-json-update").withPayload(singletonMap("order", order)).run();
   }
 
