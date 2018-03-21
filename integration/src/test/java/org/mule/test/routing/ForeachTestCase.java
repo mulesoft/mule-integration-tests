@@ -8,6 +8,7 @@ package org.mule.test.routing;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonMap;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -28,6 +29,7 @@ import static org.mule.runtime.api.metadata.DataType.JSON_STRING;
 import static org.mule.runtime.api.metadata.MediaType.APPLICATION_JAVA;
 import static org.mule.runtime.api.metadata.MediaType.APPLICATION_JSON;
 import static org.mule.runtime.api.metadata.MediaType.APPLICATION_XML;
+import static org.mule.tck.processor.FlowAssert.verify;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ForeachStory.FOR_EACH;
 
@@ -39,7 +41,7 @@ import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.text.RandomStringGenerator;
 import org.hamcrest.core.Is;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -56,7 +58,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
@@ -73,10 +74,12 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
   @Rule
   public ExpectedException expectedException = none();
 
+  private RandomStringGenerator randomStringGenerator;
   private TestConnectorQueueHandler queueHandler;
 
   @Before
   public void setUp() throws Exception {
+    randomStringGenerator = new RandomStringGenerator.Builder().withinRange('a', 'z').build();
     queueHandler = new TestConnectorQueueHandler(registry);
   }
 
@@ -221,7 +224,6 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
     names.add("Vasilievich");
     names.add("Rachmaninoff");
 
-    Message message = new TestLegacyMessageBuilder().value("message payload").addOutboundProperty("names", names).build();
     Message result = flowRunner("map-expression-config").withPayload("message payload").withInboundProperty("names", names)
         .run().getMessage();
 
@@ -351,7 +353,7 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
     order.put("name", "Ellen");
     order.put("email", "ellen.mail.com");
     order.put("items", items);
-    expectedException.expectCause(is(ConcurrentModificationException.class));
+    expectedException.expectCause(instanceOf(ConcurrentModificationException.class));
     flowRunner("process-json-update").withPayload(singletonMap("order", order)).run();
   }
 
@@ -553,19 +555,37 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
     List<String> list = new ArrayList<>(size);
 
     for (int i = 0; i < size; i++) {
-      list.add(RandomStringUtils.randomAlphabetic(10));
+      list.add(randomStringGenerator.generate(10));
     }
 
     // one more for the flow-ref outside foreach
     CountDownLatch latch = new CountDownLatch(size + 1);
     flowRunner("foreachWithAsync").withPayload(list).withVariable("latch", latch).run();
 
-    latch.await(10, TimeUnit.SECONDS);
+    latch.await(10, SECONDS);
   }
 
   @Test
   public void errorsWithinArePropagated() throws Exception {
     Message message = flowRunner("error-handler").withPayload(new String[] {TEST_PAYLOAD}).run().getMessage();
     assertThat(message, hasPayload(equalTo("handled")));
+  }
+
+  @Test
+  public void nonBlocking() throws Exception {
+    flowRunner("nonBlocking").withPayload(asList("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")).run();
+    verify("nonBlocking");
+  }
+
+  @Test
+  public void threadChange() throws Exception {
+    flowRunner("threadChange").withPayload(asList("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")).run();
+    verify("threadChange");
+  }
+
+  @Test
+  public void errorAfterThreadChange() throws Exception {
+    expectedException.expectCause(instanceOf(java.io.IOException.class));
+    flowRunner("errorAfterThreadChange").withPayload(asList("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")).run();
   }
 }
