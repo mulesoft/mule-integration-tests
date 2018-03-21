@@ -52,7 +52,7 @@
     <flow name="message-collection-config">
         <foreach>
             <test:assert expression="#[mel:message.outboundProperties['out']=='out'+counter]" />
-            <set-variable variableName="totalMessages" value="#[mel:counter]"/>
+            <set-variable variableName="totalMessages" value="#[vars.counter]"/>
         </foreach>
         <test:assert expression="#[vars.totalMessages==10]" />
     </flow>
@@ -80,8 +80,8 @@
     </flow>
 
     <flow name="process-json-update">
-        <test:assert expression="#[mel:payload.order.items.size() == 2]" />
-        <foreach collection="#[mel:payload.order.items]">
+        <test:assert expression="#[sizeOf(payload.order.items) == 2]" />
+        <foreach collection="#[payload.order.items]">
             <script:execute engine="groovy">
                 <script:code>
                     <![CDATA[
@@ -93,7 +93,7 @@
             </script:execute>
         </foreach>
         <test:assert expression="#[mel:payload is Map]" />
-        <test:assert expression="#[mel:payload.order.items.size() == 4]" />
+        <test:assert expression="#[sizeOf(payload.order.items) == 4]" />
     </flow>
 
     <flow name="array-expression-config">
@@ -161,8 +161,8 @@
             <test:processor/>
             <test:queue name="out"/>
         </foreach>
-        <test:assert expression="#[mel:counter == 'hello']" />
-        <test:assert expression="#[mel:rootMessage == 'world']" />
+        <test:assert expression="#[vars.counter == 'hello']" />
+        <test:assert expression="#[vars.rootMessage == 'world']" />
     </flow>
 
     <flow name="mvel-list">
@@ -175,7 +175,7 @@
     <flow name="mvel-map">
         <foreach collection="#[mel:['key1' : 'val1', 'key2':'val2']]">
             <test:processor/>
-            <logger level="ERROR" message="message-#[mel:counter]: #[mel:payload]"/>
+            <logger level="ERROR" message="message-#[vars.counter]: #[payload]"/>
             <test:queue name="out"/>
         </foreach>
     </flow>
@@ -194,7 +194,7 @@
     </flow>
 
     <flow name="expression-iterable">
-        <foreach collection="#[mel:iterable]">
+        <foreach collection="#[vars.iterable]">
             <flow-ref name="assertIterable" />
         </foreach>
     </flow>
@@ -202,12 +202,12 @@
     <sub-flow name="assertIterable">
         <test:processor/>
         <test:assert expression="#[mel:payload instanceof String]"  message="hoal"/>
-        <logger level="ERROR" message="message-#[mel:counter]: #[mel:payload]"/>
+        <logger level="ERROR" message="message-#[vars.counter]: #[payload]"/>
         <test:queue name="out"/>
     </sub-flow>
     
     <flow name="mvel-error">
-        <foreach collection="#[mel:invalid]">
+        <foreach collection="#[vars.invalid]">
             <test:processor/>
         </foreach>
     </flow>
@@ -302,7 +302,7 @@
 		<test:assert expression="#[vars.value1 == 'value1']" />
 		<test:assert expression="#[vars.value2 == 'value2']" />
 
-		<expression-component>mel:flowVars['latch'].countDown()</expression-component>
+		<expression-component>vars['latch'].countDown()</expression-component>
 	</sub-flow>
 
     <sub-flow name="sub-flow-with-foreach">
@@ -310,5 +310,35 @@
             <append-string-transformer message="y" />
         </foreach>
     </sub-flow>
+
+    <flow name="nonBlocking">
+        <set-variable variableName="work" value="" />
+
+        <test:assert-intercepting responseSameTask="false"/>
+        <foreach>
+            <test:non-blocking-processor />
+            <set-variable variableName="work" value="#[vars.work ++ payload]" />
+        </foreach>
+        <test:assert expression="#[vars.work == '0123456789']"/>
+    </flow>
+
+    <flow name="threadChange">
+        <set-variable variableName="work" value="" />
+
+        <test:assert-intercepting responseSameTask="false"/>
+        <foreach>
+            <test:processor processingType="CPU_INTENSIVE"/>
+            <set-variable variableName="work" value="#[vars.work ++ payload]" />
+        </foreach>
+        <test:assert expression="#[vars.work == '0123456789']"/>
+    </flow>
+
+    <flow name="errorAfterThreadChange">
+        <foreach>
+            <test:processor processingType="CPU_INTENSIVE"/>
+            <test:throw exception="java.io.IOException" error="CONNECTIVITY"/>
+        </foreach>
+    </flow>
+
 
 </mule>
