@@ -20,9 +20,37 @@
         </async>
     </flow>
     
+    <flow name="with-max-concurrency">
+        <logger message="Before async... (#[payload])" />
+        <async maxConcurrency="${maxConcurrency}">
+            <logger message="In async... (#[payload])" />
+            <test:queue name="asyncRunning"/>
+            <script:execute engine="groovy">
+                <script:code>
+                    vars['latch'].await()
+                </script:code>
+            </script:execute>
+        </async>
+        <test:queue name="asyncDispatched"/>
+    </flow>
+    
     <flow name="with-flow-max-concurrency" maxConcurrency="${maxConcurrency}">
         <logger message="Before async... (#[payload])" />
         <async>
+            <logger message="In async... (#[payload])" />
+            <test:queue name="asyncRunning"/>
+            <script:execute engine="groovy">
+                <script:code>
+                    vars['latch'].await()
+                </script:code>
+            </script:execute>
+        </async>
+        <test:queue name="asyncDispatched"/>
+    </flow>
+    
+    <flow name="with-lower-flow-max-concurrency" maxConcurrency="1">
+        <logger message="Before async... (#[payload])" />
+        <async maxConcurrency="${maxConcurrency}">
             <logger message="In async... (#[payload])" />
             <test:queue name="asyncRunning"/>
             <script:execute engine="groovy">
