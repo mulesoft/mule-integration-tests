@@ -75,9 +75,33 @@ public class AsyncTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
+  @Description("Assert that async maxConcurrency is honored")
+  public void withMaxConcurrency() throws Exception {
+    testAsyncMaxConcurrency("with-max-concurrency");
+  }
+
+  @Test
+  @Description("Assert that even if async is full, the calling flow continues executing")
+  public void withMaxConcurrencyAsyncDispatched() throws Exception {
+    CountDownLatch latch = new CountDownLatch(1);
+    runFlows("with-max-concurrency", latch);
+
+    for (int i = 0; i < MAX_CONCURRENCY + 1; ++i) {
+      assertThat("" + i, queueHandler.read("asyncDispatched", 1000), not(nullValue()));
+    }
+    latch.countDown();
+  }
+
+  @Test
   @Description("Assert that if no maxConcurrency is configured for an async, the value from the flow is inherited")
   public void withFlowMaxConcurrency() throws Exception {
     testAsyncMaxConcurrency("with-flow-max-concurrency");
+  }
+
+  @Test
+  @Description("Assert that if both flow and async have maxConcurrency, they are independent")
+  public void withLowerFlowMaxConcurrency() throws Exception {
+    testAsyncMaxConcurrency("with-lower-flow-max-concurrency");
   }
 
   private void testAsyncMaxConcurrency(String flowName) throws Exception {
