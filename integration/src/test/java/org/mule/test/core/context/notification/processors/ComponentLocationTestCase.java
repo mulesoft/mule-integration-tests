@@ -15,6 +15,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mule.runtime.api.component.AbstractComponent.LOCATION_KEY;
 import static org.mule.runtime.api.component.ComponentIdentifier.buildFromStringRepresentation;
+import static org.mule.runtime.api.component.TypedComponentIdentifier.builder;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.FLOW;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.ON_ERROR;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.OPERATION;
@@ -22,33 +23,37 @@ import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentT
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.SCOPE;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.SOURCE;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.UNKNOWN;
-import static org.mule.runtime.api.component.TypedComponentIdentifier.builder;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.FLOW_IDENTIFIER;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.SUBFLOW_IDENTIFIER;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentLocationStory.COMPONENT_LOCATION;
+
+import org.mule.functional.api.flow.FlowRunner;
 import org.mule.runtime.api.component.Component;
 import org.mule.runtime.api.component.TypedComponentIdentifier;
 import org.mule.runtime.api.component.location.ConfigurationComponentLocator;
 import org.mule.runtime.api.component.location.Location;
 import org.mule.runtime.api.notification.MessageProcessorNotification;
 import org.mule.runtime.core.api.construct.Flow;
+import org.mule.runtime.core.privileged.event.BaseEventContext;
 import org.mule.runtime.dsl.api.component.config.DefaultComponentLocation;
 import org.mule.runtime.dsl.api.component.config.DefaultComponentLocation.DefaultLocationPart;
 import org.mule.tck.probe.PollingProber;
 import org.mule.tck.probe.Probe;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import org.junit.Test;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CountDownLatch;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
-import org.junit.Test;
 
 @Feature(CONFIGURATION_COMPONENT_LOCATOR)
 @Story(COMPONENT_LOCATION)
@@ -337,7 +342,11 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void flowWithAsync() throws Exception {
-    flowRunner("flowWithAsync").run();
+    FlowRunner runner = flowRunner("flowWithAsync");
+    CountDownLatch terminationLatch = new CountDownLatch(1);
+    ((BaseEventContext) (runner.buildEvent().getContext())).onTerminated((e, t) -> terminationLatch.countDown());
+
+    runner.run();
     waitUntilNotificationsArrived(3);
     DefaultComponentLocation flowWithAsyncLocation = FLOW_WITH_ASYNC.appendProcessorsPart();
     DefaultComponentLocation asyncLocation = flowWithAsyncLocation
@@ -352,6 +361,8 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
         .appendLocationPart("1", VALIDATION_IS_TRUE,
                             CONFIG_FILE_NAME, of(115)));
     assertNoNextProcessorNotification();
+
+    terminationLatch.await();
   }
 
   @Test

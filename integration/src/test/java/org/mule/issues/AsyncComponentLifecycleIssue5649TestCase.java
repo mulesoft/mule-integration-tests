@@ -18,21 +18,21 @@ import org.mule.runtime.api.lifecycle.Stoppable;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import org.junit.Test;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import org.junit.Test;
 
 public class AsyncComponentLifecycleIssue5649TestCase extends AbstractIntegrationTestCase
     implements FunctionalTestProcessor.LifecycleCallback {
 
-  List<String> componentPhases = new ArrayList<String>();
+  List<String> componentPhases = new ArrayList<>();
 
   @Override
   protected MuleContext createMuleContext() throws Exception {
     componentPhases.clear();
     addLifecycleCallback(this);
-    return super.createMuleContext(); // To change body of overridden methods use File | Settings | File Templates.
+    return super.createMuleContext();
   }
 
   @Override
@@ -60,6 +60,8 @@ public class AsyncComponentLifecycleIssue5649TestCase extends AbstractIntegratio
 
   @Override
   public void onTransition(String name, String newPhase) {
-    componentPhases.add(newPhase);
+    if ("async".equals(name)) {
+      componentPhases.add(newPhase);
+    }
   }
 }

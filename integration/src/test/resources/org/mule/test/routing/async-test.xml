@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xmlns:script="http://www.mulesoft.org/schema/mule/scripting"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+               http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
+               http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
+
+    <flow name="ps-threading-propagated">
+        <logger message="Before async... (#[payload])" />
+        <async>
+            <logger message="In async... (#[payload])" />
+            <script:execute engine="groovy">
+                <script:code>
+                    return java.lang.Thread.currentThread().getName()
+                </script:code>
+            </script:execute>
+            <test:queue name="asyncFinished"/>
+        </async>
+    </flow>
+    
+    <flow name="with-flow-max-concurrency" maxConcurrency="${maxConcurrency}">
+        <logger message="Before async... (#[payload])" />
+        <async>
+            <logger message="In async... (#[payload])" />
+            <test:queue name="asyncRunning"/>
+            <script:execute engine="groovy">
+                <script:code>
+                    vars['latch'].await()
+                </script:code>
+            </script:execute>
+        </async>
+        <test:queue name="asyncDispatched"/>
+    </flow>
+    
+</mule>
