@@ -27,7 +27,7 @@
         <set-variable encoding="Attribute" mimeType="Attribute" value="Attribute" variableName="Attribute"/>
     </flow>
     <flow name="flowForasync">
-        <async name="Attribute">
+        <async name="Attribute" maxConcurrency="10000">
             <logger/>
         </async>
     </flow>
