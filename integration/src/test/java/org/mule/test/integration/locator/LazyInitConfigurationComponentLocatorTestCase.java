@@ -46,7 +46,7 @@ import org.junit.Test;
 @Story(SEARCH_CONFIGURATION)
 public class LazyInitConfigurationComponentLocatorTestCase extends AbstractIntegrationTestCase {
 
-  private static final int TOTAL_NUMBER_OF_LOCATIONS = 54;
+  private static final int TOTAL_NUMBER_OF_LOCATIONS = 77;
   @Inject
   private Registry registry;
 
@@ -59,7 +59,8 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
     return new String[] {"org/mule/test/integration/locator/component-locator-config.xml",
         "org/mule/test/integration/locator/component-locator-levels-config.xml",
         "org/mule/test/integration/locator/component-locator-spring-config.xml",
-        "org/mule/test/integration/locator/component-locator-reference-component-models.xml"};
+        "org/mule/test/integration/locator/component-locator-reference-component-models.xml",
+        "org/mule/test/integration/locator/module-with-config-oauth.xml"};
   }
 
   @Override
@@ -141,7 +142,31 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
                                   "aggregatorWithMaxSizeFlow/processors/1",
 
                                   "justAnotherFlowThatShouldNotBeInitialized",
-                                  "justAnotherFlowThatShouldNotBeInitialized/processors/0"));
+                                  "justAnotherFlowThatShouldNotBeInitialized/processors/0",
+
+                                  "Marketo-Config",
+                                  "Marketo-Config/0",
+                                  "Marketo-Config/0/0",
+                                  "Marketo-Config/0/0/0",
+                                  "get-channels/processors/0",
+                                  "get-channels/processors/0/0",
+                                  "get-channels/processors/0/1",
+                                  "get-channels/processors/1",
+                                  "tokenManagerConfig-Marketo-Config",
+                                  "GetChannels",
+                                  "GetChannels/source",
+                                  "GetChannels/source/0",
+                                  "GetChannels/source/0/0",
+                                  "GetChannels/processors/0",
+                                  "GetChannels/processors/0/0",
+                                  "GetChannels/processors/0/0/0",
+                                  "GetChannels/processors/0/0/1",
+                                  "GetChannels/processors/0/0/2",
+                                  "GetChannels/processors/0/0/3",
+                                  "GetChannels/processors/0/0/4",
+                                  "GetChannels/processors/0/0/5",
+                                  "GetChannels/processors/0/0/6",
+                                  "GetChannels/processors/0/1"));
     assertThat(locator.find(builder().globalName("myFlow").build()), is(empty()));
     assertThat(locator.find(builder().globalName("anotherFlow").build()), is(empty()));
   }
@@ -256,6 +281,14 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
     assertThat("springConfig was not configured", secondAppContext, notNullValue());
 
     assertThat(firstObj, not(sameInstance(secondObj)));
+  }
+
+  @Test
+  public void lazyMuleContextSmartConnectorsWithConfig() throws IllegalAccessException {
+    lazyComponentInitializer.initializeComponents(componentLocation -> componentLocation.getLocation().equals("GetChannels"));
+
+    assertThat(locator.find(builderFromStringRepresentation("GetChannels").build()), is(not(empty())));
+    assertThat(locator.find(builderFromStringRepresentation("GetChannels/processors/0").build()), is(not(empty())));
   }
 
   @Description("Lazy init should create components that are references by other components, when the reference is not a top level element")
