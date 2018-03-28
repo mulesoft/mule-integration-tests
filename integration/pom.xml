@@ -108,6 +108,13 @@
             <classifier>mule-service</classifier>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.mule.services</groupId>
+            <artifactId>mule-service-oauth</artifactId>
+            <version>${muleOAuthServiceTestVersion}</version>
+            <classifier>mule-service</classifier>
+            <scope>provided</scope>
+        </dependency>
 
         <!-- Mule Plugins -->
         <dependency>
@@ -449,6 +456,12 @@
         <dependency>
             <groupId>org.mule.tests</groupId>
             <artifactId>smart-connector-using-core</artifactId>
+            <classifier>mule-plugin</classifier>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.tests</groupId>
+            <artifactId>smart-connector-using-http-oauth</artifactId>
             <classifier>mule-plugin</classifier>
             <version>${project.version}</version>
         </dependency>
