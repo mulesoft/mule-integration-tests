@@ -21,6 +21,9 @@
         <AsyncLogger name="org.mule" level="WARN"/>
         <AsyncLogger name="com.mulesoft" level="WARN"/>
 
+        <!-- Test Runner -->
+        <AsyncLogger name="org.mule.test.runner" level="INFO"/>
+
         <AsyncRoot level="INFO">
             <AppenderRef ref="Console"/>
         </AsyncRoot>
