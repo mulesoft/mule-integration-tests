@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:jms="http://www.mulesoft.org/schema/mule/jms"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+                             http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+                             http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd">
+    <http:listener-config name="HTTP_Listener_config">
+        <http:listener-connection host="localhost" port="${httpPort}" />
+    </http:listener-config>
+    <jms:config name="JMS_Config">
+        <jms:active-mq-connection >
+            <jms:caching-strategy >
+                <jms:default-caching />
+            </jms:caching-strategy>
+        </jms:active-mq-connection>
+        <jms:consumer-config >
+            <jms:consumer-type >
+                <jms:queue-consumer />
+            </jms:consumer-type>
+        </jms:consumer-config>
+    </jms:config>
+
+    <flow name="jms-sampleFlow">
+        <http:listener config-ref="HTTP_Listener_config" path="/"/>
+        <set-payload value="#[${file::org/mule/test/integration/streaming/jmsPayloadScript.dwl}]"></set-payload>
+        <jms:publish-consume config-ref="JMS_Config" destination="in1">
+            <jms:message outboundContentType="application/xml" />
+            <jms:consume-configuration inboundContentType="application/xml" />
+        </jms:publish-consume>
+    </flow>
+
+    <flow name="jms-sampleFlow1">
+        <jms:listener config-ref="JMS_Config" destination="in1" inboundContentType="application/xml">
+            <jms:consumer-type >
+                <jms:queue-consumer />
+            </jms:consumer-type>
+            <jms:response outboundContentType="application/xml" >
+                <jms:reply-to destination="in1" />
+            </jms:response>
+        </jms:listener>
+        <set-payload value="#[${file::org/mule/test/integration/streaming/jmsResponsePayloadScript.dwl}]"></set-payload>
+    </flow>
+</mule>
