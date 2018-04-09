@@ -67,6 +67,18 @@
         </error-handler>
     </flow>
 
+    <flow name="checkFlowStack">
+        <test:skeleton-source/>
+        <test:throw exception="java.lang.RuntimeException" error="ANY"/>
+        <error-handler>
+            <test:on-error-check-log>
+                <test:check-summary>
+                    <test:summary-info key="FlowStack" value="at checkFlowStack"/>
+                </test:check-summary>
+            </test:on-error-check-log>
+        </error-handler>
+    </flow>
+
     <flow name="unknownFiltered">
         <test:skeleton-source/>
         <test:processor throwException="true" exceptionToThrow="java.lang.NullPointerException"/>
@@ -107,7 +119,7 @@
                 <test:check-equals>
                     <![CDATA[
                         Message               : null.
-                        Element               : allChecksTogetherNoneFailing/processors/0 @ LogCheckTestCase#runVerboseAllChecksTogetherNoneFailing:org/mule/test/integration/exceptions/log-check-config.xml:104
+                        Element               : allChecksTogetherNoneFailing/processors/0 @ LogCheckTestCase#runVerboseAllChecksTogetherNoneFailing:org/mule/test/integration/exceptions/log-check-config.xml:116
                         Element XML           : <test:throw exception="java.lang.RuntimeException" error="ANY"></test:throw>
                         Error type            : MULE:ANY
                         Payload               : null
