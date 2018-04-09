@@ -386,10 +386,55 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
     assertStackElements(stackToAssert,
                         isFlowStackElement("subFlow",
                                            "subFlow/processors/0"),
-                        isFlowStackElement("xmlSdkOperation",
+                        isFlowStackElement("module-using-core:flow-stack-store",
                                            "flow-stack-store/processors/0"),
                         isFlowStackElement("xmlSdkOperation",
                                            "xmlSdkOperation/processors/0"));
+  }
+
+  @Test
+  public void xmlSdkOperationInSubflow() throws Exception {
+    flowRunner("xmlSdkOperationInSubflow").withPayload("payload").run();
+
+    assertThat(stackToAssert, not(nullValue()));
+
+    assertStackElements(stackToAssert,
+                        isFlowStackElement("subFlow",
+                                           "subFlow/processors/0"),
+                        isFlowStackElement("module-using-core:flow-stack-store",
+                                           "flow-stack-store/processors/0"),
+                        isFlowStackElement("xmlSdkOperation",
+                                           "xmlSdkOperation/processors/0"),
+                        isFlowStackElement("xmlSdkOperationInSubflow",
+                                           "xmlSdkOperationInSubflow/processors/0"));
+  }
+
+  @Test
+  public void xmlSdkOperationFailAfter() throws Exception {
+    flowRunner("xmlSdkOperationFailAfter").withPayload("payload").run();
+
+    assertThat(stackToAssert, not(nullValue()));
+
+    assertStackElements(stackToAssert,
+                        isFlowStackElement("subFlow",
+                                           "subFlow/processors/0"),
+                        isFlowStackElement("xmlSdkOperationFailAfter",
+                                           "xmlSdkOperationFailAfter/errorHandler/0/processors/0"));
+  }
+
+  @Test
+  public void xmlSdkOperationFailAfterSubFlow() throws Exception {
+    flowRunner("xmlSdkOperationFailAfterSubFlow").withPayload("payload").run();
+
+    assertThat(stackToAssert, not(nullValue()));
+
+    assertStackElements(stackToAssert,
+                        isFlowStackElement("subFlow",
+                                           "subFlow/processors/0"),
+                        isFlowStackElement("xmlSdkOperationFailAfter",
+                                           "xmlSdkOperationFailAfter/errorHandler/0/processors/0"),
+                        isFlowStackElement("xmlSdkOperationFailAfterSubFlow",
+                                           "xmlSdkOperationFailAfterSubFlow/processors/0"));
   }
 
   @Test
@@ -416,5 +461,20 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
                                            "subFlow/processors/0"),
                         isFlowStackElement("xmlSdkOperationError",
                                            "xmlSdkOperationError/processors/1"));
+  }
+
+  @Test
+  public void xmlSdkOperationErrorInSubflow() throws Exception {
+    flowRunner("xmlSdkOperationErrorInSubflow").withPayload("payload").run();
+
+    assertThat(stackToAssert, not(nullValue()));
+
+    assertStackElements(stackToAssert,
+                        isFlowStackElement("subFlow",
+                                           "subFlow/processors/0"),
+                        isFlowStackElement("xmlSdkOperationError",
+                                           "xmlSdkOperationError/processors/1"),
+                        isFlowStackElement("xmlSdkOperationErrorInSubflow",
+                                           "xmlSdkOperationErrorInSubflow/processors/0"));
   }
 }

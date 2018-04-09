@@ -252,6 +252,33 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     assertThat(setPayloadOperation.getParameters().get("encoding").resolveValue(), is("UTF-8"));
   }
 
+  @Description("Smart Connector simple operation with parameters through flow-ref")
+  @Test
+  public void scEchoOperationFlowRef() throws Exception {
+    final String variableValue = "echo message for the win";
+    flowRunner("scEchoOperationFlowRef").withVariable("variable", variableValue).run();
+
+    List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
+    assertThat(interceptionParameters, hasSize(3));
+
+    InterceptionParameters flowRef = interceptionParameters.get(0);
+    InterceptionParameters moduleOperationChain = interceptionParameters.get(1);
+    InterceptionParameters setPayloadOperation = interceptionParameters.get(2);
+
+    assertThat(flowRef.getParameters().keySet(), containsInAnyOrder("name", "targetValue"));
+    assertThat(flowRef.getParameters().get("name").resolveValue(), is("scEchoOperation"));
+
+    assertThat(moduleOperationChain.getParameters().keySet(), containsInAnyOrder("moduleName", "moduleOperation"));
+    assertThat(moduleOperationChain.getParameters().get("moduleName").resolveValue(), is("module-using-core"));
+    assertThat(moduleOperationChain.getParameters().get("moduleOperation").resolveValue(), is("echo-set-payload"));
+
+    assertThat(setPayloadOperation.getParameters().keySet(), containsInAnyOrder("value", "mimeType", "encoding"));
+    assertThat(setPayloadOperation.getParameters().get("value").providedValue(), is("#[vars.echoMessage]"));
+    assertThat(setPayloadOperation.getParameters().get("value").resolveValue(), is(variableValue));
+    assertThat(setPayloadOperation.getParameters().get("mimeType").resolveValue(), is("text/plain"));
+    assertThat(setPayloadOperation.getParameters().get("encoding").resolveValue(), is("UTF-8"));
+  }
+
   @Description("Smart Connector that uses a Smart Connector operation without parameters")
   @Test
   public void scUsingScOperation() throws Exception {

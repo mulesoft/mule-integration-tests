@@ -85,6 +85,10 @@
         <logger />
     </flow>
 
+    <flow name="scEchoOperationFlowRef">
+        <flow-ref name="scEchoOperation"/>
+    </flow>
+
     <flow name="scOperation">
         <sc:set-payload-hardcoded />
     </flow>
