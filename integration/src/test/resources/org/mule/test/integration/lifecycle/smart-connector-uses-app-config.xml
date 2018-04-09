@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:scuhoac="http://www.mulesoft.org/schema/mule/module-using-http-oauth-authorization-code"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="
+        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+        http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+        http://www.mulesoft.org/schema/mule/module-using-http-oauth-authorization-code http://www.mulesoft.org/schema/mule/module-using-http-oauth-authorization-code/current/mule-module-using-http-oauth-authorization-code.xsd">
+
+    <!-- The SC config must be defined before the http listener config to manifest the issue -->
+    <scuhoac:config name="scConfig"
+        property_port="${port}"
+        property_accessTokenUrl="http://localhost:${port}/oauth/token"
+        property_clientId="cid"
+        property_clientSecret="csecret"/>
+
+    <http:listener-config name="listenerConfig">
+        <http:listener-connection host="localhost" port="${port}"/>
+    </http:listener-config>
+
+    <flow name="request">
+        <scuhoac:request-with-oauth-auth-code
+            config-ref="scConfig"
+            path="${path}"/>
+    </flow>
+    <flow name="listen">
+        <http:listener path="${path}" config-ref="listenerConfig"/>
+        <logger />
+    </flow>
+
+    <!-- Dummy support for the OAuth dance -->
+    <http:request-config name="requestConfig">
+        <http:request-connection host="localhost" port="${port}"/>
+    </http:request-config>
+
+    <flow name="store-auth-code">
+        <http:request config-ref="requestConfig" method="GET" path="/callback">
+            <http:query-params>
+                #[{'code' : 'myAuthCode'}]
+            </http:query-params>
+        </http:request>        
+    </flow>
+    <flow name="oauth-token">
+        <http:listener path="oauth/token" config-ref="listenerConfig"/>
+        <set-payload value="{&quot;access_token&quot;: &quot;theToken&quot;}" mimeType="application/json"/>
+        
+    </flow>
+</mule>
