@@ -12,6 +12,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
+import static org.mule.runtime.api.util.ComponentLocationProvider.getSourceCode;
 
 import org.mule.runtime.api.component.Component;
 import org.mule.runtime.core.api.construct.Flow;
@@ -40,7 +41,7 @@ public class ConfigurationAnnotationsTestCase extends AbstractIntegrationTestCas
     assertThat(stb, not(nullValue()));
     assertThat(getDocName(stb), is("stb-transformer"));
     assertThat(getDocDescription(stb), is("Convert a String to a Byte Array"));
-    assertThat(getSourceElement(stb),
+    assertThat(getSourceCode((Component) stb),
                is("<string-to-byte-array-transformer name=\"StringtoByteArray\" doc:name=\"stb-transformer\">"
                    + lineSeparator() + "<annotations>" + lineSeparator()
                    + "<doc:description>Convert a String to a Byte Array</doc:description>" + lineSeparator()
@@ -53,7 +54,7 @@ public class ConfigurationAnnotationsTestCase extends AbstractIntegrationTestCas
     assertThat(flow, not(nullValue()));
     assertThat(getDocName(flow), is("Bridge flow"));
     assertThat(getDocDescription(flow), is("Main flow"));
-    assertThat(getSourceElement(flow),
+    assertThat(getSourceCode(flow),
                is("<flow name=\"Bridge\" doc:name=\"Bridge flow\">" + lineSeparator() + "<annotations>"
                    + lineSeparator() + "<doc:description>Main flow</doc:description>" + lineSeparator()
                    + "</annotations>" + lineSeparator() + "<logger doc:name=\"echo\">" + "</logger>"
@@ -66,7 +67,7 @@ public class ConfigurationAnnotationsTestCase extends AbstractIntegrationTestCas
     assertThat(flow, not(nullValue()));
     assertThat(getDocName(flow), is("With Referenced Exception Strategy"));
     assertThat(getDocDescription(flow), is(nullValue()));
-    assertThat(getSourceElement(flow),
+    assertThat(getSourceCode(flow),
                is("<flow name=\"WithRefExceptionStrategy\" doc:name=\"With Referenced Exception Strategy\">"
                    + lineSeparator() + "<logger doc:name=\"echo_ex\">" + "</logger>"
                    + lineSeparator()
@@ -83,7 +84,7 @@ public class ConfigurationAnnotationsTestCase extends AbstractIntegrationTestCas
     assertThat(flow, not(nullValue()));
     assertThat(getDocName(flow), is(nullValue()));
     assertThat(getDocDescription(flow), is(nullValue()));
-    assertThat(getSourceElement(flow), is("<flow name=\"NotAnnotatedBridge\">" + lineSeparator()
+    assertThat(getSourceCode(flow), is("<flow name=\"NotAnnotatedBridge\">" + lineSeparator()
         + "<logger></logger>" + lineSeparator() + "</flow>"));
   }
 
@@ -91,7 +92,7 @@ public class ConfigurationAnnotationsTestCase extends AbstractIntegrationTestCas
   public void testJavaComponentAnnotations() {
     Flow flow = (Flow) registry.<FlowConstruct>lookupByName("Bridge").get();
     Processor logger = flow.getProcessors().get(0);
-    assertThat(getSourceElement(logger), is("<logger doc:name=\"echo\">" + "</logger>"));
+    assertThat(getSourceCode((Component) logger), is("<logger doc:name=\"echo\">" + "</logger>"));
   }
 
   @Test
@@ -99,7 +100,7 @@ public class ConfigurationAnnotationsTestCase extends AbstractIntegrationTestCas
     Transformer stb = registry.<Transformer>lookupByName("ManziTransformer").get();
     assertThat(stb, not(nullValue()));
     assertThat(getDocName(stb), is("manzi-transformer"));
-    assertThat(getSourceElement(stb),
+    assertThat(getSourceCode((Component) stb),
                is("<append-string-transformer message=\"Manzi\" name=\"ManziTransformer\" doc:name=\"manzi-transformer\"></append-string-transformer>"));
   }
 
@@ -112,8 +113,4 @@ public class ConfigurationAnnotationsTestCase extends AbstractIntegrationTestCas
         .getAnnotation(new QName("http://www.mulesoft.org/schema/mule/documentation", "description"));
   }
 
-  protected String getSourceElement(Object obj) {
-    return (String) ((Component) obj)
-        .getAnnotation(new QName("http://www.mulesoft.org/schema/mule/documentation", "sourceElement"));
-  }
 }

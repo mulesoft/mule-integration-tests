@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:module-using-http="http://www.mulesoft.org/schema/mule/module-using-http"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+	        http://www.mulesoft.org/schema/mule/module-using-http http://www.mulesoft.org/schema/mule/module-using-http/current/mule-module-using-http.xsd">
+
+    <module-using-http:config name="moduleConfig" username="pepe" password="parada"/>
+
+    <flow name="testFlow">
+        <module-using-http:search-issues repo="non-existent" config-ref="moduleConfig"/>
+    </flow>
+
+</mule>
