@@ -105,6 +105,10 @@
         <sc:raise-error-op/>
     </flow>
 
+    <flow name="scFailingOperationFlowRef">
+        <flow-ref name="scFailingOperation"/>
+    </flow>
+
     <flow name="flowFailing">
         <test:processor throwException="true"/>
     </flow>
