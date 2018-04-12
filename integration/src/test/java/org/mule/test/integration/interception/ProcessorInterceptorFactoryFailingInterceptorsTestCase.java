@@ -205,7 +205,7 @@ public class ProcessorInterceptorFactoryFailingInterceptorsTestCase extends Abst
   }
 
   @Test
-  @Description("Processors in global error handlers are intercepted correctly for errors in XML SDK operations, when called from flow ref")
+  @Description("Processors in global error handlers are intercepted correctly for errors in XML SDK operations, when referenced from flow ref")
   public void globalErrorHandlerScOperationFromFlowRef() throws Exception {
     // Original error type kept regardless of interceptor failure
     expectedError.expectErrorType("MODULE-USING-CORE", "RAISED");
