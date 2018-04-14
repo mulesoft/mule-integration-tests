@@ -45,7 +45,7 @@ import io.qameta.allure.Story;
 public class RedeliveryExhaustedTestCase extends AbstractIntegrationTestCase {
 
   private static final int MAX_REDELIVERY_COUNT = 2;
-  private static TestConnectorQueueHandler queueHandler;
+  private TestConnectorQueueHandler queueHandler;
 
   @Rule
   public ExpectedError expectedError = none();

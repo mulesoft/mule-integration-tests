@@ -46,7 +46,7 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
 
   private static FlowExceptionHandler effectiveMessagingExceptionHandler;
   private static CountDownLatch latch;
-  private static TestConnectorQueueHandler queueHandler;
+  private TestConnectorQueueHandler queueHandler;
 
   @Override
   protected String getConfigFile() {

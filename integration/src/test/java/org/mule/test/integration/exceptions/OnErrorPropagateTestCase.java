@@ -59,7 +59,7 @@ import io.qameta.allure.Story;
 @Story("On Error Propagate")
 public class OnErrorPropagateTestCase extends AbstractIntegrationTestCase {
 
-  private static TestConnectorQueueHandler queueHandler;
+  private TestConnectorQueueHandler queueHandler;
 
   @Rule
   public ExpectedError expectedError = none();
