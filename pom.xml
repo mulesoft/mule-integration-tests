@@ -44,7 +44,6 @@
     <muleAggregatorsModuleTestVersion>1.0.0-SNAPSHOT</muleAggregatorsModuleTestVersion>
     <muleDbConnectorTestVersion>1.2.0-SNAPSHOT</muleDbConnectorTestVersion>
     <muleFtpConnectorTestVersion>1.2.0-SNAPSHOT</muleFtpConnectorTestVersion>
-    <muleFileConnectorTestVersion>1.2.0-SNAPSHOT</muleFileConnectorTestVersion>
     <muleJmsConnectorTestVersion>1.2.0-SNAPSHOT</muleJmsConnectorTestVersion>
     <muleWscConnectorTestVersion>1.2.0-SNAPSHOT</muleWscConnectorTestVersion>
     <muleOauthModuleTestVersion>1.2.0-SNAPSHOT</muleOauthModuleTestVersion>
@@ -53,7 +52,6 @@
     <apacheHttpCoreVersion>4.4.6</apacheHttpCoreVersion>
     <apacheHttpClientVersion>4.5.3</apacheHttpClientVersion>
     <springVersion>4.1.9.RELEASE</springVersion>
-    <springSecurityVersion>4.0.4.RELEASE</springSecurityVersion>
   </properties>
 
   <build>
