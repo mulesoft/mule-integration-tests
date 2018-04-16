@@ -4,13 +4,13 @@
       xmlns:http="http://www.mulesoft.org/schema/mule/http"
       xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
       xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xmlns:aggregators="http://www.mulesoft.org/schema/mule/aggregators"
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
                http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
-               http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
+               http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
+               http://www.mulesoft.org/schema/mule/aggregators http://www.mulesoft.org/schema/mule/aggregators/current/mule-aggregators.xsd">
 
     <configuration defaultErrorHandler-ref="defaultErrorHandler"/>
-
-
 
     <notifications>
         <notification event="MESSAGE-PROCESSOR"/>
@@ -76,14 +76,6 @@
         <logger/>
     </flow>
 
-
-
-
-
-
-
-
-
     <flow name="flowWithSubflow">
         <logger/>
         <flow-ref name="subflow"/>
@@ -121,5 +113,36 @@
             <logger/>
         </on-error-continue>
     </error-handler>
+
+    <flow name="aggregatorWithOneRoute">
+        <aggregators:size-based-aggregator name="oneRouteAggregator" maxSize="1">
+            <aggregators:aggregation-complete>
+                <logger/>
+            </aggregators:aggregation-complete>
+        </aggregators:size-based-aggregator>
+    </flow>
+
+    <flow name="aggregatorWithTwoRoutes">
+        <aggregators:size-based-aggregator name="twoRoutesAggregator" maxSize="2">
+            <aggregators:incremental-aggregation>
+                <logger/>
+            </aggregators:incremental-aggregation>
+            <aggregators:aggregation-complete>
+                <logger/>
+            </aggregators:aggregation-complete>
+        </aggregators:size-based-aggregator>
+    </flow>
+
+    <flow name="aggregatorWithTwoRoutesAndContent">
+        <aggregators:size-based-aggregator name="twoRouteAggregatorAndContent" maxSize="2">
+            <aggregators:content>#[payload]</aggregators:content>
+            <aggregators:incremental-aggregation>
+                <logger/>
+            </aggregators:incremental-aggregation>
+            <aggregators:aggregation-complete>
+                <logger/>
+            </aggregators:aggregation-complete>
+        </aggregators:size-based-aggregator>
+    </flow>
 
 </mule>
