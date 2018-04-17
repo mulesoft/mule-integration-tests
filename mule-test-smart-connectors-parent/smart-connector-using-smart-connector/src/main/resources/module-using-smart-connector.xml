@@ -15,4 +15,11 @@
         <output type="string"/>
     </operation>
 
+    <operation name="proxy-raise-error-op">
+        <body>
+            <module-using-core:raise-error-op/>
+        </body>
+        <output type="string"/>
+    </operation>
+
  </module>
