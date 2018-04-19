@@ -80,6 +80,10 @@
         <http:request method="GET" config-ref="HTTP_Request_configuration" url="https://httpbin.org/status/418"/>
     </flow>
 
+    <flow name="loggerWithTemplate">
+        <logger message="Logging #[vars.v1]"/>
+    </flow>
+
 
     <flow name="expressionsInInterception">
         <logger />
