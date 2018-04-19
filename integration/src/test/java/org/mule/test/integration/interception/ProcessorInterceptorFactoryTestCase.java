@@ -483,6 +483,17 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
   }
 
   @Test
+  public void loggerWithTemplate() throws Exception {
+    flowRunner("loggerWithTemplate").withVariable("v1", "value").run();
+
+    List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
+    assertThat(interceptionParameters, hasSize(1));
+
+    InterceptionParameters param = interceptionParameters.get(0);
+    assertThat(param.parameters.get("message").resolveValue(), is("Logging value"));
+  }
+
+  @Test
   @Description("Processors in global error handlers are intercepted correctly for errors in XML SDK operations")
   public void globalErrorHandlerScOperation() throws Exception {
     expectedError.expectErrorType("MODULE-USING-CORE", "RAISED");
