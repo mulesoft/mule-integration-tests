@@ -10,14 +10,10 @@ import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import org.junit.Ignore;
+import io.qameta.allure.Issue;
 import org.junit.Rule;
 import org.junit.Test;
-import org.springframework.context.annotation.Description;
 
-import io.qameta.allure.Issue;
-
-@Ignore("MULE-14827")
 @Issue("MULE-14827")
 public class SmartConnectorUsesAppConfigTestCase extends AbstractIntegrationTestCase {
 
