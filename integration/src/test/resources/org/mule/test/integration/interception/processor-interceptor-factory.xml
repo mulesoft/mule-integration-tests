@@ -76,6 +76,10 @@
         <heisenberg:cure-cancer />
     </flow>
 
+    <flow name="flowFailingOperationFlowRef">
+        <flow-ref name="flowFailingOperation"/>
+    </flow>
+
     <flow name="flowUnknownStatusCodeHttpRequest">
         <http:request method="GET" config-ref="HTTP_Request_configuration" url="https://httpbin.org/status/418"/>
     </flow>

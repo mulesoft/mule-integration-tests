@@ -191,6 +191,14 @@ public class ProcessorInterceptorFactoryFailingInterceptorsTestCase extends Abst
   }
 
   @Test
+  @Description("Processors in global error handlers are intercepted correctly for errors in operations")
+  public void globalErrorHandlerOperationFromFlowRef() throws Exception {
+    // Original error type kept regardless of interceptor failure
+    expectedError.expectErrorType("HEISENBERG", "HEALTH");
+    flowRunner("flowFailingOperationFlowRef").run();
+  }
+
+  @Test
   @Description("Processors in global error handlers are intercepted correctly for an unknown status code errors in http request")
   public void globalErrorHandlerUnknownStatusCodeHttpRequest() throws Exception {
     flowRunner("flowUnknownStatusCodeHttpRequest").run();
