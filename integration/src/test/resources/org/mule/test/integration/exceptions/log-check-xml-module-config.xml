@@ -16,7 +16,7 @@
             <test:on-error-check-log>
                 <test:check-equals>
                     <![CDATA[
-                        Message               : Expected error.
+                        Message               : Expected error
                         Element               : xmlSdkOperationError/processors/0 @ LogCheckXmlModuleTestCase#runXmlSdkOperationError:org/mule/test/integration/exceptions/log-check-xml-module-config.xml:14
                         Element XML           : <module-using-core:raise-error-op></module-using-core:raise-error-op>
                         Error type            : MODULE-USING-CORE:RAISED
@@ -35,7 +35,7 @@
             <test:on-error-check-log>
                 <test:check-equals>
                     <![CDATA[
-                        Message               : Expected error.
+                        Message               : Expected error
                         Element               : xmlSdkOperationErrorNested/processors/0 @ LogCheckXmlModuleTestCase#runXmlSdkOperationErrorNested:org/mule/test/integration/exceptions/log-check-xml-module-config.xml:33
                         Element XML           : <module-using-sc:proxy-raise-error-op></module-using-sc:proxy-raise-error-op>
                         Error type            : MODULE-USING-CORE:RAISED
