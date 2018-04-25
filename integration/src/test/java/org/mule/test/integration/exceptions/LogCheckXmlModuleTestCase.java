@@ -8,13 +8,16 @@ package org.mule.test.integration.exceptions;
 
 import static org.mule.runtime.api.exception.MuleException.MULE_VERBOSE_EXCEPTIONS;
 import static org.mule.runtime.api.exception.MuleException.refreshVerboseExceptions;
+import static org.mule.runtime.core.api.config.MuleProperties.MULE_FLOW_TRACE;
+
+import org.mule.tck.junit4.rule.SystemProperty;
+import org.mule.test.AbstractIntegrationTestCase;
+
 import org.junit.AfterClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.mule.tck.junit4.rule.SystemProperty;
-import org.mule.test.AbstractIntegrationTestCase;
 
 public class LogCheckXmlModuleTestCase extends AbstractIntegrationTestCase {
 
@@ -34,6 +37,9 @@ public class LogCheckXmlModuleTestCase extends AbstractIntegrationTestCase {
   protected String getConfigFile() {
     return "org/mule/test/integration/exceptions/log-check-xml-module-config.xml";
   }
+
+  @Rule
+  public SystemProperty logFlowStack = new SystemProperty(MULE_FLOW_TRACE, Boolean.toString(false));
 
   @Test
   public void runXmlSdkOperationError() throws Exception {
