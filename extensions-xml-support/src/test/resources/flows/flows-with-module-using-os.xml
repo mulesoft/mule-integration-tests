@@ -6,8 +6,8 @@
        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
        http://www.mulesoft.org/schema/mule/module-using-os http://www.mulesoft.org/schema/mule/module-using-os/current/mule-module-using-os.xsd">
 
-    <module-using-os:config name="firstConfiguration"/>
-    <module-using-os:config name="secondConfiguration"/>
+    <module-using-os:config name="firstConfiguration" maxentries="10"/>
+    <module-using-os:config name="secondConfiguration" maxentries="5"/>
 
     <flow name="contains-firstConfiguration-flow">
         <module-using-os:do-contains config-ref="firstConfiguration" daKey="someKey"/>

@@ -9,7 +9,8 @@
            http://www.mulesoft.org/schema/mule/module http://www.mulesoft.org/schema/mule/module/current/mule-module.xsd
            http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd">
 
-    <os:object-store name="os-config"/>
+    <property name="maxentries" type="number" />
+    <os:object-store name="os-config"  maxEntries="10"/>
 
     <operation name="do-store">
         <parameters>
