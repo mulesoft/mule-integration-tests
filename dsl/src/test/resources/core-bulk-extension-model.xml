@@ -4,7 +4,7 @@
         <scheduler schedulingStrategy="Attribute"/>
     </flow>
     <flow name="flowForidempotentMessageValidator">
-        <idempotent-message-validator idExpression="#[id]" objectStore="OS:OBJECT_STORE" storePrefix="Attribute" valueExpression="#[id]"/>
+        <idempotent-message-validator idExpression="#[correlationId]" objectStore="OS:OBJECT_STORE" storePrefix="Attribute" valueExpression="#[correlationId]"/>
     </flow>
     <flow name="flowForlogger">
         <logger category="Attribute" level="INFO" message="Attribute"/>
