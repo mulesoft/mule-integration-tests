@@ -22,16 +22,18 @@ import static org.mule.runtime.config.api.LazyComponentInitializer.LAZY_COMPONEN
 import static org.mule.runtime.config.api.SpringXmlConfigurationBuilderFactory.createConfigurationBuilder;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentLocatorStory.SEARCH_CONFIGURATION;
-
 import org.mule.extension.spring.api.SpringConfig;
 import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.artifact.Registry;
+import org.mule.runtime.api.component.Component;
 import org.mule.runtime.api.component.location.ComponentLocation;
+import org.mule.runtime.api.component.location.Location;
 import org.mule.runtime.config.api.LazyComponentInitializer;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -314,4 +316,18 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
     TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
     assertThat(queueHandler.read("globalErrorHandlerQueue", 5000), is(notNullValue()));
   }
+
+  @Description("Search for sub-flows components")
+  @Test
+  public void findSubFlowComponents() {
+    lazyComponentInitializer.initializeComponent(builder().globalName("mySubFlow").addProcessorsPart().addIndexPart(0).build());
+
+    Optional<Component> componentOptional = muleContext.getConfigurationComponentLocator().find(
+                                                                                                Location.builder()
+                                                                                                    .globalName("mySubFlow")
+                                                                                                    .addProcessorsPart()
+                                                                                                    .addIndexPart(0).build());
+    assertThat(componentOptional.isPresent(), is(true));
+  }
+
 }
