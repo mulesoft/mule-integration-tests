@@ -6,13 +6,11 @@
        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
        http://www.mulesoft.org/schema/mule/module-using-jms http://www.mulesoft.org/schema/mule/module-using-jms/current/mule-module-using-jms.xsd">
 
-    <module-using-jms:config name="aConfigName"/>
-
     <flow name="producer-flow">
-        <module-using-jms:do-publish config-ref="aConfigName" destination="someDestination" content="#[vars.content]"/>
+        <module-using-jms:do-publish destination="someDestination" content="#[vars.content]"/>
     </flow>
 
     <flow name="consumer-flow">
-        <module-using-jms:do-consume config-ref="aConfigName" destination="someDestination"/>
+        <module-using-jms:do-consume destination="someDestination"/>
     </flow>
 </mule>
