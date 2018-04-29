@@ -62,6 +62,8 @@ import java.util.Optional;
 import java.util.Set;
 
 import io.qameta.allure.junit4.DisplayName;
+
+import org.junit.After;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -208,6 +210,13 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
     super.doSetUp();
     listener.setLogSingleNotification(true);
     muleContext.getNotificationManager().addListener(listener);
+  }
+
+  @After
+  public void clearNotifications() {
+    if (listener != null) {
+      listener.getNotifications().clear();
+    }
   }
 
   private Optional<ConfigLine> loadConfigLines(Set<ExtensionModel> extensionModels, InputStream inputStream) {

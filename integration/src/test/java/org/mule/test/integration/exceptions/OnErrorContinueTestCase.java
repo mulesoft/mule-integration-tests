@@ -7,40 +7,38 @@
 package org.mule.test.integration.exceptions;
 
 import static java.lang.String.format;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.mule.functional.junit4.matchers.ThrowableCauseMatcher.hasCause;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.mule.runtime.http.api.HttpConstants.Method.POST;
 import static org.mule.runtime.http.api.HttpConstants.Protocol.HTTP;
 import static org.mule.runtime.http.api.HttpConstants.Protocol.HTTPS;
-import static org.mule.tck.junit4.matcher.IsEmptyOptional.empty;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
 
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-
-import static org.mockito.Mockito.mock;
-
 import org.mule.functional.api.component.TestConnectorQueueHandler;
+import org.mule.runtime.api.component.AbstractComponent;
+import org.mule.runtime.api.exception.DefaultMuleException;
 import org.mule.runtime.api.exception.MuleException;
+import org.mule.runtime.api.exception.MuleFatalException;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.lifecycle.CreateException;
 import org.mule.runtime.api.lifecycle.Initialisable;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.streaming.bytes.CursorStreamProvider;
 import org.mule.runtime.api.tls.TlsContextFactory;
-import org.mule.runtime.api.exception.DefaultMuleException;
 import org.mule.runtime.core.api.event.CoreEvent;
-import org.mule.runtime.api.exception.MuleFatalException;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.retry.policy.RetryPolicyExhaustedException;
 import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.runtime.http.api.HttpConstants.Protocol;
 import org.mule.runtime.http.api.HttpService;
+import org.mule.runtime.http.api.client.HttpRequestOptions;
 import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;
 import org.mule.runtime.http.api.domain.entity.HttpEntity;
 import org.mule.runtime.http.api.domain.message.request.HttpRequest;
@@ -48,14 +46,7 @@ import org.mule.runtime.http.api.domain.message.response.HttpResponse;
 import org.mule.service.http.TestHttpClient;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
-
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.hamcrest.core.Is;
-import org.hamcrest.core.IsNull;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.mule.test.runner.RunnerDelegateTo;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -65,6 +56,12 @@ import java.io.StringWriter;
 import javax.jws.WebParam;
 import javax.jws.WebResult;
 import javax.jws.WebService;
+
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
@@ -121,28 +118,30 @@ public class OnErrorContinueTestCase extends AbstractIntegrationTestCase {
   }
 
   private void assertResponse(Message response) throws Exception {
-    assertThat(response, IsNull.<Object>notNullValue());
+    assertThat(response, is(notNullValue()));
     // compare the structure and values but not the attributes' order
     JsonNode actualJsonNode = new ObjectMapper().readTree(getPayloadAsString(response));
     JsonNode expectedJsonNode = new ObjectMapper().readTree(JSON_RESPONSE);
-    assertThat(actualJsonNode, Is.is(expectedJsonNode));
+    assertThat(actualJsonNode, is(expectedJsonNode));
   }
 
   private void testJsonErrorResponse(String endpointUri) throws Exception {
     HttpRequest request = HttpRequest.builder().uri(endpointUri).method(POST)
         .entity(new ByteArrayHttpEntity(JSON_REQUEST.getBytes())).build();
-    final HttpEntity response = httpClient.send(request, TIMEOUT, false, null).getEntity();
+
+    final HttpEntity response = httpClient
+        .send(request, HttpRequestOptions.builder().responseTimeout(TIMEOUT).followsRedirect(false).build()).getEntity();
 
     assertResponse(response);
   }
 
   private void assertResponse(HttpEntity responseEntity) throws Exception {
-    assertThat(responseEntity, IsNull.<Object>notNullValue());
+    assertThat(responseEntity, is(notNullValue()));
     // compare the structure and values but not the attributes' order
     JsonNode actualJsonNode =
         new ObjectMapper().readTree(IOUtils.toString(responseEntity.getContent()));
     JsonNode expectedJsonNode = new ObjectMapper().readTree(JSON_RESPONSE);
-    assertThat(actualJsonNode, Is.is(expectedJsonNode));
+    assertThat(actualJsonNode, is(expectedJsonNode));
   }
 
   public static final String MESSAGE = "some message";
@@ -151,16 +150,16 @@ public class OnErrorContinueTestCase extends AbstractIntegrationTestCase {
   @Test
   public void testCatchWithComponent() throws Exception {
     Message result = flowRunner("catchWithComponent").withPayload(MESSAGE).run().getMessage();
-    assertThat(result, IsNull.<Object>notNullValue());
-    assertThat(getPayloadAsString(result), Is.is(MESSAGE + " Caught"));
+    assertThat(result, is(notNullValue()));
+    assertThat(getPayloadAsString(result), is(MESSAGE + " Caught"));
   }
 
   @Test
   public void testFullyDefinedCatchExceptionStrategyWithComponent() throws Exception {
     Message result =
         flowRunner("fullyDefinedCatchExceptionStrategyWithComponent").withPayload(MESSAGE).run().getMessage();
-    assertThat(result, IsNull.<Object>notNullValue());
-    assertThat(getPayloadAsString(result), Is.is(MESSAGE + " apt1 apt2 groovified"));
+    assertThat(result, is(notNullValue()));
+    assertThat(getPayloadAsString(result), is(MESSAGE + " apt1 apt2 groovified"));
   }
 
   @Test
@@ -199,7 +198,8 @@ public class OnErrorContinueTestCase extends AbstractIntegrationTestCase {
   public void doesNotHandleSourceErrors() throws Exception {
     HttpRequest request = HttpRequest.builder().uri(getUrl(HTTP, dynamicPort1, "sourceError")).method(POST)
         .entity(new ByteArrayHttpEntity(TEST_MESSAGE.getBytes())).build();
-    final HttpResponse response = httpClient.send(request, TIMEOUT, false, null);
+    final HttpResponse response =
+        httpClient.send(request, HttpRequestOptions.builder().responseTimeout(TIMEOUT).followsRedirect(false).build());
 
     assertThat(response.getStatusCode(), is(INTERNAL_SERVER_ERROR.getStatusCode()));
     TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
