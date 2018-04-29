@@ -94,9 +94,9 @@ public class MuleContextLifecycleTestCase extends AbstractMuleTestCase {
           });
           builders.add(new SimpleConfigurationBuilder(baseRegistry));
         }
-      }.setApplicationResources(new String[] {
-          configFile
-      }).build();
+      }.setApplicationResources(configFile)
+          .setContextId(MuleContextLifecycleTestCase.class.getSimpleName())
+          .build();
       fail(EXPECTED_A_CONTEXT_START_EXCEPTION_EXCEPTION);
     } catch (LifecycleException e) {
       LifecycleObject lifecycleBean = (LifecycleObject) e.getComponent();

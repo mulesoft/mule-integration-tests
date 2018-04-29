@@ -184,7 +184,9 @@ public class SchedulerServiceTestCase extends AbstractIntegrationTestCase {
 
     @Override
     public void initialise() throws InitialisationException {
-      scheduler = schedulerService.cpuLightScheduler();
+      if (scheduler == null) {
+        scheduler = schedulerService.cpuLightScheduler();
+      }
     }
 
     @Override

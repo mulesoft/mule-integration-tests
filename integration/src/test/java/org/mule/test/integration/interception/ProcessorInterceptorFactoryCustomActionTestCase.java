@@ -37,18 +37,19 @@ import org.mule.test.integration.interception.ProcessorInterceptorFactoryTestCas
 import org.mule.test.integration.interception.ProcessorInterceptorFactoryTestCase.InterceptionParameters;
 import org.mule.test.runner.RunnerDelegateTo;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
@@ -95,8 +96,12 @@ public class ProcessorInterceptorFactoryCustomActionTestCase extends AbstractInt
 
   @Before
   public void before() {
-    getActiveConnections().clear();
     CustomActionInterceptor.actioner = action -> action.proceed();
+  }
+
+  @After
+  public void after() {
+    getActiveConnections().clear();
     HasInjectedAttributesInterceptor.interceptionParameters.clear();
   }
 
