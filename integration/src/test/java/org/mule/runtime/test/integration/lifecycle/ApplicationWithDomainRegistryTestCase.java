@@ -37,13 +37,14 @@ import org.mule.tck.probe.JUnitLambdaProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.test.allure.AllureConstants;
 
-import org.junit.Before;
-import org.junit.Test;
-
 import java.util.Collection;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
@@ -59,8 +60,21 @@ public class ApplicationWithDomainRegistryTestCase extends AbstractMuleTestCase 
 
   @Before
   public void createContexts() throws Exception {
-    domainContext = new DomainContextBuilder().build();
-    applicationContext = new ApplicationContextBuilder().setDomainContext(domainContext).build();
+    domainContext = new DomainContextBuilder().setContextId(MuleContextLifecycleTestCase.class.getSimpleName()).build();
+    applicationContext = new ApplicationContextBuilder().setContextId(ApplicationWithDomainRegistryTestCase.class.getSimpleName())
+        .setDomainContext(domainContext).build();
+  }
+
+  @After
+  public void disposeContexts() {
+    if (domainContext != null) {
+      domainContext.dispose();
+      domainContext = null;
+    }
+    if (applicationContext != null) {
+      applicationContext.dispose();
+      applicationContext = null;
+    }
   }
 
   @Story(OBJECT_REGISTRATION)
@@ -135,6 +149,7 @@ public class ApplicationWithDomainRegistryTestCase extends AbstractMuleTestCase 
         disposingLatch.countDown();
         synchronized (applicationContext) {
           applicationContext.dispose();
+          applicationContext = null;
         }
       });
 

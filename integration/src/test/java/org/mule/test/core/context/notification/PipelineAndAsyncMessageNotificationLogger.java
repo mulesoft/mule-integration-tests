@@ -6,17 +6,22 @@
  */
 package org.mule.test.core.context.notification;
 
+import org.mule.runtime.api.lifecycle.Disposable;
 import org.mule.tck.core.context.notification.NotificationLogger;
 
 import java.util.LinkedList;
 import java.util.List;
 
-public class PipelineAndAsyncMessageNotificationLogger implements NotificationLogger {
+public class PipelineAndAsyncMessageNotificationLogger implements NotificationLogger, Disposable {
 
-  protected static LinkedList notifications = new LinkedList();
+  protected LinkedList notifications = new LinkedList();
 
   public List getNotifications() {
     return notifications;
   }
 
+  @Override
+  public void dispose() {
+    notifications.clear();
+  }
 }

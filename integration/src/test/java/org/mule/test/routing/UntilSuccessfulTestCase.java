@@ -62,6 +62,13 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
     targetMessageProcessor = getFromFlow(locator, "target-mp");
   }
 
+  @Override
+  protected void doTearDown() throws Exception {
+    CustomMP.clearCount();
+
+    super.doTearDown();
+  }
+
   @Test
   public void defaultConfiguration() throws Exception {
     final String payload = RandomStringUtils.randomAlphanumeric(20);

@@ -18,13 +18,13 @@ import org.mule.tck.junit4.AbstractMuleTestCase;
 import java.util.List;
 
 import org.junit.After;
-import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 
 public class MuleConfigurationConfigTestCase extends AbstractMuleTestCase {
 
-  @ClassRule
-  public static TestServicesConfigurationBuilder testServicesConfigurationBuilder = new TestServicesConfigurationBuilder();
+  @Rule
+  public TestServicesConfigurationBuilder testServicesConfigurationBuilder = new TestServicesConfigurationBuilder();
 
   private MuleContext muleContext;
 
@@ -37,19 +37,28 @@ public class MuleConfigurationConfigTestCase extends AbstractMuleTestCase {
 
   @Test
   public void configurationQueueTxLogSizeExplicitValue() throws Exception {
-    muleContext = new WithServicesApplicationContextBuilder()
-        .setApplicationResources(new String[] {"org/mule/test/config/configuration-queue-tx-log-size-explict-config.xml"})
+    muleContext = new WithServicesApplicationContextBuilder(testServicesConfigurationBuilder)
+        .setContextId(MuleConfigurationConfigTestCase.class.getSimpleName())
+        .setApplicationResources("org/mule/test/config/configuration-queue-tx-log-size-explict-config.xml")
         .build();
     assertThat(muleContext.getConfiguration().getMaxQueueTransactionFilesSizeInMegabytes(), is(100));
   }
 
   @Test
   public void configurationQueueTxLogSizeDefaultValue() throws Exception {
-    muleContext = new WithServicesApplicationContextBuilder().setApplicationResources(new String[] {}).build();
+    muleContext = new WithServicesApplicationContextBuilder(testServicesConfigurationBuilder)
+        .setContextId(MuleConfigurationConfigTestCase.class.getSimpleName())
+        .setApplicationResources().build();
     assertThat(muleContext.getConfiguration().getMaxQueueTransactionFilesSizeInMegabytes(), is(500));
   }
 
   private static class WithServicesApplicationContextBuilder extends ApplicationContextBuilder {
+
+    private TestServicesConfigurationBuilder testServicesConfigurationBuilder;
+
+    public WithServicesApplicationContextBuilder(TestServicesConfigurationBuilder testServicesConfigurationBuilder) {
+      this.testServicesConfigurationBuilder = testServicesConfigurationBuilder;
+    }
 
     @Override
     protected void addBuilders(List<ConfigurationBuilder> builders) {

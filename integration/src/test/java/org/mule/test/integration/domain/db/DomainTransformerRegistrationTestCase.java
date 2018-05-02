@@ -21,7 +21,7 @@ public class DomainTransformerRegistrationTestCase extends DomainFunctionalTestC
 
   private static final String APP1 = "app1";
   private static final String APP2 = "app2";
-  private static final String[] APPLICATION_RESOURCES = new String[] {"domain/domain-transformer-registration-config.xml"};
+  private static final String APPLICATION_RESOURCES = "domain/domain-transformer-registration-config.xml";
 
   @Override
   protected String getDomainConfig() {
@@ -30,8 +30,10 @@ public class DomainTransformerRegistrationTestCase extends DomainFunctionalTestC
 
   @Override
   public ApplicationConfig[] getConfigResources() {
-    return new ApplicationConfig[] {new ApplicationConfig(APP1, APPLICATION_RESOURCES),
-        new ApplicationConfig(APP2, APPLICATION_RESOURCES)};
+    return new ApplicationConfig[] {
+        new ApplicationConfig(APP1, APPLICATION_RESOURCES),
+        new ApplicationConfig(APP2, APPLICATION_RESOURCES)
+    };
   }
 
   @Test

@@ -42,6 +42,7 @@ import org.mule.tck.probe.PollingProber;
 import org.mule.tck.probe.Probe;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import org.junit.After;
 import org.junit.Test;
 
 import java.util.Iterator;
@@ -201,6 +202,14 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
   @Override
   protected String getConfigFile() {
     return CONFIG_FILE_NAME.get();
+  }
+
+  @After
+  public void clearNotifications() {
+    final ProcessorNotificationStore notificationsStore = getNotificationsStore();
+    if (notificationsStore != null) {
+      notificationsStore.getNotifications().clear();
+    }
   }
 
   @Test

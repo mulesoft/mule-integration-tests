@@ -19,7 +19,7 @@ import org.junit.Test;
 
 public class InOnlyOptionalOutTestCase extends AbstractIntegrationTestCase {
 
-  private static TestConnectorQueueHandler queueHandler;
+  private TestConnectorQueueHandler queueHandler;
 
   @Override
   protected void doSetUp() throws Exception {
