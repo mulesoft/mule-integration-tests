@@ -49,6 +49,7 @@ import org.mule.test.heisenberg.extension.HeisenbergExtension;
 import org.mule.test.heisenberg.extension.exception.HeisenbergException;
 import org.mule.test.heisenberg.extension.model.KillParameters;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -97,8 +98,8 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     return objects;
   }
 
-  @Before
-  public void before() {
+  @After
+  public void after() {
     getActiveConnections().clear();
     HasInjectedAttributesInterceptor.interceptionParameters.clear();
     AfterWithCallbackInterceptor.callback = (event, thrown) -> {
@@ -703,7 +704,8 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
 
   public static class AfterWithCallbackInterceptor implements ProcessorInterceptor {
 
-    static BiConsumer<InterceptionEvent, Optional<Throwable>> callback;
+    static BiConsumer<InterceptionEvent, Optional<Throwable>> callback = (event, thrown) -> {
+    };
 
     @Override
     public void after(ComponentLocation location, InterceptionEvent event, Optional<Throwable> thrown) {

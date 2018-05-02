@@ -40,6 +40,7 @@ import org.mule.runtime.api.notification.NotificationListenerRegistry;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.runtime.core.api.config.ConfigurationException;
+import org.mule.runtime.core.api.config.DefaultMuleConfiguration;
 import org.mule.runtime.core.api.config.builders.AbstractConfigurationBuilder;
 import org.mule.runtime.core.api.context.DefaultMuleContextFactory;
 import org.mule.runtime.core.api.context.MuleContextBuilder;
@@ -261,6 +262,9 @@ public class ErrorHandlingConfigurationFailuresTestCase extends AbstractMuleTest
     builders.add(createConfigurationBuilder(configuration));
     builders.add(new TestServicesConfigurationBuilder());
     MuleContextBuilder contextBuilder = MuleContextBuilder.builder(APP);
+    final DefaultMuleConfiguration muleConfiguration = new DefaultMuleConfiguration();
+    muleConfiguration.setId(ErrorHandlingConfigurationFailuresTestCase.class.getSimpleName());
+    contextBuilder.setMuleConfiguration(muleConfiguration);
     MuleContext muleContext = muleContextFactory.createMuleContext(builders, contextBuilder);
     final AtomicReference<Latch> contextStartedLatch = new AtomicReference<>();
     contextStartedLatch.set(new Latch());

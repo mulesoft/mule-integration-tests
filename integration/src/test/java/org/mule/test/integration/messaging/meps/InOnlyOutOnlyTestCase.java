@@ -18,7 +18,7 @@ import org.junit.Test;
 
 public class InOnlyOutOnlyTestCase extends AbstractIntegrationTestCase {
 
-  private static TestConnectorQueueHandler queueHandler;
+  private TestConnectorQueueHandler queueHandler;
 
   @Override
   protected String getConfigFile() {

@@ -7,12 +7,10 @@
 package org.mule.test.core.context.notification;
 
 import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.Assert.assertNull;
 import static org.mule.runtime.api.notification.ExceptionNotification.EXCEPTION_ACTION;
 
 import org.mule.functional.api.exception.FunctionalTestException;
 import org.mule.functional.listener.ExceptionListener;
-import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.notification.ExceptionNotification;
 import org.mule.runtime.api.notification.IntegerAction;
 
@@ -34,13 +32,14 @@ public class ExceptionNotificationTestCase extends AbstractNotificationTestCase 
   public void doTest() throws Exception {
     ExceptionListener exceptionListener = new ExceptionListener(notificationListenerRegistry);
     expectedException.expectCause(instanceOf(FunctionalTestException.class));
-    Message result = flowRunner("the-service").withPayload(TEST_PAYLOAD).run().getMessage();
-    // processing is async, give time for the exception notificator to run
-    exceptionListener.waitUntilAllNotificationsAreReceived();
+    try {
+      flowRunner("the-service").withPayload(TEST_PAYLOAD).run().getMessage();
+    } finally {
+      // processing is async, give time for the exception notificator to run
+      exceptionListener.waitUntilAllNotificationsAreReceived();
 
-    assertNull(result);
-
-    assertNotifications();
+      assertNotifications();
+    }
   }
 
   @Override

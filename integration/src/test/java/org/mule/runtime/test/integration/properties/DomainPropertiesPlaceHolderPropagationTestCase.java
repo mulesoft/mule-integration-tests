@@ -65,9 +65,11 @@ public class DomainPropertiesPlaceHolderPropagationTestCase extends AbstractMule
   }
 
   private void configureContexts(String domainConfig, String appConfig) throws Exception {
-    domainContext = new DomainContextBuilder().setDomainConfig(domainConfig).build();
+    domainContext = new DomainContextBuilder().setContextId(DomainPropertiesPlaceHolderPropagationTestCase.class.getSimpleName())
+        .setDomainConfig(domainConfig).build();
     applicationContext =
-        new ApplicationContextBuilder().setApplicationResources(new String[] {appConfig}).setDomainContext(domainContext).build();
+        new ApplicationContextBuilder().setContextId(DomainPropertiesPlaceHolderPropagationTestCase.class.getSimpleName())
+            .setApplicationResources(new String[] {appConfig}).setDomainContext(domainContext).build();
   }
 
   @After

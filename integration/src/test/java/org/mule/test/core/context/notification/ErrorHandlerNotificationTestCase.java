@@ -8,6 +8,7 @@ package org.mule.test.core.context.notification;
 
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.rules.ExpectedException.none;
 import static org.mule.runtime.api.notification.ErrorHandlerNotification.PROCESS_END;
 import static org.mule.runtime.api.notification.ErrorHandlerNotification.PROCESS_START;
 
@@ -15,16 +16,43 @@ import org.mule.functional.api.exception.FunctionalTestException;
 import org.mule.runtime.api.notification.ErrorHandlerNotification;
 import org.mule.runtime.api.notification.IntegerAction;
 import org.mule.runtime.api.notification.Notification.Action;
+import org.mule.test.runner.RunnerDelegateTo;
+
+import java.util.function.Consumer;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
+@RunnerDelegateTo(Parameterized.class)
 public class ErrorHandlerNotificationTestCase extends AbstractNotificationTestCase {
 
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
+  private String flowName;
 
+  private Consumer<ExpectedException> expected;
+  @Rule
+  public ExpectedException expectedException = none();
+
+  @Parameters(name = "{0}")
+  public static Object[][] params() {
+    return new Object[][] {
+        new Object[] {"catch-es", (Consumer<ExpectedException>) (expected -> {
+        })},
+        new Object[] {"choice-es", (Consumer<ExpectedException>) (expected -> {
+        })},
+        new Object[] {"rollback-es",
+            (Consumer<ExpectedException>) (expected -> expected.expectCause(instanceOf(FunctionalTestException.class)))},
+        new Object[] {"default-es",
+            (Consumer<ExpectedException>) (expected -> expected.expectCause(instanceOf(FunctionalTestException.class)))}
+    };
+  }
+
+  public ErrorHandlerNotificationTestCase(String flowName, Consumer<ExpectedException> expected) {
+    this.flowName = flowName;
+    this.expected = expected;
+  }
 
   @Override
   protected String getConfigFile() {
@@ -33,24 +61,18 @@ public class ErrorHandlerNotificationTestCase extends AbstractNotificationTestCa
 
   @Test
   public void doTest() throws Exception {
-    assertNotNull(flowRunner("catch-es").withPayload(TEST_PAYLOAD).run());
-    assertNotNull(flowRunner("choice-es").withPayload(TEST_PAYLOAD).run());
-    expectedException.expectCause(instanceOf(FunctionalTestException.class));
-    assertNotNull(flowRunner("rollback-es").withPayload(TEST_PAYLOAD).run());
-    assertNotNull(flowRunner("default-es").withPayload(TEST_PAYLOAD).run());
+    expected.accept(expectedException);
 
-    assertNotifications();
+    try {
+      assertNotNull(flowRunner(flowName).withPayload(TEST_PAYLOAD).run());
+    } finally {
+      assertNotifications();
+    }
   }
 
   @Override
   public RestrictedNode getSpecification() {
     return new Node()
-        .serial(node(new IntegerAction(PROCESS_START))
-            .serial(node(new IntegerAction(PROCESS_END))))
-        .serial(node(new IntegerAction(PROCESS_START))
-            .serial(node(new IntegerAction(PROCESS_END))))
-        .serial(node(new IntegerAction(PROCESS_START))
-            .serial(node(new IntegerAction(PROCESS_END))))
         .serial(node(new IntegerAction(PROCESS_START))
             .serial(node(new IntegerAction(PROCESS_END))));
   }

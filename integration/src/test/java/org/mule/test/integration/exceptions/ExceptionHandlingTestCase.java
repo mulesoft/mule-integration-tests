@@ -37,6 +37,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
+import org.junit.After;
 import org.junit.Test;
 
 public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
@@ -46,7 +47,7 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
 
   private static FlowExceptionHandler effectiveMessagingExceptionHandler;
   private static CountDownLatch latch;
-  private static TestConnectorQueueHandler queueHandler;
+  private TestConnectorQueueHandler queueHandler;
 
   @Override
   protected String getConfigFile() {
@@ -55,8 +56,12 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
 
   @Override
   protected void doSetUp() throws Exception {
-    effectiveMessagingExceptionHandler = null;
     queueHandler = new TestConnectorQueueHandler(registry);
+  }
+
+  @After
+  public void after() {
+    effectiveMessagingExceptionHandler = null;
   }
 
   @Test
