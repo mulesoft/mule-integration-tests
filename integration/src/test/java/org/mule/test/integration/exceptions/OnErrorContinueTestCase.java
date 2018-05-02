@@ -38,7 +38,6 @@ import org.mule.runtime.core.api.retry.policy.RetryPolicyExhaustedException;
 import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.runtime.http.api.HttpConstants.Protocol;
 import org.mule.runtime.http.api.HttpService;
-import org.mule.runtime.http.api.client.HttpRequestOptions;
 import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;
 import org.mule.runtime.http.api.domain.entity.HttpEntity;
 import org.mule.runtime.http.api.domain.message.request.HttpRequest;
@@ -128,9 +127,7 @@ public class OnErrorContinueTestCase extends AbstractIntegrationTestCase {
   private void testJsonErrorResponse(String endpointUri) throws Exception {
     HttpRequest request = HttpRequest.builder().uri(endpointUri).method(POST)
         .entity(new ByteArrayHttpEntity(JSON_REQUEST.getBytes())).build();
-
-    final HttpEntity response = httpClient
-        .send(request, HttpRequestOptions.builder().responseTimeout(TIMEOUT).followsRedirect(false).build()).getEntity();
+    final HttpEntity response = httpClient.send(request, TIMEOUT, false, null).getEntity();
 
     assertResponse(response);
   }
@@ -198,8 +195,7 @@ public class OnErrorContinueTestCase extends AbstractIntegrationTestCase {
   public void doesNotHandleSourceErrors() throws Exception {
     HttpRequest request = HttpRequest.builder().uri(getUrl(HTTP, dynamicPort1, "sourceError")).method(POST)
         .entity(new ByteArrayHttpEntity(TEST_MESSAGE.getBytes())).build();
-    final HttpResponse response =
-        httpClient.send(request, HttpRequestOptions.builder().responseTimeout(TIMEOUT).followsRedirect(false).build());
+    final HttpResponse response = httpClient.send(request, TIMEOUT, false, null);
 
     assertThat(response.getStatusCode(), is(INTERNAL_SERVER_ERROR.getStatusCode()));
     TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
