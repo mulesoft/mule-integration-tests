@@ -13,7 +13,7 @@
     <flow name="complexFlow">
         <scheduler>
             <scheduling-strategy>
-                <fixed-frequency/>
+                <fixed-frequency frequency="1000"/>
             </scheduling-strategy>
         </scheduler>
         <set-payload value="someValue"/>
