@@ -34,7 +34,7 @@
 
     <muleSpringModuleTestVersion>1.1.0</muleSpringModuleTestVersion>
     <muleValidationModuleTestVersion>1.2.1</muleValidationModuleTestVersion>
-    <muleScriptingModuleTestVersion>1.1.2-SNAPSHOT</muleScriptingModuleTestVersion>
+    <muleScriptingModuleTestVersion>1.1.2</muleScriptingModuleTestVersion>
     <muleFileCommonsTestVersion>1.1.1</muleFileCommonsTestVersion>
     
     <muleHttpConnectorTestVersion>1.2.0</muleHttpConnectorTestVersion>
