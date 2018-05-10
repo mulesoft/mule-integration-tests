@@ -17,8 +17,8 @@
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
 
         <eaioUuidVersion>3.4.0</eaioUuidVersion>
-        <springSecurityVersion>4.0.4.RELEASE</springSecurityVersion>
-        <activemqVersion>5.14.5</activemqVersion>
+        <springSecurityVersion>4.2.6.RELEASE</springSecurityVersion>
+        <activemqVersion>5.15.3</activemqVersion>
         <hawtbufVersion>1.1</hawtbufVersion>
         <activemqProtobuf>1.1</activemqProtobuf>
     </properties>
@@ -313,6 +313,12 @@
             <groupId>org.apache.activemq</groupId>
             <artifactId>activemq-broker</artifactId>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-databind</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.activemq</groupId>
