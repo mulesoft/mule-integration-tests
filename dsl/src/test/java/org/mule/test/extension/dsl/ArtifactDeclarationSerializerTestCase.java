@@ -314,6 +314,13 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
             .getDeclaration())
         .withGlobalElement(http.newConfiguration("requestConfig")
             .withRefName("httpRequester")
+            .withParameterGroup(group -> group.withName("Request Settings")
+                .withParameter("requestStreamingMode", "ALWAYS")
+                .withParameter("defaultHeaders", newListValue().withValue(newObjectValue()
+                    .withParameter("key", "testDefault")
+                    .withParameter("value", "testDefaultValue")
+                    .build())
+                    .build()))
             .withConnection(http.newConnection("request")
                 .withParameterGroup(group -> group.withParameter("authentication",
                                                                  newObjectValue()
