@@ -49,7 +49,7 @@
                          enableCookies="true"
                          followRedirects="true"
                          name="httpRequester"
-                         requestStreamingMode="AUTO"
+                         requestStreamingMode="ALWAYS"
                          sendCorrelationId="NEVER"
                          sendBodyMode="AUTO"
                          preserveHeadersCase="false">
@@ -76,6 +76,9 @@
                                                   sendTcpNoDelay="true"/>
             </http:client-socket-properties>
         </http:request-connection>
+        <http:default-headers>
+            <http:default-header key="testDefault" value="testDefaultValue"/>
+        </http:default-headers>
     </http:request-config>
     <sockets:request-config name="sockets-config">
         <sockets:tcp-requester-connection connectionTimeout="30000" failOnUnresolvedHost="true" host="localhost" keepAlive="false"
