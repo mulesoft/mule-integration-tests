@@ -68,7 +68,7 @@
         </http:listener-connection>
     </http:listener-config>
 
-    <http:request-config name="httpRequester">
+    <http:request-config name="httpRequester" requestStreamingMode="ALWAYS">
         <http:request-connection host="localhost" port="49020">
             <http:authentication>
                 <http:basic-authentication password="pass" username="user"/>
@@ -79,6 +79,9 @@
                                                       clientTimeout="1000" linger="1000" />
             </http:client-socket-properties>
         </http:request-connection>
+        <http:default-headers>
+            <http:default-header key="testDefault" value="testDefaultValue"/>
+        </http:default-headers>
     </http:request-config>
 
     <flow doc:id="docUUID" initialState="stopped" name="testFlow">
