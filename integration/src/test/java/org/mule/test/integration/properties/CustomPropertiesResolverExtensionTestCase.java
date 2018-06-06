@@ -21,6 +21,13 @@ public class CustomPropertiesResolverExtensionTestCase extends AbstractIntegrati
   private ConfigurationProperties configurationProperties;
 
   @Override
+  protected void doTearDownAfterMuleContextDispose() throws Exception {
+    //Also check that provider is disposed
+    assertThat(configurationProperties.resolveStringProperty("lifecycle::initialize").get(), is("1"));
+    assertThat(configurationProperties.resolveStringProperty("lifecycle::dispose").get(), is("1"));
+  }
+
+  @Override
   protected String getConfigFile() {
     return "properties/custom-properties-resolver-extension-config.xml";
   }
@@ -30,4 +37,11 @@ public class CustomPropertiesResolverExtensionTestCase extends AbstractIntegrati
     assertThat(configurationProperties.resolveStringProperty("key1").get(), is("test.key1:value1:AES:CBC"));
     assertThat(configurationProperties.resolveStringProperty("key2").get(), is("test.key2:value2:AES:CBC"));
   }
+
+  @Test
+  public void providerIsInitialisedCorrectly() {
+    assertThat(configurationProperties.resolveStringProperty("lifecycle::initialize").get(), is("1"));
+    assertThat(configurationProperties.resolveStringProperty("lifecycle::dispose").get(), is("0"));
+  }
+
 }
