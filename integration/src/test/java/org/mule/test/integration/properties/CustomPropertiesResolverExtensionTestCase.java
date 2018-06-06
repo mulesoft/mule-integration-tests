@@ -8,17 +8,8 @@ package org.mule.test.integration.properties;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 import org.mule.runtime.api.component.ConfigurationProperties;
-import org.mule.runtime.config.api.dsl.model.properties.ConfigurationPropertiesProvider;
-import org.mule.runtime.config.internal.dsl.model.config.ConfigurationPropertiesResolver;
-import org.mule.runtime.config.internal.dsl.model.config.DefaultConfigurationPropertiesResolver;
-import org.mule.runtime.config.internal.dsl.model.config.PropertiesResolverConfigurationProperties;
 import org.mule.test.AbstractIntegrationTestCase;
-import org.mule.test.crafted.config.properties.extension.SecureConfigurationPropertiesProvider;
-
-import java.lang.reflect.Field;
-import java.util.Optional;
 
 import javax.inject.Inject;
 
