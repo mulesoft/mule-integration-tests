@@ -23,7 +23,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.junit.Rule;
 import org.junit.Test;
 
-public class LogRepeatableStreamTestCase extends AbstractIntegrationTestCase {
+public class LogStreamDataRepeatedlyTestCase extends AbstractIntegrationTestCase {
 
   @Rule
   public DynamicPort listenPort = new DynamicPort("port");
