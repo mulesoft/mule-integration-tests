@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xsi:schemaLocation="
+        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+        http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+
+    <http:listener-config name="listenerConfigBasicAuth">
+        <http:listener-connection host="localhost" port="${port}"/>
+    </http:listener-config>
+
+    <flow name="listenerFlow">
+        <http:listener config-ref="listenerConfigBasicAuth" path="/"/>
+        <logger message="Name: #[payload.name], ID: #[payload.id]" level="ERROR"/>
+        <set-payload value="OK"/>
+    </flow>
+
+</mule>
