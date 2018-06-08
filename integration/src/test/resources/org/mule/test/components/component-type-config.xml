@@ -2,10 +2,12 @@
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:petstore="http://www.mulesoft.org/schema/mule/petstore"
       xmlns:sc="http://www.mulesoft.org/schema/mule/module-using-core"
       xsi:schemaLocation="
        http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
        http://www.mulesoft.org/schema/mule/module-using-core http://www.mulesoft.org/schema/mule/module-using-core/current/mule-module-using-core.xsd
+       http://www.mulesoft.org/schema/mule/petstore http://www.mulesoft.org/schema/mule/petstore/current/mule-petstore.xsd
        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 
     <http:request-config name="requestConfig"/>
@@ -69,6 +71,15 @@
         <error-handler>
             <on-error-continue/>
         </error-handler>
+    </flow>
+
+    <flow name="sourceWithoutAlias" initialState="stopped">
+        <petstore:pet-adoption-source watermark="true" idempotent="true">
+            <scheduling-strategy>
+                <fixed-frequency frequency="100"/>
+            </scheduling-strategy>
+        </petstore:pet-adoption-source>
+        <logger/>
     </flow>
 
 </mule>

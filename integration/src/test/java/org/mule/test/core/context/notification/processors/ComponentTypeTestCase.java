@@ -85,6 +85,11 @@ public class ComponentTypeTestCase extends AbstractIntegrationTestCase {
     assertThat(getComponentType(buildFromStringRepresentation("scheduler")), is(SOURCE));
   }
 
+  @Test
+  public void sourceComponentTypeWithoutAlias() {
+    assertThat(getComponentType(buildFromStringRepresentation("petstore:pet-adoption-source")), is(SOURCE));
+  }
+
   private TypedComponentIdentifier.ComponentType getComponentType(ComponentIdentifier componentIdentifier) {
     return locator.find(componentIdentifier).get(0).getLocation().getComponentIdentifier().getType();
   }
