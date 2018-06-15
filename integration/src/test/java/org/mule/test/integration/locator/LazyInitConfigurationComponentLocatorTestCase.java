@@ -20,6 +20,7 @@ import static org.mule.runtime.api.component.location.Location.builder;
 import static org.mule.runtime.api.component.location.Location.builderFromStringRepresentation;
 import static org.mule.runtime.config.api.LazyComponentInitializer.LAZY_COMPONENT_INITIALIZER_SERVICE_KEY;
 import static org.mule.runtime.config.api.SpringXmlConfigurationBuilderFactory.createConfigurationBuilder;
+import static org.mule.runtime.core.api.config.MuleProperties.OBJECT_SECURITY_MANAGER;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentLocatorStory.SEARCH_CONFIGURATION;
 import org.mule.extension.spring.api.SpringConfig;
@@ -30,6 +31,7 @@ import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.api.component.location.Location;
 import org.mule.runtime.config.api.LazyComponentInitializer;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
+import org.mule.runtime.core.api.security.SecurityManager;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.util.List;
@@ -48,7 +50,7 @@ import org.junit.Test;
 @Story(SEARCH_CONFIGURATION)
 public class LazyInitConfigurationComponentLocatorTestCase extends AbstractIntegrationTestCase {
 
-  private static final int TOTAL_NUMBER_OF_LOCATIONS = 77;
+  private static final int TOTAL_NUMBER_OF_LOCATIONS = 86;
   @Inject
   private Registry registry;
 
@@ -168,7 +170,17 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
                                   "GetChannels/processors/0/0/4",
                                   "GetChannels/processors/0/0/5",
                                   "GetChannels/processors/0/0/6",
-                                  "GetChannels/processors/0/1"));
+                                  "GetChannels/processors/0/1",
+
+                                  "null",
+                                  "null/0",
+                                  "listenerConfig",
+                                  "listenerConfig/0",
+                                  "SecureUMO",
+                                  "SecureUMO/source",
+                                  "SecureUMO/processors/0",
+                                  "SecureUMO/processors/1",
+                                  "SecureUMO/processors/1/0"));
     assertThat(locator.find(builder().globalName("myFlow").build()), is(empty()));
     assertThat(locator.find(builder().globalName("anotherFlow").build()), is(empty()));
   }
@@ -267,6 +279,25 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
     SpringConfig springConfig = (SpringConfig) registry.lookupByName("springConfig").get();
     Object applicationContext = FieldUtils.readField(springConfig, "applicationContext", true);
     assertThat("springConfig was not configured", applicationContext, notNullValue());
+
+    assertThat(springConfig.getObject("child1").isPresent(), is(true));
+  }
+
+  @Description("Lazy init should create spring security manager without dependencies")
+  @Test
+  public void lazyMuleContextInitializesSpringSecurityManager() throws IllegalAccessException {
+    lazyComponentInitializer.initializeComponents(componentLocation -> componentLocation.getLocation().equals("SecureUMO"));
+
+    assertThat(locator.find(builderFromStringRepresentation("listenerConfig").build()), is(not(empty())));
+    assertThat(locator.find(Location.builderFromStringRepresentation("listenerConfig/0").build()), is(not(empty())));
+    assertThat(locator.find(builderFromStringRepresentation("SecureUMO/source").build()), is(not(empty())));
+    assertThat(locator.find(builderFromStringRepresentation("SecureUMO/processors/0").build()), is(not(empty())));
+    assertThat(locator.find(builderFromStringRepresentation("SecureUMO/processors/1").build()), is(not(empty())));
+
+    assertThat(registry.lookupByName(OBJECT_SECURITY_MANAGER).isPresent(), is(true));
+
+    SecurityManager securityManager = (SecurityManager) registry.lookupByName(OBJECT_SECURITY_MANAGER).get();
+    assertThat("spring security provider was not registered", securityManager.getProvider("memory-dao"), notNullValue());
   }
 
   @Description("Spring component should be created each time as the rest")
