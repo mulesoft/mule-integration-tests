@@ -17,6 +17,12 @@
                 name="memory-dao" delegate-ref="authenticationManager" />
     </spring:security-manager>
 
+
+    <spring:security-manager name="securityManager2">
+        <spring:delegate-security-provider
+                name="memory-dao2" delegate-ref="authenticationManager2" />
+    </spring:security-manager>
+
     <http:listener-config name="listenerConfig">
         <http:listener-connection host="localhost" port="8080"/>
     </http:listener-config>
@@ -24,6 +30,18 @@
     <flow name="SecureUMO">
         <http:listener path="*" config-ref="listenerConfig"/>
         <http:basic-security-filter realm="mule-realm" />
+        <test:processor>
+            <test:return-data>foo</test:return-data>
+        </test:processor>
+    </flow>
+
+    <flow name="SecureUMO2">
+        <http:listener path="*" config-ref="listenerConfig"/>
+        <http:basic-security-filter realm="mule-realm">
+            <http:security-providers>
+                <http:security-provider value="memory-dao2"/>
+            </http:security-providers>
+        </http:basic-security-filter>
         <test:processor>
             <test:return-data>foo</test:return-data>
         </test:processor>

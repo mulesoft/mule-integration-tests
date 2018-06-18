@@ -50,7 +50,7 @@ import org.junit.Test;
 @Story(SEARCH_CONFIGURATION)
 public class LazyInitConfigurationComponentLocatorTestCase extends AbstractIntegrationTestCase {
 
-  private static final int TOTAL_NUMBER_OF_LOCATIONS = 86;
+  private static final int TOTAL_NUMBER_OF_LOCATIONS = 95;
   @Inject
   private Registry registry;
 
@@ -180,7 +180,16 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
                                   "SecureUMO/source",
                                   "SecureUMO/processors/0",
                                   "SecureUMO/processors/1",
-                                  "SecureUMO/processors/1/0"));
+                                  "SecureUMO/processors/1/0",
+                                  "SecureUMO2",
+                                  "SecureUMO2/source",
+                                  "SecureUMO2/processors/0",
+                                  "SecureUMO2/processors/0/0",
+                                  "SecureUMO2/processors/0/0/0",
+                                  "SecureUMO2/processors/1",
+                                  "SecureUMO2/processors/1/0",
+                                  "securityManager2",
+                                  "securityManager2/0"));
     assertThat(locator.find(builder().globalName("myFlow").build()), is(empty()));
     assertThat(locator.find(builder().globalName("anotherFlow").build()), is(empty()));
   }
@@ -298,6 +307,23 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
 
     SecurityManager securityManager = (SecurityManager) registry.lookupByName(OBJECT_SECURITY_MANAGER).get();
     assertThat("spring security provider was not registered", securityManager.getProvider("memory-dao"), notNullValue());
+  }
+
+  @Description("Lazy init should create spring security manager without dependencies")
+  @Test
+  public void lazyMuleContextInitializesNamedSpringSecurityManager() throws IllegalAccessException {
+    lazyComponentInitializer.initializeComponents(componentLocation -> componentLocation.getLocation().equals("SecureUMO2"));
+
+    assertThat(locator.find(builderFromStringRepresentation("listenerConfig").build()), is(not(empty())));
+    assertThat(locator.find(Location.builderFromStringRepresentation("listenerConfig/0").build()), is(not(empty())));
+    assertThat(locator.find(builderFromStringRepresentation("SecureUMO2/source").build()), is(not(empty())));
+    assertThat(locator.find(builderFromStringRepresentation("SecureUMO2/processors/0").build()), is(not(empty())));
+    assertThat(locator.find(builderFromStringRepresentation("SecureUMO2/processors/1").build()), is(not(empty())));
+
+    assertThat(registry.lookupByName(OBJECT_SECURITY_MANAGER).isPresent(), is(true));
+
+    SecurityManager securityManager = (SecurityManager) registry.lookupByName("securityManager2").get();
+    assertThat("spring security provider was not registered", securityManager.getProvider("memory-dao2"), notNullValue());
   }
 
   @Description("Spring component should be created each time as the rest")

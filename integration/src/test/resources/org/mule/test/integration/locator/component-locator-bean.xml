@@ -17,4 +17,12 @@
         </ss:authentication-provider>
     </ss:authentication-manager>
 
+    <ss:authentication-manager alias="authenticationManager2">
+        <ss:authentication-provider>
+            <ss:user-service id="userService">
+                <ss:user name="jdoe" password="jdoe" authorities="ROLE_ADMIN" />
+            </ss:user-service>
+        </ss:authentication-provider>
+    </ss:authentication-manager>
+    
 </beans>
