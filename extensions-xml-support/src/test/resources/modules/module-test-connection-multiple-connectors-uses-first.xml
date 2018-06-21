@@ -13,16 +13,12 @@
     <property name="somePassConfig" type="string" defaultValue="some-password"/>
 
     <!--Notice the following global element does not have the xmlns:connection -->
-    <http:request-config name="http-config" basePath="/basic-auth/">
-        <http:request-connection host="localhost" protocol="HTTP" port="80">
-            <http:authentication>
-                <http:basic-authentication username="#[vars.someUserConfig]" password="#[vars.somePassConfig]"/>
-            </http:authentication>
-        </http:request-connection>
-    </http:request-config>
+    <file:config name="first-file-config" xmlns:connection="true">
+        <file:connection workingDir="#[vars.workingDir]"/>
+    </file:config>
 
     <!--Notice the following global element does have the xmlns:connection -->
-    <file:config name="file-config" xmlns:connection="true">
+    <file:config name="second-file-config">
         <file:connection workingDir="#[vars.workingDir]"/>
     </file:config>
     <file:matcher name="globalMatcher" directories="REQUIRE" filenamePattern="#[vars.filenamePattern]" />
