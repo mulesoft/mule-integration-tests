@@ -9,22 +9,15 @@ package org.mule.test.functional;
 import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
-
 import org.mule.extension.http.api.request.validator.ResponseValidatorTypedException;
 import org.mule.functional.api.exception.ExpectedError;
-import org.mule.runtime.api.connection.ConnectionProvider;
-import org.mule.runtime.api.connection.ConnectionValidationResult;
-import org.mule.runtime.extension.api.runtime.config.ConfigurationInstance;
 import org.mule.test.runner.RunnerDelegateTo;
+
+import java.util.Collection;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
-
-import java.util.Collection;
 
 @RunnerDelegateTo(Parameterized.class)
 public class ModuleWithGlobalElementTestCase extends AbstractModuleWithHttpTestCase {
@@ -91,18 +84,6 @@ public class ModuleWithGlobalElementTestCase extends AbstractModuleWithHttpTestC
   @Override
   protected boolean shouldValidateXml() {
     return shouldValidate;
-  }
-
-  @Test
-  public void testConnection() throws Exception {
-    ConfigurationInstance config = muleContext.getExtensionManager().getConfiguration("la-plata-config", testEvent());
-    assertThat(config, is(notNullValue()));
-    assertThat(config.getConnectionProvider().isPresent(), is(true));
-    final ConnectionProvider connectionProvider = config.getConnectionProvider().get();
-    final Object connect = connectionProvider.connect();
-    final ConnectionValidationResult connectionValidationResult = connectionProvider.validate(connect);
-    assertThat(connectionValidationResult.isValid(), is(true));
-    connectionProvider.disconnect(connect);
   }
 
   @Test
