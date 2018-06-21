@@ -27,6 +27,7 @@ import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.exception.FlowExceptionHandler;
+import org.mule.runtime.core.internal.processor.LoggingExceptionHandler;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.tck.processor.FlowAssert;
@@ -140,7 +141,7 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
   @Test
   public void testAsyncInExceptionStrategy() throws Exception {
     testExceptionStrategy("asyncInExceptionStrategy", emptyMap());
-    assertThat(effectiveMessagingExceptionHandler.getClass().getName(), equalTo(ERROR_HANDLER_CLASSNAME));
+    assertThat(effectiveMessagingExceptionHandler.getClass().getName(), equalTo(LoggingExceptionHandler.class.getName()));
   }
 
   @Test
