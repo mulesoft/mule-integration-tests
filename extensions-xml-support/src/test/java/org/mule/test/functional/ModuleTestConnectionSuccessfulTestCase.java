@@ -10,8 +10,6 @@ import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
-import org.junit.Test;
-import org.junit.runners.Parameterized;
 import org.mule.runtime.api.connection.ConnectionProvider;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.api.exception.MuleException;
@@ -19,6 +17,9 @@ import org.mule.runtime.extension.api.runtime.config.ConfigurationInstance;
 import org.mule.test.runner.RunnerDelegateTo;
 
 import java.util.Collection;
+
+import org.junit.Test;
+import org.junit.runners.Parameterized;
 
 @RunnerDelegateTo(Parameterized.class)
 public class ModuleTestConnectionSuccessfulTestCase extends AbstractXmlExtensionMuleArtifactFunctionalTestCase {
@@ -30,9 +31,9 @@ public class ModuleTestConnectionSuccessfulTestCase extends AbstractXmlExtension
   public static Collection<Object[]> data() {
     return asList(new Object[][] {
         // http is the default test connection
-        {"modules/module-test-connection-multiple-connectors-uses-http.xml"},
+        {"modules/module-test-connection-multiple-connectors-uses-first.xml"},
         // file is the default test connection
-        {"modules/module-test-connection-multiple-connectors-uses-file.xml"}
+        {"modules/module-test-connection-multiple-connectors-uses-second.xml"}
     });
   }
 
