@@ -43,7 +43,7 @@ public class ConfigurationPropertiesErrorScenariosTestCase extends AbstractMuleT
   public void nonExistentFileDefinedWithSystemProperty() throws Exception {
     testWithSystemProperty("env", "no-env", () -> {
       expectedException
-          .expectMessage("Couldn't find configuration properties file no-env.properties neither on classpath or in file system");
+          .expectMessage("Couldn't find resource: no-env.properties");
       new ApplicationContextBuilder()
           .setApplicationResources(new String[] {"org/mule/test/components/customizable-configuration-properties-file.xml"})
           .build();
