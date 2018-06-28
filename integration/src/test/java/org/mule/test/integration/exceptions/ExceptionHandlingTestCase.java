@@ -27,7 +27,6 @@ import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.exception.FlowExceptionHandler;
-import org.mule.runtime.core.internal.processor.LoggingExceptionHandler;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.tck.processor.FlowAssert;
@@ -45,6 +44,8 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
 
   public static final String MESSAGE = "some message";
   private static final String ERROR_HANDLER_CLASSNAME = "org.mule.runtime.core.internal.exception.ErrorHandler";
+  private static final String LOGGING_ERROR_HANDLER_CLASSNAME =
+      "org.mule.runtime.core.internal.processor.LoggingExceptionHandler";
 
   private static FlowExceptionHandler effectiveMessagingExceptionHandler;
   private static CountDownLatch latch;
@@ -141,7 +142,7 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
   @Test
   public void testAsyncInExceptionStrategy() throws Exception {
     testExceptionStrategy("asyncInExceptionStrategy", emptyMap());
-    assertThat(effectiveMessagingExceptionHandler.getClass().getName(), equalTo(LoggingExceptionHandler.class.getName()));
+    assertThat(effectiveMessagingExceptionHandler.getClass().getName(), equalTo(LOGGING_ERROR_HANDLER_CLASSNAME));
   }
 
   @Test
