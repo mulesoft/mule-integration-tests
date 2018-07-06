@@ -110,4 +110,42 @@
         <test:processor throwException="true" exceptionToThrow="java.lang.IllegalStateException" />
     </sub-flow>
 
+    <!-- Infinite recursion handling -->
+
+    <flow name="recursiveCaller">
+        <set-variable variableName="level" value="#[0]" />
+        <flow-ref name="recursive"/>
+    </flow>
+    <flow name="recursive">
+        <set-variable variableName="level" value="#[vars.level + 1]" />
+        <flow-ref name="recursive"/>
+    </flow>
+
+    <flow name="recursiveDynamicCaller">
+        <set-variable variableName="level" value="#[0]" />
+        <flow-ref name="recursiveDynamic"/>
+    </flow>
+    <flow name="recursiveDynamic">
+        <set-variable variableName="level" value="#[vars.level + 1]" />
+        <flow-ref name="#['recursiveDynamic']"/>
+    </flow>
+
+    <flow name="recursiveSubFlowCaller">
+        <set-variable variableName="level" value="#[0]" />
+        <flow-ref name="recursiveSubFlow"/>
+    </flow>
+    <sub-flow name="recursiveSubFlow">
+        <set-variable variableName="level" value="#[vars.level + 1]" />
+        <flow-ref name="recursiveSubFlow"/>
+    </sub-flow>
+
+    <flow name="recursiveSubFlowDynamicCaller">
+        <set-variable variableName="level" value="#[0]" />
+        <flow-ref name="recursiveDynamicSubFlow"/>
+    </flow>
+    <sub-flow name="recursiveDynamicSubFlow">
+        <set-variable variableName="level" value="#[vars.level + 1]" />
+        <flow-ref name="#['recursiveDynamicSubFlow']"/>
+    </sub-flow>
+
 </mule>
