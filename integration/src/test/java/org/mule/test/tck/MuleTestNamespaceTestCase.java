@@ -6,13 +6,15 @@
  */
 package org.mule.test.tck;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mule.functional.api.component.FunctionalTestProcessor.getFromFlow;
-
+import static org.mule.functional.api.component.StreamProviderProcessor.SIXTEEN_BYTES;
 import org.mule.functional.api.component.EventCallback;
 import org.mule.functional.api.component.FunctionalTestProcessor;
 import org.mule.runtime.core.api.MuleContext;
@@ -49,6 +51,11 @@ public class MuleTestNamespaceTestCase extends AbstractIntegrationTestCase {
     assertEquals(" #[mel:context:serviceName]", ftc.getAppendString());
     assertNull(ftc.getReturnData());
     assertNull(ftc.getEventCallback());
+  }
+
+  @Test
+  public void streamingComponentsConfig() throws Exception {
+    assertThat(runFlow("testService2").getMessage().getPayload().getValue(), equalTo(SIXTEEN_BYTES.getBytes()));
   }
 
   public static final class TestCallback implements EventCallback {
