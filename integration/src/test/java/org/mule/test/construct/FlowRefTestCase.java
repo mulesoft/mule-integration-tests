@@ -7,15 +7,16 @@
 package org.mule.test.construct;
 
 import static java.util.stream.Collectors.toList;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mule.functional.api.exception.ExpectedError.none;
+import static org.mule.functional.junit4.matchers.ThrowableMessageMatcher.hasMessage;
 import static org.mule.runtime.api.notification.MessageProcessorNotification.MESSAGE_PROCESSOR_POST_INVOKE;
 import static org.mule.runtime.api.notification.MessageProcessorNotification.MESSAGE_PROCESSOR_PRE_INVOKE;
 import static org.mule.runtime.core.api.exception.Errors.CORE_NAMESPACE_NAME;
@@ -29,7 +30,6 @@ import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import io.qameta.allure.Issue;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -37,7 +37,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import io.qameta.allure.Issue;
+
 public class FlowRefTestCase extends AbstractIntegrationTestCase {
+
+  private static final String CONTEXT_DEPTH_MESSAGE = "Too many child contexts nested.";
 
   @Rule
   public ExpectedError expectedException = none();
@@ -147,4 +151,23 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
     assertThat(postNotification.getEvent().getError().get().getCause(), instanceOf(IllegalStateException.class));
   }
 
+  @Test
+  public void recursive() throws Exception {
+    flowRunner("recursiveCaller").runExpectingException(hasMessage(containsString(CONTEXT_DEPTH_MESSAGE)));
+  }
+
+  @Test
+  public void recursiveDynamic() throws Exception {
+    flowRunner("recursiveDynamicCaller").runExpectingException(hasMessage(containsString(CONTEXT_DEPTH_MESSAGE)));
+  }
+
+  @Test
+  public void recursiveSubFlow() throws Exception {
+    flowRunner("recursiveSubFlowCaller").runExpectingException(hasMessage(containsString(CONTEXT_DEPTH_MESSAGE)));
+  }
+
+  @Test
+  public void recursiveSubFlowDynamic() throws Exception {
+    flowRunner("recursiveSubFlowDynamicCaller").runExpectingException(hasMessage(containsString(CONTEXT_DEPTH_MESSAGE)));
+  }
 }

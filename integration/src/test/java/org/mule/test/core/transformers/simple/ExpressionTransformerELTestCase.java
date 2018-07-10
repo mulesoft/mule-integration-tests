@@ -10,6 +10,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+
 import org.mule.functional.junit4.TestLegacyMessageBuilder;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.transformer.Transformer;
@@ -19,14 +20,17 @@ import org.mule.tck.testmodels.fruit.FruitBasket;
 import org.mule.tck.testmodels.fruit.FruitBowl;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import org.junit.After;
+import org.junit.Test;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Test;
-
 public class ExpressionTransformerELTestCase extends AbstractIntegrationTestCase {
+
+  private Transformer transformer;
 
   @Override
   protected String getConfigFile() {
@@ -38,8 +42,13 @@ public class ExpressionTransformerELTestCase extends AbstractIntegrationTestCase
     testExecutionWithCorrectMessage("testTransformer");
   }
 
+  @After
+  public void after() {
+    transformer.dispose();
+  }
+
   private void testExecutionWithCorrectMessage(String name) throws Exception {
-    Transformer transformer = registry.<Transformer>lookupByName(name).get();
+    transformer = registry.<Transformer>lookupByName(name).get();
     Map<String, Serializable> props = new HashMap<>();
     props.put("foo", "moo");
     props.put("bar", "mar");
@@ -63,7 +72,7 @@ public class ExpressionTransformerELTestCase extends AbstractIntegrationTestCase
 
   @Test
   public void testExecutionWithPartialMissingOptionalParams() throws Exception {
-    Transformer transformer = registry.<Transformer>lookupByName("testTransformer").get();
+    transformer = registry.<Transformer>lookupByName("testTransformer").get();
     Map<String, Serializable> props = new HashMap<>();
     props.put("foo", "moo");
 
@@ -85,7 +94,7 @@ public class ExpressionTransformerELTestCase extends AbstractIntegrationTestCase
 
   @Test
   public void testTransformerConfigWithSingleArgument() throws Exception {
-    Transformer transformer = registry.<Transformer>lookupByName("testTransformer2").get();
+    transformer = registry.<Transformer>lookupByName("testTransformer2").get();
     Map<String, Serializable> props = new HashMap<>();
     props.put("foo", "moo");
     props.put("bar", "mar");
@@ -108,7 +117,7 @@ public class ExpressionTransformerELTestCase extends AbstractIntegrationTestCase
   }
 
   private void testTransformerConfigWithSingleArgumentShortcutConfig(String name) throws Exception {
-    Transformer transformer = registry.<Transformer>lookupByName(name).get();
+    transformer = registry.<Transformer>lookupByName(name).get();
     Map<String, Serializable> props = new HashMap<>();
     props.put("foo", "moo");
     props.put("bar", "mar");
