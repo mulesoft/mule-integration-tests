@@ -9,9 +9,8 @@ package org.mule.test.functional;
 import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
-
+import static org.mule.runtime.core.api.util.StreamingUtils.withCursoredEvent;
 import org.mule.extension.file.common.api.FileAttributes;
 import org.mule.runtime.api.connection.ConnectionProvider;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
@@ -22,7 +21,7 @@ import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.runner.RunnerDelegateTo;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.Iterator;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -140,10 +139,15 @@ public class ModuleWithMultipleGlobalElementsTestCase extends AbstractXmlExtensi
   }
 
   private void assertFlowResult(String flowName, String subDirectoryName) throws Exception {
-    List<Message> messages = (List<Message>) flowRunner(flowName).run().getMessage().getPayload().getValue();
-    assertThat(messages, is(notNullValue()));
-    assertThat(messages, hasSize(1));
-    FileAttributes attributes = (FileAttributes) messages.get(0).getAttributes().getValue();
-    assertThat(attributes.getName(), is(subDirectoryName));
+    withCursoredEvent(flowRunner(flowName).keepStreamsOpen().run(), event -> {
+
+      Iterator<Message> messages = (Iterator<Message>) event.getMessage().getPayload().getValue();
+      Message message = messages.next();
+      assertThat(messages.hasNext(), is(false));
+      FileAttributes attributes = (FileAttributes) message.getAttributes().getValue();
+      assertThat(attributes.getName(), is(subDirectoryName));
+
+      return event;
+    });
   }
 }
