@@ -4,7 +4,7 @@
 
     <global-property name="env" value="my-env"/>
 
-    <configuration-properties file="${env}.yaml"/>
+    <configuration-properties file="${env}.yaml" encoding="UTF-8"/>
 
     <global-property name="basicValue" value="value1"/>
     <global-property name="complexValue" value="value2-${basicValue}"/>
