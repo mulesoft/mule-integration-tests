@@ -9,19 +9,16 @@ package org.mule.test.spring;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
-import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.LIFECYCLE_AND_DEPENDENCY_INJECTION;
 import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.ObjectFactoryStory.OBJECT_FACTORY_INECTION_AND_LIFECYCLE;
-
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.tests.parsers.api.TestObject;
 import org.mule.tests.parsers.api.TestObjectFactory;
 
-import org.junit.Test;
-
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
+import org.junit.Test;
 
 @Feature(LIFECYCLE_AND_DEPENDENCY_INJECTION)
 @Story(OBJECT_FACTORY_INECTION_AND_LIFECYCLE)
@@ -34,14 +31,14 @@ public class ObjectFactoryTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void validateInjectionAndLifecycleOverObjectFactoryAndTheObjectCreatedByIt() {
-    TestObject testObject = registry.<TestObject>lookupByType(TestObject.class).get();
+    TestObject testObject = registry.lookupByType(TestObject.class).get();
     assertThat(testObject, notNullValue());
 
     TestObjectFactory objectFactory = testObject.getObjectFactory();
     assertThat(objectFactory.isInjectionDoneBeforeGetObject(), is(true));
     assertThat(objectFactory.getLifecycleActions().isEmpty(), is(true));
 
-    assertThat(testObject.getLockFactory(), nullValue());
+    assertThat(testObject.getLockFactory(), is(notNullValue()));
 
     muleContext.dispose();
 
