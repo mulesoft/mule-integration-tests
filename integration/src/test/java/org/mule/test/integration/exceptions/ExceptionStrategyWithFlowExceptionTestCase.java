@@ -35,7 +35,6 @@ public class ExceptionStrategyWithFlowExceptionTestCase extends AbstractIntegrat
     Message message = queueHandler.read("out", RECEIVE_TIMEOUT).getMessage();
 
     assertThat(message, is(notNullValue()));
-    assertThat(TestLegacyMessageUtils.getExceptionPayload(message), is(notNullValue()));
   }
 
   public static class ExceptionThrower implements Processor {

@@ -11,6 +11,7 @@
         <processor ref="processor"/>
         <error-handler>
             <on-error-propagate>
+                <test:assert expression="#[error.exception != null]"/>
                 <test:queue name="out"/>
             </on-error-propagate>
         </error-handler>
