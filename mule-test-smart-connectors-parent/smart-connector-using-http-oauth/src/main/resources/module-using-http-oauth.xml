@@ -12,17 +12,17 @@
            http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
            http://www.mulesoft.org/schema/mule/oauth http://www.mulesoft.org/schema/mule/oauth/current/mule-oauth.xsd">
 
-    <property name="property_host" displayName="host" type="string" defaultValue="marketoId.mktorest.com" summary="Host for consuming API"/>
-    <property name="property_port" displayName="port" type="string" defaultValue="443" summary="Port for consuming API"/>
+    <property name="property_host" displayName="host" type="string" defaultValue="api.github.com" summary="Host for consuming API"/>
+    <property name="property_port" displayName="port" type="string" defaultValue="8080" summary="Port for consuming API"/>
     <property name="property_basePath" displayName="basePath" type="string"  summary="Basepath for consuming API"/>
     <property name="property_protocol" displayName="protocol" type="string" defaultValue="HTTPS" summary="Protocol for consuming API"/>
     <property name="property_clientId" displayName="clientId" type="string" summary="OAuth2 Client Id"/>
     <property name="property_clientSecret" displayName="clientSecret" type="string" password="true" summary="OAuth2 Client Secret"/>
-    <property name="property_accessTokenUrl" displayName="accessTokenUrl" type="string" defaultValue="https://marketoId.mktorest.com/identity/oauth/token" summary="Token URL for consuming API"/>
+    <property name="property_accessTokenUrl" displayName="accessTokenUrl" type="string" defaultValue="http://api.github.com/identity/oauth/token" summary="Token URL for consuming API"/>
 
     <oauth:token-manager-config name="tokenManagerConfig"/>
 
-    <http:request-config name="marketo-httpreq-config" basePath="/">
+    <http:request-config name="github-httpreq-config" basePath="/">
         <http:request-connection
                 host="api.github.com"
                 protocol="HTTPS"
@@ -46,7 +46,7 @@
                        use="OPTIONAL"                    doc:description="Integer offset for paging"/>
         </parameters>
         <body>
-            <http:request config-ref="marketo-httpreq-config" path="/rest/asset/v1/channels.json" method="GET" >
+            <http:request config-ref="github-httpreq-config" path="/rest/asset/v1/channels.json" method="GET" >
 
                 <http:headers>
                     <![CDATA[#[ { 'Accept': 'application/json' } filterObject $ != null ]]]>
