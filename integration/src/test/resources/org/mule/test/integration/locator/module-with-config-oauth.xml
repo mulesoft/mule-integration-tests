@@ -5,11 +5,11 @@
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
       http://www.mulesoft.org/schema/mule/module-using-http-oauth http://www.mulesoft.org/schema/mule/module-using-core/current/mule-module-using-http-oauth.xsd">
 
-    <module-using-http-oauth:config name="Marketo-Config"
+    <module-using-http-oauth:config name="sample-config"
                                     property_basePath="/"
-                                    property_clientId="c68dbbda-44b0-4fb3-8c0b-55a5b99ed3c3"
-                                    property_clientSecret="YcXlvkSlA9ALCOdeu8oF29E1Yd4BEITE" property_host="699-ZUG-064.mktorest.com"
-                                    property_accessTokenUrl="https://699-ZUG-064.mktorest.com/identity/oauth/token" />
+                                    property_clientId="clientId"
+                                    property_clientSecret="secret" property_host="api.github.com"
+                                    property_accessTokenUrl="http://api.github.com/identity/oauth/token" />
 
     <flow name="GetChannels" >
         <scheduler>
@@ -17,6 +17,6 @@
                 <fixed-frequency frequency="1000"/>
             </scheduling-strategy>
         </scheduler>
-        <module-using-http-oauth:get-channels config-ref="Marketo-Config"/>
+        <module-using-http-oauth:get-channels config-ref="sample-config"/>
     </flow>
 </mule>
