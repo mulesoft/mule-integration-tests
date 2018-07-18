@@ -35,4 +35,12 @@ public class XmlDslProcessingValidationTestCase extends AbstractMuleTestCase imp
         "org/mule/config/spring/parsers/dsl-validation-nameless-top-level-element-config.xml"}).build();
   }
 
+  @Test
+  public void emptyChildSimpleParameter() throws Exception {
+    expectedException
+        .expectMessage("Parameter at org/mule/config/spring/parsers/dsl-validation-empty-simple-child-parameter.xml:10 must provide a non-empty value");
+    new ApplicationContextBuilder().setApplicationResources(new String[] {
+        "org/mule/config/spring/parsers/dsl-validation-empty-simple-child-parameter.xml"}).build();
+  }
+
 }
