@@ -14,11 +14,6 @@
         </test:processor>
     </flow>
 
-    <flow name="testService2">
-        <test:stream-provider size="16"/>
-        <test:stream-consumer chunked="false"/>
-    </flow>
-
     <flow name="testService3">
         <test:processor enableMessageHistory="false"
             appendString=" #[mel:context:serviceName]" />
