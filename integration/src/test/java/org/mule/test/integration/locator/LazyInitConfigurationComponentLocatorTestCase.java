@@ -50,7 +50,7 @@ import org.junit.Test;
 @Story(SEARCH_CONFIGURATION)
 public class LazyInitConfigurationComponentLocatorTestCase extends AbstractIntegrationTestCase {
 
-  private static final int TOTAL_NUMBER_OF_LOCATIONS = 95;
+  private static final int TOTAL_NUMBER_OF_LOCATIONS = 101;
   @Inject
   private Registry registry;
 
@@ -190,7 +190,14 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
                                   "SecureUMO2/processors/1",
                                   "SecureUMO2/processors/1/0",
                                   "securityManager2",
-                                  "securityManager2/0"));
+                                  "securityManager2/0",
+
+                                  "Matcher",
+                                  "fileListWithMatcherReference",
+                                  "fileListWithMatcherReference/source",
+                                  "fileListWithMatcherReference/source/0",
+                                  "fileListWithMatcherReference/source/0/0",
+                                  "fileListWithMatcherReference/processors/0"));
     assertThat(locator.find(builder().globalName("myFlow").build()), is(empty()));
     assertThat(locator.find(builder().globalName("anotherFlow").build()), is(empty()));
   }
@@ -258,6 +265,16 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
     assertThat(locator.find(builder().globalName("dbConfig").build()), is(not(empty())));
     assertThat(locator.find(builder().globalName("requestConfig").build()), is(not(empty())));
     assertThat(locator.find(builder().globalName("tlsContextRef").build()), is(not(empty())));
+  }
+
+  @Test
+  public void fileListShouldInitializeMatcherReference() {
+    lazyComponentInitializer
+        .initializeComponent(builder().globalName("fileListWithMatcherReference").addProcessorsPart().addIndexPart(0).build());
+
+    assertThat(locator.find(builder().globalName("fileListWithMatcherReference").build()), is(not(empty())));
+    assertThat(locator.find(builder().globalName("fileListWithMatcherReference").addProcessorsPart().addIndexPart(0).build()),
+               is(not(empty())));
   }
 
   @Test
