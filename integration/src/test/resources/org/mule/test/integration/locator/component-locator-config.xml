@@ -2,8 +2,10 @@
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xmlns:file="http://www.mulesoft.org/schema/mule/file"
       xsi:schemaLocation="
        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+       http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/http/current/mule-file.xsd
        http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
     <configuration defaultErrorHandler-ref="globalErrorHandler" />
@@ -13,6 +15,17 @@
             <test:queue name="globalErrorHandlerQueue"/>
         </on-error-propagate>
     </error-handler>
+
+    <file:matcher name="Matcher" filenamePattern="*.txt" directories="EXCLUDE" />
+
+    <flow name="fileListWithMatcherReference">
+        <scheduler>
+            <scheduling-strategy>
+                <fixed-frequency frequency="1000"/>
+            </scheduling-strategy>
+        </scheduler>
+        <file:list directoryPath="/tmp/aFile" matcher="Matcher"/>
+    </flow>
 
     <flow name="myFlow">
         <scheduler>
