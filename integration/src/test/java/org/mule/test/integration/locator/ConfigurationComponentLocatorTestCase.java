@@ -108,7 +108,7 @@ public class ConfigurationComponentLocatorTestCase extends AbstractIntegrationTe
   @Test
   public void findAllSchedulers() {
     List<Component> components = muleContext.getConfigurationComponentLocator().find(SCHEDULER_MESSAGE_SOURCE_IDENTIFIER);
-    assertThat(components, hasSize(2));
+    assertThat(components, hasSize(3));
     assertThat(components.stream().map(component -> component.getLocation().getRootContainerName()).collect(toList()),
                hasItems("myFlow", "anotherFlow"));
   }
@@ -147,6 +147,10 @@ public class ConfigurationComponentLocatorTestCase extends AbstractIntegrationTe
                                                      "_muleConfiguration",
                                                      "globalErrorHandler",
                                                      "globalErrorHandler/0",
-                                                     "globalErrorHandler/0/processors/0"));
+                                                     "globalErrorHandler/0/processors/0",
+                                                     "fileListWithMatcherReference",
+                                                     "fileListWithMatcherReference/source",
+                                                     "fileListWithMatcherReference/processors/0",
+                                                     "Matcher"));
   }
 }
