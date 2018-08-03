@@ -6,10 +6,15 @@
  */
 package org.mule.test.processors;
 
+import static java.nio.charset.StandardCharsets.UTF_16;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.Assert.assertEquals;
+import static org.mule.functional.junit4.matchers.MessageMatchers.hasMediaType;
+import static org.mule.functional.junit4.matchers.MessageMatchers.hasPayload;
+import static org.mule.runtime.api.metadata.MediaType.APPLICATION_JSON;
+import static org.mule.runtime.api.metadata.MediaType.JSON;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.metadata.TypedValue;
 import org.mule.runtime.core.api.event.CoreEvent;
@@ -164,7 +169,6 @@ public class ParseTemplateTestCase extends AbstractIntegrationTestCase {
     CoreEvent event = flowRunner("nestedExpressionsFlow").withVariable("individuals", "alpinos").withVariable("quantity", "3")
         .withVariable("origin", "guerra").run();
     assertThat(event.getMessage().getPayload().getValue(), equalTo("Eran 3 alpinos que venian de la guerra"));
-
   }
 
   @Test
@@ -173,5 +177,15 @@ public class ParseTemplateTestCase extends AbstractIntegrationTestCase {
     assertThat(event.getMessage().getPayload().getValue(), equalTo("tiaitai rataplam, que venian de la guerra"));
   }
 
+  @Test
+  public void testMimeTypeIsGuessed() throws Exception {
+    CoreEvent event = flowRunner("jsonTemplateFromFile").withVariable("name", "El mismisimo Luciano Raineri Marchina").run();
+    assertThat(event.getMessage(), hasMediaType(JSON));
+  }
 
+  @Test
+  public void testOverrideDataType() throws Exception {
+    CoreEvent event = flowRunner("overriddenDataType").withVariable("flowName", "what do you care?").run();
+    assertThat(event.getMessage(), hasMediaType(APPLICATION_JSON.withCharset(UTF_16)));
+  }
 }
