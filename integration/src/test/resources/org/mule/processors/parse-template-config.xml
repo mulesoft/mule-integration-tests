@@ -103,6 +103,7 @@
 
     <flow name="jsonTemplateFromFile">
         <parse-template location="org/mule/processors/template.json"/>
+        <test:assert expression="#[payload.name == vars.name]"/>
     </flow>
 
     <flow name="overriddenDataType">
