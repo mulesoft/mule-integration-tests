@@ -110,4 +110,11 @@
         <parse-template location="org/mule/processors/dw-expression.ptem" outputMimeType="application/json" outputEncoding="UTF-16"/>
     </flow>
 
+    <flow name="overriddenEncodingFromMediaType">
+        <parse-template location="org/mule/processors/dw-expression.ptem" outputMimeType="application/json; charset=utf-16"/>
+    </flow>
+
+    <flow name="encodingFromMediaTypeAndAttribute">
+        <parse-template location="org/mule/processors/dw-expression.ptem" outputMimeType="application/json; charset=utf-8" outputEncoding="UTF-16"/>
+    </flow>
 </mule>

@@ -42,70 +42,70 @@ public class ParseTemplateTestCase extends AbstractIntegrationTestCase {
 
 
   @Test
-  public void testNoExpressionInline() throws Exception {
+  public void noExpressionInline() throws Exception {
     CoreEvent event = flowRunner("no-expression-inline").run();
     String msg = (String) event.getMessage().getPayload().getValue();
     assertEquals(PARSED_NO_EXPRESSION, msg);
   }
 
   @Test
-  public void testMELExpressionInline() throws Exception {
+  public void melExpressionInline() throws Exception {
     CoreEvent event = flowRunner("mel-expression-inline").withVariable("flowName", "mel-expression").run();
     String msg = (String) event.getMessage().getPayload().getValue();
     assertEquals(PARSED_MEL_EXPRESSION, msg);
   }
 
   @Test
-  public void testDWExpressionInline() throws Exception {
+  public void dwExpressionInline() throws Exception {
     CoreEvent event = flowRunner("dw-expression-inline").withVariable("flowName", "dw-expression").run();
     String msg = (String) event.getMessage().getPayload().getValue();
     assertEquals(PARSED_DW_EXPRESSION, msg);
   }
 
   @Test
-  public void testNoExpressionFromFile() throws Exception {
+  public void noExpressionFromFile() throws Exception {
     CoreEvent event = flowRunner("no-expression").run();
     String msg = (String) event.getMessage().getPayload().getValue();
     assertEquals(PARSED_NO_EXPRESSION, msg);
   }
 
   @Test
-  public void testMELExpressionFromFile() throws Exception {
+  public void melExpressionFromFile() throws Exception {
     CoreEvent event = flowRunner("mel-expression").withVariable("flowName", "mel-expression").run();
     String msg = (String) event.getMessage().getPayload().getValue();
     assertEquals(PARSED_MEL_EXPRESSION, msg);
   }
 
   @Test
-  public void testDWExpressionFromFile() throws Exception {
+  public void dwExpressionFromFile() throws Exception {
     CoreEvent event = flowRunner("dw-expression").withVariable("flowName", "dw-expression").run();
     String msg = (String) event.getMessage().getPayload().getValue();
     assertEquals(PARSED_DW_EXPRESSION, msg);
   }
 
   @Test
-  public void testNoExpressionFromLocation() throws Exception {
+  public void noExpressionFromLocation() throws Exception {
     CoreEvent event = flowRunner("no-expression-from-location").run();
     String msg = (String) event.getMessage().getPayload().getValue();
     assertEquals(PARSED_NO_EXPRESSION, msg);
   }
 
   @Test
-  public void testMELExpressionFromLocation() throws Exception {
+  public void melExpressionFromLocation() throws Exception {
     CoreEvent event = flowRunner("mel-expression-from-location").withVariable("flowName", "mel-expression").run();
     String msg = (String) event.getMessage().getPayload().getValue();
     assertEquals(PARSED_MEL_EXPRESSION, msg);
   }
 
   @Test
-  public void testDWExpressionFromLocation() throws Exception {
+  public void dwExpressionFromLocation() throws Exception {
     CoreEvent event = flowRunner("dw-expression-from-location").withVariable("flowName", "dw-expression").run();
     String msg = (String) event.getMessage().getPayload().getValue();
     assertEquals(PARSED_DW_EXPRESSION, msg);
   }
 
   @Test
-  public void testWithTargetDefaultTargetValueDefinedInline() throws Exception {
+  public void withTargetDefaultTargetValueDefinedInline() throws Exception {
     String startingPayload = "Starting payload";
     CoreEvent event = flowRunner("with-target").withPayload(startingPayload).withVariable("flowName", "dw-expression").run();
     String msg = (String) ((Message) event.getVariables().get("targetVar").getValue()).getPayload().getValue();
@@ -115,13 +115,13 @@ public class ParseTemplateTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  public void testWithTargetValueButNoTargetShouldRaiseException() throws Exception {
+  public void withTargetValueButNoTargetShouldRaiseException() throws Exception {
     expectedException.expectCause(isA(IllegalArgumentException.class));
     flowRunner("with-target-value-no-target").withVariable("flowName", "dw-expression").run();
   }
 
   @Test
-  public void testWithCustomTargetValue() throws Exception {
+  public void withCustomTargetValue() throws Exception {
     String startingPayload = "Starting payload";
     CoreEvent event =
         flowRunner("with-custom-target-value").withPayload(startingPayload).withVariable("flowName", "dw-expression").run();
@@ -132,14 +132,14 @@ public class ParseTemplateTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  public void testWithWrongTargetValue() throws Exception {
+  public void withWrongTargetValue() throws Exception {
     expectedException.expectCause(isA(ExpressionRuntimeException.class));
     String startingPayload = "Starting payload";
     flowRunner("with-wrong-target-value").withPayload(startingPayload).withVariable("flowName", "dw-expression").run();
   }
 
   @Test
-  public void testWithMessageBindingExpression() throws Exception {
+  public void withMessageBindingExpression() throws Exception {
     String startingPayload = "Starting payload";
     CoreEvent event =
         flowRunner("with-message-binding-target-value").withPayload(startingPayload).withVariable("flowName", "dw-expression")
@@ -152,7 +152,7 @@ public class ParseTemplateTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  public void testPayloadFromMessageBindingExpression() throws Exception {
+  public void payloadFromMessageBindingExpression() throws Exception {
     String startingPayload = "Starting payload";
     CoreEvent event =
         flowRunner("with-payload-from-message-binding-target-value").withPayload(startingPayload)
@@ -164,27 +164,39 @@ public class ParseTemplateTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  public void testNestedExpressions() throws Exception {
+  public void nestedExpressions() throws Exception {
     CoreEvent event = flowRunner("nestedExpressionsFlow").withVariable("individuals", "alpinos").withVariable("quantity", "3")
         .withVariable("origin", "guerra").run();
     assertThat(event.getMessage().getPayload().getValue(), equalTo("Eran 3 alpinos que venian de la guerra"));
   }
 
   @Test
-  public void testNestedExpressionsFromFile() throws Exception {
+  public void nestedExpressionsFromFile() throws Exception {
     CoreEvent event = flowRunner("nestedExpressionsFlowFromFile").withVariable("chorusPhrase", "tiaitai rataplam").run();
     assertThat(event.getMessage().getPayload().getValue(), equalTo("tiaitai rataplam, que venian de la guerra"));
   }
 
   @Test
-  public void testMimeTypeIsGuessed() throws Exception {
+  public void mimeTypeIsGuessed() throws Exception {
     CoreEvent event = flowRunner("jsonTemplateFromFile").withVariable("name", "El mismisimo Luciano Raineri Marchina").run();
     assertThat(event.getMessage(), hasMediaType(JSON));
   }
 
   @Test
-  public void testOverrideDataType() throws Exception {
+  public void overriddenDataType() throws Exception {
     CoreEvent event = flowRunner("overriddenDataType").withVariable("flowName", "what do you care?").run();
+    assertThat(event.getMessage(), hasMediaType(APPLICATION_JSON.withCharset(UTF_16)));
+  }
+
+  @Test
+  public void overriddenEncodingFromMediaTypeParsing() throws Exception {
+    CoreEvent event = flowRunner("overriddenEncodingFromMediaType").withVariable("flowName", "what do you care?").run();
+    assertThat(event.getMessage(), hasMediaType(APPLICATION_JSON.withCharset(UTF_16)));
+  }
+
+  @Test
+  public void encodingFromMediaTypeParsingIsReplacedIfSpecifiedInAttribute() throws Exception {
+    CoreEvent event = flowRunner("encodingFromMediaTypeAndAttribute").withVariable("flowName", "what do you care?").run();
     assertThat(event.getMessage(), hasMediaType(APPLICATION_JSON.withCharset(UTF_16)));
   }
 }
