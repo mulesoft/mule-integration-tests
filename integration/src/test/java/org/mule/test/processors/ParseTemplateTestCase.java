@@ -204,43 +204,6 @@ public class ParseTemplateTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  public void mediaTypeAsExpression() throws Exception {
-    CoreEvent event =
-        flowRunner("mediaTypeAsExpression").withVariable("mimeType", "application/json").withVariable("encoding", "UTF-16").run();
-    assertThat(event.getMessage(), hasMediaType(APPLICATION_JSON.withCharset(UTF_16)));
-  }
-
-  @Test
-  public void mimeTypeExpressionResolvesToInvalidValue() throws Exception {
-    expectedException.expectCause(isA(IllegalArgumentException.class));
-    flowRunner("invalidMimeTypeExpressionResult").withVariable("mimeType", new Object()).run();
-  }
-
-  @Test
-  public void mimeTypeExpressionResolvesToInvalidValue2() throws Exception {
-    expectedException.expectCause(isA(IllegalArgumentException.class));
-    flowRunner("invalidMimeTypeExpressionResult").withVariable("mimeType", "not-the-expected-format").run();
-  }
-
-  @Test
-  public void mimeTypeExpressionIsInvalid() throws Exception {
-    expectedException.expectCause(isA(ExpressionRuntimeException.class));
-    flowRunner("invalidMimeTypeExpression").run();
-  }
-
-  @Test
-  public void encodingExpressionResolvesToInvalidValue() throws Exception {
-    expectedException.expectCause(isA(IllegalArgumentException.class));
-    flowRunner("invalidEncodingExpressionResult").withVariable("encoding", new Object()).run();
-  }
-
-  @Test
-  public void encodingExpressionResolvesToInvalidValue2() throws Exception {
-    expectedException.expectCause(isA(IllegalArgumentException.class));
-    flowRunner("invalidEncodingExpressionResult").withVariable("encoding", "HTZ-45").run();
-  }
-
-  @Test
   public void loadTemplateWithCustomEncoding() throws Exception {
     CoreEvent customEncodingEvent = flowRunner("loadWithCustomEncoding").run();
     CoreEvent defaultEncodingEvent = flowRunner("loadWithDefaultEncoding").run();

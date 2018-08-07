@@ -118,30 +118,6 @@
         <parse-template location="org/mule/processors/dw-expression.ptem" outputMimeType="application/json; charset=utf-8" outputEncoding="UTF-16"/>
     </flow>
 
-    <flow name="mediaTypeAsExpression">
-        <parse-template outputMimeType="#[vars.mimeType]" outputEncoding="#[vars.encoding]">
-            <content>template data</content>
-        </parse-template>
-    </flow>
-
-    <flow name="invalidMimeTypeExpressionResult">
-        <parse-template outputMimeType="#[vars.mimeType]">
-            <content>template data</content>
-        </parse-template>
-    </flow>
-
-    <flow name="invalidMimeTypeExpression">
-        <parse-template outputMimeType="#[i don't want to follow expression rules, alright?]">
-            <content>template data</content>
-        </parse-template>
-    </flow>
-
-    <flow name="invalidEncodingExpressionResult">
-        <parse-template outputEncoding="#[vars.encoding]">
-            <content>template data</content>
-        </parse-template>
-    </flow>
-
     <flow name="loadWithDefaultEncoding">
         <parse-template location="org/mule/processors/invalid_encoding_template.tem"/>
     </flow>
