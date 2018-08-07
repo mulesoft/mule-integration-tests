@@ -12,8 +12,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.mule.runtime.core.api.config.MuleProperties.SYSTEM_PROPERTY_PREFIX;
 import static org.mule.runtime.core.api.config.bootstrap.ArtifactType.APP;
+import org.mule.runtime.api.cluster.ClusterService;
+import org.mule.runtime.api.component.ConfigurationProperties;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.config.DefaultMuleConfiguration;
 import org.mule.runtime.core.api.config.MuleConfiguration;
@@ -23,7 +28,11 @@ import org.mule.runtime.core.internal.config.builders.DefaultsConfigurationBuild
 import org.mule.tck.config.TestServicesConfigurationBuilder;
 import org.mule.tck.junit4.AbstractMuleTestCase;
 
+import java.util.Optional;
+
 import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -35,6 +44,23 @@ public class MuleConfigurationTestCase extends AbstractMuleTestCase {
   private boolean failOnMessageScribbling;
   protected String workingDirectory = "target";
   private MuleContext muleContext;
+
+  private static final ClusterService mockedClusterService = mock(ClusterService.class);
+  private static final ConfigurationProperties mockedConfigurationProperties = mock(ConfigurationProperties.class);
+
+  @BeforeClass
+  public static void configureMocks() {
+    when(mockedClusterService.isPrimaryPollingInstance()).thenReturn(true);
+    when(mockedConfigurationProperties.resolveStringProperty(anyString())).thenReturn(Optional.empty());
+    when(mockedConfigurationProperties.resolveBooleanProperty(anyString())).thenReturn(Optional.empty());
+    when(mockedConfigurationProperties.resolveProperty(anyString())).thenReturn(Optional.empty());
+  }
+
+  @Before
+  public void setUp() {
+    testServicesConfigurationBuilder.registerAdditionalService("mockedClusterService", mockedClusterService);
+    testServicesConfigurationBuilder.registerAdditionalService("mockedConfigurationProperties", mockedConfigurationProperties);
+  }
 
   @After
   public void tearDown() throws Exception {
