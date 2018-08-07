@@ -17,6 +17,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mule.runtime.core.api.config.MuleProperties.SYSTEM_PROPERTY_PREFIX;
 import static org.mule.runtime.core.api.config.bootstrap.ArtifactType.APP;
+import static java.util.Optional.empty;
 import org.mule.runtime.api.cluster.ClusterService;
 import org.mule.runtime.api.component.ConfigurationProperties;
 import org.mule.runtime.core.api.MuleContext;
@@ -28,36 +29,36 @@ import org.mule.runtime.core.internal.config.builders.DefaultsConfigurationBuild
 import org.mule.tck.config.TestServicesConfigurationBuilder;
 import org.mule.tck.junit4.AbstractMuleTestCase;
 
-import java.util.Optional;
-
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
+@RunWith(MockitoJUnitRunner.class)
 public class MuleConfigurationTestCase extends AbstractMuleTestCase {
 
   @Rule
   public TestServicesConfigurationBuilder testServicesConfigurationBuilder = new TestServicesConfigurationBuilder();
 
+  @Mock
+  private ClusterService mockedClusterService;
+
+  @Mock
+  private ConfigurationProperties mockedConfigurationProperties = mock(ConfigurationProperties.class);
+
   private boolean failOnMessageScribbling;
   protected String workingDirectory = "target";
   private MuleContext muleContext;
 
-  private static final ClusterService mockedClusterService = mock(ClusterService.class);
-  private static final ConfigurationProperties mockedConfigurationProperties = mock(ConfigurationProperties.class);
-
-  @BeforeClass
-  public static void configureMocks() {
-    when(mockedClusterService.isPrimaryPollingInstance()).thenReturn(true);
-    when(mockedConfigurationProperties.resolveStringProperty(anyString())).thenReturn(Optional.empty());
-    when(mockedConfigurationProperties.resolveBooleanProperty(anyString())).thenReturn(Optional.empty());
-    when(mockedConfigurationProperties.resolveProperty(anyString())).thenReturn(Optional.empty());
-  }
-
   @Before
   public void setUp() {
+    when(mockedClusterService.isPrimaryPollingInstance()).thenReturn(true);
+    when(mockedConfigurationProperties.resolveStringProperty(anyString())).thenReturn(empty());
+    when(mockedConfigurationProperties.resolveBooleanProperty(anyString())).thenReturn(empty());
+    when(mockedConfigurationProperties.resolveProperty(anyString())).thenReturn(empty());
     testServicesConfigurationBuilder.registerAdditionalService("mockedClusterService", mockedClusterService);
     testServicesConfigurationBuilder.registerAdditionalService("mockedConfigurationProperties", mockedConfigurationProperties);
   }
