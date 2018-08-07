@@ -28,6 +28,7 @@ import org.mule.runtime.core.api.context.MuleContextBuilder;
 import org.mule.runtime.core.internal.config.builders.DefaultsConfigurationBuilder;
 import org.mule.tck.config.TestServicesConfigurationBuilder;
 import org.mule.tck.junit4.AbstractMuleTestCase;
+import org.mule.tck.size.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -37,6 +38,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+@SmallTest
 @RunWith(MockitoJUnitRunner.class)
 public class MuleConfigurationTestCase extends AbstractMuleTestCase {
 
