@@ -38,6 +38,7 @@
     <muleFileCommonsTestVersion>1.2.0-SNAPSHOT</muleFileCommonsTestVersion>
     
     <muleHttpConnectorTestVersion>1.4.0-SNAPSHOT</muleHttpConnectorTestVersion>
+    <muleVmConnectorTestVersion>1.1.2-SNAPSHOT</muleVmConnectorTestVersion>
     <muleFileConnectorTestVersion>1.2.0-SNAPSHOT</muleFileConnectorTestVersion>
     <muleObjectStoreConnectorTestVersion>1.2.0-SNAPSHOT</muleObjectStoreConnectorTestVersion>
     <muleJavaModuleTestVersion>1.2.0-SNAPSHOT</muleJavaModuleTestVersion>
