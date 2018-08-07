@@ -60,7 +60,10 @@ public class ApplicationWithDomainRegistryTestCase extends AbstractMuleTestCase 
 
   @Before
   public void createContexts() throws Exception {
-    domainContext = new DomainContextBuilder().setContextId(MuleContextLifecycleTestCase.class.getSimpleName()).build();
+    domainContext = new DomainContextBuilder()
+        .setContextId(MuleContextLifecycleTestCase.class.getSimpleName())
+        .setDomainConfig("domain/empty-domain-config.xml")
+        .build();
     applicationContext = new ApplicationContextBuilder().setContextId(ApplicationWithDomainRegistryTestCase.class.getSimpleName())
         .setDomainContext(domainContext).build();
   }

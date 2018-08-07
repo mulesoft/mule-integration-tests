@@ -18,10 +18,10 @@ import org.mule.functional.junit4.ApplicationContextBuilder;
 import org.mule.runtime.api.el.DefaultExpressionLanguageFactoryService;
 import org.mule.runtime.api.el.ExpressionLanguage;
 import org.mule.runtime.api.lifecycle.LifecycleException;
-import org.mule.runtime.api.scheduler.SchedulerService;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.runtime.core.api.config.builders.SimpleConfigurationBuilder;
 import org.mule.runtime.http.api.HttpService;
+import org.mule.tck.SimpleUnitTestSupportSchedulerService;
 import org.mule.tck.junit4.AbstractMuleTestCase;
 
 import java.util.HashMap;
@@ -67,7 +67,7 @@ public class MuleContextLifecycleTestCase extends AbstractMuleTestCase {
         protected final void addBuilders(List<ConfigurationBuilder> builders) {
           Map<String, Object> baseRegistry = new HashMap<>();
           baseRegistry.put("httpService", mock(HttpService.class, RETURNS_DEEP_STUBS.get()));
-          baseRegistry.put("schedulerService", mock(SchedulerService.class, RETURNS_DEEP_STUBS.get()));
+          baseRegistry.put("schedulerService", new SimpleUnitTestSupportSchedulerService());
           baseRegistry.put("elService", new DefaultExpressionLanguageFactoryService() {
 
             @Override
