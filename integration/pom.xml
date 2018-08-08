@@ -151,6 +151,12 @@
             <classifier>mule-plugin</classifier>
         </dependency>
         <dependency>
+            <groupId>org.mule.connectors</groupId>
+            <artifactId>mule-vm-connector</artifactId>
+            <version>${muleVmConnectorTestVersion}</version>
+            <classifier>mule-plugin</classifier>
+        </dependency>
+        <dependency>
             <groupId>org.mule.tests</groupId>
             <artifactId>mule-petstore-extension</artifactId>
             <version>${project.version}</version>
