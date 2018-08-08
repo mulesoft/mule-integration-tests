@@ -10,7 +10,7 @@
         <logger category="Attribute" level="INFO" message="Attribute"/>
     </flow>
     <flow name="flowForparseTemplate">
-        <parse-template location="Attribute" target="Attribute" targetValue="#[payload]">
+        <parse-template location="Attribute" target="Attribute" targetValue="#[payload]" outputMimeType="Attribute" outputEncoding="Attribute">
             <content>#['ExpressionAttribute']</content>
         </parse-template>
     </flow>
