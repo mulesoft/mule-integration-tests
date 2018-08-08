@@ -31,6 +31,8 @@ import java.util.function.Consumer;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 @Feature(LIFECYCLE_AND_DEPENDENCY_INJECTION)
@@ -38,6 +40,19 @@ import org.junit.Test;
 public class MuleContextLifecycleTestCase extends AbstractMuleTestCase {
 
   private static final String EXPECTED_A_CONTEXT_START_EXCEPTION_EXCEPTION = "Expected a ContextStartException exception";
+  private SimpleUnitTestSupportSchedulerService schedulerService;
+
+  @Before
+  public void before() {
+    schedulerService = new SimpleUnitTestSupportSchedulerService();
+  }
+
+  @After
+  public void after() throws Exception {
+    if (schedulerService != null) {
+      schedulerService.stop();
+    }
+  }
 
   @Test
   public void failOnStartInvokesStopInOtherComponentsButNotInTheFailedOne() {
@@ -67,7 +82,7 @@ public class MuleContextLifecycleTestCase extends AbstractMuleTestCase {
         protected final void addBuilders(List<ConfigurationBuilder> builders) {
           Map<String, Object> baseRegistry = new HashMap<>();
           baseRegistry.put("httpService", mock(HttpService.class, RETURNS_DEEP_STUBS.get()));
-          baseRegistry.put("schedulerService", new SimpleUnitTestSupportSchedulerService());
+          baseRegistry.put("schedulerService", schedulerService);
           baseRegistry.put("elService", new DefaultExpressionLanguageFactoryService() {
 
             @Override
