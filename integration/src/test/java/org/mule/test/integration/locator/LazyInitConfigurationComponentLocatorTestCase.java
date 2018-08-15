@@ -310,6 +310,13 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
     assertThat(springConfig.getObject("child1").isPresent(), is(true));
   }
 
+  @Description("Lazy init should create spring components without dependencies")
+  @Test
+  public void lazyMuleContextShouldNotFailWhenTryingToInitializeGlobalProperty() throws IllegalAccessException {
+    lazyComponentInitializer.initializeComponents(componentLocation -> componentLocation.getLocation().equals("some.property"));
+    assertThat(locator.find(builderFromStringRepresentation("some.property").build()), is(empty()));
+  }
+
   @Description("Lazy init should create spring security manager without dependencies")
   @Test
   public void lazyMuleContextInitializesSpringSecurityManager() throws IllegalAccessException {
