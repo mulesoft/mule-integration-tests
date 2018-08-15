@@ -24,9 +24,9 @@
         </vm:listener>
         <raise-error type="APP:FLOW_ERROR"/>
         <error-handler>
-            <on-error-continue type="MULE:REDELIVERY_EXHAUSTED">
+            <on-error-propagate type="MULE:REDELIVERY_EXHAUSTED">
                 <test:queue name="redeliveredMessageQueue"/>
-            </on-error-continue>
+            </on-error-propagate>
         </error-handler>
     </flow>
 
