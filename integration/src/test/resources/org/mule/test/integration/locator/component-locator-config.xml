@@ -8,6 +8,8 @@
        http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
        http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
+    <global-property name="some.property" value="/origin/topic"/>
+
     <configuration defaultErrorHandler-ref="globalErrorHandler" />
 
     <error-handler name="globalErrorHandler">
