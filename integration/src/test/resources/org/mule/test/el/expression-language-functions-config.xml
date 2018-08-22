@@ -55,6 +55,10 @@
         <test:processor throwException="true"/>
     </flow>
 
+    <flow name="timeoutFlow">
+        <logger level="WARN" message="#[java!org::mule::test::el::ExpressionLanguageFunctionsTestCase::sleepForTimeouTest()]"/>
+    </flow>
+
     <flow name="failureHandledFlow">
         <test:processor throwException="true"/>
         <error-handler>
