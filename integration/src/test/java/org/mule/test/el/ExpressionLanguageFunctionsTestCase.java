@@ -24,7 +24,6 @@ import static org.mule.functional.junit4.matchers.ThrowableMessageMatcher.hasMes
 import static org.mule.runtime.api.metadata.DataType.TEXT_STRING;
 import static org.mule.runtime.api.metadata.MediaType.APPLICATION_JAVA;
 import static org.mule.runtime.api.metadata.MediaType.JSON;
-import static org.mule.runtime.core.internal.el.function.LookupFunction.DATA_WEAVE_SCRIPT_LOOKUP_TIMEOUT;
 import static org.mule.test.allure.AllureConstants.ExpressionLanguageFeature.EXPRESSION_LANGUAGE;
 import static org.mule.test.allure.AllureConstants.ExpressionLanguageFeature.ExpressionLanguageStory.SUPPORT_FUNCTIONS;
 
@@ -35,7 +34,6 @@ import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.api.metadata.TypedValue;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.tck.junit4.rule.DynamicPort;
-import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Rule;
@@ -59,9 +57,6 @@ public class ExpressionLanguageFunctionsTestCase extends AbstractIntegrationTest
 
   @Rule
   public ExpectedError expectedError = ExpectedError.none();
-
-  @Rule
-  public SystemProperty lookupTimeout = new SystemProperty(DATA_WEAVE_SCRIPT_LOOKUP_TIMEOUT, "5000");
 
   @Override
   protected String getConfigFile() {
@@ -146,7 +141,7 @@ public class ExpressionLanguageFunctionsTestCase extends AbstractIntegrationTest
   public void lookupFailsWhenCalledFlowTimesOut() throws Exception {
     expectedError.expectErrorType("MULE", "EXPRESSION");
     expectedError.expectCause(both(isA(ExpressionRuntimeException.class))
-        .and(hasMessage(containsString(("Flow 'timeoutFlow' has timed out after 1000 millis")))));
+        .and(hasMessage(containsString(("Flow 'timeoutFlow' has timed out after 100 millis")))));
 
     flowRunner("expressionParamsWithTimeout")
         .withVariable("flow", "timeoutFlow")
@@ -168,7 +163,7 @@ public class ExpressionLanguageFunctionsTestCase extends AbstractIntegrationTest
   public void lookupFailsWhenCalledFlowThrowsConnectorError() throws Exception {
     expectedError.expectErrorType("MULE", "EXPRESSION");
     expectedError.expectCause(both(isA(ExpressionRuntimeException.class))
-        .and(hasMessage(containsString(format("\"Exception while executing lookup(\"callApi\",\"data\",5000 as Number {class: \"java.lang.Integer\"}) cause: Flow 'callApi' has failed "
+        .and(hasMessage(containsString(format("\"Exception while executing lookup(\"callApi\",\"data\",2000 as Number {class: \"java.lang.Integer\"}) cause: Flow 'callApi' has failed "
             + "with error 'HTTP:METHOD_NOT_ALLOWED' (HTTP GET on resource 'http://localhost:%s/405' "
             + "failed: method not allowed (405).) \n", port.getValue())))));
     flowRunner("staticParams").withVariable("status", SC_METHOD_NOT_ALLOWED).run();

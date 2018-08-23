@@ -22,7 +22,7 @@
     </flow>
 
     <flow name="expressionParamsWithTimeout">
-        <set-payload value="#[lookup(vars.flow, payload, 1000)]"/>
+        <set-payload value="#[lookup(vars.flow, payload, 100)]"/>
     </flow>
 
     <flow name="staticParams">
