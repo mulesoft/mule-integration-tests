@@ -146,9 +146,9 @@ public class ExpressionLanguageFunctionsTestCase extends AbstractIntegrationTest
   public void lookupFailsWhenCalledFlowTimesOut() throws Exception {
     expectedError.expectErrorType("MULE", "EXPRESSION");
     expectedError.expectCause(both(isA(ExpressionRuntimeException.class))
-        .and(hasMessage(containsString(("Flow 'timeoutFlow' has timed out after 5000 milliseconds")))));
+        .and(hasMessage(containsString(("Flow 'timeoutFlow' has timed out after 1000 millis")))));
 
-    flowRunner("expressionParams")
+    flowRunner("expressionParamsWithTimeout")
         .withVariable("flow", "timeoutFlow")
         .withPayload(TEST_PAYLOAD)
         .run();
@@ -168,7 +168,7 @@ public class ExpressionLanguageFunctionsTestCase extends AbstractIntegrationTest
   public void lookupFailsWhenCalledFlowThrowsConnectorError() throws Exception {
     expectedError.expectErrorType("MULE", "EXPRESSION");
     expectedError.expectCause(both(isA(ExpressionRuntimeException.class))
-        .and(hasMessage(containsString(format("\"Exception while executing lookup(\"callApi\",\"data\") cause: Flow 'callApi' has failed "
+        .and(hasMessage(containsString(format("\"Exception while executing lookup(\"callApi\",\"data\",5000 as Number {class: \"java.lang.Integer\"}) cause: Flow 'callApi' has failed "
             + "with error 'HTTP:METHOD_NOT_ALLOWED' (HTTP GET on resource 'http://localhost:%s/405' "
             + "failed: method not allowed (405).) \n", port.getValue())))));
     flowRunner("staticParams").withVariable("status", SC_METHOD_NOT_ALLOWED).run();
@@ -246,7 +246,7 @@ public class ExpressionLanguageFunctionsTestCase extends AbstractIntegrationTest
   public static String sleepForTimeouTest() {
     // just calling sleep from DW causes the thrown InterruptedException to be unhandled by DW and bubble up.
     try {
-      sleep(30000L);
+      sleep(10000L);
       return "Good Morning!";
     } catch (InterruptedException e) {
       currentThread().interrupt();

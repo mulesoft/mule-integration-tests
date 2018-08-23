@@ -21,6 +21,10 @@
         <set-payload value="#[lookup(vars.flow, payload)]"/>
     </flow>
 
+    <flow name="expressionParamsWithTimeout">
+        <set-payload value="#[lookup(vars.flow, payload, 1000)]"/>
+    </flow>
+
     <flow name="staticParams">
         <set-payload value="#[lookup('callApi', 'data')]"/>
     </flow>
