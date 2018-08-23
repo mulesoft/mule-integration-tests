@@ -21,6 +21,10 @@
         <set-payload value="#[lookup(vars.flow, payload)]"/>
     </flow>
 
+    <flow name="expressionParamsWithTimeout">
+        <set-payload value="#[lookup(vars.flow, payload, 100)]"/>
+    </flow>
+
     <flow name="staticParams">
         <set-payload value="#[lookup('callApi', 'data')]"/>
     </flow>
@@ -53,6 +57,10 @@
 
     <flow name="failingFlow">
         <test:processor throwException="true"/>
+    </flow>
+
+    <flow name="timeoutFlow">
+        <logger level="WARN" message="#[java!org::mule::test::el::ExpressionLanguageFunctionsTestCase::sleepForTimeouTest()]"/>
     </flow>
 
     <flow name="failureHandledFlow">

@@ -7,6 +7,8 @@
 package org.mule.test.el;
 
 import static java.lang.String.format;
+import static java.lang.Thread.currentThread;
+import static java.lang.Thread.sleep;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.http.HttpStatus.SC_METHOD_NOT_ALLOWED;
 import static org.apache.http.HttpStatus.SC_UNAUTHORIZED;
@@ -24,6 +26,7 @@ import static org.mule.runtime.api.metadata.MediaType.APPLICATION_JAVA;
 import static org.mule.runtime.api.metadata.MediaType.JSON;
 import static org.mule.test.allure.AllureConstants.ExpressionLanguageFeature.EXPRESSION_LANGUAGE;
 import static org.mule.test.allure.AllureConstants.ExpressionLanguageFeature.ExpressionLanguageStory.SUPPORT_FUNCTIONS;
+
 import org.mule.functional.api.exception.ExpectedError;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.metadata.DataType;
@@ -33,6 +36,9 @@ import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import org.junit.Rule;
+import org.junit.Test;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,8 +46,6 @@ import java.util.Map;
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
-import org.junit.Rule;
-import org.junit.Test;
 
 @Feature(EXPRESSION_LANGUAGE)
 @Story(SUPPORT_FUNCTIONS)
@@ -134,6 +138,18 @@ public class ExpressionLanguageFunctionsTestCase extends AbstractIntegrationTest
   }
 
   @Test
+  public void lookupFailsWhenCalledFlowTimesOut() throws Exception {
+    expectedError.expectErrorType("MULE", "EXPRESSION");
+    expectedError.expectCause(both(isA(ExpressionRuntimeException.class))
+        .and(hasMessage(containsString(("Flow 'timeoutFlow' has timed out after 100 millis")))));
+
+    flowRunner("expressionParamsWithTimeout")
+        .withVariable("flow", "timeoutFlow")
+        .withPayload(TEST_PAYLOAD)
+        .run();
+  }
+
+  @Test
   public void lookupCallsFlowThatHandlesConnectorError() throws Exception {
     assertThat(flowRunner("staticParams")
         .withVariable("status", SC_UNAUTHORIZED)
@@ -147,7 +163,7 @@ public class ExpressionLanguageFunctionsTestCase extends AbstractIntegrationTest
   public void lookupFailsWhenCalledFlowThrowsConnectorError() throws Exception {
     expectedError.expectErrorType("MULE", "EXPRESSION");
     expectedError.expectCause(both(isA(ExpressionRuntimeException.class))
-        .and(hasMessage(containsString(format("\"Exception while executing lookup(\"callApi\",\"data\") cause: Flow 'callApi' has failed "
+        .and(hasMessage(containsString(format("\"Exception while executing lookup(\"callApi\",\"data\",2000 as Number {class: \"java.lang.Integer\"}) cause: Flow 'callApi' has failed "
             + "with error 'HTTP:METHOD_NOT_ALLOWED' (HTTP GET on resource 'http://localhost:%s/405' "
             + "failed: method not allowed (405).) \n", port.getValue())))));
     flowRunner("staticParams").withVariable("status", SC_METHOD_NOT_ALLOWED).run();
@@ -222,4 +238,15 @@ public class ExpressionLanguageFunctionsTestCase extends AbstractIntegrationTest
 
   }
 
+  public static String sleepForTimeouTest() {
+    // just calling sleep from DW causes the thrown InterruptedException to be unhandled by DW and bubble up.
+    try {
+      sleep(10000L);
+      return "Good Morning!";
+    } catch (InterruptedException e) {
+      currentThread().interrupt();
+      return "Rude Awakening";
+    }
+
+  }
 }
