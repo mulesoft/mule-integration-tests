@@ -27,6 +27,7 @@ import org.mule.runtime.api.source.SchedulerMessageSource;
 import org.mule.runtime.config.api.LazyComponentInitializer;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
+import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.tck.probe.PollingProber;
 import org.mule.tck.probe.Probe;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -41,6 +42,7 @@ import javax.inject.Inject;
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
 
