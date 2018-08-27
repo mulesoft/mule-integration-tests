@@ -119,19 +119,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <!--<dependency>-->
-            <!--<groupId>org.mule.tests</groupId>-->
-            <!--<artifactId>mule-module-test-services</artifactId>-->
-            <!--<version>4.2.0-SNAPSHOT</version>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.mule.tests</groupId>-->
-            <!--<artifactId>mule-echo-service</artifactId>-->
-            <!--<version>${project.version}</version>-->
-            <!--<classifier>mule-service</classifier>-->
-            <!--<scope>provided</scope>-->
-        <!--</dependency>-->
-
         <!-- Mule Plugins -->
         <dependency>
             <groupId>org.mule.modules</groupId>
@@ -296,13 +283,6 @@
             <version>${project.version}</version>
             <classifier>mule-plugin</classifier>
         </dependency>
-
-        <!--<dependency>-->
-            <!--<groupId>org.mule.tests</groupId>-->
-            <!--<artifactId>mule-echo-extension</artifactId>-->
-            <!--<version>${project.version}</version>-->
-            <!--<classifier>mule-plugin</classifier>-->
-        <!--</dependency>-->
 
         <dependency>
             <groupId>org.mule.runtime</groupId>
