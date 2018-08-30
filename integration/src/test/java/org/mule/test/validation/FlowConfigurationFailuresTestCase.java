@@ -7,6 +7,9 @@
 package org.mule.test.validation;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.junit.rules.ExpectedException.none;
+import static org.mule.test.allure.AllureConstants.MuleDsl.MULE_DSL;
+import static org.mule.test.allure.AllureConstants.MuleDsl.DslValidationStory.DSL_VALIDATION_STORY;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -15,13 +18,18 @@ import org.junit.rules.ExpectedException;
 import org.mule.runtime.core.api.config.ConfigurationException;
 import org.mule.test.integration.AbstractConfigurationFailuresTestCase;
 
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
+
+@Feature(MULE_DSL)
+@Story(DSL_VALIDATION_STORY)
 public class FlowConfigurationFailuresTestCase extends AbstractConfigurationFailuresTestCase {
 
   @Rule
-  public ExpectedException expectedException = ExpectedException.none();
+  public ExpectedException expectedException = none();
 
   @Test
-  public void errorHandlerCantHaveOnErrorWithoutTypeOrExpression() throws Exception {
+  public void showFlowNameUsingInvalidCharacter() throws Exception {
     expectedException.expect(ConfigurationException.class);
     expectedException
         .expectMessage(containsString("Invalid global element name 'flow/myFlow' in org/mule/test/integration/validation/invalid-flow-name-config.xml:7. Problem is: Invalid character used in location. Invalid characters are /,[,],{,},#"));

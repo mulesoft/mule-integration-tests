@@ -9,6 +9,8 @@ package org.mule.test.integration;
 import static java.lang.Thread.currentThread;
 import static java.util.Collections.emptyList;
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 import static org.mule.runtime.config.api.SpringXmlConfigurationBuilderFactory.createConfigurationBuilder;
 import static org.mule.runtime.core.api.config.bootstrap.ArtifactType.APP;
 import static org.mule.runtime.core.api.context.notification.MuleContextNotification.CONTEXT_STARTED;
@@ -45,7 +47,8 @@ import org.mule.tck.config.TestServicesConfigurationBuilder;
 import org.mule.tck.junit4.AbstractMuleTestCase;
 import org.mule.test.integration.exceptions.ErrorHandlingConfigurationFailuresTestCase;
 
-public class AbstractConfigurationFailuresTestCase extends AbstractMuleTestCase {
+
+public abstract class AbstractConfigurationFailuresTestCase extends AbstractMuleTestCase {
 
   @Inject
   private NotificationListenerRegistry notificationListenerRegistry;
@@ -89,7 +92,7 @@ public class AbstractConfigurationFailuresTestCase extends AbstractMuleTestCase 
       }
     });
     muleContext.start();
-    contextStartedLatch.get().await(20, SECONDS);
+    assertThat(contextStartedLatch.get().await(20, SECONDS), is(true));;
   }
 
   protected List<ExtensionModel> getRequiredExtensions() {
