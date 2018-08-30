@@ -11,13 +11,9 @@ import static java.lang.Thread.currentThread;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptySet;
 import static java.util.Collections.singleton;
-import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mule.functional.junit4.matchers.ThrowableMessageMatcher.hasMessage;
-import static org.mule.runtime.config.api.SpringXmlConfigurationBuilderFactory.createConfigurationBuilder;
-import static org.mule.runtime.core.api.config.bootstrap.ArtifactType.APP;
-import static org.mule.runtime.core.api.context.notification.MuleContextNotification.CONTEXT_STARTED;
 import static org.mule.runtime.core.api.exception.Errors.Identifiers.CRITICAL_IDENTIFIER;
 import static org.mule.runtime.core.api.exception.Errors.Identifiers.SOURCE_ERROR_IDENTIFIER;
 import static org.mule.runtime.core.api.exception.Errors.Identifiers.SOURCE_ERROR_RESPONSE_GENERATE_ERROR_IDENTIFIER;
@@ -29,51 +25,31 @@ import static org.mule.runtime.core.api.exception.Errors.Identifiers.UNKNOWN_ERR
 import static org.mule.runtime.module.extension.api.loader.AbstractJavaExtensionModelLoader.TYPE_PROPERTY_NAME;
 import static org.mule.runtime.module.extension.api.loader.AbstractJavaExtensionModelLoader.VERSION;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
-import org.mule.extension.http.internal.temporary.HttpConnector;
-import org.mule.extension.socket.api.SocketsExtension;
-import org.mule.runtime.api.dsl.DslResolvingContext;
-import org.mule.runtime.api.exception.MuleException;
-import org.mule.runtime.api.lifecycle.InitialisationException;
-import org.mule.runtime.api.meta.model.ExtensionModel;
-import org.mule.runtime.api.notification.IntegerAction;
-import org.mule.runtime.api.notification.NotificationListenerRegistry;
-import org.mule.runtime.core.api.MuleContext;
-import org.mule.runtime.core.api.config.ConfigurationBuilder;
-import org.mule.runtime.core.api.config.ConfigurationException;
-import org.mule.runtime.core.api.config.DefaultMuleConfiguration;
-import org.mule.runtime.core.api.config.builders.AbstractConfigurationBuilder;
-import org.mule.runtime.core.api.context.DefaultMuleContextFactory;
-import org.mule.runtime.core.api.context.MuleContextBuilder;
-import org.mule.runtime.core.api.context.MuleContextFactory;
-import org.mule.runtime.core.api.context.notification.MuleContextNotification;
-import org.mule.runtime.core.api.context.notification.MuleContextNotificationListener;
-import org.mule.runtime.api.util.concurrent.Latch;
-import org.mule.runtime.module.extension.api.loader.java.DefaultJavaExtensionModelLoader;
-import org.mule.runtime.module.extension.internal.manager.DefaultExtensionManager;
-import org.mule.tck.config.TestServicesConfigurationBuilder;
-import org.mule.tck.junit4.AbstractMuleTestCase;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
 
-import javax.inject.Inject;
-
-import io.qameta.allure.Feature;
-import io.qameta.allure.Story;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import org.mule.extension.http.internal.temporary.HttpConnector;
+import org.mule.extension.socket.api.SocketsExtension;
+import org.mule.runtime.api.dsl.DslResolvingContext;
+import org.mule.runtime.api.lifecycle.InitialisationException;
+import org.mule.runtime.api.meta.model.ExtensionModel;
+import org.mule.runtime.core.api.config.ConfigurationException;
+import org.mule.runtime.module.extension.api.loader.java.DefaultJavaExtensionModelLoader;
+import org.mule.test.integration.AbstractConfigurationFailuresTestCase;
+
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
+
 @Feature(ERROR_HANDLING)
 @Story("Validations")
-public class ErrorHandlingConfigurationFailuresTestCase extends AbstractMuleTestCase {
-
-  @Inject
-  private NotificationListenerRegistry notificationListenerRegistry;
+public class ErrorHandlingConfigurationFailuresTestCase extends AbstractConfigurationFailuresTestCase {
 
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
@@ -244,55 +220,13 @@ public class ErrorHandlingConfigurationFailuresTestCase extends AbstractMuleTest
     return format("Source errors are not allowed in 'on-error-continue' handlers. Offending type is '%s'.", type);
   }
 
-  private void loadConfiguration(String configuration) throws MuleException, InterruptedException {
-
-    MuleContextFactory muleContextFactory = new DefaultMuleContextFactory();
-    List<ConfigurationBuilder> builders = new ArrayList<>();
-    builders.add(new AbstractConfigurationBuilder() {
-
-      @Override
-      protected void doConfigure(MuleContext muleContext) throws Exception {
-        DefaultExtensionManager defaultExtensionManager = new DefaultExtensionManager();
-        defaultExtensionManager.setMuleContext(muleContext);
-        defaultExtensionManager.initialise();
-        getRequiredExtensions().forEach(defaultExtensionManager::registerExtension);
-        muleContext.setExtensionManager(defaultExtensionManager);
-      }
-    });
-    builders.add(createConfigurationBuilder(configuration));
-    builders.add(new TestServicesConfigurationBuilder());
-    MuleContextBuilder contextBuilder = MuleContextBuilder.builder(APP);
-    final DefaultMuleConfiguration muleConfiguration = new DefaultMuleConfiguration();
-    muleConfiguration.setId(ErrorHandlingConfigurationFailuresTestCase.class.getSimpleName());
-    contextBuilder.setMuleConfiguration(muleConfiguration);
-    MuleContext muleContext = muleContextFactory.createMuleContext(builders, contextBuilder);
-    final AtomicReference<Latch> contextStartedLatch = new AtomicReference<>();
-    contextStartedLatch.set(new Latch());
-    notificationListenerRegistry.registerListener(new MuleContextNotificationListener<MuleContextNotification>() {
-
-      @Override
-      public boolean isBlocking() {
-        return false;
-      }
-
-      @Override
-      public void onNotification(MuleContextNotification notification) {
-        if (new IntegerAction(CONTEXT_STARTED).equals(notification.getAction())) {
-          contextStartedLatch.get().countDown();
-        }
-      }
-    });
-    muleContext.start();
-    contextStartedLatch.get().await(20, SECONDS);
-  }
-
-  private List<ExtensionModel> getRequiredExtensions() {
+  protected List<ExtensionModel> getRequiredExtensions() {
     ExtensionModel sockets = loadExtension(SocketsExtension.class, emptySet());
     ExtensionModel http = loadExtension(HttpConnector.class, singleton(sockets));
     return asList(http, sockets);
   }
 
-  private ExtensionModel loadExtension(Class extension, Set<ExtensionModel> deps) {
+  protected ExtensionModel loadExtension(Class extension, Set<ExtensionModel> deps) {
     DefaultJavaExtensionModelLoader loader = new DefaultJavaExtensionModelLoader();
     Map<String, Object> ctx = new HashMap<>();
     ctx.put(TYPE_PROPERTY_NAME, extension.getName());
