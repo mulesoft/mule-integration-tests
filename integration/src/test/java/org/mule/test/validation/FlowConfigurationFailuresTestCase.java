@@ -1,0 +1,106 @@
+/*
+ * Copyright (c) MuleSoft, Inc.  All rights reserved.  http://www.mulesoft.com
+ * The software in this package is published under the terms of the CPAL v1.0
+ * license, a copy of which has been included with this distribution in the
+ * LICENSE.txt file.
+ */
+package org.mule.test.validation;
+
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.hamcrest.Matchers.containsString;
+import static org.mule.runtime.config.api.SpringXmlConfigurationBuilderFactory.createConfigurationBuilder;
+import static org.mule.runtime.core.api.config.bootstrap.ArtifactType.APP;
+import static org.mule.runtime.core.api.context.notification.MuleContextNotification.CONTEXT_STARTED;
+import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
+
+import javax.inject.Inject;
+
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+
+import org.mule.runtime.api.exception.MuleException;
+import org.mule.runtime.api.notification.IntegerAction;
+import org.mule.runtime.api.notification.NotificationListenerRegistry;
+import org.mule.runtime.api.util.concurrent.Latch;
+import org.mule.runtime.core.api.MuleContext;
+import org.mule.runtime.core.api.config.ConfigurationBuilder;
+import org.mule.runtime.core.api.config.ConfigurationException;
+import org.mule.runtime.core.api.config.DefaultMuleConfiguration;
+import org.mule.runtime.core.api.config.builders.AbstractConfigurationBuilder;
+import org.mule.runtime.core.api.context.DefaultMuleContextFactory;
+import org.mule.runtime.core.api.context.MuleContextBuilder;
+import org.mule.runtime.core.api.context.MuleContextFactory;
+import org.mule.runtime.core.api.context.notification.MuleContextNotification;
+import org.mule.runtime.core.api.context.notification.MuleContextNotificationListener;
+import org.mule.runtime.module.extension.internal.manager.DefaultExtensionManager;
+import org.mule.tck.config.TestServicesConfigurationBuilder;
+import org.mule.tck.junit4.AbstractMuleTestCase;
+
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
+
+@Feature(ERROR_HANDLING)
+@Story("Validations")
+public class FlowConfigurationFailuresTestCase extends AbstractMuleTestCase {
+
+  @Inject
+  private NotificationListenerRegistry notificationListenerRegistry;
+
+  @Rule
+  public ExpectedException expectedException = ExpectedException.none();
+
+  @Test
+  public void errorHandlerCantHaveOnErrorWithoutTypeOrExpression() throws Exception {
+    expectedException.expect(ConfigurationException.class);
+    expectedException
+        .expectMessage(containsString("Invalid global element name 'flow/myFlow' in org/mule/test/integration/validation/invalid-flow-name-config.xml:7. Problem is: Invalid character used in location. Invalid characters are /,[,],{,},#"));
+    loadConfiguration("org/mule/test/integration/validation/invalid-flow-name-config.xml");
+  }
+
+  private void loadConfiguration(String configuration) throws MuleException, InterruptedException {
+
+    MuleContextFactory muleContextFactory = new DefaultMuleContextFactory();
+    List<ConfigurationBuilder> builders = new ArrayList<>();
+    builders.add(new AbstractConfigurationBuilder() {
+
+      @Override
+      protected void doConfigure(MuleContext muleContext) throws Exception {
+        DefaultExtensionManager defaultExtensionManager = new DefaultExtensionManager();
+        defaultExtensionManager.setMuleContext(muleContext);
+        defaultExtensionManager.initialise();
+        muleContext.setExtensionManager(defaultExtensionManager);
+      }
+    });
+    builders.add(createConfigurationBuilder(configuration));
+    builders.add(new TestServicesConfigurationBuilder());
+    MuleContextBuilder contextBuilder = MuleContextBuilder.builder(APP);
+    final DefaultMuleConfiguration muleConfiguration = new DefaultMuleConfiguration();
+    muleConfiguration.setId(FlowConfigurationFailuresTestCase.class.getSimpleName());
+    contextBuilder.setMuleConfiguration(muleConfiguration);
+    MuleContext muleContext = muleContextFactory.createMuleContext(builders, contextBuilder);
+    final AtomicReference<Latch> contextStartedLatch = new AtomicReference<>();
+    contextStartedLatch.set(new Latch());
+    notificationListenerRegistry.registerListener(new MuleContextNotificationListener<MuleContextNotification>() {
+
+      @Override
+      public boolean isBlocking() {
+        return false;
+      }
+
+      @Override
+      public void onNotification(MuleContextNotification notification) {
+        if (new IntegerAction(CONTEXT_STARTED).equals(notification.getAction())) {
+          contextStartedLatch.get().countDown();
+        }
+      }
+    });
+    muleContext.start();
+    contextStartedLatch.get().await(20, SECONDS);
+  }
+
+}
