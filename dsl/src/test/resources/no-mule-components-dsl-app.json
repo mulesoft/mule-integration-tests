@@ -1,0 +1,190 @@
+{
+  "globalElements": [
+    {
+      "refName": "config",
+      "name": "config",
+      "declaringExtension": "JMS",
+      "kind": "CONFIG",
+      "customConfigurationParameters": [],
+      "metadataProperties": {},
+      "parameterGroups": [],
+      "connection": {
+        "name": "active-mq",
+        "declaringExtension": "JMS",
+        "kind": "CONNECTION",
+        "customConfigurationParameters": [],
+        "metadataProperties": {},
+        "parameterGroups": [
+          {
+            "name": "General",
+            "customConfigurationParameters": [],
+            "metadataProperties": {},
+            "parameters": [{"name":"cachingStrategy","metadataProperties":{},"value":{"fields":{},"typeId":"org.mule.extensions.jms.api.connection.caching.NoCachingConfiguration"}}]
+          }
+        ]
+      }
+    },
+    {
+      "refName": "httpRequester",
+      "name": "requestConfig",
+      "declaringExtension": "HTTP",
+      "kind": "CONFIG",
+      "customConfigurationParameters": [],
+      "metadataProperties": {},
+      "parameterGroups": [],
+      "connection": {
+        "name": "request",
+        "declaringExtension": "HTTP",
+        "kind": "CONNECTION",
+        "customConfigurationParameters": [],
+        "metadataProperties": {},
+        "parameterGroups": []
+      }
+    },
+    {
+      "refName": "send-payload",
+      "name": "flow",
+      "declaringExtension": "mule",
+      "kind": "CONSTRUCT",
+      "customConfigurationParameters": [],
+      "metadataProperties": {},
+      "parameterGroups": [],
+      "components": [
+        {
+          "name": "publish",
+          "declaringExtension": "JMS",
+          "kind": "OPERATION",
+          "customConfigurationParameters": [],
+          "metadataProperties": {},
+          "parameterGroups": [
+            {
+              "name": "General",
+              "customConfigurationParameters": [],
+              "metadataProperties": {},
+              "parameters": [{"name":"destination","metadataProperties":{},"value":{"text":"#[initialDestination]","isCData":false,"type":"STRING"}}]
+            },
+            {
+              "name": "Message",
+              "customConfigurationParameters": [],
+              "metadataProperties": {},
+              "parameters": [{"name":"body","metadataProperties":{},"value":{"text":"#[payload]","isCData":false,"type":"STRING"}},{"name":"properties","metadataProperties":{},"value":{"text":"#[{(initialProperty): propertyValue}]","isCData":false,"type":"STRING"}}]
+            }
+          ],
+          "configRef": "config",
+          "components": []
+        },
+        {
+          "name": "request",
+          "declaringExtension": "HTTP",
+          "kind": "OPERATION",
+          "customConfigurationParameters": [],
+          "metadataProperties": {},
+          "parameterGroups": [
+            {
+              "name": "URI Settings",
+              "customConfigurationParameters": [],
+              "metadataProperties": {},
+              "parameters": [{"name":"path","metadataProperties":{},"value":{"text":"/nested","isCData":false,"type":"STRING"}}]
+            },
+            {
+              "name": "General",
+              "customConfigurationParameters": [],
+              "metadataProperties": {},
+              "parameters": [{"name":"method","metadataProperties":{},"value":{"text":"POST","isCData":false,"type":"STRING"}}]
+            }
+          ],
+          "configRef": "httpRequester",
+          "components": []
+        }
+      ]
+    },
+    {
+      "refName": "bridge",
+      "name": "flow",
+      "declaringExtension": "mule",
+      "kind": "CONSTRUCT",
+      "customConfigurationParameters": [],
+      "metadataProperties": {},
+      "parameterGroups": [],
+      "components": [
+        {
+          "name": "consume",
+          "declaringExtension": "JMS",
+          "kind": "OPERATION",
+          "customConfigurationParameters": [],
+          "metadataProperties": {},
+          "parameterGroups": [
+            {
+              "name": "General",
+              "customConfigurationParameters": [],
+              "metadataProperties": {},
+              "parameters": [{"name":"destination","metadataProperties":{},"value":{"text":"#[initialDestination]","isCData":false,"type":"STRING"}},{"name":"maximumWait","metadataProperties":{},"value":{"text":"1000","isCData":false,"type":"NUMBER"}}]
+            }
+          ],
+          "configRef": "config",
+          "components": []
+        },
+        {
+          "name": "request",
+          "declaringExtension": "HTTP",
+          "kind": "OPERATION",
+          "customConfigurationParameters": [],
+          "metadataProperties": {},
+          "parameterGroups": [
+            {
+              "name": "URI Settings",
+              "customConfigurationParameters": [],
+              "metadataProperties": {},
+              "parameters": [{"name":"path","metadataProperties":{},"value":{"text":"/nested","isCData":false,"type":"STRING"}}]
+            }
+          ],
+          "configRef": "httpRequester",
+          "components": []
+        }
+      ]
+    }
+  ],
+  "customParameters": [
+    {
+      "value": {
+        "text": "http://www.mulesoft.org/schema/mule/core",
+        "isCData": false
+      },
+      "properties": {},
+      "name": "xmlns"
+    },
+    {
+      "value": {
+        "text": "http://www.mulesoft.org/schema/mule/jms",
+        "isCData": false
+      },
+      "properties": {},
+      "name": "xmlns:jms"
+    },
+    {
+      "value": {
+        "text": "http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd",
+        "isCData": false
+      },
+      "properties": {},
+      "name": "xsi:schemaLocation"
+    },
+    {
+      "value": {
+        "text": "http://www.mulesoft.org/schema/mule/http",
+        "isCData": false
+      },
+      "properties": {},
+      "name": "xmlns:http"
+    },
+    {
+      "value": {
+        "text": "http://www.w3.org/2001/XMLSchema-instance",
+        "isCData": false
+      },
+      "properties": {},
+      "name": "xmlns:xsi"
+    }
+  ],
+  "properties": {}
+}
