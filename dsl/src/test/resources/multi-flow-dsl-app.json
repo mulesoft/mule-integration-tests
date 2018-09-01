@@ -292,7 +292,8 @@
     {
       "value": {
         "text": "http://www.mulesoft.org/schema/mule/core",
-        "isCData": false
+        "isCData": false,
+        "type": "STRING"
       },
       "properties": {},
       "name": "xmlns"
@@ -300,7 +301,8 @@
     {
       "value": {
         "text": "http://www.mulesoft.org/schema/mule/jms",
-        "isCData": false
+        "isCData": false,
+        "type": "STRING"
       },
       "properties": {},
       "name": "xmlns:jms"
@@ -308,7 +310,8 @@
     {
       "value": {
         "text": "http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd",
-        "isCData": false
+        "isCData": false,
+        "type": "STRING"
       },
       "properties": {},
       "name": "xsi:schemaLocation"
@@ -316,7 +319,8 @@
     {
       "value": {
         "text": "http://www.w3.org/2001/XMLSchema-instance",
-        "isCData": false
+        "isCData": false,
+        "type": "STRING"
       },
       "properties": {},
       "name": "xmlns:xsi"

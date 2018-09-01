@@ -19,7 +19,16 @@
             "name": "General",
             "customConfigurationParameters": [],
             "metadataProperties": {},
-            "parameters": [{"name":"cachingStrategy","metadataProperties":{},"value":{"fields":{},"typeId":"org.mule.extensions.jms.api.connection.caching.NoCachingConfiguration"}}]
+            "parameters": [
+              {
+                "name": "cachingStrategy",
+                "metadataProperties": {},
+                "value": {
+                  "fields": {},
+                  "typeId": "org.mule.extensions.jms.api.connection.caching.NoCachingConfiguration"
+                }
+              }
+            ]
           }
         ]
       }
@@ -61,13 +70,42 @@
               "name": "General",
               "customConfigurationParameters": [],
               "metadataProperties": {},
-              "parameters": [{"name":"destination","metadataProperties":{},"value":{"text":"#[initialDestination]","isCData":false,"type":"STRING"}}]
+              "parameters": [
+                {
+                  "name": "destination",
+                  "metadataProperties": {},
+                  "value": {
+                    "text": "#[initialDestination]",
+                    "isCData": false,
+                    "type": "STRING"
+                  }
+                }
+              ]
             },
             {
               "name": "Message",
               "customConfigurationParameters": [],
               "metadataProperties": {},
-              "parameters": [{"name":"body","metadataProperties":{},"value":{"text":"#[payload]","isCData":false,"type":"STRING"}},{"name":"properties","metadataProperties":{},"value":{"text":"#[{(initialProperty): propertyValue}]","isCData":false,"type":"STRING"}}]
+              "parameters": [
+                {
+                  "name": "body",
+                  "metadataProperties": {},
+                  "value": {
+                    "text": "#[payload]",
+                    "isCData": false,
+                    "type": "STRING"
+                  }
+                },
+                {
+                  "name": "properties",
+                  "metadataProperties": {},
+                  "value": {
+                    "text": "#[{(initialProperty): propertyValue}]",
+                    "isCData": false,
+                    "type": "STRING"
+                  }
+                }
+              ]
             }
           ],
           "configRef": "config",
@@ -84,13 +122,33 @@
               "name": "URI Settings",
               "customConfigurationParameters": [],
               "metadataProperties": {},
-              "parameters": [{"name":"path","metadataProperties":{},"value":{"text":"/nested","isCData":false,"type":"STRING"}}]
+              "parameters": [
+                {
+                  "name": "path",
+                  "metadataProperties": {},
+                  "value": {
+                    "text": "/nested",
+                    "isCData": false,
+                    "type": "STRING"
+                  }
+                }
+              ]
             },
             {
               "name": "General",
               "customConfigurationParameters": [],
               "metadataProperties": {},
-              "parameters": [{"name":"method","metadataProperties":{},"value":{"text":"POST","isCData":false,"type":"STRING"}}]
+              "parameters": [
+                {
+                  "name": "method",
+                  "metadataProperties": {},
+                  "value": {
+                    "text": "POST",
+                    "isCData": false,
+                    "type": "STRING"
+                  }
+                }
+              ]
             }
           ],
           "configRef": "httpRequester",
@@ -118,7 +176,26 @@
               "name": "General",
               "customConfigurationParameters": [],
               "metadataProperties": {},
-              "parameters": [{"name":"destination","metadataProperties":{},"value":{"text":"#[initialDestination]","isCData":false,"type":"STRING"}},{"name":"maximumWait","metadataProperties":{},"value":{"text":"1000","isCData":false,"type":"NUMBER"}}]
+              "parameters": [
+                {
+                  "name": "destination",
+                  "metadataProperties": {},
+                  "value": {
+                    "text": "#[initialDestination]",
+                    "isCData": false,
+                    "type": "STRING"
+                  }
+                },
+                {
+                  "name": "maximumWait",
+                  "metadataProperties": {},
+                  "value": {
+                    "text": "1000",
+                    "isCData": false,
+                    "type": "NUMBER"
+                  }
+                }
+              ]
             }
           ],
           "configRef": "config",
@@ -135,7 +212,17 @@
               "name": "URI Settings",
               "customConfigurationParameters": [],
               "metadataProperties": {},
-              "parameters": [{"name":"path","metadataProperties":{},"value":{"text":"/nested","isCData":false,"type":"STRING"}}]
+              "parameters": [
+                {
+                  "name": "path",
+                  "metadataProperties": {},
+                  "value": {
+                    "text": "/nested",
+                    "isCData": false,
+                    "type": "STRING"
+                  }
+                }
+              ]
             }
           ],
           "configRef": "httpRequester",
@@ -148,7 +235,8 @@
     {
       "value": {
         "text": "http://www.mulesoft.org/schema/mule/core",
-        "isCData": false
+        "isCData": false,
+        "type": "STRING"
       },
       "properties": {},
       "name": "xmlns"
@@ -156,7 +244,8 @@
     {
       "value": {
         "text": "http://www.mulesoft.org/schema/mule/jms",
-        "isCData": false
+        "isCData": false,
+        "type": "STRING"
       },
       "properties": {},
       "name": "xmlns:jms"
@@ -164,7 +253,8 @@
     {
       "value": {
         "text": "http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd",
-        "isCData": false
+        "isCData": false,
+        "type": "STRING"
       },
       "properties": {},
       "name": "xsi:schemaLocation"
@@ -172,7 +262,8 @@
     {
       "value": {
         "text": "http://www.mulesoft.org/schema/mule/http",
-        "isCData": false
+        "isCData": false,
+        "type": "STRING"
       },
       "properties": {},
       "name": "xmlns:http"
@@ -180,7 +271,8 @@
     {
       "value": {
         "text": "http://www.w3.org/2001/XMLSchema-instance",
-        "isCData": false
+        "isCData": false,
+        "type": "STRING"
       },
       "properties": {},
       "name": "xmlns:xsi"

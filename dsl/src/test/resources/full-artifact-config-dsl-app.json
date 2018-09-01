@@ -682,7 +682,8 @@
         {
           "value": {
             "text": "docUUID",
-            "isCData": false
+            "isCData": false,
+            "type": "STRING"
           },
           "properties": {},
           "name": "doc:id"
@@ -716,7 +717,8 @@
             {
               "value": {
                 "text": "docUUID",
-                "isCData": false
+                "isCData": false,
+                "type": "STRING"
               },
               "properties": {},
               "name": "doc:id"
@@ -724,7 +726,8 @@
             {
               "value": {
                 "text": "testBuilder",
-                "isCData": false
+                "isCData": false,
+                "type": "STRING"
               },
               "properties": {},
               "name": "path"
@@ -732,7 +735,8 @@
             {
               "value": {
                 "text": "docUUID",
-                "isCData": false
+                "isCData": false,
+                "type": "STRING"
               },
               "properties": {},
               "name": "doc:id"
@@ -740,7 +744,8 @@
             {
               "value": {
                 "text": "testBuilder",
-                "isCData": false
+                "isCData": false,
+                "type": "STRING"
               },
               "properties": {},
               "name": "path"
@@ -748,7 +753,8 @@
             {
               "value": {
                 "text": "docUUID",
-                "isCData": false
+                "isCData": false,
+                "type": "STRING"
               },
               "properties": {},
               "name": "doc:id"
@@ -1618,7 +1624,8 @@
     {
       "value": {
         "text": "http://www.mulesoft.org/schema/mule/documentation",
-        "isCData": false
+        "isCData": false,
+        "type": "STRING"
       },
       "properties": {},
       "name": "xmlns:doc"
@@ -1626,7 +1633,8 @@
     {
       "value": {
         "text": "http://www.mulesoft.org/schema/mule/os",
-        "isCData": false
+        "isCData": false,
+        "type": "STRING"
       },
       "properties": {},
       "name": "xmlns:os"
@@ -1634,7 +1642,8 @@
     {
       "value": {
         "text": "http://www.mulesoft.org/schema/mule/file",
-        "isCData": false
+        "isCData": false,
+        "type": "STRING"
       },
       "properties": {},
       "name": "xmlns:file"
@@ -1642,7 +1651,8 @@
     {
       "value": {
         "text": "http://www.mulesoft.org/schema/mule/core",
-        "isCData": false
+        "isCData": false,
+        "type": "STRING"
       },
       "properties": {},
       "name": "xmlns"
@@ -1650,7 +1660,8 @@
     {
       "value": {
         "text": "http://www.mulesoft.org/schema/mule/wsc",
-        "isCData": false
+        "isCData": false,
+        "type": "STRING"
       },
       "properties": {},
       "name": "xmlns:wsc"
@@ -1658,7 +1669,8 @@
     {
       "value": {
         "text": "http://www.mulesoft.org/schema/mule/sockets",
-        "isCData": false
+        "isCData": false,
+        "type": "STRING"
       },
       "properties": {},
       "name": "xmlns:sockets"
@@ -1666,7 +1678,8 @@
     {
       "value": {
         "text": "http://www.mulesoft.org/schema/mule/tls",
-        "isCData": false
+        "isCData": false,
+        "type": "STRING"
       },
       "properties": {},
       "name": "xmlns:tls"
@@ -1674,7 +1687,8 @@
     {
       "value": {
         "text": "http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd http://www.mulesoft.org/schema/mule/sockets http://www.mulesoft.org/schema/mule/sockets/current/mule-sockets.xsd",
-        "isCData": false
+        "isCData": false,
+        "type": "STRING"
       },
       "properties": {},
       "name": "xsi:schemaLocation"
@@ -1682,7 +1696,8 @@
     {
       "value": {
         "text": "http://www.mulesoft.org/schema/mule/http",
-        "isCData": false
+        "isCData": false,
+        "type": "STRING"
       },
       "properties": {},
       "name": "xmlns:http"
@@ -1690,7 +1705,8 @@
     {
       "value": {
         "text": "http://www.w3.org/2001/XMLSchema-instance",
-        "isCData": false
+        "isCData": false,
+        "type": "STRING"
       },
       "properties": {},
       "name": "xmlns:xsi"
@@ -1698,7 +1714,8 @@
     {
       "value": {
         "text": "http://www.mulesoft.org/schema/mule/db",
-        "isCData": false
+        "isCData": false,
+        "type": "STRING"
       },
       "properties": {},
       "name": "xmlns:db"
