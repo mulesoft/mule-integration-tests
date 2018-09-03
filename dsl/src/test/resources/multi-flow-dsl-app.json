@@ -1,0 +1,330 @@
+{
+  "globalElements": [
+    {
+      "refName": "config",
+      "name": "config",
+      "declaringExtension": "JMS",
+      "kind": "CONFIG",
+      "customConfigurationParameters": [],
+      "metadataProperties": {},
+      "parameterGroups": [],
+      "connection": {
+        "name": "active-mq",
+        "declaringExtension": "JMS",
+        "kind": "CONNECTION",
+        "customConfigurationParameters": [],
+        "metadataProperties": {},
+        "parameterGroups": [
+          {
+            "name": "General",
+            "customConfigurationParameters": [],
+            "metadataProperties": {},
+            "parameters": [
+              {
+                "name": "cachingStrategy",
+                "metadataProperties": {},
+                "value": {
+                  "fields": {},
+                  "typeId": "org.mule.extensions.jms.api.connection.caching.NoCachingConfiguration"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "refName": "send-payload",
+      "name": "flow",
+      "declaringExtension": "mule",
+      "kind": "CONSTRUCT",
+      "customConfigurationParameters": [],
+      "metadataProperties": {},
+      "parameterGroups": [],
+      "components": [
+        {
+          "name": "publish",
+          "declaringExtension": "JMS",
+          "kind": "OPERATION",
+          "customConfigurationParameters": [],
+          "metadataProperties": {},
+          "parameterGroups": [
+            {
+              "name": "General",
+              "customConfigurationParameters": [],
+              "metadataProperties": {},
+              "parameters": [
+                {
+                  "name": "destination",
+                  "metadataProperties": {},
+                  "value": {
+                    "text": "#[initialDestination]",
+                    "isCData": false,
+                    "type": "STRING"
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Message",
+              "customConfigurationParameters": [],
+              "metadataProperties": {},
+              "parameters": [
+                {
+                  "name": "body",
+                  "metadataProperties": {},
+                  "value": {
+                    "text": "#[payload]",
+                    "isCData": false,
+                    "type": "STRING"
+                  }
+                },
+                {
+                  "name": "properties",
+                  "metadataProperties": {},
+                  "value": {
+                    "text": "\n                    #[{(initialProperty): propertyValue}]\n                ",
+                    "isCData": false,
+                    "type": "STRING"
+                  }
+                }
+              ]
+            }
+          ],
+          "configRef": "config",
+          "components": []
+        }
+      ]
+    },
+    {
+      "refName": "bridge",
+      "name": "flow",
+      "declaringExtension": "mule",
+      "kind": "CONSTRUCT",
+      "customConfigurationParameters": [],
+      "metadataProperties": {},
+      "parameterGroups": [],
+      "components": [
+        {
+          "name": "consume",
+          "declaringExtension": "JMS",
+          "kind": "OPERATION",
+          "customConfigurationParameters": [],
+          "metadataProperties": {},
+          "parameterGroups": [
+            {
+              "name": "General",
+              "customConfigurationParameters": [],
+              "metadataProperties": {},
+              "parameters": [
+                {
+                  "name": "destination",
+                  "metadataProperties": {},
+                  "value": {
+                    "text": "#[initialDestination]",
+                    "isCData": false,
+                    "type": "STRING"
+                  }
+                },
+                {
+                  "name": "maximumWait",
+                  "metadataProperties": {},
+                  "value": {
+                    "text": "1000",
+                    "isCData": false,
+                    "type": "NUMBER"
+                  }
+                }
+              ]
+            }
+          ],
+          "configRef": "config",
+          "components": []
+        },
+        {
+          "name": "foreach",
+          "declaringExtension": "mule",
+          "kind": "CONSTRUCT",
+          "customConfigurationParameters": [],
+          "metadataProperties": {},
+          "parameterGroups": [],
+          "components": [
+            {
+              "name": "publish",
+              "declaringExtension": "JMS",
+              "kind": "OPERATION",
+              "customConfigurationParameters": [],
+              "metadataProperties": {},
+              "parameterGroups": [
+                {
+                  "name": "General",
+                  "customConfigurationParameters": [],
+                  "metadataProperties": {},
+                  "parameters": [
+                    {
+                      "name": "destination",
+                      "metadataProperties": {},
+                      "value": {
+                        "text": "#[finalDestination]",
+                        "isCData": false,
+                        "type": "STRING"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "name": "Message",
+                  "customConfigurationParameters": [],
+                  "metadataProperties": {},
+                  "parameters": [
+                    {
+                      "name": "jmsxProperties",
+                      "metadataProperties": {},
+                      "value": {
+                        "text": "#[attributes.properties.jmsxProperties]",
+                        "isCData": false,
+                        "type": "STRING"
+                      }
+                    },
+                    {
+                      "name": "body",
+                      "metadataProperties": {},
+                      "value": {
+                        "text": "#[bridgePrefix ++ payload]",
+                        "isCData": false,
+                        "type": "STRING"
+                      }
+                    },
+                    {
+                      "name": "properties",
+                      "metadataProperties": {},
+                      "value": {
+                        "text": "#[attributes.properties.userProperties]",
+                        "isCData": false,
+                        "type": "STRING"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "configRef": "config",
+              "components": []
+            },
+            {
+              "name": "logger",
+              "declaringExtension": "mule",
+              "kind": "OPERATION",
+              "customConfigurationParameters": [],
+              "metadataProperties": {},
+              "parameterGroups": [
+                {
+                  "name": "General",
+                  "customConfigurationParameters": [],
+                  "metadataProperties": {},
+                  "parameters": [
+                    {
+                      "name": "message",
+                      "metadataProperties": {},
+                      "value": {
+                        "text": "Message Sent",
+                        "isCData": false,
+                        "type": "STRING"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "components": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "refName": "bridge-receiver",
+      "name": "flow",
+      "declaringExtension": "mule",
+      "kind": "CONSTRUCT",
+      "customConfigurationParameters": [],
+      "metadataProperties": {},
+      "parameterGroups": [],
+      "components": [
+        {
+          "name": "consume",
+          "declaringExtension": "JMS",
+          "kind": "OPERATION",
+          "customConfigurationParameters": [],
+          "metadataProperties": {},
+          "parameterGroups": [
+            {
+              "name": "General",
+              "customConfigurationParameters": [],
+              "metadataProperties": {},
+              "parameters": [
+                {
+                  "name": "destination",
+                  "metadataProperties": {},
+                  "value": {
+                    "text": "#[finalDestination]",
+                    "isCData": false,
+                    "type": "STRING"
+                  }
+                },
+                {
+                  "name": "maximumWait",
+                  "metadataProperties": {},
+                  "value": {
+                    "text": "1000",
+                    "isCData": false,
+                    "type": "NUMBER"
+                  }
+                }
+              ]
+            }
+          ],
+          "configRef": "config",
+          "components": []
+        }
+      ]
+    }
+  ],
+  "customParameters": [
+    {
+      "value": {
+        "text": "http://www.mulesoft.org/schema/mule/core",
+        "isCData": false,
+        "type": "STRING"
+      },
+      "properties": {},
+      "name": "xmlns"
+    },
+    {
+      "value": {
+        "text": "http://www.mulesoft.org/schema/mule/jms",
+        "isCData": false,
+        "type": "STRING"
+      },
+      "properties": {},
+      "name": "xmlns:jms"
+    },
+    {
+      "value": {
+        "text": "http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd",
+        "isCData": false,
+        "type": "STRING"
+      },
+      "properties": {},
+      "name": "xsi:schemaLocation"
+    },
+    {
+      "value": {
+        "text": "http://www.w3.org/2001/XMLSchema-instance",
+        "isCData": false,
+        "type": "STRING"
+      },
+      "properties": {},
+      "name": "xmlns:xsi"
+    }
+  ],
+  "properties": {}
+}
