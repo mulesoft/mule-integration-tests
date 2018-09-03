@@ -19,6 +19,7 @@
         <javaxJmsApiVersion>2.0.1</javaxJmsApiVersion>
 
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
+        <jsonassert.version>1.5.0</jsonassert.version>
     </properties>
 
     <build>
@@ -237,6 +238,12 @@
         <dependency>
             <groupId>net.sf.saxon</groupId>
             <artifactId>Saxon-HE</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.skyscreamer</groupId>
+            <artifactId>jsonassert</artifactId>
+            <version>${jsonassert.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

@@ -6,6 +6,7 @@
  */
 package org.mule.test.extension.dsl;
 
+import static java.lang.Thread.currentThread;
 import static java.util.Arrays.asList;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -15,6 +16,11 @@ import static org.mule.runtime.app.declaration.api.fluent.ElementDeclarer.newArt
 import static org.mule.runtime.app.declaration.api.fluent.ElementDeclarer.newListValue;
 import static org.mule.runtime.app.declaration.api.fluent.ElementDeclarer.newObjectValue;
 import static org.mule.runtime.app.declaration.api.fluent.ElementDeclarer.newParameterGroup;
+import static org.mule.runtime.app.declaration.api.fluent.ParameterSimpleValue.cdata;
+import static org.mule.runtime.app.declaration.api.fluent.ParameterSimpleValue.plain;
+import static org.mule.runtime.app.declaration.api.fluent.SimpleValueType.BOOLEAN;
+import static org.mule.runtime.app.declaration.api.fluent.SimpleValueType.NUMBER;
+import static org.mule.runtime.app.declaration.api.fluent.SimpleValueType.STRING;
 import static org.mule.runtime.core.api.util.IOUtils.getResourceAsString;
 import static org.mule.runtime.extension.api.ExtensionConstants.EXPIRATION_POLICY_PARAMETER_NAME;
 import static org.mule.runtime.extension.api.ExtensionConstants.POOLING_PROFILE_PARAMETER_NAME;
@@ -34,26 +40,35 @@ import static org.mule.runtime.extension.api.declaration.type.RedeliveryPolicyTy
 import static org.mule.runtime.extension.api.declaration.type.StreamingStrategyTypeBuilder.REPEATABLE_IN_MEMORY_BYTES_STREAM_ALIAS;
 import static org.mule.test.module.extension.internal.util.ExtensionsTestUtils.compareXML;
 import org.mule.extensions.jms.api.connection.caching.NoCachingConfiguration;
+import org.mule.runtime.api.app.declaration.serialization.ArtifactDeclarationJsonSerializer;
 import org.mule.runtime.app.declaration.api.ArtifactDeclaration;
 import org.mule.runtime.app.declaration.api.ParameterElementDeclaration;
+import org.mule.runtime.app.declaration.api.ParameterValue;
 import org.mule.runtime.app.declaration.api.fluent.ElementDeclarer;
+import org.mule.runtime.app.declaration.api.fluent.SimpleValueType;
 import org.mule.runtime.config.api.dsl.ArtifactDeclarationXmlSerializer;
 import org.mule.runtime.extension.api.runtime.ExpirationPolicy;
 import org.mule.test.runner.RunnerDelegateTo;
 
+import com.google.gson.JsonParser;
+import com.google.gson.stream.JsonReader;
+
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Collection;
 import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
+import org.skyscreamer.jsonassert.JSONAssert;
 
 @RunnerDelegateTo(Parameterized.class)
 public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelTestCase {
 
   private String expectedAppXml;
+  private String expectedAppJson;
 
   @Parameterized.Parameter(0)
   public String configFile;
@@ -61,18 +76,26 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
   @Parameterized.Parameter(1)
   public ArtifactDeclaration applicationDeclaration;
 
+  @Parameterized.Parameter(2)
+  public String declarationFile;
+
   @Parameterized.Parameters(name = "{0}")
   public static Collection<Object[]> data() {
     return asList(new Object[][] {
-        {"full-artifact-config-dsl-app.xml", createFullArtifactDeclaration()},
-        {"multi-flow-dsl-app.xml", createMultiFlowArtifactDeclaration()},
-        {"no-mule-components-dsl-app.xml", createNoMuleComponentsArtifactDeclaration()}
+        {"full-artifact-config-dsl-app.xml", createFullArtifactDeclaration(), "full-artifact-config-dsl-app.json"},
+        {"multi-flow-dsl-app.xml", createMultiFlowArtifactDeclaration(), "multi-flow-dsl-app.json"},
+        {"no-mule-components-dsl-app.xml", createNoMuleComponentsArtifactDeclaration(), "no-mule-components-dsl-app.json"}
     });
   }
 
   @Before
   public void loadExpectedResult() throws IOException {
     expectedAppXml = getResourceAsString(configFile, getClass());
+
+    JsonParser parser = new JsonParser();
+    JsonReader reader = new JsonReader(new InputStreamReader(currentThread().getContextClassLoader()
+        .getResourceAsStream(declarationFile)));
+    expectedAppJson = parser.parse(reader).toString();
   }
 
   @Test
@@ -83,7 +106,7 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
 
   @Test
   public void loadCustomConfigParameters() {
-    InputStream configIs = Thread.currentThread().getContextClassLoader().getResourceAsStream(configFile);
+    InputStream configIs = currentThread().getContextClassLoader().getResourceAsStream(configFile);
     ArtifactDeclarationXmlSerializer serializer = ArtifactDeclarationXmlSerializer.getDefault(dslContext);
 
     ArtifactDeclaration artifact = serializer.deserialize(configIs);
@@ -96,8 +119,8 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
   }
 
   @Test
-  public void loadAndserialize() throws Exception {
-    InputStream configIs = Thread.currentThread().getContextClassLoader().getResourceAsStream(configFile);
+  public void loadAndSerialize() throws Exception {
+    InputStream configIs = currentThread().getContextClassLoader().getResourceAsStream(configFile);
     ArtifactDeclarationXmlSerializer serializer = ArtifactDeclarationXmlSerializer.getDefault(dslContext);
 
     ArtifactDeclaration artifact = serializer.deserialize(configIs);
@@ -105,6 +128,18 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
     String serializationResult = serializer.serialize(artifact);
 
     compareXML(expectedAppXml, serializationResult);
+  }
+
+  @Test
+  public void serializesToJson() {
+    InputStream configIs = currentThread().getContextClassLoader().getResourceAsStream(configFile);
+    ArtifactDeclarationXmlSerializer serializer = ArtifactDeclarationXmlSerializer.getDefault(dslContext);
+    ArtifactDeclaration expectedDeclaration = serializer.deserialize(configIs);
+
+    ArtifactDeclarationJsonSerializer jsonSerializer = ArtifactDeclarationJsonSerializer.getDefault(true);
+    String actualAppJson = jsonSerializer.serialize(expectedDeclaration);
+
+    JSONAssert.assertEquals(expectedAppJson, actualAppJson, true);
   }
 
   @Override
@@ -133,11 +168,11 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
             .withComponent(jms.newOperation("publish")
                 .withConfig("config")
                 .withParameterGroup(newParameterGroup()
-                    .withParameter("destination", "#[initialDestination]")
+                    .withParameter("destination", createStringParameter("#[initialDestination]"))
                     .getDeclaration())
                 .withParameterGroup(newParameterGroup("Message")
-                    .withParameter("body", "#[payload]")
-                    .withParameter("properties", "#[{(initialProperty): propertyValue}]")
+                    .withParameter("body", createStringParameter("#[payload]"))
+                    .withParameter("properties", createStringParameter("#[{(initialProperty): propertyValue}]"))
                     .getDeclaration())
                 .getDeclaration())
             .getDeclaration())
@@ -145,29 +180,29 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
             .withComponent(jms.newOperation("consume")
                 .withConfig("config")
                 .withParameterGroup(newParameterGroup()
-                    .withParameter("destination", "#[initialDestination]")
-                    .withParameter("maximumWait", "1000")
+                    .withParameter("destination", createStringParameter("#[initialDestination]"))
+                    .withParameter("maximumWait", createNumberParameter("1000"))
                     .getDeclaration())
                 .getDeclaration())
             .withComponent(core.newConstruct("foreach")
                 .withComponent(jms.newOperation("publish")
                     .withConfig("config")
                     .withParameterGroup(newParameterGroup()
-                        .withParameter("destination", "#[finalDestination]")
+                        .withParameter("destination", createStringParameter("#[finalDestination]"))
                         .getDeclaration())
                     .withParameterGroup(newParameterGroup("Message")
                         .withParameter("jmsxProperties",
-                                       "#[attributes.properties.jmsxProperties]")
+                                       createStringParameter("#[attributes.properties.jmsxProperties]"))
                         .withParameter("body",
-                                       "#[bridgePrefix ++ payload]")
+                                       createStringParameter("#[bridgePrefix ++ payload]"))
                         .withParameter("properties",
-                                       "#[attributes.properties.userProperties]")
+                                       createStringParameter("#[attributes.properties.userProperties]"))
                         .getDeclaration())
                     .getDeclaration())
                 .withComponent(core
                     .newOperation("logger")
                     .withParameterGroup(newParameterGroup()
-                        .withParameter("message", "Message Sent")
+                        .withParameter("message", createStringParameter("Message Sent"))
                         .getDeclaration())
 
                     .getDeclaration())
@@ -178,8 +213,8 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
                 .newOperation("consume")
                 .withConfig("config")
                 .withParameterGroup(newParameterGroup()
-                    .withParameter("destination", "#[finalDestination]")
-                    .withParameter("maximumWait", "1000")
+                    .withParameter("destination", createStringParameter("#[finalDestination]"))
+                    .withParameter("maximumWait", createNumberParameter("1000"))
                     .getDeclaration())
                 .getDeclaration())
             .getDeclaration())
@@ -199,18 +234,19 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
     return newArtifact()
         .withCustomParameter("xmlns:doc", "http://www.mulesoft.org/schema/mule/documentation")
         .withGlobalElement(core.newConstruct("configuration")
-            .withParameterGroup(group -> group.withParameter("defaultErrorHandler-ref", "referableHandler"))
+            .withParameterGroup(group -> group.withParameter("defaultErrorHandler-ref",
+                                                             createStringParameter("referableHandler")))
             .getDeclaration())
         .withGlobalElement(core.newConstruct("errorHandler")
             .withRefName("referableHandler")
             .withComponent(core.newRoute("onErrorContinue")
                 .withParameterGroup(group -> group
-                    .withParameter("type", "MULE:SOURCE_RESPONSE")
-                    .withParameter("logException", "false")
-                    .withParameter("enableNotifications", "false"))
+                    .withParameter("type", createStringParameter("MULE:SOURCE_RESPONSE"))
+                    .withParameter("logException", createBooleanParameter("false"))
+                    .withParameter("enableNotifications", createBooleanParameter("false")))
                 .withComponent(core.newOperation("logger")
                     .withParameterGroup(group -> group
-                        .withParameter("level", "TRACE"))
+                        .withParameter("level", createStringParameter("TRACE")))
                     .getDeclaration())
                 .getDeclaration())
             .getDeclaration())
@@ -218,13 +254,13 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
             .withRefName("persistentStore")
             .withValue(newObjectValue()
                 .ofType("org.mule.extension.objectstore.api.TopLevelObjectStore")
-                .withParameter("entryTtl", "1")
-                .withParameter("entryTtlUnit", "HOURS")
-                .withParameter("maxEntries", "10")
-                .withParameter("persistent", "true")
-                .withParameter("expirationInterval", "2")
-                .withParameter("expirationIntervalUnit", "HOURS")
-                .withParameter("config-ref", "persistentConfig")
+                .withParameter("entryTtl", createNumberParameter("1"))
+                .withParameter("entryTtlUnit", createStringParameter("HOURS"))
+                .withParameter("maxEntries", createNumberParameter("10"))
+                .withParameter("persistent", createBooleanParameter("true"))
+                .withParameter("expirationInterval", createNumberParameter("2"))
+                .withParameter("expirationIntervalUnit", createStringParameter("HOURS"))
+                .withParameter("config-ref", createStringParameter("persistentConfig"))
                 .build())
             .getDeclaration())
         .withGlobalElement(os.newConfiguration("config")
@@ -239,20 +275,20 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
             .withParameterGroup(newParameterGroup()
                 .withParameter(EXPIRATION_POLICY_PARAMETER_NAME, newObjectValue()
                     .ofType(ExpirationPolicy.class.getName())
-                    .withParameter("maxIdleTime", "1")
-                    .withParameter("timeUnit", MINUTES.name())
+                    .withParameter("maxIdleTime", createNumberParameter("1"))
+                    .withParameter("timeUnit", createStringParameter(MINUTES.name()))
                     .build())
                 .getDeclaration())
             .withConnection(wsc.newConnection("connection")
                 .withParameterGroup(newParameterGroup()
-                    .withParameter("soapVersion", "SOAP11")
-                    .withParameter("mtomEnabled", "false")
+                    .withParameter("soapVersion", createStringParameter("SOAP11"))
+                    .withParameter("mtomEnabled", createBooleanParameter("false"))
                     .getDeclaration())
                 .withParameterGroup(newParameterGroup("Connection")
-                    .withParameter("wsdlLocation", "http://www.webservicex.com/globalweather.asmx?WSDL")
-                    .withParameter("address", "http://www.webservicex.com/globalweather.asmx")
-                    .withParameter("service", "GlobalWeather")
-                    .withParameter("port", "GlobalWeatherSoap")
+                    .withParameter("wsdlLocation", createStringParameter("http://www.webservicex.com/globalweather.asmx?WSDL"))
+                    .withParameter("address", createStringParameter("http://www.webservicex.com/globalweather.asmx"))
+                    .withParameter("service", createStringParameter("GlobalWeather"))
+                    .withParameter("port", createStringParameter("GlobalWeatherSoap"))
                     .getDeclaration())
                 .getDeclaration())
             .getDeclaration())
@@ -261,84 +297,84 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
             .withConnection(db
                 .newConnection("derby").withParameterGroup(newParameterGroup()
                     .withParameter(POOLING_PROFILE_PARAMETER_NAME, newObjectValue()
-                        .withParameter("maxPoolSize", "10")
+                        .withParameter("maxPoolSize", createNumberParameter("10"))
                         .build())
                     .getDeclaration())
                 .withParameterGroup(newParameterGroup(CONNECTION)
                     .withParameter("connectionProperties", newObjectValue()
-                        .withParameter("first", "propertyOne")
-                        .withParameter("second", "propertyTwo")
+                        .withParameter("first", createStringParameter("propertyOne"))
+                        .withParameter("second", createStringParameter("propertyTwo"))
                         .build())
                     .withParameter(RECONNECTION_CONFIG_PARAMETER_NAME, newObjectValue()
                         .ofType(RECONNECTION_CONFIG)
-                        .withParameter("failsDeployment", "true")
+                        .withParameter("failsDeployment", createBooleanParameter("true"))
                         .withParameter("reconnectionStrategy", newObjectValue()
                             .ofType(RECONNECT_ALIAS)
-                            .withParameter(COUNT, "1")
-                            .withParameter(FREQUENCY, "0")
+                            .withParameter(COUNT, createNumberParameter("1"))
+                            .withParameter(FREQUENCY, createNumberParameter("0"))
                             .build())
                         .build())
-                    .withParameter("database", "target/muleEmbeddedDB")
-                    .withParameter("create", "true")
+                    .withParameter("database", createStringParameter("target/muleEmbeddedDB"))
+                    .withParameter("create", createBooleanParameter("true"))
                     .getDeclaration())
                 .getDeclaration())
             .getDeclaration())
         .withGlobalElement(http.newConfiguration("listenerConfig")
             .withRefName("httpListener")
             .withParameterGroup(newParameterGroup()
-                .withParameter("basePath", "/")
+                .withParameter("basePath", createStringParameter("/"))
                 .getDeclaration())
             .withConnection(http.newConnection("listener")
                 .withParameterGroup(newParameterGroup()
                     .withParameter(TLS_PARAMETER_NAME, newObjectValue()
                         .withParameter("key-store", newObjectValue()
-                            .withParameter("path", "ssltest-keystore.jks")
-                            .withParameter("password", "changeit")
-                            .withParameter("keyPassword", "changeit")
+                            .withParameter("path", createStringParameter("ssltest-keystore.jks"))
+                            .withParameter("password", createStringParameter("changeit"))
+                            .withParameter("keyPassword", createStringParameter("changeit"))
                             .build())
                         .withParameter("trust-store", newObjectValue()
-                            .withParameter("insecure", "true")
+                            .withParameter("insecure", createBooleanParameter("true"))
                             .build())
                         .withParameter("revocation-check",
                                        newObjectValue()
                                            .ofType("standard-revocation-check")
-                                           .withParameter("onlyEndEntities", "true")
+                                           .withParameter("onlyEndEntities", createBooleanParameter("true"))
                                            .build())
                         .build())
                     .getDeclaration())
                 .withParameterGroup(group -> group.withName(CONNECTION)
-                    .withParameter("host", "localhost")
-                    .withParameter("port", "49019")
-                    .withParameter("protocol", "HTTPS"))
+                    .withParameter("host", createStringParameter("localhost"))
+                    .withParameter("port", createNumberParameter("49019"))
+                    .withParameter("protocol", createStringParameter("HTTPS")))
                 .getDeclaration())
             .getDeclaration())
         .withGlobalElement(http.newConfiguration("requestConfig")
             .withRefName("httpRequester")
             .withParameterGroup(group -> group.withName("Request Settings")
-                .withParameter("requestStreamingMode", "ALWAYS")
+                .withParameter("requestStreamingMode", createStringParameter("ALWAYS"))
                 .withParameter("defaultHeaders", newListValue().withValue(newObjectValue()
-                    .withParameter("key", "testDefault")
-                    .withParameter("value", "testDefaultValue")
+                    .withParameter("key", createStringParameter("testDefault"))
+                    .withParameter("value", createStringParameter("testDefaultValue"))
                     .build())
                     .build()))
             .withConnection(http.newConnection("request")
                 .withParameterGroup(group -> group.withParameter("authentication",
                                                                  newObjectValue()
                                                                      .ofType("org.mule.extension.http.api.request.authentication.BasicAuthentication")
-                                                                     .withParameter("username", "user")
-                                                                     .withParameter("password", "pass")
+                                                                     .withParameter("username", createStringParameter("user"))
+                                                                     .withParameter("password", createStringParameter("pass"))
                                                                      .build()))
                 .withParameterGroup(newParameterGroup(CONNECTION)
-                    .withParameter("host", "localhost")
-                    .withParameter("port", "49020")
+                    .withParameter("host", createStringParameter("localhost"))
+                    .withParameter("port", createNumberParameter("49020"))
                     .withParameter("clientSocketProperties",
                                    newObjectValue()
-                                       .withParameter("connectionTimeout", "1000")
-                                       .withParameter("keepAlive", "true")
-                                       .withParameter("receiveBufferSize", "1024")
-                                       .withParameter("sendBufferSize", "1024")
-                                       .withParameter("clientTimeout", "1000")
-                                       .withParameter("linger", "1000")
+                                       .withParameter("connectionTimeout", createNumberParameter("1000"))
+                                       .withParameter("keepAlive", createBooleanParameter("true"))
+                                       .withParameter("receiveBufferSize", createNumberParameter("1024"))
+                                       .withParameter("sendBufferSize", createNumberParameter("1024"))
+                                       .withParameter("clientTimeout", createNumberParameter("1000"))
+                                       .withParameter("linger", createNumberParameter("1000"))
                                        .build())
                     .getDeclaration())
                 .getDeclaration())
@@ -346,29 +382,29 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
         .withGlobalElement(core.newConstruct("flow")
             .withRefName("testFlow")
             .withCustomParameter("doc:id", "docUUID")
-            .withParameterGroup(group -> group.withParameter("initialState", "stopped"))
+            .withParameterGroup(group -> group.withParameter("initialState", createStringParameter("stopped")))
             .withComponent(http.newSource("listener")
                 .withConfig("httpListener")
                 .withCustomParameter("doc:id", "docUUID")
                 .withParameterGroup(newParameterGroup()
-                    .withParameter("path", "testBuilder")
+                    .withParameter("path", createStringParameter("testBuilder"))
                     .withParameter(REDELIVERY_POLICY_PARAMETER_NAME,
                                    newObjectValue()
-                                       .withParameter(MAX_REDELIVERY_COUNT, "2")
-                                       .withParameter(USE_SECURE_HASH, "true")
+                                       .withParameter(MAX_REDELIVERY_COUNT, createNumberParameter("2"))
+                                       .withParameter(USE_SECURE_HASH, createBooleanParameter("true"))
                                        .build())
                     .getDeclaration())
                 .withParameterGroup(group -> group.withName(CONNECTION)
                     .withParameter(RECONNECTION_STRATEGY_PARAMETER_NAME,
                                    newObjectValue()
                                        .ofType(RECONNECT_ALIAS)
-                                       .withParameter(COUNT, "1")
-                                       .withParameter(FREQUENCY, "0")
+                                       .withParameter(COUNT, createNumberParameter("1"))
+                                       .withParameter(FREQUENCY, createNumberParameter("0"))
                                        .build()))
                 .withParameterGroup(newParameterGroup("Response")
-                    .withParameter("headers", "<![CDATA[#[{{'content-type' : 'text/plain'}}]]]>")
+                    .withParameter("headers", createStringCDataParameter("<![CDATA[#[{{'content-type' : 'text/plain'}}]]]>"))
                     .withParameter("body",
-                                   "<![CDATA[#[\n"
+                                   createStringCDataParameter("<![CDATA[#[\n"
                                        + "                    %dw 2.0\n"
                                        + "                    output application/json\n"
                                        + "                    input payload application/xml\n"
@@ -390,27 +426,27 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
                                        + "                            }\n"
                                        + "                         }\n"
                                        + "                    }\n"
-                                       + "                ]]>")
+                                       + "                ]]>"))
                     .getDeclaration())
                 .getDeclaration())
             .withComponent(core.newConstruct("choice")
                 .withRoute(core.newRoute("when")
                     .withParameterGroup(newParameterGroup()
-                        .withParameter("expression", "#[true]")
+                        .withParameter("expression", createStringParameter("#[true]"))
                         .getDeclaration())
                     .withComponent(db.newOperation("bulkInsert")
                         .withParameterGroup(newParameterGroup("Query")
                             .withParameter("sql",
-                                           "INSERT INTO PLANET(POSITION, NAME) VALUES (:position, :name)")
+                                           createStringParameter("INSERT INTO PLANET(POSITION, NAME) VALUES (:position, :name)"))
                             .withParameter("parameterTypes",
                                            newListValue()
                                                .withValue(newObjectValue()
-                                                   .withParameter("key", "name")
-                                                   .withParameter("type", "VARCHAR")
+                                                   .withParameter("key", createStringParameter("name"))
+                                                   .withParameter("type", createStringParameter("VARCHAR"))
                                                    .build())
                                                .withValue(newObjectValue()
-                                                   .withParameter("key", "position")
-                                                   .withParameter("type", "INTEGER")
+                                                   .withParameter("key", createStringParameter("position"))
+                                                   .withParameter("type", createStringParameter("INTEGER"))
                                                    .build())
                                                .build())
                             .getDeclaration())
@@ -419,11 +455,11 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
                 .withRoute(core.newRoute("otherwise")
                     .withComponent(core.newConstruct("foreach")
                         .withParameterGroup(newParameterGroup()
-                            .withParameter("collection", "#[myCollection]")
+                            .withParameter("collection", createStringParameter("#[myCollection]"))
                             .getDeclaration())
                         .withComponent(core.newOperation("logger")
                             .withParameterGroup(newParameterGroup()
-                                .withParameter("message", "#[payload]")
+                                .withParameter("message", createStringParameter("#[payload]"))
                                 .getDeclaration())
                             .getDeclaration())
                         .getDeclaration())
@@ -431,39 +467,39 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
                 .getDeclaration())
             .withComponent(db.newOperation("bulkInsert")
                 .withParameterGroup(newParameterGroup("Query")
-                    .withParameter("sql", "INSERT INTO PLANET(POSITION, NAME) VALUES (:position, :name)")
+                    .withParameter("sql", createStringParameter("INSERT INTO PLANET(POSITION, NAME) VALUES (:position, :name)"))
                     .withParameter("parameterTypes",
                                    newListValue()
                                        .withValue(newObjectValue()
-                                           .withParameter("key", "name")
-                                           .withParameter("type", "VARCHAR").build())
+                                           .withParameter("key", createStringParameter("name"))
+                                           .withParameter("type", createStringParameter("VARCHAR")).build())
                                        .withValue(newObjectValue()
-                                           .withParameter("key", "position")
-                                           .withParameter("type", "INTEGER").build())
+                                           .withParameter("key", createStringParameter("position"))
+                                           .withParameter("type", createStringParameter("INTEGER")).build())
                                        .build())
                     .getDeclaration())
                 .getDeclaration())
             .withComponent(http.newOperation("request")
                 .withConfig("httpRequester")
                 .withParameterGroup(newParameterGroup("URI Settings")
-                    .withParameter("path", "/nested")
+                    .withParameter("path", createStringParameter("/nested"))
                     .getDeclaration())
                 .withParameterGroup(newParameterGroup()
-                    .withParameter("method", "POST")
+                    .withParameter("method", createStringParameter("POST"))
                     .getDeclaration())
                 .getDeclaration())
             .withComponent(db.newOperation("insert")
                 .withConfig("dbConfig")
                 .withParameterGroup(newParameterGroup("Query")
                     .withParameter("sql",
-                                   "INSERT INTO PLANET(POSITION, NAME, DESCRIPTION) VALUES (777, 'Pluto', :description)")
+                                   createStringParameter("INSERT INTO PLANET(POSITION, NAME, DESCRIPTION) VALUES (777, 'Pluto', :description)"))
                     .withParameter("parameterTypes",
                                    newListValue()
                                        .withValue(newObjectValue()
-                                           .withParameter("key", "description")
-                                           .withParameter("type", "CLOB").build())
+                                           .withParameter("key", createStringParameter("description"))
+                                           .withParameter("type", createStringParameter("CLOB")).build())
                                        .build())
-                    .withParameter("inputParameters", "#[{{'description' : payload}}]")
+                    .withParameter("inputParameters", createStringParameter("#[{{'description' : payload}}]"))
                     .getDeclaration())
                 .getDeclaration())
             .withComponent(sockets.newOperation("sendAndReceive")
@@ -471,40 +507,40 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
                     .withParameter(STREAMING_STRATEGY_PARAMETER_NAME,
                                    newObjectValue()
                                        .ofType(REPEATABLE_IN_MEMORY_BYTES_STREAM_ALIAS)
-                                       .withParameter("bufferSizeIncrement", "8")
-                                       .withParameter("bufferUnit", "KB")
-                                       .withParameter("initialBufferSize", "51")
-                                       .withParameter("maxBufferSize", "1000")
+                                       .withParameter("bufferSizeIncrement", createNumberParameter("8"))
+                                       .withParameter("bufferUnit", createStringParameter("KB"))
+                                       .withParameter("initialBufferSize", createNumberParameter("51"))
+                                       .withParameter("maxBufferSize", createNumberParameter("1000"))
                                        .build())
                     .getDeclaration())
                 .withParameterGroup(newParameterGroup("Output")
-                    .withParameter(TARGET_PARAMETER_NAME, "myVar")
-                    .withParameter(TARGET_VALUE_PARAMETER_NAME, "#[message]")
+                    .withParameter(TARGET_PARAMETER_NAME, createStringParameter("myVar"))
+                    .withParameter(TARGET_VALUE_PARAMETER_NAME, createStringParameter("#[message]"))
                     .getDeclaration())
                 .getDeclaration())
             .withComponent(core.newConstruct("try")
                 .withComponent(wsc.newOperation("consume")
                     .withParameterGroup(newParameterGroup()
-                        .withParameter("operation", "GetCitiesByCountry")
+                        .withParameter("operation", createStringParameter("GetCitiesByCountry"))
                         .getDeclaration())
                     .withParameterGroup(newParameterGroup("Message")
-                        .withParameter("attachments", "#[{}]")
-                        .withParameter("headers",
-                                       "#[{\"headers\": {con#headerIn: \"Header In Value\",con#headerInOut: \"Header In Out Value\"}]")
-                        .withParameter("body", "#[payload]")
+                        .withParameter("attachments", createStringParameter("#[{}]"))
+                        .withParameter("headers", createStringParameter(
+                                                                        "#[{\"headers\": {con#headerIn: \"Header In Value\",con#headerInOut: \"Header In Out Value\"}]"))
+                        .withParameter("body", createStringParameter("#[payload]"))
                         .getDeclaration())
                     .getDeclaration())
                 .withComponent(core.newConstruct("errorHandler")
                     .withComponent(core.newRoute("onErrorContinue")
                         .withParameterGroup(newParameterGroup()
-                            .withParameter("type", "MULE:ANY")
+                            .withParameter("type", createStringParameter("MULE:ANY"))
                             .getDeclaration())
                         .withComponent(core.newOperation("logger").getDeclaration())
                         .getDeclaration())
                     .withComponent(core.newRoute("onErrorPropagate")
                         .withParameterGroup(newParameterGroup()
-                            .withParameter("type", "WSC:CONNECTIVITY")
-                            .withParameter("when", "#[e.cause == null]")
+                            .withParameter("type", createStringParameter("WSC:CONNECTIVITY"))
+                            .withParameter("when", createStringParameter("#[e.cause == null]"))
                             .getDeclaration())
                         .getDeclaration())
                     .getDeclaration())
@@ -515,15 +551,15 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
                 .withParameterGroup(newParameterGroup()
                     .withParameter("schedulingStrategy", newObjectValue()
                         .ofType("org.mule.runtime.core.api.source.scheduler.FixedFrequencyScheduler")
-                        .withParameter("frequency", "50")
-                        .withParameter("startDelay", "20")
-                        .withParameter("timeUnit", "SECONDS")
+                        .withParameter("frequency", createNumberParameter("50"))
+                        .withParameter("startDelay", createNumberParameter("20"))
+                        .withParameter("timeUnit", createStringParameter("SECONDS"))
                         .build())
                     .getDeclaration())
                 .getDeclaration())
             .withComponent(core.newOperation("logger")
                 .withParameterGroup(newParameterGroup()
-                    .withParameter("message", "#[payload]").getDeclaration())
+                    .withParameter("message", createStringParameter("#[payload]")).getDeclaration())
                 .getDeclaration())
             .getDeclaration())
         .withGlobalElement(core.newConstruct("flow").withRefName("cronSchedulerFlow")
@@ -531,13 +567,13 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
                 .withParameterGroup(newParameterGroup()
                     .withParameter("schedulingStrategy", newObjectValue()
                         .ofType("org.mule.runtime.core.api.source.scheduler.CronScheduler")
-                        .withParameter("expression", "0/1 * * * * ?")
+                        .withParameter("expression", createStringParameter("0/1 * * * * ?"))
                         .build())
                     .getDeclaration())
                 .getDeclaration())
             .withComponent(core.newOperation("logger")
                 .withParameterGroup(newParameterGroup()
-                    .withParameter("message", "#[payload]").getDeclaration())
+                    .withParameter("message", createStringParameter("#[payload]")).getDeclaration())
                 .getDeclaration())
             .getDeclaration())
         .withGlobalElement(core.newConstruct("flow").withRefName("fileListenerToObjectStore")
@@ -547,10 +583,10 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
                 .getDeclaration())
             .withComponent(os.newOperation("store")
                 .withParameterGroup(newParameterGroup()
-                    .withParameter("key", "key")
-                    .withParameter("failOnNullValue", "#[vars.failOnNullValue]")
-                    .withParameter("objectStore", "persistentStore")
-                    .withParameter("value", "#[payload]")
+                    .withParameter("key", createStringParameter("key"))
+                    .withParameter("failOnNullValue", createBooleanParameter("#[vars.failOnNullValue]"))
+                    .withParameter("objectStore", createStringParameter("persistentStore"))
+                    .withParameter("value", createStringParameter("#[payload]"))
                     .getDeclaration())
                 .getDeclaration())
             .getDeclaration())
@@ -582,20 +618,20 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
             .withComponent(jms.newOperation("publish")
                 .withConfig("config")
                 .withParameterGroup(newParameterGroup()
-                    .withParameter("destination", "#[initialDestination]")
+                    .withParameter("destination", createStringParameter("#[initialDestination]"))
                     .getDeclaration())
                 .withParameterGroup(newParameterGroup("Message")
-                    .withParameter("body", "#[payload]")
-                    .withParameter("properties", "#[{(initialProperty): propertyValue}]")
+                    .withParameter("body", createStringParameter("#[payload]"))
+                    .withParameter("properties", createStringParameter("#[{(initialProperty): propertyValue}]"))
                     .getDeclaration())
                 .getDeclaration())
             .withComponent(http.newOperation("request")
                 .withConfig("httpRequester")
                 .withParameterGroup(newParameterGroup("URI Settings")
-                    .withParameter("path", "/nested")
+                    .withParameter("path", createStringParameter("/nested"))
                     .getDeclaration())
                 .withParameterGroup(newParameterGroup()
-                    .withParameter("method", "POST")
+                    .withParameter("method", createStringParameter("POST"))
                     .getDeclaration())
                 .getDeclaration())
             .getDeclaration())
@@ -603,17 +639,37 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
             .withComponent(jms.newOperation("consume")
                 .withConfig("config")
                 .withParameterGroup(newParameterGroup()
-                    .withParameter("destination", "#[initialDestination]")
-                    .withParameter("maximumWait", "1000")
+                    .withParameter("destination", createStringParameter("#[initialDestination]"))
+                    .withParameter("maximumWait", createNumberParameter("1000"))
                     .getDeclaration())
                 .getDeclaration())
             .withComponent(http.newOperation("request")
                 .withConfig("httpRequester")
                 .withParameterGroup(newParameterGroup("URI Settings")
-                    .withParameter("path", "/nested")
+                    .withParameter("path", createStringParameter("/nested"))
                     .getDeclaration())
                 .getDeclaration())
             .getDeclaration())
         .getDeclaration();
+  }
+
+  private static ParameterValue createNumberParameter(String value) {
+    return createParameter(value, NUMBER);
+  }
+
+  private static ParameterValue createStringParameter(String value) {
+    return createParameter(value, STRING);
+  }
+
+  private static ParameterValue createBooleanParameter(String value) {
+    return createParameter(value, BOOLEAN);
+  }
+
+  private static ParameterValue createParameter(String value, SimpleValueType type) {
+    return plain(value, type);
+  }
+
+  private static ParameterValue createStringCDataParameter(String value) {
+    return cdata(value, STRING);
   }
 }
