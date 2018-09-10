@@ -17,7 +17,7 @@
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
 
         <eaioUuidVersion>3.4.0</eaioUuidVersion>
-        <springSecurityVersion>4.2.6.RELEASE</springSecurityVersion>
+        <springSecurityVersion>4.2.7.RELEASE</springSecurityVersion>
         <activemqVersion>5.15.3</activemqVersion>
         <hawtbufVersion>1.1</hawtbufVersion>
         <activemqProtobuf>1.1</activemqProtobuf>
