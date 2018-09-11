@@ -19,10 +19,10 @@ import org.junit.Test;
 
 public class ResourceAccessTestCase extends MuleArtifactFunctionalTestCase {
 
-  private static final String COMMONS_LANG_MANIFEST = "resource::org.apache.commons:commons-lang3:3.8:META-INF/MANIFEST.MF";
-  private static final String COMMONS_TEXT_MANIFEST = "resource::org.apache.commons:commons-text:1.4:META-INF/MANIFEST.MF";
+  private static final String COMMONS_LANG_MANIFEST = "resource::org.apache.commons:commons-lang3:3.8::jar:META-INF/MANIFEST.MF";
+  private static final String COMMONS_TEXT_MANIFEST = "resource::org.apache.commons:commons-text:1.4::jar:META-INF/MANIFEST.MF";
   private static final String COMMONS_COMPRESS_MANIFEST =
-      "resource::org.apache.commons:commons-compress:1.18:META-INF/MANIFEST.MF";
+      "resource::org.apache.commons:commons-compress:1.18::jar:META-INF/MANIFEST.MF";
   private static final String EMPTY_STRING = "";
 
   @Rule
