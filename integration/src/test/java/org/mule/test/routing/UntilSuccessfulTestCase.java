@@ -164,8 +164,8 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
   public void executeWithoutRetrying() throws Exception {
     final String payload = randomAlphanumeric(20);
     flowRunner("synchronous-without-retry").withPayload(payload).runExpectingException();
-    assertThat(getNumberOfInvocationsFor("untilSuccessful"), is(1));
-    assertThat(getNumberOfInvocationsFor("exceptionStrategy"), is(1));
+    assertThat(getNumberOfInvocationsFor("untilSuccessfulNoRetry"), is(1));
+    assertThat(getNumberOfInvocationsFor("exceptionStrategyNoRetry"), is(1));
   }
 
   /**

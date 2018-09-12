@@ -84,12 +84,12 @@
 
     <flow name="synchronous-without-retry">
         <until-successful maxRetries="0" millisBetweenRetries="0">
-            <test:invocation-counter name="untilSuccessful"/>
+            <test:invocation-counter name="untilSuccessfulNoRetry"/>
             <test:processor throwException="true"/>
         </until-successful>
         <error-handler>
             <on-error-propagate type="RETRY_EXHAUSTED">
-                <test:invocation-counter name="exceptionStrategy"/>
+                <test:invocation-counter name="exceptionStrategyNoRetry"/>
             </on-error-propagate>
         </error-handler>
     </flow>
