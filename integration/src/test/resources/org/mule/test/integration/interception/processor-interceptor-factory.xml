@@ -54,6 +54,10 @@
         <heisenberg:kill-with-custom-message victim="T-1000" goodbyeMessage="#[vars.goodbye]" />
     </flow>
 
+    <flow name="executeOperationWithInvalidExpression">
+        <heisenberg:kill-with-custom-message victim="T-1000" goodbyeMessage="#[iAmInvalid_notDW]" />
+    </flow>
+
     <flow name="die">
         <heisenberg:die config-ref="heisenberg" />
     </flow>

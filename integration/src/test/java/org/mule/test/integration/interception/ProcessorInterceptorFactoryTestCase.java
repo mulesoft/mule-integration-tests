@@ -50,7 +50,6 @@ import org.mule.test.heisenberg.extension.exception.HeisenbergException;
 import org.mule.test.heisenberg.extension.model.KillParameters;
 
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -179,6 +178,23 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     assertThat(killInterceptionParameter.getParameters().get("goodbyeMessage").resolveValue(), is("Hasta la vista, baby"));
     assertThat(killInterceptionParameter.getParameters().get("killParameters").resolveValue(),
                is(instanceOf(KillParameters.class)));
+  }
+
+  @Test
+  @Description("Verify that even if an operation has parameters with invalid expressions, before is called for the interceptor.")
+  public void executeOperationWithInvalidExpression() throws Exception {
+    flowRunner("executeOperationWithInvalidExpression").runExpectingException();
+
+    List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
+    // One for the operation and another for the logger in the global error handler
+    assertThat(interceptionParameters, hasSize(2));
+
+    InterceptionParameters killInterceptionParameter = interceptionParameters.get(0);
+
+    assertThat(killInterceptionParameter.getParameters().keySet(),
+               containsInAnyOrder("targetValue", "victim", "goodbyeMessage"));
+    assertThat(killInterceptionParameter.getParameters().get("victim").resolveValue(), is("T-1000"));
+    assertThat(killInterceptionParameter.getParameters().containsKey("goodbyeMessage"), is(true));
   }
 
   @Test
@@ -608,7 +624,13 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
 
     @Override
     public void before(ComponentLocation location, Map<String, ProcessorParameterValue> parameters, InterceptionEvent event) {
-      parameters.values().forEach(ProcessorParameterValue::resolveValue);
+      parameters.values().forEach(v -> {
+        try {
+          v.resolveValue();
+        } catch (ExpressionRuntimeException e) {
+          // Ignore so that the evaluation continues
+        }
+      });
       interceptionParameters.add(new InterceptionParameters(location, parameters, event));
       assertThat(expressionEvaluator, not(nullValue()));
       assertThat(lockFactory, not(nullValue()));
