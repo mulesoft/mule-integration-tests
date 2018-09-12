@@ -76,10 +76,12 @@ public class MuleContextLifecycleTestCase extends AbstractMuleTestCase {
                                   failOnStartLifecycleBean -> {
                                     LifecycleObject lifecycleBean = failOnStartLifecycleBean.getOtherLifecycleObject();
                                     assertThat(lifecycleBean.getLifecycleInvocations(), hasSize(2));
-                                    assertThat(lifecycleBean.getLifecycleInvocations(), containsInAnyOrder(Initialisable.PHASE_NAME,
-                                                                                                           Disposable.PHASE_NAME));
+                                    assertThat(lifecycleBean.getLifecycleInvocations(),
+                                               containsInAnyOrder(Initialisable.PHASE_NAME,
+                                                                  Disposable.PHASE_NAME));
                                     assertThat(failOnStartLifecycleBean.getLifecycleInvocations(), hasSize(1));
-                                    assertThat(failOnStartLifecycleBean.getLifecycleInvocations().get(0), equalTo(Initialisable.PHASE_NAME));
+                                    assertThat(failOnStartLifecycleBean.getLifecycleInvocations().get(0),
+                                               equalTo(Initialisable.PHASE_NAME));
                                   });
   }
 
