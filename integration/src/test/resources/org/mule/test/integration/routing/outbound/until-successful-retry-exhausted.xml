@@ -20,4 +20,16 @@
             </try>
         </async>
     </flow>
+
+    <flow name="noRetry">
+        <until-successful maxRetries="0" millisBetweenRetries="1000">
+            <set-variable variableName="message" value="#[payload ++ ' executed once']"/>
+            <test:processor throwException="true"/>
+        </until-successful>
+        <error-handler>
+            <on-error-continue>
+                <set-payload value="#[vars.message]"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
 </mule>
