@@ -6,6 +6,8 @@
  */
 package org.mule.runtime.test.integration.lifecycle;
 
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
@@ -17,6 +19,8 @@ import org.mule.functional.api.component.LifecycleObject;
 import org.mule.functional.junit4.ApplicationContextBuilder;
 import org.mule.runtime.api.el.DefaultExpressionLanguageFactoryService;
 import org.mule.runtime.api.el.ExpressionLanguage;
+import org.mule.runtime.api.lifecycle.Disposable;
+import org.mule.runtime.api.lifecycle.Initialisable;
 import org.mule.runtime.api.lifecycle.LifecycleException;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.runtime.core.api.config.builders.SimpleConfigurationBuilder;
@@ -33,6 +37,7 @@ import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 @Feature(LIFECYCLE_AND_DEPENDENCY_INJECTION)
@@ -55,12 +60,13 @@ public class MuleContextLifecycleTestCase extends AbstractMuleTestCase {
   }
 
   @Test
+  @Ignore("MULE-15693")
   public void failOnStartInvokesStopInOtherComponentsButNotInTheFailedOne() {
     testOnContextLifecycleFailure("lifecycle/component-failing-during-startup-config.xml",
                                   failOnStartLifecycleBean -> {
                                     LifecycleObject lifecycleBean = failOnStartLifecycleBean.getOtherLifecycleObject();
-                                    assertThat(lifecycleBean.getLifecycleInvocations(), hasSize(0));
-                                    assertThat(failOnStartLifecycleBean.getLifecycleInvocations(), hasSize(0));
+                                    assertThat(lifecycleBean.getLifecycleInvocations(), hasSize(2));
+                                    assertThat(failOnStartLifecycleBean.getLifecycleInvocations(), hasSize(2));
                                   });
   }
 
@@ -69,8 +75,13 @@ public class MuleContextLifecycleTestCase extends AbstractMuleTestCase {
     testOnContextLifecycleFailure("lifecycle/component-failing-during-initialise-config.xml",
                                   failOnStartLifecycleBean -> {
                                     LifecycleObject lifecycleBean = failOnStartLifecycleBean.getOtherLifecycleObject();
-                                    assertThat(lifecycleBean.getLifecycleInvocations(), hasSize(0));
-                                    assertThat(failOnStartLifecycleBean.getLifecycleInvocations(), hasSize(0));
+                                    assertThat(lifecycleBean.getLifecycleInvocations(), hasSize(2));
+                                    assertThat(lifecycleBean.getLifecycleInvocations(),
+                                               containsInAnyOrder(Initialisable.PHASE_NAME,
+                                                                  Disposable.PHASE_NAME));
+                                    assertThat(failOnStartLifecycleBean.getLifecycleInvocations(), hasSize(1));
+                                    assertThat(failOnStartLifecycleBean.getLifecycleInvocations().get(0),
+                                               equalTo(Initialisable.PHASE_NAME));
                                   });
   }
 
