@@ -6,15 +6,12 @@
  */
 package org.mule.test.integration.interception;
 
-import static java.util.Arrays.asList;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.collection.IsMapContaining.hasKey;
 import static org.junit.Assert.assertThat;
-import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.SOURCE;
-import static org.mule.runtime.api.interception.ProcessorInterceptorFactory.INTERCEPTORS_ORDER_REGISTRY_KEY;
 import static org.mule.test.allure.AllureConstants.InterceptonApi.INTERCEPTION_API;
 import static org.mule.test.allure.AllureConstants.InterceptonApi.ComponentInterceptionStory.COMPONENT_INTERCEPTION_STORY;
 import static org.mule.test.heisenberg.extension.HeisenbergConnectionProvider.getActiveConnections;
@@ -22,17 +19,11 @@ import static org.mule.test.heisenberg.extension.HeisenbergConnectionProvider.ge
 import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.interception.InterceptionEvent;
-import org.mule.runtime.api.interception.ProcessorInterceptor;
-import org.mule.runtime.api.interception.ProcessorInterceptorFactory;
-import org.mule.runtime.api.interception.ProcessorInterceptorFactory.ProcessorInterceptorOrder;
 import org.mule.runtime.api.interception.ProcessorParameterValue;
+import org.mule.runtime.api.interception.SourceInterceptor;
+import org.mule.runtime.api.interception.SourceInterceptorFactory;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.test.AbstractIntegrationTestCase;
-import org.mule.test.integration.interception.ProcessorInterceptorFactoryTestCase.AfterWithCallbackInterceptor;
-import org.mule.test.integration.interception.ProcessorInterceptorFactoryTestCase.AfterWithCallbackInterceptorFactory;
-import org.mule.test.integration.interception.ProcessorInterceptorFactoryTestCase.EvaluatesExpressionInterceptorFactory;
-import org.mule.test.integration.interception.ProcessorInterceptorFactoryTestCase.HasInjectedAttributesInterceptor;
-import org.mule.test.integration.interception.ProcessorInterceptorFactoryTestCase.HasInjectedAttributesInterceptorFactory;
 import org.mule.test.integration.interception.ProcessorInterceptorFactoryTestCase.InterceptionParameters;
 
 import org.junit.After;
@@ -51,30 +42,19 @@ import io.qameta.allure.Story;
 
 @Feature(INTERCEPTION_API)
 @Story(COMPONENT_INTERCEPTION_STORY)
-public class ProcessorInterceptorFactorySourcesTestCase extends AbstractIntegrationTestCase {
+public class SourceInterceptorFactoryTestCase extends AbstractIntegrationTestCase {
 
   private Flow flow;
 
   @Override
   protected String getConfigFile() {
-    return "org/mule/test/integration/interception/processor-interceptor-factory-source.xml";
+    return "org/mule/test/integration/interception/source-interceptor-factory.xml";
   }
 
   @Override
   protected Map<String, Object> getStartUpRegistryObjects() {
     Map<String, Object> objects = new HashMap<>();
-
-    objects.put("_AfterWithCallbackInterceptorFactory", new AfterWithCallbackInterceptorFactory());
-    objects.put("_HasInjectedAttributesInterceptorFactory", new HasInjectedAttributesInterceptorFactory(false));
-    objects.put("_EvaluatesExpressionInterceptorFactory", new EvaluatesExpressionInterceptorFactory());
     objects.put("_SourceCallbackInterceptor", new SourceCallbackInterceptorFactory());
-
-    objects.put(INTERCEPTORS_ORDER_REGISTRY_KEY,
-                (ProcessorInterceptorOrder) () -> asList(AfterWithCallbackInterceptorFactory.class.getName(),
-                                                         HasInjectedAttributesInterceptorFactory.class.getName(),
-                                                         EvaluatesExpressionInterceptorFactory.class.getName(),
-                                                         SourceCallbackInterceptorFactory.class.getName()));
-
     return objects;
   }
 
@@ -85,10 +65,7 @@ public class ProcessorInterceptorFactorySourcesTestCase extends AbstractIntegrat
     }
 
     getActiveConnections().clear();
-    HasInjectedAttributesInterceptor.interceptionParameters.clear();
     SourceCallbackInterceptor.interceptionParameters.clear();
-    AfterWithCallbackInterceptor.callback = (event, thrown) -> {
-    };
     SourceCallbackInterceptor.afterCallback = (event, thrown) -> {
     };
   }
@@ -139,20 +116,16 @@ public class ProcessorInterceptorFactorySourcesTestCase extends AbstractIntegrat
     assertThat(heisenbergSourceInterceptionParameter.getParameters().entrySet(), hasSize(8));
   }
 
-  public static class SourceCallbackInterceptorFactory implements ProcessorInterceptorFactory {
+  public static class SourceCallbackInterceptorFactory implements SourceInterceptorFactory {
 
     @Override
-    public ProcessorInterceptor get() {
+    public SourceInterceptor get() {
       return new SourceCallbackInterceptor();
     }
 
-    @Override
-    public boolean intercept(ComponentLocation location) {
-      return SOURCE.equals(location.getComponentIdentifier().getType());
-    }
   }
 
-  public static class SourceCallbackInterceptor implements ProcessorInterceptor {
+  public static class SourceCallbackInterceptor implements SourceInterceptor {
 
     static BiConsumer<InterceptionEvent, Optional<Throwable>> afterCallback = (event, thrown) -> {
     };
@@ -160,12 +133,13 @@ public class ProcessorInterceptorFactorySourcesTestCase extends AbstractIntegrat
     static final List<InterceptionParameters> interceptionParameters = new LinkedList<>();
 
     @Override
-    public void before(ComponentLocation location, Map<String, ProcessorParameterValue> parameters, InterceptionEvent event) {
+    public void beforeCallback(ComponentLocation location, Map<String, ProcessorParameterValue> parameters,
+                               InterceptionEvent event) {
       interceptionParameters.add(new InterceptionParameters(location, parameters, event));
     }
 
     @Override
-    public void after(ComponentLocation location, InterceptionEvent event, Optional<Throwable> thrown) {
+    public void afterCallback(ComponentLocation location, InterceptionEvent event, Optional<Throwable> thrown) {
       afterCallback.accept(event, thrown);
     }
   }
