@@ -93,7 +93,6 @@ public class ProcessorInterceptorFactorySourcesTestCase extends AbstractIntegrat
     };
   }
 
-  // @Description("Logger, flow-ref and splitter components are intercepted in order and the parameters are correctly sent")
   @Test
   public void sourceIntercepted() throws Exception {
     startFlow("sourceIntercepted");
