@@ -160,6 +160,14 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
     assertThat(getNumberOfInvocationsFor("exceptionStrategy"), is(1));
   }
 
+  @Test
+  public void executeWithoutRetrying() throws Exception {
+    final String payload = randomAlphanumeric(20);
+    flowRunner("synchronous-without-retry").withPayload(payload).runExpectingException();
+    assertThat(getNumberOfInvocationsFor("untilSuccessfulNoRetry"), is(1));
+    assertThat(getNumberOfInvocationsFor("exceptionStrategyNoRetry"), is(1));
+  }
+
   /**
    * Verifies that the synchronous wait time is consistent with that requested
    */

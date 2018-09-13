@@ -7,14 +7,18 @@
 package org.mule.test.integration.routing.outbound;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.fail;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.UntilSuccessfulStory.UNTIL_SUCCESSFUL;
 
 import org.mule.runtime.api.notification.ExceptionNotificationListener;
 import org.mule.runtime.api.util.concurrent.Latch;
+import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import io.qameta.allure.Feature;
@@ -38,5 +42,12 @@ public class UntilSuccessfulRetryExhaustedTestCase extends AbstractIntegrationTe
     if (!exceptionStrategyCalledLatch.await(10000, MILLISECONDS)) {
       fail("exception strategy was not executed");
     }
+  }
+
+  @Test
+  @Ignore("MULE-15694")
+  public void withoutRetryingCallExceptionStrategy() throws Exception {
+    CoreEvent event = flowRunner("noRetry").withPayload("message").run();
+    assertThat(event.getMessage().getPayload().getValue(), is("message executed once"));
   }
 }
