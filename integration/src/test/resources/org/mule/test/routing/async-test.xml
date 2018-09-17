@@ -62,4 +62,20 @@
         <test:queue name="asyncDispatched"/>
     </flow>
     
+    <flow name="within-subflow-doesnt-use-flow-max-concurrency" maxConcurrency="1">
+        <flow-ref name="sf-within-subflow-doesnt-use-flow-max-concurrency"/>
+    </flow>
+
+    <sub-flow name="sf-within-subflow-doesnt-use-flow-max-concurrency">
+        <async>
+            <test:queue name="asyncRunning"/>
+            <script:execute engine="groovy">
+                <script:code>
+                    vars['latch'].await()
+                </script:code>
+            </script:execute>
+        </async>
+        <test:queue name="asyncDispatched"/>
+    </sub-flow>
+    
 </mule>
