@@ -104,6 +104,18 @@ public class AsyncTestCase extends AbstractIntegrationTestCase {
     testAsyncMaxConcurrency("with-lower-flow-max-concurrency");
   }
 
+  @Test
+  @Description("Assert that asyncs in a sub-flow don't use up the maxConcurrency of the caller flow")
+  public void withinSubflowDoesntUseFlowMaxConcurrency() throws Exception {
+    CountDownLatch latch = new CountDownLatch(1);
+    runFlows("within-subflow-doesnt-use-flow-max-concurrency", latch);
+
+    for (int i = 0; i < MAX_CONCURRENCY + 1; ++i) {
+      assertThat("" + i, queueHandler.read("asyncRunning", 1000), not(nullValue()));
+    }
+    latch.countDown();
+  }
+
   private void testAsyncMaxConcurrency(String flowName) throws Exception {
     CountDownLatch latch = new CountDownLatch(1);
     runFlows(flowName, latch);
