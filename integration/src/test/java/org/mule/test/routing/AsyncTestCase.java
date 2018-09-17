@@ -113,6 +113,9 @@ public class AsyncTestCase extends AbstractIntegrationTestCase {
     for (int i = 0; i < MAX_CONCURRENCY + 1; ++i) {
       assertThat("" + i, queueHandler.read("asyncRunning", 1000), not(nullValue()));
     }
+    for (int i = 0; i < MAX_CONCURRENCY + 1; ++i) {
+      assertThat("" + i, queueHandler.read("asyncDispatched", 1000), not(nullValue()));
+    }
     latch.countDown();
   }
 

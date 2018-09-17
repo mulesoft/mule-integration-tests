@@ -67,9 +67,7 @@
     </flow>
 
     <sub-flow name="sf-within-subflow-doesnt-use-flow-max-concurrency">
-        <logger message="Before async... (#[payload])" />
         <async>
-            <logger message="In async... (#[payload])" />
             <test:queue name="asyncRunning"/>
             <script:execute engine="groovy">
                 <script:code>
