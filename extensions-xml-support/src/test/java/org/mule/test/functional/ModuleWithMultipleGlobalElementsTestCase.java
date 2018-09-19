@@ -17,6 +17,7 @@ import org.mule.runtime.api.connection.ConnectionProvider;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
+import org.mule.runtime.api.streaming.object.CursorIteratorProvider;
 import org.mule.runtime.extension.api.runtime.config.ConfigurationInstance;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.runner.RunnerDelegateTo;
@@ -24,6 +25,7 @@ import org.mule.test.runner.RunnerDelegateTo;
 import java.util.Collection;
 import java.util.List;
 
+import com.google.common.collect.Lists;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -140,7 +142,9 @@ public class ModuleWithMultipleGlobalElementsTestCase extends AbstractXmlExtensi
   }
 
   private void assertFlowResult(String flowName, String subDirectoryName) throws Exception {
-    List<Message> messages = (List<Message>) flowRunner(flowName).run().getMessage().getPayload().getValue();
+    CursorIteratorProvider cursorIteratorProvider =
+        (CursorIteratorProvider) flowRunner(flowName).keepStreamsOpen().run().getMessage().getPayload().getValue();
+    List<Message> messages = Lists.newArrayList(cursorIteratorProvider.openCursor());
     assertThat(messages, is(notNullValue()));
     assertThat(messages, hasSize(1));
     FileAttributes attributes = (FileAttributes) messages.get(0).getAttributes().getValue();
