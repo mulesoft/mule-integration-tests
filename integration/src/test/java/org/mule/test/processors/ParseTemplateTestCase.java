@@ -14,9 +14,9 @@ import static org.hamcrest.Matchers.isA;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertEquals;
 import static org.mule.functional.junit4.matchers.MessageMatchers.hasMediaType;
-import static org.mule.functional.junit4.matchers.MessageMatchers.hasPayload;
 import static org.mule.runtime.api.metadata.MediaType.APPLICATION_JSON;
 import static org.mule.runtime.api.metadata.MediaType.JSON;
+
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.metadata.TypedValue;
 import org.mule.runtime.core.api.event.CoreEvent;
@@ -171,6 +171,14 @@ public class ParseTemplateTestCase extends AbstractIntegrationTestCase {
     CoreEvent event = flowRunner("nestedExpressionsFlow").withVariable("individuals", "alpinos").withVariable("quantity", "3")
         .withVariable("origin", "guerra").run();
     assertThat(event.getMessage().getPayload().getValue(), equalTo("Eran 3 alpinos que venian de la guerra"));
+  }
+
+  @Test
+  public void nestedExpressionsAndQuote() throws Exception {
+    CoreEvent event =
+        flowRunner("nestedExpressionsAndQuoteFlow").withVariable("individuals", "alpinos").withVariable("quantity", "3")
+            .withVariable("origin", "guerra").run();
+    assertThat(event.getMessage().getPayload().getValue(), equalTo("Eran 3 alpinos que venian de la guerra, vite'"));
   }
 
   @Test
