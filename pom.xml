@@ -48,7 +48,7 @@
     <muleFileConnectorTestVersion>1.2.0</muleFileConnectorTestVersion>
     <muleJmsConnectorTestVersion>1.2.2</muleJmsConnectorTestVersion>
     <muleWscConnectorTestVersion>1.1.1</muleWscConnectorTestVersion>
-    <muleOauthModuleTestVersion>1.1.5</muleOauthModuleTestVersion>
+    <muleOauthModuleTestVersion>1.1.6-SNAPSHOT</muleOauthModuleTestVersion>
     <muleSocketsConnectorTestVersion>1.1.1</muleSocketsConnectorTestVersion>
 
     <apacheHttpCoreVersion>4.4.6</apacheHttpCoreVersion>
