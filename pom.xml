@@ -44,7 +44,7 @@
     <muleVmConnectorTestVersion>1.1.2-SNAPSHOT</muleVmConnectorTestVersion>
     <muleAggregatorsModuleTestVersion>1.0.1-SNAPSHOT</muleAggregatorsModuleTestVersion>
     <muleDbConnectorTestVersion>1.4.1-SNAPSHOT</muleDbConnectorTestVersion>
-    <muleFtpConnectorTestVersion>1.2.2</muleFtpConnectorTestVersion>
+    <muleFtpConnectorTestVersion>1.2.3-SNAPSHOT</muleFtpConnectorTestVersion>
     <muleFileConnectorTestVersion>1.2.1-SNAPSHOT</muleFileConnectorTestVersion>
     <muleJmsConnectorTestVersion>1.2.2</muleJmsConnectorTestVersion>
     <muleWscConnectorTestVersion>1.1.1</muleWscConnectorTestVersion>
