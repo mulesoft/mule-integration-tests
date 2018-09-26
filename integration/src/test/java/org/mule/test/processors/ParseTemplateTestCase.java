@@ -8,6 +8,7 @@ package org.mule.test.processors;
 
 import static java.nio.charset.StandardCharsets.UTF_16;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
@@ -169,16 +170,22 @@ public class ParseTemplateTestCase extends AbstractIntegrationTestCase {
   @Test
   public void nestedExpressions() throws Exception {
     CoreEvent event = flowRunner("nestedExpressionsFlow").withVariable("individuals", "alpinos").withVariable("quantity", "3")
-        .withVariable("origin", "guerra").run();
-    assertThat(event.getMessage().getPayload().getValue(), equalTo("Eran 3 alpinos que venian de la guerra"));
+        .withVariable("origin", "war").run();
+    assertThat(event.getMessage().getPayload().getValue(), equalTo("They were 3 alpinos that came from war"));
+  }
+
+  @Test
+  public void nestedExpressionsWithNonexistingValues() throws Exception {
+    expectedException.expectMessage("Unable to resolve reference of pepito");
+    flowRunner("nestedExpressionsFlowWithNonexistentValues").run();
   }
 
   @Test
   public void nestedExpressionsAndQuote() throws Exception {
-    CoreEvent event =
-        flowRunner("nestedExpressionsAndQuoteFlow").withVariable("individuals", "alpinos").withVariable("quantity", "3")
-            .withVariable("origin", "guerra").run();
-    assertThat(event.getMessage().getPayload().getValue(), equalTo("Eran 3 alpinos que venian de la guerra, vite'"));
+    expectedException.expectCause(isA(IllegalArgumentException.class));
+    expectedException.expectMessage(containsString("Quotation (') at line 1, column 11 is not closed"));
+    flowRunner("nestedExpressionsAndQuoteFlow").withVariable("individuals", "alpinos").withVariable("quantity", "3")
+        .withVariable("origin", "war").run();
   }
 
   @Test
