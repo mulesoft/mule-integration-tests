@@ -14,9 +14,9 @@ import static org.hamcrest.Matchers.isA;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertEquals;
 import static org.mule.functional.junit4.matchers.MessageMatchers.hasMediaType;
-import static org.mule.functional.junit4.matchers.MessageMatchers.hasPayload;
 import static org.mule.runtime.api.metadata.MediaType.APPLICATION_JSON;
 import static org.mule.runtime.api.metadata.MediaType.JSON;
+
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.metadata.TypedValue;
 import org.mule.runtime.core.api.event.CoreEvent;
@@ -169,8 +169,34 @@ public class ParseTemplateTestCase extends AbstractIntegrationTestCase {
   @Test
   public void nestedExpressions() throws Exception {
     CoreEvent event = flowRunner("nestedExpressionsFlow").withVariable("individuals", "alpinos").withVariable("quantity", "3")
-        .withVariable("origin", "guerra").run();
-    assertThat(event.getMessage().getPayload().getValue(), equalTo("Eran 3 alpinos que venian de la guerra"));
+        .withVariable("origin", "war").run();
+    assertThat(event.getMessage().getPayload().getValue(), equalTo("They were 3 alpinos that came from war"));
+  }
+
+  @Test
+  public void expressionEscaped() throws Exception {
+    CoreEvent event = flowRunner("expressionEscaped").run();
+    assertThat(event.getMessage().getPayload().getValue(), equalTo("His name is #[pepito]"));
+  }
+
+  @Test
+  public void nestedExpressionsWithNonexistingValues() throws Exception {
+    expectedException.expectMessage("Unable to resolve reference of pepito");
+    flowRunner("nestedExpressionsFlowWithNonexistentValues").run();
+  }
+
+  @Test
+  public void nestedExpressionsAndQuote() throws Exception {
+    CoreEvent event = flowRunner("nestedExpressionsAndQuoteFlow").withVariable("individuals", "alpinos")
+        .withVariable("quantity", "3").withVariable("origin", "war").run();
+    assertThat(event.getMessage().getPayload().getValue(), equalTo("They weren't 3 alpinos that came from war"));
+  }
+
+  @Test
+  public void nestedQuotedExpressionsAndQuoteFlow() throws Exception {
+    CoreEvent event = flowRunner("nestedQuotedExpressionsAndQuoteFlow").withVariable("individuals", "alpinos")
+        .withVariable("quantity", "3").withVariable("origin", "war").run();
+    assertThat(event.getMessage().getPayload().getValue(), equalTo("They weren't 3 alpinos that came from war"));
   }
 
   @Test
