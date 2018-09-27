@@ -103,9 +103,21 @@
         </parse-template>
     </flow>
 
+    <flow name="expressionEscaped">
+        <parse-template>
+            <content>His name is \#[pepito]</content>
+        </parse-template>
+    </flow>
+
     <flow name="nestedExpressionsAndQuoteFlow">
         <parse-template>
             <content>They weren't #[vars.quantity] #[vars.individuals] that came from #[vars.origin]</content>
+        </parse-template>
+    </flow>
+
+    <flow name="nestedQuotedExpressionsAndQuoteFlow">
+        <parse-template>
+            <content>They #['weren\'t'] #[vars.quantity] #[vars.individuals] that came from #['war']</content>
         </parse-template>
     </flow>
 

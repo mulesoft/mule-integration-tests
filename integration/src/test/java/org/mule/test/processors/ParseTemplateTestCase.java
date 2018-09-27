@@ -8,7 +8,6 @@ package org.mule.test.processors;
 
 import static java.nio.charset.StandardCharsets.UTF_16;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
@@ -175,6 +174,12 @@ public class ParseTemplateTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
+  public void expressionEscaped() throws Exception {
+    CoreEvent event = flowRunner("expressionEscaped").run();
+    assertThat(event.getMessage().getPayload().getValue(), equalTo("His name is #[pepito]"));
+  }
+
+  @Test
   public void nestedExpressionsWithNonexistingValues() throws Exception {
     expectedException.expectMessage("Unable to resolve reference of pepito");
     flowRunner("nestedExpressionsFlowWithNonexistentValues").run();
@@ -182,10 +187,16 @@ public class ParseTemplateTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void nestedExpressionsAndQuote() throws Exception {
-    expectedException.expectCause(isA(IllegalArgumentException.class));
-    expectedException.expectMessage(containsString("Quotation (') at line 1, column 11 is not closed"));
-    flowRunner("nestedExpressionsAndQuoteFlow").withVariable("individuals", "alpinos").withVariable("quantity", "3")
-        .withVariable("origin", "war").run();
+    CoreEvent event = flowRunner("nestedExpressionsAndQuoteFlow").withVariable("individuals", "alpinos")
+        .withVariable("quantity", "3").withVariable("origin", "war").run();
+    assertThat(event.getMessage().getPayload().getValue(), equalTo("They weren't 3 alpinos that came from war"));
+  }
+
+  @Test
+  public void nestedQuotedExpressionsAndQuoteFlow() throws Exception {
+    CoreEvent event = flowRunner("nestedQuotedExpressionsAndQuoteFlow").withVariable("individuals", "alpinos")
+        .withVariable("quantity", "3").withVariable("origin", "war").run();
+    assertThat(event.getMessage().getPayload().getValue(), equalTo("They weren't 3 alpinos that came from war"));
   }
 
   @Test
