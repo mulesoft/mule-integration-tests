@@ -49,7 +49,7 @@
     <muleJmsConnectorTestVersion>1.3.0-SNAPSHOT</muleJmsConnectorTestVersion>
     <muleWscConnectorTestVersion>1.1.2-SNAPSHOT</muleWscConnectorTestVersion>
     <muleOauthModuleTestVersion>1.1.5</muleOauthModuleTestVersion>
-    <muleSocketsConnectorTestVersion>1.1.3-SNAPSHOT</muleSocketsConnectorTestVersion>
+    <muleSocketsConnectorTestVersion>1.1.2</muleSocketsConnectorTestVersion>
 
     <apacheHttpCoreVersion>4.4.6</apacheHttpCoreVersion>
     <apacheHttpClientVersion>4.5.3</apacheHttpClientVersion>
