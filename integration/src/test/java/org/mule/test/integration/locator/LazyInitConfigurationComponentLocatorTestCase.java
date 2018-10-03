@@ -31,6 +31,7 @@ import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.api.component.location.Location;
 import org.mule.runtime.config.api.LazyComponentInitializer;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
+import org.mule.runtime.core.api.config.MuleConfiguration;
 import org.mule.runtime.core.api.security.SecurityManager;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -397,6 +398,13 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
 
     TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
     assertThat(queueHandler.read("globalErrorHandlerQueue", 5000), is(notNullValue()));
+  }
+
+  @Test
+  public void globalMuleConfigurationDefaultResponseTimeout() throws Exception {
+    MuleConfiguration configuration = registry.lookupByType(MuleConfiguration.class)
+        .orElseThrow(() -> new AssertionError("Missing MuleConfiguration from registry"));
+    assertThat(configuration.getDefaultResponseTimeout(), is(2001));
   }
 
   @Description("Search for sub-flows components")
