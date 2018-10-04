@@ -10,7 +10,7 @@
 
     <global-property name="some.property" value="/origin/topic"/>
 
-    <configuration defaultErrorHandler-ref="globalErrorHandler" />
+    <configuration defaultErrorHandler-ref="globalErrorHandler" defaultResponseTimeout="2001"/>
 
     <error-handler name="globalErrorHandler">
         <on-error-propagate>
