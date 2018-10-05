@@ -2,10 +2,12 @@
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
       xmlns:file="http://www.mulesoft.org/schema/mule/file"
       xsi:schemaLocation="
        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
        http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+       http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/file/current/mule-http.xsd
        http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
     <global-property name="some.property" value="/origin/topic"/>
@@ -41,6 +43,17 @@
             <set-payload value="anotherValue"/>
             <logger/>
         </async>
+    </flow>
+
+    <http:listener-config name="listenerConfigRedeliveryPolicy" basePath="/api">
+        <http:listener-connection port="8080" host="localhost"/>
+    </http:listener-config>
+
+    <flow name="redeliveryPolicyFlow">
+        <http:listener path="/service/helloWorld" config-ref="listenerConfigRedeliveryPolicy">
+            <redelivery-policy maxRedeliveryCount="6" />
+        </http:listener>
+        <set-payload value="anotherValue"/>
     </flow>
 
     <flow name="anotherFlow">
