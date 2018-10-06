@@ -151,6 +151,12 @@ public class ConfigurationComponentLocatorTestCase extends AbstractIntegrationTe
                                                      "fileListWithMatcherReference",
                                                      "fileListWithMatcherReference/source",
                                                      "fileListWithMatcherReference/processors/0",
-                                                     "Matcher"));
+                                                     "Matcher",
+                                                     "listenerConfigRedeliveryPolicy",
+                                                     "listenerConfigRedeliveryPolicy/0",
+                                                     "redeliveryPolicyFlow",
+                                                     "redeliveryPolicyFlow/source",
+                                                     "redeliveryPolicyFlow/source/0",
+                                                     "redeliveryPolicyFlow/processors/0"));
   }
 }
