@@ -51,7 +51,7 @@ import org.junit.Test;
 @Story(SEARCH_CONFIGURATION)
 public class LazyInitConfigurationComponentLocatorTestCase extends AbstractIntegrationTestCase {
 
-  private static final int TOTAL_NUMBER_OF_LOCATIONS = 101;
+  private static final int TOTAL_NUMBER_OF_LOCATIONS = 107;
   @Inject
   private Registry registry;
 
@@ -198,7 +198,14 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
                                   "fileListWithMatcherReference/source",
                                   "fileListWithMatcherReference/source/0",
                                   "fileListWithMatcherReference/source/0/0",
-                                  "fileListWithMatcherReference/processors/0"));
+                                  "fileListWithMatcherReference/processors/0",
+
+                                  "listenerConfigRedeliveryPolicy",
+                                  "listenerConfigRedeliveryPolicy/0",
+                                  "redeliveryPolicyFlow",
+                                  "redeliveryPolicyFlow/source",
+                                  "redeliveryPolicyFlow/source/0",
+                                  "redeliveryPolicyFlow/processors/0"));
     assertThat(locator.find(builder().globalName("myFlow").build()), is(empty()));
     assertThat(locator.find(builder().globalName("anotherFlow").build()), is(empty()));
   }
