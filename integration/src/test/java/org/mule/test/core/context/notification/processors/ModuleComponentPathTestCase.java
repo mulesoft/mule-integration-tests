@@ -8,6 +8,7 @@ package org.mule.test.core.context.notification.processors;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
+import static java.util.Collections.emptySet;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static org.hamcrest.core.Is.is;
@@ -19,9 +20,9 @@ import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentT
 import static org.mule.runtime.api.component.TypedComponentIdentifier.builder;
 import static org.mule.runtime.api.dsl.DslResolvingContext.getDefault;
 import static org.mule.runtime.api.util.collection.Collectors.toImmutableList;
-import static org.mule.runtime.config.api.XmlConfigurationDocumentLoader.noValidationDocumentLoader;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.FLOW_IDENTIFIER;
 import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.initialiseIfNeeded;
+import static org.mule.runtime.dsl.api.xml.parser.XmlConfigurationDocumentLoader.noValidationDocumentLoader;
 import static org.mule.runtime.module.extension.api.util.MuleExtensionUtils.createDefaultExtensionManager;
 import org.mule.runtime.api.component.TypedComponentIdentifier;
 import org.mule.runtime.api.component.location.ComponentLocation;
@@ -30,21 +31,23 @@ import org.mule.runtime.api.dsl.DslResolvingContext;
 import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.api.notification.MessageProcessorNotification;
 import org.mule.runtime.config.api.dsl.processor.ArtifactConfig;
-import org.mule.runtime.config.api.dsl.processor.ConfigFile;
-import org.mule.runtime.config.api.dsl.processor.ConfigLine;
-import org.mule.runtime.config.api.dsl.processor.xml.XmlApplicationParser;
-import org.mule.runtime.config.api.dsl.xml.StaticXmlNamespaceInfo;
-import org.mule.runtime.config.api.dsl.xml.StaticXmlNamespaceInfoProvider;
+import org.mule.runtime.config.internal.ModuleDelegatingEntityResolver;
 import org.mule.runtime.config.internal.model.ApplicationModel;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.runtime.core.api.config.builders.AbstractConfigurationBuilder;
 import org.mule.runtime.core.api.extension.ExtensionManager;
 import org.mule.runtime.core.api.registry.SpiServiceRegistry;
+import org.mule.runtime.core.api.util.xmlsecurity.XMLSecureFactories;
 import org.mule.runtime.dsl.api.component.config.DefaultComponentLocation;
 import org.mule.runtime.dsl.api.component.config.DefaultComponentLocation.DefaultLocationPart;
 import org.mule.runtime.dsl.api.xml.XmlNamespaceInfo;
 import org.mule.runtime.dsl.api.xml.XmlNamespaceInfoProvider;
+import org.mule.runtime.dsl.api.xml.parser.ConfigFile;
+import org.mule.runtime.dsl.api.xml.parser.ConfigLine;
+import org.mule.runtime.dsl.api.xml.parser.StaticXmlNamespaceInfo;
+import org.mule.runtime.dsl.api.xml.parser.StaticXmlNamespaceInfoProvider;
+import org.mule.runtime.dsl.api.xml.parser.XmlApplicationParser;
 import org.mule.runtime.extension.api.loader.xml.XmlExtensionModelLoader;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -227,7 +230,9 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
             .addAll(discoverRuntimeXmlNamespaceInfoProvider())
             .build();
     XmlApplicationParser xmlApplicationParser = new XmlApplicationParser(xmlNamespaceInfoProviders);
-    Document document = noValidationDocumentLoader().loadDocument("config", inputStream);
+    Document document = noValidationDocumentLoader().loadDocument(() -> XMLSecureFactories.createDefault().getSAXParserFactory(),
+                                                                  "config", inputStream,
+                                                                  new ModuleDelegatingEntityResolver(emptySet()));
     return xmlApplicationParser.parse(document.getDocumentElement());
   }
 
