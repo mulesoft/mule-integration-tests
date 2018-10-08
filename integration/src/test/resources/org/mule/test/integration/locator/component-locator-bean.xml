@@ -2,7 +2,7 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:ss="http://www.springframework.org/schema/security"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
 
     <bean name="child1" class="org.mule.test.integration.locator.beans.ChildBean"/>
@@ -10,9 +10,9 @@
     <ss:authentication-manager alias="authenticationManager">
         <ss:authentication-provider>
             <ss:user-service id="userService">
-                <ss:user name="ross" password="ross" authorities="ROLE_ADMIN" />
-                <ss:user name="anon" password="anon" authorities="ROLE_ANON" />
-                <ss:user name="marie" password="marie" authorities="ROLE_ADMIN" />
+                <ss:user name="ross" password="{noop}ross" authorities="ROLE_ADMIN" />
+                <ss:user name="anon" password="{noop}anon" authorities="ROLE_ANON" />
+                <ss:user name="marie" password="{noop}marie" authorities="ROLE_ADMIN" />
             </ss:user-service>
         </ss:authentication-provider>
     </ss:authentication-manager>
