@@ -26,7 +26,7 @@ import java.util.Map;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
 
-/**ModuleEchoTestCase
+/**
  * Test case to ensure {@link ModuleOperationProcessorChain#apply(org.reactivestreams.Publisher)}
  * does the correct handle of the chaining when working with events and context child. It also checks if in those cases when
  * an exception happens, {@link ModuleOperationProcessorChain#workOutInternalError(MessagingException, CoreEvent)} does handle
