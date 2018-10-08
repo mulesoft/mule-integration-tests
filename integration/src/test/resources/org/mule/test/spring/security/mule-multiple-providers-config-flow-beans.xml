@@ -25,15 +25,13 @@
     </bean>
 
     <ss:user-service id="userService1">
-        <ss:user name="ross" password="ross" authorities="ROLE_ADMIN" />
-        <ss:user name="admin1" password="admin1"
-                 authorities="ROLE_ADMIN" />
-        <ss:user name="anon" password="anon" authorities="ROLE_ANONYMOUS" />
+        <ss:user name="ross" password="{noop}ross" authorities="ROLE_ADMIN" />
+        <ss:user name="admin1" password="{noop}admin1" authorities="ROLE_ADMIN" />
+        <ss:user name="anon" password="{noop}anon" authorities="ROLE_ANONYMOUS" />
     </ss:user-service>
 
     <ss:user-service id="userService2">
-        <ss:user name="admin2" password="admin2"
-                 authorities="ROLE_ADMIN" />
+        <ss:user name="admin2" password="{noop}admin2" authorities="ROLE_ADMIN" />
     </ss:user-service>
 
 </beans>
