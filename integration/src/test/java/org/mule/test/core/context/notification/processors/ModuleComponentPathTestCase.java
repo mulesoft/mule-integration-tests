@@ -45,9 +45,9 @@ import org.mule.runtime.dsl.api.xml.XmlNamespaceInfo;
 import org.mule.runtime.dsl.api.xml.XmlNamespaceInfoProvider;
 import org.mule.runtime.dsl.api.xml.parser.ConfigFile;
 import org.mule.runtime.dsl.api.xml.parser.ConfigLine;
-import org.mule.runtime.dsl.api.xml.parser.StaticXmlNamespaceInfo;
-import org.mule.runtime.dsl.api.xml.parser.StaticXmlNamespaceInfoProvider;
-import org.mule.runtime.dsl.api.xml.parser.XmlApplicationParser;
+import org.mule.runtime.config.internal.dsl.xml.StaticXmlNamespaceInfo;
+import org.mule.runtime.config.internal.dsl.xml.StaticXmlNamespaceInfoProvider;
+import org.mule.runtime.dsl.internal.xml.parser.XmlApplicationParser;
 import org.mule.runtime.extension.api.loader.xml.XmlExtensionModelLoader;
 import org.mule.test.AbstractIntegrationTestCase;
 
