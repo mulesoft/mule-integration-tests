@@ -16,7 +16,7 @@
         <skipExportTests>false</skipExportTests>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
         <eaioUuidVersion>3.4.2-MULE-001</eaioUuidVersion>
-        <springSecurityVersion>4.2.8.RELEASE</springSecurityVersion>
+        <springSecurityVersion>5.1.0.RELEASE</springSecurityVersion>
         <activemqVersion>5.15.3</activemqVersion>
         <hawtbufVersion>1.1</hawtbufVersion>
         <activemqProtobuf>1.1</activemqProtobuf>
