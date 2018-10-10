@@ -12,7 +12,7 @@ import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mule.runtime.api.component.ComponentIdentifier.builder;
-import static org.mule.runtime.config.api.XmlConfigurationDocumentLoader.schemaValidatingDocumentLoader;
+import static org.mule.runtime.dsl.api.xml.parser.XmlConfigurationDocumentLoader.schemaValidatingDocumentLoader;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.api.component.ComponentIdentifier;
 import org.mule.runtime.api.dsl.DslResolvingContext;
@@ -21,17 +21,21 @@ import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.api.meta.model.parameter.ParameterizedModel;
 import org.mule.runtime.app.declaration.api.ArtifactDeclaration;
 import org.mule.runtime.app.declaration.api.ElementDeclaration;
-import org.mule.runtime.config.internal.model.ApplicationModel;
 import org.mule.runtime.config.api.dsl.model.DslElementModel;
 import org.mule.runtime.config.api.dsl.model.DslElementModelFactory;
 import org.mule.runtime.config.api.dsl.processor.ArtifactConfig;
-import org.mule.runtime.config.api.dsl.processor.ConfigFile;
-import org.mule.runtime.config.api.dsl.processor.ConfigLine;
-import org.mule.runtime.config.api.dsl.processor.xml.XmlApplicationParser;
 import org.mule.runtime.config.api.dsl.processor.xml.XmlApplicationServiceRegistry;
+import org.mule.runtime.config.internal.ModuleDelegatingEntityResolver;
+import org.mule.runtime.config.internal.model.ApplicationModel;
 import org.mule.runtime.core.api.extension.MuleExtensionModelProvider;
 import org.mule.runtime.core.api.registry.SpiServiceRegistry;
+import org.mule.runtime.core.api.util.xmlsecurity.XMLSecureFactories;
 import org.mule.runtime.dsl.api.component.config.ComponentConfiguration;
+import org.mule.runtime.dsl.api.xml.XmlNamespaceInfoProvider;
+import org.mule.runtime.dsl.api.xml.parser.ConfigFile;
+import org.mule.runtime.dsl.api.xml.parser.ConfigLine;
+import org.mule.runtime.dsl.internal.xml.parser.XmlApplicationParser;
+import org.mule.runtime.config.internal.dsl.xml.XmlNamespaceInfoProviderSupplier;
 import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
 
 import com.google.common.collect.ImmutableSet;
@@ -40,6 +44,7 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -167,13 +172,16 @@ public abstract class AbstractElementModelTestCase extends MuleArtifactFunctiona
     checkArgument(appIs != null, "The given application was not found as resource");
 
     Document document = schemaValidatingDocumentLoader()
-        .loadDocument(muleContext.getExtensionManager().getExtensions(), configFile, appIs);
+        .loadDocument(() -> XMLSecureFactories.createDefault().getSAXParserFactory(),
+                      new ModuleDelegatingEntityResolver(muleContext.getExtensionManager().getExtensions()), configFile, appIs);
 
     XmlApplicationServiceRegistry customRegistry = new XmlApplicationServiceRegistry(new SpiServiceRegistry(), dslContext);
     ConfigLine configLine =
-        new XmlApplicationParser(customRegistry, singletonList(AbstractElementModelTestCase.class.getClassLoader()))
-            .parse(document.getDocumentElement())
-            .orElseThrow(() -> new Exception("Failed to load config"));
+        new XmlApplicationParser(XmlNamespaceInfoProviderSupplier
+            .createFromPluginClassloaders(cl -> customRegistry.lookupProviders(XmlNamespaceInfoProvider.class, cl).stream()
+                .collect(Collectors.toList()), singletonList(AbstractElementModelTestCase.class.getClassLoader())))
+                    .parse(document.getDocumentElement())
+                    .orElseThrow(() -> new Exception("Failed to load config"));
 
     ArtifactConfig artifactConfig = new ArtifactConfig.Builder()
         .addConfigFile(new ConfigFile(configFile, singletonList(configLine)))
