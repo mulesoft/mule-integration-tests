@@ -44,10 +44,4 @@ public class UntilSuccessfulRetryExhaustedTestCase extends AbstractIntegrationTe
     }
   }
 
-  @Test
-  @Ignore("MULE-15694")
-  public void withoutRetryingCallExceptionStrategy() throws Exception {
-    CoreEvent event = flowRunner("noRetry").withPayload("message").run();
-    assertThat(event.getMessage().getPayload().getValue(), is("message executed once"));
-  }
 }

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+
+        http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+
+    <flow name="untilSuccessfulVariables">
+        <until-successful maxRetries="1" millisBetweenRetries="1000">
+            <set-variable variableName="message" value="#[payload ++ ' executed once']"/>
+            <test:processor throwException="true"/>
+        </until-successful>
+        <error-handler>
+            <on-error-continue>
+                <set-payload value="#[vars.message]"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="untilSuccessfulVariablesNoError">
+        <until-successful maxRetries="1" millisBetweenRetries="1000">
+            <set-variable variableName="message" value="#[payload ++ ' executed once']"/>
+        </until-successful>
+        <set-payload value="#[vars.message]"/>
+    </flow>
+
+    <flow name="untilSuccessfulPayload">
+        <until-successful maxRetries="2" millisBetweenRetries="1000">
+            <set-payload value="#[payload ++ ' executed once']"/>
+            <test:processor throwException="true"/>
+        </until-successful>
+        <error-handler>
+            <on-error-continue>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="untilSuccessfulPayloadNoError">
+        <until-successful maxRetries="2" millisBetweenRetries="1000">
+            <set-payload value="#[payload ++ ' executed once']"/>
+        </until-successful>
+        <error-handler>
+            <on-error-continue>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+</mule>
