@@ -7,7 +7,6 @@
 package org.mule.test.integration.routing.outbound;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.junit.Test;
@@ -22,32 +21,41 @@ public class UntilSuccessfulPropagationTestCase extends AbstractIntegrationTestC
   }
 
   @Test
-  public void variablePropagation() throws Exception {
-    CoreEvent event = flowRunner("untilSuccessfulVariables").withPayload("message").run();
-    assertThat(event.getMessage().getPayload().getValue(), is("message executed once"));
+  public void variablePropagationToErrorHandler() throws Exception {
+    assertPayloadContent(flowRunner("variablePropagationToErrorHandler").withPayload("message").run());
   }
 
   @Test
-  public void variableNoPropagation() throws Exception {
-    CoreEvent event = flowRunner("untilSuccessfulNoPropagationVariables").withPayload("message").run();
-    assertThat(event.getMessage().getPayload().getValue(), nullValue());
+  public void variablePropagationOutside() throws Exception {
+    assertPayloadContent(flowRunner("variablePropagationOutside").withPayload("message").run());
   }
 
   @Test
-  public void variablePropagationNoError() throws Exception {
-    CoreEvent event = flowRunner("untilSuccessfulVariablesNoError").withPayload("message").run();
-    assertThat(event.getMessage().getPayload().getValue(), is("message executed once"));
+  public void variablePropagationWithoutError() throws Exception {
+    assertPayloadContent(flowRunner("variablePropagationWithoutError").withPayload("message").run());
+  }
+
+  @Test
+  public void variableImmutableBetweenRetries() throws Exception {
+    assertPayloadContent(flowRunner("variableImmutableBetweenRetries").withPayload("message").run());
   }
 
   @Test
   public void payloadPropagation() throws Exception {
-    CoreEvent event = flowRunner("untilSuccessfulPayload").withPayload("message").run();
-    assertThat(event.getMessage().getPayload().getValue(), is("message"));
+    assertPayloadContent(flowRunner("payloadPropagation").withPayload("message").run());
   }
 
   @Test
-  public void payloadPropagationNoError() throws Exception {
-    CoreEvent event = flowRunner("untilSuccessfulPayloadNoError").withPayload("message").run();
+  public void payloadPropagationWithoutError() throws Exception {
+    assertPayloadContent(flowRunner("payloadPropagationWithoutError").withPayload("message").run());
+  }
+
+  @Test
+  public void payloadImmutableBetweenRetries() throws Exception {
+    assertPayloadContent(flowRunner("payloadImmutableBetweenRetries").withPayload("message").run());
+  }
+
+  public void assertPayloadContent(CoreEvent event) {
     assertThat(event.getMessage().getPayload().getValue(), is("message executed once"));
   }
 }
