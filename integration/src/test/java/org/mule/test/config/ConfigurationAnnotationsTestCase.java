@@ -105,7 +105,7 @@ public class ConfigurationAnnotationsTestCase extends AbstractIntegrationTestCas
   }
 
   protected String getDocName(Object obj) {
-    return (String) ((Component) obj).getAnnotation(new QName("http://www.mulesoft.org/schema/mule/documentation", "name"));
+    return (String) ((Component) obj).getAnnotation(Component.Annotations.NAME_ANNOTATION_KEY);
   }
 
   protected String getDocDescription(Object obj) {
