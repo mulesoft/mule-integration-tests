@@ -17,6 +17,19 @@
         </error-handler>
     </flow>
 
+    <flow name="untilSuccessfulNoPropagationVariables">
+        <try>
+            <until-successful maxRetries="1" millisBetweenRetries="1000">
+                <set-variable variableName="message" value="#[payload ++ ' executed once']"/>
+                <test:processor throwException="true"/>
+            </until-successful>
+            <error-handler>
+                <on-error-continue/>
+            </error-handler>
+        </try>
+        <set-payload value="#[vars.message]"/>
+    </flow>
+
     <flow name="untilSuccessfulVariablesNoError">
         <until-successful maxRetries="1" millisBetweenRetries="1000">
             <set-variable variableName="message" value="#[payload ++ ' executed once']"/>
@@ -30,8 +43,7 @@
             <test:processor throwException="true"/>
         </until-successful>
         <error-handler>
-            <on-error-continue>
-            </on-error-continue>
+            <on-error-continue/>
         </error-handler>
     </flow>
 
@@ -40,8 +52,7 @@
             <set-payload value="#[payload ++ ' executed once']"/>
         </until-successful>
         <error-handler>
-            <on-error-continue>
-            </on-error-continue>
+            <on-error-continue/>
         </error-handler>
     </flow>
 </mule>

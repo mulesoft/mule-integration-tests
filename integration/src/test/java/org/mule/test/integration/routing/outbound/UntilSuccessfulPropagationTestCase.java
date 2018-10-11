@@ -7,6 +7,7 @@
 package org.mule.test.integration.routing.outbound;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.junit.Test;
@@ -24,6 +25,12 @@ public class UntilSuccessfulPropagationTestCase extends AbstractIntegrationTestC
   public void variablePropagation() throws Exception {
     CoreEvent event = flowRunner("untilSuccessfulVariables").withPayload("message").run();
     assertThat(event.getMessage().getPayload().getValue(), is("message executed once"));
+  }
+
+  @Test
+  public void variableNoPropagation() throws Exception {
+    CoreEvent event = flowRunner("untilSuccessfulNoPropagationVariables").withPayload("message").run();
+    assertThat(event.getMessage().getPayload().getValue(), nullValue());
   }
 
   @Test
