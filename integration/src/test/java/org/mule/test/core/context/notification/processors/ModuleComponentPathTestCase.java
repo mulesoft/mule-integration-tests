@@ -8,7 +8,6 @@ package org.mule.test.core.context.notification.processors;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
-import static java.util.Collections.emptySet;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static org.hamcrest.core.Is.is;
@@ -23,6 +22,7 @@ import static org.mule.runtime.api.util.collection.Collectors.toImmutableList;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.FLOW_IDENTIFIER;
 import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.initialiseIfNeeded;
 import static org.mule.runtime.dsl.api.xml.parser.XmlConfigurationDocumentLoader.noValidationDocumentLoader;
+import static org.mule.runtime.dsl.api.xml.parser.XmlConfigurationProcessor.processXmlConfiguration;
 import static org.mule.runtime.module.extension.api.util.MuleExtensionUtils.createDefaultExtensionManager;
 import org.mule.runtime.api.component.TypedComponentIdentifier;
 import org.mule.runtime.api.component.location.ComponentLocation;
@@ -30,6 +30,7 @@ import org.mule.runtime.api.component.location.Location;
 import org.mule.runtime.api.dsl.DslResolvingContext;
 import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.api.notification.MessageProcessorNotification;
+import org.mule.runtime.api.util.ResourceLocator;
 import org.mule.runtime.config.api.dsl.processor.ArtifactConfig;
 import org.mule.runtime.config.internal.ModuleDelegatingEntityResolver;
 import org.mule.runtime.config.internal.model.ApplicationModel;
@@ -39,15 +40,16 @@ import org.mule.runtime.core.api.config.builders.AbstractConfigurationBuilder;
 import org.mule.runtime.core.api.extension.ExtensionManager;
 import org.mule.runtime.core.api.registry.SpiServiceRegistry;
 import org.mule.runtime.core.api.util.xmlsecurity.XMLSecureFactories;
+import org.mule.runtime.dsl.api.ConfigResource;
 import org.mule.runtime.dsl.api.component.config.DefaultComponentLocation;
 import org.mule.runtime.dsl.api.component.config.DefaultComponentLocation.DefaultLocationPart;
 import org.mule.runtime.dsl.api.xml.XmlNamespaceInfo;
 import org.mule.runtime.dsl.api.xml.XmlNamespaceInfoProvider;
 import org.mule.runtime.dsl.api.xml.parser.ConfigFile;
 import org.mule.runtime.dsl.api.xml.parser.ConfigLine;
-import org.mule.runtime.config.internal.dsl.xml.StaticXmlNamespaceInfo;
-import org.mule.runtime.config.internal.dsl.xml.StaticXmlNamespaceInfoProvider;
-import org.mule.runtime.dsl.internal.xml.parser.XmlApplicationParser;
+import org.mule.runtime.dsl.api.xml.parser.ParsingPropertyResolver;
+import org.mule.runtime.dsl.api.xml.parser.XmlConfigurationDocumentLoader;
+import org.mule.runtime.dsl.api.xml.parser.XmlParsingConfiguration;
 import org.mule.runtime.extension.api.loader.xml.XmlExtensionModelLoader;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -63,11 +65,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+
+import javax.xml.parsers.SAXParserFactory;
 
 import io.qameta.allure.junit4.DisplayName;
 import org.junit.After;
 import org.junit.Test;
-import org.w3c.dom.Document;
+import org.xml.sax.EntityResolver;
 
 @DisplayName("XML Connectors Path generation")
 public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
@@ -229,19 +235,67 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
             .add(createStaticNamespaceInfoProviders(extensionModels))
             .addAll(discoverRuntimeXmlNamespaceInfoProvider())
             .build();
-    XmlApplicationParser xmlApplicationParser = new XmlApplicationParser(xmlNamespaceInfoProviders);
-    Document document = noValidationDocumentLoader().loadDocument(() -> XMLSecureFactories.createDefault().getSAXParserFactory(),
-                                                                  "config", inputStream,
-                                                                  new ModuleDelegatingEntityResolver(emptySet()));
-    return xmlApplicationParser.parse(document.getDocumentElement());
+    List<ConfigFile> configFiles = processXmlConfiguration(new XmlParsingConfiguration() {
+
+      @Override
+      public ParsingPropertyResolver getParsingPropertyResolver() {
+        return key -> null;
+      }
+
+      @Override
+      public ConfigResource[] getArtifactConfigResources() {
+        return new ConfigResource[] {
+            new ConfigResource("config", inputStream)
+        };
+      }
+
+      @Override
+      public ResourceLocator getResourceLocator() {
+        return null;
+      }
+
+      @Override
+      public Supplier<SAXParserFactory> getSaxParserFactory() {
+        return () -> XMLSecureFactories.createDefault().getSAXParserFactory();
+      }
+
+      @Override
+      public XmlConfigurationDocumentLoader getXmlConfigurationDocumentLoader() {
+        return noValidationDocumentLoader();
+      }
+
+      @Override
+      public EntityResolver getEntityResolver() {
+        return new ModuleDelegatingEntityResolver(extensionModels);
+      }
+
+      @Override
+      public List<XmlNamespaceInfoProvider> getXmlNamespaceInfoProvider() {
+        return xmlNamespaceInfoProviders;
+      }
+    });
+    return configFiles.isEmpty() ? empty() : of(configFiles.get(0).getConfigLines().get(0));
   }
 
   private XmlNamespaceInfoProvider createStaticNamespaceInfoProviders(Set<ExtensionModel> extensionModels) {
-    List<XmlNamespaceInfo> extensionNamespaces = extensionModels.stream()
-        .map(ext -> new StaticXmlNamespaceInfo(ext.getXmlDslModel().getNamespace(), ext.getXmlDslModel().getPrefix()))
-        .collect(toImmutableList());
+    List<XmlNamespaceInfoProvider> xmlNamesInfoProviders =
+        extensionModels.stream()
+            .map(ext -> (XmlNamespaceInfoProvider) () -> Collections.singleton(new XmlNamespaceInfo() {
 
-    return new StaticXmlNamespaceInfoProvider(extensionNamespaces);
+              @Override
+              public String getNamespaceUriPrefix() {
+                return ext.getXmlDslModel().getNamespace();
+              }
+
+              @Override
+              public String getNamespace() {
+                return ext.getXmlDslModel().getPrefix();
+              }
+            }))
+            .collect(toImmutableList());
+    return () -> xmlNamesInfoProviders.stream().map(XmlNamespaceInfoProvider::getXmlNamespacesInfo)
+        .flatMap(collection -> collection.stream())
+        .collect(Collectors.toCollection(() -> new ArrayList<>()));
   }
 
   private List<XmlNamespaceInfoProvider> discoverRuntimeXmlNamespaceInfoProvider() {
