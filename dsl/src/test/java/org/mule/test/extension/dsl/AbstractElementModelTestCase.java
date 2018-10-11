@@ -8,47 +8,50 @@ package org.mule.test.extension.dsl;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.lang.String.format;
-import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mule.runtime.api.component.ComponentIdentifier.builder;
-import static org.mule.runtime.dsl.api.xml.parser.XmlConfigurationDocumentLoader.schemaValidatingDocumentLoader;
+import static org.mule.runtime.config.internal.dsl.xml.XmlNamespaceInfoProviderSupplier.createFromExtensionModels;
+import static org.mule.runtime.dsl.api.xml.parser.XmlConfigurationProcessor.processXmlConfiguration;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.api.component.ComponentIdentifier;
 import org.mule.runtime.api.dsl.DslResolvingContext;
 import org.mule.runtime.api.meta.NamedObject;
 import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.api.meta.model.parameter.ParameterizedModel;
+import org.mule.runtime.api.util.ResourceLocator;
 import org.mule.runtime.app.declaration.api.ArtifactDeclaration;
 import org.mule.runtime.app.declaration.api.ElementDeclaration;
 import org.mule.runtime.config.api.dsl.model.DslElementModel;
 import org.mule.runtime.config.api.dsl.model.DslElementModelFactory;
 import org.mule.runtime.config.api.dsl.processor.ArtifactConfig;
-import org.mule.runtime.config.api.dsl.processor.xml.XmlApplicationServiceRegistry;
 import org.mule.runtime.config.internal.ModuleDelegatingEntityResolver;
 import org.mule.runtime.config.internal.model.ApplicationModel;
 import org.mule.runtime.core.api.extension.MuleExtensionModelProvider;
-import org.mule.runtime.core.api.registry.SpiServiceRegistry;
 import org.mule.runtime.core.api.util.xmlsecurity.XMLSecureFactories;
+import org.mule.runtime.core.internal.util.DefaultResourceLocator;
+import org.mule.runtime.dsl.api.ConfigResource;
 import org.mule.runtime.dsl.api.component.config.ComponentConfiguration;
 import org.mule.runtime.dsl.api.xml.XmlNamespaceInfoProvider;
 import org.mule.runtime.dsl.api.xml.parser.ConfigFile;
-import org.mule.runtime.dsl.api.xml.parser.ConfigLine;
-import org.mule.runtime.dsl.internal.xml.parser.XmlApplicationParser;
-import org.mule.runtime.config.internal.dsl.xml.XmlNamespaceInfoProviderSupplier;
+import org.mule.runtime.dsl.api.xml.parser.ParsingPropertyResolver;
+import org.mule.runtime.dsl.api.xml.parser.XmlConfigurationDocumentLoader;
+import org.mule.runtime.dsl.api.xml.parser.XmlParsingConfiguration;
 import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
 
 import com.google.common.collect.ImmutableSet;
 
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.function.Supplier;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -58,6 +61,7 @@ import javax.xml.transform.stream.StreamResult;
 import org.junit.Before;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.xml.sax.EntityResolver;
 
 @ArtifactClassLoaderRunnerConfig(applicationSharedRuntimeLibs = {"org.apache.derby:derby", "org.apache.activemq:activemq-client",
     "org.apache.activemq:activemq-broker", "org.apache.activemq:activemq-kahadb-store"})
@@ -171,20 +175,46 @@ public abstract class AbstractElementModelTestCase extends MuleArtifactFunctiona
     InputStream appIs = Thread.currentThread().getContextClassLoader().getResourceAsStream(configFile);
     checkArgument(appIs != null, "The given application was not found as resource");
 
-    Document document = schemaValidatingDocumentLoader()
-        .loadDocument(() -> XMLSecureFactories.createDefault().getSAXParserFactory(),
-                      new ModuleDelegatingEntityResolver(muleContext.getExtensionManager().getExtensions()), configFile, appIs);
+    List<ConfigFile> configFiles = processXmlConfiguration(new XmlParsingConfiguration() {
 
-    XmlApplicationServiceRegistry customRegistry = new XmlApplicationServiceRegistry(new SpiServiceRegistry(), dslContext);
-    ConfigLine configLine =
-        new XmlApplicationParser(XmlNamespaceInfoProviderSupplier
-            .createFromPluginClassloaders(cl -> customRegistry.lookupProviders(XmlNamespaceInfoProvider.class, cl).stream()
-                .collect(Collectors.toList()), singletonList(AbstractElementModelTestCase.class.getClassLoader())))
-                    .parse(document.getDocumentElement())
-                    .orElseThrow(() -> new Exception("Failed to load config"));
+      @Override
+      public ParsingPropertyResolver getParsingPropertyResolver() {
+        return key -> key;
+      }
+
+      @Override
+      public ConfigResource[] getArtifactConfigResources() {
+        return new ConfigResource[] {new ConfigResource(configFile, appIs)};
+      }
+
+      @Override
+      public ResourceLocator getResourceLocator() {
+        return new DefaultResourceLocator();
+      }
+
+      @Override
+      public Supplier<SAXParserFactory> getSaxParserFactory() {
+        return () -> XMLSecureFactories.createDefault().getSAXParserFactory();
+      }
+
+      @Override
+      public XmlConfigurationDocumentLoader getXmlConfigurationDocumentLoader() {
+        return XmlConfigurationDocumentLoader.schemaValidatingDocumentLoader();
+      }
+
+      @Override
+      public EntityResolver getEntityResolver() {
+        return new ModuleDelegatingEntityResolver(muleContext.getExtensionManager().getExtensions());
+      }
+
+      @Override
+      public List<XmlNamespaceInfoProvider> getXmlNamespaceInfoProvider() {
+        return createFromExtensionModels(muleContext.getExtensionManager().getExtensions(), Optional.empty());
+      }
+    });
 
     ArtifactConfig artifactConfig = new ArtifactConfig.Builder()
-        .addConfigFile(new ConfigFile(configFile, singletonList(configLine)))
+        .addConfigFile(configFiles.get(0))
         .build();
 
     return new ApplicationModel(artifactConfig, new ArtifactDeclaration(),
