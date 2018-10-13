@@ -13,14 +13,9 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mule.tck.processor.FlowAssert.verify;
 
-import org.mule.runtime.api.lifecycle.InitialisationException;
-import org.mule.runtime.api.security.SecurityProviderNotFoundException;
-import org.mule.runtime.api.security.UnknownAuthenticationTypeException;
+import org.mule.runtime.api.security.SecurityContext;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.security.AbstractAuthenticationFilter;
-import org.mule.runtime.core.api.security.CryptoFailureException;
-import org.mule.runtime.core.api.security.EncryptionStrategyNotFoundException;
-import org.mule.runtime.api.security.SecurityContext;
 import org.mule.runtime.core.api.transaction.Transaction;
 import org.mule.runtime.core.api.transaction.TransactionCoordination;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -79,11 +74,6 @@ public class NonBlockingFunctionalTestCase extends AbstractIntegrationTestCase {
   @Test
   public void enricher() throws Exception {
     flowRunner("enricher").withPayload(TEST_MESSAGE).run();
-  }
-
-  @Test
-  public void response() throws Exception {
-    flowRunner("response").withPayload(TEST_MESSAGE).run();
   }
 
   @Test

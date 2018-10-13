@@ -25,12 +25,11 @@
     <flow name="httpIn">
         <http:listener config-ref="listenerConfig" path="in"/>
         <logger message="check1"/>
-        <response>
-            <http:request config-ref="requestConfig" path="echo"/>
-        </response>
         <logger message="check2"/>
         <http:request config-ref="requestConfig" path="echo"/>
         <logger message="check3"/>
+        <http:request config-ref="requestConfig" path="echo"/>
+
         <http:request config-ref="requestConfig" path="echo"/>
     </flow>
 

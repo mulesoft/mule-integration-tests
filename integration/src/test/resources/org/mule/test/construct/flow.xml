@@ -142,28 +142,6 @@
         <test:processor appendString="test"/>
     </flow>
 
-    <flow name="response">
-        <append-string-transformer message="a" />
-        <response>
-            <append-string-transformer message="i" />
-            <test:processor/>
-        </response>
-        <append-string-transformer message="b" />
-        <response>
-            <append-string-transformer message="f" />
-            <append-string-transformer message="g" />
-            <append-string-transformer message="h" />
-        </response>
-        <response>
-            <append-string-transformer message="e" />
-        </response>
-        <append-string-transformer message="c" />
-        <response>
-            <test:processor/>
-        </response>
-        <append-string-transformer message="d" />
-    </flow>
-
     <flow name="async-oneway">
         <append-string-transformer message="a" />
         <async>

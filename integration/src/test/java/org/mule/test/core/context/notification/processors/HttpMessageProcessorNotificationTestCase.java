@@ -11,7 +11,6 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.http.api.HttpConstants.Method.GET;
 
-import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.http.api.HttpService;
 import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;
 import org.mule.runtime.http.api.domain.message.request.HttpRequest;
@@ -58,9 +57,6 @@ public class HttpMessageProcessorNotificationTestCase extends AbstractMessagePro
         // logger
         .serial(prePost())
 
-        // <response> start
-        .serial(pre())
-
         // logger
         .serial(prePost())
 
@@ -74,7 +70,7 @@ public class HttpMessageProcessorNotificationTestCase extends AbstractMessagePro
         .serial(pre()).serial(prePost()).serial(post())
 
         // <response> end
-        .serial(pre()).serial(prePost()).serial(post()).serial(post());
+        .serial(pre()).serial(prePost()).serial(post());
   }
 
   @Override

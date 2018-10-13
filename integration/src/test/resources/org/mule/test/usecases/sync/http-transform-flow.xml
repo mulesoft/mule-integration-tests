@@ -20,10 +20,8 @@
     <flow name="HttpService2">
         <http:listener path="RemoteService" config-ref="listenerConfig2"/>
         <transformer ref="ByteArrayToSerializable"/>
-        <response>
-            <transformer ref="SerializableToByteArray"/>
-        </response>
         <logger/>
+        <transformer ref="SerializableToByteArray"/>
     </flow>
 
     <flow name="LocalService">
