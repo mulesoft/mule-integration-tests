@@ -14,14 +14,13 @@
     </http:request-config>
 
     <flow name="flow1">
-        <response>
-            <set-payload value="flow1-response"/>
-            <custom-transformer class="org.mule.issues.MessageRootIdPropagationTestCase$RootIDGatherer"/>
-        </response>
         <set-payload value="flow1-request"/>
         <custom-transformer class="org.mule.issues.MessageRootIdPropagationTestCase$RootIDGatherer"/>
         <flow-ref name="flow2"/>
         <http:request method="POST" path="foo" config-ref="requestConfig"/>
+
+        <set-payload value="flow1-response"/>
+        <custom-transformer class="org.mule.issues.MessageRootIdPropagationTestCase$RootIDGatherer"/>
     </flow>
 
     <flow name="flow2">
@@ -32,11 +31,10 @@
 
     <flow name="flow3">
         <http:listener path="foo" config-ref="listenerConfig"/>
-        <response>
-            <set-payload value="flow3-response"/>
-            <custom-transformer class="org.mule.issues.MessageRootIdPropagationTestCase$RootIDGatherer"/>
-        </response>
         <set-payload value="flow3-request"/>
+        <custom-transformer class="org.mule.issues.MessageRootIdPropagationTestCase$RootIDGatherer"/>
+
+        <set-payload value="flow3-response"/>
         <custom-transformer class="org.mule.issues.MessageRootIdPropagationTestCase$RootIDGatherer"/>
     </flow>
 </mule>

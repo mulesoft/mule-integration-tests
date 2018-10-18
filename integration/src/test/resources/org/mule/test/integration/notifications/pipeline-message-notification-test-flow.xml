@@ -25,9 +25,7 @@
     </flow>
 
     <flow name="service-3">
-        <response>
-            <expression-component>mel:hola</expression-component>
-        </response>
+        <expression-component>mel:hola</expression-component>
     </flow>
 
     <flow name="service-4">

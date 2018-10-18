@@ -103,15 +103,6 @@
         <test:assert expression="#[mel:assertPayload()]"/>
     </flow>
 
-    <flow name="response">
-        <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]"/>
-        <response>
-            <test:assert expression="#[mel:assertPayload()]"/>
-        </response>
-        <test:non-blocking-processor/>
-        <test:assert expression="#[mel:assertPayload()]"/>
-    </flow>
-
     <flow name="enricherIssue">
         <enricher target="mel:flowVars['match']">
             <set-payload value="false"/>

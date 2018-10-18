@@ -20,6 +20,7 @@ import static org.mockito.Mockito.mock;
 import static org.mule.functional.api.flow.TransactionConfigEnum.ACTION_ALWAYS_BEGIN;
 import static org.mule.functional.junit4.TestLegacyMessageUtils.getOutboundProperty;
 import static org.mule.runtime.api.metadata.MediaType.APPLICATION_XML;
+
 import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
@@ -36,12 +37,12 @@ import org.mule.tck.testmodels.fruit.Orange;
 import org.mule.tck.testmodels.mule.TestTransactionFactory;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import org.junit.Ignore;
+import org.junit.Test;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.junit.Ignore;
-import org.junit.Test;
 
 public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTestCase {
 
@@ -289,14 +290,6 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
 
     assertNotNull(result);
     assertNotSame(TEST_MESSAGE + "test", result.getPayload().getValue());
-  }
-
-  @Test
-  public void testResponseElement() throws Exception {
-    final Message result = flowRunner("response").withPayload("").run().getMessage();
-
-    assertNotNull(result);
-    assertEquals("abcdefghi", getPayloadAsString(result));
   }
 
   @Test
