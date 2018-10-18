@@ -11,18 +11,21 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mule.runtime.api.store.ObjectStoreSettings.unmanagedTransient;
 
 import org.mule.runtime.api.store.ObjectStore;
+import org.mule.runtime.api.store.ObjectStoreSettings;
 import org.mule.runtime.api.store.SimpleMemoryObjectStore;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.construct.FlowConstruct;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.internal.routing.IdempotentMessageValidator;
+import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import org.junit.Rule;
 import org.junit.Test;
 
-import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -32,6 +35,14 @@ import java.util.List;
  */
 public class IdempotentMessageValidatorNamespaceHandlerTestCase extends AbstractIntegrationTestCase {
 
+  private static final String KEY = "theKey";
+  private static final String VALUE = "theValue";
+
+  private ObjectStore objectStore;
+
+  @Rule
+  public SystemProperty customObjectStore = new SystemProperty("customObjectStore", "customObjectStore");
+
   @Override
   protected String getConfigFile() {
     return "org/mule/test/config/idempotent-message-validator-config.xml";
@@ -39,17 +50,16 @@ public class IdempotentMessageValidatorNamespaceHandlerTestCase extends Abstract
 
   @Test
   public void testCustomObjectStore() throws Exception {
-    testPojoObjectStore("customObjectStore");
+    objectStore = muleContext.getObjectStoreManager().getObjectStore(customObjectStore.getValue());
+    objectStore.store(KEY, VALUE);
+    testPojoObjectStore("customObjectStoreFlow");
   }
 
   private void testPojoObjectStore(final String flowName) throws Exception {
     final Processor filter = idempotentMessageFilterFromFlow(flowName);
 
     final ObjectStore<?> store = getObjectStore(filter);
-    assertThat(store, instanceOf(CustomObjectStore.class));
-
-    final CustomObjectStore customStore = (CustomObjectStore) store;
-    assertEquals("the-value:" + flowName, customStore.getCustomProperty());
+    assertThat(store.contains(KEY), equalTo(true));
   }
 
   private Processor idempotentMessageFilterFromFlow(final String flowName) throws Exception {
@@ -70,18 +80,5 @@ public class IdempotentMessageValidatorNamespaceHandlerTestCase extends Abstract
       throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
     Method method = router.getClass().getMethod("getObjectStore");
     return (ObjectStore) method.invoke(router);
-  }
-
-  public static class CustomObjectStore extends SimpleMemoryObjectStore<Serializable> {
-
-    private String customProperty;
-
-    public String getCustomProperty() {
-      return customProperty;
-    }
-
-    public void setCustomProperty(final String value) {
-      customProperty = value;
-    }
   }
 }
