@@ -224,36 +224,6 @@
     </flow>
     
 
-    <flow name="enrich">
-        <enricher target="#[mel:message.outboundProperties.helloHeader]" source="#[mel:payload]">
-            <append-string-transformer message="Hello" />
-        </enricher>
-    </flow>
-
-    <flow name="enrich2">
-        <enricher>
-            <append-string-transformer message="Hello" />
-            <enrich target="#[mel:message.outboundProperties.helloHeader]" />
-            <enrich target="#[mel:message.outboundProperties.helloHeader2]" source="#[mel:payload]" />
-        </enricher>
-    </flow>
-    
-    <!-- MULE-5544 -->
-    <flow name="enrichcomponent">
-        <enricher target="#[mel:message.outboundProperties.echoHeader]" source="#[mel:payload]">
-            <logger/>
-        </enricher>
-    </flow>
-
-    <flow name="enrichcomponent2">
-        <enricher target="#[mel:message.outboundProperties.echoHeader]" source="#[mel:payload]">
-            <processor-chain>
-                <logger/>
-            </processor-chain>
-        </enricher>
-    </flow>
-
-
     <invoke name="invokeme" object-ref="pojo" method="method" methodArguments="#[mel:'Account'] ,    #[mel:payload]"
         methodArgumentTypes="java.lang.String, java.lang.String" />
 

@@ -222,52 +222,6 @@ public class ProcessorsTraceTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  public void flowStaticWithEnricher() throws Exception {
-    flowRunner("flowStaticWithEnricher").withPayload(TEST_PAYLOAD).run();
-
-    assertThat(ProcessorsTraceAsserter.processorsTraceToAssert, not(nullValue()));
-
-    assertThat(ProcessorsTraceAsserter.processorsTraceToAssert,
-               hasExecutedProcessors("flowStaticWithEnricher/processors/0", "flowStaticWithEnricher/processors/0/processors/0",
-                                     "flow/processors/0"));
-  }
-
-  @Test
-  public void subFlowStaticWithEnricher() throws Exception {
-    flowRunner("subFlowStaticWithEnricher").withPayload(TEST_PAYLOAD).run();
-
-    assertThat(ProcessorsTraceAsserter.processorsTraceToAssert, not(nullValue()));
-
-    assertThat(ProcessorsTraceAsserter.processorsTraceToAssert,
-               hasExecutedProcessors("subFlowStaticWithEnricher/processors/0",
-                                     "subFlowStaticWithEnricher/processors/0/processors/0",
-                                     "subFlow/processors/0"));
-  }
-
-  @Test
-  public void flowDynamicWithEnricher() throws Exception {
-    flowRunner("flowDynamicWithEnricher").withPayload(TEST_PAYLOAD).run();
-
-    assertThat(ProcessorsTraceAsserter.processorsTraceToAssert, not(nullValue()));
-
-    assertThat(ProcessorsTraceAsserter.processorsTraceToAssert,
-               hasExecutedProcessors("flowDynamicWithEnricher/processors/0", "flowDynamicWithEnricher/processors/0/processors/0",
-                                     "flow/processors/0"));
-  }
-
-  @Test
-  public void subFlowDynamicWithEnricher() throws Exception {
-    flowRunner("subFlowDynamicWithEnricher").withPayload(TEST_PAYLOAD).run();
-
-    assertThat(ProcessorsTraceAsserter.processorsTraceToAssert, not(nullValue()));
-
-    assertThat(ProcessorsTraceAsserter.processorsTraceToAssert,
-               hasExecutedProcessors("subFlowDynamicWithEnricher/processors/0",
-                                     "subFlowDynamicWithEnricher/processors/0/processors/0",
-                                     "subFlow/processors/0"));
-  }
-
-  @Test
   public void flowStaticWithChoice() throws Exception {
     flowRunner("flowStaticWithChoice").withPayload(TEST_PAYLOAD).run();
 

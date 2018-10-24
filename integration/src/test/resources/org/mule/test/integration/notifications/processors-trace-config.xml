@@ -89,32 +89,6 @@
         </async>
     </flow>
     
-    <!-- Enricher -->
-    
-    <flow name="flowStaticWithEnricher">
-        <enricher source="#[mel:payload]" target="#[mel:flowVars.enriched]">
-            <flow-ref name="flow"/>
-        </enricher>
-    </flow>
-
-    <flow name="subFlowStaticWithEnricher">
-        <enricher source="#[mel:payload]" target="#[mel:flowVars.enriched]">
-            <flow-ref name="subFlow"/>
-        </enricher>
-    </flow>
-
-    <flow name="flowDynamicWithEnricher">
-        <enricher source="#[mel:payload]" target="#[mel:flowVars.enriched]">
-            <flow-ref name="#[mel:'flow']"/>
-        </enricher>
-    </flow>
-
-    <flow name="subFlowDynamicWithEnricher">
-        <enricher source="#[mel:payload]" target="#[mel:flowVars.enriched]">
-            <flow-ref name="#[mel:'subFlow']"/>
-        </enricher>
-    </flow>
-    
     <!-- Choice -->
     
     <flow name="flowStaticWithChoice">
