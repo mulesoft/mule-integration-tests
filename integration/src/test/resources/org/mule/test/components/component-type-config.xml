@@ -49,9 +49,6 @@
                 <logger/>
             </route>
         </round-robin>
-        <enricher>
-            <logger/>
-        </enricher>
         <async>
             <logger/>
         </async>

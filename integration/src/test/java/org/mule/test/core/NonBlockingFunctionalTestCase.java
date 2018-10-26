@@ -7,9 +7,6 @@
 package org.mule.test.core;
 
 import static java.util.Arrays.asList;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mule.tck.processor.FlowAssert.verify;
 
@@ -69,29 +66,6 @@ public class NonBlockingFunctionalTestCase extends AbstractIntegrationTestCase {
   @Test
   public void choice() throws Exception {
     flowRunner("choice").withPayload(TEST_MESSAGE).run();
-  }
-
-  @Test
-  public void enricher() throws Exception {
-    flowRunner("enricher").withPayload(TEST_MESSAGE).run();
-  }
-
-  @Test
-  public void enricherIssue() throws Exception {
-    CoreEvent result = flowRunner("enricherIssue").withPayload(TEST_MESSAGE).run();
-    assertThat(result.getMessage().getPayload().getValue(), is(equalTo(TEST_MESSAGE)));
-  }
-
-  @Test
-  public void enricherIssueNonBlocking() throws Exception {
-    CoreEvent result = flowRunner("enricherIssueNonBlocking").withPayload(TEST_MESSAGE).run();
-    assertThat(result.getMessage().getPayload().getValue(), is(equalTo(TEST_MESSAGE)));
-  }
-
-  @Test
-  public void enricherFlowVar() throws Exception {
-    CoreEvent result = flowRunner("enricherFlowVar").withPayload(TEST_MESSAGE).run();
-    assertThat(result.getVariables().get(FOO).getValue(), is(equalTo(TEST_MESSAGE)));
   }
 
   @Test

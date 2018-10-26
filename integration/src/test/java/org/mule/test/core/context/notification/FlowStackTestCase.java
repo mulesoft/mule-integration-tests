@@ -182,48 +182,6 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  public void flowStaticWithEnricher() throws Exception {
-    flowRunner("flowStaticWithEnricher").withPayload("payload").run();
-
-    assertThat(stackToAssert, not(nullValue()));
-
-    assertStackElements(stackToAssert, isFlowStackElement("flow", "flow/processors/0"),
-                        isFlowStackElement("flowStaticWithEnricher", "flowStaticWithEnricher/processors/0/processors/0"));
-  }
-
-  @Test
-  public void subFlowStaticWithEnricher() throws Exception {
-    flowRunner("subFlowStaticWithEnricher").withPayload("payload").run();
-
-    assertThat(stackToAssert, not(nullValue()));
-
-    assertStackElements(stackToAssert,
-                        isFlowStackElement("subFlow", "subFlow/processors/0"),
-                        isFlowStackElement("subFlowStaticWithEnricher", "subFlowStaticWithEnricher/processors/0/processors/0"));
-  }
-
-  @Test
-  public void flowDynamicWithEnricher() throws Exception {
-    flowRunner("flowDynamicWithEnricher").withPayload("payload").run();
-
-    assertThat(stackToAssert, not(nullValue()));
-
-    assertStackElements(stackToAssert, isFlowStackElement("flow", "flow/processors/0"),
-                        isFlowStackElement("flowDynamicWithEnricher", "flowDynamicWithEnricher/processors/0/processors/0"));
-  }
-
-  @Test
-  public void subFlowDynamicWithEnricher() throws Exception {
-    flowRunner("subFlowDynamicWithEnricher").withPayload("payload").run();
-
-    assertThat(stackToAssert, not(nullValue()));
-
-    assertStackElements(stackToAssert,
-                        isFlowStackElement("subFlow", "subFlow/processors/0"),
-                        isFlowStackElement("subFlowDynamicWithEnricher", "subFlowDynamicWithEnricher/processors/0/processors/0"));
-  }
-
-  @Test
   public void flowStaticWithChoice() throws Exception {
     flowRunner("flowStaticWithChoice").withPayload("payload").run();
 

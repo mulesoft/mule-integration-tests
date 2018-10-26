@@ -18,7 +18,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mule.functional.api.flow.TransactionConfigEnum.ACTION_ALWAYS_BEGIN;
-import static org.mule.functional.junit4.TestLegacyMessageUtils.getOutboundProperty;
 import static org.mule.runtime.api.metadata.MediaType.APPLICATION_XML;
 
 import org.mule.functional.api.component.TestConnectorQueueHandler;
@@ -390,36 +389,6 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
   public void testInvokeArrayInArgs() throws Exception {
     final Message message = flowRunner("invokeArrayInArgs").withPayload("0").run().getMessage();
     assertThat(message.getPayload().getValue(), equalTo(EXPECTED_ARRAY_IN_ARGS_RESULT));
-  }
-
-  @Test
-  public void testEnrichWithAttributes() throws Exception {
-    final Message muleMessage = flowRunner("enrich").withPayload("0").run().getMessage();
-    assertEquals("0Hello", getOutboundProperty(muleMessage, "helloHeader"));
-  }
-
-  @Test
-  public void testEnrichWithElements() throws Exception {
-    Message result = flowRunner("enrich2").withPayload("0").run().getMessage();
-
-    assertEquals("0Hello", getOutboundProperty(result, "helloHeader"));
-    assertEquals("0Hello", getOutboundProperty(result, "helloHeader2"));
-  }
-
-  @Test
-  public void testEnrichUsingComponent() throws Exception {
-    // MULE-5544
-    Message result = flowRunner("enrichcomponent").withPayload("0").run().getMessage();
-
-    assertEquals("0", getOutboundProperty(result, "echoHeader"));
-  }
-
-  @Test
-  public void testEnrichUsingComponent2() throws Exception {
-    // MULE-5544
-    Message result = flowRunner("enrichcomponent2").withPayload("0").run().getMessage();
-
-    assertEquals("0", getOutboundProperty(result, "echoHeader"));
   }
 
   @Test
