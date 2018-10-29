@@ -73,7 +73,7 @@
         <error-handler>
             <test:on-error-check-log>
                 <test:check-summary>
-                    <test:summary-info key="FlowStack" value="at checkFlowStack"/>
+                    <test:summary-info key="FlowStack" valueStartsWith="at checkFlowStack"/>
                 </test:check-summary>
             </test:on-error-check-log>
         </error-handler>
