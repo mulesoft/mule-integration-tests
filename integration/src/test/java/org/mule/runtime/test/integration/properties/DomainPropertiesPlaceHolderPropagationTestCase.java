@@ -6,6 +6,7 @@
  */
 package org.mule.runtime.test.integration.properties;
 
+import static java.lang.System.lineSeparator;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
@@ -51,7 +52,7 @@ public class DomainPropertiesPlaceHolderPropagationTestCase extends AbstractMule
     String appPropertyObject = getApplicationProperty("appPropertyObject");
     assertThat(appPropertyObject, is("9999"));
     String inlinePropertyObject = getApplicationProperty("inlinePropertyObject");
-    assertThat(inlinePropertyObject, is("file contents" + System.lineSeparator()));
+    assertThat(inlinePropertyObject, is("file contents" + lineSeparator()));
   }
 
   private String getApplicationProperty(String property) {
