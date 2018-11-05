@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd
+		http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	
+<http:listener-config name="listener" >
+	<http:listener-connection protocol="HTTPS" host="localhost" port="${portSsl}">
+	<tls:context>
+		<tls:trust-store path="chain-cert-truststore.jks" password="changeit"/>
+		<tls:key-store path="chain-cert-keystore.jks" keyPassword="changeit" password="changeit"/>
+	</tls:context>
+	</http:listener-connection>
+</http:listener-config>
+	
+	<http:request-config name="default" >
+		<http:request-connection host="localhost" protocol="HTTPS" port="${portSsl}">
+			<tls:context>
+				<tls:key-store path="chain-cert-keystore.jks" keyPassword="changeit" password="changeit"/>
+			</tls:context>
+		</http:request-connection>
+	</http:request-config>
+	
+	<http:request-config name="custom" >
+		<http:request-connection protocol="HTTPS" host="localhost" port="${portSsl}">
+			<tls:context>
+				<tls:trust-store path="chain-cert-truststore.jks" password="changeit" type="jks"/>
+				<tls:key-store path="chain-cert-keystore.jks" keyPassword="changeit" password="changeit"/>
+			</tls:context>
+		</http:request-connection>
+	</http:request-config>
+	
+	<flow name="flow-default">
+		<http:request config-ref="default"
+			path="/" method="GET"  />
+		<object-to-string-transformer />		
+	</flow>
+	
+	<flow name="flow-custom">
+		<http:request config-ref="custom"
+			path="/" method="GET" />
+		<object-to-string-transformer />		
+	</flow>
+	
+	<flow name="flow-ssl">
+		<http:listener config-ref="listener" path="/" />
+		<set-payload value="test" />
+	</flow>
+	
+	
+</mule>
