@@ -562,7 +562,12 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
     CountDownLatch latch = new CountDownLatch(size + 1);
     flowRunner("foreachWithAsync").withPayload(list).withVariable("latch", latch).run();
 
-    latch.await(10, SECONDS);
+    assertThat(latch.toString(), latch.await(10, SECONDS), is(true));
+  }
+
+  public static CountDownLatch coundDownLatch(CountDownLatch latch) {
+    latch.countDown();
+    return latch;
   }
 
   @Test
