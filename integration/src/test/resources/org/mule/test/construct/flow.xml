@@ -35,24 +35,24 @@
         <append-string-transformer message="3" />
     </flow>
 
-    <flow name="asynchronousAsync">
+    <flow name="asynchronousAsync" initialState="stopped">
         <async>
             <custom-processor class="org.mule.test.construct.FlowConfigurationFunctionalTestCase$ThreadSensingMessageProcessor"/>
             <test:queue name="asynchronous-async-out"/>
         </async>
     </flow>    
 
-    <flow name="inout">
+    <flow name="inout" initialState="stopped">
         <logger/>
         <test:queue name="inout-out"/>
     </flow>
 
-    <flow name="inout-append">
+    <flow name="inout-append" initialState="stopped">
         <append-string-transformer message="inout" />
         <test:queue name="inout-append-out"/>
     </flow>
 
-    <flow name="split-aggregate">
+    <flow name="split-aggregate" initialState="stopped">
         <splitter expression="#[mel:payload.fruit]"/>
         <script:execute engine="groovy">
             <script:code>
@@ -64,11 +64,11 @@
         <test:queue name="split-aggregate-out"/>
     </flow>
     
-    <flow name="split-no-parts">
+    <flow name="split-no-parts" initialState="stopped">
         <splitter expression="#[output application/java --- payload..Order.item]"/>
     </flow>
 
-    <flow name="split-aggregate-singleton-list">
+    <flow name="split-aggregate-singleton-list" initialState="stopped">
         <splitter />
         <script:execute engine="groovy">
             <script:code>
@@ -80,7 +80,7 @@
         <test:queue name="split-aggregate-singleton-list-out"/>
     </flow>
 
-    <flow name="split-aggregate-list">
+    <flow name="split-aggregate-list" initialState="stopped">
         <splitter />
         <script:execute engine="groovy">
             <script:code>
@@ -93,7 +93,7 @@
     </flow>
 
 
-    <flow name="split-aggregate-response-singleton-list">
+    <flow name="split-aggregate-response-singleton-list" initialState="stopped">
         <splitter />
         <script:execute engine="groovy">
             <script:code>
@@ -104,7 +104,7 @@
         <collection-aggregator />
     </flow>
 
-    <flow name="split-aggregate-response-list">
+    <flow name="split-aggregate-response-list" initialState="stopped">
         <splitter />
         <script:execute engine="groovy">
             <script:code>
@@ -114,7 +114,7 @@
         </script:execute>
     </flow>
 
-    <flow name="split-aggregate-map">
+    <flow name="split-aggregate-map" initialState="stopped">
         <splitter/>
         <script:execute engine="groovy">
             <script:code>
@@ -124,25 +124,25 @@
         </script:execute>
     </flow>
 
-    <flow name="split-filter-aggregate">
+    <flow name="split-filter-aggregate" initialState="stopped">
         <splitter expression="#[payload.fruit]" filterOnErrorType="VALIDATION:VALIDATION"/>
         <validation:is-true expression="#[payload.^class != 'org.mule.tck.testmodels.fruit.Banana' and payload.^class != 'org.mule.tck.testmodels.fruit.Orange']"/>
         <collection-aggregator failOnTimeout="false" timeout="1000" />
         <test:queue name="split-filter-aggregate-out"/>
     </flow>
     
-    <flow name="message-chunk-split-aggregate">
+    <flow name="message-chunk-split-aggregate" initialState="stopped">
         <message-chunk-splitter messageSize="20"/>
         <message-chunk-aggregator />
         <test:queue name="message-chunk-split-aggregate-out"/>
     </flow>
 
-    <flow name="components">
+    <flow name="components" initialState="stopped">
         <logger/>
         <test:processor appendString="test"/>
     </flow>
 
-    <flow name="response">
+    <flow name="response" initialState="stopped">
         <append-string-transformer message="a" />
         <response>
             <append-string-transformer message="i" />
@@ -164,7 +164,7 @@
         <append-string-transformer message="d" />
     </flow>
 
-    <flow name="async-oneway">
+    <flow name="async-oneway" initialState="stopped">
         <append-string-transformer message="a" />
         <async>
             <append-string-transformer message="b" />
@@ -174,7 +174,7 @@
         <test:queue name="async-oneway-out"/>
     </flow>
 
-    <flow name="async-seda-oneway">
+    <flow name="async-seda-oneway" initialState="stopped">
         <append-string-transformer message="a" />
         <async>
             <append-string-transformer message="b" />
@@ -184,7 +184,7 @@
         <test:queue name="async-seda-oneway-out"/>
     </flow>
 
-    <flow name="async-requestresponse">
+    <flow name="async-requestresponse" initialState="stopped">
         <append-string-transformer message="a" />
         <async>
             <append-string-transformer message="b" />
@@ -194,7 +194,7 @@
         <test:queue name="async-requestresponse-out"/>
     </flow>
 
-    <flow name="async-tx">
+    <flow name="async-tx" initialState="stopped">
         <append-string-transformer message="a" />
         <async>
             <append-string-transformer message="b" />
@@ -204,7 +204,7 @@
         <test:queue name="async-tx-out"/>
     </flow>
     
-    <flow name="choice2">
+    <flow name="choice2" initialState="stopped">
         <choice>
             <when expression="payload=='foo'">
                 <append-string-transformer message=" Hello" />
@@ -220,39 +220,39 @@
         </choice>
     </flow>
     
-    <flow name="flow-ref">
+    <flow name="flow-ref" initialState="stopped">
         <flow-ref name="flow"/>
         <flow-ref name="flow"/>
     </flow>
 
-    <flow name="invoke">
+    <flow name="invoke" initialState="stopped">
         <invoke object-ref="appender" method="transform" methodArguments="#[mel:payload]"/>
     </flow>
 
-    <flow name="invoke2">
+    <flow name="invoke2" initialState="stopped">
         <invoke object-ref="appender" method="transform" methodArguments="#[mel:message.inboundProperties.one]"/>
     </flow>
     
-    <flow name="invoke3">
+    <flow name="invoke3" initialState="stopped">
         <processor ref="invokeme"/>
     </flow>
 
-    <flow name="invoke4">
+    <flow name="invoke4" initialState="stopped">
         <processor ref="invokeme-noargs"/>
     </flow>
     
-   	<flow name="invokeArrayInArgs">
+   	<flow name="invokeArrayInArgs" initialState="stopped">
         <invoke object-ref="test-array-appender" method="transformArray" methodArguments="#[['test', 'test']]"/>
     </flow>
     
 
-    <flow name="enrich">
+    <flow name="enrich" initialState="stopped">
         <enricher target="#[mel:message.outboundProperties.helloHeader]" source="#[mel:payload]">
             <append-string-transformer message="Hello" />
         </enricher>
     </flow>
 
-    <flow name="enrich2">
+    <flow name="enrich2" initialState="stopped">
         <enricher>
             <append-string-transformer message="Hello" />
             <enrich target="#[mel:message.outboundProperties.helloHeader]" />
@@ -261,13 +261,13 @@
     </flow>
     
     <!-- MULE-5544 -->
-    <flow name="enrichcomponent">
+    <flow name="enrichcomponent" initialState="stopped">
         <enricher target="#[mel:message.outboundProperties.echoHeader]" source="#[mel:payload]">
             <logger/>
         </enricher>
     </flow>
 
-    <flow name="enrichcomponent2">
+    <flow name="enrichcomponent2" initialState="stopped">
         <enricher target="#[mel:message.outboundProperties.echoHeader]" source="#[mel:payload]">
             <processor-chain>
                 <logger/>
@@ -282,12 +282,12 @@
     <invoke name="invokeme-noargs" object-ref="pojo" method="method"/>
 
 
-    <flow name="loggermessage">
+    <flow name="loggermessage" initialState="stopped">
         <append-string-transformer message=" Hello foo" />
         <logger level="ERROR" category="mycategory"/>
     </flow>
 
-    <flow name="loggerheader">
+    <flow name="loggerheader" initialState="stopped">
         <logger message="Ths is my header value: #[mel:message.inboundProperties.toLog]" level="ERROR" category="mycategory"/>
     </flow>
 
@@ -314,7 +314,7 @@
         <test:queue name="poll2-out"/>
     </flow>
 
-    <flow name="messagefiltersubflow">
+    <flow name="messagefiltersubflow" initialState="stopped">
         <choice>
             <when expression="#[false]">
                 <test:throw exception="java.lang.RuntimeException" error="ROUTING"/>
@@ -333,7 +333,7 @@
         <test:queue name="messagefiltersubflow-out"/>
     </sub-flow>
 
-    <flow name="customMaxConcurrency" maxConcurrency="1">
+    <flow name="customMaxConcurrency" maxConcurrency="1" initialState="stopped">
         <append-string-transformer message="nop" />
     </flow>
 

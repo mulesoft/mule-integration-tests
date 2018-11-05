@@ -16,81 +16,81 @@
         </expression-language>
     </configuration>
 
-    <flow name="flow">
-        <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]"/>
+    <flow name="flow" initialState="stopped">
+        <test:assert-intercepting responseSameTask="false" responseExpression="#[payload == 'Test Message']"/>
         <test:non-blocking-processor/>
-        <test:assert expression="#[mel:assertPayload()]"/>
+        <test:assert expression="#[payload == 'Test Message']"/>
     </flow>
 
-    <flow name="subFlow">
-        <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]"/>
+    <flow name="subFlow" initialState="stopped">
+        <test:assert-intercepting responseSameTask="false" responseExpression="#[payload == 'Test Message']"/>
         <flow-ref name="subFlowChild"/>
         <test:assert count="1"/>
     </flow>
     <sub-flow name="subFlowChild">
-        <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]"/>
+        <test:assert-intercepting responseSameTask="false" responseExpression="#[payload == 'Test Message']"/>
         <test:non-blocking-processor/>
-        <test:assert expression="#[mel:assertPayload()]"/>
+        <test:assert expression="#[payload == 'Test Message']"/>
     </sub-flow>
 
-    <flow name="childFlow">
-        <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]"/>
+    <flow name="childFlow" initialState="stopped">
+        <test:assert-intercepting responseSameTask="false" responseExpression="#[payload == 'Test Message']"/>
         <flow-ref name="childFlowChild"/>
-        <test:assert expression="#[mel:assertPayload()]"/>
-        <test:assert count="1" expression="#[mel:flow.name=='childFlow']"/>
+        <test:assert expression="#[payload == 'Test Message']"/>
+        <test:assert count="1" expression="#[flow.name == 'childFlow']"/>
     </flow>
     <flow name="childFlowChild">
-        <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]"/>
+        <test:assert-intercepting responseSameTask="false" responseExpression="#[payload == 'Test Message']"/>
         <test:non-blocking-processor/>
-        <test:assert expression="#[mel:assertPayload()]"/>
+        <test:assert expression="#[payload == 'Test Message']"/>
     </flow>
 
-    <flow name="childAsyncFlow">
+    <flow name="childAsyncFlow" initialState="stopped">
         <flow-ref name="childAsyncFlowChild"/>
     </flow>
     <flow name="childAsyncFlowChild">
         <test:non-blocking-processor/>
-        <test:assert expression="#[mel:assertPayload()]"/>
+        <test:assert expression="#[payload == 'Test Message']"/>
     </flow>
 
-    <flow name="processorChain">
-        <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]"/>
+    <flow name="processorChain" initialState="stopped">
+        <test:assert-intercepting responseSameTask="false" responseExpression="#[payload == 'Test Message']"/>
         <processor-chain>
-            <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]"/>
+            <test:assert-intercepting responseSameTask="false" responseExpression="#[payload == 'Test Message']"/>
             <test:non-blocking-processor/>
         </processor-chain>
         <test:non-blocking-processor/>
-        <test:assert expression="#[mel:assertPayload()]"/>
+        <test:assert expression="#[payload == 'Test Message']"/>
     </flow>
 
-    <flow name="security-filter">
-        <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]"/>
+    <flow name="security-filter" initialState="stopped">
+        <test:assert-intercepting responseSameTask="false" responseExpression="#[payload == 'Test Message']"/>
         <custom-security-filter ref="customFilter"/>
         <test:non-blocking-processor/>
-        <test:assert expression="#[mel:assertPayload()]"/>
+        <test:assert expression="#[payload == 'Test Message']"/>
     </flow>
 
     <flow name="transformer">
         <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]"/>
-        <expression-transformer expression="#[mel:true]"/>
+        <expression-transformer expression="#[true]"/>
         <test:non-blocking-processor/>
         <test:assert expression="#[mel:assertPayload()]"/>
     </flow>
 
-    <flow name="choice">
-        <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]"/>
+    <flow name="choice" initialState="stopped">
+        <test:assert-intercepting responseSameTask="false" responseExpression="#[payload == 'Test Message']"/>
         <choice>
-            <when expression="#[mel:true]">
-                <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]"/>
+            <when expression="#[true]">
+                <test:assert-intercepting responseSameTask="false" responseExpression="#[payload == 'Test Message']"/>
                 <test:non-blocking-processor/>
             </when>
         </choice>
-        <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]"/>
+        <test:assert-intercepting responseSameTask="false" responseExpression="#[payload == 'Test Message']"/>
         <test:non-blocking-processor/>
-        <test:assert expression="#[mel:assertPayload()]"/>
+        <test:assert expression="#[payload == 'Test Message']"/>
     </flow>
 
-    <flow name="enricher">
+    <flow name="enricher" initialState="stopped">
         <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]"/>
         <enricher source="#[mel:payload]" target="#[mel:payload]">
             <processor-chain>
@@ -103,7 +103,7 @@
         <test:assert expression="#[mel:assertPayload()]"/>
     </flow>
 
-    <flow name="response">
+    <flow name="response" initialState="stopped">
         <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]"/>
         <response>
             <test:assert expression="#[mel:assertPayload()]"/>
@@ -112,7 +112,7 @@
         <test:assert expression="#[mel:assertPayload()]"/>
     </flow>
 
-    <flow name="enricherIssue">
+    <flow name="enricherIssue" initialState="stopped">
         <enricher target="mel:flowVars['match']">
             <set-payload value="false"/>
         </enricher>
@@ -120,31 +120,31 @@
         <test:assert expression="#[mel:assertPayload()]"/>
     </flow>
 
-    <flow name="enricherIssueNonBlocking">
+    <flow name="enricherIssueNonBlocking" initialState="stopped">
         <enricher target="mel:flowVars['match']">
             <test:non-blocking-processor/>
         </enricher>
         <test:non-blocking-processor/>
     </flow>
 
-    <flow name="enricherFlowVar">
+    <flow name="enricherFlowVar" initialState="stopped">
         <enricher target="mel:flowVars[org.mule.test.core.NonBlockingFunctionalTestCase.FOO]">
             <test:non-blocking-processor/>
         </enricher>
         <test:assert expression="#[mel:assertPayload()]"/>
     </flow>
 
-    <flow name="async">
+    <flow name="async" initialState="stopped">
         <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]"/>
         <async>
-            <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]"/>
+            <test:assert-intercepting responseSameTask="false" responseExpression="#[payload == 'Test Message']"/>
             <test:non-blocking-processor/>
         </async>
         <test:non-blocking-processor/>
     </flow>
 
-    <flow name="catchExceptionStrategy">
-        <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]"/>
+    <flow name="catchExceptionStrategy" initialState="stopped">
+        <test:assert-intercepting responseSameTask="false" responseExpression="#[payload == 'Test Message']"/>
         <flow-ref name="catchExceptionStrategyChild"/>
         <test:assert count="1"/>
     </flow>
@@ -152,16 +152,16 @@
         <test:processor throwException="true"/>
         <error-handler>
             <on-error-continue>
-                <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]"/>
+                <test:assert-intercepting responseSameTask="false" responseExpression="#[payload == 'Test Message']"/>
                 <test:non-blocking-processor/>
             </on-error-continue>
         </error-handler>
     </flow>
 
-    <flow name="rollbackExceptionStrategy">
-        <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]"/>
+    <flow name="rollbackExceptionStrategy" initialState="stopped">
+        <test:assert-intercepting responseSameTask="false" responseExpression="#[payload == 'Test Message']"/>
         <flow-ref name="rollbackExceptionStrategyChild"/>
-        <test:assert expression="#[mel:assertPayload()]"/>
+        <test:assert expression="#[payload == 'Test Message']"/>
     </flow>
     <flow name="rollbackExceptionStrategyChild">
         <flow-ref name="rollbackExceptionStrategyGrandChild"/>
@@ -179,94 +179,94 @@
         </error-handler>
     </flow>
 
-    <flow name="nonTransactionalTry">
-        <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]"/>
+    <flow name="nonTransactionalTry" initialState="stopped">
+        <test:assert-intercepting responseSameTask="false" responseExpression="#[payload == 'Test Message']"/>
         <try>
-            <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]"/>
+            <test:assert-intercepting responseSameTask="false" responseExpression="#[payload == 'Test Message']"/>
             <test:non-blocking-processor/>
         </try>
     </flow>
 
-    <flow name="nonTransactionalTryErrorHandler">
+    <flow name="nonTransactionalTryErrorHandler" initialState="stopped">
         <try>
             <test:processor throwException="true"/>
             <error-handler>
                 <on-error-continue>
-                    <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]"/>
+                    <test:assert-intercepting responseSameTask="false" responseExpression="#[payload == 'Test Message']"/>
                     <test:non-blocking-processor/>
                 </on-error-continue>
             </error-handler>
         </try>
     </flow>
 
-    <flow name="transactionalTry">
-        <test:assert-intercepting responseSameTask="true" responseExpression="#[mel:assertPayload()]"/>
+    <flow name="transactionalTry" initialState="stopped">
+        <test:assert-intercepting responseSameTask="true" responseExpression="#[payload == 'Test Message']"/>
         <try transactionalAction="ALWAYS_BEGIN">
-            <test:assert-intercepting responseSameTask="true" responseExpression="#[mel:assertPayload()]"/>
+            <test:assert-intercepting responseSameTask="true" responseExpression="#[payload == 'Test Message']"/>
             <test:non-blocking-processor/>
         </try>
     </flow>
 
-    <flow name="transactionalTryErrorHandler">
+    <flow name="transactionalTryErrorHandler" initialState="stopped">
         <try transactionalAction="ALWAYS_BEGIN">
             <test:processor throwException="true"/>
             <error-handler>
                 <on-error-continue>
-                    <test:assert-intercepting responseSameTask="true" responseExpression="#[mel:assertPayload()]"/>
+                    <test:assert-intercepting responseSameTask="true" responseExpression="#[payload == 'Test Message']"/>
                     <test:non-blocking-processor/>
                 </on-error-continue>
             </error-handler>
         </try>
     </flow>
 
-    <flow name="childDefaultFlow">
-        <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]"/>
+    <flow name="childDefaultFlow" initialState="stopped">
+        <test:assert-intercepting responseSameTask="false" responseExpression="#[payload == 'Test Message']"/>
         <flow-ref name="childDefaultFlowChild"/>
-        <test:assert expression="#[mel:assertPayload()]"/>
+        <test:assert expression="#[payload == 'Test Message']"/>
         <test:non-blocking-processor/>
     </flow>
     
     <flow name="childDefaultFlowChild">
-        <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]" message="2"/>
+        <test:assert-intercepting responseSameTask="false" responseExpression="#[payload == 'Test Message']" message="2"/>
         <test:non-blocking-processor/>
-        <test:assert expression="#[mel:assertPayload()]"/>
+        <test:assert expression="#[payload == 'Test Message']"/>
     </flow>
 
-    <flow name="untilSuccessfulNoRetry">
-        <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]"/>
+    <flow name="untilSuccessfulNoRetry" initialState="stopped">
+        <test:assert-intercepting responseSameTask="false" responseExpression="#[payload == 'Test Message']"/>
         <until-successful>
             <test:non-blocking-processor/>
         </until-successful>
-        <test:assert expression="#[mel:assertPayload()]"/>
+        <test:assert expression="#[payload == 'Test Message']"/>
     </flow>
 
-    <flow name="untilSuccessfulNoRetryNonBlockingAfterScope">
-        <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]"/>
+    <flow name="untilSuccessfulNoRetryNonBlockingAfterScope" initialState="stopped">
+        <test:assert-intercepting responseSameTask="false" responseExpression="#[payload == 'Test Message']"/>
         <until-successful>
-            <test:assert expression="#[mel:assertPayload()]"/>
+            <test:assert expression="#[payload == 'Test Message']"/>
         </until-successful>
         <test:non-blocking-processor/>
     </flow>
 
-    <flow name="untilSuccessfulWithRetryExceptionBefore">
+    <flow name="untilSuccessfulWithRetryExceptionBefore" initialState="stopped">
         <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]"/>
         <until-successful millisBetweenRetries="100">
             <test:throw exception="java.lang.RuntimeException" error="ANY" count="2"/>
             <test:non-blocking-processor/>
         </until-successful>
-        <test:assert expression="#[mel:assertPayload()]"/>
+        <test:assert expression="#[payload == 'Test Message']"/>
     </flow>
 
-    <flow name="untilSuccessfulWithRetryExceptionAfter">
+    <flow name="untilSuccessfulWithRetryExceptionAfter" initialState="stopped">
         <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]"/>
         <until-successful millisBetweenRetries="100">
             <test:non-blocking-processor/>
             <test:throw exception="java.lang.RuntimeException" error="ANY" count="2"/>
         </until-successful>
-        <test:assert expression="#[mel:assertPayload()]"/>
+        <test:assert expression="#[payload == 'Test Message']"/>
     </flow>
 
-    <flow name="untilSuccessfulWithRetryNonBlockingAfterScope">
+    <flow name="untilSuccessfulWithRetryNonBlockingAfterScope" initialState="stopped">
         <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]"/>
         <until-successful millisBetweenRetries="100">
             <test:throw exception="java.lang.RuntimeException" error="ANY" count="2"/>
@@ -274,16 +274,16 @@
         <test:non-blocking-processor/>
     </flow>
 
-    <flow name="untilSuccessfulWithRetryTransactional">
+    <flow name="untilSuccessfulWithRetryTransactional" initialState="stopped">
         <test:assert-intercepting responseSameTask="true" responseExpression="#[mel:assertPayload()]"/>
         <until-successful millisBetweenRetries="100">
             <test:throw exception="java.lang.RuntimeException" error="ANY" count="2"/>
             <test:non-blocking-processor/>
         </until-successful>
-        <test:assert expression="#[mel:assertPayload()]"/>
+        <test:assert expression="#[payload == 'Test Message']"/>
     </flow>
 
-    <flow name="foreach">
+    <flow name="foreach" initialState="stopped">
         <test:assert-intercepting responseSameTask="false"/>
         <foreach>
             <test:assert-intercepting responseSameTask="false" count="2"/>

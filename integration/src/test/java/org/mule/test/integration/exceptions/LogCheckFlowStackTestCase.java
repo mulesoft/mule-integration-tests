@@ -6,14 +6,13 @@
  */
 package org.mule.test.integration.exceptions;
 
-import static org.mule.runtime.api.exception.MuleException.MULE_VERBOSE_EXCEPTIONS;
-import static org.mule.runtime.api.exception.MuleException.refreshVerboseExceptions;
 import static org.mule.runtime.core.api.config.MuleProperties.MULE_FLOW_TRACE;
+import static org.mule.tck.junit4.rule.VerboseExceptions.setVerboseExceptions;
 
 import org.mule.tck.junit4.rule.SystemProperty;
+import org.mule.tck.junit4.rule.VerboseExceptions;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import org.junit.AfterClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -23,15 +22,10 @@ public class LogCheckFlowStackTestCase extends AbstractIntegrationTestCase {
 
   // Just to ensure the previous value is set after the test
   @ClassRule
-  public static SystemProperty verboseExceptions = new SystemProperty(MULE_VERBOSE_EXCEPTIONS, Boolean.toString(false));
+  public static VerboseExceptions verboseExceptions = new VerboseExceptions(false);
 
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
-
-  @AfterClass
-  public static void afterClass() {
-    refreshVerboseExceptions();
-  }
 
   @Override
   protected String getConfigFile() {
@@ -47,8 +41,7 @@ public class LogCheckFlowStackTestCase extends AbstractIntegrationTestCase {
   }
 
   protected void runSuccesses(boolean verboseExceptions, String flowName) throws Exception {
-    System.setProperty(MULE_VERBOSE_EXCEPTIONS, Boolean.toString(verboseExceptions));
-    refreshVerboseExceptions();
+    setVerboseExceptions(verboseExceptions);
     flowRunner(flowName).run();
   }
 }

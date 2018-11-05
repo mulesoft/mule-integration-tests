@@ -26,6 +26,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import javax.inject.Inject;
 
+import org.junit.Rule;
+
 import org.mule.runtime.api.dsl.DslResolvingContext;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.meta.model.ExtensionModel;
@@ -53,6 +55,9 @@ public abstract class AbstractConfigurationFailuresTestCase extends AbstractMule
   @Inject
   private NotificationListenerRegistry notificationListenerRegistry;
 
+  @Rule
+  public TestServicesConfigurationBuilder testServicesConfigurationBuilder = new TestServicesConfigurationBuilder();
+
   protected void loadConfiguration(String configuration) throws MuleException, InterruptedException {
 
     MuleContextFactory muleContextFactory = new DefaultMuleContextFactory();
@@ -69,7 +74,7 @@ public abstract class AbstractConfigurationFailuresTestCase extends AbstractMule
       }
     });
     builders.add(createConfigurationBuilder(configuration));
-    builders.add(new TestServicesConfigurationBuilder());
+    builders.add(testServicesConfigurationBuilder);
     MuleContextBuilder contextBuilder = MuleContextBuilder.builder(APP);
     final DefaultMuleConfiguration muleConfiguration = new DefaultMuleConfiguration();
     muleConfiguration.setId(ErrorHandlingConfigurationFailuresTestCase.class.getSimpleName());
