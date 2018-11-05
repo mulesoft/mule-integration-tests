@@ -20,38 +20,38 @@
         <processor ref="flowStackAsserter2"/>
     </flow>
 
-    <flow name="flowStatic">
+    <flow name="flowStatic" initialState="stopped">
         <flow-ref name="flow"/>
     </flow>
 
-    <flow name="subFlowStatic">
+    <flow name="subFlowStatic" initialState="stopped">
         <flow-ref name="subFlow"/>
     </flow>
 
-    <flow name="flowDynamic">
+    <flow name="flowDynamic" initialState="stopped">
         <flow-ref name="#['flow']"/>
     </flow>
 
-    <flow name="subFlowDynamic">
+    <flow name="subFlowDynamic" initialState="stopped">
         <flow-ref name="#['subFlow']"/>
     </flow>
 
-    <flow name="secondFlowStatic">
+    <flow name="secondFlowStatic" initialState="stopped">
         <flow-ref name="flow"/>
         <flow-ref name="flow"/>
     </flow>
 
-    <flow name="secondSubFlowStatic">
+    <flow name="secondSubFlowStatic" initialState="stopped">
         <flow-ref name="subFlow"/>
         <flow-ref name="subFlow"/>
     </flow>
 
-    <flow name="secondFlowDynamic">
+    <flow name="secondFlowDynamic" initialState="stopped">
         <flow-ref name="#['flow']"/>
         <flow-ref name="#['flow']"/>
     </flow>
 
-    <flow name="secondSubFlowDynamic">
+    <flow name="secondSubFlowDynamic" initialState="stopped">
         <flow-ref name="#['subFlow']"/>
         <flow-ref name="#['subFlow']"/>
     </flow>
@@ -66,25 +66,25 @@
         <processor ref="flowStackAsyncAsserter2"/>
     </flow>
     
-    <flow name="flowStaticWithAsync">
+    <flow name="flowStaticWithAsync" initialState="stopped">
         <async>
             <flow-ref name="flowInAsync"/>
         </async>
     </flow>
 
-    <flow name="subFlowStaticWithAsync">
+    <flow name="subFlowStaticWithAsync" initialState="stopped">
         <async>
             <flow-ref name="subFlowInAsync"/>
         </async>
     </flow>
 
-    <flow name="flowDynamicWithAsync">
+    <flow name="flowDynamicWithAsync" initialState="stopped">
         <async>
             <flow-ref name="#['flowInAsync']"/>
         </async>
     </flow>
 
-    <flow name="subFlowDynamicWithAsync">
+    <flow name="subFlowDynamicWithAsync" initialState="stopped">
         <async>
             <flow-ref name="#['subFlowInAsync']"/>
         </async>
@@ -92,7 +92,7 @@
     
     <!-- Choice -->
     
-    <flow name="flowStaticWithChoice">
+    <flow name="flowStaticWithChoice" initialState="stopped">
         <choice>
             <when expression="#[true]">
                 <flow-ref name="flow"/>
@@ -103,7 +103,7 @@
         </choice>
     </flow>
 
-    <flow name="subFlowStaticWithChoice">
+    <flow name="subFlowStaticWithChoice" initialState="stopped">
         <choice>
             <when expression="#[true]">
                 <flow-ref name="subFlow"/>
@@ -114,7 +114,7 @@
         </choice>
     </flow>
 
-    <flow name="flowDynamicWithChoice">
+    <flow name="flowDynamicWithChoice" initialState="stopped">
         <choice>
             <when expression="#[true]">
                 <flow-ref name="#['flow']"/>
@@ -125,7 +125,7 @@
         </choice>
     </flow>
 
-    <flow name="subFlowDynamicWithChoice">
+    <flow name="subFlowDynamicWithChoice" initialState="stopped">
         <choice>
             <when expression="#[true]">
                 <flow-ref name="#['subFlow']"/>
@@ -138,7 +138,7 @@
     
     <!-- Scatter Gather single -->
     
-    <flow name="flowStaticWithScatterGather">
+    <flow name="flowStaticWithScatterGather" initialState="stopped">
         <scatter-gather>
             <route>
                 <test:processor/>
@@ -149,7 +149,7 @@
         </scatter-gather>
     </flow>
 
-    <flow name="subFlowStaticWithScatterGather">
+    <flow name="subFlowStaticWithScatterGather" initialState="stopped">
         <scatter-gather>
             <route>
                 <test:processor/>
@@ -160,7 +160,7 @@
         </scatter-gather>
     </flow>
 
-    <flow name="flowDynamicWithScatterGather">
+    <flow name="flowDynamicWithScatterGather" initialState="stopped">
         <scatter-gather>
             <route>
                 <test:processor/>
@@ -171,7 +171,7 @@
         </scatter-gather>
     </flow>
 
-    <flow name="subFlowDynamicWithScatterGather">
+    <flow name="subFlowDynamicWithScatterGather" initialState="stopped">
         <scatter-gather>
             <route>
                 <test:processor/>
@@ -184,7 +184,7 @@
     
     <!-- Scatter Gather chain -->
     
-    <flow name="flowStaticWithScatterGatherChain">
+    <flow name="flowStaticWithScatterGatherChain" initialState="stopped">
         <scatter-gather>
             <route>
                 <test:processor/>
@@ -195,7 +195,7 @@
         </scatter-gather>
     </flow>
 
-    <flow name="subFlowStaticWithScatterGatherChain">
+    <flow name="subFlowStaticWithScatterGatherChain" initialState="stopped">
         <scatter-gather>
             <route>
                 <test:processor/>
@@ -206,7 +206,7 @@
         </scatter-gather>
     </flow>
 
-    <flow name="flowDynamicWithScatterGatherChain">
+    <flow name="flowDynamicWithScatterGatherChain" initialState="stopped">
         <scatter-gather>
             <route>
                 <test:processor/>
@@ -217,7 +217,7 @@
         </scatter-gather>
     </flow>
 
-    <flow name="subFlowDynamicWithScatterGatherChain">
+    <flow name="subFlowDynamicWithScatterGatherChain" initialState="stopped">
         <scatter-gather>
             <route>
                 <test:processor/>
@@ -230,14 +230,14 @@
 
     <!-- For Each -->
 
-    <flow name="flowForEach">
+    <flow name="flowForEach" initialState="stopped">
         <foreach collection="#[['foo', 'bar']]">
             <test:processor/>
             <flow-ref name="flow"/>
         </foreach>
     </flow>
 
-    <flow name="flowSplitAggregate">
+    <flow name="flowSplitAggregate" initialState="stopped">
         <split-aggregate>
             <collection>
                 ['foo', 'bar']
@@ -253,7 +253,7 @@
         <sc:flow-stack-store />
     </flow>
     
-    <flow name="xmlSdkOperationInSubflow">
+    <flow name="xmlSdkOperationInSubflow" initialState="stopped">
         <flow-ref name="xmlSdkOperation"/>
     </flow>
     
@@ -267,11 +267,11 @@
         </error-handler>
     </flow>
     
-    <flow name="xmlSdkOperationFailAfterSubFlow">
+    <flow name="xmlSdkOperationFailAfterSubFlow" initialState="stopped">
         <flow-ref name="xmlSdkOperationFailAfter"/>
     </flow>
 
-    <flow name="xmlSdkOperationAfter">
+    <flow name="xmlSdkOperationAfter" initialState="stopped">
         <sc:set-payload-hardcoded />
         <flow-ref name="subFlow"/>
     </flow>
@@ -286,7 +286,7 @@
         <flow-ref name="subFlow"/>
     </flow>
     
-    <flow name="xmlSdkOperationErrorInSubflow">
+    <flow name="xmlSdkOperationErrorInSubflow" initialState="stopped">
         <flow-ref name="xmlSdkOperationError"/>
     </flow>
     

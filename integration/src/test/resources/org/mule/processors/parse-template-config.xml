@@ -7,115 +7,115 @@
                http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
 
-    <flow name="no-expression">
+    <flow name="no-expression" initialState="stopped">
         <parse-template>
             <content>${file::org/mule/processors/no-expression.ptem}</content>
         </parse-template>
     </flow>
 
-    <flow name="mel-expression">
+    <flow name="mel-expression" initialState="stopped">
         <parse-template>
             <content>${file::org/mule/processors/mel-expression.ptem}</content>
         </parse-template>
     </flow>
 
-    <flow name="dw-expression">
+    <flow name="dw-expression" initialState="stopped">
         <parse-template>
             <content>${file::org/mule/processors/dw-expression.ptem}</content>
         </parse-template>
     </flow>
 
-    <flow name="no-expression-from-location">
+    <flow name="no-expression-from-location" initialState="stopped">
         <parse-template location="org/mule/processors/no-expression.ptem"/>
     </flow>
 
-    <flow name="mel-expression-from-location">
+    <flow name="mel-expression-from-location" initialState="stopped">
         <parse-template location="org/mule/processors/mel-expression.ptem"/>
     </flow>
 
-    <flow name="dw-expression-from-location">
+    <flow name="dw-expression-from-location" initialState="stopped">
         <parse-template location="org/mule/processors/dw-expression.ptem"/>
     </flow>
 
-    <flow name="no-expression-inline">
+    <flow name="no-expression-inline" initialState="stopped">
         <parse-template>
             <content>This template does not have any expressions to parse</content>
         </parse-template>
     </flow>
 
-    <flow name="mel-expression-inline">
+    <flow name="mel-expression-inline" initialState="stopped">
         <parse-template>
             <content>This template has a MEL expression to parse from #[mel:flowVars.flowName] flow</content>
         </parse-template>
     </flow>
 
-    <flow name="dw-expression-inline">
+    <flow name="dw-expression-inline" initialState="stopped">
         <parse-template>
             <content>#['This template has a DW expression to parse from ' ++ vars.flowName ++ ' flow. Remember, the name of the flow is $(vars.flowName)']</content>
         </parse-template>
     </flow>
 
-    <flow name="with-target">
+    <flow name="with-target" initialState="stopped">
         <parse-template target="targetVar">
             <content>#['This template has a DW expression to parse from ' ++ vars.flowName ++ ' flow. Remember, the name of the flow is $(vars.flowName)']</content>
         </parse-template>
     </flow>
 
-    <flow name="with-target-value-no-target">
+    <flow name="with-target-value-no-target" initialState="stopped">
         <parse-template targetValue="#[payload]">
             <content>#['This template has a DW expression to parse from ' ++ vars.flowName ++ ' flow. Remember, the name of the flow is $(vars.flowName)']</content>
         </parse-template>
     </flow>
 
-    <flow name="with-custom-target-value">
+    <flow name="with-custom-target-value" initialState="stopped">
         <parse-template target="targetVar" targetValue="#[payload]">
             <content>#['This template has a DW expression to parse from ' ++ vars.flowName ++ ' flow. Remember, the name of the flow is $(vars.flowName)']</content>
         </parse-template>
     </flow>
 
-    <flow name="with-wrong-target-value">
+    <flow name="with-wrong-target-value" initialState="stopped">
         <parse-template target="targetVar" targetValue="not_an_expression">
             <content>#['This template has a DW expression to parse from ' ++ vars.flowName ++ ' flow. Remember, the name of the flow is $(vars.flowName)']</content>
         </parse-template>
     </flow>
 
-    <flow name="with-message-binding-target-value">
+    <flow name="with-message-binding-target-value" initialState="stopped">
         <parse-template target="targetVar" targetValue="#[message]">
             <content>#['This template has a DW expression to parse from ' ++ vars.flowName ++ ' flow. Remember, the name of the flow is $(vars.flowName)']</content>
         </parse-template>
     </flow>
 
-    <flow name="with-payload-from-message-binding-target-value">
+    <flow name="with-payload-from-message-binding-target-value" initialState="stopped">
         <parse-template target="targetVar" targetValue="#[message.payload]">
             <content>#['This template has a DW expression to parse from ' ++ vars.flowName ++ ' flow. Remember, the name of the flow is $(vars.flowName)']</content>
         </parse-template>
     </flow>
 
-    <flow name="nestedExpressionsFlow">
+    <flow name="nestedExpressionsFlow" initialState="stopped">
         <parse-template>
             <content>They were #[vars.quantity] #[vars.individuals] that came from #[vars.origin]</content>
         </parse-template>
     </flow>
 
-    <flow name="nestedExpressionsFlowWithNonexistentValues">
+    <flow name="nestedExpressionsFlowWithNonexistentValues" initialState="stopped">
         <parse-template>
             <content>His name is #[pepito]</content>
         </parse-template>
     </flow>
 
-    <flow name="expressionEscaped">
+    <flow name="expressionEscaped" initialState="stopped">
         <parse-template>
             <content>His name is \#[pepito]</content>
         </parse-template>
     </flow>
 
-    <flow name="nestedExpressionsAndQuoteFlow">
+    <flow name="nestedExpressionsAndQuoteFlow" initialState="stopped">
         <parse-template>
             <content>They weren't #[vars.quantity] #[vars.individuals] that came from #[vars.origin]</content>
         </parse-template>
     </flow>
 
-    <flow name="nestedQuotedExpressionsAndQuoteFlow">
+    <flow name="nestedQuotedExpressionsAndQuoteFlow" initialState="stopped">
         <parse-template>
             <content>They #['weren\'t'] #[vars.quantity] #[vars.individuals] that came from #['war']</content>
         </parse-template>
@@ -125,28 +125,28 @@
         <parse-template location="org/mule/processors/song.ptem"/>
     </flow>
 
-    <flow name="jsonTemplateFromFile">
+    <flow name="jsonTemplateFromFile" initialState="stopped">
         <parse-template location="org/mule/processors/template.json"/>
         <test:assert expression="#[payload.name == vars.name]"/>
     </flow>
 
-    <flow name="overriddenDataType">
+    <flow name="overriddenDataType" initialState="stopped">
         <parse-template location="org/mule/processors/dw-expression.ptem" outputMimeType="application/json" outputEncoding="UTF-16"/>
     </flow>
 
-    <flow name="overriddenEncodingFromMediaType">
+    <flow name="overriddenEncodingFromMediaType" initialState="stopped">
         <parse-template location="org/mule/processors/dw-expression.ptem" outputMimeType="application/json; charset=utf-16"/>
     </flow>
 
-    <flow name="encodingFromMediaTypeAndAttribute">
+    <flow name="encodingFromMediaTypeAndAttribute" initialState="stopped">
         <parse-template location="org/mule/processors/dw-expression.ptem" outputMimeType="application/json; charset=utf-8" outputEncoding="UTF-16"/>
     </flow>
 
-    <flow name="loadWithDefaultEncoding">
+    <flow name="loadWithDefaultEncoding" initialState="stopped">
         <parse-template location="org/mule/processors/invalid_encoding_template.tem"/>
     </flow>
 
-    <flow name="loadWithCustomEncoding">
+    <flow name="loadWithCustomEncoding" initialState="stopped">
         <parse-template location="org/mule/processors/invalid_encoding_template.tem" outputEncoding="US-ASCII"/>
     </flow>
 

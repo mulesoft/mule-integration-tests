@@ -15,6 +15,7 @@ import static org.junit.Assert.assertThat;
 import static org.mule.test.allure.AllureConstants.InterceptonApi.INTERCEPTION_API;
 import static org.mule.test.allure.AllureConstants.InterceptonApi.ComponentInterceptionStory.COMPONENT_INTERCEPTION_STORY;
 import static org.mule.test.heisenberg.extension.HeisenbergConnectionProvider.getActiveConnections;
+import static org.mule.test.heisenberg.extension.HeisenbergSource.resetHeisenbergSource;
 
 import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.api.exception.MuleException;
@@ -24,6 +25,7 @@ import org.mule.runtime.api.interception.SourceInterceptor;
 import org.mule.runtime.api.interception.SourceInterceptorFactory;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.test.heisenberg.extension.HeisenbergSource;
 import org.mule.test.integration.interception.ProcessorInterceptorFactoryTestCase.InterceptionParameters;
 
 import org.junit.After;
@@ -68,6 +70,8 @@ public class SourceInterceptorFactoryTestCase extends AbstractIntegrationTestCas
     SourceCallbackInterceptor.interceptionParameters.clear();
     SourceCallbackInterceptor.afterCallback = (event, thrown) -> {
     };
+
+    resetHeisenbergSource();
   }
 
   @Test

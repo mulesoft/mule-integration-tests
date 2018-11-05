@@ -13,7 +13,7 @@
         <http:request-connection host="localhost" port="${port}"/>
     </http:request-config>
 
-    <flow name="flow1">
+    <flow name="flow1" initialState="stopped">
         <flow-ref name="sub-flow" />
         <flow-ref name="sub-flow" />
     </flow>
@@ -38,7 +38,7 @@
     </sub-flow>
 
     <!-- 'Target' tests -->
-    <flow name="targetToFlow">
+    <flow name="targetToFlow" initialState="stopped">
         <flow-ref name="nestedTargetFlow" target="flowRefResult" targetValue="#[payload[0]]"/>
     </flow>
 
@@ -46,7 +46,7 @@
         <flow-ref name="nestedTargetSubFlow"/>
     </flow>
 
-    <flow name="targetToSubFlow">
+    <flow name="targetToSubFlow" initialState="stopped">
         <flow-ref name="nestedTargetSubFlow" target="flowRefResult" targetValue="#[payload[0]]"/>
     </flow>
     
@@ -55,7 +55,7 @@
     </sub-flow>
     <!-- End 'Target' tests -->
 
-    <flow name="flow2">
+    <flow name="flow2" initialState="stopped">
         <flow-ref name="#['sub-flow-' ++ vars.letter]" />
     </flow>
 
@@ -89,12 +89,12 @@
         </scatter-gather>
     </sub-flow>
 
-    <flow name="httpEcho">
+    <flow name="httpEcho" initialState="stopped">
         <http:listener config-ref="listenerConfig" path="echo"/>
         <logger/>
     </flow>
 
-    <flow name="flowRefFlowErrorNotifications">
+    <flow name="flowRefFlowErrorNotifications" initialState="stopped">
         <flow-ref name="errorFlow"/>
     </flow>
 
@@ -102,7 +102,7 @@
         <test:processor throwException="true" exceptionToThrow="java.lang.IllegalStateException"/>
     </flow>
 
-    <flow name="flowRefSubFlowErrorNotifications">
+    <flow name="flowRefSubFlowErrorNotifications" initialState="stopped">
         <flow-ref name="errorSubFlow"/>
     </flow>
 
@@ -112,7 +112,7 @@
 
     <!-- Infinite recursion handling -->
 
-    <flow name="recursiveCaller">
+    <flow name="recursiveCaller" initialState="stopped">
         <set-variable variableName="level" value="#[0]" />
         <flow-ref name="recursive"/>
     </flow>
@@ -121,7 +121,7 @@
         <flow-ref name="recursive"/>
     </flow>
 
-    <flow name="recursiveDynamicCaller">
+    <flow name="recursiveDynamicCaller" initialState="stopped">
         <set-variable variableName="level" value="#[0]" />
         <flow-ref name="recursiveDynamic"/>
     </flow>
@@ -130,7 +130,7 @@
         <flow-ref name="#['recursiveDynamic']"/>
     </flow>
 
-    <flow name="recursiveSubFlowCaller">
+    <flow name="recursiveSubFlowCaller" initialState="stopped">
         <set-variable variableName="level" value="#[0]" />
         <flow-ref name="recursiveSubFlow"/>
     </flow>
@@ -139,7 +139,7 @@
         <flow-ref name="recursiveSubFlow"/>
     </sub-flow>
 
-    <flow name="recursiveSubFlowDynamicCaller">
+    <flow name="recursiveSubFlowDynamicCaller" initialState="stopped">
         <set-variable variableName="level" value="#[0]" />
         <flow-ref name="recursiveDynamicSubFlow"/>
     </flow>
