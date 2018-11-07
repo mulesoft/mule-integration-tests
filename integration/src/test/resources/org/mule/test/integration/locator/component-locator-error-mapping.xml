@@ -6,14 +6,6 @@
        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
        http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
 
-    <http:listener-config name="HTTP_Listener_config">
-        <http:listener-connection host="0.0.0.0" port="8081" />
-    </http:listener-config>
-    
-    <http:request-config name="HTTP_Request_configuration">
-        <http:request-connection host="localhost" port="8082"/>
-    </http:request-config>
-
     <configuration defaultErrorHandler-ref="errorHandler" />
 
     <error-handler name="errorHandler">
@@ -26,14 +18,12 @@
     </error-handler>
 
     <flow name="mainFlow" >
-        <http:listener config-ref="HTTP_Listener_config" path="/"/>
-        <http:request method="POST" config-ref="HTTP_Request_configuration" responseTimeout="300000" path="/">
-            <http:headers ><![CDATA[#[output applicaton/java
----
-{
-	"Content-Type" : attributes.headers.'content-type'
-}]]]></http:headers>
-        </http:request>
+        <scheduler>
+            <scheduling-strategy>
+                <fixed-frequency frequency="1000"/>
+            </scheduling-strategy>
+        </scheduler>
+        <http:request method="POST" url="http://localhost:8080/sample"/>
         <logger/>
     </flow>
 
