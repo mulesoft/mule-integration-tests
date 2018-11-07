@@ -36,7 +36,6 @@ import org.junit.Test;
 @Story(SEARCH_CONFIGURATION)
 public class ErrorHandlerLazyInitTestCase extends AbstractIntegrationTestCase {
 
-  private static final int TOTAL_NUMBER_OF_LOCATIONS = 107;
   @Inject
   private Registry registry;
 
@@ -62,7 +61,7 @@ public class ErrorHandlerLazyInitTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  public void customErrorTypesShouldDiscovered() throws Exception {
+  public void customErrorTypesShouldDiscovered() {
     lazyComponentInitializer.initializeComponent(builder().globalName("mainFlow").build());
 
     ErrorTypeRepository errorTypeRepository = registry.lookupByType(ErrorTypeRepository.class)
