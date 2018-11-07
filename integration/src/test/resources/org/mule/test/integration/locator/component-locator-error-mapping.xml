@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xsi:schemaLocation="
+       http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+       http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+
+    <http:listener-config name="HTTP_Listener_config">
+        <http:listener-connection host="0.0.0.0" port="8081" />
+    </http:listener-config>
+    
+    <http:request-config name="HTTP_Request_configuration">
+        <http:request-connection host="localhost" port="8082"/>
+    </http:request-config>
+
+    <configuration defaultErrorHandler-ref="errorHandler" />
+
+    <error-handler name="errorHandler">
+        <on-error-continue type="APP:ERROR_TYPE_1">
+            <logger />
+        </on-error-continue>
+        <on-error-continue type="APP:ERROR_TYPE_2">
+            <logger />
+        </on-error-continue>
+    </error-handler>
+
+    <flow name="mainFlow" >
+        <http:listener config-ref="HTTP_Listener_config" path="/"/>
+        <http:request method="POST" config-ref="HTTP_Request_configuration" responseTimeout="300000" path="/">
+            <http:headers ><![CDATA[#[output applicaton/java
+---
+{
+	"Content-Type" : attributes.headers.'content-type'
+}]]]></http:headers>
+        </http:request>
+        <logger/>
+    </flow>
+
+    <flow name="errorMappingFlowDeclaration">
+        <http:request method="GET" config-ref="HTTP_Request_configuration">
+            <error-mapping targetType="APP:ERROR_TYPE_1"/>
+        </http:request>
+    </flow>
+
+    <flow name="flowSplitterCustomErrorType">
+        <splitter expression="#[payload]" filterOnErrorType="APP:ERROR_TYPE_2"/>
+    </flow>
+
+
+</mule>
+
