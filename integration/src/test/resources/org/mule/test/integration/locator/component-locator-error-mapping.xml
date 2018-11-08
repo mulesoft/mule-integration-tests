@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xsi:schemaLocation="
+       http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+       http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+
+    <configuration defaultErrorHandler-ref="errorHandler" />
+
+    <error-handler name="errorHandler">
+        <on-error-continue type="APP:ERROR_TYPE_1">
+            <logger />
+        </on-error-continue>
+        <on-error-continue type="APP:ERROR_TYPE_2">
+            <logger />
+        </on-error-continue>
+    </error-handler>
+
+    <flow name="mainFlow" >
+        <scheduler>
+            <scheduling-strategy>
+                <fixed-frequency frequency="1000"/>
+            </scheduling-strategy>
+        </scheduler>
+        <http:request method="POST" url="http://localhost:8080/sample"/>
+        <logger/>
+    </flow>
+
+    <flow name="errorMappingFlowDeclaration">
+        <http:request method="GET" config-ref="HTTP_Request_configuration">
+            <error-mapping targetType="APP:ERROR_TYPE_1"/>
+        </http:request>
+    </flow>
+
+    <flow name="flowSplitterCustomErrorType">
+        <splitter expression="#[payload]" filterOnErrorType="APP:ERROR_TYPE_2"/>
+    </flow>
+
+
+</mule>
+
