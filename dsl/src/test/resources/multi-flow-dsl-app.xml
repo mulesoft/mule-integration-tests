@@ -34,7 +34,12 @@
             <logger message="Message Sent"/>
         </foreach>
     </flow>
-              
+
+    <flow name="jmsListener">
+        <jms:listener config-ref="config" transactionType="XA" destination="listen-queue" primaryNodeOnly="false"/>
+        <jms:consume config-ref="config" destination="#[finalDestination]" maximumWait="1000"/>
+    </flow>
+
     <flow name="bridge-receiver">
         <jms:consume config-ref="config" destination="#[finalDestination]" maximumWait="1000"/>
     </flow>

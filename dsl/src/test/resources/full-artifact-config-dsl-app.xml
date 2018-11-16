@@ -34,13 +34,13 @@
     </file:config>
 
     <wsc:config name="wscConfig">
-        <expiration-policy maxIdleTime="1" timeUnit="MINUTES" />
         <wsc:connection address="http://www.webservicex.com/globalweather.asmx"
                         mtomEnabled="false"
                         port="GlobalWeatherSoap"
                         service="GlobalWeather"
                         soapVersion="SOAP11"
                         wsdlLocation="http://www.webservicex.com/globalweather.asmx?WSDL"/>
+        <expiration-policy maxIdleTime="1" timeUnit="MINUTES" />
     </wsc:config>
 
     <db:config name="dbConfig">
@@ -118,7 +118,7 @@
 
         <choice>
             <when expression="#[true]">
-                <db:bulk-insert>
+                <db:bulk-insert transactionalAction="ALWAYS_JOIN">
                     <db:sql>INSERT INTO PLANET(POSITION, NAME) VALUES (:position, :name)</db:sql>
                     <db:parameter-types>
                         <db:parameter-type key="name" type="VARCHAR" />
