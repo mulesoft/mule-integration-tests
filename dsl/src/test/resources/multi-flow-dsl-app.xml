@@ -35,8 +35,8 @@
         </foreach>
     </flow>
 
-    <flow name="jmsListener">
-        <jms:listener config-ref="config" transactionType="XA" destination="listen-queue" primaryNodeOnly="false"/>
+    <flow initialState="stopped" name="jmsListener">
+        <jms:listener config-ref="config" transactionType="LOCAL" destination="listen-queue" primaryNodeOnly="false"/>
         <jms:consume config-ref="config" destination="#[finalDestination]" maximumWait="1000"/>
     </flow>
 

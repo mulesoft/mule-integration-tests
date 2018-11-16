@@ -247,7 +247,24 @@
       "kind": "CONSTRUCT",
       "customConfigurationParameters": [],
       "metadataProperties": {},
-      "parameterGroups": [],
+      "parameterGroups": [
+        {
+          "name": "General",
+          "customConfigurationParameters": [],
+          "metadataProperties": {},
+          "parameters": [
+            {
+              "name": "initialState",
+              "metadataProperties": {},
+              "value": {
+                "text": "stopped",
+                "isCData": false,
+                "type": "STRING"
+              }
+            }
+          ]
+        }
+      ],
       "components": [
         {
           "name": "listener",
@@ -274,7 +291,7 @@
                   "name": "transactionType",
                   "metadataProperties": {},
                   "value": {
-                    "text": "XA",
+                    "text": "LOCAL",
                     "isCData": false,
                     "type": "STRING"
                   }
