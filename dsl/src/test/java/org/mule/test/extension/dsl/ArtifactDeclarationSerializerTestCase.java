@@ -11,6 +11,7 @@ import static java.util.Arrays.asList;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.mule.runtime.api.meta.model.parameter.ParameterGroupModel.ADVANCED;
 import static org.mule.runtime.api.meta.model.parameter.ParameterGroupModel.CONNECTION;
 import static org.mule.runtime.app.declaration.api.fluent.ElementDeclarer.newArtifact;
 import static org.mule.runtime.app.declaration.api.fluent.ElementDeclarer.newListValue;
@@ -24,6 +25,7 @@ import static org.mule.runtime.app.declaration.api.fluent.SimpleValueType.STRING
 import static org.mule.runtime.core.api.util.IOUtils.getResourceAsString;
 import static org.mule.runtime.extension.api.ExtensionConstants.EXPIRATION_POLICY_PARAMETER_NAME;
 import static org.mule.runtime.extension.api.ExtensionConstants.POOLING_PROFILE_PARAMETER_NAME;
+import static org.mule.runtime.extension.api.ExtensionConstants.PRIMARY_NODE_ONLY_PARAMETER_NAME;
 import static org.mule.runtime.extension.api.ExtensionConstants.RECONNECTION_CONFIG_PARAMETER_NAME;
 import static org.mule.runtime.extension.api.ExtensionConstants.RECONNECTION_STRATEGY_PARAMETER_NAME;
 import static org.mule.runtime.extension.api.ExtensionConstants.REDELIVERY_POLICY_PARAMETER_NAME;
@@ -31,6 +33,8 @@ import static org.mule.runtime.extension.api.ExtensionConstants.STREAMING_STRATE
 import static org.mule.runtime.extension.api.ExtensionConstants.TARGET_PARAMETER_NAME;
 import static org.mule.runtime.extension.api.ExtensionConstants.TARGET_VALUE_PARAMETER_NAME;
 import static org.mule.runtime.extension.api.ExtensionConstants.TLS_PARAMETER_NAME;
+import static org.mule.runtime.extension.api.ExtensionConstants.TRANSACTIONAL_ACTION_PARAMETER_NAME;
+import static org.mule.runtime.extension.api.ExtensionConstants.TRANSACTIONAL_TYPE_PARAMETER_NAME;
 import static org.mule.runtime.extension.api.declaration.type.ReconnectionStrategyTypeBuilder.COUNT;
 import static org.mule.runtime.extension.api.declaration.type.ReconnectionStrategyTypeBuilder.FREQUENCY;
 import static org.mule.runtime.extension.api.declaration.type.ReconnectionStrategyTypeBuilder.RECONNECTION_CONFIG;
@@ -204,7 +208,24 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
                     .withParameterGroup(newParameterGroup()
                         .withParameter("message", createStringParameter("Message Sent"))
                         .getDeclaration())
-
+                    .getDeclaration())
+                .getDeclaration())
+            .getDeclaration())
+        .withGlobalElement(core.newConstruct("flow").withRefName("jmsListener")
+            .withParameterGroup(group -> group.withParameter("initialState", createStringParameter("stopped")))
+            .withComponent(jms.newSource("listener")
+                .withConfig("config")
+                .withParameterGroup(newParameterGroup()
+                    .withParameter("destination", "listen-queue")
+                    .withParameter(TRANSACTIONAL_TYPE_PARAMETER_NAME, createStringParameter("LOCAL"))
+                    .withParameter(PRIMARY_NODE_ONLY_PARAMETER_NAME, createBooleanParameter("false"))
+                    .getDeclaration())
+                .getDeclaration())
+            .withComponent(jms.newOperation("consume")
+                .withConfig("config")
+                .withParameterGroup(newParameterGroup()
+                    .withParameter("destination", createStringParameter("#[finalDestination]"))
+                    .withParameter("maximumWait", createNumberParameter("1000"))
                     .getDeclaration())
                 .getDeclaration())
             .getDeclaration())
@@ -435,6 +456,10 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
                         .withParameter("expression", createStringParameter("#[true]"))
                         .getDeclaration())
                     .withComponent(db.newOperation("bulkInsert")
+                        .withParameterGroup(newParameterGroup()
+                            .withParameter(TRANSACTIONAL_ACTION_PARAMETER_NAME,
+                                           createStringParameter("ALWAYS_JOIN"))
+                            .getDeclaration())
                         .withParameterGroup(newParameterGroup("Query")
                             .withParameter("sql",
                                            createStringParameter("INSERT INTO PLANET(POSITION, NAME) VALUES (:position, :name)"))
