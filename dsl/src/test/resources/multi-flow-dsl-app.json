@@ -241,6 +241,115 @@
       ]
     },
     {
+      "refName": "jmsListener",
+      "name": "flow",
+      "declaringExtension": "mule",
+      "kind": "CONSTRUCT",
+      "customConfigurationParameters": [],
+      "metadataProperties": {},
+      "parameterGroups": [
+        {
+          "name": "General",
+          "customConfigurationParameters": [],
+          "metadataProperties": {},
+          "parameters": [
+            {
+              "name": "initialState",
+              "metadataProperties": {},
+              "value": {
+                "text": "stopped",
+                "isCData": false,
+                "type": "STRING"
+              }
+            }
+          ]
+        }
+      ],
+      "components": [
+        {
+          "name": "listener",
+          "declaringExtension": "JMS",
+          "kind": "SOURCE",
+          "customConfigurationParameters": [],
+          "metadataProperties": {},
+          "parameterGroups": [
+            {
+              "name": "General",
+              "customConfigurationParameters": [],
+              "metadataProperties": {},
+              "parameters": [
+                {
+                  "name": "transactionType",
+                  "metadataProperties": {},
+                  "value": {
+                    "text": "LOCAL",
+                    "isCData": false,
+                    "type": "STRING"
+                  }
+                },
+                {
+                  "name": "primaryNodeOnly",
+                  "metadataProperties": {},
+                  "value": {
+                    "text": "false",
+                    "isCData": false,
+                    "type": "BOOLEAN"
+                  }
+                },
+                {
+                  "name": "destination",
+                  "metadataProperties": {},
+                  "value": {
+                    "text": "listen-queue",
+                    "isCData": false,
+                    "type": "STRING"
+                  }
+                }
+              ]
+            }
+          ],
+          "configRef": "config",
+          "components": []
+        },
+        {
+          "name": "consume",
+          "declaringExtension": "JMS",
+          "kind": "OPERATION",
+          "customConfigurationParameters": [],
+          "metadataProperties": {},
+          "parameterGroups": [
+            {
+              "name": "General",
+              "customConfigurationParameters": [],
+              "metadataProperties": {},
+              "parameters": [
+                {
+                  "name": "destination",
+                  "metadataProperties": {},
+                  "value": {
+                    "text": "#[finalDestination]",
+                    "isCData": false,
+                    "type": "STRING"
+                  }
+                },
+                {
+                  "name": "maximumWait",
+                  "metadataProperties": {},
+                  "value": {
+                    "text": "1000",
+                    "isCData": false,
+                    "type": "NUMBER"
+                  }
+                }
+              ]
+            }
+          ],
+          "configRef": "config",
+          "components": []
+        }
+      ]
+    },
+    {
       "refName": "bridge-receiver",
       "name": "flow",
       "declaringExtension": "mule",

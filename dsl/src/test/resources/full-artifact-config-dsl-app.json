@@ -722,42 +722,6 @@
               },
               "properties": {},
               "name": "doc:id"
-            },
-            {
-              "value": {
-                "text": "testBuilder",
-                "isCData": false,
-                "type": "STRING"
-              },
-              "properties": {},
-              "name": "path"
-            },
-            {
-              "value": {
-                "text": "docUUID",
-                "isCData": false,
-                "type": "STRING"
-              },
-              "properties": {},
-              "name": "doc:id"
-            },
-            {
-              "value": {
-                "text": "testBuilder",
-                "isCData": false,
-                "type": "STRING"
-              },
-              "properties": {},
-              "name": "path"
-            },
-            {
-              "value": {
-                "text": "docUUID",
-                "isCData": false,
-                "type": "STRING"
-              },
-              "properties": {},
-              "name": "doc:id"
             }
           ],
           "metadataProperties": {},
@@ -891,6 +855,22 @@
                   "customConfigurationParameters": [],
                   "metadataProperties": {},
                   "parameterGroups": [
+                    {
+                      "name": "General",
+                      "customConfigurationParameters": [],
+                      "metadataProperties": {},
+                      "parameters": [
+                        {
+                          "name": "transactionalAction",
+                          "metadataProperties": {},
+                          "value": {
+                            "text": "ALWAYS_JOIN",
+                            "isCData": false,
+                            "type": "STRING"
+                          }
+                        }
+                      ]
+                    },
                     {
                       "name": "Query",
                       "customConfigurationParameters": [],
