@@ -15,6 +15,6 @@ public class ErrorHandlerNotificationLogger extends AbstractNotificationLogger<E
 
   @Override
   public boolean isBlocking() {
-    return false;
+    return true;
   }
 }
