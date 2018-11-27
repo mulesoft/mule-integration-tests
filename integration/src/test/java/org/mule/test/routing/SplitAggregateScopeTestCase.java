@@ -145,7 +145,7 @@ public class SplitAggregateScopeTestCase extends AbstractIntegrationTestCase {
   public void routeWithExpressionException() {
     assertRouteException("routeWithExpressionException", EXCEPTION_MESSAGE_TITLE_PREFIX
         + "\t1: org.mule.runtime.core.api.expression.ExpressionRuntimeException: \"Script 'invalidExpr ' has errors: \n"
-        + "\tUnable to resolve reference of invalidExpr. at 1 : 1\" evaluating expression: \"invalidExpr\".",
+        + "\tUnable to resolve reference of invalidExpr. at 1 : 1\" evaluating expression: \"#[invalidExpr]\".",
                          ExpressionRuntimeException.class, EXPRESSION);
   }
 
