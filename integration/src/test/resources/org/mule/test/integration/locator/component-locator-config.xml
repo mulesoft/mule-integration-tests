@@ -14,6 +14,12 @@
 
     <configuration defaultErrorHandler-ref="globalErrorHandler" defaultResponseTimeout="2001"/>
 
+    <sub-flow name="untilSuccessfulFlow">
+        <until-successful maxRetries="5" millisBetweenRetries="10000">
+            <set-payload value="#[2]"/>
+        </until-successful>
+    </sub-flow>
+
     <error-handler name="globalErrorHandler">
         <on-error-propagate>
             <test:queue name="globalErrorHandlerQueue"/>
