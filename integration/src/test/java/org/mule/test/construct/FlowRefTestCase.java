@@ -214,20 +214,20 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  @Ignore("How to handle backpressure on flow-ref's is not defined yet, but this test will provide a starting point in the   future...")
+  @Ignore("How to handle backpressure on flow-ref's is not defined yet, but this test will provide a starting point in the future...")
   public void backpressureFlowRef() throws Exception {
     HttpRequest request =
         HttpRequest.builder()
             .uri(format("http://localhost:%s/backpressureFlowRef?ref=backpressureFlowRefInner", port.getNumber())).method(GET)
             .build();
 
-    int nThreads = (getRuntime().availableProcessors() * 4);
+    int nThreads = (getRuntime().availableProcessors() * 4) + 1;
 
     for (int i = 0; i < nThreads; ++i) {
       sendAsyncs.add(httpClient.sendAsync(request, HttpRequestOptions.builder().responseTimeout(RECEIVE_TIMEOUT * 2).build()));
     }
 
-    probe(RECEIVE_TIMEOUT, 50, () -> awaiting.get() >= 16);
+    probe(RECEIVE_TIMEOUT, 50, () -> awaiting.get() >= getRuntime().availableProcessors() * 2);
     probe(RECEIVE_TIMEOUT, 50, () -> {
       assertThat(httpClient.send(request, HttpRequestOptions.builder().responseTimeout(1000).build()).getStatusCode(),
                  is(SERVICE_UNAVAILABLE.getStatusCode()));
@@ -242,13 +242,13 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
             .uri(format("http://localhost:%s/backpressureFlowRef?ref=backpressureFlowRefInnerSub", port.getNumber()))
             .method(GET).build();
 
-    int nThreads = (getRuntime().availableProcessors() * 4);
+    int nThreads = (getRuntime().availableProcessors() * 4) + 1;
 
     for (int i = 0; i < nThreads; ++i) {
       sendAsyncs.add(httpClient.sendAsync(request, HttpRequestOptions.builder().responseTimeout(RECEIVE_TIMEOUT * 2).build()));
     }
 
-    probe(RECEIVE_TIMEOUT, 50, () -> awaiting.get() >= 16);
+    probe(RECEIVE_TIMEOUT, 50, () -> awaiting.get() >= getRuntime().availableProcessors() * 2);
     probe(RECEIVE_TIMEOUT, 50, () -> {
       assertThat(httpClient.send(request, HttpRequestOptions.builder().responseTimeout(1000).build()).getStatusCode(),
                  is(SERVICE_UNAVAILABLE.getStatusCode()));
