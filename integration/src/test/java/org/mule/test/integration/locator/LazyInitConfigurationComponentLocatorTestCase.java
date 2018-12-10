@@ -80,15 +80,13 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
     return configurationBuilder;
   }
 
-  @Description("Initialize same flow twice")
+  @Description("Initialize same sub-flow twice, test component should not fail when disposing")
   @Test
   public void lazyMuleContextInitializeMultipleTimesSubFlowWithUntilSuccessful() {
-    System.out.println("1)");
     lazyComponentInitializer
-            .initializeComponents(componentLocation -> componentLocation.getLocation().equals("untilSuccessfulFlow"));
-    System.out.println("2)");
+        .initializeComponents(componentLocation -> componentLocation.getLocation().equals("untilSuccessfulFlow"));
     lazyComponentInitializer
-            .initializeComponents(componentLocation -> componentLocation.getLocation().equals("untilSuccessfulFlow"));
+        .initializeComponents(componentLocation -> componentLocation.getLocation().equals("untilSuccessfulFlow"));
   }
 
   @Description("Lazy init should not create components until an operation is done")

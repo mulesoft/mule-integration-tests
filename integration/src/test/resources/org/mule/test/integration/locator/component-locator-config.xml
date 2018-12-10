@@ -16,7 +16,7 @@
 
     <sub-flow name="untilSuccessfulFlow">
         <until-successful maxRetries="5" millisBetweenRetries="10000">
-            <set-payload value="#[2]"/>
+            <test:processor class="org.mule.test.integration.locator.processor.CustomTestComponent"/>
         </until-successful>
     </sub-flow>
 
