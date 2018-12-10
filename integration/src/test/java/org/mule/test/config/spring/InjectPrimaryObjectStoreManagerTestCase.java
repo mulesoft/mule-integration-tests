@@ -27,12 +27,12 @@ import javax.inject.Inject;
 
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 @RunnerDelegateTo(MockitoJUnitRunner.class)
 public class InjectPrimaryObjectStoreManagerTestCase extends AbstractIntegrationTestCase {
 
-  @Mock
+  @Mock(lenient = true)
   private ObjectStore overridenBaseStore;
 
   @Override
