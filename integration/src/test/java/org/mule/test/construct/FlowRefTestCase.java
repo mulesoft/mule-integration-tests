@@ -6,6 +6,9 @@
  */
 package org.mule.test.construct;
 
+import static java.lang.Runtime.getRuntime;
+import static java.lang.String.format;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static java.util.stream.Collectors.toList;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -21,24 +24,43 @@ import static org.mule.runtime.api.notification.MessageProcessorNotification.MES
 import static org.mule.runtime.api.notification.MessageProcessorNotification.MESSAGE_PROCESSOR_PRE_INVOKE;
 import static org.mule.runtime.core.api.exception.Errors.CORE_NAMESPACE_NAME;
 import static org.mule.runtime.core.api.exception.Errors.Identifiers.ROUTING_ERROR_IDENTIFIER;
+import static org.mule.runtime.http.api.HttpConstants.HttpStatus.SERVICE_UNAVAILABLE;
+import static org.mule.runtime.http.api.HttpConstants.Method.GET;
+import static org.mule.tck.probe.PollingProber.probe;
 
+import org.mule.functional.api.component.EventCallback;
 import org.mule.functional.api.exception.ExpectedError;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.notification.MessageProcessorNotification;
 import org.mule.runtime.api.notification.MessageProcessorNotificationListener;
+import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.event.CoreEvent;
+import org.mule.runtime.http.api.HttpService;
+import org.mule.runtime.http.api.client.HttpRequestOptions;
+import org.mule.runtime.http.api.domain.message.request.HttpRequest;
+import org.mule.runtime.http.api.domain.message.response.HttpResponse;
+import org.mule.service.http.TestHttpClient;
+import org.mule.tck.junit4.FlakinessDetectorTestRunner;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.test.runner.RunnerDelegateTo;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import io.qameta.allure.Issue;
 
+@RunnerDelegateTo(FlakinessDetectorTestRunner.class)
 public class FlowRefTestCase extends AbstractIntegrationTestCase {
 
   private static final String CONTEXT_DEPTH_MESSAGE = "Too many child contexts nested.";
@@ -49,9 +71,29 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
   @Rule
   public DynamicPort port = new DynamicPort("port");
 
+  private List<Future<HttpResponse>> sendAsyncs = new ArrayList<>();
+
+  @Rule
+  public TestHttpClient httpClient = new TestHttpClient.Builder(getService(HttpService.class)).build();
+
   @Override
   protected String getConfigFile() {
     return "org/mule/test/construct/flow-ref.xml";
+  }
+
+  @Before
+  public void before() {
+    sendAsyncs = new ArrayList<>();
+    latch = new CountDownLatch(1);
+    awaiting.set(0);
+  }
+
+  @After
+  public void after() throws Exception {
+    latch.countDown();
+    for (Future<HttpResponse> sentAsync : sendAsyncs) {
+      sentAsync.get(RECEIVE_TIMEOUT, SECONDS);
+    }
   }
 
   @Test
@@ -169,5 +211,98 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
   @Test
   public void recursiveSubFlowDynamic() throws Exception {
     flowRunner("recursiveSubFlowDynamicCaller").runExpectingException(hasMessage(containsString(CONTEXT_DEPTH_MESSAGE)));
+  }
+
+  @Test
+  @Ignore("How to handle backpressure on flow-ref's is not defined yet, but this test will provide a starting point in the   future...")
+  public void backpressureFlowRef() throws Exception {
+    HttpRequest request =
+        HttpRequest.builder()
+            .uri(format("http://localhost:%s/backpressureFlowRef?ref=backpressureFlowRefInner", port.getNumber())).method(GET)
+            .build();
+
+    int nThreads = (getRuntime().availableProcessors() * 4);
+
+    for (int i = 0; i < nThreads; ++i) {
+      sendAsyncs.add(httpClient.sendAsync(request, HttpRequestOptions.builder().responseTimeout(RECEIVE_TIMEOUT * 2).build()));
+    }
+
+    probe(RECEIVE_TIMEOUT, 50, () -> awaiting.get() >= 16);
+    probe(RECEIVE_TIMEOUT, 50, () -> {
+      assertThat(httpClient.send(request, HttpRequestOptions.builder().responseTimeout(1000).build()).getStatusCode(),
+                 is(SERVICE_UNAVAILABLE.getStatusCode()));
+      return true;
+    });
+  }
+
+  @Test
+  public void backpressureFlowRefSub() throws Exception {
+    HttpRequest request =
+        HttpRequest.builder()
+            .uri(format("http://localhost:%s/backpressureFlowRef?ref=backpressureFlowRefInnerSub", port.getNumber()))
+            .method(GET).build();
+
+    int nThreads = (getRuntime().availableProcessors() * 4);
+
+    for (int i = 0; i < nThreads; ++i) {
+      sendAsyncs.add(httpClient.sendAsync(request, HttpRequestOptions.builder().responseTimeout(RECEIVE_TIMEOUT * 2).build()));
+    }
+
+    probe(RECEIVE_TIMEOUT, 50, () -> awaiting.get() >= 16);
+    probe(RECEIVE_TIMEOUT, 50, () -> {
+      assertThat(httpClient.send(request, HttpRequestOptions.builder().responseTimeout(1000).build()).getStatusCode(),
+                 is(SERVICE_UNAVAILABLE.getStatusCode()));
+      return true;
+    });
+  }
+
+  @Test
+  public void backpressureFlowRefMaxConcurrency() throws Exception {
+    HttpRequest request =
+        HttpRequest.builder()
+            .uri(format("http://localhost:%s/backpressureFlowRefMaxConcurrency?ref=backpressureFlowRefInner", port.getNumber()))
+            .method(GET)
+            .build();
+
+    int nThreads = 2;
+
+    for (int i = 0; i < nThreads; ++i) {
+      sendAsyncs.add(httpClient.sendAsync(request, HttpRequestOptions.builder().responseTimeout(RECEIVE_TIMEOUT * 2).build()));
+    }
+
+    probe(RECEIVE_TIMEOUT, 50, () -> awaiting.get() >= 1);
+    assertThat(httpClient.send(request).getStatusCode(), is(SERVICE_UNAVAILABLE.getStatusCode()));
+  }
+
+  @Test
+  public void backpressureFlowRefMaxConcurrencySub() throws Exception {
+    HttpRequest request =
+        HttpRequest.builder()
+            .uri(format("http://localhost:%s/backpressureFlowRefMaxConcurrency?ref=backpressureFlowRefInnerSub",
+                        port.getNumber()))
+            .method(GET)
+            .build();
+
+    int nThreads = 2;
+
+    for (int i = 0; i < nThreads; ++i) {
+      sendAsyncs.add(httpClient.sendAsync(request, HttpRequestOptions.builder().responseTimeout(RECEIVE_TIMEOUT * 2).build()));
+    }
+
+    probe(RECEIVE_TIMEOUT, 50, () -> awaiting.get() >= 1);
+    assertThat(httpClient.send(request).getStatusCode(), is(SERVICE_UNAVAILABLE.getStatusCode()));
+  }
+
+  private static CountDownLatch latch;
+  private static AtomicInteger awaiting = new AtomicInteger();
+
+  public static class LatchAwaitCallback implements EventCallback {
+
+    @Override
+    public void eventReceived(CoreEvent event, Object component, MuleContext muleContext) throws Exception {
+      awaiting.incrementAndGet();
+      latch.await();
+    }
+
   }
 }
