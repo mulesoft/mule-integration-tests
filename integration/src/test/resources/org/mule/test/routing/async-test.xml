@@ -7,7 +7,7 @@
                http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
                http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
 
-    <flow name="ps-threading-propagated">
+    <flow name="ps-threading-propagated" initialState="stopped">
         <logger message="Before async... (#[payload])" />
         <async>
             <logger message="In async... (#[payload])" />
@@ -20,7 +20,7 @@
         </async>
     </flow>
     
-    <flow name="with-flow-max-concurrency" maxConcurrency="${maxConcurrency}">
+    <flow name="with-flow-max-concurrency" maxConcurrency="${maxConcurrency}" initialState="stopped">
         <logger message="Before async... (#[payload])" />
         <async>
             <logger message="In async... (#[payload])" />
@@ -34,7 +34,7 @@
         <test:queue name="asyncDispatched"/>
     </flow>
     
-    <flow name="within-subflow-doesnt-use-flow-max-concurrency" maxConcurrency="1">
+    <flow name="within-subflow-doesnt-use-flow-max-concurrency" maxConcurrency="1" initialState="stopped">
         <flow-ref name="sf-within-subflow-doesnt-use-flow-max-concurrency"/>
     </flow>
 

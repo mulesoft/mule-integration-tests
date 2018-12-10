@@ -148,4 +148,28 @@
         <flow-ref name="#['recursiveDynamicSubFlow']"/>
     </sub-flow>
 
+    <!-- Back-pressure with flow-ref -->
+
+    <flow name="backpressureFlowRefOuter">
+        <http:listener config-ref="listenerConfig" path="backpressureFlowRef"/>
+
+        <flow-ref name="#[attributes.queryParams.ref]"/>
+    </flow>
+
+    <flow name="backpressureFlowRefOuterMaxConcurrency" maxConcurrency="1">
+        <http:listener config-ref="listenerConfig" path="backpressureFlowRefMaxConcurrency"/>
+
+        <flow-ref name="#[attributes.queryParams.ref]"/>
+    </flow>
+
+    <flow name="backpressureFlowRefInner">
+        <test:processor processingType="CPU_INTENSIVE">
+            <test:callback class="org.mule.test.construct.FlowRefTestCase$LatchAwaitCallback"/>
+        </test:processor>
+    </flow>
+    <sub-flow name="backpressureFlowRefInnerSub">
+        <test:processor processingType="CPU_INTENSIVE">
+            <test:callback class="org.mule.test.construct.FlowRefTestCase$LatchAwaitCallback"/>
+        </test:processor>
+    </sub-flow>
 </mule>
