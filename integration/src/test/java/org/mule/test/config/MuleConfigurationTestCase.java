@@ -36,7 +36,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 @SmallTest
 @RunWith(MockitoJUnitRunner.class)
@@ -59,8 +59,6 @@ public class MuleConfigurationTestCase extends AbstractMuleTestCase {
   public void setUp() {
     when(mockedClusterService.isPrimaryPollingInstance()).thenReturn(true);
     when(mockedConfigurationProperties.resolveStringProperty(anyString())).thenReturn(empty());
-    when(mockedConfigurationProperties.resolveBooleanProperty(anyString())).thenReturn(empty());
-    when(mockedConfigurationProperties.resolveProperty(anyString())).thenReturn(empty());
     testServicesConfigurationBuilder.registerAdditionalService("mockedClusterService", mockedClusterService);
     testServicesConfigurationBuilder.registerAdditionalService("mockedConfigurationProperties", mockedConfigurationProperties);
   }

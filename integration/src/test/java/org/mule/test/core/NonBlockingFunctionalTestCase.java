@@ -21,8 +21,6 @@ import org.junit.Test;
 
 public class NonBlockingFunctionalTestCase extends AbstractIntegrationTestCase {
 
-  public static String FOO = "foo";
-
   @Override
   protected String getConfigFile() {
     return "non-blocking-test-config.xml";
