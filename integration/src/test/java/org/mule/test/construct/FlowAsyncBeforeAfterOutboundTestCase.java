@@ -7,9 +7,7 @@
 package org.mule.test.construct;
 
 import static java.lang.Thread.currentThread;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 import static org.mule.functional.junit4.TestLegacyMessageUtils.getInboundProperty;
 import static org.mule.functional.junit4.TestLegacyMessageUtils.getOutboundProperty;
@@ -69,6 +67,7 @@ public class FlowAsyncBeforeAfterOutboundTestCase extends AbstractIntegrationTes
                not(equalTo(getOutboundProperty(msgAsync, "async-thread"))));
     assertThat(getOutboundProperty(msgOut, "request-response-thread"),
                not(equalTo(getOutboundProperty(msgAsync, "async-thread"))));
+    assertThat(getOutboundProperty(msgAsync, "async-thread"), not(containsString("ring-buffer")));
   }
 
   public static class ThreadSensingMessageProcessor implements Processor {
