@@ -71,18 +71,13 @@ public class RedeliveryPolicyTestCase extends AbstractIntegrationTestCase {
   public void redeliveryPolicyDoesntUseCpuLite() throws Exception {
     final int dispatchs = (getRuntime().availableProcessors() * 2) + 1;
 
-    try {
-      for (int i = 0; i < dispatchs; ++i) {
-        sendDataWeaveObjectMessage("redeliveryPolicyFlowLongDispatch");
-      }
-      probe(10000, 100, () -> {
-        assertThat(awaiting.get(), is(dispatchs));
-        return true;
-      });
-    } finally {
-      latch.countDown();
+    for (int i = 0; i < dispatchs; ++i) {
+      sendDataWeaveObjectMessage("redeliveryPolicyFlowLongDispatch");
     }
-
+    probe(10000, 100, () -> {
+      assertThat(awaiting.get(), is(dispatchs));
+      return true;
+    });
   }
 
   private void sendDataWeaveObjectMessageExpectingError(String flowName) throws Exception {
