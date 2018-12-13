@@ -28,6 +28,19 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class RedeliveryPolicyTestCase extends AbstractIntegrationTestCase {
 
+  private static CountDownLatch latch;
+  private static AtomicInteger awaiting = new AtomicInteger();
+
+  public static class LatchAwaitCallback implements EventCallback {
+
+    @Override
+    public void eventReceived(CoreEvent event, Object component, MuleContext muleContext) throws Exception {
+      awaiting.incrementAndGet();
+      latch.await();
+    }
+
+  }
+
   private TestConnectorQueueHandler queueHandler;
 
   @Before
@@ -84,19 +97,6 @@ public class RedeliveryPolicyTestCase extends AbstractIntegrationTestCase {
         .withPayload("{ \"name\" : \"bruce\"}")
         .withMediaType(MediaType.APPLICATION_JSON)
         .run();
-  }
-
-  private static CountDownLatch latch;
-  private static AtomicInteger awaiting = new AtomicInteger();
-
-  public static class LatchAwaitCallback implements EventCallback {
-
-    @Override
-    public void eventReceived(CoreEvent event, Object component, MuleContext muleContext) throws Exception {
-      awaiting.incrementAndGet();
-      latch.await();
-    }
-
   }
 
 }
