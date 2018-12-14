@@ -25,13 +25,13 @@ public class FlowProcessingStrategyConfigTestCase extends AbstractIntegrationTes
   @Test
   public void testDefault() throws Exception {
     assertThat(getFlowProcessingStrategy("defaultFlow").getClass().getName(),
-               equalTo("org.mule.runtime.core.internal.processor.strategy.TransactionAwareProactorStreamProcessingStrategyFactory$TransactionAwareProactorStreamProcessingStrategy"));
+               equalTo("org.mule.runtime.core.internal.processor.strategy.TransactionAwareProactorStreamEmitterProcessingStrategyFactory$TransactionAwareProactorStreamEmitterProcessingStrategy"));
   }
 
   @Test
   public void testDefaultAsync() throws Exception {
     assertThat(getFlowProcessingStrategy("defaultAsync").getClass().getName(),
-               equalTo("org.mule.runtime.core.internal.processor.strategy.TransactionAwareProactorStreamProcessingStrategyFactory$TransactionAwareProactorStreamProcessingStrategy"));
+               equalTo("org.mule.runtime.core.internal.processor.strategy.TransactionAwareProactorStreamEmitterProcessingStrategyFactory$TransactionAwareProactorStreamEmitterProcessingStrategy"));
   }
 
   private ProcessingStrategy getFlowProcessingStrategy(String flowName) throws Exception {
