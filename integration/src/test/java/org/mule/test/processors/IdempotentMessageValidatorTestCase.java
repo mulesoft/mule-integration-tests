@@ -78,4 +78,18 @@ public class IdempotentMessageValidatorTestCase extends AbstractIntegrationTestC
         .runExpectingException(errorType(CORE_NAMESPACE_NAME, DUPLICATE_MESSAGE_ERROR_IDENTIFIER));
   }
 
+  @Test
+  public void validateImplicitValidatorCreatesOneObjectStorePerFlow() throws Exception {
+    final String implicitPayload = "implicit-payload";
+    CoreEvent implicitResponse = flowRunner("validate-implicit").withPayload(implicitPayload).run();
+    CoreEvent otherImplicitResponse = flowRunner("other-validate-implicit").withPayload(implicitPayload).run();
+    assertThat(implicitResponse.getMessage().getPayload().getValue(), is(equalTo(implicitPayload)));
+    assertThat(otherImplicitResponse.getMessage().getPayload().getValue(), is(equalTo(implicitPayload)));
+
+    flowRunner("other-validate-implicit").withPayload(implicitPayload)
+        .runExpectingException(errorType(CORE_NAMESPACE_NAME, DUPLICATE_MESSAGE_ERROR_IDENTIFIER));
+    flowRunner("validate-implicit").withPayload(implicitPayload)
+        .runExpectingException(errorType(CORE_NAMESPACE_NAME, DUPLICATE_MESSAGE_ERROR_IDENTIFIER));
+  }
+
 }
