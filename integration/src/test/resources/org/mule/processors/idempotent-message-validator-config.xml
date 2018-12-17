@@ -34,8 +34,17 @@
     </flow>
 
     <flow name="validate-implicit">
-        <idempotent-message-validator idExpression="#[payload]"/>
+        <flow-ref name="implicit-validator"/>
     </flow>
+
+    <flow name="other-validate-implicit">
+        <flow-ref name="implicit-validator"/>
+    </flow>
+
+    <sub-flow name="implicit-validator">
+        <idempotent-message-validator idExpression="#[payload]"/>
+    </sub-flow>
+
 
 
 </mule>
