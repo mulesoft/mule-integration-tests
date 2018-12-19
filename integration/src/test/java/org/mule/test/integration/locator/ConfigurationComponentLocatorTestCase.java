@@ -20,7 +20,6 @@ import static org.mule.runtime.api.component.location.Location.builder;
 import static org.mule.runtime.api.source.SchedulerMessageSource.SCHEDULER_MESSAGE_SOURCE_IDENTIFIER;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentLocatorStory.SEARCH_CONFIGURATION;
-
 import org.mule.runtime.api.component.Component;
 import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.api.component.location.Location;
@@ -157,6 +156,9 @@ public class ConfigurationComponentLocatorTestCase extends AbstractIntegrationTe
                                                      "redeliveryPolicyFlow",
                                                      "redeliveryPolicyFlow/source",
                                                      "redeliveryPolicyFlow/source/0",
-                                                     "redeliveryPolicyFlow/processors/0"));
+                                                     "redeliveryPolicyFlow/processors/0",
+                                                     "untilSuccessfulFlow",
+                                                     "untilSuccessfulFlow/processors/0",
+                                                     "untilSuccessfulFlow/processors/0/processors/0"));
   }
 }
