@@ -104,7 +104,7 @@
                     <test:summary-info key="Error type" value="MULE:UNKNOWN"/>
                 </test:check-summary>
                 <test:check-stacktrace>
-                    <test:method-call package="reactor.core.publisher" class="FluxHandleFuseable$HandleFuseableSubscriber" method="onNext"/>
+                    <test:method-call package="reactor.core.publisher" class="FluxHandle$HandleSubscriber" method="onNext"/>
                     <test:cause exception="java.lang.NullPointerException"/>
                 </test:check-stacktrace>
             </test:on-error-check-log>
