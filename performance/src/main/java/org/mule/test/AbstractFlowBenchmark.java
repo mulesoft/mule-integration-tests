@@ -13,13 +13,10 @@ import static java.util.concurrent.locks.LockSupport.parkNanos;
 import static org.mule.runtime.api.message.Message.of;
 import static org.mule.runtime.core.api.construct.Flow.builder;
 import static org.mule.runtime.core.api.event.EventContextFactory.create;
-import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.stopIfNeeded;
 import static org.mule.runtime.core.api.processor.ReactiveProcessor.ProcessingType.BLOCKING;
-import static org.mule.runtime.core.privileged.registry.LegacyRegistryUtils.lookupObject;
 import static org.mule.runtime.core.privileged.registry.LegacyRegistryUtils.registerObject;
 import static org.openjdk.jmh.annotations.Scope.Benchmark;
 import static org.openjdk.jmh.infra.Blackhole.consumeCPU;
-
 import org.mule.AbstractBenchmark;
 import org.mule.runtime.api.el.DefaultExpressionLanguageFactoryService;
 import org.mule.runtime.api.exception.MuleException;
@@ -35,7 +32,6 @@ import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.processor.strategy.ProcessingStrategyFactory;
 import org.mule.runtime.core.internal.config.builders.DefaultsConfigurationBuilder;
-import org.mule.runtime.core.internal.processor.strategy.AbstractProcessingStrategyFactory;
 import org.mule.runtime.core.internal.processor.strategy.ReactorStreamProcessingStrategyFactory;
 import org.mule.service.scheduler.internal.DefaultSchedulerService;
 import org.mule.tck.TriggerableMessageSource;
@@ -46,7 +42,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.locks.LockSupport;
 
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Measurement;
@@ -236,7 +231,7 @@ public abstract class AbstractFlowBenchmark extends AbstractBenchmark {
         registerObject(muleContext, schedulerService.getName(),
                        newProxyInstance(getClass().getClassLoader(), new Class[] {SchedulerService.class},
                                         new PassThroughInvocationHandler(schedulerService)));
-        DefaultExpressionLanguageFactoryService weaveExpressionExecutor = new WeaveDefaultExpressionLanguageFactoryService();
+        DefaultExpressionLanguageFactoryService weaveExpressionExecutor = new WeaveDefaultExpressionLanguageFactoryService(null);
         registerObject(muleContext, weaveExpressionExecutor.getName(), weaveExpressionExecutor);
       }
     });
