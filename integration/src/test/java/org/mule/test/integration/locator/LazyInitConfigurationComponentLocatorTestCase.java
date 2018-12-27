@@ -34,6 +34,7 @@ import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.runtime.core.api.config.MuleConfiguration;
 import org.mule.runtime.core.api.security.SecurityManager;
 import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.test.integration.locator.processor.CustomTestComponent;
 
 import java.util.List;
 import java.util.Optional;
@@ -87,6 +88,11 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
         .initializeComponents(componentLocation -> componentLocation.getLocation().equals("untilSuccessfulFlow"));
     lazyComponentInitializer
         .initializeComponents(componentLocation -> componentLocation.getLocation().equals("untilSuccessfulFlow"));
+
+    // force dispose to check that components from sub-flow are disposed
+    muleContext.dispose();
+    assertThat(CustomTestComponent.statesByInstances.size(), is(2));
+    assertThat(CustomTestComponent.statesByInstances.values(), containsInAnyOrder("disposed", "disposed"));
   }
 
   @Description("Lazy init should not create components until an operation is done")

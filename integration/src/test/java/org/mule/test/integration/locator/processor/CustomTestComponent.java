@@ -17,22 +17,29 @@ import org.mule.runtime.core.api.processor.Processor;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CustomTestComponent implements Initialisable, Disposable, Processor {
 
-  private Closeable internalState;
+  public static Map<CustomTestComponent, String> statesByInstances = new HashMap<>();
+
+  private Closeable value;
 
   @Override
   public void initialise() throws InitialisationException {
-    internalState = new StringReader("content");
+    statesByInstances.put(this, "initialized");
+    value = new StringReader("content");
   }
 
   @Override
   public void dispose() {
     try {
-      internalState.close();
+      value.close();
     } catch (IOException e) {
       // Nothing to do...
+    } finally {
+      statesByInstances.put(this, "disposed");
     }
   }
 
