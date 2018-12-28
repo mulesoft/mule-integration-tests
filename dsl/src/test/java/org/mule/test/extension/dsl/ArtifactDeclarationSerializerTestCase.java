@@ -11,7 +11,6 @@ import static java.util.Arrays.asList;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.mule.runtime.api.meta.model.parameter.ParameterGroupModel.ADVANCED;
 import static org.mule.runtime.api.meta.model.parameter.ParameterGroupModel.CONNECTION;
 import static org.mule.runtime.app.declaration.api.fluent.ElementDeclarer.newArtifact;
 import static org.mule.runtime.app.declaration.api.fluent.ElementDeclarer.newListValue;
@@ -43,6 +42,7 @@ import static org.mule.runtime.extension.api.declaration.type.RedeliveryPolicyTy
 import static org.mule.runtime.extension.api.declaration.type.RedeliveryPolicyTypeBuilder.USE_SECURE_HASH;
 import static org.mule.runtime.extension.api.declaration.type.StreamingStrategyTypeBuilder.REPEATABLE_IN_MEMORY_BYTES_STREAM_ALIAS;
 import static org.mule.test.module.extension.internal.util.ExtensionsTestUtils.compareXML;
+
 import org.mule.extensions.jms.api.connection.caching.NoCachingConfiguration;
 import org.mule.runtime.api.app.declaration.serialization.ArtifactDeclarationJsonSerializer;
 import org.mule.runtime.app.declaration.api.ArtifactDeclaration;
@@ -54,15 +54,14 @@ import org.mule.runtime.config.api.dsl.ArtifactDeclarationXmlSerializer;
 import org.mule.runtime.extension.api.runtime.ExpirationPolicy;
 import org.mule.test.runner.RunnerDelegateTo;
 
-import com.google.gson.JsonParser;
-import com.google.gson.stream.JsonReader;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Collection;
 import java.util.List;
 
+import com.google.gson.JsonParser;
+import com.google.gson.stream.JsonReader;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
@@ -286,6 +285,24 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
             .getDeclaration())
         .withGlobalElement(os.newConfiguration("config")
             .withRefName("persistentConfig")
+            .getDeclaration())
+        .withGlobalElement(db.newConfiguration("config")
+            .withRefName("dbConfig")
+            .withConnection(db
+                .newConnection("derby").withParameterGroup(newParameterGroup()
+                    .withParameter(POOLING_PROFILE_PARAMETER_NAME, newObjectValue()
+                        .withParameter("maxPoolSize", createNumberParameter("10"))
+                        .build())
+                    .getDeclaration())
+                .withParameterGroup(newParameterGroup(CONNECTION)
+                    .withParameter("connectionProperties", newObjectValue()
+                        .withParameter("first", createStringParameter("propertyOne"))
+                        .withParameter("second", createStringParameter("propertyTwo"))
+                        .build())
+                    .withParameter("database", createStringParameter("target/muleEmbeddedDB"))
+                    .withParameter("create", createBooleanParameter("true"))
+                    .getDeclaration())
+                .getDeclaration())
             .getDeclaration())
         .withGlobalElement(file.newConfiguration("config")
             .withRefName("fileConfig")
@@ -604,7 +621,54 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
         .withGlobalElement(core.newConstruct("flow").withRefName("fileListenerToObjectStore")
             .withComponent(file.newSource("listener")
                 .withConfig("fileConfig")
-                // TODO Missing scheduling strategy on purpose to test automatic default. Add once EE-5855 is done
+                .withParameterGroup(newParameterGroup()
+                    .withParameter("schedulingStrategy", newObjectValue()
+                        .ofType("org.mule.runtime.core.api.source.scheduler.FixedFrequencyScheduler")
+                        .withParameter("frequency", "1")
+                        .withParameter("timeUnit", "MINUTES")
+                        .build())
+                    .getDeclaration())
+                .getDeclaration())
+            .withComponent(os.newOperation("store")
+                .withParameterGroup(newParameterGroup()
+                    .withParameter("key", createStringParameter("key"))
+                    .withParameter("failOnNullValue", createBooleanParameter("#[vars.failOnNullValue]"))
+                    .withParameter("objectStore", createStringParameter("persistentStore"))
+                    .withParameter("value", createStringParameter("#[payload]"))
+                    .getDeclaration())
+                .getDeclaration())
+            .getDeclaration())
+        .withGlobalElement(core.newConstruct("flow").withRefName("fileListenerToObjectStoreCron")
+            .withComponent(file.newSource("listener")
+                .withConfig("fileConfig")
+                .withParameterGroup(newParameterGroup()
+                    .withParameter("schedulingStrategy", newObjectValue()
+                        .ofType("org.mule.runtime.core.api.source.scheduler.CronScheduler")
+                        .withParameter("expression", createStringParameter("0,4,25,26,53 0 0 ? * * *"))
+                        .build())
+                    .getDeclaration())
+                .getDeclaration())
+            .withComponent(os.newOperation("store")
+                .withParameterGroup(newParameterGroup()
+                    .withParameter("key", createStringParameter("key"))
+                    .withParameter("failOnNullValue", createBooleanParameter("#[vars.failOnNullValue]"))
+                    .withParameter("objectStore", createStringParameter("persistentStore"))
+                    .withParameter("value", createStringParameter("#[payload]"))
+                    .getDeclaration())
+                .getDeclaration())
+            .getDeclaration())
+        .withGlobalElement(core.newConstruct("flow").withRefName("dbListenerToObjectStoreCron")
+            .withComponent(db.newSource("listener")
+                .withConfig("dbConfig")
+                .withParameterGroup(newParameterGroup()
+                    .withParameter("schedulingStrategy", newObjectValue()
+                        .ofType("org.mule.runtime.core.api.source.scheduler.CronScheduler")
+                        .withParameter("expression", createStringParameter("0,4,25,26,51 0 0 ? * * *"))
+                        .build())
+                    .withParameter("table", createStringParameter("person"))
+                    .withParameter("watermarkColumn", createStringParameter("timestamp"))
+                    .withParameter("idColumn", createStringParameter("id"))
+                    .getDeclaration())
                 .getDeclaration())
             .withComponent(os.newOperation("store")
                 .withParameterGroup(newParameterGroup()
