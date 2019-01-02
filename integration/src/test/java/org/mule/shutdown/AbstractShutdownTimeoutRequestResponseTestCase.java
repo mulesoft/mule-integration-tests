@@ -7,13 +7,13 @@
 package org.mule.shutdown;
 
 import org.mule.runtime.api.component.AbstractComponent;
-import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.runtime.api.exception.DefaultMuleException;
-import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.api.exception.MuleException;
-import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.api.util.concurrent.Latch;
+import org.mule.runtime.core.api.event.CoreEvent;
+import org.mule.runtime.core.api.processor.Processor;
 import org.mule.tck.junit4.rule.DynamicPort;
+import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -22,6 +22,7 @@ public abstract class AbstractShutdownTimeoutRequestResponseTestCase extends Abs
 
   protected static int WAIT_TIME = 2000;
   protected static Latch waitLatch;
+  protected static Latch contextStopLatch;
 
   @Rule
   public DynamicPort httpPort = new DynamicPort("httpPort");
@@ -29,16 +30,17 @@ public abstract class AbstractShutdownTimeoutRequestResponseTestCase extends Abs
   @Before
   public void setUpWaitLatch() throws Exception {
     waitLatch = new Latch();
+    contextStopLatch = new Latch();
   }
 
-  private static class BlockMessageProcessor extends AbstractComponent implements Processor {
+  public static class BlockMessageProcessor extends AbstractComponent implements Processor {
 
     @Override
     public CoreEvent process(CoreEvent event) throws MuleException {
       waitLatch.release();
 
       try {
-        Thread.sleep(WAIT_TIME);
+        contextStopLatch.await();
       } catch (InterruptedException e) {
         Thread.currentThread().interrupt();
         throw new DefaultMuleException(e);
