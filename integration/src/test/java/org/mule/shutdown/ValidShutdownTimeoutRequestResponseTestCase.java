@@ -14,7 +14,6 @@ import static org.mule.runtime.http.api.HttpConstants.Method.GET;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.runtime.http.api.HttpService;
-import org.mule.runtime.http.api.client.HttpRequestOptions;
 import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;
 import org.mule.runtime.http.api.domain.message.request.HttpRequest;
 import org.mule.runtime.http.api.domain.message.response.HttpResponse;
@@ -80,8 +79,7 @@ public class ValidShutdownTimeoutRequestResponseTestCase extends AbstractShutdow
       try {
         HttpRequest request =
             HttpRequest.builder().uri(url).method(GET).entity(new ByteArrayHttpEntity(payload.getBytes())).build();
-        final HttpResponse response =
-            httpClient.send(request, HttpRequestOptions.builder().responseTimeout(RECEIVE_TIMEOUT * 5).build());
+        final HttpResponse response = httpClient.send(request, RECEIVE_TIMEOUT * 5, false, null);
         assertThat("Was not able to process message ", IOUtils.toString(response.getEntity().getContent()), is(payload));
       } catch (Exception e) {
         throw new MuleRuntimeException(e);

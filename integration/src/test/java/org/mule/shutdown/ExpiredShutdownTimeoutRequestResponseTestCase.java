@@ -15,7 +15,6 @@ import static org.mule.runtime.http.api.HttpConstants.Method.POST;
 
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.http.api.HttpService;
-import org.mule.runtime.http.api.client.HttpRequestOptions;
 import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;
 import org.mule.runtime.http.api.domain.message.request.HttpRequest;
 import org.mule.runtime.http.api.domain.message.response.HttpResponse;
@@ -72,8 +71,7 @@ public class ExpiredShutdownTimeoutRequestResponseTestCase extends AbstractShutd
         HttpRequest request = HttpRequest.builder().uri(url).entity(new ByteArrayHttpEntity(TEST_MESSAGE.getBytes()))
             .method(POST).build();
 
-        HttpResponse response =
-            httpClient.send(request, HttpRequestOptions.builder().responseTimeout(RECEIVE_TIMEOUT * 5).build());
+        HttpResponse response = httpClient.send(request, RECEIVE_TIMEOUT * 5, false, null);
 
         assertThat("Was able to process message ", response.getStatusCode(), is(not(OK.getStatusCode())));
       } catch (Exception e) {
