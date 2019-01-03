@@ -6,7 +6,6 @@
  */
 package org.mule.shutdown;
 
-import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
@@ -22,34 +21,19 @@ import org.mule.runtime.http.api.domain.message.response.HttpResponse;
 import org.mule.service.http.TestHttpClient;
 import org.mule.tck.junit4.rule.SystemProperty;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 public class ExpiredShutdownTimeoutRequestResponseTestCase extends AbstractShutdownTimeoutRequestResponseTestCase {
-
-  private ExecutorService executor;
 
   @Rule
   public SystemProperty contextShutdownTimeout = new SystemProperty("contextShutdownTimeout", "100");
 
   @Rule
   public TestHttpClient httpClient = new TestHttpClient.Builder(getService(HttpService.class)).build();
-
-  @Before
-  public void before() {
-    executor = newSingleThreadExecutor();
-  }
-
-  @After
-  public void after() {
-    executor.shutdownNow();
-  }
 
   @Override
   protected String getConfigFile() {
