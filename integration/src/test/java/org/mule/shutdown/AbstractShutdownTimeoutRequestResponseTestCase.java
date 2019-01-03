@@ -6,6 +6,8 @@
  */
 package org.mule.shutdown;
 
+import static java.util.concurrent.Executors.newSingleThreadExecutor;
+
 import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.exception.DefaultMuleException;
 import org.mule.runtime.api.exception.MuleException;
@@ -15,14 +17,29 @@ import org.mule.runtime.core.api.processor.Processor;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
+
+import java.util.concurrent.ExecutorService;
 
 public abstract class AbstractShutdownTimeoutRequestResponseTestCase extends AbstractIntegrationTestCase {
 
   protected static int WAIT_TIME = 2000;
   protected static Latch waitLatch;
   protected static Latch contextStopLatch;
+
+  protected ExecutorService executor;
+
+  @Before
+  public void before() {
+    executor = newSingleThreadExecutor();
+  }
+
+  @After
+  public void after() {
+    executor.shutdownNow();
+  }
 
   @Rule
   public DynamicPort httpPort = new DynamicPort("httpPort");

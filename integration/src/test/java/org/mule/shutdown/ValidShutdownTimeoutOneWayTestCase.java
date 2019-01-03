@@ -6,15 +6,19 @@
  */
 package org.mule.shutdown;
 
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 import org.mule.functional.api.component.TestConnectorQueueHandler;
-import org.mule.runtime.api.exception.MuleException;
+import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.message.Message;
 import org.mule.tck.junit4.rule.SystemProperty;
 
 import org.junit.Rule;
 import org.junit.Test;
+
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 public class ValidShutdownTimeoutOneWayTestCase extends AbstractShutdownTimeoutRequestResponseTestCase {
 
@@ -32,43 +36,44 @@ public class ValidShutdownTimeoutOneWayTestCase extends AbstractShutdownTimeoutR
   }
 
   @Test
-  public void testStaticComponent() throws Exception {
+  public void testStaticComponent() throws Throwable {
     doShutDownTest("staticComponentResponse", "staticComponentFlow");
   }
 
   @Test
-  public void testScriptComponent() throws Exception {
+  public void testScriptComponent() throws Throwable {
     doShutDownTest("scriptComponentResponse", "scriptComponentFlow");
   }
 
   @Test
-  public void testExpressionTransformer() throws Exception {
+  public void testExpressionTransformer() throws Throwable {
     doShutDownTest("expressionTransformerResponse", "expressionTransformerFlow");
   }
 
-  private void doShutDownTest(final String payload, final String flowName) throws MuleException, InterruptedException {
+  private void doShutDownTest(final String payload, final String flowName) throws Throwable {
     final TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
-    final boolean[] results = new boolean[] {false};
 
-    Thread t = new Thread(() -> {
+    final Future<?> requestTask = executor.submit(() -> {
       try {
         flowRunner(flowName).withPayload(payload).dispatch();
 
         Message response = queueHandler.read("response", RECEIVE_TIMEOUT).getMessage();
-        results[0] = payload.equals(getPayloadAsString(response));
+        assertThat("Was not able to process message ", getPayloadAsString(response), is(payload));
       } catch (Exception e) {
-        // Ignore
+        throw new MuleRuntimeException(e);
       }
     });
-    t.start();
 
     // Make sure to give the request enough time to get to the waiting portion of the feed.
     waitLatch.await();
+    contextStopLatch.release();
 
     muleContext.stop();
 
-    t.join();
-
-    assertTrue("Was not able to process message ", results[0]);
+    try {
+      requestTask.get();
+    } catch (ExecutionException e) {
+      throw e.getCause();
+    }
   }
 }
