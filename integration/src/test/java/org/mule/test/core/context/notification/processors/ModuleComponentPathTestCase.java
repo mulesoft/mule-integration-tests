@@ -65,7 +65,6 @@ import java.util.Optional;
 import java.util.Set;
 
 import io.qameta.allure.junit4.DisplayName;
-
 import org.junit.After;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -100,8 +99,7 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
   private static final DefaultComponentLocation getSubFlowLocation(final String subFlowName, final int subFlowLineNumber) {
     return new DefaultComponentLocation(of(subFlowName),
                                         asList(new DefaultLocationPart(subFlowName, SUBFLOW_TYPED_COMPONENT_IDENTIFIER,
-                                                                       CONFIG_FILE_NAME, of(subFlowLineNumber),
-                                                                       of(5))));
+                                                                       CONFIG_FILE_NAME, of(subFlowLineNumber))));
   }
 
   private static final String FLOW_WITH_SINGLE_MP_NAME = "flowWithSingleMp";
@@ -376,16 +374,16 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
   public void subFlowWithSetPayloadHardcoded() throws Exception {
     flowRunner("flowWithSetPayloadHardcodedInsideSubFlow").run();
     assertNextProcessorLocationIs(FLOW_WITH_SET_PAYLOAD_HARDCODED_INSIDE_SUBFLOW
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("processors", empty(), empty(), empty())
         .appendLocationPart("0", of(TypedComponentIdentifier.builder()
             .identifier(FLOW_REF_IDENTIFIER)
-            .type(OPERATION).build()), CONFIG_FILE_NAME, of(62), of(9)));
+            .type(OPERATION).build()), CONFIG_FILE_NAME, of(62)));
     assertNextProcessorLocationIs(SUBFLOW_WITH_SET_PAYLOAD_HARDCODED
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
-        .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(66), of(9)));
+        .appendLocationPart("processors", empty(), empty(), empty())
+        .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(66)));
     assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
-        .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13)));
+        .appendLocationPart("processors", empty(), empty(), empty())
+        .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13)));
     assertNoNextProcessorNotification();
   }
 
