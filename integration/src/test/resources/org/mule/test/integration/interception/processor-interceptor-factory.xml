@@ -105,6 +105,14 @@
         <sc:set-payload-hardcoded />
     </flow>
 
+    <flow name="scOperationInsideSubFlow">
+        <flow-ref name="scOperationSubFlow"/>
+    </flow>
+
+    <sub-flow name="scOperationSubFlow">
+        <sc:set-payload-hardcoded/>
+    </sub-flow>
+
     <flow name="scEchoOperation">
         <sc:echo-set-payload echoMessage="#[vars.variable]" />
     </flow>
