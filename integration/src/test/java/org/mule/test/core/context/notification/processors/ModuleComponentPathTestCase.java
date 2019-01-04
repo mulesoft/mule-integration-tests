@@ -16,11 +16,14 @@ import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.component.ComponentIdentifier.buildFromStringRepresentation;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.FLOW;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.OPERATION;
+import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.SCOPE;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.builder;
 import static org.mule.runtime.api.dsl.DslResolvingContext.getDefault;
 import static org.mule.runtime.api.util.collection.Collectors.toImmutableList;
 import static org.mule.runtime.config.api.XmlConfigurationDocumentLoader.noValidationDocumentLoader;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.FLOW_IDENTIFIER;
+import static org.mule.runtime.config.api.dsl.CoreDslConstants.FLOW_REF_IDENTIFIER;
+import static org.mule.runtime.config.api.dsl.CoreDslConstants.SUBFLOW_IDENTIFIER;
 import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.initialiseIfNeeded;
 import static org.mule.runtime.module.extension.api.util.MuleExtensionUtils.createDefaultExtensionManager;
 import org.mule.runtime.api.component.TypedComponentIdentifier;
@@ -86,14 +89,25 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
   private static final Optional<String> MODULE_SIMPLE_PROXY_FILE_NAME = of(BASE_PATH_XML_MODULES + MODULE_SIMPLE_PROXY_XML);
   private static final Optional<TypedComponentIdentifier> FLOW_TYPED_COMPONENT_IDENTIFIER =
       of(builder().identifier(FLOW_IDENTIFIER).type(FLOW).build());
+  private static final Optional<TypedComponentIdentifier> SUBFLOW_TYPED_COMPONENT_IDENTIFIER =
+      of(builder().identifier(SUBFLOW_IDENTIFIER).type(SCOPE).build());
 
   private static final DefaultComponentLocation getFlowLocation(final String flowName, final int flowLineNumber) {
     return new DefaultComponentLocation(of(flowName), asList(new DefaultLocationPart(flowName, FLOW_TYPED_COMPONENT_IDENTIFIER,
                                                                                      CONFIG_FILE_NAME, of(flowLineNumber))));
   }
 
+  private static final DefaultComponentLocation getSubFlowLocation(final String subFlowName, final int subFlowLineNumber) {
+    return new DefaultComponentLocation(of(subFlowName),
+                                        asList(new DefaultLocationPart(subFlowName, SUBFLOW_TYPED_COMPONENT_IDENTIFIER,
+                                                                       CONFIG_FILE_NAME, of(subFlowLineNumber),
+                                                                       of(5))));
+  }
+
   private static final String FLOW_WITH_SINGLE_MP_NAME = "flowWithSingleMp";
   private static final String FLOW_WITH_SET_PAYLOAD_HARDCODED_NAME = "flowWithSetPayloadHardcoded";
+  private static final String FLOW_WITH_SET_PAYLOAD_HARDCODED_INSIDE_SUBFLOW_NAME = "flowWithSetPayloadHardcodedInsideSubFlow";
+  private static final String SUBFLOW_WITH_SET_PAYLOAD_HARDCODED_NAME = "subFlowWithSetPayloadHardcoded";
   private static final String FLOW_WITH_SET_PAYLOAD_TWO_TIMES_NAME = "flowWithSetPayloadTwoTimes";
   private static final String FLOW_WITH_SET_PAYLOAD_HARDCODED_TWICE_NAME = "flowWithSetPayloadHardcodedTwice";
   private static final String FLOW_WITH_SET_PAYLOAD_PARAM_VALUE_NAME = "flowWithSetPayloadParamValue";
@@ -111,6 +125,10 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
       getFlowLocation(FLOW_WITH_SINGLE_MP_NAME, 15);
   private static final DefaultComponentLocation FLOW_WITH_SET_PAYLOAD_HARDCODED =
       getFlowLocation(FLOW_WITH_SET_PAYLOAD_HARDCODED_NAME, 19);
+  private static final DefaultComponentLocation FLOW_WITH_SET_PAYLOAD_HARDCODED_INSIDE_SUBFLOW =
+      getFlowLocation(FLOW_WITH_SET_PAYLOAD_HARDCODED_INSIDE_SUBFLOW_NAME, 61);
+  private static final DefaultComponentLocation SUBFLOW_WITH_SET_PAYLOAD_HARDCODED =
+      getSubFlowLocation(SUBFLOW_WITH_SET_PAYLOAD_HARDCODED_NAME, 65);
   private static final DefaultComponentLocation FLOW_WITH_SET_PAYLOAD_HARDCODED_TWICE =
       getFlowLocation(FLOW_WITH_SET_PAYLOAD_HARDCODED_TWICE_NAME, 23);
   private static final DefaultComponentLocation FLOW_WITH_SET_PAYLOAD_PARAM_VALUE =
@@ -331,6 +349,16 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
             .addIndexPart(1).build().toString())
         .add(Location.builder().globalName(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_REVERSE_NAME).addProcessorsPart()
             .addIndexPart(2).build().toString())
+
+        .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_HARDCODED_INSIDE_SUBFLOW_NAME).build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_HARDCODED_INSIDE_SUBFLOW_NAME).addProcessorsPart()
+            .addIndexPart(0).build()
+            .toString())
+
+        .add(Location.builder().globalName(SUBFLOW_WITH_SET_PAYLOAD_HARDCODED_NAME).build().toString())
+        .add(Location.builder().globalName(SUBFLOW_WITH_SET_PAYLOAD_HARDCODED_NAME).addProcessorsPart().addIndexPart(0).build()
+            .toString())
+
         .build(), componentLocations);
   }
 
@@ -341,6 +369,23 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
     assertNextProcessorLocationIs(FLOW_WITH_SINGLE_MP_LOCATION
         .appendLocationPart("processors", empty(), empty(), empty())
         .appendLocationPart("0", LOGGER, CONFIG_FILE_NAME, of(16)));
+    assertNoNextProcessorNotification();
+  }
+
+  @Test
+  public void subFlowWithSetPayloadHardcoded() throws Exception {
+    flowRunner("flowWithSetPayloadHardcodedInsideSubFlow").run();
+    assertNextProcessorLocationIs(FLOW_WITH_SET_PAYLOAD_HARDCODED_INSIDE_SUBFLOW
+        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("0", of(TypedComponentIdentifier.builder()
+            .identifier(FLOW_REF_IDENTIFIER)
+            .type(OPERATION).build()), CONFIG_FILE_NAME, of(62), of(9)));
+    assertNextProcessorLocationIs(SUBFLOW_WITH_SET_PAYLOAD_HARDCODED
+        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(66), of(9)));
+    assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
+        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13)));
     assertNoNextProcessorNotification();
   }
 
