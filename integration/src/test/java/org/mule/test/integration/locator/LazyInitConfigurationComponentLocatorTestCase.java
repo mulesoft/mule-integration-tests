@@ -52,6 +52,9 @@ import org.junit.Test;
 @Story(SEARCH_CONFIGURATION)
 public class LazyInitConfigurationComponentLocatorTestCase extends AbstractIntegrationTestCase {
 
+  @Rule
+  public DynamicPort listenPort = new DynamicPort("http.listener.port");
+
   private static final int TOTAL_NUMBER_OF_LOCATIONS = 110;
   @Inject
   private Registry registry;
