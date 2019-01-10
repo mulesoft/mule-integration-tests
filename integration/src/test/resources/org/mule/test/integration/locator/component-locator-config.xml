@@ -52,7 +52,7 @@
     </flow>
 
     <http:listener-config name="listenerConfigRedeliveryPolicy" basePath="/api">
-        <http:listener-connection port="8080" host="localhost"/>
+        <http:listener-connection port="${http.listener.port}" host="localhost"/>
     </http:listener-config>
 
     <flow name="redeliveryPolicyFlow">
