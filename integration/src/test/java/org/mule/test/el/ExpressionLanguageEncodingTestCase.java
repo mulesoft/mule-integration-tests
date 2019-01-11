@@ -42,6 +42,7 @@ public class ExpressionLanguageEncodingTestCase extends AbstractIntegrationTestC
     Optional<Charset> charset = result.getPayload().getDataType().getMediaType().getCharset();
     assertThat(charset, not(empty()));
     assertThat(charset.get(), is(UTF_16));
-    assertThat(IOUtils.toString(((CursorStreamProvider) result.getPayload().getValue()).openCursor(), UTF_16), is("This is evolution."));
+    assertThat(IOUtils.toString(((CursorStreamProvider) result.getPayload().getValue()).openCursor(), UTF_16),
+               is("This is evolution."));
   }
 }
