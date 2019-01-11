@@ -19,6 +19,7 @@ import org.mule.functional.api.component.LifecycleObject;
 import org.mule.functional.junit4.ApplicationContextBuilder;
 import org.mule.runtime.api.el.DefaultExpressionLanguageFactoryService;
 import org.mule.runtime.api.el.ExpressionLanguage;
+import org.mule.runtime.api.el.ExpressionLanguageConfiguration;
 import org.mule.runtime.api.lifecycle.Disposable;
 import org.mule.runtime.api.lifecycle.Initialisable;
 import org.mule.runtime.api.lifecycle.LifecycleException;
@@ -99,6 +100,11 @@ public class MuleContextLifecycleTestCase extends AbstractMuleTestCase {
             @Override
             public ExpressionLanguage create() {
               return mock(ExpressionLanguage.class, RETURNS_DEEP_STUBS.get());
+            }
+
+            @Override
+            public ExpressionLanguage create(ExpressionLanguageConfiguration configuration) {
+              return create();
             }
 
             @Override
