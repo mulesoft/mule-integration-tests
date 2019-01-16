@@ -6,6 +6,7 @@
  */
 package org.mule.test.core.context.notification;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
@@ -25,7 +26,6 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 public class FlowStackTestCase extends AbstractIntegrationTestCase {
 
@@ -134,7 +134,7 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
   public void flowStaticWithAsync() throws Exception {
     flowRunner("flowStaticWithAsync").withPayload("payload").run();
 
-    FlowStackAsyncAsserter.latch.await(RECEIVE_TIMEOUT, TimeUnit.MILLISECONDS);
+    FlowStackAsyncAsserter.latch.await(RECEIVE_TIMEOUT, MILLISECONDS);
     assertThat(stackToAssert, not(nullValue()));
 
     assertStackElements(stackToAssert, isFlowStackElement("flowInAsync", "flowInAsync/processors/0"),
@@ -145,7 +145,7 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
   public void subFlowStaticWithAsync() throws Exception {
     flowRunner("subFlowStaticWithAsync").withPayload("payload").run();
 
-    FlowStackAsyncAsserter.latch.await(RECEIVE_TIMEOUT, TimeUnit.MILLISECONDS);
+    FlowStackAsyncAsserter.latch.await(RECEIVE_TIMEOUT, MILLISECONDS);
 
     assertThat(stackToAssert, not(nullValue()));
 
@@ -159,7 +159,7 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
   public void flowDynamicWithAsync() throws Exception {
     flowRunner("flowDynamicWithAsync").withPayload("payload").run();
 
-    FlowStackAsyncAsserter.latch.await(1, TimeUnit.SECONDS);
+    FlowStackAsyncAsserter.latch.await(RECEIVE_TIMEOUT, MILLISECONDS);
 
     assertThat(stackToAssert, not(nullValue()));
 
@@ -171,7 +171,7 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
   public void subFlowDynamicWithAsync() throws Exception {
     flowRunner("subFlowDynamicWithAsync").withPayload("payload").run();
 
-    FlowStackAsyncAsserter.latch.await(1, TimeUnit.SECONDS);
+    FlowStackAsyncAsserter.latch.await(RECEIVE_TIMEOUT, MILLISECONDS);
 
     assertThat(stackToAssert, not(nullValue()));
 
