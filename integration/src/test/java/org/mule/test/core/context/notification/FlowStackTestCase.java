@@ -6,6 +6,7 @@
  */
 package org.mule.test.core.context.notification;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
@@ -16,17 +17,20 @@ import static org.mule.tck.util.FlowTraceUtils.FlowStackAsserter.stackToAssert;
 
 import org.mule.runtime.api.notification.MessageProcessorNotification;
 import org.mule.runtime.api.notification.MessageProcessorNotificationListener;
+import org.mule.tck.junit4.FlakinessDetectorTestRunner;
+import org.mule.tck.junit4.FlakyTest;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.tck.util.FlowTraceUtils.FlowStackAsyncAsserter;
 import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.test.runner.RunnerDelegateTo;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
+@RunnerDelegateTo(FlakinessDetectorTestRunner.class)
 public class FlowStackTestCase extends AbstractIntegrationTestCase {
 
   @Rule
@@ -131,10 +135,11 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
+  @FlakyTest
   public void flowStaticWithAsync() throws Exception {
     flowRunner("flowStaticWithAsync").withPayload("payload").run();
 
-    FlowStackAsyncAsserter.latch.await(RECEIVE_TIMEOUT, TimeUnit.MILLISECONDS);
+    FlowStackAsyncAsserter.latch.await(RECEIVE_TIMEOUT, MILLISECONDS);
     assertThat(stackToAssert, not(nullValue()));
 
     assertStackElements(stackToAssert, isFlowStackElement("flowInAsync", "flowInAsync/processors/0"),
@@ -142,10 +147,11 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
+  @FlakyTest
   public void subFlowStaticWithAsync() throws Exception {
     flowRunner("subFlowStaticWithAsync").withPayload("payload").run();
 
-    FlowStackAsyncAsserter.latch.await(RECEIVE_TIMEOUT, TimeUnit.MILLISECONDS);
+    FlowStackAsyncAsserter.latch.await(RECEIVE_TIMEOUT, MILLISECONDS);
 
     assertThat(stackToAssert, not(nullValue()));
 
@@ -156,10 +162,11 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
+  @FlakyTest
   public void flowDynamicWithAsync() throws Exception {
     flowRunner("flowDynamicWithAsync").withPayload("payload").run();
 
-    FlowStackAsyncAsserter.latch.await(1, TimeUnit.SECONDS);
+    FlowStackAsyncAsserter.latch.await(RECEIVE_TIMEOUT, MILLISECONDS);
 
     assertThat(stackToAssert, not(nullValue()));
 
@@ -168,10 +175,11 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
+  @FlakyTest
   public void subFlowDynamicWithAsync() throws Exception {
     flowRunner("subFlowDynamicWithAsync").withPayload("payload").run();
 
-    FlowStackAsyncAsserter.latch.await(1, TimeUnit.SECONDS);
+    FlowStackAsyncAsserter.latch.await(RECEIVE_TIMEOUT, MILLISECONDS);
 
     assertThat(stackToAssert, not(nullValue()));
 
