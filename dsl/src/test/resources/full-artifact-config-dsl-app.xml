@@ -9,7 +9,7 @@
       xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
       xmlns:wsc="http://www.mulesoft.org/schema/mule/wsc"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd http://www.mulesoft.org/schema/mule/sockets http://www.mulesoft.org/schema/mule/sockets/current/mule-sockets.xsd">
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd http://www.mulesoft.org/schema/mule/sockets http://www.mulesoft.org/schema/mule/sockets/current/mule-sockets.xsd">
     <configuration defaultErrorHandler-ref="referableHandler"/>
 
     <error-handler name="referableHandler">
@@ -27,7 +27,17 @@
                      expirationIntervalUnit="HOURS"
                      config-ref="persistentConfig"/>
 
-    <os:config name="persistentConfig" />
+    <os:config name="persistentConfig"/>
+
+    <db:config name="dbConfig">
+        <db:derby-connection create="true" database="target/muleEmbeddedDB">
+            <db:pooling-profile maxPoolSize="10"/>
+            <db:connection-properties>
+                <db:connection-property key="first" value="propertyOne"/>
+                <db:connection-property key="second" value="propertyTwo"/>
+            </db:connection-properties>
+        </db:derby-connection>
+    </db:config>
 
     <file:config name="fileConfig">
         <file:connection/>
@@ -40,13 +50,13 @@
                         service="GlobalWeather"
                         soapVersion="SOAP11"
                         wsdlLocation="http://www.webservicex.com/globalweather.asmx?WSDL"/>
-        <expiration-policy maxIdleTime="1" timeUnit="MINUTES" />
+        <expiration-policy maxIdleTime="1" timeUnit="MINUTES"/>
     </wsc:config>
 
     <db:config name="dbConfig">
         <db:derby-connection create="true" database="target/muleEmbeddedDB">
             <reconnection failsDeployment="true">
-                 <reconnect count="1" frequency="0" />
+                <reconnect count="1" frequency="0"/>
             </reconnection>
             <db:pooling-profile maxPoolSize="10"/>
             <db:connection-properties>
@@ -76,7 +86,7 @@
             <http:client-socket-properties>
                 <sockets:tcp-client-socket-properties connectionTimeout="1000" keepAlive="true"
                                                       receiveBufferSize="1024" sendBufferSize="1024"
-                                                      clientTimeout="1000" linger="1000" />
+                                                      clientTimeout="1000" linger="1000"/>
             </http:client-socket-properties>
         </http:request-connection>
         <http:default-headers>
@@ -121,8 +131,8 @@
                 <db:bulk-insert transactionalAction="ALWAYS_JOIN">
                     <db:sql>INSERT INTO PLANET(POSITION, NAME) VALUES (:position, :name)</db:sql>
                     <db:parameter-types>
-                        <db:parameter-type key="name" type="VARCHAR" />
-                        <db:parameter-type key="position" type="INTEGER" />
+                        <db:parameter-type key="name" type="VARCHAR"/>
+                        <db:parameter-type key="position" type="INTEGER"/>
                     </db:parameter-types>
                 </db:bulk-insert>
             </when>
@@ -136,8 +146,8 @@
         <db:bulk-insert>
             <db:sql>INSERT INTO PLANET(POSITION, NAME) VALUES (:position, :name)</db:sql>
             <db:parameter-types>
-                <db:parameter-type key="name" type="VARCHAR" />
-                <db:parameter-type key="position" type="INTEGER" />
+                <db:parameter-type key="name" type="VARCHAR"/>
+                <db:parameter-type key="position" type="INTEGER"/>
             </db:parameter-types>
         </db:bulk-insert>
 
@@ -207,4 +217,31 @@
             </os:value>
         </os:store>
     </flow>
+
+    <flow name="fileListenerToObjectStoreCron">
+        <file:listener config-ref="fileConfig">
+            <scheduling-strategy>
+                <cron expression="0,4,25,26,53 0 0 ? * * *"/>
+            </scheduling-strategy>
+        </file:listener>
+        <os:store failOnNullValue="#[vars.failOnNullValue]" key="key" objectStore="persistentStore">
+            <os:value>
+                #[payload]
+            </os:value>
+        </os:store>
+    </flow>
+
+    <flow name="dbListenerToObjectStoreCron">
+        <db:listener table="person" config-ref="dbConfig" watermarkColumn="timestamp" idColumn="id">
+            <scheduling-strategy>
+                <cron expression="0,4,25,26,51 0 0 ? * * *"/>
+            </scheduling-strategy>
+        </db:listener>
+        <os:store failOnNullValue="#[vars.failOnNullValue]" key="key" objectStore="persistentStore">
+            <os:value>
+                #[payload]
+            </os:value>
+        </os:store>
+    </flow>
+
 </mule>
