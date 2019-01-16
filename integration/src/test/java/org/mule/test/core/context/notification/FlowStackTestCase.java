@@ -17,12 +17,9 @@ import static org.mule.tck.util.FlowTraceUtils.FlowStackAsserter.stackToAssert;
 
 import org.mule.runtime.api.notification.MessageProcessorNotification;
 import org.mule.runtime.api.notification.MessageProcessorNotificationListener;
-import org.mule.tck.junit4.FlakinessDetectorTestRunner;
-import org.mule.tck.junit4.FlakyTest;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.tck.util.FlowTraceUtils.FlowStackAsyncAsserter;
 import org.mule.test.AbstractIntegrationTestCase;
-import org.mule.test.runner.RunnerDelegateTo;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -30,7 +27,6 @@ import org.junit.Test;
 
 import java.util.concurrent.CountDownLatch;
 
-@RunnerDelegateTo(FlakinessDetectorTestRunner.class)
 public class FlowStackTestCase extends AbstractIntegrationTestCase {
 
   @Rule
@@ -135,7 +131,6 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  @FlakyTest
   public void flowStaticWithAsync() throws Exception {
     flowRunner("flowStaticWithAsync").withPayload("payload").run();
 
@@ -147,7 +142,6 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  @FlakyTest
   public void subFlowStaticWithAsync() throws Exception {
     flowRunner("subFlowStaticWithAsync").withPayload("payload").run();
 
@@ -162,7 +156,6 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  @FlakyTest
   public void flowDynamicWithAsync() throws Exception {
     flowRunner("flowDynamicWithAsync").withPayload("payload").run();
 
@@ -175,7 +168,6 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  @FlakyTest
   public void subFlowDynamicWithAsync() throws Exception {
     flowRunner("subFlowDynamicWithAsync").withPayload("payload").run();
 
