@@ -238,10 +238,7 @@
     </flow>
 
     <flow name="flowSplitAggregate" initialState="stopped">
-        <split-aggregate>
-            <collection>
-                ['foo', 'bar']
-            </collection>
+        <split-aggregate collection="#[['foo', 'bar']]">
             <test:processor/>
             <flow-ref name="flow"/>
         </split-aggregate>
