@@ -17,9 +17,9 @@ import static org.mule.runtime.http.api.HttpConstants.HttpStatus.UNAUTHORIZED;
 import org.mule.extension.http.api.HttpResponseAttributes;
 import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.api.util.concurrent.Latch;
 import org.mule.runtime.api.notification.SecurityNotification;
 import org.mule.runtime.api.notification.SecurityNotificationListener;
+import org.mule.runtime.api.util.concurrent.Latch;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -55,16 +55,16 @@ public class SecureHttpPollingFunctionalTestCase extends AbstractIntegrationTest
     });
 
     TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
-    Message result = queueHandler.read("toclient", 5000).getMessage();
+    Message result = queueHandler.read("toclient", RECEIVE_TIMEOUT).getMessage();
     assertThat(result, not(nullValue()));
     assertThat(result.getPayload().getValue(), is("foo"));
 
-    result = queueHandler.read("toclient2", 1000).getMessage();
+    result = queueHandler.read("toclient2", RECEIVE_TIMEOUT).getMessage();
     // This seems a little odd that we forward the exception to the outbound endpoint, but I guess users
     // can just add a filter
     assertThat(result, not(nullValue()));
     assertThat(result.getAttributes().getValue(), instanceOf(HttpResponseAttributes.class));
     assertThat(((HttpResponseAttributes) result.getAttributes().getValue()).getStatusCode(), is(UNAUTHORIZED.getStatusCode()));
-    assertThat(latch.await(1000, MILLISECONDS), is(true));
+    assertThat(latch.await(RECEIVE_TIMEOUT, MILLISECONDS), is(true));
   }
 }
