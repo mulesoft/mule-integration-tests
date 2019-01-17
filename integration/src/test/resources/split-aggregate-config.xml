@@ -25,10 +25,7 @@
     </flow>
 
     <flow name="minimalConfigurationCollectionExpression">
-        <split-aggregate>
-            <collection>
-                ['apple', 'banana', 'orange']
-            </collection>
+        <split-aggregate collection="#[['apple', 'banana', 'orange']]" >
             <set-payload value="#[payload ++ '-result']"/>
             <test:assert count="3"/>
         </split-aggregate>
