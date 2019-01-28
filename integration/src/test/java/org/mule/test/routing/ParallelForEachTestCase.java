@@ -11,7 +11,6 @@ import static java.lang.Thread.currentThread;
 import static java.util.Arrays.asList;
 import static java.util.concurrent.ConcurrentHashMap.newKeySet;
 import static org.apache.commons.io.IOUtils.LINE_SEPARATOR;
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.Matchers.hasSize;
@@ -23,7 +22,7 @@ import static org.mule.runtime.core.api.exception.Errors.ComponentIdentifiers.Ha
 import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
 import static org.mule.tck.junit4.matcher.HasClassInHierarchy.withClassName;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
-import static org.mule.test.allure.AllureConstants.RoutersFeature.SplitAggregateStory.SPLIT_AGGREGATE;
+import static org.mule.test.allure.AllureConstants.RoutersFeature.ParallelForEachStory.PARALLEL_FOR_EACH;
 
 import java.util.List;
 import java.util.Set;
@@ -39,10 +38,8 @@ import org.mule.runtime.api.exception.ComposedErrorException;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.util.concurrent.Latch;
 import org.mule.runtime.core.api.event.CoreEvent;
-import org.mule.runtime.core.api.exception.Errors;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.runtime.core.api.processor.Processor;
-import org.mule.tck.junit4.matcher.ErrorTypeMatcher;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import io.qameta.allure.Description;
@@ -50,8 +47,8 @@ import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
 
 @Feature(ROUTERS)
-@Story(SPLIT_AGGREGATE)
-public class SplitAggregateScopeTestCase extends AbstractIntegrationTestCase {
+@Story(PARALLEL_FOR_EACH)
+public class ParallelForEachTestCase extends AbstractIntegrationTestCase {
 
   private static final String EXCEPTION_MESSAGE_TITLE_PREFIX = "Exception(s) were found for route(s): " + LINE_SEPARATOR;
   private static Set<Thread> capturedThreads;
@@ -62,7 +59,7 @@ public class SplitAggregateScopeTestCase extends AbstractIntegrationTestCase {
 
   @Override
   protected String getConfigFile() {
-    return "split-aggregate-config.xml";
+    return "parallel-foreach-config.xml";
   }
 
   @Override

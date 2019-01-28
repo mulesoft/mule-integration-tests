@@ -52,7 +52,7 @@
         <test:queue name="inout-append-out"/>
     </flow>
 
-    <flow name="split-aggregate" initialState="stopped">
+    <flow name="parallel-foreach" initialState="stopped">
         <splitter expression="#[mel:payload.fruit]"/>
         <script:execute engine="groovy">
             <script:code>
@@ -61,14 +61,14 @@
             </script:code>
         </script:execute>
         <collection-aggregator />
-        <test:queue name="split-aggregate-out"/>
+        <test:queue name="parallel-foreach-out"/>
     </flow>
     
     <flow name="split-no-parts" initialState="stopped">
         <splitter expression="#[output application/java --- payload..Order.item]"/>
     </flow>
 
-    <flow name="split-aggregate-singleton-list" initialState="stopped">
+    <flow name="parallel-foreach-singleton-list" initialState="stopped">
         <splitter />
         <script:execute engine="groovy">
             <script:code>
@@ -77,10 +77,10 @@
             </script:code>
         </script:execute>
         <collection-aggregator />
-        <test:queue name="split-aggregate-singleton-list-out"/>
+        <test:queue name="parallel-foreach-singleton-list-out"/>
     </flow>
 
-    <flow name="split-aggregate-list" initialState="stopped">
+    <flow name="parallel-foreach-list" initialState="stopped">
         <splitter />
         <script:execute engine="groovy">
             <script:code>
@@ -89,11 +89,11 @@
             </script:code>
         </script:execute>
         <collection-aggregator />
-        <test:queue name="split-aggregate-list-out"/>
+        <test:queue name="parallel-foreach-list-out"/>
     </flow>
 
 
-    <flow name="split-aggregate-response-singleton-list" initialState="stopped">
+    <flow name="parallel-foreach-response-singleton-list" initialState="stopped">
         <splitter />
         <script:execute engine="groovy">
             <script:code>
@@ -104,7 +104,7 @@
         <collection-aggregator />
     </flow>
 
-    <flow name="split-aggregate-response-list" initialState="stopped">
+    <flow name="parallel-foreach-response-list" initialState="stopped">
         <splitter />
         <script:execute engine="groovy">
             <script:code>
@@ -114,7 +114,7 @@
         </script:execute>
     </flow>
 
-    <flow name="split-aggregate-map" initialState="stopped">
+    <flow name="parallel-foreach-map" initialState="stopped">
         <splitter/>
         <script:execute engine="groovy">
             <script:code>
@@ -131,10 +131,10 @@
         <test:queue name="split-filter-aggregate-out"/>
     </flow>
     
-    <flow name="message-chunk-split-aggregate" initialState="stopped">
+    <flow name="message-chunk-parallel-foreach" initialState="stopped">
         <message-chunk-splitter messageSize="20"/>
         <message-chunk-aggregator />
-        <test:queue name="message-chunk-split-aggregate-out"/>
+        <test:queue name="message-chunk-parallel-foreach-out"/>
     </flow>
 
     <flow name="components" initialState="stopped">

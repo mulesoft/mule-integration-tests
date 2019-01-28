@@ -89,9 +89,9 @@
         </scatter-gather>
     </flow>
     <flow name="flowForsplitAggregate">
-        <split-aggregate collection="#['ExpressionAttribute']" maxConcurrency="2147483647" target="Attribute" targetValue="#[payload]" timeout="9223372036854775807">
+        <parallel-foreach collection="#['ExpressionAttribute']" maxConcurrency="2147483647" target="Attribute" targetValue="#[payload]" timeout="9223372036854775807">
             <logger/>
-        </split-aggregate>
+        </parallel-foreach>
     </flow>
     <sub-flow name="globalsubFlow">
         <logger/>

@@ -238,10 +238,10 @@
     </flow>
 
     <flow name="flowSplitAggregate" initialState="stopped">
-        <split-aggregate collection="#[['foo', 'bar']]">
+        <parallel-foreach collection="#[['foo', 'bar']]">
             <test:processor/>
             <flow-ref name="flow"/>
-        </split-aggregate>
+        </parallel-foreach>
     </flow>
     
     <!-- XML SDK -->

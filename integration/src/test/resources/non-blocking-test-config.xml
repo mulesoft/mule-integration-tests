@@ -267,14 +267,14 @@
 
     <flow name="splitAggregate" initialState="stopped">
         <test:assert-intercepting responseSameTask="false"/>
-        <split-aggregate>
+        <parallel-foreach>
             <test:assert-intercepting responseSameTask="false" count="2"/>
             <test:non-blocking-processor/>
-            <split-aggregate>
+            <parallel-foreach>
                 <test:assert-intercepting responseSameTask="false" count="6"/>
                 <test:non-blocking-processor/>
-            </split-aggregate>
-        </split-aggregate>
+            </parallel-foreach>
+        </parallel-foreach>
     </flow>
 
 </mule>
