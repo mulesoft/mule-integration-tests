@@ -16,7 +16,7 @@
         <skipExportTests>false</skipExportTests>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
 
-        <eaioUuidVersion>3.4.0</eaioUuidVersion>
+        <eaioUuidVersion>3.4.2-MULE-001</eaioUuidVersion>
         <springSecurityVersion>5.1.0.RELEASE</springSecurityVersion>
         <activemqVersion>5.15.3</activemqVersion>
         <hawtbufVersion>1.1</hawtbufVersion>
@@ -310,7 +310,7 @@
         </dependency>
 
         <dependency>
-            <groupId>com.github.stephenc.eaio-uuid</groupId>
+            <groupId>org.mule.com.github.stephenc.eaio-uuid</groupId>
             <artifactId>uuid</artifactId>
             <version>${eaioUuidVersion}</version>
         </dependency>
