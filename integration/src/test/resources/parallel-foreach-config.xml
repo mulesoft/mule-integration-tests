@@ -7,53 +7,53 @@
                http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
     <flow name="minimalConfig">
-        <split-aggregate>
+        <parallel-foreach>
             <set-payload value="#[payload ++ '-result']"/>
             <test:assert count="3"/>
-        </split-aggregate>
+        </parallel-foreach>
         <flow-ref name="testListAggregation"/>
     </flow>
 
     <flow name="minimalConfigNested">
-        <split-aggregate>
-            <split-aggregate>
+        <parallel-foreach>
+            <parallel-foreach>
                 <test:assert count="12"/>
-            </split-aggregate>
+            </parallel-foreach>
             <test:assert expression="#[sizeOf(payload) == 4]" count="3"/>
-        </split-aggregate>
+        </parallel-foreach>
         <test:assert expression="#[sizeOf(payload) == 3]"/>
     </flow>
 
     <flow name="minimalConfigurationCollectionExpression">
-        <split-aggregate collection="#[['apple', 'banana', 'orange']]" >
+        <parallel-foreach collection="#[['apple', 'banana', 'orange']]" >
             <set-payload value="#[payload ++ '-result']"/>
             <test:assert count="3"/>
-        </split-aggregate>
+        </parallel-foreach>
         <flow-ref name="testListAggregation"/>
     </flow>
 
     <flow name="minimalConfigTarget">
-        <split-aggregate target="result">
+        <parallel-foreach target="result">
             <set-payload value="#[payload ++ '-result']"/>
             <test:assert count="3"/>
-        </split-aggregate>
+        </parallel-foreach>
         <test:assert expression="#[vars.result != null]"/>
         <set-payload value="#[vars.result]"/>
         <flow-ref name="testListAggregation"/>
     </flow>
 
     <flow name="minimalConfigTargetMessage">
-        <split-aggregate target="result" targetValue="#[message]">
+        <parallel-foreach target="result" targetValue="#[message]">
             <set-payload value="#[payload ++ '-result']"/>
             <test:assert count="3"/>
-        </split-aggregate>
+        </parallel-foreach>
         <test:assert expression="#[vars.result != null]"/>
         <set-payload value="#[vars.result.payload]"/>
         <flow-ref name="testListAggregation"/>
     </flow>
 
     <flow name="timeout">
-        <split-aggregate timeout="1000">
+        <parallel-foreach timeout="1000">
             <test:assert count="3"/>
             <choice>
                 <when expression="#[payload == 'orange']">
@@ -63,11 +63,11 @@
                     <set-payload value="#[payload ++ '-result']"/>
                 </otherwise>
             </choice>
-        </split-aggregate>
+        </parallel-foreach>
     </flow>
 
     <flow name="routeWithException">
-        <split-aggregate>
+        <parallel-foreach>
             <test:assert count="3"/>
             <choice>
                 <when expression="#[payload == 'banana']">
@@ -77,11 +77,11 @@
                     <set-payload value="#[payload ++ '-result']"/>
                 </otherwise>
             </choice>
-        </split-aggregate>
+        </parallel-foreach>
     </flow>
 
     <flow name="routeWithExceptionWithMessage">
-        <split-aggregate>
+        <parallel-foreach>
             <test:assert count="3"/>
             <choice>
                 <when expression="#[payload == 'banana']">
@@ -91,11 +91,11 @@
                     <set-payload value="#[payload ++ '-result']"/>
                 </otherwise>
             </choice>
-        </split-aggregate>
+        </parallel-foreach>
     </flow>
 
     <flow name="routeWithNonMuleException">
-        <split-aggregate>
+        <parallel-foreach>
             <test:assert count="3"/>
             <choice>
                 <when expression="#[payload == 'banana']">
@@ -106,11 +106,11 @@
                     <set-payload value="#[payload ++ '-result']"/>
                 </otherwise>
             </choice>
-        </split-aggregate>
+        </parallel-foreach>
     </flow>
 
     <flow name="routeWithExpressionException">
-        <split-aggregate>
+        <parallel-foreach>
             <test:assert count="3"/>
             <choice>
                 <when expression="#[payload == 'banana']">
@@ -120,11 +120,11 @@
                     <set-payload value="#[payload ++ '-result']"/>
                 </otherwise>
             </choice>
-        </split-aggregate>
+        </parallel-foreach>
     </flow>
 
     <flow name="routeWithExceptionInSequentialProcessing">
-        <split-aggregate maxConcurrency="1">
+        <parallel-foreach maxConcurrency="1">
             <test:assert count="3"/>
             <choice>
                 <when expression="#[payload == 'banana']">
@@ -134,20 +134,20 @@
                     <set-payload value="#[payload ++ '-result']"/>
                 </otherwise>
             </choice>
-        </split-aggregate>
+        </parallel-foreach>
     </flow>
 
     <flow name="sequentialProcessing">
-        <split-aggregate maxConcurrency="1">
+        <parallel-foreach maxConcurrency="1">
             <set-payload value="#[payload ++ '-result']"/>
-            <custom-processor class="org.mule.test.routing.SplitAggregateScopeTestCase$ThreadCaptor"/>
+            <custom-processor class="org.mule.test.routing.ParallelForEachTestCase$ThreadCaptor"/>
             <test:assert count="3"/>
-        </split-aggregate>
+        </parallel-foreach>
         <flow-ref name="testListAggregation"/>
     </flow>
 
     <flow name="errorHandler">
-        <split-aggregate>
+        <parallel-foreach>
             <test:assert count="3"/>
             <choice>
                 <when expression="#[payload == 'banana']">
@@ -160,7 +160,7 @@
                     <set-payload value="#[payload ++ '-result']"/>
                 </otherwise>
             </choice>
-        </split-aggregate>
+        </parallel-foreach>
         <error-handler>
             <on-error-continue type="COMPOSITE_ROUTING">
                 <test:assert
@@ -178,7 +178,7 @@
     <flow name="variables">
         <set-variable variableName="var1" value="var"/>
         <set-variable variableName="var2" value="var"/>
-        <split-aggregate>
+        <parallel-foreach>
             <choice>
                 <when expression="#[payload == 'apple']">
                     <set-variable variableName="var2" value="newValue"/>
@@ -193,7 +193,7 @@
                 </otherwise>
             </choice>
             <test:assert count="3"/>
-        </split-aggregate>
+        </parallel-foreach>
         <test:assert expression="#[vars.var1 == 'var']"/>
         <test:assert expression="#[vars.var2 == 'newValue']"/>
         <test:assert expression="#[vars.var3 == 'var']"/>
@@ -201,15 +201,15 @@
     </flow>
 
     <flow name="concurrent">
-        <split-aggregate>
+        <parallel-foreach>
             <flow-ref name="captureThreadAndWait"/>
             <set-payload value="#[payload ++ '-result']"/>
             <test:assert count="3"/>
-        </split-aggregate>
+        </parallel-foreach>
     </flow>
 
     <sub-flow name="captureThreadAndWait">
-        <custom-processor class="org.mule.test.routing.SplitAggregateScopeTestCase$ThreadCaptor"/>
+        <custom-processor class="org.mule.test.routing.ParallelForEachTestCase$ThreadCaptor"/>
         <expression-component>mel:flowVars['latch'].await()</expression-component>
     </sub-flow>
 

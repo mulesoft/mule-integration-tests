@@ -98,10 +98,10 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
     final FruitBowl fruitBowl = new FruitBowl(apple, banana);
     fruitBowl.addFruit(orange);
 
-    flowRunner("split-aggregate").withPayload(fruitBowl).run();
+    flowRunner("parallel-foreach").withPayload(fruitBowl).run();
 
     final Message result =
-        queueHandler.read("split-aggregate-out", RECEIVE_TIMEOUT).getMessage();
+        queueHandler.read("parallel-foreach-out", RECEIVE_TIMEOUT).getMessage();
 
     assertNotNull(result);
     assertTrue(result.getPayload().getValue() instanceof List);
@@ -136,9 +136,9 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
     final FruitBowl fruitBowl = new FruitBowl(apple, banana);
     fruitBowl.addFruit(orange);
 
-    flowRunner("split-aggregate-list").withPayload(fruitBowl.getFruit()).run();
+    flowRunner("parallel-foreach-list").withPayload(fruitBowl.getFruit()).run();
 
-    final Message result = queueHandler.read("split-aggregate-list-out", RECEIVE_TIMEOUT).getMessage();
+    final Message result = queueHandler.read("parallel-foreach-list-out", RECEIVE_TIMEOUT).getMessage();
 
     assertNotNull(result);
     assertTrue(result.getPayload().getValue() instanceof List);
@@ -161,9 +161,9 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
     final FruitBowl fruitBowl = new FruitBowl();
     fruitBowl.addFruit(apple);
 
-    flowRunner("split-aggregate-singleton-list").withPayload(fruitBowl.getFruit()).run();
+    flowRunner("parallel-foreach-singleton-list").withPayload(fruitBowl.getFruit()).run();
 
-    final Message result = queueHandler.read("split-aggregate-singleton-list-out", RECEIVE_TIMEOUT).getMessage();
+    final Message result = queueHandler.read("parallel-foreach-singleton-list-out", RECEIVE_TIMEOUT).getMessage();
 
     assertNotNull(result);
     assertTrue(result.getPayload().getValue() instanceof List);
@@ -185,7 +185,7 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
     fruitBowl.addFruit(orange);
 
     final Message result =
-        flowRunner("split-aggregate-response-list").withPayload(fruitBowl.getFruit()).run().getMessage();
+        flowRunner("parallel-foreach-response-list").withPayload(fruitBowl.getFruit()).run().getMessage();
 
     assertNotNull(result);
     assertTrue(result.getPayload().getValue() instanceof List);
@@ -209,7 +209,7 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
     fruitBowl.addFruit(apple);
 
     final Message result =
-        flowRunner("split-aggregate-response-singleton-list").withPayload(fruitBowl.getFruit()).run().getMessage();
+        flowRunner("parallel-foreach-response-singleton-list").withPayload(fruitBowl.getFruit()).run().getMessage();
 
     assertNotNull(result);
     assertTrue(result.getPayload().getValue() instanceof List);
@@ -231,7 +231,7 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
     map.put("banana", banana);
     map.put("orange", orange);
 
-    CoreEvent result = flowRunner("split-aggregate-map").withPayload(map).run();
+    CoreEvent result = flowRunner("parallel-foreach-map").withPayload(map).run();
 
     assertNotNull(result);
     assertTrue(result.getMessage().getPayload().getValue() instanceof List);
@@ -274,9 +274,9 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
       payload += TEST_MESSAGE;
     }
 
-    flowRunner("message-chunk-split-aggregate").withPayload(payload).run();
+    flowRunner("message-chunk-parallel-foreach").withPayload(payload).run();
 
-    final Message result = queueHandler.read("message-chunk-split-aggregate-out", RECEIVE_TIMEOUT).getMessage();
+    final Message result = queueHandler.read("message-chunk-parallel-foreach-out", RECEIVE_TIMEOUT).getMessage();
 
     assertNotNull(result);
     assertNotSame(payload, result.getPayload().getValue());
