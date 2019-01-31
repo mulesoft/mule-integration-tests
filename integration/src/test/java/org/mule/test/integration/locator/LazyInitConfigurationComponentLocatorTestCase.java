@@ -59,7 +59,7 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
   @Rule
   public DynamicPort listenPort = new DynamicPort("http.listener.port");
 
-  private static final int TOTAL_NUMBER_OF_LOCATIONS = 110;
+  private static final int TOTAL_NUMBER_OF_LOCATIONS = 112;
   @Inject
   private Registry registry;
 
@@ -194,7 +194,9 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
                                   "GetChannels/processors/0/0/4",
                                   "GetChannels/processors/0/0/5",
                                   "GetChannels/processors/0/0/6",
+                                  "GetChannels/processors/0/0/7",
                                   "GetChannels/processors/0/1",
+                                  "GetChannels/processors/0/1/0",
 
                                   "null",
                                   "null/0",
