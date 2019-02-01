@@ -6,9 +6,12 @@
  */
 package org.mule.test.streaming;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.apache.commons.io.FileUtils.writeStringToFile;
+import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.assertThat;
 import static org.mule.tck.probe.PollingProber.check;
 import org.mule.runtime.api.exception.MuleException;
@@ -16,45 +19,57 @@ import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.streaming.StreamingManager;
 import org.mule.runtime.core.api.streaming.StreamingStatistics;
-import org.mule.runtime.core.internal.streaming.NullStreamingStatistics;
+import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
+
+import java.io.File;
 
 import javax.inject.Inject;
 
+import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 public class AutoCloseCursorProviderTestCase extends AbstractIntegrationTestCase {
 
-  public static class AssertStatisticsProcessor implements Processor {
+  private static final int OPEN_PROVIDERS = 100;
+  private static StreamingStatistics statistics;
 
-    public static StreamingStatistics statistics;
+
+  public static class AssertStatisticsProcessor implements Processor {
 
     @Override
     public CoreEvent process(CoreEvent event) throws MuleException {
       check(10000, 100, () -> {
         System.gc();
 
-        assertThat(statistics, not(instanceOf(NullStreamingStatistics.class)));
-        assertThat(statistics.getOpenCursorProvidersCount(), is(0));
-        assertThat(statistics.getOpenCursorsCount(), is(0));
-
+        assertThat(statistics.getClass().getName(), not(containsString("NullStreamingStatistics")));
+        assertThat("No cursor provider reclaimed", statistics.getOpenCursorProvidersCount(), is(lessThan(OPEN_PROVIDERS)));
+        //TODO: take heap dump and see if there's an actual reason this cannot go to zero
         return true;
       });
-
       return event;
     }
   }
+
 
   public static class SpyProcessor implements Processor {
 
     @Override
     public CoreEvent process(CoreEvent event) throws MuleException {
       System.out.println("payload: " + event.getVariables().get("spy").getValue());
-      System.out.println("Open providers: " + AssertStatisticsProcessor.statistics.getOpenCursorProvidersCount());
+      System.out.println("Open providers: " + statistics.getOpenCursorProvidersCount());
 
       return event;
     }
   }
+
+  @ClassRule
+  public static TemporaryFolder temporaryFolder = new TemporaryFolder();
+
+  @Rule
+  public SystemProperty workingDirSysProp = new SystemProperty("workingDir", temporaryFolder.getRoot().getPath());
 
   @Inject
   private StreamingManager streamingManager;
@@ -64,13 +79,31 @@ public class AutoCloseCursorProviderTestCase extends AbstractIntegrationTestCase
     return "org/mule/streaming/auto-close-cursor-provider-config.xml";
   }
 
+  @Override
+  protected void doSetUp() throws Exception {
+    super.doSetUp();
+    statistics = streamingManager.getStreamingStatistics();
+  }
+
+  @Override
+  protected void doTearDown() throws Exception {
+    super.doTearDown();
+    statistics = null;
+  }
+
   @Test
   public void openManyStreamsInForeachAndDiscard() throws Exception {
-    AssertStatisticsProcessor.statistics = streamingManager.getStreamingStatistics();
-    try {
-      flowRunner("openManyStreamsInForeachAndDiscard").run();
-    } finally {
-      AssertStatisticsProcessor.statistics = null;
-    }
+    String content = randomAlphanumeric(1024 * 1024);
+    File file = new File(temporaryFolder.getRoot(), "1kb.txt");
+    writeStringToFile(file, content);
+
+    flowRunner("openManyStreamsInForeachAndDiscard").run();
+
+    check(5000, 100, () -> {
+      assertThat("Leaked Cursor Providers", statistics.getOpenCursorProvidersCount(), is(0));
+      assertThat("Leaked Cursors", statistics.getOpenCursorsCount(), is(0));
+
+      return true;
+    });
   }
 }

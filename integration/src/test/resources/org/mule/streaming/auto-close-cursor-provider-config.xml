@@ -17,13 +17,16 @@
 
     <flow name="openManyStreamsInForeachAndDiscard">
 
+        <set-variable variableName="accum" value="#[[]]" />
         <foreach collection="#[1 to 100]">
             <set-variable variableName="spy" value="#[payload]" />
-            <file:read path="1kb.txt" />
-            <logger level="ERROR" message="#[payload]" />
-            <custom-processor class="org.mule.test.streaming.AutoCloseCursorProviderTestCase$SpyProcessor" />
+            <file:read path="1kb.txt" config-ref="file"/>
+            <set-variable variableName="toString" value="#[output application/java --- payload as String]" />
+            <set-variable variableName="accum" value="#[vars.accum ++ [vars.toString]]" />
+            <!--<custom-processor class="org.mule.test.streaming.AutoCloseCursorProviderTestCase$SpyProcessor" />-->
         </foreach>
 
+        <set-payload value="blank" />
         <custom-processor class="org.mule.test.streaming.AutoCloseCursorProviderTestCase$AssertStatisticsProcessor" />
     </flow>
 
