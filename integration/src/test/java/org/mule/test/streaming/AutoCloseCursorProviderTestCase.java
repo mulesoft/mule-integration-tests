@@ -46,21 +46,9 @@ public class AutoCloseCursorProviderTestCase extends AbstractIntegrationTestCase
 
         assertThat(statistics.getClass().getName(), not(containsString("NullStreamingStatistics")));
         assertThat("No cursor provider reclaimed", statistics.getOpenCursorProvidersCount(), is(lessThan(OPEN_PROVIDERS)));
-        //TODO: take heap dump and see if there's an actual reason this cannot go to zero
+
         return true;
       });
-      return event;
-    }
-  }
-
-
-  public static class SpyProcessor implements Processor {
-
-    @Override
-    public CoreEvent process(CoreEvent event) throws MuleException {
-      System.out.println("payload: " + event.getVariables().get("spy").getValue());
-      System.out.println("Open providers: " + statistics.getOpenCursorProvidersCount());
-
       return event;
     }
   }
@@ -94,7 +82,7 @@ public class AutoCloseCursorProviderTestCase extends AbstractIntegrationTestCase
   @Test
   public void openManyStreamsInForeachAndDiscard() throws Exception {
     String content = randomAlphanumeric(1024 * 1024);
-    File file = new File(temporaryFolder.getRoot(), "1kb.txt");
+    File file = new File(temporaryFolder.getRoot(), "file.txt");
     writeStringToFile(file, content);
 
     flowRunner("openManyStreamsInForeachAndDiscard").run();

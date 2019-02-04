@@ -1,14 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xmlns:test="http://www.mulesoft.org/schema/mule/test"
-      xmlns:http="http://www.mulesoft.org/schema/mule/http"
       xmlns:file="http://www.mulesoft.org/schema/mule/file"
       xsi:schemaLocation="
        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-       http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
-       http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
-       http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+       http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
 
 
     <file:config name="file">
@@ -19,11 +15,9 @@
 
         <set-variable variableName="accum" value="#[[]]" />
         <foreach collection="#[1 to 100]">
-            <set-variable variableName="spy" value="#[payload]" />
-            <file:read path="1kb.txt" config-ref="file"/>
+            <file:read path="file.txt" config-ref="file"/>
             <set-variable variableName="toString" value="#[output application/java --- payload as String]" />
             <set-variable variableName="accum" value="#[vars.accum ++ [vars.toString]]" />
-            <!--<custom-processor class="org.mule.test.streaming.AutoCloseCursorProviderTestCase$SpyProcessor" />-->
         </foreach>
 
         <set-payload value="blank" />
