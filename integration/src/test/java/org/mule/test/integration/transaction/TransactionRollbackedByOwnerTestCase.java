@@ -66,7 +66,7 @@ public class TransactionRollbackedByOwnerTestCase extends AbstractIntegrationTes
   }
 
   @Test
-  public void testInitializeIsCalledInInnerExceptionStrategy() throws Exception {
+  public void checkRollback() throws Exception {
     final TransactionNotificationListener listener = notification -> notifications.add((TransactionNotification) notification);
     muleContext.getNotificationManager().addListener(listener);
     try {
