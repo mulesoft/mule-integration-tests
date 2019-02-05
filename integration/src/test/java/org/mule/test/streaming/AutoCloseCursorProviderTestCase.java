@@ -13,7 +13,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.assertThat;
-import static org.mule.tck.probe.PollingProber.check;
+import static org.mule.tck.probe.PollingProber.probe;
 import static org.mule.test.allure.AllureConstants.StreamingFeature.STREAMING;
 import static org.mule.test.allure.AllureConstants.StreamingFeature.StreamingStory.STREAM_MANAGEMENT;
 import org.mule.runtime.api.exception.MuleException;
@@ -40,14 +40,16 @@ import org.junit.rules.TemporaryFolder;
 public class AutoCloseCursorProviderTestCase extends AbstractIntegrationTestCase {
 
   private static final int OPEN_PROVIDERS = 100;
-  private static StreamingStatistics statistics;
+  private static final int TIMEOUT_MILLIS = 10000;
+  private static final int POLL_DELAY_MILLIS = 100;
 
+  private static StreamingStatistics statistics;
 
   public static class AssertStatisticsProcessor implements Processor {
 
     @Override
     public CoreEvent process(CoreEvent event) throws MuleException {
-      check(10000, 100, () -> {
+      probe(TIMEOUT_MILLIS, POLL_DELAY_MILLIS, () -> {
         System.gc();
 
         assertThat(statistics.getClass().getName(), not(containsString("NullStreamingStatistics")));
@@ -93,7 +95,7 @@ public class AutoCloseCursorProviderTestCase extends AbstractIntegrationTestCase
 
     flowRunner("openManyStreamsInForeachAndDiscard").run();
 
-    check(5000, 100, () -> {
+    probe(TIMEOUT_MILLIS, POLL_DELAY_MILLIS, () -> {
       assertThat("Leaked Cursor Providers", statistics.getOpenCursorProvidersCount(), is(0));
       assertThat("Leaked Cursors", statistics.getOpenCursorsCount(), is(0));
 
