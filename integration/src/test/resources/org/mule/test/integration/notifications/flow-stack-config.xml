@@ -237,7 +237,7 @@
         </foreach>
     </flow>
 
-    <flow name="flowSplitAggregate" initialState="stopped">
+    <flow name="flowParallelForeach" initialState="stopped">
         <parallel-foreach collection="#[['foo', 'bar']]">
             <test:processor/>
             <flow-ref name="flow"/>

@@ -91,7 +91,7 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
   }
 
   @Test
-  public void testSplitAggregateFlow() throws Exception {
+  public void testParallelForeachFlow() throws Exception {
     final Apple apple = new Apple();
     final Banana banana = new Banana();
     final Orange orange = new Orange();
@@ -129,7 +129,7 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
   }
 
   @Test
-  public void testSplitAggregateListFlow() throws Exception {
+  public void testParallelForeachListFlow() throws Exception {
     final Apple apple = new Apple();
     final Banana banana = new Banana();
     final Orange orange = new Orange();
@@ -156,7 +156,7 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
   }
 
   @Test
-  public void testSplitAggregateListFlowSingleItem() throws Exception {
+  public void testParallelForeachListFlowSingleItem() throws Exception {
     final Apple apple = new Apple();
     final FruitBowl fruitBowl = new FruitBowl();
     fruitBowl.addFruit(apple);
@@ -177,7 +177,7 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
   }
 
   @Test
-  public void testSplitAggregateResponseListFlow() throws Exception {
+  public void testParallelForeachResponseListFlow() throws Exception {
     final Apple apple = new Apple();
     final Banana banana = new Banana();
     final Orange orange = new Orange();
@@ -203,7 +203,7 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
   }
 
   @Test
-  public void testSplitAggregateResponseListFlowSingleItem() throws Exception {
+  public void testParallelForeachResponseListFlowSingleItem() throws Exception {
     final Apple apple = new Apple();
     final FruitBowl fruitBowl = new FruitBowl();
     fruitBowl.addFruit(apple);
@@ -222,7 +222,7 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
   }
 
   @Test
-  public void testSplitAggregateMapFlow() throws Exception {
+  public void testParallelForeachMapFlow() throws Exception {
     Map<String, Fruit> map = new HashMap<>();
     final Apple apple = new Apple();
     final Banana banana = new Banana();
@@ -245,7 +245,7 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
   }
 
   @Test
-  public void testSplitFilterAggregateFlow() throws Exception {
+  public void testParallelForeachAggregateFlow() throws Exception {
     final Apple apple = new Apple();
     final Banana banana = new Banana();
     final Orange orange = new Orange();
@@ -268,7 +268,7 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
   }
 
   @Test
-  public void testMessageChunkSplitAggregateFlow() throws Exception {
+  public void testMessageChunkParallelForeachFlow() throws Exception {
     String payload = "";
     for (int i = 0; i < 100; i++) {
       payload += TEST_MESSAGE;

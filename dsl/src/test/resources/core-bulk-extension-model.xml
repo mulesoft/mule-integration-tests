@@ -74,6 +74,11 @@
     <flow name="flowForonError">
         <on-error ref="Attribute"/>
     </flow>
+    <flow name="flowForparallelForeach">
+        <parallel-foreach collection="#['ExpressionAttribute']" maxConcurrency="2147483647" target="Attribute" targetValue="#[payload]" timeout="9223372036854775807">
+            <logger/>
+        </parallel-foreach>
+    </flow>
     <flow name="flowForroundRobin">
         <round-robin>
             <route>
@@ -87,11 +92,6 @@
                 <logger/>
             </route>
         </scatter-gather>
-    </flow>
-    <flow name="flowForsplitAggregate">
-        <parallel-foreach collection="#['ExpressionAttribute']" maxConcurrency="2147483647" target="Attribute" targetValue="#[payload]" timeout="9223372036854775807">
-            <logger/>
-        </parallel-foreach>
     </flow>
     <sub-flow name="globalsubFlow">
         <logger/>
