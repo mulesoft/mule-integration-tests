@@ -70,11 +70,6 @@ public class TransactionRollbackedByOwnerTestCase extends AbstractIntegrationTes
     final TransactionNotificationListener listener = new TransactionNotificationListener<TransactionNotification>() {
 
       @Override
-      public boolean isBlocking() {
-        return false;
-      }
-
-      @Override
       public void onNotification(TransactionNotification notification) {
         notifications.add(notification);
       }
