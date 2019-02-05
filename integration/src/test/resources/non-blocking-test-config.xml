@@ -265,7 +265,7 @@
         </scatter-gather>
     </flow>
 
-    <flow name="splitAggregate" initialState="stopped">
+    <flow name="parallelForeach" initialState="stopped">
         <test:assert-intercepting responseSameTask="false"/>
         <parallel-foreach>
             <test:assert-intercepting responseSameTask="false" count="2"/>

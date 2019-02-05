@@ -437,14 +437,14 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  public void flowSplitAggregate() throws Exception {
-    flowRunner("flowSplitAggregate").run();
+  public void flowParallelForeach() throws Exception {
+    flowRunner("flowParallelForeach").run();
     assertThat(stackToAssert, not(nullValue()));
 
     assertStackElements(stackToAssert,
                         isFlowStackElement("flow",
                                            "flow/processors/0"),
-                        isFlowStackElement("flowSplitAggregate",
-                                           "flowSplitAggregate/processors/0/processors/1"));
+                        isFlowStackElement("flowParallelForeach",
+                                           "flowParallelForeach/processors/0/processors/1"));
   }
 }

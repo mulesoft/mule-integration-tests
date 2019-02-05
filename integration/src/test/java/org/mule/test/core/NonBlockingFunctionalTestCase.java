@@ -151,8 +151,8 @@ public class NonBlockingFunctionalTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  public void splitAggregate() throws Exception {
-    flowRunner("splitAggregate").withPayload(asList(new String[] {"1", "2", "3"}, new String[] {"a", "b", "c"})).run();
+  public void parallelForeach() throws Exception {
+    flowRunner("parallelForeach").withPayload(asList(new String[] {"1", "2", "3"}, new String[] {"a", "b", "c"})).run();
   }
 
   public static class CustomSecurityFilter extends AbstractAuthenticationFilter {
