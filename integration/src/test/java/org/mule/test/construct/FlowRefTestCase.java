@@ -8,14 +8,15 @@ package org.mule.test.construct;
 
 import static java.lang.Runtime.getRuntime;
 import static java.lang.String.format;
+import static java.util.Collections.synchronizedList;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static java.util.stream.Collectors.toList;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mule.functional.api.exception.ExpectedError.none;
@@ -40,10 +41,8 @@ import org.mule.runtime.http.api.client.HttpRequestOptions;
 import org.mule.runtime.http.api.domain.message.request.HttpRequest;
 import org.mule.runtime.http.api.domain.message.response.HttpResponse;
 import org.mule.service.http.TestHttpClient;
-import org.mule.tck.junit4.FlakinessDetectorTestRunner;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
-import org.mule.test.runner.RunnerDelegateTo;
 
 import org.junit.After;
 import org.junit.Before;
@@ -60,7 +59,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import io.qameta.allure.Issue;
 
-@RunnerDelegateTo(FlakinessDetectorTestRunner.class)
 public class FlowRefTestCase extends AbstractIntegrationTestCase {
 
   private static final String CONTEXT_DEPTH_MESSAGE = "Too many child contexts nested.";
@@ -148,7 +146,7 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
   @Test
   @Issue("MULE-14285")
   public void flowRefFlowErrorNotifications() throws Exception {
-    List<MessageProcessorNotification> notificationList = new ArrayList<>();
+    List<MessageProcessorNotification> notificationList = synchronizedList(new ArrayList<>());
     setupMessageProcessorNotificationListener(notificationList);
 
     assertThat(flowRunner("flowRefFlowErrorNotifications").runExpectingException().getCause(),
@@ -160,7 +158,7 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
   @Test
   @Issue("MULE-14285")
   public void flowRefSubFlowErrorNotifications() throws Exception {
-    List<MessageProcessorNotification> notificationList = new ArrayList<>();
+    List<MessageProcessorNotification> notificationList = synchronizedList(new ArrayList<>());
     setupMessageProcessorNotificationListener(notificationList);
 
     assertThat(flowRunner("flowRefSubFlowErrorNotifications").runExpectingException().getCause(),
@@ -178,19 +176,23 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
   }
 
   private void assertNotifications(List<MessageProcessorNotification> notificationList, String name) {
-    assertThat(notificationList, hasSize(4));
+    probe(() -> {
+      assertThat(notificationList.toString(), notificationList, hasSize(4));
 
-    MessageProcessorNotification preNotification = notificationList.get(0);
-    assertThat(preNotification.getAction().getActionId(), equalTo(MESSAGE_PROCESSOR_PRE_INVOKE));
-    assertThat(preNotification.getComponent().getLocation().getLocation(), equalTo(name));
-    assertThat(preNotification.getException(), is(nullValue()));
+      MessageProcessorNotification preNotification = notificationList.get(0);
+      assertThat(preNotification.getAction().getActionId(), equalTo(MESSAGE_PROCESSOR_PRE_INVOKE));
+      assertThat(preNotification.getComponent().getLocation().getLocation(), equalTo(name));
+      assertThat(preNotification.getException(), is(nullValue()));
 
-    MessageProcessorNotification postNotification = notificationList.get(3);
-    assertThat(postNotification.getAction().getActionId(), equalTo(MESSAGE_PROCESSOR_POST_INVOKE));
-    assertThat(postNotification.getComponent().getLocation().getLocation(), equalTo(name));
-    assertThat(postNotification.getException().getCause(), instanceOf(IllegalStateException.class));
-    assertThat(postNotification.getEvent().getError().isPresent(), is(true));
-    assertThat(postNotification.getEvent().getError().get().getCause(), instanceOf(IllegalStateException.class));
+      MessageProcessorNotification postNotification = notificationList.get(3);
+      assertThat(postNotification.getAction().getActionId(), equalTo(MESSAGE_PROCESSOR_POST_INVOKE));
+      assertThat(postNotification.getComponent().getLocation().getLocation(), equalTo(name));
+      assertThat(postNotification.getException().getCause(), instanceOf(IllegalStateException.class));
+      assertThat(postNotification.getEvent().getError().isPresent(), is(true));
+      assertThat(postNotification.getEvent().getError().get().getCause(), instanceOf(IllegalStateException.class));
+
+      return true;
+    });
   }
 
   @Test

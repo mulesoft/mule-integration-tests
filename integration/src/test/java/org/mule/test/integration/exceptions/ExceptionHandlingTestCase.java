@@ -8,7 +8,7 @@ package org.mule.test.integration.exceptions;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
-import static java.util.concurrent.TimeUnit.SECONDS;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.instanceOf;
@@ -19,7 +19,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
-import static org.mule.functional.api.event.TestLegacyEventUtils.getEffectiveExceptionHandler;
 import static org.mule.tck.MuleTestUtils.getExceptionListeners;
 
 import org.mule.functional.api.component.TestConnectorQueueHandler;
@@ -28,19 +27,24 @@ import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.exception.FlowExceptionHandler;
 import org.mule.runtime.core.api.exception.LoggingExceptionHandler;
+import org.mule.runtime.core.api.exception.NullExceptionHandler;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.runtime.core.api.processor.Processor;
+import org.mule.runtime.core.privileged.event.BaseEventContext;
 import org.mule.tck.processor.FlowAssert;
 import org.mule.test.AbstractIntegrationTestCase;
-
-import java.io.Serializable;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.concurrent.CountDownLatch;
 
 import org.junit.After;
 import org.junit.Test;
 
+import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+
+// TODO MULE-16371 These tests make assertions on the internal state of the Event/EventContext
 public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
 
   public static final String MESSAGE = "some message";
@@ -80,16 +84,15 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
   public void testAsyncInFlow() throws Exception {
     flowRunner("asyncInFlow").withPayload(MESSAGE).dispatch();
 
-    Message response = queueHandler.read("outFlow4", 3000).getMessage();
+    Message response = queueHandler.read("outFlow4", RECEIVE_TIMEOUT).getMessage();
     assertNotNull(response);
-    assertThat(effectiveMessagingExceptionHandler.getClass().getName(), equalTo(ERROR_HANDLER_CLASSNAME));
   }
 
   @Test
   public void testUntilSuccessfulInFlow() throws Exception {
     flowRunner("untilSuccessfulInFlow").withPayload(MESSAGE).dispatch();
 
-    Message response = queueHandler.read("outFlow5", 3000).getMessage();
+    Message response = queueHandler.read("outFlow5", RECEIVE_TIMEOUT).getMessage();
 
     assertNotNull(response);
     assertThat(effectiveMessagingExceptionHandler.getClass().getName(), equalTo(ERROR_HANDLER_CLASSNAME));
@@ -97,7 +100,7 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void testCustomProcessorInScope() throws Exception {
-    LinkedList<String> list = new LinkedList<>();
+    List<String> list = new LinkedList<>();
     list.add(MESSAGE);
     final CoreEvent muleEvent = flowRunner("customProcessorInScope").withPayload(list).run();
     Message response = muleEvent.getMessage();
@@ -110,7 +113,7 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
   public void testCustomProcessorInTransactionalScope() throws Exception {
     flowRunner("customProcessorInTransactionalScope").withPayload(MESSAGE).dispatch();
 
-    Message response = queueHandler.read("outTransactional1", 3000).getMessage();
+    Message response = queueHandler.read("outTransactional1", RECEIVE_TIMEOUT).getMessage();
 
     assertNotNull(response);
 
@@ -129,7 +132,7 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
   public void testCustomProcessorInExceptionStrategy() throws Exception {
     flowRunner("customProcessorInExceptionStrategy").withPayload(MESSAGE).dispatch();
 
-    Message response = queueHandler.read("outStrategy1", 3000).getMessage();
+    Message response = queueHandler.read("outStrategy1", RECEIVE_TIMEOUT).getMessage();
 
     assertNotNull(response);
 
@@ -167,7 +170,7 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
       throws Exception {
     flowRunner(flowName).withPayload(MESSAGE).withInboundProperties(messageProperties).dispatch();
 
-    Message response = queueHandler.read(expected, 3000).getMessage();
+    Message response = queueHandler.read(expected, RECEIVE_TIMEOUT).getMessage();
 
     assertNotNull(response);
   }
@@ -180,7 +183,7 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
       // do nothing
     }
 
-    assertFalse(latch.await(3, SECONDS));
+    assertFalse(latch.await(RECEIVE_TIMEOUT, MILLISECONDS));
     verify(latch).countDown();
   }
 
@@ -195,11 +198,46 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
 
   public static class ExceptionHandlerVerifierProcessor implements Processor {
 
+    public static final FlowExceptionHandler HANDLER = NullExceptionHandler.getInstance();
+
     @Override
     public synchronized CoreEvent process(CoreEvent event) throws MuleException {
       effectiveMessagingExceptionHandler = getEffectiveExceptionHandler(event);
       return event;
     }
 
+    /**
+     * @return the {@link FlowExceptionHandler} to be applied if an exception is unhandled during the processing of the given
+     *         event.
+     */
+    public static FlowExceptionHandler getEffectiveExceptionHandler(CoreEvent event) {
+      Field exceptionHandlerField;
+      try {
+        exceptionHandlerField = event.getContext().getClass().getSuperclass().getDeclaredField("exceptionHandler");
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+
+      exceptionHandlerField.setAccessible(true);
+      try {
+        BaseEventContext eventContext = (BaseEventContext) event.getContext();
+
+        FlowExceptionHandler effectiveMessagingExceptionHandler =
+            (FlowExceptionHandler) exceptionHandlerField.get(eventContext);
+        while (eventContext.getParentContext().isPresent() && effectiveMessagingExceptionHandler == HANDLER) {
+          eventContext = eventContext.getParentContext().get();
+          effectiveMessagingExceptionHandler = (FlowExceptionHandler) exceptionHandlerField.get(eventContext);
+        }
+
+        return effectiveMessagingExceptionHandler;
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      } finally {
+        exceptionHandlerField.setAccessible(false);
+      }
+    }
+
   }
+
+
 }

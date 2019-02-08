@@ -79,16 +79,19 @@ public class OnErrorNestedExceptionsTestCase extends AbstractIntegrationTestCase
 
   @Test
   public void exceptionInErrorHandlerFlowIsMarked() throws Exception {
-    flowRunner("exceptionInErrorHandlerFlow").runExpectingException(hasMessage(hasPayload(equalTo("propagated"))));
+    flowRunner("exceptionInErrorHandlerFlow")
+        .runExpectingException(hasMessage(hasPayload(equalTo("propagated"))));
   }
 
   @Test
   public void exceptionInErrorHandlerTryIsMarked() throws Exception {
-    flowRunner("exceptionInErrorHandlerTry").runExpectingException(hasMessage(hasPayload(equalTo("propagated"))));
+    flowRunner("exceptionInErrorHandlerTry")
+        .runExpectingException(hasMessage(hasPayload(equalTo("propagated"))));
   }
 
   @Test
   public void exceptionInErrorHandlerNestedTryIsMarked() throws Exception {
-    flowRunner("exceptionInErrorHandlerNestedTry").runExpectingException(hasMessage(hasPayload(equalTo("propagated"))));
+    flowRunner("exceptionInErrorHandlerNestedTry")
+        .runExpectingException(hasMessage(hasPayload(equalTo("propagated"))));
   }
 }

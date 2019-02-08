@@ -10,7 +10,7 @@
     <object name="throw-exception" class="org.mule.test.integration.exceptions.ThrowExceptionProcessor"/>
     <object name="throw-error" class="org.mule.test.integration.exceptions.ErrorHandlerTestCase$ThrowErrorProcessor"/>
 
-    <flow name="matchesHandlerUsingWhen">
+    <flow name="matchesHandlerUsingWhen" initialState="stopped">
         <test:processor/>
         <error-handler>
             <on-error-continue when="#[mel:exception.causedBy(java.lang.IllegalArgumentException)]">
@@ -50,7 +50,7 @@
         </error-handler>
     </flow>
 
-    <flow name="matchesHandlerUsingType">
+    <flow name="matchesHandlerUsingType" initialState="stopped">
         <processor ref="throw-exception"/>
         <error-handler>
             <on-error-continue type="TRANSFORMATION">
@@ -74,7 +74,7 @@
         </error-handler>
     </flow>
 
-    <flow name="propagatesCriticalErrors">
+    <flow name="propagatesCriticalErrors" initialState="stopped">
         <append-string-transformer message=" critical"/>
         <processor ref="throw-error"/>
         <error-handler>
@@ -84,7 +84,7 @@
         </error-handler>
     </flow>
 
-    <flow name="propagatesErrorHandlingRoutingErrors">
+    <flow name="propagatesErrorHandlingRoutingErrors" initialState="stopped">
         <flow-ref name="onErrorFails"/>
         <error-handler>
             <on-error-continue type="EXPRESSION">
