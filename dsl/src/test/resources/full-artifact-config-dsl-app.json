@@ -1309,6 +1309,32 @@
           "components": []
         },
         {
+          "name": "flowRef",
+          "declaringExtension": "mule",
+          "kind": "OPERATION",
+          "customConfigurationParameters": [],
+          "metadataProperties": {},
+          "parameterGroups": [
+            {
+              "name": "General",
+              "customConfigurationParameters": [],
+              "metadataProperties": {},
+              "parameters": [
+                {
+                  "name": "name",
+                  "metadataProperties": {},
+                  "value": {
+                    "text": "testSubFlow",
+                    "isCData": false,
+                    "type": "STRING"
+                  }
+                }
+              ]
+            }
+          ],
+          "components": []
+        },
+        {
           "name": "try",
           "declaringExtension": "mule",
           "kind": "CONSTRUCT",
@@ -1916,6 +1942,43 @@
                   "metadataProperties": {},
                   "value": {
                     "text": "\n                #[payload]\n            ",
+                    "isCData": false,
+                    "type": "STRING"
+                  }
+                }
+              ]
+            }
+          ],
+          "components": []
+        }
+      ]
+    },
+    {
+      "refName": "testSubFlow",
+      "name": "flow",
+      "declaringExtension": "mule",
+      "kind": "CONSTRUCT",
+      "customConfigurationParameters": [],
+      "metadataProperties": {},
+      "parameterGroups": [],
+      "components": [
+        {
+          "name": "logger",
+          "declaringExtension": "mule",
+          "kind": "OPERATION",
+          "customConfigurationParameters": [],
+          "metadataProperties": {},
+          "parameterGroups": [
+            {
+              "name": "General",
+              "customConfigurationParameters": [],
+              "metadataProperties": {},
+              "parameters": [
+                {
+                  "name": "message",
+                  "metadataProperties": {},
+                  "value": {
+                    "text": "onTestSubFlow",
                     "isCData": false,
                     "type": "STRING"
                   }

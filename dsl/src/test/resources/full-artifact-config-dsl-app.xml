@@ -170,6 +170,8 @@
                                          maxBufferSize="1000"/>
         </sockets:send-and-receive>
 
+        <flow-ref name="testSubFlow"/>
+
         <try>
             <wsc:consume operation="GetCitiesByCountry">
                 <wsc:message>
@@ -244,4 +246,7 @@
         </os:store>
     </flow>
 
+    <flow name="testSubFlow">
+        <logger message="onTestSubFlow"/>
+    </flow>
 </mule>
