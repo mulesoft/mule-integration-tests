@@ -42,7 +42,6 @@ import static org.mule.runtime.extension.api.declaration.type.RedeliveryPolicyTy
 import static org.mule.runtime.extension.api.declaration.type.RedeliveryPolicyTypeBuilder.USE_SECURE_HASH;
 import static org.mule.runtime.extension.api.declaration.type.StreamingStrategyTypeBuilder.REPEATABLE_IN_MEMORY_BYTES_STREAM_ALIAS;
 import static org.mule.test.module.extension.internal.util.ExtensionsTestUtils.compareXML;
-
 import org.mule.extensions.jms.api.connection.caching.NoCachingConfiguration;
 import org.mule.runtime.api.app.declaration.serialization.ArtifactDeclarationJsonSerializer;
 import org.mule.runtime.app.declaration.api.ArtifactDeclaration;
@@ -54,14 +53,15 @@ import org.mule.runtime.config.api.dsl.ArtifactDeclarationXmlSerializer;
 import org.mule.runtime.extension.api.runtime.ExpirationPolicy;
 import org.mule.test.runner.RunnerDelegateTo;
 
+import com.google.gson.JsonParser;
+import com.google.gson.stream.JsonReader;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Collection;
 import java.util.List;
 
-import com.google.gson.JsonParser;
-import com.google.gson.stream.JsonReader;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
@@ -560,6 +560,11 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
                     .withParameter(TARGET_VALUE_PARAMETER_NAME, createStringParameter("#[message]"))
                     .getDeclaration())
                 .getDeclaration())
+            .withComponent(core.newOperation("flowRef")
+                .withParameterGroup(newParameterGroup()
+                    .withParameter("name", createStringParameter("testSubFlow"))
+                    .getDeclaration())
+                .getDeclaration())
             .withComponent(core.newConstruct("try")
                 .withComponent(wsc.newOperation("consume")
                     .withParameterGroup(newParameterGroup()
@@ -676,6 +681,14 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
                     .withParameter("failOnNullValue", createBooleanParameter("#[vars.failOnNullValue]"))
                     .withParameter("objectStore", createStringParameter("persistentStore"))
                     .withParameter("value", createStringParameter("#[payload]"))
+                    .getDeclaration())
+                .getDeclaration())
+            .getDeclaration())
+        .withGlobalElement(core.newConstruct("flow").withRefName("testSubFlow")
+            .withComponent(core
+                .newOperation("logger")
+                .withParameterGroup(newParameterGroup()
+                    .withParameter("message", createStringParameter("onTestSubFlow"))
                     .getDeclaration())
                 .getDeclaration())
             .getDeclaration())
