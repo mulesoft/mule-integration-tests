@@ -6,23 +6,23 @@
        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
        http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
-    <flow name="customError">
+    <flow name="customError" initialState="stopped">
         <raise-error type="APP:MY_TYPE"/>
     </flow>
 
-    <flow name="existingError">
+    <flow name="existingError" initialState="stopped">
         <raise-error type="CONNECTIVITY"/>
     </flow>
 
-    <flow name="descriptionString">
+    <flow name="descriptionString" initialState="stopped">
         <raise-error type="ROUTING" description="This is a routing error."/>
     </flow>
 
-    <flow name="descriptionExpression">
+    <flow name="descriptionExpression" initialState="stopped">
         <raise-error type="APP:MY_TYPE" description="#['The error was caused by: ' ++ payload]"/>
     </flow>
 
-    <flow name="continueOverride">
+    <flow name="continueOverride" initialState="stopped">
         <test:processor throwException="true"/>
         <error-handler>
             <on-error-continue>
@@ -31,7 +31,7 @@
         </error-handler>
     </flow>
 
-    <flow name="propagateOverride">
+    <flow name="propagateOverride" initialState="stopped">
         <test:processor throwException="true"/>
         <error-handler>
             <on-error-propagate>
@@ -40,7 +40,7 @@
         </error-handler>
     </flow>
 
-    <flow name="handled">
+    <flow name="handled" initialState="stopped">
         <raise-error type="APP:MY_TYPE" description="Fatal error."/>
         <error-handler>
             <on-error-continue type="APP:MY_TYPE">
@@ -52,7 +52,7 @@
         </error-handler>
     </flow>
 
-    <flow name="try">
+    <flow name="try" initialState="stopped">
         <test:processor/>
         <try>
             <choice>
@@ -83,7 +83,7 @@
         </error-handler>
     </flow>
 
-    <flow name="foreach">
+    <flow name="foreach" initialState="stopped">
         <foreach>
             <test:processor/>
             <raise-error type="APP:MY_TYPE" description="For each failed."/>
@@ -98,7 +98,7 @@
         </error-handler>
     </flow>
 
-    <flow name="scatter">
+    <flow name="scatter" initialState="stopped">
         <scatter-gather>
             <route>
                 <test:processor/>

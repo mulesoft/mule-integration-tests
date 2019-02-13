@@ -5,7 +5,7 @@
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
                http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
-    <flow name="checkEquals">
+    <flow name="checkEquals" initialState="stopped">
         <test:skeleton-source/>
         <test:throw exception="java.lang.RuntimeException" error="ANY"/>
         <error-handler>
@@ -23,7 +23,7 @@
         </error-handler>
     </flow>
 
-    <flow name="checkEqualsVerbose">
+    <flow name="checkEqualsVerbose" initialState="stopped">
         <test:skeleton-source/>
         <test:throw exception="java.lang.RuntimeException" error="ANY"/>
         <error-handler>
@@ -42,7 +42,7 @@
         </error-handler>
     </flow>
 
-    <flow name="checkStacktrace">
+    <flow name="checkStacktrace" initialState="stopped">
         <test:skeleton-source/>
         <test:throw exception="java.lang.RuntimeException" error="ANY"/>
         <error-handler>
@@ -55,7 +55,7 @@
         </error-handler>
     </flow>
 
-    <flow name="checkSummary">
+    <flow name="checkSummary" initialState="stopped">
         <test:skeleton-source/>
         <test:throw exception="java.lang.RuntimeException" error="ANY"/>
         <error-handler>
@@ -67,7 +67,7 @@
         </error-handler>
     </flow>
 
-    <flow name="checkFlowStack">
+    <flow name="checkFlowStack" initialState="stopped">
         <test:skeleton-source/>
         <test:throw exception="java.lang.RuntimeException" error="ANY"/>
         <error-handler>
@@ -79,7 +79,7 @@
         </error-handler>
     </flow>
 
-    <flow name="unknownFiltered">
+    <flow name="unknownFiltered" initialState="stopped">
         <test:skeleton-source/>
         <test:processor throwException="true" exceptionToThrow="java.lang.NullPointerException"/>
         <error-handler>
@@ -95,7 +95,7 @@
         </error-handler>
     </flow>
 
-    <flow name="unknownFull">
+    <flow name="unknownFull" initialState="stopped">
         <test:skeleton-source/>
         <test:processor throwException="true" exceptionToThrow="java.lang.NullPointerException"/>
         <error-handler>
@@ -111,7 +111,7 @@
         </error-handler>
     </flow>
 
-    <flow name="allChecksTogetherNoneFailing">
+    <flow name="allChecksTogetherNoneFailing" initialState="stopped">
         <test:skeleton-source/>
         <test:throw exception="java.lang.RuntimeException" error="ANY"/>
         <error-handler>
@@ -137,7 +137,7 @@
         </error-handler>
     </flow>
 
-    <flow name="exceptionInTry">
+    <flow name="exceptionInTry" initialState="stopped">
         <try>
             <try>
                 <test:throw exception="org.mule.test.integration.exceptions.LogCheckTestCase.CustomException" error="ANY"/>
@@ -154,7 +154,7 @@
         </try>
     </flow>
 
-    <flow name="sameExceptionInTry">
+    <flow name="sameExceptionInTry" initialState="stopped">
         <try>
             <try>
                 <test:throw exception="org.mule.test.integration.exceptions.LogCheckTestCase.CustomException" error="ANY"/>
@@ -174,7 +174,7 @@
         </try>
     </flow>
 
-    <flow name="differentExceptionsInTry">
+    <flow name="differentExceptionsInTry" initialState="stopped">
         <try>
             <try>
                 <test:throw exception="org.mule.test.integration.exceptions.LogCheckTestCase.CustomException"
@@ -203,7 +203,7 @@
         </try>
     </flow>
 
-    <flow name="noLogFlowFlagNotSet">
+    <flow name="noLogFlowFlagNotSet" initialState="stopped">
         <try>
             <test:throw exception="java.lang.AssertionError" error="TRANSFORMATION"/>
             <error-handler>
@@ -216,7 +216,7 @@
         </error-handler>
     </flow>
     
-    <flow name="noLogFlowFlagSet">
+    <flow name="noLogFlowFlagSet" initialState="stopped">
         <try>
             <test:throw exception="java.lang.AssertionError" error="TRANSFORMATION"/>
             <error-handler>
@@ -229,7 +229,7 @@
         </error-handler>
     </flow>
 
-    <flow name="noExceptionFlow">
+    <flow name="noExceptionFlow" initialState="stopped">
         <test:processor/>
         <error-handler>
             <test:on-error-check-log succeedIfNoLog="true"/>

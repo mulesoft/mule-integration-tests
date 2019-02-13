@@ -5,7 +5,7 @@
 
         http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
-    <flow name="variablePropagationToErrorHandler">
+    <flow name="variablePropagationToErrorHandler" initialState="stopped">
         <until-successful maxRetries="1" millisBetweenRetries="1000">
             <set-variable variableName="message" value="#[payload ++ ' executed once']"/>
             <test:processor throwException="true"/>
@@ -17,7 +17,7 @@
         </error-handler>
     </flow>
 
-    <flow name="variablePropagationOutside">
+    <flow name="variablePropagationOutside" initialState="stopped">
         <try>
             <until-successful maxRetries="1" millisBetweenRetries="1000">
                 <set-variable variableName="message" value="#[payload ++ ' executed once']"/>
@@ -30,14 +30,14 @@
         <set-payload value="#[vars.message]"/>
     </flow>
 
-    <flow name="variablePropagationWithoutError">
+    <flow name="variablePropagationWithoutError" initialState="stopped">
         <until-successful maxRetries="1" millisBetweenRetries="1000">
             <set-variable variableName="message" value="#[payload ++ ' executed once']"/>
         </until-successful>
         <set-payload value="#[vars.message]"/>
     </flow>
 
-    <flow name="variableImmutableBetweenRetries">
+    <flow name="variableImmutableBetweenRetries" initialState="stopped">
         <set-variable variableName="message" value="#[payload]"/>
         <try>
             <until-successful maxRetries="10" millisBetweenRetries="1000">
@@ -51,7 +51,7 @@
         <set-payload value="#[vars.message]"/>
     </flow>
 
-    <flow name="payloadPropagation">
+    <flow name="payloadPropagation" initialState="stopped">
         <until-successful maxRetries="0" millisBetweenRetries="1000">
             <set-payload value="#[payload ++ ' executed once']"/>
             <test:processor throwException="true"/>
@@ -61,7 +61,7 @@
         </error-handler>
     </flow>
 
-    <flow name="payloadPropagationWithoutError">
+    <flow name="payloadPropagationWithoutError" initialState="stopped">
         <until-successful maxRetries="2" millisBetweenRetries="1000">
             <set-payload value="#[payload ++ ' executed once']"/>
         </until-successful>
@@ -70,7 +70,7 @@
         </error-handler>
     </flow>
 
-    <flow name="payloadImmutableBetweenRetries">
+    <flow name="payloadImmutableBetweenRetries" initialState="stopped">
         <until-successful maxRetries="10" millisBetweenRetries="1000">
             <set-payload value="#[payload ++ ' executed once']"/>
         </until-successful>
