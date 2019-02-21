@@ -6,6 +6,9 @@
  */
 package org.mule.test.config.spring.parsers;
 
+import static org.hamcrest.Matchers.both;
+import static org.hamcrest.Matchers.containsString;
+
 import org.mule.test.IntegrationTestCaseRunnerConfig;
 
 import org.junit.Test;
@@ -19,7 +22,10 @@ public class MissingParserTestCase extends AbstractBadConfigTestCase implements 
 
   @Test
   public void testHelpfulErrorMessage() throws Exception {
-    assertErrorContains("Invalid content was found starting with element 'parsers-test:missing'");
+    expected.expectMessage(both(containsString("Invalid content was found starting with element"))
+        .and(containsString("parsers-test")).and(containsString("missing")));
+
+    parseConfig();
   }
 
 }
