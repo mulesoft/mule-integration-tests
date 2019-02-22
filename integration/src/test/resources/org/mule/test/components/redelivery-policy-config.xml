@@ -10,6 +10,7 @@
     <vm:config name="VM_Config">
         <vm:queues >
           <vm:queue queueName="Q1" />
+          <vm:queue queueName="Q2" />
         </vm:queues>
     </vm:config>
 
@@ -23,6 +24,26 @@
             <redelivery-policy maxRedeliveryCount="0"/>
         </vm:listener>
         <raise-error type="APP:FLOW_ERROR"/>
+        <error-handler>
+            <on-error-propagate type="MULE:REDELIVERY_EXHAUSTED">
+                <test:queue name="redeliveredMessageQueue"/>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+
+    <flow name="redeliveryPolicyFlowLongDispatch">
+        <vm:publish queueName="Q2" config-ref="VM_Config"/>
+    </flow>
+
+    <flow name="redeliveryPolicyFlowLongProcess">
+        <vm:listener queueName="Q2" config-ref="VM_Config">
+            <redelivery-policy maxRedeliveryCount="1" idExpression="#[random()]"/>
+        </vm:listener>
+        
+        <test:processor processingType="BLOCKING">
+            <test:callback class="org.mule.test.components.RedeliveryPolicyTestCase$LatchAwaitCallback"/>
+        </test:processor>
+        
         <error-handler>
             <on-error-propagate type="MULE:REDELIVERY_EXHAUSTED">
                 <test:queue name="redeliveredMessageQueue"/>
