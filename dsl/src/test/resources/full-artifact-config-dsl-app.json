@@ -27,6 +27,42 @@
       "components": []
     },
     {
+      "refName": "failingProcessor",
+      "name": "object",
+      "declaringExtension": "mule",
+      "kind": "CONSTRUCT",
+      "customConfigurationParameters": [],
+      "metadataProperties": {},
+      "parameterGroups": [
+        {
+          "name": "General",
+          "customConfigurationParameters": [],
+          "metadataProperties": {},
+          "parameters": [
+            {
+              "name": "name",
+              "metadataProperties": {},
+              "value": {
+                "text": "failingProcessor",
+                "isCData": false,
+                "type": "STRING"
+              }
+            },
+            {
+              "name": "class",
+              "metadataProperties": {},
+              "value": {
+                "text": "org.mule.test.extension.dsl.ArtifactDeclarationSerializerTestCase$FailingProcessor",
+                "isCData": false,
+                "type": "STRING"
+              }
+            }
+          ]
+        }
+      ],
+      "components": []
+    },
+    {
       "refName": "referableHandler",
       "name": "errorHandler",
       "declaringExtension": "mule",
