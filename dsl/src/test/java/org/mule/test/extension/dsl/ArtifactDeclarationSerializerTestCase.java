@@ -11,6 +11,8 @@ import static java.util.Arrays.asList;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.mock;
+import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 import static org.mule.runtime.api.meta.model.parameter.ParameterGroupModel.CONNECTION;
 import static org.mule.runtime.app.declaration.api.fluent.ElementDeclarer.newArtifact;
 import static org.mule.runtime.app.declaration.api.fluent.ElementDeclarer.newListValue;
@@ -44,12 +46,17 @@ import static org.mule.runtime.extension.api.declaration.type.StreamingStrategyT
 import static org.mule.test.module.extension.internal.util.ExtensionsTestUtils.compareXML;
 import org.mule.extensions.jms.api.connection.caching.NoCachingConfiguration;
 import org.mule.runtime.api.app.declaration.serialization.ArtifactDeclarationJsonSerializer;
+import org.mule.runtime.api.exception.MuleException;
+import org.mule.runtime.api.lifecycle.Initialisable;
 import org.mule.runtime.app.declaration.api.ArtifactDeclaration;
 import org.mule.runtime.app.declaration.api.ParameterElementDeclaration;
 import org.mule.runtime.app.declaration.api.ParameterValue;
 import org.mule.runtime.app.declaration.api.fluent.ElementDeclarer;
 import org.mule.runtime.app.declaration.api.fluent.SimpleValueType;
 import org.mule.runtime.config.api.dsl.ArtifactDeclarationXmlSerializer;
+import org.mule.runtime.core.api.event.CoreEvent;
+import org.mule.runtime.core.api.processor.Processor;
+import org.mule.runtime.core.api.retry.policy.RetryPolicyExhaustedException;
 import org.mule.runtime.extension.api.runtime.ExpirationPolicy;
 import org.mule.test.runner.RunnerDelegateTo;
 
@@ -256,6 +263,12 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
         .withGlobalElement(core.newConstruct("configuration")
             .withParameterGroup(group -> group.withParameter("defaultErrorHandler-ref",
                                                              createStringParameter("referableHandler")))
+            .getDeclaration())
+        .withGlobalElement(core.newConstruct("object")
+            .withParameterGroup(group -> group
+                .withParameter("name", createStringParameter("failingProcessor"))
+                .withParameter("class",
+                               createStringParameter("org.mule.test.extension.dsl.ArtifactDeclarationSerializerTestCase$FailingProcessor")))
             .getDeclaration())
         .withGlobalElement(core.newConstruct("errorHandler")
             .withRefName("referableHandler")
@@ -774,4 +787,14 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
   private static ParameterValue createStringCDataParameter(String value) {
     return cdata(value, STRING);
   }
+
+  public static class FailingProcessor implements Processor {
+
+    @Override
+    public CoreEvent process(CoreEvent event) throws MuleException {
+      throw new RetryPolicyExhaustedException(createStaticMessage("Error."), mock(Initialisable.class));
+    }
+
+  }
+
 }
