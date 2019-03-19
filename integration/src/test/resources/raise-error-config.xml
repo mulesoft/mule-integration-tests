@@ -134,7 +134,9 @@
             </try>
         </foreach>
         <error-handler>
-            <on-error-continue type="APP:MY_TYPE"></on-error-continue>
+            <on-error-continue type="APP:MY_TYPE">
+                <set-payload value="Executed OnErrorContinue"/>
+            </on-error-continue>
         </error-handler>
     </flow>
 
