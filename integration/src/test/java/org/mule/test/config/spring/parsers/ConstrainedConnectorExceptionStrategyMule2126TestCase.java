@@ -6,6 +6,9 @@
  */
 package org.mule.test.config.spring.parsers;
 
+import static org.hamcrest.Matchers.both;
+import static org.hamcrest.Matchers.containsString;
+
 import org.junit.Test;
 
 public class ConstrainedConnectorExceptionStrategyMule2126TestCase extends AbstractBadConfigTestCase {
@@ -17,7 +20,11 @@ public class ConstrainedConnectorExceptionStrategyMule2126TestCase extends Abstr
 
   @Test
   public void testError() throws Exception {
-    assertErrorContains("Invalid content was found starting with element 'default-connector-exception-strategy'");
+    expected.expectMessage(both(containsString("Invalid content was found starting with element"))
+        .and(containsString("default-connector-exception-strategy")).and(containsString("One of"))
+        .and(containsString("is expected")));
+
+    parseConfig();
   }
 
 }
