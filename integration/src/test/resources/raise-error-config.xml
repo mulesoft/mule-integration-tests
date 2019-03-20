@@ -121,4 +121,23 @@
         </error-handler>
     </flow>
 
+    <flow name="tryAndForEach">
+        <foreach collection="#[1 to 100]">
+            <try>
+                <test:processor/>
+                <raise-error type="APP:MY_TYPE"/>
+                <error-handler>
+                    <on-error-propagate>
+                        <logger message="Hello"/>
+                    </on-error-propagate>
+                </error-handler>
+            </try>
+        </foreach>
+        <error-handler>
+            <on-error-continue type="APP:MY_TYPE">
+                <set-payload value="Executed OnErrorContinue"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
 </mule>

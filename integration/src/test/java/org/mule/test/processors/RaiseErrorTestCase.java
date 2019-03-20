@@ -109,4 +109,10 @@ public class RaiseErrorTestCase extends AbstractIntegrationTestCase {
                hasPayload(equalTo("Scatter gather route failed.")));
   }
 
+  @Test
+  public void withinForEachAndTryScope() throws Exception {
+    //If error is properly catch, nothing should fail.
+    assertThat(flowRunner("tryAndForEach").run().getMessage(), hasPayload(equalTo("Executed OnErrorContinue")));
+  }
+
 }
