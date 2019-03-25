@@ -26,4 +26,17 @@
         </error-handler>
     </flow>
 
+    <flow name="flowWithCustomError">
+        <flow-ref name="customErrorThrower"/>
+        <error-handler>
+            <on-error-propagate type="APP:CUSTOM_ERROR_TYPE">
+                <set-payload value="#[payload + vars.myVar]"/>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="customErrorThrower">
+        <logger level="INFO" message="inside of get:\resources"/>
+        <raise-error type="APP:CUSTOM_ERROR_TYPE" description="Failing on purpose."/>
+    </flow>
+
 </mule>
