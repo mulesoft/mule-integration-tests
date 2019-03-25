@@ -42,6 +42,10 @@ public class FlowExecutionTestCase extends AbstractIntegrationTestCase {
   @Named("flowWithErrorPropagate")
   private ExecutableComponent flowWithErrorPropagate;
 
+  @Inject
+  @Named("flowWithCustomError")
+  private ExecutableComponent flowWithCustomError;
+
   @Override
   protected String getConfigFile() {
     return "org/mule/test/components/flow-execution-config.xml";
@@ -62,8 +66,13 @@ public class FlowExecutionTestCase extends AbstractIntegrationTestCase {
     executeTest(flowWithErrorPropagate, of("EXPRESSION"));
   }
 
+  @Test
+  public void executeFlowWithErrorPropagateWithCustomError() throws Exception {
+    executeTest(flowWithCustomError, of("CUSTOM_ERROR_TYPE"));
+  }
+
   private void executeTest(ExecutableComponent executableComponent, Optional<String> errorIdentifierExpected)
-      throws InterruptedException, java.util.concurrent.ExecutionException {
+      throws InterruptedException {
     Event resultEvent;
     try {
       resultEvent = executableComponent.execute(createInputEvent())
