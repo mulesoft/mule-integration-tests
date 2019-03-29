@@ -44,6 +44,8 @@ import static org.mule.runtime.extension.api.declaration.type.RedeliveryPolicyTy
 import static org.mule.runtime.extension.api.declaration.type.RedeliveryPolicyTypeBuilder.USE_SECURE_HASH;
 import static org.mule.runtime.extension.api.declaration.type.StreamingStrategyTypeBuilder.REPEATABLE_IN_MEMORY_BYTES_STREAM_ALIAS;
 import static org.mule.test.module.extension.internal.util.ExtensionsTestUtils.compareXML;
+import static org.skyscreamer.jsonassert.JSONCompareMode.NON_EXTENSIBLE;
+
 import org.mule.extensions.jms.api.connection.caching.NoCachingConfiguration;
 import org.mule.runtime.api.app.declaration.serialization.ArtifactDeclarationJsonSerializer;
 import org.mule.runtime.api.exception.MuleException;
@@ -60,15 +62,14 @@ import org.mule.runtime.core.api.retry.policy.RetryPolicyExhaustedException;
 import org.mule.runtime.extension.api.runtime.ExpirationPolicy;
 import org.mule.test.runner.RunnerDelegateTo;
 
-import com.google.gson.JsonParser;
-import com.google.gson.stream.JsonReader;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Collection;
 import java.util.List;
 
+import com.google.gson.JsonParser;
+import com.google.gson.stream.JsonReader;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
@@ -149,7 +150,7 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
     ArtifactDeclarationJsonSerializer jsonSerializer = ArtifactDeclarationJsonSerializer.getDefault(true);
     String actualAppJson = jsonSerializer.serialize(expectedDeclaration);
 
-    JSONAssert.assertEquals(expectedAppJson, actualAppJson, true);
+    JSONAssert.assertEquals(expectedAppJson, actualAppJson, NON_EXTENSIBLE);
   }
 
   @Override
