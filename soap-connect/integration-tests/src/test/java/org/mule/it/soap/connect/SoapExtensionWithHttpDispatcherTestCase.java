@@ -11,7 +11,7 @@ import static org.mule.service.soap.SoapTestUtils.assertSimilarXml;
 import org.mule.runtime.api.message.Message;
 import org.junit.Test;
 
-public class SoapExtensionWithHttpDispatcher extends AbstractSimpleServiceFunctionalTestCase {
+public class SoapExtensionWithHttpDispatcherTestCase extends AbstractSimpleServiceFunctionalTestCase {
 
   @Override
   protected String getConfigFile() {

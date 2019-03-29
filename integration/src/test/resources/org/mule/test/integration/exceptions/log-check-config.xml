@@ -48,7 +48,7 @@
         <error-handler>
             <test:on-error-check-log>
                 <test:check-stacktrace>
-                    <test:method-call package="java.lang" class="Thread" method="run"/>
+                    <test:method-call class="Thread" method="run"/>
                     <test:cause exception="java.lang.RuntimeException"/>
                 </test:check-stacktrace>
             </test:on-error-check-log>
@@ -130,7 +130,7 @@
                     <test:summary-info key="Error type" value="MULE:ANY"/>
                 </test:check-summary>
                 <test:check-stacktrace>
-                    <test:method-call package="java.lang" class="Thread" method="run"/>
+                    <test:method-call class="Thread" method="run"/>
                     <test:cause exception="java.lang.RuntimeException"/>
                 </test:check-stacktrace>
             </test:on-error-check-log>
