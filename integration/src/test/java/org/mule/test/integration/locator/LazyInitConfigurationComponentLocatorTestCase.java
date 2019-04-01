@@ -23,7 +23,6 @@ import static org.mule.runtime.config.api.SpringXmlConfigurationBuilderFactory.c
 import static org.mule.runtime.core.api.config.MuleProperties.OBJECT_SECURITY_MANAGER;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentLocatorStory.SEARCH_CONFIGURATION;
-
 import org.mule.extension.spring.api.SpringConfig;
 import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.artifact.Registry;
@@ -38,10 +37,6 @@ import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.integration.locator.processor.CustomTestComponent;
 
-import org.apache.commons.lang3.reflect.FieldUtils;
-import org.junit.Rule;
-import org.junit.Test;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -51,6 +46,9 @@ import javax.inject.Named;
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
+import org.apache.commons.lang3.reflect.FieldUtils;
+import org.junit.Rule;
+import org.junit.Test;
 
 @Feature(CONFIGURATION_COMPONENT_LOCATOR)
 @Story(SEARCH_CONFIGURATION)
@@ -452,6 +450,29 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
                                                                                                     .globalName("mySubFlow")
                                                                                                     .addProcessorsPart()
                                                                                                     .addIndexPart(0).build());
+    assertThat(componentOptional.isPresent(), is(true));
+  }
+
+  @Description("Initialize flow and referenced sub-flow")
+  @Test
+  public void findFlowAndSubFlowComponents() {
+    lazyComponentInitializer.initializeComponents(componentLocation -> {
+      String location = componentLocation.getLocation();
+      return location.equals("mySubFlow") || location.equals("flowWithSubflow");
+    });
+
+    Optional<Component> componentOptional = muleContext.getConfigurationComponentLocator().find(
+                                                                                                Location.builder()
+                                                                                                    .globalName("mySubFlow")
+                                                                                                    .addProcessorsPart()
+                                                                                                    .addIndexPart(0).build());
+    assertThat(componentOptional.isPresent(), is(true));
+
+    componentOptional = muleContext.getConfigurationComponentLocator().find(
+                                                                            Location.builder()
+                                                                                .globalName("flowWithSubflow")
+                                                                                .addProcessorsPart()
+                                                                                .addIndexPart(0).build());
     assertThat(componentOptional.isPresent(), is(true));
   }
 
