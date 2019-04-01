@@ -54,6 +54,9 @@ import org.junit.Test;
 @Story(SEARCH_CONFIGURATION)
 public class LazyInitConfigurationComponentLocatorTestCase extends AbstractIntegrationTestCase {
 
+  private static final String MY_SUB_FLOW = "mySubFlow";
+  private static final String FLOW_WITH_SUBFLOW = "flowWithSubflow";
+
   @Rule
   public DynamicPort listenPort = new DynamicPort("http.listener.port");
 
@@ -125,10 +128,10 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
                                   "anotherFlow/source/0/0",
                                   "anotherFlow/processors/0",
 
-                                  "flowWithSubflow",
-                                  "flowWithSubflow/processors/0",
-                                  "mySubFlow",
-                                  "mySubFlow/processors/0",
+                                  FLOW_WITH_SUBFLOW,
+                                  FLOW_WITH_SUBFLOW + "/processors/0",
+                                  MY_SUB_FLOW,
+                                  MY_SUB_FLOW + "/processors/0",
 
                                   "_muleConfiguration",
                                   "globalErrorHandler",
@@ -443,11 +446,11 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
   @Description("Search for sub-flows components")
   @Test
   public void findSubFlowComponents() {
-    lazyComponentInitializer.initializeComponent(builder().globalName("mySubFlow").addProcessorsPart().addIndexPart(0).build());
+    lazyComponentInitializer.initializeComponent(builder().globalName(MY_SUB_FLOW).addProcessorsPart().addIndexPart(0).build());
 
     Optional<Component> componentOptional = muleContext.getConfigurationComponentLocator().find(
                                                                                                 Location.builder()
-                                                                                                    .globalName("mySubFlow")
+                                                                                                    .globalName(MY_SUB_FLOW)
                                                                                                     .addProcessorsPart()
                                                                                                     .addIndexPart(0).build());
     assertThat(componentOptional.isPresent(), is(true));
@@ -458,19 +461,19 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
   public void findFlowAndSubFlowComponents() {
     lazyComponentInitializer.initializeComponents(componentLocation -> {
       String location = componentLocation.getLocation();
-      return location.equals("mySubFlow") || location.equals("flowWithSubflow");
+      return location.equals(MY_SUB_FLOW) || location.equals(FLOW_WITH_SUBFLOW);
     });
 
     Optional<Component> componentOptional = muleContext.getConfigurationComponentLocator().find(
                                                                                                 Location.builder()
-                                                                                                    .globalName("mySubFlow")
+                                                                                                    .globalName(MY_SUB_FLOW)
                                                                                                     .addProcessorsPart()
                                                                                                     .addIndexPart(0).build());
     assertThat(componentOptional.isPresent(), is(true));
 
     componentOptional = muleContext.getConfigurationComponentLocator().find(
                                                                             Location.builder()
-                                                                                .globalName("flowWithSubflow")
+                                                                                .globalName(FLOW_WITH_SUBFLOW)
                                                                                 .addProcessorsPart()
                                                                                 .addIndexPart(0).build());
     assertThat(componentOptional.isPresent(), is(true));
