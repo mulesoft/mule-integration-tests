@@ -100,7 +100,8 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
     // force dispose to check that components from sub-flow are disposed
     muleContext.dispose();
     assertThat(CustomTestComponent.statesByInstances.size(), is(2));
-    assertThat(CustomTestComponent.statesByInstances.values(), containsInAnyOrder("disposed", "disposed"));
+    assertThat(CustomTestComponent.statesByInstances.values(),
+               containsInAnyOrder("initialized_stopped_disposed", "initialized_stopped_disposed"));
   }
 
   @Description("Lazy init should not create components until an operation is done")
