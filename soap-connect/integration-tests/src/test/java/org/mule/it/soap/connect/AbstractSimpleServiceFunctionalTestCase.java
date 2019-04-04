@@ -7,9 +7,8 @@
 package org.mule.it.soap.connect;
 
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
-import org.mule.service.soap.server.HttpServer;
-import org.mule.service.soap.service.Soap11Service;
 import org.mule.tck.junit4.rule.DynamicPort;
+import org.mule.tck.junit4.rule.ExternalProcess;
 import org.mule.tck.junit4.rule.SystemProperty;
 
 import org.custommonkey.xmlunit.XMLUnit;
@@ -20,18 +19,16 @@ public abstract class AbstractSimpleServiceFunctionalTestCase extends MuleArtifa
   @Rule
   public DynamicPort port = new DynamicPort("testPort");
 
-  private HttpServer server = new HttpServer(port.getNumber(), null, null, new Soap11Service());;
+  @Rule
+  public ExternalProcess server =
+      new ExternalProcess("java", "-cp", System.getProperty("soapHttpServerClasspath"), "org.mule.service.soap.server.HttpServer",
+                          "" + port.getNumber(), "org.mule.service.soap.service.Soap11Service");
 
   @Rule
-  public SystemProperty address = new SystemProperty("address", server.getDefaultAddress());;
+  public SystemProperty address = new SystemProperty("address", "http://localhost:" + port.getNumber() + "/server");
 
   @Override
   protected void doSetUp() throws Exception {
     XMLUnit.setIgnoreWhitespace(true);
-  }
-
-  @Override
-  protected void doTearDown() throws Exception {
-    server.stop();
   }
 }

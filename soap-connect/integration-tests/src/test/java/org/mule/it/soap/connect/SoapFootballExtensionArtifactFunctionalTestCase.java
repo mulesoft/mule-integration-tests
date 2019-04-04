@@ -7,10 +7,8 @@
 package org.mule.it.soap.connect;
 
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
-import org.mule.it.soap.connect.services.FootballService;
-import org.mule.it.soap.connect.services.LaLigaService;
-import org.mule.service.soap.server.HttpServer;
 import org.mule.tck.junit4.rule.DynamicPort;
+import org.mule.tck.junit4.rule.ExternalProcess;
 import org.mule.tck.junit4.rule.SystemProperty;
 
 import org.junit.Rule;
@@ -25,14 +23,22 @@ public abstract class SoapFootballExtensionArtifactFunctionalTestCase extends Mu
   @Rule
   public DynamicPort laLigaPort = new DynamicPort("laLigaPort");
 
-  private HttpServer footballService = new HttpServer(footballPort.getNumber(), null, null, new FootballService());
-  private HttpServer laLigaService = new HttpServer(laLigaPort.getNumber(), null, null, new LaLigaService());
+  @Rule
+  public final ExternalProcess footballServiceServer =
+      new ExternalProcess("java", "-cp", System.getProperty("soapHttpServerClasspath"), "org.mule.service.soap.server.HttpServer",
+                          "" + footballPort.getNumber(), "org.mule.it.soap.connect.services.FootballService");
+  @Rule
+  public final ExternalProcess laLigaServiceServer =
+      new ExternalProcess("java", "-cp", System.getProperty("soapHttpServerClasspath"), "org.mule.service.soap.server.HttpServer",
+                          "" + laLigaPort.getNumber(), "org.mule.it.soap.connect.services.LaLigaService");
 
   @Rule
-  public SystemProperty footballAddress = new SystemProperty("footballAddress", footballService.getDefaultAddress());
+  public SystemProperty footballAddress =
+      new SystemProperty("footballAddress", "http://localhost:" + footballPort.getNumber() + "/server");
 
   @Rule
-  public SystemProperty laLigaAddress = new SystemProperty("laLigaAddress", laLigaService.getDefaultAddress());
+  public SystemProperty laLigaAddress =
+      new SystemProperty("laLigaAddress", "http://localhost:" + laLigaPort.getNumber() + "/server");
 
   @Override
   protected String getConfigFile() {
@@ -42,13 +48,6 @@ public abstract class SoapFootballExtensionArtifactFunctionalTestCase extends Mu
   String getBodyXml(String tagName, String content) {
     String ns = "http://services.connect.soap.it.mule.org/";
     return String.format("<con:%s xmlns:con=\"%s\">%s</con:%s>", tagName, ns, content, tagName);
-  }
-
-  @Override
-  protected void doTearDown() throws Exception {
-    super.doTearDown();
-    footballService.stop();
-    laLigaService.stop();
   }
 
 }
