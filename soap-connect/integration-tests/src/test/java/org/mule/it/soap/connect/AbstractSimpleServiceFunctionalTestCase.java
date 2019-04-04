@@ -19,9 +19,13 @@ public abstract class AbstractSimpleServiceFunctionalTestCase extends MuleArtifa
   @Rule
   public DynamicPort port = new DynamicPort("testPort");
 
+  // TODO MULE-16661 Use a Docker image instead of this
+  // This needs to run with a plain classloader to avoid conflicting libs in different artifacts in the Mule classloader
+  // hierarchy, in order to avoid a LinkageError when running in JDK 11 or higher.
   @Rule
   public ExternalProcess server =
-      new ExternalProcess("java", "-cp", System.getProperty("soapHttpServerClasspath"), "org.mule.service.soap.server.HttpServer",
+      new ExternalProcess(line -> line.contains("org.eclipse.jetty.server.ServerConnector: Started ServerConnector"),
+                          "java", "-cp", System.getProperty("soapHttpServerClasspath"), "org.mule.service.soap.server.HttpServer",
                           "" + port.getNumber(), "org.mule.service.soap.service.Soap11Service");
 
   @Rule

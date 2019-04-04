@@ -23,13 +23,18 @@ public abstract class SoapFootballExtensionArtifactFunctionalTestCase extends Mu
   @Rule
   public DynamicPort laLigaPort = new DynamicPort("laLigaPort");
 
+  // TODO MULE-16661 Use a Docker image instead of this
+  // These need to run with a plain classloader to avoid conflicting libs in different artifacts in the Mule classloader
+  // hierarchy, in order to avoid a LinkageError when running in JDK 11 or higher.
   @Rule
   public final ExternalProcess footballServiceServer =
-      new ExternalProcess("java", "-cp", System.getProperty("soapHttpServerClasspath"), "org.mule.service.soap.server.HttpServer",
+      new ExternalProcess(line -> line.contains("org.eclipse.jetty.server.ServerConnector: Started ServerConnector"),
+                          "java", "-cp", System.getProperty("soapHttpServerClasspath"), "org.mule.service.soap.server.HttpServer",
                           "" + footballPort.getNumber(), "org.mule.it.soap.connect.services.FootballService");
   @Rule
   public final ExternalProcess laLigaServiceServer =
-      new ExternalProcess("java", "-cp", System.getProperty("soapHttpServerClasspath"), "org.mule.service.soap.server.HttpServer",
+      new ExternalProcess(line -> line.contains("org.eclipse.jetty.server.ServerConnector: Started ServerConnector"),
+                          "java", "-cp", System.getProperty("soapHttpServerClasspath"), "org.mule.service.soap.server.HttpServer",
                           "" + laLigaPort.getNumber(), "org.mule.it.soap.connect.services.LaLigaService");
 
   @Rule
