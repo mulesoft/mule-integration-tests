@@ -52,7 +52,7 @@
 
     <apacheHttpCoreVersion>4.4.6</apacheHttpCoreVersion>
     <apacheHttpClientVersion>4.5.3</apacheHttpClientVersion>
-    <springVersion>5.1.0.RELEASE</springVersion>
+    <springVersion>5.1.6.RELEASE</springVersion>
   </properties>
 
   <build>
