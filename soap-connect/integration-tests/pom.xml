@@ -14,10 +14,38 @@
     <packaging>jar</packaging>
 
     <properties>
-        <cxfVersion>3.0.13</cxfVersion>
+        <cxfVersion>3.3.1</cxfVersion>
         <javax.jws-api.version>1.1</javax.jws-api.version>
         <formatterConfigPath>../../formatter.xml</formatterConfigPath>
     </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>test-server-classpath</id>
+                        <phase>process-test-classes</phase>
+                        <goals>
+                            <goal>build-classpath</goal>
+                        </goals>
+                        <configuration>
+                            <outputProperty>soapHttpServerClasspath</outputProperty>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <systemPropertyVariables>
+                        <soapHttpServerClasspath>${project.build.testOutputDirectory}:${soapHttpServerClasspath}</soapHttpServerClasspath>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
     <dependencies>
         <dependency>
@@ -25,13 +53,6 @@
             <artifactId>mule-extension-test-soap</artifactId>
             <version>${muleExtensionTestSoapTestVersion}</version>
             <classifier>mule-plugin</classifier>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mule.services</groupId>
-            <artifactId>mule-service-soap</artifactId>
-            <version>${muleSoapServiceTestVersion}</version>
-            <type>test-jar</type>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -122,6 +143,18 @@
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-servlet</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-http</artifactId>
+            <version>9.0.7.v20131107</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-io</artifactId>
+            <version>9.0.7.v20131107</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -221,5 +254,19 @@
             <classifier>mule-plugin</classifier>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.mule.services</groupId>
+            <artifactId>mule-service-soap</artifactId>
+            <version>${muleSoapServiceTestVersion}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-servlet_3.0_spec</artifactId>
+            <version>${geronimoSpecsServletApiVersion}</version>
+        </dependency>
+
     </dependencies>
 </project>
