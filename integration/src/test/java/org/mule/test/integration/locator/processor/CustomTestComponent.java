@@ -11,6 +11,7 @@ import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.lifecycle.Disposable;
 import org.mule.runtime.api.lifecycle.Initialisable;
 import org.mule.runtime.api.lifecycle.InitialisationException;
+import org.mule.runtime.api.lifecycle.Stoppable;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
 
@@ -20,7 +21,7 @@ import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CustomTestComponent implements Initialisable, Disposable, Processor {
+public class CustomTestComponent implements Initialisable, Stoppable, Disposable, Processor {
 
   public static Map<CustomTestComponent, String> statesByInstances = new HashMap<>();
 
@@ -33,13 +34,18 @@ public class CustomTestComponent implements Initialisable, Disposable, Processor
   }
 
   @Override
+  public void stop() throws MuleException {
+    statesByInstances.put(this, statesByInstances.get(this) + "_stopped");
+  }
+
+  @Override
   public void dispose() {
     try {
       value.close();
     } catch (IOException e) {
       // Nothing to do...
     } finally {
-      statesByInstances.put(this, "disposed");
+      statesByInstances.put(this, statesByInstances.get(this) + "_disposed");
     }
   }
 
