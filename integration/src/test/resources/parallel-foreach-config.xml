@@ -186,7 +186,7 @@
                     <set-variable variableName="var4" value="val1"/>
                 </when>
                 <when expression="#[payload == 'banana']">
-                    <set-variable variableName="var4" value="val2"/>
+                    <set-variable variableName="var5" value="val2"/>
                 </when>
                 <otherwise>
                     <set-variable variableName="var4" value="val3"/>
@@ -195,9 +195,10 @@
             <test:assert count="3"/>
         </parallel-foreach>
         <test:assert expression="#[vars.var1 == 'var']"/>
-        <test:assert expression="#[vars.var2 == 'newValue']"/>
-        <test:assert expression="#[vars.var3 == 'var']"/>
-        <test:assert expression="#[vars.var4 == ['val1','val2','val3']]"/>
+        <test:assert expression="#[vars.var2 == 'var']"/>
+        <test:assert expression="#[vars.var3 == null]"/>
+        <test:assert expression="#[vars.var4 == null]"/>
+        <test:assert expression="#[vars.var5 == null]"/>
     </flow>
 
     <flow name="concurrent">
