@@ -40,7 +40,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <systemPropertyVariables>
-                        <soapHttpServerClasspath>${project.build.testOutputDirectory}:${soapHttpServerClasspath}</soapHttpServerClasspath>
+                        <soapHttpServerClasspath>${project.build.testOutputDirectory}${path.separator}${soapHttpServerClasspath}</soapHttpServerClasspath>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
