@@ -10,6 +10,7 @@ import static java.lang.Runtime.getRuntime;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.mule.runtime.api.metadata.MediaType.APPLICATION_JAVA;
 import static org.mule.tck.probe.PollingProber.probe;
 
 import org.mule.functional.api.component.EventCallback;
@@ -19,12 +20,12 @@ import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class RedeliveryPolicyTestCase extends AbstractIntegrationTestCase {
 
@@ -78,6 +79,40 @@ public class RedeliveryPolicyTestCase extends AbstractIntegrationTestCase {
       assertThat(awaiting.get(), is(dispatchs));
       return true;
     });
+  }
+
+  @Test
+  public void javaPojoPayload() throws Exception {
+    final PojoPayload pojoPayload = new PojoPayload();
+    flowRunner("redeliveryPolicy3FlowDispatch")
+        .withPayload(pojoPayload)
+        .withMediaType(APPLICATION_JAVA)
+        .run();
+
+    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
+    assertThat(queueHandler.read("processed", RECEIVE_TIMEOUT), notNullValue());
+
+    assertThat(pojoPayload.isHashCodeCalled(), is(true));
+  }
+
+  private static class PojoPayload {
+
+    private boolean hashCodeCalled = false;
+
+    @Override
+    public boolean equals(Object obj) {
+      return super.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+      hashCodeCalled = true;
+      return super.hashCode();
+    }
+
+    public boolean isHashCodeCalled() {
+      return hashCodeCalled;
+    }
   }
 
   private void sendDataWeaveObjectMessageExpectingError(String flowName) throws Exception {

@@ -11,6 +11,7 @@
         <vm:queues >
           <vm:queue queueName="Q1" />
           <vm:queue queueName="Q2" />
+          <vm:queue queueName="Q3" />
         </vm:queues>
     </vm:config>
 
@@ -51,4 +52,15 @@
         </error-handler>
     </flow>
 
+    <flow name="redeliveryPolicy3FlowDispatch">
+        <vm:publish-consume queueName="Q3" config-ref="VM_Config" timeout="10"/>
+    </flow>
+
+    <flow name="redeliveryPolicy3FlowProcess">
+        <vm:listener queueName="Q3" config-ref="VM_Config">
+            <redelivery-policy/>
+        </vm:listener>
+        
+        <test:queue name="processed"/>
+    </flow>
 </mule>
