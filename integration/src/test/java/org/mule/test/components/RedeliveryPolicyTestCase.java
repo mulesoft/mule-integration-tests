@@ -37,6 +37,40 @@ public class RedeliveryPolicyTestCase extends AbstractIntegrationTestCase {
     assertThat(queueHandler.read("redeliveredMessageQueue", RECEIVE_TIMEOUT), notNullValue());
   }
 
+  @Test
+  public void javaPojoPayload() throws Exception {
+    final PojoPayload pojoPayload = new PojoPayload();
+    flowRunner("redeliveryPolicy3FlowDispatch")
+        .withPayload(pojoPayload)
+        .withMediaType(APPLICATION_JAVA)
+        .run();
+
+    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
+    assertThat(queueHandler.read("processed", RECEIVE_TIMEOUT), notNullValue());
+
+    assertThat(pojoPayload.isHashCodeCalled(), is(true));
+  }
+
+  private static class PojoPayload {
+
+    private boolean hashCodeCalled = false;
+
+    @Override
+    public boolean equals(Object obj) {
+      return super.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+      hashCodeCalled = true;
+      return super.hashCode();
+    }
+
+    public boolean isHashCodeCalled() {
+      return hashCodeCalled;
+    }
+  }
+
   private void sendDataWeaveObjectMessage() throws Exception {
     flowRunner("redeliveryPolicyFlowDispatch")
         .withPayload("{ \"name\" : \"bruce\"}")

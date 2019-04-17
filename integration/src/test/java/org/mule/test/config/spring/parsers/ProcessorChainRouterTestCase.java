@@ -10,8 +10,9 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
-import static org.mule.test.allure.AllureConstants.RoutersFeature.ProcessorChainRouterStory.PROCESSOR_CHAIN_ROUTER;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
+import static org.mule.test.allure.AllureConstants.RoutersFeature.ProcessorChainRouterStory.PROCESSOR_CHAIN_ROUTER;
+
 import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.component.execution.ComponentExecutionException;
 import org.mule.runtime.api.component.execution.ExecutableComponent;
@@ -28,10 +29,11 @@ import java.util.concurrent.ExecutionException;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.junit.Test;
+
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
-import org.junit.Test;
 
 @Feature(ROUTERS)
 @Story(PROCESSOR_CHAIN_ROUTER)
@@ -161,9 +163,9 @@ public class ProcessorChainRouterTestCase extends AbstractIntegrationTestCase im
     Event returnedEvent = completableFuture.get().getEvent();
     assertThat(returnedEvent, notNullValue());
     TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
-    assertThat(queueHandler.read("asyncQueue", RECEIVE_TIMEOUT) != null, is(true));
-    assertThat(queueHandler.read("sgRoute1Queue", RECEIVE_TIMEOUT) != null, is(true));
-    assertThat(queueHandler.read("sgRoute2Queue", RECEIVE_TIMEOUT) != null, is(true));
+    assertThat(queueHandler.read("asyncQueue", RECEIVE_TIMEOUT), notNullValue());
+    assertThat(queueHandler.read("sgRoute1Queue", RECEIVE_TIMEOUT), notNullValue());
+    assertThat(queueHandler.read("sgRoute2Queue", RECEIVE_TIMEOUT), notNullValue());
   }
 
   private void assertProcessorChainResult(Event returnedEvent) {
