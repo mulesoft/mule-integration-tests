@@ -6,15 +6,17 @@
  */
 package org.mule.test.components;
 
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
-
-import org.junit.Before;
-import org.junit.Test;
+import static org.mule.runtime.api.metadata.MediaType.APPLICATION_JAVA;
 
 import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.metadata.MediaType;
 import org.mule.test.AbstractIntegrationTestCase;
+
+import org.junit.Before;
+import org.junit.Test;
 
 public class RedeliveryPolicyTestCase extends AbstractIntegrationTestCase {
 
