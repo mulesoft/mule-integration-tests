@@ -22,10 +22,11 @@ import static org.junit.Assert.assertThat;
 import static org.mule.functional.api.exception.ExpectedError.none;
 import static org.mule.runtime.api.interception.ProcessorInterceptorFactory.INTERCEPTORS_ORDER_REGISTRY_KEY;
 import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
-import static org.mule.test.allure.AllureConstants.InterceptonApi.ComponentInterceptionStory.COMPONENT_INTERCEPTION_STORY;
 import static org.mule.test.allure.AllureConstants.InterceptonApi.INTERCEPTION_API;
+import static org.mule.test.allure.AllureConstants.InterceptonApi.ComponentInterceptionStory.COMPONENT_INTERCEPTION_STORY;
 import static org.mule.test.heisenberg.extension.HeisenbergConnectionProvider.getActiveConnections;
 import static org.mule.test.heisenberg.extension.HeisenbergOperations.CALL_GUS_MESSAGE;
+
 import org.mule.extension.http.api.request.validator.ResponseValidatorException;
 import org.mule.functional.api.exception.ExpectedError;
 import org.mule.functional.api.exception.FunctionalTestException;
@@ -62,12 +63,13 @@ import java.util.function.BiConsumer;
 
 import javax.inject.Inject;
 
-import io.qameta.allure.Description;
-import io.qameta.allure.Feature;
-import io.qameta.allure.Story;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
+
+import io.qameta.allure.Description;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 
 @Feature(INTERCEPTION_API)
 @Story(COMPONENT_INTERCEPTION_STORY)
@@ -95,6 +97,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
                                                          EvaluatesExpressionInterceptorFactory.class.getName()));
 
     return objects;
+    // return Collections.emptyMap();
   }
 
   @After
@@ -576,7 +579,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     try {
       flowRunner("flowWithFailingFlowRef").run();
     } finally {
-      // The MP in the global error handler is ran twice, once for the called flow and another for tha caller flow.
+      // The MP in the global error handler is ran twice, once for the called flow and another for the caller flow.
 
       List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
       assertThat(interceptionParameters.stream().map(ip -> ip.getLocation().getLocation()).collect(toList()).toString(),
@@ -584,6 +587,12 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
 
       assertThat(afters.get(), is(4));
     }
+  }
+
+  @Test
+  @Description("Processors inside an SDK scope with implicit configs are initialised correctly")
+  public void implicitConfigInNestedScope() throws Exception {
+    flowRunner("implicitConfigInNestedScope").run();
   }
 
   public static class HasInjectedAttributesInterceptorFactory implements ProcessorInterceptorFactory {
@@ -606,7 +615,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     @Inject
     private Registry registry;
 
-    private boolean mutateEventBefore;
+    private final boolean mutateEventBefore;
 
     public HasInjectedAttributesInterceptorFactory(boolean mutateEventBefore) {
       this.mutateEventBefore = mutateEventBefore;
@@ -623,14 +632,14 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
 
     static final List<InterceptionParameters> interceptionParameters = new LinkedList<>();
 
-    private MuleExpressionLanguage expressionEvaluator;
-    private LockFactory lockFactory;
-    private HttpService httpService;
-    private ErrorTypeRepository errorTypeRepository;
-    private SchedulerService schedulerService;
-    private Registry registry;
+    private final MuleExpressionLanguage expressionEvaluator;
+    private final LockFactory lockFactory;
+    private final HttpService httpService;
+    private final ErrorTypeRepository errorTypeRepository;
+    private final SchedulerService schedulerService;
+    private final Registry registry;
 
-    private boolean mutateEventBefore;
+    private final boolean mutateEventBefore;
 
     public HasInjectedAttributesInterceptor(MuleExpressionLanguage expressionEvaluator, LockFactory lockFactory,
                                             HttpService httpService, ErrorTypeRepository errorTypeRepository,
@@ -670,9 +679,9 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
 
   public static class InterceptionParameters {
 
-    private ComponentLocation location;
-    private Map<String, ProcessorParameterValue> parameters;
-    private InterceptionEvent event;
+    private final ComponentLocation location;
+    private final Map<String, ProcessorParameterValue> parameters;
+    private final InterceptionEvent event;
 
     public InterceptionParameters(ComponentLocation location, Map<String, ProcessorParameterValue> parameters,
                                   InterceptionEvent event) {
@@ -714,7 +723,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
 
   public static class EvaluatesExpressionInterceptor implements ProcessorInterceptor {
 
-    private MuleExpressionLanguage expressionEvaluator;
+    private final MuleExpressionLanguage expressionEvaluator;
 
     public EvaluatesExpressionInterceptor(MuleExpressionLanguage expressionEvaluator) {
       this.expressionEvaluator = expressionEvaluator;
