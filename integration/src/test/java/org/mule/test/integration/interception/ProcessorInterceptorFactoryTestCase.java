@@ -97,7 +97,6 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
                                                          EvaluatesExpressionInterceptorFactory.class.getName()));
 
     return objects;
-    // return Collections.emptyMap();
   }
 
   @After
