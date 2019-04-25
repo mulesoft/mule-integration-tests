@@ -592,7 +592,8 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
   @Test
   @Description("Processors inside an SDK scope with implicit configs are initialised correctly")
   public void implicitConfigInNestedScope() throws Exception {
-    flowRunner("implicitConfigInNestedScope").run();
+    // before MULE-16730, this excecution hanged
+    assertThat(flowRunner("implicitConfigInNestedScope").run(), not(nullValue()));
   }
 
   public static class HasInjectedAttributesInterceptorFactory implements ProcessorInterceptorFactory {
