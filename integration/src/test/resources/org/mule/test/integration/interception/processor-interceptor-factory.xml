@@ -5,13 +5,15 @@
     xmlns:heisenberg="http://www.mulesoft.org/schema/mule/heisenberg"
     xmlns:sc="http://www.mulesoft.org/schema/mule/module-using-core"
     xmlns:sc-using-sc="http://www.mulesoft.org/schema/mule/module-using-sc"
+    xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
                http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
                http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
                http://www.mulesoft.org/schema/mule/heisenberg http://www.mulesoft.org/schema/mule/heisenberg/current/mule-heisenberg.xsd
                http://www.mulesoft.org/schema/mule/module-using-core http://www.mulesoft.org/schema/mule/module-using-core/current/mule-module-using-core.xsd
-               http://www.mulesoft.org/schema/mule/module-using-sc http://www.mulesoft.org/schema/mule/module-using-sc/current/mule-module-using-sc.xsd">
+               http://www.mulesoft.org/schema/mule/module-using-sc http://www.mulesoft.org/schema/mule/module-using-sc/current/mule-module-using-sc.xsd
+               http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
 
     <configuration defaultErrorHandler-ref="globalErrorHandler" />
 
@@ -149,5 +151,12 @@
     <sub-flow name="failing-sub-flow">
         <test:processor throwException="true"/>
     </sub-flow>
+
+    <flow name="implicitConfigInNestedScope">
+        <!-- Here, the validation:all is a quick way to get an SDK scope -->
+        <validation:all>
+            <validation:is-not-null value="#[&quot;NOT NULL&quot;]" />
+        </validation:all>
+    </flow>
 
 </mule>
