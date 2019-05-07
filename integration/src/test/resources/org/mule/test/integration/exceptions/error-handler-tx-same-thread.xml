@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xmlns:vm="http://www.mulesoft.org/schema/mule/vm"
+      xsi:schemaLocation="
+       http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+       http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd
+       http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+
+    <vm:config name="VM_Config">
+        <vm:queues >
+            <vm:queue queueName="Q1" />
+        </vm:queues>
+    </vm:config>
+
+
+    <flow name="flowWithTx">
+        <try transactionalAction="ALWAYS_BEGIN">
+            <test:processor>
+                <test:callback class="org.mule.test.integration.exceptions.ErrorHandlerWorksWithTx$ThreadWatch"/>
+            </test:processor>
+            <raise-error type="APP:SOMETYPE"/>
+            <error-handler>
+                <on-error-continue>
+                    <choice>
+                        <when expression="'${errorHandlerName}' == 'errorHandlerWithProcessingTypeChange'">
+                            <vm:publish queueName="Q1" config-ref="VM_Config"/>
+                        </when>
+                        <when expression="'${errorHandlerName}' == 'errorHandlerWithNonBlockingOp'">
+                            <test:non-blocking-processor />
+                        </when>
+                        <otherwise>
+                            <!-- This is added to make the test fail in case any change on it prevent from invoking routes
+                            (the test case itself will pass without this) -->
+                            <raise-error type="APP:UNHANDLED"/>
+                        </otherwise>
+                    </choice>
+                    <test:processor processingType="CPU_INTENSIVE">
+                        <test:callback class="org.mule.test.integration.exceptions.ErrorHandlerWorksWithTx$ThreadWatch"/>
+                    </test:processor>
+                    <set-payload value="zaraza"/>
+                </on-error-continue>
+            </error-handler>
+        </try>
+    </flow>
+
+
+
+</mule>

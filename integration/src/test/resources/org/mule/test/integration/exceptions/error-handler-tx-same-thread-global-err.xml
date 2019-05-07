@@ -9,11 +9,11 @@
        http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
 
-    <error-handler name="globalEHWith">
+    <error-handler name="errorHandlerWithProcessingTypeChange">
         <on-error-continue>
             <test:non-blocking-processor />
             <test:processor processingType="CPU_INTENSIVE">
-                <test:callback class="org.mule.test.integration.exceptions.GlobalErrorHandlerWorksWithTx$ThreadWatch"/>
+                <test:callback class="org.mule.test.integration.exceptions.ErrorHandlerWorksWithTx$ThreadWatch"/>
             </test:processor>
             <set-payload value="zaraza"/>
         </on-error-continue>
@@ -26,20 +26,20 @@
         </vm:queues>
     </vm:config>
 
-    <error-handler name="globalEHWithNonBlockingOp">
+    <error-handler name="errorHandlerWithNonBlockingOp">
         <on-error-continue>
             <vm:publish queueName="Q1" config-ref="VM_Config"/>
             <test:processor>
-                <test:callback class="org.mule.test.integration.exceptions.GlobalErrorHandlerWorksWithTx$ThreadWatch"/>
+                <test:callback class="org.mule.test.integration.exceptions.ErrorHandlerWorksWithTx$ThreadWatch"/>
             </test:processor>
             <set-payload value="zaraza"/>
         </on-error-continue>
     </error-handler>
 
-    <flow name="flowWithGlobalErrorHandler">
+    <flow name="flowWithTx">
         <try transactionalAction="ALWAYS_BEGIN">
             <test:processor>
-                <test:callback class="org.mule.test.integration.exceptions.GlobalErrorHandlerWorksWithTx$ThreadWatch"/>
+                <test:callback class="org.mule.test.integration.exceptions.ErrorHandlerWorksWithTx$ThreadWatch"/>
             </test:processor>
             <raise-error type="APP:SOMETYPE"/>
             <error-handler ref="${errorHandlerName}"/>

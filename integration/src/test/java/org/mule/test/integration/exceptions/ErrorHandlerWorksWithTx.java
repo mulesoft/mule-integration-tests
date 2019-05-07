@@ -26,25 +26,29 @@ import java.util.Collection;
 import java.util.List;
 
 @RunnerDelegateTo(Parameterized.class)
-public class GlobalErrorHandlerWorksWithTx extends AbstractIntegrationTestCase {
+public class ErrorHandlerWorksWithTx extends AbstractIntegrationTestCase {
 
   private static List<Thread> threads = new ArrayList<>();
+  private String config;
 
-  @Parameterized.Parameters(name = "{0}")
+  @Parameterized.Parameters(name = "{0} - {2}")
   public static Collection<Object[]> data() {
     return Arrays.asList(new Object[][] {
-        {"globalEHWith"},
-        {"globalEHWithNonBlockingOp"}
+        {"Local Error Handler", "org/mule/test/integration/exceptions/error-handler-tx-same-thread.xml", "errorHandlerWithProcessingTypeChange"},
+            {"Local Error Handler", "org/mule/test/integration/exceptions/error-handler-tx-same-thread.xml", "errorHandlerWithNonBlockingOp"},
+            {"Global Error Handler", "org/mule/test/integration/exceptions/error-handler-tx-same-thread-global-err.xml", "errorHandlerWithProcessingTypeChange"},
+            {"Global Error Handler", "org/mule/test/integration/exceptions/error-handler-tx-same-thread-global-err.xml", "errorHandlerWithNonBlockingOp"},
     });
   }
 
   @Override
   protected String getConfigFile() {
-    return "org/mule/test/integration/exceptions/global-error-handler-resolve-tx.xml";
+    return config;
   }
 
-  public GlobalErrorHandlerWorksWithTx(String errorHandlerName) {
+  public ErrorHandlerWorksWithTx(String type, String config, String errorHandlerName) {
     System.setProperty("errorHandlerName", errorHandlerName);
+    this.config = config;
   }
 
   @Before
@@ -54,7 +58,7 @@ public class GlobalErrorHandlerWorksWithTx extends AbstractIntegrationTestCase {
 
   @Test
   public void doesNotChangeThread() throws Exception {
-    Event event = flowRunner("flowWithGlobalErrorHandler").run();
+    Event event = flowRunner("flowWithTx").run();
 
     ///assertThat(threads, hasSize(1));
     assertThat(event.getMessage().getPayload().getValue(), is("zaraza"));
