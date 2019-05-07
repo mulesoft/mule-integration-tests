@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xmlns:vm="http://www.mulesoft.org/schema/mule/vm"
+      xsi:schemaLocation="
+       http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+       http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd
+       http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+
+
+    <error-handler name="globalEHWith">
+        <on-error-continue>
+            <test:non-blocking-processor />
+            <test:processor processingType="CPU_INTENSIVE">
+                <test:callback class="org.mule.test.integration.exceptions.GlobalErrorHandlerWorksWithTx$ThreadWatch"/>
+            </test:processor>
+            <set-payload value="zaraza"/>
+        </on-error-continue>
+    </error-handler>
+
+
+    <vm:config name="VM_Config">
+        <vm:queues >
+            <vm:queue queueName="Q1" />
+        </vm:queues>
+    </vm:config>
+
+    <error-handler name="globalEHWithNonBlockingOp">
+        <on-error-continue>
+            <vm:publish queueName="Q1" config-ref="VM_Config"/>
+            <test:processor>
+                <test:callback class="org.mule.test.integration.exceptions.GlobalErrorHandlerWorksWithTx$ThreadWatch"/>
+            </test:processor>
+            <set-payload value="zaraza"/>
+        </on-error-continue>
+    </error-handler>
+
+    <flow name="flowWithGlobalErrorHandler">
+        <try transactionalAction="ALWAYS_BEGIN">
+            <test:processor>
+                <test:callback class="org.mule.test.integration.exceptions.GlobalErrorHandlerWorksWithTx$ThreadWatch"/>
+            </test:processor>
+            <raise-error type="APP:SOMETYPE"/>
+            <error-handler ref="${errorHandlerName}"/>
+        </try>
+    </flow>
+
+
+
+</mule>
