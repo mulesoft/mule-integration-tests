@@ -34,10 +34,14 @@ public class ErrorHandlerWorksWithTx extends AbstractIntegrationTestCase {
   @Parameterized.Parameters(name = "{0} - {2}")
   public static Collection<Object[]> data() {
     return Arrays.asList(new Object[][] {
-        {"Local Error Handler", "org/mule/test/integration/exceptions/error-handler-tx-same-thread.xml", "errorHandlerWithProcessingTypeChange"},
-            {"Local Error Handler", "org/mule/test/integration/exceptions/error-handler-tx-same-thread.xml", "errorHandlerWithNonBlockingOp"},
-            {"Global Error Handler", "org/mule/test/integration/exceptions/error-handler-tx-same-thread-global-err.xml", "errorHandlerWithProcessingTypeChange"},
-            {"Global Error Handler", "org/mule/test/integration/exceptions/error-handler-tx-same-thread-global-err.xml", "errorHandlerWithNonBlockingOp"},
+        {"Local Error Handler", "org/mule/test/integration/exceptions/error-handler-tx-same-thread.xml",
+            "errorHandlerWithProcessingTypeChange"},
+        {"Local Error Handler", "org/mule/test/integration/exceptions/error-handler-tx-same-thread.xml",
+            "errorHandlerWithNonBlockingOp"},
+        {"Global Error Handler", "org/mule/test/integration/exceptions/error-handler-tx-same-thread-global-err.xml",
+            "errorHandlerWithProcessingTypeChange"},
+        {"Global Error Handler", "org/mule/test/integration/exceptions/error-handler-tx-same-thread-global-err.xml",
+            "errorHandlerWithNonBlockingOp"},
     });
   }
 
