@@ -14,7 +14,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
 import org.mule.functional.api.component.EventCallback;
-import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.event.Event;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.event.CoreEvent;
@@ -30,7 +29,6 @@ import java.util.List;
 public class GlobalErrorHandlerWorksWithTx extends AbstractIntegrationTestCase {
 
   private static List<Thread> threads = new ArrayList<>();
-  private TestConnectorQueueHandler queueHandler;
 
   @Parameterized.Parameters(name = "{0}")
   public static Collection<Object[]> data() {
@@ -51,7 +49,6 @@ public class GlobalErrorHandlerWorksWithTx extends AbstractIntegrationTestCase {
 
   @Before
   public void before() {
-    queueHandler = new TestConnectorQueueHandler(registry);
     threads.clear();
   }
 

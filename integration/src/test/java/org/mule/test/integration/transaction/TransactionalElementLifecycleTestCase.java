@@ -12,6 +12,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mule.functional.api.component.FunctionalTestProcessor.getFromFlow;
 
+import org.junit.runners.Parameterized;
 import org.mule.runtime.api.notification.TransactionNotificationListener;
 import org.mule.runtime.api.util.concurrent.Latch;
 import org.mule.runtime.api.notification.TransactionNotification;
@@ -20,20 +21,38 @@ import org.mule.tck.probe.PollingProber;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
+import org.mule.test.runner.RunnerDelegateTo;
 
+@RunnerDelegateTo(Parameterized.class)
 public class TransactionalElementLifecycleTestCase extends AbstractIntegrationTestCase {
 
   private static final int POLL_DELAY_MILLIS = 100;
 
   private List<TransactionNotification> notifications;
 
+  private String config;
+
+  @Parameterized.Parameters(name = "{0}")
+  public static Collection<Object[]> data() {
+    return Arrays.asList(new Object[][] {
+        {"Local Error Handler", "org/mule/test/integration/transaction/transactional-lifecycle-config.xml"},
+        {"Global Error Handler", "org/mule/test/integration/transaction/transactional-lifecycle-config-global-err.xml"}
+    });
+  }
+
+  public TransactionalElementLifecycleTestCase(String type, String config) {
+    this.config = config;
+  }
+
   @Override
   protected String getConfigFile() {
-    return "org/mule/test/integration/transaction/transactional-lifecycle-config.xml";
+    return config;
   }
 
   @Override
