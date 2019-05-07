@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) MuleSoft, Inc.  All rights reserved.  http://www.mulesoft.com
+ * The software in this package is published under the terms of the CPAL v1.0
+ * license, a copy of which has been included with this distribution in the
+ * LICENSE.txt file.
+ */
 package org.mule.test.integration.exceptions;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -23,48 +29,49 @@ import java.util.List;
 @RunnerDelegateTo(Parameterized.class)
 public class GlobalErrorHandlerWorksWithTx extends AbstractIntegrationTestCase {
 
-    private static List<Thread> threads = new ArrayList<>();
-    private TestConnectorQueueHandler queueHandler;
+  private static List<Thread> threads = new ArrayList<>();
+  private TestConnectorQueueHandler queueHandler;
 
-    @Parameterized.Parameters(name = "{0}")
-    public static Collection<Object[]> data() {
-        return Arrays.asList(new Object[][] {
-                {"globalEHWith"},
-                {"globalEHWithNonBlockingOp"}
-        });
-    }
+  @Parameterized.Parameters(name = "{0}")
+  public static Collection<Object[]> data() {
+    return Arrays.asList(new Object[][] {
+        {"globalEHWith"},
+        {"globalEHWithNonBlockingOp"}
+    });
+  }
+
+  @Override
+  protected String getConfigFile() {
+    return "org/mule/test/integration/exceptions/global-error-handler-resolve-tx.xml";
+  }
+
+  public GlobalErrorHandlerWorksWithTx(String errorHandlerName) {
+    System.setProperty("errorHandlerName", errorHandlerName);
+  }
+
+  @Before
+  public void before() {
+    queueHandler = new TestConnectorQueueHandler(registry);
+    threads.clear();
+  }
+
+  @Test
+  public void doesNotChangeThread() throws Exception {
+    Event event = flowRunner("flowWithGlobalErrorHandler").run();
+
+    ///assertThat(threads, hasSize(1));
+    assertThat(event.getMessage().getPayload().getValue(), is("zaraza"));
+    assertThat(threads, hasSize(2));
+    assertThat(threads.get(0), is(threads.get(1)));
+  }
+
+  public static class ThreadWatch implements EventCallback {
 
     @Override
-    protected String getConfigFile() {
-        return "org/mule/test/integration/exceptions/global-error-handler-resolve-tx.xml";
+    public void eventReceived(CoreEvent event, Object component, MuleContext muleContext) throws Exception {
+      threads.add(Thread.currentThread());
     }
 
-    public GlobalErrorHandlerWorksWithTx(String errorHandlerName) {
-        System.setProperty("errorHandlerName", errorHandlerName);
-    }
-
-    @Before
-    public void before() {
-        queueHandler = new TestConnectorQueueHandler(registry);
-        threads.clear();
-    }
-    @Test
-    public void doesNotChangeThread() throws Exception {
-        Event event = flowRunner("flowWithGlobalErrorHandler").run();
-
-        ///assertThat(threads, hasSize(1));
-        assertThat(event.getMessage().getPayload().getValue(), is("zaraza"));
-        assertThat(threads, hasSize(2));
-        assertThat(threads.get(0), is(threads.get(1)));
-    }
-
-    public static class ThreadWatch implements EventCallback {
-
-        @Override
-        public void eventReceived(CoreEvent event, Object component, MuleContext muleContext) throws Exception {
-            threads.add(Thread.currentThread());
-        }
-
-    }
+  }
 
 }
