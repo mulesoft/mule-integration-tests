@@ -10,12 +10,14 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
 import org.mule.functional.api.component.EventCallback;
 import org.mule.runtime.api.event.Event;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.event.CoreEvent;
+import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.runner.RunnerDelegateTo;
 
@@ -26,9 +28,12 @@ import java.util.Collection;
 public class ErrorHandlerWorksWithTxTestCase extends AbstractIntegrationTestCase {
 
   private static final String ERROR_HANDLER_REF = "errorHandlerName";
-  private String config;
   private static ThreadLocal<Boolean> execution = new ThreadLocal<>();
   private static Boolean executedInSameThread;
+  private String config;
+
+  @Rule
+  public SystemProperty property;
 
   @Parameterized.Parameters(name = "{0} - {2}")
   public static Collection<Object[]> data() {
@@ -58,13 +63,12 @@ public class ErrorHandlerWorksWithTxTestCase extends AbstractIntegrationTestCase
   }
 
   public ErrorHandlerWorksWithTxTestCase(String type, String config, String errorHandlerName) {
-    System.setProperty(ERROR_HANDLER_REF, errorHandlerName);
+    property = new SystemProperty(ERROR_HANDLER_REF, errorHandlerName);
     this.config = config;
   }
 
   @After
   public void tearDown() {
-    System.clearProperty(ERROR_HANDLER_REF);
     execution.remove();
     executedInSameThread = false;
   }

@@ -40,13 +40,13 @@ public class TransactionalTryTestCase extends AbstractIntegrationTestCase {
   @Parameterized.Parameters(name = "{0}")
   public static Collection<Object[]> data() {
     return Arrays.asList(new Object[][] {
-        {"transactional-try-config.xml"},
-        {"transactional-try-config-global-err.xml"}
+        {"Local Error Handler", "transactional-try-config.xml"},
+        {"Global Error Handler", "transactional-try-config-global-err.xml"}
     });
   }
 
 
-  public TransactionalTryTestCase(String config) {
+  public TransactionalTryTestCase(String type, String config) {
     this.config = config;
   }
 
