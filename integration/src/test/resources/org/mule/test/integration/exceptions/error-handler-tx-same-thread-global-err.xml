@@ -9,11 +9,20 @@
        http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
 
-    <error-handler name="errorHandlerWithProcessingTypeChange">
+    <error-handler name="errorHandlerWithTestNonBlocking">
         <on-error-continue>
             <test:non-blocking-processor />
             <test:processor processingType="CPU_INTENSIVE">
-                <test:callback class="org.mule.test.integration.exceptions.ErrorHandlerWorksWithTx$ThreadWatch"/>
+                <test:callback class="org.mule.test.integration.exceptions.ErrorHandlerWorksWithTxTestCase$ThreadWatch"/>
+            </test:processor>
+            <set-payload value="zaraza"/>
+        </on-error-continue>
+    </error-handler>
+
+    <error-handler name="errorHandlerWithProcessingTypeChange">
+        <on-error-continue>
+            <test:processor processingType="CPU_INTENSIVE">
+                <test:callback class="org.mule.test.integration.exceptions.ErrorHandlerWorksWithTxTestCase$ThreadWatch"/>
             </test:processor>
             <set-payload value="zaraza"/>
         </on-error-continue>
@@ -30,7 +39,17 @@
         <on-error-continue>
             <vm:publish queueName="Q1" config-ref="VM_Config"/>
             <test:processor>
-                <test:callback class="org.mule.test.integration.exceptions.ErrorHandlerWorksWithTx$ThreadWatch"/>
+                <test:callback class="org.mule.test.integration.exceptions.ErrorHandlerWorksWithTxTestCase$ThreadWatch"/>
+            </test:processor>
+            <set-payload value="zaraza"/>
+        </on-error-continue>
+    </error-handler>
+
+    <error-handler name="errorHandlerWithNonBlockingOpAndProcessingTypeChange">
+        <on-error-continue>
+            <vm:publish queueName="Q1" config-ref="VM_Config"/>
+            <test:processor processingType="CPU_INTENSIVE">
+                <test:callback class="org.mule.test.integration.exceptions.ErrorHandlerWorksWithTxTestCase$ThreadWatch"/>
             </test:processor>
             <set-payload value="zaraza"/>
         </on-error-continue>
@@ -39,7 +58,7 @@
     <flow name="flowWithTx">
         <try transactionalAction="ALWAYS_BEGIN">
             <test:processor>
-                <test:callback class="org.mule.test.integration.exceptions.ErrorHandlerWorksWithTx$ThreadWatch"/>
+                <test:callback class="org.mule.test.integration.exceptions.ErrorHandlerWorksWithTxTestCase$ThreadWatch"/>
             </test:processor>
             <raise-error type="APP:SOMETYPE"/>
             <error-handler ref="${errorHandlerName}"/>

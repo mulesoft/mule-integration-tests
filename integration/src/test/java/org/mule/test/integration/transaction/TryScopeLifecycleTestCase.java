@@ -30,7 +30,7 @@ import org.junit.Test;
 import org.mule.test.runner.RunnerDelegateTo;
 
 @RunnerDelegateTo(Parameterized.class)
-public class TransactionalElementLifecycleTestCase extends AbstractIntegrationTestCase {
+public class TryScopeLifecycleTestCase extends AbstractIntegrationTestCase {
 
   private static final int POLL_DELAY_MILLIS = 100;
 
@@ -46,7 +46,7 @@ public class TransactionalElementLifecycleTestCase extends AbstractIntegrationTe
     });
   }
 
-  public TransactionalElementLifecycleTestCase(String type, String config) {
+  public TryScopeLifecycleTestCase(String type, String config) {
     this.config = config;
   }
 

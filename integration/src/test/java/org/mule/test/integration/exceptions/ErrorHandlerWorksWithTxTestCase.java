@@ -10,7 +10,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 
-import org.junit.Before;
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
 import org.mule.functional.api.component.EventCallback;
@@ -26,8 +26,9 @@ import java.util.Collection;
 import java.util.List;
 
 @RunnerDelegateTo(Parameterized.class)
-public class ErrorHandlerWorksWithTx extends AbstractIntegrationTestCase {
+public class ErrorHandlerWorksWithTxTestCase extends AbstractIntegrationTestCase {
 
+  private static final String ERROR_HANDLER_REF = "errorHandlerName";
   private static List<Thread> threads = new ArrayList<>();
   private String config;
 
@@ -35,13 +36,21 @@ public class ErrorHandlerWorksWithTx extends AbstractIntegrationTestCase {
   public static Collection<Object[]> data() {
     return Arrays.asList(new Object[][] {
         {"Local Error Handler", "org/mule/test/integration/exceptions/error-handler-tx-same-thread.xml",
+            "errorHandlerWithTestNonBlocking"},
+        {"Local Error Handler", "org/mule/test/integration/exceptions/error-handler-tx-same-thread.xml",
             "errorHandlerWithProcessingTypeChange"},
         {"Local Error Handler", "org/mule/test/integration/exceptions/error-handler-tx-same-thread.xml",
             "errorHandlerWithNonBlockingOp"},
+        {"Local Error Handler", "org/mule/test/integration/exceptions/error-handler-tx-same-thread.xml",
+            "errorHandlerWithNonBlockingOpAndProcessingTypeChange"},
+        {"Global Error Handler", "org/mule/test/integration/exceptions/error-handler-tx-same-thread-global-err.xml",
+            "errorHandlerWithTestNonBlocking"},
         {"Global Error Handler", "org/mule/test/integration/exceptions/error-handler-tx-same-thread-global-err.xml",
             "errorHandlerWithProcessingTypeChange"},
         {"Global Error Handler", "org/mule/test/integration/exceptions/error-handler-tx-same-thread-global-err.xml",
             "errorHandlerWithNonBlockingOp"},
+        {"Global Error Handler", "org/mule/test/integration/exceptions/error-handler-tx-same-thread-global-err.xml",
+            "errorHandlerWithNonBlockingOpAndProcessingTypeChange"},
     });
   }
 
@@ -50,13 +59,14 @@ public class ErrorHandlerWorksWithTx extends AbstractIntegrationTestCase {
     return config;
   }
 
-  public ErrorHandlerWorksWithTx(String type, String config, String errorHandlerName) {
-    System.setProperty("errorHandlerName", errorHandlerName);
+  public ErrorHandlerWorksWithTxTestCase(String type, String config, String errorHandlerName) {
+    System.setProperty(ERROR_HANDLER_REF, errorHandlerName);
     this.config = config;
   }
 
-  @Before
-  public void before() {
+  @After
+  public void tearDown() {
+    System.clearProperty(ERROR_HANDLER_REF);
     threads.clear();
   }
 
@@ -64,7 +74,6 @@ public class ErrorHandlerWorksWithTx extends AbstractIntegrationTestCase {
   public void doesNotChangeThread() throws Exception {
     Event event = flowRunner("flowWithTx").run();
 
-    ///assertThat(threads, hasSize(1));
     assertThat(event.getMessage().getPayload().getValue(), is("zaraza"));
     assertThat(threads, hasSize(2));
     assertThat(threads.get(0), is(threads.get(1)));

@@ -16,6 +16,31 @@
         </expression-language>
     </configuration>
 
+    <error-handler name="globalEmptyHandler">
+        <on-error-continue/>
+    </error-handler>
+    <error-handler name="globalCatchExceptionStrategyChild">
+        <on-error-continue>
+            <test:assert-intercepting responseSameTask="false" responseExpression="#[payload == 'Test Message']"/>
+            <test:non-blocking-processor/>
+        </on-error-continue>
+    </error-handler>
+
+    <error-handler name="globalNonBlocking">
+        <on-error-propagate>
+            <test:non-blocking-processor/>
+        </on-error-propagate>
+    </error-handler>
+
+    <error-handler name="globalAssert">
+        <on-error-continue>
+            <test:assert-intercepting responseSameTask="false" responseExpression="#[payload == 'Test Message']"/>
+            <test:non-blocking-processor/>
+        </on-error-continue>
+    </error-handler>
+
+
+
     <flow name="flow" initialState="stopped">
         <test:assert-intercepting responseSameTask="false" responseExpression="#[payload == 'Test Message']"/>
         <test:non-blocking-processor/>
@@ -104,12 +129,7 @@
         <flow-ref name="catchExceptionStrategyChild"/>
         <test:assert count="1"/>
     </flow>
-    <error-handler name="globalCatchExceptionStrategyChild">
-        <on-error-continue>
-            <test:assert-intercepting responseSameTask="false" responseExpression="#[payload == 'Test Message']"/>
-            <test:non-blocking-processor/>
-        </on-error-continue>
-    </error-handler>
+
     <flow name="catchExceptionStrategyChild">
         <test:processor throwException="true"/>
         <error-handler ref="globalCatchExceptionStrategyChild"/>
@@ -121,21 +141,11 @@
         <test:assert expression="#[payload == 'Test Message']"/>
     </flow>
 
-    <error-handler name="globalEmptyHandler">
-        <on-error-continue/>
-    </error-handler>
-
     <flow name="rollbackExceptionStrategyChild">
         <flow-ref name="rollbackExceptionStrategyGrandChild"/>
         <test:assert count="0"/>
         <error-handler ref="globalEmptyHandler"/>
     </flow>
-
-    <error-handler name="globalNonBlocking">
-        <on-error-propagate>
-            <test:non-blocking-processor/>
-        </on-error-propagate>
-    </error-handler>
 
     <flow name="rollbackExceptionStrategyGrandChild">
         <test:processor throwException="true"/>
@@ -149,13 +159,6 @@
             <test:non-blocking-processor/>
         </try>
     </flow>
-
-    <error-handler name="globalAssert">
-        <on-error-continue>
-            <test:assert-intercepting responseSameTask="false" responseExpression="#[payload == 'Test Message']"/>
-            <test:non-blocking-processor/>
-        </on-error-continue>
-    </error-handler>
 
     <flow name="nonTransactionalTryErrorHandler" initialState="stopped">
         <try>
