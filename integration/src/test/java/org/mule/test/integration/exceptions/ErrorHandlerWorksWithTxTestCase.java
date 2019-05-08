@@ -7,7 +7,6 @@
 package org.mule.test.integration.exceptions;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 
 import org.junit.After;
@@ -20,17 +19,16 @@ import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.runner.RunnerDelegateTo;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
 @RunnerDelegateTo(Parameterized.class)
 public class ErrorHandlerWorksWithTxTestCase extends AbstractIntegrationTestCase {
 
   private static final String ERROR_HANDLER_REF = "errorHandlerName";
-  private static List<Thread> threads = new ArrayList<>();
   private String config;
+  private static ThreadLocal<Boolean> execution = new ThreadLocal<>();
+  private static Boolean executedInSameThread;
 
   @Parameterized.Parameters(name = "{0} - {2}")
   public static Collection<Object[]> data() {
@@ -67,7 +65,8 @@ public class ErrorHandlerWorksWithTxTestCase extends AbstractIntegrationTestCase
   @After
   public void tearDown() {
     System.clearProperty(ERROR_HANDLER_REF);
-    threads.clear();
+    execution.remove();
+    executedInSameThread = false;
   }
 
   @Test
@@ -75,15 +74,25 @@ public class ErrorHandlerWorksWithTxTestCase extends AbstractIntegrationTestCase
     Event event = flowRunner("flowWithTx").run();
 
     assertThat(event.getMessage().getPayload().getValue(), is("zaraza"));
-    assertThat(threads, hasSize(2));
-    assertThat(threads.get(0), is(threads.get(1)));
+    assertThat(executedInSameThread, is(true));
   }
 
-  public static class ThreadWatch implements EventCallback {
+  public static class StartProcess implements EventCallback {
 
     @Override
     public void eventReceived(CoreEvent event, Object component, MuleContext muleContext) throws Exception {
-      threads.add(Thread.currentThread());
+      execution.set(true);
+    }
+
+  }
+
+  public static class FinishProcess implements EventCallback {
+
+    @Override
+    public void eventReceived(CoreEvent event, Object component, MuleContext muleContext) throws Exception {
+      if (execution.get()) {
+        executedInSameThread = true;
+      }
     }
 
   }

@@ -17,35 +17,27 @@
 
     <flow name="flowWithTx">
         <try transactionalAction="ALWAYS_BEGIN">
-            <test:processor>
-                <test:callback class="org.mule.test.integration.exceptions.ErrorHandlerWorksWithTxTestCase$ThreadWatch"/>
-            </test:processor>
+            <logger message="hello"/>
             <raise-error type="APP:SOMETYPE"/>
             <error-handler>
                 <on-error-continue>
+                    <test:processor>
+                        <test:callback class="org.mule.test.integration.exceptions.ErrorHandlerWorksWithTxTestCase$StartProcess"/>
+                    </test:processor>
                     <choice>
                         <when expression="'${errorHandlerName}' == 'errorHandlerWithTestNonBlocking'">
                             <test:non-blocking-processor />
-                            <test:processor processingType="CPU_INTENSIVE">
-                                <test:callback class="org.mule.test.integration.exceptions.ErrorHandlerWorksWithTxTestCase$ThreadWatch"/>
-                            </test:processor>
+                            <test:processor processingType="CPU_INTENSIVE"/>
                         </when>
                         <when expression="'${errorHandlerName}' == 'errorHandlerWithProcessingTypeChange'">
-                            <test:processor processingType="CPU_INTENSIVE">
-                                <test:callback class="org.mule.test.integration.exceptions.ErrorHandlerWorksWithTxTestCase$ThreadWatch"/>
-                            </test:processor>
+                            <test:processor processingType="CPU_INTENSIVE"/>
                         </when>
                         <when expression="'${errorHandlerName}' == 'errorHandlerWithNonBlockingOp'">
                             <vm:publish queueName="Q1" config-ref="VM_Config"/>
-                            <test:processor>
-                                <test:callback class="org.mule.test.integration.exceptions.ErrorHandlerWorksWithTxTestCase$ThreadWatch"/>
-                            </test:processor>
                         </when>
                         <when expression="'${errorHandlerName}' == 'errorHandlerWithNonBlockingOpAndProcessingTypeChange'">
                             <vm:publish queueName="Q1" config-ref="VM_Config"/>
-                            <test:processor processingType="CPU_INTENSIVE">
-                                <test:callback class="org.mule.test.integration.exceptions.ErrorHandlerWorksWithTxTestCase$ThreadWatch"/>
-                            </test:processor>
+                            <test:processor processingType="CPU_INTENSIVE"/>
                         </when>
                         <otherwise>
                             <!-- This is added to make the test fail in case any change on it prevent from invoking routes
@@ -54,6 +46,9 @@
                         </otherwise>
                     </choice>
                     <set-payload value="zaraza"/>
+                    <test:processor>
+                        <test:callback class="org.mule.test.integration.exceptions.ErrorHandlerWorksWithTxTestCase$FinishProcess"/>
+                    </test:processor>
                 </on-error-continue>
             </error-handler>
         </try>

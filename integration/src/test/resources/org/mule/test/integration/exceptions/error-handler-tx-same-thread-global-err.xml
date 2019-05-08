@@ -11,20 +11,27 @@
 
     <error-handler name="errorHandlerWithTestNonBlocking">
         <on-error-continue>
-            <test:non-blocking-processor />
-            <test:processor processingType="CPU_INTENSIVE">
-                <test:callback class="org.mule.test.integration.exceptions.ErrorHandlerWorksWithTxTestCase$ThreadWatch"/>
+            <test:processor>
+                <test:callback class="org.mule.test.integration.exceptions.ErrorHandlerWorksWithTxTestCase$StartProcess"/>
             </test:processor>
+            <test:non-blocking-processor />
             <set-payload value="zaraza"/>
+            <test:processor>
+                <test:callback class="org.mule.test.integration.exceptions.ErrorHandlerWorksWithTxTestCase$FinishProcess"/>
+            </test:processor>
         </on-error-continue>
     </error-handler>
 
     <error-handler name="errorHandlerWithProcessingTypeChange">
         <on-error-continue>
-            <test:processor processingType="CPU_INTENSIVE">
-                <test:callback class="org.mule.test.integration.exceptions.ErrorHandlerWorksWithTxTestCase$ThreadWatch"/>
+            <test:processor>
+                <test:callback class="org.mule.test.integration.exceptions.ErrorHandlerWorksWithTxTestCase$StartProcess"/>
             </test:processor>
+            <test:processor processingType="CPU_INTENSIVE"/>
             <set-payload value="zaraza"/>
+            <test:processor>
+                <test:callback class="org.mule.test.integration.exceptions.ErrorHandlerWorksWithTxTestCase$FinishProcess"/>
+            </test:processor>
         </on-error-continue>
     </error-handler>
 
@@ -37,29 +44,34 @@
 
     <error-handler name="errorHandlerWithNonBlockingOp">
         <on-error-continue>
-            <vm:publish queueName="Q1" config-ref="VM_Config"/>
             <test:processor>
-                <test:callback class="org.mule.test.integration.exceptions.ErrorHandlerWorksWithTxTestCase$ThreadWatch"/>
+                <test:callback class="org.mule.test.integration.exceptions.ErrorHandlerWorksWithTxTestCase$StartProcess"/>
             </test:processor>
+            <vm:publish queueName="Q1" config-ref="VM_Config"/>
             <set-payload value="zaraza"/>
+            <test:processor>
+                <test:callback class="org.mule.test.integration.exceptions.ErrorHandlerWorksWithTxTestCase$FinishProcess"/>
+            </test:processor>
         </on-error-continue>
     </error-handler>
 
     <error-handler name="errorHandlerWithNonBlockingOpAndProcessingTypeChange">
         <on-error-continue>
-            <vm:publish queueName="Q1" config-ref="VM_Config"/>
-            <test:processor processingType="CPU_INTENSIVE">
-                <test:callback class="org.mule.test.integration.exceptions.ErrorHandlerWorksWithTxTestCase$ThreadWatch"/>
+            <test:processor>
+                <test:callback class="org.mule.test.integration.exceptions.ErrorHandlerWorksWithTxTestCase$StartProcess"/>
             </test:processor>
+            <vm:publish queueName="Q1" config-ref="VM_Config"/>
+            <test:processor processingType="CPU_INTENSIVE"/>
             <set-payload value="zaraza"/>
+            <test:processor>
+                <test:callback class="org.mule.test.integration.exceptions.ErrorHandlerWorksWithTxTestCase$FinishProcess"/>
+            </test:processor>
         </on-error-continue>
     </error-handler>
 
     <flow name="flowWithTx">
         <try transactionalAction="ALWAYS_BEGIN">
-            <test:processor>
-                <test:callback class="org.mule.test.integration.exceptions.ErrorHandlerWorksWithTxTestCase$ThreadWatch"/>
-            </test:processor>
+            <logger message="hello"/>
             <raise-error type="APP:SOMETYPE"/>
             <error-handler ref="${errorHandlerName}"/>
         </try>
