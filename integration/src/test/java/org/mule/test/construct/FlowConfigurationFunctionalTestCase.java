@@ -7,18 +7,14 @@
 package org.mule.test.construct;
 
 import static java.lang.Thread.currentThread;
-import static java.util.stream.Collectors.toList;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mule.functional.api.flow.TransactionConfigEnum.ACTION_ALWAYS_BEGIN;
-import static org.mule.runtime.api.metadata.MediaType.APPLICATION_XML;
 
 import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.exception.MuleException;
@@ -28,20 +24,10 @@ import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.transaction.Transaction;
 import org.mule.runtime.core.api.transaction.TransactionCoordination;
-import org.mule.tck.testmodels.fruit.Apple;
-import org.mule.tck.testmodels.fruit.Banana;
-import org.mule.tck.testmodels.fruit.Fruit;
-import org.mule.tck.testmodels.fruit.FruitBowl;
-import org.mule.tck.testmodels.fruit.Orange;
 import org.mule.tck.testmodels.mule.TestTransactionFactory;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import org.junit.Ignore;
 import org.junit.Test;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTestCase {
 
@@ -88,199 +74,6 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
   public void testInOutAppendFlow() throws Exception {
     flowRunner("inout-append").withPayload("0").run();
     assertEquals("0inout", getPayloadAsString(queueHandler.read("inout-append-out", RECEIVE_TIMEOUT).getMessage()));
-  }
-
-  @Test
-  public void testParallelForeachFlow() throws Exception {
-    final Apple apple = new Apple();
-    final Banana banana = new Banana();
-    final Orange orange = new Orange();
-    final FruitBowl fruitBowl = new FruitBowl(apple, banana);
-    fruitBowl.addFruit(orange);
-
-    flowRunner("parallel-foreach").withPayload(fruitBowl).run();
-
-    final Message result =
-        queueHandler.read("parallel-foreach-out", RECEIVE_TIMEOUT).getMessage();
-
-    assertNotNull(result);
-    assertTrue(result.getPayload().getValue() instanceof List);
-    final List<Message> coll = (List<Message>) result.getPayload().getValue();
-    assertEquals(3, coll.size());
-    final List<Fruit> results = coll.stream().map(msg -> (Fruit) msg.getPayload().getValue()).collect(toList());
-
-    assertTrue(apple.isBitten());
-    assertTrue(banana.isBitten());
-    assertTrue(orange.isBitten());
-
-    assertTrue(results.contains(apple));
-    assertTrue(results.contains(banana));
-    assertTrue(results.contains(orange));
-  }
-
-  @Ignore("MULE-12407")
-  @Test
-  public void testSplitNoParts() throws Exception {
-    String MESSAGE = "<Order></Order>";
-    Message result = flowRunner("split-no-parts").withPayload(MESSAGE).withMediaType(APPLICATION_XML).run().getMessage();
-
-    assertNotNull(result);
-    assertEquals(result.getPayload().getValue(), MESSAGE);
-  }
-
-  @Test
-  public void testParallelForeachListFlow() throws Exception {
-    final Apple apple = new Apple();
-    final Banana banana = new Banana();
-    final Orange orange = new Orange();
-    final FruitBowl fruitBowl = new FruitBowl(apple, banana);
-    fruitBowl.addFruit(orange);
-
-    flowRunner("parallel-foreach-list").withPayload(fruitBowl.getFruit()).run();
-
-    final Message result = queueHandler.read("parallel-foreach-list-out", RECEIVE_TIMEOUT).getMessage();
-
-    assertNotNull(result);
-    assertTrue(result.getPayload().getValue() instanceof List);
-    final List<Message> coll = (List<Message>) result.getPayload().getValue();
-    assertEquals(3, coll.size());
-    final List<Fruit> results = coll.stream().map(msg -> (Fruit) msg.getPayload().getValue()).collect(toList());
-
-    assertTrue(apple.isBitten());
-    assertTrue(banana.isBitten());
-    assertTrue(orange.isBitten());
-
-    assertTrue(results.contains(apple));
-    assertTrue(results.contains(banana));
-    assertTrue(results.contains(orange));
-  }
-
-  @Test
-  public void testParallelForeachListFlowSingleItem() throws Exception {
-    final Apple apple = new Apple();
-    final FruitBowl fruitBowl = new FruitBowl();
-    fruitBowl.addFruit(apple);
-
-    flowRunner("parallel-foreach-singleton-list").withPayload(fruitBowl.getFruit()).run();
-
-    final Message result = queueHandler.read("parallel-foreach-singleton-list-out", RECEIVE_TIMEOUT).getMessage();
-
-    assertNotNull(result);
-    assertTrue(result.getPayload().getValue() instanceof List);
-    final List<Message> coll = (List<Message>) result.getPayload().getValue();
-    assertEquals(1, coll.size());
-    final List<Fruit> results = coll.stream().map(msg -> (Fruit) msg.getPayload().getValue()).collect(toList());
-
-    assertTrue(apple.isBitten());
-
-    assertTrue(results.contains(apple));
-  }
-
-  @Test
-  public void testParallelForeachResponseListFlow() throws Exception {
-    final Apple apple = new Apple();
-    final Banana banana = new Banana();
-    final Orange orange = new Orange();
-    final FruitBowl fruitBowl = new FruitBowl(apple, banana);
-    fruitBowl.addFruit(orange);
-
-    final Message result =
-        flowRunner("parallel-foreach-response-list").withPayload(fruitBowl.getFruit()).run().getMessage();
-
-    assertNotNull(result);
-    assertTrue(result.getPayload().getValue() instanceof List);
-    final List<Message> coll = (List<Message>) result.getPayload().getValue();
-    assertEquals(3, coll.size());
-    final List<Fruit> results = coll.stream().map(msg -> (Fruit) msg.getPayload().getValue()).collect(toList());
-
-    assertTrue(apple.isBitten());
-    assertTrue(banana.isBitten());
-    assertTrue(orange.isBitten());
-
-    assertTrue(results.contains(apple));
-    assertTrue(results.contains(banana));
-    assertTrue(results.contains(orange));
-  }
-
-  @Test
-  public void testParallelForeachResponseListFlowSingleItem() throws Exception {
-    final Apple apple = new Apple();
-    final FruitBowl fruitBowl = new FruitBowl();
-    fruitBowl.addFruit(apple);
-
-    final Message result =
-        flowRunner("parallel-foreach-response-singleton-list").withPayload(fruitBowl.getFruit()).run().getMessage();
-
-    assertNotNull(result);
-    assertTrue(result.getPayload().getValue() instanceof List);
-    final List<Message> coll = (List<Message>) result.getPayload().getValue();
-    assertEquals(1, coll.size());
-    final List<Fruit> results = coll.stream().map(msg -> (Fruit) msg.getPayload().getValue()).collect(toList());
-
-    assertTrue(apple.isBitten());
-    assertTrue(results.contains(apple));
-  }
-
-  @Test
-  public void testParallelForeachMapFlow() throws Exception {
-    Map<String, Fruit> map = new HashMap<>();
-    final Apple apple = new Apple();
-    final Banana banana = new Banana();
-    final Orange orange = new Orange();
-    map.put("apple", apple);
-    map.put("banana", banana);
-    map.put("orange", orange);
-
-    CoreEvent result = flowRunner("parallel-foreach-map").withPayload(map).run();
-
-    assertNotNull(result);
-    assertTrue(result.getMessage().getPayload().getValue() instanceof List);
-    final Message[] results = new Message[3];
-    ((List<Message>) result.getMessage().getPayload().getValue()).toArray(results);
-    assertEquals(3, results.length);
-
-    assertTrue(apple.isBitten());
-    assertTrue(banana.isBitten());
-    assertTrue(orange.isBitten());
-  }
-
-  @Test
-  public void testParallelForeachAggregateFlow() throws Exception {
-    final Apple apple = new Apple();
-    final Banana banana = new Banana();
-    final Orange orange = new Orange();
-    final FruitBowl fruitBowl = new FruitBowl(apple, banana);
-    fruitBowl.addFruit(orange);
-
-    flowRunner("split-filter-aggregate").withPayload(fruitBowl).run();
-
-    final Message result = queueHandler.read("split-filter-aggregate-out", RECEIVE_TIMEOUT).getMessage();
-
-    assertNotNull(result);
-    assertTrue(result.getPayload().getValue() instanceof List);
-    final List<Message> coll = (List<Message>) result.getPayload().getValue();
-    assertEquals(1, coll.size());
-    final List<Fruit> results = coll.stream().map(msg -> (Fruit) msg.getPayload().getValue()).collect(toList());
-
-    assertTrue(results.contains(apple));
-    assertFalse(results.contains(banana));
-    assertFalse(results.contains(orange));
-  }
-
-  @Test
-  public void testMessageChunkParallelForeachFlow() throws Exception {
-    String payload = "";
-    for (int i = 0; i < 100; i++) {
-      payload += TEST_MESSAGE;
-    }
-
-    flowRunner("message-chunk-parallel-foreach").withPayload(payload).run();
-
-    final Message result = queueHandler.read("message-chunk-parallel-foreach-out", RECEIVE_TIMEOUT).getMessage();
-
-    assertNotNull(result);
-    assertNotSame(payload, result.getPayload().getValue());
-    assertEquals(payload, getPayloadAsString(result));
   }
 
   @Test

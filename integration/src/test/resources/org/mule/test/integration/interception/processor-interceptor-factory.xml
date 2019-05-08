@@ -39,15 +39,6 @@
         </heisenberg:known-addresses>
     </heisenberg:config>
 
-    <flow name="injectionInterceptionTest">
-        <logger />
-        <flow-ref name="anotherFlow" />
-    </flow>
-
-    <flow name="anotherFlow">
-        <splitter expression="#[payload]" />
-    </flow>
-
     <flow name="killFromPayload">
         <heisenberg:kill goodbyeMessage="#[vars.goodbye]" />
     </flow>
