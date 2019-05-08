@@ -7,17 +7,23 @@
 http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
-    <error-handler name="globalNoRollback">
+    <error-handler name="globalContinue">
         <on-error-continue>
             <test:processor/>
         </on-error-continue>
+    </error-handler>
+
+    <error-handler name="globalPropagate">
+        <on-error-propagate>
+            <test:processor/>
+        </on-error-propagate>
     </error-handler>
 
     <flow name="no-rollback">
         <try transactionalAction="BEGIN_OR_JOIN">
             <test:processor throwException="true"
                             exceptionToThrow="java.lang.RuntimeException" />
-            <error-handler ref="globalNoRollback"/>
+            <error-handler ref="globalContinue"/>
         </try>
     </flow>
 
@@ -25,6 +31,7 @@ http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/tes
         <try transactionalAction="BEGIN_OR_JOIN">
             <test:processor throwException="true"
                             exceptionToThrow="java.lang.RuntimeException" />
+            <error-handler ref="globalPropagate"/>
         </try>
     </flow>
 
@@ -34,13 +41,14 @@ http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/tes
         </try>
         <test:processor throwException="true"
                         exceptionToThrow="java.lang.RuntimeException" />
+        <error-handler ref="globalPropagate"/>
     </flow>
 
 
     <flow name="no-rollback-flowref">
         <try transactionalAction="BEGIN_OR_JOIN">
             <flow-ref name="rollback-flowref"/>
-            <error-handler ref="globalNoRollback"/>
+            <error-handler ref="globalContinue"/>
         </try>
     </flow>
 
@@ -51,20 +59,21 @@ http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/tes
     <flow name="rollback-error-in-flow-ref-with-try">
         <try transactionalAction="BEGIN_OR_JOIN">
             <flow-ref name="error-flowref"/>
+            <error-handler ref="globalPropagate"/>
         </try>
     </flow>
 
     <flow name="no-rollback-error-in-flow-ref-with-try">
         <try transactionalAction="BEGIN_OR_JOIN">
             <flow-ref name="error-flowref"/>
-            <error-handler ref="globalNoRollback"/>
+            <error-handler ref="globalContinue"/>
         </try>
     </flow>
 
     <flow name="no-rollback-error-in-flow-ref-with-try-join-tx">
         <try transactionalAction="BEGIN_OR_JOIN">
             <flow-ref name="error-flowref-JOIN"/>
-            <error-handler ref="globalNoRollback"/>
+            <error-handler ref="globalContinue"/>
         </try>
     </flow>
 
@@ -77,19 +86,21 @@ http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/tes
     <flow name="error-flowref-JOIN">
         <try transactionalAction="BEGIN_OR_JOIN">
             <test:processor/>
-            <error-handler ref="globalNoRollback"/>
+            <error-handler ref="globalContinue"/>
         </try>
         <test:processor throwException="true"
                         exceptionToThrow="java.lang.RuntimeException" />
+        <error-handler ref="globalPropagate"/>
     </flow>
 
     <flow name="error-flowref">
         <try transactionalAction="ALWAYS_BEGIN">
             <test:processor/>
-            <error-handler ref="globalNoRollback"/>
+            <error-handler ref="globalContinue"/>
         </try>
         <test:processor throwException="true"
                         exceptionToThrow="java.lang.RuntimeException" />
+        <error-handler ref="globalPropagate"/>
     </flow>
 
 </mule>
