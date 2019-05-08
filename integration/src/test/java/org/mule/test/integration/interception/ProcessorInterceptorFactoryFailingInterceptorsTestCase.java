@@ -94,14 +94,6 @@ public class ProcessorInterceptorFactoryFailingInterceptorsTestCase extends Abst
     return objects;
   }
 
-  @Description("Logger, flow-ref and splitter components are intercepted in order and the parameters are correctly sent")
-  @Test
-  public void injection() throws Exception {
-    List<Object> payload = new ArrayList<>();
-    flowRunner("injectionInterceptionTest").withPayload(payload).run();
-
-  }
-
   @Test
   public void operationParameters() throws Exception {
     flowRunner("killFromPayload").withPayload("T-1000").withVariable("goodbye", "Hasta la vista, baby").run();

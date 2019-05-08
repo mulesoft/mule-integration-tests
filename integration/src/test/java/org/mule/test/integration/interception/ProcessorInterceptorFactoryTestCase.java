@@ -51,7 +51,6 @@ import org.mule.test.heisenberg.extension.HeisenbergExtension;
 import org.mule.test.heisenberg.extension.exception.HeisenbergException;
 import org.mule.test.heisenberg.extension.model.KillParameters;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -105,24 +104,6 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     HasInjectedAttributesInterceptor.interceptionParameters.clear();
     AfterWithCallbackInterceptor.callback = (event, thrown) -> {
     };
-  }
-
-  @Description("Logger, flow-ref and splitter components are intercepted in order and the parameters are correctly sent")
-  @Test
-  public void injection() throws Exception {
-    List<Object> payload = new ArrayList<>();
-    flowRunner("injectionInterceptionTest").withPayload(payload).run();
-
-    List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
-    assertThat(interceptionParameters, hasSize(3));
-
-    InterceptionParameters loggerInterceptionParameter = interceptionParameters.get(0);
-    InterceptionParameters flowRefInterceptionParameter = interceptionParameters.get(1);
-    InterceptionParameters splitterInterceptionParameter = interceptionParameters.get(2);
-
-    assertThat(loggerInterceptionParameter.getParameters().isEmpty(), is(true));
-    assertThat(flowRefInterceptionParameter.getParameters().get("name").resolveValue(), is("anotherFlow"));
-    assertThat(splitterInterceptionParameter.getParameters().get("expression").resolveValue(), is(payload));
   }
 
   @Test

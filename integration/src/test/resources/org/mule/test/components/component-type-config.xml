@@ -37,8 +37,6 @@
                 <logger/>
             </route>
         </scatter-gather>
-        <splitter/>
-        <resequencer/>
         <choice>
             <when expression="#[true]">
                 <logger/>
