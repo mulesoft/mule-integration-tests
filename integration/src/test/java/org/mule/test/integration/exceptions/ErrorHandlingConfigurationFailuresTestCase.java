@@ -93,6 +93,13 @@ public class ErrorHandlingConfigurationFailuresTestCase extends AbstractConfigur
   }
 
   @Test
+  public void xaTransactionalTryNotAllowedWithGlobalErrorHandler() throws Exception {
+    expectedException.expect(InitialisationException.class);
+    expectedException.expectMessage(containsString("Unable to create Try Scope with a Transaction Type: [XA]"));
+    loadConfiguration("org/mule/test/integration/transaction/xa-transactional-try-config-global-err.xml");
+  }
+
+  @Test
   public void unknownErrorFilteringNotAllowed() throws Exception {
     expectedException.expect(InitialisationException.class);
     expectedException.expectCause(hasMessage(equalTo(notFound(UNKNOWN_ERROR_IDENTIFIER))));

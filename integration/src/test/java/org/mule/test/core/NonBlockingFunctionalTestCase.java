@@ -16,24 +16,43 @@ import static org.mule.tck.processor.FlowAssert.verify;
 import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.api.security.SecurityProviderNotFoundException;
 import org.mule.runtime.api.security.UnknownAuthenticationTypeException;
+import org.junit.runners.Parameterized;
+import org.mule.runtime.api.security.SecurityContext;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.security.AbstractAuthenticationFilter;
 import org.mule.runtime.core.api.security.CryptoFailureException;
 import org.mule.runtime.core.api.security.EncryptionStrategyNotFoundException;
-import org.mule.runtime.api.security.SecurityContext;
 import org.mule.runtime.core.api.transaction.Transaction;
 import org.mule.runtime.core.api.transaction.TransactionCoordination;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Test;
+import org.mule.test.runner.RunnerDelegateTo;
 
+import java.util.Arrays;
+import java.util.Collection;
+
+@RunnerDelegateTo(Parameterized.class)
 public class NonBlockingFunctionalTestCase extends AbstractIntegrationTestCase {
 
   public static String FOO = "foo";
+  private String config;
+
+  @Parameterized.Parameters(name = "{0}")
+  public static Collection<Object[]> data() {
+    return Arrays.asList(new Object[][] {
+        {"Local Error Handler", "non-blocking-test-config.xml"},
+        {"Global Error Handler", "non-blocking-test-config-global-err.xml"}
+    });
+  }
+
+  public NonBlockingFunctionalTestCase(String type, String config) {
+    this.config = config;
+  }
 
   @Override
   protected String getConfigFile() {
-    return "non-blocking-test-config.xml";
+    return config;
   }
 
   @Test

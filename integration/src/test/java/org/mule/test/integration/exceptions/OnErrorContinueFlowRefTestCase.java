@@ -10,6 +10,8 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.test.integration.exceptions.OnErrorContinueTestCase.JSON_REQUEST;
 import static org.mule.test.integration.exceptions.OnErrorContinueTestCase.JSON_RESPONSE;
+
+import org.junit.runners.Parameterized;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.event.CoreEvent;
@@ -23,14 +25,33 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.hamcrest.core.Is;
 import org.hamcrest.core.IsNull;
 import org.junit.Test;
+import org.mule.test.runner.RunnerDelegateTo;
 
+import java.util.Arrays;
+import java.util.Collection;
+
+@RunnerDelegateTo(Parameterized.class)
 public class OnErrorContinueFlowRefTestCase extends AbstractIntegrationTestCase {
 
   public static final int TIMEOUT = 5000;
+  private String config;
+
+  @Parameterized.Parameters(name = "{0}")
+  public static Collection<Object[]> data() {
+    return Arrays.asList(new Object[][] {
+        {"Local Error Handler", "org/mule/test/integration/exceptions/on-error-continue-flow-ref.xml"},
+        {"Global Error Handler", "org/mule/test/integration/exceptions/on-error-continue-flow-ref-global-err.xml"}
+    });
+  }
+
+
+  public OnErrorContinueFlowRefTestCase(String type, String config) {
+    this.config = config;
+  }
 
   @Override
   protected String getConfigFile() {
-    return "org/mule/test/integration/exceptions/on-error-continue-flow-ref.xml";
+    return config;
   }
 
   @Test
