@@ -33,31 +33,57 @@ public class TransactionRollbackedByOwnerTestCase extends AbstractIntegrationTes
   private String flowName;
   private String secondActionExpected;
   private boolean throwsMessagingException;
+  private String config;
 
-
-  @Parameterized.Parameters(name = "{0}")
+  @Parameterized.Parameters(name = "{0} - {2}")
   public static Object[][] params() {
     return new Object[][] {
-        new Object[] {"no-rollback", false, "commit"},
-        new Object[] {"rollback", true, "rollback"},
-        new Object[] {"no-rollback-outside-try", true, "commit"},
-        new Object[] {"no-rollback-flowref", false, "commit"},
-        new Object[] {"no-rollback-error-in-flow-ref", false, "commit"},
-        new Object[] {"rollback-error-in-flow-ref-with-try", true, "rollback"},
-        new Object[] {"no-rollback-error-in-flow-ref-with-try", false, "commit"},
-        new Object[] {"no-rollback-error-in-flow-ref-with-try-join-tx", false, "commit"}
+        new Object[] {"Local Error Handler", "org/mule/test/integration/transaction/transaction-owner.xml", "no-rollback", false,
+            "commit"},
+        new Object[] {"Local Error Handler", "org/mule/test/integration/transaction/transaction-owner.xml", "rollback", true,
+            "rollback"},
+        new Object[] {"Local Error Handler", "org/mule/test/integration/transaction/transaction-owner.xml",
+            "no-rollback-outside-try", true, "commit"},
+        new Object[] {"Local Error Handler", "org/mule/test/integration/transaction/transaction-owner.xml", "no-rollback-flowref",
+            false, "commit"},
+        new Object[] {"Local Error Handler", "org/mule/test/integration/transaction/transaction-owner.xml",
+            "no-rollback-error-in-flow-ref", false, "commit"},
+        new Object[] {"Local Error Handler", "org/mule/test/integration/transaction/transaction-owner.xml",
+            "rollback-error-in-flow-ref-with-try", true, "rollback"},
+        new Object[] {"Local Error Handler", "org/mule/test/integration/transaction/transaction-owner.xml",
+            "no-rollback-error-in-flow-ref-with-try", false, "commit"},
+        new Object[] {"Local Error Handler", "org/mule/test/integration/transaction/transaction-owner.xml",
+            "no-rollback-error-in-flow-ref-with-try-join-tx", false, "commit"},
+        new Object[] {"Global Error Handler", "org/mule/test/integration/transaction/transaction-owner-global-err.xml",
+            "no-rollback", false, "commit"},
+        new Object[] {"Global Error Handler", "org/mule/test/integration/transaction/transaction-owner-global-err.xml",
+            "rollback", true, "rollback"},
+        new Object[] {"Global Error Handler", "org/mule/test/integration/transaction/transaction-owner-global-err.xml",
+            "no-rollback-outside-try", true, "commit"},
+        new Object[] {"Global Error Handler", "org/mule/test/integration/transaction/transaction-owner-global-err.xml",
+            "no-rollback-flowref", false, "commit"},
+        new Object[] {"Global Error Handler", "org/mule/test/integration/transaction/transaction-owner-global-err.xml",
+            "no-rollback-error-in-flow-ref", false, "commit"},
+        new Object[] {"Global Error Handler", "org/mule/test/integration/transaction/transaction-owner-global-err.xml",
+            "rollback-error-in-flow-ref-with-try", true, "rollback"},
+        new Object[] {"Global Error Handler", "org/mule/test/integration/transaction/transaction-owner-global-err.xml",
+            "no-rollback-error-in-flow-ref-with-try", false, "commit"},
+        new Object[] {"Global Error Handler", "org/mule/test/integration/transaction/transaction-owner-global-err.xml",
+            "no-rollback-error-in-flow-ref-with-try-join-tx", false, "commit"}
     };
   }
 
-  public TransactionRollbackedByOwnerTestCase(String flowName, boolean throwsMessagingException, String secondNotification) {
+  public TransactionRollbackedByOwnerTestCase(String type, String config, String flowName, boolean throwsMessagingException,
+                                              String secondNotification) {
     this.flowName = flowName;
     this.secondActionExpected = secondNotification;
     this.throwsMessagingException = throwsMessagingException;
+    this.config = config;
   }
 
   @Override
   protected String getConfigFile() {
-    return "org/mule/test/integration/transaction/transaction-owner.xml";
+    return config;
   }
 
   @Override
