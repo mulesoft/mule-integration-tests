@@ -22,6 +22,7 @@
 
     <error-handler name="globalErrorHandler">
         <on-error-propagate>
+            <test:processor class="org.mule.test.integration.locator.processor.CustomTestComponent"/>
             <test:queue name="globalErrorHandlerQueue"/>
         </on-error-propagate>
     </error-handler>
