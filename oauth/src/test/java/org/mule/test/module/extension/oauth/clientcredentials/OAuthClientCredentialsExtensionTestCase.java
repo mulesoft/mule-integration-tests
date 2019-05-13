@@ -8,20 +8,24 @@ package org.mule.test.module.extension.oauth.clientcredentials;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.extension.http.api.HttpHeaders.Names.CONTENT_TYPE;
-import static org.mule.runtime.api.store.ObjectStoreManager.BASE_PERSISTENT_OBJECT_STORE_KEY;
 import static org.mule.runtime.api.store.ObjectStoreSettings.unmanagedTransient;
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.OK;
 import static org.mule.runtime.oauth.api.state.ResourceOwnerOAuthContext.DEFAULT_RESOURCE_OWNER_ID;
 import org.mule.runtime.api.store.ObjectStore;
 import org.mule.runtime.extension.api.connectivity.oauth.ClientCredentialsState;
+import org.mule.runtime.oauth.api.state.ResourceOwnerOAuthContext;
 import org.mule.test.module.extension.oauth.BaseOAuthExtensionTestCase;
-import org.mule.test.oauth.TestOAuthClientCredentialsProvider;
 import org.mule.test.oauth.TestOAuthConnection;
 import org.mule.test.oauth.TestOAuthConnectionState;
+
+import com.github.tomakehurst.wiremock.client.WireMock;
 
 import org.junit.Test;
 
@@ -31,7 +35,7 @@ public class OAuthClientCredentialsExtensionTestCase extends BaseOAuthExtensionT
 
   @Override
   protected String[] getConfigFiles() {
-    return new String[] {"client-credentials-oauth-extension-config.xml", "oauth-extension-flows.xml"};
+    return new String[] {"client-credentials-oauth-extension-config.xml", "client-credentials-flows.xml"};
   }
 
   @Override
@@ -57,12 +61,28 @@ public class OAuthClientCredentialsExtensionTestCase extends BaseOAuthExtensionT
     assertConnectionState(connection);
 
     assertOAuthStateStored(CUSTOM_STORE_NAME, storedOwnerId, DEFAULT_RESOURCE_OWNER_ID);
-    assertOAuthStateStored(BASE_PERSISTENT_OBJECT_STORE_KEY, storedOwnerId, DEFAULT_RESOURCE_OWNER_ID);
+  }
+
+  @Test
+  public void refreshToken() throws Exception {
+    executeProtectedOperation();
+    WireMock.reset();
+
+    String refreshedToken = ACCESS_TOKEN + "-refreshed";
+    wireMock.stubFor(post(urlPathMatching("/" + TOKEN_PATH)).willReturn(aResponse()
+                                                                            .withStatus(OK.getStatusCode())
+                                                                            .withBody(accessTokenContent(refreshedToken))
+                                                                            .withHeader(CONTENT_TYPE, "application/json")));
+
+    flowRunner("refreshToken").run();
+    wireMock.verify(postRequestedFor(urlPathEqualTo("/" + TOKEN_PATH)));
+    ResourceOwnerOAuthContext context = (ResourceOwnerOAuthContext) objectStore.retrieve(storedOwnerId);
+    assertThat(context.getAccessToken(), equalTo(refreshedToken));
   }
 
   @Override
-  protected void assertOAuthState(TestOAuthConnectionState connection) {
-    ClientCredentialsState state = ((TestOAuthClientCredentialsProvider) connection).getClientCredentialsState();
+  protected void assertAuthCodeState(TestOAuthConnectionState connection) {
+    ClientCredentialsState state = (ClientCredentialsState) connection.getState();
     assertThat(state.getAccessToken(), is(ACCESS_TOKEN));
     assertThat(state.getExpiresIn().get(), is(EXPIRES_IN));
 

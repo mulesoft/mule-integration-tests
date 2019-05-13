@@ -12,7 +12,7 @@
     </http:listener-config>
 
 
-    <test-oauth:config name="oauth">
+    <test-oauth:auth-code-config name="oauth">
         <test-oauth:connection display="PAGE" immediate="true" prompt="false">
             <test-oauth:oauth-authorization-code consumerKey="${consumerKey}"
                                                  consumerSecret="${consumerSecret}"
@@ -26,6 +26,6 @@
                                               callbackPath="${callbackPath}"
                                               authorizePath="${localAuthPath}" />
         </test-oauth:connection>
-    </test-oauth:config>
+    </test-oauth:auth-code-config>
 
 </mule>

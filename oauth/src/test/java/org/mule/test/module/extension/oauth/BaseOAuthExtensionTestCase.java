@@ -207,11 +207,11 @@ public abstract class BaseOAuthExtensionTestCase extends AbstractExtensionFuncti
 
   protected void assertConnectionState(TestOAuthConnectionState connection) {
     assertConnectionProperties(connection);
-    assertOAuthState(connection);
+    assertAuthCodeState(connection);
   }
 
-  protected void assertOAuthState(TestOAuthConnectionState connection) {
-    AuthorizationCodeState state = connection.getState();
+  protected void assertAuthCodeState(TestOAuthConnectionState connection) {
+    AuthorizationCodeState state = (AuthorizationCodeState) connection.getState();
     assertThat(state.getAccessToken(), is(ACCESS_TOKEN));
     assertThat(state.getExpiresIn().get(), is(EXPIRES_IN));
     assertThat(state.getRefreshToken().get(), is(REFRESH_TOKEN));
