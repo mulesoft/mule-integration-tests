@@ -43,9 +43,9 @@ public class OAuthClientCredentialsExtensionTestCase extends BaseOAuthExtensionT
     super.doSetUp();
     storedOwnerId = DEFAULT_RESOURCE_OWNER_ID + "-oauth";
     wireMock.stubFor(post(urlPathMatching("/" + TOKEN_PATH)).willReturn(aResponse()
-                                                                        .withStatus(OK.getStatusCode())
-                                                                        .withBody(accessTokenContent())
-                                                                        .withHeader(CONTENT_TYPE, "application/json")));
+                                                                            .withStatus(OK.getStatusCode())
+                                                                            .withBody(accessTokenContent())
+                                                                            .withHeader(CONTENT_TYPE, "application/json")));
     objectStore = muleContext.getObjectStoreManager().createObjectStore(CUSTOM_STORE_NAME, unmanagedTransient());
   }
 
@@ -92,90 +92,4 @@ public class OAuthClientCredentialsExtensionTestCase extends BaseOAuthExtensionT
     assertThat(state.getExpiresIn().get(), is(EXPIRES_IN));
 
   }
-                   /*
-  @Test
-  public void refreshToken() throws Exception {
-    receiveAccessTokenAndUserConnection();
-    WireMock.reset();
-    stubTokenUrl(accessTokenContent(ACCESS_TOKEN + "-refreshed"));
-    flowRunner("refreshToken").withVariable(OWNER_ID_VARIABLE_NAME, getCustomOwnerId()).run();
-    wireMock.verify(postRequestedFor(urlPathEqualTo("/" + TOKEN_PATH)));
-  }
-
-  @Test
-  public void callbackFlows() throws Exception {
-    authorizeAndStartDancingBaby();
-    receiveAccessTokenAndUserConnection();
-
-    CoreEvent initialiserEvent = null;
-    try {
-      initialiserEvent = getInitialiserEvent(muleContext);
-      TestOAuthExtension config = getConfigurationFromRegistry("oauth", CoreEvent.builder(initialiserEvent)
-          .addVariable(OWNER_ID_VARIABLE_NAME, getCustomOwnerId())
-          .build(), muleContext);
-
-      check(REQUEST_TIMEOUT, 500, () -> {
-        assertThat(config.getCapturedAuthCodeRequests(), hasSize(1));
-        assertThat(config.getCapturedAuthCodeStates(), hasSize(1));
-        return true;
-      });
-
-      assertBeforeCallbackPayload(config);
-      assertAfterCallbackPayload(config);
-    } finally {
-      if (initialiserEvent != null) {
-        ((BaseEventContext) initialiserEvent.getContext()).success();
-      }
-    }
-  }
-
-  @Test
-  public void unauthorize() throws Exception {
-    authorizeAndStartDancingBaby();
-    receiveAccessTokenAndUserConnection();
-
-    flowRunner("unauthorize").withVariable(OWNER_ID_VARIABLE_NAME, ownerId).run();
-    ObjectStore objectStore = getObjectStore(BASE_PERSISTENT_OBJECT_STORE_KEY);
-    assertThat(objectStore.contains(storedOwnerId), is(false));
-  }
-
-  protected void assertBeforeCallbackPayload(TestOAuthExtension config) {
-    AuthCodeRequest request = config.getCapturedAuthCodeRequests().get(0);
-    assertThat(request.getResourceOwnerId(), is(ownerId));
-    assertScopes(request);
-    assertThat(request.getState().get(), is(STATE));
-    assertExternalCallbackUrl(request);
-  }
-
-  protected void assertScopes(AuthCodeRequest request) {
-    assertThat(request.getScopes().get(), is(SCOPES));
-  }
-
-  private void assertAfterCallbackPayload(TestOAuthExtension config) {
-    AuthorizationCodeState state = config.getCapturedAuthCodeStates().get(0);
-    assertThat(state.getAccessToken(), is(ACCESS_TOKEN));
-    assertThat(state.getRefreshToken().get(), is(REFRESH_TOKEN));
-    assertThat(state.getResourceOwnerId(), is(ownerId));
-    assertThat(state.getExpiresIn().get(), is(EXPIRES_IN));
-    assertThat(state.getState().get(), is(STATE));
-    assertThat(state.getAuthorizationUrl(), is(authUrl));
-    assertThat(state.getAccessTokenUrl(), is(tokenUrl));
-    assertThat(state.getConsumerKey(), is(CONSUMER_KEY));
-    assertThat(state.getConsumerSecret(), is(CONSUMER_SECRET));
-    assertExternalCallbackUrlOnAfterCallback(state);
-  }
-
-  protected void assertExternalCallbackUrl(AuthCodeRequest request) {
-    assertThat(request.getExternalCallbackUrl().isPresent(), is(false));
-  }
-
-  protected void assertExternalCallbackUrlOnAfterCallback(AuthorizationCodeState state) {
-    assertThat(state.getExternalCallbackUrl().isPresent(), is(false));
-  }
-
-  protected void assertExternalCallbackUrl(AuthorizationCodeState state) {
-    assertThat(state.getExternalCallbackUrl().isPresent(), is(false));
-  }
-  
-                    */
 }
