@@ -1,0 +1,6 @@
+appVsGlobal: "App wins"
+systemVsApp: "App wins"
+deploymentVsApp: "App wins"
+appValue: "App"
+appDepGlobal: "App - ${globalValue}"
+appDepSystem: "App - ${systemValue}"
