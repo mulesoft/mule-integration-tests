@@ -4,13 +4,14 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.test.module.extension.oauth;
+package org.mule.test.module.extension.oauth.authcode;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.store.ObjectStoreManager.BASE_PERSISTENT_OBJECT_STORE_KEY;
 import org.mule.runtime.api.store.ObjectStore;
 import org.mule.tck.junit4.rule.DynamicPort;
+import org.mule.test.module.extension.oauth.BaseOAuthExtensionTestCase;
 import org.mule.test.oauth.TestOAuthConnection;
 import org.mule.test.oauth.TestOAuthConnectionState;
 

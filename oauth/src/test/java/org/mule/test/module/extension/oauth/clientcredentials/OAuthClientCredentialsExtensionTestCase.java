@@ -4,64 +4,70 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.test.module.extension.oauth;
+package org.mule.test.module.extension.oauth.clientcredentials;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
+import static org.mule.extension.http.api.HttpHeaders.Names.CONTENT_TYPE;
 import static org.mule.runtime.api.store.ObjectStoreManager.BASE_PERSISTENT_OBJECT_STORE_KEY;
-import static org.mule.runtime.module.extension.api.util.MuleExtensionUtils.getInitialiserEvent;
-import static org.mule.tck.probe.PollingProber.check;
-import static org.mule.test.module.extension.internal.util.ExtensionsTestUtils.getConfigurationFromRegistry;
-
+import static org.mule.runtime.api.store.ObjectStoreSettings.unmanagedTransient;
+import static org.mule.runtime.http.api.HttpConstants.HttpStatus.OK;
+import static org.mule.runtime.oauth.api.state.ResourceOwnerOAuthContext.DEFAULT_RESOURCE_OWNER_ID;
 import org.mule.runtime.api.store.ObjectStore;
-import org.mule.runtime.core.api.event.CoreEvent;
-import org.mule.runtime.core.privileged.event.BaseEventContext;
-import org.mule.runtime.extension.api.connectivity.oauth.AuthCodeRequest;
-import org.mule.runtime.extension.api.connectivity.oauth.AuthorizationCodeState;
+import org.mule.runtime.extension.api.connectivity.oauth.ClientCredentialsState;
+import org.mule.test.module.extension.oauth.BaseOAuthExtensionTestCase;
+import org.mule.test.oauth.TestOAuthClientCredentialsProvider;
 import org.mule.test.oauth.TestOAuthConnection;
 import org.mule.test.oauth.TestOAuthConnectionState;
-import org.mule.test.oauth.TestOAuthExtension;
 
-import com.github.tomakehurst.wiremock.client.WireMock;
-import org.junit.Before;
 import org.junit.Test;
 
-public class OAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
+public class OAuthClientCredentialsExtensionTestCase extends BaseOAuthExtensionTestCase {
+
+  private ObjectStore objectStore;
 
   @Override
   protected String[] getConfigFiles() {
-    return new String[] {"dynamic-oauth-extension-config.xml", "oauth-extension-flows.xml"};
+    return new String[] {"client-credentials-oauth-extension-config.xml", "oauth-extension-flows.xml"};
   }
 
-  @Before
-  public void setOwnerId() throws Exception {
-    ownerId = getCustomOwnerId();
-    storedOwnerId = getCustomOwnerId() + "-oauth";
+  @Override
+  protected void doSetUpBeforeMuleContextCreation() throws Exception {
+  }
+
+  @Override
+  protected void doSetUp() throws Exception {
+    super.doSetUp();
+    storedOwnerId = DEFAULT_RESOURCE_OWNER_ID + "-oauth";
+    wireMock.stubFor(post(urlPathMatching("/" + TOKEN_PATH)).willReturn(aResponse()
+                                                                        .withStatus(OK.getStatusCode())
+                                                                        .withBody(accessTokenContent())
+                                                                        .withHeader(CONTENT_TYPE, "application/json")));
+    objectStore = muleContext.getObjectStoreManager().createObjectStore(CUSTOM_STORE_NAME, unmanagedTransient());
   }
 
   @Test
-  public void authorizeAndStartDancingBaby() throws Exception {
-    simulateDanceStart();
-    verifyAuthUrlRequest();
-  }
-
-  @Test
-  public void receiveAccessTokenAndUserConnection() throws Exception {
-    simulateCallback();
-
+  public void executeProtectedOperation() throws Exception {
     TestOAuthConnectionState connection = ((TestOAuthConnection) flowRunner("getConnection")
-        .withVariable(OWNER_ID_VARIABLE_NAME, getCustomOwnerId())
         .run().getMessage().getPayload().getValue()).getState();
 
     assertConnectionState(connection);
-    assertExternalCallbackUrl(connection.getState());
 
-    assertOAuthStateStored(BASE_PERSISTENT_OBJECT_STORE_KEY, storedOwnerId, ownerId);
+    assertOAuthStateStored(CUSTOM_STORE_NAME, storedOwnerId, DEFAULT_RESOURCE_OWNER_ID);
+    assertOAuthStateStored(BASE_PERSISTENT_OBJECT_STORE_KEY, storedOwnerId, DEFAULT_RESOURCE_OWNER_ID);
   }
 
+  @Override
+  protected void assertOAuthState(TestOAuthConnectionState connection) {
+    ClientCredentialsState state = ((TestOAuthClientCredentialsProvider) connection).getClientCredentialsState();
+    assertThat(state.getAccessToken(), is(ACCESS_TOKEN));
+    assertThat(state.getExpiresIn().get(), is(EXPIRES_IN));
+
+  }
+                   /*
   @Test
   public void refreshToken() throws Exception {
     receiveAccessTokenAndUserConnection();
@@ -145,4 +151,6 @@ public class OAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
   protected void assertExternalCallbackUrl(AuthorizationCodeState state) {
     assertThat(state.getExternalCallbackUrl().isPresent(), is(false));
   }
+  
+                    */
 }
