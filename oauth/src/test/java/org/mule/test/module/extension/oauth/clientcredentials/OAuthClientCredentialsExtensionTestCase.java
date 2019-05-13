@@ -39,10 +39,6 @@ public class OAuthClientCredentialsExtensionTestCase extends BaseOAuthExtensionT
   }
 
   @Override
-  protected void doSetUpBeforeMuleContextCreation() throws Exception {
-  }
-
-  @Override
   protected void doSetUp() throws Exception {
     super.doSetUp();
     storedOwnerId = DEFAULT_RESOURCE_OWNER_ID + "-oauth";
@@ -78,6 +74,15 @@ public class OAuthClientCredentialsExtensionTestCase extends BaseOAuthExtensionT
     wireMock.verify(postRequestedFor(urlPathEqualTo("/" + TOKEN_PATH)));
     ResourceOwnerOAuthContext context = (ResourceOwnerOAuthContext) objectStore.retrieve(storedOwnerId);
     assertThat(context.getAccessToken(), equalTo(refreshedToken));
+  }
+
+  @Test
+  public void unauthorize() throws Exception {
+    executeProtectedOperation();
+
+    flowRunner("unauthorize").run();
+    ObjectStore objectStore = getObjectStore(CUSTOM_STORE_NAME);
+    assertThat(objectStore.contains(storedOwnerId), is(false));
   }
 
   @Override
