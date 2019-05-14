@@ -7,11 +7,11 @@
 package org.mule.test.module.extension.oauth.clientcredentials;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.extension.http.api.HttpHeaders.Names.CONTENT_TYPE;
@@ -27,6 +27,7 @@ import org.mule.test.oauth.TestOAuthConnectionState;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 
+import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 public class OAuthClientCredentialsExtensionTestCase extends BaseOAuthExtensionTestCase {
@@ -50,7 +51,7 @@ public class OAuthClientCredentialsExtensionTestCase extends BaseOAuthExtensionT
   }
 
   @Test
-  public void executeProtectedOperation() throws Exception {
+  public void authenticate() throws Exception {
     TestOAuthConnectionState connection = ((TestOAuthConnection) flowRunner("getConnection")
         .run().getMessage().getPayload().getValue()).getState();
 
@@ -61,7 +62,7 @@ public class OAuthClientCredentialsExtensionTestCase extends BaseOAuthExtensionT
 
   @Test
   public void refreshToken() throws Exception {
-    executeProtectedOperation();
+    authenticate();
     WireMock.reset();
 
     String refreshedToken = ACCESS_TOKEN + "-refreshed";
@@ -73,12 +74,12 @@ public class OAuthClientCredentialsExtensionTestCase extends BaseOAuthExtensionT
     flowRunner("refreshToken").run();
     wireMock.verify(postRequestedFor(urlPathEqualTo("/" + TOKEN_PATH)));
     ResourceOwnerOAuthContext context = (ResourceOwnerOAuthContext) objectStore.retrieve(storedOwnerId);
-    assertThat(context.getAccessToken(), equalTo(refreshedToken));
+    assertThat(context.getAccessToken(), CoreMatchers.equalTo(refreshedToken));
   }
 
   @Test
   public void unauthorize() throws Exception {
-    executeProtectedOperation();
+    authenticate();
 
     flowRunner("unauthorize").run();
     ObjectStore objectStore = getObjectStore(CUSTOM_STORE_NAME);
@@ -90,6 +91,27 @@ public class OAuthClientCredentialsExtensionTestCase extends BaseOAuthExtensionT
     ClientCredentialsState state = (ClientCredentialsState) connection.getState();
     assertThat(state.getAccessToken(), is(ACCESS_TOKEN));
     assertThat(state.getExpiresIn().get(), is(EXPIRES_IN));
+  }
 
+  @Test
+  public void authenticateWithCustomParameters() throws Exception {
+    WireMock.reset();
+    storedOwnerId = DEFAULT_RESOURCE_OWNER_ID + "-customParametersOAuth";
+    wireMock.stubFor(post(urlPathMatching("/" + TOKEN_PATH))
+                         .withHeader("foo", equalTo("bar"))
+                         .withHeader("foo", equalTo("manchu"))
+                         .withQueryParam("immediate", equalTo("true"))
+                         .withQueryParam("prompt", equalTo("false"))
+                         .withHeader("knownCustomHeader", equalTo("myHeader"))
+                         .willReturn(aResponse()
+                                         .withStatus(OK.getStatusCode())
+                                         .withBody(accessTokenContent())
+                                         .withHeader(CONTENT_TYPE, "application/json")));
+
+    TestOAuthConnectionState connection = ((TestOAuthConnection) flowRunner("getConnectionWithCustomParameters")
+        .run().getMessage().getPayload().getValue()).getState();
+
+    assertConnectionState(connection);
+    assertOAuthStateStored(CUSTOM_STORE_NAME, storedOwnerId, DEFAULT_RESOURCE_OWNER_ID);
   }
 }
