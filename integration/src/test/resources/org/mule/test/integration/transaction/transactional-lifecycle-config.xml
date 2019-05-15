@@ -11,7 +11,7 @@ http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/tes
         <try transactionalAction="BEGIN_OR_JOIN">
             <test:processor throwException="true"
                 exceptionToThrow="java.lang.RuntimeException" />
-            <error-handler>
+            <error-handler name="someErrorHandler">
                 <on-error-continue>
                     <flow-ref name="dlq-out"/>
                 </on-error-continue>
