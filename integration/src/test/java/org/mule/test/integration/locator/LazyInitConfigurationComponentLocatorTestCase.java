@@ -23,6 +23,7 @@ import static org.mule.runtime.config.api.SpringXmlConfigurationBuilderFactory.c
 import static org.mule.runtime.core.api.config.MuleProperties.OBJECT_SECURITY_MANAGER;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentLocatorStory.SEARCH_CONFIGURATION;
+
 import org.mule.extension.spring.api.SpringConfig;
 import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.artifact.Registry;
@@ -60,7 +61,7 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
   @Rule
   public DynamicPort listenPort = new DynamicPort("http.listener.port");
 
-  private static final int TOTAL_NUMBER_OF_LOCATIONS = 110;
+  private static final int TOTAL_NUMBER_OF_LOCATIONS = 111;
   @Inject
   private Registry registry;
 
@@ -92,6 +93,8 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
   @Description("Initialize same sub-flow twice, test component should not fail when disposing")
   @Test
   public void lazyMuleContextInitializeMultipleTimesSubFlowWithUntilSuccessful() {
+    CustomTestComponent.statesByInstances.clear();
+
     lazyComponentInitializer
         .initializeComponents(componentLocation -> componentLocation.getLocation().equals("untilSuccessfulFlow"));
     lazyComponentInitializer
@@ -138,6 +141,7 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
                                   "globalErrorHandler",
                                   "globalErrorHandler/0",
                                   "globalErrorHandler/0/processors/0",
+                                  "globalErrorHandler/0/processors/1",
                                   "flowFailing",
                                   "flowFailing/processors/0",
 
@@ -436,10 +440,26 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
   }
 
   @Test
-  public void globalMuleConfigurationDefaultResponseTimeout() throws Exception {
+  public void globalMuleConfigurationDefaultResponseTimeout() {
+    CustomTestComponent.statesByInstances.clear();
+
+    // A configuration can be retrieved but will have the values set from the DSL, instead default values
     MuleConfiguration configuration = registry.lookupByType(MuleConfiguration.class)
-        .orElseThrow(() -> new AssertionError("Missing MuleConfiguration from registry"));
+            .orElseThrow(() -> new AssertionError("Missing MuleConfiguration from registry"));
+    assertThat(configuration.getDefaultResponseTimeout(), is(10000));
+    assertThat(CustomTestComponent.statesByInstances.size(), is(0));
+
+    // Configuration and its dependent components are initialized at this point...
+    lazyComponentInitializer.initializeComponent(builder().globalName("flowFailing").build());
+    configuration = registry.lookupByType(MuleConfiguration.class)
+            .orElseThrow(() -> new AssertionError("Missing MuleConfiguration from registry"));
     assertThat(configuration.getDefaultResponseTimeout(), is(2001));
+
+    // force dispose to check that components from sub-flow are disposed
+    muleContext.dispose();
+    assertThat(CustomTestComponent.statesByInstances.size(), is(1));
+    assertThat(CustomTestComponent.statesByInstances.values(),
+               containsInAnyOrder("initialized_stopped_disposed"));
   }
 
   @Description("Search for sub-flows components")
