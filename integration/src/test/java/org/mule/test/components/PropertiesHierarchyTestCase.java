@@ -40,6 +40,7 @@ public class PropertiesHierarchyTestCase extends AbstractIntegrationTestCase {
   private static final String GLOBAL_PLUS_APP_PLUS_SYSTEM = "Global - App - System";
   private static final String APP_PLUS_GLOBAL = "App - Global";
   private static final String APP_PLUS_SYSTEM = "App - System";
+  private static final String APP_PLUS_SYSTEM_VS_GLOBAL = "App - System wins";
   private static final String SYSTEM_PLUS_APP = "System - App";
   private static final String SYSTEM_PLUS_GLOBAL = "System - Global";
   private static final String DEPLOYMENT_VS_SYSTEM = "deploymentVsSystem";
@@ -55,6 +56,7 @@ public class PropertiesHierarchyTestCase extends AbstractIntegrationTestCase {
   private static final String SYSTEM_DEP_APP = "systemDepApp";
   private static final String SYSTEM_DEP_GLOBAL = "systemDepGlobal";
   private static final String GLOBAL_DEP_APP_DEP_SYSTEM = "globalDepAppDepSystem";
+  private static final String APP_WITH_OVERRIDED_DEPENDENCY = "appDepOverriden";
 
   @Inject
   private ConfigurationProperties configurationProperties;
@@ -172,6 +174,12 @@ public class PropertiesHierarchyTestCase extends AbstractIntegrationTestCase {
   public void globalPropertyDependsOnAppPropertyWhichDependsOnSystemProperty() {
     assertThat(configurationProperties.resolveStringProperty(GLOBAL_DEP_APP_DEP_SYSTEM).isPresent(), is(true));
     assertThat(configurationProperties.resolveStringProperty(GLOBAL_DEP_APP_DEP_SYSTEM).get(), is(GLOBAL_PLUS_APP_PLUS_SYSTEM));
+  }
+
+  @Test
+  public void applicationPropertyCanDependOnPropertyWithOverridenValue() {
+    assertThat(configurationProperties.resolveStringProperty(APP_WITH_OVERRIDED_DEPENDENCY).isPresent(), is(true));
+    assertThat(configurationProperties.resolveStringProperty(APP_WITH_OVERRIDED_DEPENDENCY).get(), is(APP_PLUS_SYSTEM_VS_GLOBAL));
   }
 
 }
