@@ -154,6 +154,7 @@ public class ConfigurationComponentLocatorTestCase extends AbstractIntegrationTe
                                                      "globalErrorHandler",
                                                      "globalErrorHandler/0",
                                                      "globalErrorHandler/0/processors/0",
+                                                     "globalErrorHandler/0/processors/1",
                                                      "fileListWithMatcherReference",
                                                      "fileListWithMatcherReference/source",
                                                      "fileListWithMatcherReference/processors/0",
