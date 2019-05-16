@@ -445,14 +445,14 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
 
     // A configuration can be retrieved but will have the values set from the DSL, instead default values
     MuleConfiguration configuration = registry.lookupByType(MuleConfiguration.class)
-            .orElseThrow(() -> new AssertionError("Missing MuleConfiguration from registry"));
+        .orElseThrow(() -> new AssertionError("Missing MuleConfiguration from registry"));
     assertThat(configuration.getDefaultResponseTimeout(), is(10000));
     assertThat(CustomTestComponent.statesByInstances.size(), is(0));
 
     // Configuration and its dependent components are initialized at this point...
     lazyComponentInitializer.initializeComponent(builder().globalName("flowFailing").build());
     configuration = registry.lookupByType(MuleConfiguration.class)
-            .orElseThrow(() -> new AssertionError("Missing MuleConfiguration from registry"));
+        .orElseThrow(() -> new AssertionError("Missing MuleConfiguration from registry"));
     assertThat(configuration.getDefaultResponseTimeout(), is(2001));
 
     // force dispose to check that components from sub-flow are disposed
