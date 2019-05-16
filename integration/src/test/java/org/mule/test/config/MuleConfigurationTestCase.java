@@ -7,6 +7,8 @@
 package org.mule.test.config;
 
 import static java.util.Arrays.asList;
+import static java.util.Optional.empty;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -17,7 +19,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mule.runtime.core.api.config.MuleProperties.SYSTEM_PROPERTY_PREFIX;
 import static org.mule.runtime.core.api.config.bootstrap.ArtifactType.APP;
-import static java.util.Optional.empty;
+
 import org.mule.runtime.api.cluster.ClusterService;
 import org.mule.runtime.api.component.ConfigurationProperties;
 import org.mule.runtime.core.api.MuleContext;
@@ -170,6 +172,29 @@ public class MuleConfigurationTestCase extends AbstractMuleTestCase {
     assertFalse(workingDirectory.equals(config.getWorkingDirectory()));
     assertFalse("MY_SERVER".equals(config.getId()));
     assertFalse("MY_DOMAIN".equals(config.getDomainId()));
+  }
+
+  @Test
+  public void testConfigureAfterInitOrStartWhenLazyInitIsEnabled() throws Exception {
+    muleContext = new DefaultMuleContextFactory()
+        .createMuleContext(testServicesConfigurationBuilder, new DefaultsConfigurationBuilder());
+
+    DefaultMuleConfiguration mutableConfig = ((DefaultMuleConfiguration) muleContext.getConfiguration());
+
+    // Lazy Init will allow to change those fields that cannot be changed after MuleContext is initialized or started
+    mutableConfig.setLazyInit(true);
+
+    mutableConfig.setDefaultEncoding("UTF-8");
+    mutableConfig.setDefaultResponseTimeout(1);
+    assertThat("UTF-8", equalTo(mutableConfig.getDefaultEncoding()));
+    assertThat(1, equalTo(mutableConfig.getDefaultResponseTimeout()));
+
+    muleContext.start();
+    mutableConfig.setDefaultEncoding("ISO_8859_1");
+    mutableConfig.setDefaultResponseTimeout(3);
+
+    assertThat("ISO_8859_1", equalTo(mutableConfig.getDefaultEncoding()));
+    assertThat(3, equalTo(mutableConfig.getDefaultResponseTimeout()));
   }
 
   /** Test for MULE-3110 */
