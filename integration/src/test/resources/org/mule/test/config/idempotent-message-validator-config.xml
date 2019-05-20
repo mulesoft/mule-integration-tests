@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+      xmlns:os="http://www.mulesoft.org/schema/mule/os"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+                          http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd">
 
-    <object name="objectStore" class="org.mule.test.config.IdempotentMessageValidatorNamespaceHandlerTestCase$CustomObjectStore">
-        <property key="customProperty" value="the-value:customObjectStore"/>
-    </object>
+    <os:object-store name="${customObjectStore}" persistent="false"/>
 
-    <flow name="customObjectStore">
-        <idempotent-message-validator objectStore="objectStore"/>
+    <flow name="customObjectStoreFlow">
+        <idempotent-message-validator objectStore="${customObjectStore}"/>
     </flow>
 
  </mule>
