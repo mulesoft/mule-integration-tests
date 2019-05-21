@@ -130,7 +130,7 @@ public class AsyncTestCase extends AbstractIntegrationTestCase {
         (Startable) (locator.find(Location.builderFromStringRepresentation("with-source-tx").build())).get();
     withSourceTx.start();
 
-    assertThat(queueHandler.read("asyncDispatched", 1000), not(nullValue()));
+    assertThat(queueHandler.read("asyncDispatched", RECEIVE_TIMEOUT), not(nullValue()));
     assertThat(queueHandler.read("asyncRunning", 1000), not(nullValue()));
   }
 
