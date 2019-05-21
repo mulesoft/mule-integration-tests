@@ -15,17 +15,19 @@ import static org.mule.test.allure.AllureConstants.RoutersFeature.AsyncStory.ASY
 
 import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.functional.api.flow.FlowRunner;
+import org.mule.runtime.api.component.location.Location;
+import org.mule.runtime.api.lifecycle.Startable;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.privileged.event.BaseEventContext;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import java.util.concurrent.CountDownLatch;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-
-import java.util.concurrent.CountDownLatch;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
@@ -92,6 +94,41 @@ public class AsyncTestCase extends AbstractIntegrationTestCase {
     for (int i = 0; i < MAX_CONCURRENCY + 1; ++i) {
       assertThat("" + i, queueHandler.read("asyncDispatched", 1000), not(nullValue()));
     }
+    latch.countDown();
+  }
+
+  @Test
+  @Description("Assert that async blocks run outside of the transaction from the caller flow")
+  public void withSourceTx() throws Exception {
+    terminationLatch = new CountDownLatch(0);
+
+    final Startable withSourceTx =
+        (Startable) (locator.find(Location.builderFromStringRepresentation("with-source-tx").build())).get();
+    withSourceTx.start();
+
+    assertThat(queueHandler.read("asyncDispatched", RECEIVE_TIMEOUT), not(nullValue()));
+    assertThat(queueHandler.read("asyncRunning", 1000), not(nullValue()));
+  }
+
+  @Test
+  @Description("Assert that async blocks run outside of the transaction from the `try` in the caller flow")
+  public void withTryTx() throws Exception {
+    CountDownLatch latch = new CountDownLatch(1);
+    runFlows("with-try-tx", latch);
+
+    assertThat(queueHandler.read("asyncDispatched", 1000), not(nullValue()));
+    assertThat(queueHandler.read("asyncRunning", 1000), not(nullValue()));
+    latch.countDown();
+  }
+
+  @Test
+  @Description("Assert that txs within async blocks are honored")
+  public void txWithinAsync() throws Exception {
+    CountDownLatch latch = new CountDownLatch(1);
+    runFlows("tx-within-async", latch);
+
+    assertThat(queueHandler.read("asyncDispatched", 1000), not(nullValue()));
+    assertThat(queueHandler.read("asyncRunning", 1000), not(nullValue()));
     latch.countDown();
   }
 
