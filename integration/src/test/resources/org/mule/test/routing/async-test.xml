@@ -2,9 +2,11 @@
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xmlns:tx="http://www.mulesoft.org/schema/mule/tx"
       xmlns:script="http://www.mulesoft.org/schema/mule/scripting"
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
                http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
+               http://www.mulesoft.org/schema/mule/tx http://www.mulesoft.org/schema/mule/tx/current/mule-tx.xsd
                http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
 
     <flow name="ps-threading-propagated" initialState="stopped">
@@ -77,5 +79,76 @@
         </async>
         <test:queue name="asyncDispatched"/>
     </sub-flow>
+
+    <tx:config name="localTx">
+        <tx:connection>
+            <pooling-profile maxActive="1" exhaustedAction="WHEN_EXHAUSTED_WAIT"/>
+        </tx:connection>
+    </tx:config>
+
+    <flow name="with-source-tx" initialState="stopped">
+        <tx:transactional-source config-ref="localTx" transactionalAction="ALWAYS_BEGIN"/>
+
+        <script:execute engine="groovy" target="latch">
+            <script:code>
+                new java.util.concurrent.CountDownLatch(1)
+            </script:code>
+        </script:execute>
+    
+        <logger message="Before async... (#[payload])" />
+        <async maxConcurrency="${maxConcurrency}">
+            <logger message="In async... (#[payload])" />
+            <test:assert expression="#[! java!org::mule::runtime::core::api::transaction::TransactionCoordination::isTransactionActive()]"/>
+            <test:queue name="asyncRunning"/>
+            <script:execute engine="groovy">
+                <script:code>
+                    vars['latch'].await()
+                </script:code>
+            </script:execute>
+        </async>
+        <script:execute engine="groovy">
+            <script:code>
+                vars['latch'].countDown()
+            </script:code>
+        </script:execute>
+        <test:queue name="asyncDispatched"/>
+    </flow>
+    
+    <flow name="with-try-tx" initialState="stopped">
+        <logger message="Before try... (#[payload])" />
+        <try transactionalAction="ALWAYS_BEGIN">
+            <logger message="Before async... (#[payload])" />
+            <async maxConcurrency="${maxConcurrency}">
+                <logger message="In async... (#[payload])" />
+                <test:assert expression="#[! java!org::mule::runtime::core::api::transaction::TransactionCoordination::isTransactionActive()]"/>
+                <test:queue name="asyncRunning"/>
+                <script:execute engine="groovy">
+                    <script:code>
+                        vars['latch'].await()
+                    </script:code>
+                </script:execute>
+            </async>
+        </try>
+        <test:queue name="asyncDispatched"/>
+    </flow>
+    
+    <flow name="tx-within-async" initialState="stopped">
+        <logger message="Before async... (#[payload])" />
+        <async maxConcurrency="${maxConcurrency}">
+            <logger message="In async... (#[payload])" />
+            <test:assert expression="#[! java!org::mule::runtime::core::api::transaction::TransactionCoordination::isTransactionActive()]"/>
+            <logger message="Before try... (#[payload])" />
+            <try transactionalAction="ALWAYS_BEGIN">
+                <test:assert expression="#[java!org::mule::runtime::core::api::transaction::TransactionCoordination::isTransactionActive()]"/>
+                <test:queue name="asyncRunning"/>
+                <script:execute engine="groovy">
+                    <script:code>
+                        vars['latch'].await()
+                    </script:code>
+                </script:execute>
+            </try>
+        </async>
+        <test:queue name="asyncDispatched"/>
+    </flow>
     
 </mule>
