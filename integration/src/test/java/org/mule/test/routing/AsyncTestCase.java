@@ -135,7 +135,7 @@ public class AsyncTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  @Description("Assert that async blocks run outside of the transaction from the caller flow")
+  @Description("Assert that async blocks run outside of the transaction from the `try` in the caller flow")
   public void withTryTx() throws Exception {
     CountDownLatch latch = new CountDownLatch(1);
     runFlows("with-try-tx", latch);

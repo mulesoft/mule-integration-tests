@@ -95,9 +95,7 @@
             </script:code>
         </script:execute>
     
-        <logger message="Before async... (#[payload])" />
         <async maxConcurrency="${maxConcurrency}">
-            <logger message="In async... (#[payload])" />
             <test:assert expression="#[! java!org::mule::runtime::core::api::transaction::TransactionCoordination::isTransactionActive()]"/>
             <test:queue name="asyncRunning"/>
             <script:execute engine="groovy">
@@ -115,11 +113,8 @@
     </flow>
     
     <flow name="with-try-tx" initialState="stopped">
-        <logger message="Before try... (#[payload])" />
         <try transactionalAction="ALWAYS_BEGIN">
-            <logger message="Before async... (#[payload])" />
             <async maxConcurrency="${maxConcurrency}">
-                <logger message="In async... (#[payload])" />
                 <test:assert expression="#[! java!org::mule::runtime::core::api::transaction::TransactionCoordination::isTransactionActive()]"/>
                 <test:queue name="asyncRunning"/>
                 <script:execute engine="groovy">
@@ -133,11 +128,8 @@
     </flow>
     
     <flow name="tx-within-async" initialState="stopped">
-        <logger message="Before async... (#[payload])" />
         <async maxConcurrency="${maxConcurrency}">
-            <logger message="In async... (#[payload])" />
             <test:assert expression="#[! java!org::mule::runtime::core::api::transaction::TransactionCoordination::isTransactionActive()]"/>
-            <logger message="Before try... (#[payload])" />
             <try transactionalAction="ALWAYS_BEGIN">
                 <test:assert expression="#[java!org::mule::runtime::core::api::transaction::TransactionCoordination::isTransactionActive()]"/>
                 <test:queue name="asyncRunning"/>
