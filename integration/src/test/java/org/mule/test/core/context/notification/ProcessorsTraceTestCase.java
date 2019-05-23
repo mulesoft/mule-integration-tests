@@ -24,6 +24,13 @@ import org.mule.runtime.core.api.processor.Processor;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
@@ -31,13 +38,6 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 public class ProcessorsTraceTestCase extends AbstractIntegrationTestCase {
 
@@ -128,8 +128,9 @@ public class ProcessorsTraceTestCase extends AbstractIntegrationTestCase {
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert, not(nullValue()));
 
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert,
-               hasExecutedProcessors("secondFlowStatic/processors/0", "flow/processors/0", "secondFlowStatic/processors/1",
-                                     "flow/processors/0"));
+               hasExecutedProcessors("secondFlowStatic/processors/0",
+                                     "flow/processors/0",
+                                     "secondFlowStatic/processors/1"));
   }
 
   @Test
@@ -141,8 +142,7 @@ public class ProcessorsTraceTestCase extends AbstractIntegrationTestCase {
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert,
                hasExecutedProcessors("secondSubFlowStatic/processors/0",
                                      "subFlow/processors/0",
-                                     "secondSubFlowStatic/processors/1",
-                                     "subFlow/processors/0"));
+                                     "secondSubFlowStatic/processors/1"));
   }
 
   @Test
@@ -152,8 +152,9 @@ public class ProcessorsTraceTestCase extends AbstractIntegrationTestCase {
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert, not(nullValue()));
 
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert,
-               hasExecutedProcessors("secondFlowDynamic/processors/0", "flow/processors/0", "secondFlowDynamic/processors/1",
-                                     "flow/processors/0"));
+               hasExecutedProcessors("secondFlowDynamic/processors/0",
+                                     "flow/processors/0",
+                                     "secondFlowDynamic/processors/1"));
   }
 
   @Test
@@ -165,8 +166,7 @@ public class ProcessorsTraceTestCase extends AbstractIntegrationTestCase {
     assertThat(ProcessorsTraceAsserter.processorsTraceToAssert,
                hasExecutedProcessors("secondSubFlowDynamic/processors/0",
                                      "subFlow/processors/0",
-                                     "secondSubFlowDynamic/processors/1",
-                                     "subFlow/processors/0"));
+                                     "secondSubFlowDynamic/processors/1"));
   }
 
   @Test
