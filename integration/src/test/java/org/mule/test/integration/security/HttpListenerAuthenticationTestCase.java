@@ -14,16 +14,19 @@ import static org.mule.runtime.core.api.util.IOUtils.closeQuietly;
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.OK;
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.UNAUTHORIZED;
+import static org.mule.runtime.http.api.HttpHeaders.Names.AUTHORIZATION;
 import static org.mule.runtime.http.api.HttpHeaders.Names.WWW_AUTHENTICATE;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
 import static org.mule.test.http.functional.matcher.HttpResponseReasonPhraseMatcher.hasReasonPhrase;
 import static org.mule.test.http.functional.matcher.HttpResponseStatusCodeMatcher.hasStatusCode;
-
 import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import java.io.IOException;
+
+import io.qameta.allure.Feature;
 import org.apache.http.Header;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -36,10 +39,6 @@ import org.apache.http.impl.client.HttpClients;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
-
-import java.io.IOException;
-
-import io.qameta.allure.Feature;
 
 @Feature(HTTP_EXTENSION)
 public class HttpListenerAuthenticationTestCase extends AbstractIntegrationTestCase {
@@ -72,10 +71,7 @@ public class HttpListenerAuthenticationTestCase extends AbstractIntegrationTestC
     CredentialsProvider credsProvider = getCredentialsProvider(VALID_USER, INVALID_PASSWORD);
     getHttpResponse(credsProvider);
 
-    assertThat(httpResponse.getStatusLine().getStatusCode(), is(UNAUTHORIZED.getStatusCode()));
-    Header authHeader = httpResponse.getFirstHeader(WWW_AUTHENTICATE);
-    assertThat(authHeader, is(notNullValue()));
-    assertThat(authHeader.getValue(), is(BASIC_REALM_MULE_REALM));
+    assertUnauthorised();
     TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
     assertThat(queueHandler.read("basicAuthentication", RECEIVE_TIMEOUT).getMessage(), is(notNullValue()));
   }
@@ -98,6 +94,26 @@ public class HttpListenerAuthenticationTestCase extends AbstractIntegrationTestC
     assertThat(httpResponse, hasReasonPhrase(INTERNAL_SERVER_ERROR.getReasonPhrase()));
     TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
     assertThat(queueHandler.read("basicAuthentication", RECEIVE_TIMEOUT).getMessage(), is(notNullValue()));
+  }
+
+  @Test
+  public void extendedEncodedHeader() throws Exception {
+    HttpPost httpPost = new HttpPost(format("http://localhost:%s/basic?provider=%s", listenPort.getNumber(), "memory-provider"));
+    httpPost.addHeader(AUTHORIZATION, "Basic dXNlcjpwYXNzd29yZA==PEPE");
+    httpClient = HttpClients.createDefault();
+    httpResponse = httpClient.execute(httpPost);
+    assertResultForExtendedHeader();
+  }
+
+  protected void assertResultForExtendedHeader() {
+    assertUnauthorised();
+  }
+
+  protected void assertUnauthorised() {
+    assertThat(httpResponse.getStatusLine().getStatusCode(), is(UNAUTHORIZED.getStatusCode()));
+    Header authHeader = httpResponse.getFirstHeader(WWW_AUTHENTICATE);
+    assertThat(authHeader, is(notNullValue()));
+    assertThat(authHeader.getValue(), is(BASIC_REALM_MULE_REALM));
   }
 
   private void getHttpResponse(CredentialsProvider credsProvider) throws IOException {
