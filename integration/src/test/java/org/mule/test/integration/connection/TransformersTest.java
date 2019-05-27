@@ -1,0 +1,48 @@
+package org.mule.test.integration.connection;
+
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.fluent.Request;
+import org.junit.rules.ExpectedException;
+import org.junit.Rule;
+import org.junit.Test;
+import org.mule.runtime.core.api.util.IOUtils;
+import org.mule.runtime.http.api.HttpService;
+import org.mule.service.http.TestHttpClient;
+import org.mule.tck.junit4.rule.DynamicPort;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsEqual.equalTo;
+
+public class TransformersTest extends LazyConnectionsTestCase {
+
+    @Rule
+    public DynamicPort port = new DynamicPort("port");
+
+
+    @Rule
+    public DynamicPort port2 = new DynamicPort("port2");
+
+
+    @Rule
+    public TestHttpClient httpClient = new TestHttpClient.Builder(getService(HttpService.class)).build();
+
+    @Override
+    protected String getConfigFile() { return "transformer-test-config.xml";}
+
+    //@Rule
+    //public ExpectedException exceptionGrabber = ExpectedException.none();
+
+
+    @Test
+    public void iteratorToByteArrayTransformerThrowsException() throws Exception {
+        HttpResponse response = Request.Post(getUrl("test/listener")).execute().returnResponse();
+        System.out.println(IOUtils.toString(response.getEntity().getContent()));
+        assertThat(response.getStatusLine().getStatusCode(), equalTo(500));
+    }
+
+    private String getUrl(String path) {
+        return String.format("http://localhost:%s/%s", port.getNumber(), path);
+    }
+
+}

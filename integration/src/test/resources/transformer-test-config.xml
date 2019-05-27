@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:db="http://www.mulesoft.org/schema/mule/db"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xsi:schemaLocation="
+        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+        http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+
+    <http:listener-config name="listenerConfig"  basePath="test">
+        <http:listener-connection host="localhost" port="${port}"/>
+    </http:listener-config>
+
+    <http:request-config name="requesterConfig">
+        <http:request-connection host="localhost" port="${port2}"/>
+    </http:request-config>
+
+    <db:config name="Database_Config" >
+        <db:my-sql-connection host="localhost" port="3036" user="test" password="test" database="fake_db" />
+    </db:config>
+
+    <db:config name="config">
+        <db:derby-connection database="test" subsubProtocol="memory" create="true" />
+    </db:config>
+
+    <flow name="listenerIteratorToByteArrayTransformerUnsupportedFlow">
+        <http:listener config-ref="listenerConfig" path="/listener">
+        </http:listener>
+        <db:select config-ref="config">
+            <db:sql>select * from sys.syscolumns</db:sql>
+        </db:select>
+    </flow>
+
+
+</mule>
+
