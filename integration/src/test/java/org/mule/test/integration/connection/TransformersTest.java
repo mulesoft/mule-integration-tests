@@ -3,7 +3,6 @@ package org.mule.test.integration.connection;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.fluent.Request;
-import org.junit.rules.ExpectedException;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mule.runtime.core.api.util.IOUtils;
@@ -29,10 +28,6 @@ public class TransformersTest extends LazyConnectionsTestCase {
 
     @Override
     protected String getConfigFile() { return "transformer-test-config.xml";}
-
-    //@Rule
-    //public ExpectedException exceptionGrabber = ExpectedException.none();
-
 
     @Test
     public void iteratorToByteArrayTransformerThrowsException() throws Exception {
