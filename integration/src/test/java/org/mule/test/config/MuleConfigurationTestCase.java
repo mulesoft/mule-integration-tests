@@ -17,9 +17,17 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mule.runtime.core.api.config.MuleProperties.OBJECT_CLUSTER_SERVICE;
 import static org.mule.runtime.core.api.config.MuleProperties.SYSTEM_PROPERTY_PREFIX;
 import static org.mule.runtime.core.api.config.bootstrap.ArtifactType.APP;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.mule.runtime.api.cluster.ClusterService;
 import org.mule.runtime.api.component.ConfigurationProperties;
 import org.mule.runtime.core.api.MuleContext;
@@ -31,14 +39,6 @@ import org.mule.runtime.core.internal.config.builders.DefaultsConfigurationBuild
 import org.mule.tck.config.TestServicesConfigurationBuilder;
 import org.mule.tck.junit4.AbstractMuleTestCase;
 import org.mule.tck.size.SmallTest;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
 
 @SmallTest
 @RunWith(MockitoJUnitRunner.class)
@@ -63,7 +63,7 @@ public class MuleConfigurationTestCase extends AbstractMuleTestCase {
     when(mockedConfigurationProperties.resolveStringProperty(anyString())).thenReturn(empty());
     when(mockedConfigurationProperties.resolveBooleanProperty(anyString())).thenReturn(empty());
     when(mockedConfigurationProperties.resolveProperty(anyString())).thenReturn(empty());
-    testServicesConfigurationBuilder.registerAdditionalService("mockedClusterService", mockedClusterService);
+    testServicesConfigurationBuilder.registerOverriddenService(OBJECT_CLUSTER_SERVICE, mockedClusterService);
     testServicesConfigurationBuilder.registerAdditionalService("mockedConfigurationProperties", mockedConfigurationProperties);
   }
 
