@@ -19,15 +19,10 @@ import org.mule.tck.junit4.rule.DynamicPort;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 
-public class TransformersTest extends LazyConnectionsTestCase {
+public class AttemptToSendIteratorThroughHttpResponseFailTest extends LazyConnectionsTestCase {
 
   @Rule
   public DynamicPort port = new DynamicPort("port");
-
-
-  @Rule
-  public DynamicPort port2 = new DynamicPort("port2");
-
 
   @Rule
   public TestHttpClient httpClient = new TestHttpClient.Builder(getService(HttpService.class)).build();

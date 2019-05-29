@@ -12,14 +12,6 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
         <http:listener-connection host="localhost" port="${port}"/>
     </http:listener-config>
 
-    <http:request-config name="requesterConfig">
-        <http:request-connection host="localhost" port="${port2}"/>
-    </http:request-config>
-
-    <db:config name="Database_Config" >
-        <db:my-sql-connection host="localhost" port="3036" user="test" password="test" database="fake_db" />
-    </db:config>
-
     <db:config name="config">
         <db:derby-connection database="test" subsubProtocol="memory" create="true" />
     </db:config>
@@ -31,7 +23,5 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
             <db:sql>select * from sys.syscolumns</db:sql>
         </db:select>
     </flow>
-
-
 </mule>
 
