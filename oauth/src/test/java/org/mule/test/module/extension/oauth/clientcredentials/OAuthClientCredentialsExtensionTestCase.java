@@ -44,9 +44,9 @@ public class OAuthClientCredentialsExtensionTestCase extends BaseOAuthExtensionT
     super.doSetUp();
     storedOwnerId = DEFAULT_RESOURCE_OWNER_ID + "-oauth";
     wireMock.stubFor(post(urlPathMatching("/" + TOKEN_PATH)).willReturn(aResponse()
-                                                                            .withStatus(OK.getStatusCode())
-                                                                            .withBody(accessTokenContent())
-                                                                            .withHeader(CONTENT_TYPE, "application/json")));
+        .withStatus(OK.getStatusCode())
+        .withBody(accessTokenContent())
+        .withHeader(CONTENT_TYPE, "application/json")));
     objectStore = muleContext.getObjectStoreManager().createObjectStore(CUSTOM_STORE_NAME, unmanagedTransient());
   }
 
@@ -67,9 +67,9 @@ public class OAuthClientCredentialsExtensionTestCase extends BaseOAuthExtensionT
 
     String refreshedToken = ACCESS_TOKEN + "-refreshed";
     wireMock.stubFor(post(urlPathMatching("/" + TOKEN_PATH)).willReturn(aResponse()
-                                                                            .withStatus(OK.getStatusCode())
-                                                                            .withBody(accessTokenContent(refreshedToken))
-                                                                            .withHeader(CONTENT_TYPE, "application/json")));
+        .withStatus(OK.getStatusCode())
+        .withBody(accessTokenContent(refreshedToken))
+        .withHeader(CONTENT_TYPE, "application/json")));
 
     flowRunner("refreshToken").run();
     wireMock.verify(postRequestedFor(urlPathEqualTo("/" + TOKEN_PATH)));
@@ -98,15 +98,15 @@ public class OAuthClientCredentialsExtensionTestCase extends BaseOAuthExtensionT
     WireMock.reset();
     storedOwnerId = DEFAULT_RESOURCE_OWNER_ID + "-customParametersOAuth";
     wireMock.stubFor(post(urlPathMatching("/" + TOKEN_PATH))
-                         .withHeader("foo", equalTo("bar"))
-                         .withHeader("foo", equalTo("manchu"))
-                         .withQueryParam("immediate", equalTo("true"))
-                         .withQueryParam("prompt", equalTo("false"))
-                         .withHeader("knownCustomHeader", equalTo("myHeader"))
-                         .willReturn(aResponse()
-                                         .withStatus(OK.getStatusCode())
-                                         .withBody(accessTokenContent())
-                                         .withHeader(CONTENT_TYPE, "application/json")));
+        .withHeader("foo", equalTo("bar"))
+        .withHeader("foo", equalTo("manchu"))
+        .withQueryParam("immediate", equalTo("true"))
+        .withQueryParam("prompt", equalTo("false"))
+        .withHeader("knownCustomHeader", equalTo("myHeader"))
+        .willReturn(aResponse()
+            .withStatus(OK.getStatusCode())
+            .withBody(accessTokenContent())
+            .withHeader(CONTENT_TYPE, "application/json")));
 
     TestOAuthConnectionState connection = ((TestOAuthConnection) flowRunner("getConnectionWithCustomParameters")
         .run().getMessage().getPayload().getValue()).getState();
