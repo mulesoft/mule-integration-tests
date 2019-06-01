@@ -4,7 +4,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.test.module.extension.oauth;
+package org.mule.test.module.extension.oauth.authcode;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
@@ -15,17 +15,18 @@ import static org.mule.runtime.api.store.ObjectStoreManager.BASE_PERSISTENT_OBJE
 import static org.mule.runtime.module.extension.api.util.MuleExtensionUtils.getInitialiserEvent;
 import static org.mule.tck.probe.PollingProber.check;
 import static org.mule.test.module.extension.internal.util.ExtensionsTestUtils.getConfigurationFromRegistry;
-
 import org.mule.runtime.api.store.ObjectStore;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.privileged.event.BaseEventContext;
 import org.mule.runtime.extension.api.connectivity.oauth.AuthCodeRequest;
 import org.mule.runtime.extension.api.connectivity.oauth.AuthorizationCodeState;
+import org.mule.test.module.extension.oauth.BaseOAuthExtensionTestCase;
+import org.mule.test.oauth.AuthCodeConfig;
 import org.mule.test.oauth.TestOAuthConnection;
 import org.mule.test.oauth.TestOAuthConnectionState;
-import org.mule.test.oauth.TestOAuthExtension;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -33,7 +34,7 @@ public class OAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
 
   @Override
   protected String[] getConfigFiles() {
-    return new String[] {"dynamic-oauth-extension-config.xml", "oauth-extension-flows.xml"};
+    return new String[] {"auth-code-oauth-extension-config.xml", "oauth-extension-flows.xml"};
   }
 
   @Before
@@ -57,7 +58,7 @@ public class OAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
         .run().getMessage().getPayload().getValue()).getState();
 
     assertConnectionState(connection);
-    assertExternalCallbackUrl(connection.getState());
+    assertExternalCallbackUrl((AuthorizationCodeState) connection.getState());
 
     assertOAuthStateStored(BASE_PERSISTENT_OBJECT_STORE_KEY, storedOwnerId, ownerId);
   }
@@ -79,7 +80,7 @@ public class OAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
     CoreEvent initialiserEvent = null;
     try {
       initialiserEvent = getInitialiserEvent(muleContext);
-      TestOAuthExtension config = getConfigurationFromRegistry("oauth", CoreEvent.builder(initialiserEvent)
+      AuthCodeConfig config = getConfigurationFromRegistry("oauth", CoreEvent.builder(initialiserEvent)
           .addVariable(OWNER_ID_VARIABLE_NAME, getCustomOwnerId())
           .build(), muleContext);
 
@@ -108,7 +109,7 @@ public class OAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
     assertThat(objectStore.contains(storedOwnerId), is(false));
   }
 
-  protected void assertBeforeCallbackPayload(TestOAuthExtension config) {
+  protected void assertBeforeCallbackPayload(AuthCodeConfig config) {
     AuthCodeRequest request = config.getCapturedAuthCodeRequests().get(0);
     assertThat(request.getResourceOwnerId(), is(ownerId));
     assertScopes(request);
@@ -120,7 +121,7 @@ public class OAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
     assertThat(request.getScopes().get(), is(SCOPES));
   }
 
-  private void assertAfterCallbackPayload(TestOAuthExtension config) {
+  private void assertAfterCallbackPayload(AuthCodeConfig config) {
     AuthorizationCodeState state = config.getCapturedAuthCodeStates().get(0);
     assertThat(state.getAccessToken(), is(ACCESS_TOKEN));
     assertThat(state.getRefreshToken().get(), is(REFRESH_TOKEN));
