@@ -4,16 +4,17 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.test.module.extension.oauth;
+package org.mule.test.module.extension.oauth.authcode;
 
 import static org.mule.runtime.api.store.ObjectStoreSettings.unmanagedTransient;
 import org.mule.runtime.api.store.ObjectStore;
+import org.mule.test.module.extension.oauth.BaseOAuthExtensionTestCase;
 
 import org.junit.Test;
 
 public class CustomStoreOAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
 
-  private static final String CUSTOM_STORE_NAME = "customStore";
+
   private ObjectStore objectStore;
 
   @Override

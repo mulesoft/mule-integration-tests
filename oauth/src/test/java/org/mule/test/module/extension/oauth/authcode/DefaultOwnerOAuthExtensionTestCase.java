@@ -4,7 +4,9 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.test.module.extension.oauth;
+package org.mule.test.module.extension.oauth.authcode;
+
+import org.mule.test.module.extension.oauth.BaseOAuthExtensionTestCase;
 
 import org.junit.Before;
 
@@ -17,8 +19,8 @@ public class DefaultOwnerOAuthExtensionTestCase extends OAuthExtensionTestCase {
 
   @Before
   public void setOwnerId() {
-    ownerId = DEFAULT_OWNER_ID;
-    storedOwnerId = DEFAULT_OWNER_ID + "-oauth";
+    ownerId = BaseOAuthExtensionTestCase.DEFAULT_OWNER_ID;
+    storedOwnerId = BaseOAuthExtensionTestCase.DEFAULT_OWNER_ID + "-oauth";
   }
 
   @Override
