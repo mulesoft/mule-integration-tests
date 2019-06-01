@@ -27,7 +27,6 @@ import static org.mule.service.oauth.internal.OAuthConstants.ACCESS_TOKEN_PARAME
 import static org.mule.service.oauth.internal.OAuthConstants.EXPIRES_IN_PARAMETER;
 import static org.mule.service.oauth.internal.OAuthConstants.REFRESH_TOKEN_PARAMETER;
 import static org.mule.tck.probe.PollingProber.check;
-
 import org.mule.runtime.api.store.ObjectStore;
 import org.mule.runtime.extension.api.connectivity.oauth.AuthorizationCodeState;
 import org.mule.runtime.oauth.api.state.ResourceOwnerOAuthContext;
@@ -36,11 +35,12 @@ import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.module.extension.AbstractExtensionFunctionalTestCase;
 import org.mule.test.oauth.TestOAuthConnectionState;
 
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.google.common.collect.ImmutableMap;
+
 import java.io.IOException;
 import java.util.Map;
 
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import com.google.common.collect.ImmutableMap;
 import org.apache.http.client.fluent.Response;
 import org.junit.Rule;
 
@@ -64,6 +64,7 @@ public abstract class BaseOAuthExtensionTestCase extends AbstractExtensionFuncti
   protected static final String EXPIRES_IN = "3897";
   protected static final String STATE_PARAMETER = "state";
   protected static final String CODE_PARAMETER = "code";
+  protected static final String CUSTOM_STORE_NAME = "customStore";
 
   @Rule
   public SystemProperty consumerKey = new SystemProperty("consumerKey", CONSUMER_KEY);
@@ -90,7 +91,9 @@ public abstract class BaseOAuthExtensionTestCase extends AbstractExtensionFuncti
   public SystemProperty oauthProvider = new SystemProperty("callbackPath", CALLBACK_PATH);
 
   @Rule
-  public WireMockRule wireMock = new WireMockRule(wireMockConfig().port(oauthServerPort.getNumber()));
+  public WireMockRule wireMock = new WireMockRule(wireMockConfig()
+                                                        .bindAddress("127.0.0.1")
+                                                        .port(oauthServerPort.getNumber()));
 
   protected String authUrl = toUrl(AUTHORIZE_PATH, oauthServerPort.getNumber());
 
@@ -99,6 +102,7 @@ public abstract class BaseOAuthExtensionTestCase extends AbstractExtensionFuncti
 
 
   protected String tokenUrl = toUrl(TOKEN_PATH, oauthServerPort.getNumber());
+
   @Rule
   public SystemProperty accessTokenUrl = new SystemProperty("accessTokenUrl", tokenUrl);
 
@@ -202,6 +206,20 @@ public abstract class BaseOAuthExtensionTestCase extends AbstractExtensionFuncti
   }
 
   protected void assertConnectionState(TestOAuthConnectionState connection) {
+    assertConnectionProperties(connection);
+    assertAuthCodeState(connection);
+  }
+
+  protected void assertAuthCodeState(TestOAuthConnectionState connection) {
+    AuthorizationCodeState state = (AuthorizationCodeState) connection.getState();
+    assertThat(state.getAccessToken(), is(ACCESS_TOKEN));
+    assertThat(state.getExpiresIn().get(), is(EXPIRES_IN));
+    assertThat(state.getRefreshToken().get(), is(REFRESH_TOKEN));
+    assertThat(state.getState().get(), is(STATE));
+    assertThat(state.getResourceOwnerId(), is(ownerId));
+  }
+
+  protected void assertConnectionProperties(TestOAuthConnectionState connection) {
     assertThat(connection, is(notNullValue()));
     assertThat(connection.getApiVersion(), is(34.0D));
     assertThat(connection.getDisplay(), is("PAGE"));
@@ -209,13 +227,6 @@ public abstract class BaseOAuthExtensionTestCase extends AbstractExtensionFuncti
     assertThat(connection.isImmediate(), is(true));
     assertThat(connection.getInstanceId(), is(INSTANCE_ID));
     assertThat(connection.getUserId(), is(USER_ID));
-
-    AuthorizationCodeState state = connection.getState();
-    assertThat(state.getAccessToken(), is(ACCESS_TOKEN));
-    assertThat(state.getExpiresIn().get(), is(EXPIRES_IN));
-    assertThat(state.getRefreshToken().get(), is(REFRESH_TOKEN));
-    assertThat(state.getState().get(), is(STATE));
-    assertThat(state.getResourceOwnerId(), is(ownerId));
   }
 
   protected String getCustomOwnerId() {
