@@ -15,7 +15,7 @@
         <http:listener-connection host="localhost" port="${otherCallbackPort}" />
     </http:listener-config>
 
-    <test-oauth:config name="oauth">
+    <test-oauth:auth-code-config name="oauth">
         <test-oauth:connection display="PAGE" immediate="true" prompt="false">
             <test-oauth:oauth-authorization-code consumerKey="${consumerKey}"
                                                  consumerSecret="${consumerSecret}"
@@ -27,9 +27,9 @@
                                               callbackPath="${callbackPath}"
                                               authorizePath="${localAuthPath}" />
         </test-oauth:connection>
-    </test-oauth:config>
+    </test-oauth:auth-code-config>
 
-    <test-oauth:config name="otherOauth">
+    <test-oauth:auth-code-config name="otherOauth">
         <test-oauth:connection display="PAGE" immediate="true" prompt="false">
             <test-oauth:oauth-authorization-code consumerKey="${consumerKey}"
                                                  consumerSecret="${consumerSecret}"
@@ -41,7 +41,7 @@
                                               callbackPath="${callbackPath}"
                                               authorizePath="${localAuthPath}" />
         </test-oauth:connection>
-    </test-oauth:config>
+    </test-oauth:auth-code-config>
 
     <flow name="getConnection">
         <test-oauth:get-connection config-ref="oauth"/>
