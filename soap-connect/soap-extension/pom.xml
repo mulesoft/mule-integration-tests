@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.mulesoft.mule.extensions</groupId>
         <artifactId>mule-modules-soap-parent</artifactId>
-        <version>1.2.1-SNAPSHOT</version>
+        <version>1.2.0</version>
     </parent>
 
     <name>Soap Connect Test Extension</name>
