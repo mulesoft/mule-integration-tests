@@ -132,6 +132,17 @@ public class AsyncTestCase extends AbstractIntegrationTestCase {
     latch.countDown();
   }
 
+  @Test
+  @Description("Assert that a combination of sub-flow, async, and try works as expected")
+  public void tryNoTxWithinAsyncSubFlow() throws Exception {
+    CountDownLatch latch = new CountDownLatch(1);
+    runFlows("tryNoTx-within-async-subFlow", latch);
+
+    assertThat(queueHandler.read("asyncDispatched", 1000), not(nullValue()));
+    assertThat(queueHandler.read("asyncRunning", 1000), not(nullValue()));
+    latch.countDown();
+  }
+
   private void testAsyncMaxConcurrency(String flowName) throws Exception {
     CountDownLatch latch = new CountDownLatch(1);
     runFlows(flowName, latch);

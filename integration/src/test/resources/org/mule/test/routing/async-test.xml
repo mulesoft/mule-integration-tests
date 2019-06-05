@@ -123,4 +123,25 @@
         <test:queue name="asyncDispatched"/>
     </flow>
     
+    <flow name="tryNoTx-within-async-subFlow" initialState="stopped">
+        <try transactionalAction="ALWAYS_BEGIN">
+            <flow-ref name="tryNoTx-within-async-subFlow_sub"/>
+        </try>
+    </flow>
+    <sub-flow name="tryNoTx-within-async-subFlow_sub">
+        <async>
+            <test:assert expression="#[not java!org::mule::runtime::core::api::transaction::TransactionCoordination::isTransactionActive()]"/>
+            <try>
+                <test:assert expression="#[not java!org::mule::runtime::core::api::transaction::TransactionCoordination::isTransactionActive()]"/>
+                <test:queue name="asyncRunning"/>
+                <script:execute engine="groovy">
+                    <script:code>
+                        vars['latch'].await()
+                    </script:code>
+                </script:execute>
+            </try>
+        </async>
+        <test:queue name="asyncDispatched"/>
+    </sub-flow>
+    
 </mule>
