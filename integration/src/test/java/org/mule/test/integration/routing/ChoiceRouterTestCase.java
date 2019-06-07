@@ -6,6 +6,7 @@
  */
 package org.mule.test.integration.routing;
 
+import static java.lang.Runtime.getRuntime;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -24,6 +25,8 @@ import org.junit.Test;
 @Story(CHOICE)
 public class ChoiceRouterTestCase extends AbstractIntegrationTestCase {
 
+  public static final int LOAD = getRuntime().availableProcessors() * 10;
+
   @Override
   protected String getConfigFile() {
     return "org/mule/test/integration/routing/choice-router-config.xml";
@@ -39,9 +42,30 @@ public class ChoiceRouterTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
+  public void defaultAndNoMatchingRoute() throws Exception {
+    Message result = flowRunner("otherwise").withPayload(TEST_PAYLOAD).run().getMessage();
+    assertThat(result.getPayload().getValue(), is(TEST_PAYLOAD));
+
+    assertThat(InvocationCountMessageProcessor.getNumberOfInvocationsFor("routeCounter"), is(0));
+    assertThat(InvocationCountMessageProcessor.getNumberOfInvocationsFor("otherwiseCounter"), is(1));
+    assertThat(InvocationCountMessageProcessor.getNumberOfInvocationsFor("afterCounter"), is(1));
+  }
+
+  @Test
   public void errorsWithinRouteArePropagated() throws Exception {
-    Message message = flowRunner("error-handler").withPayload(TEST_PAYLOAD).run().getMessage();
-    assertThat(message, hasPayload(equalTo("handled")));
+    assertMultipleErrors("error-handler");
+  }
+
+  @Test
+  public void errorsWithinRouteExpressionArePropagated() throws Exception {
+    assertMultipleErrors("expression");
+  }
+
+  private void assertMultipleErrors(String expression) throws Exception {
+    for (int i = 0; i < LOAD; i++) {
+      Message message = flowRunner(expression).withPayload(TEST_PAYLOAD).run().getMessage();
+      assertThat(message, hasPayload(equalTo("handled")));
+    }
   }
 
 }
