@@ -7,12 +7,14 @@
 package org.mule.test.integration.exceptions;
 
 import static java.lang.String.format;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mule.functional.junit4.matchers.MessageMatchers.hasPayload;
 import static org.mule.functional.junit4.matchers.ThrowableCauseMatcher.hasCause;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.INTERNAL_SERVER_ERROR;
@@ -20,7 +22,6 @@ import static org.mule.runtime.http.api.HttpConstants.Method.POST;
 import static org.mule.runtime.http.api.HttpConstants.Protocol.HTTP;
 import static org.mule.runtime.http.api.HttpConstants.Protocol.HTTPS;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
-
 import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.exception.DefaultMuleException;
@@ -46,7 +47,6 @@ import org.mule.runtime.http.api.domain.message.response.HttpResponse;
 import org.mule.service.http.TestHttpClient;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
-import org.mule.test.runner.RunnerDelegateTo;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -57,14 +57,13 @@ import javax.jws.WebParam;
 import javax.jws.WebResult;
 import javax.jws.WebService;
 
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
-import io.qameta.allure.Feature;
-import io.qameta.allure.Story;
 
 @Feature(ERROR_HANDLING)
 @Story("On Error Continue")
@@ -204,6 +203,14 @@ public class OnErrorContinueTestCase extends AbstractIntegrationTestCase {
     assertThat(response.getStatusCode(), is(INTERNAL_SERVER_ERROR.getStatusCode()));
     TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
     assertThat(queueHandler.read("out", RECEIVE_TIMEOUT), is(nullValue()));
+  }
+
+  @Test
+  public void handlesTryScope() throws Exception {
+    flowRunner("withTry").run();
+    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
+    assertThat(queueHandler.read("out1", RECEIVE_TIMEOUT).getMessage(), hasPayload(equalTo("flow")));
+    assertThat(queueHandler.read("out2", RECEIVE_TIMEOUT).getMessage(), hasPayload(equalTo("try")));
   }
 
   private String getUrl(Protocol protocol, DynamicPort port, String path) {

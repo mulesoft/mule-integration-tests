@@ -159,4 +159,23 @@
         </error-handler>
     </flow>
 
+    <flow name="withTry">
+        <set-payload value="flow"/>
+        <test:processor throwException="true"/>
+        <error-handler>
+            <on-error-continue>
+                <test:queue name="out1"/>
+                <try>
+                    <set-payload value="try"/>
+                    <test:processor throwException="true"/>
+                    <error-handler>
+                        <on-error-continue>
+                            <test:queue name="out2"/>
+                        </on-error-continue>
+                    </error-handler>
+                </try>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
 </mule>

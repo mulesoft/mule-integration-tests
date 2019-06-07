@@ -7,6 +7,7 @@
 package org.mule.test.integration.exceptions;
 
 import static java.lang.String.format;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -18,15 +19,13 @@ import static org.junit.Assert.fail;
 import static org.mule.functional.api.exception.ExpectedError.none;
 import static org.mule.functional.junit4.matchers.MessageMatchers.hasPayload;
 import static org.mule.functional.junit4.matchers.ThrowableCauseMatcher.hasCause;
+import static org.mule.runtime.api.metadata.MediaType.TEXT;
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.mule.runtime.http.api.HttpConstants.Method.POST;
 import static org.mule.tck.junit4.matcher.EventMatcher.hasMessage;
 import static org.mule.tck.junit4.matcher.EventMatcher.hasVariables;
 import static org.mule.tck.junit4.matcher.HasClassInHierarchy.withClassName;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.mule.runtime.api.metadata.MediaType.TEXT;
-
 import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.functional.api.exception.ExpectedError;
 import org.mule.functional.api.exception.FunctionalTestException;
@@ -46,14 +45,13 @@ import org.mule.service.http.TestHttpClient;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import org.hamcrest.Matcher;
-import org.junit.Rule;
-import org.junit.Test;
-
 import java.util.concurrent.TimeUnit;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
+import org.hamcrest.Matcher;
+import org.junit.Rule;
+import org.junit.Test;
 
 @Feature(ERROR_HANDLING)
 @Story("On Error Propagate")
@@ -135,6 +133,13 @@ public class OnErrorPropagateTestCase extends AbstractIntegrationTestCase {
 
     assertThat(response.getStatusCode(), is(INTERNAL_SERVER_ERROR.getStatusCode()));
     assertThat(queueHandler.read("out", RECEIVE_TIMEOUT).getMessage(), hasPayload(equalTo("Test Message hey")));
+  }
+
+  @Test
+  public void handlesTryScope() throws Exception {
+    verifyFlow("withTry");
+    assertThat(queueHandler.read("out1", RECEIVE_TIMEOUT).getMessage(), hasPayload(equalTo("flow")));
+    assertThat(queueHandler.read("out2", RECEIVE_TIMEOUT).getMessage(), hasPayload(equalTo("try")));
   }
 
   private String getUrl() {
