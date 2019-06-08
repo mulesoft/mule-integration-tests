@@ -285,4 +285,31 @@
         <test:assert expression="#[payload[2].payload == 'orange']"/>
     </sub-flow>
 
+    <flow name="withinTransaction">
+        <try transactionalAction="ALWAYS_BEGIN">
+            <scatter-gather>
+                <route>
+                    <test:non-blocking-processor />
+                    <test:assert expression="#[java!org::mule::runtime::core::api::transaction::TransactionCoordination::isTransactionActive()]"/>
+                    <set-payload value="apple"/>
+                    <custom-processor class="org.mule.test.routing.ScatterGatherRouterTestCase$ThreadCaptor" />
+                </route>
+                <route>
+                    <test:processor processingType="CPU_INTENSIVE"/>
+                    <test:assert expression="#[java!org::mule::runtime::core::api::transaction::TransactionCoordination::isTransactionActive()]"/>
+                    <set-payload value="banana"/>
+                    <custom-processor class="org.mule.test.routing.ScatterGatherRouterTestCase$ThreadCaptor" />
+                </route>
+                <route>
+                    <test:processor processingType="BLOCKING"/>
+                    <test:assert expression="#[java!org::mule::runtime::core::api::transaction::TransactionCoordination::isTransactionActive()]"/>
+                    <set-payload value="orange"/>
+                    <custom-processor class="org.mule.test.routing.ScatterGatherRouterTestCase$ThreadCaptor" />
+                </route>
+            </scatter-gather>
+        </try>
+
+        <flow-ref name="testRoutesMap"/>
+    </flow>
+
 </mule>
