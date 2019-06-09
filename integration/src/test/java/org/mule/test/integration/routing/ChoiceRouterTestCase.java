@@ -25,7 +25,7 @@ import org.junit.Test;
 @Story(CHOICE)
 public class ChoiceRouterTestCase extends AbstractIntegrationTestCase {
 
-  public static final int LOAD = getRuntime().availableProcessors() * 10;
+  private static final int LOAD = getRuntime().availableProcessors() * 10;
 
   @Override
   protected String getConfigFile() {
@@ -49,6 +49,17 @@ public class ChoiceRouterTestCase extends AbstractIntegrationTestCase {
     assertThat(InvocationCountMessageProcessor.getNumberOfInvocationsFor("routeCounter"), is(0));
     assertThat(InvocationCountMessageProcessor.getNumberOfInvocationsFor("otherwiseCounter"), is(1));
     assertThat(InvocationCountMessageProcessor.getNumberOfInvocationsFor("afterCounter"), is(1));
+  }
+
+  @Test
+  public void multipleMatchingRoutes() throws Exception {
+    Message result = flowRunner("multiple").withPayload(TEST_PAYLOAD).run().getMessage();
+    assertThat(result.getPayload().getValue(), is(TEST_PAYLOAD));
+
+    assertThat(InvocationCountMessageProcessor.getNumberOfInvocationsFor("first"), is(1));
+    assertThat(InvocationCountMessageProcessor.getNumberOfInvocationsFor("second"), is(0));
+    assertThat(InvocationCountMessageProcessor.getNumberOfInvocationsFor("default"), is(0));
+    assertThat(InvocationCountMessageProcessor.getNumberOfInvocationsFor("after"), is(1));
   }
 
   @Test

@@ -26,6 +26,21 @@
         <test:invocation-counter name="afterCounter"/>
     </flow>
 
+    <flow name="multiple">
+        <choice>
+            <when expression="#[payload == 'test']">
+                <test:invocation-counter name="first"/>
+            </when>
+            <when expression="#[payload == 'test']">
+                <test:invocation-counter name="second"/>
+            </when>
+            <otherwise>
+                <test:invocation-counter name="default"/>
+            </otherwise>
+        </choice>
+        <test:invocation-counter name="after"/>
+    </flow>
+
     <flow name="error-handler">
         <choice>
             <when expression="#[true]">
