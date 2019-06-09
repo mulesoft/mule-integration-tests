@@ -64,18 +64,28 @@ public class ChoiceRouterTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void errorsWithinRouteArePropagated() throws Exception {
-    assertMultipleErrors("error-handler");
+    assertMultipleErrors("error-handler", "handled");
   }
 
   @Test
   public void errorsWithinRouteExpressionArePropagated() throws Exception {
-    assertMultipleErrors("expression");
+    assertMultipleErrors("expression", "handled");
   }
 
-  private void assertMultipleErrors(String expression) throws Exception {
+  @Test
+  public void errorsWithinTryRouteArePropagated() throws Exception {
+    assertMultipleErrors("try-error-handler", "handled after try");
+  }
+
+  @Test
+  public void errorsWithinTryRouteExpressionArePropagated() throws Exception {
+    assertMultipleErrors("try-expression", "handled after try");
+  }
+
+  private void assertMultipleErrors(String expression, String expected) throws Exception {
     for (int i = 0; i < LOAD; i++) {
       Message message = flowRunner(expression).withPayload(TEST_PAYLOAD).run().getMessage();
-      assertThat(message, hasPayload(equalTo("handled")));
+      assertThat(message, hasPayload(equalTo(expected)));
     }
   }
 
