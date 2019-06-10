@@ -14,6 +14,33 @@
         <test:invocation-counter name="afterRouteMpCounter"/>
     </flow>
 
+    <flow name="otherwise">
+        <choice>
+            <when expression="#[payload == 'A']">
+                <test:invocation-counter name="routeCounter"/>
+            </when>
+            <otherwise>
+                <test:invocation-counter name="otherwiseCounter"/>
+            </otherwise>
+        </choice>
+        <test:invocation-counter name="afterCounter"/>
+    </flow>
+
+    <flow name="multiple">
+        <choice>
+            <when expression="#[payload == 'test']">
+                <test:invocation-counter name="first"/>
+            </when>
+            <when expression="#[payload == 'test']">
+                <test:invocation-counter name="second"/>
+            </when>
+            <otherwise>
+                <test:invocation-counter name="default"/>
+            </otherwise>
+        </choice>
+        <test:invocation-counter name="after"/>
+    </flow>
+
     <flow name="error-handler">
         <choice>
             <when expression="#[true]">
@@ -25,6 +52,51 @@
                 <set-payload value="handled"/>
             </on-error-continue>
         </error-handler>
+    </flow>
+
+    <flow name="try-error-handler">
+        <try>
+            <choice>
+                <when expression="#[true]">
+                    <test:throw exception="java.io.IOException" error="CONNECTIVITY"/>
+                </when>
+            </choice>
+            <error-handler>
+                <on-error-continue type="CONNECTIVITY">
+                    <set-payload value="handled"/>
+                </on-error-continue>
+            </error-handler>
+        </try>
+        <set-payload value="#[payload ++ ' after try']"/>
+    </flow>
+
+    <flow name="expression">
+        <choice>
+            <when expression="#[wat]">
+                <set-payload value="You can't touch this!"/>
+            </when>
+        </choice>
+        <error-handler>
+            <on-error-continue type="EXPRESSION">
+                <set-payload value="handled"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="try-expression">
+        <try>
+            <choice>
+                <when expression="#[wat]">
+                    <set-payload value="You can't touch this!"/>
+                </when>
+            </choice>
+            <error-handler>
+                <on-error-continue type="EXPRESSION">
+                    <set-payload value="handled"/>
+                </on-error-continue>
+            </error-handler>
+        </try>
+        <set-payload value="#[payload ++ ' after try']"/>
     </flow>
 
 </mule>
