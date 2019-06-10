@@ -251,6 +251,28 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     assertThat(setPayloadOperationIdentifier.getName(), equalTo("set-payload"));
   }
 
+  @Description("Smart Connector inside a choice module declares a simple operation without parameters")
+  @Test
+  public void scOperationInsideChoice() throws Exception {
+    flowRunner("flowWithChoice").run();
+
+    List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
+    assertThat(interceptionParameters, hasSize(3));
+
+    ComponentIdentifier choiceIdentifier = interceptionParameters.get(0).getLocation().getComponentIdentifier().getIdentifier();
+    ComponentIdentifier moduleName =
+        interceptionParameters.get(1).getLocation().getComponentIdentifier().getIdentifier();
+    ComponentIdentifier setPayloadOperationIdentifier =
+        interceptionParameters.get(2).getLocation().getComponentIdentifier().getIdentifier();
+
+    assertThat(choiceIdentifier.getName(), equalTo("choice"));
+
+    assertThat(moduleName.getNamespace(), equalTo("module-using-core"));
+
+    assertThat(moduleName.getName(), equalTo("set-payload-hardcoded"));
+    assertThat(setPayloadOperationIdentifier.getName(), equalTo("set-payload"));
+  }
+
   @Description("Smart Connector simple operation with parameters")
   @Test
   public void scEchoOperation() throws Exception {
