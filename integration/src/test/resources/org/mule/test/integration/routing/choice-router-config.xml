@@ -100,6 +100,7 @@
     </flow>
 
     <flow name="txNonBlocking">
+        <custom-processor class="org.mule.test.integration.routing.ChoiceRouterTestCase$ThreadCaptor" />
         <try transactionalAction="ALWAYS_BEGIN">
             <choice>
                 <when expression="#[payload == 'nonBlocking']">
@@ -111,9 +112,11 @@
             <test:assert expression="#[java!org::mule::runtime::core::api::transaction::TransactionCoordination::isTransactionActive()]"/>
             <custom-processor class="org.mule.test.integration.routing.ChoiceRouterTestCase$ThreadCaptor" />
         </try>
+        <custom-processor class="org.mule.test.integration.routing.ChoiceRouterTestCase$ThreadCaptor" />
     </flow>
 
     <flow name="txCpuIntensive">
+        <custom-processor class="org.mule.test.integration.routing.ChoiceRouterTestCase$ThreadCaptor" />
         <try transactionalAction="ALWAYS_BEGIN">
             <choice>
                 <when expression="#[payload == 'cpuIntensive']">
@@ -125,9 +128,11 @@
             <test:assert expression="#[java!org::mule::runtime::core::api::transaction::TransactionCoordination::isTransactionActive()]"/>
             <custom-processor class="org.mule.test.integration.routing.ChoiceRouterTestCase$ThreadCaptor" />
         </try>
+        <custom-processor class="org.mule.test.integration.routing.ChoiceRouterTestCase$ThreadCaptor" />
     </flow>
 
     <flow name="txBlocking">
+        <custom-processor class="org.mule.test.integration.routing.ChoiceRouterTestCase$ThreadCaptor" />
         <try transactionalAction="ALWAYS_BEGIN">
             <choice>
                 <when expression="#[payload == 'blocking']">
@@ -139,9 +144,11 @@
             <test:assert expression="#[java!org::mule::runtime::core::api::transaction::TransactionCoordination::isTransactionActive()]"/>
             <custom-processor class="org.mule.test.integration.routing.ChoiceRouterTestCase$ThreadCaptor" />
         </try>
+        <custom-processor class="org.mule.test.integration.routing.ChoiceRouterTestCase$ThreadCaptor" />
     </flow>
 
     <flow name="txOtherwise">
+        <custom-processor class="org.mule.test.integration.routing.ChoiceRouterTestCase$ThreadCaptor" />
         <try transactionalAction="ALWAYS_BEGIN">
             <choice>
                 <when expression="#[payload == 'nonBlocking']">
@@ -155,9 +162,11 @@
             <test:assert expression="#[java!org::mule::runtime::core::api::transaction::TransactionCoordination::isTransactionActive()]"/>
             <custom-processor class="org.mule.test.integration.routing.ChoiceRouterTestCase$ThreadCaptor" />
         </try>
+        <custom-processor class="org.mule.test.integration.routing.ChoiceRouterTestCase$ThreadCaptor" />
     </flow>
 
     <flow name="txNoOtherwise">
+        <custom-processor class="org.mule.test.integration.routing.ChoiceRouterTestCase$ThreadCaptor" />
         <try transactionalAction="ALWAYS_BEGIN">
             <choice>
                 <when expression="#[payload == 'nonBlocking']">
@@ -167,6 +176,7 @@
             <test:assert expression="#[java!org::mule::runtime::core::api::transaction::TransactionCoordination::isTransactionActive()]"/>
             <custom-processor class="org.mule.test.integration.routing.ChoiceRouterTestCase$ThreadCaptor" />
         </try>
+        <custom-processor class="org.mule.test.integration.routing.ChoiceRouterTestCase$ThreadCaptor" />
     </flow>
 
 </mule>
