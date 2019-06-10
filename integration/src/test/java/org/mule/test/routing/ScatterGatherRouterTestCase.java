@@ -37,15 +37,15 @@ import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import org.hamcrest.Matchers;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-
 import java.io.ByteArrayInputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.hamcrest.Matchers;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
@@ -170,9 +170,16 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  @Description("Only sa single thread is used to process all routes when configured with maxConcurrency=1.")
+  @Description("Only a single thread is used to process all routes when configured with maxConcurrency=1.")
   public void sequentialProcessing() throws Exception {
     flowRunner("sequentialProcessing").withVariable("latch", new Latch()).run();
+    assertThat(capturedThreads, hasSize(1));
+  }
+
+  @Test
+  @Description("Only a single thread is used to process all routes when a transaction is active.")
+  public void withinTransaction() throws Exception {
+    flowRunner("withinTransaction").withVariable("latch", new Latch()).run();
     assertThat(capturedThreads, hasSize(1));
   }
 
