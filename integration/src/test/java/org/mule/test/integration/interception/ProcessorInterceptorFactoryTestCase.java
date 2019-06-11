@@ -22,8 +22,8 @@ import static org.junit.Assert.assertThat;
 import static org.mule.functional.api.exception.ExpectedError.none;
 import static org.mule.runtime.api.interception.ProcessorInterceptorFactory.INTERCEPTORS_ORDER_REGISTRY_KEY;
 import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
-import static org.mule.test.allure.AllureConstants.InterceptonApi.INTERCEPTION_API;
 import static org.mule.test.allure.AllureConstants.InterceptonApi.ComponentInterceptionStory.COMPONENT_INTERCEPTION_STORY;
+import static org.mule.test.allure.AllureConstants.InterceptonApi.INTERCEPTION_API;
 import static org.mule.test.heisenberg.extension.HeisenbergConnectionProvider.getActiveConnections;
 import static org.mule.test.heisenberg.extension.HeisenbergOperations.CALL_GUS_MESSAGE;
 
@@ -62,13 +62,12 @@ import java.util.function.BiConsumer;
 
 import javax.inject.Inject;
 
-import org.junit.After;
-import org.junit.Rule;
-import org.junit.Test;
-
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
+import org.junit.After;
+import org.junit.Rule;
+import org.junit.Test;
 
 @Feature(INTERCEPTION_API)
 @Story(COMPONENT_INTERCEPTION_STORY)
@@ -281,6 +280,8 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
     assertThat(interceptionParameters, hasSize(2));
 
+    ComponentIdentifier untilSuccessfulIdentifier =
+        interceptionParameters.get(0).getLocation().getComponentIdentifier().getIdentifier();
     ComponentIdentifier moduleName =
         interceptionParameters.get(0).getLocation().getComponentIdentifier().getIdentifier();
     ComponentIdentifier setPayloadOperationIdentifier =
@@ -614,7 +615,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
   @Test
   @Description("Processors inside an SDK scope with implicit configs are initialised correctly")
   public void implicitConfigInNestedScope() throws Exception {
-    // before MULE-16730, this excecution hanged
+    // before MULE-16730, this execution hanged
     assertThat(flowRunner("implicitConfigInNestedScope").run(), not(nullValue()));
   }
 
