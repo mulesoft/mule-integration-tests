@@ -251,10 +251,10 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     assertThat(setPayloadOperationIdentifier.getName(), equalTo("set-payload"));
   }
 
-  @Description("Smart Connector inside a choice module declares a simple operation without parameters")
+  @Description("Smart Connector inside a choice router declares a simple operation without parameters")
   @Test
-  public void scOperationInsideChoice() throws Exception {
-    flowRunner("flowWithChoice").run();
+  public void scOperationInsideChoiceRouter() throws Exception {
+    flowRunner("flowWithChoiceRouter").run();
 
     List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
     assertThat(interceptionParameters, hasSize(3));
@@ -270,6 +270,26 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     assertThat(moduleName.getNamespace(), equalTo("module-using-core"));
 
     assertThat(moduleName.getName(), equalTo("set-payload-hardcoded"));
+    assertThat(setPayloadOperationIdentifier.getName(), equalTo("set-payload"));
+  }
+
+  @Description("Smart Connector inside a until-successful scope declares a simple operation without parameters")
+  @Test
+  public void scOperationInsideAnUntilSuccessScope() throws Exception {
+    flowRunner("flowWithUntilSuccessfulScope").run();
+
+    List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
+    assertThat(interceptionParameters, hasSize(2));
+
+    ComponentIdentifier moduleName =
+        interceptionParameters.get(0).getLocation().getComponentIdentifier().getIdentifier();
+    ComponentIdentifier setPayloadOperationIdentifier =
+        interceptionParameters.get(1).getLocation().getComponentIdentifier().getIdentifier();
+
+    assertThat(moduleName.getName(), equalTo("until-successful"));
+
+    assertThat(moduleName.getNamespace(), equalTo("mule"));
+    
     assertThat(setPayloadOperationIdentifier.getName(), equalTo("set-payload"));
   }
 

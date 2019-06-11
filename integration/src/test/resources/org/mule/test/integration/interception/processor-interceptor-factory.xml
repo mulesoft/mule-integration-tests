@@ -158,12 +158,18 @@
         </validation:all>
     </flow>
 
-    <flow name="flowWithChoice">
+    <flow name="flowWithChoiceRouter">
         <choice>
             <when expression="true">
                 <sc:set-payload-hardcoded/>
             </when>
         </choice>
+    </flow>
+
+    <flow name="flowWithUntilSuccessfulScope">
+        <until-successful maxRetries="0">
+            <sc:set-payload-hardcoded/>
+        </until-successful>
     </flow>
 
 </mule>
