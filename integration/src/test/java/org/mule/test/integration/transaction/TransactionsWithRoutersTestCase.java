@@ -65,9 +65,21 @@ public class TransactionsWithRoutersTestCase extends AbstractIntegrationTestCase
   }
 
   @Test
+  @Description("Error handling of parallel foreach does not change even in context of transactions, where execution is sequential")
+  public void parallelForEachHasSameErrorHandling() throws Exception {
+    runsInSameThreadWithErrors("txParallelForeachWithErrors");
+  }
+
+  @Test
   @Description("When running inside a tx, every route executes sequentially")
   public void scatterGatherRunsInSameThread() throws Exception {
     runsInSameThread("txScatterGather");
+  }
+
+  @Test
+  @Description("Error handling of scatter gather does not change even in context of transactions, where execution is sequential")
+  public void scatterGatherHasSameErrorHandling() throws Exception {
+    runsInSameThreadWithErrors("txScatterGatherWithErrors");
   }
 
   @Test
@@ -114,10 +126,14 @@ public class TransactionsWithRoutersTestCase extends AbstractIntegrationTestCase
   private void runsInSameThread(String flowName, String... expectedPayloads) throws Exception {
     flowRunner(flowName).run();
     assertThat(threads, hasSize(expectedPayloads.length));
+    assertThat(threads, everyItem(is(threads.get(0))));
     assertThat(runsInTx, everyItem(is(true)));
     // Since there is no concurrency, the element must match in exact order
     assertThat(payloads, contains(expectedPayloads));
-    assertThat(threads, everyItem(is(threads.get(0))));
+  }
+
+  private void runsInSameThreadWithErrors(String flow) throws Exception {
+    runsInSameThread(flow, TX_MESSAGE, OTHER_TX_MESSAGE, "Error with " + TX_MESSAGE, OTHER_TX_MESSAGE);
   }
 
   public static class ThreadCaptor implements Processor {

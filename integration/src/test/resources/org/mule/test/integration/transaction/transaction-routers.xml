@@ -25,6 +25,29 @@ http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/cu
         </try>
     </flow>
 
+    <flow name="txParallelForeachWithErrors">
+        <try transactionalAction="ALWAYS_BEGIN">
+            <set-payload value="#[[p('firstValue'), p('otherValue')]]"/>
+            <parallel-foreach>
+                <logger message="#[payload]"/>
+                <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+                <choice>
+                    <when expression="#[payload == p('firstValue')]">
+                        <raise-error type="APP:SOME" description="Error with ${firstValue}"/>
+                    </when>
+                </choice>
+            </parallel-foreach>
+            <error-handler>
+                <on-error-continue type="COMPOSITE_ROUTING">
+                    <set-payload value="#[error.errorMessage.payload.failures['0'].description]"/>
+                    <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+                    <set-payload value="#[error.errorMessage.payload.results['1'].payload]"/>
+                    <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+                </on-error-continue>
+            </error-handler>
+        </try>
+    </flow>
+
     <flow name="txScatterGather">
         <try transactionalAction="ALWAYS_BEGIN">
             <set-payload value="not relevant"/>
@@ -42,6 +65,31 @@ http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/cu
                     <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
                 </route>
             </scatter-gather>
+        </try>
+    </flow>
+
+    <flow name="txScatterGatherWithErrors">
+        <try transactionalAction="ALWAYS_BEGIN">
+            <set-payload value="not relevant"/>
+            <scatter-gather>
+                <route>
+                    <set-payload value="${firstValue}"/>
+                    <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+                    <raise-error type="APP:SOME" description="Error with ${firstValue}"/>
+                </route>
+                <route>
+                    <set-payload value="${otherValue}"/>
+                    <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+                </route>
+            </scatter-gather>
+            <error-handler>
+                <on-error-continue type="COMPOSITE_ROUTING">
+                    <set-payload value="#[error.errorMessage.payload.failures['0'].description]"/>
+                    <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+                    <set-payload value="#[error.errorMessage.payload.results['1'].payload]"/>
+                    <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+                </on-error-continue>
+            </error-handler>
         </try>
     </flow>
 
