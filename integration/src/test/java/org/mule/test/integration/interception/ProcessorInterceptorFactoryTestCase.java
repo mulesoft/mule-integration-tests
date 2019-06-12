@@ -285,8 +285,6 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     ComponentIdentifier setPayloadOperationIdentifier =
         interceptionParameters.get(1).getLocation().getComponentIdentifier().getIdentifier();
 
-    assertThat(moduleName.getName(), equalTo("until-successful"));
-
     assertThat(moduleName.getNamespace(), equalTo("module-using-core"));
 
     assertThat(moduleName.getName(), equalTo("set-payload-hardcoded"));

@@ -16,13 +16,17 @@ import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.component.ComponentIdentifier.buildFromStringRepresentation;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.FLOW;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.OPERATION;
+import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.ROUTER;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.SCOPE;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.builder;
 import static org.mule.runtime.api.dsl.DslResolvingContext.getDefault;
 import static org.mule.runtime.api.util.collection.Collectors.toImmutableList;
+import static org.mule.runtime.config.api.dsl.CoreDslConstants.CHOICE_IDENTIFIER;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.FLOW_IDENTIFIER;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.FLOW_REF_IDENTIFIER;
+import static org.mule.runtime.config.api.dsl.CoreDslConstants.ROUTE_IDENTIFIER;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.SUBFLOW_IDENTIFIER;
+import static org.mule.runtime.config.api.dsl.CoreDslConstants.UNTIL_SUCCESSFUL_IDENTIFIER;
 import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.initialiseIfNeeded;
 import static org.mule.runtime.dsl.api.xml.parser.XmlConfigurationDocumentLoader.noValidationDocumentLoader;
 import static org.mule.runtime.dsl.api.xml.parser.XmlConfigurationProcessor.processXmlConfiguration;
@@ -126,6 +130,8 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
   private static final String FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_NAME = "flowWithProxyAndSimpleModuleAndLogger";
   private static final String FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_REVERSE_NAME =
       "flowWithProxyAndSimpleModuleAndLoggerReverse";
+  private static final String FLOW_WITH_CHOICE_ROUTER_NAME = "flowWithChoiceRouter";
+  private static final String FLOW_WITH_UNTIL_SUCCESSFUL_SCOPE_NAME = "flowWithUntilSuccessfulScope";
 
   /**
    * "flows-using-modules.xml" flows defined below
@@ -154,6 +160,10 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
       getFlowLocation(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_NAME, 49);
   private static final DefaultComponentLocation FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_REVERSE =
       getFlowLocation(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_REVERSE_NAME, 55);
+  private static final DefaultComponentLocation FLOW_WITH_CHOICE_ROUTER =
+      getFlowLocation(FLOW_WITH_CHOICE_ROUTER_NAME, 69);
+  private static final DefaultComponentLocation FLOW_WITH_UNTIL_SUCCESSFUL_SCOPE =
+      getFlowLocation(FLOW_WITH_UNTIL_SUCCESSFUL_SCOPE_NAME, 77);
 
   private static Optional<TypedComponentIdentifier> getModuleOperationIdentifier(final String namespace,
                                                                                  final String identifier) {
@@ -446,6 +456,47 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
     assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
         .appendLocationPart("processors", empty(), empty(), empty(), empty())
         .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13)));
+    assertNoNextProcessorNotification();
+  }
+
+  @Test
+  public void flowWithChoiceRouter() throws Exception {
+    flowRunner("flowWithChoiceRouter").run();
+    assertNextProcessorLocationIs(FLOW_WITH_CHOICE_ROUTER
+                                      .appendLocationPart("processors", empty(), empty(), empty(), empty())
+                                      .appendLocationPart("0", of(TypedComponentIdentifier.builder()
+                                                                      .identifier(CHOICE_IDENTIFIER)
+                                                                      .type(ROUTER).build()), CONFIG_FILE_NAME, of(70), of(9)));
+    assertNextProcessorLocationIs(FLOW_WITH_CHOICE_ROUTER
+                                      .appendLocationPart("processors", empty(), empty(), empty(), empty())
+                                      .appendLocationPart("0", of(TypedComponentIdentifier.builder()
+                                                                      .identifier(CHOICE_IDENTIFIER)
+                                                                      .type(ROUTER).build()), CONFIG_FILE_NAME, of(70), of(9))
+                                      .appendLocationPart("route", empty(), empty(), empty(), empty())
+                                      .appendLocationPart("0", of(TypedComponentIdentifier.builder()
+                                                                      .identifier(ROUTE_IDENTIFIER)              
+                                                                      .type(SCOPE).build()), CONFIG_FILE_NAME, of(71), of(13))
+                                      .appendLocationPart("processors", empty(), empty(), empty(), empty())
+                                      .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(72), of(17)));
+    
+    assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP              
+                                      .appendLocationPart("processors", empty(), empty(), empty(), empty())
+                                      .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13)));
+    assertNoNextProcessorNotification();
+  }
+
+  @Test
+  public void flowWithUntilSuccessfulScope() throws Exception {
+    flowRunner("flowWithUntilSuccessfulScope").run();
+    assertNextProcessorLocationIs(FLOW_WITH_UNTIL_SUCCESSFUL_SCOPE
+                                      .appendLocationPart("processors", empty(), empty(), empty(), empty())
+                                      .appendLocationPart("0", of(TypedComponentIdentifier.builder()
+                                                                      .identifier(UNTIL_SUCCESSFUL_IDENTIFIER)
+                                                                      .type(SCOPE).build()), CONFIG_FILE_NAME, of(78), of(9))
+                                      .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(79), of(9)));
+    assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
+                                      .appendLocationPart("processors", empty(), empty(), empty(), empty())
+                                      .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13)));
     assertNoNextProcessorNotification();
   }
 
