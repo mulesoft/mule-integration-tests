@@ -280,8 +280,6 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
     assertThat(interceptionParameters, hasSize(2));
 
-    ComponentIdentifier untilSuccessfulIdentifier =
-        interceptionParameters.get(0).getLocation().getComponentIdentifier().getIdentifier();
     ComponentIdentifier moduleName =
         interceptionParameters.get(0).getLocation().getComponentIdentifier().getIdentifier();
     ComponentIdentifier setPayloadOperationIdentifier =
@@ -289,8 +287,9 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
 
     assertThat(moduleName.getName(), equalTo("until-successful"));
 
-    assertThat(moduleName.getNamespace(), equalTo("mule"));
-    
+    assertThat(moduleName.getNamespace(), equalTo("module-using-core"));
+
+    assertThat(moduleName.getName(), equalTo("set-payload-hardcoded"));
     assertThat(setPayloadOperationIdentifier.getName(), equalTo("set-payload"));
   }
 
