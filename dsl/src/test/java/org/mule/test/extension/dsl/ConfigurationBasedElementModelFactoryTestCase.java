@@ -376,6 +376,9 @@ public class ConfigurationBasedElementModelFactoryTestCase extends AbstractEleme
     assertThat(config.findElement("active-mq").isPresent(), is(true));
     assertThat(config.findElement("active-mq").get().getContainedElements().size(), is(3));
 
+    assertThat(config.findElement(newIdentifier("xa-connection-pool", "jms")).isPresent(), is(true));
+    assertThat(config.findElement(newIdentifier("xa-connection-pool", "jms")).get().getContainedElements().size(), is(3));
+
     assertThat(config.findElement(newIdentifier("consumer-config", "jms")).isPresent(), is(true));
     assertThat(config.findElement(newIdentifier("consumer-config", "jms")).get().getContainedElements().size(), is(2));
 
