@@ -147,6 +147,7 @@
         </choice>
 
         <db:bulk-insert>
+            <db:bulk-input-parameters>#[payload.changes]</db:bulk-input-parameters>
             <db:sql>INSERT INTO PLANET(POSITION, NAME) VALUES (:position, :name)</db:sql>
             <db:parameter-types>
                 <db:parameter-type key="name" type="VARCHAR"/>
