@@ -521,6 +521,9 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
                     .getDeclaration())
                 .getDeclaration())
             .withComponent(db.newOperation("bulkInsert")
+                .withParameterGroup(newParameterGroup("General")
+                    .withParameter("bulkInputParameters", createStringParameter("#[payload.changes]"))
+                    .getDeclaration())
                 .withParameterGroup(newParameterGroup("Query")
                     .withParameter("sql", createStringParameter("INSERT INTO PLANET(POSITION, NAME) VALUES (:position, :name)"))
                     .withParameter("parameterTypes",
