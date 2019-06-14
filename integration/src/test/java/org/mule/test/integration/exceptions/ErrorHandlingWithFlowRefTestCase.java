@@ -8,19 +8,22 @@ package org.mule.test.integration.exceptions;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
+
+import io.qameta.allure.Issue;
+import org.junit.Before;
 import org.junit.Test;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.test.AbstractIntegrationTestCase;
 
+@Issue("MULE-16892")
 public class ErrorHandlingWithFlowRefTestCase extends AbstractIntegrationTestCase {
 
   private static int executions;
 
-  @Override
-  public void doSetUp() throws Exception {
-    super.doSetUp();
+  @Before
+  public void resetExecutions() {
     executions = 0;
   }
 
