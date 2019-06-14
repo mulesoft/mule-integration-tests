@@ -1119,6 +1119,22 @@
           "metadataProperties": {},
           "parameterGroups": [
             {
+              "name": "General",
+              "customConfigurationParameters": [],
+              "metadataProperties": {},
+              "parameters": [
+                {
+                  "name": "bulkInputParameters",
+                  "metadataProperties": {},
+                  "value": {
+                    "text": "#[payload.changes]",
+                    "isCData": false,
+                    "type": "STRING"
+                  }
+                }
+              ]
+            },
+            {
               "name": "Query",
               "customConfigurationParameters": [],
               "metadataProperties": {},
