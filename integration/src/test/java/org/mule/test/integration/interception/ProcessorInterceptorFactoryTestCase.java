@@ -267,8 +267,8 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     assertThat(choiceIdentifier.getName(), equalTo("choice"));
 
     assertThat(moduleName.getNamespace(), equalTo("module-using-core"));
-
     assertThat(moduleName.getName(), equalTo("set-payload-hardcoded"));
+
     assertThat(setPayloadOperationIdentifier.getName(), equalTo("set-payload"));
   }
 
@@ -278,16 +278,20 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     flowRunner("flowWithUntilSuccessfulScope").run();
 
     List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
-    assertThat(interceptionParameters, hasSize(2));
+    assertThat(interceptionParameters, hasSize(3));
 
-    ComponentIdentifier moduleName =
+    ComponentIdentifier untilSuccessfulIdentifier =
         interceptionParameters.get(0).getLocation().getComponentIdentifier().getIdentifier();
-    ComponentIdentifier setPayloadOperationIdentifier =
+    ComponentIdentifier moduleName =
         interceptionParameters.get(1).getLocation().getComponentIdentifier().getIdentifier();
+    ComponentIdentifier setPayloadOperationIdentifier =
+        interceptionParameters.get(2).getLocation().getComponentIdentifier().getIdentifier();
+
+    assertThat(untilSuccessfulIdentifier.getName(), equalTo("until-successful"));
 
     assertThat(moduleName.getNamespace(), equalTo("module-using-core"));
-
     assertThat(moduleName.getName(), equalTo("set-payload-hardcoded"));
+
     assertThat(setPayloadOperationIdentifier.getName(), equalTo("set-payload"));
   }
 
