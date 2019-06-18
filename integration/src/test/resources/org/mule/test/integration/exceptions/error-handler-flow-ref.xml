@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+    http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+    http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+
+    <flow name="error-handler-with-flow-ref-all-static">
+        <flow-ref name="flow-with-error"/>
+        <error-handler>
+            <on-error-continue>
+                <logger level="ERROR" message="HELLOWORLD"/>
+                <custom-processor class="org.mule.test.integration.exceptions.ErrorHandlingWithFlowRefTestCase$TestProcessorCounter"/>
+                <flow-ref name="flow-modif"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="error-handler-with-flow-ref-dynamic">
+        <flow-ref name="flow-with-error"/>
+        <error-handler>
+            <on-error-continue>
+                <logger level="ERROR" message="HELLOWORLD"/>
+                <custom-processor class="org.mule.test.integration.exceptions.ErrorHandlingWithFlowRefTestCase$TestProcessorCounter"/>
+                <flow-ref name="#[vars.flowToExecute]"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="error-handler-with-flow-ref-error-dynamic">
+        <flow-ref name="#[vars.errorFlowToExecute]"/>
+        <error-handler>
+            <on-error-continue>
+                <logger level="ERROR" message="HELLOWORLD"/>
+                <custom-processor class="org.mule.test.integration.exceptions.ErrorHandlingWithFlowRefTestCase$TestProcessorCounter"/>
+                <flow-ref name="flow-modif"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="error-handler-with-flow-ref-all-dynamic">
+        <flow-ref name="#[vars.errorFlowToExecute]"/>
+        <error-handler>
+            <on-error-continue>
+                <logger level="ERROR" message="HELLOWORLD"/>
+                <custom-processor class="org.mule.test.integration.exceptions.ErrorHandlingWithFlowRefTestCase$TestProcessorCounter"/>
+                <flow-ref name="#[vars.flowToExecute]"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="error-handler-with-flow-ref-to-sub-flow">
+        <flow-ref name="flow-with-error"/>
+        <error-handler>
+            <on-error-continue>
+                <logger level="ERROR" message="HELLOWORLD"/>
+                <custom-processor class="org.mule.test.integration.exceptions.ErrorHandlingWithFlowRefTestCase$TestProcessorCounter"/>
+                <flow-ref name="sub-flow-modif"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="error-handler-with-flow-ref-to-error-sub-flow">
+        <flow-ref name="sub-flow-with-error"/>
+        <error-handler>
+            <on-error-continue>
+                <logger level="ERROR" message="HELLOWORLD"/>
+                <custom-processor class="org.mule.test.integration.exceptions.ErrorHandlingWithFlowRefTestCase$TestProcessorCounter"/>
+                <flow-ref name="flow-modif"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="error-handler-with-flow-ref-all-sub-flow">
+        <flow-ref name="sub-flow-with-error"/>
+        <error-handler>
+            <on-error-continue>
+                <logger level="ERROR" message="HELLOWORLD"/>
+                <custom-processor class="org.mule.test.integration.exceptions.ErrorHandlingWithFlowRefTestCase$TestProcessorCounter"/>
+                <flow-ref name="sub-flow-modif"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <sub-flow name="sub-flow-with-error">
+        <raise-error type="APP:SOME"/>
+    </sub-flow>
+
+    <flow name="flow-with-error">
+        <raise-error type="APP:SOME"/>
+    </flow>
+
+    <flow name="flow-modif">
+        <logger level="ERROR" message="HELLO"/>
+    </flow>
+
+    <flow name="sub-flow-modif">
+        <logger level="ERROR" message="HELLO"/>
+    </flow>
+
+</mule>
+
