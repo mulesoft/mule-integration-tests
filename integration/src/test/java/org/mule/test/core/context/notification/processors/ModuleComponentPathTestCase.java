@@ -24,8 +24,11 @@ import static org.mule.runtime.api.util.collection.Collectors.toImmutableList;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.CHOICE_IDENTIFIER;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.FLOW_IDENTIFIER;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.FLOW_REF_IDENTIFIER;
+import static org.mule.runtime.config.api.dsl.CoreDslConstants.FOREACH_IDENTIFIER;
+import static org.mule.runtime.config.api.dsl.CoreDslConstants.PARALLEL_FOREACH_IDENTIFIER;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.ROUTE_IDENTIFIER;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.SUBFLOW_IDENTIFIER;
+import static org.mule.runtime.config.api.dsl.CoreDslConstants.TRY_IDENTIFIER;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.UNTIL_SUCCESSFUL_IDENTIFIER;
 import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.initialiseIfNeeded;
 import static org.mule.runtime.dsl.api.xml.parser.XmlConfigurationDocumentLoader.noValidationDocumentLoader;
@@ -132,6 +135,9 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
       "flowWithProxyAndSimpleModuleAndLoggerReverse";
   private static final String FLOW_WITH_CHOICE_ROUTER_NAME = "flowWithChoiceRouter";
   private static final String FLOW_WITH_UNTIL_SUCCESSFUL_SCOPE_NAME = "flowWithUntilSuccessfulScope";
+  private static final String FLOW_WITH_TRY_SCOPE_NAME = "flowWithTryScope";
+  private static final String FLOW_WITH_FOREACH_SCOPE_NAME = "flowWithForeachScope";
+  private static final String FLOW_WITH_PARALLEL_FOREACH_SCOPE_NAME = "flowWithParallelForeachScope";
 
   /**
    * "flows-using-modules.xml" flows defined below
@@ -164,6 +170,12 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
       getFlowLocation(FLOW_WITH_CHOICE_ROUTER_NAME, 69);
   private static final DefaultComponentLocation FLOW_WITH_UNTIL_SUCCESSFUL_SCOPE =
       getFlowLocation(FLOW_WITH_UNTIL_SUCCESSFUL_SCOPE_NAME, 77);
+  private static final DefaultComponentLocation FLOW_WITH_TRY_SCOPE =
+      getFlowLocation(FLOW_WITH_TRY_SCOPE_NAME, 83);
+  private static final DefaultComponentLocation FLOW_WITH_FOREACH_SCOPE =
+      getFlowLocation(FLOW_WITH_FOREACH_SCOPE_NAME, 89);
+  private static final DefaultComponentLocation FLOW_WITH_PARALLEL_FOREACH_SCOPE =
+      getFlowLocation(FLOW_WITH_PARALLEL_FOREACH_SCOPE_NAME, 95);
 
   private static Optional<TypedComponentIdentifier> getModuleOperationIdentifier(final String namespace,
                                                                                  final String identifier) {
@@ -440,7 +452,25 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
         .add(Location.builder().globalName(FLOW_WITH_UNTIL_SUCCESSFUL_SCOPE_NAME).addProcessorsPart().addIndexPart(0)
             .build().toString())
         .add(Location.builder().globalName(FLOW_WITH_UNTIL_SUCCESSFUL_SCOPE_NAME).addProcessorsPart().addIndexPart(0)
-            .addProcessorsPart().addIndexPart(0).build().toString())
+        .addProcessorsPart().addIndexPart(0).build().toString())
+
+        .add(Location.builder().globalName(FLOW_WITH_TRY_SCOPE_NAME).build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_TRY_SCOPE_NAME).addProcessorsPart().addIndexPart(0)
+            .build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_TRY_SCOPE_NAME).addProcessorsPart().addIndexPart(0)
+        .addProcessorsPart().addIndexPart(0).build().toString())
+
+        .add(Location.builder().globalName(FLOW_WITH_FOREACH_SCOPE_NAME).build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_FOREACH_SCOPE_NAME).addProcessorsPart().addIndexPart(0)
+            .build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_FOREACH_SCOPE_NAME).addProcessorsPart().addIndexPart(0)
+        .addProcessorsPart().addIndexPart(0).build().toString())
+
+        .add(Location.builder().globalName(FLOW_WITH_PARALLEL_FOREACH_SCOPE_NAME).build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_PARALLEL_FOREACH_SCOPE_NAME).addProcessorsPart().addIndexPart(0)
+            .build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_PARALLEL_FOREACH_SCOPE_NAME).addProcessorsPart().addIndexPart(0)
+        .addProcessorsPart().addIndexPart(0).build().toString())
 
         .build(), componentLocations);
   }
@@ -475,16 +505,15 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
   @Test
   public void flowWithChoiceRouter() throws Exception {
     flowRunner("flowWithChoiceRouter").run();
-    assertNextProcessorLocationIs(FLOW_WITH_CHOICE_ROUTER
+
+    DefaultComponentLocation firstComponentLocation = FLOW_WITH_CHOICE_ROUTER
         .appendLocationPart("processors", empty(), empty(), empty(), empty())
-        .appendLocationPart("0", of(TypedComponentIdentifier.builder()
+        .appendLocationPart("0", of(builder()
             .identifier(CHOICE_IDENTIFIER)
-            .type(ROUTER).build()), CONFIG_FILE_NAME, of(70), of(9)));
-    assertNextProcessorLocationIs(FLOW_WITH_CHOICE_ROUTER
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
-        .appendLocationPart("0", of(TypedComponentIdentifier.builder()
-            .identifier(CHOICE_IDENTIFIER)
-            .type(ROUTER).build()), CONFIG_FILE_NAME, of(70), of(9))
+            .type(ROUTER).build()), CONFIG_FILE_NAME, of(70), of(9));
+
+    assertNextProcessorLocationIs(firstComponentLocation);
+    assertNextProcessorLocationIs(firstComponentLocation
         .appendLocationPart("route", empty(), empty(), empty(), empty())
         .appendLocationPart("0", of(TypedComponentIdentifier.builder()
             .identifier(ROUTE_IDENTIFIER)
@@ -501,18 +530,77 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
   @Test
   public void flowWithUntilSuccessfulScope() throws Exception {
     flowRunner("flowWithUntilSuccessfulScope").run();
-    assertNextProcessorLocationIs(FLOW_WITH_UNTIL_SUCCESSFUL_SCOPE
+
+    DefaultComponentLocation firstComponentLocation = FLOW_WITH_UNTIL_SUCCESSFUL_SCOPE
         .appendLocationPart("processors", empty(), empty(), empty(), empty())
-        .appendLocationPart("0", of(TypedComponentIdentifier.builder()
+        .appendLocationPart("0", of(builder()
             .identifier(UNTIL_SUCCESSFUL_IDENTIFIER)
-            .type(SCOPE).build()), CONFIG_FILE_NAME, of(78), of(9)));
-    assertNextProcessorLocationIs(FLOW_WITH_UNTIL_SUCCESSFUL_SCOPE
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
-        .appendLocationPart("0", of(TypedComponentIdentifier.builder()
-            .identifier(UNTIL_SUCCESSFUL_IDENTIFIER)
-            .type(SCOPE).build()), CONFIG_FILE_NAME, of(78), of(9))
+            .type(SCOPE).build()), CONFIG_FILE_NAME, of(78), of(9));
+
+    assertNextProcessorLocationIs(firstComponentLocation);
+    assertNextProcessorLocationIs(firstComponentLocation
         .appendLocationPart("processors", empty(), empty(), empty(), empty())
         .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(79), of(13)));
+    assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
+        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13)));
+    assertNoNextProcessorNotification();
+  }
+
+  @Test
+  public void flowWithTryScope() throws Exception {
+    flowRunner("flowWithTryScope").run();
+
+    DefaultComponentLocation firstComponentLocation = FLOW_WITH_TRY_SCOPE
+        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("0", of(builder()
+            .identifier(TRY_IDENTIFIER)
+            .type(SCOPE).build()), CONFIG_FILE_NAME, of(84), of(9));
+
+    assertNextProcessorLocationIs(firstComponentLocation);
+    assertNextProcessorLocationIs(firstComponentLocation
+        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(85), of(13)));
+    assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
+        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13)));
+    assertNoNextProcessorNotification();
+  }
+
+  @Test
+  public void flowWithForeachScope() throws Exception {
+    flowRunner("flowWithForeachScope").run();
+
+    DefaultComponentLocation firstComponentLocation = FLOW_WITH_FOREACH_SCOPE
+        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("0", of(builder()
+            .identifier(FOREACH_IDENTIFIER)
+            .type(SCOPE).build()), CONFIG_FILE_NAME, of(90), of(9));
+
+    assertNextProcessorLocationIs(firstComponentLocation);
+    assertNextProcessorLocationIs(firstComponentLocation
+        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(91), of(13)));
+    assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
+        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13)));
+    assertNoNextProcessorNotification();
+  }
+
+  @Test
+  public void flowWithParallelForeachScope() throws Exception {
+    flowRunner("flowWithParallelForeachScope").run();
+
+    DefaultComponentLocation firstComponentLocation = FLOW_WITH_PARALLEL_FOREACH_SCOPE
+        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("0", of(builder()
+            .identifier(PARALLEL_FOREACH_IDENTIFIER)
+            .type(SCOPE).build()), CONFIG_FILE_NAME, of(96), of(9));
+
+    assertNextProcessorLocationIs(firstComponentLocation);
+    assertNextProcessorLocationIs(firstComponentLocation
+        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(97), of(13)));
     assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
         .appendLocationPart("processors", empty(), empty(), empty(), empty())
         .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13)));

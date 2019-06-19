@@ -79,4 +79,23 @@
             <simple-weirdo-prefix:set-payload-hardcoded-value/>
         </until-successful>
     </flow>
+
+    <flow name="flowWithTryScope">
+        <try>
+            <simple-weirdo-prefix:set-payload-hardcoded-value/>
+        </try>
+    </flow>
+
+    <flow name="flowWithForeachScope">
+        <foreach collection="[1]" batchSize="1" rootMessageVariableName="rootMessage" counterVariableName="counter">
+            <simple-weirdo-prefix:set-payload-hardcoded-value/>
+        </foreach>
+    </flow>
+
+    <flow name="flowWithParallelForeachScope">
+        <parallel-foreach collection="[1]"  maxConcurrency="2" target="rootMessage" targetValue="#[payload]" timeout="9223372036854775807">
+            <simple-weirdo-prefix:set-payload-hardcoded-value/>
+        </parallel-foreach>
+    </flow>
+
 </mule>

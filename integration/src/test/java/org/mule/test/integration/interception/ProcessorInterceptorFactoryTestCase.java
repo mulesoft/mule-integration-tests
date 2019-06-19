@@ -295,6 +295,75 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     assertThat(setPayloadOperationIdentifier.getName(), equalTo("set-payload"));
   }
 
+  @Description("Smart Connector inside a try scope declares a simple operation without parameters")
+  @Test
+  public void scOperationInsideTryScope() throws Exception {
+    flowRunner("flowWithTryScope").run();
+
+    List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
+    assertThat(interceptionParameters, hasSize(3));
+
+    ComponentIdentifier untilSuccessfulIdentifier =
+        interceptionParameters.get(0).getLocation().getComponentIdentifier().getIdentifier();
+    ComponentIdentifier moduleName =
+        interceptionParameters.get(1).getLocation().getComponentIdentifier().getIdentifier();
+    ComponentIdentifier setPayloadOperationIdentifier =
+        interceptionParameters.get(2).getLocation().getComponentIdentifier().getIdentifier();
+
+    assertThat(untilSuccessfulIdentifier.getName(), equalTo("try"));
+
+    assertThat(moduleName.getNamespace(), equalTo("module-using-core"));
+    assertThat(moduleName.getName(), equalTo("set-payload-hardcoded"));
+
+    assertThat(setPayloadOperationIdentifier.getName(), equalTo("set-payload"));
+  }
+
+  @Description("Smart Connector inside a foreach scope declares a simple operation without parameters")
+  @Test
+  public void scOperationInsideForeachScope() throws Exception {
+    flowRunner("flowWithForeachScope").run();
+
+    List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
+    assertThat(interceptionParameters, hasSize(3));
+
+    ComponentIdentifier untilSuccessfulIdentifier =
+        interceptionParameters.get(0).getLocation().getComponentIdentifier().getIdentifier();
+    ComponentIdentifier moduleName =
+        interceptionParameters.get(1).getLocation().getComponentIdentifier().getIdentifier();
+    ComponentIdentifier setPayloadOperationIdentifier =
+        interceptionParameters.get(2).getLocation().getComponentIdentifier().getIdentifier();
+
+    assertThat(untilSuccessfulIdentifier.getName(), equalTo("foreach"));
+
+    assertThat(moduleName.getNamespace(), equalTo("module-using-core"));
+    assertThat(moduleName.getName(), equalTo("set-payload-hardcoded"));
+
+    assertThat(setPayloadOperationIdentifier.getName(), equalTo("set-payload"));
+  }
+
+  @Description("Smart Connector inside a parallel-foreach scope declares a simple operation without parameters")
+  @Test
+  public void scOperationInsideParallelForeachScope() throws Exception {
+    flowRunner("flowWithParallelForeachScope").run();
+
+    List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
+    assertThat(interceptionParameters, hasSize(3));
+
+    ComponentIdentifier untilSuccessfulIdentifier =
+        interceptionParameters.get(0).getLocation().getComponentIdentifier().getIdentifier();
+    ComponentIdentifier moduleName =
+        interceptionParameters.get(1).getLocation().getComponentIdentifier().getIdentifier();
+    ComponentIdentifier setPayloadOperationIdentifier =
+        interceptionParameters.get(2).getLocation().getComponentIdentifier().getIdentifier();
+
+    assertThat(untilSuccessfulIdentifier.getName(), equalTo("parallel-foreach"));
+
+    assertThat(moduleName.getNamespace(), equalTo("module-using-core"));
+    assertThat(moduleName.getName(), equalTo("set-payload-hardcoded"));
+
+    assertThat(setPayloadOperationIdentifier.getName(), equalTo("set-payload"));
+  }
+
   @Description("Smart Connector simple operation with parameters")
   @Test
   public void scEchoOperation() throws Exception {

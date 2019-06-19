@@ -172,4 +172,22 @@
         </until-successful>
     </flow>
 
+    <flow name="flowWithTryScope">
+        <try>
+            <sc:set-payload-hardcoded/>
+        </try>
+    </flow>
+
+    <flow name="flowWithForeachScope">
+        <foreach collection="[1]" batchSize="1" rootMessageVariableName="rootMessage" counterVariableName="counter">
+            <sc:set-payload-hardcoded/>
+        </foreach>
+    </flow>
+
+    <flow name="flowWithParallelForeachScope">
+        <parallel-foreach collection="[1]"  maxConcurrency="2" target="rootMessage" targetValue="#[payload]" timeout="9223372036854775807">
+            <sc:set-payload-hardcoded/>
+        </parallel-foreach>
+    </flow>
+
 </mule>
