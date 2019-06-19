@@ -26,7 +26,9 @@ import static org.mule.runtime.config.api.dsl.CoreDslConstants.FLOW_IDENTIFIER;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.FLOW_REF_IDENTIFIER;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.FOREACH_IDENTIFIER;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.PARALLEL_FOREACH_IDENTIFIER;
+import static org.mule.runtime.config.api.dsl.CoreDslConstants.ROUTE_ELEMENT;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.ROUTE_IDENTIFIER;
+import static org.mule.runtime.config.api.dsl.CoreDslConstants.SCATTER_GATHER_IDENTIFIER;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.SUBFLOW_IDENTIFIER;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.TRY_IDENTIFIER;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.UNTIL_SUCCESSFUL_IDENTIFIER;
@@ -138,6 +140,7 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
   private static final String FLOW_WITH_TRY_SCOPE_NAME = "flowWithTryScope";
   private static final String FLOW_WITH_FOREACH_SCOPE_NAME = "flowWithForeachScope";
   private static final String FLOW_WITH_PARALLEL_FOREACH_SCOPE_NAME = "flowWithParallelForeachScope";
+  private static final String FLOW_WITH_SCATTER_GATHER_NAME = "flowWithScatterGather";
 
   /**
    * "flows-using-modules.xml" flows defined below
@@ -176,6 +179,8 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
       getFlowLocation(FLOW_WITH_FOREACH_SCOPE_NAME, 89);
   private static final DefaultComponentLocation FLOW_WITH_PARALLEL_FOREACH_SCOPE =
       getFlowLocation(FLOW_WITH_PARALLEL_FOREACH_SCOPE_NAME, 95);
+  private static final DefaultComponentLocation FLOW_WITH_SCATTER_GATHER =
+      getFlowLocation(FLOW_WITH_SCATTER_GATHER_NAME, 101);
 
   private static Optional<TypedComponentIdentifier> getModuleOperationIdentifier(final String namespace,
                                                                                  final String identifier) {
@@ -443,9 +448,9 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
 
         .add(Location.builder().globalName(FLOW_WITH_CHOICE_ROUTER_NAME).build().toString())
         .add(Location.builder().globalName(FLOW_WITH_CHOICE_ROUTER_NAME).addProcessorsPart().addIndexPart(0).build().toString())
-        .add(Location.builder().globalName(FLOW_WITH_CHOICE_ROUTER_NAME).addProcessorsPart().addIndexPart(0).addPart("route")
+        .add(Location.builder().globalName(FLOW_WITH_CHOICE_ROUTER_NAME).addProcessorsPart().addIndexPart(0).addPart(ROUTE_ELEMENT)
             .addIndexPart(0).build().toString())
-        .add(Location.builder().globalName(FLOW_WITH_CHOICE_ROUTER_NAME).addProcessorsPart().addIndexPart(0).addPart("route")
+        .add(Location.builder().globalName(FLOW_WITH_CHOICE_ROUTER_NAME).addProcessorsPart().addIndexPart(0).addPart(ROUTE_ELEMENT)
             .addIndexPart(0).addProcessorsPart().addIndexPart(0).build().toString())
 
         .add(Location.builder().globalName(FLOW_WITH_UNTIL_SUCCESSFUL_SCOPE_NAME).build().toString())
@@ -464,13 +469,24 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
         .add(Location.builder().globalName(FLOW_WITH_FOREACH_SCOPE_NAME).addProcessorsPart().addIndexPart(0)
             .build().toString())
         .add(Location.builder().globalName(FLOW_WITH_FOREACH_SCOPE_NAME).addProcessorsPart().addIndexPart(0)
-        .addProcessorsPart().addIndexPart(0).build().toString())
+            .addProcessorsPart().addIndexPart(0).build().toString())
 
         .add(Location.builder().globalName(FLOW_WITH_PARALLEL_FOREACH_SCOPE_NAME).build().toString())
         .add(Location.builder().globalName(FLOW_WITH_PARALLEL_FOREACH_SCOPE_NAME).addProcessorsPart().addIndexPart(0)
             .build().toString())
         .add(Location.builder().globalName(FLOW_WITH_PARALLEL_FOREACH_SCOPE_NAME).addProcessorsPart().addIndexPart(0)
-        .addProcessorsPart().addIndexPart(0).build().toString())
+            .addProcessorsPart().addIndexPart(0).build().toString())
+
+        .add(Location.builder().globalName(FLOW_WITH_SCATTER_GATHER_NAME).build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_SCATTER_GATHER_NAME).addProcessorsPart().addIndexPart(0).build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_SCATTER_GATHER_NAME).addProcessorsPart().addIndexPart(0).addPart(ROUTE_ELEMENT)
+            .addIndexPart(0).build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_SCATTER_GATHER_NAME).addProcessorsPart().addIndexPart(0).addPart(ROUTE_ELEMENT)
+            .addIndexPart(0).addProcessorsPart().addIndexPart(0).build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_SCATTER_GATHER_NAME).addProcessorsPart().addIndexPart(0).addPart(ROUTE_ELEMENT)
+            .addIndexPart(1).build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_SCATTER_GATHER_NAME).addProcessorsPart().addIndexPart(0).addPart(ROUTE_ELEMENT)
+            .addIndexPart(1).addProcessorsPart().addIndexPart(0).build().toString())
 
         .build(), componentLocations);
   }
@@ -514,7 +530,7 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
 
     assertNextProcessorLocationIs(firstComponentLocation);
     assertNextProcessorLocationIs(firstComponentLocation
-        .appendLocationPart("route", empty(), empty(), empty(), empty())
+        .appendLocationPart(ROUTE_ELEMENT, empty(), empty(), empty(), empty())
         .appendLocationPart("0", of(TypedComponentIdentifier.builder()
             .identifier(ROUTE_IDENTIFIER)
             .type(SCOPE).build()), CONFIG_FILE_NAME, of(71), of(13))
@@ -601,6 +617,40 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
     assertNextProcessorLocationIs(firstComponentLocation
         .appendLocationPart("processors", empty(), empty(), empty(), empty())
         .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(97), of(13)));
+    assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
+        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13)));
+    assertNoNextProcessorNotification();
+  }
+
+  @Test
+  public void flowWithScatterGather() throws Exception {
+    flowRunner("flowWithScatterGather").run();
+
+    DefaultComponentLocation firstComponentLocation = FLOW_WITH_SCATTER_GATHER
+        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("0", of(builder()
+                                        .identifier(SCATTER_GATHER_IDENTIFIER)
+                                        .type(ROUTER).build()), CONFIG_FILE_NAME, of(102), of(9));
+
+    assertNextProcessorLocationIs(firstComponentLocation);
+
+    assertNextProcessorLocationIs(firstComponentLocation
+        .appendLocationPart(ROUTE_ELEMENT, empty(), empty(), empty(), empty())
+        .appendLocationPart("0", of(builder()
+                                        .identifier(ROUTE_IDENTIFIER)
+                                        .type(SCOPE).build()), CONFIG_FILE_NAME, of(103), of(13))
+        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(104), of(17)));
+
+    assertNextProcessorLocationIs(firstComponentLocation
+        .appendLocationPart(ROUTE_ELEMENT, empty(), empty(), empty(), empty())
+        .appendLocationPart("1", of(builder()
+                                        .identifier(ROUTE_IDENTIFIER)
+                                        .type(SCOPE).build()), CONFIG_FILE_NAME, of(106), of(13))
+        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("0", LOGGER, CONFIG_FILE_NAME, of(107), of(17)));
+
     assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
         .appendLocationPart("processors", empty(), empty(), empty(), empty())
         .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13)));

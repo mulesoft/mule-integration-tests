@@ -190,4 +190,15 @@
         </parallel-foreach>
     </flow>
 
+    <flow name="flowWithScatterGather">
+        <scatter-gather>
+            <route>
+                <sc:set-payload-hardcoded/>
+            </route>
+            <route>
+                <logger/>
+            </route>
+        </scatter-gather>
+    </flow>
+
 </mule>

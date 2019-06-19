@@ -98,4 +98,15 @@
         </parallel-foreach>
     </flow>
 
+    <flow name="flowWithScatterGather">
+        <scatter-gather>
+            <route>
+                <simple-weirdo-prefix:set-payload-hardcoded-value/>
+            </route>
+            <route>
+                <logger/>
+            </route>
+        </scatter-gather>
+    </flow>
+
 </mule>

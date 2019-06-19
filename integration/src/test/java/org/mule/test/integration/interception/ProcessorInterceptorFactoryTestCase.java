@@ -303,14 +303,14 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
     assertThat(interceptionParameters, hasSize(3));
 
-    ComponentIdentifier untilSuccessfulIdentifier =
+    ComponentIdentifier tryIdentifier =
         interceptionParameters.get(0).getLocation().getComponentIdentifier().getIdentifier();
     ComponentIdentifier moduleName =
         interceptionParameters.get(1).getLocation().getComponentIdentifier().getIdentifier();
     ComponentIdentifier setPayloadOperationIdentifier =
         interceptionParameters.get(2).getLocation().getComponentIdentifier().getIdentifier();
 
-    assertThat(untilSuccessfulIdentifier.getName(), equalTo("try"));
+    assertThat(tryIdentifier.getName(), equalTo("try"));
 
     assertThat(moduleName.getNamespace(), equalTo("module-using-core"));
     assertThat(moduleName.getName(), equalTo("set-payload-hardcoded"));
@@ -326,14 +326,14 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
     assertThat(interceptionParameters, hasSize(3));
 
-    ComponentIdentifier untilSuccessfulIdentifier =
+    ComponentIdentifier foreachIdentifier =
         interceptionParameters.get(0).getLocation().getComponentIdentifier().getIdentifier();
     ComponentIdentifier moduleName =
         interceptionParameters.get(1).getLocation().getComponentIdentifier().getIdentifier();
     ComponentIdentifier setPayloadOperationIdentifier =
         interceptionParameters.get(2).getLocation().getComponentIdentifier().getIdentifier();
 
-    assertThat(untilSuccessfulIdentifier.getName(), equalTo("foreach"));
+    assertThat(foreachIdentifier.getName(), equalTo("foreach"));
 
     assertThat(moduleName.getNamespace(), equalTo("module-using-core"));
     assertThat(moduleName.getName(), equalTo("set-payload-hardcoded"));
@@ -349,17 +349,45 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
     assertThat(interceptionParameters, hasSize(3));
 
-    ComponentIdentifier untilSuccessfulIdentifier =
+    ComponentIdentifier parallelForeachIdentifier =
         interceptionParameters.get(0).getLocation().getComponentIdentifier().getIdentifier();
     ComponentIdentifier moduleName =
         interceptionParameters.get(1).getLocation().getComponentIdentifier().getIdentifier();
     ComponentIdentifier setPayloadOperationIdentifier =
         interceptionParameters.get(2).getLocation().getComponentIdentifier().getIdentifier();
 
-    assertThat(untilSuccessfulIdentifier.getName(), equalTo("parallel-foreach"));
+    assertThat(parallelForeachIdentifier.getName(), equalTo("parallel-foreach"));
 
     assertThat(moduleName.getNamespace(), equalTo("module-using-core"));
     assertThat(moduleName.getName(), equalTo("set-payload-hardcoded"));
+
+    assertThat(setPayloadOperationIdentifier.getName(), equalTo("set-payload"));
+  }
+
+  @Description("Smart Connector inside a scatter-gather declares a simple operation without parameters")
+  @Test
+  public void flowWithScatterGather() throws Exception {
+    flowRunner("flowWithScatterGather").run();
+
+    List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
+    assertThat(interceptionParameters, hasSize(4));
+
+    ComponentIdentifier scatterGatherIdentifier =
+        interceptionParameters.get(0).getLocation().getComponentIdentifier().getIdentifier();
+    ComponentIdentifier firstRoute =
+        interceptionParameters.get(1).getLocation().getComponentIdentifier().getIdentifier();
+    ComponentIdentifier loggerIdentifier =
+        interceptionParameters.get(2).getLocation().getComponentIdentifier().getIdentifier();
+
+    ComponentIdentifier setPayloadOperationIdentifier =
+        interceptionParameters.get(3).getLocation().getComponentIdentifier().getIdentifier();
+
+    assertThat(scatterGatherIdentifier.getName(), equalTo("scatter-gather"));
+
+    assertThat(firstRoute.getNamespace(), equalTo("module-using-core"));
+    assertThat(firstRoute.getName(), equalTo("set-payload-hardcoded"));
+
+    assertThat(loggerIdentifier.getName(), equalTo("logger"));
 
     assertThat(setPayloadOperationIdentifier.getName(), equalTo("set-payload"));
   }
