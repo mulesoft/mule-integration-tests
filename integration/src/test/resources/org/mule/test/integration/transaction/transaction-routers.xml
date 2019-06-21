@@ -12,15 +12,28 @@ http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/cu
     <vm:config name="VM_Config">
         <vm:queues >
             <vm:queue queueName="Q1" />
+            <vm:queue queueName="Q2" />
+            <vm:queue queueName="Q3" />
         </vm:queues>
     </vm:config>
 
     <flow name="txParallelForeach">
         <try transactionalAction="ALWAYS_BEGIN">
-            <set-payload value="#[['apple', 'banana', 'orange']]"/>
+            <set-payload value="#[[p('firstValue'), p('otherValue')]]"/>
             <parallel-foreach>
                 <logger message="#[payload]"/>
                 <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+            </parallel-foreach>
+        </try>
+    </flow>
+
+    <flow name="txParallelForeachInsideParallelForeach">
+        <try transactionalAction="ALWAYS_BEGIN">
+            <set-payload value="#[[[p('firstValue'), p('otherValue')], [p('otherValue'), p('firstValue')]]]"/>
+            <parallel-foreach>
+                <parallel-foreach>
+                    <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+                </parallel-foreach>
             </parallel-foreach>
         </try>
     </flow>
@@ -53,15 +66,11 @@ http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/cu
             <set-payload value="not relevant"/>
             <scatter-gather>
                 <route>
-                    <set-payload value="apple"/>
+                    <set-payload value="${firstValue}"/>
                     <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
                 </route>
                 <route>
-                    <set-payload value="banana"/>
-                    <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
-                </route>
-                <route>
-                    <set-payload value="orange"/>
+                    <set-payload value="${otherValue}"/>
                     <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
                 </route>
             </scatter-gather>
@@ -94,6 +103,23 @@ http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/cu
     </flow>
 
     <flow name="txUntilSuccessful">
+        <try transactionalAction="BEGIN_OR_JOIN">
+            <set-payload value="${firstValue}"/>
+            <until-successful maxRetries="2" millisBetweenRetries="100">
+                <logger message="#[payload]"/>
+                <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+                <test:processor throwException="true"/>
+            </until-successful>
+            <error-handler>
+                <on-error-continue>
+                    <set-payload value="${otherValue}"/>
+                    <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+                </on-error-continue>
+            </error-handler>
+        </try>
+    </flow>
+
+    <flow name="txUntilSuccessfulOtherError">
         <try transactionalAction="ALWAYS_BEGIN">
             <set-payload value="${firstValue}"/>
             <until-successful maxRetries="2" millisBetweenRetries="100">
@@ -105,6 +131,7 @@ http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/cu
                 <on-error-continue>
                     <set-payload value="${otherValue}"/>
                     <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+                    <flow-ref name="txUntilSuccessful"/>
                 </on-error-continue>
             </error-handler>
         </try>
@@ -142,6 +169,18 @@ http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/cu
         <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
     </flow>
 
+    <flow name="toQueue">
+        <vm:publish queueName="Q2" config-ref="VM_Config" />
+    </flow>
+
+    <flow name="flowWithTxSourceToFlowWithFlowRef">
+        <vm:listener queueName="Q2" config-ref="VM_Config" transactionalAction="ALWAYS_BEGIN"/>
+        <set-payload value="${otherValue}"/>
+        <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+        <flow-ref name="flowRefWithoutTx"/>
+        <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptorAsync"/>
+    </flow>
+
     <flow name="flowRefToSubFlowWithTx">
         <try transactionalAction="ALWAYS_BEGIN">
             <set-payload value="${firstValue}"/>
@@ -154,5 +193,361 @@ http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/cu
         <set-payload value="${otherValue}"/>
         <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
     </sub-flow>
+
+    <flow name="flowRefToFlowWithErrorTx">
+        <try transactionalAction="ALWAYS_BEGIN">
+            <set-payload value="${firstValue}"/>
+            <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+            <flow-ref name="flow-with-error"/>
+            <error-handler>
+                <on-error-continue>
+                    <set-payload value="${otherValue}"/>
+                    <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+                </on-error-continue>
+            </error-handler>
+        </try>
+    </flow>
+
+    <flow name="flowRefDynamicToFlowWithErrorTx">
+        <try transactionalAction="ALWAYS_BEGIN">
+            <set-payload value="${firstValue}"/>
+            <set-variable value="flow-with-error" variableName="flowName"/>
+            <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+            <flow-ref name="#[vars.flowName]"/>
+            <error-handler>
+                <on-error-continue>
+                    <set-payload value="${otherValue}"/>
+                    <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+                </on-error-continue>
+            </error-handler>
+        </try>
+    </flow>
+
+    <flow name="flow-with-error">
+        <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+        <raise-error type="APP:SOME"/>
+    </flow>
+
+
+    <flow name="flowRefToTxFlowWithError">
+        <set-payload value="${firstValue}"/>
+        <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+        <flow-ref name="flow-with-error-tx"/>
+        <error-handler>
+            <on-error-continue>
+                <set-payload value="${firstValue}"/>
+                <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+    <flow name="flowRefToFlowWithErrorAndContinue">
+        <try transactionalAction="ALWAYS_BEGIN">
+            <set-payload value="${firstValue}"/>
+            <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+            <flow-ref name="flowWithErrorAndContinue"/>
+            <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+        </try>
+    </flow>
+
+    <flow name="flowWithErrorAndContinue">
+        <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+        <raise-error type="APP:SOME"/>
+        <error-handler>
+            <on-error-continue>
+                <set-payload value="${otherValue}"/>
+                <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="flow-with-error-tx">
+        <try transactionalAction="ALWAYS_BEGIN">
+            <set-payload value="${otherValue}"/>
+            <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+            <flow-ref name="#[vars.errorType]"/>
+            <error-handler>
+                <on-error-propagate type="APP:PROPAGATE">
+                    <set-payload value="${otherValue}"/>
+                    <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+                </on-error-propagate>
+                <on-error-continue type="APP:CONTINUE">
+                    <set-payload value="${otherValue}"/>
+                    <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+                </on-error-continue>
+            </error-handler>
+        </try>
+    </flow>
+
+    <flow name="raise-propagate-error">
+        <raise-error type="APP:PROPAGATE"/>
+    </flow>
+
+    <flow name="raise-continue-error">
+        <raise-error type="APP:CONTINUE"/>
+    </flow>
+
+
+    <flow name="flowRefToFlowWithErrorTxAndFlowRef">
+        <try transactionalAction="ALWAYS_BEGIN">
+            <set-payload value="${firstValue}"/>
+            <set-variable value="flow-with-error" variableName="flowName"/>
+            <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+            <flow-ref name="#[vars.flowName]"/>
+            <error-handler>
+                <on-error-continue>
+                    <set-payload value="${otherValue}"/>
+                    <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+                    <set-payload value="${firstValue}"/>
+                    <flow-ref name="flow-ok"/>
+                </on-error-continue>
+            </error-handler>
+        </try>
+    </flow>
+
+    <flow name="flowRefToFlowWithErrorAndPropagate">
+        <try transactionalAction="ALWAYS_BEGIN">
+            <set-payload value="${firstValue}"/>
+            <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+            <flow-ref name="flowWithErrorAndPropagate"/>
+            <error-handler>
+                <on-error-continue>
+                    <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+                </on-error-continue>
+            </error-handler>
+        </try>
+    </flow>
+
+    <flow name="flow-ok">
+        <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+    </flow>
+
+    <flow name="nestedTries">
+        <set-payload value="${firstValue}"/>
+        <try transactionalAction="ALWAYS_BEGIN">
+            <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+            <try transactionalAction="BEGIN_OR_JOIN">
+                <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+                <try transactionalAction="BEGIN_OR_JOIN">
+                    <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+                </try>
+            </try>
+        </try>
+    </flow>
+
+    <flow name="nestedTriesContinuesTx">
+        <set-payload value="${firstValue}"/>
+        <try transactionalAction="ALWAYS_BEGIN">
+            <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+            <try transactionalAction="INDIFFERENT">
+                <set-payload value="${otherValue}"/>
+                <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+            </try>
+        </try>
+    </flow>
+
+    <flow name="nestedTriesWithIndifferentInTheMiddle">
+        <set-payload value="${firstValue}"/>
+        <try transactionalAction="ALWAYS_BEGIN">
+            <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+            <try transactionalAction="BEGIN_OR_JOIN">
+                <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+                <try transactionalAction="INDIFFERENT">
+                    <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+                    <try transactionalAction="INDIFFERENT">
+                        <set-payload value="${otherValue}"/>
+                        <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+                    </try>
+                </try>
+            </try>
+        </try>
+    </flow>
+
+    <flow name="flowWithTxSourceWithTryContinuesTx">
+        <vm:listener queueName="Q3" config-ref="VM_Config" transactionalAction="ALWAYS_BEGIN"/>
+        <set-payload value="${firstValue}"/>
+        <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+        <try>
+            <set-payload value="${otherValue}"/>
+            <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+        </try>
+        <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptorAsync"/>
+    </flow>
+
+    <flow name="toQueueFlowWithTxSourceWithTryContinuesTx">
+        <vm:publish queueName="Q3" config-ref="VM_Config" />
+    </flow>
+
+    <flow name="flowWithErrorAndPropagate">
+        <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+        <raise-error type="APP:SOME"/>
+        <error-handler>
+            <on-error-propagate>
+                <set-payload value="${otherValue}"/>
+                <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+
+    <flow name="nestedTriesWithOnErrorPropagate">
+        <try transactionalAction="ALWAYS_BEGIN">
+            <try transactionalAction="BEGIN_OR_JOIN">
+                <try>
+                    <set-payload value="${firstValue}"/>
+                    <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+                    <raise-error type="APP:SOME"/>
+                    <error-handler>
+                        <on-error-propagate>
+                            <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+                        </on-error-propagate>
+                    </error-handler>
+                </try>
+                <error-handler>
+                    <on-error-continue>
+                        <set-payload value="${otherValue}"/>
+                        <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+                    </on-error-continue>
+                </error-handler>
+            </try>
+            <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+        </try>
+    </flow>
+
+    <flow name="tryWithInnerTryWithOnErrorPropagate">
+        <set-payload value="${firstValue}"/>
+        <try transactionalAction="ALWAYS_BEGIN">
+            <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+            <try>
+                <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+                <raise-error type="APP:SOME"/>
+                <error-handler>
+                    <on-error-propagate>
+                        <set-payload value="${otherValue}"/>
+                        <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+                    </on-error-propagate>
+                </error-handler>
+            </try>
+            <error-handler>
+                <on-error-continue>
+                    <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+                </on-error-continue>
+            </error-handler>
+        </try>
+    </flow>
+
+    <flow name="onErrorPropagateRaisesError">
+        <set-payload value="${firstValue}"/>
+        <try transactionalAction="ALWAYS_BEGIN">
+            <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+            <try>
+                <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+                <raise-error type="APP:SOME"/>
+                <error-handler>
+                    <on-error-propagate>
+                        <set-payload value="${otherValue}"/>
+                        <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+                        <raise-error type="APP:SOME2"/>
+                    </on-error-propagate>
+                </error-handler>
+            </try>
+            <error-handler>
+                <on-error-continue>
+                    <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+                </on-error-continue>
+            </error-handler>
+        </try>
+    </flow>
+
+    <flow name="onErrorContinueRaisesError">
+        <set-payload value="${firstValue}"/>
+        <try transactionalAction="ALWAYS_BEGIN">
+            <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+            <try>
+                <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+                <raise-error type="APP:SOME"/>
+                <error-handler>
+                    <on-error-continue>
+                        <set-payload value="${otherValue}"/>
+                        <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+                        <raise-error type="APP:SOME2"/>
+                    </on-error-continue>
+                </error-handler>
+            </try>
+            <error-handler>
+                <on-error-continue>
+                    <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+                </on-error-continue>
+            </error-handler>
+        </try>
+    </flow>
+
+    <flow name="onErrorContinueAndPropagateRaiseError">
+        <set-payload value="${firstValue}"/>
+        <try transactionalAction="ALWAYS_BEGIN">
+            <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+            <try>
+                <try>
+                    <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+                    <raise-error type="APP:SOME"/>
+                    <error-handler>
+                        <on-error-propagate>
+                            <set-payload value="${otherValue}"/>
+                            <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+                            <raise-error type="APP:SOME2"/>
+                        </on-error-propagate>
+                    </error-handler>
+                </try>
+                <error-handler>
+                    <on-error-continue>
+                        <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+                        <raise-error type="APP:SOME2"/>
+                    </on-error-continue>
+                </error-handler>
+            </try>
+            <error-handler>
+                <on-error-continue>
+                    <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+                </on-error-continue>
+            </error-handler>
+        </try>
+    </flow>
+
+    <flow name="tryWithinTryDoesNotFinishTx">
+        <set-payload value="${firstValue}"/>
+        <try transactionalAction="ALWAYS_BEGIN">
+            <try>
+                <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+            </try>
+            <try>
+                <set-payload value="${otherValue}"/>
+                <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+            </try>
+            <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+        </try>
+    </flow>
+
+    <flow name="flowRefToFlowWithErrorPropagateWithError">
+        <set-payload value="${firstValue}"/>
+        <try transactionalAction="ALWAYS_BEGIN">
+            <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+            <flow-ref name="flowWithErrorInErrorHandler"/>
+            <error-handler>
+                <on-error-continue>
+                    <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+                </on-error-continue>
+            </error-handler>
+        </try>
+    </flow>
+
+    <flow name="flowWithErrorInErrorHandler">
+        <set-payload value="${otherValue}"/>
+        <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+        <raise-error type="APP:SOME"/>
+        <error-handler>
+            <on-error-propagate>
+                <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+                <raise-error type="APP:SOME2"/>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
 
 </mule>

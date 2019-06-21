@@ -15,8 +15,10 @@ import static org.hamcrest.core.Every.everyItem;
 import static org.mule.runtime.core.api.transaction.TransactionCoordination.isTransactionActive;
 
 import io.qameta.allure.Description;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
+import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.util.concurrent.Latch;
 import org.mule.runtime.core.api.event.CoreEvent;
@@ -37,6 +39,7 @@ public class TransactionsWithRoutersTestCase extends AbstractIntegrationTestCase
   private static List<String> payloads;
   private static List<Boolean> runsInTx;
   private static Latch latch;
+  private TestConnectorQueueHandler queueHandler;
 
   @Rule
   public SystemProperty message = new SystemProperty("firstValue", TX_MESSAGE);
@@ -51,6 +54,7 @@ public class TransactionsWithRoutersTestCase extends AbstractIntegrationTestCase
     payloads = new ArrayList<>();
     latch = new Latch();
     runsInTx = new CopyOnWriteArrayList<>();
+    queueHandler = new TestConnectorQueueHandler(registry);
   }
 
   @Override
@@ -61,7 +65,12 @@ public class TransactionsWithRoutersTestCase extends AbstractIntegrationTestCase
   @Test
   @Description("When running inside a tx, parallel foreach should work as common foreach")
   public void parallelForeachInSameThread() throws Exception {
-    runsInSameThread("txParallelForeach");
+    runsInSameThread("txParallelForeach", TX_MESSAGE, OTHER_TX_MESSAGE);
+  }
+
+  @Test
+  public void parallelForeachInsideParallelForeachInSameThread() throws Exception {
+    runsInSameThread("txParallelForeachInsideParallelForeach", TX_MESSAGE, OTHER_TX_MESSAGE, OTHER_TX_MESSAGE, TX_MESSAGE);
   }
 
   @Test
@@ -73,7 +82,7 @@ public class TransactionsWithRoutersTestCase extends AbstractIntegrationTestCase
   @Test
   @Description("When running inside a tx, every route executes sequentially")
   public void scatterGatherRunsInSameThread() throws Exception {
-    runsInSameThread("txScatterGather");
+    runsInSameThread("txScatterGather", TX_MESSAGE, OTHER_TX_MESSAGE);
   }
 
   @Test
@@ -86,6 +95,13 @@ public class TransactionsWithRoutersTestCase extends AbstractIntegrationTestCase
   @Description("When running inside a tx, every execution of until successful must be in the same thread")
   public void untilSucessfulRunsInSameThread() throws Exception {
     runsInSameThread("txUntilSuccessful", TX_MESSAGE, TX_MESSAGE, TX_MESSAGE, OTHER_TX_MESSAGE);
+  }
+
+  @Test
+  @Description("When running inside a tx, every execution of until successful must be in the same thread")
+  public void untilSucessfulWithErrorHandlerWithRouterRunsInSameThread() throws Exception {
+    runsInSameThread("txUntilSuccessfulOtherError", TX_MESSAGE, TX_MESSAGE, TX_MESSAGE, OTHER_TX_MESSAGE, TX_MESSAGE, TX_MESSAGE,
+                     TX_MESSAGE, OTHER_TX_MESSAGE);
   }
 
   @Test
@@ -119,12 +135,132 @@ public class TransactionsWithRoutersTestCase extends AbstractIntegrationTestCase
     runsInSameThread("flowRefToSubFlowWithTx", TX_MESSAGE, OTHER_TX_MESSAGE);
   }
 
-  private void runsInSameThread(String flowName) throws Exception {
-    runsInSameThread(flowName, "apple", "banana", "orange");
+  @Test
+  public void flowRefWithTxToFlowWithError() throws Exception {
+    runsInSameThread("flowRefToFlowWithErrorTx", TX_MESSAGE, TX_MESSAGE, OTHER_TX_MESSAGE);
+  }
+
+  @Test
+  public void flowReDynamicWithTxToFlowWithError() throws Exception {
+    runsInSameThread("flowRefDynamicToFlowWithErrorTx", TX_MESSAGE, TX_MESSAGE, OTHER_TX_MESSAGE);
+  }
+
+  @Test
+  public void flowReDynamicToFlowWithTxAndErrorWithOnErrorPropagate() throws Exception {
+    flowRunner("flowRefToTxFlowWithError").withVariable("errorType", "raise-propagate-error").run();
+    assertThat(threads, hasSize(4));
+    // when executing the on-error-propagate, tx has already been rolled back
+    assertThat(runsInTx, contains(false, true, false, false));
+    assertThat(payloads, contains(TX_MESSAGE, OTHER_TX_MESSAGE, OTHER_TX_MESSAGE, TX_MESSAGE));
+  }
+
+  @Test
+  public void flowReDynamicToFlowWithTxAndErrorWithOnErrorContinue() throws Exception {
+    flowRunner("flowRefToTxFlowWithError").withVariable("errorType", "raise-continue-error").run();
+    assertThat(threads, hasSize(3));
+    // when executing the on-error-continue, tx has not yet been committed (it still runs as part of the tx)
+    assertThat(runsInTx, contains(false, true, true));
+    assertThat(payloads, contains(TX_MESSAGE, OTHER_TX_MESSAGE, OTHER_TX_MESSAGE));
+  }
+
+  @Test
+  public void flowRefWithTxToFlowWithErrorAndFlowRefInErrorHandler() throws Exception {
+    runsInSameThread("flowRefToFlowWithErrorTxAndFlowRef", TX_MESSAGE, TX_MESSAGE, OTHER_TX_MESSAGE, TX_MESSAGE);
+  }
+
+  @Test
+  public void nestedTries() throws Exception {
+    runsInSameThread("nestedTries", TX_MESSAGE, TX_MESSAGE, TX_MESSAGE);
+  }
+
+  @Test
+  public void nestedTriesContinuesTx() throws Exception {
+    runsInSameThread("nestedTriesContinuesTx", TX_MESSAGE, OTHER_TX_MESSAGE);
+  }
+
+  @Test
+  public void flowWithTxSourceWithTryContinuesTx() throws Exception {
+    runsInSameThreadAsync("toQueueFlowWithTxSourceWithTryContinuesTx", TX_MESSAGE, OTHER_TX_MESSAGE);
+  }
+
+  @Test
+  public void nestedTriesWithIndifferentInTheMiddle() throws Exception {
+    runsInSameThread("nestedTriesWithIndifferentInTheMiddle", TX_MESSAGE, TX_MESSAGE, TX_MESSAGE, OTHER_TX_MESSAGE);
+  }
+
+  @Test
+  public void flowWithTxSourceAndFlowRef() throws Exception {
+    runsInSameThreadAsync("toQueue", OTHER_TX_MESSAGE, TX_MESSAGE, OTHER_TX_MESSAGE);
+  }
+
+  @Test
+  public void flowRefToFlowWithErrorAndContinue() throws Exception {
+    runsInSameThread("flowRefToFlowWithErrorAndContinue", TX_MESSAGE, TX_MESSAGE, OTHER_TX_MESSAGE, OTHER_TX_MESSAGE);
+  }
+
+  @Test
+  public void flowRefToFlowWithErrorAndPropagate() throws Exception {
+    // Since the on-error-propagate is not in the flow/try that created the tx, it should not rollback it. Thus, it should
+    // still run in the same thread (and within a tx)
+    runsInSameThread("flowRefToFlowWithErrorAndPropagate", TX_MESSAGE, TX_MESSAGE, OTHER_TX_MESSAGE, OTHER_TX_MESSAGE);
+  }
+
+  @Test
+  @Ignore("MULE-17023")
+  public void nestedTriesWithOnErrorPropagatesAndContinue() throws Exception {
+    runsInSameThread("nestedTriesWithOnErrorPropagate", TX_MESSAGE, TX_MESSAGE, OTHER_TX_MESSAGE, OTHER_TX_MESSAGE);
+  }
+
+  @Test
+  @Ignore("MULE-17023")
+  public void innerTryWithOnErrorPropagate() throws Exception {
+    runsInSameThread("tryWithInnerTryWithOnErrorPropagate", TX_MESSAGE, TX_MESSAGE, OTHER_TX_MESSAGE, OTHER_TX_MESSAGE);
+  }
+
+  @Test
+  @Ignore("MULE-17025")
+  public void onErrorPropagateRaisesError() throws Exception {
+    runsInSameThread("onErrorPropagateRaisesError", TX_MESSAGE, TX_MESSAGE, OTHER_TX_MESSAGE, OTHER_TX_MESSAGE);
+  }
+
+  @Test
+  @Ignore("MULE-17025")
+  public void onErrorContinueRaisesError() throws Exception {
+    runsInSameThread("onErrorContinueRaisesError", TX_MESSAGE, TX_MESSAGE, OTHER_TX_MESSAGE, OTHER_TX_MESSAGE);
+  }
+
+  @Test
+  @Ignore("MULE-17025")
+  public void onErrorContinueAndPropagateRaiseError() throws Exception {
+    runsInSameThread("onErrorContinueAndPropagateRaiseError", TX_MESSAGE, TX_MESSAGE, OTHER_TX_MESSAGE, OTHER_TX_MESSAGE,
+                     OTHER_TX_MESSAGE);
+  }
+
+  @Test
+  public void tryWithinTryDoesNotFinishTx() throws Exception {
+    runsInSameThread("tryWithinTryDoesNotFinishTx", TX_MESSAGE, OTHER_TX_MESSAGE, OTHER_TX_MESSAGE);
+  }
+
+  @Test
+  @Ignore("MULE-17026")
+  public void flowRefToFlowWithErrorPropagateWithError() throws Exception {
+    runsInSameThread("flowRefToFlowWithErrorPropagateWithError", TX_MESSAGE, OTHER_TX_MESSAGE, OTHER_TX_MESSAGE,
+                     OTHER_TX_MESSAGE);
   }
 
   private void runsInSameThread(String flowName, String... expectedPayloads) throws Exception {
+    runsInSameThread(flowName, false, expectedPayloads);
+  }
+
+  private void runsInSameThreadAsync(String flowName, String... expectedPayloads) throws Exception {
+    runsInSameThread(flowName, true, expectedPayloads);
+  }
+
+  private void runsInSameThread(String flowName, boolean async, String... expectedPayloads) throws Exception {
     flowRunner(flowName).run();
+    if (async) {
+      latch.await();
+    }
     assertThat(threads, hasSize(expectedPayloads.length));
     assertThat(threads, everyItem(is(threads.get(0))));
     assertThat(runsInTx, everyItem(is(true)));
