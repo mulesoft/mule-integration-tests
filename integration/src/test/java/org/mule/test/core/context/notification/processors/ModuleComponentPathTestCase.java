@@ -36,8 +36,8 @@ import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.initialiseIfNee
 import static org.mule.runtime.dsl.api.xml.parser.XmlConfigurationDocumentLoader.noValidationDocumentLoader;
 import static org.mule.runtime.dsl.api.xml.parser.XmlConfigurationProcessor.processXmlConfiguration;
 import static org.mule.runtime.module.extension.api.util.MuleExtensionUtils.createDefaultExtensionManager;
-import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentLocationStory.COMPONENT_LOCATION;
-import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentLocationStory.LazyConnectionsStory.COMPONENT_LOCATION_STORY;
+import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentLocationStory.CONFIGURATION_COMPONENT_LOCATION;
+import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentLocationStory.LazyConnectionsStory.COMPONENT_LOCATION;
 import org.mule.runtime.api.component.TypedComponentIdentifier;
 import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.api.component.location.Location;
@@ -94,8 +94,8 @@ import org.junit.Test;
 import org.xml.sax.EntityResolver;
 
 @DisplayName("XML Connectors Path generation")
-@Feature(COMPONENT_LOCATION)
-@Story(COMPONENT_LOCATION_STORY)
+@Feature(CONFIGURATION_COMPONENT_LOCATION)
+@Story(COMPONENT_LOCATION)
 public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
 
   private static final String COLON_SEPARATOR = ":";
