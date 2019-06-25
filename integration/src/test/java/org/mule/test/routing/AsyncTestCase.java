@@ -10,6 +10,8 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThat;
+import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.startIfNeeded;
+import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.stopIfNeeded;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.AsyncStory.ASYNC;
 
@@ -17,12 +19,16 @@ import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.functional.api.flow.FlowRunner;
 import org.mule.runtime.api.component.location.Location;
 import org.mule.runtime.api.lifecycle.Startable;
+import org.mule.runtime.core.api.construct.FlowConstruct;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.privileged.event.BaseEventContext;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.util.concurrent.CountDownLatch;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.junit.After;
 import org.junit.Before;
@@ -59,7 +65,9 @@ public class AsyncTestCase extends AbstractIntegrationTestCase {
   @After
   public void after() throws InterruptedException {
     // Forces to wait till all contexts are finished.
-    terminationLatch.await();
+    if (terminationLatch != null) {
+      terminationLatch.await();
+    }
   }
 
   @Test
@@ -165,6 +173,24 @@ public class AsyncTestCase extends AbstractIntegrationTestCase {
     assertThat(queueHandler.read("asyncDispatched", 1000), not(nullValue()));
     assertThat(queueHandler.read("asyncRunning", 1000), not(nullValue()));
     latch.countDown();
+  }
+
+  @Inject
+  @Named("with-max-concurrency")
+  private FlowConstruct withMaxConcurrency;
+
+  @Test
+  public void flowStoppedWhileAsyncInFlight() throws Exception {
+    CountDownLatch latch = new CountDownLatch(1);
+    flowRunner("with-max-concurrency").withPayload("").withVariable("latch", latch).run();
+
+    assertThat(queueHandler.read("asyncRunning", 1000), not(nullValue()));
+    stopIfNeeded(withMaxConcurrency);
+
+    assertThat(queueHandler.read("asyncFinished", 1000), nullValue());
+
+    // Restart so it can be stopped again when the test ends
+    startIfNeeded(withMaxConcurrency);
   }
 
   private void testAsyncMaxConcurrency(String flowName) throws Exception {
