@@ -37,6 +37,7 @@ import org.junit.Test;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
 
 @Feature(ROUTERS)
@@ -180,6 +181,7 @@ public class AsyncTestCase extends AbstractIntegrationTestCase {
   private FlowConstruct withMaxConcurrency;
 
   @Test
+  @Issue("MULE-17048")
   public void flowStoppedWhileAsyncInFlight() throws Exception {
     CountDownLatch latch = new CountDownLatch(1);
     flowRunner("with-max-concurrency").withPayload("").withVariable("latch", latch).run();
