@@ -11,8 +11,7 @@ import static java.lang.Thread.currentThread;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptySet;
 import static java.util.Collections.singleton;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.*;
 import static org.junit.internal.matchers.ThrowableCauseMatcher.hasCause;
 import static org.mule.functional.junit4.matchers.ThrowableMessageMatcher.hasMessage;
 import static org.mule.runtime.core.api.exception.Errors.Identifiers.CRITICAL_IDENTIFIER;
@@ -75,8 +74,7 @@ public class ErrorHandlingConfigurationFailuresTestCase extends AbstractConfigur
   @Test
   public void defaultErrorHandlerReferencesNonExistentErrorHandler() throws Exception {
     expectedException.expect(InitialisationException.class);
-    expectedException
-        .expectCause(hasCause(hasMessage(containsString("No global error handler defined with name 'nonExistentEh'."))));
+    expectedException.expectMessage(containsString("No global error handler defined with name 'nonExistentEh'."));
     loadConfiguration("org/mule/test/integration/exceptions/default-error-handler-reference-non-existent-es.xml");
   }
 
