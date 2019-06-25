@@ -36,6 +36,8 @@ import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.initialiseIfNee
 import static org.mule.runtime.dsl.api.xml.parser.XmlConfigurationDocumentLoader.noValidationDocumentLoader;
 import static org.mule.runtime.dsl.api.xml.parser.XmlConfigurationProcessor.processXmlConfiguration;
 import static org.mule.runtime.module.extension.api.util.MuleExtensionUtils.createDefaultExtensionManager;
+import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentLocationStory.COMPONENT_LOCATION;
+import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentLocationStory.LazyConnectionsStory.COMPONENT_LOCATION_STORY;
 import org.mule.runtime.api.component.TypedComponentIdentifier;
 import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.api.component.location.Location;
@@ -82,12 +84,18 @@ import java.util.stream.Collectors;
 
 import javax.xml.parsers.SAXParserFactory;
 
+import io.qameta.allure.Description;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
+import io.qameta.allure.Story;
 import io.qameta.allure.junit4.DisplayName;
 import org.junit.After;
 import org.junit.Test;
 import org.xml.sax.EntityResolver;
 
 @DisplayName("XML Connectors Path generation")
+@Feature(COMPONENT_LOCATION)
+@Story(COMPONENT_LOCATION_STORY)
 public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
 
   private static final String COLON_SEPARATOR = ":";
@@ -274,83 +282,6 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
     }
   }
 
-  private Optional<ConfigLine> loadConfigLines(Set<ExtensionModel> extensionModels, InputStream inputStream) {
-    List<XmlNamespaceInfoProvider> xmlNamespaceInfoProviders =
-        ImmutableList.<XmlNamespaceInfoProvider>builder()
-            .add(createStaticNamespaceInfoProviders(extensionModels))
-            .addAll(discoverRuntimeXmlNamespaceInfoProvider())
-            .build();
-    List<ConfigFile> configFiles = processXmlConfiguration(new XmlParsingConfiguration() {
-
-      @Override
-      public ParsingPropertyResolver getParsingPropertyResolver() {
-        return key -> null;
-      }
-
-      @Override
-      public ConfigResource[] getArtifactConfigResources() {
-        return new ConfigResource[] {
-            new ConfigResource("config", inputStream)
-        };
-      }
-
-      @Override
-      public ResourceLocator getResourceLocator() {
-        return null;
-      }
-
-      @Override
-      public Supplier<SAXParserFactory> getSaxParserFactory() {
-        return () -> XMLSecureFactories.createDefault().getSAXParserFactory();
-      }
-
-      @Override
-      public XmlConfigurationDocumentLoader getXmlConfigurationDocumentLoader() {
-        return noValidationDocumentLoader();
-      }
-
-      @Override
-      public EntityResolver getEntityResolver() {
-        return new ModuleDelegatingEntityResolver(extensionModels);
-      }
-
-      @Override
-      public List<XmlNamespaceInfoProvider> getXmlNamespaceInfoProvider() {
-        return xmlNamespaceInfoProviders;
-      }
-    });
-    return configFiles.isEmpty() ? empty() : of(configFiles.get(0).getConfigLines().get(0));
-  }
-
-  private XmlNamespaceInfoProvider createStaticNamespaceInfoProviders(Set<ExtensionModel> extensionModels) {
-    List<XmlNamespaceInfoProvider> xmlNamesInfoProviders =
-        extensionModels.stream()
-            .map(ext -> (XmlNamespaceInfoProvider) () -> Collections.singleton(new XmlNamespaceInfo() {
-
-              @Override
-              public String getNamespaceUriPrefix() {
-                return ext.getXmlDslModel().getNamespace();
-              }
-
-              @Override
-              public String getNamespace() {
-                return ext.getXmlDslModel().getPrefix();
-              }
-            }))
-            .collect(toImmutableList());
-    return () -> xmlNamesInfoProviders.stream().map(XmlNamespaceInfoProvider::getXmlNamespacesInfo)
-        .flatMap(collection -> collection.stream())
-        .collect(Collectors.toCollection(() -> new ArrayList<>()));
-  }
-
-  private List<XmlNamespaceInfoProvider> discoverRuntimeXmlNamespaceInfoProvider() {
-    ImmutableList.Builder namespaceInfoProvidersBuilder = ImmutableList.builder();
-    namespaceInfoProvidersBuilder
-        .addAll(new SpiServiceRegistry().lookupProviders(XmlNamespaceInfoProvider.class,
-                                                         muleContext.getClass().getClassLoader()));
-    return namespaceInfoProvidersBuilder.build();
-  }
-
   @Test
   public void validateComponentLocationCreatedFromExtensionModelsWithoutUsingParsers() throws Exception {
     final Set<ExtensionModel> extensionModels = muleContext.getExtensionManager().getExtensions();
@@ -524,6 +455,8 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
     assertNoNextProcessorNotification();
   }
 
+  @Description("Smart Connector inside a choice router")
+  @Issue("MULE-16984")
   @Test
   public void flowWithChoiceRouter() throws Exception {
     flowRunner("flowWithChoiceRouter").run();
@@ -549,6 +482,8 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
     assertNoNextProcessorNotification();
   }
 
+  @Description("Smart Connector inside a until-successful scope")
+  @Issue("MULE-16285")
   @Test
   public void flowWithUntilSuccessfulScope() throws Exception {
     flowRunner("flowWithUntilSuccessfulScope").run();
@@ -569,6 +504,8 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
     assertNoNextProcessorNotification();
   }
 
+  @Description("Smart Connector inside a try scope")
+  @Issue("MULE-16285")
   @Test
   public void flowWithTryScope() throws Exception {
     flowRunner("flowWithTryScope").run();
@@ -589,6 +526,8 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
     assertNoNextProcessorNotification();
   }
 
+  @Description("Smart Connector inside a foreach scope")
+  @Issue("MULE-16285")
   @Test
   public void flowWithForeachScope() throws Exception {
     flowRunner("flowWithForeachScope").run();
@@ -609,6 +548,8 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
     assertNoNextProcessorNotification();
   }
 
+  @Description("Smart Connector inside a parallel-foreach scope")
+  @Issue("MULE-16285")
   @Test
   public void flowWithParallelForeachScope() throws Exception {
     flowRunner("flowWithParallelForeachScope").run();
@@ -629,6 +570,8 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
     assertNoNextProcessorNotification();
   }
 
+  @Description("Smart Connector inside a scatter-gather")
+  @Issue("MULE-16285")
   @Test
   public void flowWithScatterGather() throws Exception {
     flowRunner("flowWithScatterGather").run();
@@ -844,20 +787,6 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
     assertNoNextProcessorNotification();
   }
 
-  private void assertNoNextProcessorNotification() {
-    Iterator iterator = listener.getNotifications().iterator();
-    assertThat(iterator.hasNext(), is(false));
-  }
-
-  private void assertNextProcessorLocationIs(DefaultComponentLocation componentLocation) {
-    assertThat(listener.getNotifications().isEmpty(), is(false));
-    MessageProcessorNotification processorNotification =
-        listener.getNotifications().get(0);
-    listener.getNotifications().remove(0);
-    assertThat(processorNotification.getComponent().getLocation().getLocation(), is(componentLocation.getLocation()));
-    assertThat(processorNotification.getComponent().getLocation(), is(componentLocation));
-  }
-
   private String[] getModulePaths() {
     return new String[] {BASE_PATH_XML_MODULES + MODULE_SIMPLE_XML,
         BASE_PATH_XML_MODULES + MODULE_SIMPLE_PROXY_XML};
@@ -898,4 +827,97 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
       }
     });
   }
+
+  // TODO: MULE-17049
+  private Optional<ConfigLine> loadConfigLines(Set<ExtensionModel> extensionModels, InputStream inputStream) {
+    List<XmlNamespaceInfoProvider> xmlNamespaceInfoProviders =
+        ImmutableList.<XmlNamespaceInfoProvider>builder()
+            .add(createStaticNamespaceInfoProviders(extensionModels))
+            .addAll(discoverRuntimeXmlNamespaceInfoProvider())
+            .build();
+    List<ConfigFile> configFiles = processXmlConfiguration(new XmlParsingConfiguration() {
+
+      @Override
+      public ParsingPropertyResolver getParsingPropertyResolver() {
+        return key -> null;
+      }
+
+      @Override
+      public ConfigResource[] getArtifactConfigResources() {
+        return new ConfigResource[] {
+            new ConfigResource("config", inputStream)
+        };
+      }
+
+      @Override
+      public ResourceLocator getResourceLocator() {
+        return null;
+      }
+
+      @Override
+      public Supplier<SAXParserFactory> getSaxParserFactory() {
+        return () -> XMLSecureFactories.createDefault().getSAXParserFactory();
+      }
+
+      @Override
+      public XmlConfigurationDocumentLoader getXmlConfigurationDocumentLoader() {
+        return noValidationDocumentLoader();
+      }
+
+      @Override
+      public EntityResolver getEntityResolver() {
+        return new ModuleDelegatingEntityResolver(extensionModels);
+      }
+
+      @Override
+      public List<XmlNamespaceInfoProvider> getXmlNamespaceInfoProvider() {
+        return xmlNamespaceInfoProviders;
+      }
+    });
+    return configFiles.isEmpty() ? empty() : of(configFiles.get(0).getConfigLines().get(0));
+  }
+
+  private XmlNamespaceInfoProvider createStaticNamespaceInfoProviders(Set<ExtensionModel> extensionModels) {
+    List<XmlNamespaceInfoProvider> xmlNamesInfoProviders =
+        extensionModels.stream()
+            .map(ext -> (XmlNamespaceInfoProvider) () -> Collections.singleton(new XmlNamespaceInfo() {
+
+              @Override
+              public String getNamespaceUriPrefix() {
+                return ext.getXmlDslModel().getNamespace();
+              }
+
+              @Override
+              public String getNamespace() {
+                return ext.getXmlDslModel().getPrefix();
+              }
+            }))
+            .collect(toImmutableList());
+    return () -> xmlNamesInfoProviders.stream().map(XmlNamespaceInfoProvider::getXmlNamespacesInfo)
+        .flatMap(collection -> collection.stream())
+        .collect(Collectors.toCollection(() -> new ArrayList<>()));
+  }
+
+  private List<XmlNamespaceInfoProvider> discoverRuntimeXmlNamespaceInfoProvider() {
+    ImmutableList.Builder namespaceInfoProvidersBuilder = ImmutableList.builder();
+    namespaceInfoProvidersBuilder
+        .addAll(new SpiServiceRegistry().lookupProviders(XmlNamespaceInfoProvider.class,
+                                                         muleContext.getClass().getClassLoader()));
+    return namespaceInfoProvidersBuilder.build();
+  }
+
+  private void assertNoNextProcessorNotification() {
+    Iterator iterator = listener.getNotifications().iterator();
+    assertThat(iterator.hasNext(), is(false));
+  }
+
+  private void assertNextProcessorLocationIs(DefaultComponentLocation componentLocation) {
+    assertThat(listener.getNotifications().isEmpty(), is(false));
+    MessageProcessorNotification processorNotification =
+        listener.getNotifications().get(0);
+    listener.getNotifications().remove(0);
+    assertThat(processorNotification.getComponent().getLocation().getLocation(), is(componentLocation.getLocation()));
+    assertThat(processorNotification.getComponent().getLocation(), is(componentLocation));
+  }
+
 }

@@ -64,6 +64,7 @@ import javax.inject.Inject;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
 import org.junit.After;
 import org.junit.Rule;
@@ -273,6 +274,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
   }
 
   @Description("Smart Connector inside a until-successful scope declares a simple operation without parameters")
+  @Issue("MULE-16285")
   @Test
   public void scOperationInsideAnUntilSuccessScope() throws Exception {
     flowRunner("flowWithUntilSuccessfulScope").run();
@@ -296,6 +298,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
   }
 
   @Description("Smart Connector inside a try scope declares a simple operation without parameters")
+  @Issue("MULE-16285")
   @Test
   public void scOperationInsideTryScope() throws Exception {
     flowRunner("flowWithTryScope").run();
@@ -319,6 +322,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
   }
 
   @Description("Smart Connector inside a foreach scope declares a simple operation without parameters")
+  @Issue("MULE-16285")
   @Test
   public void scOperationInsideForeachScope() throws Exception {
     flowRunner("flowWithForeachScope").run();
@@ -342,6 +346,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
   }
 
   @Description("Smart Connector inside a parallel-foreach scope declares a simple operation without parameters")
+  @Issue("MULE-16285")
   @Test
   public void scOperationInsideParallelForeachScope() throws Exception {
     flowRunner("flowWithParallelForeachScope").run();
@@ -365,6 +370,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
   }
 
   @Description("Smart Connector inside a scatter-gather declares a simple operation without parameters")
+  @Issue("MULE-16285")
   @Test
   public void flowWithScatterGather() throws Exception {
     flowRunner("flowWithScatterGather").run();
