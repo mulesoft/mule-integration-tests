@@ -46,6 +46,7 @@
                     vars['latch'].await()
                 </script:code>
             </script:execute>
+            <test:queue name="asyncFinished"/>
         </async>
         <test:queue name="asyncDispatched"/>
     </flow>
