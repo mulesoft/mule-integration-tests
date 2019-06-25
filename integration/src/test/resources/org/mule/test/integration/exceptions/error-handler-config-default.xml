@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+
+    <http:request-config name="example" basePath="/api/v1">
+        <http:request-connection host="localhost" port="${httpPort}"/>
+    </http:request-config>
+
+
+    <error-handler name="globalHandlers">
+        <on-error-propagate logException="true">
+            <http:request method="POST" config-ref="example" path="/notifications" />
+        </on-error-propagate>
+    </error-handler>
+
+    <configuration defaultErrorHandler-ref="globalHandlers"/>
+
+</mule>
