@@ -7,17 +7,29 @@
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 
-    <http:request-config name="example" basePath="/api/v1">
+    <http:request-config name="example">
         <http:request-connection host="localhost" port="${httpPort}"/>
     </http:request-config>
 
+    <http:listener-config name="HTTP_Listener_config">
+        <http:listener-connection host="localhost" port="${httpPort}" />
+    </http:listener-config>
 
     <error-handler name="globalHandlers">
-        <on-error-propagate logException="true">
-            <http:request method="POST" config-ref="example" path="/notifications" />
-        </on-error-propagate>
+        <on-error-continue logException="true">
+            <http:request method="POST" config-ref="example" path="/test" />
+            <set-payload value="${someValue}"/>
+        </on-error-continue>
     </error-handler>
 
     <configuration defaultErrorHandler-ref="globalHandlers"/>
 
+    <flow name="someFlow">
+        <raise-error type="APP:SOME"/>
+    </flow>
+
+    <flow name="listenerFlow">
+        <http:listener config-ref="HTTP_Listener_config" path="test"/>
+        <logger message="Hello world"/>
+    </flow>
 </mule>

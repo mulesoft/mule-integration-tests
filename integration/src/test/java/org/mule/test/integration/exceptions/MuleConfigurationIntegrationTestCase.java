@@ -6,10 +6,15 @@
  */
 package org.mule.test.integration.exceptions;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.CoreMatchers.is;
+
 import io.qameta.allure.Issue;
 import org.junit.Rule;
 import org.junit.Test;
+import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.tck.junit4.rule.DynamicPort;
+import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
 
 @Issue("MULE-17051")
@@ -18,13 +23,18 @@ public class MuleConfigurationIntegrationTestCase extends AbstractIntegrationTes
   @Rule
   public DynamicPort port = new DynamicPort("httpPort");
 
+  @Rule
+  public SystemProperty EXPECTED_PAYLOAD = new SystemProperty("someValue", "No tengo pruebas, pero tampoco dudas");
+
   @Override
   protected String getConfigFile() {
     return "org/mule/test/integration/exceptions/error-handler-config-default.xml";
   }
 
   @Test
-  public void modifyingDefaultErrorHandlerCanBeDeployed() {
-    // only need to check that configuration can actually be deployed
+  public void modifyingDefaultErrorHandlerCanBeDeployed() throws Exception {
+    CoreEvent event = flowRunner("someFlow").run();
+    assertThat(event.getMessage().getPayload().getValue(), is(EXPECTED_PAYLOAD.getValue()));
   }
+
 }
