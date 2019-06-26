@@ -318,12 +318,12 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  public void flowWithSource() throws Exception {
+  public void flowWithSource() {
     DefaultComponentLocation expectedSourceLocation =
         FLOW_WITH_SOURCE.appendLocationPart("source", SCHEDULER_SOURCE,
                                             CONFIG_FILE_NAME, of(71), of(9));
     DefaultComponentLocation sourceLocation =
-        (DefaultComponentLocation) ((Component) flowWithSource.getSource()).getAnnotation(LOCATION_KEY);
+        (DefaultComponentLocation) (flowWithSource.getSource()).getAnnotation(LOCATION_KEY);
     assertThat(sourceLocation, is(expectedSourceLocation));
     assertThat(((Component) flowWithSource.getProcessors().get(0)).getAnnotation(LOCATION_KEY), is(FLOW_WITH_SOURCE
         .appendLocationPart("processors", empty(), empty(), empty(), empty())
