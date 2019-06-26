@@ -12,7 +12,9 @@ import static org.hamcrest.CoreMatchers.is;
 import io.qameta.allure.Issue;
 import org.junit.Rule;
 import org.junit.Test;
+import org.mule.runtime.api.streaming.bytes.CursorStreamProvider;
 import org.mule.runtime.core.api.event.CoreEvent;
+import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -33,8 +35,9 @@ public class MuleConfigurationIntegrationTestCase extends AbstractIntegrationTes
 
   @Test
   public void modifyingDefaultErrorHandlerCanBeDeployed() throws Exception {
-    CoreEvent event = flowRunner("someFlow").run();
-    assertThat(event.getMessage().getPayload().getValue(), is(EXPECTED_PAYLOAD.getValue()));
+    CoreEvent event = flowRunner("someFlow").keepStreamsOpen().run();
+    CursorStreamProvider provider = (CursorStreamProvider) event.getMessage().getPayload().getValue();
+    assertThat(IOUtils.toString(provider), is(EXPECTED_PAYLOAD.getValue()));
   }
 
 }

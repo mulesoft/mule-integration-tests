@@ -18,7 +18,6 @@ http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/cor
     <error-handler name="globalHandlers">
         <on-error-continue logException="true">
             <http:request method="POST" config-ref="example" path="/test" />
-            <set-payload value="${someValue}"/>
         </on-error-continue>
     </error-handler>
 
@@ -30,6 +29,6 @@ http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/cor
 
     <flow name="listenerFlow">
         <http:listener config-ref="HTTP_Listener_config" path="test"/>
-        <logger message="Hello world"/>
+        <set-payload value="${someValue}"/>
     </flow>
 </mule>
