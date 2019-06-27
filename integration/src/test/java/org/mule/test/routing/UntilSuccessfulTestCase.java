@@ -177,6 +177,13 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
     assertThat(WaitMeasure.totalWait >= 1000, is(true));
   }
 
+  @Test
+  public void untilSuccessfulInErrorHandler() throws Exception {
+    CoreEvent event = flowRunner("untilSuccessfulInErrorHandler").run();
+    assertThat(CustomMP.getCount(), is(1));
+    assertThat(event.getMessage().getPayload().getValue(), is("hello"));
+  }
+
   private List<Object> ponderUntilMessageCountReceivedByTargetMessageProcessor(final int expectedCount)
       throws InterruptedException {
     return ponderUntilMessageCountReceived(expectedCount, targetMessageProcessor);

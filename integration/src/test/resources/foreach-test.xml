@@ -340,5 +340,16 @@
         </foreach>
     </flow>
 
+    <flow name="foreachInErrorHandler">
+        <raise-error type="APP:SOME"/>
+        <error-handler>
+            <on-error-continue>
+                <foreach collection="#[['apple']]">
+                    <logger></logger>
+                </foreach>
+                <set-payload value="hello"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
 
 </mule>

@@ -204,6 +204,23 @@
         </error-handler>
     </flow>
 
+    <flow name="scatterGattherInsideErrorHandler">
+        <raise-error type="APP:SOME"/>
+        <error-handler>
+            <on-error-continue>
+                <scatter-gather>
+                    <route>
+                        <logger message="Hello World"/>
+                    </route>
+                    <route>
+                        <logger message="Hello World"/>
+                    </route>
+                </scatter-gather>
+                <set-payload value="hello"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
     <flow name="variables">
         <set-variable variableName="var1" value="var"/>
         <set-variable variableName="var2" value="var"/>

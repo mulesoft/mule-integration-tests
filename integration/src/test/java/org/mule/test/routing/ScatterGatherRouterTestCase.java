@@ -201,6 +201,12 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
+  public void scatterGattherInsideErrorHandler() throws Exception {
+    CoreEvent event = flowRunner("scatterGattherInsideErrorHandler").run();
+    assertThat(event.getMessage().getPayload().getValue(), is("hello"));
+  }
+
+  @Test
   @Description("By default routes are run concurrently and multiple threads are used.")
   public void concurrent() throws Exception {
     flowRunner("concurrent").withVariable("latch", new Latch()).run();

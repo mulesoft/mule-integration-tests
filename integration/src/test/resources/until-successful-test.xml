@@ -100,4 +100,16 @@
             <test:processor throwException="true"/>
         </until-successful>
     </flow>
+
+    <flow name="untilSuccessfulInErrorHandler">
+        <raise-error type="APP:SOME"/>
+        <error-handler>
+            <on-error-continue>
+                <until-successful>
+                    <processor ref="dlq-mp"/>
+                </until-successful>
+                <set-payload value="hello"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
 </mule>
