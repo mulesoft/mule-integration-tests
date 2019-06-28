@@ -15,7 +15,6 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mule.runtime.api.component.AbstractComponent.LOCATION_KEY;
 import static org.mule.runtime.api.component.ComponentIdentifier.buildFromStringRepresentation;
-import static org.mule.runtime.api.component.TypedComponentIdentifier.builder;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.FLOW;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.ON_ERROR;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.OPERATION;
@@ -23,11 +22,11 @@ import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentT
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.SCOPE;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.SOURCE;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.UNKNOWN;
+import static org.mule.runtime.api.component.TypedComponentIdentifier.builder;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.FLOW_IDENTIFIER;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.SUBFLOW_IDENTIFIER;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentLocationStory.COMPONENT_LOCATION;
-
 import org.mule.functional.api.flow.FlowRunner;
 import org.mule.runtime.api.component.Component;
 import org.mule.runtime.api.component.TypedComponentIdentifier;
@@ -42,9 +41,6 @@ import org.mule.tck.probe.PollingProber;
 import org.mule.tck.probe.Probe;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import org.junit.After;
-import org.junit.Test;
-
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -55,6 +51,8 @@ import javax.inject.Named;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
+import org.junit.After;
+import org.junit.Test;
 
 @Feature(CONFIGURATION_COMPONENT_LOCATOR)
 @Story(COMPONENT_LOCATION)
@@ -74,83 +72,85 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
                                    asList(new DefaultLocationPart("flowWithSingleMp",
                                                                   FLOW_TYPED_COMPONENT_IDENTIFIER,
                                                                   CONFIG_FILE_NAME,
-                                                                  of(27))));
+                                                                  of(27),
+                                                                  of(5))));
   private static final DefaultComponentLocation FLOW_WITH_MULTIPLE_MP_LOCATION =
       new DefaultComponentLocation(of("flowWithMultipleMps"),
                                    asList(new DefaultLocationPart("flowWithMultipleMps",
                                                                   FLOW_TYPED_COMPONENT_IDENTIFIER,
                                                                   CONFIG_FILE_NAME,
-                                                                  of(31))));
+                                                                  of(31),
+                                                                  of(5))));
   private static final DefaultComponentLocation FLOW_WITH_ERROR_HANDLER =
       new DefaultComponentLocation(of("flowWithErrorHandler"),
                                    asList(new DefaultLocationPart("flowWithErrorHandler",
                                                                   FLOW_TYPED_COMPONENT_IDENTIFIER,
                                                                   CONFIG_FILE_NAME,
-                                                                  of(37))));
+                                                                  of(37),
+                                                                  of(5))));
   private static final DefaultComponentLocation FLOW_WITH_BLOCK_WITH_ERROR_HANDLER =
       new DefaultComponentLocation(of("flowWithTryWithErrorHandler"),
                                    asList(new DefaultLocationPart("flowWithTryWithErrorHandler",
                                                                   FLOW_TYPED_COMPONENT_IDENTIFIER,
                                                                   CONFIG_FILE_NAME,
-                                                                  of(58))));
-
+                                                                  of(58),
+                                                                  of(5))));
   private static final DefaultComponentLocation FLOW_WITH_SOURCE =
       new DefaultComponentLocation(of("flowWithSource"),
                                    asList(new DefaultLocationPart("flowWithSource",
                                                                   FLOW_TYPED_COMPONENT_IDENTIFIER,
                                                                   CONFIG_FILE_NAME,
-                                                                  of(70))));
-
+                                                                  of(70),
+                                                                  of(5))));
   private static final DefaultComponentLocation FLOW_WITH_SCATTER_GATHER =
       new DefaultComponentLocation(of("flowWithScatterGather"),
                                    asList(new DefaultLocationPart("flowWithScatterGather",
                                                                   FLOW_TYPED_COMPONENT_IDENTIFIER,
                                                                   CONFIG_FILE_NAME,
-                                                                  of(90))));
-
+                                                                  of(90),
+                                                                  of(5))));
   private static final DefaultComponentLocation FLOW_WITH_ASYNC =
       new DefaultComponentLocation(of("flowWithAsync"),
                                    asList(new DefaultLocationPart("flowWithAsync",
                                                                   FLOW_TYPED_COMPONENT_IDENTIFIER,
                                                                   CONFIG_FILE_NAME,
-                                                                  of(104))));
-
+                                                                  of(104),
+                                                                  of(5))));
   private static final DefaultComponentLocation FLOW_WITH_SUBFLOW =
       new DefaultComponentLocation(of("flowWithSubflow"),
                                    asList(new DefaultLocationPart("flowWithSubflow",
                                                                   FLOW_TYPED_COMPONENT_IDENTIFIER,
                                                                   CONFIG_FILE_NAME,
-                                                                  of(79))));
-
-
+                                                                  of(79),
+                                                                  of(5))));
   private static final DefaultComponentLocation SUBFLOW =
       new DefaultComponentLocation(of("subflow"),
                                    asList(new DefaultLocationPart("subflow",
                                                                   SUB_FLOW_TYPED_COMPONENT_IDENTIFIER,
                                                                   CONFIG_FILE_NAME,
-                                                                  of(85))));
-
+                                                                  of(85),
+                                                                  of(5))));
   private static final DefaultComponentLocation FLOW_WITH_AGGREGATOR_ONE_ROUTE =
       new DefaultComponentLocation(of("aggregatorWithOneRoute"),
                                    asList(new DefaultLocationPart("aggregatorWithOneRoute",
                                                                   FLOW_TYPED_COMPONENT_IDENTIFIER,
                                                                   CONFIG_FILE_NAME,
-                                                                  of(117))));
-
+                                                                  of(117),
+                                                                  of(5))));
   private static final DefaultComponentLocation FLOW_WITH_AGGREGATOR_TWO_ROUTES =
       new DefaultComponentLocation(of("aggregatorWithTwoRoutes"),
                                    asList(new DefaultLocationPart("aggregatorWithTwoRoutes",
                                                                   FLOW_TYPED_COMPONENT_IDENTIFIER,
                                                                   CONFIG_FILE_NAME,
-                                                                  of(125))));
-
+                                                                  of(125),
+                                                                  of(5))));
   private static final DefaultComponentLocation FLOW_WITH_AGGREGATOR_TWO_ROUTES_AND_CONTENT =
       new DefaultComponentLocation(of("aggregatorWithTwoRoutesAndContent"),
                                    asList(new DefaultLocationPart("aggregatorWithTwoRoutesAndContent",
                                                                   FLOW_TYPED_COMPONENT_IDENTIFIER,
                                                                   CONFIG_FILE_NAME,
-                                                                  of(136))));
-
+                                                                  of(136),
+                                                                  of(5))));
   private static final Optional<TypedComponentIdentifier> LOGGER =
       of(builder().identifier(buildFromStringRepresentation("mule:logger"))
           .type(OPERATION).build());
@@ -215,66 +215,72 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
   @Test
   public void flowWithSingleMp() throws Exception {
     flowRunner("flowWithSingleMp").run();
-    assertNextProcessorLocationIs(FLOW_WITH_SINGLE_MP_LOCATION.appendLocationPart("processors", empty(), empty(), empty())
-        .appendLocationPart("0", LOGGER, CONFIG_FILE_NAME, of(28)));
+    assertNextProcessorLocationIs(FLOW_WITH_SINGLE_MP_LOCATION
+        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("0", LOGGER, CONFIG_FILE_NAME, of(28), of(9)));
     assertNoNextProcessorNotification();
   }
 
   @Test
   public void flowWithMultipleMps() throws Exception {
     flowRunner("flowWithMultipleMps").run();
-    assertNextProcessorLocationIs(FLOW_WITH_MULTIPLE_MP_LOCATION.appendLocationPart("processors", empty(), empty(), empty())
-        .appendLocationPart("0", LOGGER, CONFIG_FILE_NAME, of(32)));
-    assertNextProcessorLocationIs(FLOW_WITH_MULTIPLE_MP_LOCATION.appendLocationPart("processors", empty(), empty(), empty())
-        .appendLocationPart("1", SET_PAYLOAD, CONFIG_FILE_NAME, of(33)));
-    assertNextProcessorLocationIs(FLOW_WITH_MULTIPLE_MP_LOCATION.appendLocationPart("processors", empty(), empty(), empty())
+    assertNextProcessorLocationIs(FLOW_WITH_MULTIPLE_MP_LOCATION
+        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("0", LOGGER, CONFIG_FILE_NAME, of(32), of(9)));
+    assertNextProcessorLocationIs(FLOW_WITH_MULTIPLE_MP_LOCATION
+        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("1", SET_PAYLOAD, CONFIG_FILE_NAME, of(33), of(9)));
+    assertNextProcessorLocationIs(FLOW_WITH_MULTIPLE_MP_LOCATION
+        .appendLocationPart("processors", empty(), empty(), empty(), empty())
         .appendLocationPart("2", OBJECT_TO_STRING_TRANSFORMER,
-                            CONFIG_FILE_NAME, of(34)));
+                            CONFIG_FILE_NAME, of(34), of(9)));
     assertNoNextProcessorNotification();
   }
 
   @Test
   public void flowWithErrorHandlerExecutingOnContinue() throws Exception {
     flowRunner("flowWithErrorHandler").withVariable("executeFailingComponent", false).run();
-    DefaultComponentLocation choiceLocation = FLOW_WITH_ERROR_HANDLER.appendLocationPart("processors", empty(), empty(), empty())
-        .appendLocationPart("0", CHOICE, CONFIG_FILE_NAME, of(38));
+    DefaultComponentLocation choiceLocation =
+        FLOW_WITH_ERROR_HANDLER.appendLocationPart("processors", empty(), empty(), empty(), empty())
+            .appendLocationPart("0", CHOICE, CONFIG_FILE_NAME, of(38), of(9));
     assertNextProcessorLocationIs(choiceLocation);
     assertNextProcessorLocationIs(FLOW_WITH_ERROR_HANDLER
         .appendLocationPart("errorHandler", ERROR_HANDLER,
-                            CONFIG_FILE_NAME, of(46))
+                            CONFIG_FILE_NAME, of(46), of(9))
         .appendLocationPart("0", ON_ERROR_CONTINUE, CONFIG_FILE_NAME,
-                            of(47))
+                            of(47), of(13))
         .appendProcessorsPart()
         .appendLocationPart("0", VALIDATION_IS_FALSE, CONFIG_FILE_NAME,
-                            of(48)));
+                            of(48), of(17)));
     assertNoNextProcessorNotification();
   }
 
   @Test
   public void flowWithErrorHandlerExecutingOnPropagate() throws Exception {
     flowRunner("flowWithErrorHandler").withVariable("executeFailingComponent", true).runExpectingException();
-    DefaultComponentLocation choiceLocation = FLOW_WITH_ERROR_HANDLER.appendLocationPart("processors", empty(), empty(), empty())
-        .appendLocationPart("0", CHOICE, CONFIG_FILE_NAME, of(38));
+    DefaultComponentLocation choiceLocation =
+        FLOW_WITH_ERROR_HANDLER.appendLocationPart("processors", empty(), empty(), empty(), empty())
+            .appendLocationPart("0", CHOICE, CONFIG_FILE_NAME, of(38), of(9));
     assertNextProcessorLocationIs(choiceLocation);
     DefaultComponentLocation choiceRoute0 = choiceLocation
         .appendRoutePart()
-        .appendLocationPart("0", ROUTE, CONFIG_FILE_NAME, of(39));
+        .appendLocationPart("0", ROUTE, CONFIG_FILE_NAME, of(39), of(13));
     assertNextProcessorLocationIs(choiceRoute0
         .appendProcessorsPart()
-        .appendLocationPart("0", TEST_PROCESSOR, CONFIG_FILE_NAME, of(40)));
+        .appendLocationPart("0", TEST_PROCESSOR, CONFIG_FILE_NAME, of(40), of(17)));
     assertNextProcessorLocationIs(FLOW_WITH_ERROR_HANDLER
-        .appendLocationPart("errorHandler", ERROR_HANDLER, CONFIG_FILE_NAME, of(46))
-        .appendLocationPart("1", ON_ERROR_PROPAGATE, CONFIG_FILE_NAME, of(50))
+        .appendLocationPart("errorHandler", ERROR_HANDLER, CONFIG_FILE_NAME, of(46), of(9))
+        .appendLocationPart("1", ON_ERROR_PROPAGATE, CONFIG_FILE_NAME, of(50), of(13))
         .appendProcessorsPart()
-        .appendLocationPart("0", TRY, CONFIG_FILE_NAME, of(51)));
+        .appendLocationPart("0", TRY, CONFIG_FILE_NAME, of(51), of(17)));
     assertNextProcessorLocationIs(FLOW_WITH_ERROR_HANDLER
-        .appendLocationPart("errorHandler", ERROR_HANDLER, CONFIG_FILE_NAME, of(46))
+        .appendLocationPart("errorHandler", ERROR_HANDLER, CONFIG_FILE_NAME, of(46), of(9))
         .appendLocationPart("1", ON_ERROR_PROPAGATE, CONFIG_FILE_NAME,
-                            of(50))
+                            of(50), of(13))
         .appendProcessorsPart()
-        .appendLocationPart("0", TRY, CONFIG_FILE_NAME, of(51))
+        .appendLocationPart("0", TRY, CONFIG_FILE_NAME, of(51), of(17))
         .appendProcessorsPart()
-        .appendLocationPart("0", VALIDATION_IS_TRUE, CONFIG_FILE_NAME, of(52)));
+        .appendLocationPart("0", VALIDATION_IS_TRUE, CONFIG_FILE_NAME, of(52), of(21)));
     assertNoNextProcessorNotification();
   }
 
@@ -282,36 +288,36 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
   public void flowWithBlockWithErrorHandler() throws Exception {
     flowRunner("flowWithTryWithErrorHandler").run();
     DefaultComponentLocation blockLocation =
-        FLOW_WITH_BLOCK_WITH_ERROR_HANDLER.appendLocationPart("processors", empty(), empty(), empty())
-            .appendLocationPart("0", TRY, CONFIG_FILE_NAME, of(59));
+        FLOW_WITH_BLOCK_WITH_ERROR_HANDLER.appendLocationPart("processors", empty(), empty(), empty(), empty())
+            .appendLocationPart("0", TRY, CONFIG_FILE_NAME, of(59), of(9));
     assertNextProcessorLocationIs(blockLocation);
     assertNextProcessorLocationIs(blockLocation
         .appendProcessorsPart()
-        .appendLocationPart("0", TEST_PROCESSOR, CONFIG_FILE_NAME, of(60)));
+        .appendLocationPart("0", TEST_PROCESSOR, CONFIG_FILE_NAME, of(60), of(13)));
     DefaultComponentLocation blockOnErrorContinueLocation = blockLocation
-        .appendLocationPart("errorHandler", ERROR_HANDLER, CONFIG_FILE_NAME, of(61))
+        .appendLocationPart("errorHandler", ERROR_HANDLER, CONFIG_FILE_NAME, of(61), of(13))
         .appendLocationPart("0", ON_ERROR_CONTINUE, CONFIG_FILE_NAME,
-                            of(62));
+                            of(62), of(17));
     assertNextProcessorLocationIs(blockOnErrorContinueLocation
         .appendProcessorsPart()
-        .appendLocationPart("0", VALIDATION_IS_FALSE, CONFIG_FILE_NAME, of(63)));
+        .appendLocationPart("0", VALIDATION_IS_FALSE, CONFIG_FILE_NAME, of(63), of(21)));
     assertNextProcessorLocationIs(blockOnErrorContinueLocation
         .appendProcessorsPart()
-        .appendLocationPart("1", VALIDATION_IS_TRUE, CONFIG_FILE_NAME, of(64)));
+        .appendLocationPart("1", VALIDATION_IS_TRUE, CONFIG_FILE_NAME, of(64), of(21)));
     assertNoNextProcessorNotification();
   }
 
   @Test
-  public void flowWithSource() throws Exception {
+  public void flowWithSource() {
     DefaultComponentLocation expectedSourceLocation =
         FLOW_WITH_SOURCE.appendLocationPart("source", SCHEDULER_SOURCE,
-                                            CONFIG_FILE_NAME, of(71));
+                                            CONFIG_FILE_NAME, of(71), of(9));
     DefaultComponentLocation sourceLocation =
-        (DefaultComponentLocation) ((Component) flowWithSource.getSource()).getAnnotation(LOCATION_KEY);
+        (DefaultComponentLocation) (flowWithSource.getSource()).getAnnotation(LOCATION_KEY);
     assertThat(sourceLocation, is(expectedSourceLocation));
     assertThat(((Component) flowWithSource.getProcessors().get(0)).getAnnotation(LOCATION_KEY), is(FLOW_WITH_SOURCE
-        .appendLocationPart("processors", empty(), empty(), empty())
-        .appendLocationPart("0", LOGGER, CONFIG_FILE_NAME, of(76))));
+        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("0", LOGGER, CONFIG_FILE_NAME, of(76), of(9))));
   }
 
   @Test
@@ -320,20 +326,20 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
     DefaultComponentLocation flowWithSplitterProcessorsLocation =
         FLOW_WITH_SUBFLOW.appendProcessorsPart();
     assertNextProcessorLocationIs(flowWithSplitterProcessorsLocation
-        .appendLocationPart("0", LOGGER, CONFIG_FILE_NAME, of(80)));
+        .appendLocationPart("0", LOGGER, CONFIG_FILE_NAME, of(80), of(9)));
     assertNextProcessorLocationIs(flowWithSplitterProcessorsLocation
-        .appendLocationPart("1", FLOW_REF, CONFIG_FILE_NAME, of(81)));
+        .appendLocationPart("1", FLOW_REF, CONFIG_FILE_NAME, of(81), of(9)));
 
     assertNextProcessorLocationIs(SUBFLOW.appendProcessorsPart()
         .appendLocationPart("0", LOGGER,
-                            CONFIG_FILE_NAME, of(86)));
+                            CONFIG_FILE_NAME, of(86), of(9)));
     assertNextProcessorLocationIs(SUBFLOW.appendProcessorsPart()
         .appendLocationPart("1", VALIDATION_IS_TRUE,
-                            CONFIG_FILE_NAME, of(87)));
+                            CONFIG_FILE_NAME, of(87), of(9)));
 
     assertNextProcessorLocationIs(flowWithSplitterProcessorsLocation
         .appendLocationPart("2", VALIDATION_IS_FALSE, CONFIG_FILE_NAME,
-                            of(82)));
+                            of(82), of(9)));
     assertNoNextProcessorNotification();
   }
 
@@ -342,34 +348,34 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
     flowRunner("flowWithScatterGather").run();
     waitUntilNotificationsArrived(4);
     DefaultComponentLocation flowWithSplitterProcessorsLocation =
-        FLOW_WITH_SCATTER_GATHER.appendLocationPart("processors", empty(), empty(), empty());
+        FLOW_WITH_SCATTER_GATHER.appendLocationPart("processors", empty(), empty(), empty(), empty());
     DefaultComponentLocation scatterGatherLocation =
-        flowWithSplitterProcessorsLocation.appendLocationPart("0", SCATTER_GATHER, CONFIG_FILE_NAME, of(91));
+        flowWithSplitterProcessorsLocation.appendLocationPart("0", SCATTER_GATHER, CONFIG_FILE_NAME, of(91), of(9));
     assertNextProcessorLocationIs(scatterGatherLocation);
 
     DefaultComponentLocation scatterGatherRoute0 = scatterGatherLocation
         .appendRoutePart()
-        .appendLocationPart("0", ROUTE, CONFIG_FILE_NAME, of(92));
+        .appendLocationPart("0", ROUTE, CONFIG_FILE_NAME, of(92), of(13));
     DefaultComponentLocation scatterGatherRouter1 = scatterGatherLocation
         .appendRoutePart()
-        .appendLocationPart("1", ROUTE, CONFIG_FILE_NAME, of(95));
+        .appendLocationPart("1", ROUTE, CONFIG_FILE_NAME, of(95), of(13));
     DefaultComponentLocation scatterGatherRouter2 = scatterGatherLocation
         .appendRoutePart()
-        .appendLocationPart("2", ROUTE, CONFIG_FILE_NAME, of(98));
+        .appendLocationPart("2", ROUTE, CONFIG_FILE_NAME, of(98), of(13));
 
     List<DefaultComponentLocation> nextLocations = asList(
                                                           scatterGatherRoute0
                                                               .appendProcessorsPart()
                                                               .appendLocationPart("0", LOGGER, CONFIG_FILE_NAME,
-                                                                                  of(93)),
+                                                                                  of(93), of(17)),
                                                           scatterGatherRouter1
                                                               .appendProcessorsPart()
                                                               .appendLocationPart("0", VALIDATION_IS_TRUE, CONFIG_FILE_NAME,
-                                                                                  of(96)),
+                                                                                  of(96), of(17)),
                                                           scatterGatherRouter2
                                                               .appendProcessorsPart()
                                                               .appendLocationPart("0", VALIDATION_IS_FALSE, CONFIG_FILE_NAME,
-                                                                                  of(99)));
+                                                                                  of(99), of(17)));
 
     assertNextProcessorLocationsAre(nextLocations);
     assertNoNextProcessorNotification();
@@ -385,16 +391,16 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
     waitUntilNotificationsArrived(3);
     DefaultComponentLocation flowWithAsyncLocation = FLOW_WITH_ASYNC.appendProcessorsPart();
     DefaultComponentLocation asyncLocation = flowWithAsyncLocation
-        .appendLocationPart("0", ASYNC, CONFIG_FILE_NAME, of(105));
+        .appendLocationPart("0", ASYNC, CONFIG_FILE_NAME, of(105), of(9));
     assertNextProcessorLocationIs(asyncLocation);
     DefaultComponentLocation asyncProcessorsLocation = asyncLocation
         .appendProcessorsPart();
     assertNextProcessorLocationIs(asyncProcessorsLocation
         .appendLocationPart("0", LOGGER,
-                            CONFIG_FILE_NAME, of(106)));
+                            CONFIG_FILE_NAME, of(106), of(13)));
     assertNextProcessorLocationIs(asyncProcessorsLocation
         .appendLocationPart("1", VALIDATION_IS_TRUE,
-                            CONFIG_FILE_NAME, of(107)));
+                            CONFIG_FILE_NAME, of(107), of(13)));
     assertNoNextProcessorNotification();
 
     terminationLatch.await();
@@ -420,16 +426,16 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
     flowRunner("aggregatorWithOneRoute").run();
     waitUntilNotificationsArrived(2);
     DefaultComponentLocation flowWithSingleRouteAggregator =
-        FLOW_WITH_AGGREGATOR_ONE_ROUTE.appendLocationPart("processors", empty(), empty(), empty());
+        FLOW_WITH_AGGREGATOR_ONE_ROUTE.appendLocationPart("processors", empty(), empty(), empty(), empty());
     DefaultComponentLocation aggregatorLocation =
-        flowWithSingleRouteAggregator.appendLocationPart("0", AGGREGATOR, CONFIG_FILE_NAME, of(118));
+        flowWithSingleRouteAggregator.appendLocationPart("0", AGGREGATOR, CONFIG_FILE_NAME, of(118), of(9));
     assertNextProcessorLocationIs(aggregatorLocation);
 
     DefaultComponentLocation aggregatorRoute0 = aggregatorLocation
         .appendRoutePart()
-        .appendLocationPart("0", ROUTE, CONFIG_FILE_NAME, of(119))
+        .appendLocationPart("0", ROUTE, CONFIG_FILE_NAME, of(119), of(13))
         .appendProcessorsPart()
-        .appendLocationPart("0", LOGGER, CONFIG_FILE_NAME, of(120));
+        .appendLocationPart("0", LOGGER, CONFIG_FILE_NAME, of(120), of(17));
 
 
     assertNextProcessorLocationIs(aggregatorRoute0);
@@ -443,16 +449,16 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
     flowRunner(flowName).run();
     waitUntilNotificationsArrived(2);
     DefaultComponentLocation flowWithSingleRouteAggregator =
-        FLOW_WITH_AGGREGATOR_TWO_ROUTES.appendLocationPart("processors", empty(), empty(), empty());
+        FLOW_WITH_AGGREGATOR_TWO_ROUTES.appendLocationPart("processors", empty(), empty(), empty(), empty());
     DefaultComponentLocation aggregatorLocation =
-        flowWithSingleRouteAggregator.appendLocationPart("0", AGGREGATOR, CONFIG_FILE_NAME, of(126));
+        flowWithSingleRouteAggregator.appendLocationPart("0", AGGREGATOR, CONFIG_FILE_NAME, of(126), of(9));
     assertNextProcessorLocationIs(aggregatorLocation);
 
     DefaultComponentLocation aggregatorRoute0 = aggregatorLocation
         .appendRoutePart()
-        .appendLocationPart("0", ROUTE, CONFIG_FILE_NAME, of(127))
+        .appendLocationPart("0", ROUTE, CONFIG_FILE_NAME, of(127), of(13))
         .appendProcessorsPart()
-        .appendLocationPart("0", LOGGER, CONFIG_FILE_NAME, of(128));
+        .appendLocationPart("0", LOGGER, CONFIG_FILE_NAME, of(128), of(17));
 
     assertNextProcessorLocationIs(aggregatorRoute0);
 
@@ -463,9 +469,9 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
 
     DefaultComponentLocation aggregatorRoute1 = aggregatorLocation
         .appendRoutePart()
-        .appendLocationPart("1", ROUTE, CONFIG_FILE_NAME, of(130))
+        .appendLocationPart("1", ROUTE, CONFIG_FILE_NAME, of(130), of(13))
         .appendProcessorsPart()
-        .appendLocationPart("0", LOGGER, CONFIG_FILE_NAME, of(131));
+        .appendLocationPart("0", LOGGER, CONFIG_FILE_NAME, of(131), of(17));
 
     assertNextProcessorLocationIs(aggregatorRoute1);
 
@@ -478,16 +484,16 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
     flowRunner(flowName).run();
     waitUntilNotificationsArrived(2);
     DefaultComponentLocation flowWithSingleRouteAggregator =
-        FLOW_WITH_AGGREGATOR_TWO_ROUTES_AND_CONTENT.appendLocationPart("processors", empty(), empty(), empty());
+        FLOW_WITH_AGGREGATOR_TWO_ROUTES_AND_CONTENT.appendLocationPart("processors", empty(), empty(), empty(), empty());
     DefaultComponentLocation aggregatorLocation =
-        flowWithSingleRouteAggregator.appendLocationPart("0", AGGREGATOR, CONFIG_FILE_NAME, of(137));
+        flowWithSingleRouteAggregator.appendLocationPart("0", AGGREGATOR, CONFIG_FILE_NAME, of(137), of(9));
     assertNextProcessorLocationIs(aggregatorLocation);
 
     DefaultComponentLocation aggregatorRoute0 = aggregatorLocation
         .appendRoutePart()
-        .appendLocationPart("0", ROUTE, CONFIG_FILE_NAME, of(139))
+        .appendLocationPart("0", ROUTE, CONFIG_FILE_NAME, of(139), of(13))
         .appendProcessorsPart()
-        .appendLocationPart("0", LOGGER, CONFIG_FILE_NAME, of(140));
+        .appendLocationPart("0", LOGGER, CONFIG_FILE_NAME, of(140), of(17));
 
     assertNextProcessorLocationIs(aggregatorRoute0);
 
@@ -498,9 +504,9 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
 
     DefaultComponentLocation aggregatorRoute1 = aggregatorLocation
         .appendRoutePart()
-        .appendLocationPart("1", ROUTE, CONFIG_FILE_NAME, of(142))
+        .appendLocationPart("1", ROUTE, CONFIG_FILE_NAME, of(142), of(13))
         .appendProcessorsPart()
-        .appendLocationPart("0", LOGGER, CONFIG_FILE_NAME, of(143));
+        .appendLocationPart("0", LOGGER, CONFIG_FILE_NAME, of(143), of(17));
 
     assertNextProcessorLocationIs(aggregatorRoute1);
 
