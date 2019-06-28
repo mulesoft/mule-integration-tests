@@ -383,11 +383,14 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     ComponentIdentifier firstRoute =
         interceptionParameters.get(1).getLocation().getComponentIdentifier().getIdentifier();
 
-    ComponentIdentifier thirdInterceptorParameter = interceptionParameters.get(2).getLocation().getComponentIdentifier().getIdentifier();
+    ComponentIdentifier thirdInterceptorParameter =
+        interceptionParameters.get(2).getLocation().getComponentIdentifier().getIdentifier();
 
-    ComponentIdentifier fourthInterceptorParameter = interceptionParameters.get(3).getLocation().getComponentIdentifier().getIdentifier();
+    ComponentIdentifier fourthInterceptorParameter =
+        interceptionParameters.get(3).getLocation().getComponentIdentifier().getIdentifier();
 
-    assertThat(asList(thirdInterceptorParameter.getName(), fourthInterceptorParameter.getName()), hasItems("logger", "set-payload"));
+    assertThat(asList(thirdInterceptorParameter.getName(), fourthInterceptorParameter.getName()),
+               hasItems("logger", "set-payload"));
 
     assertThat(scatterGatherIdentifier.getName(), equalTo("scatter-gather"));
 
