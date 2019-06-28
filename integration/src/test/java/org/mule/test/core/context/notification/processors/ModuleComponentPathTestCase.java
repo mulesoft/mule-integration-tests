@@ -596,8 +596,8 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
     DefaultComponentLocation thirdComponentLocation = firstComponentLocation
         .appendLocationPart(ROUTE_ELEMENT, empty(), empty(), empty(), empty())
         .appendLocationPart("1", of(builder()
-                                        .identifier(ROUTE_IDENTIFIER)
-                                        .type(SCOPE).build()), CONFIG_FILE_NAME, of(106), of(13))
+            .identifier(ROUTE_IDENTIFIER)
+            .type(SCOPE).build()), CONFIG_FILE_NAME, of(106), of(13))
         .appendLocationPart("processors", empty(), empty(), empty(), empty())
         .appendLocationPart("0", LOGGER, CONFIG_FILE_NAME, of(107), of(17));
 
