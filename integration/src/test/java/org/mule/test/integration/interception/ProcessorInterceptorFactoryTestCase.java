@@ -10,6 +10,7 @@ import static java.lang.Math.random;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.endsWith;
@@ -381,20 +382,17 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
         interceptionParameters.get(0).getLocation().getComponentIdentifier().getIdentifier();
     ComponentIdentifier firstRoute =
         interceptionParameters.get(1).getLocation().getComponentIdentifier().getIdentifier();
-    ComponentIdentifier loggerIdentifier =
-        interceptionParameters.get(2).getLocation().getComponentIdentifier().getIdentifier();
 
-    ComponentIdentifier setPayloadOperationIdentifier =
-        interceptionParameters.get(3).getLocation().getComponentIdentifier().getIdentifier();
+    ComponentIdentifier thirdInterceptorParameter = interceptionParameters.get(2).getLocation().getComponentIdentifier().getIdentifier();
+
+    ComponentIdentifier fourthInterceptorParameter = interceptionParameters.get(3).getLocation().getComponentIdentifier().getIdentifier();
+
+    assertThat(asList(thirdInterceptorParameter.getName(), fourthInterceptorParameter.getName()), hasItems("logger", "set-payload"));
 
     assertThat(scatterGatherIdentifier.getName(), equalTo("scatter-gather"));
 
     assertThat(firstRoute.getNamespace(), equalTo("module-using-core"));
     assertThat(firstRoute.getName(), equalTo("set-payload-hardcoded"));
-
-    assertThat(loggerIdentifier.getName(), equalTo("logger"));
-
-    assertThat(setPayloadOperationIdentifier.getName(), equalTo("set-payload"));
   }
 
   @Description("Smart Connector simple operation with parameters")
