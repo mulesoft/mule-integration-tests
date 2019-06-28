@@ -10,6 +10,7 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -592,17 +593,27 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
         .appendLocationPart("processors", empty(), empty(), empty(), empty())
         .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(104), of(17)));
 
-    assertNextProcessorLocationIs(firstComponentLocation
+    DefaultComponentLocation thirdComponentLocation = firstComponentLocation
         .appendLocationPart(ROUTE_ELEMENT, empty(), empty(), empty(), empty())
         .appendLocationPart("1", of(builder()
-            .identifier(ROUTE_IDENTIFIER)
-            .type(SCOPE).build()), CONFIG_FILE_NAME, of(106), of(13))
+                                        .identifier(ROUTE_IDENTIFIER)
+                                        .type(SCOPE).build()), CONFIG_FILE_NAME, of(106), of(13))
         .appendLocationPart("processors", empty(), empty(), empty(), empty())
-        .appendLocationPart("0", LOGGER, CONFIG_FILE_NAME, of(107), of(17)));
+        .appendLocationPart("0", LOGGER, CONFIG_FILE_NAME, of(107), of(17));
 
-    assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
+    DefaultComponentLocation fourthComponentLocation = OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
         .appendLocationPart("processors", empty(), empty(), empty(), empty())
-        .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13)));
+        .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13));
+
+    ComponentLocation thirdProcessorNotification = getMessageProcessorNotification().getComponent().getLocation();
+    ComponentLocation fourthProcessorNotification = getMessageProcessorNotification().getComponent().getLocation();
+
+    List<String> locations = asList(thirdProcessorNotification.getLocation(), fourthProcessorNotification.getLocation());
+    List<ComponentLocation> componentLocations = asList(thirdProcessorNotification, fourthProcessorNotification);
+
+    assertThat(locations, hasItems(thirdComponentLocation.getLocation(), fourthComponentLocation.getLocation()));
+    assertThat(componentLocations, hasItems(thirdComponentLocation, fourthComponentLocation));
+
     assertNoNextProcessorNotification();
   }
 
@@ -912,12 +923,17 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
   }
 
   private void assertNextProcessorLocationIs(DefaultComponentLocation componentLocation) {
+    MessageProcessorNotification processorNotification = getMessageProcessorNotification();
+    assertThat(processorNotification.getComponent().getLocation().getLocation(), is(componentLocation.getLocation()));
+    assertThat(processorNotification.getComponent().getLocation(), is(componentLocation));
+  }
+
+  private MessageProcessorNotification getMessageProcessorNotification() {
     assertThat(listener.getNotifications().isEmpty(), is(false));
     MessageProcessorNotification processorNotification =
         listener.getNotifications().get(0);
     listener.getNotifications().remove(0);
-    assertThat(processorNotification.getComponent().getLocation().getLocation(), is(componentLocation.getLocation()));
-    assertThat(processorNotification.getComponent().getLocation(), is(componentLocation));
+    return processorNotification;
   }
 
 }
