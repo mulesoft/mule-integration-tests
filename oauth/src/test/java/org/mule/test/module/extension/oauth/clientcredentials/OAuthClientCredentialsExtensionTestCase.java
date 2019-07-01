@@ -18,6 +18,7 @@ import static org.mule.extension.http.api.HttpHeaders.Names.CONTENT_TYPE;
 import static org.mule.runtime.api.store.ObjectStoreSettings.unmanagedTransient;
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.OK;
 import static org.mule.runtime.oauth.api.state.ResourceOwnerOAuthContext.DEFAULT_RESOURCE_OWNER_ID;
+
 import org.mule.runtime.api.store.ObjectStore;
 import org.mule.runtime.extension.api.connectivity.oauth.ClientCredentialsState;
 import org.mule.runtime.oauth.api.state.ResourceOwnerOAuthContext;
@@ -25,10 +26,10 @@ import org.mule.test.module.extension.oauth.BaseOAuthExtensionTestCase;
 import org.mule.test.oauth.TestOAuthConnection;
 import org.mule.test.oauth.TestOAuthConnectionState;
 
-import com.github.tomakehurst.wiremock.client.WireMock;
-
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
+
+import com.github.tomakehurst.wiremock.client.WireMock;
 
 public class OAuthClientCredentialsExtensionTestCase extends BaseOAuthExtensionTestCase {
 
@@ -48,6 +49,13 @@ public class OAuthClientCredentialsExtensionTestCase extends BaseOAuthExtensionT
         .withBody(accessTokenContent())
         .withHeader(CONTENT_TYPE, "application/json")));
     objectStore = muleContext.getObjectStoreManager().createObjectStore(CUSTOM_STORE_NAME, unmanagedTransient());
+
+    muleContext.start();
+  }
+
+  @Override
+  protected boolean isStartContext() {
+    return false;
   }
 
   @Test
