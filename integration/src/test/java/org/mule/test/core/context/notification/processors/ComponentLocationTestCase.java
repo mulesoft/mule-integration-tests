@@ -95,7 +95,6 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
                                                                   CONFIG_FILE_NAME,
                                                                   of(58),
                                                                   of(5))));
-
   private static final DefaultComponentLocation FLOW_WITH_SOURCE =
       new DefaultComponentLocation(of("flowWithSource"),
                                    asList(new DefaultLocationPart("flowWithSource",
@@ -103,7 +102,6 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
                                                                   CONFIG_FILE_NAME,
                                                                   of(70),
                                                                   of(5))));
-
   private static final DefaultComponentLocation FLOW_WITH_SCATTER_GATHER =
       new DefaultComponentLocation(of("flowWithScatterGather"),
                                    asList(new DefaultLocationPart("flowWithScatterGather",
@@ -111,7 +109,6 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
                                                                   CONFIG_FILE_NAME,
                                                                   of(90),
                                                                   of(5))));
-
   private static final DefaultComponentLocation FLOW_WITH_ASYNC =
       new DefaultComponentLocation(of("flowWithAsync"),
                                    asList(new DefaultLocationPart("flowWithAsync",
@@ -119,7 +116,6 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
                                                                   CONFIG_FILE_NAME,
                                                                   of(104),
                                                                   of(5))));
-
   private static final DefaultComponentLocation FLOW_WITH_SUBFLOW =
       new DefaultComponentLocation(of("flowWithSubflow"),
                                    asList(new DefaultLocationPart("flowWithSubflow",
@@ -127,8 +123,6 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
                                                                   CONFIG_FILE_NAME,
                                                                   of(79),
                                                                   of(5))));
-
-
   private static final DefaultComponentLocation SUBFLOW =
       new DefaultComponentLocation(of("subflow"),
                                    asList(new DefaultLocationPart("subflow",
@@ -136,7 +130,6 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
                                                                   CONFIG_FILE_NAME,
                                                                   of(85),
                                                                   of(5))));
-
   private static final DefaultComponentLocation FLOW_WITH_AGGREGATOR_ONE_ROUTE =
       new DefaultComponentLocation(of("aggregatorWithOneRoute"),
                                    asList(new DefaultLocationPart("aggregatorWithOneRoute",
@@ -144,7 +137,6 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
                                                                   CONFIG_FILE_NAME,
                                                                   of(117),
                                                                   of(5))));
-
   private static final DefaultComponentLocation FLOW_WITH_AGGREGATOR_TWO_ROUTES =
       new DefaultComponentLocation(of("aggregatorWithTwoRoutes"),
                                    asList(new DefaultLocationPart("aggregatorWithTwoRoutes",
@@ -152,7 +144,6 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
                                                                   CONFIG_FILE_NAME,
                                                                   of(125),
                                                                   of(5))));
-
   private static final DefaultComponentLocation FLOW_WITH_AGGREGATOR_TWO_ROUTES_AND_CONTENT =
       new DefaultComponentLocation(of("aggregatorWithTwoRoutesAndContent"),
                                    asList(new DefaultLocationPart("aggregatorWithTwoRoutesAndContent",
@@ -200,7 +191,6 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
 
   private static final Optional<TypedComponentIdentifier> AGGREGATOR =
       of(builder().identifier(buildFromStringRepresentation("aggregators:size-based-aggregator")).type(ROUTER).build());
-
 
   @Inject
   @Named("flowWithSource")
@@ -318,12 +308,12 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  public void flowWithSource() throws Exception {
+  public void flowWithSource() {
     DefaultComponentLocation expectedSourceLocation =
         FLOW_WITH_SOURCE.appendLocationPart("source", SCHEDULER_SOURCE,
                                             CONFIG_FILE_NAME, of(71), of(9));
     DefaultComponentLocation sourceLocation =
-        (DefaultComponentLocation) ((Component) flowWithSource.getSource()).getAnnotation(LOCATION_KEY);
+        (DefaultComponentLocation) (flowWithSource.getSource()).getAnnotation(LOCATION_KEY);
     assertThat(sourceLocation, is(expectedSourceLocation));
     assertThat(((Component) flowWithSource.getProcessors().get(0)).getAnnotation(LOCATION_KEY), is(FLOW_WITH_SOURCE
         .appendLocationPart("processors", empty(), empty(), empty(), empty())

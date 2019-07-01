@@ -8,25 +8,39 @@ package org.mule.test.core.context.notification.processors;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
+import static java.util.Collections.singleton;
+import static java.util.Collections.singletonList;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.component.ComponentIdentifier.buildFromStringRepresentation;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.FLOW;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.OPERATION;
+import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.ROUTER;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.SCOPE;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.builder;
 import static org.mule.runtime.api.dsl.DslResolvingContext.getDefault;
 import static org.mule.runtime.api.util.collection.Collectors.toImmutableList;
+import static org.mule.runtime.config.api.dsl.CoreDslConstants.CHOICE_IDENTIFIER;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.FLOW_IDENTIFIER;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.FLOW_REF_IDENTIFIER;
+import static org.mule.runtime.config.api.dsl.CoreDslConstants.FOREACH_IDENTIFIER;
+import static org.mule.runtime.config.api.dsl.CoreDslConstants.PARALLEL_FOREACH_IDENTIFIER;
+import static org.mule.runtime.config.api.dsl.CoreDslConstants.ROUTE_ELEMENT;
+import static org.mule.runtime.config.api.dsl.CoreDslConstants.ROUTE_IDENTIFIER;
+import static org.mule.runtime.config.api.dsl.CoreDslConstants.SCATTER_GATHER_IDENTIFIER;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.SUBFLOW_IDENTIFIER;
+import static org.mule.runtime.config.api.dsl.CoreDslConstants.TRY_IDENTIFIER;
+import static org.mule.runtime.config.api.dsl.CoreDslConstants.UNTIL_SUCCESSFUL_IDENTIFIER;
 import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.initialiseIfNeeded;
 import static org.mule.runtime.dsl.api.xml.parser.XmlConfigurationDocumentLoader.noValidationDocumentLoader;
 import static org.mule.runtime.dsl.api.xml.parser.XmlConfigurationProcessor.processXmlConfiguration;
 import static org.mule.runtime.module.extension.api.util.MuleExtensionUtils.createDefaultExtensionManager;
+import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
+import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentLocationStory.COMPONENT_LOCATION;
 import org.mule.runtime.api.component.TypedComponentIdentifier;
 import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.api.component.location.Location;
@@ -60,7 +74,6 @@ import com.google.common.collect.ImmutableList;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -73,12 +86,18 @@ import java.util.stream.Collectors;
 
 import javax.xml.parsers.SAXParserFactory;
 
+import io.qameta.allure.Description;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
+import io.qameta.allure.Story;
 import io.qameta.allure.junit4.DisplayName;
 import org.junit.After;
 import org.junit.Test;
 import org.xml.sax.EntityResolver;
 
 @DisplayName("XML Connectors Path generation")
+@Feature(CONFIGURATION_COMPONENT_LOCATOR)
+@Story(COMPONENT_LOCATION)
 public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
 
   private static final String COLON_SEPARATOR = ":";
@@ -126,6 +145,12 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
   private static final String FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_NAME = "flowWithProxyAndSimpleModuleAndLogger";
   private static final String FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_REVERSE_NAME =
       "flowWithProxyAndSimpleModuleAndLoggerReverse";
+  private static final String FLOW_WITH_CHOICE_ROUTER_NAME = "flowWithChoiceRouter";
+  private static final String FLOW_WITH_UNTIL_SUCCESSFUL_SCOPE_NAME = "flowWithUntilSuccessfulScope";
+  private static final String FLOW_WITH_TRY_SCOPE_NAME = "flowWithTryScope";
+  private static final String FLOW_WITH_FOREACH_SCOPE_NAME = "flowWithForeachScope";
+  private static final String FLOW_WITH_PARALLEL_FOREACH_SCOPE_NAME = "flowWithParallelForeachScope";
+  private static final String FLOW_WITH_SCATTER_GATHER_NAME = "flowWithScatterGather";
 
   /**
    * "flows-using-modules.xml" flows defined below
@@ -154,6 +179,18 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
       getFlowLocation(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_NAME, 49);
   private static final DefaultComponentLocation FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_REVERSE =
       getFlowLocation(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_REVERSE_NAME, 55);
+  private static final DefaultComponentLocation FLOW_WITH_CHOICE_ROUTER =
+      getFlowLocation(FLOW_WITH_CHOICE_ROUTER_NAME, 69);
+  private static final DefaultComponentLocation FLOW_WITH_UNTIL_SUCCESSFUL_SCOPE =
+      getFlowLocation(FLOW_WITH_UNTIL_SUCCESSFUL_SCOPE_NAME, 77);
+  private static final DefaultComponentLocation FLOW_WITH_TRY_SCOPE =
+      getFlowLocation(FLOW_WITH_TRY_SCOPE_NAME, 83);
+  private static final DefaultComponentLocation FLOW_WITH_FOREACH_SCOPE =
+      getFlowLocation(FLOW_WITH_FOREACH_SCOPE_NAME, 89);
+  private static final DefaultComponentLocation FLOW_WITH_PARALLEL_FOREACH_SCOPE =
+      getFlowLocation(FLOW_WITH_PARALLEL_FOREACH_SCOPE_NAME, 95);
+  private static final DefaultComponentLocation FLOW_WITH_SCATTER_GATHER =
+      getFlowLocation(FLOW_WITH_SCATTER_GATHER_NAME, 101);
 
   private static Optional<TypedComponentIdentifier> getModuleOperationIdentifier(final String namespace,
                                                                                  final String identifier) {
@@ -247,93 +284,20 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
     }
   }
 
-  private Optional<ConfigLine> loadConfigLines(Set<ExtensionModel> extensionModels, InputStream inputStream) {
-    List<XmlNamespaceInfoProvider> xmlNamespaceInfoProviders =
-        ImmutableList.<XmlNamespaceInfoProvider>builder()
-            .add(createStaticNamespaceInfoProviders(extensionModels))
-            .addAll(discoverRuntimeXmlNamespaceInfoProvider())
-            .build();
-    List<ConfigFile> configFiles = processXmlConfiguration(new XmlParsingConfiguration() {
-
-      @Override
-      public ParsingPropertyResolver getParsingPropertyResolver() {
-        return key -> null;
-      }
-
-      @Override
-      public ConfigResource[] getArtifactConfigResources() {
-        return new ConfigResource[] {
-            new ConfigResource("config", inputStream)
-        };
-      }
-
-      @Override
-      public ResourceLocator getResourceLocator() {
-        return null;
-      }
-
-      @Override
-      public Supplier<SAXParserFactory> getSaxParserFactory() {
-        return () -> XMLSecureFactories.createDefault().getSAXParserFactory();
-      }
-
-      @Override
-      public XmlConfigurationDocumentLoader getXmlConfigurationDocumentLoader() {
-        return noValidationDocumentLoader();
-      }
-
-      @Override
-      public EntityResolver getEntityResolver() {
-        return new ModuleDelegatingEntityResolver(extensionModels);
-      }
-
-      @Override
-      public List<XmlNamespaceInfoProvider> getXmlNamespaceInfoProvider() {
-        return xmlNamespaceInfoProviders;
-      }
-    });
-    return configFiles.isEmpty() ? empty() : of(configFiles.get(0).getConfigLines().get(0));
-  }
-
-  private XmlNamespaceInfoProvider createStaticNamespaceInfoProviders(Set<ExtensionModel> extensionModels) {
-    List<XmlNamespaceInfoProvider> xmlNamesInfoProviders =
-        extensionModels.stream()
-            .map(ext -> (XmlNamespaceInfoProvider) () -> Collections.singleton(new XmlNamespaceInfo() {
-
-              @Override
-              public String getNamespaceUriPrefix() {
-                return ext.getXmlDslModel().getNamespace();
-              }
-
-              @Override
-              public String getNamespace() {
-                return ext.getXmlDslModel().getPrefix();
-              }
-            }))
-            .collect(toImmutableList());
-    return () -> xmlNamesInfoProviders.stream().map(XmlNamespaceInfoProvider::getXmlNamespacesInfo)
-        .flatMap(collection -> collection.stream())
-        .collect(Collectors.toCollection(() -> new ArrayList<>()));
-  }
-
-  private List<XmlNamespaceInfoProvider> discoverRuntimeXmlNamespaceInfoProvider() {
-    ImmutableList.Builder namespaceInfoProvidersBuilder = ImmutableList.builder();
-    namespaceInfoProvidersBuilder
-        .addAll(new SpiServiceRegistry().lookupProviders(XmlNamespaceInfoProvider.class,
-                                                         muleContext.getClass().getClassLoader()));
-    return namespaceInfoProvidersBuilder.build();
-  }
-
   @Test
   public void validateComponentLocationCreatedFromExtensionModelsWithoutUsingParsers() throws Exception {
     final Set<ExtensionModel> extensionModels = muleContext.getExtensionManager().getExtensions();
 
     ArtifactConfig.Builder artifactConfigBuilder = new ArtifactConfig.Builder();
-    artifactConfigBuilder.addConfigFile(new ConfigFile(CONFIG_FILE_NAME.get(), Collections
-        .singletonList(loadConfigLines(extensionModels,
-                                       this.getClass().getClassLoader().getResourceAsStream(CONFIG_FILE_NAME.get()))
-                                           .orElseThrow(() -> new IllegalArgumentException(String
-                                               .format("Failed to parse %s.", CONFIG_FILE_NAME.get()))))));
+    artifactConfigBuilder.addConfigFile(new ConfigFile(CONFIG_FILE_NAME.get(), singletonList(loadConfigLines(extensionModels,
+                                                                                                             this.getClass()
+                                                                                                                 .getClassLoader()
+                                                                                                                 .getResourceAsStream(CONFIG_FILE_NAME
+                                                                                                                     .get()))
+                                                                                                                         .orElseThrow(() -> new IllegalArgumentException(String
+                                                                                                                             .format("Failed to parse %s.",
+                                                                                                                                     CONFIG_FILE_NAME
+                                                                                                                                         .get()))))));
 
 
     ApplicationModel toolingApplicationModel = new ApplicationModel(artifactConfigBuilder.build(), null,
@@ -359,55 +323,71 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
 
     assertEquals(ImmutableList.builder()
         .add(Location.builder().globalName(FLOW_WITH_SINGLE_MP_NAME).build().toString())
-        .add(Location.builder().globalName(FLOW_WITH_SINGLE_MP_NAME).addProcessorsPart().addIndexPart(0).build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_SINGLE_MP_NAME).addProcessorsPart().addIndexPart(0).build()
+            .toString())
 
         .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_HARDCODED_NAME).build().toString())
-        .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_HARDCODED_NAME).addProcessorsPart().addIndexPart(0).build()
+        .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_HARDCODED_NAME).addProcessorsPart().addIndexPart(0)
+            .build()
             .toString())
 
         .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_HARDCODED_TWICE_NAME).build().toString())
-        .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_HARDCODED_TWICE_NAME).addProcessorsPart().addIndexPart(0).build()
+        .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_HARDCODED_TWICE_NAME).addProcessorsPart()
+            .addIndexPart(0).build()
             .toString())
-        .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_HARDCODED_TWICE_NAME).addProcessorsPart().addIndexPart(1).build()
+        .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_HARDCODED_TWICE_NAME).addProcessorsPart()
+            .addIndexPart(1).build()
             .toString())
 
         .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_PARAM_VALUE_NAME).build().toString())
-        .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_PARAM_VALUE_NAME).addProcessorsPart().addIndexPart(0).build()
-            .toString())
+        .add(
+             Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_PARAM_VALUE_NAME).addProcessorsPart().addIndexPart(0)
+                 .build()
+                 .toString())
 
         .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_TWO_TIMES_NAME).build().toString())
-        .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_TWO_TIMES_NAME).addProcessorsPart().addIndexPart(0).build()
+        .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_TWO_TIMES_NAME).addProcessorsPart().addIndexPart(0)
+            .build()
             .toString())
 
         .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_TWO_TIMES_TWICE_NAME).build().toString())
-        .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_TWO_TIMES_TWICE_NAME).addProcessorsPart().addIndexPart(0).build()
+        .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_TWO_TIMES_TWICE_NAME).addProcessorsPart()
+            .addIndexPart(0).build()
             .toString())
-        .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_TWO_TIMES_TWICE_NAME).addProcessorsPart().addIndexPart(1).build()
+        .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_TWO_TIMES_TWICE_NAME).addProcessorsPart()
+            .addIndexPart(1).build()
             .toString())
 
         .add(Location.builder().globalName(FLOW_WITH_PROXY_SET_PAYLOAD_HARDCODED_NAME).build().toString())
-        .add(Location.builder().globalName(FLOW_WITH_PROXY_SET_PAYLOAD_HARDCODED_NAME).addProcessorsPart().addIndexPart(0).build()
+        .add(Location.builder().globalName(FLOW_WITH_PROXY_SET_PAYLOAD_HARDCODED_NAME).addProcessorsPart()
+            .addIndexPart(0).build()
             .toString())
-
 
         .add(Location.builder().globalName(FLOW_WITH_PROXY_SET_PAYLOAD_HARDCODED_AND_LOGGER_NAME).build().toString())
         .add(Location.builder().globalName(FLOW_WITH_PROXY_SET_PAYLOAD_HARDCODED_AND_LOGGER_NAME).addProcessorsPart()
             .addIndexPart(0).build().toString())
 
         .add(Location.builder().globalName(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_NAME).build().toString())
-        .add(Location.builder().globalName(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_NAME).addProcessorsPart().addIndexPart(0)
+        .add(Location.builder().globalName(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_NAME).addProcessorsPart()
+            .addIndexPart(0)
             .build().toString())
-        .add(Location.builder().globalName(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_NAME).addProcessorsPart().addIndexPart(1)
+        .add(Location.builder().globalName(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_NAME).addProcessorsPart()
+            .addIndexPart(1)
             .build().toString())
-        .add(Location.builder().globalName(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_NAME).addProcessorsPart().addIndexPart(2)
+        .add(Location.builder().globalName(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_NAME).addProcessorsPart()
+            .addIndexPart(2)
             .build().toString())
 
-        .add(Location.builder().globalName(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_REVERSE_NAME).build().toString())
-        .add(Location.builder().globalName(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_REVERSE_NAME).addProcessorsPart()
+        .add(Location.builder().globalName(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_REVERSE_NAME).build()
+            .toString())
+        .add(Location.builder().globalName(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_REVERSE_NAME)
+            .addProcessorsPart()
             .addIndexPart(0).build().toString())
-        .add(Location.builder().globalName(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_REVERSE_NAME).addProcessorsPart()
+        .add(Location.builder().globalName(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_REVERSE_NAME)
+            .addProcessorsPart()
             .addIndexPart(1).build().toString())
-        .add(Location.builder().globalName(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_REVERSE_NAME).addProcessorsPart()
+        .add(Location.builder().globalName(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_REVERSE_NAME)
+            .addProcessorsPart()
             .addIndexPart(2).build().toString())
 
         .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_HARDCODED_INSIDE_SUBFLOW_NAME).build().toString())
@@ -416,8 +396,59 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
             .toString())
 
         .add(Location.builder().globalName(SUBFLOW_WITH_SET_PAYLOAD_HARDCODED_NAME).build().toString())
-        .add(Location.builder().globalName(SUBFLOW_WITH_SET_PAYLOAD_HARDCODED_NAME).addProcessorsPart().addIndexPart(0).build()
+        .add(Location.builder().globalName(SUBFLOW_WITH_SET_PAYLOAD_HARDCODED_NAME).addProcessorsPart()
+            .addIndexPart(0).build()
             .toString())
+
+        .add(Location.builder().globalName(FLOW_WITH_CHOICE_ROUTER_NAME).build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_CHOICE_ROUTER_NAME).addProcessorsPart().addIndexPart(0).build()
+            .toString())
+        .add(Location.builder().globalName(FLOW_WITH_CHOICE_ROUTER_NAME).addProcessorsPart().addIndexPart(0)
+            .addPart(ROUTE_ELEMENT)
+            .addIndexPart(0).build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_CHOICE_ROUTER_NAME).addProcessorsPart().addIndexPart(0)
+            .addPart(ROUTE_ELEMENT)
+            .addIndexPart(0).addProcessorsPart().addIndexPart(0).build().toString())
+
+        .add(Location.builder().globalName(FLOW_WITH_UNTIL_SUCCESSFUL_SCOPE_NAME).build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_UNTIL_SUCCESSFUL_SCOPE_NAME).addProcessorsPart().addIndexPart(0)
+            .build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_UNTIL_SUCCESSFUL_SCOPE_NAME).addProcessorsPart().addIndexPart(0)
+            .addProcessorsPart().addIndexPart(0).build().toString())
+
+        .add(Location.builder().globalName(FLOW_WITH_TRY_SCOPE_NAME).build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_TRY_SCOPE_NAME).addProcessorsPart().addIndexPart(0)
+            .build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_TRY_SCOPE_NAME).addProcessorsPart().addIndexPart(0)
+            .addProcessorsPart().addIndexPart(0).build().toString())
+
+        .add(Location.builder().globalName(FLOW_WITH_FOREACH_SCOPE_NAME).build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_FOREACH_SCOPE_NAME).addProcessorsPart().addIndexPart(0)
+            .build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_FOREACH_SCOPE_NAME).addProcessorsPart().addIndexPart(0)
+            .addProcessorsPart().addIndexPart(0).build().toString())
+
+        .add(Location.builder().globalName(FLOW_WITH_PARALLEL_FOREACH_SCOPE_NAME).build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_PARALLEL_FOREACH_SCOPE_NAME).addProcessorsPart().addIndexPart(0)
+            .build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_PARALLEL_FOREACH_SCOPE_NAME).addProcessorsPart().addIndexPart(0)
+            .addProcessorsPart().addIndexPart(0).build().toString())
+
+        .add(Location.builder().globalName(FLOW_WITH_SCATTER_GATHER_NAME).build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_SCATTER_GATHER_NAME).addProcessorsPart().addIndexPart(0).build()
+            .toString())
+        .add(Location.builder().globalName(FLOW_WITH_SCATTER_GATHER_NAME).addProcessorsPart().addIndexPart(0)
+            .addPart(ROUTE_ELEMENT)
+            .addIndexPart(0).build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_SCATTER_GATHER_NAME).addProcessorsPart().addIndexPart(0)
+            .addPart(ROUTE_ELEMENT)
+            .addIndexPart(0).addProcessorsPart().addIndexPart(0).build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_SCATTER_GATHER_NAME).addProcessorsPart().addIndexPart(0)
+            .addPart(ROUTE_ELEMENT)
+            .addIndexPart(1).build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_SCATTER_GATHER_NAME).addProcessorsPart().addIndexPart(0)
+            .addPart(ROUTE_ELEMENT)
+            .addIndexPart(1).addProcessorsPart().addIndexPart(0).build().toString())
 
         .build(), componentLocations);
   }
@@ -439,13 +470,181 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
         .appendLocationPart("processors", empty(), empty(), empty(), empty())
         .appendLocationPart("0", of(TypedComponentIdentifier.builder()
             .identifier(FLOW_REF_IDENTIFIER)
-            .type(OPERATION).build()), CONFIG_FILE_NAME, of(62), of(9)));
+            .type(OPERATION).build()), CONFIG_FILE_NAME, of(62),
+                            of(9)));
     assertNextProcessorLocationIs(SUBFLOW_WITH_SET_PAYLOAD_HARDCODED
         .appendLocationPart("processors", empty(), empty(), empty(), empty())
-        .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(66), of(9)));
+        .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(66),
+                            of(9)));
     assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
         .appendLocationPart("processors", empty(), empty(), empty(), empty())
         .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13)));
+    assertNoNextProcessorNotification();
+  }
+
+  @Description("Smart Connector inside a choice router")
+  @Issue("MULE-16984")
+  @Test
+  public void flowWithChoiceRouter() throws Exception {
+    flowRunner("flowWithChoiceRouter").run();
+
+    DefaultComponentLocation firstComponentLocation = FLOW_WITH_CHOICE_ROUTER
+        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("0", of(builder()
+            .identifier(CHOICE_IDENTIFIER)
+            .type(ROUTER).build()), CONFIG_FILE_NAME, of(70), of(9));
+
+    assertNextProcessorLocationIs(firstComponentLocation);
+    assertNextProcessorLocationIs(firstComponentLocation
+        .appendLocationPart(ROUTE_ELEMENT, empty(), empty(), empty(), empty())
+        .appendLocationPart("0", of(TypedComponentIdentifier.builder()
+            .identifier(ROUTE_IDENTIFIER)
+            .type(SCOPE).build()), CONFIG_FILE_NAME, of(71), of(13))
+        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(72),
+                            of(17)));
+
+    assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
+        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13)));
+    assertNoNextProcessorNotification();
+  }
+
+  @Description("Smart Connector inside a until-successful scope")
+  @Issue("MULE-16285")
+  @Test
+  public void flowWithUntilSuccessfulScope() throws Exception {
+    flowRunner("flowWithUntilSuccessfulScope").run();
+
+    DefaultComponentLocation firstComponentLocation = FLOW_WITH_UNTIL_SUCCESSFUL_SCOPE
+        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("0", of(builder()
+            .identifier(UNTIL_SUCCESSFUL_IDENTIFIER)
+            .type(SCOPE).build()), CONFIG_FILE_NAME, of(78), of(9));
+
+    assertNextProcessorLocationIs(firstComponentLocation);
+    assertNextProcessorLocationIs(firstComponentLocation
+        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(79),
+                            of(13)));
+    assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
+        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13)));
+    assertNoNextProcessorNotification();
+  }
+
+  @Description("Smart Connector inside a try scope")
+  @Issue("MULE-16285")
+  @Test
+  public void flowWithTryScope() throws Exception {
+    flowRunner("flowWithTryScope").run();
+
+    DefaultComponentLocation firstComponentLocation = FLOW_WITH_TRY_SCOPE
+        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("0", of(builder()
+            .identifier(TRY_IDENTIFIER)
+            .type(SCOPE).build()), CONFIG_FILE_NAME, of(84), of(9));
+
+    assertNextProcessorLocationIs(firstComponentLocation);
+    assertNextProcessorLocationIs(firstComponentLocation
+        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(85),
+                            of(13)));
+    assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
+        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13)));
+    assertNoNextProcessorNotification();
+  }
+
+  @Description("Smart Connector inside a foreach scope")
+  @Issue("MULE-16285")
+  @Test
+  public void flowWithForeachScope() throws Exception {
+    flowRunner("flowWithForeachScope").run();
+
+    DefaultComponentLocation firstComponentLocation = FLOW_WITH_FOREACH_SCOPE
+        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("0", of(builder()
+            .identifier(FOREACH_IDENTIFIER)
+            .type(SCOPE).build()), CONFIG_FILE_NAME, of(90), of(9));
+
+    assertNextProcessorLocationIs(firstComponentLocation);
+    assertNextProcessorLocationIs(firstComponentLocation
+        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(91),
+                            of(13)));
+    assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
+        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13)));
+    assertNoNextProcessorNotification();
+  }
+
+  @Description("Smart Connector inside a parallel-foreach scope")
+  @Issue("MULE-16285")
+  @Test
+  public void flowWithParallelForeachScope() throws Exception {
+    flowRunner("flowWithParallelForeachScope").run();
+
+    DefaultComponentLocation firstComponentLocation = FLOW_WITH_PARALLEL_FOREACH_SCOPE
+        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("0", of(builder()
+            .identifier(PARALLEL_FOREACH_IDENTIFIER)
+            .type(SCOPE).build()), CONFIG_FILE_NAME, of(96), of(9));
+
+    assertNextProcessorLocationIs(firstComponentLocation);
+    assertNextProcessorLocationIs(firstComponentLocation
+        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(97), of(13)));
+    assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
+        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13)));
+    assertNoNextProcessorNotification();
+  }
+
+  @Description("Smart Connector inside a scatter-gather")
+  @Issue("MULE-16285")
+  @Test
+  public void flowWithScatterGather() throws Exception {
+    flowRunner("flowWithScatterGather").run();
+
+    DefaultComponentLocation firstComponentLocation = FLOW_WITH_SCATTER_GATHER
+        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("0", of(builder()
+            .identifier(SCATTER_GATHER_IDENTIFIER)
+            .type(ROUTER).build()), CONFIG_FILE_NAME, of(102), of(9));
+
+    assertNextProcessorLocationIs(firstComponentLocation);
+
+    assertNextProcessorLocationIs(firstComponentLocation
+        .appendLocationPart(ROUTE_ELEMENT, empty(), empty(), empty(), empty())
+        .appendLocationPart("0", of(builder()
+            .identifier(ROUTE_IDENTIFIER)
+            .type(SCOPE).build()), CONFIG_FILE_NAME, of(103), of(13))
+        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(104),
+                            of(17)));
+
+    DefaultComponentLocation thirdComponentLocation = firstComponentLocation
+        .appendLocationPart(ROUTE_ELEMENT, empty(), empty(), empty(), empty())
+        .appendLocationPart("1", of(builder()
+            .identifier(ROUTE_IDENTIFIER)
+            .type(SCOPE).build()), CONFIG_FILE_NAME, of(106), of(13))
+        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("0", LOGGER, CONFIG_FILE_NAME, of(107), of(17));
+
+    DefaultComponentLocation fourthComponentLocation = OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
+        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13));
+
+    ComponentLocation thirdProcessorNotification = getMessageProcessorNotification().getComponent().getLocation();
+    ComponentLocation fourthProcessorNotification = getMessageProcessorNotification().getComponent().getLocation();
+
+    List<String> locations = asList(thirdProcessorNotification.getLocation(), fourthProcessorNotification.getLocation());
+    List<ComponentLocation> componentLocations = asList(thirdProcessorNotification, fourthProcessorNotification);
+
+    assertThat(locations, hasItems(thirdComponentLocation.getLocation(), fourthComponentLocation.getLocation()));
+    assertThat(componentLocations, hasItems(thirdComponentLocation, fourthComponentLocation));
+
     assertNoNextProcessorNotification();
   }
 
@@ -454,7 +653,8 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
     flowRunner("flowWithSetPayloadHardcoded").run();
     assertNextProcessorLocationIs(FLOW_WITH_SET_PAYLOAD_HARDCODED
         .appendLocationPart("processors", empty(), empty(), empty(), empty())
-        .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(20), of(9)));
+        .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(20),
+                            of(9)));
     assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
         .appendLocationPart("processors", empty(), empty(), empty(), empty())
         .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13)));
@@ -466,14 +666,16 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
     flowRunner("flowWithSetPayloadHardcodedTwice").run();
     assertNextProcessorLocationIs(FLOW_WITH_SET_PAYLOAD_HARDCODED_TWICE
         .appendLocationPart("processors", empty(), empty(), empty(), empty())
-        .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(24), of(9)));
+        .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(24),
+                            of(9)));
     assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
         .appendLocationPart("processors", empty(), empty(), empty(), empty())
         .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13)));
 
     assertNextProcessorLocationIs(FLOW_WITH_SET_PAYLOAD_HARDCODED_TWICE
         .appendLocationPart("processors", empty(), empty(), empty(), empty())
-        .appendLocationPart("1", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(25), of(9)));
+        .appendLocationPart("1", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(25),
+                            of(9)));
     assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
         .appendLocationPart("processors", empty(), empty(), empty(), empty())
         .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13)));
@@ -541,7 +743,8 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
         .appendLocationPart("0", MODULE_PROXY_SET_PAYLOAD, CONFIG_FILE_NAME, of(42), of(9)));
     assertNextProcessorLocationIs(OPERATION_PROXY_SET_PAYLOAD_FIRST_MP
         .appendLocationPart("processors", empty(), empty(), empty(), empty())
-        .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, MODULE_SIMPLE_PROXY_FILE_NAME, of(13), of(13)));
+        .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, MODULE_SIMPLE_PROXY_FILE_NAME,
+                            of(13), of(13)));
     assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
         .appendLocationPart("processors", empty(), empty(), empty(), empty())
         .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13)));
@@ -553,10 +756,12 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
     flowRunner("flowWithProxySetPayloadHardcodedAndLogger").run();
     assertNextProcessorLocationIs(FLOW_WITH_PROXY_SET_PAYLOAD_HARDCODED_AND_LOGGER
         .appendLocationPart("processors", empty(), empty(), empty(), empty())
-        .appendLocationPart("0", MODULE_PROXY_SET_PAYLOAD_AND_LOGGER, CONFIG_FILE_NAME, of(46), of(9)));
+        .appendLocationPart("0", MODULE_PROXY_SET_PAYLOAD_AND_LOGGER, CONFIG_FILE_NAME, of(46),
+                            of(9)));
     assertNextProcessorLocationIs(OPERATION_PROXY_SET_PAYLOAD_AND_LOGGER_FIRST_MP
         .appendLocationPart("processors", empty(), empty(), empty(), empty())
-        .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, MODULE_SIMPLE_PROXY_FILE_NAME, of(20), of(13)));
+        .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, MODULE_SIMPLE_PROXY_FILE_NAME,
+                            of(20), of(13)));
     assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
         .appendLocationPart("processors", empty(), empty(), empty(), empty())
         .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13)));
@@ -573,10 +778,12 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
     // first MP from within the flow
     assertNextProcessorLocationIs(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER
         .appendLocationPart("processors", empty(), empty(), empty(), empty())
-        .appendLocationPart("0", MODULE_PROXY_SET_PAYLOAD_AND_LOGGER, CONFIG_FILE_NAME, of(50), of(9)));
+        .appendLocationPart("0", MODULE_PROXY_SET_PAYLOAD_AND_LOGGER, CONFIG_FILE_NAME, of(50),
+                            of(9)));
     assertNextProcessorLocationIs(OPERATION_PROXY_SET_PAYLOAD_AND_LOGGER_FIRST_MP
         .appendLocationPart("processors", empty(), empty(), empty(), empty())
-        .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, MODULE_SIMPLE_PROXY_FILE_NAME, of(20), of(13)));
+        .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, MODULE_SIMPLE_PROXY_FILE_NAME,
+                            of(20), of(13)));
     assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
         .appendLocationPart("processors", empty(), empty(), empty(), empty())
         .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13)));
@@ -587,7 +794,8 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
     // second MP from within the flow
     assertNextProcessorLocationIs(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER
         .appendLocationPart("processors", empty(), empty(), empty(), empty())
-        .appendLocationPart("1", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(51), of(9)));
+        .appendLocationPart("1", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(51),
+                            of(9)));
     assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
         .appendLocationPart("processors", empty(), empty(), empty(), empty())
         .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13)));
@@ -609,7 +817,8 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
     // second MP from within the flow
     assertNextProcessorLocationIs(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_REVERSE
         .appendLocationPart("processors", empty(), empty(), empty(), empty())
-        .appendLocationPart("1", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(57), of(9)));
+        .appendLocationPart("1", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(57),
+                            of(9)));
     assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
         .appendLocationPart("processors", empty(), empty(), empty(), empty())
         .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13)));
@@ -617,10 +826,12 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
     // third MP from within the flow
     assertNextProcessorLocationIs(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_REVERSE
         .appendLocationPart("processors", empty(), empty(), empty(), empty())
-        .appendLocationPart("2", MODULE_PROXY_SET_PAYLOAD_AND_LOGGER, CONFIG_FILE_NAME, of(58), of(9)));
+        .appendLocationPart("2", MODULE_PROXY_SET_PAYLOAD_AND_LOGGER, CONFIG_FILE_NAME, of(58),
+                            of(9)));
     assertNextProcessorLocationIs(OPERATION_PROXY_SET_PAYLOAD_AND_LOGGER_FIRST_MP
         .appendLocationPart("processors", empty(), empty(), empty(), empty())
-        .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, MODULE_SIMPLE_PROXY_FILE_NAME, of(20), of(13)));
+        .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, MODULE_SIMPLE_PROXY_FILE_NAME,
+                            of(20), of(13)));
     assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
         .appendLocationPart("processors", empty(), empty(), empty(), empty())
         .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13)));
@@ -628,20 +839,6 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
         .appendLocationPart("processors", empty(), empty(), empty(), empty())
         .appendLocationPart("1", LOGGER, MODULE_SIMPLE_PROXY_FILE_NAME, of(21), of(13)));
     assertNoNextProcessorNotification();
-  }
-
-  private void assertNoNextProcessorNotification() {
-    Iterator iterator = listener.getNotifications().iterator();
-    assertThat(iterator.hasNext(), is(false));
-  }
-
-  private void assertNextProcessorLocationIs(DefaultComponentLocation componentLocation) {
-    assertThat(listener.getNotifications().isEmpty(), is(false));
-    MessageProcessorNotification processorNotification =
-        listener.getNotifications().get(0);
-    listener.getNotifications().remove(0);
-    assertThat(processorNotification.getComponent().getLocation().getLocation(), is(componentLocation.getLocation()));
-    assertThat(processorNotification.getComponent().getLocation(), is(componentLocation));
   }
 
   private String[] getModulePaths() {
@@ -684,4 +881,102 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
       }
     });
   }
+
+  private Optional<ConfigLine> loadConfigLines(Set<ExtensionModel> extensionModels, InputStream inputStream) {
+    List<XmlNamespaceInfoProvider> xmlNamespaceInfoProviders =
+        ImmutableList.<XmlNamespaceInfoProvider>builder()
+            .add(createStaticNamespaceInfoProviders(extensionModels))
+            .addAll(discoverRuntimeXmlNamespaceInfoProvider())
+            .build();
+    List<ConfigFile> configFiles = processXmlConfiguration(new XmlParsingConfiguration() {
+
+      @Override
+      public ParsingPropertyResolver getParsingPropertyResolver() {
+        return key -> null;
+      }
+
+      @Override
+      public ConfigResource[] getArtifactConfigResources() {
+        return new ConfigResource[] {
+            new ConfigResource("config", inputStream)
+        };
+      }
+
+      @Override
+      public ResourceLocator getResourceLocator() {
+        return null;
+      }
+
+      @Override
+      public Supplier<SAXParserFactory> getSaxParserFactory() {
+        return () -> XMLSecureFactories.createDefault().getSAXParserFactory();
+      }
+
+      @Override
+      public XmlConfigurationDocumentLoader getXmlConfigurationDocumentLoader() {
+        return noValidationDocumentLoader();
+      }
+
+      @Override
+      public EntityResolver getEntityResolver() {
+        return new ModuleDelegatingEntityResolver(extensionModels);
+      }
+
+      @Override
+      public List<XmlNamespaceInfoProvider> getXmlNamespaceInfoProvider() {
+        return xmlNamespaceInfoProviders;
+      }
+    });
+    return configFiles.isEmpty() ? empty() : of(configFiles.get(0).getConfigLines().get(0));
+  }
+
+
+  private XmlNamespaceInfoProvider createStaticNamespaceInfoProviders(Set<ExtensionModel> extensionModels) {
+    List<XmlNamespaceInfoProvider> xmlNamesInfoProviders =
+        extensionModels.stream()
+            .map(ext -> (XmlNamespaceInfoProvider) () -> singleton(new XmlNamespaceInfo() {
+
+              @Override
+              public String getNamespaceUriPrefix() {
+                return ext.getXmlDslModel().getNamespace();
+              }
+
+              @Override
+              public String getNamespace() {
+                return ext.getXmlDslModel().getPrefix();
+              }
+            }))
+            .collect(toImmutableList());
+    return () -> xmlNamesInfoProviders.stream().map(XmlNamespaceInfoProvider::getXmlNamespacesInfo)
+        .flatMap(collection -> collection.stream())
+        .collect(Collectors.toCollection(() -> new ArrayList<>()));
+  }
+
+  private List<XmlNamespaceInfoProvider> discoverRuntimeXmlNamespaceInfoProvider() {
+    ImmutableList.Builder namespaceInfoProvidersBuilder = ImmutableList.builder();
+    namespaceInfoProvidersBuilder
+        .addAll(new SpiServiceRegistry().lookupProviders(XmlNamespaceInfoProvider.class,
+                                                         muleContext.getClass().getClassLoader()));
+    return namespaceInfoProvidersBuilder.build();
+  }
+
+  private void assertNoNextProcessorNotification() {
+    Iterator iterator = listener.getNotifications().iterator();
+    assertThat(iterator.hasNext(), is(false));
+  }
+
+  private void assertNextProcessorLocationIs(DefaultComponentLocation componentLocation) {
+    MessageProcessorNotification processorNotification = getMessageProcessorNotification();
+    assertThat(processorNotification.getComponent().getLocation().getLocation(), is(componentLocation.getLocation()));
+    assertThat(processorNotification.getComponent().getLocation(), is(componentLocation));
+  }
+
+  private MessageProcessorNotification getMessageProcessorNotification() {
+    assertThat(listener.getNotifications().isEmpty(), is(false));
+    MessageProcessorNotification processorNotification =
+        listener.getNotifications().get(0);
+    listener.getNotifications().remove(0);
+    return processorNotification;
+  }
+
 }
