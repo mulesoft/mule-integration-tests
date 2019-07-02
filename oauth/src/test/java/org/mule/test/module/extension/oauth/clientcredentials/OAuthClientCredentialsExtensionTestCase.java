@@ -49,8 +49,8 @@ public class OAuthClientCredentialsExtensionTestCase extends BaseOAuthExtensionT
         .withBody(accessTokenContent())
         .withHeader(CONTENT_TYPE, "application/json")));
 
-    // This needs to be pre-populated before the app starts, since the token will be refreshed during startup and that needs the
-    // OS created.
+    // This needs to be created before the app starts, since the token will be refreshed during startup and that needs the OS
+    // created.
     objectStore = muleContext.getObjectStoreManager().createObjectStore(CUSTOM_STORE_NAME, unmanagedTransient());
 
     muleContext.start();
