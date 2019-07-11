@@ -146,6 +146,12 @@ public class TransactionsWithRoutersTestCase extends AbstractIntegrationTestCase
   }
 
   @Test
+  @Description("When Flow that creates tx has flow-ref to flow that raises error and handles it with on-error-continue, then tx must go on in the first flow")
+  public void flowRefToFlowWithErrorAndOnErrorContinue() throws Exception {
+    runsInSameThread("flowRefToFlowWithErrorAndOnErrorContinue", TX_MESSAGE, TX_MESSAGE, OTHER_TX_MESSAGE);
+  }
+
+  @Test
   public void flowReDynamicToFlowWithTxAndErrorWithOnErrorPropagate() throws Exception {
     flowRunner("flowRefToTxFlowWithError").withVariable("errorType", "raise-propagate-error").run();
     assertThat(threads, hasSize(4));
