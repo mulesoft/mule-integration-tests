@@ -9,28 +9,36 @@ package org.mule.test.module.extension.oauth.authcode;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
+import static org.mule.functional.api.exception.ExpectedError.none;
 import static org.mule.runtime.api.store.ObjectStoreManager.BASE_PERSISTENT_OBJECT_STORE_KEY;
 import static org.mule.runtime.module.extension.api.util.MuleExtensionUtils.getInitialiserEvent;
 import static org.mule.tck.probe.PollingProber.check;
 import static org.mule.test.module.extension.internal.util.ExtensionsTestUtils.getConfigurationFromRegistry;
+
+import org.mule.functional.api.exception.ExpectedError;
 import org.mule.runtime.api.store.ObjectStore;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.privileged.event.BaseEventContext;
 import org.mule.runtime.extension.api.connectivity.oauth.AuthCodeRequest;
 import org.mule.runtime.extension.api.connectivity.oauth.AuthorizationCodeState;
+import org.mule.runtime.extension.api.error.MuleErrors;
 import org.mule.test.module.extension.oauth.BaseOAuthExtensionTestCase;
 import org.mule.test.oauth.AuthCodeConfig;
 import org.mule.test.oauth.TestOAuthConnection;
 import org.mule.test.oauth.TestOAuthConnectionState;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
-
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
 public class OAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
+
+  @Rule
+  public ExpectedError expectedError = none();
 
   @Override
   protected String[] getConfigFiles() {
@@ -107,6 +115,25 @@ public class OAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
     flowRunner("unauthorize").withVariable(OWNER_ID_VARIABLE_NAME, ownerId).run();
     ObjectStore objectStore = getObjectStore(BASE_PERSISTENT_OBJECT_STORE_KEY);
     assertThat(objectStore.contains(storedOwnerId), is(false));
+
+    if (expectedError != null) {
+      expectedError.expectErrorType("TEST-OAUTH", MuleErrors.CONNECTIVITY.name());
+    }
+
+    flowRunner("refreshToken").withVariable(OWNER_ID_VARIABLE_NAME, getCustomOwnerId()).run();
+  }
+
+  @Test
+  public void reauthorize() throws Exception {
+    expectedError = null;
+    try {
+      unauthorize();
+    } catch (Exception e) {
+      assertThat(e.getCause().getClass().getName(), containsString("TokenInvalidatedException"));
+    }
+
+    authorizeAndStartDancingBaby();
+    receiveAccessTokenAndUserConnection();
   }
 
   protected void assertBeforeCallbackPayload(AuthCodeConfig config) {
