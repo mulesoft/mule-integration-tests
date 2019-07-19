@@ -26,10 +26,9 @@ import org.mule.test.module.extension.oauth.BaseOAuthExtensionTestCase;
 import org.mule.test.oauth.TestOAuthConnection;
 import org.mule.test.oauth.TestOAuthConnectionState;
 
+import com.github.tomakehurst.wiremock.client.WireMock;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
-
-import com.github.tomakehurst.wiremock.client.WireMock;
 
 public class OAuthClientCredentialsExtensionTestCase extends BaseOAuthExtensionTestCase {
 
@@ -76,16 +75,24 @@ public class OAuthClientCredentialsExtensionTestCase extends BaseOAuthExtensionT
     authenticate();
     WireMock.reset();
 
+    String refreshedToken = configureRefreshResponse();
+    flowRunner("refreshToken").run();
+    assertRefreshToken(refreshedToken);
+  }
+
+  private void assertRefreshToken(String refreshedToken) throws Exception {
+    wireMock.verify(postRequestedFor(urlPathEqualTo("/" + TOKEN_PATH)));
+    ResourceOwnerOAuthContext context = (ResourceOwnerOAuthContext) objectStore.retrieve(storedOwnerId);
+    assertThat(context.getAccessToken(), CoreMatchers.equalTo(refreshedToken));
+  }
+
+  private String configureRefreshResponse() {
     String refreshedToken = ACCESS_TOKEN + "-refreshed";
     wireMock.stubFor(post(urlPathMatching("/" + TOKEN_PATH)).willReturn(aResponse()
         .withStatus(OK.getStatusCode())
         .withBody(accessTokenContent(refreshedToken))
         .withHeader(CONTENT_TYPE, "application/json")));
-
-    flowRunner("refreshToken").run();
-    wireMock.verify(postRequestedFor(urlPathEqualTo("/" + TOKEN_PATH)));
-    ResourceOwnerOAuthContext context = (ResourceOwnerOAuthContext) objectStore.retrieve(storedOwnerId);
-    assertThat(context.getAccessToken(), CoreMatchers.equalTo(refreshedToken));
+    return refreshedToken;
   }
 
   @Test
@@ -95,6 +102,13 @@ public class OAuthClientCredentialsExtensionTestCase extends BaseOAuthExtensionT
     flowRunner("unauthorize").run();
     ObjectStore objectStore = getObjectStore(CUSTOM_STORE_NAME);
     assertThat(objectStore.contains(storedOwnerId), is(false));
+
+    String refreshedToken = configureRefreshResponse();
+    TestOAuthConnectionState connection = ((TestOAuthConnection) flowRunner("getConnection")
+        .run().getMessage().getPayload().getValue()).getState();
+
+    assertThat(connection.getState().getAccessToken(), CoreMatchers.equalTo(refreshedToken));
+    assertRefreshToken(refreshedToken);
   }
 
   @Override
