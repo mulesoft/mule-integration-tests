@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xmlns:petstore="http://www.mulesoft.org/schema/mule/petstore"
+      xsi:schemaLocation="
+               http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+               http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
+               http://www.mulesoft.org/schema/mule/petstore http://www.mulesoft.org/schema/mule/petstore/current/mule-petstore.xsd">
+
+    <petstore:config name="petstore" cashierName="jim">
+        <petstore:connection username="john" password="doe">
+            <reconnection>
+                <reconnect count="1" frequency="0"/>
+            </reconnection>
+        </petstore:connection>
+        <petstore:pets>
+            <petstore:pet value="Grumpy Cat"/>
+        </petstore:pets>
+    </petstore:config>
+
+    <flow name="fixedFrequencyReconnectingPoll" initialState="stopped">
+        <petstore:pet-failing-source config-ref="petstore" failAtPoll="3" adoptionLimit="7">
+            <scheduling-strategy>
+                <fixed-frequency frequency="100" startDelay="3500"/>
+            </scheduling-strategy>
+        </petstore:pet-failing-source>
+        <flow-ref name="adopt"/>
+    </flow>
+
+    <flow name="cronReconnectingPoll" initialState="stopped">
+        <petstore:pet-failing-source config-ref="petstore" failAtPoll="3" adoptionLimit="7">
+            <scheduling-strategy>
+                <cron expression="0/3 * * * * ?" timeZone="GMT"/>
+            </scheduling-strategy>
+        </petstore:pet-failing-source>
+        <flow-ref name="adopt"/>
+    </flow>
+
+    <flow name="cronReconnectingPollWithSleep" initialState="stopped">
+        <petstore:pet-failing-source config-ref="petstore" failAtPoll="3" sleepAtRestart="1100" adoptionLimit="7">
+            <scheduling-strategy>
+                <cron expression="0/3 * * * * ?" timeZone="GMT"/>
+            </scheduling-strategy>
+        </petstore:pet-failing-source>
+        <flow-ref name="adopt"/>
+    </flow>
+
+    <flow name="adopt">
+        <test:processor class="org.mule.test.module.scheduler.PollingSourceTestCase$AdoptionProcessor"/>
+    </flow>
+
+    <flow name="pollEvery500ms" initialState="stopped">
+        <petstore:pet-failing-source config-ref="petstore" failAtPoll="3">
+            <scheduling-strategy>
+                <fixed-frequency frequency="500" startDelay="0"/>
+            </scheduling-strategy>
+        </petstore:pet-failing-source>
+        <flow-ref name="adopt2"/>
+    </flow>
+
+    <flow name="pollEvery1000ms" initialState="stopped">
+        <petstore:pet-failing-source config-ref="petstore" failAtPoll="3">
+            <scheduling-strategy>
+                <fixed-frequency frequency="1000" startDelay="0"/>
+            </scheduling-strategy>
+        </petstore:pet-failing-source>
+        <flow-ref name="adopt2"/>
+    </flow>
+
+    <flow name="adopt2">
+        <test:processor class="org.mule.test.module.scheduler.SharedSchedulersTestCase$AdoptionProcessor"/>
+    </flow>
+
+</mule>
