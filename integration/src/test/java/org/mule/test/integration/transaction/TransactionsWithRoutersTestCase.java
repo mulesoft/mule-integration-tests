@@ -210,13 +210,11 @@ public class TransactionsWithRoutersTestCase extends AbstractIntegrationTestCase
   }
 
   @Test
-  @Ignore("MULE-17023")
   public void nestedTriesWithOnErrorPropagatesAndContinue() throws Exception {
     runsInSameThread("nestedTriesWithOnErrorPropagate", TX_MESSAGE, TX_MESSAGE, OTHER_TX_MESSAGE, OTHER_TX_MESSAGE);
   }
 
   @Test
-  @Ignore("MULE-17023")
   public void innerTryWithOnErrorPropagate() throws Exception {
     runsInSameThread("tryWithInnerTryWithOnErrorPropagate", TX_MESSAGE, TX_MESSAGE, OTHER_TX_MESSAGE, OTHER_TX_MESSAGE);
   }
