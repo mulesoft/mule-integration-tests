@@ -18,11 +18,11 @@ import io.qameta.allure.Description;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
-import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.util.concurrent.Latch;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
+import org.mule.runtime.core.api.transaction.Transaction;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -39,7 +39,6 @@ public class TransactionsWithRoutersTestCase extends AbstractIntegrationTestCase
   private static List<String> payloads;
   private static List<Boolean> runsInTx;
   private static Latch latch;
-  private TestConnectorQueueHandler queueHandler;
 
   @Rule
   public SystemProperty message = new SystemProperty("firstValue", TX_MESSAGE);
@@ -54,7 +53,6 @@ public class TransactionsWithRoutersTestCase extends AbstractIntegrationTestCase
     payloads = new ArrayList<>();
     latch = new Latch();
     runsInTx = new CopyOnWriteArrayList<>();
-    queueHandler = new TestConnectorQueueHandler(registry);
   }
 
   @Override
@@ -224,22 +222,25 @@ public class TransactionsWithRoutersTestCase extends AbstractIntegrationTestCase
   }
 
   @Test
-  @Ignore("MULE-17025")
   public void onErrorPropagateRaisesError() throws Exception {
     runsInSameThread("onErrorPropagateRaisesError", TX_MESSAGE, TX_MESSAGE, OTHER_TX_MESSAGE, OTHER_TX_MESSAGE);
   }
 
   @Test
-  @Ignore("MULE-17025")
   public void onErrorContinueRaisesError() throws Exception {
     runsInSameThread("onErrorContinueRaisesError", TX_MESSAGE, TX_MESSAGE, OTHER_TX_MESSAGE, OTHER_TX_MESSAGE);
   }
 
   @Test
-  @Ignore("MULE-17025")
   public void onErrorContinueAndPropagateRaiseError() throws Exception {
     runsInSameThread("onErrorContinueAndPropagateRaiseError", TX_MESSAGE, TX_MESSAGE, OTHER_TX_MESSAGE, OTHER_TX_MESSAGE,
                      OTHER_TX_MESSAGE);
+  }
+
+  @Test
+  public void nestedTryRollbacksTxInInnerTry() throws Exception {
+    flowRunner("nestedTryRollbacksTxInInnerTry").run();
+    assertThat(runsInTx, contains(false, true, true, false));
   }
 
   @Test
@@ -248,7 +249,6 @@ public class TransactionsWithRoutersTestCase extends AbstractIntegrationTestCase
   }
 
   @Test
-  @Ignore("MULE-17026")
   public void flowRefToFlowWithErrorPropagateWithError() throws Exception {
     runsInSameThread("flowRefToFlowWithErrorPropagateWithError", TX_MESSAGE, OTHER_TX_MESSAGE, OTHER_TX_MESSAGE,
                      OTHER_TX_MESSAGE);
