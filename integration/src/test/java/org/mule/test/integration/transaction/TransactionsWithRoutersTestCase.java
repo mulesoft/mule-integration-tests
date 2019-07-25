@@ -15,14 +15,12 @@ import static org.hamcrest.core.Every.everyItem;
 import static org.mule.runtime.core.api.transaction.TransactionCoordination.isTransactionActive;
 
 import io.qameta.allure.Description;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.util.concurrent.Latch;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
-import org.mule.runtime.core.api.transaction.Transaction;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -210,13 +208,18 @@ public class TransactionsWithRoutersTestCase extends AbstractIntegrationTestCase
   }
 
   @Test
-  public void nestedTriesWithOnErrorPropagatesAndContinue() throws Exception {
+  public void nestedTriesWithOnErrorPropagates() throws Exception {
     runsInSameThread("nestedTriesWithOnErrorPropagate", TX_MESSAGE, TX_MESSAGE, OTHER_TX_MESSAGE, OTHER_TX_MESSAGE);
   }
 
   @Test
   public void innerTryWithOnErrorPropagate() throws Exception {
     runsInSameThread("tryWithInnerTryWithOnErrorPropagate", TX_MESSAGE, TX_MESSAGE, OTHER_TX_MESSAGE, OTHER_TX_MESSAGE);
+  }
+
+  @Test
+  public void nestedTriesWithOnErrorContinue() throws Exception {
+    runsInSameThread("nestedTriesWithOnErrorContinue", TX_MESSAGE, TX_MESSAGE, OTHER_TX_MESSAGE, OTHER_TX_MESSAGE);
   }
 
   @Test
