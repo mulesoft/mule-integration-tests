@@ -91,7 +91,8 @@ public class MultiConfigOAuthExtensionTestCase extends BaseOAuthExtensionTestCas
   private void getConnection(int port) throws Exception {
     simulateCallback(port);
 
-    TestOAuthConnectionState connection = ((TestOAuthConnection) flowRunner("getConnection")
+    String flowName = storedOwnerId.equals(OAUTH_RESOLVED_OWNER) ? "getConnection" : "getOtherConnection";
+    TestOAuthConnectionState connection = ((TestOAuthConnection) flowRunner(flowName)
         .run().getMessage().getPayload().getValue()).getState();
 
     assertConnectionState(connection);
