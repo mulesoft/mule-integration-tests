@@ -15,7 +15,8 @@
 
     <properties>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
-        <mule.version>${project.version}</mule.version>
+        <mule.version.smart.connectors>${project.version}</mule.version.smart.connectors>
+        <mule.version>${mule.version.smart.connectors}</mule.version>
     </properties>
 
     <modules>
