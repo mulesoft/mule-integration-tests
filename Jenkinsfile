@@ -1,4 +1,4 @@
-def UPSTREAM_PROJECTS_LIST = [ "Mule-runtime/mule/mule-4.2.1" ]
+def UPSTREAM_PROJECTS_LIST = [ "Mule-runtime/mule/mule-4.2.1-SPX" ]
 
 Map pipelineParams = [ "upstreamProjects" : UPSTREAM_PROJECTS_LIST.join(','),
                        // Comment the mule public settings as there are some transitive deps from the services that are only present
