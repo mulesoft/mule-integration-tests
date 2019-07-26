@@ -20,7 +20,7 @@
     </petstore:config>
 
     <flow name="fixedFrequencyReconnectingPoll" initialState="stopped">
-        <petstore:pet-failing-source config-ref="petstore" failAtPoll="3" adoptionLimit="7">
+        <petstore:pet-failing-source config-ref="petstore" failAtPoll="3">
             <scheduling-strategy>
                 <fixed-frequency frequency="100" startDelay="3500"/>
             </scheduling-strategy>
@@ -29,7 +29,7 @@
     </flow>
 
     <flow name="cronReconnectingPoll" initialState="stopped">
-        <petstore:pet-failing-source config-ref="petstore" failAtPoll="3" adoptionLimit="7">
+        <petstore:pet-failing-source config-ref="petstore" failAtPoll="3">
             <scheduling-strategy>
                 <cron expression="0/3 * * * * ?" timeZone="GMT"/>
             </scheduling-strategy>
@@ -38,7 +38,7 @@
     </flow>
 
     <flow name="cronReconnectingPollWithSleep" initialState="stopped">
-        <petstore:pet-failing-source config-ref="petstore" failAtPoll="3" sleepAtRestart="1100" adoptionLimit="7">
+        <petstore:pet-failing-source config-ref="petstore" failAtPoll="3" sleepAtRestart="1100">
             <scheduling-strategy>
                 <cron expression="0/3 * * * * ?" timeZone="GMT"/>
             </scheduling-strategy>
@@ -48,28 +48,6 @@
 
     <flow name="adopt">
         <test:processor class="org.mule.test.module.scheduler.PollingSourceTestCase$AdoptionProcessor"/>
-    </flow>
-
-    <flow name="pollEvery500ms" initialState="stopped">
-        <petstore:pet-failing-source config-ref="petstore" failAtPoll="3">
-            <scheduling-strategy>
-                <fixed-frequency frequency="500" startDelay="0"/>
-            </scheduling-strategy>
-        </petstore:pet-failing-source>
-        <flow-ref name="adopt2"/>
-    </flow>
-
-    <flow name="pollEvery1000ms" initialState="stopped">
-        <petstore:pet-failing-source config-ref="petstore" failAtPoll="3">
-            <scheduling-strategy>
-                <fixed-frequency frequency="1000" startDelay="0"/>
-            </scheduling-strategy>
-        </petstore:pet-failing-source>
-        <flow-ref name="adopt2"/>
-    </flow>
-
-    <flow name="adopt2">
-        <test:processor class="org.mule.test.module.scheduler.SharedSchedulersTestCase$AdoptionProcessor"/>
     </flow>
 
 </mule>

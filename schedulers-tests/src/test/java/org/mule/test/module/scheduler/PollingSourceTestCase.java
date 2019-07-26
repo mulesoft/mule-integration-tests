@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 
 public class PollingSourceTestCase extends AbstractSchedulerTestCase {
@@ -41,11 +42,15 @@ public class PollingSourceTestCase extends AbstractSchedulerTestCase {
     @Override
     public CoreEvent process(CoreEvent event) throws MuleException {
       synchronized (ADOPTION_EVENTS) {
-        System.out.println("Adopting");
         ADOPTION_EVENTS.add(event);
       }
       return event;
     }
+  }
+
+  @Before
+  public void before() {
+    ADOPTION_EVENTS.clear();
   }
 
   /* This test checks that when a polling source with a fixed frequency scheduler with start delay is restarted, the
@@ -98,7 +103,7 @@ public class PollingSourceTestCase extends AbstractSchedulerTestCase {
   }
 
   private void assertAdoptionTimestampsOutside() throws Exception {
-    Thread.sleep(25000);
+    Thread.sleep(15000);
     List<Instant> timestampList =
         ADOPTION_EVENTS.stream().map(e -> (Instant) e.getMessage().getAttributes().getValue()).collect(toList());
     Collections.sort(timestampList);
@@ -116,7 +121,7 @@ public class PollingSourceTestCase extends AbstractSchedulerTestCase {
   }
 
   private void assertAdoptionTimestampsInside() throws Exception {
-    Thread.sleep(25000);
+    Thread.sleep(15000);
     List<Instant> timestampList =
         ADOPTION_EVENTS.stream().map(e -> (Instant) e.getMessage().getAttributes().getValue()).collect(toList());
     Collections.sort(timestampList);
@@ -128,7 +133,7 @@ public class PollingSourceTestCase extends AbstractSchedulerTestCase {
   }
 
   private void assertAllPetsAdopted() {
-    check(5000, 200, () -> {
+    check(5000, 300, () -> {
       synchronized (ADOPTION_EVENTS) {
         return ADOPTION_EVENTS.size() >= ALL_PETS.size() &&
             ADOPTION_EVENTS.stream().map(e -> e.getMessage().getPayload().getValue().toString()).collect(toList())
