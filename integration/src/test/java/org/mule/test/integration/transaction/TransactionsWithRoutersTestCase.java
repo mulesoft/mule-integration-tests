@@ -96,8 +96,9 @@ public class TransactionsWithRoutersTestCase extends AbstractIntegrationTestCase
   @Test
   @Description("When running inside a tx, every execution of until successful must be in the same thread")
   public void untilSucessfulWithErrorHandlerWithRouterRunsInSameThread() throws Exception {
-    runsInSameTransaction("txUntilSuccessfulOtherError", TX_MESSAGE, TX_MESSAGE, TX_MESSAGE, OTHER_TX_MESSAGE, TX_MESSAGE, TX_MESSAGE,
-                     TX_MESSAGE, OTHER_TX_MESSAGE);
+    runsInSameTransaction("txUntilSuccessfulOtherError", TX_MESSAGE, TX_MESSAGE, TX_MESSAGE, OTHER_TX_MESSAGE, TX_MESSAGE,
+                          TX_MESSAGE,
+                          TX_MESSAGE, OTHER_TX_MESSAGE);
   }
 
   @Test
@@ -235,7 +236,7 @@ public class TransactionsWithRoutersTestCase extends AbstractIntegrationTestCase
   @Test
   public void onErrorContinueAndPropagateRaiseError() throws Exception {
     runsInSameTransaction("onErrorContinueAndPropagateRaiseError", TX_MESSAGE, TX_MESSAGE, OTHER_TX_MESSAGE, OTHER_TX_MESSAGE,
-                     OTHER_TX_MESSAGE);
+                          OTHER_TX_MESSAGE);
   }
 
   @Test
@@ -252,7 +253,7 @@ public class TransactionsWithRoutersTestCase extends AbstractIntegrationTestCase
   @Test
   public void flowRefToFlowWithErrorPropagateWithError() throws Exception {
     runsInSameTransaction("flowRefToFlowWithErrorPropagateWithError", TX_MESSAGE, OTHER_TX_MESSAGE, OTHER_TX_MESSAGE,
-                     OTHER_TX_MESSAGE);
+                          OTHER_TX_MESSAGE);
   }
 
   private void runsInSameTransaction(String flowName, String... expectedPayloads) throws Exception {
