@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+
+    <flow name="onErrorPropagateRaisesOtherError">
+        <try>
+            <set-payload value="I am inevitable"/>
+            <try>
+                <raise-error type="APP:SOME"/>
+                <error-handler>
+                    <on-error-propagate>
+                        <raise-error type="APP:SOME2"/>
+                    </on-error-propagate>
+                </error-handler>
+            </try>
+            <error-handler>
+                <on-error-continue type="APP:SOME2">
+                    <set-payload value="And I am Ironman"/>
+                </on-error-continue>
+            </error-handler>
+        </try>
+    </flow>
+
+</mule>
