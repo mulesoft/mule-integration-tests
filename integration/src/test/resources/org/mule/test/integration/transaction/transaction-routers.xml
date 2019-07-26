@@ -475,6 +475,29 @@ http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/cu
         </try>
     </flow>
 
+    <flow name="nestedTryRollbacksTxInInnerTry">
+        <set-payload value="${firstValue}"/>
+        <try>
+            <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+            <try transactionalAction="ALWAYS_BEGIN">
+                <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+                <raise-error type="APP:SOME"/>
+                <error-handler>
+                    <on-error-continue>
+                        <set-payload value="${otherValue}"/>
+                        <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+                        <raise-error type="APP:SOME2"/>
+                    </on-error-continue>
+                </error-handler>
+            </try>
+            <error-handler>
+                <on-error-continue>
+                    <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+                </on-error-continue>
+            </error-handler>
+        </try>
+    </flow>
+
     <flow name="onErrorContinueRaisesError">
         <set-payload value="${firstValue}"/>
         <try transactionalAction="ALWAYS_BEGIN">
