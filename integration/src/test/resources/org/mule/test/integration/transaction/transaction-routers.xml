@@ -430,6 +430,26 @@ http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/cu
         </try>
     </flow>
 
+    <flow name="nestedTriesWithOnErrorContinue">
+        <try transactionalAction="ALWAYS_BEGIN">
+            <try transactionalAction="BEGIN_OR_JOIN">
+                <try>
+                    <set-payload value="${firstValue}"/>
+                    <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+                    <raise-error type="APP:SOME"/>
+                    <error-handler>
+                        <on-error-continue>
+                            <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+                        </on-error-continue>
+                    </error-handler>
+                </try>
+                <set-payload value="${otherValue}"/>
+                <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+            </try>
+            <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+        </try>
+    </flow>
+
     <flow name="tryWithInnerTryWithOnErrorPropagate">
         <set-payload value="${firstValue}"/>
         <try transactionalAction="ALWAYS_BEGIN">

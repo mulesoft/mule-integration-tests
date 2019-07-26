@@ -15,14 +15,12 @@ import static org.hamcrest.core.Every.everyItem;
 import static org.mule.runtime.core.api.transaction.TransactionCoordination.isTransactionActive;
 
 import io.qameta.allure.Description;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.util.concurrent.Latch;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
-import org.mule.runtime.core.api.transaction.Transaction;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -63,42 +61,42 @@ public class TransactionsWithRoutersTestCase extends AbstractIntegrationTestCase
   @Test
   @Description("When running inside a tx, parallel foreach should work as common foreach")
   public void parallelForeachInSameThread() throws Exception {
-    runsInSameThread("txParallelForeach", TX_MESSAGE, OTHER_TX_MESSAGE);
+    runsInSameTransaction("txParallelForeach", TX_MESSAGE, OTHER_TX_MESSAGE);
   }
 
   @Test
   public void parallelForeachInsideParallelForeachInSameThread() throws Exception {
-    runsInSameThread("txParallelForeachInsideParallelForeach", TX_MESSAGE, OTHER_TX_MESSAGE, OTHER_TX_MESSAGE, TX_MESSAGE);
+    runsInSameTransaction("txParallelForeachInsideParallelForeach", TX_MESSAGE, OTHER_TX_MESSAGE, OTHER_TX_MESSAGE, TX_MESSAGE);
   }
 
   @Test
   @Description("Error handling of parallel foreach does not change even in context of transactions, where execution is sequential")
   public void parallelForEachHasSameErrorHandling() throws Exception {
-    runsInSameThreadWithErrors("txParallelForeachWithErrors");
+    runsInSameTransactionWithErrors("txParallelForeachWithErrors");
   }
 
   @Test
   @Description("When running inside a tx, every route executes sequentially")
   public void scatterGatherRunsInSameThread() throws Exception {
-    runsInSameThread("txScatterGather", TX_MESSAGE, OTHER_TX_MESSAGE);
+    runsInSameTransaction("txScatterGather", TX_MESSAGE, OTHER_TX_MESSAGE);
   }
 
   @Test
   @Description("Error handling of scatter gather does not change even in context of transactions, where execution is sequential")
   public void scatterGatherHasSameErrorHandling() throws Exception {
-    runsInSameThreadWithErrors("txScatterGatherWithErrors");
+    runsInSameTransactionWithErrors("txScatterGatherWithErrors");
   }
 
   @Test
   @Description("When running inside a tx, every execution of until successful must be in the same thread")
   public void untilSucessfulRunsInSameThread() throws Exception {
-    runsInSameThread("txUntilSuccessful", TX_MESSAGE, TX_MESSAGE, TX_MESSAGE, OTHER_TX_MESSAGE);
+    runsInSameTransaction("txUntilSuccessful", TX_MESSAGE, TX_MESSAGE, TX_MESSAGE, OTHER_TX_MESSAGE);
   }
 
   @Test
   @Description("When running inside a tx, every execution of until successful must be in the same thread")
   public void untilSucessfulWithErrorHandlerWithRouterRunsInSameThread() throws Exception {
-    runsInSameThread("txUntilSuccessfulOtherError", TX_MESSAGE, TX_MESSAGE, TX_MESSAGE, OTHER_TX_MESSAGE, TX_MESSAGE, TX_MESSAGE,
+    runsInSameTransaction("txUntilSuccessfulOtherError", TX_MESSAGE, TX_MESSAGE, TX_MESSAGE, OTHER_TX_MESSAGE, TX_MESSAGE, TX_MESSAGE,
                      TX_MESSAGE, OTHER_TX_MESSAGE);
   }
 
@@ -124,29 +122,29 @@ public class TransactionsWithRoutersTestCase extends AbstractIntegrationTestCase
   @Test
   @Description("When running inside tx and use flow-ref, the tx is propagated")
   public void flowRefWithTx() throws Exception {
-    runsInSameThread("flowRefWithTx", TX_MESSAGE, OTHER_TX_MESSAGE);
+    runsInSameTransaction("flowRefWithTx", TX_MESSAGE, OTHER_TX_MESSAGE);
   }
 
   @Test
   @Description("When running inside tx and use flow-ref, the tx is propagated even in case of subflow")
   public void flowRefWithTxToSubFlow() throws Exception {
-    runsInSameThread("flowRefToSubFlowWithTx", TX_MESSAGE, OTHER_TX_MESSAGE);
+    runsInSameTransaction("flowRefToSubFlowWithTx", TX_MESSAGE, OTHER_TX_MESSAGE);
   }
 
   @Test
   public void flowRefWithTxToFlowWithError() throws Exception {
-    runsInSameThread("flowRefToFlowWithErrorTx", TX_MESSAGE, TX_MESSAGE, OTHER_TX_MESSAGE);
+    runsInSameTransaction("flowRefToFlowWithErrorTx", TX_MESSAGE, TX_MESSAGE, OTHER_TX_MESSAGE);
   }
 
   @Test
   public void flowReDynamicWithTxToFlowWithError() throws Exception {
-    runsInSameThread("flowRefDynamicToFlowWithErrorTx", TX_MESSAGE, TX_MESSAGE, OTHER_TX_MESSAGE);
+    runsInSameTransaction("flowRefDynamicToFlowWithErrorTx", TX_MESSAGE, TX_MESSAGE, OTHER_TX_MESSAGE);
   }
 
   @Test
   @Description("When Flow that creates tx has flow-ref to flow that raises error and handles it with on-error-continue, then tx must go on in the first flow")
   public void flowRefToFlowWithErrorAndOnErrorContinue() throws Exception {
-    runsInSameThread("flowRefToFlowWithErrorAndOnErrorContinue", TX_MESSAGE, TX_MESSAGE, OTHER_TX_MESSAGE);
+    runsInSameTransaction("flowRefToFlowWithErrorAndOnErrorContinue", TX_MESSAGE, TX_MESSAGE, OTHER_TX_MESSAGE);
   }
 
   @Test
@@ -169,71 +167,74 @@ public class TransactionsWithRoutersTestCase extends AbstractIntegrationTestCase
 
   @Test
   public void flowRefWithTxToFlowWithErrorAndFlowRefInErrorHandler() throws Exception {
-    runsInSameThread("flowRefToFlowWithErrorTxAndFlowRef", TX_MESSAGE, TX_MESSAGE, OTHER_TX_MESSAGE, TX_MESSAGE);
+    runsInSameTransaction("flowRefToFlowWithErrorTxAndFlowRef", TX_MESSAGE, TX_MESSAGE, OTHER_TX_MESSAGE, TX_MESSAGE);
   }
 
   @Test
   public void nestedTries() throws Exception {
-    runsInSameThread("nestedTries", TX_MESSAGE, TX_MESSAGE, TX_MESSAGE);
+    runsInSameTransaction("nestedTries", TX_MESSAGE, TX_MESSAGE, TX_MESSAGE);
   }
 
   @Test
   public void nestedTriesContinuesTx() throws Exception {
-    runsInSameThread("nestedTriesContinuesTx", TX_MESSAGE, OTHER_TX_MESSAGE);
+    runsInSameTransaction("nestedTriesContinuesTx", TX_MESSAGE, OTHER_TX_MESSAGE);
   }
 
   @Test
   public void flowWithTxSourceWithTryContinuesTx() throws Exception {
-    runsInSameThreadAsync("toQueueFlowWithTxSourceWithTryContinuesTx", TX_MESSAGE, OTHER_TX_MESSAGE);
+    runsInSameTransactionAsync("toQueueFlowWithTxSourceWithTryContinuesTx", TX_MESSAGE, OTHER_TX_MESSAGE);
   }
 
   @Test
   public void nestedTriesWithIndifferentInTheMiddle() throws Exception {
-    runsInSameThread("nestedTriesWithIndifferentInTheMiddle", TX_MESSAGE, TX_MESSAGE, TX_MESSAGE, OTHER_TX_MESSAGE);
+    runsInSameTransaction("nestedTriesWithIndifferentInTheMiddle", TX_MESSAGE, TX_MESSAGE, TX_MESSAGE, OTHER_TX_MESSAGE);
   }
 
   @Test
   public void flowWithTxSourceAndFlowRef() throws Exception {
-    runsInSameThreadAsync("toQueue", OTHER_TX_MESSAGE, TX_MESSAGE, OTHER_TX_MESSAGE);
+    runsInSameTransactionAsync("toQueue", OTHER_TX_MESSAGE, TX_MESSAGE, OTHER_TX_MESSAGE);
   }
 
   @Test
   public void flowRefToFlowWithErrorAndContinue() throws Exception {
-    runsInSameThread("flowRefToFlowWithErrorAndContinue", TX_MESSAGE, TX_MESSAGE, OTHER_TX_MESSAGE, OTHER_TX_MESSAGE);
+    runsInSameTransaction("flowRefToFlowWithErrorAndContinue", TX_MESSAGE, TX_MESSAGE, OTHER_TX_MESSAGE, OTHER_TX_MESSAGE);
   }
 
   @Test
   public void flowRefToFlowWithErrorAndPropagate() throws Exception {
     // Since the on-error-propagate is not in the flow/try that created the tx, it should not rollback it. Thus, it should
     // still run in the same thread (and within a tx)
-    runsInSameThread("flowRefToFlowWithErrorAndPropagate", TX_MESSAGE, TX_MESSAGE, OTHER_TX_MESSAGE, OTHER_TX_MESSAGE);
+    runsInSameTransaction("flowRefToFlowWithErrorAndPropagate", TX_MESSAGE, TX_MESSAGE, OTHER_TX_MESSAGE, OTHER_TX_MESSAGE);
   }
 
   @Test
-  @Ignore("MULE-17023")
-  public void nestedTriesWithOnErrorPropagatesAndContinue() throws Exception {
-    runsInSameThread("nestedTriesWithOnErrorPropagate", TX_MESSAGE, TX_MESSAGE, OTHER_TX_MESSAGE, OTHER_TX_MESSAGE);
+  public void nestedTriesWithOnErrorPropagates() throws Exception {
+    runsInSameTransaction("nestedTriesWithOnErrorPropagate", TX_MESSAGE, TX_MESSAGE, OTHER_TX_MESSAGE, OTHER_TX_MESSAGE);
   }
 
   @Test
-  @Ignore("MULE-17023")
   public void innerTryWithOnErrorPropagate() throws Exception {
-    runsInSameThread("tryWithInnerTryWithOnErrorPropagate", TX_MESSAGE, TX_MESSAGE, OTHER_TX_MESSAGE, OTHER_TX_MESSAGE);
+    runsInSameTransaction("tryWithInnerTryWithOnErrorPropagate", TX_MESSAGE, TX_MESSAGE, OTHER_TX_MESSAGE, OTHER_TX_MESSAGE);
+  }
+
+  @Test
+  public void nestedTriesWithOnErrorContinue() throws Exception {
+    runsInSameTransaction("nestedTriesWithOnErrorContinue", TX_MESSAGE, TX_MESSAGE, OTHER_TX_MESSAGE, OTHER_TX_MESSAGE);
   }
 
   @Test
   public void onErrorPropagateRaisesError() throws Exception {
-    runsInSameThread("onErrorPropagateRaisesError", TX_MESSAGE, TX_MESSAGE, OTHER_TX_MESSAGE, OTHER_TX_MESSAGE);
+    runsInSameTransaction("onErrorPropagateRaisesError", TX_MESSAGE, TX_MESSAGE, OTHER_TX_MESSAGE, OTHER_TX_MESSAGE);
   }
 
   @Test
   public void onErrorContinueRaisesError() throws Exception {
-    runsInSameThread("onErrorContinueRaisesError", TX_MESSAGE, TX_MESSAGE, OTHER_TX_MESSAGE, OTHER_TX_MESSAGE);
+    runsInSameTransaction("onErrorContinueRaisesError", TX_MESSAGE, TX_MESSAGE, OTHER_TX_MESSAGE, OTHER_TX_MESSAGE);
   }
 
   @Test
   public void onErrorContinueAndPropagateRaiseError() throws Exception {
-    runsInSameThread("onErrorContinueAndPropagateRaiseError", TX_MESSAGE, TX_MESSAGE, OTHER_TX_MESSAGE, OTHER_TX_MESSAGE,
+    runsInSameTransaction("onErrorContinueAndPropagateRaiseError", TX_MESSAGE, TX_MESSAGE, OTHER_TX_MESSAGE, OTHER_TX_MESSAGE,
                      OTHER_TX_MESSAGE);
   }
 
@@ -245,24 +246,26 @@ public class TransactionsWithRoutersTestCase extends AbstractIntegrationTestCase
 
   @Test
   public void tryWithinTryDoesNotFinishTx() throws Exception {
-    runsInSameThread("tryWithinTryDoesNotFinishTx", TX_MESSAGE, OTHER_TX_MESSAGE, OTHER_TX_MESSAGE);
+    runsInSameTransaction("tryWithinTryDoesNotFinishTx", TX_MESSAGE, OTHER_TX_MESSAGE, OTHER_TX_MESSAGE);
   }
 
   @Test
   public void flowRefToFlowWithErrorPropagateWithError() throws Exception {
-    runsInSameThread("flowRefToFlowWithErrorPropagateWithError", TX_MESSAGE, OTHER_TX_MESSAGE, OTHER_TX_MESSAGE,
+    runsInSameTransaction("flowRefToFlowWithErrorPropagateWithError", TX_MESSAGE, OTHER_TX_MESSAGE, OTHER_TX_MESSAGE,
                      OTHER_TX_MESSAGE);
   }
 
-  private void runsInSameThread(String flowName, String... expectedPayloads) throws Exception {
-    runsInSameThread(flowName, false, expectedPayloads);
+  private void runsInSameTransaction(String flowName, String... expectedPayloads) throws Exception {
+    runsInSameTransaction(flowName, false, expectedPayloads);
   }
 
-  private void runsInSameThreadAsync(String flowName, String... expectedPayloads) throws Exception {
-    runsInSameThread(flowName, true, expectedPayloads);
+  private void runsInSameTransactionAsync(String flowName, String... expectedPayloads) throws Exception {
+    runsInSameTransaction(flowName, true, expectedPayloads);
   }
 
-  private void runsInSameThread(String flowName, boolean async, String... expectedPayloads) throws Exception {
+  private void runsInSameTransaction(String flowName, boolean async, String... expectedPayloads) throws Exception {
+    // Checks that all the points captured by the ThreadCaptor are processing within the Transaction, the threads
+    // are (as should be) the same, and the payloads are the expected ones
     flowRunner(flowName).run();
     if (async) {
       latch.await();
@@ -274,8 +277,8 @@ public class TransactionsWithRoutersTestCase extends AbstractIntegrationTestCase
     assertThat(payloads, contains(expectedPayloads));
   }
 
-  private void runsInSameThreadWithErrors(String flow) throws Exception {
-    runsInSameThread(flow, TX_MESSAGE, OTHER_TX_MESSAGE, "Error with " + TX_MESSAGE, OTHER_TX_MESSAGE);
+  private void runsInSameTransactionWithErrors(String flow) throws Exception {
+    runsInSameTransaction(flow, TX_MESSAGE, OTHER_TX_MESSAGE, "Error with " + TX_MESSAGE, OTHER_TX_MESSAGE);
   }
 
   public static class ThreadCaptor implements Processor {
