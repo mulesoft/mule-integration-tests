@@ -61,8 +61,10 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
 
   @Rule
   public DynamicPort listenPort = new DynamicPort("http.listener.port");
+  @Rule
+  public DynamicPort proxyPort = new DynamicPort("http.proxy.port");
 
-  private static final int TOTAL_NUMBER_OF_LOCATIONS = 106;
+  private static final int TOTAL_NUMBER_OF_LOCATIONS = 107;
   @Inject
   private Registry registry;
 
@@ -72,7 +74,8 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
 
   @Override
   protected String[] getConfigFiles() {
-    return new String[] {"org/mule/test/integration/locator/component-locator-config.xml",
+    return new String[] {
+        "org/mule/test/integration/locator/component-locator-config.xml",
         "org/mule/test/integration/locator/component-locator-levels-config.xml",
         "org/mule/test/integration/locator/component-locator-spring-config.xml",
         "org/mule/test/integration/locator/component-locator-reference-component-models.xml",
@@ -173,6 +176,7 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
                                   "requestConfig/0",
                                   "tlsContextRef",
                                   "tlsContextRef/0",
+                                  "anonymousProxyConfig",
                                   "springConfig",
                                   "globalObjectStore",
                                   "globalObjectStoreAggregatorFlow",
@@ -315,6 +319,7 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
     assertThat(locator.find(builder().globalName("dbConfig").build()), is(not(empty())));
     assertThat(locator.find(builder().globalName("requestConfig").build()), is(not(empty())));
     assertThat(locator.find(builder().globalName("tlsContextRef").build()), is(not(empty())));
+    assertThat(locator.find(builder().globalName("anonymousProxyConfig").build()), is(not(empty())));
   }
 
   @Test
@@ -429,7 +434,7 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
   @Test
   public void componentModelReferencesToNonTopLevelElement() {
     lazyComponentInitializer.initializeComponent(builder().globalName("aggregatorWithMaxSizeListenerFlow").build());
-    assertThat(locator.find(builder().globalName("aggregatorWithMaxSizeFlow").build()), is(not(empty())));
+    assertThat(locator.find(builder().globalName("aggregatorWithMaxSizeFlow").build()), is(empty()));
     assertThat(locator.find(builder().globalName("aggregatorWithMaxSizeFlow").addProcessorsPart().addIndexPart(0).build()),
                is(not(empty())));
 
