@@ -44,18 +44,18 @@ import org.mule.service.http.TestHttpClient;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.Test;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Rule;
+import org.junit.Test;
 
 import io.qameta.allure.Issue;
 
@@ -238,6 +238,7 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
+  @Ignore("How to handle backpressure on flow-ref's is not defined yet, but this test will provide a starting point in the future...")
   public void backpressureFlowRefSub() throws Exception {
     HttpRequest request =
         HttpRequest.builder()
