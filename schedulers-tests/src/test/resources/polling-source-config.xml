@@ -9,11 +9,7 @@
                http://www.mulesoft.org/schema/mule/petstore http://www.mulesoft.org/schema/mule/petstore/current/mule-petstore.xsd">
 
     <petstore:config name="petstore" cashierName="jim">
-        <petstore:connection username="john" password="doe">
-            <reconnection>
-                <reconnect count="1" frequency="0"/>
-            </reconnection>
-        </petstore:connection>
+        <petstore:connection username="john" password="doe"/>
         <petstore:pets>
             <petstore:pet value="Grumpy Cat"/>
         </petstore:pets>
