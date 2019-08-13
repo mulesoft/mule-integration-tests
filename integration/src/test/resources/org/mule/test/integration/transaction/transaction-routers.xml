@@ -611,4 +611,51 @@ http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/cu
         </error-handler>
     </flow>
 
+
+    <flow name="tryRunsInSameThreadAsBeforeExecuting">
+        <set-payload value="${firstValue}"/>
+        <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+        <try>
+            <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+        </try>
+    </flow>
+
+    <flow name="tryWithAlwaysBegin">
+        <set-payload value="${firstValue}"/>
+        <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+        <try transactionalAction="ALWAYS_BEGIN">
+            <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+        </try>
+    </flow>
+
+    <flow name="tryWithBeginOrJoin">
+        <set-payload value="${firstValue}"/>
+        <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+        <try transactionalAction="BEGIN_OR_JOIN">
+            <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+        </try>
+    </flow>
+
+    <flow name="tryWithBeginOrJoinNestedIndifferent">
+        <set-payload value="${firstValue}"/>
+        <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+        <try transactionalAction="BEGIN_OR_JOIN">
+            <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+            <try transactionalAction="INDIFFERENT">
+                <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+            </try>
+        </try>
+    </flow>
+
+    <flow name="tryWithBeginOrJoinNestedBeginOrJoin">
+        <set-payload value="${firstValue}"/>
+        <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+        <try transactionalAction="BEGIN_OR_JOIN">
+            <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+            <try transactionalAction="BEGIN_OR_JOIN">
+                <custom-processor class="org.mule.test.integration.transaction.TransactionsWithRoutersTestCase$ThreadCaptor"/>
+            </try>
+        </try>
+    </flow>
+
 </mule>
