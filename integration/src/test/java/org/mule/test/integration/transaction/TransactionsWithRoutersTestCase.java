@@ -12,6 +12,7 @@ import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 import static org.hamcrest.core.Every.everyItem;
+import static org.hamcrest.core.IsNot.not;
 import static org.mule.runtime.core.api.transaction.TransactionCoordination.isTransactionActive;
 
 import io.qameta.allure.Description;
@@ -33,6 +34,8 @@ public class TransactionsWithRoutersTestCase extends AbstractIntegrationTestCase
 
   private static final String TX_MESSAGE = "Kangaroo";
   private static final String OTHER_TX_MESSAGE = "Uruguayan";
+  private static final String CPU_LIGHT = "cpuLight";
+  private static final String IO = "io";
   private static List<Thread> threads;
   private static List<String> payloads;
   private static List<Boolean> runsInTx;
@@ -256,6 +259,47 @@ public class TransactionsWithRoutersTestCase extends AbstractIntegrationTestCase
                           OTHER_TX_MESSAGE);
   }
 
+  @Test
+  public void tryRunsInSameThreadAsBeforeExecuting() throws Exception {
+    flowRunner("tryRunsInSameThreadAsBeforeExecuting").run();
+    assertThat(threads.get(1), is(threads.get(0)));
+    assertThreadType(threads.get(0), CPU_LIGHT);
+  }
+
+  @Test
+  public void tryWithAlwaysBegin() throws Exception {
+    flowRunner("tryWithAlwaysBegin").run();
+    assertThat(threads.get(1), not(threads.get(0)));
+    assertThreadType(threads.get(0), CPU_LIGHT);
+    assertThreadType(threads.get(1), IO);
+  }
+
+  @Test
+  public void tryWithBeginOrJoin() throws Exception {
+    flowRunner("tryWithBeginOrJoin").run();
+    assertThat(threads.get(1), not(threads.get(0)));
+    assertThreadType(threads.get(0), CPU_LIGHT);
+    assertThreadType(threads.get(1), IO);
+  }
+
+  @Test
+  public void tryWithBeginOrJoinNestedIndifferent() throws Exception {
+    flowRunner("tryWithBeginOrJoinNestedIndifferent").run();
+    assertThat(threads.get(1), not(threads.get(0)));
+    assertThat(threads.get(2), is(threads.get(1)));
+    assertThreadType(threads.get(0), CPU_LIGHT);
+    assertThreadType(threads.get(1), IO);
+  }
+
+  @Test
+  public void tryWithBeginOrJoinNestedBeginOrJoin() throws Exception {
+    flowRunner("tryWithBeginOrJoinNestedBeginOrJoin").run();
+    assertThat(threads.get(1), not(threads.get(0)));
+    assertThat(threads.get(2), is(threads.get(1)));
+    assertThreadType(threads.get(0), CPU_LIGHT);
+    assertThreadType(threads.get(1), IO);
+  }
+
   private void runsInSameTransaction(String flowName, String... expectedPayloads) throws Exception {
     runsInSameTransaction(flowName, false, expectedPayloads);
   }
@@ -280,6 +324,10 @@ public class TransactionsWithRoutersTestCase extends AbstractIntegrationTestCase
 
   private void runsInSameTransactionWithErrors(String flow) throws Exception {
     runsInSameTransaction(flow, TX_MESSAGE, OTHER_TX_MESSAGE, "Error with " + TX_MESSAGE, OTHER_TX_MESSAGE);
+  }
+
+  private void assertThreadType(Thread thread, String type) {
+    assertThat(thread.getName().matches("^\\[MuleRuntime\\]\\." + type + ".*"), is(true));
   }
 
   public static class ThreadCaptor implements Processor {
