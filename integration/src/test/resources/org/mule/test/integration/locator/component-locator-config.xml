@@ -84,5 +84,10 @@
         <test:processor throwException="true"/>
     </flow>
 
+    <sub-flow name="async-flow">
+        <async>
+            <logger level="INFO" message="payload is #[payload]"/>
+        </async>
+    </sub-flow>
 </mule>
 

@@ -61,7 +61,7 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
   @Rule
   public DynamicPort listenPort = new DynamicPort("http.listener.port");
 
-  private static final int TOTAL_NUMBER_OF_LOCATIONS = 111;
+  private static final int TOTAL_NUMBER_OF_LOCATIONS = 114;
   @Inject
   private Registry registry;
 
@@ -88,6 +88,14 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
     final ConfigurationBuilder configurationBuilder = createConfigurationBuilder(getConfigFiles(), true);
     configureSpringXmlConfigurationBuilder(configurationBuilder);
     return configurationBuilder;
+  }
+
+  @Description("Search for sub-flows with asyncs")
+  @Test
+  public void subFlowWithAsync() {
+    lazyComponentInitializer.initializeComponent(builder().globalName("async-flow").addProcessorsPart().addIndexPart(0).build());
+
+    assertThat(locator.find(builderFromStringRepresentation("async-flow").build()), is(not(empty())));
   }
 
   @Description("Initialize same sub-flow twice, test component should not fail when disposing")
@@ -237,7 +245,11 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
 
                                   "untilSuccessfulFlow",
                                   "untilSuccessfulFlow/processors/0",
-                                  "untilSuccessfulFlow/processors/0/processors/0"));
+                                  "untilSuccessfulFlow/processors/0/processors/0",
+
+                                  "async-flow",
+                                  "async-flow/processors/0",
+                                  "async-flow/processors/0/processors/0"));
     assertThat(locator.find(builder().globalName("myFlow").build()), is(empty()));
     assertThat(locator.find(builder().globalName("anotherFlow").build()), is(empty()));
   }
