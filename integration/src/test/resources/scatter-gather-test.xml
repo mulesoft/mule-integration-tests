@@ -210,12 +210,42 @@
             <on-error-continue>
                 <scatter-gather>
                     <route>
-                        <logger message="Hello World"/>
+                        <logger level="ERROR" message="Hello World"/>
                     </route>
                     <route>
-                        <logger message="Hello World"/>
+                        <logger level="ERROR" message="Hello World"/>
                     </route>
                 </scatter-gather>
+                <set-payload value="hello"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="scatterGattherInsideErrorHandlerThrowsError">
+        <try>
+            <raise-error type="APP:SOME"/>
+            <error-handler>
+                <on-error-continue>
+                    <scatter-gather>
+                        <route>
+                            <logger level="ERROR" message="Hello World"/>
+                        </route>
+                        <route>
+                            <raise-error type="APP:SOME"/>
+                            <logger level="ERROR" message="Hello World"/>
+                        </route>
+                    </scatter-gather>
+                    <set-payload value="hello"/>
+                </on-error-continue>
+            </error-handler>
+        </try>
+        <error-handler>
+            <on-error-continue type="COMPOSITE_ROUTING">
+                <test:assert expression="#[mel:exception.cause.getClass().getName().equals('org.mule.runtime.core.privileged.routing.CompositeRoutingException')]"/>
+                <test:assert expression="#[error.errorMessage.payload.failures['0'] == null]"/>
+                <test:assert expression="#[error.errorMessage.payload.failures['1'] != null]"/>
+                <test:assert expression="#[error.errorMessage.payload.results['0'] != null]"/>
+                <test:assert expression="#[error.errorMessage.payload.results['1'] == null]"/>
                 <set-payload value="hello"/>
             </on-error-continue>
         </error-handler>
