@@ -286,8 +286,8 @@
     </sub-flow>
 
     <flow name="withinTransaction">
-        <custom-processor class="org.mule.test.routing.ScatterGatherRouterTestCase$ThreadCaptor" />
         <try transactionalAction="ALWAYS_BEGIN">
+            <custom-processor class="org.mule.test.routing.ScatterGatherRouterTestCase$ThreadCaptor" />
             <scatter-gather>
                 <route>
                     <test:non-blocking-processor />
