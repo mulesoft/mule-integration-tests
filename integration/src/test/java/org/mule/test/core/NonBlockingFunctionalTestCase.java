@@ -114,7 +114,7 @@ public class NonBlockingFunctionalTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  public void tansactionalTry() throws Exception {
+  public void transactionalTry() throws Exception {
     flowRunner("transactionalTry").withPayload(TEST_MESSAGE).run();
   }
 
