@@ -201,12 +201,14 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
+  @Description("Validates that scatter-gather can be used correctly within an error handler")
   public void scatterGattherInsideErrorHandler() throws Exception {
     CoreEvent event = flowRunner("scatterGattherInsideErrorHandler").run();
     assertThat(event.getMessage().getPayload().getValue(), is("hello"));
   }
 
   @Test
+  @Description("Validates that if a route of a scatter-gather within an error handler fails, then only that route will have an error")
   public void scatterGattherInsideErrorHandlerThrowsError() throws Exception {
     CoreEvent event = flowRunner("scatterGattherInsideErrorHandlerThrowsError").run();
     assertThat(event.getMessage().getPayload().getValue(), is("hello"));

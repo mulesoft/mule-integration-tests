@@ -10,14 +10,13 @@
         <error-handler>
             <on-error-continue>
                 <try>
-                    <logger message="hello"/>
+                    <set-payload value="hello"/>
                     <error-handler>
                         <on-error-continue>
                             <test:invocation-counter name="try-in-eh"/>
                         </on-error-continue>
                     </error-handler>
                 </try>
-                <set-payload value="hello"/>
             </on-error-continue>
         </error-handler>
     </flow>

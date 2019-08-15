@@ -345,9 +345,9 @@
         <error-handler>
             <on-error-continue>
                 <foreach collection="#[['apple']]">
-                    <logger></logger>
+                    <set-variable variableName="zaraza" value="#[payload]"/>
                 </foreach>
-                <set-payload value="hello"/>
+                <set-payload value="#[vars.zaraza]"/>
             </on-error-continue>
         </error-handler>
     </flow>

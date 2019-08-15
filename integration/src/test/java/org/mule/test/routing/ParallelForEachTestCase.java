@@ -194,6 +194,7 @@ public class ParallelForEachTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
+  @Description("Validates that parallel foreach can be used correctly within an error handler")
   public void parallelForEachInErrorHandler() throws Exception {
     CoreEvent event = flowRunner("parallelForEachInErrorHandler").run();
     assertThat(event.getMessage().getPayload().getValue(), is("hello"));

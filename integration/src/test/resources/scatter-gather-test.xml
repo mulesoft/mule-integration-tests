@@ -210,12 +210,14 @@
             <on-error-continue>
                 <scatter-gather>
                     <route>
-                        <logger level="ERROR" message="Hello World"/>
+                        <set-payload value="v1"/>
                     </route>
                     <route>
-                        <logger level="ERROR" message="Hello World"/>
+                        <set-payload value="v2"/>
                     </route>
                 </scatter-gather>
+                <test:assert expression="#[payload[0].payload == 'v1']"/>
+                <test:assert expression="#[payload[1].payload == 'v2']"/>
                 <set-payload value="hello"/>
             </on-error-continue>
         </error-handler>

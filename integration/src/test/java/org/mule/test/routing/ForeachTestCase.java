@@ -595,8 +595,9 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
+  @Description("Validates that for each can be used correctly within an error handler")
   public void foreachInErrorHandler() throws Exception {
     CoreEvent event = flowRunner("foreachInErrorHandler").run();
-    assertThat(event.getMessage().getPayload().getValue(), is("hello"));
+    assertThat(event.getMessage().getPayload().getValue(), is("apple"));
   }
 }

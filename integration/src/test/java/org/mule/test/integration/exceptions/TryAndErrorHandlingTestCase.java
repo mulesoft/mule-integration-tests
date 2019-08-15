@@ -9,12 +9,18 @@ package org.mule.test.integration.exceptions;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 import static org.mule.functional.api.component.InvocationCountMessageProcessor.getNumberOfInvocationsFor;
+import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
+import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ErrorHandlingStory.ERROR_HANDLER;
 
+import io.qameta.allure.Description;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 import org.junit.Test;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.test.AbstractIntegrationTestCase;
 
-
+@Feature(ERROR_HANDLING)
+@Story(ERROR_HANDLER)
 public class TryAndErrorHandlingTestCase extends AbstractIntegrationTestCase {
 
   @Override
@@ -23,6 +29,7 @@ public class TryAndErrorHandlingTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
+  @Description("Validates that try scope works within an error handler")
   public void tryInErrorHandler() throws Exception {
     CoreEvent event = flowRunner("tryInErrorHandler").run();
     assertThat(event.getMessage().getPayload().getValue(), is("hello"));
