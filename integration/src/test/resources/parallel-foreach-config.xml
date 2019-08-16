@@ -220,4 +220,17 @@
         <test:assert expression="#[payload[2].payload == 'orange-result']"/>
     </sub-flow>
 
+    <flow name="parallelForEachInErrorHandler">
+        <raise-error type="APP:SOME"/>
+        <error-handler>
+            <on-error-continue>
+                <parallel-foreach collection="#[['apple', 'banana', 'orange']]">
+                    <set-payload value="#[payload ++ '-result']"/>
+                </parallel-foreach>
+                <flow-ref name="testListAggregation"/>
+                <set-payload value="hello"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
 </mule>

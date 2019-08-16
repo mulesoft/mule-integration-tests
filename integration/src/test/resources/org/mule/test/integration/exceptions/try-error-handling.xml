@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+    http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+    http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+
+    <flow name="tryInErrorHandler">
+        <raise-error type="APP:SOME"/>
+        <error-handler>
+            <on-error-continue>
+                <try>
+                    <set-payload value="hello"/>
+                    <error-handler>
+                        <on-error-continue>
+                            <test:invocation-counter name="try-in-eh"/>
+                        </on-error-continue>
+                    </error-handler>
+                </try>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+</mule>

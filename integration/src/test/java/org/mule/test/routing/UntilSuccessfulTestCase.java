@@ -25,6 +25,7 @@ import static org.mule.functional.junit4.matchers.ThrowableCauseMatcher.hasCause
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.UntilSuccessfulStory.UNTIL_SUCCESSFUL;
 
+import io.qameta.allure.Description;
 import org.mule.functional.api.component.FunctionalTestProcessor;
 import org.mule.functional.api.exception.FunctionalTestException;
 import org.mule.runtime.api.exception.MuleException;
@@ -176,6 +177,14 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
     final String payload = randomAlphanumeric(20);
     flowRunner("measureSynchronousWait").withPayload(payload).runExpectingException();
     assertThat(WaitMeasure.totalWait >= 1000, is(true));
+  }
+
+  @Test
+  @Description("Validates that until successful can be used correctly within an error handler")
+  public void untilSuccessfulInErrorHandler() throws Exception {
+    CoreEvent event = flowRunner("untilSuccessfulInErrorHandler").run();
+    assertThat(CustomMP.getCount(), is(1));
+    assertThat(event.getMessage().getPayload().getValue(), is("hello"));
   }
 
   private List<Object> ponderUntilMessageCountReceivedByTargetMessageProcessor(final int expectedCount)

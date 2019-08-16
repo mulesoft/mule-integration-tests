@@ -12,6 +12,7 @@ import static java.util.Arrays.asList;
 import static java.util.concurrent.ConcurrentHashMap.newKeySet;
 import static org.apache.commons.io.IOUtils.LINE_SEPARATOR;
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
@@ -190,6 +191,13 @@ public class ParallelForEachTestCase extends AbstractIntegrationTestCase {
   @Description("Variables set before route are conserved after router. Variables set in routes are merged and available after router.")
   public void variables() throws Exception {
     flowRunner("variables").withPayload(fruitList).run();
+  }
+
+  @Test
+  @Description("Validates that parallel foreach can be used correctly within an error handler")
+  public void parallelForEachInErrorHandler() throws Exception {
+    CoreEvent event = flowRunner("parallelForEachInErrorHandler").run();
+    assertThat(event.getMessage().getPayload().getValue(), is("hello"));
   }
 
   @Test
