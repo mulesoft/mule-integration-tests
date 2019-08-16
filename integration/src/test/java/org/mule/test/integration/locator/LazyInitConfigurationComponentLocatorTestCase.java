@@ -93,9 +93,14 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
   @Description("Search for sub-flows with asyncs")
   @Test
   public void subFlowWithAsync() {
+    CustomTestComponent.statesByInstances.clear();
+
     lazyComponentInitializer.initializeComponent(builder().globalName("async-flow").addProcessorsPart().addIndexPart(0).build());
 
     assertThat(locator.find(builderFromStringRepresentation("async-flow").build()), is(not(empty())));
+
+    assertThat(CustomTestComponent.statesByInstances.size(), is(1));
+    assertThat(CustomTestComponent.statesByInstances.values(), containsInAnyOrder("initialized_started"));
   }
 
   @Description("Initialize same sub-flow twice, test component should not fail when disposing")
@@ -112,7 +117,7 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
     muleContext.dispose();
     assertThat(CustomTestComponent.statesByInstances.size(), is(2));
     assertThat(CustomTestComponent.statesByInstances.values(),
-               containsInAnyOrder("initialized_stopped_disposed", "initialized_stopped_disposed"));
+               containsInAnyOrder("initialized_started_stopped_disposed", "initialized_started_stopped_disposed"));
   }
 
   @Description("Lazy init should not create components until an operation is done")
@@ -471,7 +476,7 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
     muleContext.dispose();
     assertThat(CustomTestComponent.statesByInstances.size(), is(1));
     assertThat(CustomTestComponent.statesByInstances.values(),
-               containsInAnyOrder("initialized_stopped_disposed"));
+               containsInAnyOrder("initialized_started_stopped_disposed"));
   }
 
   @Description("Search for sub-flows components")

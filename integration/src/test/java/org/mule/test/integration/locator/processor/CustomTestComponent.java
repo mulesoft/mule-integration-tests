@@ -10,7 +10,7 @@ package org.mule.test.integration.locator.processor;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.lifecycle.Disposable;
 import org.mule.runtime.api.lifecycle.Initialisable;
-import org.mule.runtime.api.lifecycle.InitialisationException;
+import org.mule.runtime.api.lifecycle.Startable;
 import org.mule.runtime.api.lifecycle.Stoppable;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
@@ -21,20 +21,25 @@ import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CustomTestComponent implements Initialisable, Stoppable, Disposable, Processor {
+public class CustomTestComponent implements Initialisable, Startable, Stoppable, Disposable, Processor {
 
   public static Map<CustomTestComponent, String> statesByInstances = new HashMap<>();
 
   private Closeable value;
 
   @Override
-  public void initialise() throws InitialisationException {
-    statesByInstances.put(this, "initialized");
+  public void initialise() {
+    statesByInstances.put(this, statesByInstances.getOrDefault(this, "initialized"));
     value = new StringReader("content");
   }
 
   @Override
-  public void stop() throws MuleException {
+  public void start() {
+    statesByInstances.put(this, statesByInstances.get(this) + "_started");
+  }
+
+  @Override
+  public void stop() {
     statesByInstances.put(this, statesByInstances.get(this) + "_stopped");
   }
 

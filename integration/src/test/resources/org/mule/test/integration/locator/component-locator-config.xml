@@ -86,7 +86,7 @@
 
     <sub-flow name="async-flow">
         <async>
-            <logger level="INFO" message="payload is #[payload]"/>
+            <test:processor class="org.mule.test.integration.locator.processor.CustomTestComponent"/>
         </async>
     </sub-flow>
 </mule>
