@@ -593,4 +593,11 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
     expectedException.expectCause(instanceOf(java.io.IOException.class));
     flowRunner("errorAfterThreadChange").withPayload(asList("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")).run();
   }
+
+  @Test
+  @Description("Validates that for each can be used correctly within an error handler")
+  public void foreachInErrorHandler() throws Exception {
+    CoreEvent event = flowRunner("foreachInErrorHandler").run();
+    assertThat(event.getMessage().getPayload().getValue(), is("apple"));
+  }
 }
