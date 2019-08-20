@@ -29,15 +29,14 @@ import org.mule.runtime.core.api.source.MessageSource;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import org.junit.Rule;
-import org.junit.Test;
-
 import java.util.List;
 import java.util.Optional;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
+import org.junit.Rule;
+import org.junit.Test;
 
 @Feature(CONFIGURATION_COMPONENT_LOCATOR)
 @Story(SEARCH_CONFIGURATION)
@@ -167,6 +166,9 @@ public class ConfigurationComponentLocatorTestCase extends AbstractIntegrationTe
                                                      "redeliveryPolicyFlow/processors/0",
                                                      "untilSuccessfulFlow",
                                                      "untilSuccessfulFlow/processors/0",
-                                                     "untilSuccessfulFlow/processors/0/processors/0"));
+                                                     "untilSuccessfulFlow/processors/0/processors/0",
+                                                     "async-flow/processors/0/processors/0",
+                                                     "async-flow/processors/0",
+                                                     "async-flow"));
   }
 }
