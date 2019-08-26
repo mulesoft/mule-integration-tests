@@ -15,6 +15,7 @@ import static org.mule.tck.probe.PollingProber.probe;
 
 import org.mule.functional.api.component.EventCallback;
 import org.mule.functional.api.component.TestConnectorQueueHandler;
+import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.event.CoreEvent;
@@ -32,7 +33,7 @@ public class RedeliveryPolicyTestCase extends AbstractIntegrationTestCase {
   private static CountDownLatch latch;
   private static AtomicInteger awaiting = new AtomicInteger();
 
-  public static class LatchAwaitCallback implements EventCallback {
+  public static class LatchAwaitCallback extends AbstractComponent implements EventCallback {
 
     @Override
     public void eventReceived(CoreEvent event, Object component, MuleContext muleContext) throws Exception {

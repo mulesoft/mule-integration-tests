@@ -31,6 +31,7 @@ import static org.mule.tck.probe.PollingProber.probe;
 
 import org.mule.functional.api.component.EventCallback;
 import org.mule.functional.api.exception.ExpectedError;
+import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.notification.MessageProcessorNotification;
 import org.mule.runtime.api.notification.MessageProcessorNotificationListener;
@@ -299,7 +300,7 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
   private static CountDownLatch latch;
   private static AtomicInteger awaiting = new AtomicInteger();
 
-  public static class LatchAwaitCallback implements EventCallback {
+  public static class LatchAwaitCallback extends AbstractComponent implements EventCallback {
 
     @Override
     public void eventReceived(CoreEvent event, Object component, MuleContext muleContext) throws Exception {

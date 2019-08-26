@@ -9,15 +9,13 @@ package org.mule.test.integration.transaction;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
-import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
+import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 import static org.hamcrest.core.Every.everyItem;
 import static org.hamcrest.core.IsNot.not;
 import static org.mule.runtime.core.api.transaction.TransactionCoordination.isTransactionActive;
 
-import io.qameta.allure.Description;
-import org.junit.Rule;
-import org.junit.Test;
+import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.util.concurrent.Latch;
 import org.mule.runtime.core.api.event.CoreEvent;
@@ -28,6 +26,11 @@ import org.mule.test.AbstractIntegrationTestCase;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+
+import org.junit.Rule;
+import org.junit.Test;
+
+import io.qameta.allure.Description;
 
 
 public class TransactionsWithRoutersTestCase extends AbstractIntegrationTestCase {
@@ -330,7 +333,7 @@ public class TransactionsWithRoutersTestCase extends AbstractIntegrationTestCase
     assertThat(thread.getName().matches("^\\[MuleRuntime\\]\\." + type + ".*"), is(true));
   }
 
-  public static class ThreadCaptor implements Processor {
+  public static class ThreadCaptor extends AbstractComponent implements Processor {
 
     @Override
     public CoreEvent process(CoreEvent event) throws MuleException {
@@ -342,7 +345,7 @@ public class TransactionsWithRoutersTestCase extends AbstractIntegrationTestCase
 
   }
 
-  public static class ThreadCaptorAsync implements Processor {
+  public static class ThreadCaptorAsync extends AbstractComponent implements Processor {
 
     @Override
     public CoreEvent process(CoreEvent event) throws MuleException {

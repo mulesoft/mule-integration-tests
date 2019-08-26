@@ -14,6 +14,7 @@ import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.component.location.Location.builderFromStringRepresentation;
 
 import org.mule.functional.api.component.EventCallback;
+import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.lifecycle.Startable;
 import org.mule.runtime.api.lifecycle.Stoppable;
@@ -25,12 +26,12 @@ import org.mule.tck.probe.JUnitLambdaProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.test.AbstractSchedulerTestCase;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 /**
@@ -115,7 +116,7 @@ public class CronSchedulerTestCase extends AbstractSchedulerTestCase {
     registry.<Startable>lookupByName("pollfoo").get().start();
   }
 
-  public static class Foo implements EventCallback {
+  public static class Foo extends AbstractComponent implements EventCallback {
 
     @Override
     public void eventReceived(CoreEvent event, Object component, MuleContext muleContext) throws Exception {
@@ -127,7 +128,7 @@ public class CronSchedulerTestCase extends AbstractSchedulerTestCase {
     }
   }
 
-  public static class Bar implements EventCallback {
+  public static class Bar extends AbstractComponent implements EventCallback {
 
     @Override
     public void eventReceived(CoreEvent event, Object component, MuleContext muleContext) throws Exception {

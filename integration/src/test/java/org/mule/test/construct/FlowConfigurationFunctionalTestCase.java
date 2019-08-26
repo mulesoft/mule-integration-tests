@@ -17,6 +17,7 @@ import static org.mockito.Mockito.mock;
 import static org.mule.functional.api.flow.TransactionConfigEnum.ACTION_ALWAYS_BEGIN;
 
 import org.mule.functional.api.component.TestConnectorQueueHandler;
+import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.construct.Flow;
@@ -233,7 +234,7 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
     assertThat(flow.getMaxConcurrency(), equalTo(1));
   }
 
-  public static class ThreadSensingMessageProcessor implements Processor {
+  public static class ThreadSensingMessageProcessor extends AbstractComponent implements Processor {
 
     @Override
     public CoreEvent process(CoreEvent event) throws MuleException {

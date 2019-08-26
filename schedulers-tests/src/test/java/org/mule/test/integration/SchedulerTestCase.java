@@ -18,6 +18,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mule.runtime.api.component.ComponentIdentifier.buildFromStringRepresentation;
 
 import org.mule.functional.api.component.EventCallback;
+import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.source.SchedulerMessageSource;
 import org.mule.runtime.core.api.MuleContext;
@@ -27,10 +28,10 @@ import org.mule.tck.probe.JUnitLambdaProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.test.AbstractSchedulerTestCase;
 
-import org.junit.Test;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import org.junit.Test;
 
 public class SchedulerTestCase extends AbstractSchedulerTestCase {
 
@@ -89,7 +90,7 @@ public class SchedulerTestCase extends AbstractSchedulerTestCase {
     }
   }
 
-  public static class EventWireTrap implements Processor {
+  public static class EventWireTrap extends AbstractComponent implements Processor {
 
     @Override
     public CoreEvent process(CoreEvent event) throws MuleException {
@@ -101,7 +102,7 @@ public class SchedulerTestCase extends AbstractSchedulerTestCase {
     }
   }
 
-  public static class Foo implements EventCallback {
+  public static class Foo extends AbstractComponent implements EventCallback {
 
     @Override
     public void eventReceived(CoreEvent event, Object component, MuleContext muleContext) throws Exception {
@@ -114,7 +115,7 @@ public class SchedulerTestCase extends AbstractSchedulerTestCase {
     }
   }
 
-  public static class Bar implements EventCallback {
+  public static class Bar extends AbstractComponent implements EventCallback {
 
     @Override
     public void eventReceived(CoreEvent event, Object component, MuleContext muleContext) throws Exception {

@@ -14,6 +14,7 @@ import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertThat;
 
 import org.mule.functional.api.component.EventCallback;
+import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.component.location.Location;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.source.SchedulerMessageSource;
@@ -21,13 +22,13 @@ import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.test.AbstractSchedulerTestCase;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * <p>
@@ -70,7 +71,7 @@ public class SynchronousSchedulerTestCase extends AbstractSchedulerTestCase {
     assertThat(fooNonSync, hasSize(greaterThanOrEqualTo(2)));
   }
 
-  public static class FooNonSync implements EventCallback {
+  public static class FooNonSync extends AbstractComponent implements EventCallback {
 
     public static CountDownLatch latch;
 
@@ -89,7 +90,7 @@ public class SynchronousSchedulerTestCase extends AbstractSchedulerTestCase {
     }
   }
 
-  public static class FooSync implements EventCallback {
+  public static class FooSync extends AbstractComponent implements EventCallback {
 
     public static CountDownLatch latch;
 

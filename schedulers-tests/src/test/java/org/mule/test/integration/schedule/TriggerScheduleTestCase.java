@@ -15,6 +15,7 @@ import static org.mule.runtime.api.component.location.Location.builderFromString
 import static org.mule.runtime.core.api.util.ClassUtils.withContextClassLoader;
 
 import org.mule.functional.api.component.EventCallback;
+import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.component.location.ConfigurationComponentLocator;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.exception.MuleRuntimeException;
@@ -24,10 +25,10 @@ import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractSchedulerTestCase;
 
+import java.util.concurrent.CountDownLatch;
+
 import org.junit.ClassRule;
 import org.junit.Test;
-
-import java.util.concurrent.CountDownLatch;
 
 public class TriggerScheduleTestCase extends AbstractSchedulerTestCase {
 
@@ -73,7 +74,7 @@ public class TriggerScheduleTestCase extends AbstractSchedulerTestCase {
     assertThat(l2.await(RECEIVE_TIMEOUT, MILLISECONDS), is(true));
   }
 
-  public static class Foo implements EventCallback {
+  public static class Foo extends AbstractComponent implements EventCallback {
 
     @Override
     public void eventReceived(CoreEvent event, Object component, MuleContext muleContext) throws Exception {

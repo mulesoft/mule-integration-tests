@@ -11,6 +11,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.mule.functional.security.TestSingleUserSecurityProvider.PROPERTY_FAVORITE_COLOR;
 import static org.mule.functional.security.TestSingleUserSecurityProvider.PROPERTY_NUMBER_LOGINS;
 import static org.mule.runtime.core.api.config.MuleProperties.MULE_USER_PROPERTY;
+
+import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.security.Authentication;
@@ -80,7 +82,7 @@ public class MultiuserSecurityTestCase extends AbstractIntegrationTestCase {
     return flowRunner("testService").withPayload(data).withInboundProperties(props).run().getMessage();
   }
 
-  public static class TestSecurityProcessor implements Processor {
+  public static class TestSecurityProcessor extends AbstractComponent implements Processor {
 
     protected static final Logger logger = LoggerFactory.getLogger(TestSecurityProcessor.class);
 

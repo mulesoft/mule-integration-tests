@@ -7,11 +7,12 @@
 package org.mule.test.integration.exceptions;
 
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.mule.test.integration.exceptions.OnErrorContinueTestCase.JSON_REQUEST;
 import static org.mule.test.integration.exceptions.OnErrorContinueTestCase.JSON_RESPONSE;
 
-import org.junit.runners.Parameterized;
+import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.event.CoreEvent;
@@ -19,22 +20,21 @@ import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.transaction.Transaction;
 import org.mule.runtime.core.api.transaction.TransactionCoordination;
 import org.mule.test.AbstractIntegrationTestCase;
-
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.hamcrest.core.Is;
-import org.hamcrest.core.IsNull;
-import org.junit.Test;
 import org.mule.test.runner.RunnerDelegateTo;
 
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.junit.Test;
+import org.junit.runners.Parameterized;
+
 @RunnerDelegateTo(Parameterized.class)
 public class OnErrorContinueFlowRefTestCase extends AbstractIntegrationTestCase {
 
   public static final int TIMEOUT = 5000;
-  private String config;
+  private final String config;
 
   @Parameterized.Parameters(name = "{0}")
   public static Collection<Object[]> data() {
@@ -74,13 +74,13 @@ public class OnErrorContinueFlowRefTestCase extends AbstractIntegrationTestCase 
     assertThat(actualJsonNode, is(expectedJsonNode));
   }
 
-  public static class VerifyTransactionNotResolvedProcessor implements Processor {
+  public static class VerifyTransactionNotResolvedProcessor extends AbstractComponent implements Processor {
 
     @Override
     public CoreEvent process(CoreEvent event) throws MuleException {
       Transaction tx = TransactionCoordination.getInstance().getTransaction();
-      assertThat(tx, IsNull.<Object>notNullValue());
-      assertThat(tx.isRollbackOnly(), Is.is(false));
+      assertThat(tx, notNullValue());
+      assertThat(tx.isRollbackOnly(), is(false));
       return event;
     }
   }
