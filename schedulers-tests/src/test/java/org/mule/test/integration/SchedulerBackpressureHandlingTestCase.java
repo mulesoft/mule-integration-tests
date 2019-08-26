@@ -12,15 +12,16 @@ import static org.mule.tck.probe.PollingProber.probe;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
 
 import org.mule.functional.api.component.EventCallback;
+import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.source.SchedulerMessageSource;
 import org.mule.runtime.api.util.concurrent.Latch;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.test.AbstractSchedulerTestCase;
 
-import org.junit.Test;
-
 import java.util.concurrent.atomic.AtomicInteger;
+
+import org.junit.Test;
 
 import io.qameta.allure.Story;
 
@@ -58,7 +59,7 @@ public class SchedulerBackpressureHandlingTestCase extends AbstractSchedulerTest
           () -> "The triggers in the middle were held back instead of rejected");
   }
 
-  public static class HangThreadCallback implements EventCallback {
+  public static class HangThreadCallback extends AbstractComponent implements EventCallback {
 
     @Override
     public void eventReceived(CoreEvent event, Object component, MuleContext muleContext) throws Exception {

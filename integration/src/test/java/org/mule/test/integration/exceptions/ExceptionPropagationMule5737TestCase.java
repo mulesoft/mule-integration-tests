@@ -12,6 +12,7 @@ import static org.junit.Assert.assertThat;
 
 import org.mule.functional.api.component.EventCallback;
 import org.mule.functional.api.exception.FunctionalTestException;
+import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -70,7 +71,7 @@ public class ExceptionPropagationMule5737TestCase extends AbstractIntegrationTes
     assertThat(SensingExceptionChildCallback.caught, is(true));
   }
 
-  public static class SensingExceptionParentCallback implements EventCallback {
+  public static class SensingExceptionParentCallback extends AbstractComponent implements EventCallback {
 
     static boolean caught;
 
@@ -80,7 +81,7 @@ public class ExceptionPropagationMule5737TestCase extends AbstractIntegrationTes
     }
   }
 
-  public static class SensingExceptionChildCallback implements EventCallback {
+  public static class SensingExceptionChildCallback extends AbstractComponent implements EventCallback {
 
     static boolean caught;
 

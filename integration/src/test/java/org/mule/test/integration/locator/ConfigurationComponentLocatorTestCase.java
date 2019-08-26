@@ -32,11 +32,12 @@ import org.mule.test.AbstractIntegrationTestCase;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.Rule;
+import org.junit.Test;
+
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
-import org.junit.Rule;
-import org.junit.Test;
 
 @Feature(CONFIGURATION_COMPONENT_LOCATOR)
 @Story(SEARCH_CONFIGURATION)
@@ -135,6 +136,7 @@ public class ConfigurationComponentLocatorTestCase extends AbstractIntegrationTe
     assertThat(allComponentPaths, containsInAnyOrder(
                                                      "myFlow",
                                                      "myFlow/source",
+                                                     "myFlow/source/0/0",
                                                      "myFlow/processors/0",
                                                      "myFlow/processors/1",
                                                      "myFlow/processors/2",
@@ -142,6 +144,7 @@ public class ConfigurationComponentLocatorTestCase extends AbstractIntegrationTe
                                                      "myFlow/processors/2/processors/1",
                                                      "anotherFlow",
                                                      "anotherFlow/source",
+                                                     "anotherFlow/source/0/0",
                                                      "anotherFlow/processors/0",
                                                      "flowWithSubflow",
                                                      "flowWithSubflow/processors/0",
@@ -156,6 +159,7 @@ public class ConfigurationComponentLocatorTestCase extends AbstractIntegrationTe
                                                      "globalErrorHandler/0/processors/1",
                                                      "fileListWithMatcherReference",
                                                      "fileListWithMatcherReference/source",
+                                                     "fileListWithMatcherReference/source/0/0",
                                                      "fileListWithMatcherReference/processors/0",
                                                      "Matcher",
                                                      "listenerConfigRedeliveryPolicy",

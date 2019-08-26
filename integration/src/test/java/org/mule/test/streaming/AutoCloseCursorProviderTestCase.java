@@ -16,6 +16,8 @@ import static org.junit.Assert.assertThat;
 import static org.mule.tck.probe.PollingProber.probe;
 import static org.mule.test.allure.AllureConstants.StreamingFeature.STREAMING;
 import static org.mule.test.allure.AllureConstants.StreamingFeature.StreamingStory.STREAM_MANAGEMENT;
+
+import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
@@ -28,12 +30,13 @@ import java.io.File;
 
 import javax.inject.Inject;
 
-import io.qameta.allure.Feature;
-import io.qameta.allure.Story;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 
 @Feature(STREAMING)
 @Story(STREAM_MANAGEMENT)
@@ -45,7 +48,7 @@ public class AutoCloseCursorProviderTestCase extends AbstractIntegrationTestCase
 
   private static StreamingStatistics statistics;
 
-  public static class AssertStatisticsProcessor implements Processor {
+  public static class AssertStatisticsProcessor extends AbstractComponent implements Processor {
 
     @Override
     public CoreEvent process(CoreEvent event) throws MuleException {

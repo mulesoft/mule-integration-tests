@@ -22,6 +22,7 @@ import static org.mockito.Mockito.verify;
 import static org.mule.tck.MuleTestUtils.getExceptionListeners;
 
 import org.mule.functional.api.component.TestConnectorQueueHandler;
+import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.event.CoreEvent;
@@ -34,15 +35,15 @@ import org.mule.runtime.core.privileged.event.BaseEventContext;
 import org.mule.tck.processor.FlowAssert;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import org.junit.After;
-import org.junit.Test;
-
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
+
+import org.junit.After;
+import org.junit.Test;
 
 // TODO MULE-16371 These tests make assertions on the internal state of the Event/EventContext
 public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
@@ -187,7 +188,7 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
     verify(latch).countDown();
   }
 
-  public static class ExecutionCountProcessor implements Processor {
+  public static class ExecutionCountProcessor extends AbstractComponent implements Processor {
 
     @Override
     public synchronized CoreEvent process(CoreEvent event) throws MuleException {
@@ -196,7 +197,7 @@ public class ExceptionHandlingTestCase extends AbstractIntegrationTestCase {
     }
   }
 
-  public static class ExceptionHandlerVerifierProcessor implements Processor {
+  public static class ExceptionHandlerVerifierProcessor extends AbstractComponent implements Processor {
 
     public static final FlowExceptionHandler HANDLER = NullExceptionHandler.getInstance();
 

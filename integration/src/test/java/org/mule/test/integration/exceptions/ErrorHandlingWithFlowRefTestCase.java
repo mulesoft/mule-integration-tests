@@ -6,16 +6,19 @@
  */
 package org.mule.test.integration.exceptions;
 
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-import io.qameta.allure.Issue;
-import org.junit.Before;
-import org.junit.Test;
+import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.test.AbstractIntegrationTestCase;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import io.qameta.allure.Issue;
 
 @Issue("MULE-16892")
 public class ErrorHandlingWithFlowRefTestCase extends AbstractIntegrationTestCase {
@@ -106,7 +109,7 @@ public class ErrorHandlingWithFlowRefTestCase extends AbstractIntegrationTestCas
     assertThat(executions, is(1));
   }
 
-  public static class TestProcessorCounter implements Processor {
+  public static class TestProcessorCounter extends AbstractComponent implements Processor {
 
     @Override
     public CoreEvent process(CoreEvent event) throws MuleException {

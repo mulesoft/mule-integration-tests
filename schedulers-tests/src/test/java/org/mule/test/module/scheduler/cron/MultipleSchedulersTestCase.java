@@ -10,18 +10,19 @@ package org.mule.test.module.scheduler.cron;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 import org.mule.functional.api.component.EventCallback;
+import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.lifecycle.Stoppable;
+import org.mule.runtime.api.util.concurrent.Latch;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.event.CoreEvent;
-import org.mule.runtime.api.util.concurrent.Latch;
 import org.mule.tck.probe.JUnitLambdaProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.test.AbstractSchedulerTestCase;
 
+import java.util.concurrent.CountDownLatch;
+
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.concurrent.CountDownLatch;
 
 public class MultipleSchedulersTestCase extends AbstractSchedulerTestCase {
 
@@ -52,7 +53,7 @@ public class MultipleSchedulersTestCase extends AbstractSchedulerTestCase {
 
   }
 
-  public static class SynchronizedPollExecutionCounter implements EventCallback {
+  public static class SynchronizedPollExecutionCounter extends AbstractComponent implements EventCallback {
 
     @Override
     public void eventReceived(CoreEvent event, Object component, MuleContext muleContext) throws Exception {
