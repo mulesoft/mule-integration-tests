@@ -304,7 +304,6 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
                                                                     extensionModels, emptyMap(),
                                                                     empty(),
                                                                     empty(),
-                                                                    false,
                                                                     uri -> {
                                                                       throw new UnsupportedOperationException();
                                                                     });
