@@ -61,7 +61,7 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
   @Rule
   public DynamicPort listenPort = new DynamicPort("http.listener.port");
 
-  private static final int TOTAL_NUMBER_OF_LOCATIONS = 116;
+  private static final int TOTAL_NUMBER_OF_LOCATIONS = 119;
   @Inject
   private Registry registry;
 
@@ -111,13 +111,44 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
     lazyComponentInitializer
         .initializeComponents(componentLocation -> componentLocation.getLocation().equals("untilSuccessfulFlow"));
     lazyComponentInitializer
-        .initializeComponents(componentLocation -> componentLocation.getLocation().equals("untilSuccessfulFlow"));
+        .initializeComponents(componentLocation -> componentLocation.getLocation().equals("untilSuccessfulFlowCopy"));
 
     // force dispose to check that components from sub-flow are disposed
     muleContext.dispose();
     assertThat(CustomTestComponent.statesByInstances.size(), is(2));
     assertThat(CustomTestComponent.statesByInstances.values(),
                containsInAnyOrder("initialized_started_stopped_disposed", "initialized_started_stopped_disposed"));
+  }
+
+  @Test
+  public void shouldNotCreateBeansForSameLocationRequest() {
+    CustomTestComponent.statesByInstances.clear();
+
+    Location location = builderFromStringRepresentation("untilSuccessfulFlow").build();
+    lazyComponentInitializer.initializeComponent(location);
+    lazyComponentInitializer.initializeComponent(location);
+
+    // force dispose to check that components from sub-flow are disposed
+    muleContext.dispose();
+    assertThat(CustomTestComponent.statesByInstances.size(), is(1));
+    assertThat(CustomTestComponent.statesByInstances.values(),
+               containsInAnyOrder("initialized_started_stopped_disposed"));
+  }
+
+  @Test
+  public void shouldNotCreateBeansForSameLocationFilterRequest() {
+    CustomTestComponent.statesByInstances.clear();
+
+    LazyComponentInitializer.ComponentLocationFilter componentLocationFilter =
+        componentLocation -> componentLocation.getLocation().equals("untilSuccessfulFlow");
+    lazyComponentInitializer.initializeComponents(componentLocationFilter);
+    lazyComponentInitializer.initializeComponents(componentLocationFilter);
+
+    // force dispose to check that components from sub-flow are disposed
+    muleContext.dispose();
+    assertThat(CustomTestComponent.statesByInstances.size(), is(1));
+    assertThat(CustomTestComponent.statesByInstances.values(),
+               containsInAnyOrder("initialized_started_stopped_disposed"));
   }
 
   @Description("Lazy init should not create components until an operation is done")
@@ -253,6 +284,10 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
                                   "untilSuccessfulFlow",
                                   "untilSuccessfulFlow/processors/0",
                                   "untilSuccessfulFlow/processors/0/processors/0",
+
+                                  "untilSuccessfulFlowCopy",
+                                  "untilSuccessfulFlowCopy/processors/0",
+                                  "untilSuccessfulFlowCopy/processors/0/processors/0",
 
                                   "async-flow",
                                   "async-flow/processors/0",
