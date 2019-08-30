@@ -19,6 +19,11 @@
             <test:processor class="org.mule.test.integration.locator.processor.CustomTestComponent"/>
         </until-successful>
     </sub-flow>
+    <sub-flow name="untilSuccessfulFlowCopy">
+        <until-successful maxRetries="5" millisBetweenRetries="10000">
+            <test:processor class="org.mule.test.integration.locator.processor.CustomTestComponent"/>
+        </until-successful>
+    </sub-flow>
 
     <error-handler name="globalErrorHandler">
         <on-error-propagate>
