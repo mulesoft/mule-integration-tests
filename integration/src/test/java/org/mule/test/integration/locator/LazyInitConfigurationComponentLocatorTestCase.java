@@ -61,7 +61,7 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
   @Rule
   public DynamicPort listenPort = new DynamicPort("http.listener.port");
 
-  private static final int TOTAL_NUMBER_OF_LOCATIONS = 119;
+  private static final int TOTAL_NUMBER_OF_LOCATIONS = 122;
   @Inject
   private Registry registry;
 
@@ -112,6 +112,30 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
         .initializeComponents(componentLocation -> componentLocation.getLocation().equals("untilSuccessfulFlow"));
     lazyComponentInitializer
         .initializeComponents(componentLocation -> componentLocation.getLocation().equals("untilSuccessfulFlowCopy"));
+
+    // force dispose to check that components from sub-flow are disposed
+    muleContext.dispose();
+    assertThat(CustomTestComponent.statesByInstances.size(), is(2));
+    assertThat(CustomTestComponent.statesByInstances.values(),
+               containsInAnyOrder("initialized_started_stopped_disposed", "initialized_started_stopped_disposed"));
+  }
+
+  @Test
+  public void lazyMuleContextInitializeMultipleTimesProcessor() {
+    CustomTestComponent.statesByInstances.clear();
+
+    Location multipleInitiailizeProcessor1 =
+        builder().globalName("multipleInitialize").addProcessorsPart().addIndexPart(0).build();
+    Location multipleInitiailizeProcessor2 =
+        builder().globalName("multipleInitialize").addProcessorsPart().addIndexPart(1).build();
+
+    lazyComponentInitializer.initializeComponent(multipleInitiailizeProcessor1);
+    assertThat(locator.find(multipleInitiailizeProcessor1), not(empty()));
+    assertThat(locator.find(multipleInitiailizeProcessor2), is(empty()));
+
+    lazyComponentInitializer.initializeComponent(multipleInitiailizeProcessor2);
+    assertThat(locator.find(multipleInitiailizeProcessor1), is(empty()));
+    assertThat(locator.find(multipleInitiailizeProcessor2), not(empty()));
 
     // force dispose to check that components from sub-flow are disposed
     muleContext.dispose();
@@ -288,6 +312,10 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
                                   "untilSuccessfulFlowCopy",
                                   "untilSuccessfulFlowCopy/processors/0",
                                   "untilSuccessfulFlowCopy/processors/0/processors/0",
+
+                                  "multipleInitialize",
+                                  "multipleInitialize/processors/0",
+                                  "multipleInitialize/processors/1",
 
                                   "async-flow",
                                   "async-flow/processors/0",
