@@ -6,6 +6,7 @@
  */
 package org.mule.test.integration.schedule;
 
+import static org.mule.runtime.api.notification.ConnectorMessageNotification.MESSAGE_RECEIVED;
 import static org.mule.tck.probe.PollingProber.check;
 import org.mule.functional.api.component.EventCallback;
 import org.mule.runtime.api.component.AbstractComponent;
@@ -42,7 +43,7 @@ public class SchedulerNotificationsTestCase extends AbstractSchedulerTestCase {
   @Test
   public void testMessageReceivedNotificationAreReceivedOncePerEmittedEvent() throws Exception {
     SchedulerNotificationListener notificationListener = notification -> {
-      if (notification.getAction().getActionId() == ConnectorMessageNotification.MESSAGE_RECEIVED &&
+      if (notification.getAction().getActionId() == MESSAGE_RECEIVED &&
           notification.getComponent().getLocation().getLocation().equals("notiflow/source")) {
         receivedNotifications.incrementAndGet();
       }
@@ -54,7 +55,7 @@ public class SchedulerNotificationsTestCase extends AbstractSchedulerTestCase {
     ((Flow) getFlowConstruct("notiflow")).start();
 
     check(TIMEOUT, 1000,
-          () -> eventsReceivedCount.get() == EXPECTED_EVENT_COUNT && receivedNotifications.get() == EXPECTED_EVENT_COUNT);
+          () -> eventsReceivedCount.get() >= EXPECTED_EVENT_COUNT && receivedNotifications.get() >= EXPECTED_EVENT_COUNT);
   }
 
 
