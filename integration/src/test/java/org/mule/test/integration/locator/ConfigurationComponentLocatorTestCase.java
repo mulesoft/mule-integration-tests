@@ -170,6 +170,9 @@ public class ConfigurationComponentLocatorTestCase extends AbstractIntegrationTe
                                                      "untilSuccessfulFlowCopy",
                                                      "untilSuccessfulFlowCopy/processors/0",
                                                      "untilSuccessfulFlowCopy/processors/0/processors/0",
+                                                     "multipleInitialize",
+                                                     "multipleInitialize/processors/0",
+                                                     "multipleInitialize/processors/1",
                                                      "async-flow/processors/0/processors/0",
                                                      "async-flow/processors/0",
                                                      "async-flow"));
