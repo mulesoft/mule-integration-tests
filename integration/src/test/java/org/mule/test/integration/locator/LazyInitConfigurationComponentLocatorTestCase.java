@@ -101,10 +101,12 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
 
     lazyComponentInitializer.initializeComponent(builder().globalName("async-flow").addProcessorsPart().addIndexPart(0).build());
 
-    assertThat(locator.find(builderFromStringRepresentation("async-flow").build()), is(not(empty())));
+    assertThat(locator.find(builderFromStringRepresentation("async-flow").build()), is(empty()));
 
-    assertThat(CustomTestComponent.statesByInstances.size(), is(1));
-    assertThat(CustomTestComponent.statesByInstances.values(), containsInAnyOrder("initialized_started"));
+    assertThat(CustomTestComponent.statesByInstances.toString(),
+               CustomTestComponent.statesByInstances.size(), is(1));
+    assertThat(CustomTestComponent.statesByInstances.toString(),
+               CustomTestComponent.statesByInstances.values(), containsInAnyOrder("initialized_started"));
   }
 
   @Description("Initialize same sub-flow twice, test component should not fail when disposing")
@@ -119,8 +121,10 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
 
     // force dispose to check that components from sub-flow are disposed
     muleContext.dispose();
-    assertThat(CustomTestComponent.statesByInstances.size(), is(2));
-    assertThat(CustomTestComponent.statesByInstances.values(),
+    assertThat(CustomTestComponent.statesByInstances.toString(),
+               CustomTestComponent.statesByInstances.size(), is(2));
+    assertThat(CustomTestComponent.statesByInstances.toString(),
+               CustomTestComponent.statesByInstances.values(),
                containsInAnyOrder("initialized_started_stopped_disposed", "initialized_started_stopped_disposed"));
   }
 
@@ -289,18 +293,18 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
   public void lazyMuleContextSiblingNodesEnabled() {
     lazyComponentInitializer.initializeComponents(componentLocation -> {
       String location = componentLocation.getLocation();
-      return location.equals("myFlow/source/0") || location.equals("myFlow/processors/2/processors/0");
+      return location.equals("myFlow/source") || location.equals("myFlow/processors/2/processors/0");
     });
     assertThat(locator.findAllLocations(), hasSize(TOTAL_NUMBER_OF_LOCATIONS));
 
     lazyComponentInitializer.initializeComponents(componentLocation -> {
       String location = componentLocation.getLocation();
-      return location.equals("myFlow/source/0") || location.equals("myFlow/processors/2/processors/0");
+      return location.equals("myFlow/source") || location.equals("myFlow/processors/2/processors/0");
     });
 
-    assertThat(locator.find(builderFromStringRepresentation("myFlow").build()), is(not(empty())));
+    assertThat(locator.find(builderFromStringRepresentation("myFlow").build()), is(empty()));
     assertThat(locator.find(builderFromStringRepresentation("myFlow/source").build()), is(not(empty())));
-    assertThat(locator.find(builderFromStringRepresentation("myFlow/processors/2").build()), is(not(empty())));
+    assertThat(locator.find(builderFromStringRepresentation("myFlow/processors/2").build()), is(empty()));
     assertThat(locator.find(builderFromStringRepresentation("myFlow/processors/2/processors/0").build()), is(not(empty())));
     assertThat(locator.find(builderFromStringRepresentation("springConfig").build()), is(not(empty())));
   }
@@ -327,7 +331,7 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
     lazyComponentInitializer
         .initializeComponent(builder().globalName("fileListWithMatcherReference").addProcessorsPart().addIndexPart(0).build());
 
-    assertThat(locator.find(builder().globalName("fileListWithMatcherReference").build()), is(not(empty())));
+    assertThat(locator.find(builder().globalName("fileListWithMatcherReference").build()), is(empty()));
     assertThat(locator.find(builder().globalName("fileListWithMatcherReference").addProcessorsPart().addIndexPart(0).build()),
                is(not(empty())));
   }
@@ -336,7 +340,7 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
   public void lazyMuleContextShouldInitializeOnlyTheProcessorRequested() {
     lazyComponentInitializer.initializeComponent(builder().globalName("flowLvl2").addProcessorsPart().addIndexPart(1).build());
 
-    assertThat(locator.find(builder().globalName("flowLvl2").build()), is(not(empty())));
+    assertThat(locator.find(builder().globalName("flowLvl2").build()), is(empty()));
     assertThat(locator.find(builder().globalName("flowLvl2").addProcessorsPart().addIndexPart(0).build()), is(empty()));
     assertThat(locator.find(builder().globalName("flowLvl2").addProcessorsPart().addIndexPart(1).build()), is(not(empty())));
   }
@@ -462,7 +466,8 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
     MuleConfiguration configuration = registry.lookupByType(MuleConfiguration.class)
         .orElseThrow(() -> new AssertionError("Missing MuleConfiguration from registry"));
     assertThat(configuration.getDefaultResponseTimeout(), is(10000));
-    assertThat(CustomTestComponent.statesByInstances.size(), is(0));
+    assertThat(CustomTestComponent.statesByInstances.toString(),
+               CustomTestComponent.statesByInstances.size(), is(0));
 
     // Configuration and its dependent components are initialized at this point...
     lazyComponentInitializer.initializeComponent(builder().globalName("flowFailing").build());
@@ -472,8 +477,10 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
 
     // force dispose to check that components from sub-flow are disposed
     muleContext.dispose();
-    assertThat(CustomTestComponent.statesByInstances.size(), is(1));
-    assertThat(CustomTestComponent.statesByInstances.values(),
+    assertThat(CustomTestComponent.statesByInstances.toString(),
+               CustomTestComponent.statesByInstances.size(), is(1));
+    assertThat(CustomTestComponent.statesByInstances.toString(),
+               CustomTestComponent.statesByInstances.values(),
                containsInAnyOrder("initialized_started_stopped_disposed"));
   }
 

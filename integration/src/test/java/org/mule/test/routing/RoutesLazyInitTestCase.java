@@ -6,9 +6,9 @@
  */
 package org.mule.test.routing;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mule.runtime.api.metadata.MetadataService.METADATA_SERVICE_KEY;
+import static org.mule.tck.junit4.matcher.metadata.MetadataKeyResultSuccessMatcher.isSuccess;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.RoundRobinStory.ROUND_ROBIN;
 
@@ -22,10 +22,11 @@ import org.mule.test.AbstractIntegrationTestCase;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.junit.Test;
+
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
-import org.junit.Test;
 
 @Feature(ROUTERS)
 @Story(ROUND_ROBIN)
@@ -58,7 +59,7 @@ public class RoutesLazyInitTestCase extends AbstractIntegrationTestCase {
         .builderFromStringRepresentation("select-inside-scatter-gather/processors/0/route/0/processors/0").build();
     MetadataResult<ComponentMetadataDescriptor<OperationModel>> operationMetadata = metadataService.getOperationMetadata(build);
 
-    assertThat(operationMetadata.isSuccess(), is(true));
+    assertThat(operationMetadata, isSuccess());
   }
 
 }

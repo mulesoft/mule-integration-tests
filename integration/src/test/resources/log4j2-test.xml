@@ -19,8 +19,8 @@
 
         <!-- Mule classes -->
         <AsyncLogger name="org.mule" level="WARN"/>
-<!--         <AsyncLogger name="org.mule.runtime.ast" level="DEBUG"/> -->
-<!--         <AsyncLogger name="org.mule.runtime.config.internal" level="DEBUG"/> -->
+        <AsyncLogger name="org.mule.runtime.ast" level="DEBUG"/>
+        <AsyncLogger name="org.mule.runtime.config.internal.LazyMuleArtifactContext" level="DEBUG"/>
         <AsyncLogger name="com.mulesoft" level="WARN"/>
 
         <AsyncRoot level="INFO">

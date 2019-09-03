@@ -6,7 +6,6 @@
  */
 package org.mule.it.soap.connect;
 
-import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -19,6 +18,9 @@ import static org.mule.runtime.extension.api.util.ExtensionMetadataTypeUtils.get
 import static org.mule.runtime.module.extension.soap.internal.loader.SoapInvokeOperationDeclarer.ATTACHMENTS_PARAM;
 import static org.mule.runtime.module.extension.soap.internal.loader.SoapInvokeOperationDeclarer.BODY_PARAM;
 import static org.mule.runtime.module.extension.soap.internal.loader.SoapInvokeOperationDeclarer.HEADERS_PARAM;
+import static org.mule.tck.junit4.matcher.metadata.MetadataKeyResultFailureMatcher.isFailure;
+import static org.mule.tck.junit4.matcher.metadata.MetadataKeyResultSuccessMatcher.isSuccess;
+
 import org.mule.metadata.api.model.BinaryType;
 import org.mule.metadata.api.model.BooleanType;
 import org.mule.metadata.api.model.MetadataType;
@@ -55,7 +57,7 @@ public class InvokeMetadataTestCase extends SoapFootballExtensionArtifactFunctio
   public void metadataKeys() {
     Location location = Location.builder().globalName("getLeagues").addProcessorsPart().addIndexPart(1).build();
     final MetadataResult<MetadataKeysContainer> result = metadataService.getMetadataKeys(location);
-    assertThat(result.isSuccess(), is(true));
+    assertThat(result, isSuccess());
     Set<MetadataKey> keys = result.get().getKeysByCategory().values().iterator().next();
     assertThat(keys, hasSize(2));
     Optional<MetadataKey> service = keys.stream().filter(key -> key.getId().equals("leagues"))
@@ -132,8 +134,7 @@ public class InvokeMetadataTestCase extends SoapFootballExtensionArtifactFunctio
   public void invalidKey() {
     Location location = Location.builder().globalName("invalidKey").addProcessorsPart().addIndexPart(0).build();
     MetadataResult<ComponentMetadataDescriptor<OperationModel>> result = metadataService.getOperationMetadata(location);
-    assertThat(result.isSuccess(), is(false));
-    assertThat(result.getFailures(), hasSize(4));
+    assertThat(result, isFailure(hasSize(4)));
     result.getFailures().forEach(failure -> assertThat(failure.getReason(), containsString(INVALID_KEY_ERROR)));
   }
 
@@ -149,7 +150,7 @@ public class InvokeMetadataTestCase extends SoapFootballExtensionArtifactFunctio
   private OperationModel getMetadata(String flow) {
     Location location = Location.builder().globalName(flow).addProcessorsPart().addIndexPart(0).build();
     MetadataResult<ComponentMetadataDescriptor<OperationModel>> result = metadataService.getOperationMetadata(location);
-    assertThat(result.getFailures().stream().map(f -> f.getMessage()).collect(joining(", \n")), result.isSuccess(), is(true));
+    assertThat(result, isSuccess());
     return result.get().getModel();
   }
 }
