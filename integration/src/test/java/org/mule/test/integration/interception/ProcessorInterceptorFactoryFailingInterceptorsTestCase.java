@@ -11,8 +11,8 @@ import static org.hamcrest.Matchers.sameInstance;
 import static org.mule.functional.api.exception.ExpectedError.none;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 import static org.mule.runtime.api.interception.ProcessorInterceptorFactory.INTERCEPTORS_ORDER_REGISTRY_KEY;
-import static org.mule.test.allure.AllureConstants.InterceptonApi.INTERCEPTION_API;
 import static org.mule.test.allure.AllureConstants.InterceptonApi.ComponentInterceptionStory.COMPONENT_INTERCEPTION_STORY;
+import static org.mule.test.allure.AllureConstants.InterceptonApi.INTERCEPTION_API;
 
 import org.mule.functional.api.exception.ExpectedError;
 import org.mule.runtime.api.component.location.ComponentLocation;
@@ -23,13 +23,7 @@ import org.mule.runtime.api.interception.ProcessorInterceptorFactory;
 import org.mule.runtime.api.interception.ProcessorInterceptorFactory.ProcessorInterceptorOrder;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -37,6 +31,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
 
 /**
  * Test robustness of the Mule Runtime with misbehaving interceptors.
@@ -115,6 +112,7 @@ public class ProcessorInterceptorFactoryFailingInterceptorsTestCase extends Abst
   @Test
   @Description("The errorType set by an operation is preserved if an interceptor is applied")
   public void failingOperationErrorTypePreserved() throws Exception {
+    expectedError.expectErrorType("HEISENBERG", "CONNECTIVITY").expectCause(sameInstance(THROWN));
     flowRunner("callGusFring").run();
   }
 
