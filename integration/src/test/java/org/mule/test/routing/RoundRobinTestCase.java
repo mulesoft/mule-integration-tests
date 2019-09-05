@@ -18,10 +18,11 @@ import org.mule.test.AbstractIntegrationTestCase;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.qameta.allure.Feature;
-import io.qameta.allure.Story;
 import org.junit.Test;
 import org.slf4j.Logger;
+
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 
 @Feature(ROUTERS)
 @Story(ROUND_ROBIN)
@@ -63,9 +64,14 @@ public class RoundRobinTestCase extends AbstractIntegrationTestCase {
     }
   }
 
+  @Test
+  public void testRoundRobinNonBlocking() throws Exception {
+    flowRunner("test-router-nb").withPayload("AmI_NB?").runAndVerify("test-router-nb");
+  }
+
   class MessageWriter implements Runnable {
 
-    private int id;
+    private final int id;
 
     MessageWriter(int id) {
       this.id = id;
