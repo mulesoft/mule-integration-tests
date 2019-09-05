@@ -27,4 +27,16 @@
         </round-robin>
     </flow>
 
+    <flow name="test-router-nb">
+        <test:assert-intercepting responseSameTask="false" />
+        <round-robin>
+            <route>
+                <test:non-blocking-processor />
+            </route>
+            <route>
+                <test:non-blocking-processor />
+            </route>
+        </round-robin>
+    </flow>
+
 </mule>
