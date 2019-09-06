@@ -9,6 +9,7 @@ package org.mule.test.integration.locator;
 import static java.util.Optional.empty;
 import static java.util.stream.Collectors.toList;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
@@ -133,9 +134,19 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
     assertThat(locator.find(multipleInitiailizeProcessor1), not(empty()));
     assertThat(locator.find(multipleInitiailizeProcessor2), is(empty()));
 
+    MuleConfiguration configuration = registry.lookupByType(MuleConfiguration.class)
+        .orElseThrow(() -> new AssertionError("Missing MuleConfiguration from registry"));
+
     lazyComponentInitializer.initializeComponent(multipleInitiailizeProcessor2);
     assertThat(locator.find(multipleInitiailizeProcessor1), is(empty()));
     assertThat(locator.find(multipleInitiailizeProcessor2), not(empty()));
+
+    MuleConfiguration afterNextInitConfiguration = registry.lookupByType(MuleConfiguration.class)
+        .orElseThrow(() -> new AssertionError("Missing MuleConfiguration from registry"));
+
+    // Cannot do more than testing that both are the same instances and equals
+    assertThat(configuration, sameInstance(afterNextInitConfiguration));
+    assertThat(configuration, equalTo(afterNextInitConfiguration));
 
     // force dispose to check that components from sub-flow are disposed
     muleContext.dispose();
