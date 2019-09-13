@@ -15,11 +15,11 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.extension.http.api.HttpHeaders.Names.CONTENT_TYPE;
-import static org.mule.runtime.api.store.ObjectStoreSettings.unmanagedTransient;
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.OK;
 import static org.mule.runtime.oauth.api.state.ResourceOwnerOAuthContext.DEFAULT_RESOURCE_OWNER_ID;
 
 import org.mule.runtime.api.store.ObjectStore;
+import org.mule.runtime.api.util.LazyValue;
 import org.mule.runtime.extension.api.connectivity.oauth.ClientCredentialsState;
 import org.mule.runtime.oauth.api.state.ResourceOwnerOAuthContext;
 import org.mule.test.module.extension.oauth.BaseOAuthExtensionTestCase;
@@ -32,7 +32,8 @@ import org.junit.Test;
 
 public class OAuthClientCredentialsExtensionTestCase extends BaseOAuthExtensionTestCase {
 
-  private ObjectStore objectStore;
+  private LazyValue<ObjectStore> objectStore =
+      new LazyValue<>(() -> muleContext.getObjectStoreManager().getObjectStore(CUSTOM_STORE_NAME));
 
   @Override
   protected String[] getConfigFiles() {
@@ -47,17 +48,6 @@ public class OAuthClientCredentialsExtensionTestCase extends BaseOAuthExtensionT
         .withStatus(OK.getStatusCode())
         .withBody(accessTokenContent())
         .withHeader(CONTENT_TYPE, "application/json")));
-
-    // This needs to be created before the app starts, since the token will be refreshed during startup and that needs the OS
-    // created.
-    objectStore = muleContext.getObjectStoreManager().createObjectStore(CUSTOM_STORE_NAME, unmanagedTransient());
-
-    muleContext.start();
-  }
-
-  @Override
-  protected boolean isStartContext() {
-    return false;
   }
 
   @Test
@@ -82,7 +72,7 @@ public class OAuthClientCredentialsExtensionTestCase extends BaseOAuthExtensionT
 
   private void assertRefreshToken(String refreshedToken) throws Exception {
     wireMock.verify(postRequestedFor(urlPathEqualTo("/" + TOKEN_PATH)));
-    ResourceOwnerOAuthContext context = (ResourceOwnerOAuthContext) objectStore.retrieve(storedOwnerId);
+    ResourceOwnerOAuthContext context = (ResourceOwnerOAuthContext) objectStore.get().retrieve(storedOwnerId);
     assertThat(context.getAccessToken(), CoreMatchers.equalTo(refreshedToken));
   }
 
