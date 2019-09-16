@@ -163,8 +163,8 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
   @Test
   public void executeSynchronouslyDoingExpressionRetries() throws Exception {
     flowRunner("synchronous-with-expression-retry").runExpectingException();
-    assertThat(getNumberOfInvocationsFor("untilSuccessful"), is(6));
-    assertThat(getNumberOfInvocationsFor("exceptionStrategy"), is(1));
+    assertThat(getNumberOfInvocationsFor("untilSuccessfulExpression"), is(6));
+    assertThat(getNumberOfInvocationsFor("exceptionStrategyExpression"), is(1));
   }
 
   @Test
