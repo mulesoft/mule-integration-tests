@@ -82,6 +82,19 @@
         </error-handler>
     </flow>
 
+    <flow name="synchronous-with-expression-retry">
+        <set-payload value="3"/>
+        <until-successful maxRetries="#[payload + 2]" millisBetweenRetries="0">
+            <test:invocation-counter name="untilSuccessfulExpression"/>
+            <test:processor throwException="true"/>
+        </until-successful>
+        <error-handler>
+            <on-error-propagate type="RETRY_EXHAUSTED">
+                <test:invocation-counter name="exceptionStrategyExpression"/>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+
     <flow name="synchronous-without-retry">
         <until-successful maxRetries="0" millisBetweenRetries="0">
             <test:invocation-counter name="untilSuccessfulNoRetry"/>
