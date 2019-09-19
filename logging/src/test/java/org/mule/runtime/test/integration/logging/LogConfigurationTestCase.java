@@ -63,12 +63,12 @@ public class LogConfigurationTestCase extends AbstractFakeMuleServerTestCase {
   @Test
   public void defaultAppInDomainLoggingConfigurationOnlyLogsOnApplicationLogFile() throws Exception {
     muleServer.start();
-    File domainFile =
-        new DomainFileBuilder(DOMAIN_NAME).definedBy("log/empty-domain/empty-domain-config.xml").getArtifactFile();
-    muleServer.deployDomainFile(domainFile);
+    DomainFileBuilder domainFileBuilder =
+        new DomainFileBuilder(DOMAIN_NAME).definedBy("log/empty-domain/empty-domain-config.xml");
+    muleServer.deployDomainFile(domainFileBuilder.getArtifactFile());
 
     ApplicationFileBuilder applicationFileBuilder =
-        new ApplicationFileBuilder(APP_NAME).definedBy("log/empty-config.xml").deployedWith("domain", "domain");
+        new ApplicationFileBuilder(APP_NAME).dependingOn(domainFileBuilder).definedBy("log/empty-config.xml");
     muleServer.deploy(applicationFileBuilder.getArtifactFile().toURI().toURL(), APP_NAME);
     ensureOnlyDefaultAppender();
   }
@@ -101,8 +101,7 @@ public class LogConfigurationTestCase extends AbstractFakeMuleServerTestCase {
     muleServer.deployDomainFile(domainFileBuilder.getArtifactFile());
 
     ApplicationFileBuilder applicationFileBuilder = new ApplicationFileBuilder(APP_NAME)
-        .definedBy("log/empty-config.xml").deployedWith("domain", "domain")
-        .dependingOn(domainFileBuilder);
+        .definedBy("log/empty-config.xml").dependingOn(domainFileBuilder);
     muleServer.deploy(applicationFileBuilder.getArtifactFile().toURI().toURL(), APP_NAME);
     ensureArtifactAppender("ConsoleForDomain", ConsoleAppender.class);
   }
