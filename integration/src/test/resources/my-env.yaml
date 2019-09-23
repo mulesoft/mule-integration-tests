@@ -1,4 +1,5 @@
 myProp: "myEnvValue"
+escaped: "This is \\${ escaped ${myProp}"
 fileProp: ${basicValue}-filePropValue
 http:
   url: http://localhost/${http.path}
