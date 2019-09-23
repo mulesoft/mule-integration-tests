@@ -9,17 +9,17 @@ package org.mule.test.core.context.notification.processors;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
 import static java.util.Optional.empty;
-import static java.util.Optional.of;
+import static java.util.OptionalInt.of;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.component.ComponentIdentifier.buildFromStringRepresentation;
+import static org.mule.runtime.api.component.TypedComponentIdentifier.builder;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.FLOW;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.OPERATION;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.ROUTER;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.SCOPE;
-import static org.mule.runtime.api.component.TypedComponentIdentifier.builder;
 import static org.mule.runtime.api.dsl.DslResolvingContext.getDefault;
 import static org.mule.runtime.api.util.collection.Collectors.toImmutableList;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.CHOICE_IDENTIFIER;
@@ -39,6 +39,7 @@ import static org.mule.runtime.dsl.api.xml.parser.XmlConfigurationProcessor.proc
 import static org.mule.runtime.module.extension.api.util.MuleExtensionUtils.createDefaultExtensionManager;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentLocationStory.COMPONENT_LOCATION;
+
 import org.mule.runtime.api.component.TypedComponentIdentifier;
 import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.api.component.location.Location;
@@ -68,8 +69,6 @@ import org.mule.runtime.dsl.api.xml.parser.XmlParsingConfiguration;
 import org.mule.runtime.extension.api.loader.xml.XmlExtensionModelLoader;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import com.google.common.collect.ImmutableList;
-
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -79,20 +78,24 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import javax.xml.parsers.SAXParserFactory;
 
+import org.junit.After;
+import org.junit.Test;
+import org.xml.sax.EntityResolver;
+
+import com.google.common.collect.ImmutableList;
+
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
 import io.qameta.allure.junit4.DisplayName;
-import org.junit.After;
-import org.junit.Test;
-import org.xml.sax.EntityResolver;
 
 @DisplayName("XML Connectors Path generation")
 @Feature(CONFIGURATION_COMPONENT_LOCATOR)
@@ -110,22 +113,24 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
     return CONFIG_FILE_NAME.get();
   }
 
-  private static final Optional<String> CONFIG_FILE_NAME = of(BASE_PATH_XML_MODULES + FLOWS_USING_MODULE_SIMPLE_XML);
-  private static final Optional<String> MODULE_SIMPLE_FILE_NAME = of(BASE_PATH_XML_MODULES + MODULE_SIMPLE_XML);
-  private static final Optional<String> MODULE_SIMPLE_PROXY_FILE_NAME = of(BASE_PATH_XML_MODULES + MODULE_SIMPLE_PROXY_XML);
+  private static final Optional<String> CONFIG_FILE_NAME = Optional.of(BASE_PATH_XML_MODULES + FLOWS_USING_MODULE_SIMPLE_XML);
+  private static final Optional<String> MODULE_SIMPLE_FILE_NAME = Optional.of(BASE_PATH_XML_MODULES + MODULE_SIMPLE_XML);
+  private static final Optional<String> MODULE_SIMPLE_PROXY_FILE_NAME =
+      Optional.of(BASE_PATH_XML_MODULES + MODULE_SIMPLE_PROXY_XML);
   private static final Optional<TypedComponentIdentifier> FLOW_TYPED_COMPONENT_IDENTIFIER =
-      of(builder().identifier(FLOW_IDENTIFIER).type(FLOW).build());
+      Optional.of(builder().identifier(FLOW_IDENTIFIER).type(FLOW).build());
   private static final Optional<TypedComponentIdentifier> SUBFLOW_TYPED_COMPONENT_IDENTIFIER =
-      of(builder().identifier(SUBFLOW_IDENTIFIER).type(SCOPE).build());
+      Optional.of(builder().identifier(SUBFLOW_IDENTIFIER).type(SCOPE).build());
 
   private static final DefaultComponentLocation getFlowLocation(final String flowName, final int flowLineNumber) {
-    return new DefaultComponentLocation(of(flowName), asList(new DefaultLocationPart(flowName, FLOW_TYPED_COMPONENT_IDENTIFIER,
+    return new DefaultComponentLocation(Optional
+        .of(flowName), asList(new DefaultLocationPart(flowName, FLOW_TYPED_COMPONENT_IDENTIFIER,
                                                                                      CONFIG_FILE_NAME, of(flowLineNumber),
                                                                                      of(5))));
   }
 
   private static final DefaultComponentLocation getSubFlowLocation(final String subFlowName, final int subFlowLineNumber) {
-    return new DefaultComponentLocation(of(subFlowName),
+    return new DefaultComponentLocation(Optional.of(subFlowName),
                                         asList(new DefaultLocationPart(subFlowName, SUBFLOW_TYPED_COMPONENT_IDENTIFIER,
                                                                        CONFIG_FILE_NAME, of(subFlowLineNumber),
                                                                        of(5))));
@@ -193,7 +198,7 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
 
   private static Optional<TypedComponentIdentifier> getModuleOperationIdentifier(final String namespace,
                                                                                  final String identifier) {
-    return of(builder()
+    return Optional.of(builder()
         .identifier(buildFromStringRepresentation(namespace + COLON_SEPARATOR + identifier))
         .type(OPERATION).build());
   }
@@ -202,7 +207,7 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
                                                                      final Optional<TypedComponentIdentifier> operationIdentifier,
                                                                      final Optional<String> moduleFilename,
                                                                      final int operationLineNumber) {
-    return new DefaultComponentLocation(of(operationName),
+    return new DefaultComponentLocation(Optional.of(operationName),
                                         asList(new DefaultLocationPart(operationName,
                                                                        operationIdentifier,
                                                                        moduleFilename,
@@ -259,12 +264,12 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
    * runtime provided MPs
    */
   private static final Optional<TypedComponentIdentifier> LOGGER =
-      of(builder().identifier(buildFromStringRepresentation("mule:logger"))
+      Optional.of(builder().identifier(buildFromStringRepresentation("mule:logger"))
           .type(OPERATION).build());
 
 
   private static final Optional<TypedComponentIdentifier> SET_PAYLOAD =
-      of(builder().identifier(buildFromStringRepresentation("mule:set-payload"))
+      Optional.of(builder().identifier(buildFromStringRepresentation("mule:set-payload"))
           .type(OPERATION).build());
 
   final ProcessorNotificationStore listener = new ProcessorNotificationStore();
@@ -434,7 +439,7 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
     // simple test to be sure the macro expansion doesn't mess up the a flow that has no modifications
     flowRunner("flowWithSingleMp").run();
     assertNextProcessorLocationIs(FLOW_WITH_SINGLE_MP_LOCATION
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
         .appendLocationPart("0", LOGGER, CONFIG_FILE_NAME, of(16), of(9)));
     assertNoNextProcessorNotification();
   }
@@ -443,15 +448,15 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
   public void subFlowWithSetPayloadHardcoded() throws Exception {
     flowRunner("flowWithSetPayloadHardcodedInsideSubFlow").run();
     assertNextProcessorLocationIs(FLOW_WITH_SET_PAYLOAD_HARDCODED_INSIDE_SUBFLOW
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
-        .appendLocationPart("0", of(TypedComponentIdentifier.builder()
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", Optional.of(TypedComponentIdentifier.builder()
             .identifier(FLOW_REF_IDENTIFIER)
             .type(OPERATION).build()), CONFIG_FILE_NAME, of(62), of(9)));
     assertNextProcessorLocationIs(SUBFLOW_WITH_SET_PAYLOAD_HARDCODED
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
         .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(66), of(9)));
     assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
         .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13)));
     assertNoNextProcessorNotification();
   }
@@ -463,22 +468,22 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
     flowRunner("flowWithChoiceRouter").run();
 
     DefaultComponentLocation firstComponentLocation = FLOW_WITH_CHOICE_ROUTER
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
-        .appendLocationPart("0", of(builder()
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", Optional.of(builder()
             .identifier(CHOICE_IDENTIFIER)
             .type(ROUTER).build()), CONFIG_FILE_NAME, of(70), of(9));
 
     assertNextProcessorLocationIs(firstComponentLocation);
     assertNextProcessorLocationIs(firstComponentLocation
-        .appendLocationPart(ROUTE_ELEMENT, empty(), empty(), empty(), empty())
-        .appendLocationPart("0", of(TypedComponentIdentifier.builder()
+        .appendLocationPart(ROUTE_ELEMENT, empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", Optional.of(TypedComponentIdentifier.builder()
             .identifier(ROUTE_IDENTIFIER)
             .type(SCOPE).build()), CONFIG_FILE_NAME, of(71), of(13))
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
         .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(72), of(17)));
 
     assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
         .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13)));
     assertNoNextProcessorNotification();
   }
@@ -490,17 +495,17 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
     flowRunner("flowWithUntilSuccessfulScope").run();
 
     DefaultComponentLocation firstComponentLocation = FLOW_WITH_UNTIL_SUCCESSFUL_SCOPE
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
-        .appendLocationPart("0", of(builder()
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", Optional.of(builder()
             .identifier(UNTIL_SUCCESSFUL_IDENTIFIER)
             .type(SCOPE).build()), CONFIG_FILE_NAME, of(78), of(9));
 
     assertNextProcessorLocationIs(firstComponentLocation);
     assertNextProcessorLocationIs(firstComponentLocation
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
         .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(79), of(13)));
     assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
         .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13)));
     assertNoNextProcessorNotification();
   }
@@ -512,17 +517,17 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
     flowRunner("flowWithTryScope").run();
 
     DefaultComponentLocation firstComponentLocation = FLOW_WITH_TRY_SCOPE
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
-        .appendLocationPart("0", of(builder()
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", Optional.of(builder()
             .identifier(TRY_IDENTIFIER)
             .type(SCOPE).build()), CONFIG_FILE_NAME, of(84), of(9));
 
     assertNextProcessorLocationIs(firstComponentLocation);
     assertNextProcessorLocationIs(firstComponentLocation
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
         .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(85), of(13)));
     assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
         .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13)));
     assertNoNextProcessorNotification();
   }
@@ -534,17 +539,17 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
     flowRunner("flowWithForeachScope").run();
 
     DefaultComponentLocation firstComponentLocation = FLOW_WITH_FOREACH_SCOPE
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
-        .appendLocationPart("0", of(builder()
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", Optional.of(builder()
             .identifier(FOREACH_IDENTIFIER)
             .type(SCOPE).build()), CONFIG_FILE_NAME, of(90), of(9));
 
     assertNextProcessorLocationIs(firstComponentLocation);
     assertNextProcessorLocationIs(firstComponentLocation
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
         .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(91), of(13)));
     assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
         .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13)));
     assertNoNextProcessorNotification();
   }
@@ -556,17 +561,17 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
     flowRunner("flowWithParallelForeachScope").run();
 
     DefaultComponentLocation firstComponentLocation = FLOW_WITH_PARALLEL_FOREACH_SCOPE
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
-        .appendLocationPart("0", of(builder()
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", Optional.of(builder()
             .identifier(PARALLEL_FOREACH_IDENTIFIER)
             .type(SCOPE).build()), CONFIG_FILE_NAME, of(96), of(9));
 
     assertNextProcessorLocationIs(firstComponentLocation);
     assertNextProcessorLocationIs(firstComponentLocation
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
         .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(97), of(13)));
     assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
         .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13)));
     assertNoNextProcessorNotification();
   }
@@ -578,31 +583,31 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
     flowRunner("flowWithScatterGather").run();
 
     DefaultComponentLocation firstComponentLocation = FLOW_WITH_SCATTER_GATHER
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
-        .appendLocationPart("0", of(builder()
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", Optional.of(builder()
             .identifier(SCATTER_GATHER_IDENTIFIER)
             .type(ROUTER).build()), CONFIG_FILE_NAME, of(102), of(9));
 
     assertNextProcessorLocationIs(firstComponentLocation);
 
     assertNextProcessorLocationIs(firstComponentLocation
-        .appendLocationPart(ROUTE_ELEMENT, empty(), empty(), empty(), empty())
-        .appendLocationPart("0", of(builder()
+        .appendLocationPart(ROUTE_ELEMENT, empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", Optional.of(builder()
             .identifier(ROUTE_IDENTIFIER)
             .type(SCOPE).build()), CONFIG_FILE_NAME, of(103), of(13))
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
         .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(104), of(17)));
 
     DefaultComponentLocation thirdComponentLocation = firstComponentLocation
-        .appendLocationPart(ROUTE_ELEMENT, empty(), empty(), empty(), empty())
-        .appendLocationPart("1", of(builder()
+        .appendLocationPart(ROUTE_ELEMENT, empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("1", Optional.of(builder()
             .identifier(ROUTE_IDENTIFIER)
             .type(SCOPE).build()), CONFIG_FILE_NAME, of(106), of(13))
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
         .appendLocationPart("0", LOGGER, CONFIG_FILE_NAME, of(107), of(17));
 
     DefaultComponentLocation fourthComponentLocation = OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
         .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13));
 
     ComponentLocation thirdProcessorNotification = getMessageProcessorNotification().getComponent().getLocation();
@@ -621,10 +626,10 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
   public void flowWithSetPayloadHardcoded() throws Exception {
     flowRunner("flowWithSetPayloadHardcoded").run();
     assertNextProcessorLocationIs(FLOW_WITH_SET_PAYLOAD_HARDCODED
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
         .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(20), of(9)));
     assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
         .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13)));
     assertNoNextProcessorNotification();
   }
@@ -633,17 +638,17 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
   public void flowWithSetPayloadHardcodedTwice() throws Exception {
     flowRunner("flowWithSetPayloadHardcodedTwice").run();
     assertNextProcessorLocationIs(FLOW_WITH_SET_PAYLOAD_HARDCODED_TWICE
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
         .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(24), of(9)));
     assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
         .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13)));
 
     assertNextProcessorLocationIs(FLOW_WITH_SET_PAYLOAD_HARDCODED_TWICE
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
         .appendLocationPart("1", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(25), of(9)));
     assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
         .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13)));
     assertNoNextProcessorNotification();
   }
@@ -652,10 +657,10 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
   public void flowWithSetPayloadParamValue() throws Exception {
     flowRunner("flowWithSetPayloadParamValue").run();
     assertNextProcessorLocationIs(FLOW_WITH_SET_PAYLOAD_PARAM_VALUE
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
         .appendLocationPart("0", MODULE_SET_PAYLOAD_PARAM_VALUE, CONFIG_FILE_NAME, of(29), of(9)));
     assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_PARAM_VALUE_FIRST_MP
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
         .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(23), of(13)));
     assertNoNextProcessorNotification();
   }
@@ -664,13 +669,13 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
   public void flowWithSetPayloadTwoTimes() throws Exception {
     flowRunner("flowWithSetPayloadTwoTimes").run();
     assertNextProcessorLocationIs(FLOW_WITH_SET_PAYLOAD_TWO_TIMES
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
         .appendLocationPart("0", MODULE_SET_PAYLOAD_TWO_TIMES, CONFIG_FILE_NAME, of(33), of(9)));
     assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_TWO_TIMES_FIRST_MP
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
         .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(30), of(13)));
     assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_TWO_TIMES_SECOND_MP
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
         .appendLocationPart("1", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(31), of(13)));
     assertNoNextProcessorNotification();
   }
@@ -679,23 +684,23 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
   public void flowWithSetPayloadTwoTimesTwice() throws Exception {
     flowRunner("flowWithSetPayloadTwoTimesTwice").run();
     assertNextProcessorLocationIs(FLOW_WITH_SET_PAYLOAD_TWO_TIMES_TWICE
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
         .appendLocationPart("0", MODULE_SET_PAYLOAD_TWO_TIMES, CONFIG_FILE_NAME, of(37), of(9)));
     assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_TWO_TIMES_FIRST_MP
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
         .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(30), of(13)));
     assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_TWO_TIMES_SECOND_MP
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
         .appendLocationPart("1", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(31), of(13)));
     // assertion on the second call of the OP
     assertNextProcessorLocationIs(FLOW_WITH_SET_PAYLOAD_TWO_TIMES_TWICE
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
         .appendLocationPart("1", MODULE_SET_PAYLOAD_TWO_TIMES, CONFIG_FILE_NAME, of(38), of(9)));
     assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_TWO_TIMES_FIRST_MP
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
         .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(30), of(13)));
     assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_TWO_TIMES_SECOND_MP
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
         .appendLocationPart("1", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(31), of(13)));
     assertNoNextProcessorNotification();
   }
@@ -705,13 +710,13 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
     flowRunner("flowWithProxySetPayloadHardcoded").run();
     // flow assertion
     assertNextProcessorLocationIs(FLOW_WITH_PROXY_SET_PAYLOAD_HARDCODED
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
         .appendLocationPart("0", MODULE_PROXY_SET_PAYLOAD, CONFIG_FILE_NAME, of(42), of(9)));
     assertNextProcessorLocationIs(OPERATION_PROXY_SET_PAYLOAD_FIRST_MP
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
         .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, MODULE_SIMPLE_PROXY_FILE_NAME, of(13), of(13)));
     assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
         .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13)));
     assertNoNextProcessorNotification();
   }
@@ -720,16 +725,16 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
   public void flowWithProxySetPayloadHardcodedAndLogger() throws Exception {
     flowRunner("flowWithProxySetPayloadHardcodedAndLogger").run();
     assertNextProcessorLocationIs(FLOW_WITH_PROXY_SET_PAYLOAD_HARDCODED_AND_LOGGER
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
         .appendLocationPart("0", MODULE_PROXY_SET_PAYLOAD_AND_LOGGER, CONFIG_FILE_NAME, of(46), of(9)));
     assertNextProcessorLocationIs(OPERATION_PROXY_SET_PAYLOAD_AND_LOGGER_FIRST_MP
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
         .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, MODULE_SIMPLE_PROXY_FILE_NAME, of(20), of(13)));
     assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
         .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13)));
     assertNextProcessorLocationIs(OPERATION_PROXY_SET_PAYLOAD_AND_LOGGER_SECOND_MP
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
         .appendLocationPart("1", LOGGER, MODULE_SIMPLE_PROXY_FILE_NAME, of(21), of(13)));
     assertNoNextProcessorNotification();
   }
@@ -740,28 +745,28 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
 
     // first MP from within the flow
     assertNextProcessorLocationIs(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
         .appendLocationPart("0", MODULE_PROXY_SET_PAYLOAD_AND_LOGGER, CONFIG_FILE_NAME, of(50), of(9)));
     assertNextProcessorLocationIs(OPERATION_PROXY_SET_PAYLOAD_AND_LOGGER_FIRST_MP
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
         .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, MODULE_SIMPLE_PROXY_FILE_NAME, of(20), of(13)));
     assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
         .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13)));
     assertNextProcessorLocationIs(OPERATION_PROXY_SET_PAYLOAD_AND_LOGGER_SECOND_MP
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
         .appendLocationPart("1", LOGGER, MODULE_SIMPLE_PROXY_FILE_NAME, of(21), of(13)));
 
     // second MP from within the flow
     assertNextProcessorLocationIs(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
         .appendLocationPart("1", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(51), of(9)));
     assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
         .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13)));
     // third MP from within the flow
     assertNextProcessorLocationIs(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
         .appendLocationPart("2", LOGGER, CONFIG_FILE_NAME, of(52), of(9)));
     assertNoNextProcessorNotification();
   }
@@ -771,29 +776,29 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
     flowRunner("flowWithProxyAndSimpleModuleAndLoggerReverse").run();
     // first MP from within the flow
     assertNextProcessorLocationIs(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_REVERSE
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
         .appendLocationPart("0", LOGGER, CONFIG_FILE_NAME, of(56), of(9)));
 
     // second MP from within the flow
     assertNextProcessorLocationIs(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_REVERSE
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
         .appendLocationPart("1", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(57), of(9)));
     assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
         .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13)));
 
     // third MP from within the flow
     assertNextProcessorLocationIs(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_REVERSE
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
         .appendLocationPart("2", MODULE_PROXY_SET_PAYLOAD_AND_LOGGER, CONFIG_FILE_NAME, of(58), of(9)));
     assertNextProcessorLocationIs(OPERATION_PROXY_SET_PAYLOAD_AND_LOGGER_FIRST_MP
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
         .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, MODULE_SIMPLE_PROXY_FILE_NAME, of(20), of(13)));
     assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
         .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13)));
     assertNextProcessorLocationIs(OPERATION_PROXY_SET_PAYLOAD_AND_LOGGER_SECOND_MP
-        .appendLocationPart("processors", empty(), empty(), empty(), empty())
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
         .appendLocationPart("1", LOGGER, MODULE_SIMPLE_PROXY_FILE_NAME, of(21), of(13)));
     assertNoNextProcessorNotification();
   }
@@ -885,7 +890,7 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
         return xmlNamespaceInfoProviders;
       }
     });
-    return configFiles.isEmpty() ? empty() : of(configFiles.get(0).getConfigLines().get(0));
+    return configFiles.isEmpty() ? empty() : Optional.of(configFiles.get(0).getConfigLines().get(0));
   }
 
   private XmlNamespaceInfoProvider createStaticNamespaceInfoProviders(Set<ExtensionModel> extensionModels) {
