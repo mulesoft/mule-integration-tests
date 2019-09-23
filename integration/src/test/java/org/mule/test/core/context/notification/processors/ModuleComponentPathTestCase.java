@@ -125,8 +125,8 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
   private static final DefaultComponentLocation getFlowLocation(final String flowName, final int flowLineNumber) {
     return new DefaultComponentLocation(Optional
         .of(flowName), asList(new DefaultLocationPart(flowName, FLOW_TYPED_COMPONENT_IDENTIFIER,
-                                                                                     CONFIG_FILE_NAME, of(flowLineNumber),
-                                                                                     of(5))));
+                                                      CONFIG_FILE_NAME, of(flowLineNumber),
+                                                      of(5))));
   }
 
   private static final DefaultComponentLocation getSubFlowLocation(final String subFlowName, final int subFlowLineNumber) {
