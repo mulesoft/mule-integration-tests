@@ -60,4 +60,10 @@ public class ConfigurationPropertiesTestCase extends AbstractIntegrationTestCase
     assertThat(configurationProperties.resolveStringProperty("global.property.value.key").get(),
                is("globalPropertyValueKeyValue"));
   }
+
+  @Description("Configuration properties can escape the placeholder prefix")
+  @Test
+  public void prefixCanBeEscaped() {
+    assertThat(configurationProperties.resolveStringProperty("escaped").get(), is("This is ${ escaped myEnvValue"));
+  }
 }
