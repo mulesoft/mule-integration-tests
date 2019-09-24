@@ -73,4 +73,11 @@
         <output type="string"/>
     </operation>
 
+    <operation name="flow-stack-store-nested">
+        <body>
+            <tns:flow-stack-store/>
+        </body>
+        <output type="string"/>
+    </operation>
+
  </module>

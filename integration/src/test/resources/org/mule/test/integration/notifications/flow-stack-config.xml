@@ -250,6 +250,10 @@
         <sc:flow-stack-store />
     </flow>
     
+    <flow name="xmlSdkOperationNested">
+        <sc:flow-stack-store-nested />
+    </flow>
+    
     <flow name="xmlSdkOperationInSubflow" initialState="stopped">
         <flow-ref name="xmlSdkOperation"/>
     </flow>
