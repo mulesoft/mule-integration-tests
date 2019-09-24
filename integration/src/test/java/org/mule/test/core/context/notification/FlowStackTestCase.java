@@ -10,7 +10,7 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
-import static org.mule.runtime.core.api.config.MuleProperties.MULE_FLOW_TRACE;
+import static org.mule.runtime.api.util.MuleSystemProperties.MULE_FLOW_TRACE;
 import static org.mule.tck.util.FlowTraceUtils.assertStackElements;
 import static org.mule.tck.util.FlowTraceUtils.isFlowStackElement;
 import static org.mule.tck.util.FlowTraceUtils.FlowStackAsserter.stackToAssert;
@@ -21,11 +21,11 @@ import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.tck.util.FlowTraceUtils.FlowStackAsyncAsserter;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import java.util.concurrent.CountDownLatch;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-
-import java.util.concurrent.CountDownLatch;
 
 public class FlowStackTestCase extends AbstractIntegrationTestCase {
 
@@ -348,6 +348,23 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
                                            "flow-stack-store/processors/0"),
                         isFlowStackElement("xmlSdkOperation",
                                            "xmlSdkOperation/processors/0"));
+  }
+
+  @Test
+  public void xmlSdkOperationNested() throws Exception {
+    flowRunner("xmlSdkOperationNested").withPayload("payload").run();
+
+    assertThat(stackToAssert, not(nullValue()));
+
+    assertStackElements(stackToAssert,
+                        isFlowStackElement("subFlow",
+                                           "subFlow/processors/0"),
+                        isFlowStackElement("module-using-core:flow-stack-store",
+                                           "flow-stack-store/processors/0"),
+                        isFlowStackElement("module-using-core:flow-stack-store-nested",
+                                           "flow-stack-store-nested/processors/0"),
+                        isFlowStackElement("xmlSdkOperationNested",
+                                           "xmlSdkOperationNested/processors/0"));
   }
 
   @Test
