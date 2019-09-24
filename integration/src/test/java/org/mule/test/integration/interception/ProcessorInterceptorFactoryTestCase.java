@@ -23,10 +23,11 @@ import static org.junit.Assert.assertThat;
 import static org.mule.functional.api.exception.ExpectedError.none;
 import static org.mule.runtime.api.interception.ProcessorInterceptorFactory.INTERCEPTORS_ORDER_REGISTRY_KEY;
 import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
-import static org.mule.test.allure.AllureConstants.InterceptonApi.ComponentInterceptionStory.COMPONENT_INTERCEPTION_STORY;
 import static org.mule.test.allure.AllureConstants.InterceptonApi.INTERCEPTION_API;
+import static org.mule.test.allure.AllureConstants.InterceptonApi.ComponentInterceptionStory.COMPONENT_INTERCEPTION_STORY;
 import static org.mule.test.heisenberg.extension.HeisenbergConnectionProvider.getActiveConnections;
 import static org.mule.test.heisenberg.extension.HeisenbergOperations.CALL_GUS_MESSAGE;
+
 import org.mule.extension.http.api.request.validator.ResponseValidatorException;
 import org.mule.functional.api.exception.ExpectedError;
 import org.mule.functional.api.exception.FunctionalTestException;
@@ -63,14 +64,14 @@ import java.util.function.BiConsumer;
 
 import javax.inject.Inject;
 
+import org.junit.After;
+import org.junit.Rule;
+import org.junit.Test;
+
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
-import org.junit.After;
-import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.Test;
 
 @Feature(INTERCEPTION_API)
 @Story(COMPONENT_INTERCEPTION_STORY)
@@ -241,9 +242,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     InterceptionParameters moduleOperationChain = interceptionParameters.get(0);
     InterceptionParameters setPayloadOperation = interceptionParameters.get(1);
 
-    assertThat(moduleOperationChain.getParameters().keySet(), containsInAnyOrder("moduleName", "moduleOperation"));
-    assertThat(moduleOperationChain.getParameters().get("moduleName").resolveValue(), is("module-using-core"));
-    assertThat(moduleOperationChain.getParameters().get("moduleOperation").resolveValue(), is("set-payload-hardcoded"));
+    assertThat(moduleOperationChain.getParameters().keySet(), containsInAnyOrder("targetValue"));
 
     assertThat(setPayloadOperation.getParameters().keySet(), containsInAnyOrder("value", "mimeType", "encoding"));
     assertThat(setPayloadOperation.getParameters().get("value").resolveValue(), is("Wubba Lubba Dub Dub"));
@@ -409,9 +408,8 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     InterceptionParameters moduleOperationChain = interceptionParameters.get(0);
     InterceptionParameters setPayloadOperation = interceptionParameters.get(1);
 
-    assertThat(moduleOperationChain.getParameters().keySet(), containsInAnyOrder("moduleName", "moduleOperation"));
-    assertThat(moduleOperationChain.getParameters().get("moduleName").resolveValue(), is("module-using-core"));
-    assertThat(moduleOperationChain.getParameters().get("moduleOperation").resolveValue(), is("echo-set-payload"));
+    assertThat(moduleOperationChain.getParameters().keySet(), containsInAnyOrder("echoMessage", "targetValue"));
+    assertThat(moduleOperationChain.getParameters().get("echoMessage").resolveValue(), is("echo message for the win"));
 
     assertThat(setPayloadOperation.getParameters().keySet(), containsInAnyOrder("value", "mimeType", "encoding"));
     assertThat(setPayloadOperation.getParameters().get("value").providedValue(), is("#[vars.echoMessage]"));
@@ -437,9 +435,8 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     assertThat(flowRef.getParameters().keySet(), containsInAnyOrder("name", "targetValue"));
     assertThat(flowRef.getParameters().get("name").resolveValue(), is("scEchoOperation"));
 
-    assertThat(moduleOperationChain.getParameters().keySet(), containsInAnyOrder("moduleName", "moduleOperation"));
-    assertThat(moduleOperationChain.getParameters().get("moduleName").resolveValue(), is("module-using-core"));
-    assertThat(moduleOperationChain.getParameters().get("moduleOperation").resolveValue(), is("echo-set-payload"));
+    assertThat(moduleOperationChain.getParameters().keySet(), containsInAnyOrder("echoMessage", "targetValue"));
+    assertThat(moduleOperationChain.getParameters().get("echoMessage").resolveValue(), is("echo message for the win"));
 
     assertThat(setPayloadOperation.getParameters().keySet(), containsInAnyOrder("value", "mimeType", "encoding"));
     assertThat(setPayloadOperation.getParameters().get("value").providedValue(), is("#[vars.echoMessage]"));
@@ -461,14 +458,9 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     InterceptionParameters innerModuleOperationChain = interceptionParameters.get(1);
     InterceptionParameters setPayloadOperation = interceptionParameters.get(2);
 
-    assertThat(proxyModuleOperationChain.getParameters().keySet(), containsInAnyOrder("moduleName", "moduleOperation"));
-    assertThat(proxyModuleOperationChain.getParameters().get("moduleName").resolveValue(), is("module-using-sc"));
-    assertThat(proxyModuleOperationChain.getParameters().get("moduleOperation").resolveValue(),
-               is("proxy-set-payload-hardcoded"));
+    assertThat(proxyModuleOperationChain.getParameters().keySet(), containsInAnyOrder("targetValue"));
 
-    assertThat(innerModuleOperationChain.getParameters().keySet(), containsInAnyOrder("moduleName", "moduleOperation"));
-    assertThat(innerModuleOperationChain.getParameters().get("moduleName").resolveValue(), is("module-using-core"));
-    assertThat(innerModuleOperationChain.getParameters().get("moduleOperation").resolveValue(), is("set-payload-hardcoded"));
+    assertThat(innerModuleOperationChain.getParameters().keySet(), containsInAnyOrder("targetValue"));
 
     assertThat(setPayloadOperation.getParameters().keySet(), containsInAnyOrder("value", "mimeType", "encoding"));
     assertThat(setPayloadOperation.getParameters().get("value").resolveValue(), is("Wubba Lubba Dub Dub"));
