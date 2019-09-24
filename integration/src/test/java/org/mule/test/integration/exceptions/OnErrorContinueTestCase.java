@@ -79,7 +79,6 @@ public class OnErrorContinueTestCase extends AbstractIntegrationTestCase {
   public DynamicPort dynamicPort1 = new DynamicPort("port1");
   @Rule
   public DynamicPort dynamicPort2 = new DynamicPort("port2");
-
   @Rule
   public DynamicPort dynamicPort3 = new DynamicPort("port3");
 
@@ -178,6 +177,28 @@ public class OnErrorContinueTestCase extends AbstractIntegrationTestCase {
   @Test
   public void onErrorTypeMatchSeveral() throws Exception {
     Message result = flowRunner("onErrorTypeMatchSeveral").withPayload(true).run().getMessage();
+    assertThat(result, is(notNullValue()));
+    assertThat(getPayloadAsString(result), is("true apt1 apt2"));
+
+    result = flowRunner("onErrorTypeMatchSeveral").withPayload(false).run().getMessage();
+    assertThat(result, is(notNullValue()));
+    assertThat(getPayloadAsString(result), is("false apt1 apt2"));
+  }
+
+  @Test
+  public void onErrorTypeMatchNameWildcard() throws Exception {
+    Message result = flowRunner("onErrorTypeMatchNameWildcard").withPayload(true).run().getMessage();
+    assertThat(result, is(notNullValue()));
+    assertThat(getPayloadAsString(result), is("true apt1 apt2"));
+
+    result = flowRunner("onErrorTypeMatchSeveral").withPayload(false).run().getMessage();
+    assertThat(result, is(notNullValue()));
+    assertThat(getPayloadAsString(result), is("false apt1 apt2"));
+  }
+
+  @Test
+  public void onErrorTypeMatchNamespaceWildcard() throws Exception {
+    Message result = flowRunner("onErrorTypeMatchNamespaceWildcard").withPayload(true).run().getMessage();
     assertThat(result, is(notNullValue()));
     assertThat(getPayloadAsString(result), is("true apt1 apt2"));
 

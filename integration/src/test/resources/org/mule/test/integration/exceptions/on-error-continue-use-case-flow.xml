@@ -138,6 +138,48 @@
         </error-handler>
     </flow>
 
+    <flow name="onErrorTypeMatchNameWildcard">
+        <choice>
+            <when expression="#[mel:payload]">
+                <append-string-transformer message=" apt1"/>
+                <processor ref="failing"/>
+            </when>
+            <otherwise>
+                <append-string-transformer message=" apt1"/>
+                <expression-transformer expression="#[mel:payload.nope]"/>
+            </otherwise>
+        </choice>
+        <error-handler>
+            <on-error-continue type="*:RETRY_EXHAUSTED">
+                <append-string-transformer message=" apt2"/>
+            </on-error-continue>
+            <on-error-continue type="ANY">
+                <append-string-transformer message=" nope"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="onErrorTypeMatchNamespaceWildcard">
+        <choice>
+            <when expression="#[mel:payload]">
+                <append-string-transformer message=" apt1"/>
+                <processor ref="failing"/>
+            </when>
+            <otherwise>
+                <append-string-transformer message=" apt1"/>
+                <expression-transformer expression="#[mel:payload.nope]"/>
+            </otherwise>
+        </choice>
+        <error-handler>
+            <on-error-continue type="MULE:*">
+                <append-string-transformer message=" apt2"/>
+            </on-error-continue>
+            <on-error-continue type="ANY">
+                <append-string-transformer message=" nope"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
     <flow name="failingHandler">
         <test:processor throwException="true"/>
         <error-handler>
