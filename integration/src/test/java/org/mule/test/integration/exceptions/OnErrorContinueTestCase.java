@@ -191,9 +191,9 @@ public class OnErrorContinueTestCase extends AbstractIntegrationTestCase {
     assertThat(result, is(notNullValue()));
     assertThat(getPayloadAsString(result), is("true apt1 apt2"));
 
-    result = flowRunner("onErrorTypeMatchSeveral").withPayload(false).run().getMessage();
+    result = flowRunner("onErrorTypeMatchNameWildcard").withPayload(false).run().getMessage();
     assertThat(result, is(notNullValue()));
-    assertThat(getPayloadAsString(result), is("false apt1 apt2"));
+    assertThat(result, hasPayload(equalTo("false apt1 apt2")));
   }
 
   @Test
@@ -202,9 +202,9 @@ public class OnErrorContinueTestCase extends AbstractIntegrationTestCase {
     assertThat(result, is(notNullValue()));
     assertThat(getPayloadAsString(result), is("true apt1 apt2"));
 
-    result = flowRunner("onErrorTypeMatchSeveral").withPayload(false).run().getMessage();
+    result = flowRunner("onErrorTypeMatchNamespaceWildcard").withPayload(false).run().getMessage();
     assertThat(result, is(notNullValue()));
-    assertThat(getPayloadAsString(result), is("false apt1 apt2"));
+    assertThat(result, hasPayload(equalTo("false apt1 apt2")));
   }
 
   @Test
