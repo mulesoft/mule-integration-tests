@@ -459,7 +459,6 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     InterceptionParameters setPayloadOperation = interceptionParameters.get(2);
 
     assertThat(proxyModuleOperationChain.getParameters().keySet(), containsInAnyOrder("targetValue"));
-
     assertThat(innerModuleOperationChain.getParameters().keySet(), containsInAnyOrder("targetValue"));
 
     assertThat(setPayloadOperation.getParameters().keySet(), containsInAnyOrder("value", "mimeType", "encoding"));
