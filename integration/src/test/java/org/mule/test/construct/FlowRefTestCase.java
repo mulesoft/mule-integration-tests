@@ -217,19 +217,6 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
     testRecursiveFlowrefsAreDetectedFor("crossedRecursiveSubflow", "recurse1");
   }
 
-  private void testRecursiveFlowrefsAreDetectedFor(String callingFlowName, String offendingFlowName) {
-    try {
-      // This will attempt to start the flow. That's the moment the subscription is triggered from downstream, and that's where
-      // the inter-flow-ref cycle is checked.
-      flowRunner(callingFlowName);
-      fail();
-    } catch (Exception e) {
-      Throwable rootCause = getRootCause(e);
-      assertThat(rootCause.getMessage(),
-                 endsWith(format("Found a possible infinite recursion involving flow named %s", offendingFlowName)));
-    }
-  }
-
   @Test
   public void tripleCrossedRecursiveSubFlow() throws Exception {
     testRecursiveFlowrefsAreDetectedFor("tripleCrossedRecursiveSubflow", "tripleRecurse1");
@@ -320,6 +307,20 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
     probe(RECEIVE_TIMEOUT, 50, () -> awaiting.get() >= 1);
     assertThat(httpClient.send(request).getStatusCode(), is(SERVICE_UNAVAILABLE.getStatusCode()));
   }
+
+  private void testRecursiveFlowrefsAreDetectedFor(String callingFlowName, String offendingFlowName) {
+    try {
+      // This will attempt to start the flow. That's the moment the subscription is triggered from downstream, and that's where
+      // the inter-flow-ref cycle is checked.
+      flowRunner(callingFlowName);
+      fail();
+    } catch (Exception e) {
+      Throwable rootCause = getRootCause(e);
+      assertThat(rootCause.getMessage(),
+                 endsWith(format("Found a possible infinite recursion involving flow named %s", offendingFlowName)));
+    }
+  }
+
 
   private static CountDownLatch latch;
   private static AtomicInteger awaiting = new AtomicInteger();
