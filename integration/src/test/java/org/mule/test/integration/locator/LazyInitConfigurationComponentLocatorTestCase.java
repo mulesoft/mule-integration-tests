@@ -32,6 +32,7 @@ import org.mule.runtime.api.component.Component;
 import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.api.component.location.Location;
 import org.mule.runtime.config.api.LazyComponentInitializer;
+import org.mule.runtime.config.internal.LazyComponentInitializerAdapter;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.runtime.core.api.config.MuleConfiguration;
 import org.mule.runtime.core.api.security.SecurityManager;
@@ -68,7 +69,7 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
 
   @Inject
   @Named(value = LAZY_COMPONENT_INITIALIZER_SERVICE_KEY)
-  private LazyComponentInitializer lazyComponentInitializer;
+  private LazyComponentInitializerAdapter lazyComponentInitializer;
 
   @Override
   protected String[] getConfigFiles() {
@@ -171,6 +172,23 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
   }
 
   @Test
+  public void shouldCreateBeansForSameLocationRequestIfDifferentPhaseApplied() {
+    CustomTestComponent.statesByInstances.clear();
+
+    Location location = builderFromStringRepresentation("untilSuccessfulFlow").build();
+    lazyComponentInitializer.initializeComponent(location, false);
+    lazyComponentInitializer.initializeComponent(location, true);
+
+    // force dispose to check that components from sub-flow are disposed
+    muleContext.dispose();
+    assertThat(CustomTestComponent.statesByInstances.toString(),
+               CustomTestComponent.statesByInstances.size(), is(2));
+    assertThat(CustomTestComponent.statesByInstances.toString(),
+               CustomTestComponent.statesByInstances.values(),
+               containsInAnyOrder("initialized_started_stopped_disposed", "initialized_started_stopped_disposed"));
+  }
+
+  @Test
   public void shouldNotCreateBeansForSameLocationFilterRequest() {
     CustomTestComponent.statesByInstances.clear();
 
@@ -184,6 +202,22 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
     assertThat(CustomTestComponent.statesByInstances.size(), is(1));
     assertThat(CustomTestComponent.statesByInstances.values(),
                containsInAnyOrder("initialized_started_stopped_disposed"));
+  }
+
+  @Test
+  public void shouldCreateBeansForSameLocationFilterRequestIfDifferentPhaseApplied() {
+    CustomTestComponent.statesByInstances.clear();
+
+    LazyComponentInitializer.ComponentLocationFilter componentLocationFilter =
+        componentLocation -> componentLocation.getLocation().equals("untilSuccessfulFlow");
+    lazyComponentInitializer.initializeComponents(componentLocationFilter, true);
+    lazyComponentInitializer.initializeComponents(componentLocationFilter, false);
+
+    // force dispose to check that components from sub-flow are disposed
+    muleContext.dispose();
+    assertThat(CustomTestComponent.statesByInstances.size(), is(2));
+    assertThat(CustomTestComponent.statesByInstances.values(),
+               containsInAnyOrder("initialized_started_stopped_disposed", "initialized_started_stopped_disposed"));
   }
 
   @Description("Lazy init should not create components until an operation is done")
