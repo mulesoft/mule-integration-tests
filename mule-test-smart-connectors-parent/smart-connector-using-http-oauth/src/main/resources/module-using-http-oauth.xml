@@ -40,10 +40,10 @@
 
     <operation name="get-channels" >
         <parameters>
-            <parameter name="max-return"                     type="number"
-                       use="OPTIONAL"                    doc:description="Maximum number of channels to return.  Max 200, default 20"/>
-            <parameter name="offset"                     type="number"
-                       use="OPTIONAL"                    doc:description="Integer offset for paging"/>
+            <parameter name="max-return" type="number"
+                       use="OPTIONAL"    doc:description="Maximum number of channels to return.  Max 200, default 20"/>
+            <parameter name="offset"     type="number"
+                       use="OPTIONAL"    doc:description="Integer offset for paging"/>
         </parameters>
         <body>
             <http:request config-ref="github-httpreq-config" path="/rest/asset/v1/channels.json" method="GET" >
