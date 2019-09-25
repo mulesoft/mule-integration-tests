@@ -150,7 +150,7 @@
             </otherwise>
         </choice>
         <error-handler>
-            <on-error-continue type="*:RETRY_EXHAUSTED, EXPRESSION">
+            <on-error-continue type="*:RETRY_EXHAUSTED, *:EXPRESSION">
                 <append-string-transformer message=" apt2"/>
             </on-error-continue>
             <on-error-continue type="ANY">
