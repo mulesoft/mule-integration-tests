@@ -313,7 +313,8 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
       // This will attempt to start the flow. That's the moment the subscription is triggered from downstream, and that's where
       // the inter-flow-ref cycle is checked.
       flowRunner(callingFlowName);
-      fail();
+      fail("Expected and error regarding a flowref cycle from " + callingFlowName + ", and with the offending flow being "
+          + offendingFlowName);
     } catch (Exception e) {
       Throwable rootCause = getRootCause(e);
       assertThat(rootCause.getMessage(),
