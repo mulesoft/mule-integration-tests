@@ -308,6 +308,11 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
     assertThat(httpClient.send(request).getStatusCode(), is(SERVICE_UNAVAILABLE.getStatusCode()));
   }
 
+  @Test
+  public void stoppedFlowWithStoppedFlowRefTargetAreStartedAndMessageIsProcessed() throws Exception {
+    flowRunner("flow1").run();
+  }
+
   private void testRecursiveFlowrefsAreDetectedFor(String callingFlowName, String offendingFlowName) {
     try {
       // This will attempt to start the flow. That's the moment the subscription is triggered from downstream, and that's where
