@@ -62,7 +62,7 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
   @Rule
   public DynamicPort listenPort = new DynamicPort("http.listener.port");
 
-  private static final int TOTAL_NUMBER_OF_LOCATIONS = 114;
+  private static final int TOTAL_NUMBER_OF_LOCATIONS = 106;
   @Inject
   private Registry registry;
 
@@ -201,21 +201,12 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
                                   "get-channels/processors/0/1",
                                   "get-channels/processors/1",
 
+                                  "sample-config",
                                   "GetChannels",
                                   "GetChannels/source",
                                   "GetChannels/source/0",
                                   "GetChannels/source/0/0",
                                   "GetChannels/processors/0",
-                                  // properties added by macroexpansion
-                                  "GetChannels/processors/0/0",
-                                  "GetChannels/processors/0/0/0",
-                                  "GetChannels/processors/0/0/1",
-                                  "GetChannels/processors/0/0/2",
-                                  "GetChannels/processors/0/0/3",
-                                  "GetChannels/processors/0/0/4",
-                                  "GetChannels/processors/0/0/5",
-                                  "GetChannels/processors/0/0/6",
-                                  "GetChannels/processors/0/0/7",
 
                                   "null",
                                   "null/0",
@@ -296,7 +287,7 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
       String location = componentLocation.getLocation();
       return location.equals("myFlow/source/0") || location.equals("myFlow/processors/2/processors/0");
     });
-    assertThat(muleContext.getConfigurationComponentLocator().findAllLocations(), hasSize(TOTAL_NUMBER_OF_LOCATIONS));
+    assertThat(locator.findAllLocations(), hasSize(TOTAL_NUMBER_OF_LOCATIONS));
 
     lazyComponentInitializer.initializeComponents(componentLocation -> {
       String location = componentLocation.getLocation();
@@ -486,11 +477,8 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
   public void findSubFlowComponents() {
     lazyComponentInitializer.initializeComponent(builder().globalName(MY_SUB_FLOW).addProcessorsPart().addIndexPart(0).build());
 
-    Optional<Component> componentOptional = muleContext.getConfigurationComponentLocator().find(
-                                                                                                Location.builder()
-                                                                                                    .globalName(MY_SUB_FLOW)
-                                                                                                    .addProcessorsPart()
-                                                                                                    .addIndexPart(0).build());
+    Optional<Component> componentOptional =
+        locator.find(Location.builder().globalName(MY_SUB_FLOW).addProcessorsPart().addIndexPart(0).build());
     assertThat(componentOptional.isPresent(), is(true));
   }
 
@@ -502,18 +490,12 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
       return location.equals(MY_SUB_FLOW) || location.equals(FLOW_WITH_SUBFLOW);
     });
 
-    Optional<Component> componentOptional = muleContext.getConfigurationComponentLocator().find(
-                                                                                                Location.builder()
-                                                                                                    .globalName(MY_SUB_FLOW)
-                                                                                                    .addProcessorsPart()
-                                                                                                    .addIndexPart(0).build());
+    Optional<Component> componentOptional =
+        locator.find(Location.builder().globalName(MY_SUB_FLOW).addProcessorsPart().addIndexPart(0).build());
     assertThat(componentOptional.isPresent(), is(true));
 
-    componentOptional = muleContext.getConfigurationComponentLocator().find(
-                                                                            Location.builder()
-                                                                                .globalName(FLOW_WITH_SUBFLOW)
-                                                                                .addProcessorsPart()
-                                                                                .addIndexPart(0).build());
+    componentOptional =
+        locator.find(Location.builder().globalName(FLOW_WITH_SUBFLOW).addProcessorsPart().addIndexPart(0).build());
     assertThat(componentOptional.isPresent(), is(true));
   }
 

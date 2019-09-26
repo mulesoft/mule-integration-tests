@@ -8,7 +8,8 @@
     <module-using-http-oauth:config name="sample-config"
                                     property_basePath="/"
                                     property_clientId="clientId"
-                                    property_clientSecret="secret" property_host="api.github.com"
+                                    property_clientSecret="secret"
+                                    property_host="api.github.com"
                                     property_accessTokenUrl="http://api.github.com/identity/oauth/token" />
 
     <flow name="GetChannels" >
