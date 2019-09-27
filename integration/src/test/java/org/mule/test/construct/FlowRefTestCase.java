@@ -310,7 +310,7 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void stoppedFlowWithStoppedFlowRefTargetAreStartedAndMessageIsProcessed() throws Exception {
-    flowRunner("flow1").run();
+    flowRunner("stoppedTargetFlow1").run();
   }
 
   private void testRecursiveFlowrefsAreDetectedFor(String callingFlowName, String offendingFlowName) {
