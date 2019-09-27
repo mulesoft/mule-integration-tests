@@ -310,7 +310,9 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void stoppedFlowWithStoppedFlowRefTargetAreStartedAndMessageIsProcessed() throws Exception {
-    flowRunner("stoppedTargetFlow1").run();
+    // When the target flow is stopped regular flow, it should be started from the flow-ref lifecycle method.
+    CoreEvent responseEvent = flowRunner("stoppedTargetFlow1").run();
+    assertThat(getPayloadAsString(responseEvent.getMessage()), is("holis perre"));
   }
 
   private void testRecursiveFlowrefsAreDetectedFor(String callingFlowName, String offendingFlowName) {
