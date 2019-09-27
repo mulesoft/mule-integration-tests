@@ -17,6 +17,7 @@ import static org.mule.runtime.core.api.processor.ReactiveProcessor.ProcessingTy
 import static org.mule.runtime.core.privileged.registry.LegacyRegistryUtils.registerObject;
 import static org.openjdk.jmh.annotations.Scope.Benchmark;
 import static org.openjdk.jmh.infra.Blackhole.consumeCPU;
+
 import org.mule.AbstractBenchmark;
 import org.mule.runtime.api.el.DefaultExpressionLanguageFactoryService;
 import org.mule.runtime.api.exception.MuleException;
@@ -32,7 +33,7 @@ import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.processor.strategy.ProcessingStrategyFactory;
 import org.mule.runtime.core.internal.config.builders.DefaultsConfigurationBuilder;
-import org.mule.runtime.core.internal.processor.strategy.ReactorStreamProcessingStrategyFactory;
+import org.mule.runtime.core.internal.processor.strategy.AbstractStreamProcessingStrategyFactory;
 import org.mule.service.scheduler.internal.DefaultSchedulerService;
 import org.mule.tck.TriggerableMessageSource;
 import org.mule.weave.v2.el.WeaveDefaultExpressionLanguageFactoryService;
@@ -245,9 +246,9 @@ public abstract class AbstractFlowBenchmark extends AbstractBenchmark {
     muleContext.start();
 
     ProcessingStrategyFactory factory = (ProcessingStrategyFactory) forName(processingStrategyFactory).newInstance();
-    if (factory instanceof ReactorStreamProcessingStrategyFactory) {
-      ((ReactorStreamProcessingStrategyFactory) factory).setBufferSize(bufferSize);
-      ((ReactorStreamProcessingStrategyFactory) factory).setSubscriberCount(subscribers);
+    if (factory instanceof AbstractStreamProcessingStrategyFactory) {
+      ((AbstractStreamProcessingStrategyFactory) factory).setBufferSize(bufferSize);
+      ((AbstractStreamProcessingStrategyFactory) factory).setSubscriberCount(subscribers);
     }
 
 

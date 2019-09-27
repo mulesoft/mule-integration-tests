@@ -11,7 +11,7 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import org.mule.AbstractBenchmarkAssertionTestCase;
 import org.mule.runtime.core.internal.processor.strategy.BlockingProcessingStrategyFactory;
-import org.mule.runtime.core.internal.processor.strategy.TransactionAwareWorkQueueProcessingStrategyFactory;
+import org.mule.runtime.core.internal.processor.strategy.TransactionAwareProactorStreamEmitterProcessingStrategyFactory;
 
 import org.junit.Test;
 
@@ -24,7 +24,8 @@ public class FlowProcessBenchmarkAssertionTestCase extends AbstractBenchmarkAsse
     runAndAssertBenchmark(FlowNullProcessorBenchmark.class, "processSourceStream", 1,
                           singletonMap(PROCESSING_STRATEGY_PARAM,
                                        new String[] {
-                                           TransactionAwareWorkQueueProcessingStrategyFactory.class.getCanonicalName()}),
+                                           TransactionAwareProactorStreamEmitterProcessingStrategyFactory.class
+                                               .getCanonicalName()}),
                           9, MILLISECONDS, 7800000);
   }
 
