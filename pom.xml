@@ -47,7 +47,7 @@
     <muleFtpConnectorTestVersion>2.0.0-SNAPSHOT</muleFtpConnectorTestVersion>
     <muleJmsConnectorTestVersion>1.6.0</muleJmsConnectorTestVersion>
     <muleWscConnectorTestVersion>1.4.1</muleWscConnectorTestVersion>
-    <muleOauthModuleTestVersion>1.1.9</muleOauthModuleTestVersion>
+    <muleOauthModuleTestVersion>1.2.0-SNAPSHOT</muleOauthModuleTestVersion>
     <muleSocketsConnectorTestVersion>1.2.0-SNAPSHOT</muleSocketsConnectorTestVersion>
 
     <munitExtensionsMavenPlugin>1.0.0-BETA2</munitExtensionsMavenPlugin>
