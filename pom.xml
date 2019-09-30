@@ -33,7 +33,7 @@
     <muleExtensionTestSoapTestVersion>1.2.0</muleExtensionTestSoapTestVersion>
 
     <muleSpringModuleTestVersion>1.4.0-SNAPSHOT</muleSpringModuleTestVersion>
-    <muleValidationModuleTestVersion>1.5.0-SNAPSHOT</muleValidationModuleTestVersion>
+    <muleValidationModuleTestVersion>1.4.0</muleValidationModuleTestVersion>
     <muleScriptingModuleTestVersion>1.2.0-SNAPSHOT</muleScriptingModuleTestVersion>
     <muleFileCommonsTestVersion>1.3.1</muleFileCommonsTestVersion>
 
