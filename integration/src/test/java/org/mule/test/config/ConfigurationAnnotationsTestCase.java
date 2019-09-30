@@ -6,12 +6,13 @@
  */
 package org.mule.test.config;
 
-
 import static java.lang.System.lineSeparator;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
+import static org.mule.runtime.api.component.Component.NS_MULE_DOCUMENTATION;
+import static org.mule.runtime.api.component.Component.Annotations.NAME_ANNOTATION_KEY;
 import static org.mule.runtime.api.util.ComponentLocationProvider.getSourceCode;
 
 import org.mule.runtime.api.component.Component;
@@ -21,9 +22,9 @@ import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.transformer.Transformer;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import org.junit.Test;
-
 import javax.xml.namespace.QName;
+
+import org.junit.Test;
 
 /**
  * Test that configuration-based annotations are propagated to the appropriate runtime objects
@@ -105,12 +106,12 @@ public class ConfigurationAnnotationsTestCase extends AbstractIntegrationTestCas
   }
 
   protected String getDocName(Object obj) {
-    return (String) ((Component) obj).getAnnotation(Component.Annotations.NAME_ANNOTATION_KEY);
+    return (String) ((Component) obj).getAnnotation(NAME_ANNOTATION_KEY);
   }
 
   protected String getDocDescription(Object obj) {
     return (String) ((Component) obj)
-        .getAnnotation(new QName("http://www.mulesoft.org/schema/mule/documentation", "description"));
+        .getAnnotation(new QName(NS_MULE_DOCUMENTATION, "description"));
   }
 
 }

@@ -12,6 +12,7 @@ import static java.util.concurrent.TimeUnit.MINUTES;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
+import static org.mule.runtime.api.component.Component.NS_MULE_DOCUMENTATION;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 import static org.mule.runtime.api.meta.model.parameter.ParameterGroupModel.CONNECTION;
 import static org.mule.runtime.app.declaration.api.fluent.ElementDeclarer.newArtifact;
@@ -45,6 +46,7 @@ import static org.mule.runtime.extension.api.declaration.type.RedeliveryPolicyTy
 import static org.mule.runtime.extension.api.declaration.type.StreamingStrategyTypeBuilder.REPEATABLE_IN_MEMORY_BYTES_STREAM_ALIAS;
 import static org.mule.test.module.extension.internal.util.ExtensionsTestUtils.compareXML;
 import static org.skyscreamer.jsonassert.JSONCompareMode.NON_EXTENSIBLE;
+
 import org.mule.extensions.jms.api.connection.caching.NoCachingConfiguration;
 import org.mule.runtime.api.app.declaration.serialization.ArtifactDeclarationJsonSerializer;
 import org.mule.runtime.api.exception.MuleException;
@@ -61,9 +63,6 @@ import org.mule.runtime.core.api.retry.policy.RetryPolicyExhaustedException;
 import org.mule.runtime.extension.api.runtime.ExpirationPolicy;
 import org.mule.test.runner.RunnerDelegateTo;
 
-import com.google.gson.JsonParser;
-import com.google.gson.stream.JsonReader;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -74,6 +73,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
 import org.skyscreamer.jsonassert.JSONAssert;
+
+import com.google.gson.JsonParser;
+import com.google.gson.stream.JsonReader;
 
 @RunnerDelegateTo(Parameterized.class)
 public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelTestCase {
@@ -260,7 +262,7 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
     ElementDeclarer os = ElementDeclarer.forExtension("ObjectStore");
 
     return newArtifact()
-        .withCustomParameter("xmlns:doc", "http://www.mulesoft.org/schema/mule/documentation")
+        .withCustomParameter("xmlns:doc", NS_MULE_DOCUMENTATION)
         .withGlobalElement(core.newConstruct("configuration")
             .withParameterGroup(group -> group.withParameter("defaultErrorHandler-ref",
                                                              createStringParameter("referableHandler")))
