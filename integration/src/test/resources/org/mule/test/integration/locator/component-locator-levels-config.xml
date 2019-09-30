@@ -18,8 +18,10 @@
         <tls:trust-store path="trustStore" password="mulepassword"/>
     </tls:context>
 
+    <http:proxy name="anonymousProxyConfig" host="localhost" port="${http.proxy.port}" />
+
     <http:request-config name="requestConfig">
-        <http:request-connection host="localhost" port="8081" protocol="HTTPS" tlsContext="tlsContextRef"/>
+        <http:request-connection host="localhost" port="8081" protocol="HTTPS" tlsContext="tlsContextRef" proxyConfig="anonymousProxyConfig"/>
     </http:request-config>
 
     <flow name="flowLvl0">
