@@ -11,7 +11,9 @@ import static java.lang.String.format;
 import static java.util.Collections.synchronizedList;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static java.util.stream.Collectors.toList;
+import static org.apache.logging.log4j.core.util.Throwables.getRootCause;
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.endsWith;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.hasSize;
@@ -19,6 +21,7 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import static org.mule.functional.api.exception.ExpectedError.none;
 import static org.mule.functional.junit4.matchers.ThrowableMessageMatcher.hasMessage;
 import static org.mule.runtime.api.notification.MessageProcessorNotification.MESSAGE_PROCESSOR_POST_INVOKE;
@@ -28,7 +31,6 @@ import static org.mule.runtime.core.api.exception.Errors.Identifiers.ROUTING_ERR
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.SERVICE_UNAVAILABLE;
 import static org.mule.runtime.http.api.HttpConstants.Method.GET;
 import static org.mule.tck.probe.PollingProber.probe;
-
 import org.mule.functional.api.component.EventCallback;
 import org.mule.functional.api.exception.ExpectedError;
 import org.mule.runtime.api.message.Message;
@@ -41,6 +43,7 @@ import org.mule.runtime.http.api.client.HttpRequestOptions;
 import org.mule.runtime.http.api.domain.message.request.HttpRequest;
 import org.mule.runtime.http.api.domain.message.response.HttpResponse;
 import org.mule.service.http.TestHttpClient;
+import org.mule.tck.junit4.matcher.ErrorTypeMatcher;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -51,13 +54,12 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.qameta.allure.Issue;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
-
-import io.qameta.allure.Issue;
 
 public class FlowRefTestCase extends AbstractIntegrationTestCase {
 
@@ -207,7 +209,17 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void recursiveSubFlow() throws Exception {
-    flowRunner("recursiveSubFlowCaller").runExpectingException(hasMessage(containsString(CONTEXT_DEPTH_MESSAGE)));
+    testRecursiveFlowrefsAreDetectedFor("recursiveSubFlowCaller", "recursiveSubFlow");
+  }
+
+  @Test
+  public void crossedRecursiveSubFlow() {
+    testRecursiveFlowrefsAreDetectedFor("crossedRecursiveSubflow", "recurse1");
+  }
+
+  @Test
+  public void tripleCrossedRecursiveSubFlow() throws Exception {
+    testRecursiveFlowrefsAreDetectedFor("tripleCrossedRecursiveSubflow", "tripleRecurse1");
   }
 
   @Test
@@ -295,6 +307,26 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
     probe(RECEIVE_TIMEOUT, 50, () -> awaiting.get() >= 1);
     assertThat(httpClient.send(request).getStatusCode(), is(SERVICE_UNAVAILABLE.getStatusCode()));
   }
+
+  @Test
+  public void flowWithStoppedTargetFlowFailsToProcess() throws Exception {
+    flowRunner("stoppedTargetFlow1").runExpectingException(ErrorTypeMatcher.errorType("MULE", "UNKNOWN"));
+  }
+
+  private void testRecursiveFlowrefsAreDetectedFor(String callingFlowName, String offendingFlowName) {
+    try {
+      // This will attempt to start the flow. That's the moment the subscription is triggered from downstream, and that's where
+      // the inter-flow-ref cycle is checked.
+      flowRunner(callingFlowName);
+      fail("Expected and error regarding a flowref cycle from " + callingFlowName + ", and with the offending flow being "
+          + offendingFlowName);
+    } catch (Exception e) {
+      Throwable rootCause = getRootCause(e);
+      assertThat(rootCause.getMessage(),
+                 endsWith(format("Found a possible infinite recursion involving flow named %s", offendingFlowName)));
+    }
+  }
+
 
   private static CountDownLatch latch;
   private static AtomicInteger awaiting = new AtomicInteger();
