@@ -106,6 +106,26 @@ public class OnErrorPropagateTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
+  public void typeMatchNameWildcard() throws Exception {
+    verifyFlow("onErrorPropagateTypeMatchNameWildcard", true);
+    Event anyPath = queueHandler.read("any", RECEIVE_TIMEOUT);
+    assertThat(anyPath, is(nullValue()));
+    verifyFlow("onErrorPropagateTypeMatchNameWildcard", false);
+    anyPath = queueHandler.read("any", RECEIVE_TIMEOUT);
+    assertThat(anyPath, is(nullValue()));
+  }
+
+  @Test
+  public void typeMatchNamespaceWildcard() throws Exception {
+    verifyFlow("onErrorPropagateTypeMatchNamespaceWildcard", true);
+    Event anyPath = queueHandler.read("any", RECEIVE_TIMEOUT);
+    assertThat(anyPath, is(nullValue()));
+    verifyFlow("onErrorPropagateTypeMatchNamespaceWildcard", false);
+    anyPath = queueHandler.read("any", RECEIVE_TIMEOUT);
+    assertThat(anyPath, is(nullValue()));
+  }
+
+  @Test
   public void propagateErrorAndMessage() throws Exception {
     expectedError.expectCause(withClassName("org.mule.runtime.api.exception.DefaultMuleException"));
     Matcher hasEntry =
