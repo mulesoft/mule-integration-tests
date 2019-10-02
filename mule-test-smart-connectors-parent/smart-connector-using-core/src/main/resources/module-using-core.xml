@@ -16,6 +16,9 @@
         <body>
             <mule:set-payload value="Wubba Lubba Dub Dub" mimeType="text/plain" encoding="UTF-8"/>
         </body>
+        <parameters>
+            <parameter name="nameSetPayload" type="string" defaultValue="myParameterValue"/>
+        </parameters>
         <output type="string" doc:description="Payload's output"/>
     </operation>
 
