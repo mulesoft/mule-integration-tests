@@ -102,7 +102,7 @@
     </flow>
 
     <flow name="scOperation">
-        <sc:set-payload-hardcoded />
+        <sc:set-payload-hardcoded nameSetPayload="scOp1"/>
     </flow>
 
     <flow name="scOperationInsideSubFlow">
