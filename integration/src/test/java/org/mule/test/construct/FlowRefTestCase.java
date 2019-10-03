@@ -231,17 +231,17 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void recursiveSubFlow() throws Exception {
-    testRecursiveFlowrefsAreDetectedFor("recursiveSubFlowCaller", "recursiveSubFlow");
+    flowRunner("recursiveSubFlowCaller").runExpectingException(hasMessage(containsString(CONTEXT_DEPTH_MESSAGE)));
   }
 
   @Test
-  public void crossedRecursiveSubFlow() {
-    testRecursiveFlowrefsAreDetectedFor("crossedRecursiveSubflow", "recurse1");
+  public void crossedRecursiveSubFlow() throws Exception {
+    flowRunner("crossedRecursiveSubflow").runExpectingException(hasMessage(containsString(CONTEXT_DEPTH_MESSAGE)));
   }
 
   @Test
   public void tripleCrossedRecursiveSubFlow() throws Exception {
-    testRecursiveFlowrefsAreDetectedFor("tripleCrossedRecursiveSubflow", "tripleRecurse1");
+    flowRunner("tripleCrossedRecursiveSubflow").runExpectingException(hasMessage(containsString(CONTEXT_DEPTH_MESSAGE)));
   }
 
   @Test
