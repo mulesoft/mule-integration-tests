@@ -44,7 +44,6 @@ import org.mule.runtime.http.api.client.HttpRequestOptions;
 import org.mule.runtime.http.api.domain.message.request.HttpRequest;
 import org.mule.runtime.http.api.domain.message.response.HttpResponse;
 import org.mule.service.http.TestHttpClient;
-import org.mule.tck.junit4.matcher.ErrorTypeMatcher;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -310,8 +309,10 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  public void flowWithStoppedTargetFlowFailsToProcess() throws Exception {
-    flowRunner("stoppedTargetFlow1").runExpectingException(ErrorTypeMatcher.errorType("MULE", "UNKNOWN"));
+  public void stoppedFlowWithStoppedFlowRefTargetAreStartedAndMessageIsProcessed() throws Exception {
+    // When the target flow is stopped regular flow, it should be started from the flow-ref lifecycle method.
+    CoreEvent responseEvent = flowRunner("stoppedTargetFlow1").run();
+    assertThat(getPayloadAsString(responseEvent.getMessage()), is("holis perre"));
   }
 
   private void testRecursiveFlowrefsAreDetectedFor(String callingFlowName, String offendingFlowName) {
