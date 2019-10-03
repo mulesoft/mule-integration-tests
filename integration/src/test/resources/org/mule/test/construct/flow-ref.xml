@@ -210,13 +210,4 @@
         <flow-ref name="tripleRecurse1"/>
     </sub-flow>
 
-    <flow name="stoppedTargetFlow1" initialState="stopped">
-        <flow-ref name="flow2"/>
-        <set-payload value="#[payload ++ 'perre']"></set-payload>
-    </flow>
-
-    <flow name="stoppedTargetFlow2" initialState="stopped">
-        <set-payload value="holis"></set-payload>
-    </flow>
-
 </mule>
