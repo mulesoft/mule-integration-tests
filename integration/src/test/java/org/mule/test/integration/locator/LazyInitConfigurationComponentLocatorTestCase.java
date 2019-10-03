@@ -9,6 +9,7 @@ package org.mule.test.integration.locator;
 import static java.util.Optional.empty;
 import static java.util.stream.Collectors.toList;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
@@ -31,6 +32,7 @@ import org.mule.runtime.api.component.Component;
 import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.api.component.location.Location;
 import org.mule.runtime.config.api.LazyComponentInitializer;
+import org.mule.runtime.config.internal.LazyComponentInitializerAdapter;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.runtime.core.api.config.MuleConfiguration;
 import org.mule.runtime.core.api.security.SecurityManager;
@@ -44,13 +46,12 @@ import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.apache.commons.lang3.reflect.FieldUtils;
-import org.junit.Rule;
-import org.junit.Test;
-
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
+import org.apache.commons.lang3.reflect.FieldUtils;
+import org.junit.Rule;
+import org.junit.Test;
 
 @Feature(CONFIGURATION_COMPONENT_LOCATOR)
 @Story(SEARCH_CONFIGURATION)
@@ -64,13 +65,13 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
   @Rule
   public DynamicPort proxyPort = new DynamicPort("http.proxy.port");
 
-  private static final int TOTAL_NUMBER_OF_LOCATIONS = 107;
+  private static final int TOTAL_NUMBER_OF_LOCATIONS = 113;
   @Inject
   private Registry registry;
 
   @Inject
   @Named(value = LAZY_COMPONENT_INITIALIZER_SERVICE_KEY)
-  private LazyComponentInitializer lazyComponentInitializer;
+  private LazyComponentInitializerAdapter lazyComponentInitializer;
 
   @Override
   protected String[] getConfigFiles() {
@@ -117,7 +118,71 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
     lazyComponentInitializer
         .initializeComponents(componentLocation -> componentLocation.getLocation().equals("untilSuccessfulFlow"));
     lazyComponentInitializer
-        .initializeComponents(componentLocation -> componentLocation.getLocation().equals("untilSuccessfulFlow"));
+        .initializeComponents(componentLocation -> componentLocation.getLocation().equals("untilSuccessfulFlowCopy"));
+
+    // force dispose to check that components from sub-flow are disposed
+    muleContext.dispose();
+    assertThat(CustomTestComponent.statesByInstances.size(), is(2));
+    assertThat(CustomTestComponent.statesByInstances.values(),
+               containsInAnyOrder("initialized_started_stopped_disposed", "initialized_started_stopped_disposed"));
+  }
+
+  @Test
+  public void lazyMuleContextInitializeMultipleTimesProcessor() {
+    CustomTestComponent.statesByInstances.clear();
+
+    Location multipleInitiailizeProcessor1 =
+        builder().globalName("multipleInitialize").addProcessorsPart().addIndexPart(0).build();
+    Location multipleInitiailizeProcessor2 =
+        builder().globalName("multipleInitialize").addProcessorsPart().addIndexPart(1).build();
+
+    lazyComponentInitializer.initializeComponent(multipleInitiailizeProcessor1);
+    assertThat(locator.find(multipleInitiailizeProcessor1), not(empty()));
+    assertThat(locator.find(multipleInitiailizeProcessor2), is(empty()));
+
+    MuleConfiguration configuration = registry.lookupByType(MuleConfiguration.class)
+        .orElseThrow(() -> new AssertionError("Missing MuleConfiguration from registry"));
+
+    lazyComponentInitializer.initializeComponent(multipleInitiailizeProcessor2);
+    assertThat(locator.find(multipleInitiailizeProcessor1), is(empty()));
+    assertThat(locator.find(multipleInitiailizeProcessor2), not(empty()));
+
+    MuleConfiguration afterNextInitConfiguration = registry.lookupByType(MuleConfiguration.class)
+        .orElseThrow(() -> new AssertionError("Missing MuleConfiguration from registry"));
+
+    // Cannot do more than testing that both are the same instances and equals
+    assertThat(configuration, sameInstance(afterNextInitConfiguration));
+    assertThat(configuration, equalTo(afterNextInitConfiguration));
+
+    // force dispose to check that components from sub-flow are disposed
+    muleContext.dispose();
+    assertThat(CustomTestComponent.statesByInstances.size(), is(2));
+    assertThat(CustomTestComponent.statesByInstances.values(),
+               containsInAnyOrder("initialized_started_stopped_disposed", "initialized_started_stopped_disposed"));
+  }
+
+  @Test
+  public void shouldNotCreateBeansForSameLocationRequest() {
+    CustomTestComponent.statesByInstances.clear();
+
+    Location location = builderFromStringRepresentation("untilSuccessfulFlow").build();
+    lazyComponentInitializer.initializeComponent(location);
+    lazyComponentInitializer.initializeComponent(location);
+
+    // force dispose to check that components from sub-flow are disposed
+    muleContext.dispose();
+    assertThat(CustomTestComponent.statesByInstances.size(), is(1));
+    assertThat(CustomTestComponent.statesByInstances.values(),
+               containsInAnyOrder("initialized_started_stopped_disposed"));
+  }
+
+  @Test
+  public void shouldCreateBeansForSameLocationRequestIfDifferentPhaseApplied() {
+    CustomTestComponent.statesByInstances.clear();
+
+    Location location = builderFromStringRepresentation("untilSuccessfulFlow").build();
+    lazyComponentInitializer.initializeComponent(location, false);
+    lazyComponentInitializer.initializeComponent(location, true);
 
     // force dispose to check that components from sub-flow are disposed
     muleContext.dispose();
@@ -127,6 +192,39 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
                CustomTestComponent.statesByInstances.values(),
                containsInAnyOrder("initialized_started_stopped_disposed", "initialized_started_stopped_disposed"));
   }
+
+  @Test
+  public void shouldNotCreateBeansForSameLocationFilterRequest() {
+    CustomTestComponent.statesByInstances.clear();
+
+    LazyComponentInitializer.ComponentLocationFilter componentLocationFilter =
+        componentLocation -> componentLocation.getLocation().equals("untilSuccessfulFlow");
+    lazyComponentInitializer.initializeComponents(componentLocationFilter);
+    lazyComponentInitializer.initializeComponents(componentLocationFilter);
+
+    // force dispose to check that components from sub-flow are disposed
+    muleContext.dispose();
+    assertThat(CustomTestComponent.statesByInstances.size(), is(1));
+    assertThat(CustomTestComponent.statesByInstances.values(),
+               containsInAnyOrder("initialized_started_stopped_disposed"));
+  }
+
+  @Test
+  public void shouldCreateBeansForSameLocationFilterRequestIfDifferentPhaseApplied() {
+    CustomTestComponent.statesByInstances.clear();
+
+    LazyComponentInitializer.ComponentLocationFilter componentLocationFilter =
+        componentLocation -> componentLocation.getLocation().equals("untilSuccessfulFlow");
+    lazyComponentInitializer.initializeComponents(componentLocationFilter, true);
+    lazyComponentInitializer.initializeComponents(componentLocationFilter, false);
+
+    // force dispose to check that components from sub-flow are disposed
+    muleContext.dispose();
+    assertThat(CustomTestComponent.statesByInstances.size(), is(2));
+    assertThat(CustomTestComponent.statesByInstances.values(),
+               containsInAnyOrder("initialized_started_stopped_disposed", "initialized_started_stopped_disposed"));
+  }
+
 
   @Description("Lazy init should not create components until an operation is done")
   @Test
@@ -252,6 +350,14 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
                                   "untilSuccessfulFlow",
                                   "untilSuccessfulFlow/processors/0",
                                   "untilSuccessfulFlow/processors/0/processors/0",
+
+                                  "untilSuccessfulFlowCopy",
+                                  "untilSuccessfulFlowCopy/processors/0",
+                                  "untilSuccessfulFlowCopy/processors/0/processors/0",
+
+                                  "multipleInitialize",
+                                  "multipleInitialize/processors/0",
+                                  "multipleInitialize/processors/1",
 
                                   "async-flow",
                                   "async-flow/processors/0",
