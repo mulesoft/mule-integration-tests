@@ -424,7 +424,12 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
     assertThat(interceptionParameters, hasSize(2));
 
+    InterceptionParameters moduleOperationChain = interceptionParameters.get(0);
     InterceptionParameters setPayloadOperation = interceptionParameters.get(1);
+
+    assertThat(moduleOperationChain.getParameters().keySet(), containsInAnyOrder("targetValue", "echoMessage"));
+    assertThat(moduleOperationChain.getParameters().get("targetValue").resolveValue(), is(nullValue()));
+    assertThat(moduleOperationChain.getParameters().get("echoMessage").resolveValue(), is("echo message for the win"));
 
     assertThat(setPayloadOperation.getParameters().keySet(), containsInAnyOrder("value", "mimeType", "encoding"));
     assertThat(setPayloadOperation.getParameters().get("value").providedValue(), is("#[vars.echoMessage]"));
@@ -443,10 +448,15 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     assertThat(interceptionParameters, hasSize(3));
 
     InterceptionParameters flowRef = interceptionParameters.get(0);
+    InterceptionParameters moduleOperationChain = interceptionParameters.get(1);
     InterceptionParameters setPayloadOperation = interceptionParameters.get(2);
 
     assertThat(flowRef.getParameters().keySet(), containsInAnyOrder("name", "targetValue"));
     assertThat(flowRef.getParameters().get("name").resolveValue(), is("scEchoOperation"));
+
+    assertThat(moduleOperationChain.getParameters().keySet(), containsInAnyOrder("targetValue", "echoMessage"));
+    assertThat(moduleOperationChain.getParameters().get("targetValue").resolveValue(), is(nullValue()));
+    assertThat(moduleOperationChain.getParameters().get("echoMessage").resolveValue(), is("echo message for the win"));
 
     assertThat(setPayloadOperation.getParameters().keySet(), containsInAnyOrder("value", "mimeType", "encoding"));
     assertThat(setPayloadOperation.getParameters().get("value").providedValue(), is("#[vars.echoMessage]"));
@@ -464,9 +474,15 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     assertThat(interceptionParameters, hasSize(3));
 
     InterceptionParameters proxyModuleOperationChain = interceptionParameters.get(0);
+    InterceptionParameters innerModuleOperationChain = interceptionParameters.get(1);
     InterceptionParameters setPayloadOperation = interceptionParameters.get(2);
 
     assertThat(proxyModuleOperationChain.getParameters().keySet(), containsInAnyOrder("targetValue"));
+
+
+    assertThat(innerModuleOperationChain.getParameters().keySet(), containsInAnyOrder("targetValue", "nameSetPayload"));
+    assertThat(innerModuleOperationChain.getParameters().get("nameSetPayload").resolveValue(), is("myParameterValue"));
+    assertThat(innerModuleOperationChain.getParameters().get("targetValue").resolveValue(), is(nullValue()));
 
     assertThat(setPayloadOperation.getParameters().keySet(), containsInAnyOrder("value", "mimeType", "encoding"));
     assertThat(setPayloadOperation.getParameters().get("value").resolveValue(), is("Wubba Lubba Dub Dub"));
