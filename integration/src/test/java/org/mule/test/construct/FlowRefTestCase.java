@@ -31,6 +31,7 @@ import static org.mule.runtime.core.api.exception.Errors.Identifiers.ROUTING_ERR
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.SERVICE_UNAVAILABLE;
 import static org.mule.runtime.http.api.HttpConstants.Method.GET;
 import static org.mule.tck.probe.PollingProber.probe;
+
 import org.mule.functional.api.component.EventCallback;
 import org.mule.functional.api.exception.ExpectedError;
 import org.mule.runtime.api.component.AbstractComponent;
@@ -55,12 +56,13 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.qameta.allure.Issue;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
+
+import io.qameta.allure.Issue;
 
 public class FlowRefTestCase extends AbstractIntegrationTestCase {
 
@@ -210,17 +212,17 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void recursiveSubFlow() throws Exception {
-    testRecursiveFlowrefsAreDetectedFor("recursiveSubFlowCaller", "recursiveSubFlow");
+    flowRunner("recursiveSubFlowCaller").runExpectingException(hasMessage(containsString(CONTEXT_DEPTH_MESSAGE)));
   }
 
   @Test
-  public void crossedRecursiveSubFlow() {
-    testRecursiveFlowrefsAreDetectedFor("crossedRecursiveSubflow", "recurse1");
+  public void crossedRecursiveSubFlow() throws Exception {
+    flowRunner("crossedRecursiveSubflow").runExpectingException(hasMessage(containsString(CONTEXT_DEPTH_MESSAGE)));
   }
 
   @Test
   public void tripleCrossedRecursiveSubFlow() throws Exception {
-    testRecursiveFlowrefsAreDetectedFor("tripleCrossedRecursiveSubflow", "tripleRecurse1");
+    flowRunner("tripleCrossedRecursiveSubflow").runExpectingException(hasMessage(containsString(CONTEXT_DEPTH_MESSAGE)));
   }
 
   @Test
