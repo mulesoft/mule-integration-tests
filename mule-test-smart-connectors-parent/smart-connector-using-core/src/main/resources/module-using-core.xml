@@ -13,6 +13,9 @@
            http://www.mulesoft.org/schema/mule/module-using-core http://www.mulesoft.org/schema/mule/module-using-core/current/mule-module-using-core.xsd">
 
     <operation name="set-payload-hardcoded" doc:description="Sets the payload to the String value 'Wubba Lubba Dub Dub'">
+        <parameters>
+            <parameter name="nameSetPayload" type="string" defaultValue="myParameterValue"/>
+        </parameters>
         <body>
             <mule:set-payload value="Wubba Lubba Dub Dub" mimeType="text/plain" encoding="UTF-8"/>
         </body>
