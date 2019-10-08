@@ -27,6 +27,8 @@ import static org.mule.test.allure.AllureConstants.InterceptonApi.ComponentInter
 import static org.mule.test.allure.AllureConstants.InterceptonApi.INTERCEPTION_API;
 import static org.mule.test.heisenberg.extension.HeisenbergConnectionProvider.getActiveConnections;
 import static org.mule.test.heisenberg.extension.HeisenbergOperations.CALL_GUS_MESSAGE;
+
+import org.junit.Ignore;
 import org.mule.extension.http.api.request.validator.ResponseValidatorException;
 import org.mule.functional.api.exception.ExpectedError;
 import org.mule.functional.api.exception.FunctionalTestException;
@@ -391,6 +393,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
   @Description("Smart Connector inside a scatter-gather declares a simple operation without parameters")
   @Issue("MULE-16285")
   @Test
+  @Ignore("MULE-17570")
   public void flowWithScatterGather() throws Exception {
     flowRunner("flowWithScatterGather").run();
 
