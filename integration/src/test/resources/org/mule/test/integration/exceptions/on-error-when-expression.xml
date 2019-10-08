@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xsi:schemaLocation="
+       http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+       http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+
+    <flow name="withType">
+        <raise-error type="APP:SOME"/>
+        <error-handler>
+            <on-error-continue type="APP:SOME">
+                <set-payload value="Correct"/>
+            </on-error-continue>
+            <on-error-continue>
+                <set-payload value="Incorrect"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="withIncorrectType">
+        <raise-error type="APP:SOME2"/>
+        <error-handler>
+            <on-error-continue type="APP:SOME">
+                <set-payload value="Incorrect"/>
+            </on-error-continue>
+            <on-error-continue>
+                <set-payload value="Correct"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="withWhen">
+        <set-variable variableName="var1" value="10"/>
+        <raise-error type="APP:SOME"/>
+        <error-handler>
+            <on-error-continue when="#[vars.var1 == 10]">
+                <set-payload value="Correct"/>
+            </on-error-continue>
+            <on-error-continue>
+                <set-payload value="Incorrect"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="withIncorrectWhen">
+        <set-variable variableName="var1" value="20"/>
+        <raise-error type="APP:SOME"/>
+        <error-handler>
+            <on-error-continue when="#[vars.var1 == 10]">
+                <set-payload value="Incorrect"/>
+            </on-error-continue>
+            <on-error-continue>
+                <set-payload value="Correct"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="withWhenAndType">
+        <set-variable variableName="var1" value="10"/>
+        <raise-error type="APP:SOME"/>
+        <error-handler>
+            <on-error-continue type="APP:SOME" when="#[vars.var1 == 10]">
+                <set-payload value="Correct"/>
+            </on-error-continue>
+            <on-error-continue>
+                <set-payload value="Incorrect"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="withCorrectWhenIncorrectType">
+        <set-variable variableName="var1" value="10"/>
+        <raise-error type="APP:SOME2"/>
+        <error-handler>
+            <on-error-continue type="APP:SOME" when="#[vars.var1 == 10]">
+                <set-payload value="Incorrect"/>
+            </on-error-continue>
+            <on-error-continue when="#[vars.var1 == 10]">
+                <set-payload value="Correct"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="withIncorrectWhenCorrectType">
+        <set-variable variableName="var1" value="20"/>
+        <raise-error type="APP:SOME"/>
+        <error-handler>
+            <on-error-continue type="APP:SOME" when="#[vars.var1 == 10]">
+                <set-payload value="Incorrect"/>
+            </on-error-continue>
+            <on-error-continue type="APP:SOME">
+                <set-payload value="Correct"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="withIncorrectWhenIncorrectType">
+        <set-variable variableName="var1" value="20"/>
+        <raise-error type="APP:SOME"/>
+        <error-handler>
+            <on-error-continue type="APP:SOME2" when="#[vars.var1 == 10]">
+                <set-payload value="Incorrect"/>
+            </on-error-continue>
+            <on-error-continue>
+                <set-payload value="Correct"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+</mule>
