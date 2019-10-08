@@ -26,36 +26,36 @@ import java.util.Collection;
 @RunnerDelegateTo(Parameterized.class)
 public class OnErrorWithTypeAndWhenExpressionTestCase extends AbstractIntegrationTestCase {
 
-    private String flowName;
+  private String flowName;
 
-    @Override
-    protected String getConfigFile() {
-        return "org/mule/test/integration/exceptions/on-error-when-expression.xml";
-    }
+  @Override
+  protected String getConfigFile() {
+    return "org/mule/test/integration/exceptions/on-error-when-expression.xml";
+  }
 
-    @Parameterized.Parameters(name = "{0}")
-    public static Collection<Object[]> data() {
-        return Arrays.asList(new Object[][] {
-                {"withType"},
-                {"withIncorrectType"},
-                {"withWhen"},
-                {"withIncorrectWhen"},
-                {"withWhenAndType"},
-                {"withCorrectWhenIncorrectType"},
-                {"withIncorrectWhenCorrectType"},
-                {"withIncorrectWhenIncorrectType"}
-        });
-    }
+  @Parameterized.Parameters(name = "{0}")
+  public static Collection<Object[]> data() {
+    return Arrays.asList(new Object[][] {
+        {"withType"},
+        {"withIncorrectType"},
+        {"withWhen"},
+        {"withIncorrectWhen"},
+        {"withWhenAndType"},
+        {"withCorrectWhenIncorrectType"},
+        {"withIncorrectWhenCorrectType"},
+        {"withIncorrectWhenIncorrectType"}
+    });
+  }
 
-    public OnErrorWithTypeAndWhenExpressionTestCase(String flowName) {
-        this.flowName = flowName;
-    }
+  public OnErrorWithTypeAndWhenExpressionTestCase(String flowName) {
+    this.flowName = flowName;
+  }
 
-    @Test
-    public void runTest() throws Exception {
-        CoreEvent event = flowRunner(flowName).run();
-        assertThat(event.getMessage().getPayload().getValue(), is("Correct"));
-    }
+  @Test
+  public void runTest() throws Exception {
+    CoreEvent event = flowRunner(flowName).run();
+    assertThat(event.getMessage().getPayload().getValue(), is("Correct"));
+  }
 
 
 }
