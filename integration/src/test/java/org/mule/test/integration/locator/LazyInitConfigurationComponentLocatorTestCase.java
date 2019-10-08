@@ -46,12 +46,13 @@ import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import io.qameta.allure.Description;
-import io.qameta.allure.Feature;
-import io.qameta.allure.Story;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.Rule;
 import org.junit.Test;
+
+import io.qameta.allure.Description;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 
 @Feature(CONFIGURATION_COMPONENT_LOCATOR)
 @Story(SEARCH_CONFIGURATION)
@@ -603,10 +604,7 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
   @Description("Initialize flow and referenced sub-flow")
   @Test
   public void findFlowAndSubFlowComponents() {
-    lazyComponentInitializer.initializeComponents(componentLocation -> {
-      String location = componentLocation.getLocation();
-      return location.equals(MY_SUB_FLOW) || location.equals(FLOW_WITH_SUBFLOW);
-    });
+    lazyComponentInitializer.initializeComponents(componentLocation -> componentLocation.getLocation().equals(FLOW_WITH_SUBFLOW));
 
     Optional<Component> componentOptional =
         locator.find(Location.builder().globalName(MY_SUB_FLOW).addProcessorsPart().addIndexPart(0).build());
