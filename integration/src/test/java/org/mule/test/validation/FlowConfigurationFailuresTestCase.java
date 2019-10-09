@@ -11,6 +11,7 @@ import static org.junit.rules.ExpectedException.none;
 import static org.mule.test.allure.AllureConstants.MuleDsl.MULE_DSL;
 import static org.mule.test.allure.AllureConstants.MuleDsl.DslValidationStory.DSL_VALIDATION_STORY;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -29,6 +30,7 @@ public class FlowConfigurationFailuresTestCase extends AbstractConfigurationFail
   public ExpectedException expectedException = none();
 
   @Test
+  @Ignore("MULE-17577")
   public void showFlowNameUsingInvalidCharacter() throws Exception {
     expectedException.expect(ConfigurationException.class);
     expectedException

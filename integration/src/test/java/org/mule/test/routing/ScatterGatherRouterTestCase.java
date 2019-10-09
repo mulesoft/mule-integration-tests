@@ -25,6 +25,7 @@ import static org.mule.tck.junit4.matcher.HasClassInHierarchy.withClassName;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ScatterGatherStory.SCATTER_GATHER;
 
+import org.junit.Ignore;
 import org.mule.functional.api.exception.FunctionalTestException;
 import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.exception.ComposedErrorException;
@@ -137,6 +138,7 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
 
   @Test
   @Description("An error in a route results in a CompositeRoutingException containing details of exceptions.")
+  @Ignore("MULE-17575")
   public void routeWithExpressionException() throws Exception {
     assertRouteException("routeWithExpressionException", EXCEPTION_MESSAGE_TITLE_PREFIX
         + "\t1: org.mule.runtime.core.api.expression.ExpressionRuntimeException: \"Script 'invalidExpr ' has errors: \n"
