@@ -12,6 +12,7 @@ import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.component.location.Location.builderFromStringRepresentation;
 
+import org.junit.Ignore;
 import org.mule.functional.api.component.EventCallback;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.lifecycle.Startable;
@@ -57,6 +58,7 @@ public class PollScheduleTestCase extends AbstractSchedulerTestCase {
    * stopped) Checks that the polls where not executed. Runs the polls on demand Checks that the polls where executed only once.
    */
   @Test
+  @Ignore("MULE-17576")
   public void test() throws Exception {
     new PollingProber(10000, 100l).check(new Probe() {
 

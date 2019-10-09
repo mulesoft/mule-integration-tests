@@ -16,6 +16,8 @@ import static org.junit.Assert.assertThat;
 import static org.mule.tck.probe.PollingProber.probe;
 import static org.mule.test.allure.AllureConstants.StreamingFeature.STREAMING;
 import static org.mule.test.allure.AllureConstants.StreamingFeature.StreamingStory.STREAM_MANAGEMENT;
+
+import org.junit.Ignore;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
@@ -88,6 +90,7 @@ public class AutoCloseCursorProviderTestCase extends AbstractIntegrationTestCase
   }
 
   @Test
+  @Ignore("MULE-17574")
   public void openManyStreamsInForeachAndDiscard() throws Exception {
     String content = randomAlphanumeric(1024 * 1024);
     File file = new File(temporaryFolder.getRoot(), "file.txt");
