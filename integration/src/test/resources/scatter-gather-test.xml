@@ -72,7 +72,7 @@
     </flow>
 
     <flow name="timeout">
-        <scatter-gather timeout="1000">
+        <scatter-gather timeout="${scatterGather.timeout}">
             <route>
                 <set-payload value="apple"/>
             </route>
@@ -86,7 +86,7 @@
     </flow>
 
     <flow name="routeWithException">
-        <scatter-gather timeout="1000">
+        <scatter-gather timeout="${scatterGather.timeout}">
             <route>
                 <set-payload value="apple"/>
             </route>
@@ -100,7 +100,7 @@
     </flow>
 
     <flow name="routeWithExceptionWithMessage">
-        <scatter-gather timeout="1000">
+        <scatter-gather timeout="${scatterGather.timeout}">
             <route>
                 <set-payload value="apple"/>
             </route>
@@ -114,7 +114,7 @@
     </flow>
 
     <flow name="routeWithNonMuleException">
-        <scatter-gather timeout="1000">
+        <scatter-gather timeout="${scatterGather.timeout}">
             <route>
                 <set-payload value="apple"/>
             </route>
@@ -128,7 +128,7 @@
     </flow>
 
     <flow name="routeWithExpressionException">
-        <scatter-gather timeout="1000">
+        <scatter-gather timeout="${scatterGather.timeout}">
             <route>
                 <set-payload value="apple"/>
             </route>
@@ -175,7 +175,7 @@
     </flow>
 
     <flow name="errorHandler">
-        <scatter-gather timeout="1000">
+        <scatter-gather timeout="${scatterGather.timeout}">
             <route>
                 <set-payload value="apple"/>
             </route>
@@ -188,7 +188,7 @@
         </scatter-gather>
         <error-handler>
             <on-error-continue type="COMPOSITE_ROUTING">
-                <test:assert expression="#[mel:exception.cause.getClass().getName().equals('org.mule.runtime.core.privileged.routing.CompositeRoutingException')]"/>
+                <test:assert expression="#[error.cause.^class == 'org.mule.runtime.core.privileged.routing.CompositeRoutingException']"/>
                 <test:assert expression="#[error.errorMessage.payload.failures['0'] == null]"/>
                 <test:assert expression="#[error.errorMessage.payload.failures['1'] != null]"/>
                 <test:assert expression="#[error.errorMessage.payload.failures['2'] != null]"/>
@@ -259,7 +259,7 @@
 
     <sub-flow name="captureThreadAndWait">
         <custom-processor class="org.mule.test.routing.ScatterGatherRouterTestCase$ThreadCaptor" />
-        <expression-component>mel:flowVars['latch'].await()</expression-component>
+        <expression-component>vars['latch'].await()</expression-component>
     </sub-flow>
 
     <sub-flow name="testRoutesMap">

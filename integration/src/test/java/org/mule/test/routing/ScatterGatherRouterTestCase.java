@@ -36,6 +36,7 @@ import org.mule.runtime.api.util.concurrent.Latch;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.runtime.core.api.processor.Processor;
+import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.io.ByteArrayInputStream;
@@ -62,6 +63,9 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
   @Rule
   public ExpectedException expectedException = none();
 
+  @Rule
+  public SystemProperty timeout = new SystemProperty("scatterGather.timeout", "" + RECEIVE_TIMEOUT);
+
   @Override
   protected String getConfigFile() {
     return "scatter-gather-test.xml";
@@ -70,6 +74,11 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
   @Override
   protected void doSetUp() throws Exception {
     capturedThreads = newKeySet();
+  }
+
+  @Override
+  protected void doTearDown() throws Exception {
+    capturedThreads = null;
   }
 
   @Test
