@@ -6,12 +6,10 @@
  */
 package org.mule.test.components;
 
-import static java.lang.Runtime.getRuntime;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.metadata.MediaType.APPLICATION_JAVA;
-import static org.mule.tck.probe.PollingProber.probe;
 
 import org.mule.functional.api.component.EventCallback;
 import org.mule.functional.api.component.TestConnectorQueueHandler;
@@ -67,19 +65,6 @@ public class RedeliveryPolicyTestCase extends AbstractIntegrationTestCase {
     sendDataWeaveObjectMessageExpectingError("redeliveryPolicyFlowDispatch");
     sendDataWeaveObjectMessageExpectingError("redeliveryPolicyFlowDispatch");
     assertThat(queueHandler.read("redeliveredMessageQueue", RECEIVE_TIMEOUT), notNullValue());
-  }
-
-  @Test
-  public void redeliveryPolicyDoesntUseCpuLite() throws Exception {
-    final int dispatchs = (getRuntime().availableProcessors() * 2) + 1;
-
-    for (int i = 0; i < dispatchs; ++i) {
-      sendDataWeaveObjectMessage("redeliveryPolicyFlowLongDispatch");
-    }
-    probe(10000, 100, () -> {
-      assertThat(awaiting.get(), is(dispatchs));
-      return true;
-    });
   }
 
   @Test

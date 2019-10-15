@@ -6,6 +6,9 @@
  */
 package org.mule.test.integration.transaction;
 
+import static java.lang.System.clearProperty;
+import static java.lang.System.setProperty;
+import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
@@ -13,6 +16,7 @@ import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInA
 import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 import static org.hamcrest.core.Every.everyItem;
 import static org.hamcrest.core.IsNot.not;
+import static org.junit.Assert.fail;
 import static org.mule.runtime.core.api.transaction.TransactionCoordination.isTransactionActive;
 
 import org.mule.runtime.api.component.AbstractComponent;
@@ -20,35 +24,63 @@ import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.util.concurrent.Latch;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
+import org.mule.runtime.core.api.processor.strategy.ProcessingStrategy;
+import org.mule.runtime.core.api.processor.strategy.ProcessingStrategyFactory;
+import org.mule.runtime.core.api.util.func.CheckedRunnable;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.test.runner.RunnerDelegateTo;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import io.qameta.allure.Description;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runners.Parameterized;
 
-import io.qameta.allure.Description;
-
-
+@RunnerDelegateTo(Parameterized.class)
 public class TransactionsWithRoutersTestCase extends AbstractIntegrationTestCase {
 
   private static final String TX_MESSAGE = "Kangaroo";
   private static final String OTHER_TX_MESSAGE = "Uruguayan";
   private static final String CPU_LIGHT = "cpuLight";
   private static final String IO = "io";
+  private static final String UBER = "uber";
+  private static final String DEFAULT_PROCESSING_STRATEGY =
+      "org.mule.runtime.core.internal.processor.strategy.TransactionAwareStreamEmitterProcessingStrategyFactory";
+  private static final String PROACTOR_PROCESSING_STRATEGY =
+      "org.mule.runtime.core.internal.processor.strategy.TransactionAwareProactorStreamEmitterProcessingStrategyFactory";
   private static List<Thread> threads;
   private static List<String> payloads;
   private static List<Boolean> runsInTx;
   private static Latch latch;
+
+  @Parameterized.Parameters
+  public static List<Object[]> parameters() {
+    return asList(
+                  new Object[] {DEFAULT_PROCESSING_STRATEGY},
+                  new Object[] {PROACTOR_PROCESSING_STRATEGY});
+  }
 
   @Rule
   public SystemProperty message = new SystemProperty("firstValue", TX_MESSAGE);
 
   @Rule
   public SystemProperty otherMessage = new SystemProperty("otherValue", OTHER_TX_MESSAGE);
+
+  private final String processingStrategyFactoryClassname;
+
+  public TransactionsWithRoutersTestCase(String processingStrategyFactoryClassname) {
+    this.processingStrategyFactoryClassname = processingStrategyFactoryClassname;
+  }
+
+  @Override
+  protected void doSetUpBeforeMuleContextCreation() throws Exception {
+    super.doSetUpBeforeMuleContextCreation();
+    setProperty(ProcessingStrategyFactory.class.getName(), processingStrategyFactoryClassname);
+  }
 
   @Override
   protected void doSetUp() throws Exception {
@@ -57,6 +89,12 @@ public class TransactionsWithRoutersTestCase extends AbstractIntegrationTestCase
     payloads = new ArrayList<>();
     latch = new Latch();
     runsInTx = new CopyOnWriteArrayList<>();
+  }
+
+  @Override
+  protected void doTearDown() throws Exception {
+    super.doTearDown();
+    clearProperty(ProcessingStrategy.class.getName());
   }
 
   @Override
@@ -266,41 +304,71 @@ public class TransactionsWithRoutersTestCase extends AbstractIntegrationTestCase
   public void tryRunsInSameThreadAsBeforeExecuting() throws Exception {
     flowRunner("tryRunsInSameThreadAsBeforeExecuting").run();
     assertThat(threads.get(1), is(threads.get(0)));
-    assertThreadType(threads.get(0), CPU_LIGHT);
+    onProcessingStrategy(() -> assertThreadType(threads.get(0), UBER), () -> assertThreadType(threads.get(0), CPU_LIGHT));
   }
 
   @Test
   public void tryWithAlwaysBegin() throws Exception {
     flowRunner("tryWithAlwaysBegin").run();
-    assertThat(threads.get(1), not(threads.get(0)));
-    assertThreadType(threads.get(0), CPU_LIGHT);
-    assertThreadType(threads.get(1), IO);
+    onProcessingStrategy(() -> {
+      assertThat(threads.get(1), is(threads.get(0)));
+      assertThreadType(threads.get(0), UBER);
+    }, () -> {
+      assertThat(threads.get(1), not(threads.get(0)));
+      assertThreadType(threads.get(0), CPU_LIGHT);
+      assertThreadType(threads.get(1), IO);
+    });
   }
 
   @Test
   public void tryWithBeginOrJoin() throws Exception {
     flowRunner("tryWithBeginOrJoin").run();
-    assertThat(threads.get(1), not(threads.get(0)));
-    assertThreadType(threads.get(0), CPU_LIGHT);
-    assertThreadType(threads.get(1), IO);
+    onProcessingStrategy(() -> {
+      assertThat(threads.get(1), is(threads.get(0)));
+      assertThreadType(threads.get(0), UBER);
+    }, () -> {
+      assertThat(threads.get(1), not(threads.get(0)));
+      assertThreadType(threads.get(0), CPU_LIGHT);
+      assertThreadType(threads.get(1), IO);
+    });
   }
 
   @Test
   public void tryWithBeginOrJoinNestedIndifferent() throws Exception {
     flowRunner("tryWithBeginOrJoinNestedIndifferent").run();
-    assertThat(threads.get(1), not(threads.get(0)));
-    assertThat(threads.get(2), is(threads.get(1)));
-    assertThreadType(threads.get(0), CPU_LIGHT);
-    assertThreadType(threads.get(1), IO);
+    onProcessingStrategy(() -> {
+      assertThat(threads.get(1), is(threads.get(0)));
+      assertThreadType(threads.get(0), UBER);
+    }, () -> {
+      assertThat(threads.get(1), not(threads.get(0)));
+      assertThat(threads.get(2), is(threads.get(1)));
+      assertThreadType(threads.get(0), CPU_LIGHT);
+      assertThreadType(threads.get(1), IO);
+    });
   }
 
   @Test
   public void tryWithBeginOrJoinNestedBeginOrJoin() throws Exception {
     flowRunner("tryWithBeginOrJoinNestedBeginOrJoin").run();
-    assertThat(threads.get(1), not(threads.get(0)));
-    assertThat(threads.get(2), is(threads.get(1)));
-    assertThreadType(threads.get(0), CPU_LIGHT);
-    assertThreadType(threads.get(1), IO);
+    onProcessingStrategy(() -> {
+      assertThat(threads.stream().allMatch(t -> t == threads.get(0)), is(true));
+      assertThreadType(threads.get(0), UBER);
+    }, () -> {
+      assertThat(threads.get(1), not(threads.get(0)));
+      assertThat(threads.get(2), is(threads.get(1)));
+      assertThreadType(threads.get(0), CPU_LIGHT);
+      assertThreadType(threads.get(1), IO);
+    });
+  }
+
+  private void onProcessingStrategy(CheckedRunnable withEmmiter, CheckedRunnable withProactor) {
+    if (DEFAULT_PROCESSING_STRATEGY.equals(processingStrategyFactoryClassname)) {
+      withEmmiter.run();
+    } else if (PROACTOR_PROCESSING_STRATEGY.equals(processingStrategyFactoryClassname)) {
+      withProactor.run();
+    } else {
+      fail("Unknown processing strategy " + processingStrategyFactoryClassname);
+    }
   }
 
   private void runsInSameTransaction(String flowName, String... expectedPayloads) throws Exception {
@@ -344,6 +412,7 @@ public class TransactionsWithRoutersTestCase extends AbstractIntegrationTestCase
     }
 
   }
+
 
   public static class ThreadCaptorAsync extends AbstractComponent implements Processor {
 
