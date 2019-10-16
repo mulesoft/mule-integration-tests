@@ -32,12 +32,11 @@ import org.mule.test.AbstractIntegrationTestCase;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.Rule;
-import org.junit.Test;
-
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
+import org.junit.Rule;
+import org.junit.Test;
 
 @Feature(CONFIGURATION_COMPONENT_LOCATOR)
 @Story(SEARCH_CONFIGURATION)
@@ -179,6 +178,9 @@ public class ConfigurationComponentLocatorTestCase extends AbstractIntegrationTe
                                                      "multipleInitialize/processors/1",
                                                      "async-flow/processors/0/processors/0",
                                                      "async-flow/processors/0",
-                                                     "async-flow"));
+                                                     "async-flow",
+                                                     "invokeBeanFlow",
+                                                     "invokeBeanFlow/processors/0",
+                                                     "childBean"));
   }
 }
