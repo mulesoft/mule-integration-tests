@@ -133,6 +133,14 @@
             <classifier>mule-plugin</classifier>
         </dependency>
         <dependency>
+            <groupId>org.mule.module</groupId>
+            <artifactId>mule-java-module</artifactId>
+            <version>${muleJavaModuleTestVersion}</version>
+            <classifier>mule-plugin</classifier>
+            <!-- TODO MULE-14466: BeanCreationException could not autowire JavaModuleLoadingCache -->
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>org.mule.connectors</groupId>
             <artifactId>mule-file-connector</artifactId>
             <version>${muleFileConnectorTestVersion}</version>

@@ -4,15 +4,23 @@
       xmlns:test="http://www.mulesoft.org/schema/mule/test"
       xmlns:http="http://www.mulesoft.org/schema/mule/http"
       xmlns:file="http://www.mulesoft.org/schema/mule/file"
+      xmlns:java="http://www.mulesoft.org/schema/mule/java"
       xsi:schemaLocation="
        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
        http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+       http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd
        http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
        http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
     <global-property name="some.property" value="/origin/topic"/>
 
     <configuration defaultErrorHandler-ref="globalErrorHandler" defaultResponseTimeout="2001"/>
+
+    <object name="childBean" class="org.mule.test.integration.locator.beans.ChildBean"/>
+
+    <flow name="invokeBeanFlow">
+        <java:invoke method="getFoo()" instance="childBean" class="org.mule.test.integration.locator.beans.ChildBean"/>
+    </flow>
 
     <sub-flow name="untilSuccessfulFlow">
         <until-successful maxRetries="5" millisBetweenRetries="10000">
