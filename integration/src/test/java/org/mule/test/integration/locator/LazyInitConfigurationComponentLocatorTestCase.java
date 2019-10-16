@@ -63,7 +63,7 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
   @Rule
   public DynamicPort listenPort = new DynamicPort("http.listener.port");
 
-  private static final int TOTAL_NUMBER_OF_LOCATIONS = 124;
+  private static final int TOTAL_NUMBER_OF_LOCATIONS = 127;
   @Inject
   private Registry registry;
 
@@ -367,7 +367,11 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
 
                                   "async-flow",
                                   "async-flow/processors/0",
-                                  "async-flow/processors/0/processors/0"));
+                                  "async-flow/processors/0/processors/0",
+
+                                  "invokeBeanFlow",
+                                  "invokeBeanFlow/processors/0",
+                                  "childBean"));
     assertThat(locator.find(builder().globalName("myFlow").build()), is(empty()));
     assertThat(locator.find(builder().globalName("anotherFlow").build()), is(empty()));
   }
@@ -384,6 +388,20 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
         .stream()
         .map(ComponentLocation::getLocation)
         .collect(toList()), hasItem("myFlow/source"));
+  }
+
+  @Test
+  public void objectInitializedWhenReferenceFromJavaInvoke() {
+    Location invokeBeanFlow = builder().globalName("invokeBeanFlow").addProcessorsPart().addIndexPart(0).build();
+    lazyComponentInitializer.initializeComponent(invokeBeanFlow);
+
+    assertThat(registry.lookupByName("childBean").isPresent(), is(true));
+
+    assertThat(locator
+        .findAllLocations()
+        .stream()
+        .map(ComponentLocation::getLocation)
+        .collect(toList()), hasItem("childBean"));
   }
 
   @Description("Lazy init should refresh the ConfigurationComponentLocator when initialize is done")
