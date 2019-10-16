@@ -7,43 +7,62 @@
 package org.mule.test.core;
 
 import static java.util.Arrays.asList;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mule.tck.processor.FlowAssert.verify;
 
-import org.junit.runners.Parameterized;
 import org.mule.runtime.api.security.SecurityContext;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.security.AbstractAuthenticationFilter;
 import org.mule.runtime.core.api.transaction.Transaction;
 import org.mule.runtime.core.api.transaction.TransactionCoordination;
 import org.mule.test.AbstractIntegrationTestCase;
-
-import org.junit.Test;
 import org.mule.test.runner.RunnerDelegateTo;
 
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.junit.Test;
+import org.junit.runners.Parameterized;
+
 @RunnerDelegateTo(Parameterized.class)
 public class NonBlockingFunctionalTestCase extends AbstractIntegrationTestCase {
 
-  private String config;
+
 
   @Parameterized.Parameters(name = "{0}")
   public static Collection<Object[]> data() {
     return Arrays.asList(new Object[][] {
-        {"Local Error Handler", "non-blocking-test-config.xml"},
-        {"Global Error Handler", "non-blocking-test-config-global-err.xml"}
+        {"Local Error Handler with Default PS", "non-blocking-test-config.xml", DEFAULT_PROCESSING_STRATEGY_CLASSNAME},
+        {"Global Error Handler with Default PS", "non-blocking-test-config-global-err.xml",
+            DEFAULT_PROCESSING_STRATEGY_CLASSNAME},
+        {"Local Error Handler with Proactor PS", "non-blocking-test-config.xml", PROACTOR_PROCESSING_STRATEGY_CLASSNAME},
+        {"Global Error Handler with Proactor PS", "non-blocking-test-config-global-err.xml",
+            PROACTOR_PROCESSING_STRATEGY_CLASSNAME}
     });
   }
 
-  public NonBlockingFunctionalTestCase(String type, String config) {
+  private final String config;
+  private final String processingStrategyFactory;
+
+  public NonBlockingFunctionalTestCase(String type, String config, String processingStrategyFactory) {
     this.config = config;
+    this.processingStrategyFactory = processingStrategyFactory;
   }
 
   @Override
   protected String getConfigFile() {
     return config;
+  }
+
+  @Override
+  protected void doSetUpBeforeMuleContextCreation() throws Exception {
+    setDefaultProcessingStrategyFactory(PROACTOR_PROCESSING_STRATEGY_CLASSNAME);
+  }
+
+  @Override
+  protected void doTearDownAfterMuleContextDispose() throws Exception {
+    clearDefaultProcessingStrategyFactory();
   }
 
   @Test
@@ -115,7 +134,17 @@ public class NonBlockingFunctionalTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void transactionalTry() throws Exception {
-    flowRunner("transactionalTry").withPayload(TEST_MESSAGE).run();
+    String flowName = "transactionalTry";
+
+    if (PROACTOR_PROCESSING_STRATEGY_CLASSNAME.equals(processingStrategyFactory)) {
+      flowName += "Proactor";
+    } else if (DEFAULT_PROCESSING_STRATEGY_CLASSNAME.equals(processingStrategyFactory)) {
+      flowName += "Emmiter";
+    } else {
+      fail("Unknown processingStrategyFactory " + processingStrategyFactory);
+    }
+
+    flowRunner(flowName).withPayload(TEST_MESSAGE).run();
   }
 
   @Test

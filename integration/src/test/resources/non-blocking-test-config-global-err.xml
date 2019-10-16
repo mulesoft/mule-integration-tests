@@ -167,7 +167,14 @@
         </try>
     </flow>
 
-    <flow name="transactionalTry" initialState="stopped">
+    <flow name="transactionalTryEmmiter" initialState="stopped">
+        <try transactionalAction="ALWAYS_BEGIN">
+            <test:assert-intercepting responseSameTask="true" responseExpression="#[payload == 'Test Message']"/>
+            <test:non-blocking-processor/>
+        </try>
+    </flow>
+
+    <flow name="transactionalTryProactor" initialState="stopped">
         <test:assert-intercepting responseSameTask="false" responseExpression="#[payload == 'Test Message']"/>
         <try transactionalAction="ALWAYS_BEGIN">
             <test:assert-intercepting responseSameTask="true" responseExpression="#[payload == 'Test Message']"/>

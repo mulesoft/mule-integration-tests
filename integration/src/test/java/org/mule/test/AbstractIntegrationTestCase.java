@@ -7,7 +7,11 @@
 
 package org.mule.test;
 
+import static java.lang.System.clearProperty;
+import static java.lang.System.setProperty;
+
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
+import org.mule.runtime.core.api.processor.strategy.ProcessingStrategyFactory;
 import org.mule.test.runner.ArtifactClassLoaderRunner;
 
 /**
@@ -21,5 +25,18 @@ import org.mule.test.runner.ArtifactClassLoaderRunner;
 public abstract class AbstractIntegrationTestCase extends MuleArtifactFunctionalTestCase
     implements IntegrationTestCaseRunnerConfig {
 
+  protected static final String DEFAULT_PROCESSING_STRATEGY_CLASSNAME =
+      "org.mule.runtime.core.internal.processor.strategy.TransactionAwareStreamEmitterProcessingStrategyFactory";
+  protected static final String PROACTOR_PROCESSING_STRATEGY_CLASSNAME =
+      "org.mule.runtime.core.internal.processor.strategy.TransactionAwareProactorStreamEmitterProcessingStrategyFactory";
+
+
+  protected void setDefaultProcessingStrategyFactory(String classname) {
+    setProperty(ProcessingStrategyFactory.class.getName(), classname);
+  }
+
+  protected void clearDefaultProcessingStrategyFactory() {
+    clearProperty(ProcessingStrategyFactory.class.getName());
+  }
 
 }

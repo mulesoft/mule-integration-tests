@@ -30,8 +30,8 @@ import static org.mule.runtime.api.metadata.MediaType.APPLICATION_JAVA;
 import static org.mule.runtime.api.metadata.MediaType.APPLICATION_JSON;
 import static org.mule.runtime.api.metadata.MediaType.APPLICATION_XML;
 import static org.mule.tck.processor.FlowAssert.verify;
-import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ForeachStory.FOR_EACH;
+import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 
 import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.functional.junit4.TestLegacyMessageBuilder;
@@ -41,16 +41,6 @@ import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import org.apache.commons.text.RandomStringGenerator;
-import org.hamcrest.core.Is;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-
-import com.google.common.collect.ImmutableList;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
@@ -59,10 +49,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
+import com.google.common.collect.ImmutableList;
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
+import org.apache.commons.text.RandomStringGenerator;
+import org.hamcrest.core.Is;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 @Feature(ROUTERS)
 @Story(FOR_EACH)
@@ -580,12 +578,6 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
   public void nonBlocking() throws Exception {
     flowRunner("nonBlocking").withPayload(asList("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")).run();
     verify("nonBlocking");
-  }
-
-  @Test
-  public void threadChange() throws Exception {
-    flowRunner("threadChange").withPayload(asList("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")).run();
-    verify("threadChange");
   }
 
   @Test

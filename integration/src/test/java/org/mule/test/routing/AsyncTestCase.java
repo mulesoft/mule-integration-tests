@@ -82,7 +82,7 @@ public class AsyncTestCase extends AbstractIntegrationTestCase {
     CoreEvent afterAsyncMessage = queueHandler.read("asyncFinished", 1000);
     assertThat(afterAsyncMessage, not(nullValue()));
 
-    assertThat(afterAsyncMessage.getMessage().getPayload().getValue().toString(), startsWith("[MuleRuntime].cpuIntensive."));
+    assertThat(afterAsyncMessage.getMessage().getPayload().getValue().toString(), startsWith("[MuleRuntime].uber."));
   }
 
   @Test

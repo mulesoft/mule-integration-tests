@@ -74,7 +74,7 @@ public class SchedulerServiceTestCase extends AbstractIntegrationTestCase {
     SchedulerService schedulerService = muleContext.getSchedulerService();
     final Scheduler ioScheduler = schedulerService.ioScheduler();
     assertThat(ioScheduler.getName(),
-               startsWith("[SchedulerServiceTestCase#schedulerDefaultName].io@" + SchedulerServiceTestCase.class.getName()
+               startsWith("[SchedulerServiceTestCase#schedulerDefaultName].uber@" + SchedulerServiceTestCase.class.getName()
                    + ".schedulerDefaultName:"));
     ioScheduler.shutdownNow();
   }
@@ -170,9 +170,9 @@ public class SchedulerServiceTestCase extends AbstractIntegrationTestCase {
     flowRunner("willSchedule").run();
 
     assertThat(RecordThreadName.threadName,
-               allOf(startsWith("[MuleRuntime].cpuLight."),
+               allOf(startsWith("[MuleRuntime].uber."),
                      // [appName].flowName.processingStrategy
-                     containsString("[SchedulerServiceTestCase#flowProcessingThreadName].willSchedule.CPU_LITE @")));
+                     containsString("[SchedulerServiceTestCase#flowProcessingThreadName].willSchedule.dispatch @")));
   }
 
   public static class HasSchedulingService implements Processor, Initialisable, Disposable {
