@@ -38,6 +38,7 @@ import org.mule.runtime.core.api.config.MuleConfiguration;
 import org.mule.runtime.core.api.security.SecurityManager;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.test.core.context.notification.processors.ProcessorNotificationStore;
 import org.mule.test.integration.locator.processor.CustomTestComponent;
 
 import java.util.List;
@@ -65,7 +66,7 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
   @Rule
   public DynamicPort proxyPort = new DynamicPort("http.proxy.port");
 
-  private static final int TOTAL_NUMBER_OF_LOCATIONS = 118;
+  private static final int TOTAL_NUMBER_OF_LOCATIONS = 124;
   @Inject
   private Registry registry;
 
@@ -367,7 +368,14 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
 
                                   "invokeBeanFlow",
                                   "invokeBeanFlow/processors/0",
-                                  "childBean"));
+                                  "childBean",
+
+                                  "notificationFlow",
+                                  "notificationFlow/processors/0",
+                                  "null",
+                                  "null/0",
+                                  "null",
+                                  "null/0"));
     assertThat(locator.find(builder().globalName("myFlow").build()), is(empty()));
     assertThat(locator.find(builder().globalName("anotherFlow").build()), is(empty()));
   }
@@ -640,6 +648,14 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
     componentOptional =
         locator.find(Location.builder().globalName(FLOW_WITH_SUBFLOW).addProcessorsPart().addIndexPart(0).build());
     assertThat(componentOptional.isPresent(), is(true));
+  }
+
+  @Test
+  public void notificationObjectsInSpringConfigArePickUpByMule() throws Exception {
+    lazyComponentInitializer.initializeComponent(builder().globalName("notificationFlow").build());
+
+    flowRunner("notificationFlow").run();
+    assertThat(registry.lookupByType(ProcessorNotificationStore.class).get().getNotifications(), hasSize(2));
   }
 
 }
