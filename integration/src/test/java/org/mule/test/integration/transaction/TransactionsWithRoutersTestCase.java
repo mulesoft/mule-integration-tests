@@ -6,8 +6,6 @@
  */
 package org.mule.test.integration.transaction;
 
-import static java.lang.System.clearProperty;
-import static java.lang.System.setProperty;
 import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -24,8 +22,6 @@ import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.util.concurrent.Latch;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
-import org.mule.runtime.core.api.processor.strategy.ProcessingStrategy;
-import org.mule.runtime.core.api.processor.strategy.ProcessingStrategyFactory;
 import org.mule.runtime.core.api.util.func.CheckedRunnable;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -48,20 +44,15 @@ public class TransactionsWithRoutersTestCase extends AbstractIntegrationTestCase
   private static final String CPU_LIGHT = "cpuLight";
   private static final String IO = "io";
   private static final String UBER = "uber";
-  private static final String DEFAULT_PROCESSING_STRATEGY =
-      "org.mule.runtime.core.internal.processor.strategy.TransactionAwareStreamEmitterProcessingStrategyFactory";
-  private static final String PROACTOR_PROCESSING_STRATEGY =
-      "org.mule.runtime.core.internal.processor.strategy.TransactionAwareProactorStreamEmitterProcessingStrategyFactory";
+
   private static List<Thread> threads;
   private static List<String> payloads;
   private static List<Boolean> runsInTx;
   private static Latch latch;
 
   @Parameterized.Parameters
-  public static List<Object[]> parameters() {
-    return asList(
-                  new Object[] {DEFAULT_PROCESSING_STRATEGY},
-                  new Object[] {PROACTOR_PROCESSING_STRATEGY});
+  public static List<String> parameters() {
+    return asList(DEFAULT_PROCESSING_STRATEGY_CLASSNAME, PROACTOR_PROCESSING_STRATEGY_CLASSNAME);
   }
 
   @Rule
@@ -79,7 +70,7 @@ public class TransactionsWithRoutersTestCase extends AbstractIntegrationTestCase
   @Override
   protected void doSetUpBeforeMuleContextCreation() throws Exception {
     super.doSetUpBeforeMuleContextCreation();
-    setProperty(ProcessingStrategyFactory.class.getName(), processingStrategyFactoryClassname);
+    setDefaultProcessingStrategyFactory(processingStrategyFactoryClassname);
   }
 
   @Override
@@ -92,9 +83,9 @@ public class TransactionsWithRoutersTestCase extends AbstractIntegrationTestCase
   }
 
   @Override
-  protected void doTearDown() throws Exception {
-    super.doTearDown();
-    clearProperty(ProcessingStrategy.class.getName());
+  protected void doTearDownAfterMuleContextDispose() throws Exception {
+    super.doTearDownAfterMuleContextDispose();
+    clearDefaultProcessingStrategyFactory();
   }
 
   @Override
@@ -362,9 +353,9 @@ public class TransactionsWithRoutersTestCase extends AbstractIntegrationTestCase
   }
 
   private void onProcessingStrategy(CheckedRunnable withEmmiter, CheckedRunnable withProactor) {
-    if (DEFAULT_PROCESSING_STRATEGY.equals(processingStrategyFactoryClassname)) {
+    if (DEFAULT_PROCESSING_STRATEGY_CLASSNAME.equals(processingStrategyFactoryClassname)) {
       withEmmiter.run();
-    } else if (PROACTOR_PROCESSING_STRATEGY.equals(processingStrategyFactoryClassname)) {
+    } else if (PROACTOR_PROCESSING_STRATEGY_CLASSNAME.equals(processingStrategyFactoryClassname)) {
       withProactor.run();
     } else {
       fail("Unknown processing strategy " + processingStrategyFactoryClassname);

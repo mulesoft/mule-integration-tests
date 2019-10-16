@@ -6,10 +6,14 @@
  */
 package org.mule.test.components;
 
+import static java.lang.Runtime.getRuntime;
+import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assume.assumeThat;
 import static org.mule.runtime.api.metadata.MediaType.APPLICATION_JAVA;
+import static org.mule.tck.probe.PollingProber.probe;
 
 import org.mule.functional.api.component.EventCallback;
 import org.mule.functional.api.component.TestConnectorQueueHandler;
@@ -18,14 +22,18 @@ import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.test.runner.RunnerDelegateTo;
 
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runners.Parameterized;
 
+@RunnerDelegateTo(Parameterized.class)
 public class RedeliveryPolicyTestCase extends AbstractIntegrationTestCase {
 
   private static CountDownLatch latch;
@@ -41,7 +49,24 @@ public class RedeliveryPolicyTestCase extends AbstractIntegrationTestCase {
 
   }
 
+  @Parameterized.Parameters
+  public static List<String> parameters() {
+    return asList(DEFAULT_PROCESSING_STRATEGY_CLASSNAME, PROACTOR_PROCESSING_STRATEGY_CLASSNAME);
+  }
+
   private TestConnectorQueueHandler queueHandler;
+
+  private final String processingStrategyFactoryClassname;
+
+  public RedeliveryPolicyTestCase(String processingStrategyFactoryClassname) {
+    this.processingStrategyFactoryClassname = processingStrategyFactoryClassname;
+  }
+
+  @Override
+  protected void doSetUpBeforeMuleContextCreation() throws Exception {
+    super.doSetUpBeforeMuleContextCreation();
+    setDefaultProcessingStrategyFactory(processingStrategyFactoryClassname);
+  }
 
   @Before
   public void before() {
@@ -56,6 +81,12 @@ public class RedeliveryPolicyTestCase extends AbstractIntegrationTestCase {
   }
 
   @Override
+  protected void doTearDownAfterMuleContextDispose() throws Exception {
+    super.doTearDownAfterMuleContextDispose();
+    clearDefaultProcessingStrategyFactory();
+  }
+
+  @Override
   protected String getConfigFile() {
     return "org/mule/test/components/redelivery-policy-config.xml";
   }
@@ -65,6 +96,21 @@ public class RedeliveryPolicyTestCase extends AbstractIntegrationTestCase {
     sendDataWeaveObjectMessageExpectingError("redeliveryPolicyFlowDispatch");
     sendDataWeaveObjectMessageExpectingError("redeliveryPolicyFlowDispatch");
     assertThat(queueHandler.read("redeliveredMessageQueue", RECEIVE_TIMEOUT), notNullValue());
+  }
+
+  @Test
+  public void redeliveryPolicyDoesntUseCpuLite() throws Exception {
+    assumeThat(processingStrategyFactoryClassname, is(PROACTOR_PROCESSING_STRATEGY_CLASSNAME));
+
+    final int dispatchs = (getRuntime().availableProcessors() * 2) + 1;
+
+    for (int i = 0; i < dispatchs; ++i) {
+      sendDataWeaveObjectMessage("redeliveryPolicyFlowLongDispatch");
+    }
+    probe(10000, 100, () -> {
+      assertThat(awaiting.get(), is(dispatchs));
+      return true;
+    });
   }
 
   @Test
