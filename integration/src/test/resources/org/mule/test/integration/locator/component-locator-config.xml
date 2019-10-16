@@ -109,16 +109,5 @@
         </async>
     </sub-flow>
 
-    <notifications>
-        <notification event="MESSAGE-PROCESSOR"/>
-    </notifications>
-
-    <notifications>
-        <notification-listener ref="notificationLogger"/>
-    </notifications>
-
-    <flow name="notificationFlow">
-        <set-payload value="0.8.1"/>
-    </flow>
 </mule>
 

@@ -7,7 +7,7 @@
 
     <bean name="child1" class="org.mule.test.integration.locator.beans.ChildBean"/>
 
-    <bean name="notificationLogger"
+    <bean name="notificationLoggerSpringBean"
           class="org.mule.test.core.context.notification.processors.ProcessorNotificationStore"/>
 
     <ss:authentication-manager alias="authenticationManager">
