@@ -38,5 +38,10 @@
         </db:select>
         <http:request config-ref="requestConfig" path="helloMule" method="GET" />
     </flow>
+
+    <flow name="flowRecursive">
+        <flow-ref name="flowRecursive"/>
+    </flow>
+
 </mule>
 
