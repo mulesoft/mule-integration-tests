@@ -63,7 +63,7 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
   @Rule
   public DynamicPort listenPort = new DynamicPort("http.listener.port");
 
-  private static final int TOTAL_NUMBER_OF_LOCATIONS = 122;
+  private static final int TOTAL_NUMBER_OF_LOCATIONS = 124;
   @Inject
   private Registry registry;
 
@@ -73,7 +73,8 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
 
   @Override
   protected String[] getConfigFiles() {
-    return new String[] {"org/mule/test/integration/locator/component-locator-config.xml",
+    return new String[] {
+        "org/mule/test/integration/locator/component-locator-config.xml",
         "org/mule/test/integration/locator/component-locator-levels-config.xml",
         "org/mule/test/integration/locator/component-locator-spring-config.xml",
         "org/mule/test/integration/locator/component-locator-reference-component-models.xml",
@@ -266,6 +267,8 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
                                   "flowLvl2/processors/0",
                                   "flowLvl2/processors/0/0",
                                   "flowLvl2/processors/1",
+                                  "flowRecursive",
+                                  "flowRecursive/processors/0",
                                   "dbConfig",
                                   "dbConfig/0",
                                   "requestConfig",
@@ -432,6 +435,14 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
     assertThat(locator.find(builder().globalName("dbConfig").build()), is(not(empty())));
     assertThat(locator.find(builder().globalName("requestConfig").build()), is(not(empty())));
     assertThat(locator.find(builder().globalName("tlsContextRef").build()), is(not(empty())));
+  }
+
+  @Test
+  public void lazyMuleContextWithRecursiveFlowRefs() {
+    lazyComponentInitializer.initializeComponent(builder().globalName("flowRecursive").build());
+
+    assertThat(locator.find(builder().globalName("flowRecursive").build()), is(not(empty())));
+    assertThat(locator.find(builder().globalName("flowRecursive").addProcessorsPart().addIndexPart(0).build()), is(not(empty())));
   }
 
   @Test
