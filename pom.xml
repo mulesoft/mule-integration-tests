@@ -8,7 +8,7 @@
   </parent>
   <groupId>org.mule.tests</groupId>
   <artifactId>mule-extensions-integration-tests</artifactId>
-  <version>4.2.2-SNAPSHOT</version>
+  <version>4.2.2-DRY-RUN</version>
   <packaging>pom</packaging>
   <name>Mule Tests</name>
 
