@@ -38,8 +38,10 @@ import org.mule.runtime.core.api.config.MuleConfiguration;
 import org.mule.runtime.core.api.security.SecurityManager;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.test.core.context.notification.processors.ProcessorNotificationStore;
 import org.mule.test.integration.locator.processor.CustomTestComponent;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -63,7 +65,7 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
   @Rule
   public DynamicPort listenPort = new DynamicPort("http.listener.port");
 
-  private static final int TOTAL_NUMBER_OF_LOCATIONS = 127;
+  private static final int TOTAL_NUMBER_OF_LOCATIONS = 135;
   @Inject
   private Registry registry;
 
@@ -75,6 +77,7 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
   protected String[] getConfigFiles() {
     return new String[] {
         "org/mule/test/integration/locator/component-locator-config.xml",
+        "org/mule/test/integration/locator/component-locator-notifications.xml",
         "org/mule/test/integration/locator/component-locator-levels-config.xml",
         "org/mule/test/integration/locator/component-locator-spring-config.xml",
         "org/mule/test/integration/locator/component-locator-reference-component-models.xml",
@@ -371,7 +374,16 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
 
                                   "invokeBeanFlow",
                                   "invokeBeanFlow/processors/0",
-                                  "childBean"));
+                                  "childBean",
+
+                                  "notificationFlow",
+                                  "notificationFlow/processors/0",
+                                  "notificationLoggerObject",
+                                  "null",
+                                  "null/0",
+                                  "null",
+                                  "null/0",
+                                  "null/1"));
     assertThat(locator.find(builder().globalName("myFlow").build()), is(empty()));
     assertThat(locator.find(builder().globalName("anotherFlow").build()), is(empty()));
   }
@@ -652,6 +664,19 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
                                                                                 .addProcessorsPart()
                                                                                 .addIndexPart(0).build());
     assertThat(componentOptional.isPresent(), is(true));
+  }
+
+  @Test
+  public void notificationsObjectInitialized() throws Exception {
+    lazyComponentInitializer.initializeComponent(builder().globalName("notificationFlow").build());
+
+    flowRunner("notificationFlow").run();
+    Collection<ProcessorNotificationStore> processorNotificationStores =
+        registry.lookupAllByType(ProcessorNotificationStore.class);
+    assertThat(processorNotificationStores, hasSize(2));
+
+    processorNotificationStores.stream()
+        .forEach(processorNotificationStore -> assertThat(processorNotificationStore.getNotifications(), hasSize(2)));
   }
 
 }
