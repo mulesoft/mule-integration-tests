@@ -108,5 +108,6 @@
             <test:processor class="org.mule.test.integration.locator.processor.CustomTestComponent"/>
         </async>
     </sub-flow>
+
 </mule>
 
