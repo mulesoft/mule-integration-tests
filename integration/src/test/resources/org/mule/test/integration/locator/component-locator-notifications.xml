@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+
+    <object name="notificationLoggerObject"
+            class="org.mule.test.core.context.notification.processors.ProcessorNotificationStore"/>
+
+    <notifications>
+        <notification event="MESSAGE-PROCESSOR"/>
+    </notifications>
+
+    <notifications>
+        <notification-listener ref="notificationLoggerSpringBean"/>
+        <notification-listener ref="notificationLoggerObject"/>
+    </notifications>
+
+    <flow name="notificationFlow">
+        <set-payload value="0.8.1"/>
+    </flow>
+
+</mule>
