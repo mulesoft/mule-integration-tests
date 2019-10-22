@@ -222,7 +222,11 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     InterceptionParameters setPayloadOperation = interceptionParameters.get(1);
 
     assertThat(moduleOperationChain.getParameters().keySet(), containsInAnyOrder("targetValue"));
+    assertThat(moduleOperationChain.getParameters().keySet(), containsInAnyOrder("doc:name","moduleName", "moduleOperation"));
+    assertThat(moduleOperationChain.getParameters().get("moduleName").resolveValue(), is("module-using-core"));
+    assertThat(moduleOperationChain.getParameters().get("moduleOperation").resolveValue(), is("set-payload-hardcoded"));
 
+    assertThat(moduleOperationChain.getParameters().get("doc:name").resolveValue(), is("mySCName"));
     assertThat(setPayloadOperation.getParameters().keySet(), containsInAnyOrder("value", "mimeType", "encoding"));
     assertThat(setPayloadOperation.getParameters().get("value").resolveValue(), is("Wubba Lubba Dub Dub"));
     assertThat(setPayloadOperation.getParameters().get("mimeType").resolveValue(), is("text/plain"));
