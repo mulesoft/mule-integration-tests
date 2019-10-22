@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
     xmlns:test="http://www.mulesoft.org/schema/mule/test"
-    xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
     xmlns:heisenberg="http://www.mulesoft.org/schema/mule/heisenberg"
     xmlns:sc="http://www.mulesoft.org/schema/mule/module-using-core"
     xmlns:sc-using-sc="http://www.mulesoft.org/schema/mule/module-using-sc"
@@ -95,7 +96,7 @@
     </flow>
 
     <flow name="scOperation">
-        <sc:set-payload-hardcoded />
+        <sc:set-payload-hardcoded doc:name="mySCName"/>
     </flow>
 
     <flow name="scOperationInsideSubFlow">
