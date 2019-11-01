@@ -111,18 +111,6 @@
         </error-handler>
     </flow>
 
-    <flow name="concurrent-requests">
-        <until-successful maxRetries="1" millisBetweenRetries="1000">
-            <test:processor throwException="true"/>
-        </until-successful>
-        <error-handler>
-            <on-error-continue type="RETRY_EXHAUSTED">
-                <test:invocation-counter name="eventsPassing"/>
-                <set-payload value="chau"></set-payload>
-            </on-error-continue>
-        </error-handler>
-    </flow>
-
     <flow name="us-with-no-errors">
         <until-successful maxRetries="3" millisBetweenRetries="0">
             <set-payload value="#[payload ++ ' holis']"></set-payload>

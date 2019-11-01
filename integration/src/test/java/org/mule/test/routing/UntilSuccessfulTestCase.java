@@ -31,14 +31,12 @@ import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.retry.policy.RetryPolicyExhaustedException;
-import org.mule.runtime.core.internal.message.InternalEvent;
 import org.mule.tck.probe.JUnitLambdaProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 import java.util.concurrent.ExecutorService;
 
 import io.qameta.allure.Description;
@@ -77,12 +75,10 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  public void executesOnceWhenNoErrorArisesAndClearsContext() throws Exception {
+  public void executesOnceWhenNoErrorArises() throws Exception {
     CoreEvent response = flowRunner("happy-path-scope").run();
     assertThat(getPayloadAsString(response.getMessage()), is("pig"));
     assertThat(getNumberOfInvocationsFor("insideScope"), is(1));
-    Stack retryContextsStack = ((InternalEvent) response).getInternalParameter("RETRY_CTX");
-    assertThat(retryContextsStack.empty(), is(true));
   }
 
   @Test
@@ -92,9 +88,6 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
     // Each scope was executed desired amount of times
     assertThat(getNumberOfInvocationsFor("outerScope"), is(2));
     assertThat(getNumberOfInvocationsFor("innerScope"), is(6));
-    // Context are cleaned
-    Stack contextsStack = ((InternalEvent) response).getInternalParameter("RETRY_CTX");
-    assertThat(contextsStack.empty(), is(true));
   }
 
   @Test
@@ -108,7 +101,7 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  public void testNoErrorsInUS() throws Exception {
+  public void scopeHappyPathWithDifferentPayloads() throws Exception {
     assertThat(getPayloadAsString(flowRunner("us-with-no-errors").withPayload("perro").run().getMessage()), is("perro holis"));
     assertThat(getPayloadAsString(flowRunner("us-with-no-errors").withPayload("gato").run().getMessage()), is("gato holis"));
   }
@@ -228,22 +221,6 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
     CoreEvent event = flowRunner("untilSuccessfulInErrorHandler").run();
     assertThat(CustomMP.getCount(), is(1));
     assertThat(event.getMessage().getPayload().getValue(), is("hello"));
-  }
-
-  @Test
-  public void concurrentEventsWithLimitedCores() throws Exception {
-    for (int i = 0; i < 3; i++) {
-      new Thread(() -> {
-        try {
-          flowRunner("concurrent-requests").run();
-        } catch (Exception e) {
-          e.printStackTrace();
-        }
-
-      }).start();
-    }
-
-    PollingProber.probe(10000, 1000, () -> getNumberOfInvocationsFor("eventsPassing") == 3);
   }
 
   private List<Object> ponderUntilMessageCountReceivedByTargetMessageProcessor(final int expectedCount)
