@@ -98,6 +98,16 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
+  public void scopeContinuesWorkingAfterErrorInMaxRetryExpression() throws Exception {
+    for (int i = 0; i < getRuntime().availableProcessors() * 2; i++) {
+      flowRunner("scope-with-max-retry-expr-and-err-continue").withVariable("maxRetries", "gato").runExpectingException();
+    }
+    CoreEvent response =
+        flowRunner("scope-with-max-retry-expr-and-err-continue").withVariable("maxRetries", "1").run();
+    assertThat(getPayloadAsString(response.getMessage()), is("holis"));
+  }
+
+  @Test
   public void testNoErrorsInUS() throws Exception {
     assertThat(getPayloadAsString(flowRunner("us-with-no-errors").withPayload("perro").run().getMessage()), is("perro holis"));
     assertThat(getPayloadAsString(flowRunner("us-with-no-errors").withPayload("gato").run().getMessage()), is("gato holis"));

@@ -25,6 +25,14 @@
         </until-successful>
     </flow>
 
+    <flow name="scope-with-max-retry-expr-and-err-continue">
+        <set-payload value="3"/>
+        <set-payload value="chau"></set-payload>
+        <until-successful maxRetries="#[vars.maxRetries + 1]" millisBetweenRetries="10">
+            <set-payload value="holis"></set-payload>
+        </until-successful>
+    </flow>
+
     <flow name="full-config-with-mp">
         <async>
             <try>
