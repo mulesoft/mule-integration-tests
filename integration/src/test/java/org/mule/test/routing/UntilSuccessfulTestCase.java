@@ -19,23 +19,9 @@ import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.functional.api.component.FunctionalTestProcessor.getFromFlow;
-import static org.mule.functional.api.component.InvocationCountMessageProcessor.getNumberOfInvocationsFor;
 import static org.mule.functional.junit4.matchers.ThrowableCauseMatcher.hasCause;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.UntilSuccessfulStory.UNTIL_SUCCESSFUL;
-
-import io.qameta.allure.Description;
-import org.mule.functional.api.component.FunctionalTestProcessor;
-import org.mule.functional.api.exception.FunctionalTestException;
-import org.mule.runtime.api.exception.MuleException;
-import org.mule.runtime.api.exception.MuleRuntimeException;
-import org.mule.runtime.api.message.Message;
-import org.mule.runtime.core.api.event.CoreEvent;
-import org.mule.runtime.core.api.processor.Processor;
-import org.mule.runtime.core.api.retry.policy.RetryPolicyExhaustedException;
-import org.mule.tck.probe.JUnitLambdaProbe;
-import org.mule.tck.probe.PollingProber;
-import org.mule.test.AbstractIntegrationTestCase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +31,21 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import org.mule.functional.api.component.FunctionalTestProcessor;
+import org.mule.functional.api.component.TestConnectorQueueHandler;
+import org.mule.functional.api.exception.FunctionalTestException;
+import org.mule.runtime.api.exception.MuleException;
+import org.mule.runtime.api.exception.MuleRuntimeException;
+import org.mule.runtime.api.message.Message;
+import org.mule.runtime.core.api.event.CoreEvent;
+import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
+import org.mule.runtime.core.api.processor.Processor;
+import org.mule.runtime.core.api.retry.policy.RetryPolicyExhaustedException;
+import org.mule.tck.probe.JUnitLambdaProbe;
+import org.mule.tck.probe.PollingProber;
+import org.mule.test.AbstractIntegrationTestCase;
+
+import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
 
@@ -55,6 +56,7 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
 
+  private TestConnectorQueueHandler queueHandler;
   private FunctionalTestProcessor targetMessageProcessor;
 
   @Override
@@ -66,6 +68,7 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
   protected void doSetUp() throws Exception {
     super.doSetUp();
 
+    queueHandler = new TestConnectorQueueHandler(registry);
     targetMessageProcessor = getFromFlow(locator, "target-mp");
   }
 
@@ -74,6 +77,45 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
     CustomMP.clearCount();
 
     super.doTearDown();
+  }
+
+  @Test
+  public void executesOnceWhenNoErrorArises() throws Exception {
+    CoreEvent response = flowRunner("happy-path-scope").run();
+    assertThat(getPayloadAsString(response.getMessage()), is("pig"));
+    assertThat(queueHandler.countPendingEvents("insideScope"), is(1));
+  }
+
+  @Test
+  public void nestedUntilSuccessfulScopesExecutionTimes() throws Exception {
+    CoreEvent response = flowRunner("nestedUntilSuccessfulScopes").run();
+    assertThat(getPayloadAsString(response.getMessage()), is("holis"));
+    // Each scope was executed desired amount of times
+    assertThat(queueHandler.countPendingEvents("outerScope"), is(2));
+    assertThat(queueHandler.countPendingEvents("innerScope"), is(6));
+  }
+
+  @Test
+  public void scopeContinuesWorkingAfterErrorInMaxRetryExpression() throws Exception {
+    for (int i = 0; i < getRuntime().availableProcessors() * 2; i++) {
+      flowRunner("scope-with-max-retry-expr-and-err-continue").withVariable("maxRetries", "gato").runExpectingException();
+    }
+    CoreEvent response =
+        flowRunner("scope-with-max-retry-expr-and-err-continue").withVariable("maxRetries", "1").run();
+    assertThat(getPayloadAsString(response.getMessage()), is("holis"));
+  }
+
+  @Test
+  public void exceptionThrownFromInitializingRetryContextPropagates() throws Exception {
+    expectedException.expectMessage(containsString("You called the function '+' with these arguments"));
+    expectedException.expectCause(instanceOf(ExpressionRuntimeException.class));
+    flowRunner("scope-with-max-retry-expr-and-err-continue").withVariable("maxRetries", "gato").run();
+  }
+
+  @Test
+  public void scopeHappyPathWithDifferentPayloads() throws Exception {
+    assertThat(getPayloadAsString(flowRunner("us-with-no-errors").withPayload("perro").run().getMessage()), is("perro holis"));
+    assertThat(getPayloadAsString(flowRunner("us-with-no-errors").withPayload("gato").run().getMessage()), is("gato holis"));
   }
 
   @Test
@@ -156,23 +198,23 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
   public void executeSynchronouslyDoingRetries() throws Exception {
     final String payload = randomAlphanumeric(20);
     flowRunner("synchronous-with-retry").withPayload(payload).runExpectingException();
-    assertThat(getNumberOfInvocationsFor("untilSuccessful"), is(4));
-    assertThat(getNumberOfInvocationsFor("exceptionStrategy"), is(1));
+    assertThat(queueHandler.countPendingEvents("untilSuccessful"), is(4));
+    assertThat(queueHandler.countPendingEvents("exceptionStrategy"), is(1));
   }
 
   @Test
   public void executeSynchronouslyDoingExpressionRetries() throws Exception {
     flowRunner("synchronous-with-expression-retry").runExpectingException();
-    assertThat(getNumberOfInvocationsFor("untilSuccessfulExpression"), is(6));
-    assertThat(getNumberOfInvocationsFor("exceptionStrategyExpression"), is(1));
+    assertThat(queueHandler.countPendingEvents("untilSuccessfulExpression"), is(6));
+    assertThat(queueHandler.countPendingEvents("exceptionStrategyExpression"), is(1));
   }
 
   @Test
   public void executeWithoutRetrying() throws Exception {
     final String payload = randomAlphanumeric(20);
     flowRunner("synchronous-without-retry").withPayload(payload).runExpectingException();
-    assertThat(getNumberOfInvocationsFor("untilSuccessfulNoRetry"), is(1));
-    assertThat(getNumberOfInvocationsFor("exceptionStrategyNoRetry"), is(1));
+    assertThat(queueHandler.countPendingEvents("untilSuccessfulNoRetry"), is(1));
+    assertThat(queueHandler.countPendingEvents("exceptionStrategyNoRetry"), is(1));
   }
 
   /**
