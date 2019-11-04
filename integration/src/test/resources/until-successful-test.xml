@@ -20,7 +20,7 @@
     <flow name="happy-path-scope">
         <set-payload value="pepa"></set-payload>
         <until-successful maxRetries="2" millisBetweenRetries="100">
-            <test:invocation-counter name="insideScope"/>
+            <test:queue name="insideScope"></test:queue>
             <set-payload value="pig"></set-payload>
         </until-successful>
     </flow>
@@ -88,12 +88,12 @@
 
     <flow name="synchronous-with-retry">
         <until-successful maxRetries="3" millisBetweenRetries="0">
-            <test:invocation-counter name="untilSuccessful"/>
+            <test:queue name="untilSuccessful"/>
             <test:processor throwException="true"/>
         </until-successful>
         <error-handler>
             <on-error-propagate type="RETRY_EXHAUSTED">
-                <test:invocation-counter name="exceptionStrategy"/>
+                <test:queue name="exceptionStrategy"/>
             </on-error-propagate>
         </error-handler>
     </flow>
@@ -101,12 +101,12 @@
     <flow name="synchronous-with-expression-retry">
         <set-payload value="3"/>
         <until-successful maxRetries="#[payload + 2]" millisBetweenRetries="0">
-            <test:invocation-counter name="untilSuccessfulExpression"/>
+            <test:queue name="untilSuccessfulExpression"/>
             <test:processor throwException="true"/>
         </until-successful>
         <error-handler>
             <on-error-propagate type="RETRY_EXHAUSTED">
-                <test:invocation-counter name="exceptionStrategyExpression"/>
+                <test:queue name="exceptionStrategyExpression"/>
             </on-error-propagate>
         </error-handler>
     </flow>
@@ -124,12 +124,12 @@
 
     <flow name="synchronous-without-retry">
         <until-successful maxRetries="0" millisBetweenRetries="0">
-            <test:invocation-counter name="untilSuccessfulNoRetry"/>
+            <test:queue name="untilSuccessfulNoRetry"/>
             <test:processor throwException="true"/>
         </until-successful>
         <error-handler>
             <on-error-propagate type="RETRY_EXHAUSTED">
-                <test:invocation-counter name="exceptionStrategyNoRetry"/>
+                <test:queue name="exceptionStrategyNoRetry"/>
             </on-error-propagate>
         </error-handler>
     </flow>
@@ -155,9 +155,9 @@
 
     <flow name="nestedUntilSuccessfulScopes">
         <until-successful maxRetries="1" millisBetweenRetries="10">
-            <test:invocation-counter name="outerScope"/>
+            <test:queue name="outerScope"/>
             <until-successful maxRetries="2" millisBetweenRetries="10">
-                <test:invocation-counter name="innerScope"/>
+                <test:queue name="innerScope"/>
                 <test:processor throwException="true"/>
             </until-successful>
         </until-successful>

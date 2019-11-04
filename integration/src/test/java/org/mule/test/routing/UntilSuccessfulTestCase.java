@@ -19,11 +19,11 @@ import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.functional.api.component.FunctionalTestProcessor.getFromFlow;
-import static org.mule.functional.api.component.InvocationCountMessageProcessor.getNumberOfInvocationsFor;
 import static org.mule.functional.junit4.matchers.ThrowableCauseMatcher.hasCause;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.UntilSuccessfulStory.UNTIL_SUCCESSFUL;
 import org.mule.functional.api.component.FunctionalTestProcessor;
+import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.functional.api.exception.FunctionalTestException;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.exception.MuleRuntimeException;
@@ -53,6 +53,7 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
 
+  private TestConnectorQueueHandler queueHandler;
   private FunctionalTestProcessor targetMessageProcessor;
 
   @Override
@@ -64,6 +65,7 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
   protected void doSetUp() throws Exception {
     super.doSetUp();
 
+    queueHandler = new TestConnectorQueueHandler(registry);
     targetMessageProcessor = getFromFlow(locator, "target-mp");
   }
 
@@ -78,7 +80,7 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
   public void executesOnceWhenNoErrorArises() throws Exception {
     CoreEvent response = flowRunner("happy-path-scope").run();
     assertThat(getPayloadAsString(response.getMessage()), is("pig"));
-    assertThat(getNumberOfInvocationsFor("insideScope"), is(1));
+    assertThat(queueHandler.countPendingEvents("insideScope"), is(1));
   }
 
   @Test
@@ -86,8 +88,8 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
     CoreEvent response = flowRunner("nestedUntilSuccessfulScopes").run();
     assertThat(getPayloadAsString(response.getMessage()), is("holis"));
     // Each scope was executed desired amount of times
-    assertThat(getNumberOfInvocationsFor("outerScope"), is(2));
-    assertThat(getNumberOfInvocationsFor("innerScope"), is(6));
+    assertThat(queueHandler.countPendingEvents("outerScope"), is(2));
+    assertThat(queueHandler.countPendingEvents("innerScope"), is(6));
   }
 
   @Test
@@ -186,23 +188,23 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
   public void executeSynchronouslyDoingRetries() throws Exception {
     final String payload = randomAlphanumeric(20);
     flowRunner("synchronous-with-retry").withPayload(payload).runExpectingException();
-    assertThat(getNumberOfInvocationsFor("untilSuccessful"), is(4));
-    assertThat(getNumberOfInvocationsFor("exceptionStrategy"), is(1));
+    assertThat(queueHandler.countPendingEvents("untilSuccessful"), is(4));
+    assertThat(queueHandler.countPendingEvents("exceptionStrategy"), is(1));
   }
 
   @Test
   public void executeSynchronouslyDoingExpressionRetries() throws Exception {
     flowRunner("synchronous-with-expression-retry").runExpectingException();
-    assertThat(getNumberOfInvocationsFor("untilSuccessfulExpression"), is(6));
-    assertThat(getNumberOfInvocationsFor("exceptionStrategyExpression"), is(1));
+    assertThat(queueHandler.countPendingEvents("untilSuccessfulExpression"), is(6));
+    assertThat(queueHandler.countPendingEvents("exceptionStrategyExpression"), is(1));
   }
 
   @Test
   public void executeWithoutRetrying() throws Exception {
     final String payload = randomAlphanumeric(20);
     flowRunner("synchronous-without-retry").withPayload(payload).runExpectingException();
-    assertThat(getNumberOfInvocationsFor("untilSuccessfulNoRetry"), is(1));
-    assertThat(getNumberOfInvocationsFor("exceptionStrategyNoRetry"), is(1));
+    assertThat(queueHandler.countPendingEvents("untilSuccessfulNoRetry"), is(1));
+    assertThat(queueHandler.countPendingEvents("exceptionStrategyNoRetry"), is(1));
   }
 
   /**
