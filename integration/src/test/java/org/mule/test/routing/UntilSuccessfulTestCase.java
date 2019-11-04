@@ -22,6 +22,15 @@ import static org.mule.functional.api.component.FunctionalTestProcessor.getFromF
 import static org.mule.functional.junit4.matchers.ThrowableCauseMatcher.hasCause;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.UntilSuccessfulStory.UNTIL_SUCCESSFUL;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+
 import org.mule.functional.api.component.FunctionalTestProcessor;
 import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.functional.api.exception.FunctionalTestException;
@@ -29,22 +38,16 @@ import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.event.CoreEvent;
+import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.retry.policy.RetryPolicyExhaustedException;
 import org.mule.tck.probe.JUnitLambdaProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 @Feature(ROUTERS)
 @Story(UNTIL_SUCCESSFUL)
@@ -100,6 +103,13 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
     CoreEvent response =
         flowRunner("scope-with-max-retry-expr-and-err-continue").withVariable("maxRetries", "1").run();
     assertThat(getPayloadAsString(response.getMessage()), is("holis"));
+  }
+
+  @Test
+  public void exceptionThrownFromInitializingRetryContextPropagates() throws Exception {
+    expectedException.expectMessage(containsString("You called the function '+' with these arguments"));
+    expectedException.expectCause(instanceOf(ExpressionRuntimeException.class));
+    flowRunner("scope-with-max-retry-expr-and-err-continue").withVariable("maxRetries", "gato").run();
   }
 
   @Test
