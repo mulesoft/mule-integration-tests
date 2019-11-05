@@ -14,7 +14,7 @@
 
     <properties>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
-        <munitVersion>2.2.2-SNAPSHOT</munitVersion>
+        <munitVersion>2.2.3-SNAPSHOT</munitVersion>
     </properties>
 
     <dependencies>
