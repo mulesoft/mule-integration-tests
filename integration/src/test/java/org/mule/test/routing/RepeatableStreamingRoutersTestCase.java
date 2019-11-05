@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) MuleSoft, Inc.  All rights reserved.  http://www.mulesoft.com
+ * The software in this package is published under the terms of the CPAL v1.0
+ * license, a copy of which has been included with this distribution in the
+ * LICENSE.txt file.
+ */
+
 package org.mule.test.routing;
 
 import static java.lang.String.format;
@@ -25,50 +32,51 @@ import org.mule.test.AbstractIntegrationTestCase;
 @Feature("Repeatable Streams")
 @Story("Routers working with Repeatable Streams")
 public class RepeatableStreamingRoutersTestCase extends AbstractIntegrationTestCase {
-    private static final String PAYLOAD = "{\"name\": \"tato\", \"id\": \"42\"}";
-    private static final String EXPECTED_OUTPUT = "\"tato - 42\"";
 
-    @Rule
-    public DynamicPort listenPort = new DynamicPort("port");
+  private static final String PAYLOAD = "{\"name\": \"tato\", \"id\": \"42\"}";
+  private static final String EXPECTED_OUTPUT = "\"tato - 42\"";
 
-    @Override
-    protected String getConfigFile() {
-        return "routers-with-streams-config.xml";
+  @Rule
+  public DynamicPort listenPort = new DynamicPort("port");
+
+  @Override
+  protected String getConfigFile() {
+    return "routers-with-streams-config.xml";
+  }
+
+  private void doTest(HttpEntity entity, String endpoint, String expected) throws Exception {
+    HttpPost httpPost = new HttpPost(format("http://localhost:%s/%s", listenPort.getNumber(), endpoint));
+    httpPost.setEntity(entity);
+
+    try (CloseableHttpClient client = HttpClients.createDefault()) {
+      try (CloseableHttpResponse response = client.execute(httpPost)) {
+        assertThat(response.getStatusLine().getStatusCode(), is(OK.getStatusCode()));
+        assertThat(IOUtils.toString(response.getEntity().getContent()), is(expected));
+      }
     }
+  }
 
-    private void doTest(HttpEntity entity, String endpoint, String expected) throws Exception {
-        HttpPost httpPost = new HttpPost(format("http://localhost:%s/%s", listenPort.getNumber(), endpoint));
-        httpPost.setEntity(entity);
+  @Description("Repeatable Streaming works with Scatter Gather Scope - String Payload")
+  @Test
+  public void scatterGather() throws Exception {
+    doTest(new StringEntity(PAYLOAD, APPLICATION_JSON), "scatter-gather", EXPECTED_OUTPUT);
+  }
 
-        try (CloseableHttpClient client = HttpClients.createDefault()) {
-            try (CloseableHttpResponse response = client.execute(httpPost)) {
-                assertThat(response.getStatusLine().getStatusCode(), is(OK.getStatusCode()));
-                assertThat(IOUtils.toString(response.getEntity().getContent()), is(expected));
-            }
-        }
-    }
+  @Description("Repeatable Streaming works with Scatter Gather Scope - Byte[] Payload")
+  @Test
+  public void scatterGatherByteArray() throws Exception {
+    doTest(new ByteArrayEntity(PAYLOAD.getBytes(), APPLICATION_JSON), "scatter-gather", EXPECTED_OUTPUT);
+  }
 
-    @Description("Repeatable Streaming works with Scatter Gather Scope - String Payload")
-    @Test
-    public void scatterGather() throws Exception {
-        doTest(new StringEntity(PAYLOAD, APPLICATION_JSON), "scatter-gather", EXPECTED_OUTPUT);
-    }
+  @Description("Repeatable Streaming works with Async Scope - String Payload")
+  @Test
+  public void async() throws Exception {
+    doTest(new StringEntity(PAYLOAD, APPLICATION_JSON), "async", EXPECTED_OUTPUT);
+  }
 
-    @Description("Repeatable Streaming works with Scatter Gather Scope - Byte[] Payload")
-    @Test
-    public void scatterGatherByteArray() throws Exception {
-        doTest(new ByteArrayEntity(PAYLOAD.getBytes(), APPLICATION_JSON), "scatter-gather", EXPECTED_OUTPUT);
-    }
-
-    @Description("Repeatable Streaming works with Async Scope - String Payload")
-    @Test
-    public void async() throws Exception {
-        doTest(new StringEntity(PAYLOAD, APPLICATION_JSON), "async", EXPECTED_OUTPUT);
-    }
-
-    @Description("Repeatable Streaming works with Async Scope - Byte[] Payload")
-    @Test
-    public void asyncByteArray() throws Exception {
-        doTest(new ByteArrayEntity(PAYLOAD.getBytes(), APPLICATION_JSON), "async", EXPECTED_OUTPUT);
-    }
+  @Description("Repeatable Streaming works with Async Scope - Byte[] Payload")
+  @Test
+  public void asyncByteArray() throws Exception {
+    doTest(new ByteArrayEntity(PAYLOAD.getBytes(), APPLICATION_JSON), "async", EXPECTED_OUTPUT);
+  }
 }
