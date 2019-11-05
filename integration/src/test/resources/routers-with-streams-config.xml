@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+            http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+
+    <http:listener-config name="listenerConfigBasicAuth">
+        <http:listener-connection host="localhost" port="${port}"/>
+    </http:listener-config>
+
+    <flow name="scatter-gather">
+        <http:listener config-ref="listenerConfigBasicAuth" path="/scatter-gather"/>
+        <scatter-gather>
+            <route>
+                <set-payload value="#[payload.name]"/>
+            </route>
+            <route>
+                <set-payload value="#[payload.id]"/>
+            </route>
+        </scatter-gather>
+        <set-payload value="#['&quot;' ++ payload[0].payload ++ ' - ' ++ payload[1].payload ++ '&quot;']"/>
+    </flow>
+
+    <flow name="async">
+        <http:listener config-ref="listenerConfigBasicAuth" path="/async"/>
+        <async>
+            <logger message="Hello"/>
+        </async>
+        <set-payload value="#[payload.name ++ ' - ' ++ payload.id]"/>
+    </flow>
+
+</mule>
