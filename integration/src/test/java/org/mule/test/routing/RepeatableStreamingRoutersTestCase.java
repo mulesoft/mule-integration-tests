@@ -6,6 +6,9 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.OK;
 
+import io.qameta.allure.Description;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -19,6 +22,8 @@ import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
 
+@Feature("Repeatable Streams")
+@Story("Routers working with Repeatable Streams")
 public class RepeatableStreamingRoutersTestCase extends AbstractIntegrationTestCase {
     private static final String PAYLOAD = "{\"name\": \"tato\", \"id\": \"42\"}";
     private static final String EXPECTED_OUTPUT = "\"tato - 42\"";
@@ -43,21 +48,25 @@ public class RepeatableStreamingRoutersTestCase extends AbstractIntegrationTestC
         }
     }
 
+    @Description("Repeatable Streaming works with Scatter Gather Scope - String Payload")
     @Test
     public void scatterGather() throws Exception {
         doTest(new StringEntity(PAYLOAD, APPLICATION_JSON), "scatter-gather", EXPECTED_OUTPUT);
     }
 
+    @Description("Repeatable Streaming works with Scatter Gather Scope - Byte[] Payload")
     @Test
     public void scatterGatherByteArray() throws Exception {
         doTest(new ByteArrayEntity(PAYLOAD.getBytes(), APPLICATION_JSON), "scatter-gather", EXPECTED_OUTPUT);
     }
 
+    @Description("Repeatable Streaming works with Async Scope - String Payload")
     @Test
     public void async() throws Exception {
         doTest(new StringEntity(PAYLOAD, APPLICATION_JSON), "async", EXPECTED_OUTPUT);
     }
 
+    @Description("Repeatable Streaming works with Async Scope - Byte[] Payload")
     @Test
     public void asyncByteArray() throws Exception {
         doTest(new ByteArrayEntity(PAYLOAD.getBytes(), APPLICATION_JSON), "async", EXPECTED_OUTPUT);
