@@ -48,12 +48,13 @@ import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import io.qameta.allure.Description;
-import io.qameta.allure.Feature;
-import io.qameta.allure.Story;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.Rule;
 import org.junit.Test;
+
+import io.qameta.allure.Description;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 
 @Feature(CONFIGURATION_COMPONENT_LOCATOR)
 @Story(SEARCH_CONFIGURATION)
@@ -292,12 +293,12 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
                                   "globalObjectStoreAggregatorFlow/processors/0/route/0/processors/0",
                                   "aggregatorWithMaxSizeFlow",
                                   "aggregatorWithMaxSizeFlow/processors/0",
+                                  "aggregatorWithMaxSizeFlow/processors/1",
                                   "aggregatorWithMaxSizeListenerFlow",
                                   "aggregatorWithMaxSizeListenerFlow/source",
                                   "aggregatorWithMaxSizeListenerFlow/processors/0",
                                   "aggregatorOnListenerFlow",
                                   "aggregatorOnListenerFlow/processors/0",
-                                  "aggregatorWithMaxSizeFlow/processors/1",
 
                                   "justAnotherFlowThatShouldNotBeInitialized",
                                   "justAnotherFlowThatShouldNotBeInitialized/processors/0",
@@ -601,7 +602,7 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
     flowRunner("flowFailing").runExpectingException();
 
     TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
-    assertThat(queueHandler.read("globalErrorHandlerQueue", 5000), is(notNullValue()));
+    assertThat(queueHandler.read("globalErrorHandlerQueue", RECEIVE_TIMEOUT), is(notNullValue()));
   }
 
   @Test

@@ -32,11 +32,12 @@ import org.mule.test.AbstractIntegrationTestCase;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.Rule;
+import org.junit.Test;
+
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
-import org.junit.Rule;
-import org.junit.Test;
 
 @Feature(CONFIGURATION_COMPONENT_LOCATOR)
 @Story(SEARCH_CONFIGURATION)
@@ -53,7 +54,7 @@ public class ConfigurationComponentLocatorTestCase extends AbstractIntegrationTe
   @Description("Search for a global component that do not exists return an empty optional")
   @Test
   public void globalObjectNotFound() {
-    assertThat(muleContext.getConfigurationComponentLocator().find(builder().globalName("nonExistent").build()).isPresent(),
+    assertThat(locator.find(builder().globalName("nonExistent").build()).isPresent(),
                is(false));
   }
 
@@ -61,7 +62,7 @@ public class ConfigurationComponentLocatorTestCase extends AbstractIntegrationTe
   @Test
   public void globalObjectFound() {
     Optional<Component> myFlow =
-        muleContext.getConfigurationComponentLocator().find(builder().globalName("myFlow").build());
+        locator.find(builder().globalName("myFlow").build());
     assertThat(myFlow.isPresent(), is(true));
     assertThat(myFlow.get(), instanceOf(Flow.class));
   }
@@ -70,14 +71,14 @@ public class ConfigurationComponentLocatorTestCase extends AbstractIntegrationTe
   @Test
   public void badContainerType() {
     Location location = builder().globalName("pepe").addProcessorsPart().addIndexPart(0).build();
-    assertThat(muleContext.getConfigurationComponentLocator().find(location).isPresent(), is(false));
+    assertThat(locator.find(location).isPresent(), is(false));
   }
 
   @Description("Search for a message source component by the flow component name")
   @Test
   public void sourceByPath() {
     Location sourceLocation = builder().globalName("myFlow").addSourcePart().build();
-    Optional<Component> source = muleContext.getConfigurationComponentLocator().find(sourceLocation);
+    Optional<Component> source = locator.find(sourceLocation);
     assertThat(source.isPresent(), is(true));
     assertThat(source.get(), instanceOf(MessageSource.class));
   }
@@ -87,23 +88,23 @@ public class ConfigurationComponentLocatorTestCase extends AbstractIntegrationTe
   public void messageProcessorByPath() {
     Location.Builder myFlowProcessorsLocationBuilder = builder().globalName("myFlow").addProcessorsPart();
     Optional<Component> processor =
-        muleContext.getConfigurationComponentLocator().find(myFlowProcessorsLocationBuilder.addIndexPart(0).build());
+        locator.find(myFlowProcessorsLocationBuilder.addIndexPart(0).build());
     assertThat(processor.isPresent(), is(true));
     assertThat(processor.get().getClass().getName(), equalTo("org.mule.runtime.core.internal.processor.LoggerMessageProcessor"));
-    processor = muleContext.getConfigurationComponentLocator().find(myFlowProcessorsLocationBuilder.addIndexPart(1).build());
+    processor = locator.find(myFlowProcessorsLocationBuilder.addIndexPart(1).build());
     assertThat(processor.isPresent(), is(true));
     assertThat(processor.get().getClass().getName(),
                equalTo("org.mule.runtime.core.internal.processor.simple.SetPayloadMessageProcessor"));
-    processor = muleContext.getConfigurationComponentLocator().find(myFlowProcessorsLocationBuilder.addIndexPart(2).build());
+    processor = locator.find(myFlowProcessorsLocationBuilder.addIndexPart(2).build());
     assertThat(processor.isPresent(), is(true));
     assertThat(processor.get().getClass().getName(),
                equalTo("org.mule.runtime.core.internal.processor.AsyncDelegateMessageProcessor"));
-    processor = muleContext.getConfigurationComponentLocator()
+    processor = locator
         .find(myFlowProcessorsLocationBuilder.addIndexPart(2).addProcessorsPart().addIndexPart(0).build());
     assertThat(processor.isPresent(), is(true));
     assertThat(processor.get().getClass().getName(),
                equalTo("org.mule.runtime.core.internal.processor.simple.SetPayloadMessageProcessor"));
-    processor = muleContext.getConfigurationComponentLocator()
+    processor = locator
         .find(myFlowProcessorsLocationBuilder.addIndexPart(2).addProcessorsPart().addIndexPart(1).build());
     assertThat(processor.isPresent(), is(true));
     assertThat(processor.get().getClass().getName(), equalTo("org.mule.runtime.core.internal.processor.LoggerMessageProcessor"));
@@ -112,7 +113,7 @@ public class ConfigurationComponentLocatorTestCase extends AbstractIntegrationTe
   @Description("Search all scheduler message sources within the configuration")
   @Test
   public void findAllSchedulers() {
-    List<Component> components = muleContext.getConfigurationComponentLocator().find(SCHEDULER_MESSAGE_SOURCE_IDENTIFIER);
+    List<Component> components = locator.find(SCHEDULER_MESSAGE_SOURCE_IDENTIFIER);
     assertThat(components, hasSize(3));
     assertThat(components.stream().map(component -> component.getLocation().getRootContainerName()).collect(toList()),
                hasItems("myFlow", "anotherFlow"));
@@ -122,7 +123,7 @@ public class ConfigurationComponentLocatorTestCase extends AbstractIntegrationTe
   @Test
   public void notFoundComponentByComponentIdentifierReturnsEmptyCollection() {
     List<Component> components =
-        muleContext.getConfigurationComponentLocator().find(buildFromStringRepresentation("mule:nonExistent"));
+        locator.find(buildFromStringRepresentation("mule:nonExistent"));
     assertThat(components, notNullValue());
     assertThat(components, hasSize(0));
   }
@@ -130,10 +131,10 @@ public class ConfigurationComponentLocatorTestCase extends AbstractIntegrationTe
   @Description("Search for all the components in the configuration")
   @Test
   public void findAllComponents() {
-    List<ComponentLocation> componentLocs = muleContext.getConfigurationComponentLocator().findAllLocations();
+    List<ComponentLocation> componentLocs = locator.findAllLocations();
     List<String> allComponentPaths = componentLocs.stream().map(ComponentLocation::getLocation).collect(toList());
-    assertThat(allComponentPaths, containsInAnyOrder(
-                                                     "myFlow",
+    assertThat(allComponentPaths.toString(),
+               allComponentPaths, containsInAnyOrder("myFlow",
                                                      "myFlow/source",
                                                      "myFlow/source/0/0",
                                                      "myFlow/processors/0",
