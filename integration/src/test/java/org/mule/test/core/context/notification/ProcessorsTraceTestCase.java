@@ -13,7 +13,6 @@ import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertThat;
 import static org.mule.functional.api.event.TestLegacyEventUtils.getProcessorsTrace;
-import static org.mule.runtime.core.api.config.MuleProperties.MULE_FLOW_TRACE;
 
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.notification.MessageProcessorNotification;
@@ -21,7 +20,6 @@ import org.mule.runtime.api.notification.MessageProcessorNotificationListener;
 import org.mule.runtime.core.api.context.notification.ProcessorsTrace;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
-import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.util.ArrayList;
@@ -36,7 +34,6 @@ import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.Before;
 import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
 
 public class ProcessorsTraceTestCase extends AbstractIntegrationTestCase {
@@ -63,9 +60,6 @@ public class ProcessorsTraceTestCase extends AbstractIntegrationTestCase {
       return event;
     }
   }
-
-  @Rule
-  public SystemProperty flowTraceEnabled = new SystemProperty(MULE_FLOW_TRACE, "true");
 
   @Override
   protected String getConfigFile() {
