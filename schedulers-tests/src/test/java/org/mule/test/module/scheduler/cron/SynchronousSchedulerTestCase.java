@@ -12,6 +12,7 @@ import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertThat;
+import static org.mule.tck.probe.PollingProber.probe;
 
 import org.mule.functional.api.component.EventCallback;
 import org.mule.runtime.api.component.AbstractComponent;
@@ -40,10 +41,16 @@ public class SynchronousSchedulerTestCase extends AbstractSchedulerTestCase {
   private static List<String> fooSync = new ArrayList<>();
   private static List<String> fooNonSync = new ArrayList<>();
 
+  public static CountDownLatch shutDownLatch;
+
   @Before
   public void before() {
     FooSync.latch = new CountDownLatch(2);
     FooNonSync.latch = new CountDownLatch(2);
+    shutDownLatch = new CountDownLatch(1);
+
+    fooSync.clear();
+    fooNonSync.clear();
   }
 
   @Override
@@ -53,6 +60,7 @@ public class SynchronousSchedulerTestCase extends AbstractSchedulerTestCase {
 
   @After
   public void after() throws MuleException {
+    shutDownLatch.countDown();
     ((SchedulerMessageSource) locator.find(Location.builder().globalName("nonSynchronousPoll").addSourcePart().build()).get())
         .stop();
     ((SchedulerMessageSource) locator.find(Location.builder().globalName("synchronousPoll").addSourcePart().build()).get())
@@ -68,7 +76,10 @@ public class SynchronousSchedulerTestCase extends AbstractSchedulerTestCase {
   @Test
   public void testNonSynchronous() throws InterruptedException {
     assertThat(FooNonSync.latch.await(7000, MILLISECONDS), is(true));
-    assertThat(fooNonSync, hasSize(greaterThanOrEqualTo(2)));
+    probe(10000 + RECEIVE_TIMEOUT, 100, () -> {
+      assertThat(fooNonSync, hasSize(greaterThanOrEqualTo(2)));
+      return true;
+    });
   }
 
   public static class FooNonSync extends AbstractComponent implements EventCallback {
@@ -82,7 +93,7 @@ public class SynchronousSchedulerTestCase extends AbstractSchedulerTestCase {
       synchronized (fooNonSync) {
         fooNonSync.add((String) event.getMessage().getPayload().getValue());
         try {
-          Thread.sleep(10000);
+          shutDownLatch.await(10000, MILLISECONDS);
         } catch (InterruptedException e) {
 
         }
@@ -101,7 +112,7 @@ public class SynchronousSchedulerTestCase extends AbstractSchedulerTestCase {
       synchronized (fooSync) {
         fooSync.add((String) event.getMessage().getPayload().getValue());
         try {
-          Thread.sleep(10000);
+          shutDownLatch.await(10000, MILLISECONDS);
         } catch (InterruptedException e) {
 
         }
