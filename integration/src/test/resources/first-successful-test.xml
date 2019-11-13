@@ -35,4 +35,37 @@
     <flow name="withOneWayEndpoints-handler">
         <test:queue name="WithOneWayEndpoints.out"/>
     </flow>
+
+    <flow name="nestedFirstSuccessful">
+        <first-successful>
+            <route>
+                <test:processor throwException="true"/>
+            </route>
+            <route>
+                <first-successful>
+                    <route>
+                        <test:processor throwException="true"/>
+                    </route>
+                    <route>
+                        <set-payload value="Error"/>
+                        <test:processor throwException="true"/>
+                    </route>
+                </first-successful>
+            </route>
+            <route>
+                <first-successful>
+                    <route>
+                        <test:processor throwException="true"/>
+                    </route>
+                    <route>
+                        <set-payload value="#[payload ++ ' hello']"/>
+                    </route>
+                    <route>
+                        <test:processor throwException="true"/>
+                    </route>
+                </first-successful>
+            </route>
+        </first-successful>
+        <logger message="ZARAZA" category="ERROR"/>
+    </flow>
 </mule>
