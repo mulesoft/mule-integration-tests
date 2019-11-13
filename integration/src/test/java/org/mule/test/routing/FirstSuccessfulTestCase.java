@@ -54,8 +54,8 @@ public class FirstSuccessfulTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void allRoutesFail() throws Exception {
-    expected.expectCause(hasCause(instanceOf(ValidationException.class)));
-    expected.expectErrorType("MULE", "ROUTING");
+    expected.expectCause(instanceOf(ValidationException.class));
+    expected.expectErrorType("VALIDATION", "INVALID_BOOLEAN");
     flowRunner("test-router").withPayload(Boolean.TRUE).run().getMessage();
   }
 
