@@ -12,10 +12,12 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.FirstSuccessfulStory.FIRST_SUCCESSFUL;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
+import static org.mule.functional.junit4.matchers.ThrowableCauseMatcher.hasCause;
 import org.mule.extension.validation.api.ValidationException;
 import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.functional.api.exception.ExpectedError;
 import org.mule.runtime.api.message.Message;
+import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import io.qameta.allure.Feature;
@@ -52,9 +54,15 @@ public class FirstSuccessfulTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void allRoutesFail() throws Exception {
-    expected.expectCause(instanceOf(ValidationException.class));
-    expected.expectErrorType("VALIDATION", "INVALID_BOOLEAN");
+    expected.expectCause(hasCause(instanceOf(ValidationException.class)));
+    expected.expectErrorType("MULE", "ROUTING");
     flowRunner("test-router").withPayload(Boolean.TRUE).run().getMessage();
+  }
+
+  @Test
+  public void nestedFirstSuccessful() throws Exception {
+    CoreEvent event = flowRunner("nestedFirstSuccessful").withPayload(TEST_PAYLOAD).run();
+    assertThat(event.getMessage().getPayload().getValue(), is(TEST_PAYLOAD + " hello"));
   }
 
   @Test
