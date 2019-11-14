@@ -51,7 +51,7 @@ public class AsyncTestCase extends AbstractIntegrationTestCase {
   public SystemProperty maxConcurrency = new SystemProperty("maxConcurrency", "" + MAX_CONCURRENCY);
 
   @Rule
-  // TODO MULE-: Remove this to re-enable flowTrace for this test case
+  // TODO MULE-17752: Remove this to re-enable flowTrace for this test case
   public SystemProperty disableFlowStack = new SystemProperty(MULE_FLOW_TRACE, "false");
 
   private TestConnectorQueueHandler queueHandler;
