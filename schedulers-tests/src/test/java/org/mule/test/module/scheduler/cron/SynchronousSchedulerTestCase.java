@@ -38,6 +38,7 @@ import org.junit.Test;
  */
 public class SynchronousSchedulerTestCase extends AbstractSchedulerTestCase {
 
+  private static final int PROBE_TIMEOUT = 10000 + RECEIVE_TIMEOUT;
   private static List<String> fooSync = new ArrayList<>();
   private static List<String> fooNonSync = new ArrayList<>();
 
@@ -76,7 +77,7 @@ public class SynchronousSchedulerTestCase extends AbstractSchedulerTestCase {
   @Test
   public void testNonSynchronous() throws InterruptedException {
     assertThat(FooNonSync.latch.await(7000, MILLISECONDS), is(true));
-    probe(10000 + RECEIVE_TIMEOUT, 100, () -> {
+    probe(PROBE_TIMEOUT, 100, () -> {
       assertThat(fooNonSync, hasSize(greaterThanOrEqualTo(2)));
       return true;
     });

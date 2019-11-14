@@ -41,7 +41,7 @@ public class ConnectorMessageNotificationTestCase extends AbstractNotificationTe
     HttpRequest request =
         HttpRequest.builder().uri(String.format("http://localhost:%s/path", port.getNumber())).method(POST).build();
 
-    httpClient.send(request, HttpRequestOptions.builder().responseTimeout(RECEIVE_TIMEOUT * 1000).build());
+    httpClient.send(request, HttpRequestOptions.builder().responseTimeout(RECEIVE_TIMEOUT).build());
 
     assertNotifications();
   }
