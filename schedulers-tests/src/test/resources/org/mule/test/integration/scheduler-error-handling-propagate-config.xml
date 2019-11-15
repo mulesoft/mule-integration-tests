@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xsi:schemaLocation="
+               http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+               http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+
+    <flow name="handlesErrorsPropagate">
+        <scheduler>
+            <scheduling-strategy>
+                <fixed-frequency frequency="1000" timeUnit="MILLISECONDS" />
+            </scheduling-strategy>
+        </scheduler>
+        <test:processor throwException="true"/>
+        <error-handler>
+            <on-error-propagate>
+                <test:processor>
+                    <test:callback class="org.mule.test.integration.SchedulerErrorHandlingPropagateTestCase$VerifyExecutionCallback"/>
+                </test:processor>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+
+</mule>
