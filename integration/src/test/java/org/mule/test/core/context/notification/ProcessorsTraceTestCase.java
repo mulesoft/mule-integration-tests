@@ -18,6 +18,7 @@ import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.notification.MessageProcessorNotification;
 import org.mule.runtime.api.notification.MessageProcessorNotificationListener;
 import org.mule.runtime.core.api.context.notification.ProcessorsTrace;
+import org.mule.runtime.core.api.context.notification.ServerNotificationManager;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -29,6 +30,8 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import javax.inject.Inject;
+
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
@@ -37,6 +40,9 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 public class ProcessorsTraceTestCase extends AbstractIntegrationTestCase {
+
+  @Inject
+  private ServerNotificationManager notificationManager;
 
   public static class ProcessorsTraceAsserter implements Processor {
 
@@ -68,8 +74,8 @@ public class ProcessorsTraceTestCase extends AbstractIntegrationTestCase {
 
   @Before
   public void before() {
-    muleContext.getNotificationManager().addInterfaceToType(MessageProcessorNotificationListener.class,
-                                                            MessageProcessorNotification.class);
+    notificationManager.addInterfaceToType(MessageProcessorNotificationListener.class,
+                                           MessageProcessorNotification.class);
 
     ProcessorsTraceAsserter.processorsTraceToAssert = null;
     ProcessorsTraceAsyncAsserter.latch = new CountDownLatch(1);
