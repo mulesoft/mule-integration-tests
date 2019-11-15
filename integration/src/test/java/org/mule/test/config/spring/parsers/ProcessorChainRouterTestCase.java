@@ -29,6 +29,7 @@ import java.util.concurrent.ExecutionException;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.junit.After;
 import org.junit.Test;
 
 import io.qameta.allure.Description;
@@ -72,18 +73,29 @@ public class ProcessorChainRouterTestCase extends AbstractIntegrationTestCase im
     return "org/mule/config/spring/parsers/processor-chain-router-config.xml";
   }
 
+  private ExecutionResult executionResult;
+
+  @After
+  public void after() {
+    if (executionResult != null) {
+      executionResult.complete();
+    }
+  }
+
   @Test
   public void executeCompositeRouterUsingInputEvent() throws Exception {
     InputEvent event = createInputEvent();
 
     CompletableFuture<ExecutionResult> completableFuture = compositeChainRouter.execute(event);
-    Event returnedEvent = completableFuture.get().getEvent();
+    executionResult = completableFuture.get();
+    Event returnedEvent = executionResult.getEvent();
     assertProcessorChainResult(returnedEvent);
   }
 
   @Test
   public void executeCompositeRouterUsingEvent() throws Exception {
-    Event flowResultEvent = byPassFlow.execute(createInputEvent()).get().getEvent();
+    executionResult = byPassFlow.execute(createInputEvent()).get();
+    Event flowResultEvent = executionResult.getEvent();
 
     CompletableFuture<Event> completableFuture = compositeChainRouter.execute(flowResultEvent);
     Event returnedEvent = completableFuture.get();
@@ -97,14 +109,16 @@ public class ProcessorChainRouterTestCase extends AbstractIntegrationTestCase im
 
     CompletableFuture<ExecutionResult> completableFuture = flowRefCompositeChainRouter.execute(event);
 
-    Event returnedEvent = completableFuture.get().getEvent();
+    executionResult = completableFuture.get();
+    Event returnedEvent = executionResult.getEvent();
     assertProcessorChainResult(returnedEvent);
   }
 
   @Test
   @Description("Ensure that when composite processor chain is used with more complex/async components such as nested flow-ref there are no dead-locks.")
   public void nestedFlowRefUsingEvent() throws Exception {
-    Event flowResultEvent = byPassFlow.execute(createInputEvent()).get().getEvent();
+    executionResult = byPassFlow.execute(createInputEvent()).get();
+    Event flowResultEvent = executionResult.getEvent();
 
     CompletableFuture<Event> completableFuture = flowRefCompositeChainRouter.execute(flowResultEvent);
 
@@ -118,7 +132,8 @@ public class ProcessorChainRouterTestCase extends AbstractIntegrationTestCase im
 
     CompletableFuture<ExecutionResult> completableFuture = compositeChainRouterError.execute(event);
     try {
-      completableFuture.get().getEvent();
+      executionResult = completableFuture.get();
+      executionResult.getEvent();
       fail();
     } catch (ExecutionException e) {
       ComponentExecutionException componentExecutionException = (ComponentExecutionException) e.getCause();
@@ -134,7 +149,8 @@ public class ProcessorChainRouterTestCase extends AbstractIntegrationTestCase im
     InputEvent event = createInputEvent();
 
     CompletableFuture<ExecutionResult> completableFuture = chainRouter.execute(event);
-    Event returnedEvent = completableFuture.get().getEvent();
+    executionResult = completableFuture.get();
+    Event returnedEvent = executionResult.getEvent();
     assertThat(returnedEvent, notNullValue());
     assertThat(returnedEvent.getMessage().getPayload().getValue(), is("testPayload custom"));
   }
@@ -160,7 +176,8 @@ public class ProcessorChainRouterTestCase extends AbstractIntegrationTestCase im
   public void executeChainFlowConstructDependantComponents() throws Exception {
     InputEvent event = createInputEvent();
     CompletableFuture<ExecutionResult> completableFuture = chainRouterComponents.execute(event);
-    Event returnedEvent = completableFuture.get().getEvent();
+    executionResult = completableFuture.get();
+    Event returnedEvent = executionResult.getEvent();
     assertThat(returnedEvent, notNullValue());
     TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
     assertThat(queueHandler.read("asyncQueue", RECEIVE_TIMEOUT), notNullValue());
