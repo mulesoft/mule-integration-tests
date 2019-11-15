@@ -60,7 +60,7 @@
     </flow>
 
     <flow name="timeoutFlow">
-        <logger level="WARN" message="#[java!org::mule::test::el::ExpressionLanguageFunctionsTestCase::sleepForTimeouTest()]"/>
+        <logger level="WARN" message="#[java!org::mule::test::el::ExpressionLanguageFunctionsTestCase::sleepForTimeoutTest()]"/>
     </flow>
 
     <flow name="failureHandledFlow">

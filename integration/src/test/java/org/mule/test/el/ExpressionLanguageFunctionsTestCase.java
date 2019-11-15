@@ -36,12 +36,12 @@ import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import org.junit.Rule;
-import org.junit.Test;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.junit.Rule;
+import org.junit.Test;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
@@ -238,7 +238,7 @@ public class ExpressionLanguageFunctionsTestCase extends AbstractIntegrationTest
 
   }
 
-  public static String sleepForTimeouTest() {
+  public static String sleepForTimeoutTest() {
     // just calling sleep from DW causes the thrown InterruptedException to be unhandled by DW and bubble up.
     try {
       sleep(10000L);
