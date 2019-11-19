@@ -822,6 +822,11 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     public InterceptionEvent getEvent() {
       return event;
     }
+
+    @Override
+    public String toString() {
+      return "InterceptionParameters{location: '" + location.getLocation() + "'; parameters: " + parameters + "}";
+    }
   }
 
   public static class EvaluatesExpressionInterceptorFactory implements ProcessorInterceptorFactory {
