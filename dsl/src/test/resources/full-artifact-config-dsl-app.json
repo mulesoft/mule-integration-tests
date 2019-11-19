@@ -69,7 +69,24 @@
       "kind": "CONSTRUCT",
       "customConfigurationParameters": [],
       "metadataProperties": {},
-      "parameterGroups": [],
+      "parameterGroups": [
+        {
+          "name": "General",
+          "customConfigurationParameters": [],
+          "metadataProperties": {},
+          "parameters": [
+            {
+              "name": "name",
+              "metadataProperties": {},
+              "value": {
+                "text": "referableHandler",
+                "isCData": false,
+                "type": "STRING"
+              }
+            }
+          ]
+        }
+      ],
       "components": [
         {
           "name": "onErrorContinue",
@@ -822,6 +839,15 @@
                 "isCData": false,
                 "type": "STRING"
               }
+            },
+            {
+              "name": "name",
+              "metadataProperties": {},
+              "value": {
+                "text": "testFlow",
+                "isCData": false,
+                "type": "STRING"
+              }
             }
           ]
         }
@@ -1546,7 +1572,24 @@
       "kind": "CONSTRUCT",
       "customConfigurationParameters": [],
       "metadataProperties": {},
-      "parameterGroups": [],
+      "parameterGroups": [
+        {
+          "name": "General",
+          "customConfigurationParameters": [],
+          "metadataProperties": {},
+          "parameters": [
+            {
+              "name": "name",
+              "metadataProperties": {},
+              "value": {
+                "text": "schedulerFlow",
+                "isCData": false,
+                "type": "STRING"
+              }
+            }
+          ]
+        }
+      ],
       "components": [
         {
           "name": "scheduler",
@@ -1624,7 +1667,24 @@
       "kind": "CONSTRUCT",
       "customConfigurationParameters": [],
       "metadataProperties": {},
-      "parameterGroups": [],
+      "parameterGroups": [
+        {
+          "name": "General",
+          "customConfigurationParameters": [],
+          "metadataProperties": {},
+          "parameters": [
+            {
+              "name": "name",
+              "metadataProperties": {},
+              "value": {
+                "text": "cronSchedulerFlow",
+                "isCData": false,
+                "type": "STRING"
+              }
+            }
+          ]
+        }
+      ],
       "components": [
         {
           "name": "scheduler",
@@ -1692,7 +1752,24 @@
       "kind": "CONSTRUCT",
       "customConfigurationParameters": [],
       "metadataProperties": {},
-      "parameterGroups": [],
+      "parameterGroups": [
+        {
+          "name": "General",
+          "customConfigurationParameters": [],
+          "metadataProperties": {},
+          "parameters": [
+            {
+              "name": "name",
+              "metadataProperties": {},
+              "value": {
+                "text": "fileListenerToObjectStore",
+                "isCData": false,
+                "type": "STRING"
+              }
+            }
+          ]
+        }
+      ],
       "components": [
         {
           "name": "listener",
@@ -1793,7 +1870,24 @@
       "kind": "CONSTRUCT",
       "customConfigurationParameters": [],
       "metadataProperties": {},
-      "parameterGroups": [],
+      "parameterGroups": [
+        {
+          "name": "General",
+          "customConfigurationParameters": [],
+          "metadataProperties": {},
+          "parameters": [
+            {
+              "name": "name",
+              "metadataProperties": {},
+              "value": {
+                "text": "fileListenerToObjectStoreCron",
+                "isCData": false,
+                "type": "STRING"
+              }
+            }
+          ]
+        }
+      ],
       "components": [
         {
           "name": "listener",
@@ -1889,7 +1983,24 @@
       "kind": "CONSTRUCT",
       "customConfigurationParameters": [],
       "metadataProperties": {},
-      "parameterGroups": [],
+      "parameterGroups": [
+        {
+          "name": "General",
+          "customConfigurationParameters": [],
+          "metadataProperties": {},
+          "parameters": [
+            {
+              "name": "name",
+              "metadataProperties": {},
+              "value": {
+                "text": "dbListenerToObjectStoreCron",
+                "isCData": false,
+                "type": "STRING"
+              }
+            }
+          ]
+        }
+      ],
       "components": [
         {
           "name": "listener",
@@ -2012,7 +2123,24 @@
       "kind": "CONSTRUCT",
       "customConfigurationParameters": [],
       "metadataProperties": {},
-      "parameterGroups": [],
+      "parameterGroups": [
+        {
+          "name": "General",
+          "customConfigurationParameters": [],
+          "metadataProperties": {},
+          "parameters": [
+            {
+              "name": "name",
+              "metadataProperties": {},
+              "value": {
+                "text": "testSubFlow",
+                "isCData": false,
+                "type": "STRING"
+              }
+            }
+          ]
+        }
+      ],
       "components": [
         {
           "name": "logger",
