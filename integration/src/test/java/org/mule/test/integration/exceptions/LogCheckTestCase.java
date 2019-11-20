@@ -6,11 +6,9 @@
  */
 package org.mule.test.integration.exceptions;
 
-import static org.mule.runtime.core.api.config.MuleProperties.MULE_FLOW_TRACE;
 import static org.mule.tck.junit4.rule.VerboseExceptions.setVerboseExceptions;
 
 import org.mule.runtime.api.exception.MuleException;
-import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.tck.junit4.rule.VerboseExceptions;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -32,9 +30,6 @@ public class LogCheckTestCase extends AbstractIntegrationTestCase {
   protected String getConfigFile() {
     return "org/mule/test/integration/exceptions/log-check-config.xml";
   }
-
-  @Rule
-  public SystemProperty logFlowStack = new SystemProperty(MULE_FLOW_TRACE, Boolean.toString(false));
 
   @Test
   public void runVerboseCheckEqualsVerbose() throws Exception {

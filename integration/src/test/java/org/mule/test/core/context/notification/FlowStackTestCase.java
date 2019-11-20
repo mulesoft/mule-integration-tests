@@ -10,27 +10,21 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
-import static org.mule.runtime.api.util.MuleSystemProperties.MULE_FLOW_TRACE;
 import static org.mule.tck.util.FlowTraceUtils.assertStackElements;
 import static org.mule.tck.util.FlowTraceUtils.isFlowStackElement;
 import static org.mule.tck.util.FlowTraceUtils.FlowStackAsserter.stackToAssert;
 
 import org.mule.runtime.api.notification.MessageProcessorNotification;
 import org.mule.runtime.api.notification.MessageProcessorNotificationListener;
-import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.tck.util.FlowTraceUtils.FlowStackAsyncAsserter;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.util.concurrent.CountDownLatch;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 
 public class FlowStackTestCase extends AbstractIntegrationTestCase {
-
-  @Rule
-  public SystemProperty flowTraceEnabled = new SystemProperty(MULE_FLOW_TRACE, "true");
 
   @Override
   protected String getConfigFile() {
