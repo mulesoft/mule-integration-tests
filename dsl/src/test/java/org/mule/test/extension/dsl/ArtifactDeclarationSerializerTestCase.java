@@ -6,6 +6,7 @@
  */
 package org.mule.test.extension.dsl;
 
+import static java.lang.Boolean.getBoolean;
 import static java.lang.Thread.currentThread;
 import static java.util.Arrays.asList;
 import static java.util.concurrent.TimeUnit.MINUTES;
@@ -15,6 +16,7 @@ import static org.mockito.Mockito.mock;
 import static org.mule.runtime.api.component.Component.NS_MULE_DOCUMENTATION;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 import static org.mule.runtime.api.meta.model.parameter.ParameterGroupModel.CONNECTION;
+import static org.mule.runtime.api.util.MuleSystemProperties.SYSTEM_PROPERTY_PREFIX;
 import static org.mule.runtime.app.declaration.api.fluent.ElementDeclarer.newArtifact;
 import static org.mule.runtime.app.declaration.api.fluent.ElementDeclarer.newListValue;
 import static org.mule.runtime.app.declaration.api.fluent.ElementDeclarer.newObjectValue;
@@ -24,7 +26,9 @@ import static org.mule.runtime.app.declaration.api.fluent.ParameterSimpleValue.p
 import static org.mule.runtime.app.declaration.api.fluent.SimpleValueType.BOOLEAN;
 import static org.mule.runtime.app.declaration.api.fluent.SimpleValueType.NUMBER;
 import static org.mule.runtime.app.declaration.api.fluent.SimpleValueType.STRING;
+import static org.mule.runtime.core.api.util.FileUtils.stringToFile;
 import static org.mule.runtime.core.api.util.IOUtils.getResourceAsString;
+import static org.mule.runtime.core.api.util.IOUtils.getResourceAsUrl;
 import static org.mule.runtime.extension.api.ExtensionConstants.EXPIRATION_POLICY_PARAMETER_NAME;
 import static org.mule.runtime.extension.api.ExtensionConstants.POOLING_PROFILE_PARAMETER_NAME;
 import static org.mule.runtime.extension.api.ExtensionConstants.PRIMARY_NODE_ONLY_PARAMETER_NAME;
@@ -63,9 +67,11 @@ import org.mule.runtime.core.api.retry.policy.RetryPolicyExhaustedException;
 import org.mule.runtime.extension.api.runtime.ExpirationPolicy;
 import org.mule.test.runner.RunnerDelegateTo;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.List;
 
@@ -79,6 +85,9 @@ import com.google.gson.stream.JsonReader;
 
 @RunnerDelegateTo(Parameterized.class)
 public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelTestCase {
+
+  private static final boolean UPDATE_EXPECTED_FILES_ON_ERROR =
+      getBoolean(SYSTEM_PROPERTY_PREFIX + "appJson.updateExpectedFilesOnError");
 
   private String expectedAppXml;
   private String expectedAppJson;
@@ -99,6 +108,17 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
         {"multi-flow-dsl-app.xml", createMultiFlowArtifactDeclaration(), "multi-flow-dsl-app.json"},
         {"no-mule-components-dsl-app.xml", createNoMuleComponentsArtifactDeclaration(), "no-mule-components-dsl-app.json"}
     });
+  }
+
+  /**
+   * Utility to batch fix input files when severe model changes are introduced. Use carefully, not a mechanism to get away with
+   * anything. First check why the generated json is different and make sure you're not introducing any bugs. This should NEVER be
+   * committed as true
+   *
+   * @return whether or not the "expected" test files should be updated when comparison fails
+   */
+  private boolean shouldUpdateExpectedFilesOnError() {
+    return UPDATE_EXPECTED_FILES_ON_ERROR;
   }
 
   @Before
@@ -144,7 +164,7 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
   }
 
   @Test
-  public void serializesToJson() {
+  public void serializesToJson() throws URISyntaxException, IOException {
     InputStream configIs = currentThread().getContextClassLoader().getResourceAsStream(configFile);
     ArtifactDeclarationXmlSerializer serializer = ArtifactDeclarationXmlSerializer.getDefault(dslContext);
     ArtifactDeclaration expectedDeclaration = serializer.deserialize(configIs);
@@ -152,7 +172,31 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
     ArtifactDeclarationJsonSerializer jsonSerializer = ArtifactDeclarationJsonSerializer.getDefault(true);
     String actualAppJson = jsonSerializer.serialize(expectedDeclaration);
 
-    JSONAssert.assertEquals(expectedAppJson, actualAppJson, NON_EXTENSIBLE);
+    System.out.println(actualAppJson);
+    System.out.println(actualAppJson);
+
+    try {
+      JSONAssert.assertEquals(expectedAppJson, actualAppJson, NON_EXTENSIBLE);
+    } catch (AssertionError e) {
+
+      if (shouldUpdateExpectedFilesOnError()) {
+        updateExpectedJson(actualAppJson);
+      } else {
+        System.out.println(actualAppJson);
+
+        throw e;
+      }
+    }
+  }
+
+  private void updateExpectedJson(String json) throws URISyntaxException, IOException {
+    File root = new File(getResourceAsUrl(declarationFile, getClass()).toURI()).getParentFile()
+        .getParentFile().getParentFile();
+    File testDir = new File(root, "src/test/resources");
+    File target = new File(testDir, declarationFile);
+    stringToFile(target.getAbsolutePath(), json);
+
+    System.out.println(declarationFile + " fixed");
   }
 
   @Override

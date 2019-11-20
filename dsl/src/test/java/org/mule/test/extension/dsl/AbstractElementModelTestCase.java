@@ -13,6 +13,7 @@ import static org.hamcrest.Matchers.is;
 import static org.mule.runtime.api.component.ComponentIdentifier.builder;
 import static org.mule.runtime.config.internal.dsl.xml.XmlNamespaceInfoProviderSupplier.createFromExtensionModels;
 import static org.mule.runtime.dsl.api.xml.parser.XmlConfigurationProcessor.processXmlConfiguration;
+
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.api.component.ComponentIdentifier;
 import org.mule.runtime.api.dsl.DslResolvingContext;
@@ -39,8 +40,6 @@ import org.mule.runtime.dsl.api.xml.parser.XmlConfigurationDocumentLoader;
 import org.mule.runtime.dsl.api.xml.parser.XmlParsingConfiguration;
 import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
 
-import com.google.common.collect.ImmutableSet;
-
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.List;
@@ -63,8 +62,13 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.EntityResolver;
 
-@ArtifactClassLoaderRunnerConfig(applicationSharedRuntimeLibs = {"org.apache.derby:derby", "org.apache.activemq:activemq-client",
-    "org.apache.activemq:activemq-broker", "org.apache.activemq:activemq-kahadb-store"})
+import com.google.common.collect.ImmutableSet;
+
+@ArtifactClassLoaderRunnerConfig(applicationSharedRuntimeLibs = {
+    "org.apache.derby:derby",
+    "org.apache.activemq:activemq-client",
+    "org.apache.activemq:activemq-broker",
+    "org.apache.activemq:activemq-kahadb-store"})
 public abstract class AbstractElementModelTestCase extends MuleArtifactFunctionalTestCase {
 
   protected static final String DB_CONFIG = "dbConfig";

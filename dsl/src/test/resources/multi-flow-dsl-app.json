@@ -40,7 +40,24 @@
       "kind": "CONSTRUCT",
       "customConfigurationParameters": [],
       "metadataProperties": {},
-      "parameterGroups": [],
+      "parameterGroups": [
+        {
+          "name": "General",
+          "customConfigurationParameters": [],
+          "metadataProperties": {},
+          "parameters": [
+            {
+              "name": "name",
+              "metadataProperties": {},
+              "value": {
+                "text": "send-payload",
+                "isCData": false,
+                "type": "STRING"
+              }
+            }
+          ]
+        }
+      ],
       "components": [
         {
           "name": "publish",
@@ -103,7 +120,24 @@
       "kind": "CONSTRUCT",
       "customConfigurationParameters": [],
       "metadataProperties": {},
-      "parameterGroups": [],
+      "parameterGroups": [
+        {
+          "name": "General",
+          "customConfigurationParameters": [],
+          "metadataProperties": {},
+          "parameters": [
+            {
+              "name": "name",
+              "metadataProperties": {},
+              "value": {
+                "text": "bridge",
+                "isCData": false,
+                "type": "STRING"
+              }
+            }
+          ]
+        }
+      ],
       "components": [
         {
           "name": "consume",
@@ -261,6 +295,15 @@
                 "isCData": false,
                 "type": "STRING"
               }
+            },
+            {
+              "name": "name",
+              "metadataProperties": {},
+              "value": {
+                "text": "jmsListener",
+                "isCData": false,
+                "type": "STRING"
+              }
             }
           ]
         }
@@ -356,7 +399,24 @@
       "kind": "CONSTRUCT",
       "customConfigurationParameters": [],
       "metadataProperties": {},
-      "parameterGroups": [],
+      "parameterGroups": [
+        {
+          "name": "General",
+          "customConfigurationParameters": [],
+          "metadataProperties": {},
+          "parameters": [
+            {
+              "name": "name",
+              "metadataProperties": {},
+              "value": {
+                "text": "bridge-receiver",
+                "isCData": false,
+                "type": "STRING"
+              }
+            }
+          ]
+        }
+      ],
       "components": [
         {
           "name": "consume",

@@ -6,18 +6,23 @@
  */
 package org.mule.test.extension.dsl;
 
+import static java.lang.Boolean.getBoolean;
 import static java.util.Collections.emptyList;
 import static org.mule.metadata.api.utils.MetadataTypeUtils.getDefaultValue;
 import static org.mule.runtime.api.meta.ExpressionSupport.REQUIRED;
+import static org.mule.runtime.api.util.MuleSystemProperties.SYSTEM_PROPERTY_PREFIX;
 import static org.mule.runtime.app.declaration.api.fluent.ElementDeclarer.newArtifact;
 import static org.mule.runtime.app.declaration.api.fluent.ElementDeclarer.newListValue;
 import static org.mule.runtime.app.declaration.api.fluent.ElementDeclarer.newObjectValue;
+import static org.mule.runtime.core.api.util.FileUtils.stringToFile;
 import static org.mule.runtime.core.api.util.IOUtils.getResourceAsString;
+import static org.mule.runtime.core.api.util.IOUtils.getResourceAsUrl;
 import static org.mule.runtime.extension.api.util.ExtensionMetadataTypeUtils.getAlias;
 import static org.mule.runtime.extension.api.util.ExtensionMetadataTypeUtils.getId;
 import static org.mule.runtime.extension.api.util.ExtensionModelUtils.isContent;
 import static org.mule.runtime.extension.api.util.ExtensionModelUtils.isText;
 import static org.mule.test.module.extension.internal.util.ExtensionsTestUtils.compareXML;
+
 import org.mule.metadata.api.model.ArrayType;
 import org.mule.metadata.api.model.MetadataType;
 import org.mule.metadata.api.model.NumberType;
@@ -61,8 +66,7 @@ import org.mule.runtime.core.api.extension.MuleExtensionModelProvider;
 import org.mule.runtime.extension.api.dsl.syntax.DslElementSyntax;
 import org.mule.runtime.extension.api.dsl.syntax.resolver.DslSyntaxResolver;
 
-import com.google.common.collect.ImmutableSet;
-
+import java.io.File;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -72,7 +76,12 @@ import java.util.stream.Collectors;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.google.common.collect.ImmutableSet;
+
 public class BulkArtifactDeclarationTestCase extends AbstractElementModelTestCase {
+
+  private static final boolean UPDATE_EXPECTED_FILES_ON_ERROR =
+      getBoolean(SYSTEM_PROPERTY_PREFIX + "appXml.updateExpectedFilesOnError");
 
   private ArtifactDeclarationXmlSerializer serializer;
   private DslSyntaxResolver dslResolver;
@@ -82,6 +91,7 @@ public class BulkArtifactDeclarationTestCase extends AbstractElementModelTestCas
     return new String[] {};
   }
 
+  @Override
   @Before
   public void setup() throws Exception {
     Set<ExtensionModel> extensions = muleContext.getExtensionManager().getExtensions();
@@ -90,6 +100,17 @@ public class BulkArtifactDeclarationTestCase extends AbstractElementModelTestCas
         .add(MuleExtensionModelProvider.getExtensionModel()).build());
     modelResolver = DslElementModelFactory.getDefault(dslContext);
     serializer = ArtifactDeclarationXmlSerializer.getDefault(dslContext);
+  }
+
+  /**
+   * Utility to batch fix input files when severe model changes are introduced. Use carefully, not a mechanism to get away with
+   * anything. First check why the generated json is different and make sure you're not introducing any bugs. This should NEVER be
+   * committed as true
+   *
+   * @return whether or not the "expected" test files should be updated when comparison fails
+   */
+  private boolean shouldUpdateExpectedFilesOnError() {
+    return UPDATE_EXPECTED_FILES_ON_ERROR;
   }
 
   @Test
@@ -199,8 +220,20 @@ public class BulkArtifactDeclarationTestCase extends AbstractElementModelTestCas
     String serializationResult = serializer.serialize(artifactDeclarer.getDeclaration());
     String expected = getResourceAsString("core-bulk-extension-model.xml", getClass());
 
-    compareXML(expected, serializationResult);
+    try {
+      compareXML(expected, serializationResult);
+    } catch (Throwable t) {
+      if (shouldUpdateExpectedFilesOnError()) {
+        File root = new File(getResourceAsUrl("core-bulk-extension-model.xml", getClass()).toURI()).getParentFile()
+            .getParentFile().getParentFile();
+        File testDir = new File(root, "src/test/resources");
+        File target = new File(testDir, "core-bulk-extension-model.xml");
+        stringToFile(target.getAbsolutePath(), serializationResult);
 
+        System.out.println(expected + " fixed");
+      }
+      throw t;
+    }
   }
 
   private void populateParameterized(ParameterizedModel model, ParameterizedElementDeclarer<?, ?> parameterizedDeclarer) {
