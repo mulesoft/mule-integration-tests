@@ -66,7 +66,7 @@ import io.qameta.allure.Issue;
 
 public class FlowRefTestCase extends AbstractIntegrationTestCase {
 
-  private static final String CONTEXT_DEPTH_MESSAGE = "Too many child contexts nested.";
+  private static final String CONTEXT_DEPTH_MESSAGE = "Too many nested child contexts.";
 
   @Rule
   public ExpectedError expectedException = none();
