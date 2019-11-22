@@ -15,8 +15,11 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.component.ComponentIdentifier.buildFromStringRepresentation;
-import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.*;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.builder;
+import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.FLOW;
+import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.OPERATION;
+import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.ROUTER;
+import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.SCOPE;
 import static org.mule.runtime.api.dsl.DslResolvingContext.getDefault;
 import static org.mule.runtime.api.util.collection.Collectors.toImmutableList;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.CHOICE_IDENTIFIER;
@@ -66,8 +69,6 @@ import org.mule.runtime.dsl.api.xml.parser.ParsingPropertyResolver;
 import org.mule.runtime.dsl.api.xml.parser.XmlConfigurationDocumentLoader;
 import org.mule.runtime.dsl.api.xml.parser.XmlParsingConfiguration;
 import org.mule.runtime.extension.api.loader.xml.XmlExtensionModelLoader;
-import org.mule.tck.junit4.FlakinessDetectorTestRunner;
-import org.mule.tck.junit4.FlakyTest;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.io.InputStream;
@@ -90,7 +91,6 @@ import javax.xml.parsers.SAXParserFactory;
 import org.junit.After;
 import org.junit.Test;
 import org.mule.test.runner.RunnerDelegateTo;
-import org.slf4j.LoggerFactory;
 import org.xml.sax.EntityResolver;
 
 import com.google.common.collect.ImmutableList;
@@ -104,7 +104,6 @@ import io.qameta.allure.junit4.DisplayName;
 @DisplayName("XML Connectors Path generation")
 @Feature(CONFIGURATION_COMPONENT_LOCATOR)
 @Story(COMPONENT_LOCATION)
-@RunnerDelegateTo(FlakinessDetectorTestRunner.class)
 public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
 
   private static final String COLON_SEPARATOR = ":";
@@ -586,8 +585,6 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
 
   @Description("Smart Connector inside a scatter-gather")
   @Issue("MULE-16285")
-  @FlakyTest(times = 100)
-  @Test
   public void flowWithScatterGather() throws Exception {
     flowRunner("flowWithScatterGather").run();
 
