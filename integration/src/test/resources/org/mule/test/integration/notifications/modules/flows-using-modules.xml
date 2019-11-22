@@ -109,4 +109,11 @@
         </scatter-gather>
     </flow>
 
+    <flow name="flowWithAsyncAndSmartConnector">
+        <async>
+            <simple-weirdo-prefix:set-payload-hardcoded-value/>
+            <logger level="DEBUG" message="Hello world!"/>
+        </async>
+    </flow>
+
 </mule>

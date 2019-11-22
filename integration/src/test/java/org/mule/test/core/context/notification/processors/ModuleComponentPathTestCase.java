@@ -15,11 +15,8 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.component.ComponentIdentifier.buildFromStringRepresentation;
+import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.*;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.builder;
-import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.FLOW;
-import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.OPERATION;
-import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.ROUTER;
-import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.SCOPE;
 import static org.mule.runtime.api.dsl.DslResolvingContext.getDefault;
 import static org.mule.runtime.api.util.collection.Collectors.toImmutableList;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.CHOICE_IDENTIFIER;
@@ -31,12 +28,14 @@ import static org.mule.runtime.config.api.dsl.CoreDslConstants.ROUTE_ELEMENT;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.ROUTE_IDENTIFIER;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.SCATTER_GATHER_IDENTIFIER;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.SUBFLOW_IDENTIFIER;
+import static org.mule.runtime.config.api.dsl.CoreDslConstants.ASYNC_IDENTIFIER;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.TRY_IDENTIFIER;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.UNTIL_SUCCESSFUL_IDENTIFIER;
 import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.initialiseIfNeeded;
 import static org.mule.runtime.dsl.api.xml.parser.XmlConfigurationDocumentLoader.noValidationDocumentLoader;
 import static org.mule.runtime.dsl.api.xml.parser.XmlConfigurationProcessor.processXmlConfiguration;
 import static org.mule.runtime.module.extension.api.util.MuleExtensionUtils.createDefaultExtensionManager;
+import static org.mule.tck.probe.PollingProber.check;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentLocationStory.COMPONENT_LOCATION;
 
@@ -67,6 +66,8 @@ import org.mule.runtime.dsl.api.xml.parser.ParsingPropertyResolver;
 import org.mule.runtime.dsl.api.xml.parser.XmlConfigurationDocumentLoader;
 import org.mule.runtime.dsl.api.xml.parser.XmlParsingConfiguration;
 import org.mule.runtime.extension.api.loader.xml.XmlExtensionModelLoader;
+import org.mule.tck.junit4.FlakinessDetectorTestRunner;
+import org.mule.tck.junit4.FlakyTest;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.io.InputStream;
@@ -76,6 +77,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalInt;
@@ -87,6 +89,8 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.junit.After;
 import org.junit.Test;
+import org.mule.test.runner.RunnerDelegateTo;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.EntityResolver;
 
 import com.google.common.collect.ImmutableList;
@@ -100,6 +104,7 @@ import io.qameta.allure.junit4.DisplayName;
 @DisplayName("XML Connectors Path generation")
 @Feature(CONFIGURATION_COMPONENT_LOCATOR)
 @Story(COMPONENT_LOCATION)
+@RunnerDelegateTo(FlakinessDetectorTestRunner.class)
 public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
 
   private static final String COLON_SEPARATOR = ":";
@@ -107,6 +112,8 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
   private static final String MODULE_SIMPLE_PROXY_XML = "module-simple-proxy.xml";
   private static final String FLOWS_USING_MODULE_SIMPLE_XML = "flows-using-modules.xml";
   private static final String BASE_PATH_XML_MODULES = "org/mule/test/integration/notifications/modules/";
+  private static final int POLLING_TIMEOUT = 5000;
+  private static final int POLLING_DELAY = 500;
 
   @Override
   protected String getConfigFile() {
@@ -155,7 +162,7 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
   private static final String FLOW_WITH_FOREACH_SCOPE_NAME = "flowWithForeachScope";
   private static final String FLOW_WITH_PARALLEL_FOREACH_SCOPE_NAME = "flowWithParallelForeachScope";
   private static final String FLOW_WITH_SCATTER_GATHER_NAME = "flowWithScatterGather";
-
+  private static final String FLOW_WITH_ASYNC_AND_SC_NAME = "flowWithAsyncAndSmartConnector";
   /**
    * "flows-using-modules.xml" flows defined below
    */
@@ -195,6 +202,8 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
       getFlowLocation(FLOW_WITH_PARALLEL_FOREACH_SCOPE_NAME, 95);
   private static final DefaultComponentLocation FLOW_WITH_SCATTER_GATHER =
       getFlowLocation(FLOW_WITH_SCATTER_GATHER_NAME, 101);
+  private static final DefaultComponentLocation FLOW_WITH_ASYNC_AND_SC =
+      getFlowLocation(FLOW_WITH_ASYNC_AND_SC_NAME, 112);
 
   private static Optional<TypedComponentIdentifier> getModuleOperationIdentifier(final String namespace,
                                                                                  final String identifier) {
@@ -577,6 +586,7 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
 
   @Description("Smart Connector inside a scatter-gather")
   @Issue("MULE-16285")
+  @FlakyTest(times = 100)
   @Test
   public void flowWithScatterGather() throws Exception {
     flowRunner("flowWithScatterGather").run();
@@ -620,6 +630,54 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
 
     assertNoNextProcessorNotification();
   }
+
+
+  @Description("Smart Connector inside a async scope")
+  @Issue("MULE-17020")
+  @Test
+  public void flowWithAsync() throws Exception {
+    flowRunner("flowWithAsyncAndSmartConnector").run();
+
+    DefaultComponentLocation flowComponentLocation = FLOW_WITH_ASYNC_AND_SC
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", Optional.of(builder()
+            .identifier(ASYNC_IDENTIFIER)
+            .type(SCOPE).build()), CONFIG_FILE_NAME, of(113), of(9));
+
+
+    assertNextProcessorLocationIs(flowComponentLocation);
+
+    DefaultComponentLocation nestedSetHardcodedPayloadLocation = flowComponentLocation
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(114), of(13));
+
+    DefaultComponentLocation setPayloadLocation = OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13));
+
+    DefaultComponentLocation loggerComponentLocation = flowComponentLocation
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("1", LOGGER, CONFIG_FILE_NAME, of(117), of(13));
+
+    List<String> locations = new LinkedList<>(asList(nestedSetHardcodedPayloadLocation.getLocation(),
+                                                     setPayloadLocation.getLocation(), loggerComponentLocation.getLocation()));
+
+    check(POLLING_TIMEOUT, POLLING_DELAY, () -> {
+      try {
+        ComponentLocation componentLocation = getMessageProcessorNotification().getComponent().getLocation();
+        if (locations.contains(componentLocation.getLocation())) {
+          locations.remove(locations.indexOf(componentLocation.getLocation()));
+        }
+        return locations.isEmpty();
+      } catch (AssertionError e) {
+        return false;
+      }
+    });
+
+    assertNoNextProcessorNotification();
+  }
+
+
 
   @Test
   public void flowWithSetPayloadHardcoded() throws Exception {
