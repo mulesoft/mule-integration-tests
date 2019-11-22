@@ -48,13 +48,12 @@ import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.apache.commons.lang3.reflect.FieldUtils;
-import org.junit.Rule;
-import org.junit.Test;
-
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
+import org.apache.commons.lang3.reflect.FieldUtils;
+import org.junit.Rule;
+import org.junit.Test;
 
 @Feature(CONFIGURATION_COMPONENT_LOCATOR)
 @Story(SEARCH_CONFIGURATION)
@@ -68,7 +67,7 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
   @Rule
   public DynamicPort proxyPort = new DynamicPort("http.proxy.port");
 
-  private static final int TOTAL_NUMBER_OF_LOCATIONS = 126;
+  private static final int TOTAL_NUMBER_OF_LOCATIONS = 134;
   @Inject
   private Registry registry;
 
@@ -278,6 +277,16 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
                                   "flowLvl2/processors/1",
                                   "flowRecursive",
                                   "flowRecursive/processors/0",
+
+                                  "flowRecursiveLevel0",
+                                  "flowRecursiveLevel0/processors/0",
+                                  "flowRecursiveLevel1",
+                                  "flowRecursiveLevel1/processors/0",
+                                  "flowRecursiveLevel2",
+                                  "flowRecursiveLevel2/processors/0",
+                                  "flowRecursiveLevel3",
+                                  "flowRecursiveLevel3/processors/0",
+
                                   "dbConfig",
                                   "dbConfig/0",
                                   "requestConfig",
@@ -471,6 +480,24 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
 
     assertThat(locator.find(builder().globalName("flowRecursive").build()), is(not(empty())));
     assertThat(locator.find(builder().globalName("flowRecursive").addProcessorsPart().addIndexPart(0).build()), is(not(empty())));
+  }
+
+  @Test
+  public void lazyMuleContextWithNestedRecursiveFlowRefs() {
+    lazyComponentInitializer.initializeComponent(builder().globalName("flowRecursiveLevel0").build());
+
+    assertThat(locator.find(builder().globalName("flowRecursiveLevel0").build()), is(not(empty())));
+    assertThat(locator.find(builder().globalName("flowRecursiveLevel0").addProcessorsPart().addIndexPart(0).build()),
+               is(not(empty())));
+    assertThat(locator.find(builder().globalName("flowRecursiveLevel1").build()), is(not(empty())));
+    assertThat(locator.find(builder().globalName("flowRecursiveLevel1").addProcessorsPart().addIndexPart(0).build()),
+               is(not(empty())));
+    assertThat(locator.find(builder().globalName("flowRecursiveLevel2").build()), is(not(empty())));
+    assertThat(locator.find(builder().globalName("flowRecursiveLevel2").addProcessorsPart().addIndexPart(0).build()),
+               is(not(empty())));
+    assertThat(locator.find(builder().globalName("flowRecursiveLevel3").build()), is(not(empty())));
+    assertThat(locator.find(builder().globalName("flowRecursiveLevel3").addProcessorsPart().addIndexPart(0).build()),
+               is(not(empty())));
   }
 
   @Test

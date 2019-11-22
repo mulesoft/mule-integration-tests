@@ -43,5 +43,21 @@
         <flow-ref name="flowRecursive"/>
     </flow>
 
+    <flow name="flowRecursiveLevel0">
+        <flow-ref name="flowRecursiveLevel1"/>
+    </flow>
+
+    <flow name="flowRecursiveLevel1">
+        <flow-ref name="flowRecursiveLevel2"/>
+    </flow>
+
+    <flow name="flowRecursiveLevel2">
+        <flow-ref name="flowRecursiveLevel3"/>
+    </flow>
+
+    <flow name="flowRecursiveLevel3">
+        <flow-ref name="flowRecursiveLevel0"/>
+    </flow>
+
 </mule>
 
