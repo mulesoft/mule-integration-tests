@@ -29,8 +29,6 @@ import static org.mule.test.allure.AllureConstants.InterceptonApi.ComponentInter
 import static org.mule.test.heisenberg.extension.HeisenbergConnectionProvider.getActiveConnections;
 import static org.mule.test.heisenberg.extension.HeisenbergOperations.CALL_GUS_MESSAGE;
 
-import org.mule.tck.junit4.FlakyTest;
-import org.mule.tck.junit4.FlakinessDetectorTestRunner;
 import org.mule.extension.http.api.request.validator.ResponseValidatorException;
 import org.mule.functional.api.exception.ExpectedError;
 import org.mule.functional.api.exception.FunctionalTestException;
@@ -74,13 +72,11 @@ import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
-import org.mule.test.runner.RunnerDelegateTo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Feature(INTERCEPTION_API)
 @Story(COMPONENT_INTERCEPTION_STORY)
-@RunnerDelegateTo(FlakinessDetectorTestRunner.class)
 public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTestCase {
 
   private static final int POLLING_TIMEOUT = 5000;
