@@ -90,7 +90,6 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.junit.After;
 import org.junit.Test;
-import org.mule.test.runner.RunnerDelegateTo;
 import org.xml.sax.EntityResolver;
 
 import com.google.common.collect.ImmutableList;
