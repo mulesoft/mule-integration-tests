@@ -22,18 +22,7 @@ import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentT
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.SCOPE;
 import static org.mule.runtime.api.dsl.DslResolvingContext.getDefault;
 import static org.mule.runtime.api.util.collection.Collectors.toImmutableList;
-import static org.mule.runtime.config.api.dsl.CoreDslConstants.CHOICE_IDENTIFIER;
-import static org.mule.runtime.config.api.dsl.CoreDslConstants.FLOW_IDENTIFIER;
-import static org.mule.runtime.config.api.dsl.CoreDslConstants.FLOW_REF_IDENTIFIER;
-import static org.mule.runtime.config.api.dsl.CoreDslConstants.FOREACH_IDENTIFIER;
-import static org.mule.runtime.config.api.dsl.CoreDslConstants.PARALLEL_FOREACH_IDENTIFIER;
-import static org.mule.runtime.config.api.dsl.CoreDslConstants.ROUTE_ELEMENT;
-import static org.mule.runtime.config.api.dsl.CoreDslConstants.ROUTE_IDENTIFIER;
-import static org.mule.runtime.config.api.dsl.CoreDslConstants.SCATTER_GATHER_IDENTIFIER;
-import static org.mule.runtime.config.api.dsl.CoreDslConstants.SUBFLOW_IDENTIFIER;
-import static org.mule.runtime.config.api.dsl.CoreDslConstants.ASYNC_IDENTIFIER;
-import static org.mule.runtime.config.api.dsl.CoreDslConstants.TRY_IDENTIFIER;
-import static org.mule.runtime.config.api.dsl.CoreDslConstants.UNTIL_SUCCESSFUL_IDENTIFIER;
+import static org.mule.runtime.config.api.dsl.CoreDslConstants.*;
 import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.initialiseIfNeeded;
 import static org.mule.runtime.dsl.api.xml.parser.XmlConfigurationDocumentLoader.noValidationDocumentLoader;
 import static org.mule.runtime.dsl.api.xml.parser.XmlConfigurationProcessor.processXmlConfiguration;
@@ -437,6 +426,14 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
             .addPart(ROUTE_ELEMENT)
             .addIndexPart(1).addProcessorsPart().addIndexPart(0).build().toString())
 
+        .add(Location.builder().globalName(FLOW_WITH_ASYNC_AND_SC_NAME).build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_ASYNC_AND_SC_NAME).addProcessorsPart().addIndexPart(0).build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_ASYNC_AND_SC_NAME).addProcessorsPart().addIndexPart(0)
+            .addProcessorsPart()
+            .addIndexPart(0).build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_ASYNC_AND_SC_NAME).addProcessorsPart().addIndexPart(0)
+            .addProcessorsPart()
+            .addIndexPart(1).build().toString())
         .build(), componentLocations);
   }
 
