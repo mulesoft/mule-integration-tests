@@ -20,6 +20,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
+import static org.mule.tck.probe.PollingProber.check;
 import static org.mule.functional.api.exception.ExpectedError.none;
 import static org.mule.runtime.api.interception.ProcessorInterceptorFactory.INTERCEPTORS_ORDER_REGISTRY_KEY;
 import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
@@ -71,10 +72,16 @@ import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Feature(INTERCEPTION_API)
 @Story(COMPONENT_INTERCEPTION_STORY)
 public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTestCase {
+
+  private static final int POLLING_TIMEOUT = 5000;
+  private static final int POLLING_DELAY = 500;
+  private static Logger LOGGER = LoggerFactory.getLogger(ProcessorInterceptorFactoryTestCase.class);
 
   @Rule
   public ExpectedError expectedError = none();
@@ -381,6 +388,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
 
     ComponentIdentifier scatterGatherIdentifier =
         interceptionParameters.get(0).getLocation().getComponentIdentifier().getIdentifier();
+
     ComponentIdentifier firstRoute =
         interceptionParameters.get(1).getLocation().getComponentIdentifier().getIdentifier();
 
@@ -390,13 +398,51 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     ComponentIdentifier fourthInterceptorParameter =
         interceptionParameters.get(3).getLocation().getComponentIdentifier().getIdentifier();
 
-    assertThat(asList(thirdInterceptorParameter.getName(), fourthInterceptorParameter.getName()),
-               hasItems("logger", "set-payload"));
-
     assertThat(scatterGatherIdentifier.getName(), equalTo("scatter-gather"));
 
-    assertThat(firstRoute.getNamespace(), equalTo("module-using-core"));
-    assertThat(firstRoute.getName(), equalTo("set-payload-hardcoded"));
+    if (firstRoute.getName().equals("set-payload-hardcoded")) {
+      assertThat(asList(thirdInterceptorParameter.getName(), fourthInterceptorParameter.getName()),
+                 hasItems("logger", "set-payload"));
+      assertThat(firstRoute.getNamespace(), equalTo("module-using-core"));
+    } else {
+      assertThat(asList(thirdInterceptorParameter.getName(), fourthInterceptorParameter.getName()),
+                 hasItems("set-payload-hardcoded", "set-payload"));
+
+      assertThat(firstRoute.getNamespace(), equalTo("mule"));
+      assertThat(firstRoute.getName(), equalTo("logger"));
+    }
+  }
+
+  @Description("Smart connectors inside async are not skipped properly")
+  @Issue("MULE-17020")
+  @Test
+  public void flowWithAsyncScope() throws Exception {
+    flowRunner("flowWithAsyncScope").run();
+
+    check(POLLING_TIMEOUT, POLLING_DELAY, () -> {
+      List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
+      assertThat(interceptionParameters, hasSize(3));
+
+      ComponentIdentifier asyncIdentifier =
+          interceptionParameters.get(0).getLocation().getComponentIdentifier().getIdentifier();
+
+      ComponentIdentifier smartConnectorIdentifier =
+          interceptionParameters.get(1).getLocation().getComponentIdentifier().getIdentifier();
+
+      ComponentIdentifier setPayloadIdentifier =
+          interceptionParameters.get(2).getLocation().getComponentIdentifier().getIdentifier();
+
+      assertThat(asyncIdentifier.getName(), equalTo("async"));
+
+      assertThat(smartConnectorIdentifier.getNamespace(), equalTo("module-using-core"));
+      assertThat(smartConnectorIdentifier.getName(), equalTo("set-payload-hardcoded"));
+
+      assertThat(setPayloadIdentifier.getNamespace(), equalTo("mule"));
+      assertThat(setPayloadIdentifier.getName(), equalTo("set-payload"));
+
+      return true;
+    });
+
   }
 
   @Description("Smart Connector simple operation with parameters")
@@ -775,7 +821,8 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     }
 
     @Override
-    public void before(ComponentLocation location, Map<String, ProcessorParameterValue> parameters, InterceptionEvent event) {
+    public synchronized void before(ComponentLocation location, Map<String, ProcessorParameterValue> parameters,
+                                    InterceptionEvent event) {
       parameters.values().forEach(v -> {
         try {
           v.resolveValue();
