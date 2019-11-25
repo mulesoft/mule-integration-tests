@@ -420,32 +420,27 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     flowRunner("flowWithAsyncScope").run();
 
     check(POLLING_TIMEOUT, POLLING_DELAY, () -> {
-      try {
-        List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
-        assertThat(interceptionParameters, hasSize(3));
+      List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
+      assertThat(interceptionParameters, hasSize(3));
 
-        ComponentIdentifier asyncIdentifier =
-            interceptionParameters.get(0).getLocation().getComponentIdentifier().getIdentifier();
+      ComponentIdentifier asyncIdentifier =
+          interceptionParameters.get(0).getLocation().getComponentIdentifier().getIdentifier();
 
-        ComponentIdentifier smartConnectorIdentifier =
-            interceptionParameters.get(1).getLocation().getComponentIdentifier().getIdentifier();
+      ComponentIdentifier smartConnectorIdentifier =
+          interceptionParameters.get(1).getLocation().getComponentIdentifier().getIdentifier();
 
-        ComponentIdentifier setPayloadIdentifier =
-            interceptionParameters.get(2).getLocation().getComponentIdentifier().getIdentifier();
+      ComponentIdentifier setPayloadIdentifier =
+          interceptionParameters.get(2).getLocation().getComponentIdentifier().getIdentifier();
 
-        assertThat(asyncIdentifier.getName(), equalTo("async"));
+      assertThat(asyncIdentifier.getName(), equalTo("async"));
 
-        assertThat(smartConnectorIdentifier.getNamespace(), equalTo("module-using-core"));
-        assertThat(smartConnectorIdentifier.getName(), equalTo("set-payload-hardcoded"));
+      assertThat(smartConnectorIdentifier.getNamespace(), equalTo("module-using-core"));
+      assertThat(smartConnectorIdentifier.getName(), equalTo("set-payload-hardcoded"));
 
-        assertThat(setPayloadIdentifier.getNamespace(), equalTo("mule"));
-        assertThat(setPayloadIdentifier.getName(), equalTo("set-payload"));
+      assertThat(setPayloadIdentifier.getNamespace(), equalTo("mule"));
+      assertThat(setPayloadIdentifier.getName(), equalTo("set-payload"));
 
-        return true;
-      } catch (AssertionError e) {
-        LOGGER.error(e.getMessage());
-        return false;
-      }
+      return true;
     });
 
   }

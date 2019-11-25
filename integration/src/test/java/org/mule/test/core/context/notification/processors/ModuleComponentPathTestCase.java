@@ -667,15 +667,11 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
                                                      setPayloadLocation.getLocation(), loggerComponentLocation.getLocation()));
 
     check(POLLING_TIMEOUT, POLLING_DELAY, () -> {
-      try {
-        ComponentLocation componentLocation = getMessageProcessorNotification().getComponent().getLocation();
-        if (locations.contains(componentLocation.getLocation())) {
-          locations.remove(locations.indexOf(componentLocation.getLocation()));
-        }
-        return locations.isEmpty();
-      } catch (AssertionError e) {
-        return false;
+      ComponentLocation componentLocation = getMessageProcessorNotification().getComponent().getLocation();
+      if (locations.contains(componentLocation.getLocation())) {
+        locations.remove(locations.indexOf(componentLocation.getLocation()));
       }
+      return locations.isEmpty();
     });
 
     assertNoNextProcessorNotification();
