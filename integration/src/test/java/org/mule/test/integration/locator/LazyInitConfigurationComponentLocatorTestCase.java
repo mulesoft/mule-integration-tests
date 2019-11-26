@@ -67,7 +67,7 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
   @Rule
   public DynamicPort proxyPort = new DynamicPort("http.proxy.port");
 
-  private static final int TOTAL_NUMBER_OF_LOCATIONS = 126;
+  private static final int TOTAL_NUMBER_OF_LOCATIONS = 129;
   @Inject
   private Registry registry;
 
@@ -380,7 +380,11 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
                                   "null/0",
                                   "null",
                                   "null/0",
-                                  "null/1"));
+                                  "null/1",
+
+                                  "os-config",
+                                  "os-contains-flow",
+                                  "os-contains-flow/processors/0"));
     assertThat(locator.find(builder().globalName("myFlow").build()), is(empty()));
     assertThat(locator.find(builder().globalName("anotherFlow").build()), is(empty()));
   }
