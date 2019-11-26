@@ -419,10 +419,10 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
     lazyComponentInitializer.initializeComponent(invokeBeanFlow);
 
     assertThat(locator
-                       .findAllLocations()
-                       .stream()
-                       .map(ComponentLocation::getLocation)
-                       .collect(toList()), hasItem("os-config"));
+        .findAllLocations()
+        .stream()
+        .map(ComponentLocation::getLocation)
+        .collect(toList()), hasItem("os-config"));
   }
 
   @Description("Lazy init should refresh the ConfigurationComponentLocator when initialize is done")
