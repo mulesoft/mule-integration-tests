@@ -48,13 +48,12 @@ import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.apache.commons.lang3.reflect.FieldUtils;
-import org.junit.Rule;
-import org.junit.Test;
-
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
+import org.apache.commons.lang3.reflect.FieldUtils;
+import org.junit.Rule;
+import org.junit.Test;
 
 @Feature(CONFIGURATION_COMPONENT_LOCATOR)
 @Story(SEARCH_CONFIGURATION)
@@ -82,6 +81,7 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
         "org/mule/test/integration/locator/component-locator-config.xml",
         "org/mule/test/integration/locator/component-locator-notifications.xml",
         "org/mule/test/integration/locator/component-locator-levels-config.xml",
+        "org/mule/test/integration/locator/component-locator-os-connector.xml",
         "org/mule/test/integration/locator/component-locator-spring-config.xml",
         "org/mule/test/integration/locator/component-locator-reference-component-models.xml",
         "org/mule/test/integration/locator/module-with-config-oauth.xml"};
@@ -411,6 +411,18 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
         .stream()
         .map(ComponentLocation::getLocation)
         .collect(toList()), hasItem("childBean"));
+  }
+
+  @Test
+  public void objectStoreConnectorDoesNotDefineStereotypeOnParameter() {
+    Location invokeBeanFlow = builder().globalName("os-contains-flow").addProcessorsPart().addIndexPart(0).build();
+    lazyComponentInitializer.initializeComponent(invokeBeanFlow);
+
+    assertThat(locator
+                       .findAllLocations()
+                       .stream()
+                       .map(ComponentLocation::getLocation)
+                       .collect(toList()), hasItem("os-config"));
   }
 
   @Description("Lazy init should refresh the ConfigurationComponentLocator when initialize is done")
