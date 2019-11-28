@@ -17,11 +17,10 @@ import org.mule.runtime.api.streaming.bytes.CursorStream;
 import org.mule.runtime.api.streaming.bytes.CursorStreamProvider;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.util.IOUtils;
-import org.mule.runtime.core.internal.processor.chain.ModuleOperationMessageProcessorChainBuilder.ModuleOperationProcessorChain;
-
-import org.junit.Test;
 
 import java.util.Map;
+
+import org.junit.Test;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
