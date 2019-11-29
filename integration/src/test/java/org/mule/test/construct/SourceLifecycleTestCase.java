@@ -13,6 +13,8 @@ import static org.junit.Assert.assertThat;
 import org.mule.functional.api.component.LifecycleTrackerSource;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 public class SourceLifecycleTestCase extends AbstractIntegrationTestCase {
@@ -20,6 +22,16 @@ public class SourceLifecycleTestCase extends AbstractIntegrationTestCase {
   @Override
   protected String getConfigFile() {
     return "org/mule/test/construct/source.xml";
+  }
+
+  @Before
+  public void before() {
+    LifecycleTrackerSource.clearSources();
+  }
+
+  @After
+  public void after() {
+    LifecycleTrackerSource.clearSources();
   }
 
   @Test
