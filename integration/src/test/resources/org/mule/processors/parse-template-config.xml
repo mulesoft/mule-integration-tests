@@ -150,4 +150,8 @@
         <parse-template location="org/mule/processors/invalid_encoding_template.tem" outputEncoding="US-ASCII"/>
     </flow>
 
+    <flow name="targetVariableAndValue" initialState="stopped">
+        <parse-template location="org/mule/processors/no-expression.ptem" target="someVar" targetValue="#[payload]"/>
+    </flow>
+
 </mule>

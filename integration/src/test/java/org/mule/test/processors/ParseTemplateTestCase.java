@@ -128,7 +128,7 @@ public class ParseTemplateTestCase extends AbstractIntegrationTestCase {
     String startingPayload = "Starting payload";
     CoreEvent event =
         flowRunner("with-custom-target-value").withPayload(startingPayload).withVariable("flowName", "dw-expression").run();
-    String savedPayload = (String) ((TypedValue) event.getVariables().get("targetVar").getValue()).getValue();
+    String savedPayload = (String) event.getVariables().get("targetVar").getValue();
     String previousPayload = (String) event.getMessage().getPayload().getValue();
     assertEquals(PARSED_DW_EXPRESSION, savedPayload);
     assertEquals(startingPayload, previousPayload);
@@ -147,11 +147,10 @@ public class ParseTemplateTestCase extends AbstractIntegrationTestCase {
     CoreEvent event =
         flowRunner("with-message-binding-target-value").withPayload(startingPayload).withVariable("flowName", "dw-expression")
             .run();
-    TypedValue savedTypedValue = (TypedValue) event.getVariables().get("targetVar").getValue();
-    assertEquals(savedTypedValue.getDataType().getType(), Message.class);
+    Message savedTypedValue = (Message) event.getVariables().get("targetVar").getValue();
     String previousPayload = (String) event.getMessage().getPayload().getValue();
-    assertEquals(PARSED_DW_EXPRESSION, ((Message) savedTypedValue.getValue()).getPayload().getValue());
-    assertEquals(startingPayload, previousPayload);
+    assertThat(savedTypedValue.getPayload().getValue(), is(PARSED_DW_EXPRESSION));
+    assertThat(startingPayload, is(previousPayload));
   }
 
   @Test
@@ -160,10 +159,10 @@ public class ParseTemplateTestCase extends AbstractIntegrationTestCase {
     CoreEvent event =
         flowRunner("with-payload-from-message-binding-target-value").withPayload(startingPayload)
             .withVariable("flowName", "dw-expression").run();
-    TypedValue savedTypedValue = (TypedValue) event.getVariables().get("targetVar").getValue();
+    String savedTypedValue = (String) event.getVariables().get("targetVar").getValue();
     String previousPayload = (String) event.getMessage().getPayload().getValue();
-    assertEquals(PARSED_DW_EXPRESSION, savedTypedValue.getValue());
-    assertEquals(startingPayload, previousPayload);
+    assertThat(savedTypedValue, is(PARSED_DW_EXPRESSION));
+    assertThat(startingPayload, is(previousPayload));
   }
 
   @Test
@@ -235,6 +234,13 @@ public class ParseTemplateTestCase extends AbstractIntegrationTestCase {
     CoreEvent defaultEncodingEvent = flowRunner("loadWithDefaultEncoding").run();
     assertThat(customEncodingEvent.getMessage().getPayload().getValue(),
                is(not(equalTo(defaultEncodingEvent.getMessage().getPayload()))));
+  }
+
+  @Test
+  public void targetVariableAndValue() throws Exception {
+    CoreEvent event = flowRunner("targetVariableAndValue").run();
+    String msg = (String) event.getVariables().get("someVar").getValue();
+    assertEquals(PARSED_NO_EXPRESSION, msg);
   }
 
 }
