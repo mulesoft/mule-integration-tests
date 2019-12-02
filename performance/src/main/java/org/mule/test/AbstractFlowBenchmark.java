@@ -14,7 +14,9 @@ import static org.mule.runtime.api.message.Message.of;
 import static org.mule.runtime.core.api.construct.Flow.builder;
 import static org.mule.runtime.core.api.event.EventContextFactory.create;
 import static org.mule.runtime.core.api.processor.ReactiveProcessor.ProcessingType.BLOCKING;
+import static org.mule.runtime.core.internal.exception.ErrorTypeRepositoryFactory.createDefaultErrorTypeRepository;
 import static org.mule.runtime.core.privileged.registry.LegacyRegistryUtils.registerObject;
+import static org.mule.tck.MuleTestUtils.OBJECT_ERROR_TYPE_REPO_REGISTRY_KEY;
 import static org.openjdk.jmh.annotations.Scope.Benchmark;
 import static org.openjdk.jmh.infra.Blackhole.consumeCPU;
 
@@ -51,6 +53,7 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.TearDown;
 import org.openjdk.jmh.annotations.Warmup;
+
 import reactor.core.publisher.Mono;
 
 @State(Benchmark)
@@ -220,6 +223,7 @@ public abstract class AbstractFlowBenchmark extends AbstractBenchmark {
   @Param({"10000"})
   public int maxConcurrency;
 
+  @Override
   protected MuleContext createMuleContextWithServices() throws MuleException {
     MuleContextFactory muleContextFactory = new DefaultMuleContextFactory();
     List<ConfigurationBuilder> builderList = new ArrayList<>();
@@ -234,6 +238,8 @@ public abstract class AbstractFlowBenchmark extends AbstractBenchmark {
                                         new PassThroughInvocationHandler(schedulerService)));
         DefaultExpressionLanguageFactoryService weaveExpressionExecutor = new WeaveDefaultExpressionLanguageFactoryService(null);
         registerObject(muleContext, weaveExpressionExecutor.getName(), weaveExpressionExecutor);
+
+        registerObject(muleContext, OBJECT_ERROR_TYPE_REPO_REGISTRY_KEY, createDefaultErrorTypeRepository());
       }
     });
     builderList.add(new DefaultsConfigurationBuilder());
