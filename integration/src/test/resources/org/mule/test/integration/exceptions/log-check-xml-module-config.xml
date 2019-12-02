@@ -41,8 +41,7 @@
                         Element               : xmlSdkOperationErrorNested/processors/0 @ LogCheckXmlModuleTestCase#runXmlSdkOperationErrorNested:org/mule/test/integration/exceptions/log-check-xml-module-config.xml:35
                         Element XML           : <module-using-sc:proxy-raise-error-op></module-using-sc:proxy-raise-error-op>
                         Error type            : MODULE-USING-CORE:RAISED
-                        FlowStack             : at module-using-core:raise-error-op
-                                                at module-using-sc:proxy-raise-error-op
+                        FlowStack             : at module-using-sc:proxy-raise-error-op
                                                 at xmlSdkOperationErrorNested
                         Payload               : null
                         Payload Type          : null
