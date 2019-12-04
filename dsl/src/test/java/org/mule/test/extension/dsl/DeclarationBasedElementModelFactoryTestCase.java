@@ -230,10 +230,6 @@ public class DeclarationBasedElementModelFactoryTestCase extends AbstractElement
     assertThat(connectionElement.findElement("columnTypes").isPresent(), is(false));
   }
 
-  @Test
-  public void resolutionFailsForNonTopLevelElement() throws Exception {
-    assertThat(modelResolver.create(derbyConnection).isPresent(), is(false));
-  }
 
   @Test
   public void resolveConfigNoExtraContainedElements() throws Exception {
