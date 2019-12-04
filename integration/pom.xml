@@ -18,7 +18,7 @@
 
         <eaioUuidVersion>3.4.2-MULE-001</eaioUuidVersion>
         <springSecurityVersion>5.1.0.RELEASE</springSecurityVersion>
-        <activemqVersion>5.15.3</activemqVersion>
+        <activemqVersion>5.15.11</activemqVersion>
         <hawtbufVersion>1.1</hawtbufVersion>
         <activemqProtobuf>1.1</activemqProtobuf>
     </properties>
