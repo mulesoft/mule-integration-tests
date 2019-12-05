@@ -6,16 +6,22 @@
        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
        http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
 
-    <configuration defaultErrorHandler-ref="errorHandler" />
+    <error-handler name="notEnabledErrorHandler">
+        <on-error-continue type="APP:ERROR_TYPE_4">
+            <logger/>
+        </on-error-continue>
+    </error-handler>
 
     <error-handler name="errorHandler">
         <on-error-continue type="APP:ERROR_TYPE_1">
-            <logger />
+            <logger/>
         </on-error-continue>
         <on-error-continue type="APP:ERROR_TYPE_2">
-            <logger />
+            <logger/>
         </on-error-continue>
     </error-handler>
+
+    <configuration defaultErrorHandler-ref="errorHandler"/>
 
     <flow name="mainFlow" >
         <scheduler>
@@ -27,10 +33,28 @@
         <logger/>
     </flow>
 
-    <flow name="errorMappingFlowDeclaration">
+    <flow name="errorMappingFlow">
         <http:request method="GET" config-ref="HTTP_Request_configuration">
             <error-mapping targetType="APP:ERROR_TYPE_1"/>
         </http:request>
+    </flow>
+
+    <flow name="errorMappingFlow2">
+        <http:request method="GET" config-ref="HTTP_Request_configuration">
+            <error-mapping targetType="APP:ERROR_TYPE_5"/>
+        </http:request>
+    </flow>
+
+    <http:request-config name="HTTP_Request_configuration">
+        <http:request-connection host="localhost" port="8081"/>
+    </http:request-config>
+
+    <sub-flow name="raiseErrorSubFlow">
+        <raise-error type="APP:ERROR_TYPE_1"/>
+    </sub-flow>
+
+    <flow name="notEnabledFlow">
+        <raise-error type="APP:ERROR_TYPE_3"/>
     </flow>
 
     <flow name="flowSplitterCustomErrorType">
