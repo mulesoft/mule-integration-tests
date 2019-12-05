@@ -190,16 +190,26 @@ public class DeclarationBasedElementModelFactoryTestCase extends AbstractElement
 
     DslElementModel<ConnectionProviderModel> connectionElement = getChild(configElement, derbyConnection.getName());
 
+    validateFlatConnection(connectionElement);
+
+    assertThat(configElement.getConfiguration().isPresent(), is(true));
+    assertThat(configElement.getIdentifier().isPresent(), is(true));
+
+    assertThat(configElement.findElement(newIdentifier("oracle-connection", DB_NS)).isPresent(), is(false));
+  }
+
+  @Test
+  public void resolveFlatConnectionDirectly() {
+    validateFlatConnection(resolve(derbyConnection));
+  }
+
+  private void validateFlatConnection(DslElementModel<ConnectionProviderModel> connectionElement) {
     assertElementName(connectionElement, "derby-connection");
     assertHasParameter(connectionElement.getModel(), "database");
     assertAttributeIsPresent(connectionElement, "database");
     assertHasParameter(connectionElement.getModel(), "create");
     assertAttributeIsPresent(connectionElement, "create");
 
-    assertThat(configElement.getConfiguration().isPresent(), is(true));
-    assertThat(configElement.getIdentifier().isPresent(), is(true));
-
-    assertThat(configElement.findElement(newIdentifier("oracle-connection", DB_NS)).isPresent(), is(false));
     assertThat(connectionElement.findElement(newIdentifier("connection-properties", DB_NS)).isPresent(), is(false));
   }
 
@@ -207,15 +217,19 @@ public class DeclarationBasedElementModelFactoryTestCase extends AbstractElement
   public void resolveConnectionNoExtraParameters() throws Exception {
     DslElementModel<ConfigurationModel> configElement = resolve(dbConfig);
     DslElementModel<ConnectionProviderModel> connectionElement = getChild(configElement, derbyConnection.getName());
+    validateConnectionNoExtraParameters(connectionElement);
+  }
 
+  @Test
+  public void resolveConnectionNoExtraParametersDirectly() {
+    validateConnectionNoExtraParameters(resolve(derbyConnection));
+  }
+
+  private void validateConnectionNoExtraParameters(DslElementModel<ConnectionProviderModel> connectionElement) {
     assertHasParameter(connectionElement.getModel(), "columnTypes");
     assertThat(connectionElement.findElement("columnTypes").isPresent(), is(false));
   }
 
-  @Test
-  public void resolutionFailsForNonTopLevelElement() throws Exception {
-    assertThat(modelResolver.create(derbyConnection).isPresent(), is(false));
-  }
 
   @Test
   public void resolveConfigNoExtraContainedElements() throws Exception {
@@ -235,12 +249,21 @@ public class DeclarationBasedElementModelFactoryTestCase extends AbstractElement
 
     DslElementModel<ConnectionProviderModel> connectionElement = getChild(configElement, listenerConnection.getName());
 
-    assertElementName(connectionElement, "listener-connection");
-    assertAttributeIsPresent(connectionElement, "host");
-    assertAttributeIsPresent(connectionElement, "port");
+    validateSimpleListenerConnection(connectionElement);
 
     assertThat(configElement.findElement(newIdentifier("request", HTTP_NS)).isPresent(),
                is(false));
+  }
+
+  @Test
+  public void resolveConnectionWithParametersDirectly() {
+    validateSimpleListenerConnection(resolve(listenerConnection));
+  }
+
+  private void validateSimpleListenerConnection(DslElementModel<ConnectionProviderModel> connectionElement) {
+    assertElementName(connectionElement, "listener-connection");
+    assertAttributeIsPresent(connectionElement, "host");
+    assertAttributeIsPresent(connectionElement, "port");
   }
 
   @Test
@@ -250,6 +273,18 @@ public class DeclarationBasedElementModelFactoryTestCase extends AbstractElement
 
     DslElementModel<ConnectionProviderModel> connectionElement = getChild(configElement, requestConnection.getName());
 
+    validateConnectionWithSubtypes(connectionElement);
+
+    assertThat(configElement.findElement(newIdentifier("listener", HTTP_NS)).isPresent(),
+               is(false));
+  }
+
+  @Test
+  public void resolveConnectionWithSubtypesDirectly() throws Exception {
+    validateConnectionWithSubtypes(resolve(requestConnection));
+  }
+
+  private void validateConnectionWithSubtypes(DslElementModel<ConnectionProviderModel> connectionElement) {
     assertElementName(connectionElement, "request-connection");
     assertHasParameter(connectionElement.getModel(), "host");
     assertAttributeIsPresent(connectionElement, "host");
@@ -263,9 +298,6 @@ public class DeclarationBasedElementModelFactoryTestCase extends AbstractElement
     assertElementName(basicAuthElement, "basic-authentication");
     assertThat(basicAuthElement.getDsl().isWrapped(), is(false));
     assertThat(basicAuthElement.getDsl().supportsAttributeDeclaration(), is(false));
-
-    assertThat(configElement.findElement(newIdentifier("listener", HTTP_NS)).isPresent(),
-               is(false));
   }
 
   @Test
@@ -275,6 +307,18 @@ public class DeclarationBasedElementModelFactoryTestCase extends AbstractElement
 
     DslElementModel<ConnectionProviderModel> connectionElement = getChild(configElement, requestConnection.getName());
 
+    validateConnectionWithImportedTypes(connectionElement);
+
+    assertThat(configElement.findElement(newIdentifier("listener", DB_NS)).isPresent(),
+               is(false));
+  }
+
+  @Test
+  public void resolveConnectionWithImportedTypesDirectly() {
+    validateConnectionWithImportedTypes(resolve(requestConnection));
+  }
+
+  private void validateConnectionWithImportedTypes(DslElementModel<ConnectionProviderModel> connectionElement) {
     assertElementName(connectionElement, "request-connection");
     assertHasParameter(connectionElement.getModel(), "host");
     assertAttributeIsPresent(connectionElement, "host");
@@ -290,9 +334,6 @@ public class DeclarationBasedElementModelFactoryTestCase extends AbstractElement
     assertElementName(propertiesElement, "tcp-client-socket-properties");
     assertThat(propertiesElement.getDsl().isWrapped(), is(true));
     assertThat(propertiesElement.getDsl().supportsAttributeDeclaration(), is(false));
-
-    assertThat(configElement.findElement(newIdentifier("listener", DB_NS)).isPresent(),
-               is(false));
   }
 
   @Test

@@ -74,7 +74,15 @@ public class ConfigurationBasedElementModelFactoryTestCase extends AbstractEleme
     DslElementModel<ConfigurationModel> configElement = resolve(config);
 
     DslElementModel<ConnectionProviderModel> connectionElement = getChild(configElement, config.getNestedComponents().get(0));
+    validateDefaultValueResolution(connectionElement);
+  }
 
+  @Test
+  public void defaultValueResolutionDirectly() {
+    validateDefaultValueResolution(resolve(getAppElement(applicationModel, DB_CONFIG).getNestedComponents().get(0)));
+  }
+
+  private void validateDefaultValueResolution(DslElementModel<ConnectionProviderModel> connectionElement) {
     assertElementName(connectionElement, "derby-connection");
     assertHasParameter(connectionElement.getModel(), "database");
     assertAttributeIsPresent(connectionElement, "database");
@@ -103,7 +111,18 @@ public class ConfigurationBasedElementModelFactoryTestCase extends AbstractEleme
 
     ComponentConfiguration connection = config.getNestedComponents().get(0);
     DslElementModel<ConnectionProviderModel> connectionElement = getChild(configElement, connection);
+    validateConnectionWithMapParams(connection, connectionElement);
+  }
 
+  @Test
+  public void resolveConnectionWithMapParamsDirectly() {
+    ComponentConfiguration config = getAppElement(applicationModel, DB_CONFIG);
+    ComponentConfiguration connection = config.getNestedComponents().get(0);
+    validateConnectionWithMapParams(connection, resolve(config.getNestedComponents().get(0)));
+  }
+
+  private void validateConnectionWithMapParams(ComponentConfiguration connection,
+                                               DslElementModel<ConnectionProviderModel> connectionElement) {
     assertElementName(connectionElement, "derby-connection");
     assertHasParameter(connectionElement.getModel(), "database");
     assertAttributeIsPresent(connectionElement, "database");
@@ -138,17 +157,19 @@ public class ConfigurationBasedElementModelFactoryTestCase extends AbstractEleme
     DslElementModel<ConfigurationModel> configElement = resolve(config);
 
     DslElementModel<ConnectionProviderModel> connectionElement = getChild(configElement, connection);
-
-    assertHasParameter(connectionElement.getModel(), "columnTypes");
-    assertThat(connectionElement.findElement("columnTypes").isPresent(), is(false));
+    validateConnectionNoExtraParameters(connectionElement);
   }
 
   @Test
-  public void resolutionFailsForNonTopLevelElement() throws Exception {
+  public void resolveConnectionNoExtreParametersDirectly() {
     ComponentConfiguration config = getAppElement(applicationModel, DB_CONFIG);
     ComponentConfiguration connection = config.getNestedComponents().get(0);
+    validateConnectionNoExtraParameters(resolve(connection));
+  }
 
-    assertThat(modelResolver.create(connection).isPresent(), is(false));
+  private void validateConnectionNoExtraParameters(DslElementModel<ConnectionProviderModel> connectionElement) {
+    assertHasParameter(connectionElement.getModel(), "columnTypes");
+    assertThat(connectionElement.findElement("columnTypes").isPresent(), is(false));
   }
 
   @Test
@@ -185,12 +206,22 @@ public class ConfigurationBasedElementModelFactoryTestCase extends AbstractEleme
     ComponentConfiguration connection = config.getNestedComponents().get(0);
     DslElementModel<ConnectionProviderModel> connectionElement = getChild(configElement, connection);
 
-    assertElementName(connectionElement, "listener-connection");
-    assertAttributeIsPresent(connectionElement, "host");
-    assertAttributeIsPresent(connectionElement, "port");
+    validateConfigWithParameters(connectionElement);
 
     assertThat(configElement.findElement(newIdentifier("request-connection", HTTP_NS)).isPresent(),
                is(false));
+  }
+
+  @Test
+  public void resolveConfigWithParametersDirectly() {
+    ComponentConfiguration config = getAppElement(applicationModel, HTTP_LISTENER_CONFIG);
+    validateConfigWithParameters(resolve(config.getNestedComponents().get(0)));
+  }
+
+  private void validateConfigWithParameters(DslElementModel<ConnectionProviderModel> connectionElement) {
+    assertElementName(connectionElement, "listener-connection");
+    assertAttributeIsPresent(connectionElement, "host");
+    assertAttributeIsPresent(connectionElement, "port");
   }
 
   @Test
@@ -203,6 +234,21 @@ public class ConfigurationBasedElementModelFactoryTestCase extends AbstractEleme
     ComponentConfiguration connection = config.getNestedComponents().get(0);
     DslElementModel<ConnectionProviderModel> connectionElement = getChild(configElement, connection);
 
+    validateConnectionWithSubtypes(connection, connectionElement);
+
+    assertThat(configElement.findElement(newIdentifier("listener-connection", HTTP_NS)).isPresent(),
+               is(false));
+  }
+
+  @Test
+  public void resolveConnectionWithSubtypesDirectly() {
+    ComponentConfiguration config = getAppElement(applicationModel, HTTP_REQUESTER_CONFIG);
+    ComponentConfiguration connection = config.getNestedComponents().get(0);
+    validateConnectionWithSubtypes(connection, resolve(connection));
+  }
+
+  private void validateConnectionWithSubtypes(ComponentConfiguration connection,
+                                              DslElementModel<ConnectionProviderModel> connectionElement) {
     assertElementName(connectionElement, "request-connection");
     assertHasParameter(connectionElement.getModel(), "host");
     assertAttributeIsPresent(connectionElement, "host");
@@ -217,9 +263,6 @@ public class ConfigurationBasedElementModelFactoryTestCase extends AbstractEleme
     assertElementName(basicAuthElement, "basic-authentication");
     assertThat(basicAuthElement.getDsl().isWrapped(), is(false));
     assertThat(basicAuthElement.getDsl().supportsAttributeDeclaration(), is(false));
-
-    assertThat(configElement.findElement(newIdentifier("listener-connection", HTTP_NS)).isPresent(),
-               is(false));
   }
 
   @Test
@@ -231,6 +274,24 @@ public class ConfigurationBasedElementModelFactoryTestCase extends AbstractEleme
     ComponentConfiguration connection = config.getNestedComponents().get(0);
     DslElementModel<ConnectionProviderModel> connectionElement = getChild(configElement, connection);
 
+    validateConnectionWithImportedTypes(connection, connectionElement);
+
+    assertValue(configElement.findElement("receiveBufferSize").get(), "1024");
+    assertValue(configElement.findElement("sendTcpNoDelay").get(), "true");
+
+    assertThat(configElement.findElement(newIdentifier("listener-connection", HTTP_NS)).isPresent(),
+               is(false));
+  }
+
+  @Test
+  public void resolveConnectionWithImportedTypedDirectly() {
+    ComponentConfiguration config = getAppElement(applicationModel, HTTP_REQUESTER_CONFIG);
+    ComponentConfiguration connection = config.getNestedComponents().get(0);
+    validateConnectionWithImportedTypes(connection, resolve(connection));
+  }
+
+  private void validateConnectionWithImportedTypes(ComponentConfiguration connection,
+                                                   DslElementModel<ConnectionProviderModel> connectionElement) {
     assertElementName(connectionElement, "request-connection");
     assertHasParameter(connectionElement.getModel(), "host");
     assertAttributeIsPresent(connectionElement, "host");
@@ -247,12 +308,6 @@ public class ConfigurationBasedElementModelFactoryTestCase extends AbstractEleme
     assertElementName(propertiesElement, "tcp-client-socket-properties");
     assertThat(propertiesElement.getDsl().isWrapped(), is(true));
     assertThat(propertiesElement.getDsl().supportsAttributeDeclaration(), is(false));
-
-    assertValue(configElement.findElement("receiveBufferSize").get(), "1024");
-    assertValue(configElement.findElement("sendTcpNoDelay").get(), "true");
-
-    assertThat(configElement.findElement(newIdentifier("listener-connection", HTTP_NS)).isPresent(),
-               is(false));
   }
 
   @Test
