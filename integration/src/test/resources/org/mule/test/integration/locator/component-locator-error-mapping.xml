@@ -39,6 +39,12 @@
         </http:request>
     </flow>
 
+    <flow name="errorMappingFlow2">
+        <http:request method="GET" config-ref="HTTP_Request_configuration">
+            <error-mapping targetType="APP:ERROR_TYPE_5"/>
+        </http:request>
+    </flow>
+
     <http:request-config name="HTTP_Request_configuration">
         <http:request-connection host="localhost" port="8081"/>
     </http:request-config>
