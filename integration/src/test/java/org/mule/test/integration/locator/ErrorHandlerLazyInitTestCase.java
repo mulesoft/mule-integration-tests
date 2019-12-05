@@ -78,8 +78,8 @@ public class ErrorHandlerLazyInitTestCase extends AbstractIntegrationTestCase {
   public void registerCustomErrorsFromErrorMappingOnlyOnce() {
     doCustomErrorTypesShouldDiscoveredTest(builder().globalName("errorMappingFlow").build(), "APP:ERROR_TYPE_1",
                                            "APP:ERROR_TYPE_2");
-    doCustomErrorTypesShouldDiscoveredTest(builder().globalName("errorMappingFlow2").build(), "APP:ERROR_TYPE_5",
-                                           "APP:ERROR_TYPE_2");
+    doCustomErrorTypesShouldDiscoveredTest(builder().globalName("errorMappingFlow2").build(), "APP:ERROR_TYPE_1",
+                                           "APP:ERROR_TYPE_2", "APP:ERROR_TYPE_5");
   }
 
   @Test
