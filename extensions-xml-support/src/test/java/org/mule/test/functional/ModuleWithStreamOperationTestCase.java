@@ -18,7 +18,6 @@ import org.mule.runtime.api.streaming.bytes.CursorStreamProvider;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.util.IOUtils;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.junit.Test;
