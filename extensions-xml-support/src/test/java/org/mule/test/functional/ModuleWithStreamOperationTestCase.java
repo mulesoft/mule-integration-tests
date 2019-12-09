@@ -86,6 +86,17 @@ public class ModuleWithStreamOperationTestCase extends AbstractModuleWithHttpTes
   }
 
   @Test
+  public void testHttpDoLoginAndPlainEntireStreamResponseUntilSuccessfulScope() throws Exception {
+    CoreEvent muleEvent = flowRunner("testHttpDoLoginAndPlainEntireStreamResponseUntilSuccessfulScope").run();
+    assertThat(muleEvent.getMessage().getPayload().getValue(), instanceOf(Map.class));
+    Map<String, String> resultMap = (Map<String, String>) muleEvent.getMessage().getPayload().getValue();
+    assertThat(resultMap.size(), is(3));
+    assertThat(resultMap.get("route 0"), is("User and pass validated"));
+    assertThat(resultMap.get("route 1"), is("User and pass validated"));
+    assertThat(resultMap.get("route 2"), is("User and pass validated"));
+  }
+
+  @Test
   public void testHttpDoLoginAndPlainEntireStreamResponseNestingScopesWithFailures() throws Exception {
     assertFlow("testHttpDoLoginAndPlainEntireStreamResponseNestingScopesWithFailures", SUCCESS_RESPONSE);
   }
