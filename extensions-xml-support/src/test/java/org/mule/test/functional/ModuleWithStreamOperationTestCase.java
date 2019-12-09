@@ -18,6 +18,7 @@ import org.mule.runtime.api.streaming.bytes.CursorStreamProvider;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.util.IOUtils;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.junit.Test;
@@ -82,6 +83,17 @@ public class ModuleWithStreamOperationTestCase extends AbstractModuleWithHttpTes
     assertThat(resultMap.get("route 0"), is("User and pass validated"));
     assertThat(resultMap.get("route 1").trim(),
                is("index 3:[User and pass validated] index 2:[User and pass validated] index 1:[User and pass validated]"));
+    assertThat(resultMap.get("route 2"), is("User and pass validated"));
+  }
+
+  @Test
+  public void testHttpDoLoginAndPlainEntireStreamResponseUntilSuccessfulScope() throws Exception {
+    CoreEvent muleEvent = flowRunner("testHttpDoLoginAndPlainEntireStreamResponseUntilSuccessfulScope").run();
+    assertThat(muleEvent.getMessage().getPayload().getValue(), instanceOf(Map.class));
+    Map<String, String> resultMap = (Map<String, String>) muleEvent.getMessage().getPayload().getValue();
+    assertThat(resultMap.size(), is(3));
+    assertThat(resultMap.get("route 0"), is("User and pass validated"));
+    assertThat(resultMap.get("route 1"), is("User and pass validated"));
     assertThat(resultMap.get("route 2"), is("User and pass validated"));
   }
 
