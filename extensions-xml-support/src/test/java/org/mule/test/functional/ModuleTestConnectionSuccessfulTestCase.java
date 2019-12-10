@@ -10,6 +10,7 @@ import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
+
 import org.mule.runtime.api.connection.ConnectionProvider;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.api.exception.MuleException;
@@ -22,7 +23,7 @@ import org.junit.Test;
 import org.junit.runners.Parameterized;
 
 @RunnerDelegateTo(Parameterized.class)
-public class ModuleTestConnectionSuccessfulTestCase extends AbstractXmlExtensionMuleArtifactFunctionalTestCase {
+public class ModuleTestConnectionSuccessfulTestCase extends AbstractCeXmlExtensionMuleArtifactFunctionalTestCase {
 
   @Parameterized.Parameter
   public String path;

@@ -11,6 +11,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.core.api.util.StreamingUtils.withCursoredEvent;
+
 import org.mule.extension.file.common.api.FileAttributes;
 import org.mule.runtime.api.connection.ConnectionProvider;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
@@ -32,7 +33,7 @@ import org.junit.rules.TemporaryFolder;
 import org.junit.runners.Parameterized;
 
 @RunnerDelegateTo(Parameterized.class)
-public class ModuleWithMultipleGlobalElementsTestCase extends AbstractXmlExtensionMuleArtifactFunctionalTestCase {
+public class ModuleWithMultipleGlobalElementsTestCase extends AbstractCeXmlExtensionMuleArtifactFunctionalTestCase {
 
   private static final String SUB_DIRECTORY_NAME_A = "subDirectoryA";
   private static final String SUB_DIRECTORY_NAME_B = "subDirectoryB";

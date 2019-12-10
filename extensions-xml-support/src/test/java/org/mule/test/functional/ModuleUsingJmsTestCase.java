@@ -9,10 +9,12 @@ package org.mule.test.functional;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mule.functional.junit4.matchers.MessageMatchers.hasPayload;
-import org.junit.Test;
+
 import org.mule.runtime.api.message.Message;
 
-public class ModuleUsingJmsTestCase extends AbstractXmlExtensionMuleArtifactFunctionalTestCase {
+import org.junit.Test;
+
+public class ModuleUsingJmsTestCase extends AbstractCeXmlExtensionMuleArtifactFunctionalTestCase {
 
   @Override
   protected String getModulePath() {
