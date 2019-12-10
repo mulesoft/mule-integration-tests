@@ -14,19 +14,9 @@ import static org.junit.Assert.assertThat;
 import static org.mule.runtime.config.api.SpringXmlConfigurationBuilderFactory.createConfigurationBuilder;
 import static org.mule.runtime.core.api.config.bootstrap.ArtifactType.APP;
 import static org.mule.runtime.core.api.context.notification.MuleContextNotification.CONTEXT_STARTED;
+import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.initialiseIfNeeded;
 import static org.mule.runtime.module.extension.api.loader.AbstractJavaExtensionModelLoader.TYPE_PROPERTY_NAME;
 import static org.mule.runtime.module.extension.api.loader.AbstractJavaExtensionModelLoader.VERSION;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
-
-import javax.inject.Inject;
-
-import org.junit.Rule;
 
 import org.mule.runtime.api.dsl.DslResolvingContext;
 import org.mule.runtime.api.exception.MuleException;
@@ -49,6 +39,17 @@ import org.mule.tck.config.TestServicesConfigurationBuilder;
 import org.mule.tck.junit4.AbstractMuleTestCase;
 import org.mule.test.integration.exceptions.ErrorHandlingConfigurationFailuresTestCase;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
+
+import javax.inject.Inject;
+
+import org.junit.Rule;
+
 
 public abstract class AbstractConfigurationFailuresTestCase extends AbstractMuleTestCase {
 
@@ -67,8 +68,7 @@ public abstract class AbstractConfigurationFailuresTestCase extends AbstractMule
       @Override
       protected void doConfigure(MuleContext muleContext) throws Exception {
         DefaultExtensionManager defaultExtensionManager = new DefaultExtensionManager();
-        defaultExtensionManager.setMuleContext(muleContext);
-        defaultExtensionManager.initialise();
+        initialiseIfNeeded(defaultExtensionManager, muleContext);
         getRequiredExtensions().forEach(defaultExtensionManager::registerExtension);
         muleContext.setExtensionManager(defaultExtensionManager);
       }
