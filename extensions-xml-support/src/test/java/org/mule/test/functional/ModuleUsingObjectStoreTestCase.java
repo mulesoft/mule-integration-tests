@@ -9,11 +9,13 @@ package org.mule.test.functional;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import io.qameta.allure.Description;
-import org.junit.Test;
+
 import org.mule.runtime.core.api.event.CoreEvent;
 
-public class ModuleUsingObjectStoreTestCase extends AbstractXmlExtensionMuleArtifactFunctionalTestCase {
+import io.qameta.allure.Description;
+import org.junit.Test;
+
+public class ModuleUsingObjectStoreTestCase extends AbstractCeXmlExtensionMuleArtifactFunctionalTestCase {
 
   private static final String FIRST_CONFIGURATION = "firstConfiguration";
   private static final String SECOND_CONFIGURATION = "secondConfiguration";

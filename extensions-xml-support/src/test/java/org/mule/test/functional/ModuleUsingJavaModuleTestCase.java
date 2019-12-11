@@ -11,8 +11,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import com.google.common.collect.ImmutableMap;
-import org.junit.Test;
+
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.test.functional.model.TestElement;
 
@@ -20,7 +19,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class ModuleUsingJavaModuleTestCase extends AbstractXmlExtensionMuleArtifactFunctionalTestCase {
+import com.google.common.collect.ImmutableMap;
+import org.junit.Test;
+
+public class ModuleUsingJavaModuleTestCase extends AbstractCeXmlExtensionMuleArtifactFunctionalTestCase {
 
   private static final String JAVA_KEY = "java_key";
 
