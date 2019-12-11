@@ -279,9 +279,9 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
                                   "flowRecursive",
                                   "flowRecursive/processors/0",
                                   "dbConfig",
-                                  "dbConfig/0",
+                                  "dbConfig/connection",
                                   "requestConfig",
-                                  "requestConfig/0",
+                                  "requestConfig/connection",
                                   "tlsContextRef",
                                   "tlsContextRef/0",
                                   "anonymousProxyConfig",
@@ -305,9 +305,9 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
 
                                   "tokenManagerConfig-sample-config",
                                   "github-httpreq-config-sample-config",
-                                  "github-httpreq-config-sample-config/0",
-                                  "github-httpreq-config-sample-config/0/0",
-                                  "github-httpreq-config-sample-config/0/0/0",
+                                  "github-httpreq-config-sample-config/connection",
+                                  "github-httpreq-config-sample-config/connection/0",
+                                  "github-httpreq-config-sample-config/connection/0/0",
                                   "get-channels/processors/0",
                                   "get-channels/processors/0/0",
                                   "get-channels/processors/0/1",
@@ -323,7 +323,7 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
                                   "null",
                                   "null/0",
                                   "listenerConfig",
-                                  "listenerConfig/0",
+                                  "listenerConfig/connection",
                                   "SecureUMO",
                                   "SecureUMO/source",
                                   "SecureUMO/processors/0",
@@ -347,7 +347,7 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
                                   "fileListWithMatcherReference/processors/0",
 
                                   "listenerConfigRedeliveryPolicy",
-                                  "listenerConfigRedeliveryPolicy/0",
+                                  "listenerConfigRedeliveryPolicy/connection",
                                   "redeliveryPolicyFlow",
                                   "redeliveryPolicyFlow/source",
                                   "redeliveryPolicyFlow/source/0",
@@ -545,7 +545,7 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
     lazyComponentInitializer.initializeComponents(componentLocation -> componentLocation.getLocation().equals("SecureUMO"));
 
     assertThat(locator.find(builderFromStringRepresentation("listenerConfig").build()), is(not(empty())));
-    assertThat(locator.find(Location.builderFromStringRepresentation("listenerConfig/0").build()), is(not(empty())));
+    assertThat(locator.find(Location.builderFromStringRepresentation("listenerConfig/connection").build()), is(not(empty())));
     assertThat(locator.find(builderFromStringRepresentation("SecureUMO/source").build()), is(not(empty())));
     assertThat(locator.find(builderFromStringRepresentation("SecureUMO/processors/0").build()), is(not(empty())));
     assertThat(locator.find(builderFromStringRepresentation("SecureUMO/processors/1").build()), is(not(empty())));
@@ -562,7 +562,7 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
     lazyComponentInitializer.initializeComponents(componentLocation -> componentLocation.getLocation().equals("SecureUMO2"));
 
     assertThat(locator.find(builderFromStringRepresentation("listenerConfig").build()), is(not(empty())));
-    assertThat(locator.find(Location.builderFromStringRepresentation("listenerConfig/0").build()), is(not(empty())));
+    assertThat(locator.find(Location.builderFromStringRepresentation("listenerConfig/connection").build()), is(not(empty())));
     assertThat(locator.find(builderFromStringRepresentation("SecureUMO2/source").build()), is(not(empty())));
     assertThat(locator.find(builderFromStringRepresentation("SecureUMO2/processors/0").build()), is(not(empty())));
     assertThat(locator.find(builderFromStringRepresentation("SecureUMO2/processors/1").build()), is(not(empty())));
