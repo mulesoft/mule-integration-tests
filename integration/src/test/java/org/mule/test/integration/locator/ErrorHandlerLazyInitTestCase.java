@@ -101,7 +101,8 @@ public class ErrorHandlerLazyInitTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void invalidErrorTypeOnErrorHandler() {
-    doCustomErrorTypesShouldDiscoveredTest(builder().globalName("invalidErrorTypeOnErrorHandler").build(), "ERROR_NON_EXISTING_1");
+    doCustomErrorTypesShouldDiscoveredTest(builder().globalName("invalidErrorTypeOnErrorHandler").build(),
+                                           "ERROR_NON_EXISTING_1");
   }
 
   @Test
@@ -122,6 +123,7 @@ public class ErrorHandlerLazyInitTestCase extends AbstractIntegrationTestCase {
     doCustomErrorTypesShouldDiscoveredTest(builder().globalName("raiseErrorSubFlow").build(), "APP:ERROR_TYPE_1",
                                            "APP:ERROR_TYPE_3");
   }
+
   @Test
   public void errorShouldNotBeRegisteredFromErrorHandlerNotReferenced() {
     doCustomErrorTypesShouldDiscoveredTest(builder().globalName("notEnabledErrorHandler").build(), false, "APP:ERROR_TYPE_4");

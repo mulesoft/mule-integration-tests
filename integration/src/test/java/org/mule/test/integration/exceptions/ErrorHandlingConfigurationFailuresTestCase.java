@@ -115,7 +115,8 @@ public class ErrorHandlingConfigurationFailuresTestCase extends AbstractConfigur
   @Test
   public void raisesErrorEmptyErrorTypeNotAllowed() throws Exception {
     expectedException.expect(ConfigurationException.class);
-    expectedException.expectCause(hasMessage(containsString("The value '' of attribute 'type' on element 'raise-error' is not valid with respect to its type, 'nonBlankString'")));
+    expectedException
+        .expectCause(hasMessage(containsString("The value '' of attribute 'type' on element 'raise-error' is not valid with respect to its type, 'nonBlankString'")));
     loadConfiguration("org/mule/test/integration/exceptions/raise-error-empty-type-config.xml");
   }
 
