@@ -57,5 +57,23 @@
         <raise-error type="APP:ERROR_TYPE_3"/>
     </flow>
 
+    <flow name="emptyRaiseErrorType">
+        <raise-error/>
+        <raise-error type=""/>
+    </flow>
+
+    <flow name="invalidErrorTypeOnRaiseError">
+        <raise-error type="ERROR_NON_EXISTING"/>
+    </flow>
+
+    <flow name="invalidErrorTypeOnErrorHandler">
+        <try>
+            <set-payload value="value"/>
+        </try>
+        <error-handler>
+            <on-error-continue type="ERROR_NON_EXISTING_1"/>
+        </error-handler>
+    </flow>
+
 </mule>
 

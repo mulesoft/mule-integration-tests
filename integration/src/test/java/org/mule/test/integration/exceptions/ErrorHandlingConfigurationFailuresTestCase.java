@@ -26,15 +26,6 @@ import static org.mule.runtime.module.extension.api.loader.AbstractJavaExtension
 import static org.mule.runtime.module.extension.api.loader.AbstractJavaExtensionModelLoader.VERSION;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-
 import org.mule.extension.http.internal.temporary.HttpConnector;
 import org.mule.extension.socket.api.SocketsExtension;
 import org.mule.runtime.api.dsl.DslResolvingContext;
@@ -44,8 +35,16 @@ import org.mule.runtime.core.api.config.ConfigurationException;
 import org.mule.runtime.module.extension.api.loader.java.DefaultJavaExtensionModelLoader;
 import org.mule.test.integration.AbstractConfigurationFailuresTestCase;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 @Feature(ERROR_HANDLING)
 @Story("Validations")
@@ -111,6 +110,13 @@ public class ErrorHandlingConfigurationFailuresTestCase extends AbstractConfigur
     expectedException.expect(InitialisationException.class);
     expectedException.expectCause(hasMessage(equalTo(notFound(SOURCE_ERROR_IDENTIFIER))));
     loadConfiguration("org/mule/test/integration/exceptions/source-error-response-filtering-config.xml");
+  }
+
+  @Test
+  public void raisesErrorEmptyErrorTypeNotAllowed() throws Exception {
+    expectedException.expect(ConfigurationException.class);
+    expectedException.expectCause(hasMessage(containsString("The value '' of attribute 'type' on element 'raise-error' is not valid with respect to its type, 'nonBlankString'")));
+    loadConfiguration("org/mule/test/integration/exceptions/raise-error-empty-type-config.xml");
   }
 
   @Test

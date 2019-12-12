@@ -8,9 +8,11 @@ package org.mule.test.integration.locator;
 
 import static java.util.Arrays.stream;
 import static java.util.Optional.empty;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertThat;
+import static org.junit.rules.ExpectedException.none;
 import static org.mule.runtime.api.component.location.Location.builder;
 import static org.mule.runtime.config.api.LazyComponentInitializer.LAZY_COMPONENT_INITIALIZER_SERVICE_KEY;
 import static org.mule.runtime.config.api.SpringXmlConfigurationBuilderFactory.createConfigurationBuilder;
@@ -21,6 +23,8 @@ import org.mule.runtime.api.artifact.Registry;
 import org.mule.runtime.api.component.ComponentIdentifier;
 import org.mule.runtime.api.component.location.Location;
 import org.mule.runtime.api.exception.ErrorTypeRepository;
+import org.mule.runtime.api.exception.MuleRuntimeException;
+import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.api.message.ErrorType;
 import org.mule.runtime.config.api.LazyComponentInitializer;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
@@ -33,7 +37,9 @@ import javax.inject.Named;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 @Feature(CONFIGURATION_COMPONENT_LOCATOR)
 @Story(SEARCH_CONFIGURATION)
@@ -45,6 +51,9 @@ public class ErrorHandlerLazyInitTestCase extends AbstractIntegrationTestCase {
   @Inject
   @Named(value = LAZY_COMPONENT_INITIALIZER_SERVICE_KEY)
   private LazyComponentInitializer lazyComponentInitializer;
+
+  @Rule
+  public ExpectedException expectedException = none();
 
   @Override
   protected String[] getConfigFiles() {
@@ -75,6 +84,27 @@ public class ErrorHandlerLazyInitTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
+  public void emptyRaiseErrorType() {
+    expectedException.expect(MuleRuntimeException.class);
+    expectedException.expectCause(instanceOf(InitialisationException.class));
+    expectedException.expectMessage("type cannot be an empty string or null");
+    doCustomErrorTypesShouldDiscoveredTest(builder().globalName("emptyRaiseErrorType").build());
+  }
+
+  @Test
+  public void invalidErrorTypeOnRaiseError() {
+    expectedException.expect(MuleRuntimeException.class);
+    expectedException.expectCause(instanceOf(InitialisationException.class));
+    expectedException.expectMessage("Could not find error 'ERROR_NON_EXISTING'");
+    doCustomErrorTypesShouldDiscoveredTest(builder().globalName("invalidErrorTypeOnRaiseError").build());
+  }
+
+  @Test
+  public void invalidErrorTypeOnErrorHandler() {
+    doCustomErrorTypesShouldDiscoveredTest(builder().globalName("invalidErrorTypeOnErrorHandler").build(), "ERROR_NON_EXISTING_1");
+  }
+
+  @Test
   public void registerCustomErrorsFromErrorMappingOnlyOnce() {
     doCustomErrorTypesShouldDiscoveredTest(builder().globalName("errorMappingFlow").build(), "APP:ERROR_TYPE_1",
                                            "APP:ERROR_TYPE_2");
@@ -92,7 +122,6 @@ public class ErrorHandlerLazyInitTestCase extends AbstractIntegrationTestCase {
     doCustomErrorTypesShouldDiscoveredTest(builder().globalName("raiseErrorSubFlow").build(), "APP:ERROR_TYPE_1",
                                            "APP:ERROR_TYPE_3");
   }
-
   @Test
   public void errorShouldNotBeRegisteredFromErrorHandlerNotReferenced() {
     doCustomErrorTypesShouldDiscoveredTest(builder().globalName("notEnabledErrorHandler").build(), false, "APP:ERROR_TYPE_4");
