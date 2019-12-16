@@ -22,15 +22,8 @@ import static org.mule.runtime.core.api.exception.Errors.ComponentIdentifiers.Ha
 import static org.mule.runtime.core.api.exception.Errors.ComponentIdentifiers.Handleable.UNKNOWN;
 import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
 import static org.mule.tck.junit4.matcher.HasClassInHierarchy.withClassName;
-import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ParallelForEachStory.PARALLEL_FOR_EACH;
-
-import java.util.List;
-import java.util.Set;
-
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 
 import org.mule.functional.api.exception.FunctionalTestException;
 import org.mule.runtime.api.component.AbstractComponent;
@@ -43,9 +36,15 @@ import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import java.util.List;
+import java.util.Set;
+
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 @Feature(ROUTERS)
 @Story(PARALLEL_FOR_EACH)
@@ -142,8 +141,7 @@ public class ParallelForEachTestCase extends AbstractIntegrationTestCase {
   @Description("An error in a route results in a CompositeRoutingException containing details of exceptions.")
   public void routeWithExpressionException() {
     assertRouteException("routeWithExpressionException", EXCEPTION_MESSAGE_TITLE_PREFIX
-        + "\t1: org.mule.runtime.core.api.expression.ExpressionRuntimeException: \"Script 'invalidExpr ' has errors: \n"
-        + "\tUnable to resolve reference of invalidExpr. at 1 : 1\" evaluating expression: \"invalidExpr\".",
+        + "\t1: org.mule.runtime.core.api.expression.ExpressionRuntimeException: Script 'invalidExpr ' has errors:",
                          ExpressionRuntimeException.class, EXPRESSION);
   }
 
