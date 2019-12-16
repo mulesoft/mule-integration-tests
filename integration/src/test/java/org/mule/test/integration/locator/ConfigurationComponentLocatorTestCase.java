@@ -163,7 +163,7 @@ public class ConfigurationComponentLocatorTestCase extends AbstractIntegrationTe
                                                      "fileListWithMatcherReference/processors/0",
                                                      "Matcher",
                                                      "listenerConfigRedeliveryPolicy",
-                                                     "listenerConfigRedeliveryPolicy/0",
+                                                     "listenerConfigRedeliveryPolicy/connection",
                                                      "redeliveryPolicyFlow",
                                                      "redeliveryPolicyFlow/source",
                                                      "redeliveryPolicyFlow/source/0",
