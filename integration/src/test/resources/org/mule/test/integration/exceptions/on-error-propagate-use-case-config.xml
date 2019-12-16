@@ -16,7 +16,7 @@
     <object name="error" class="org.mule.test.integration.exceptions.OnErrorPropagateTestCase$ErrorProcessor"/>
     
     <flow name="onErrorPropagateTypeMatch">
-        <append-string-transformer message=" apt1"/>
+        <set-payload value="#[payload ++ ' apt1']"/>
         <flow-ref name="raiseRoutingErrorFlow"/>
         <error-handler>
             <on-error-propagate type="REDELIVERY_EXHAUSTED">
@@ -32,7 +32,7 @@
     </flow>
 
     <flow name="onErrorPropagateTypeMatchAny">
-        <append-string-transformer message=" apt1"/>
+        <set-payload value="#[payload ++ ' apt1']"/>
         <test:processor throwException="true"/>
         <error-handler>
             <on-error-propagate type="REDELIVERY_EXHAUSTED">
@@ -46,13 +46,13 @@
 
     <flow name="onErrorPropagateTypeMatchSeveral">
         <choice>
-            <when expression="#[mel:payload]">
-                <append-string-transformer message=" apt1"/>
+            <when expression="#[payload]">
+                <set-payload value="#[payload ++ ' apt1']"/>
                 <flow-ref name="raiseRoutingErrorFlow"/>
             </when>
             <otherwise>
-                <append-string-transformer message=" apt1"/>
-                <expression-transformer expression="#[mel:payload.nope]"/>
+                <set-payload value="#[payload ++ ' apt1']"/>
+                <raise-error type="TRANSFORMATION"/>
             </otherwise>
         </choice>
         <error-handler>
@@ -67,13 +67,13 @@
 
     <flow name="onErrorPropagateTypeMatchNameWildcard">
         <choice>
-            <when expression="#[mel:payload]">
-                <append-string-transformer message=" apt1"/>
+            <when expression="#[payload]">
+                <set-payload value="#[payload ++ ' apt1']"/>
                 <flow-ref name="raiseRoutingErrorFlow"/>
             </when>
             <otherwise>
-                <append-string-transformer message=" apt1"/>
-                <expression-transformer expression="#[mel:payload.nope]"/>
+                <set-payload value="#[payload ++ ' apt1']"/>
+                <raise-error type="TRANSFORMATION"/>
             </otherwise>
         </choice>
         <error-handler>
@@ -88,13 +88,13 @@
 
     <flow name="onErrorPropagateTypeMatchNamespaceWildcard">
         <choice>
-            <when expression="#[mel:payload]">
-                <append-string-transformer message=" apt1"/>
+            <when expression="#[payload]">
+                <set-payload value="#[payload ++ ' apt1']"/>
                 <flow-ref name="raiseRoutingErrorFlow"/>
             </when>
             <otherwise>
-                <append-string-transformer message=" apt1"/>
-                <expression-transformer expression="#[mel:payload.nope]"/>
+                <set-payload value="#[payload ++ ' apt1']"/>
+                <raise-error type="TRANSFORMATION"/>
             </otherwise>
         </choice>
         <error-handler>
@@ -108,7 +108,7 @@
     </flow>
 
     <flow name="onErrorPropagateMessage">
-        <append-string-transformer message=" apt1"/>
+        <set-payload value="#[payload ++ ' apt1']"/>
         <flow-ref name="raiseRoutingErrorFlow"/>
         <error-handler>
             <on-error-propagate>
@@ -131,7 +131,7 @@
         <http:listener path="sourceError" config-ref="listenerConfig">
             <http:response statusCode="#['notANumber']"/>
         </http:listener>
-        <append-string-transformer message=" hey"/>
+        <set-payload value="#[payload ++ ' hey']"/>
         <error-handler>
             <on-error-propagate>
                 <test:queue name="out"/>

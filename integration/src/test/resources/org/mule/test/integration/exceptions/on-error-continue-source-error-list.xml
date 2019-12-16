@@ -11,7 +11,7 @@
         <object-to-string-transformer/>
         <error-handler>
             <on-error-continue type="EXPRESSION, SOURCE_RESPONSE, CONNECTIVITY">
-                <append-string-transformer message=" nope"/>
+                <set-payload value="#[payload ++ ' nope']"/>
             </on-error-continue>
         </error-handler>
     </flow>

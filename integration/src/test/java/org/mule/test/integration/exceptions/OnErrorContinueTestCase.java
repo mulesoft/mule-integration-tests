@@ -22,6 +22,7 @@ import static org.mule.runtime.http.api.HttpConstants.Method.POST;
 import static org.mule.runtime.http.api.HttpConstants.Protocol.HTTP;
 import static org.mule.runtime.http.api.HttpConstants.Protocol.HTTPS;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
+
 import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.exception.DefaultMuleException;
@@ -57,19 +58,19 @@ import javax.jws.WebParam;
 import javax.jws.WebResult;
 import javax.jws.WebService;
 
-import io.qameta.allure.Feature;
-import io.qameta.allure.Story;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
+
 @Feature(ERROR_HANDLING)
 @Story("On Error Continue")
 public class OnErrorContinueTestCase extends AbstractIntegrationTestCase {
 
-  public static final int TIMEOUT = 5000;
   public static final String ERROR_PROCESSING_NEWS = "error processing news";
   public static final String JSON_RESPONSE =
       "{\"errorMessage\":\"error processing news\",\"userId\":15,\"title\":\"News title\"}";
@@ -128,7 +129,7 @@ public class OnErrorContinueTestCase extends AbstractIntegrationTestCase {
         .entity(new ByteArrayHttpEntity(JSON_REQUEST.getBytes())).build();
 
     final HttpEntity response = httpClient
-        .send(request, HttpRequestOptions.builder().responseTimeout(TIMEOUT).followsRedirect(false).build()).getEntity();
+        .send(request, HttpRequestOptions.builder().responseTimeout(RECEIVE_TIMEOUT).followsRedirect(false).build()).getEntity();
 
     assertResponse(response);
   }
@@ -219,7 +220,7 @@ public class OnErrorContinueTestCase extends AbstractIntegrationTestCase {
     HttpRequest request = HttpRequest.builder().uri(getUrl(HTTP, dynamicPort1, "sourceError")).method(POST)
         .entity(new ByteArrayHttpEntity(TEST_MESSAGE.getBytes())).build();
     final HttpResponse response =
-        httpClient.send(request, HttpRequestOptions.builder().responseTimeout(TIMEOUT).followsRedirect(false).build());
+        httpClient.send(request, HttpRequestOptions.builder().responseTimeout(RECEIVE_TIMEOUT).followsRedirect(false).build());
 
     assertThat(response.getStatusCode(), is(INTERNAL_SERVER_ERROR.getStatusCode()));
     TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);

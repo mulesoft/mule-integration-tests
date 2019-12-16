@@ -211,7 +211,7 @@
 
     <sub-flow name="captureThreadAndWait">
         <custom-processor class="org.mule.test.routing.ParallelForEachTestCase$ThreadCaptor"/>
-        <expression-component>mel:flowVars['latch'].await()</expression-component>
+        <expression-component>vars['latch'].await()</expression-component>
     </sub-flow>
 
     <sub-flow name="testListAggregation">

@@ -10,7 +10,7 @@
 
     <error-handler name="noCatchAllErrorHandler">
         <on-error-continue type="CONNECTIVITY">
-            <append-string-transformer message="append"/>
+            <set-payload value="#[payload ++ 'append']"/>
         </on-error-continue>
     </error-handler>
 
