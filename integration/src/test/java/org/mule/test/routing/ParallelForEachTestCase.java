@@ -14,6 +14,8 @@ import static org.apache.commons.io.IOUtils.LINE_SEPARATOR;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.startsWith;
+import static org.hamcrest.Matchers.both;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
@@ -38,6 +40,7 @@ import org.mule.test.AbstractIntegrationTestCase;
 
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
@@ -140,9 +143,11 @@ public class ParallelForEachTestCase extends AbstractIntegrationTestCase {
   @Test
   @Description("An error in a route results in a CompositeRoutingException containing details of exceptions.")
   public void routeWithExpressionException() {
-    assertRouteException("routeWithExpressionException", EXCEPTION_MESSAGE_TITLE_PREFIX
-        + "\t1: org.mule.runtime.core.api.expression.ExpressionRuntimeException: Script 'invalidExpr ' has errors:",
-                         ExpressionRuntimeException.class, EXPRESSION);
+    assertRouteException("routeWithExpressionException",
+                         message -> assertThat(message, both(containsString(EXCEPTION_MESSAGE_TITLE_PREFIX)).and(
+                                                                                                                 containsString("1: org.mule.runtime.core.api.expression.ExpressionRuntimeException: \"Script 'invalidExpr ' has errors:"))),
+                         ExpressionRuntimeException.class,
+                         EXPRESSION);
   }
 
   @Test
@@ -154,7 +159,16 @@ public class ParallelForEachTestCase extends AbstractIntegrationTestCase {
                          FunctionalTestException.class, UNKNOWN);
   }
 
-  private void assertRouteException(String flow, String exceptionMessageStart, Class exceptionType,
+  private void assertRouteException(String flow,
+                                    String exceptionMessageStart,
+                                    Class exceptionType,
+                                    ComponentIdentifier errorType) {
+    assertRouteException(flow, message -> assertThat(message, startsWith(exceptionMessageStart)), exceptionType, errorType);
+  }
+
+  private void assertRouteException(String flow,
+                                    Consumer<String> exceptionMessageMatcher,
+                                    Class exceptionType,
                                     ComponentIdentifier errorType) {
     try {
       flowRunner(flow).withPayload(fruitList).run();
@@ -163,7 +177,7 @@ public class ParallelForEachTestCase extends AbstractIntegrationTestCase {
       assertThat(e.getCause(), withClassName("org.mule.runtime.core.privileged.routing.CompositeRoutingException"));
 
       Throwable compositeRoutingException = e.getCause();
-      assertThat(compositeRoutingException.getMessage(), startsWith(exceptionMessageStart));
+      exceptionMessageMatcher.accept(compositeRoutingException.getMessage());
 
       List<org.mule.runtime.api.message.Error> exceptions = ((ComposedErrorException) compositeRoutingException).getErrors();
       assertThat(exceptions, hasSize(1));
