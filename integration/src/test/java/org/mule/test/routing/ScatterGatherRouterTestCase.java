@@ -13,6 +13,8 @@ import static org.apache.commons.io.IOUtils.LINE_SEPARATOR;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.startsWith;
+import static org.hamcrest.Matchers.both;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
@@ -42,15 +44,15 @@ import java.io.ByteArrayInputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.hamcrest.Matchers;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import java.util.function.Consumer;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
+import org.hamcrest.Matchers;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 @Feature(ROUTERS)
 @Story(SCATTER_GATHER)
@@ -147,8 +149,9 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
   @Test
   @Description("An error in a route results in a CompositeRoutingException containing details of exceptions.")
   public void routeWithExpressionException() throws Exception {
-    assertRouteException("routeWithExpressionException", EXCEPTION_MESSAGE_TITLE_PREFIX
-        + "\t1: org.mule.runtime.core.api.expression.ExpressionRuntimeException: Script 'invalidExpr ' has errors:",
+    assertRouteException("routeWithExpressionException",
+                         message -> assertThat(message, both(containsString(EXCEPTION_MESSAGE_TITLE_PREFIX)).and(
+                                                                                                                 containsString("1: org.mule.runtime.core.api.expression.ExpressionRuntimeException: \"Script 'invalidExpr ' has errors:"))),
                          ExpressionRuntimeException.class);
   }
 
@@ -162,6 +165,10 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
   }
 
   private void assertRouteException(String flow, String exceptionMessageStart, Class exceptionType) throws Exception {
+    assertRouteException(flow, message -> assertThat(message, startsWith(exceptionMessageStart)), exceptionType);
+  }
+
+  private void assertRouteException(String flow, Consumer<String> exceptionMessageMatcher, Class exceptionType) throws Exception {
     try {
       flowRunner(flow).run();
       fail("Was expecting a failure");
@@ -169,7 +176,7 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
       assertThat(e.getCause(), withClassName("org.mule.runtime.core.privileged.routing.CompositeRoutingException"));
 
       Throwable compositeRoutingException = e.getCause();
-      assertThat(compositeRoutingException.getMessage(), startsWith(exceptionMessageStart));
+      exceptionMessageMatcher.accept(compositeRoutingException.getMessage());
 
       List<org.mule.runtime.api.message.Error> exceptions = ((ComposedErrorException) compositeRoutingException).getErrors();
       assertThat(exceptions, hasSize(1));
