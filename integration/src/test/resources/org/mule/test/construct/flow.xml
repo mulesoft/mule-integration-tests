@@ -18,21 +18,21 @@
 
     <sub-flow name="composite1">
         <description>Composite thats appands 'ayz'</description>
-        <append-string-transformer message="x" />
-        <append-string-transformer message="y" />
-        <append-string-transformer message="z" />
+        <set-payload value="#[payload ++ 'x']" />
+        <set-payload value="#[payload ++ 'y']" />
+        <set-payload value="#[payload ++ 'z']" />
     </sub-flow>
 
     <flow name="flow">
-        <append-string-transformer message="1" />
-        <append-string-transformer message="2" />
+        <set-payload value="#[payload ++ '1']" />
+        <set-payload value="#[payload ++ '2']" />
         <processor ref="composite1" />
         <processor-chain>
-            <append-string-transformer message="a" />
-            <append-string-transformer message="b" />
-            <append-string-transformer message="c" />
+            <set-payload value="#[payload ++ 'a']" />
+            <set-payload value="#[payload ++ 'b']" />
+            <set-payload value="#[payload ++ 'c']" />
         </processor-chain>
-        <append-string-transformer message="3" />
+        <set-payload value="#[payload ++ '3']" />
     </flow>
 
     <flow name="asynchronousAsync" initialState="stopped">
@@ -48,7 +48,7 @@
     </flow>
 
     <flow name="inout-append" initialState="stopped">
-        <append-string-transformer message="inout" />
+        <set-payload value="#[payload ++ 'inout']" />
         <test:queue name="inout-append-out"/>
     </flow>
     
@@ -58,57 +58,57 @@
     </flow>
 
     <flow name="async-oneway" initialState="stopped">
-        <append-string-transformer message="a" />
+        <set-payload value="#[payload ++ 'a']" />
         <async>
-            <append-string-transformer message="b" />
+            <set-payload value="#[payload ++ 'b']" />
             <test:queue name="async-async-oneway-out"/>
         </async>    
-        <append-string-transformer message="c" />    
+        <set-payload value="#[payload ++ 'c']" />    
         <test:queue name="async-oneway-out"/>
     </flow>
 
     <flow name="async-seda-oneway" initialState="stopped">
-        <append-string-transformer message="a" />
+        <set-payload value="#[payload ++ 'a']" />
         <async>
-            <append-string-transformer message="b" />
+            <set-payload value="#[payload ++ 'b']" />
             <test:queue name="async-async-seda-oneway-out"/>
         </async>    
-        <append-string-transformer message="c" />    
+        <set-payload value="#[payload ++ 'c']" />    
         <test:queue name="async-seda-oneway-out"/>
     </flow>
 
     <flow name="async-requestresponse" initialState="stopped">
-        <append-string-transformer message="a" />
+        <set-payload value="#[payload ++ 'a']" />
         <async>
-            <append-string-transformer message="b" />
+            <set-payload value="#[payload ++ 'b']" />
             <test:queue name="async-async-requestresponse-out"/>
         </async>    
-        <append-string-transformer message="c" />    
+        <set-payload value="#[payload ++ 'c']" />    
         <test:queue name="async-requestresponse-out"/>
     </flow>
 
     <flow name="async-tx" initialState="stopped">
-        <append-string-transformer message="a" />
+        <set-payload value="#[payload ++ 'a']" />
         <async>
-            <append-string-transformer message="b" />
+            <set-payload value="#[payload ++ 'b']" />
             <test:queue name="async-async-tx-out"/>
         </async>    
-        <append-string-transformer message="c" />    
+        <set-payload value="#[payload ++ 'c']" />    
         <test:queue name="async-tx-out"/>
     </flow>
     
     <flow name="choice2" initialState="stopped">
         <choice>
             <when expression="payload=='foo'">
-                <append-string-transformer message=" Hello" />
-                <append-string-transformer message=" foo" />
+                <set-payload value="#[payload ++ ' Hello']" />
+                <set-payload value="#[payload ++ ' foo']" />
             </when>
             <when expression="#[payload=='bar']">
-                <append-string-transformer message=" Hello bar" />
+                <set-payload value="#[payload ++ ' Hello bar']" />
             </when>
             <otherwise>
-                <append-string-transformer message=" Hello" />
-                <append-string-transformer message=" ?" />
+                <set-payload value="#[payload ++ ' Hello']" />
+                <set-payload value="#[payload ++ ' ?']" />
             </otherwise>
         </choice>
     </flow>
@@ -146,7 +146,7 @@
 
 
     <flow name="loggermessage" initialState="stopped">
-        <append-string-transformer message=" Hello foo" />
+        <set-payload value="#[payload ++ ' Hello foo']" />
         <logger level="ERROR" category="mycategory"/>
     </flow>
 
@@ -161,8 +161,8 @@
             </scheduling-strategy>
         </scheduler>
         <set-payload value="#['']"/>
-        <append-string-transformer message=" Hello foo" />
-        <append-string-transformer message="out" />
+        <set-payload value="#[payload ++ ' Hello foo']" />
+        <set-payload value="#[payload ++ 'out']" />
         <test:queue name="poll-out"/>
     </flow>
 
@@ -172,8 +172,9 @@
                 <fixed-frequency frequency="3000"/>
             </scheduling-strategy>
         </scheduler>
+        <set-payload value="null" />
         <flow-ref name="pollappend"/>
-        <append-string-transformer message="out" />
+        <set-payload value="#[payload ++ 'out']" />
         <test:queue name="poll2-out"/>
     </flow>
 
@@ -189,7 +190,7 @@
     </flow>
      
     <sub-flow name="pollappend">
-        <append-string-transformer message="pollappend" />
+        <set-payload value="#[payload ++ 'pollappend']" />
     </sub-flow>
 
     <sub-flow name="invokedByMessageFilter">
@@ -197,7 +198,7 @@
     </sub-flow>
 
     <flow name="customMaxConcurrency" maxConcurrency="1" initialState="stopped">
-        <append-string-transformer message="nop" />
+        <set-payload value="#[payload ++ 'nop']" />
     </flow>
 
 </mule>

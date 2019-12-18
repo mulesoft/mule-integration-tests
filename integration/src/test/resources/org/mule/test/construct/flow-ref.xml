@@ -19,22 +19,22 @@
     </flow>
 
     <sub-flow name="sub-flow">
-        <append-string-transformer message="1" />
-        <append-string-transformer message="2" />
+        <set-payload value="#[payload ++ '1']" />
+        <set-payload value="#[payload ++ '2']" />
         <flow-ref name="composite1" />
 
-        <append-string-transformer message="a" />
-        <append-string-transformer message="b" />
-        <append-string-transformer message="c" />
-        <append-string-transformer message="3" />
+        <set-payload value="#[payload ++ 'a']" />
+        <set-payload value="#[payload ++ 'b']" />
+        <set-payload value="#[payload ++ 'c']" />
+        <set-payload value="#[payload ++ '3']" />
 
     </sub-flow>
 
     <sub-flow name="composite1">
 
-        <append-string-transformer message="x" />
-        <append-string-transformer message="y" />
-        <append-string-transformer message="z" />
+        <set-payload value="#[payload ++ 'x']" />
+        <set-payload value="#[payload ++ 'y']" />
+        <set-payload value="#[payload ++ 'z']" />
     </sub-flow>
 
     <!-- 'Target' tests -->
@@ -60,20 +60,20 @@
     </flow>
 
     <sub-flow name="sub-flow-A">
-        <append-string-transformer message="A" />
+        <set-payload value="#[payload ++ 'A']" />
     </sub-flow>
 
     <sub-flow name="sub-flow-B">
-        <append-string-transformer message="B" />
+        <set-payload value="#[payload ++ 'B']" />
     </sub-flow>
 
     <sub-flow name="sub-flow-C">
         <choice>
             <when expression="#[true]">
-                <append-string-transformer message="A" />
+                <set-payload value="#[payload ++ 'A']" />
             </when>
             <otherwise>
-                <append-string-transformer message="B" />
+                <set-payload value="#[payload ++ 'B']" />
             </otherwise>
         </choice>
     </sub-flow>
@@ -81,10 +81,10 @@
     <sub-flow name="sub-flow-SG">
         <scatter-gather>
             <route>
-                <append-string-transformer message="A" />
+                <set-payload value="#[payload ++ 'A']" />
             </route>
             <route>
-                <append-string-transformer message="B" />
+                <set-payload value="#[payload ++ 'B']" />
             </route>
         </scatter-gather>
     </sub-flow>

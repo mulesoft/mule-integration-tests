@@ -307,7 +307,7 @@
 
     <sub-flow name="sub-flow-with-foreach">
         <foreach>
-            <append-string-transformer message="y" />
+            <set-payload value="#[payload ++ 'y']"/>
         </foreach>
     </sub-flow>
 

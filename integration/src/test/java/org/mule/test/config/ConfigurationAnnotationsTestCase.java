@@ -96,15 +96,6 @@ public class ConfigurationAnnotationsTestCase extends AbstractIntegrationTestCas
     assertThat(getSourceCode((Component) logger), is("<logger doc:name=\"echo\">" + "</logger>"));
   }
 
-  @Test
-  public void testInsideSpringBeansAnnotations() {
-    Transformer stb = registry.<Transformer>lookupByName("ManziTransformer").get();
-    assertThat(stb, not(nullValue()));
-    assertThat(getDocName(stb), is("manzi-transformer"));
-    assertThat(getSourceCode((Component) stb),
-               is("<append-string-transformer message=\"Manzi\" name=\"ManziTransformer\" doc:name=\"manzi-transformer\"></append-string-transformer>"));
-  }
-
   protected String getDocName(Object obj) {
     return (String) ((Component) obj).getAnnotation(NAME_ANNOTATION_KEY);
   }

@@ -11,5 +11,4 @@
         </annotations>
     </string-to-byte-array-transformer>
 
-    <append-string-transformer message="Manzi" name="ManziTransformer" doc:name="manzi-transformer"/>
 </mule>
