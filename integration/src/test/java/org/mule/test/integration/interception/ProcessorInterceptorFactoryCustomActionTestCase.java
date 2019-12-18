@@ -186,6 +186,26 @@ public class ProcessorInterceptorFactoryCustomActionTestCase extends AbstractInt
     assertThat(getDisconnects() - disconnectsBefore, is(mutateEventBefore ? 2 : 1));
   }
 
+  @Description("Smart Connector simple operation without parameters")
+  @Test
+  public void scOperation() throws Exception {
+    flowRunner("scOperation").run();
+
+    List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
+    assertThat(interceptionParameters, hasSize(2));
+
+    InterceptionParameters moduleOperationChain = interceptionParameters.get(0);
+    InterceptionParameters setPayloadOperation = interceptionParameters.get(1);
+
+    assertThat(moduleOperationChain.getParameters().keySet(), containsInAnyOrder("doc:name", "targetValue"));
+    assertThat(moduleOperationChain.getParameters().get("doc:name").resolveValue(), is("mySCName"));
+
+    assertThat(setPayloadOperation.getParameters().keySet(), containsInAnyOrder("value", "mimeType", "encoding"));
+    assertThat(setPayloadOperation.getParameters().get("value").resolveValue(), is("Wubba Lubba Dub Dub"));
+    assertThat(setPayloadOperation.getParameters().get("mimeType").resolveValue(), is("text/plain"));
+    assertThat(setPayloadOperation.getParameters().get("encoding").resolveValue(), is("UTF-8"));
+  }
+
   public static class CustomActionInterceptorFactory implements ProcessorInterceptorFactory {
 
     @Override
