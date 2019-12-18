@@ -47,10 +47,11 @@ import java.util.concurrent.RejectedExecutionException;
 
 import javax.inject.Inject;
 
-import io.qameta.allure.Description;
-import io.qameta.allure.Feature;
 import org.junit.Rule;
 import org.junit.Test;
+
+import io.qameta.allure.Description;
+import io.qameta.allure.Feature;
 
 @Feature(SCHEDULER_SERVICE)
 public class SchedulerServiceTestCase extends AbstractIntegrationTestCase {
@@ -172,7 +173,7 @@ public class SchedulerServiceTestCase extends AbstractIntegrationTestCase {
     assertThat(RecordThreadName.threadName,
                allOf(startsWith("[MuleRuntime].uber."),
                      // [appName].flowName.processingStrategy
-                     containsString("[SchedulerServiceTestCase#flowProcessingThreadName].willSchedule.dispatch @")));
+                     containsString("[SchedulerServiceTestCase#flowProcessingThreadName].willSchedule.CPU_LITE @")));
   }
 
   public static class HasSchedulingService implements Processor, Initialisable, Disposable {
