@@ -26,6 +26,7 @@ import static org.mule.tck.junit4.matcher.EventMatcher.hasMessage;
 import static org.mule.tck.junit4.matcher.EventMatcher.hasVariables;
 import static org.mule.tck.junit4.matcher.HasClassInHierarchy.withClassName;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
+
 import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.functional.api.exception.ExpectedError;
 import org.mule.functional.api.exception.FunctionalTestException;
@@ -47,11 +48,12 @@ import org.mule.test.AbstractIntegrationTestCase;
 
 import java.util.concurrent.TimeUnit;
 
-import io.qameta.allure.Feature;
-import io.qameta.allure.Story;
 import org.hamcrest.Matcher;
 import org.junit.Rule;
 import org.junit.Test;
+
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 
 @Feature(ERROR_HANDLING)
 @Story("On Error Propagate")
@@ -135,7 +137,7 @@ public class OnErrorPropagateTestCase extends AbstractIntegrationTestCase {
                                       .build()));
     expectedError.expectEvent(allOf(hasVariables(hasEntry), hasMessage(hasPayload(equalTo("propagated")))));
 
-    flowRunner("onErrorPropagateMessage").run();
+    flowRunner("onErrorPropagateMessage").withPayload(TEST_PAYLOAD).run();
   }
 
   @Test

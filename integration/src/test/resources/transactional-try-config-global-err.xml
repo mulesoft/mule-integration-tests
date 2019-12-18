@@ -8,7 +8,7 @@ http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/tes
 
     <error-handler name="global">
         <on-error-continue>
-            <append-string-transformer message=" hi"/>
+            <set-payload value="#[payload ++ ' hi']"/>
         </on-error-continue>
     </error-handler>
 

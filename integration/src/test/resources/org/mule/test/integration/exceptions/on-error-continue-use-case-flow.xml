@@ -74,11 +74,11 @@
     </flow>
 
     <flow name="fullyDefinedCatchExceptionStrategyWithComponent">
-        <append-string-transformer message=" apt1"/>
+        <set-payload value="#[payload ++ ' apt1']"/>
         <test:processor throwException="true"/>
         <error-handler>
             <on-error-continue>
-                <append-string-transformer message=" apt2"/>
+                <set-payload value="#[payload ++ ' apt2']"/>
                 <script:execute engine="groovy">
                     <script:code>
                         return "$payload groovified"
@@ -89,51 +89,51 @@
     </flow>
 
     <flow name="onErrorTypeMatch">
-        <append-string-transformer message=" apt1"/>
+        <set-payload value="#[payload ++ ' apt1']"/>
         <processor ref="failing"/>
         <error-handler>
             <on-error-continue type="EXPRESSION">
-                <append-string-transformer message=" nope"/>
+                <set-payload value="#[payload ++ ' nope']"/>
             </on-error-continue>
             <on-error-continue type="CONNECTIVITY">
-                <append-string-transformer message=" apt2"/>
+                <set-payload value="#[payload ++ ' apt2']"/>
             </on-error-continue>
             <on-error-continue type="ANY">
-                <append-string-transformer message=" nope2"/>
+                <set-payload value="#[payload ++ ' nope2']"/>
             </on-error-continue>
         </error-handler>
     </flow>
 
     <flow name="onErrorTypeMatchAny">
-        <append-string-transformer message=" apt1"/>
+        <set-payload value="#[payload ++ ' apt1']"/>
         <test:processor throwException="true"/>
         <error-handler>
             <on-error-continue type="EXPRESSION">
-                <append-string-transformer message=" nope"/>
+                <set-payload value="#[payload ++ ' nope']"/>
             </on-error-continue>
             <on-error-continue type="ANY">
-                <append-string-transformer message=" apt2"/>
+                <set-payload value="#[payload ++ ' apt2']"/>
             </on-error-continue>
         </error-handler>
     </flow>
 
     <flow name="onErrorTypeMatchSeveral">
         <choice>
-            <when expression="#[mel:payload]">
-                <append-string-transformer message=" apt1"/>
+            <when expression="#[payload]">
+                <set-payload value="#[payload ++ ' apt1']"/>
                 <processor ref="failing"/>
             </when>
             <otherwise>
-                <append-string-transformer message=" apt1"/>
-                <expression-transformer expression="#[mel:payload.nope]"/>
+                <set-payload value="#[payload ++ ' apt1']"/>
+                <raise-error type="TRANSFORMATION"/>
             </otherwise>
         </choice>
         <error-handler>
             <on-error-continue type="TRANSFORMATION, CONNECTIVITY">
-                <append-string-transformer message=" apt2"/>
+                <set-payload value="#[payload ++ ' apt2']"/>
             </on-error-continue>
             <on-error-continue type="ANY">
-                <append-string-transformer message=" nope"/>
+                <set-payload value="#[payload ++ ' nope']"/>
             </on-error-continue>
         </error-handler>
     </flow>
@@ -141,20 +141,20 @@
     <flow name="onErrorTypeMatchNamespaceWildcard">
         <choice>
             <when expression="#[payload]">
-                <append-string-transformer message=" apt1"/>
+                <set-payload value="#[payload ++ ' apt1']"/>
                 <processor ref="failing"/>
             </when>
             <otherwise>
-                <append-string-transformer message=" apt1"/>
+                <set-payload value="#[payload ++ ' apt1']"/>
                 <expression-transformer expression="#[payload.nope]"/>
             </otherwise>
         </choice>
         <error-handler>
             <on-error-continue type="*:RETRY_EXHAUSTED, *:EXPRESSION">
-                <append-string-transformer message=" apt2"/>
+                <set-payload value="#[payload ++ ' apt2']"/>
             </on-error-continue>
             <on-error-continue type="ANY">
-                <append-string-transformer message=" nope"/>
+                <set-payload value="#[payload ++ ' nope']"/>
             </on-error-continue>
         </error-handler>
     </flow>
@@ -162,20 +162,20 @@
     <flow name="onErrorTypeMatchNameWildcard">
         <choice>
             <when expression="#[payload]">
-                <append-string-transformer message=" apt1"/>
+                <set-payload value="#[payload ++ ' apt1']"/>
                 <processor ref="failing"/>
             </when>
             <otherwise>
-                <append-string-transformer message=" apt1"/>
+                <set-payload value="#[payload ++ ' apt1']"/>
                 <expression-transformer expression="#[payload.nope]"/>
             </otherwise>
         </choice>
         <error-handler>
             <on-error-continue type="MULE:*">
-                <append-string-transformer message=" apt2"/>
+                <set-payload value="#[payload ++ ' apt2']"/>
             </on-error-continue>
             <on-error-continue type="ANY">
-                <append-string-transformer message=" nope"/>
+                <set-payload value="#[payload ++ ' nope']"/>
             </on-error-continue>
         </error-handler>
     </flow>
@@ -193,7 +193,7 @@
         <http:listener path="sourceError" config-ref="listenerConfig">
             <http:response statusCode="#['notANumber']"/>
         </http:listener>
-        <append-string-transformer message=" hey"/>
+        <set-payload value="#[payload ++ ' hey']"/>
         <error-handler>
             <on-error-continue>
                 <test:queue name="out"/>

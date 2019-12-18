@@ -7,7 +7,7 @@
        http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
     <flow name="PreservePayloadPropagate">
-        <append-string-transformer message=" with some text added"/>
+        <set-payload value="#[payload ++ ' with some text added']"/>
         <test:processor throwException="true"/>
         <error-handler>
             <on-error-propagate/>
@@ -15,7 +15,7 @@
     </flow>
 
     <flow name="PreservePayloadContinue">
-        <append-string-transformer message=" with some text added"/>
+        <set-payload value="#[payload ++ ' with some text added']"/>
         <test:processor throwException="true"/>
         <error-handler>
             <on-error-continue/>

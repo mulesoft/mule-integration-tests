@@ -15,7 +15,7 @@
 
     <flow name="flowTest">
 
-        <append-string-transformer message="hello"></append-string-transformer>
+        <set-payload value="#[payload ++ 'hello']"/>
 
         <test:queue name="test.out.1" />
 

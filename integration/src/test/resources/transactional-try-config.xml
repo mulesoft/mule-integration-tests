@@ -11,7 +11,7 @@ http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/tes
             <test:processor throwException="true" exceptionToThrow="java.lang.RuntimeException" />
             <error-handler>
                 <on-error-continue>
-                    <append-string-transformer message=" hi"/>
+                    <set-payload value="#[payload ++ ' hi']"/>
                 </on-error-continue>
             </error-handler>
         </try>

@@ -16,13 +16,13 @@
                         return new org.mule.functional.junit4.TestLegacyMessageBuilder(message).value("").build()
                     </script:code>
                 </script:execute>
-                <append-string-transformer message="A"/>
+                <set-payload value="#[payload ++ 'A']"/>
                 <choice>
                     <when expression="mel:message.inboundProperties.AcquirerCountry=='MyCountry'">
-                        <append-string-transformer message="B"/>
+                        <set-payload value="#[payload ++ 'B']"/>
                         <choice>
                             <when expression="#[mel:message.inboundProperties['Amount'] &lt; 5000]">
-                                <append-string-transformer message="C"/>
+                                <set-payload value="#[payload ++ 'C']"/>
                                 <test:queue name="outChoice"/>
                             </when>
                             <otherwise>
