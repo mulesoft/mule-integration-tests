@@ -23,12 +23,21 @@
         </script:execute>
     </flow>
 
-    <flow name="expressionTransformerFlow">
-        <http:listener path="expressionTransformer" config-ref="listenerConfig"/>
+    <flow name="setPayloadFlow">
+        <http:listener path="setPayload" config-ref="listenerConfig"/>
         <custom-processor class="org.mule.shutdown.AbstractShutdownTimeoutRequestResponseTestCase$BlockMessageProcessor"/>
-        <expression-transformer>
-            <return-argument expression="#['expressionTransformerResponse']" />
-        </expression-transformer>
+        <set-payload value="#['setPayloadResponse']" />
+    </flow>
+
+    <flow name="setPayloadChoiceFlow">
+        <http:listener path="setPayloadChoice" config-ref="listenerConfig"/>
+        
+        <custom-processor class="org.mule.shutdown.AbstractShutdownTimeoutRequestResponseTestCase$BlockMessageProcessor"/>
+        <choice>
+            <when expression="#[true]">
+                <set-payload value="#['setPayloadResponse']" />
+            </when>
+        </choice>
     </flow>
 
 </mule>

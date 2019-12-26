@@ -41,8 +41,13 @@ public class ExpiredShutdownTimeoutOneWayTestCase extends AbstractShutdownTimeou
   }
 
   @Test
-  public void testExpressionTransformer() throws Throwable {
-    doShutDownTest("expressionTransformerFlow");
+  public void testSetPayload() throws Throwable {
+    doShutDownTest("setPayloadFlow");
+  }
+
+  @Test
+  public void testSetPayloadChoice() throws Throwable {
+    doShutDownTest("setPayloadChoiceFlow");
   }
 
   private void doShutDownTest(final String flowName) throws Throwable {
