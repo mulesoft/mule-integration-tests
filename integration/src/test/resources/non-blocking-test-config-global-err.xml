@@ -95,13 +95,6 @@
         <test:assert expression="#[payload == 'Test Message']"/>
     </flow>
 
-    <flow name="transformer">
-        <test:assert-intercepting responseSameTask="false" responseExpression="#[mel:assertPayload()]"/>
-        <expression-transformer expression="#[true]"/>
-        <test:non-blocking-processor/>
-        <test:assert expression="#[mel:assertPayload()]"/>
-    </flow>
-
     <flow name="choice" initialState="stopped">
         <test:assert-intercepting responseSameTask="false" responseExpression="#[payload == 'Test Message']"/>
         <choice>
