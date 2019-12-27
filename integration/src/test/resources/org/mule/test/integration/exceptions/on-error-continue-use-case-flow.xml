@@ -146,7 +146,7 @@
             </when>
             <otherwise>
                 <set-payload value="#[payload ++ ' apt1']"/>
-                <expression-transformer expression="#[payload.nope]"/>
+                <set-payload value="#[payload.nope]"/>
             </otherwise>
         </choice>
         <error-handler>
@@ -167,7 +167,7 @@
             </when>
             <otherwise>
                 <set-payload value="#[payload ++ ' apt1']"/>
-                <expression-transformer expression="#[payload.nope]"/>
+                <set-payload value="#[payload.nope]"/>
             </otherwise>
         </choice>
         <error-handler>

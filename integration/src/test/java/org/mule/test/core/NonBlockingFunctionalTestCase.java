@@ -96,11 +96,6 @@ public class NonBlockingFunctionalTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  public void transformer() throws Exception {
-    flowRunner("transformer").withPayload(TEST_MESSAGE).run();
-  }
-
-  @Test
   public void choice() throws Exception {
     flowRunner("choice").withPayload(TEST_MESSAGE).run();
   }

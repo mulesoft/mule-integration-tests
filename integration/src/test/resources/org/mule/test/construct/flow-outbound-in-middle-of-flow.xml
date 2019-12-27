@@ -4,27 +4,18 @@
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
                http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
-    <configuration>
-        <expression-language autoResolveVariables="false">
-            <import class="org.apache.commons.lang3.StringUtils" />
-            <global-functions>
-                def reversePayload() { StringUtils.reverse(payload) }
-            </global-functions>
-        </expression-language>
-    </configuration>
-
     <flow name="flowTest">
 
         <set-payload value="#[payload ++ 'hello']"/>
 
         <test:queue name="test.out.1" />
 
-        <expression-transformer expression="mel:payload.replaceAll('hello', 'bye')" />
+        <set-payload value="#[payload replace 'hello' with 'bye']"/>
 
         <test:queue name="test.out.2" />
         
-        <expression-transformer expression="mel:payload.replaceAll('bye', '')" />
-        <expression-transformer expression="mel:reversePayload()" />
+        <set-payload value="#[payload replace 'bye' with '']"/>
+        <set-payload value="#[payload[-1 to 0]]"/>
             
         <test:queue name="test.out.3" />
 
