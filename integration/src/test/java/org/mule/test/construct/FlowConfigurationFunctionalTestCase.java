@@ -50,7 +50,6 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
   public void testFlow() throws Exception {
     final Flow flow = registry.<Flow>lookupByName("flow").get();
     assertEquals(5, flow.getProcessors().size());
-    assertNotNull(flow.getExceptionListener());
 
     assertEquals("012xyzabc3", getPayloadAsString(flowRunner("flow").withPayload("0").run().getMessage()));
   }
