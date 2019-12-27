@@ -14,11 +14,11 @@ import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.message.Message;
 import org.mule.tck.junit4.rule.SystemProperty;
 
-import org.junit.Rule;
-import org.junit.Test;
-
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+
+import org.junit.Rule;
+import org.junit.Test;
 
 public class ValidShutdownTimeoutOneWayTestCase extends AbstractShutdownTimeoutRequestResponseTestCase {
 
@@ -46,8 +46,13 @@ public class ValidShutdownTimeoutOneWayTestCase extends AbstractShutdownTimeoutR
   }
 
   @Test
-  public void testExpressionTransformer() throws Throwable {
-    doShutDownTest("expressionTransformerResponse", "expressionTransformerFlow");
+  public void testSetPayload() throws Throwable {
+    doShutDownTest("setPayloadResponse", "setPayloadFlow");
+  }
+
+  @Test
+  public void testSetPayloadChoice() throws Throwable {
+    doShutDownTest("setPayloadResponse", "setPayloadChoiceFlow");
   }
 
   private void doShutDownTest(final String payload, final String flowName) throws Throwable {

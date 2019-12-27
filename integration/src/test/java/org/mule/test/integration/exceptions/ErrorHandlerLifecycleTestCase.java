@@ -20,14 +20,12 @@ import org.mule.runtime.core.api.construct.FlowConstruct;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.AbstractMessageProcessorOwner;
 import org.mule.runtime.core.api.processor.Processor;
-import org.mule.runtime.core.privileged.exception.AbstractExceptionListener;
 import org.mule.test.AbstractIntegrationTestCase;
-
-import org.junit.Ignore;
-import org.junit.Test;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import org.junit.Test;
 
 public class ErrorHandlerLifecycleTestCase extends AbstractIntegrationTestCase {
 
@@ -71,9 +69,9 @@ public class ErrorHandlerLifecycleTestCase extends AbstractIntegrationTestCase {
   @Test
   public void testLifecycleDefaultErrorHandler() throws Exception {
     AbstractMessageProcessorOwner flowCExceptionStrategy =
-        (AbstractMessageProcessorOwner) getExceptionListeners(flowC.getExceptionListener()).get(1);
+        (AbstractMessageProcessorOwner) getExceptionListeners(flowC).get(1);
     AbstractMessageProcessorOwner flowDExceptionStrategy =
-        (AbstractMessageProcessorOwner) getExceptionListeners(flowD.getExceptionListener()).get(1);
+        (AbstractMessageProcessorOwner) getExceptionListeners(flowD).get(1);
     LifecycleCheckerMessageProcessor lifecycleCheckerMessageProcessorFlowC =
         (LifecycleCheckerMessageProcessor) getMessageProcessors(flowCExceptionStrategy).get(0);
     LifecycleCheckerMessageProcessor lifecycleCheckerMessageProcessorFlowD =

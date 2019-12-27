@@ -6,7 +6,10 @@
  */
 package org.mule.test.el;
 
+import static java.lang.Thread.currentThread;
 import static org.junit.Assert.fail;
+
+import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.util.concurrent.CountDownLatch;
@@ -28,20 +31,16 @@ public class ExpressionLanguageConcurrencyTestCase extends AbstractIntegrationTe
     final CountDownLatch end = new CountDownLatch(N);
     final AtomicInteger errors = new AtomicInteger(0);
     for (int i = 0; i < N; i++) {
-      new Thread(new Runnable() {
-
-        @Override
-        public void run() {
-          try {
-            start.await();
-            flowRunner("slowRequestHandler").withPayload("foo").run();
-          } catch (Exception e) {
-            // A NullPointerException is thrown when a lookup is performed when a registry is
-            // added or removed concurrently
-            errors.incrementAndGet();
-          } finally {
-            end.countDown();
-          }
+      new Thread((Runnable) () -> {
+        try {
+          start.await();
+          flowRunner("slowRequestHandler").withPayload("foo").run();
+        } catch (Exception e) {
+          // A NullPointerException is thrown when a lookup is performed when a registry is
+          // added or removed concurrently
+          errors.incrementAndGet();
+        } finally {
+          end.countDown();
         }
       }, "thread-eval-" + i).start();
     }
@@ -49,6 +48,16 @@ public class ExpressionLanguageConcurrencyTestCase extends AbstractIntegrationTe
     end.await();
     if (errors.get() > 0) {
       fail();
+    }
+  }
+
+  public static long sleep(long millis) {
+    try {
+      Thread.sleep(millis);
+      return millis;
+    } catch (InterruptedException e) {
+      currentThread().interrupt();
+      throw new MuleRuntimeException(e);
     }
   }
 }

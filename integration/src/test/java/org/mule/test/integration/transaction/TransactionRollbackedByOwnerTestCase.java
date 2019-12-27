@@ -11,18 +11,19 @@ import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
-import org.junit.runners.Parameterized;
-import org.mule.runtime.api.notification.TransactionNotificationListener;
 import org.mule.runtime.api.notification.TransactionNotification;
+import org.mule.runtime.api.notification.TransactionNotificationListener;
 import org.mule.tck.probe.JUnitProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.test.runner.RunnerDelegateTo;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
-import org.mule.test.runner.RunnerDelegateTo;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 @RunnerDelegateTo(Parameterized.class)
 public class TransactionRollbackedByOwnerTestCase extends AbstractIntegrationTestCase {
@@ -30,22 +31,22 @@ public class TransactionRollbackedByOwnerTestCase extends AbstractIntegrationTes
   private static final int POLL_DELAY_MILLIS = 100;
 
   private List<TransactionNotification> notifications;
-  private String flowName;
-  private String secondActionExpected;
-  private boolean throwsMessagingException;
-  private String config;
+  private final String flowName;
+  private final String secondActionExpected;
+  private final boolean throwsMessagingException;
+  private final String config;
 
-  @Parameterized.Parameters(name = "{0} - {2}")
+  @Parameters(name = "{0} - {2}")
   public static Object[][] params() {
     return new Object[][] {
-        new Object[] {"Local Error Handler", "org/mule/test/integration/transaction/transaction-owner.xml", "no-rollback", false,
-            "commit"},
-        new Object[] {"Local Error Handler", "org/mule/test/integration/transaction/transaction-owner.xml", "rollback", true,
-            "rollback"},
+        new Object[] {"Local Error Handler", "org/mule/test/integration/transaction/transaction-owner.xml",
+            "no-rollback", false, "commit"},
+        new Object[] {"Local Error Handler", "org/mule/test/integration/transaction/transaction-owner.xml",
+            "rollback", true, "rollback"},
         new Object[] {"Local Error Handler", "org/mule/test/integration/transaction/transaction-owner.xml",
             "no-rollback-outside-try", true, "commit"},
-        new Object[] {"Local Error Handler", "org/mule/test/integration/transaction/transaction-owner.xml", "no-rollback-flowref",
-            false, "commit"},
+        new Object[] {"Local Error Handler", "org/mule/test/integration/transaction/transaction-owner.xml",
+            "no-rollback-flowref", false, "commit"},
         new Object[] {"Local Error Handler", "org/mule/test/integration/transaction/transaction-owner.xml",
             "no-rollback-error-in-flow-ref", false, "commit"},
         new Object[] {"Local Error Handler", "org/mule/test/integration/transaction/transaction-owner.xml",

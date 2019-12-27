@@ -21,11 +21,11 @@ import org.mule.runtime.http.api.domain.message.response.HttpResponse;
 import org.mule.service.http.TestHttpClient;
 import org.mule.tck.junit4.rule.SystemProperty;
 
-import org.junit.Rule;
-import org.junit.Test;
-
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+
+import org.junit.Rule;
+import org.junit.Test;
 
 public class ExpiredShutdownTimeoutRequestResponseTestCase extends AbstractShutdownTimeoutRequestResponseTestCase {
 
@@ -46,8 +46,13 @@ public class ExpiredShutdownTimeoutRequestResponseTestCase extends AbstractShutd
   }
 
   @Test
-  public void testExpressionTransformer() throws Throwable {
-    doShutDownTest("http://localhost:" + httpPort.getNumber() + "/expressionTransformer");
+  public void testSetPayload() throws Throwable {
+    doShutDownTest("http://localhost:" + httpPort.getNumber() + "/setPayload");
+  }
+
+  @Test
+  public void testSetPayloadChoice() throws Throwable {
+    doShutDownTest("http://localhost:" + httpPort.getNumber() + "/setPayloadChoice");
   }
 
   private void doShutDownTest(final String url) throws Throwable {

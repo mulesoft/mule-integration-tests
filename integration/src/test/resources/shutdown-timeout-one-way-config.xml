@@ -29,14 +29,22 @@
         <test:queue name="response"/>
     </flow>
 
-    <flow name="expressionTransformerFlow">
-
+    <flow name="setPayloadFlow">
         <custom-processor class="org.mule.shutdown.AbstractShutdownTimeoutRequestResponseTestCase$BlockMessageProcessor"/>
-        <expression-transformer>
-            <return-argument expression="mel:return &quot;expressionTransformerResponse&quot;;" />
-        </expression-transformer>
+        <set-payload value="#['setPayloadResponse']" />
 
         <test:queue name="response"/>
+    </flow>
+
+    <flow name="setPayloadChoiceFlow">
+        <custom-processor class="org.mule.shutdown.AbstractShutdownTimeoutRequestResponseTestCase$BlockMessageProcessor"/>
+        <choice>
+            <when expression="#[true]">
+                <set-payload value="#['setPayloadResponse']" />
+        
+                <test:queue name="response"/>
+            </when>
+        </choice>
     </flow>
 
 </mule>

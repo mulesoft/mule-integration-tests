@@ -8,6 +8,7 @@ package org.mule.test.service.scheduler;
 
 import static java.lang.System.currentTimeMillis;
 import static java.lang.Thread.currentThread;
+import static java.util.Optional.empty;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.Matchers.allOf;
@@ -37,7 +38,6 @@ import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.runtime.core.api.config.DefaultMuleConfiguration;
 import org.mule.runtime.core.api.config.builders.AbstractConfigurationBuilder;
 import org.mule.runtime.core.api.event.CoreEvent;
-import org.mule.runtime.core.api.exception.NullExceptionHandler;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -158,8 +158,7 @@ public class SchedulerServiceTestCase extends AbstractIntegrationTestCase {
 
     messageSource.getListener()
         .process(CoreEvent
-            .builder(create("id", "serverd", fromSingleComponent(SchedulerServiceTestCase.class.getSimpleName()),
-                            NullExceptionHandler.getInstance()))
+            .builder(create("id", "serverd", fromSingleComponent(SchedulerServiceTestCase.class.getSimpleName()), null, empty()))
             .message(of(null))
             .build());
 
