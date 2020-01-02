@@ -26,4 +26,9 @@
     <flow name="unauthorize">
         <test-oauth:unauthorize config-ref="oauth" resourceOwnerId="#[vars.ownerId]"/>
     </flow>
+
+    <flow name="pagedOperation">
+        <test-oauth:paged-operation config-ref="oauth"/>
+    </flow>
+
 </mule>
