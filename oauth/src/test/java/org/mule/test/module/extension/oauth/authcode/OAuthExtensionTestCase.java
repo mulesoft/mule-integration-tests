@@ -73,6 +73,15 @@ public class OAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
   }
 
   @Test
+  public void refreshTokenForPagedOperation() throws Exception {
+    receiveAccessTokenAndUserConnection();
+    WireMock.reset();
+    stubTokenUrl(accessTokenContent(ACCESS_TOKEN + "-refreshed"));
+    flowRunner("pagedOperation").withVariable(OWNER_ID_VARIABLE_NAME, getCustomOwnerId()).run();
+    wireMock.verify(postRequestedFor(urlPathEqualTo("/" + TOKEN_PATH)));
+  }
+
+  @Test
   public void callbackFlows() throws Exception {
     authorizeAndStartDancingBaby();
     receiveAccessTokenAndUserConnection();
