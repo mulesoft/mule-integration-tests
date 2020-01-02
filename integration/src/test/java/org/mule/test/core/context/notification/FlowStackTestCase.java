@@ -14,6 +14,8 @@ import static org.mule.runtime.core.api.config.MuleProperties.MULE_FLOW_TRACE;
 import static org.mule.tck.util.FlowTraceUtils.assertStackElements;
 import static org.mule.tck.util.FlowTraceUtils.isFlowStackElement;
 import static org.mule.tck.util.FlowTraceUtils.FlowStackAsserter.stackToAssert;
+import static org.mule.test.allure.AllureConstants.Logging.LOGGING;
+import static org.mule.test.allure.AllureConstants.Logging.LoggingStory.FLOW_STACK;
 
 import org.mule.runtime.api.notification.MessageProcessorNotification;
 import org.mule.runtime.api.notification.MessageProcessorNotificationListener;
@@ -27,6 +29,11 @@ import org.junit.Test;
 
 import java.util.concurrent.CountDownLatch;
 
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
+
+@Feature(LOGGING)
+@Story(FLOW_STACK)
 public class FlowStackTestCase extends AbstractIntegrationTestCase {
 
   @Rule
