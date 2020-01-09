@@ -11,6 +11,7 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mule.tck.processor.FlowAssert.verify;
 
+import org.junit.runners.Parameterized;
 import org.mule.runtime.api.security.SecurityContext;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.security.AbstractAuthenticationFilter;
@@ -22,7 +23,6 @@ import org.mule.test.runner.RunnerDelegateTo;
 import java.util.Collection;
 
 import org.junit.Test;
-import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 @RunnerDelegateTo(Parameterized.class)
@@ -54,12 +54,12 @@ public class NonBlockingFunctionalTestCase extends AbstractIntegrationTestCase {
   }
 
   @Override
-  protected void doSetUpBeforeMuleContextCreation() throws Exception {
+  protected void doSetUpBeforeMuleContextCreation() {
     setDefaultProcessingStrategyFactory(PROACTOR_PROCESSING_STRATEGY_CLASSNAME);
   }
 
   @Override
-  protected void doTearDownAfterMuleContextDispose() throws Exception {
+  protected void doTearDownAfterMuleContextDispose() {
     clearDefaultProcessingStrategyFactory();
   }
 
@@ -185,6 +185,22 @@ public class NonBlockingFunctionalTestCase extends AbstractIntegrationTestCase {
   @Test
   public void foreach() throws Exception {
     flowRunner("foreach").withPayload(asList(new String[] {"1", "2", "3"}, new String[] {"a", "b", "c"})).run();
+  }
+
+  @Test
+  public void untilSuccessful() throws Exception {
+    flowRunner("untilSuccessful").withPayload(TEST_MESSAGE).run();
+  }
+
+  @Test
+  public void forEachAndUntilSuccessful() throws Exception {
+    flowRunner("foreach_and_untilSuccessful").withPayload(asList(new String[] {"1", "2", "3"}, new String[] {"a", "b", "c"}))
+        .run();
+  }
+
+  @Test
+  public void untilSuccessfulAndForeach() throws Exception {
+    flowRunner("untilSuccessful_and_foreach").withPayload(TEST_MESSAGE).run();
   }
 
   @Test

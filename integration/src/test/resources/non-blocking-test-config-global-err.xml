@@ -39,8 +39,6 @@
         </on-error-continue>
     </error-handler>
 
-
-
     <flow name="flow" initialState="stopped">
         <test:assert-intercepting responseSameTask="false" responseExpression="#[payload == 'Test Message']"/>
         <test:non-blocking-processor/>
@@ -162,7 +160,7 @@
 
     <flow name="transactionalTryEmmiter" initialState="stopped">
         <try transactionalAction="ALWAYS_BEGIN">
-            <test:assert-intercepting responseSameTask="true" responseExpression="#[payload == 'Test Message']"/>
+            <test:assert-intercepting responseExpression="#[payload == 'Test Message']"/>
             <test:non-blocking-processor/>
         </try>
     </flow>
@@ -170,14 +168,14 @@
     <flow name="transactionalTryProactor" initialState="stopped">
         <test:assert-intercepting responseSameTask="false" responseExpression="#[payload == 'Test Message']"/>
         <try transactionalAction="ALWAYS_BEGIN">
-            <test:assert-intercepting responseSameTask="true" responseExpression="#[payload == 'Test Message']"/>
+            <test:assert-intercepting responseExpression="#[payload == 'Test Message']"/>
             <test:non-blocking-processor/>
         </try>
     </flow>
 
     <error-handler name="globalAssertResponse">
         <on-error-continue>
-            <test:assert-intercepting responseSameTask="true" responseExpression="#[payload == 'Test Message']"/>
+            <test:assert-intercepting responseExpression="#[payload == 'Test Message']"/>
             <test:non-blocking-processor/>
         </on-error-continue>
     </error-handler>
@@ -245,7 +243,7 @@
     </flow>
 
     <flow name="untilSuccessfulWithRetryTransactional" initialState="stopped">
-        <test:assert-intercepting responseSameTask="true" responseExpression="#[payload == 'Test Message']"/>
+        <test:assert-intercepting responseExpression="#[payload == 'Test Message']"/>
         <until-successful millisBetweenRetries="100">
             <test:throw exception="java.lang.RuntimeException" error="ANY" count="2"/>
             <test:non-blocking-processor/>
@@ -256,13 +254,51 @@
     <flow name="foreach" initialState="stopped">
         <test:assert-intercepting responseSameTask="false"/>
         <foreach>
+            <test:assert-intercepting responseSameTask="false"/>
+            <test:non-blocking-processor/>
+            <foreach>
+                <test:assert-intercepting responseSameTask="false"/>
+                <test:non-blocking-processor/>
+            </foreach>
+        </foreach>
+    </flow>
+
+    <flow name="untilSuccessful" initialState="stopped">
+        <test:assert-intercepting responseSameTask="false"/>
+        <until-successful>
+            <test:assert-intercepting responseSameTask="false" count="2"/>
+            <test:non-blocking-processor/>
+            <until-successful>
+                <test:assert-intercepting responseSameTask="false" count="6"/>
+                <test:non-blocking-processor/>
+            </until-successful>
+        </until-successful>
+        <test:assert expression="#[payload == 'Test Message']"/>
+    </flow>
+
+    <flow name="foreach_and_untilSuccessful" initialState="stopped">
+        <test:assert-intercepting responseSameTask="false"/>
+        <foreach>
+            <test:assert-intercepting responseSameTask="false" count="2"/>
+            <test:non-blocking-processor/>
+            <until-successful>
+                <test:assert-intercepting responseSameTask="false" count="6"/>
+                <test:non-blocking-processor/>
+            </until-successful>
+        </foreach>
+    </flow>
+
+    <flow name="untilSuccessful_and_foreach" initialState="stopped">
+        <test:assert-intercepting responseSameTask="false"/>
+        <set-payload value="#[mel: [ 'A', 'B' ]  ]"/>
+        <until-successful maxRetries="1" >
             <test:assert-intercepting responseSameTask="false" count="2"/>
             <test:non-blocking-processor/>
             <foreach>
                 <test:assert-intercepting responseSameTask="false" count="6"/>
                 <test:non-blocking-processor/>
             </foreach>
-        </foreach>
+        </until-successful>
     </flow>
 
     <flow name="scatterGather" initialState="stopped">
