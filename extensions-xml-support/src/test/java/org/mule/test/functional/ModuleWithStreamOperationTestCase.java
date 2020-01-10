@@ -144,4 +144,10 @@ public class ModuleWithStreamOperationTestCase extends AbstractModuleWithHttpTes
     final String realResult = IOUtils.toString(cursorStream);
     assertThat(realResult, is(response));
   }
+
+  // TODO MULE-17934 remove this
+  @Override
+  protected boolean isGracefulShutdown() {
+    return true;
+  }
 }

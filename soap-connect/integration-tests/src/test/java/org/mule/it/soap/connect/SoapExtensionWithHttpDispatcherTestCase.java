@@ -9,6 +9,7 @@ package org.mule.it.soap.connect;
 import static org.mule.service.soap.SoapTestUtils.assertSimilarXml;
 
 import org.mule.runtime.api.message.Message;
+
 import org.junit.Test;
 
 public class SoapExtensionWithHttpDispatcherTestCase extends AbstractSimpleServiceFunctionalTestCase {
@@ -33,5 +34,11 @@ public class SoapExtensionWithHttpDispatcherTestCase extends AbstractSimpleServi
     assertSimilarXml("<ns2:noParamsResponse xmlns:ns2=\"http://service.soap.service.mule.org/\">"
         + "<text>response</text>"
         + "</ns2:noParamsResponse>", ((String) m.getPayload().getValue()));
+  }
+
+  // TODO MULE-17934 remove this
+  @Override
+  protected boolean isGracefulShutdown() {
+    return true;
   }
 }
