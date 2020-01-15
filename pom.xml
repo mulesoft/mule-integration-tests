@@ -50,7 +50,7 @@
     <muleOauthModuleTestVersion>1.1.9</muleOauthModuleTestVersion>
     <muleSocketsConnectorTestVersion>1.2.0-SNAPSHOT</muleSocketsConnectorTestVersion>
 
-    <munitExtensionsMavenPlugin>1.0.0-BETA2</munitExtensionsMavenPlugin>
+    <munitExtensionsMavenPlugin>1.0.1-SNAPSHOT</munitExtensionsMavenPlugin>
 
     <apacheHttpCoreVersion>4.4.6</apacheHttpCoreVersion>
     <apacheHttpClientVersion>4.5.3</apacheHttpClientVersion>
