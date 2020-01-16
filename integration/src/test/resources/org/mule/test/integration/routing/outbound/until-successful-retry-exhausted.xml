@@ -8,7 +8,7 @@
     <object name="objectStore"
             class="org.mule.runtime.api.store.SimpleMemoryObjectStore"/>
 
-    <flow name="retryExhausted">
+    <flow name="retryExhaustedCausedByUntypedError">
         <async>
             <try>
                 <until-successful maxRetries="1" millisBetweenRetries="1000">
@@ -19,6 +19,14 @@
                 </error-handler>
             </try>
         </async>
+    </flow>
+
+    <flow name="retryExhaustedCausedByConnectivityError">
+        <try>
+            <until-successful maxRetries="1" millisBetweenRetries="10">
+                <test:processor throwException="true" exceptionToThrow="org.mule.runtime.api.connection.ConnectionException" exceptionText="Connection refused"/>
+            </until-successful>
+        </try>
     </flow>
 
 </mule>

@@ -7,18 +7,16 @@
 package org.mule.test.integration.routing.outbound;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.fail;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.UntilSuccessfulStory.UNTIL_SUCCESSFUL;
 
 import org.mule.runtime.api.notification.ExceptionNotificationListener;
 import org.mule.runtime.api.util.concurrent.Latch;
-import org.mule.runtime.core.api.event.CoreEvent;
+import org.mule.runtime.extension.api.error.MuleErrors;
+import org.mule.tck.junit4.matcher.ErrorTypeMatcher;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import io.qameta.allure.Feature;
@@ -38,10 +36,16 @@ public class UntilSuccessfulRetryExhaustedTestCase extends AbstractIntegrationTe
     final Latch exceptionStrategyCalledLatch = new Latch();
     notificationListenerRegistry
         .registerListener((ExceptionNotificationListener) notification -> exceptionStrategyCalledLatch.release());
-    flowRunner("retryExhausted").withPayload("message").run();
+    flowRunner("retryExhaustedCausedByUntypedError").withPayload("message").run();
     if (!exceptionStrategyCalledLatch.await(10000, MILLISECONDS)) {
       fail("exception strategy was not executed");
     }
+  }
+
+  @Test
+  public void onRetryExhaustedErrorTypeMustBeRetryExhausted() throws Exception {
+    flowRunner("retryExhaustedCausedByConnectivityError").withPayload("message")
+        .runExpectingException(ErrorTypeMatcher.errorType(MuleErrors.RETRY_EXHAUSTED));
   }
 
 }
