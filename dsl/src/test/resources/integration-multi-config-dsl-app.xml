@@ -33,6 +33,27 @@
                 <tls:key-store path="ssltest-keystore.jks" keyPassword="changeit" password="changeit"/>
             </tls:context>
         </http:listener-connection>
+        <http:listener-interceptors>
+            <http:cors-interceptor allowCredentials="true">
+                <http:origins>
+                    <http:origin url="http://www.the-origin-of-time.com" accessControlMaxAge="30">
+                        <http:allowed-methods>
+                            <http:method methodName="POST"/>
+                            <http:method methodName="PUT"/>
+                            <http:method methodName="GET"/>
+                        </http:allowed-methods>
+                        <http:allowed-headers>
+                            <http:header headerName="x-allow-origin"/>
+                            <http:header headerName="x-yet-another-valid-header"/>
+                        </http:allowed-headers>
+                        <http:expose-headers>
+                            <http:header headerName="x-forwarded-for"/>
+                        </http:expose-headers>
+                    </http:origin>
+                </http:origins>
+            </http:cors-interceptor>
+        </http:listener-interceptors>
+
     </http:listener-config>
 
     <http:request-config name="httpRequester">
