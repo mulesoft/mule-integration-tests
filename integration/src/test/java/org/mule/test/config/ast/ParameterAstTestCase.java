@@ -6,14 +6,17 @@
  */
 package org.mule.test.config.ast;
 
+import static java.lang.Boolean.TRUE;
 import static java.lang.Thread.currentThread;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.collection.IsArrayContaining.hasItemInArray;
+import static org.hamcrest.collection.IsArrayContainingInOrder.arrayContaining;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.FLOW_IDENTIFIER;
 import static org.mule.runtime.core.api.construct.Flow.INITIAL_STATE_STARTED;
@@ -193,34 +196,79 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
         .findFirst();
     assertThat(optionalHttpListenerConfig, not(empty()));
 
-    ComponentAst componentAst = optionalHttpListenerConfig.get();
-    assertThat(componentAst.getModel(ConfigurationModel.class), not(empty()));
+    ComponentAst httpListenerConfig = optionalHttpListenerConfig.get();
+    assertThat(httpListenerConfig.getModel(ConfigurationModel.class), not(empty()));
 
-    assertThat(componentAst.getComponentId(), not(empty()));
-    ComponentParameterAst componentParameterAst = componentAst.getParameter(NAME);
-    assertThat(componentParameterAst.getValue().getRight(), equalTo(componentAst.getComponentId().get()));
+    assertThat(httpListenerConfig.getComponentId(), not(empty()));
+    ComponentParameterAst nameComponentParameter = httpListenerConfig.getParameter(NAME);
+    assertThat(nameComponentParameter.getValue().getRight(), equalTo(httpListenerConfig.getComponentId().get()));
 
-    Optional<ComponentAst> opetionalConnectionProviderAst =
-        componentAst.recursiveStream().filter(inner -> inner.getModel(ConnectionProviderModel.class).isPresent()).findFirst();
-    assertThat(opetionalConnectionProviderAst, not(empty()));
+    Optional<ComponentAst> optionalConnectionProvider =
+        httpListenerConfig.recursiveStream().filter(inner -> inner.getModel(ConnectionProviderModel.class).isPresent())
+            .findFirst();
+    assertThat(optionalConnectionProvider, not(empty()));
 
-    ComponentAst connectionProviderAst = opetionalConnectionProviderAst.get();
-    assertThat(connectionProviderAst.getParameter("tlsContext").getValue().getRight(), equalTo("listenerTlsContext"));
+    ComponentAst connectionProvider = optionalConnectionProvider.get();
+    ComponentParameterAst tlsContextParameter = connectionProvider.getParameter("tlsContext");
+    assertThat(tlsContextParameter.getValue().getLeft(), nullValue());
+    assertThat(tlsContextParameter.getValue().getRight(), equalTo("listenerTlsContext"));
 
-    componentParameterAst = componentAst.getParameter("basePath");
-    assertThat(componentParameterAst.getValue().getRight(), nullValue());
+    ComponentParameterAst basePathParameter = httpListenerConfig.getParameter("basePath");
+    assertThat(basePathParameter.getValue().getLeft(), nullValue());
+    assertThat(basePathParameter.getValue().getRight(), equalTo("/api"));
 
-    componentParameterAst = componentAst.getParameter("listenerInterceptors");
-    assertThat(componentParameterAst.getValue().getRight(), not(nullValue()));
+    ComponentParameterAst listenerInterceptorsParameter = httpListenerConfig.getParameter("listenerInterceptors");
+    assertThat(listenerInterceptorsParameter.getValue().getLeft(), nullValue());
+    ComponentAst listenerInterceptors = (ComponentAst) listenerInterceptorsParameter.getValue().getRight();
 
-    ComponentAst nestedComponentAst = (ComponentAst) componentParameterAst.getValue().getRight();
-    // TODO should be accessed as parameter!
-    ComponentParameterAst nestedComponentParameterAst = nestedComponentAst.getParameter("corsInterceptor");
-    assertThat(nestedComponentParameterAst.getValue().getRight(), nullValue());
-    //assertThat(nestedComponentParameterAst.getValue().getLeft(), is());
+    ComponentAst firstCorsInterceptor = listenerInterceptors.directChildrenStream().findFirst().get();
+    ComponentParameterAst allowCredentialsParameter = firstCorsInterceptor.getParameter("allowCredentials");
+    assertThat(allowCredentialsParameter.getValue().getLeft(), is(nullValue()));
+    assertThat(allowCredentialsParameter.getValue().getRight(), is(TRUE));
 
-    ComponentAst other =
-        nestedComponentAst.recursiveStream().findFirst().orElseThrow(() -> new AssertionError("Should have a nested parameter"));
+    ComponentParameterAst originsParameter = firstCorsInterceptor.getParameter("origins");
+    assertThat(originsParameter.getValue().getLeft(), is(nullValue()));
+    assertThat(originsParameter.getValue().getRight(), not(nullValue()));
+
+    ComponentAst origins = (ComponentAst) originsParameter.getValue().getRight();
+    ComponentAst origin = origins.directChildrenStream().findFirst().get();
+    ComponentParameterAst originUrlParameter = origin.getParameter("url");
+    assertThat(originUrlParameter.getValue().getLeft(), nullValue());
+    assertThat(originUrlParameter.getValue().getRight(), is("http://www.the-origin-of-time.com"));
+    ComponentParameterAst originAccessControlMaxAgeParameter = origin.getParameter("accessControlMaxAge");
+    assertThat(originAccessControlMaxAgeParameter.getValue().getLeft(), nullValue());
+    assertThat(originAccessControlMaxAgeParameter.getValue().getRight(), is(30l));
+
+    assertParameters(origin, "allowedMethods", "methodName", "POST", "PUT", "GET");
+    assertParameters(origin, "allowedHeaders", "headerName", "x-allow-origin", "x-yet-another-valid-header");
+    assertParameters(origin, "exposeHeaders", "headerName", "x-forwarded-for");
+
+    origin = origins.directChildrenStream().skip(1).findFirst().get();
+    originUrlParameter = origin.getParameter("url");
+    assertThat(originUrlParameter.getValue().getLeft(), nullValue());
+    assertThat(originUrlParameter.getValue().getRight(), is("http://www.the-origin-of-life.com"));
+    originAccessControlMaxAgeParameter = origin.getParameter("accessControlMaxAge");
+    assertThat(originAccessControlMaxAgeParameter.getValue().getLeft(), nullValue());
+    assertThat(originAccessControlMaxAgeParameter.getValue().getRight(), is(60l));
+
+    assertParameters(origin, "allowedMethods", "methodName", "POST", "GET");
+    assertParameters(origin, "allowedHeaders", "headerName", "x-allow-origin");
+    assertParameters(origin, "exposeHeaders", "headerName", "x-forwarded-for");
+  }
+
+  private void assertParameters(ComponentAst container, String containerParameterName, String elementParameterName,
+                                String... rightValues) {
+    ComponentParameterAst containerParameter = container.getParameter(containerParameterName);
+    assertThat(containerParameter.getValue().getLeft(), nullValue());
+    assertThat(containerParameter.getValue().getRight(), not(nullValue()));
+
+    ComponentAst elementComponent = (ComponentAst) containerParameter.getValue().getRight();
+    String[] actual = elementComponent.directChildrenStream().map(componentAst -> {
+      ComponentParameterAst elementParameter = componentAst.getParameter(elementParameterName);
+      assertThat(elementParameter.getValue().getLeft(), nullValue());
+      return (String) elementParameter.getValue().getRight();
+    }).toArray(String[]::new);
+    assertThat(actual, arrayContaining(rightValues));
   }
 
 }

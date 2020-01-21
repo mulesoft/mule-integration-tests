@@ -3,16 +3,16 @@
       xmlns:http="http://www.mulesoft.org/schema/mule/http"
       xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:schemaLocation="
-        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
         http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+
         http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd">
 
     <tls:context name="listenerTlsContext">
         <tls:key-store path="serverKeystore" keyPassword="mulepassword" password="mulepassword" alias="muleserver"/>
     </tls:context>
 
-    <http:listener-config name="HTTP_Listener_config">
+    <http:listener-config name="HTTP_Listener_config" basePath="/api">
         <http:listener-connection host="localhost" port="8080" tlsContext="listenerTlsContext"
                                   protocol="HTTPS"/>
         <http:listener-interceptors>
@@ -32,12 +32,53 @@
                             <http:header headerName="x-forwarded-for"/>
                         </http:expose-headers>
                     </http:origin>
+                    <http:origin url="http://www.the-origin-of-life.com" accessControlMaxAge="60">
+                        <http:allowed-methods>
+                            <http:method methodName="POST"/>
+                            <http:method methodName="GET"/>
+                        </http:allowed-methods>
+                        <http:allowed-headers>
+                            <http:header headerName="x-allow-origin"/>
+                        </http:allowed-headers>
+                        <http:expose-headers>
+                            <http:header headerName="x-forwarded-for"/>
+                        </http:expose-headers>
+                    </http:origin>
+                </http:origins>
+            </http:cors-interceptor>
+            <http:cors-interceptor allowCredentials="true">
+                <http:origins>
+                    <http:origin url="http://www.the-origin-of-time.com" accessControlMaxAge="30">
+                        <http:allowed-methods>
+                            <http:method methodName="POST"/>
+                            <http:method methodName="PUT"/>
+                            <http:method methodName="GET"/>
+                        </http:allowed-methods>
+                        <http:allowed-headers>
+                            <http:header headerName="x-allow-origin"/>
+                            <http:header headerName="x-yet-another-valid-header"/>
+                        </http:allowed-headers>
+                        <http:expose-headers>
+                            <http:header headerName="x-forwarded-for"/>
+                        </http:expose-headers>
+                    </http:origin>
+                    <http:origin url="http://www.the-origin-of-life.com" accessControlMaxAge="60">
+                        <http:allowed-methods>
+                            <http:method methodName="POST"/>
+                            <http:method methodName="GET"/>
+                        </http:allowed-methods>
+                        <http:allowed-headers>
+                            <http:header headerName="x-allow-origin"/>
+                        </http:allowed-headers>
+                        <http:expose-headers>
+                            <http:header headerName="x-forwarded-for"/>
+                        </http:expose-headers>
+                    </http:origin>
                 </http:origins>
             </http:cors-interceptor>
         </http:listener-interceptors>
     </http:listener-config>
 
     <flow name="flowParameters" initialState="stopped" maxConcurrency="2"/>
-
 
 </mule>
