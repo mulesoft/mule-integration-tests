@@ -13,6 +13,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.fail;
 import static org.mule.runtime.extension.api.util.ExtensionMetadataTypeUtils.getId;
 import static org.mule.runtime.module.extension.soap.internal.loader.SoapInvokeOperationDeclarer.ATTACHMENTS_PARAM;
@@ -30,11 +31,13 @@ import org.mule.metadata.api.model.StringType;
 import org.mule.runtime.api.component.location.Location;
 import org.mule.runtime.api.meta.model.operation.OperationModel;
 import org.mule.runtime.api.meta.model.parameter.ParameterModel;
+import org.mule.runtime.api.metadata.MetadataAttributes;
 import org.mule.runtime.api.metadata.MetadataKey;
 import org.mule.runtime.api.metadata.MetadataKeysContainer;
 import org.mule.runtime.api.metadata.MetadataService;
 import org.mule.runtime.api.metadata.descriptor.ComponentMetadataDescriptor;
 import org.mule.runtime.api.metadata.resolving.MetadataResult;
+import org.mule.runtime.extension.api.property.TypeResolversInformationModelProperty;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -131,6 +134,28 @@ public class InvokeMetadataTestCase extends SoapFootballExtensionArtifactFunctio
   }
 
   @Test
+  public void TypeResolversInformationModelProperty() {
+    ComponentMetadataDescriptor<OperationModel> componentMetadataDescriptor = getComponentMetadataDescriptor("getTeams");
+    MetadataAttributes metadataAttributes = componentMetadataDescriptor.getMetadataAttributes();
+    OperationModel operationModel = componentMetadataDescriptor.getModel();
+    TypeResolversInformationModelProperty modelProperty =
+        operationModel.getModelProperty(TypeResolversInformationModelProperty.class)
+            .orElseThrow(() -> new AssertionError("TypeResolversInformationModelProperty is not present"));
+
+    assertThat(modelProperty.getCategoryName(), equalTo(metadataAttributes.getCategoryName()));
+    assertThat(modelProperty.getOutputResolver()
+        .map(resolverInformation -> resolverInformation.getResolverName())
+        .orElseThrow(() -> new AssertionError("OutputResolver information is not present")),
+               equalTo(metadataAttributes.getOutputResolverName()
+                   .orElseThrow(() -> new AssertionError("OutputResolverName should be present in MetadataAttributes"))));
+
+    // Doesn't have an attributes resolver for SOAP
+    assertThat(modelProperty.getAttributesResolver().isPresent(),
+               equalTo(metadataAttributes.getOutputAttributesResolverName().isPresent()));
+  }
+
+
+  @Test
   public void invalidKey() {
     Location location = Location.builder().globalName("invalidKey").addProcessorsPart().addIndexPart(0).build();
     MetadataResult<ComponentMetadataDescriptor<OperationModel>> result = metadataService.getOperationMetadata(location);
@@ -148,9 +173,13 @@ public class InvokeMetadataTestCase extends SoapFootballExtensionArtifactFunctio
   }
 
   private OperationModel getMetadata(String flow) {
+    return getComponentMetadataDescriptor(flow).getModel();
+  }
+
+  private ComponentMetadataDescriptor<OperationModel> getComponentMetadataDescriptor(String flow) {
     Location location = Location.builder().globalName(flow).addProcessorsPart().addIndexPart(0).build();
     MetadataResult<ComponentMetadataDescriptor<OperationModel>> result = metadataService.getOperationMetadata(location);
     assertThat(result, isSuccess());
-    return result.get().getModel();
+    return result.get();
   }
 }
