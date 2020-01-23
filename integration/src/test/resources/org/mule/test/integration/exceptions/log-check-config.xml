@@ -15,7 +15,7 @@
                         Message               : null.
                         Error type            : MULE:ANY
                         Element               : checkEquals/processors/0 @ LogCheckTestCase#runSuccessesNoVerboseExceptions:org/mule/test/integration/exceptions/log-check-config.xml:10
-                        Element XML           : <test:throw exception="java.lang.RuntimeException" error="ANY"></test:throw>
+                        Element DSL           : <test:throw exception="java.lang.RuntimeException" error="ANY"></test:throw>
                         (set debug level logging or '-Dmule.verbose.exceptions=true' for everything)
                     ]]>
                 </test:check-equals>
@@ -32,7 +32,7 @@
                     <![CDATA[
                         Message               : null.
                         Element               : checkEqualsVerbose/processors/0 @ LogCheckTestCase#runVerboseCheckEqualsVerbose:org/mule/test/integration/exceptions/log-check-config.xml:28
-                        Element XML           : <test:throw exception="java.lang.RuntimeException" error="ANY"></test:throw>
+                        Element DSL           : <test:throw exception="java.lang.RuntimeException" error="ANY"></test:throw>
                         Error type            : MULE:ANY
                         FlowStack             : at checkEqualsVerbose(checkEqualsVerbose/processors/0 @ LogCheckTestCase#runVerboseCheckEqualsVerbose:org/mule/test/integration/exceptions/log-check-config.xml:28)
                         Payload               : null
@@ -121,7 +121,7 @@
                     <![CDATA[
                         Message               : null.
                         Element               : allChecksTogetherNoneFailing/processors/0 @ LogCheckTestCase#runVerboseAllChecksTogetherNoneFailing:org/mule/test/integration/exceptions/log-check-config.xml:117
-                        Element XML           : <test:throw exception="java.lang.RuntimeException" error="ANY"></test:throw>
+                        Element DSL           : <test:throw exception="java.lang.RuntimeException" error="ANY"></test:throw>
                         Error type            : MULE:ANY
                         FlowStack             : at allChecksTogetherNoneFailing(allChecksTogetherNoneFailing/processors/0 @ LogCheckTestCase#runVerboseAllChecksTogetherNoneFailing:org/mule/test/integration/exceptions/log-check-config.xml:117)
                         Payload               : null
