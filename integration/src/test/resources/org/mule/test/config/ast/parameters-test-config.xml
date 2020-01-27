@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
+      xmlns:db="http://www.mulesoft.org/schema/mule/db"
       xmlns:http="http://www.mulesoft.org/schema/mule/http"
       xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
         http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
-
+        http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
         http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd">
 
     <tls:context name="listenerTlsContext">
@@ -78,6 +79,16 @@
             </http:cors-interceptor>
         </http:listener-interceptors>
     </http:listener-config>
+
+    <db:config name="dbConfig">
+        <db:derby-connection create="true" database="target/muleEmbeddedDB">
+            <db:pooling-profile maxPoolSize="10"/>
+            <db:connection-properties>
+                <db:connection-property key="first" value="propertyOne"/>
+                <db:connection-property key="second" value="propertyTwo"/>
+            </db:connection-properties>
+        </db:derby-connection>
+    </db:config>
 
     <flow name="flowParameters" initialState="stopped" maxConcurrency="2"/>
 

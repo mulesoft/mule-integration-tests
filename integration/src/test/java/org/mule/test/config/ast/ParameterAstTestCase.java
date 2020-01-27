@@ -24,6 +24,7 @@ import static org.mule.runtime.core.api.construct.Flow.INITIAL_STATE_STOPPED;
 import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.initialiseIfNeeded;
 import static org.mule.runtime.dsl.api.xml.parser.XmlConfigurationDocumentLoader.noValidationDocumentLoader;
 
+import org.mule.extension.db.internal.DbConnector;
 import org.mule.extension.http.internal.temporary.HttpConnector;
 import org.mule.extension.socket.api.SocketsExtension;
 import org.mule.metadata.api.annotation.EnumAnnotation;
@@ -124,7 +125,7 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
     ExtensionsTestInfrastructureDiscoverer discoverer = new ExtensionsTestInfrastructureDiscoverer(extensionManager);
 
     DefaultJavaExtensionModelLoader extensionModelLoader = new DefaultJavaExtensionModelLoader();
-    for (Class<?> annotatedClass : new Class[] {HttpConnector.class, SocketsExtension.class}) {
+    for (Class<?> annotatedClass : new Class[] {HttpConnector.class, SocketsExtension.class, DbConnector.class}) {
       discoverer.discoverExtension(annotatedClass, extensionModelLoader);
     }
 
@@ -153,7 +154,7 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
   }
 
   @Test
-  public void constructParameters() {
+  public void simpleParameters() {
     Optional<ComponentAst> optionalFlowParameters = artifactAst.topLevelComponentsStream()
         .filter(componentAst -> componentAst.getIdentifier().equals(FLOW_IDENTIFIER) &&
             "flowParameters".equals(componentAst.getComponentId().orElse(null)))
@@ -189,10 +190,21 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
   }
 
   @Test
-  public void configurationParameters() {
+  public void wrappedElementSimpleMapType() {
+    Optional<ComponentAst> optionalDbConfig = artifactAst.topLevelComponentsStream()
+            .filter(componentAst -> componentAst.getIdentifier().getNamespace().equals("db") &&
+                                    componentAst.getIdentifier().getName().equals("config") &&
+                                    "dbConfig".equals(componentAst.getComponentId().orElse(null)))
+            .findFirst();
+    assertThat(optionalDbConfig, not(empty()));
+  }
+
+  @Test
+  public void wrappedElementArrayType() {
     Optional<ComponentAst> optionalHttpListenerConfig = artifactAst.topLevelComponentsStream()
-        .filter(componentAst -> componentAst.getIdentifier().getName().equals("listener-config") &&
-            "HTTP_Listener_config".equals(componentAst.getComponentId().orElse(null)))
+            .filter(componentAst -> componentAst.getIdentifier().getNamespace().equals("http") &&
+                                    componentAst.getIdentifier().getName().equals("listener-config") &&
+                                    "HTTP_Listener_config".equals(componentAst.getComponentId().orElse(null)))
         .findFirst();
     assertThat(optionalHttpListenerConfig, not(empty()));
 

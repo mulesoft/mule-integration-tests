@@ -195,7 +195,7 @@
             <artifactId>mule-db-connector</artifactId>
             <version>${muleDbConnectorTestVersion}</version>
             <classifier>mule-plugin</classifier>
-            <scope>provided</scope>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mule.modules</groupId>
