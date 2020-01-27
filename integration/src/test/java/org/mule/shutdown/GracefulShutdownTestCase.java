@@ -8,7 +8,7 @@ package org.mule.shutdown;
 
 import static java.lang.Runtime.getRuntime;
 import static java.util.Arrays.asList;
-import static org.mule.runtime.api.util.MuleSystemProperties.MULE_LIFECYCLE_PESSIMISTIC_DISPOSE;
+import static org.mule.runtime.api.util.MuleSystemProperties.MULE_LIFECYCLE_FAIL_ON_FIRST_DISPOSE_ERROR;
 import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.LIFECYCLE_AND_DEPENDENCY_INJECTION;
 import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.GracefulShutdownStory.GRACEFUL_SHUTDOWN_STORY;
 
@@ -39,7 +39,7 @@ public class GracefulShutdownTestCase extends AbstractIntegrationTestCase {
   }
 
   @Rule
-  public SystemProperty propagateDisposeError = new SystemProperty(MULE_LIFECYCLE_PESSIMISTIC_DISPOSE, "");
+  public SystemProperty propagateDisposeError = new SystemProperty(MULE_LIFECYCLE_FAIL_ON_FIRST_DISPOSE_ERROR, "");
 
   private final String configFile;
 
