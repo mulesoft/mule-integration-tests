@@ -11,12 +11,13 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mule.tck.processor.FlowAssert.verify;
 
-import org.junit.runners.Parameterized;
 import org.mule.runtime.api.security.SecurityContext;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.security.AbstractAuthenticationFilter;
 import org.mule.runtime.core.api.transaction.Transaction;
 import org.mule.runtime.core.api.transaction.TransactionCoordination;
+import org.mule.tck.junit4.FlakinessDetectorTestRunner;
+import org.mule.tck.junit4.FlakyTest;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.runner.RunnerDelegateTo;
 
@@ -25,7 +26,7 @@ import java.util.Collection;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
-@RunnerDelegateTo(Parameterized.class)
+@RunnerDelegateTo(FlakinessDetectorTestRunner.class)//Parameterized.class)
 public class NonBlockingFunctionalTestCase extends AbstractIntegrationTestCase {
 
   @Parameters(name = "{0}")
@@ -40,12 +41,12 @@ public class NonBlockingFunctionalTestCase extends AbstractIntegrationTestCase {
     });
   }
 
-  private final String config;
-  private final String processingStrategyFactory;
+  private final String config = "non-blocking-test-config-global-err.xml";
+  private final String processingStrategyFactory = DEFAULT_PROCESSING_STRATEGY_CLASSNAME;
 
-  public NonBlockingFunctionalTestCase(String type, String config, String processingStrategyFactory) {
-    this.config = config;
-    this.processingStrategyFactory = processingStrategyFactory;
+  public NonBlockingFunctionalTestCase(){//String type, String config, String processingStrategyFactory) {
+    //this.config = config;
+    //this.processingStrategyFactory = processingStrategyFactory;
   }
 
   @Override
@@ -183,6 +184,7 @@ public class NonBlockingFunctionalTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
+  @FlakyTest(times = 150)
   public void foreach() throws Exception {
     flowRunner("foreach").withPayload(asList(new String[] {"1", "2", "3"}, new String[] {"a", "b", "c"})).run();
   }
