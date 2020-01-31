@@ -12,7 +12,7 @@
             <test:on-error-check-log>
                 <test:check-equals>
                     <![CDATA[
-                        Message               : null.
+                        Message               : null
                         Error type            : MULE:ANY
                         Element               : checkEquals/processors/0 @ LogCheckTestCase#runSuccessesNoVerboseExceptions:org/mule/test/integration/exceptions/log-check-config.xml:10
                         Element DSL           : <test:throw exception="java.lang.RuntimeException" error="ANY"></test:throw>
@@ -30,7 +30,7 @@
             <test:on-error-check-log>
                 <test:check-equals>
                     <![CDATA[
-                        Message               : null.
+                        Message               : null
                         Element               : checkEqualsVerbose/processors/0 @ LogCheckTestCase#runVerboseCheckEqualsVerbose:org/mule/test/integration/exceptions/log-check-config.xml:28
                         Element DSL           : <test:throw exception="java.lang.RuntimeException" error="ANY"></test:throw>
                         Error type            : MULE:ANY
@@ -119,7 +119,7 @@
             <test:on-error-check-log>
                 <test:check-equals>
                     <![CDATA[
-                        Message               : null.
+                        Message               : null
                         Element               : allChecksTogetherNoneFailing/processors/0 @ LogCheckTestCase#runVerboseAllChecksTogetherNoneFailing:org/mule/test/integration/exceptions/log-check-config.xml:117
                         Element DSL           : <test:throw exception="java.lang.RuntimeException" error="ANY"></test:throw>
                         Error type            : MULE:ANY
