@@ -201,12 +201,5 @@
             <classifier>mule-plugin</classifier>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.mule.tests.extension</groupId>
-            <artifactId>mule-extension-test-soap</artifactId>
-            <version>${muleExtensionTestSoapTestVersion}</version>
-            <classifier>mule-plugin</classifier>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 </project>
