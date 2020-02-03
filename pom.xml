@@ -5,10 +5,10 @@
     <groupId>org.mule.runtime</groupId>
     <artifactId>mule</artifactId>
     <version>4.3.0-SNAPSHOT</version>
+    <relativePath></relativePath>
   </parent>
   <groupId>org.mule.tests</groupId>
   <artifactId>mule-extensions-integration-tests</artifactId>
-  <version>4.3.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Mule Tests</name>
 
@@ -93,11 +93,6 @@
       <id>mule</id>
       <name>Mule Repository</name>
       <url>https://repository.mulesoft.org/nexus/content/repositories/public/</url>
-    </repository>
-    <repository>
-      <id>spring-snapshot</id>
-      <name>Spring Snapshot Repository</name>
-      <url>http://repo.spring.io/snapshot/</url>
     </repository>
   </repositories>
 

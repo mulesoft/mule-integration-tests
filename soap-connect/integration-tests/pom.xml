@@ -247,13 +247,6 @@
             <classifier>mule-plugin</classifier>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.mule.tests.extension</groupId>
-            <artifactId>mule-extension-test-soap</artifactId>
-            <version>${muleExtensionTestSoapTestVersion}</version>
-            <classifier>mule-plugin</classifier>
-            <scope>test</scope>
-        </dependency>
 
         <dependency>
             <groupId>org.mule.services</groupId>
@@ -265,7 +258,6 @@
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-servlet_3.0_spec</artifactId>
-            <version>${geronimoSpecsServletApiVersion}</version>
         </dependency>
 
     </dependencies>
