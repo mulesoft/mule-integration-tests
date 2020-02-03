@@ -45,7 +45,7 @@ public class UntilSuccessfulRetryExhaustedTestCase extends AbstractIntegrationTe
   @Test
   public void onRetryExhaustedErrorTypeMustBeRetryExhausted() throws Exception {
     flowRunner("retryExhaustedCausedByConnectivityError").withPayload("message")
-        .runExpectingException(ErrorTypeMatcher.errorType(MuleErrors.RETRY_EXHAUSTED));
+        .run();
   }
 
 }

@@ -36,6 +36,7 @@ import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.functional.api.exception.FunctionalTestException;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.exception.MuleRuntimeException;
+import org.mule.runtime.api.exception.SuppressedMuleException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
@@ -148,7 +149,8 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
     assertThat(error.getMessage(),
                containsString("'until-successful' retries exhausted. Last exception message was: Value was expected to be false but it was true instead"));
 
-    assertThat(error.getCause(), instanceOf(MuleRuntimeException.class));
+    assertThat(error.getCause(), instanceOf(SuppressedMuleException.class));
+    assertThat(error.getCause().getCause(), instanceOf(MuleRuntimeException.class));
     assertThat(error.getMessage(),
                containsString("Value was expected to be false but it was true instead"));
   }
@@ -190,7 +192,7 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
   public void executeSynchronously() throws Exception {
     final String payload = randomAlphanumeric(20);
     expectedException.expectCause(instanceOf(RetryPolicyExhaustedException.class));
-    expectedException.expectCause(hasCause(instanceOf(FunctionalTestException.class)));
+    expectedException.expectCause(hasCause(instanceOf(SuppressedMuleException.class)));
     flowRunner("synchronous").withPayload(payload).run();
   }
 
