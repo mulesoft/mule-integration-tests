@@ -22,6 +22,14 @@
     </flow>
 
     <flow name="retryExhaustedCausedByConnectivityError">
+        <try>
+            <until-successful maxRetries="1" millisBetweenRetries="10">
+                <test:processor throwException="true" exceptionToThrow="org.mule.runtime.api.connection.ConnectionException" exceptionText="Connection refused"/>
+            </until-successful>
+        </try>
+    </flow>
+
+    <flow name="retryExhaustedCausedByConnectivityErrorWithErrorHandler">
         <until-successful maxRetries="1" millisBetweenRetries="10">
             <test:processor throwException="true" exceptionToThrow="org.mule.runtime.api.connection.ConnectionException" exceptionText="Connection refused"/>
         </until-successful>
