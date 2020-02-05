@@ -193,4 +193,23 @@
             </try>
         </try>
     </flow>
+    
+    <flow name="exceptionInErrorHandlerNestedTryCorrectType" initialState="stopped">
+        <try>
+            <raise-error type="MULE:CLIENT_SECURITY"/>
+            <error-handler>
+                <on-error-continue>
+                    <raise-error type="MULE:ROUTING"/>
+                </on-error-continue>
+            </error-handler>    
+        </try>
+        <error-handler>
+            <on-error-continue type="MULE:ROUTING">
+                <set-payload value="properly mapped"/>
+            </on-error-continue>
+            <on-error-continue type="MULE:CLIENT_SECURITY">
+                <set-payload value="wrongly mapped"/>
+            </on-error-continue>
+        </error-handler>    
+    </flow>
 </mule>
