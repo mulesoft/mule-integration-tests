@@ -105,30 +105,30 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
     ServiceRegistry serviceRegistry = new SpiServiceRegistry();
     try (InputStream configFileStream = resource.openStream()) {
       Document document =
-              noValidationDocumentLoader().loadDocument(SAXParserFactory::newInstance, "config", configFileStream,
-                                                        new DefaultHandler());
+          noValidationDocumentLoader().loadDocument(SAXParserFactory::newInstance, "config", configFileStream,
+                                                    new DefaultHandler());
 
       ImmutableList.Builder<XmlNamespaceInfoProvider> namespaceInfoProvidersBuilder = ImmutableList.builder();
       namespaceInfoProvidersBuilder
-              .addAll(serviceRegistry.lookupProviders(XmlNamespaceInfoProvider.class, currentThread().getContextClassLoader()));
+          .addAll(serviceRegistry.lookupProviders(XmlNamespaceInfoProvider.class, currentThread().getContextClassLoader()));
       ImmutableList<XmlNamespaceInfoProvider> xmlNamespaceInfoProviders = namespaceInfoProvidersBuilder.build();
 
       XmlApplicationParser xmlApplicationParser = new XmlApplicationParser(xmlNamespaceInfoProviders);
       configLine = xmlApplicationParser.parse(document.getDocumentElement());
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       throw new UncheckedIOException(e);
     }
 
     artifactConfigBuilder.addConfigFile(new ConfigFile(resource.getFile(), Collections.singletonList(
-            configLine.orElseThrow(() -> new IllegalArgumentException(format("Failed to parse %s.",
-                                                                             resource))))));
+                                                                                                     configLine
+                                                                                                         .orElseThrow(() -> new IllegalArgumentException(format("Failed to parse %s.",
+                                                                                                                                                                resource))))));
 
     ArtifactConfig artifactConfig = artifactConfigBuilder.build();
 
     List<ExtensionModel> runtimeExtensionModels = new ArrayList<>();
     Collection<RuntimeExtensionModelProvider> runtimeExtensionModelProviders = new SpiServiceRegistry()
-            .lookupProviders(RuntimeExtensionModelProvider.class, Thread.currentThread().getContextClassLoader());
+        .lookupProviders(RuntimeExtensionModelProvider.class, Thread.currentThread().getContextClassLoader());
     for (RuntimeExtensionModelProvider runtimeExtensionModelProvider : runtimeExtensionModelProviders) {
       runtimeExtensionModels.add(runtimeExtensionModelProvider.createExtensionModel());
     }
@@ -141,27 +141,27 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
 
     DefaultJavaExtensionModelLoader extensionModelLoader = new DefaultJavaExtensionModelLoader();
     for (Class<?> annotatedClass : new Class[] {HttpConnector.class, SocketsExtension.class, DbConnector.class,
-            HeisenbergExtension.class, SubTypesMappingConnector.class, VeganExtension.class}) {
+        HeisenbergExtension.class, SubTypesMappingConnector.class, VeganExtension.class}) {
       discoverer.discoverExtension(annotatedClass, extensionModelLoader);
     }
 
     ImmutableSet<ExtensionModel> extensionModels = ImmutableSet.<ExtensionModel>builder()
-            .addAll(muleContext.getExtensionManager().getExtensions())
-            .addAll(runtimeExtensionModels)
-            .build();
+        .addAll(muleContext.getExtensionManager().getExtensions())
+        .addAll(runtimeExtensionModels)
+        .build();
 
     final ComponentBuildingDefinitionRegistry componentBuildingDefinitionRegistry =
-            new ComponentBuildingDefinitionRegistry();
+        new ComponentBuildingDefinitionRegistry();
     serviceRegistry
-            .lookupProviders(ComponentBuildingDefinitionProvider.class, ComponentBuildingDefinitionProvider.class.getClassLoader())
-            .forEach(componentBuildingDefinitionProvider -> {
-              if (componentBuildingDefinitionProvider instanceof ExtensionBuildingDefinitionProvider) {
-                // Ignore extensions building definition provider, we have to test this works fine without parsers
-              }
-              componentBuildingDefinitionProvider.init();
-              componentBuildingDefinitionProvider.getComponentBuildingDefinitions()
-                      .forEach(componentBuildingDefinitionRegistry::register);
-            });
+        .lookupProviders(ComponentBuildingDefinitionProvider.class, ComponentBuildingDefinitionProvider.class.getClassLoader())
+        .forEach(componentBuildingDefinitionProvider -> {
+          if (componentBuildingDefinitionProvider instanceof ExtensionBuildingDefinitionProvider) {
+            // Ignore extensions building definition provider, we have to test this works fine without parsers
+          }
+          componentBuildingDefinitionProvider.init();
+          componentBuildingDefinitionProvider.getComponentBuildingDefinitions()
+              .forEach(componentBuildingDefinitionRegistry::register);
+        });
 
     this.artifactAst = new ApplicationModel(artifactConfig, null, extensionModels, Collections.emptyMap(),
                                             Optional.empty(), of(componentBuildingDefinitionRegistry),
@@ -171,13 +171,13 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
   @Test
   public void recursivePojoOperationParameter() {
     Optional<ComponentAst> optionalFlowRecursivePojo = artifactAst.topLevelComponentsStream()
-            .filter(componentAst -> componentAst.getIdentifier().equals(FLOW_IDENTIFIER) &&
-                                    "recursivePojo".equals(componentAst.getComponentId().orElse(null)))
-            .findFirst();
+        .filter(componentAst -> componentAst.getIdentifier().equals(FLOW_IDENTIFIER) &&
+            "recursivePojo".equals(componentAst.getComponentId().orElse(null)))
+        .findFirst();
     assertThat(optionalFlowRecursivePojo, not(empty()));
 
     ComponentAst heisenbergApprove = optionalFlowRecursivePojo.map(flow -> flow.directChildrenStream().findFirst().get())
-            .orElseThrow(() -> new AssertionError("Couldn't find heisenberg approve operation"));
+        .orElseThrow(() -> new AssertionError("Couldn't find heisenberg approve operation"));
 
     ComponentParameterAst recursivePojoParameter = heisenbergApprove.getParameter("recursivePojo");
     ComponentAst recursivePojo = (ComponentAst) recursivePojoParameter.getValue().getRight();
@@ -194,7 +194,7 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
     assertThat(recursivePojoChildsParameter.getValue().getRight(), not(nullValue()));
 
     ComponentAst childRecursivePojo = ((List<ComponentAst>) recursivePojoChildsParameter.getValue().getRight()).stream()
-            .findFirst().orElseThrow(() -> new AssertionError("Couldn't find child declaration"));
+        .findFirst().orElseThrow(() -> new AssertionError("Couldn't find child declaration"));
     ComponentParameterAst childRecursivePojoNextParameter = childRecursivePojo.getParameter("next");
     assertThat(getTypeId(childRecursivePojoNextParameter.getModel().getType()), equalTo(of(RecursivePojo.class.getName())));
     ComponentAst childRecursivePojoNext = (ComponentAst) childRecursivePojoNextParameter.getValue().getRight();
@@ -203,7 +203,7 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
     ComponentParameterAst childRecursivePojoNextMappedChildsParameter = childRecursivePojoNext.getParameter("mappedChilds");
     assertThat(childRecursivePojoNextMappedChildsParameter.getModel().getType(), instanceOf(ObjectType.class));
     Optional<MetadataType> openRestrictionChildRecursivePojoNextMappedChildsParameter =
-            ((ObjectType) childRecursivePojoNextMappedChildsParameter.getModel().getType()).getOpenRestriction();
+        ((ObjectType) childRecursivePojoNextMappedChildsParameter.getModel().getType()).getOpenRestriction();
     assertThat(openRestrictionChildRecursivePojoNextMappedChildsParameter, not(empty()));
     assertThat(getTypeId(openRestrictionChildRecursivePojoNextMappedChildsParameter.get()),
                equalTo(of(RecursivePojo.class.getName())));
@@ -213,7 +213,7 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
     ComponentParameterAst recursivePojoMappedChildsParameter = recursivePojo.getParameter("mappedChilds");
     assertThat(recursivePojoMappedChildsParameter.getModel().getType(), instanceOf(ObjectType.class));
     Optional<MetadataType> openRestrictionRecursivePojoMappedChildsParameter =
-            ((ObjectType) recursivePojoMappedChildsParameter.getModel().getType()).getOpenRestriction();
+        ((ObjectType) recursivePojoMappedChildsParameter.getModel().getType()).getOpenRestriction();
     assertThat(openRestrictionRecursivePojoMappedChildsParameter, not(empty()));
     assertThat(getTypeId(openRestrictionRecursivePojoMappedChildsParameter.get()),
                equalTo(of(RecursivePojo.class.getName())));
@@ -223,14 +223,14 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
 
     ComponentAst recursivePojoMappedChild = recursivePojoMappedChilds.stream().findFirst().get();
     ParameterizedModel recursivePojoMappedChildModel = recursivePojoMappedChild.getModel(ParameterizedModel.class)
-            .orElseThrow(() -> new AssertionError("Model is missing for mapped-childs"));
+        .orElseThrow(() -> new AssertionError("Model is missing for mapped-childs"));
     ParameterModel keyParameterModel =
-            recursivePojoMappedChildModel.getAllParameterModels().stream().filter(paramModel -> paramModel.getName().equals("key"))
-                    .findFirst().orElseThrow(() -> new AssertionError("mapped-childs model is missing key parameter"));
+        recursivePojoMappedChildModel.getAllParameterModels().stream().filter(paramModel -> paramModel.getName().equals("key"))
+            .findFirst().orElseThrow(() -> new AssertionError("mapped-childs model is missing key parameter"));
     assertThat(getTypeId(keyParameterModel.getType()), equalTo(of(String.class.getName())));
     ParameterModel valueParameterModel =
-            recursivePojoMappedChildModel.getAllParameterModels().stream().filter(paramModel -> paramModel.getName().equals("value"))
-                    .findFirst().orElseThrow(() -> new AssertionError("mapped-childs model is missing key parameter"));
+        recursivePojoMappedChildModel.getAllParameterModels().stream().filter(paramModel -> paramModel.getName().equals("value"))
+            .findFirst().orElseThrow(() -> new AssertionError("mapped-childs model is missing key parameter"));
     assertThat(getTypeId(valueParameterModel.getType()), equalTo(of(RecursivePojo.class.getName())));
   }
 
@@ -240,7 +240,8 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
 
     ComponentParameterAst deathsBySeasonsParam = heisenbergConfig.getParameter("deathsBySeasons");
     assertThat(isMap(deathsBySeasonsParam.getModel().getType()), is(true));
-    Optional<MetadataType> optionalOpenRestriction = ((ObjectType) deathsBySeasonsParam.getModel().getType()).getOpenRestriction();
+    Optional<MetadataType> optionalOpenRestriction =
+        ((ObjectType) deathsBySeasonsParam.getModel().getType()).getOpenRestriction();
     assertThat(optionalOpenRestriction, not(empty()));
     assertThat(optionalOpenRestriction.get(), instanceOf(ArrayType.class));
     assertThat(getTypeId(((ArrayType) optionalOpenRestriction.get()).getType()), equalTo(of(String.class.getName())));
@@ -265,7 +266,8 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
 
     ComponentParameterAst weaponValueMapsParam = heisenbergConfig.getParameter("weaponValueMap");
     assertThat(isMap(weaponValueMapsParam.getModel().getType()), is(true));
-    Optional<MetadataType> optionalOpenRestriction = ((ObjectType) weaponValueMapsParam.getModel().getType()).getOpenRestriction();
+    Optional<MetadataType> optionalOpenRestriction =
+        ((ObjectType) weaponValueMapsParam.getModel().getType()).getOpenRestriction();
     assertThat(optionalOpenRestriction, not(empty()));
     assertThat(getTypeId(optionalOpenRestriction.get()), equalTo(of(Weapon.class.getName())));
 
@@ -314,9 +316,10 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
 
   private ComponentAst getHeisenbergConfiguration() {
     Optional<ComponentAst> optionalHeisenbergConfig = artifactAst.topLevelComponentsStream()
-            .filter(componentAst -> componentAst.getIdentifier().equals(ComponentIdentifier.buildFromStringRepresentation("heisenberg:config")) &&
-                                    "heisenberg".equals(componentAst.getComponentId().orElse(null)))
-            .findFirst();
+        .filter(componentAst -> componentAst.getIdentifier()
+            .equals(ComponentIdentifier.buildFromStringRepresentation("heisenberg:config")) &&
+            "heisenberg".equals(componentAst.getComponentId().orElse(null)))
+        .findFirst();
     assertThat(optionalHeisenbergConfig, not(empty()));
 
     return optionalHeisenbergConfig.get();
@@ -338,9 +341,9 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
   @Test
   public void simpleParameters() {
     Optional<ComponentAst> optionalFlowParameters = artifactAst.topLevelComponentsStream()
-            .filter(componentAst -> componentAst.getIdentifier().equals(FLOW_IDENTIFIER) &&
-                                    "flowParameters".equals(componentAst.getComponentId().orElse(null)))
-            .findFirst();
+        .filter(componentAst -> componentAst.getIdentifier().equals(FLOW_IDENTIFIER) &&
+            "flowParameters".equals(componentAst.getComponentId().orElse(null)))
+        .findFirst();
     assertThat(optionalFlowParameters, not(empty()));
 
     ComponentAst componentAst = optionalFlowParameters.get();
@@ -368,60 +371,60 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
   private Optional<ParameterModel> findParameterModel(ParameterizedModel constructModel,
                                                       ComponentParameterAst componentParameterAst) {
     return constructModel.getAllParameterModels().stream()
-            .filter(parameterModel -> parameterModel.equals(componentParameterAst.getModel())).findFirst();
+        .filter(parameterModel -> parameterModel.equals(componentParameterAst.getModel())).findFirst();
   }
 
   @Test
   public void wrappedElementSimpleMapType() {
     Optional<ComponentAst> optionalDbConfig = artifactAst.topLevelComponentsStream()
-            .filter(componentAst -> componentAst.getIdentifier().getNamespace().equals("db") &&
-                                    componentAst.getIdentifier().getName().equals("config") &&
-                                    "dbConfig".equals(componentAst.getComponentId().orElse(null)))
-            .findFirst();
+        .filter(componentAst -> componentAst.getIdentifier().getNamespace().equals("db") &&
+            componentAst.getIdentifier().getName().equals("config") &&
+            "dbConfig".equals(componentAst.getComponentId().orElse(null)))
+        .findFirst();
     assertThat(optionalDbConfig, not(empty()));
     ComponentAst dbConfig = optionalDbConfig.get();
 
     Optional<ComponentAst> optionalConnectionProvider =
-            dbConfig.recursiveStream().filter(inner -> inner.getModel(ConnectionProviderModel.class).isPresent())
-                    .findFirst();
+        dbConfig.recursiveStream().filter(inner -> inner.getModel(ConnectionProviderModel.class).isPresent())
+            .findFirst();
     assertThat(optionalConnectionProvider, not(empty()));
 
     ComponentAst connectionProvider = optionalConnectionProvider.get();
     ComponentParameterAst connectionPropertiesParameterAst = connectionProvider.getParameter("connectionProperties");
     assertThat(connectionPropertiesParameterAst.getModel().getType(), instanceOf(ObjectType.class));
     Optional<MetadataType> openRestrictionTypeForConnectionPropertiesParameter =
-            ((ObjectType) connectionPropertiesParameterAst.getModel().getType()).getOpenRestriction();
+        ((ObjectType) connectionPropertiesParameterAst.getModel().getType()).getOpenRestriction();
     assertThat(openRestrictionTypeForConnectionPropertiesParameter, not(empty()));
     assertThat(getTypeId(openRestrictionTypeForConnectionPropertiesParameter.get()), equalTo(of(String.class.getName())));
     List<ComponentAst> connectionProperties = (List<ComponentAst>) connectionPropertiesParameterAst.getValue().getRight();
 
     ComponentAst connectionProperty = connectionProperties.stream().findFirst()
-            .orElseThrow(() -> new AssertionError("Couldn't find connection property entry"));
+        .orElseThrow(() -> new AssertionError("Couldn't find connection property entry"));
 
     ParameterizedModel connectionPropertyModel = connectionProperty.getModel(ParameterizedModel.class)
-            .orElseThrow(() -> new AssertionError("Model is missing for connection-properties"));
+        .orElseThrow(() -> new AssertionError("Model is missing for connection-properties"));
     ParameterModel keyParameterModel =
-            connectionPropertyModel.getAllParameterModels().stream().filter(paramModel -> paramModel.getName().equals("key"))
-                    .findFirst().orElseThrow(() -> new AssertionError("connection-properties model is missing key parameter"));
+        connectionPropertyModel.getAllParameterModels().stream().filter(paramModel -> paramModel.getName().equals("key"))
+            .findFirst().orElseThrow(() -> new AssertionError("connection-properties model is missing key parameter"));
     assertThat(getTypeId(keyParameterModel.getType()), equalTo(of(String.class.getName())));
     ParameterModel valueParameterModel =
-            connectionPropertyModel.getAllParameterModels().stream().filter(paramModel -> paramModel.getName().equals("value"))
-                    .findFirst().orElseThrow(() -> new AssertionError("connection-properties model is missing key parameter"));
+        connectionPropertyModel.getAllParameterModels().stream().filter(paramModel -> paramModel.getName().equals("value"))
+            .findFirst().orElseThrow(() -> new AssertionError("connection-properties model is missing key parameter"));
     assertThat(getTypeId(valueParameterModel.getType()), equalTo(of(String.class.getName())));
 
     assertThat(connectionProperty.getParameter("key").getValue().getRight(), equalTo("first"));
     assertThat(connectionProperty.getParameter("value").getValue().getRight(), equalTo("propertyOne"));
 
     connectionProperty = connectionProperties.stream().skip(1).findFirst()
-            .orElseThrow(() -> new AssertionError("Couldn't find connection property entry"));
+        .orElseThrow(() -> new AssertionError("Couldn't find connection property entry"));
 
     keyParameterModel =
-            connectionPropertyModel.getAllParameterModels().stream().filter(paramModel -> paramModel.getName().equals("key"))
-                    .findFirst().orElseThrow(() -> new AssertionError("connection-properties model is missing key parameter"));
+        connectionPropertyModel.getAllParameterModels().stream().filter(paramModel -> paramModel.getName().equals("key"))
+            .findFirst().orElseThrow(() -> new AssertionError("connection-properties model is missing key parameter"));
     assertThat(getTypeId(keyParameterModel.getType()), equalTo(of(String.class.getName())));
     valueParameterModel =
-            connectionPropertyModel.getAllParameterModels().stream().filter(paramModel -> paramModel.getName().equals("value"))
-                    .findFirst().orElseThrow(() -> new AssertionError("connection-properties model is missing key parameter"));
+        connectionPropertyModel.getAllParameterModels().stream().filter(paramModel -> paramModel.getName().equals("value"))
+            .findFirst().orElseThrow(() -> new AssertionError("connection-properties model is missing key parameter"));
     assertThat(getTypeId(valueParameterModel.getType()), equalTo(of(String.class.getName())));
     assertThat(connectionProperty.getParameter("key").getValue().getRight(), equalTo("second"));
 
@@ -431,10 +434,10 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
   @Test
   public void wrappedElementArrayType() {
     Optional<ComponentAst> optionalHttpListenerConfig = artifactAst.topLevelComponentsStream()
-            .filter(componentAst -> componentAst.getIdentifier().getNamespace().equals("http") &&
-                                    componentAst.getIdentifier().getName().equals("listener-config") &&
-                                    "HTTP_Listener_config".equals(componentAst.getComponentId().orElse(null)))
-            .findFirst();
+        .filter(componentAst -> componentAst.getIdentifier().getNamespace().equals("http") &&
+            componentAst.getIdentifier().getName().equals("listener-config") &&
+            "HTTP_Listener_config".equals(componentAst.getComponentId().orElse(null)))
+        .findFirst();
     assertThat(optionalHttpListenerConfig, not(empty()));
 
     ComponentAst httpListenerConfig = optionalHttpListenerConfig.get();
@@ -445,8 +448,8 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
     assertThat(nameComponentParameter.getValue().getRight(), equalTo(httpListenerConfig.getComponentId().get()));
 
     Optional<ComponentAst> optionalConnectionProvider =
-            httpListenerConfig.recursiveStream().filter(inner -> inner.getModel(ConnectionProviderModel.class).isPresent())
-                    .findFirst();
+        httpListenerConfig.recursiveStream().filter(inner -> inner.getModel(ConnectionProviderModel.class).isPresent())
+            .findFirst();
     assertThat(optionalConnectionProvider, not(empty()));
 
     ComponentAst connectionProvider = optionalConnectionProvider.get();
