@@ -2,6 +2,7 @@
 <mule xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
       xmlns:db="http://www.mulesoft.org/schema/mule/db"
       xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:subtypes="http://www.mulesoft.org/schema/mule/subtypes"
       xmlns:websocket="http://www.mulesoft.org/schema/mule/websocket"
       xmlns:heisenberg="http://www.mulesoft.org/schema/mule/heisenberg"
       xmlns="http://www.mulesoft.org/schema/mule/core"
@@ -9,6 +10,7 @@
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
         http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
         http://www.mulesoft.org/schema/mule/websocket http://www.mulesoft.org/schema/mule/http/current/mule-websocket.xsd
+        http://www.mulesoft.org/schema/mule/subtypes http://www.mulesoft.org/schema/mule/subtypes/current/mule-subtypes.xsd
         http://www.mulesoft.org/schema/mule/heisenberg http://www.mulesoft.org/schema/mule/heisenberg/current/mule-heisenberg.xsd">
 
     <tls:context name="listenerTlsContext">
@@ -92,6 +94,9 @@
                 <heisenberg:ricin microgramsPerKilo="22">
                     <heisenberg:destination victim="Lidia" address="Stevia coffe shop"/>
                 </heisenberg:ricin>
+            </heisenberg:weapon-value-map>
+            <heisenberg:weapon-value-map key="second">
+                <subtypes:revolver name="sledgeHammer's" bullets="1"/>
             </heisenberg:weapon-value-map>
         </heisenberg:weapon-value-maps>
         <heisenberg:labeled-ricins>
