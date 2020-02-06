@@ -8,7 +8,9 @@
 package org.mule.test.routing;
 
 import static java.lang.Thread.currentThread;
+import static java.util.Arrays.asList;
 import static java.util.concurrent.ConcurrentHashMap.newKeySet;
+import static java.util.stream.Collectors.toList;
 import static org.apache.commons.io.IOUtils.LINE_SEPARATOR;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -50,6 +52,7 @@ import org.junit.rules.ExpectedException;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
 
 @Feature(ROUTERS)
@@ -226,7 +229,7 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  @Description("The resulting Map<String, Message result maintains the correct data-type for each Message.")
+  @Description("The resulting Map<String, Message> result maintains the correct data-type for each Message.")
   public void returnsCorrectDataType() throws Exception {
     Message response = flowRunner("dataType").withMediaType(JSON).run().getMessage();
     assertThat(response.getPayload().getValue(), is(Matchers.instanceOf(Map.class)));
@@ -235,6 +238,19 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
     assertThat(messageList.get("0").getPayload().getDataType().getMediaType(), is(TEXT));
     assertThat(messageList.get("1").getPayload().getDataType().getMediaType(), is(ANY));
     assertThat(messageList.get("2").getPayload().getDataType().getMediaType(), is(ANY));
+  }
+
+  @Test
+  @Description("The resulting Map<String, Message> is iterable in the same order as the defined routes.")
+  @Issue("MULE-18040")
+  public void resultsInOrder() throws Exception {
+    Message response = flowRunner("resultsInOrder").run().getMessage();
+
+    assertThat(response.getPayload().getValue(), is(Matchers.instanceOf(Map.class)));
+    Map<String, Message> messageList = (Map<String, Message>) response.getPayload().getValue();
+    assertThat(messageList.size(), is(12));
+    assertThat(messageList.values().stream().map(m -> m.getPayload().getValue()).collect(toList()),
+               is(asList("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L")));
   }
 
   public static class ThreadCaptor extends AbstractComponent implements Processor {
