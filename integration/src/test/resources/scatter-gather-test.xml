@@ -363,4 +363,45 @@
         <flow-ref name="testRoutesMap"/>
     </flow>
 
+    <flow name="resultsInOrder">
+        <scatter-gather>
+            <route>
+                <set-payload value="A"/>
+            </route>
+            <route>
+                <set-payload value="B"/>
+            </route>
+            <route>
+                <set-payload value="C"/>
+            </route>
+            <route>
+                <set-payload value="D"/>
+            </route>
+            <route>
+                <set-payload value="E"/>
+            </route>
+            <route>
+                <set-payload value="F"/>
+            </route>
+            <route>
+                <set-payload value="G"/>
+            </route>
+            <route>
+                <set-payload value="H"/>
+            </route>
+            <route>
+                <set-payload value="I"/>
+            </route>
+            <route>
+                <set-payload value="J"/>
+            </route>
+            <route>
+                <set-payload value="K"/>
+            </route>
+            <route>
+                <set-payload value="L"/>
+            </route>
+        </scatter-gather>
+    </flow>
+
 </mule>
