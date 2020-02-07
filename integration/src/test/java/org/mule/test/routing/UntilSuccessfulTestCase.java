@@ -20,11 +20,11 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.functional.api.component.FunctionalTestProcessor.getFromFlow;
 import static org.mule.functional.junit4.matchers.ThrowableCauseMatcher.hasCause;
-import static org.mule.functional.junit4.matchers.ClassNameMatcher.hasClassName;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.UntilSuccessfulStory.UNTIL_SUCCESSFUL;
 import org.mule.functional.api.component.FunctionalTestProcessor;
 import org.mule.functional.api.component.TestConnectorQueueHandler;
+import org.mule.functional.api.exception.FunctionalTestException;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.message.Message;
@@ -128,8 +128,7 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
     assertThat(error.getMessage(),
                containsString("'until-successful' retries exhausted. Last exception message was: Value was expected to be false but it was true instead"));
 
-    assertThat(error.getCause(), hasClassName(containsString("SuppressedMuleException")));
-    assertThat(error.getCause().getCause(), instanceOf(MuleRuntimeException.class));
+    assertThat(error.getCause(), instanceOf(MuleRuntimeException.class));
     assertThat(error.getMessage(),
                containsString("Value was expected to be false but it was true instead"));
   }
@@ -171,7 +170,7 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
   public void executeSynchronously() throws Exception {
     final String payload = randomAlphanumeric(20);
     expectedException.expectCause(instanceOf(RetryPolicyExhaustedException.class));
-    expectedException.expect(hasCause(hasCause(hasClassName(containsString("SuppressedMuleException")))));
+    expectedException.expectCause(hasCause(instanceOf(FunctionalTestException.class)));
     flowRunner("synchronous").withPayload(payload).run();
   }
 

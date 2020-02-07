@@ -29,18 +29,4 @@
         </try>
     </flow>
 
-    <flow name="retryExhaustedCausedByConnectivityErrorWithErrorHandler">
-        <until-successful maxRetries="1" millisBetweenRetries="10">
-            <test:processor throwException="true" exceptionToThrow="org.mule.runtime.api.connection.ConnectionException" exceptionText="Connection refused"/>
-        </until-successful>
-        <error-handler>
-            <test:on-error-check-log>
-                <test:check-summary>
-                    <test:summary-info key="Error type" value="MULE:RETRY_EXHAUSTED"/>
-                    <test:summary-info key="Message" value="'until-successful' retries exhausted. Last exception message was: Connection refused"/>
-                </test:check-summary>
-            </test:on-error-check-log>
-        </error-handler>
-    </flow>
-
 </mule>
