@@ -146,6 +146,13 @@
                                              value="#[{} as Object {class: 'new org.mule.test.heisenberg.extension.model.RecursivePojo'}]"/>
                 </heisenberg:mapped-childs>
             </heisenberg:recursive-pojo>
+            <heisenberg:recursive-chain-a fieldA="fieldA">
+                <heisenberg:recursive-chain-b fieldB="fieldB">
+                    <heisenberg:chain-a fieldA="fieldANested">
+                        <heisenberg:recursive-chain-b fieldB="fieldBNested"/>
+                    </heisenberg:chain-a>
+                </heisenberg:recursive-chain-b>
+            </heisenberg:recursive-chain-a>
         </heisenberg:approve>
     </flow>
 

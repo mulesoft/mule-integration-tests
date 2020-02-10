@@ -165,7 +165,8 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
 
     this.artifactAst = new ApplicationModel(artifactConfig, null, extensionModels, Collections.emptyMap(),
                                             Optional.empty(), of(componentBuildingDefinitionRegistry),
-                                            uri -> muleContext.getExecutionClassLoader().getResourceAsStream(uri));
+                                            uri -> muleContext.getExecutionClassLoader().getResourceAsStream(uri),
+                                            false);
   }
 
   @Test
