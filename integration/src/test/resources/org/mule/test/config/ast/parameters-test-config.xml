@@ -132,12 +132,10 @@
                 <heisenberg:childs>
                     <heisenberg:recursive-pojo>
                         <heisenberg:next>
-                            <heisenberg:recursive-pojo>
-                                <heisenberg:mapped-childs>
-                                    <heisenberg:mapped-child key="someKey"
-                                                             value="#[{} as Object {class: 'new org.mule.test.heisenberg.extension.model.RecursivePojo'}]"/>
-                                </heisenberg:mapped-childs>
-                            </heisenberg:recursive-pojo>
+                            <heisenberg:mapped-childs>
+                                <heisenberg:mapped-child key="someKey"
+                                                         value="#[{} as Object {class: 'new org.mule.test.heisenberg.extension.model.RecursivePojo'}]"/>
+                            </heisenberg:mapped-childs>
                         </heisenberg:next>
                     </heisenberg:recursive-pojo>
                 </heisenberg:childs>

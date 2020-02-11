@@ -208,7 +208,8 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
     assertThat(openRestrictionChildRecursivePojoNextMappedChildsParameter, not(empty()));
     assertThat(getTypeId(openRestrictionChildRecursivePojoNextMappedChildsParameter.get()),
                equalTo(of(RecursivePojo.class.getName())));
-    // TODO DslSyntax is missing containedElements when recursive-pojo/next/recursive-pojo is used...
+    // TODO DslSyntax is missing containedElements when recursive-pojo/next/recursive-pojo is used... componentModel should reuse
+    // "parser" definition for types...
     //assertThat(childRecursivePojoNextMappedChildsParameter.getValue().getRight(), not(nullValue()));
 
     ComponentParameterAst recursivePojoMappedChildsParameter = recursivePojo.getParameter("mappedChilds");
