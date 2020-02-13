@@ -9,6 +9,8 @@ package org.mule.test.components;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mule.runtime.api.component.location.Location.builderFromStringRepresentation;
+import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.LIFECYCLE_AND_DEPENDENCY_INJECTION;
+import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.LifecyclePhaseStory.LIFECYCLE_PHASE_STORY;
 
 import org.mule.functional.api.component.SkeletonSource;
 import org.mule.runtime.api.lifecycle.Startable;
@@ -19,6 +21,13 @@ import org.mule.test.AbstractIntegrationTestCase;
 import org.junit.Rule;
 import org.junit.Test;
 
+import io.qameta.allure.Description;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
+import io.qameta.allure.Story;
+
+@Feature(LIFECYCLE_AND_DEPENDENCY_INJECTION)
+@Story(LIFECYCLE_PHASE_STORY)
 public class FlowStateTestCase extends AbstractIntegrationTestCase {
 
   @Rule
@@ -70,4 +79,20 @@ public class FlowStateTestCase extends AbstractIntegrationTestCase {
     assertTrue(source.isStarted());
   }
 
+  @Test
+  @Issue("MULE-18059")
+  @Description("Make sure that the `initialState` flag in a flow is honored when restarting the app.")
+  public void appResetKeepsFlowInitialState() throws Exception {
+    LifecycleStateEnabled flow = registry.<LifecycleStateEnabled>lookupByName("stoppedFlow").get();
+    // Flow initially stopped
+    assertFalse(flow.getLifecycleState().isStarted());
+    assertTrue(flow.getLifecycleState().isStopped());
+
+    muleContext.stop();
+    muleContext.start();
+
+    // Flow initially stopped
+    assertFalse(flow.getLifecycleState().isStarted());
+    assertTrue(flow.getLifecycleState().isStopped());
+  }
 }
