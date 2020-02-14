@@ -6,17 +6,27 @@
  */
 package org.mule.test.module.extension.oauth.ocs;
 
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsInstanceOf.instanceOf;
+import static org.mule.functional.junit4.matchers.ThrowableMessageMatcher.hasMessage;
 import static org.mule.runtime.extension.internal.ocs.OCSConstants.OCS_CLIENT_ID;
 import static org.mule.runtime.extension.internal.ocs.OCSConstants.OCS_CLIENT_SECRET;
 import static org.mule.runtime.extension.internal.ocs.OCSConstants.OCS_ENVIRONMENT_ID;
 import static org.mule.runtime.extension.internal.ocs.OCSConstants.OCS_ORG_ID;
 import static org.mule.runtime.extension.internal.ocs.OCSConstants.OCS_PLATFORM_AUTH_URL;
 import static org.mule.runtime.extension.internal.ocs.OCSConstants.OCS_SERVICE_URL;
+
+import org.mule.runtime.api.lifecycle.LifecycleException;
+import org.mule.runtime.module.extension.internal.runtime.exception.RequiredParameterNotSetException;
 import org.mule.tck.junit4.rule.SystemProperty;
 
-import org.junit.ClassRule;
+import java.util.HashMap;
+import java.util.Map;
 
-public abstract class PlatformManagedOAuthConfigurationTestCase extends PlatformManagedOAuthTestCase {
+import org.junit.ClassRule;
+import org.junit.rules.ExpectedException;
+
+public class PlatformManagedOAuthMissingRequiredParameterTestCase extends PlatformManagedOAuthNegativeTestCase {
 
   @ClassRule
   public static SystemProperty ocsServiceUrl = new SystemProperty(OCS_SERVICE_URL, "testServiceUrl");
@@ -31,4 +41,15 @@ public abstract class PlatformManagedOAuthConfigurationTestCase extends Platform
   @ClassRule
   public static SystemProperty ocsEnvironmentId = new SystemProperty(OCS_ENVIRONMENT_ID, "testEnvironmentId");
 
+  @Override
+  protected Map<String, Object> getDescriptorParameters() {
+    return new HashMap<>();
+  }
+
+  @Override
+  protected void addExceptionAssertions(ExpectedException expectedException) {
+    expectedException.expectCause(hasMessage("Parameter 'display' is required but was not found"));
+  }
+
 }
+

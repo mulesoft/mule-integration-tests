@@ -12,7 +12,7 @@ public class StaticOAuthExtensionTestCase extends OAuthExtensionTestCase {
 
   @Override
   protected String[] getConfigFiles() {
-    return new String[] {"static-oauth-extension-config.xml", "oauth-extension-flows.xml"};
+    return new String[] {"static-oauth-extension-config.xml", "oauth-extension-flows.xml", "ocs/platform-managed-config.xml"};
   }
 
   @Before
