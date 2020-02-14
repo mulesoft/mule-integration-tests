@@ -34,6 +34,6 @@ public class PlatformManagedOAuthConfigurationMissingTestCase extends PlatformMa
   protected void addExceptionAssertions(ExpectedException expectedException) {
     expectedException.expect(InitialisationException.class);
     expectedException
-        .expectCause(hasCause(hasCause(hasMessage("OCS property 'ocsServiceClientSecret' has not been set"))));
+        .expectCause(hasCause(hasCause(hasMessage("OCS property 'ocs.service.client.secret' has not been set"))));
   }
 }
