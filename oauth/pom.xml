@@ -10,7 +10,6 @@
     
     <properties>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
-        <powermockVersion>2.0.5</powermockVersion>
     </properties>
 
     <dependencies>

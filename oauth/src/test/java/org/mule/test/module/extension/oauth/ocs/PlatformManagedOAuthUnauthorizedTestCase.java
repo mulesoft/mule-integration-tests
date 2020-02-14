@@ -16,7 +16,7 @@ public class PlatformManagedOAuthUnauthorizedTestCase extends PlatformManagedOAu
   private static final int TIMES_CALLED_UNAUTHORIZE_OPERATION = 10;
 
   @Test
-  public void accessTokenRetrieval() throws Exception {
+  public void contextIsInvalidatedOnUnauthorizeOperation() throws Exception {
     for (int i = 0; i < TIMES_CALLED_UNAUTHORIZE_OPERATION; i++) {
       flowRunner("unauthorizeConnection").run();
     }
