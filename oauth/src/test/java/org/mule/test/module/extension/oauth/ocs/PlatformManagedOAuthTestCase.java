@@ -100,7 +100,6 @@ public abstract class PlatformManagedOAuthTestCase extends BaseOAuthExtensionTes
     });
   }
 
-
   @Override
   protected String[] getConfigFiles() {
     return new String[] {configFile, "ocs/platform-managed-flows.xml"};
@@ -125,8 +124,6 @@ public abstract class PlatformManagedOAuthTestCase extends BaseOAuthExtensionTes
   protected boolean isDisposeContextPerClass() {
     return false;
   }
-
-
 
   @Before
   public void doSetUpBeforeMuleContextCreation() throws Exception {

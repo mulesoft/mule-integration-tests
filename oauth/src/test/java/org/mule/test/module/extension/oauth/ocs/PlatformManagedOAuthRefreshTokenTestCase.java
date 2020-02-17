@@ -6,13 +6,13 @@
  */
 package org.mule.test.module.extension.oauth.ocs;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import org.mule.test.oauth.TestOAuthConnection;
 
-import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 
 public class PlatformManagedOAuthRefreshTokenTestCase extends PlatformManagedOAuthConfigurationTestCase {
@@ -26,7 +26,7 @@ public class PlatformManagedOAuthRefreshTokenTestCase extends PlatformManagedOAu
     for (int i = 0; i < TIMES_CALLED_FLAKY_OPERATION; i++) {
       connection = (TestOAuthConnection) flowRunner("getFlackyConnection").run().getMessage().getPayload().getValue();
     }
-    MatcherAssert.assertThat(connection.getState().getState().getAccessToken(), is(TEST_ACCESS_TOKEN));
+    assertThat(connection.getState().getState().getAccessToken(), is(TEST_ACCESS_TOKEN));
     verify(mockPlatformDancer, times(TIMES_CALLED_FLAKY_OPERATION)).refreshToken();
   }
 

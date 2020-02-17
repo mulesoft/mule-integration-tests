@@ -6,6 +6,8 @@
  */
 package org.mule.test.module.extension.oauth.ocs;
 
+import static org.junit.Assert.fail;
+
 import org.mule.runtime.api.lifecycle.InitialisationException;
 
 import org.junit.Assert;
@@ -31,8 +33,8 @@ public abstract class PlatformManagedOAuthNegativeTestCase extends PlatformManag
   protected void addExceptionAssertions(ExpectedException expectedException) {}
 
   @Test
-  public void fail() {
-    Assert.fail("Config should have failed to parse");
+  public void failedSetup() {
+    fail("Config should have failed to parse");
   }
 
 }
