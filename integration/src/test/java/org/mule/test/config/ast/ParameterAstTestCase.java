@@ -28,6 +28,8 @@ import static org.mule.runtime.core.api.construct.Flow.INITIAL_STATE_STOPPED;
 import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.initialiseIfNeeded;
 import static org.mule.runtime.dsl.api.xml.parser.XmlConfigurationDocumentLoader.noValidationDocumentLoader;
 import static org.mule.runtime.extension.api.util.ExtensionMetadataTypeUtils.isMap;
+import static org.mule.test.allure.AllureConstants.ArtifactAst.ARTIFACT_AST;
+import static org.mule.test.allure.AllureConstants.ArtifactAst.ParameterAst.PARAMETER_AST;
 
 import org.mule.extension.db.internal.DbConnector;
 import org.mule.extension.http.internal.temporary.HttpConnector;
@@ -84,11 +86,15 @@ import javax.xml.parsers.SAXParserFactory;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.helpers.DefaultHandler;
 
+@Feature(ARTIFACT_AST)
+@Story(PARAMETER_AST)
 public class ParameterAstTestCase extends AbstractMuleContextTestCase {
 
   private static final String NAME = "name";
@@ -208,7 +214,7 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
     assertThat(openRestrictionChildRecursivePojoNextMappedChildsParameter, not(empty()));
     assertThat(getTypeId(openRestrictionChildRecursivePojoNextMappedChildsParameter.get()),
                equalTo(of(RecursivePojo.class.getName())));
-    // TODO DslSyntax is missing containedElements when recursive-pojo/next/recursive-pojo is used... componentModel should reuse
+    // TODO MULE-18065 DslSyntax is missing containedElements when recursive-pojo/next/recursive-pojo is used... componentModel should reuse
     // "parser" definition for types...
     //assertThat(childRecursivePojoNextMappedChildsParameter.getValue().getRight(), not(nullValue()));
 
