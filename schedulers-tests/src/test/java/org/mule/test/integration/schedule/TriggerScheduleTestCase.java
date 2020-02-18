@@ -12,7 +12,6 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.component.location.Location.builderFromStringRepresentation;
-import static org.mule.runtime.core.api.util.ClassUtils.withContextClassLoader;
 
 import org.mule.functional.api.component.EventCallback;
 import org.mule.runtime.api.component.AbstractComponent;
@@ -32,8 +31,6 @@ import org.junit.Test;
 
 public class TriggerScheduleTestCase extends AbstractSchedulerTestCase {
 
-  public static final String SCHEDULER_NAME = "testScheduler";
-
   @ClassRule
   public static SystemProperty millis = new SystemProperty("frequency.millis", "1000");
 
@@ -49,9 +46,15 @@ public class TriggerScheduleTestCase extends AbstractSchedulerTestCase {
   public void triggeredFlowRunsWithAppClassLoader() throws Exception {
     assertThat(l1.await(RECEIVE_TIMEOUT, MILLISECONDS), is(true));
 
-    withContextClassLoader(ConfigurationComponentLocator.class.getClassLoader(),
-                           () -> locator.find(builderFromStringRepresentation("triggerMeFlow/source").build())
-                               .map(source -> (SchedulerMessageSource) source).ifPresent(SchedulerMessageSource::trigger));
+    Thread currentThread = currentThread();
+    ClassLoader originalClassLoader = currentThread.getContextClassLoader();
+    currentThread.setContextClassLoader(ConfigurationComponentLocator.class.getClassLoader());
+    try {
+      locator.find(builderFromStringRepresentation("triggerMeFlow/source").build())
+          .map(source -> (SchedulerMessageSource) source).ifPresent(SchedulerMessageSource::trigger);
+    } finally {
+      currentThread.setContextClassLoader(originalClassLoader);
+    }
 
     assertThat(l2.await(RECEIVE_TIMEOUT, MILLISECONDS), is(true));
   }
@@ -60,16 +63,22 @@ public class TriggerScheduleTestCase extends AbstractSchedulerTestCase {
   public void restartedSchedulerFlowRunsWithAppClassLoader() throws Exception {
     assertThat(l1.await(RECEIVE_TIMEOUT, MILLISECONDS), is(true));
 
-    withContextClassLoader(ConfigurationComponentLocator.class.getClassLoader(),
-                           () -> locator.find(builderFromStringRepresentation("triggerMeFlow/source").build())
-                               .map(source -> (SchedulerMessageSource) source).ifPresent(sms -> {
-                                 try {
-                                   sms.stop();
-                                   sms.start();
-                                 } catch (MuleException e) {
-                                   throw new MuleRuntimeException(e);
-                                 }
-                               }));
+    Thread currentThread = currentThread();
+    ClassLoader originalClassLoader = currentThread.getContextClassLoader();
+    currentThread.setContextClassLoader(ConfigurationComponentLocator.class.getClassLoader());
+    try {
+      locator.find(builderFromStringRepresentation("triggerMeFlow/source").build())
+          .map(source -> (SchedulerMessageSource) source).ifPresent(sms -> {
+        try {
+          sms.stop();
+          sms.start();
+        } catch (MuleException e) {
+          throw new MuleRuntimeException(e);
+        }
+      });
+    } finally {
+      currentThread.setContextClassLoader(originalClassLoader);
+    }
 
     assertThat(l2.await(RECEIVE_TIMEOUT, MILLISECONDS), is(true));
   }
