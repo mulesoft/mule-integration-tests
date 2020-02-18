@@ -29,7 +29,10 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <argLine>-Dfile.encoding=UTF-8 -Xmx1024m -Xms256m -XX:+HeapDumpOnOutOfMemoryError -javaagent:${settings.localRepository}/org/aspectj/aspectjweaver/${aspectjVersion}/aspectjweaver-${aspectjVersion}.jar -javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco.version}/org.jacoco.agent-${jacoco.version}-runtime.jar=destfile='${session.executionRootDirectory}/target/jacoco.exec'</argLine>
+                    <argLine>-Dfile.encoding=UTF-8 -Xmx1024m -Xms256m -XX:+HeapDumpOnOutOfMemoryError
+                        -javaagent:${settings.localRepository}/org/aspectj/aspectjweaver/${aspectjVersion}/aspectjweaver-${aspectjVersion}.jar
+                        -javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco.version}/org.jacoco.agent-${jacoco.version}-runtime.jar=destfile='${session.executionRootDirectory}/target/jacoco.exec'
+                    </argLine>
                 </configuration>
             </plugin>
         </plugins>
@@ -54,7 +57,7 @@
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
-        
+
         <dependency>
             <groupId>xmlunit</groupId>
             <artifactId>xmlunit</artifactId>
@@ -195,7 +198,19 @@
             <artifactId>mule-db-connector</artifactId>
             <version>${muleDbConnectorTestVersion}</version>
             <classifier>mule-plugin</classifier>
-            <scope>provided</scope>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.tests</groupId>
+            <artifactId>mule-vegan-extension</artifactId>
+            <version>${project.version}</version>
+            <classifier>mule-plugin</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.tests</groupId>
+            <artifactId>mule-subtypes-extension</artifactId>
+            <version>${project.version}</version>
+            <classifier>mule-plugin</classifier>
         </dependency>
         <dependency>
             <groupId>org.mule.modules</groupId>
@@ -481,6 +496,7 @@
             <artifactId>commons-httpclient</artifactId>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>org.mule.tests</groupId>
             <artifactId>mule-tests-allure</artifactId>
@@ -493,7 +509,7 @@
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
-                
+
         <dependency>
             <groupId>org.mule.tests</groupId>
             <artifactId>mule-tests-parsers-plugin</artifactId>
