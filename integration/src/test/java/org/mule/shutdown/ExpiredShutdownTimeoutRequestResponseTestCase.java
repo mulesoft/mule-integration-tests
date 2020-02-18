@@ -44,7 +44,7 @@ public class ExpiredShutdownTimeoutRequestResponseTestCase extends AbstractShutd
 
   @Override
   protected String getConfigFile() {
-    return "shutdown-timeout-request-response-config.xml";
+    return "org/mule/shutdown/shutdown-timeout-request-response-config.xml";
   }
 
   @Test
@@ -60,6 +60,11 @@ public class ExpiredShutdownTimeoutRequestResponseTestCase extends AbstractShutd
   @Test
   public void testSetPayloadChoice() throws Throwable {
     doShutDownTest("http://localhost:" + httpPort.getNumber() + "/setPayloadChoice");
+  }
+
+  @Test
+  public void testSetPayloadTx() throws Throwable {
+    doShutDownTest("http://localhost:" + httpPort.getNumber() + "/setPayloadTx");
   }
 
   private void doShutDownTest(final String url) throws Throwable {
