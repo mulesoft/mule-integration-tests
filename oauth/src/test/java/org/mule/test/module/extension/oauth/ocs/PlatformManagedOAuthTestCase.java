@@ -176,4 +176,9 @@ public abstract class PlatformManagedOAuthTestCase extends BaseOAuthExtensionTes
     return tokenResponseParameters;
   }
 
+  @Override
+  protected boolean mustRegenerateExtensionModels() {
+    return true;
+  }
+
 }
