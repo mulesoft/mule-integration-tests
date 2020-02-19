@@ -8,7 +8,6 @@ package org.mule.test.module.extension.oauth.ocs;
 
 import static org.mule.runtime.extension.internal.ocs.OCSConstants.OCS_CLIENT_ID;
 import static org.mule.runtime.extension.internal.ocs.OCSConstants.OCS_CLIENT_SECRET;
-import static org.mule.runtime.extension.internal.ocs.OCSConstants.OCS_ENVIRONMENT_ID;
 import static org.mule.runtime.extension.internal.ocs.OCSConstants.OCS_ORG_ID;
 import static org.mule.runtime.extension.internal.ocs.OCSConstants.OCS_PLATFORM_AUTH_URL;
 import static org.mule.runtime.extension.internal.ocs.OCSConstants.OCS_SERVICE_URL;
@@ -28,7 +27,5 @@ public abstract class PlatformManagedOAuthConfigurationTestCase extends Platform
   public static SystemProperty ocsClientSecret = new SystemProperty(OCS_CLIENT_SECRET, "testClientSecret");
   @ClassRule
   public static SystemProperty ocsOrgId = new SystemProperty(OCS_ORG_ID, "testOrgId");
-  @ClassRule
-  public static SystemProperty ocsEnvironmentId = new SystemProperty(OCS_ENVIRONMENT_ID, "testEnvironmentId");
 
 }

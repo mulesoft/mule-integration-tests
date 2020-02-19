@@ -11,7 +11,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mule.runtime.extension.internal.ocs.OCSConstants.OCS_SERVICE_SUPPORTED;
+import static org.mule.runtime.extension.internal.ocs.OCSConstants.OCS_ENABLED;
 import static org.mule.runtime.oauth.api.state.DancerState.HAS_TOKEN;
 
 import org.mule.runtime.api.el.MuleExpressionLanguage;
@@ -71,7 +71,7 @@ public abstract class PlatformManagedOAuthTestCase extends BaseOAuthExtensionTes
   protected static final Double API_VERSION_TEST = new Double(5.3);
 
   @ClassRule
-  public static SystemProperty enableOcs = new SystemProperty(OCS_SERVICE_SUPPORTED, "true");
+  public static SystemProperty enableOcs = new SystemProperty(OCS_ENABLED, "true");
 
   protected OAuthPlatformManagedDancerBuilder mockPlatformManagedDancerBuilder =
       mock(OAuthPlatformManagedDancerBuilder.class, RETURNS_DEEP_STUBS);
