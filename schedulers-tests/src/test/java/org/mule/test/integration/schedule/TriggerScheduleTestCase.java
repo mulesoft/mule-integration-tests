@@ -69,13 +69,13 @@ public class TriggerScheduleTestCase extends AbstractSchedulerTestCase {
     try {
       locator.find(builderFromStringRepresentation("triggerMeFlow/source").build())
           .map(source -> (SchedulerMessageSource) source).ifPresent(sms -> {
-        try {
-          sms.stop();
-          sms.start();
-        } catch (MuleException e) {
-          throw new MuleRuntimeException(e);
-        }
-      });
+            try {
+              sms.stop();
+              sms.start();
+            } catch (MuleException e) {
+              throw new MuleRuntimeException(e);
+            }
+          });
     } finally {
       currentThread.setContextClassLoader(originalClassLoader);
     }
