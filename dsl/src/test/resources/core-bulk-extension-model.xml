@@ -1,16 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
     <flow name="flowForscheduler">
         <scheduler schedulingStrategy="Attribute"/>
     </flow>
     <flow name="flowForidempotentMessageValidator">
-        <idempotent-message-validator idExpression="#[correlationId]" objectStore="MULE:OBJECT_STORE" storePrefix="Attribute" valueExpression="#[correlationId]"/>
+        <idempotent-message-validator idExpression="#[correlationId]" objectStore="OS:OBJECT_STORE"
+                                      storePrefix="Attribute" valueExpression="#[correlationId]"/>
     </flow>
     <flow name="flowForlogger">
         <logger category="Attribute" level="INFO" message="Attribute"/>
     </flow>
     <flow name="flowForparseTemplate">
-        <parse-template location="Attribute" target="Attribute" targetValue="#[payload]" outputMimeType="Attribute" outputEncoding="Attribute">
+        <parse-template location="Attribute" target="Attribute" targetValue="#[payload]" outputMimeType="Attribute"
+                        outputEncoding="Attribute">
             <content>#['ExpressionAttribute']</content>
         </parse-template>
     </flow>
@@ -41,7 +44,9 @@
             </otherwise>
         </choice>
     </flow>
-    <configuration defaultErrorHandler-ref="MULE:ERROR_HANDLER" defaultObjectSerializer-ref="Attribute" defaultResponseTimeout="10000" defaultTransactionTimeout="30000" inheritIterableRepeatability="false" maxQueueTransactionFilesSize="500" name="globalconfiguration" shutdownTimeout="5000">
+    <configuration defaultErrorHandler-ref="MULE:ERROR_HANDLER" defaultObjectSerializer-ref="Attribute"
+                   defaultResponseTimeout="10000" defaultTransactionTimeout="30000" inheritIterableRepeatability="false"
+                   maxQueueTransactionFilesSize="500" name="globalconfiguration" shutdownTimeout="5000">
         <dynamic-config-expiration frequency="5" timeUnit="MINUTES">
             <expiration-policy maxIdleTime="5" timeUnit="MINUTES"/>
         </dynamic-config-expiration>
@@ -67,7 +72,8 @@
         <logger/>
     </flow>
     <flow name="flowForforeach">
-        <foreach batchSize="10000" collection="#[payload]" counterVariableName="counter" rootMessageVariableName="rootMessage">
+        <foreach batchSize="10000" collection="#[payload]" counterVariableName="counter"
+                 rootMessageVariableName="rootMessage">
             <logger/>
         </foreach>
     </flow>
@@ -76,7 +82,8 @@
         <on-error ref="Attribute"/>
     </flow>
     <flow name="flowForparallelForeach">
-        <parallel-foreach collection="#[payload]" maxConcurrency="2147483647" target="Attribute" targetValue="#[payload]" timeout="9223372036854775807">
+        <parallel-foreach collection="#[payload]" maxConcurrency="2147483647" target="Attribute"
+                          targetValue="#[payload]" timeout="9223372036854775807">
             <logger/>
         </parallel-foreach>
     </flow>
@@ -88,7 +95,8 @@
         </round-robin>
     </flow>
     <flow name="flowForscatterGather">
-        <scatter-gather maxConcurrency="2147483647" target="Attribute" targetValue="#[payload]" timeout="9223372036854775807">
+        <scatter-gather maxConcurrency="2147483647" target="Attribute" targetValue="#[payload]"
+                        timeout="9223372036854775807">
             <route>
                 <logger/>
             </route>
