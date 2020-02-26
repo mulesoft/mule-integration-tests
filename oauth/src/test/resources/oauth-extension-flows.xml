@@ -27,8 +27,16 @@
         <test-oauth:unauthorize config-ref="oauth" resourceOwnerId="#[vars.ownerId]"/>
     </flow>
 
-    <flow name="pagedOperation">
+    <flow name="pagedOperationFailsAtFirstPage">
         <test-oauth:paged-operation config-ref="oauth"/>
+    </flow>
+
+    <flow name="pagedOperationFailsAtThirdPage">
+        <set-variable variableName="accumulator" value="#[[]]" />
+        <test-oauth:paged-operation config-ref="oauth" failAt="3"/>
+        <foreach>
+            <set-variable variableName="accumulator" value="#[vars.accumulator + payload]" />
+        </foreach>
     </flow>
 
 </mule>

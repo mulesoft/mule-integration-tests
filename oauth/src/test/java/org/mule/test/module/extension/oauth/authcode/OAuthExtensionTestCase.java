@@ -25,8 +25,11 @@ import org.mule.test.oauth.AuthCodeConfig;
 import org.mule.test.oauth.TestOAuthConnection;
 import org.mule.test.oauth.TestOAuthConnectionState;
 
+import java.util.List;
+
 import com.github.tomakehurst.wiremock.client.WireMock;
 
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -73,12 +76,27 @@ public class OAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
   }
 
   @Test
-  public void refreshTokenForPagedOperation() throws Exception {
+  public void refreshTokenForPagedOperationOnFirstPage() throws Exception {
     receiveAccessTokenAndUserConnection();
     WireMock.reset();
     stubTokenUrl(accessTokenContent(ACCESS_TOKEN + "-refreshed"));
-    flowRunner("pagedOperation").withVariable(OWNER_ID_VARIABLE_NAME, getCustomOwnerId()).run();
+    flowRunner("pagedOperationFailsAtFirstPage").withVariable(OWNER_ID_VARIABLE_NAME, getCustomOwnerId()).run();
     wireMock.verify(postRequestedFor(urlPathEqualTo("/" + TOKEN_PATH)));
+  }
+
+  @Test
+  public void refreshTokenForPagedOperationOnThirdPage() throws Exception {
+    receiveAccessTokenAndUserConnection();
+    WireMock.reset();
+    stubTokenUrl(accessTokenContent(ACCESS_TOKEN + "-refreshed"));
+    CoreEvent event = flowRunner("pagedOperationFailsAtThirdPage")
+        .withVariable(OWNER_ID_VARIABLE_NAME, getCustomOwnerId())
+        .run();
+
+    wireMock.verify(postRequestedFor(urlPathEqualTo("/" + TOKEN_PATH)));
+    List<String> accumulator = (List<String>) event.getVariables().get("accumulator").getValue();
+    assertThat(accumulator, hasSize(3));
+    assertThat(accumulator, Matchers.contains("item 1", "item 2", "item 3"));
   }
 
   @Test
