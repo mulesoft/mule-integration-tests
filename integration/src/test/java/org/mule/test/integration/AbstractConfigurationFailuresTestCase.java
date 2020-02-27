@@ -45,6 +45,7 @@ import org.mule.runtime.core.api.context.notification.MuleContextNotification;
 import org.mule.runtime.core.api.context.notification.MuleContextNotificationListener;
 import org.mule.runtime.module.extension.api.loader.java.DefaultJavaExtensionModelLoader;
 import org.mule.runtime.module.extension.internal.manager.DefaultExtensionManager;
+import org.mule.tck.config.TestPolicyProviderConfigurationBuilder;
 import org.mule.tck.config.TestServicesConfigurationBuilder;
 import org.mule.tck.junit4.AbstractMuleTestCase;
 import org.mule.test.integration.exceptions.ErrorHandlingConfigurationFailuresTestCase;
@@ -75,6 +76,7 @@ public abstract class AbstractConfigurationFailuresTestCase extends AbstractMule
     });
     builders.add(createConfigurationBuilder(configuration));
     builders.add(testServicesConfigurationBuilder);
+    builders.add(new TestPolicyProviderConfigurationBuilder());
     MuleContextBuilder contextBuilder = MuleContextBuilder.builder(APP);
     final DefaultMuleConfiguration muleConfiguration = new DefaultMuleConfiguration();
     muleConfiguration.setId(ErrorHandlingConfigurationFailuresTestCase.class.getSimpleName());
