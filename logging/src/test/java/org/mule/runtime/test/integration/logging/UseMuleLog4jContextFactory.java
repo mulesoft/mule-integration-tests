@@ -18,7 +18,7 @@ import org.junit.rules.ExternalResource;
  */
 public class UseMuleLog4jContextFactory extends ExternalResource {
 
-  private static MuleLog4jContextFactory muleLog4jContextFactory = new MuleLog4jContextFactory();
+  private static MuleLog4jContextFactory muleLog4jContextFactory = new MuleLog4jContextFactory(true);
 
   private LoggerContextFactory originalLog4jContextFactory;
 
