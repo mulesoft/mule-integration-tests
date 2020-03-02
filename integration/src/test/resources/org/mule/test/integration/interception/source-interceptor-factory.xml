@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
     xmlns:heisenberg="http://www.mulesoft.org/schema/mule/heisenberg"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:sc="http://www.mulesoft.org/schema/mule/module-using-core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+               http://www.mulesoft.org/schema/mule/module-using-core http://www.mulesoft.org/schema/mule/module-using-core/current/mule-module-using-core.xsd
                http://www.mulesoft.org/schema/mule/heisenberg http://www.mulesoft.org/schema/mule/heisenberg/current/mule-heisenberg.xsd">
 
     <heisenberg:config name="heisenberg" cancer="true" money="1000000" finalHealth="CANCER">
@@ -49,6 +51,21 @@
         </heisenberg:listen-payments>
 
         <set-payload value="Not a number"/>
+    </flow>
+
+    <flow name="sourceInterceptedWithFailingProcessor" initialState="stopped">
+        <heisenberg:listen-payments config-ref="heisenberg" initialBatchNumber="0">
+            <heisenberg:next-door address="pollos hermanos" victim="Gustavo Fring">
+                <heisenberg:previous victim="Krazy-8" address="Jesse's"/>
+            </heisenberg:next-door>
+            <heisenberg:success-info age="27">
+                <heisenberg:known-addresses>
+                    <heisenberg:known-address value="success address"/>
+                </heisenberg:known-addresses>
+            </heisenberg:success-info>
+            <heisenberg:error-info knownAddresses="#[[]]"/>
+        </heisenberg:listen-payments>
+        <sc:raise-error-op/>
     </flow>
 
 </mule>
