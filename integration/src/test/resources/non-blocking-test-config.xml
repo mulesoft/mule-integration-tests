@@ -2,8 +2,10 @@
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
       xsi:schemaLocation="
                http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+               http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
                http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
     <object name="customFilter" class="org.mule.test.core.NonBlockingFunctionalTestCase$CustomSecurityFilter"/>
@@ -250,6 +252,52 @@
             </foreach>
         </foreach>
     </flow>
+
+    <flow name="untilSuccessful" initialState="stopped">
+        <test:assert-intercepting responseSameTask="false"/>
+        <until-successful>
+            <test:assert-intercepting responseSameTask="false" count="2"/>
+            <test:non-blocking-processor/>
+            <until-successful>
+                <test:assert-intercepting responseSameTask="false" count="6"/>
+                <test:non-blocking-processor/>
+            </until-successful>
+        </until-successful>
+        <test:assert expression="#[payload == 'Test Message']"/>
+    </flow>
+
+    <flow name="foreach_and_untilSuccessful" initialState="stopped">
+        <test:assert-intercepting responseSameTask="false"/>
+        <foreach>
+            <test:assert-intercepting responseSameTask="false" count="2"/>
+            <test:non-blocking-processor/>
+            <until-successful>
+                <test:assert-intercepting responseSameTask="false" count="6"/>
+                <test:non-blocking-processor/>
+            </until-successful>
+        </foreach>
+    </flow>
+
+    <flow name="untilSuccessful_and_foreach" initialState="stopped">
+        <test:assert-intercepting responseSameTask="false"/>
+        <set-payload value="#[mel: [ 'A', 'B' ]  ]"/>
+        <until-successful maxRetries="1" >
+            <test:assert-intercepting responseSameTask="false" count="2"/>
+            <test:non-blocking-processor/>
+            <foreach>
+                <test:assert-intercepting responseSameTask="false" count="4"/>
+                <http:request config-ref="http-request-config2" path="/test" method="POST" >
+                    <http:response-validator >
+                        <http:success-status-code-validator values="0..599" />
+                    </http:response-validator>
+                </http:request>
+            </foreach>
+        </until-successful>
+    </flow>
+
+    <http:request-config name="http-request-config2">
+        <http:request-connection host="localhost" port="${requesterPort2}"/>
+    </http:request-config>
 
     <flow name="scatterGather" initialState="stopped">
         <test:assert-intercepting responseSameTask="false"/>
