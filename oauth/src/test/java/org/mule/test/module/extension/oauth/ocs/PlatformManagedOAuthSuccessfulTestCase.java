@@ -20,6 +20,7 @@ import org.junit.Test;
 public class PlatformManagedOAuthSuccessfulTestCase extends PlatformManagedOAuthConfigurationTestCase {
 
   private static final String EMPTY_STRING = "";
+  private static final String CONFIG_NAME = "oauth-platform";
 
   @Test
   public void accessTokenRetrieval() throws Exception {
@@ -74,6 +75,12 @@ public class PlatformManagedOAuthSuccessfulTestCase extends PlatformManagedOAuth
     TestOAuthConnection connection = (TestOAuthConnection) flowRunner("getConnection").run().getMessage().getPayload().getValue();
     assertThat(connection.getState().getApiVersion(), is(API_VERSION_TEST));
     assertThat(connection.getState().isPrompt(), is(PROMPT_TEST));
+  }
+
+  @Test
+  public void configurationNameIsInjectedCorrectly() throws Exception {
+    TestOAuthConnection connection = (TestOAuthConnection) flowRunner("getConnection").run().getMessage().getPayload().getValue();
+    assertThat(connection.getState().getConfigName(), is(CONFIG_NAME));
   }
 
 }
