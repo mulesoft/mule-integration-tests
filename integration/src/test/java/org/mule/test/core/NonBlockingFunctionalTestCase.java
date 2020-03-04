@@ -147,7 +147,7 @@ public class NonBlockingFunctionalTestCase extends AbstractIntegrationTestCase {
     if (PROACTOR_PROCESSING_STRATEGY_CLASSNAME.equals(processingStrategyFactory)) {
       flowName += "Proactor";
     } else if (DEFAULT_PROCESSING_STRATEGY_CLASSNAME.equals(processingStrategyFactory)) {
-      flowName += "Emmiter";
+      flowName += "Emitter";
     } else {
       fail("Unknown processingStrategyFactory " + processingStrategyFactory);
     }

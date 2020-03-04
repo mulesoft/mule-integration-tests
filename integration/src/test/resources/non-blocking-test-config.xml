@@ -150,7 +150,7 @@
         </try>
     </flow>
 
-    <flow name="transactionalTryEmmiter" initialState="stopped">
+    <flow name="transactionalTryEmitter" initialState="stopped">
         <try transactionalAction="ALWAYS_BEGIN">
             <test:assert-intercepting responseSameTask="true" responseExpression="#[payload == 'Test Message']"/>
             <test:non-blocking-processor/>
@@ -280,12 +280,13 @@
 
     <flow name="untilSuccessful_and_foreach" initialState="stopped">
         <test:assert-intercepting responseSameTask="false"/>
-        <set-payload value="#[mel: [ 'A', 'B' ]  ]"/>
+        <set-payload value="#[['A', 'B']]" />
         <until-successful maxRetries="1" >
             <test:assert-intercepting responseSameTask="false" count="2"/>
             <test:non-blocking-processor/>
             <foreach>
                 <test:assert-intercepting responseSameTask="false" count="4"/>
+                <!-- TODO MULE-18135 Migrate this extension using mule SDK -->
                 <http:request config-ref="http-request-config2" path="/test" method="POST" >
                     <http:response-validator >
                         <http:success-status-code-validator values="0..599" />
