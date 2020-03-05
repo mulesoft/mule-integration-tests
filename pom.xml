@@ -4,13 +4,13 @@
   <parent>
     <groupId>org.mule.runtime</groupId>
     <artifactId>mule</artifactId>
-    <version>4.3.0-SNAPSHOT</version>
+    <version>4.4.0-SNAPSHOT</version>
     <relativePath></relativePath>
   </parent>
   
   <groupId>org.mule.tests</groupId>
   <artifactId>mule-extensions-integration-tests</artifactId>
-  <version>4.3.0-SNAPSHOT</version>
+  <version>4.4.0-SNAPSHOT</version>
 
   <packaging>pom</packaging>
   <name>Mule Tests</name>
@@ -29,11 +29,11 @@
   </modules>
 
   <properties>
-    <muleSchedulerServiceTestVersion>1.3.0-SNAPSHOT</muleSchedulerServiceTestVersion>
-    <muleHttpServiceTestVersion>1.5.0-SNAPSHOT</muleHttpServiceTestVersion>
-    <muleOAuthServiceTestVersion>2.0.0-SNAPSHOT</muleOAuthServiceTestVersion>
-    <muleSoapServiceTestVersion>1.3.0-SNAPSHOT</muleSoapServiceTestVersion>
-    <muleExtensionTestSoapTestVersion>1.3.0-SNAPSHOT</muleExtensionTestSoapTestVersion>
+    <muleSchedulerServiceTestVersion>1.4.0-SNAPSHOT</muleSchedulerServiceTestVersion>
+    <muleHttpServiceTestVersion>1.6.0-SNAPSHOT</muleHttpServiceTestVersion>
+    <muleOAuthServiceTestVersion>2.1.0-SNAPSHOT</muleOAuthServiceTestVersion>
+    <muleSoapServiceTestVersion>1.4.0-SNAPSHOT</muleSoapServiceTestVersion>
+    <muleExtensionTestSoapTestVersion>1.4.0-SNAPSHOT</muleExtensionTestSoapTestVersion>
 
     <muleSpringModuleTestVersion>1.4.0-SNAPSHOT</muleSpringModuleTestVersion>
     <muleValidationModuleTestVersion>1.5.0-SNAPSHOT</muleValidationModuleTestVersion>
@@ -46,14 +46,14 @@
     <muleObjectStoreConnectorTestVersion>1.2.0-SNAPSHOT</muleObjectStoreConnectorTestVersion>
     <muleJavaModuleTestVersion>1.3.0-SNAPSHOT</muleJavaModuleTestVersion>
     <muleAggregatorsModuleTestVersion>1.1.0-SNAPSHOT</muleAggregatorsModuleTestVersion>
-    <muleDbConnectorTestVersion>1.5.6-SNAPSHOT</muleDbConnectorTestVersion>
+    <muleDbConnectorTestVersion>1.7.0-SNAPSHOT</muleDbConnectorTestVersion>
     <muleFtpConnectorTestVersion>2.0.0-SNAPSHOT</muleFtpConnectorTestVersion>
-    <muleJmsConnectorTestVersion>1.6.0</muleJmsConnectorTestVersion>
-    <muleWscConnectorTestVersion>1.4.0</muleWscConnectorTestVersion>
+    <muleJmsConnectorTestVersion>1.7.0-SNAPSHOT</muleJmsConnectorTestVersion>
+    <muleWscConnectorTestVersion>1.6.0-SNAPSHOT</muleWscConnectorTestVersion>
     <muleOauthModuleTestVersion>1.2.0-SNAPSHOT</muleOauthModuleTestVersion>
     <muleSocketsConnectorTestVersion>1.2.0-SNAPSHOT</muleSocketsConnectorTestVersion>
 
-    <munitExtensionsMavenPlugin>1.0.0-BETA2</munitExtensionsMavenPlugin>
+    <munitExtensionsMavenPlugin>1.0.0</munitExtensionsMavenPlugin>
 
     <apacheHttpCoreVersion>4.4.6</apacheHttpCoreVersion>
     <apacheHttpClientVersion>4.5.3</apacheHttpClientVersion>
