@@ -59,6 +59,10 @@
         <flow-ref name="#['sub-flow-' ++ vars.letter]" />
     </flow>
 
+    <flow name="flow3" initialState="stopped">
+        <flow-ref name="#['sub-flow-' ++ vars.letter replace ' ' with '']" />
+    </flow>
+
     <sub-flow name="sub-flow-A">
         <set-payload value="#[payload ++ 'A']" />
     </sub-flow>
