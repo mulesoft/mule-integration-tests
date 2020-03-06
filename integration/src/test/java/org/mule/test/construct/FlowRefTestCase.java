@@ -24,6 +24,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mule.functional.api.exception.ExpectedError.none;
 import static org.mule.functional.junit4.matchers.ThrowableMessageMatcher.hasMessage;
+import static org.mule.runtime.api.metadata.DataType.TEXT_STRING;
 import static org.mule.runtime.api.notification.MessageProcessorNotification.MESSAGE_PROCESSOR_POST_INVOKE;
 import static org.mule.runtime.api.notification.MessageProcessorNotification.MESSAGE_PROCESSOR_PRE_INVOKE;
 import static org.mule.runtime.core.api.exception.Errors.CORE_NAMESPACE_NAME;
@@ -107,6 +108,16 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
     assertThat(flowRunner("flow2").withPayload("0").withVariable("letter", "A").run().getMessage().getPayload().getValue(),
                is("0A"));
     assertThat(flowRunner("flow2").withPayload("0").withVariable("letter", "B").run().getMessage().getPayload().getValue(),
+               is("0B"));
+  }
+
+  @Test
+  public void dynamicFlowRefTextPlain() throws Exception {
+    assertThat(flowRunner("flow3").withPayload("0").withVariable("letter", " A ", TEXT_STRING).run().getMessage().getPayload()
+        .getValue(),
+               is("0A"));
+    assertThat(flowRunner("flow3").withPayload("0").withVariable("letter", " B ", TEXT_STRING).run().getMessage().getPayload()
+        .getValue(),
                is("0B"));
   }
 
