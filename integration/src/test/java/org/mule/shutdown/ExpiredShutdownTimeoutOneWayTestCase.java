@@ -6,35 +6,57 @@
  */
 package org.mule.shutdown;
 
+import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mule.functional.api.flow.TransactionConfigEnum.ACTION_ALWAYS_BEGIN;
 import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.LIFECYCLE_AND_DEPENDENCY_INJECTION;
 import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.GracefulShutdownStory.GRACEFUL_SHUTDOWN_STORY;
 
 import org.mule.functional.api.component.TestConnectorQueueHandler;
+import org.mule.functional.api.flow.FlowRunner;
 import org.mule.runtime.api.exception.MuleRuntimeException;
+import org.mule.runtime.core.api.transaction.Transaction;
 import org.mule.tck.junit4.rule.SystemProperty;
+import org.mule.tck.testmodels.mule.TestTransactionFactory;
+import org.mule.test.runner.RunnerDelegateTo;
 
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
 
 @Feature(LIFECYCLE_AND_DEPENDENCY_INJECTION)
 @Story(GRACEFUL_SHUTDOWN_STORY)
+@RunnerDelegateTo(Parameterized.class)
 public class ExpiredShutdownTimeoutOneWayTestCase extends AbstractShutdownTimeoutRequestResponseTestCase {
 
   @Rule
   public SystemProperty contextShutdownTimeout = new SystemProperty("contextShutdownTimeout", "100");
 
+  @Parameters(name = "tx: {0}")
+  public static List<Boolean> parameters() {
+    return asList(false, true);
+  }
+
+  private final boolean runWithtinTx;
+
+  public ExpiredShutdownTimeoutOneWayTestCase(boolean runWithtinTx) {
+    this.runWithtinTx = runWithtinTx;
+  }
+
   @Override
   protected String getConfigFile() {
-    return "shutdown-timeout-one-way-config.xml";
+    return "org/mule/shutdown/shutdown-timeout-one-way-config.xml";
   }
 
   @Test
@@ -61,7 +83,12 @@ public class ExpiredShutdownTimeoutOneWayTestCase extends AbstractShutdownTimeou
     final TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
     final Future<?> requestTask = executor.submit(() -> {
       try {
-        flowRunner(flowName).withPayload(TEST_MESSAGE).dispatch();
+        FlowRunner runner = flowRunner(flowName).withPayload(TEST_MESSAGE);
+        if (runWithtinTx) {
+          Transaction transaction = mock(Transaction.class);
+          runner = runner.transactionally(ACTION_ALWAYS_BEGIN, new TestTransactionFactory(transaction));
+        }
+        runner.dispatch();
         assertThat("Was able to process message ", queueHandler.read("response", RECEIVE_TIMEOUT), is(nullValue()));
       } catch (Exception e) {
         throw new MuleRuntimeException(e);

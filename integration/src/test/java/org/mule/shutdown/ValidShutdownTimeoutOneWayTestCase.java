@@ -30,11 +30,11 @@ import io.qameta.allure.Story;
 public class ValidShutdownTimeoutOneWayTestCase extends AbstractShutdownTimeoutRequestResponseTestCase {
 
   @Rule
-  public SystemProperty contextShutdownTimeout = new SystemProperty("contextShutdownTimeout", "5000");
+  public SystemProperty contextShutdownTimeout = new SystemProperty("contextShutdownTimeout", "" + RECEIVE_TIMEOUT);
 
   @Override
   protected String getConfigFile() {
-    return "shutdown-timeout-one-way-config.xml";
+    return "org/mule/shutdown/shutdown-timeout-one-way-config.xml";
   }
 
   @Override

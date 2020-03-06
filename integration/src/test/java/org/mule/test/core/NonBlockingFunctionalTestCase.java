@@ -19,20 +19,18 @@ import org.mule.runtime.core.api.transaction.TransactionCoordination;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.runner.RunnerDelegateTo;
 
-import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.Test;
 import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 @RunnerDelegateTo(Parameterized.class)
 public class NonBlockingFunctionalTestCase extends AbstractIntegrationTestCase {
 
-
-
-  @Parameterized.Parameters(name = "{0}")
+  @Parameters(name = "{0}")
   public static Collection<Object[]> data() {
-    return Arrays.asList(new Object[][] {
+    return asList(new Object[][] {
         {"Local Error Handler with Default PS", "non-blocking-test-config.xml", DEFAULT_PROCESSING_STRATEGY_CLASSNAME},
         {"Global Error Handler with Default PS", "non-blocking-test-config-global-err.xml",
             DEFAULT_PROCESSING_STRATEGY_CLASSNAME},
