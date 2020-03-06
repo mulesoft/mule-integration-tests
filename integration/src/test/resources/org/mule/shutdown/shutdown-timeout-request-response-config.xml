@@ -40,4 +40,12 @@
         </choice>
     </flow>
 
+    <flow name="setPayloadTxFlow">
+        <http:listener path="setPayloadTx" config-ref="listenerConfig"/>
+        <try transactionalAction="ALWAYS_BEGIN">
+            <custom-processor class="org.mule.shutdown.AbstractShutdownTimeoutRequestResponseTestCase$BlockMessageProcessor"/>
+            <set-payload value="#['setPayloadResponse']" />
+        </try>
+    </flow>
+
 </mule>
