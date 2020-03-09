@@ -65,7 +65,7 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
   @Rule
   public DynamicPort listenPort = new DynamicPort("http.listener.port");
 
-  private static final int TOTAL_NUMBER_OF_LOCATIONS = 135;
+  private static final int TOTAL_NUMBER_OF_LOCATIONS = 139;
   @Inject
   private Registry registry;
 
@@ -355,6 +355,10 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
                                   "redeliveryPolicyFlow/source",
                                   "redeliveryPolicyFlow/source/0",
                                   "redeliveryPolicyFlow/processors/0",
+                                  "redeliveryPolicyFlowRef1",
+                                  "redeliveryPolicyFlowRef1/processors/0",
+                                  "redeliveryPolicyFlowRef2",
+                                  "redeliveryPolicyFlowRef2/processors/0",
 
                                   "untilSuccessfulFlow",
                                   "untilSuccessfulFlow/processors/0",
@@ -677,6 +681,16 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
 
     processorNotificationStores.stream()
         .forEach(processorNotificationStore -> assertThat(processorNotificationStore.getNotifications(), hasSize(2)));
+  }
+
+  @Description("Initialize same flow with redelivery policy configured in a listener, test component should not fail when initializing the second time")
+  @Test
+  public void listenerWithRedeliveryPolicyInitializeMultipleTimes() {
+    lazyComponentInitializer.initializeComponent(builder().globalName("redeliveryPolicyFlowRef1").build());
+    lazyComponentInitializer.initializeComponent(builder().globalName("redeliveryPolicyFlowRef2").build());
+
+
+    assertThat(locator.find(builder().globalName("redeliveryPolicyFlow").build()), is(not(empty())));
   }
 
 }
