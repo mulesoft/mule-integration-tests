@@ -602,6 +602,7 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
+  @Issue("MULE-18524")
   public void forEachWithTry() throws Exception {
     flowRunner("testFlow").withPayload(ImmutableList.of("one", "two", "three")).run();
   }
