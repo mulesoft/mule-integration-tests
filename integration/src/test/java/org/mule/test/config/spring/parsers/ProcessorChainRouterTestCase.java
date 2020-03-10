@@ -6,6 +6,8 @@
  */
 package org.mule.test.config.spring.parsers;
 
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -14,6 +16,7 @@ import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ProcessorChainRouterStory.PROCESSOR_CHAIN_ROUTER;
 
 import org.mule.functional.api.component.TestConnectorQueueHandler;
+import org.mule.functional.junit4.rules.HttpServerRule;
 import org.mule.runtime.api.component.execution.ComponentExecutionException;
 import org.mule.runtime.api.component.execution.ExecutableComponent;
 import org.mule.runtime.api.component.execution.ExecutionResult;
@@ -30,10 +33,12 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
 
 @Feature(ROUTERS)
@@ -67,6 +72,13 @@ public class ProcessorChainRouterTestCase extends AbstractIntegrationTestCase im
   @Inject
   @Named("flowRefCompositeChainRouter")
   private ExecutableComponent flowRefCompositeChainRouter;
+
+  @Inject
+  @Named("nonBlockingCompositeChainRouter")
+  private ExecutableComponent nonBlockingCompositeChainRouter;
+
+  @Rule
+  public HttpServerRule httpServerRule = new HttpServerRule("httpPort");
 
   @Override
   protected String getConfigFile() {
@@ -183,6 +195,20 @@ public class ProcessorChainRouterTestCase extends AbstractIntegrationTestCase im
     assertThat(queueHandler.read("asyncQueue", RECEIVE_TIMEOUT), notNullValue());
     assertThat(queueHandler.read("sgRoute1Queue", RECEIVE_TIMEOUT), notNullValue());
     assertThat(queueHandler.read("sgRoute2Queue", RECEIVE_TIMEOUT), notNullValue());
+  }
+
+  @Test
+  @Issue("MULE-18161")
+  @Description("Ensure that app graceful shutdown timeout is not imposed as an operation timeout on MUnit chains.")
+  public void nonBlockingCompositeChainRouter() throws Exception {
+    httpServerRule.getSimpleHttpServer().setResponseDelay(RECEIVE_TIMEOUT + 1000);
+
+    InputEvent event = createInputEvent();
+
+    CompletableFuture<ExecutionResult> completableFuture = nonBlockingCompositeChainRouter.execute(event);
+
+    executionResult = completableFuture.get();
+    assertThat(executionResult.getEvent(), not(nullValue()));
   }
 
   private void assertProcessorChainResult(Event returnedEvent) {
