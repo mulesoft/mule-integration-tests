@@ -2,8 +2,10 @@
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
       xsi:schemaLocation="
                http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+               http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
                http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
     <object name="customFilter" class="org.mule.test.core.NonBlockingFunctionalTestCase$CustomSecurityFilter"/>
@@ -38,8 +40,6 @@
             <test:non-blocking-processor/>
         </on-error-continue>
     </error-handler>
-
-
 
     <flow name="flow" initialState="stopped">
         <test:assert-intercepting responseSameTask="false" responseExpression="#[payload == 'Test Message']"/>
@@ -160,9 +160,9 @@
         </try>
     </flow>
 
-    <flow name="transactionalTryEmmiter" initialState="stopped">
+    <flow name="transactionalTryEmitter" initialState="stopped">
         <try transactionalAction="ALWAYS_BEGIN">
-            <test:assert-intercepting responseSameTask="true" responseExpression="#[payload == 'Test Message']"/>
+            <test:assert-intercepting responseExpression="#[payload == 'Test Message']"/>
             <test:non-blocking-processor/>
         </try>
     </flow>
@@ -170,14 +170,14 @@
     <flow name="transactionalTryProactor" initialState="stopped">
         <test:assert-intercepting responseSameTask="false" responseExpression="#[payload == 'Test Message']"/>
         <try transactionalAction="ALWAYS_BEGIN">
-            <test:assert-intercepting responseSameTask="true" responseExpression="#[payload == 'Test Message']"/>
+            <test:assert-intercepting responseExpression="#[payload == 'Test Message']"/>
             <test:non-blocking-processor/>
         </try>
     </flow>
 
     <error-handler name="globalAssertResponse">
         <on-error-continue>
-            <test:assert-intercepting responseSameTask="true" responseExpression="#[payload == 'Test Message']"/>
+            <test:assert-intercepting responseExpression="#[payload == 'Test Message']"/>
             <test:non-blocking-processor/>
         </on-error-continue>
     </error-handler>
@@ -195,7 +195,7 @@
         <test:assert expression="#[payload == 'Test Message']"/>
         <test:non-blocking-processor/>
     </flow>
-    
+
     <flow name="childDefaultFlowChild">
         <test:assert-intercepting responseSameTask="false" responseExpression="#[payload == 'Test Message']" message="2"/>
         <test:non-blocking-processor/>
@@ -245,7 +245,7 @@
     </flow>
 
     <flow name="untilSuccessfulWithRetryTransactional" initialState="stopped">
-        <test:assert-intercepting responseSameTask="true" responseExpression="#[payload == 'Test Message']"/>
+        <test:assert-intercepting responseExpression="#[payload == 'Test Message']"/>
         <until-successful millisBetweenRetries="100">
             <test:throw exception="java.lang.RuntimeException" error="ANY" count="2"/>
             <test:non-blocking-processor/>
@@ -255,15 +255,73 @@
 
     <flow name="foreach" initialState="stopped">
         <test:assert-intercepting responseSameTask="false"/>
+        <test:non-blocking-processor/>
         <foreach>
-            <test:assert-intercepting responseSameTask="false" count="2"/>
+            <test:assert-intercepting responseSameTask="false"/>
             <test:non-blocking-processor/>
             <foreach>
-                <test:assert-intercepting responseSameTask="false" count="6"/>
-                <test:non-blocking-processor/>
+                <test:assert-intercepting responseSameTask="false"/>
+                <!-- TODO MULE-18135 Migrate this extension using mule SDK -->
+                <http:request config-ref="http-request-config" path="/test" method="POST" >
+                    <http:response-validator >
+                        <http:success-status-code-validator values="0..599" />
+                    </http:response-validator>
+                </http:request>
             </foreach>
         </foreach>
     </flow>
+
+    <http:request-config name="http-request-config">
+        <http:request-connection host="localhost" port="${requesterPort}"/>
+    </http:request-config>
+
+    <flow name="untilSuccessful" initialState="stopped">
+        <test:assert-intercepting responseSameTask="false"/>
+        <until-successful>
+            <test:assert-intercepting responseSameTask="false" count="2"/>
+            <test:non-blocking-processor/>
+            <until-successful>
+                <test:assert-intercepting responseSameTask="false" count="6"/>
+                <test:non-blocking-processor/>
+            </until-successful>
+        </until-successful>
+        <test:assert expression="#[payload == 'Test Message']"/>
+    </flow>
+
+    <flow name="foreach_and_untilSuccessful" initialState="stopped">
+        <test:assert-intercepting responseSameTask="false"/>
+        <foreach>
+            <test:assert-intercepting responseSameTask="false" count="2"/>
+            <test:non-blocking-processor/>
+            <until-successful>
+                <test:assert-intercepting responseSameTask="false" count="6"/>
+                <test:non-blocking-processor/>
+            </until-successful>
+        </foreach>
+    </flow>
+
+    <flow name="untilSuccessful_and_foreach" initialState="stopped">
+        <test:assert-intercepting responseSameTask="false"/>
+        <set-payload value="#[['A', 'B']]" />
+        <until-successful maxRetries="1" >
+            <test:assert-intercepting responseSameTask="false" count="2"/>
+            <test:non-blocking-processor/>
+            <foreach>
+                <test:assert-intercepting responseSameTask="false" count="4"/>
+                <!-- TODO MULE-18135 Migrate this extension using mule SDK -->
+                <http:request config-ref="http-request-config2" path="/test" method="POST" >
+                    <http:response-validator >
+                        <http:success-status-code-validator values="0..599" />
+                    </http:response-validator>
+                </http:request>
+            </foreach>
+        </until-successful>
+    </flow>
+
+    <http:request-config name="http-request-config2">
+        <http:request-connection host="localhost" port="${requesterPort2}"/>
+    </http:request-config>
+
 
     <flow name="scatterGather" initialState="stopped">
         <test:assert-intercepting responseSameTask="false"/>
