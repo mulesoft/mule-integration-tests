@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:http="http://www.mulesoft.org/schema/mule/http"
        xmlns:parsers-test="http://www.mulesoft.org/schema/mule/parsers-test"
        xmlns:test="http://www.mulesoft.org/schema/mule/test"
        xsi:schemaLocation="
        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+       http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
        http://www.mulesoft.org/schema/mule/parsers-test http://www.mulesoft.org/schema/mule/parsers-test/current/mule-parsers-test.xsd
        http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
@@ -70,6 +72,15 @@
         </parsers-test:chain>
         <parsers-test:chain>
             <flow-ref name="otherFlow"/>
+        </parsers-test:chain>
+    </parsers-test:composite-processor-chain-router>
+
+    <http:request-config name="HTTP_Requester_config">
+        <http:request-connection host="localhost" port="${httpPort}"/>
+    </http:request-config>
+    <parsers-test:composite-processor-chain-router name="nonBlockingCompositeChainRouter">
+        <parsers-test:chain>
+            <http:request method="GET" config-ref="HTTP_Requester_config" path="/" />
         </parsers-test:chain>
     </parsers-test:composite-processor-chain-router>
 
