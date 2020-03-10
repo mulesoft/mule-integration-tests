@@ -11,18 +11,21 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mule.tck.processor.FlowAssert.verify;
 
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runners.Parameterized;
+import org.mule.functional.junit4.rules.HttpServerRule;
 import org.mule.runtime.api.security.SecurityContext;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.security.AbstractAuthenticationFilter;
 import org.mule.runtime.core.api.transaction.Transaction;
 import org.mule.runtime.core.api.transaction.TransactionCoordination;
+import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.runner.RunnerDelegateTo;
 
 import java.util.Collection;
 
-import org.junit.Test;
-import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 @RunnerDelegateTo(Parameterized.class)
@@ -43,6 +46,18 @@ public class NonBlockingFunctionalTestCase extends AbstractIntegrationTestCase {
   private final String config;
   private final String processingStrategyFactory;
 
+  @Rule
+  public DynamicPort requesterPort = new DynamicPort("requesterPort");
+
+  @Rule
+  public HttpServerRule httpServerRule = new HttpServerRule("requesterPort");
+
+  @Rule
+  public DynamicPort requesterPort2 = new DynamicPort("requesterPort2");
+
+  @Rule
+  public HttpServerRule httpServerRules = new HttpServerRule("requesterPort2");
+
   public NonBlockingFunctionalTestCase(String type, String config, String processingStrategyFactory) {
     this.config = config;
     this.processingStrategyFactory = processingStrategyFactory;
@@ -54,12 +69,12 @@ public class NonBlockingFunctionalTestCase extends AbstractIntegrationTestCase {
   }
 
   @Override
-  protected void doSetUpBeforeMuleContextCreation() throws Exception {
+  protected void doSetUpBeforeMuleContextCreation() {
     setDefaultProcessingStrategyFactory(PROACTOR_PROCESSING_STRATEGY_CLASSNAME);
   }
 
   @Override
-  protected void doTearDownAfterMuleContextDispose() throws Exception {
+  protected void doTearDownAfterMuleContextDispose() {
     clearDefaultProcessingStrategyFactory();
   }
 
@@ -132,7 +147,7 @@ public class NonBlockingFunctionalTestCase extends AbstractIntegrationTestCase {
     if (PROACTOR_PROCESSING_STRATEGY_CLASSNAME.equals(processingStrategyFactory)) {
       flowName += "Proactor";
     } else if (DEFAULT_PROCESSING_STRATEGY_CLASSNAME.equals(processingStrategyFactory)) {
-      flowName += "Emmiter";
+      flowName += "Emitter";
     } else {
       fail("Unknown processingStrategyFactory " + processingStrategyFactory);
     }
@@ -185,6 +200,22 @@ public class NonBlockingFunctionalTestCase extends AbstractIntegrationTestCase {
   @Test
   public void foreach() throws Exception {
     flowRunner("foreach").withPayload(asList(new String[] {"1", "2", "3"}, new String[] {"a", "b", "c"})).run();
+  }
+
+  @Test
+  public void untilSuccessful() throws Exception {
+    flowRunner("untilSuccessful").withPayload(TEST_MESSAGE).run();
+  }
+
+  @Test
+  public void forEachAndUntilSuccessful() throws Exception {
+    flowRunner("foreach_and_untilSuccessful").withPayload(asList(new String[] {"1", "2", "3"}, new String[] {"a", "b", "c"}))
+        .run();
+  }
+
+  @Test
+  public void untilSuccessfulAndForeach() throws Exception {
+    flowRunner("untilSuccessful_and_foreach").withPayload(TEST_MESSAGE).run();
   }
 
   @Test
