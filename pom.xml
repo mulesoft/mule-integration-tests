@@ -86,6 +86,11 @@
       <classifier>mule-service</classifier>
       <scope>provided</scope>
     </dependency>
+     <dependency>
+        <groupId>org.mule.runtime</groupId>
+        <artifactId>mule-dwb-api</artifactId> 
+        <scope>provided</scope>         
+    </dependency> 
   </dependencies>
 
   <repositories>
