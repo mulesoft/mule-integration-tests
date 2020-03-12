@@ -352,7 +352,7 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
 
   @Test
   @Issue("MULE-18178")
-  @Description("The maxConcurrency of a taget flow called via flow-ref is enforced")
+  @Description("The maxConcurrency of a target flow called via flow-ref is enforced")
   public void backpressureFlowRefMaxConcurrencyStatic() throws Exception {
     flowRunner("backpressureFlowRefOuterMaxConcurrencyStatic").dispatchAsync(asyncFlowRunnerScheduler);
 
