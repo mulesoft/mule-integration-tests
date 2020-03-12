@@ -35,9 +35,11 @@ import static org.mule.test.allure.AllureConstants.RoutersFeature.ForeachStory.F
 
 import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.functional.junit4.TestLegacyMessageBuilder;
+import org.mule.functional.junit4.rules.HttpServerRule;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.event.CoreEvent;
+import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -74,11 +76,17 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
   @Rule
   public ExpectedException expectedException = none();
 
+  @Rule
+  public DynamicPort port = new DynamicPort("port");
+
+  @Rule
+  public HttpServerRule httpServerRules = new HttpServerRule("port");
+
   private RandomStringGenerator randomStringGenerator;
   private TestConnectorQueueHandler queueHandler;
 
   @Before
-  public void setUp() throws Exception {
+  public void setUp() {
     randomStringGenerator = new RandomStringGenerator.Builder().withinRange('a', 'z').build();
     queueHandler = new TestConnectorQueueHandler(registry);
   }
@@ -316,12 +324,12 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
     assertQueueValueIs("splitPayloadOutQueue", "Chuck");
   }
 
-  private void assertQueueValueIs(String queueName, Object queueValue) throws MuleException {
+  private void assertQueueValueIs(String queueName, Object queueValue) {
     Message receivedMessage = queueHandler.read(queueName, 1000).getMessage();
     assertThat(receivedMessage.getPayload().getValue(), Is.is(queueValue));
   }
 
-  private void assertSplitedString() throws MuleException {
+  private void assertSplitedString() {
     assertQueueValueIs("splitStringOutQueue", "a");
     assertQueueValueIs("splitStringOutQueue", "b");
     assertQueueValueIs("splitStringOutQueue", "c");
@@ -515,12 +523,11 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void mvelArray() throws Exception {
-    final String flowName = "mvel-array";
-    runFlow(flowName);
-    assertIterable(flowName);
+    runFlow("mvel-array");
+    assertIterable();
   }
 
-  private void assertIterable(String flowName) throws Exception {
+  private void assertIterable() {
     Message out = queueHandler.read("out", getTestTimeoutSecs()).getMessage();
     assertThat(out.getPayload().getValue(), instanceOf(String.class));
     String outPayload = (String) out.getPayload().getValue();
@@ -537,10 +544,9 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
   public void expressionIterable() throws Exception {
     Iterable<String> iterable = mock(Iterable.class);
     when(iterable.iterator()).thenReturn(asList("foo", "bar").iterator());
-    final String flowName = "expression-iterable";
-    flowRunner(flowName).withVariable("iterable", iterable).run();
+    flowRunner("expression-iterable").withVariable("iterable", iterable).run();
 
-    assertIterable(flowName);
+    assertIterable();
   }
 
   @Test
@@ -593,6 +599,12 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
   public void foreachInErrorHandler() throws Exception {
     CoreEvent event = flowRunner("foreachInErrorHandler").run();
     assertThat(event.getMessage().getPayload().getValue(), is("apple"));
+  }
+
+  @Test
+  @Issue("MULE-18524")
+  public void forEachWithTry() throws Exception {
+    flowRunner("testFlow").withPayload(ImmutableList.of("one", "two", "three")).run();
   }
 
   // TODO MULE-17934 remove this
