@@ -3,8 +3,10 @@
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:test="http://www.mulesoft.org/schema/mule/test"
       xmlns:script="http://www.mulesoft.org/schema/mule/scripting"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
                http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
+               http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
                http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
 
     <flow name="minimal-config" initialState="stopped">
@@ -351,5 +353,22 @@
             </on-error-continue>
         </error-handler>
     </flow>
+
+    <flow name="testFlow">
+        <foreach>
+            <try>
+                <test:processor throwException="true"/>
+                <error-handler>
+                    <on-error-continue>
+                        <http:request config-ref="httpRequestConfig" path="/test"/>
+                    </on-error-continue>
+                </error-handler>
+            </try>
+        </foreach>
+    </flow>
+
+    <http:request-config name="httpRequestConfig">
+        <http:request-connection host="localhost" port="${port}"/>
+    </http:request-config>
 
 </mule>
