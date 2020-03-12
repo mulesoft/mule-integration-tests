@@ -223,4 +223,19 @@
         <set-payload value="holis"></set-payload>
     </flow>
 
+    <flow name="backpressureFlowRefOuterMaxConcurrencyStatic">
+        <flow-ref name="backpressureFlowRefInnerMaxConcurrency"/>
+    </flow>
+
+    <flow name="backpressureFlowRefInnerMaxConcurrency" maxConcurrency="1">
+        <choice>
+            <when expression="#[java!org::mule::test::construct::FlowRefTestCase::getCallbackInFlight() >= 1]">
+                <raise-error type="FR:CONCURRENT_EXECUTION"/>
+            </when>
+        </choice>
+        
+        <test:processor processingType="CPU_INTENSIVE">
+            <test:callback class="org.mule.test.construct.FlowRefTestCase$LatchAwaitCallback"/>
+        </test:processor>
+    </flow>
 </mule>

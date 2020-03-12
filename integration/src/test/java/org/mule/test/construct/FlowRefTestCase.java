@@ -39,6 +39,7 @@ import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.notification.MessageProcessorNotification;
 import org.mule.runtime.api.notification.MessageProcessorNotificationListener;
+import org.mule.runtime.api.scheduler.Scheduler;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.http.api.HttpService;
@@ -63,6 +64,7 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
+import io.qameta.allure.Description;
 import io.qameta.allure.Issue;
 
 public class FlowRefTestCase extends AbstractIntegrationTestCase {
@@ -80,6 +82,8 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
   @Rule
   public TestHttpClient httpClient = new TestHttpClient.Builder(getService(HttpService.class)).build();
 
+  private Scheduler asyncFlowRunnerScheduler;
+
   @Override
   protected String getConfigFile() {
     return "org/mule/test/construct/flow-ref.xml";
@@ -90,10 +94,15 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
     sendAsyncs = new ArrayList<>();
     latch = new CountDownLatch(1);
     awaiting.set(0);
+
+    asyncFlowRunnerScheduler = muleContext.getSchedulerService()
+        .ioScheduler(muleContext.getSchedulerBaseConfig().withShutdownTimeout(0, SECONDS));
+
   }
 
   @After
   public void after() throws Exception {
+    asyncFlowRunnerScheduler.shutdownNow();
     latch.countDown();
     for (Future<HttpResponse> sentAsync : sendAsyncs) {
       sentAsync.get(RECEIVE_TIMEOUT, SECONDS);
@@ -341,17 +350,39 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
     }
   }
 
+  @Test
+  @Issue("MULE-18178")
+  @Description("The maxConcurrency of a target flow called via flow-ref is enforced")
+  public void backpressureFlowRefMaxConcurrencyStatic() throws Exception {
+    flowRunner("backpressureFlowRefOuterMaxConcurrencyStatic").dispatchAsync(asyncFlowRunnerScheduler);
+
+    probe(RECEIVE_TIMEOUT, 50, () -> awaiting.get() == 1);
+
+    flowRunner("backpressureFlowRefOuterMaxConcurrencyStatic").dispatchAsync(asyncFlowRunnerScheduler);
+    Thread.sleep(RECEIVE_TIMEOUT);
+    probe(RECEIVE_TIMEOUT, 50, () -> awaiting.get() == 1);
+    latch.countDown();
+
+    probe(RECEIVE_TIMEOUT, 50, () -> awaiting.get() == 2);
+  }
 
   private static CountDownLatch latch;
+  private static AtomicInteger callbackInFlight = new AtomicInteger();
   private static AtomicInteger awaiting = new AtomicInteger();
 
   public static class LatchAwaitCallback extends AbstractComponent implements EventCallback {
 
     @Override
     public void eventReceived(CoreEvent event, Object component, MuleContext muleContext) throws Exception {
+      callbackInFlight.incrementAndGet();
       awaiting.incrementAndGet();
       latch.await();
+      callbackInFlight.decrementAndGet();
     }
 
+  }
+
+  public static int getCallbackInFlight() {
+    return callbackInFlight.get();
   }
 }
