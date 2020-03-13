@@ -21,6 +21,7 @@ import static org.hamcrest.collection.IsArrayContainingInOrder.arrayContaining;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import static org.mule.metadata.api.utils.MetadataTypeUtils.getTypeId;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.FLOW_IDENTIFIER;
 import static org.mule.runtime.core.api.construct.Flow.INITIAL_STATE_STARTED;
@@ -80,6 +81,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.xml.parsers.SAXParserFactory;
@@ -398,6 +400,17 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
     assertThat(optionalConnectionProvider, not(empty()));
 
     ComponentAst connectionProvider = optionalConnectionProvider.get();
+    ComponentParameterAst poolingProfileParameterAst = connectionProvider.getParameter("poolingProfile");
+    assertThat(poolingProfileParameterAst, not(empty()));
+    Optional<ComponentAst> poolingProfileParameter = poolingProfileParameterAst.getValue().getValue();
+    assertThat(poolingProfileParameter, not(empty()));
+    Optional<ComponentParameterAst> additionalPropertiesParameterAst = poolingProfileParameter.map(
+                                                                                                   ppp -> ppp
+                                                                                                       .getParameter("additionalProperties"));
+    assertThat(additionalPropertiesParameterAst, not(empty()));
+    Optional<List<ComponentParameterAst>> additionalProperties = additionalPropertiesParameterAst.get().getValue().getValue();
+    assertThat(additionalProperties, not(empty()));
+    assertThat(additionalProperties.get().isEmpty(), is(true));
     ComponentParameterAst connectionPropertiesParameterAst = connectionProvider.getParameter("connectionProperties");
     assertThat(connectionPropertiesParameterAst.getModel().getType(), instanceOf(ObjectType.class));
     Optional<MetadataType> openRestrictionTypeForConnectionPropertiesParameter =

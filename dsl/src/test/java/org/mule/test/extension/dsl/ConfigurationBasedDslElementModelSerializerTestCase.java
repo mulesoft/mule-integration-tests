@@ -52,7 +52,6 @@ public class ConfigurationBasedDslElementModelSerializerTestCase extends Abstrac
     return "component-config-app-declaration.xml";
   }
 
-  @Ignore("MULE-18146: This test started failing after update of 4.4.0-SNAPSHOT in 4.x branches")
   @Test
   public void serialize() throws Exception {
     XmlDslElementModelConverter converter = XmlDslElementModelConverter.getDefault(this.doc);
