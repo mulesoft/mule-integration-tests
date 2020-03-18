@@ -6,12 +6,15 @@
  */
 package org.mule.test.config.spring.parsers;
 
+import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+import static org.junit.rules.ExpectedException.none;
+import static org.mule.functional.junit4.matchers.ThrowableCauseMatcher.hasCause;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ProcessorChainRouterStory.PROCESSOR_CHAIN_ROUTER;
 
@@ -23,6 +26,7 @@ import org.mule.runtime.api.component.execution.ExecutionResult;
 import org.mule.runtime.api.component.execution.InputEvent;
 import org.mule.runtime.api.event.Event;
 import org.mule.runtime.api.message.Message;
+import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.IntegrationTestCaseRunnerConfig;
 
@@ -35,6 +39,7 @@ import javax.inject.Named;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
@@ -77,8 +82,15 @@ public class ProcessorChainRouterTestCase extends AbstractIntegrationTestCase im
   @Named("nonBlockingCompositeChainRouter")
   private ExecutableComponent nonBlockingCompositeChainRouter;
 
+  @Inject
+  @Named("invalidExpressionParamCompositeChainRouter")
+  private ExecutableComponent invalidExpressionParamCompositeChainRouter;
+
   @Rule
   public HttpServerRule httpServerRule = new HttpServerRule("httpPort");
+
+  @Rule
+  public ExpectedException expected = none();
 
   @Override
   protected String getConfigFile() {
@@ -209,6 +221,19 @@ public class ProcessorChainRouterTestCase extends AbstractIntegrationTestCase im
 
     executionResult = completableFuture.get();
     assertThat(executionResult.getEvent(), not(nullValue()));
+  }
+
+  @Test
+  @Issue("MULE-18200")
+  public void invalidExpressionParamCompositeChainRouter() throws Exception {
+    InputEvent event = createInputEvent();
+
+    CompletableFuture<ExecutionResult> completableFuture = invalidExpressionParamCompositeChainRouter.execute(event);
+
+    expected.expect(ExecutionException.class);
+    expected.expectCause(instanceOf(ComponentExecutionException.class));
+    expected.expectCause(hasCause(instanceOf(ExpressionRuntimeException.class)));
+    executionResult = completableFuture.get();
   }
 
   private void assertProcessorChainResult(Event returnedEvent) {
