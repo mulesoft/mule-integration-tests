@@ -84,6 +84,12 @@
         </parsers-test:chain>
     </parsers-test:composite-processor-chain-router>
 
+    <parsers-test:composite-processor-chain-router name="invalidExpressionParamCompositeChainRouter">
+        <parsers-test:chain>
+            <http:request method="GET" config-ref="HTTP_Requester_config" path="#['' ++ null.a!]" />
+        </parsers-test:chain>
+    </parsers-test:composite-processor-chain-router>
+
     <flow name="byPassFlow">
         <set-payload value="#[payload]"/>
     </flow>
