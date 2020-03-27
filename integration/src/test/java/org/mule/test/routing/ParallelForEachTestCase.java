@@ -24,10 +24,11 @@ import static org.mule.runtime.core.api.exception.Errors.ComponentIdentifiers.Ha
 import static org.mule.runtime.core.api.exception.Errors.ComponentIdentifiers.Handleable.UNKNOWN;
 import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
 import static org.mule.tck.junit4.matcher.HasClassInHierarchy.withClassName;
-import static org.mule.test.allure.AllureConstants.RoutersFeature.ParallelForEachStory.PARALLEL_FOR_EACH;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
+import static org.mule.test.allure.AllureConstants.RoutersFeature.ParallelForEachStory.PARALLEL_FOR_EACH;
 
 import org.mule.functional.api.exception.FunctionalTestException;
+import org.mule.functional.junit4.rules.HttpServerRule;
 import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.component.ComponentIdentifier;
 import org.mule.runtime.api.exception.ComposedErrorException;
@@ -36,18 +37,21 @@ import org.mule.runtime.api.util.concurrent.Latch;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.runtime.core.api.processor.Processor;
+import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import io.qameta.allure.Description;
-import io.qameta.allure.Feature;
-import io.qameta.allure.Story;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import io.qameta.allure.Description;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
+import io.qameta.allure.Story;
 
 @Feature(ROUTERS)
 @Story(PARALLEL_FOR_EACH)
@@ -59,6 +63,12 @@ public class ParallelForEachTestCase extends AbstractIntegrationTestCase {
 
   @Rule
   public ExpectedException expectedException = none();
+
+  @Rule
+  public DynamicPort port = new DynamicPort("port");
+
+  @Rule
+  public HttpServerRule httpServerRules = new HttpServerRule("port");
 
   @Override
   protected String getConfigFile() {
@@ -217,6 +227,13 @@ public class ParallelForEachTestCase extends AbstractIntegrationTestCase {
   public void concurrent() throws Exception {
     flowRunner("concurrent").withPayload(fruitList).withVariable("latch", new Latch()).run();
     assertThat(capturedThreads, hasSize(3));
+  }
+
+  @Test
+  @Issue("MULE-18227")
+  @Description("Check that parallel execution routes do not cause race conditions when handling SdkInternalContext")
+  public void parallelForEachWithSdkOperation() throws Exception {
+    flowRunner("parallelForEachWithSdkOperation").run();
   }
 
   public static class ThreadCaptor extends AbstractComponent implements Processor {
