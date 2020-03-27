@@ -535,6 +535,12 @@
         </dependency>
         <dependency>
             <groupId>org.mule.tests</groupId>
+            <artifactId>smart-connector-using-http-noconfig</artifactId>
+            <classifier>mule-plugin</classifier>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.tests</groupId>
             <artifactId>smart-connector-using-http-oauth</artifactId>
             <classifier>mule-plugin</classifier>
             <version>${project.version}</version>
