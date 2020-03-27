@@ -30,6 +30,7 @@ import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ScatterGatherStory.SCATTER_GATHER;
 
 import org.mule.functional.api.exception.FunctionalTestException;
+import org.mule.functional.junit4.rules.HttpServerRule;
 import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.exception.ComposedErrorException;
 import org.mule.runtime.api.exception.MuleException;
@@ -39,6 +40,7 @@ import org.mule.runtime.api.util.concurrent.Latch;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.runtime.core.api.processor.Processor;
+import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -67,6 +69,12 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
 
   @Rule
   public ExpectedException expectedException = none();
+
+  @Rule
+  public DynamicPort port = new DynamicPort("port");
+
+  @Rule
+  public HttpServerRule httpServerRules = new HttpServerRule("port");
 
   @Rule
   public SystemProperty timeout = new SystemProperty("scatterGather.timeout", "" + RECEIVE_TIMEOUT);
@@ -265,6 +273,13 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
     assertThat(messageList.size(), is(12));
     assertThat(messageList.values().stream().map(m -> m.getPayload().getValue()).collect(toList()),
                is(asList("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L")));
+  }
+
+  @Test
+  @Issue("MULE-18227")
+  @Description("Check that parallel execution routes do not cause race conditions when handling SdkInternalContext")
+  public void foreachWithinScatterGatherWithSdkOperation() throws Exception {
+    flowRunner("foreachWithinScatterGatherWithSdkOperation").run();
   }
 
   public static class ThreadCaptor extends AbstractComponent implements Processor {
