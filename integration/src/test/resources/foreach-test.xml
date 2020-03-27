@@ -354,7 +354,7 @@
         </error-handler>
     </flow>
 
-    <flow name="testFlow">
+    <flow name="forEachWithTry">
         <foreach>
             <try>
                 <test:processor throwException="true"/>
