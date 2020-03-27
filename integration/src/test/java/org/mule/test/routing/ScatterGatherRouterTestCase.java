@@ -229,9 +229,10 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
+  @Issue("MULE-18154")
   @Description("Validates that an error handler in a scatter-gather route can be used correctly")
   public void errorHandlerInsideScatterGather() throws Exception {
-    CoreEvent event = flowRunner("errorHandlerInsideScatterGather").run();
+    flowRunner("errorHandlerInsideScatterGather").run();
   }
 
 
