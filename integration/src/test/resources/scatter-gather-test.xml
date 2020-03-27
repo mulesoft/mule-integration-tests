@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
       xmlns="http://www.mulesoft.org/schema/mule/core"
       xsi:schemaLocation="
                http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+               http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
                http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
     <flow name="minimalConfig">
@@ -400,6 +402,28 @@
             </route>
             <route>
                 <set-payload value="L"/>
+            </route>
+        </scatter-gather>
+    </flow>
+
+    <http:request-config name="httpRequestConfig">
+        <http:request-connection host="localhost" port="${port}"/>
+    </http:request-config>
+
+    <flow name="foreachWithinScatterGatherWithSdkOperation">
+        <!-- This first operation call is needed so that the SdkInternalContext for the event is initialized -->
+        <http:request config-ref="httpRequestConfig" path="/test"/>
+        <set-payload value="#[['apple', 'banana', 'orange']]"/>
+        <scatter-gather>
+            <route>
+                <foreach>
+                    <http:request config-ref="httpRequestConfig" path="/test"/>
+                </foreach>
+            </route>
+            <route>
+                <foreach>
+                    <http:request config-ref="httpRequestConfig" path="/test"/>
+                </foreach>
             </route>
         </scatter-gather>
     </flow>
