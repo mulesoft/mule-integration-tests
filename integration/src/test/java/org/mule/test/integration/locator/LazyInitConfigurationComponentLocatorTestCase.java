@@ -48,12 +48,14 @@ import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import io.qameta.allure.Description;
-import io.qameta.allure.Feature;
-import io.qameta.allure.Story;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.Rule;
 import org.junit.Test;
+
+import io.qameta.allure.Description;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
+import io.qameta.allure.Story;
 
 @Feature(CONFIGURATION_COMPONENT_LOCATOR)
 @Story(SEARCH_CONFIGURATION)
@@ -67,7 +69,7 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
   @Rule
   public DynamicPort proxyPort = new DynamicPort("http.proxy.port");
 
-  private static final int TOTAL_NUMBER_OF_LOCATIONS = 133;
+  private static final int TOTAL_NUMBER_OF_LOCATIONS = 140;
   @Inject
   private Registry registry;
 
@@ -84,7 +86,8 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
         "org/mule/test/integration/locator/component-locator-os-connector.xml",
         "org/mule/test/integration/locator/component-locator-spring-config.xml",
         "org/mule/test/integration/locator/component-locator-reference-component-models.xml",
-        "org/mule/test/integration/locator/module-with-config-oauth.xml"};
+        "org/mule/test/integration/locator/module-with-config-oauth.xml",
+        "org/mule/test/integration/locator/module-with-config-http-noconfig.xml"};
   }
 
   @Override
@@ -319,6 +322,14 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
                                   "GetChannels/source/0",
                                   "GetChannels/source/0/0",
                                   "GetChannels/processors/0",
+
+                                  "_defaultGlobalElements",
+                                  "RequestWithNoConfig",
+                                  "RequestWithNoConfig/processors/0",
+                                  "localhost-config-module-using-http-noconfig-default-config-global-element-suffix",
+                                  "localhost-config-module-using-http-noconfig-default-config-global-element-suffix/connection",
+                                  "do-request/processors/0",
+                                  "do-request/processors/1",
 
                                   "null",
                                   "null/0",
@@ -694,8 +705,15 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
     lazyComponentInitializer.initializeComponent(builder().globalName("redeliveryPolicyFlowRef1").build());
     lazyComponentInitializer.initializeComponent(builder().globalName("redeliveryPolicyFlowRef2").build());
 
-
     assertThat(locator.find(builder().globalName("redeliveryPolicyFlow").build()), is(not(empty())));
+  }
+
+  @Test
+  @Issue("MULE-18197")
+  @Description("Apps with Smart connectors wih default global elelements are properly initialized with LazyInit")
+  public void xmlSdkOperationWithDefaultConfig() {
+    lazyComponentInitializer.initializeComponent(builder().globalName("RequestWithNoConfig").build());
+    assertThat(locator.find(builder().globalName("RequestWithNoConfig").build()), is(not(empty())));
   }
 
 }
