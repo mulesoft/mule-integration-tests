@@ -24,6 +24,7 @@ import org.mule.runtime.api.source.SchedulerMessageSource;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
+import org.mule.runtime.core.api.source.scheduler.FixedFrequencyScheduler;
 import org.mule.tck.probe.JUnitLambdaProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.test.AbstractSchedulerTestCase;
@@ -52,6 +53,13 @@ public class SchedulerTestCase extends AbstractSchedulerTestCase {
   @Override
   protected String getConfigFile() {
     return "org/mule/test/integration/scheduler-config.xml";
+  }
+
+  @Test
+  public void test() {
+    SchedulerMessageSource source = (SchedulerMessageSource) locator.find(buildFromStringRepresentation("scheduler")).get(0);
+    FixedFrequencyScheduler conf = (FixedFrequencyScheduler) source.getConfiguration();
+    System.out.println(conf.getFrequency());
   }
 
   @Test
