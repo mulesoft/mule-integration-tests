@@ -635,6 +635,8 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
   }
 
   @Test
+  @Issue("MULE-18259")
+  @Description("Default values for parameters declared in XML SDK configs were only working when XSD validations was enabled")
   public void lazyMuleContextSmartConnectorsWithConfigAndDefaultParameters() throws IllegalAccessException {
     lazyComponentInitializer.initializeComponents(componentLocation -> componentLocation.getLocation().equals("request"));
 
