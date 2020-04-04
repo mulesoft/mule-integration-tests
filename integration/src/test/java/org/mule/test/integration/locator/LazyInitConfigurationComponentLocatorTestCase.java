@@ -49,13 +49,14 @@ import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.lang3.reflect.FieldUtils;
+import org.junit.Rule;
+import org.junit.Test;
+
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
-import org.apache.commons.lang3.reflect.FieldUtils;
-import org.junit.Rule;
-import org.junit.Test;
 
 @Feature(CONFIGURATION_COMPONENT_LOCATOR)
 @Story(SEARCH_CONFIGURATION)
@@ -84,15 +85,15 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
   @Override
   protected String[] getConfigFiles() {
     return new String[] {
-            "org/mule/test/integration/locator/component-locator-config.xml",
-            "org/mule/test/integration/locator/component-locator-notifications.xml",
-            "org/mule/test/integration/locator/component-locator-levels-config.xml",
-            "org/mule/test/integration/locator/component-locator-os-connector.xml",
-            "org/mule/test/integration/locator/component-locator-spring-config.xml",
-            "org/mule/test/integration/locator/component-locator-reference-component-models.xml",
-            "org/mule/test/integration/locator/module-with-config-oauth.xml",
-            "org/mule/test/integration/locator/module-with-config-http-oauth-auth-code.xml",
-            "org/mule/test/integration/locator/module-with-config-http-noconfig.xml"};
+        "org/mule/test/integration/locator/component-locator-config.xml",
+        "org/mule/test/integration/locator/component-locator-notifications.xml",
+        "org/mule/test/integration/locator/component-locator-levels-config.xml",
+        "org/mule/test/integration/locator/component-locator-os-connector.xml",
+        "org/mule/test/integration/locator/component-locator-spring-config.xml",
+        "org/mule/test/integration/locator/component-locator-reference-component-models.xml",
+        "org/mule/test/integration/locator/module-with-config-oauth.xml",
+        "org/mule/test/integration/locator/module-with-config-http-oauth-auth-code.xml",
+        "org/mule/test/integration/locator/module-with-config-http-noconfig.xml"};
   }
 
   @Override
@@ -128,9 +129,9 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
     CustomTestComponent.statesByInstances.clear();
 
     lazyComponentInitializer
-            .initializeComponents(componentLocation -> componentLocation.getLocation().equals("untilSuccessfulFlow"));
+        .initializeComponents(componentLocation -> componentLocation.getLocation().equals("untilSuccessfulFlow"));
     lazyComponentInitializer
-            .initializeComponents(componentLocation -> componentLocation.getLocation().equals("untilSuccessfulFlowCopy"));
+        .initializeComponents(componentLocation -> componentLocation.getLocation().equals("untilSuccessfulFlowCopy"));
 
     // force dispose to check that components from sub-flow are disposed
     muleContext.dispose();
@@ -144,23 +145,23 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
     CustomTestComponent.statesByInstances.clear();
 
     Location multipleInitiailizeProcessor1 =
-            builder().globalName("multipleInitialize").addProcessorsPart().addIndexPart(0).build();
+        builder().globalName("multipleInitialize").addProcessorsPart().addIndexPart(0).build();
     Location multipleInitiailizeProcessor2 =
-            builder().globalName("multipleInitialize").addProcessorsPart().addIndexPart(1).build();
+        builder().globalName("multipleInitialize").addProcessorsPart().addIndexPart(1).build();
 
     lazyComponentInitializer.initializeComponent(multipleInitiailizeProcessor1);
     assertThat(locator.find(multipleInitiailizeProcessor1), not(empty()));
     assertThat(locator.find(multipleInitiailizeProcessor2), is(empty()));
 
     MuleConfiguration configuration = registry.lookupByType(MuleConfiguration.class)
-            .orElseThrow(() -> new AssertionError("Missing MuleConfiguration from registry"));
+        .orElseThrow(() -> new AssertionError("Missing MuleConfiguration from registry"));
 
     lazyComponentInitializer.initializeComponent(multipleInitiailizeProcessor2);
     assertThat(locator.find(multipleInitiailizeProcessor1), is(empty()));
     assertThat(locator.find(multipleInitiailizeProcessor2), not(empty()));
 
     MuleConfiguration afterNextInitConfiguration = registry.lookupByType(MuleConfiguration.class)
-            .orElseThrow(() -> new AssertionError("Missing MuleConfiguration from registry"));
+        .orElseThrow(() -> new AssertionError("Missing MuleConfiguration from registry"));
 
     // Cannot do more than testing that both are the same instances and equals
     assertThat(configuration, sameInstance(afterNextInitConfiguration));
@@ -210,7 +211,7 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
     CustomTestComponent.statesByInstances.clear();
 
     LazyComponentInitializer.ComponentLocationFilter componentLocationFilter =
-            componentLocation -> componentLocation.getLocation().equals("untilSuccessfulFlow");
+        componentLocation -> componentLocation.getLocation().equals("untilSuccessfulFlow");
     lazyComponentInitializer.initializeComponents(componentLocationFilter);
     lazyComponentInitializer.initializeComponents(componentLocationFilter);
 
@@ -226,7 +227,7 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
     CustomTestComponent.statesByInstances.clear();
 
     LazyComponentInitializer.ComponentLocationFilter componentLocationFilter =
-            componentLocation -> componentLocation.getLocation().equals("untilSuccessfulFlow");
+        componentLocation -> componentLocation.getLocation().equals("untilSuccessfulFlow");
     lazyComponentInitializer.initializeComponents(componentLocationFilter, true);
     lazyComponentInitializer.initializeComponents(componentLocationFilter, false);
 
@@ -242,10 +243,10 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
   @Test
   public void lazyInitCalculatesLocations() {
     List<String> allLocations = locator
-            .findAllLocations()
-            .stream()
-            .map(ComponentLocation::getLocation)
-            .collect(toList());
+        .findAllLocations()
+        .stream()
+        .map(ComponentLocation::getLocation)
+        .collect(toList());
     assertThat(allLocations.toString(), allLocations,
                containsInAnyOrder("myFlow",
                                   "myFlow/source",
@@ -434,10 +435,10 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
     assertThat(locator.find(builder().globalName("anotherFlow").build()), is(empty()));
 
     assertThat(locator
-                       .findAllLocations()
-                       .stream()
-                       .map(ComponentLocation::getLocation)
-                       .collect(toList()), hasItem("myFlow/source"));
+        .findAllLocations()
+        .stream()
+        .map(ComponentLocation::getLocation)
+        .collect(toList()), hasItem("myFlow/source"));
   }
 
   @Test
@@ -448,10 +449,10 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
     assertThat(registry.lookupByName("childBean").isPresent(), is(true));
 
     assertThat(locator
-                       .findAllLocations()
-                       .stream()
-                       .map(ComponentLocation::getLocation)
-                       .collect(toList()), hasItem("childBean"));
+        .findAllLocations()
+        .stream()
+        .map(ComponentLocation::getLocation)
+        .collect(toList()), hasItem("childBean"));
   }
 
   @Test
@@ -460,10 +461,10 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
     lazyComponentInitializer.initializeComponent(invokeBeanFlow);
 
     assertThat(locator
-                       .findAllLocations()
-                       .stream()
-                       .map(ComponentLocation::getLocation)
-                       .collect(toList()), hasItem("os-config"));
+        .findAllLocations()
+        .stream()
+        .map(ComponentLocation::getLocation)
+        .collect(toList()), hasItem("os-config"));
   }
 
   @Description("Lazy init should refresh the ConfigurationComponentLocator when initialize is done")
@@ -529,7 +530,7 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
   @Test
   public void fileListShouldInitializeMatcherReference() {
     lazyComponentInitializer
-            .initializeComponent(builder().globalName("fileListWithMatcherReference").addProcessorsPart().addIndexPart(0).build());
+        .initializeComponent(builder().globalName("fileListWithMatcherReference").addProcessorsPart().addIndexPart(0).build());
 
     assertThat(locator.find(builder().globalName("fileListWithMatcherReference").build()), is(empty()));
     assertThat(locator.find(builder().globalName("fileListWithMatcherReference").addProcessorsPart().addIndexPart(0).build()),
@@ -674,7 +675,7 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
 
     // A configuration can be retrieved but will have the values set from the DSL, instead default values
     MuleConfiguration configuration = registry.lookupByType(MuleConfiguration.class)
-            .orElseThrow(() -> new AssertionError("Missing MuleConfiguration from registry"));
+        .orElseThrow(() -> new AssertionError("Missing MuleConfiguration from registry"));
     assertThat(configuration.getDefaultResponseTimeout(), is(10000));
     assertThat(CustomTestComponent.statesByInstances.toString(),
                CustomTestComponent.statesByInstances.size(), is(0));
@@ -682,7 +683,7 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
     // Configuration and its dependent components are initialized at this point...
     lazyComponentInitializer.initializeComponent(builder().globalName("flowFailing").build());
     configuration = registry.lookupByType(MuleConfiguration.class)
-            .orElseThrow(() -> new AssertionError("Missing MuleConfiguration from registry"));
+        .orElseThrow(() -> new AssertionError("Missing MuleConfiguration from registry"));
     assertThat(configuration.getDefaultResponseTimeout(), is(2001));
 
     // force dispose to check that components from sub-flow are disposed
@@ -700,7 +701,7 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
     lazyComponentInitializer.initializeComponent(builder().globalName(MY_SUB_FLOW).addProcessorsPart().addIndexPart(0).build());
 
     Optional<Component> componentOptional =
-            locator.find(Location.builder().globalName(MY_SUB_FLOW).addProcessorsPart().addIndexPart(0).build());
+        locator.find(Location.builder().globalName(MY_SUB_FLOW).addProcessorsPart().addIndexPart(0).build());
     assertThat(componentOptional.isPresent(), is(true));
   }
 
@@ -710,11 +711,11 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
     lazyComponentInitializer.initializeComponents(componentLocation -> componentLocation.getLocation().equals(FLOW_WITH_SUBFLOW));
 
     Optional<Component> componentOptional =
-            locator.find(Location.builder().globalName(MY_SUB_FLOW).addProcessorsPart().addIndexPart(0).build());
+        locator.find(Location.builder().globalName(MY_SUB_FLOW).addProcessorsPart().addIndexPart(0).build());
     assertThat(componentOptional.isPresent(), is(true));
 
     componentOptional =
-            locator.find(Location.builder().globalName(FLOW_WITH_SUBFLOW).addProcessorsPart().addIndexPart(0).build());
+        locator.find(Location.builder().globalName(FLOW_WITH_SUBFLOW).addProcessorsPart().addIndexPart(0).build());
     assertThat(componentOptional.isPresent(), is(true));
   }
 
@@ -724,11 +725,11 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
 
     flowRunner("notificationFlow").run();
     Collection<ProcessorNotificationStore> processorNotificationStores =
-            registry.lookupAllByType(ProcessorNotificationStore.class);
+        registry.lookupAllByType(ProcessorNotificationStore.class);
     assertThat(processorNotificationStores, hasSize(2));
 
     processorNotificationStores.stream()
-            .forEach(processorNotificationStore -> assertThat(processorNotificationStore.getNotifications(), hasSize(2)));
+        .forEach(processorNotificationStore -> assertThat(processorNotificationStore.getNotifications(), hasSize(2)));
   }
 
   @Description("Initialize same flow with redelivery policy configured in a listener, test component should not fail when initializing the second time")
