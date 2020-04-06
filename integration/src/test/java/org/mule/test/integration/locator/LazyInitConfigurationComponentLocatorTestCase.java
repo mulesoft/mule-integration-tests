@@ -37,6 +37,7 @@ import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.runtime.core.api.config.MuleConfiguration;
 import org.mule.runtime.core.api.security.SecurityManager;
 import org.mule.tck.junit4.rule.DynamicPort;
+import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.core.context.notification.processors.ProcessorNotificationStore;
 import org.mule.test.integration.locator.processor.CustomTestComponent;
@@ -69,7 +70,11 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
   @Rule
   public DynamicPort proxyPort = new DynamicPort("http.proxy.port");
 
-  private static final int TOTAL_NUMBER_OF_LOCATIONS = 140;
+  @Rule
+  public SystemProperty path = new SystemProperty("path", "path");
+
+
+  private static final int TOTAL_NUMBER_OF_LOCATIONS = 156;
   @Inject
   private Registry registry;
 
@@ -87,6 +92,7 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
         "org/mule/test/integration/locator/component-locator-spring-config.xml",
         "org/mule/test/integration/locator/component-locator-reference-component-models.xml",
         "org/mule/test/integration/locator/module-with-config-oauth.xml",
+        "org/mule/test/integration/locator/module-with-config-http-oauth-auth-code.xml",
         "org/mule/test/integration/locator/module-with-config-http-noconfig.xml"};
   }
 
@@ -399,7 +405,24 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
 
                                   "os-config",
                                   "os-contains-flow",
-                                  "os-contains-flow/processors/0"));
+                                  "os-contains-flow/processors/0",
+
+                                  "request-with-oauth-auth-code-config-scConfig",
+                                  "request-with-oauth-auth-code-config-scConfig/connection",
+                                  "request-with-oauth-auth-code-config-scConfig/connection/0",
+                                  "request-with-oauth-auth-code-config-scConfig/connection/0/0",
+                                  "request-with-oauth-auth-code/processors/0",
+                                  "tokenManagerConfig-scConfig",
+                                  "listenerConfigOac",
+                                  "listenerConfigOac/connection",
+                                  "listen",
+                                  "listen/source",
+                                  "listen/processors/0",
+                                  "scConfig",
+                                  "requestConfigOac",
+                                  "requestConfigOac/connection",
+                                  "request",
+                                  "request/processors/0"));
     assertThat(locator.find(builder().globalName("myFlow").build()), is(empty()));
     assertThat(locator.find(builder().globalName("anotherFlow").build()), is(empty()));
   }
@@ -610,6 +633,16 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
 
     assertThat(locator.find(builderFromStringRepresentation("GetChannels").build()), is(not(empty())));
     assertThat(locator.find(builderFromStringRepresentation("GetChannels/processors/0").build()), is(not(empty())));
+  }
+
+  @Test
+  @Issue("MULE-18259")
+  @Description("Default values for parameters declared in XML SDK configs were only working when XSD validations was enabled")
+  public void lazyMuleContextSmartConnectorsWithConfigAndDefaultParameters() throws IllegalAccessException {
+    lazyComponentInitializer.initializeComponents(componentLocation -> componentLocation.getLocation().equals("request"));
+
+    assertThat(locator.find(builderFromStringRepresentation("request").build()), is(not(empty())));
+    assertThat(locator.find(builderFromStringRepresentation("request/processors/0").build()), is(not(empty())));
   }
 
   @Description("Lazy init should create components that are references by other components, when the reference is not a top level element")
