@@ -11,7 +11,8 @@
                     property_port="${http.listener.port}"
                     property_accessTokenUrl="http://localhost:${http.listener.port}/oauth/token"
                     property_clientId="cid"
-                    property_clientSecret="csecret"/>
+                    property_clientSecret="csecret"
+                    property_localCallbackConfig="listenerConfigOac"/>
 
     <http:listener-config name="listenerConfigOac">
         <http:listener-connection host="localhost" port="${http.listener.port}" protocol="HTTP"/>
