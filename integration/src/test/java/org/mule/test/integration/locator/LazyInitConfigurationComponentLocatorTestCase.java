@@ -643,6 +643,7 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
 
     assertThat(locator.find(builderFromStringRepresentation("request").build()), is(not(empty())));
     assertThat(locator.find(builderFromStringRepresentation("request/processors/0").build()), is(not(empty())));
+    assertThat(locator.find(builderFromStringRepresentation("listenerConfigOac").build()), is(not(empty())));
   }
 
   @Description("Lazy init should create components that are references by other components, when the reference is not a top level element")
