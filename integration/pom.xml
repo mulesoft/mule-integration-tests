@@ -529,6 +529,12 @@
         </dependency>
         <dependency>
             <groupId>org.mule.tests</groupId>
+            <artifactId>smart-connector-using-file</artifactId>
+            <classifier>mule-plugin</classifier>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.tests</groupId>
             <artifactId>smart-connector-using-http</artifactId>
             <classifier>mule-plugin</classifier>
             <version>${project.version}</version>
