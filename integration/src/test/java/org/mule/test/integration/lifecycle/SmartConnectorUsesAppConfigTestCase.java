@@ -6,9 +6,16 @@
  */
 package org.mule.test.integration.lifecycle;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import org.mule.runtime.api.component.location.Location;
+import org.mule.runtime.api.connection.ConnectionValidationResult;
+import org.mule.runtime.api.connectivity.ConnectivityTestingService;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
+
+import javax.inject.Inject;
 
 import io.qameta.allure.Issue;
 import org.junit.Rule;
@@ -23,6 +30,9 @@ public class SmartConnectorUsesAppConfigTestCase extends AbstractIntegrationTest
   @Rule
   public SystemProperty path = new SystemProperty("path", "path");
 
+  @Inject
+  private ConnectivityTestingService connectivityTestingService;
+
   @Override
   protected String getConfigFile() {
     return "org/mule/test/integration/lifecycle/smart-connector-uses-app-config.xml";
@@ -35,5 +45,12 @@ public class SmartConnectorUsesAppConfigTestCase extends AbstractIntegrationTest
 
     // Use the SC to do a request authenticated with OAuth
     flowRunner("request").run();
+  }
+
+  @Test
+  public void testConnection() {
+    ConnectionValidationResult result =
+        connectivityTestingService.testConnection(Location.builder().globalName("scConfig").build());
+    assertThat(result.isValid(), is(true));
   }
 }
