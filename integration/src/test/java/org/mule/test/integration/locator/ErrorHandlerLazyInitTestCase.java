@@ -16,9 +16,9 @@ import static org.junit.rules.ExpectedException.none;
 import static org.mule.runtime.api.component.location.Location.builder;
 import static org.mule.runtime.config.api.LazyComponentInitializer.LAZY_COMPONENT_INITIALIZER_SERVICE_KEY;
 import static org.mule.runtime.config.api.SpringXmlConfigurationBuilderFactory.createConfigurationBuilder;
+import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentLocatorStory.SEARCH_CONFIGURATION;
-
 import org.mule.runtime.api.artifact.Registry;
 import org.mule.runtime.api.component.ComponentIdentifier;
 import org.mule.runtime.api.component.location.Location;
@@ -28,6 +28,7 @@ import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.api.message.ErrorType;
 import org.mule.runtime.config.api.LazyComponentInitializer;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
+import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.util.Optional;
@@ -36,6 +37,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
 import org.junit.Rule;
 import org.junit.Test;
@@ -51,6 +53,9 @@ public class ErrorHandlerLazyInitTestCase extends AbstractIntegrationTestCase {
   @Inject
   @Named(value = LAZY_COMPONENT_INITIALIZER_SERVICE_KEY)
   private LazyComponentInitializer lazyComponentInitializer;
+
+  @Rule
+  public DynamicPort httpPort = new DynamicPort("http.port");
 
   @Rule
   public ExpectedException expectedException = none();
@@ -80,7 +85,16 @@ public class ErrorHandlerLazyInitTestCase extends AbstractIntegrationTestCase {
   @Test
   public void registerCustomErrorsFromErrorMapping() {
     doCustomErrorTypesShouldDiscoveredTest(builder().globalName("errorMappingFlow").build(), "APP:ERROR_TYPE_1",
-                                           "APP:ERROR_TYPE_2");
+                                           "APP:ERROR_TYPE_2", "APP:ERROR_TYPE_MAPPING_1");
+  }
+
+  @Test
+  @Issue("MULE-18286")
+  public void errorIsRegisteredButComponentIsNotAnnotated() throws Exception {
+    Location location = builder().globalName("errorMappingFlow").build();
+    lazyComponentInitializer.initializeComponent(location);
+
+    flowRunner("errorMappingFlow").runExpectingException(errorType("APP", "ERROR_TYPE_MAPPING_1"));
   }
 
   @Test
@@ -108,9 +122,9 @@ public class ErrorHandlerLazyInitTestCase extends AbstractIntegrationTestCase {
   @Test
   public void registerCustomErrorsFromErrorMappingOnlyOnce() {
     doCustomErrorTypesShouldDiscoveredTest(builder().globalName("errorMappingFlow").build(), "APP:ERROR_TYPE_1",
-                                           "APP:ERROR_TYPE_2");
+                                           "APP:ERROR_TYPE_2", "APP:ERROR_TYPE_MAPPING_1");
     doCustomErrorTypesShouldDiscoveredTest(builder().globalName("errorMappingFlow2").build(), "APP:ERROR_TYPE_1",
-                                           "APP:ERROR_TYPE_2", "APP:ERROR_TYPE_5");
+                                           "APP:ERROR_TYPE_2", "APP:ERROR_TYPE_MAPPING_2");
   }
 
   @Test
@@ -133,16 +147,17 @@ public class ErrorHandlerLazyInitTestCase extends AbstractIntegrationTestCase {
     lazyComponentInitializer.initializeComponent(location);
 
     ErrorTypeRepository errorTypeRepository = registry.lookupByType(ErrorTypeRepository.class)
-        .orElseThrow(() -> new AssertionError("Cannot access errorTypeRepository"));
+            .orElseThrow(() -> new AssertionError("Cannot access errorTypeRepository"));
 
     stream(errorTypes).forEach(errorType -> {
       Optional<ErrorType> appMyErrorType =
-          errorTypeRepository.getErrorType(ComponentIdentifier.buildFromStringRepresentation(errorType));
+              errorTypeRepository.getErrorType(ComponentIdentifier.buildFromStringRepresentation(errorType));
 
       if (includeErrorTypes) {
         assertThat(appMyErrorType, not(empty()));
         assertThat(appMyErrorType.get().getParentErrorType(), equalTo(errorTypeRepository.getAnyErrorType()));
-      } else {
+      }
+      else {
         assertThat(appMyErrorType, equalTo(empty()));
       }
     });
