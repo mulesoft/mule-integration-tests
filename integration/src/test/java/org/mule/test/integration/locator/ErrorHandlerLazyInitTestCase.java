@@ -98,6 +98,21 @@ public class ErrorHandlerLazyInitTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
+  @Issue("MULE-18286")
+  public void errorIsRegisteredButComponentIsNotAnnotatedEvenWhenInitializedTwice() throws Exception {
+    Location errorMappingFlowLocation = builder().globalName("errorMappingFlow").build();
+    lazyComponentInitializer.initializeComponent(errorMappingFlowLocation);
+    flowRunner(errorMappingFlowLocation.getGlobalName()).runExpectingException(errorType("APP", "ERROR_TYPE_MAPPING_1"));
+
+    Location errorMappingFlow2Location = builder().globalName("errorMappingFlow2").build();
+    lazyComponentInitializer.initializeComponent(errorMappingFlow2Location);
+    flowRunner(errorMappingFlow2Location.getGlobalName()).runExpectingException(errorType("APP", "ERROR_TYPE_MAPPING_2"));
+
+    lazyComponentInitializer.initializeComponent(errorMappingFlowLocation);
+    flowRunner(errorMappingFlowLocation.getGlobalName()).runExpectingException(errorType("APP", "ERROR_TYPE_MAPPING_1"));
+  }
+
+  @Test
   public void emptyRaiseErrorType() {
     expectedException.expect(MuleRuntimeException.class);
     expectedException.expectCause(instanceOf(InitialisationException.class));
