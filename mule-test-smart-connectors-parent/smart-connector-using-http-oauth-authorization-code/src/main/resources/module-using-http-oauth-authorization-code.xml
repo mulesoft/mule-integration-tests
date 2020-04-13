@@ -33,7 +33,7 @@
 
     <oauth:token-manager-config name="tokenManagerConfig"/>
 
-    <http:request-config name="request-with-oauth-auth-code-config" basePath="#[vars.property_basePath]">
+    <http:request-config name="request-with-oauth-auth-code-config" basePath="#[vars.property_basePath]" xmlns:connection="true">
         <http:request-connection
                     host="#[vars.property_host]"
                     protocol="#[vars.property_protocol]"
