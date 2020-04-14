@@ -46,7 +46,8 @@ public class LazySmartConnectorUsesAppConfigTestCase extends AbstractIntegration
 
   @Test
   public void testConnection() {
-    ConnectionValidationResult result = connectivityTestingService.testConnection(Location.builder().globalName("fileConfig").build());
+    ConnectionValidationResult result =
+        connectivityTestingService.testConnection(Location.builder().globalName("fileConfig").build());
     assertThat(result.isValid(), is(true));
   }
 }
