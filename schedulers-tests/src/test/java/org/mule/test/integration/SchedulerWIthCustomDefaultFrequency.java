@@ -24,7 +24,8 @@ public class SchedulerWIthCustomDefaultFrequency extends AbstractSchedulerTestCa
   private static final long CUSTOM_FREQ = 42;
 
   @Rule
-  public SystemProperty defaultConfigProperty = new SystemProperty(DEFAULT_SCHEDULER_FIXED_FREQUENCY, String.valueOf(CUSTOM_FREQ));
+  public SystemProperty defaultConfigProperty =
+      new SystemProperty(DEFAULT_SCHEDULER_FIXED_FREQUENCY, String.valueOf(CUSTOM_FREQ));
 
   @Override
   protected String getConfigFile() {
