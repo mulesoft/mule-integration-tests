@@ -6,6 +6,7 @@
  */
 package org.mule.test.core.context.notification.processors;
 
+import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
 import static java.util.Optional.empty;
@@ -22,6 +23,7 @@ import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentT
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.SCOPE;
 import static org.mule.runtime.api.dsl.DslResolvingContext.getDefault;
 import static org.mule.runtime.api.util.collection.Collectors.toImmutableList;
+import static org.mule.runtime.config.api.dsl.CoreDslConstants.ASYNC_IDENTIFIER;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.CHOICE_IDENTIFIER;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.FLOW_IDENTIFIER;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.FLOW_REF_IDENTIFIER;
@@ -32,7 +34,6 @@ import static org.mule.runtime.config.api.dsl.CoreDslConstants.ROUTE_IDENTIFIER;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.SCATTER_GATHER_IDENTIFIER;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.SUBFLOW_IDENTIFIER;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.TRY_IDENTIFIER;
-import static org.mule.runtime.config.api.dsl.CoreDslConstants.ASYNC_IDENTIFIER;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.UNTIL_SUCCESSFUL_IDENTIFIER;
 import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.initialiseIfNeeded;
 import static org.mule.runtime.dsl.api.xml.parser.XmlConfigurationDocumentLoader.noValidationDocumentLoader;
@@ -49,6 +50,7 @@ import org.mule.runtime.api.dsl.DslResolvingContext;
 import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.api.notification.MessageProcessorNotification;
 import org.mule.runtime.api.util.ResourceLocator;
+import org.mule.runtime.ast.api.ArtifactAst;
 import org.mule.runtime.config.api.dsl.processor.ArtifactConfig;
 import org.mule.runtime.config.internal.ModuleDelegatingEntityResolver;
 import org.mule.runtime.config.internal.model.ApplicationModel;
@@ -77,8 +79,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalInt;
@@ -301,27 +303,28 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
 
     ArtifactConfig.Builder artifactConfigBuilder = new ArtifactConfig.Builder();
     artifactConfigBuilder.addConfigFile(new ConfigFile(CONFIG_FILE_NAME.get(), Collections
+        // TODO MULE-17199 (AST) use an AST parser api
         .singletonList(loadConfigLines(extensionModels,
                                        this.getClass().getClassLoader().getResourceAsStream(CONFIG_FILE_NAME.get()))
-                                           .orElseThrow(() -> new IllegalArgumentException(String
-                                               .format("Failed to parse %s.", CONFIG_FILE_NAME.get()))))));
+                                           .orElseThrow(() -> new IllegalArgumentException(format("Failed to parse %s.",
+                                                                                                  CONFIG_FILE_NAME.get()))))));
 
-
-    ApplicationModel toolingApplicationModel = new ApplicationModel(artifactConfigBuilder.build(), null,
-                                                                    extensionModels, emptyMap(),
-                                                                    empty(),
-                                                                    empty(),
-                                                                    uri -> {
-                                                                      throw new UnsupportedOperationException();
-                                                                    });
+    // TODO MULE-17199 (AST) use an AST parser api
+    ArtifactAst toolingApplicationModel = new ApplicationModel(artifactConfigBuilder.build(), null,
+                                                               extensionModels, emptyMap(),
+                                                               empty(),
+                                                               empty(),
+                                                               uri -> {
+                                                                 throw new UnsupportedOperationException();
+                                                               });
 
     List<String> componentLocations = new ArrayList<>();
-    toolingApplicationModel.executeOnEveryComponentTree(componentModel -> {
+    toolingApplicationModel.recursiveStream().forEach(componentModel -> {
       final String componentIdentifierName = componentModel.getIdentifier().getName();
       if (componentIdentifierName.equals("notification") || componentIdentifierName.equals("notifications")) {
         return;
       }
-      final ComponentLocation componentLocation = componentModel.getComponentLocation();
+      final ComponentLocation componentLocation = componentModel.getLocation();
       if (componentLocation != null) {
         componentLocations.add(componentLocation.getLocation());
       }

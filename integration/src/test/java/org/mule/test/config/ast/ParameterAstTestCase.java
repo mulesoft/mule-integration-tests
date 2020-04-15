@@ -21,7 +21,6 @@ import static org.hamcrest.collection.IsArrayContainingInOrder.arrayContaining;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 import static org.mule.metadata.api.utils.MetadataTypeUtils.getTypeId;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.FLOW_IDENTIFIER;
 import static org.mule.runtime.core.api.construct.Flow.INITIAL_STATE_STARTED;
@@ -81,19 +80,20 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import javax.xml.parsers.SAXParserFactory;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
-import io.qameta.allure.Feature;
-import io.qameta.allure.Story;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.helpers.DefaultHandler;
+
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
+
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 
 @Feature(ARTIFACT_AST)
 @Story(PARAMETER_AST)
@@ -171,6 +171,7 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
               .forEach(componentBuildingDefinitionRegistry::register);
         });
 
+    // TODO MULE-17199 use an ASP parser api
     this.artifactAst = new ApplicationModel(artifactConfig, null, extensionModels, Collections.emptyMap(),
                                             Optional.empty(), of(componentBuildingDefinitionRegistry),
                                             uri -> muleContext.getExecutionClassLoader().getResourceAsStream(uri),

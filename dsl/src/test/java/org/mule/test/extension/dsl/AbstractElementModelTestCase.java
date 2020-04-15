@@ -175,6 +175,7 @@ public abstract class AbstractElementModelTestCase extends MuleArtifactFunctiona
     return loadApplicationModel(getConfigFile());
   }
 
+  // TODO MULE-17199 (AST) use an AST parser api
   protected ApplicationModel loadApplicationModel(String configFile) throws Exception {
     InputStream appIs = Thread.currentThread().getContextClassLoader().getResourceAsStream(configFile);
     checkArgument(appIs != null, "The given application was not found as resource");
