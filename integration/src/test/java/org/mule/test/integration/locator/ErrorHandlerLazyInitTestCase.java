@@ -162,17 +162,16 @@ public class ErrorHandlerLazyInitTestCase extends AbstractIntegrationTestCase {
     lazyComponentInitializer.initializeComponent(location);
 
     ErrorTypeRepository errorTypeRepository = registry.lookupByType(ErrorTypeRepository.class)
-            .orElseThrow(() -> new AssertionError("Cannot access errorTypeRepository"));
+        .orElseThrow(() -> new AssertionError("Cannot access errorTypeRepository"));
 
     stream(errorTypes).forEach(errorType -> {
       Optional<ErrorType> appMyErrorType =
-              errorTypeRepository.getErrorType(ComponentIdentifier.buildFromStringRepresentation(errorType));
+          errorTypeRepository.getErrorType(ComponentIdentifier.buildFromStringRepresentation(errorType));
 
       if (includeErrorTypes) {
         assertThat(appMyErrorType, not(empty()));
         assertThat(appMyErrorType.get().getParentErrorType(), equalTo(errorTypeRepository.getAnyErrorType()));
-      }
-      else {
+      } else {
         assertThat(appMyErrorType, equalTo(empty()));
       }
     });
