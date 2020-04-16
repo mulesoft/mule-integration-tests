@@ -3,12 +3,21 @@
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:test="http://www.mulesoft.org/schema/mule/test"
       xmlns:tx="http://www.mulesoft.org/schema/mule/tx"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
       xmlns:script="http://www.mulesoft.org/schema/mule/scripting"
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
                http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
                http://www.mulesoft.org/schema/mule/tx http://www.mulesoft.org/schema/mule/tx/current/mule-tx.xsd
+               http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
                http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
 
+    <http:listener-config name="listenerConfig">
+        <http:listener-connection host="localhost" port="${http.port}"/>
+    </http:listener-config>
+    <http:request-config name="requestConfig">
+        <http:request-connection host="localhost" port="${http.port}"/>
+    </http:request-config>
+    
     <flow name="ps-threading-propagated" initialState="stopped">
         <logger message="Before async... (#[payload])" />
         <async>
@@ -65,22 +74,6 @@
         <test:queue name="asyncDispatched"/>
     </flow>
     
-    <flow name="within-subflow-doesnt-use-flow-max-concurrency" maxConcurrency="1" initialState="stopped">
-        <flow-ref name="sf-within-subflow-doesnt-use-flow-max-concurrency"/>
-    </flow>
-
-    <sub-flow name="sf-within-subflow-doesnt-use-flow-max-concurrency">
-        <async>
-            <test:queue name="asyncRunning"/>
-            <script:execute engine="groovy">
-                <script:code>
-                    vars['latch'].await()
-                </script:code>
-            </script:execute>
-        </async>
-        <test:queue name="asyncDispatched"/>
-    </sub-flow>
-
     <tx:config name="localTx">
         <tx:connection>
             <pooling-profile maxActive="1" exhaustedAction="WHEN_EXHAUSTED_WAIT"/>
@@ -164,5 +157,23 @@
         </async>
         <test:queue name="asyncDispatched"/>
     </sub-flow>
+
+    <flow name="asyncFlowWithSdkOperation" initialState="stopped">
+        <flow-ref name="outerSubFlowWithSdkOperation"/>
+    </flow>
+    <sub-flow name="outerSubFlowWithSdkOperation">
+        <async>
+            <flow-ref name="innerSubFlowWithSdkOperation"/>
+            <test:queue name="asyncFinished"/>
+        </async>
+    </sub-flow>
+    <sub-flow name="innerSubFlowWithSdkOperation">
+        <http:request config-ref="requestConfig" path="/echo"/>
+    </sub-flow>
+
+    <flow name="httpEcho">
+        <http:listener config-ref="listenerConfig" path="echo"/>
+        <logger/>
+    </flow>
     
 </mule>

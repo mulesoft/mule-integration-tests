@@ -93,7 +93,7 @@
         </scatter-gather>
     </sub-flow>
 
-    <flow name="httpEcho" initialState="stopped">
+    <flow name="httpEcho">
         <http:listener config-ref="listenerConfig" path="echo"/>
         <logger/>
     </flow>
@@ -238,4 +238,18 @@
             <test:callback class="org.mule.test.construct.FlowRefTestCase$LatchAwaitCallback"/>
         </test:processor>
     </flow>
+
+    <flow name="dynamicFlowRefWithSdkOperation">
+        <!-- This first operation call is needed so that the SdkInternalContext for the event is initialized -->
+        <http:request config-ref="requestConfig" path="/echo"/>
+        <set-payload value="#[['apple', 'banana', 'orange']]"/>
+        <foreach>
+            <flow-ref name="#['dynamicFlowRefWithSdkOperationInner']"/>
+        </foreach>
+    </flow>
+    
+    <sub-flow name="dynamicFlowRefWithSdkOperationInner">
+        <http:request config-ref="requestConfig" path="/echo"/>
+    </sub-flow>
+    
 </mule>
