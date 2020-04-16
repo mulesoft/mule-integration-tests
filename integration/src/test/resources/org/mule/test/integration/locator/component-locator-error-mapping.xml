@@ -23,7 +23,7 @@
 
     <configuration defaultErrorHandler-ref="errorHandler"/>
 
-    <flow name="mainFlow" >
+    <flow name="mainFlow">
         <scheduler>
             <scheduling-strategy>
                 <fixed-frequency frequency="1000"/>
@@ -35,18 +35,18 @@
 
     <flow name="errorMappingFlow">
         <http:request method="GET" config-ref="HTTP_Request_configuration">
-            <error-mapping targetType="APP:ERROR_TYPE_1"/>
+            <error-mapping targetType="APP:ERROR_TYPE_MAPPING_1"/>
         </http:request>
     </flow>
 
     <flow name="errorMappingFlow2">
         <http:request method="GET" config-ref="HTTP_Request_configuration">
-            <error-mapping targetType="APP:ERROR_TYPE_5"/>
+            <error-mapping targetType="APP:ERROR_TYPE_MAPPING_2"/>
         </http:request>
     </flow>
 
     <http:request-config name="HTTP_Request_configuration">
-        <http:request-connection host="localhost" port="8081"/>
+        <http:request-connection host="localhost" port="${http.port}"/>
     </http:request-config>
 
     <sub-flow name="raiseErrorSubFlow">
