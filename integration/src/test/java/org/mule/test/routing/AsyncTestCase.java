@@ -23,6 +23,7 @@ import org.mule.runtime.api.lifecycle.Startable;
 import org.mule.runtime.core.api.construct.FlowConstruct;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.privileged.event.BaseEventContext;
+import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -46,6 +47,9 @@ import io.qameta.allure.Story;
 public class AsyncTestCase extends AbstractIntegrationTestCase {
 
   private static final int MAX_CONCURRENCY = 2;
+
+  @Rule
+  public DynamicPort port = new DynamicPort("http.port");
 
   @Rule
   public SystemProperty maxConcurrency = new SystemProperty("maxConcurrency", "" + MAX_CONCURRENCY);
@@ -121,21 +125,6 @@ public class AsyncTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  @Description("Assert that asyncs in a sub-flow don't use up the maxConcurrency of the caller flow")
-  public void withinSubflowDoesntUseFlowMaxConcurrency() throws Exception {
-    CountDownLatch latch = new CountDownLatch(1);
-    runFlows("within-subflow-doesnt-use-flow-max-concurrency", latch);
-
-    for (int i = 0; i < MAX_CONCURRENCY + 1; ++i) {
-      assertThat("" + i, queueHandler.read("asyncRunning", 1000), not(nullValue()));
-    }
-    for (int i = 0; i < MAX_CONCURRENCY + 1; ++i) {
-      assertThat("" + i, queueHandler.read("asyncDispatched", 1000), not(nullValue()));
-    }
-    latch.countDown();
-  }
-
-  @Test
   @Description("Assert that async blocks run outside of the transaction from the caller flow")
   public void withSourceTx() throws Exception {
     terminationLatch = new CountDownLatch(0);
@@ -198,6 +187,17 @@ public class AsyncTestCase extends AbstractIntegrationTestCase {
 
     // Restart so it can be stopped again when the test ends
     startIfNeeded(withMaxConcurrency);
+  }
+
+  @Test
+  @Issue("MULE-18304")
+  @Description("Verify that operations inner fluxes are not terminated when within async/sub-flow combination.")
+  public void asyncFlowWithSdkOperation() throws Exception {
+    flowRunner("asyncFlowWithSdkOperation").run();
+    assertThat(queueHandler.read("asyncFinished", 1000), not(nullValue()));
+
+    flowRunner("asyncFlowWithSdkOperation").run();
+    assertThat(queueHandler.read("asyncFinished", 1000), not(nullValue()));
   }
 
   private void testAsyncMaxConcurrency(String flowName) throws Exception {
