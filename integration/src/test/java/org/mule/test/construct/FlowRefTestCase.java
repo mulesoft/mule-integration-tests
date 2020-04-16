@@ -366,6 +366,14 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
     probe(RECEIVE_TIMEOUT, 50, () -> awaiting.get() == 2);
   }
 
+  @Test
+  @Issue("MULE-18304")
+  @Description("Verify that operations inner fluxes are not terminated when within a dynamically invoked sub-flow.")
+  public void dynamicFlowRefWithSdkOperation() throws Exception {
+    flowRunner("dynamicFlowRefWithSdkOperation").run();
+    flowRunner("dynamicFlowRefWithSdkOperation").run();
+  }
+
   private static CountDownLatch latch;
   private static AtomicInteger callbackInFlight = new AtomicInteger();
   private static AtomicInteger awaiting = new AtomicInteger();
