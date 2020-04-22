@@ -14,8 +14,6 @@
 
     <global-property name="some.property" value="/origin/topic"/>
 
-    <configuration defaultErrorHandler-ref="globalErrorHandler" defaultResponseTimeout="2001"/>
-
     <object name="childBean" class="org.mule.test.integration.locator.beans.ChildBean"/>
 
     <flow name="invokeBeanFlow">
@@ -102,6 +100,9 @@
     <flow name="flowFailing">
         <test:processor throwException="true"/>
     </flow>
+
+    <!-- See MULE-18312: Default Error Handler is located after "flowFailing" to ensure wherever this component is located, it will be loaded at first. -->
+    <configuration defaultErrorHandler-ref="globalErrorHandler" defaultResponseTimeout="2001"/>
 
     <sub-flow name="async-flow">
         <async>
