@@ -79,8 +79,12 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
   private Registry registry;
 
   @Inject
+  private LazyComponentInitializer lazyComponentInitializer;
+
+  // TODO MULE-18316 (AST) remove this
+  @Inject
   @Named(value = LAZY_COMPONENT_INITIALIZER_SERVICE_KEY)
-  private LazyComponentInitializerAdapter lazyComponentInitializer;
+  private LazyComponentInitializerAdapter lazyComponentInitializerAdapter;
 
   @Override
   protected String[] getConfigFiles() {
@@ -194,8 +198,8 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
     CustomTestComponent.statesByInstances.clear();
 
     Location location = builderFromStringRepresentation("untilSuccessfulFlow").build();
-    lazyComponentInitializer.initializeComponent(location, false);
-    lazyComponentInitializer.initializeComponent(location, true);
+    lazyComponentInitializerAdapter.initializeComponent(location, false);
+    lazyComponentInitializer.initializeComponent(location);
 
     // force dispose to check that components from sub-flow are disposed
     muleContext.dispose();
@@ -228,8 +232,8 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
 
     LazyComponentInitializer.ComponentLocationFilter componentLocationFilter =
         componentLocation -> componentLocation.getLocation().equals("untilSuccessfulFlow");
-    lazyComponentInitializer.initializeComponents(componentLocationFilter, true);
-    lazyComponentInitializer.initializeComponents(componentLocationFilter, false);
+    lazyComponentInitializer.initializeComponents(componentLocationFilter);
+    lazyComponentInitializerAdapter.initializeComponents(componentLocationFilter, false);
 
     // force dispose to check that components from sub-flow are disposed
     muleContext.dispose();
