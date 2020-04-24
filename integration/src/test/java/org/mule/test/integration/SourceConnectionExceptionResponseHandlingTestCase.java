@@ -9,6 +9,8 @@ package org.mule.test.integration;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
+import static org.mule.test.allure.AllureConstants.HttpFeature.HttpStory.ERROR_HANDLING;
 
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
@@ -21,7 +23,11 @@ import org.mule.runtime.http.api.domain.message.response.HttpResponse;
 import org.mule.service.http.TestHttpClient;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 
+@Feature(HTTP_EXTENSION)
+@Story(ERROR_HANDLING)
 public class SourceConnectionExceptionResponseHandlingTestCase extends AbstractIntegrationTestCase {
 
   @Rule
@@ -36,7 +42,7 @@ public class SourceConnectionExceptionResponseHandlingTestCase extends AbstractI
   }
 
   @Test
-  public void responseParameterWithCursor() throws IOException, TimeoutException {
+  public void whenConnectionExceptionSourceIsNotifiedOfError() throws IOException, TimeoutException {
     HttpResponse httpResponse =
         httpClient.send(HttpRequest.builder().uri(String.format("http://localhost:%s/", httpPort.getNumber())).build());
     assertThat(httpResponse.getStatusCode(), is(INTERNAL_SERVER_ERROR.getStatusCode()));
