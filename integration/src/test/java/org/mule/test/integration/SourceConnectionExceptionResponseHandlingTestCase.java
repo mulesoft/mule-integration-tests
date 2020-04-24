@@ -24,10 +24,12 @@ import org.mule.service.http.TestHttpClient;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
 import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
 
 @Feature(HTTP_EXTENSION)
 @Story(ERROR_HANDLING)
+@Issue("MULE-18343")
 public class SourceConnectionExceptionResponseHandlingTestCase extends AbstractIntegrationTestCase {
 
   @Rule
