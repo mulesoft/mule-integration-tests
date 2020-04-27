@@ -35,7 +35,7 @@
             <try>
                 <raise-error type="APP:ERROR" description="An error" />
                 <error-handler>
-                    <on-error-continue enableNotifications="false" logException="false">
+                    <on-error-continue enableNotifications="true" logException="true">
                         <test:processor processingType="CPU_INTENSIVE" />
                     </on-error-continue>
                 </error-handler>
@@ -65,7 +65,7 @@
         <try>
             <raise-error type="APP:ERROR" description="An error" />
             <error-handler>
-                <on-error-continue enableNotifications="false" logException="false">
+                <on-error-continue enableNotifications="true" logException="true">
                     <test:processor processingType="CPU_INTENSIVE" />
                 </on-error-continue>
             </error-handler>
