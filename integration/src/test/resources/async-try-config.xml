@@ -2,9 +2,11 @@
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xmlns:script="http://www.mulesoft.org/schema/mule/scripting"
       xsi:schemaLocation="
-http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+            http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+            http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
+            http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
 
     <!--Triggers-->
     <flow name="trigger-sync" >
@@ -39,7 +41,11 @@ http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/tes
                 </error-handler>
             </try>
             <test:invocation-counter name="invocation-counter" />
-            <expression-component>mel:flowVars['latch'].release()</expression-component>
+            <script:execute engine="groovy">
+                <script:code>
+                    vars['latch'].release()
+                </script:code>
+            </script:execute>
         </async>
     </sub-flow>
 
@@ -65,7 +71,11 @@ http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/tes
             </error-handler>
         </try>
         <test:invocation-counter name="invocation-counter" />
-        <expression-component>mel:flowVars['latch'].release()</expression-component>
+        <script:execute engine="groovy">
+            <script:code>
+                vars['latch'].release()
+            </script:code>
+        </script:execute>
     </sub-flow>
 
 </mule>
