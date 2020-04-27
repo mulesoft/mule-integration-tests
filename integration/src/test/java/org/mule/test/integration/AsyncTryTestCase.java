@@ -30,20 +30,20 @@ public class AsyncTryTestCase extends AbstractIntegrationTestCase {
   private Latch latch;
 
   @Parameterized.Parameters(name = "{0}")
-  public static Collection<Object[]> data() {
-    return Arrays.asList(new Object[][] {
-        {"Synchronous", "trigger-sync"},
-        {"Asynchronous direct", "trigger-async-direct"},
-        {"Asynchronous Flow", "trigger-async-flow"},
-        {"Asynchronous SubFlow", "trigger-async-subflow"},
-        {"Asynchronous SubFlow", "trigger-async-subflow"},
-        {"Asynchronous SubFlow", "trigger-async-subflow"},
-        {"Asynchronous SubFlow", "trigger-async-subflow"},
-        {"Simplified SubFlow", "trigger-simplified"},
+  public static Collection<Object> data() {
+    return Arrays.asList(new String[] {
+        "trigger-sync",
+        "trigger-async-direct",
+        "trigger-async-flow",
+        "trigger-async-subflow",
+        "trigger-async-subflow",
+        "trigger-async-subflow",
+        "trigger-async-subflow",
+        "trigger-simplified",
     });
   }
 
-  public AsyncTryTestCase(String type, String flowName) {
+  public AsyncTryTestCase(String flowName) {
     this.flowName = flowName;
   }
 
