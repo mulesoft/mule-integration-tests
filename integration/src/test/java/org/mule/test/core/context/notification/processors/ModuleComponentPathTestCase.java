@@ -8,6 +8,7 @@ package org.mule.test.core.context.notification.processors;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static java.util.Optional.empty;
 import static java.util.OptionalInt.of;
@@ -21,6 +22,7 @@ import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentT
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.OPERATION;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.ROUTER;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.SCOPE;
+import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.UNKNOWN;
 import static org.mule.runtime.api.dsl.DslResolvingContext.getDefault;
 import static org.mule.runtime.api.util.collection.Collectors.toImmutableList;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.ASYNC_IDENTIFIER;
@@ -35,10 +37,8 @@ import static org.mule.runtime.config.api.dsl.CoreDslConstants.SCATTER_GATHER_ID
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.SUBFLOW_IDENTIFIER;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.TRY_IDENTIFIER;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.UNTIL_SUCCESSFUL_IDENTIFIER;
-import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.initialiseIfNeeded;
 import static org.mule.runtime.dsl.api.xml.parser.XmlConfigurationDocumentLoader.noValidationDocumentLoader;
 import static org.mule.runtime.dsl.api.xml.parser.XmlConfigurationProcessor.processXmlConfiguration;
-import static org.mule.runtime.module.extension.api.util.MuleExtensionUtils.createDefaultExtensionManager;
 import static org.mule.tck.probe.PollingProber.check;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentLocationStory.COMPONENT_LOCATION;
@@ -72,6 +72,7 @@ import org.mule.runtime.dsl.api.xml.parser.XmlConfigurationDocumentLoader;
 import org.mule.runtime.dsl.api.xml.parser.XmlParsingConfiguration;
 import org.mule.runtime.extension.api.loader.xml.XmlExtensionModelLoader;
 import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.test.runner.api.IsolatedClassLoaderExtensionsManagerConfigurationBuilder;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -205,6 +206,12 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
   private static final DefaultComponentLocation FLOW_WITH_ASYNC_AND_SC =
       getFlowLocation(FLOW_WITH_ASYNC_AND_SC_NAME, 112);
 
+  private static Optional<TypedComponentIdentifier> getModuleBodyIdentifier() {
+    return Optional.of(builder()
+        .identifier(buildFromStringRepresentation(MODULE_BODY_NAMESPACE_PREFIX + COLON_SEPARATOR + "body"))
+        .type(UNKNOWN).build());
+  }
+
   private static Optional<TypedComponentIdentifier> getModuleOperationIdentifier(final String namespace,
                                                                                  final String identifier) {
     return Optional.of(builder()
@@ -221,33 +228,40 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
                                                                        operationIdentifier,
                                                                        moduleFilename,
                                                                        of(operationLineNumber),
-                                                                       of(13))));
+                                                                       of(9))));
   }
 
   /**
    * "module-simple" operations defined below
    */
+
+  private static final String MODULE_BODY_NAMESPACE_PREFIX = "module";
+  private static final Optional<TypedComponentIdentifier> MODULE_BODY =
+      getModuleBodyIdentifier();
+
   private static final String MODULE_SIMPLE_NAMESPACE_IN_APP = "simple-prefix";
+
   private static final String SET_PAYLOAD_HARDCODED_VALUE_NAME = "set-payload-hardcoded-value";
+  private static final DefaultComponentLocation OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP =
+      getModuleOperationLocation(SET_PAYLOAD_HARDCODED_VALUE_NAME, MODULE_BODY, MODULE_SIMPLE_FILE_NAME,
+                                 12);
+
   private static final Optional<TypedComponentIdentifier> MODULE_SET_PAYLOAD_HARDCODED_VALUE =
       getModuleOperationIdentifier(MODULE_SIMPLE_NAMESPACE_IN_APP, SET_PAYLOAD_HARDCODED_VALUE_NAME);
-  private static final DefaultComponentLocation OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP =
-      getModuleOperationLocation(SET_PAYLOAD_HARDCODED_VALUE_NAME, MODULE_SET_PAYLOAD_HARDCODED_VALUE, MODULE_SIMPLE_FILE_NAME,
-                                 13);
 
   private static final String SET_PAYLOAD_PARAM_VALUE_NAME = "set-payload-param-value";
   private static final Optional<TypedComponentIdentifier> MODULE_SET_PAYLOAD_PARAM_VALUE =
       getModuleOperationIdentifier(MODULE_SIMPLE_NAMESPACE_IN_APP, SET_PAYLOAD_PARAM_VALUE_NAME);
   private static final DefaultComponentLocation OPERATION_SET_PAYLOAD_PARAM_VALUE_FIRST_MP =
-      getModuleOperationLocation(SET_PAYLOAD_PARAM_VALUE_NAME, MODULE_SET_PAYLOAD_PARAM_VALUE, MODULE_SIMPLE_FILE_NAME, 23);
+      getModuleOperationLocation(SET_PAYLOAD_PARAM_VALUE_NAME, MODULE_BODY, MODULE_SIMPLE_FILE_NAME, 22);
 
   private static final String SET_PAYLOAD_TWO_TIMES_NAME = "set-payload-two-times";
   private static final Optional<TypedComponentIdentifier> MODULE_SET_PAYLOAD_TWO_TIMES =
       getModuleOperationIdentifier(MODULE_SIMPLE_NAMESPACE_IN_APP, SET_PAYLOAD_TWO_TIMES_NAME);
   private static final DefaultComponentLocation OPERATION_SET_PAYLOAD_TWO_TIMES_FIRST_MP =
-      getModuleOperationLocation(SET_PAYLOAD_TWO_TIMES_NAME, MODULE_SET_PAYLOAD_TWO_TIMES, MODULE_SIMPLE_FILE_NAME, 30);
+      getModuleOperationLocation(SET_PAYLOAD_TWO_TIMES_NAME, MODULE_BODY, MODULE_SIMPLE_FILE_NAME, 29);
   private static final DefaultComponentLocation OPERATION_SET_PAYLOAD_TWO_TIMES_SECOND_MP =
-      getModuleOperationLocation(SET_PAYLOAD_TWO_TIMES_NAME, MODULE_SET_PAYLOAD_TWO_TIMES, MODULE_SIMPLE_FILE_NAME, 31);
+      getModuleOperationLocation(SET_PAYLOAD_TWO_TIMES_NAME, MODULE_BODY, MODULE_SIMPLE_FILE_NAME, 29);
 
   /**
    * "module-simple-proxy" operations defined below
@@ -257,17 +271,17 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
   private static final Optional<TypedComponentIdentifier> MODULE_PROXY_SET_PAYLOAD =
       getModuleOperationIdentifier(MODULE_SIMPLE_PROXY_NAMESPACE_IN_APP, PROXY_SET_PAYLOAD_NAME);
   private static final DefaultComponentLocation OPERATION_PROXY_SET_PAYLOAD_FIRST_MP =
-      getModuleOperationLocation(PROXY_SET_PAYLOAD_NAME, MODULE_PROXY_SET_PAYLOAD, MODULE_SIMPLE_PROXY_FILE_NAME, 13);
+      getModuleOperationLocation(PROXY_SET_PAYLOAD_NAME, MODULE_BODY, MODULE_SIMPLE_PROXY_FILE_NAME, 12);
 
   private static final String PROXY_SET_PAYLOAD_AND_LOGGER_NAME = "proxy-set-payload-hardcoded-value-and-logger";
   private static final Optional<TypedComponentIdentifier> MODULE_PROXY_SET_PAYLOAD_AND_LOGGER =
       getModuleOperationIdentifier(MODULE_SIMPLE_PROXY_NAMESPACE_IN_APP, PROXY_SET_PAYLOAD_AND_LOGGER_NAME);
   private static final DefaultComponentLocation OPERATION_PROXY_SET_PAYLOAD_AND_LOGGER_FIRST_MP =
-      getModuleOperationLocation(PROXY_SET_PAYLOAD_AND_LOGGER_NAME, MODULE_PROXY_SET_PAYLOAD_AND_LOGGER,
-                                 MODULE_SIMPLE_PROXY_FILE_NAME, 20);
+      getModuleOperationLocation(PROXY_SET_PAYLOAD_AND_LOGGER_NAME, MODULE_BODY,
+                                 MODULE_SIMPLE_PROXY_FILE_NAME, 19);
   private static final DefaultComponentLocation OPERATION_PROXY_SET_PAYLOAD_AND_LOGGER_SECOND_MP =
-      getModuleOperationLocation(PROXY_SET_PAYLOAD_AND_LOGGER_NAME, MODULE_PROXY_SET_PAYLOAD_AND_LOGGER,
-                                 MODULE_SIMPLE_PROXY_FILE_NAME, 21);
+      getModuleOperationLocation(PROXY_SET_PAYLOAD_AND_LOGGER_NAME, MODULE_BODY,
+                                 MODULE_SIMPLE_PROXY_FILE_NAME, 19);
 
   /**
    * runtime provided MPs
@@ -876,19 +890,13 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
 
       @Override
       protected void doConfigure(MuleContext muleContext) throws Exception {
-        ExtensionManager extensionManager;
-        if (muleContext.getExtensionManager() == null) {
-          extensionManager = createDefaultExtensionManager();
-          muleContext.setExtensionManager(extensionManager);
-        }
-        extensionManager = muleContext.getExtensionManager();
-        initialiseIfNeeded(extensionManager, muleContext);
-
+        ExtensionManager extensionManager = muleContext.getExtensionManager();
         registerXmlExtensions(extensionManager);
       }
 
       private void registerXmlExtensions(ExtensionManager extensionManager) {
         final Set<ExtensionModel> extensions = new HashSet<>();
+        extensions.addAll(extensionManager.getExtensions());
         for (String modulePath : getModulePaths()) {
           Map<String, Object> params = new HashMap<>();
           params.put(XmlExtensionModelLoader.RESOURCE_XML, modulePath);
@@ -902,6 +910,11 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
         }
       }
     });
+    final IsolatedClassLoaderExtensionsManagerConfigurationBuilder element =
+        new IsolatedClassLoaderExtensionsManagerConfigurationBuilder(emptyList());
+    element.loadExtensionModels();
+    builders.add(0, element);
+
   }
 
   // TODO: MULE-17049
@@ -996,8 +1009,7 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
   private MessageProcessorNotification getMessageProcessorNotification() {
     assertThat(listener.getNotifications().isEmpty(), is(false));
     MessageProcessorNotification processorNotification =
-        listener.getNotifications().get(0);
-    listener.getNotifications().remove(0);
+        listener.getNotifications().remove(0);
     return processorNotification;
   }
 

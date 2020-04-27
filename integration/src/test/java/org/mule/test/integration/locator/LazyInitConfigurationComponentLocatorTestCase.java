@@ -327,6 +327,14 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
                                   "get-channels/processors/1",
 
                                   "sample-config",
+                                  //
+                                  // "sample-config/0",
+                                  //
+                                  // "sample-config/1",
+                                  // "sample-config/1/connection",
+                                  // "sample-config/1/connection/0",
+                                  // "sample-config/1/connection/0/0",
+                                  //
                                   "GetChannels",
                                   "GetChannels/source",
                                   "GetChannels/source/0",
@@ -334,6 +342,10 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
                                   "GetChannels/processors/0",
 
                                   "_defaultGlobalElements",
+                                  //
+                                  // "_defaultGlobalElements/0",
+                                  // "_defaultGlobalElements/0/connection",
+                                  //
                                   "RequestWithNoConfig",
                                   "RequestWithNoConfig/processors/0",
                                   "localhost-config-module-using-http-noconfig-default-config-global-element-suffix",
@@ -423,6 +435,14 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
                                   "listen/source",
                                   "listen/processors/0",
                                   "scConfig",
+                                  //
+                                  //"scConfig/0",
+                                  //
+                                  // "scConfig/1",
+                                  // "scConfig/1/connection",
+                                  // "scConfig/1/connection/0",
+                                  // "scConfig/1/connection/0/0",
+                                  //
                                   "requestConfigOac",
                                   "requestConfigOac/connection",
                                   "request",
