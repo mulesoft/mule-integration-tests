@@ -6,7 +6,7 @@
  */
 package org.mule.test.integration;
 
-import static java.util.concurrent.TimeUnit.SECONDS;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mule.functional.api.component.InvocationCountMessageProcessor.getNumberOfInvocationsFor;
@@ -60,7 +60,7 @@ public class AsyncTryTestCase extends AbstractIntegrationTestCase {
   @Test
   public void executesTheProcessorAfterTry() throws Exception {
     flowRunner(flowName).withVariable("latch", latch).run();
-    latch.await(20, SECONDS);
+    latch.await(RECEIVE_TIMEOUT, MILLISECONDS);
     assertThat(getNumberOfInvocationsFor("invocation-counter"), is(1));
   }
 }
