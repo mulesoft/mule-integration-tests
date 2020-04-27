@@ -6,22 +6,31 @@
  */
 package org.mule.test.integration;
 
+import static java.util.Arrays.asList;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mule.functional.api.component.InvocationCountMessageProcessor.getNumberOfInvocationsFor;
+import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
+import static org.mule.test.allure.AllureConstants.RoutersFeature.AsyncStory.ASYNC;
+import static org.mule.test.allure.AllureConstants.ScopeFeature.SCOPE;
 import org.mule.runtime.api.util.concurrent.Latch;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.runner.RunnerDelegateTo;
 
-import java.util.Arrays;
 import java.util.Collection;
 
+import io.qameta.allure.Feature;
 import io.qameta.allure.Issue;
+import io.qameta.allure.Stories;
+import io.qameta.allure.Story;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
+@Feature(SCOPE)
+@Stories({@Story(ASYNC), @Story(ERROR_HANDLING)})
 @Issue("MULE-18353")
 @RunnerDelegateTo(Parameterized.class)
 public class AsyncTryTestCase extends AbstractIntegrationTestCase {
@@ -29,18 +38,16 @@ public class AsyncTryTestCase extends AbstractIntegrationTestCase {
   private String flowName;
   private Latch latch;
 
-  @Parameterized.Parameters(name = "{0}")
-  public static Collection<Object> data() {
-    return Arrays.asList(new String[] {
-        "trigger-sync",
-        "trigger-async-direct",
-        "trigger-async-flow",
-        "trigger-async-subflow",
-        "trigger-async-subflow",
-        "trigger-async-subflow",
-        "trigger-async-subflow",
-        "trigger-simplified",
-    });
+  @Parameters(name = "{0}")
+  public static Collection<String> data() {
+    return asList("trigger-sync",
+                  "trigger-async-direct",
+                  "trigger-async-flow",
+                  "trigger-async-subflow",
+                  "trigger-async-subflow",
+                  "trigger-async-subflow",
+                  "trigger-async-subflow",
+                  "trigger-simplified");
   }
 
   public AsyncTryTestCase(String flowName) {
