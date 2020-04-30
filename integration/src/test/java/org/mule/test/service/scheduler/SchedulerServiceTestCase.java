@@ -20,7 +20,7 @@ import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.component.location.Location.builderFromStringRepresentation;
 import static org.mule.runtime.api.message.Message.of;
 import static org.mule.runtime.core.api.event.EventContextFactory.create;
-import static org.mule.runtime.dsl.api.component.config.DefaultComponentLocation.fromSingleComponent;
+import static org.mule.runtime.dsl.api.component.config.DefaultComponentLocation.from;
 import static org.mule.test.allure.AllureConstants.SchedulerServiceFeature.SCHEDULER_SERVICE;
 
 import org.mule.functional.api.component.SkeletonSource;
@@ -158,7 +158,7 @@ public class SchedulerServiceTestCase extends AbstractIntegrationTestCase {
 
     messageSource.getListener()
         .process(CoreEvent
-            .builder(create("id", "serverd", fromSingleComponent(SchedulerServiceTestCase.class.getSimpleName()), null, empty()))
+            .builder(create("id", "serverd", from(SchedulerServiceTestCase.class.getSimpleName()), null, empty()))
             .message(of(null))
             .build());
 
