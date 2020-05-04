@@ -22,7 +22,6 @@ import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentT
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.ROUTER;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.SCOPE;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.SOURCE;
-import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.UNKNOWN;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.FLOW_IDENTIFIER;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.SUBFLOW_IDENTIFIER;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
@@ -171,7 +170,7 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
       Optional.of(builder().identifier(buildFromStringRepresentation("mule:set-payload"))
           .type(OPERATION).build());
   private static final Optional<TypedComponentIdentifier> OBJECT_TO_STRING_TRANSFORMER =
-      Optional.of(builder().identifier(buildFromStringRepresentation("mule:object-to-byte-array-transformer")).type(UNKNOWN)
+      Optional.of(builder().identifier(buildFromStringRepresentation("mule:object-to-byte-array-transformer")).type(OPERATION)
           .build());
   private static final Optional<TypedComponentIdentifier> CHOICE =
       Optional.of(builder().identifier(buildFromStringRepresentation("mule:choice")).type(ROUTER).build());
@@ -183,7 +182,7 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
   private static final Optional<TypedComponentIdentifier> VALIDATION_IS_FALSE =
       Optional.of(builder().identifier(buildFromStringRepresentation("validation:is-false")).type(OPERATION).build());
   private static final Optional<TypedComponentIdentifier> TEST_PROCESSOR =
-      Optional.of(builder().identifier(buildFromStringRepresentation("test:processor")).type(UNKNOWN).build());
+      Optional.of(builder().identifier(buildFromStringRepresentation("test:processor")).type(OPERATION).build());
   private static final Optional<TypedComponentIdentifier> ON_ERROR_PROPAGATE =
       Optional.of(builder().identifier(buildFromStringRepresentation("mule:on-error-propagate")).type(ON_ERROR).build());
   private static final Optional<TypedComponentIdentifier> TRY =
