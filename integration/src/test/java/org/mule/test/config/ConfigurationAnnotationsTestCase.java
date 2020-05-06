@@ -45,7 +45,9 @@ public class ConfigurationAnnotationsTestCase extends AbstractIntegrationTestCas
     assertThat(getSourceCode((Component) stb),
                is("<string-to-byte-array-transformer name=\"StringtoByteArray\" doc:name=\"stb-transformer\">"
                    + lineSeparator() + "<annotations>" + lineSeparator()
-                   + "<doc:description>Convert a String to a Byte Array</doc:description>" + lineSeparator()
+                   + "<doc:description>"
+                   + "<![CDATA[" + lineSeparator() + "Convert a String to a Byte Array" + lineSeparator() + "]]>" +
+                   "</doc:description>" + lineSeparator()
                    + "</annotations>" + lineSeparator() + "</string-to-byte-array-transformer>"));
   }
 
@@ -57,7 +59,9 @@ public class ConfigurationAnnotationsTestCase extends AbstractIntegrationTestCas
     assertThat(getDocDescription(flow), is("Main flow"));
     assertThat(getSourceCode(flow),
                is("<flow name=\"Bridge\" doc:name=\"Bridge flow\">" + lineSeparator() + "<annotations>"
-                   + lineSeparator() + "<doc:description>Main flow</doc:description>" + lineSeparator()
+                   + lineSeparator() + "<doc:description>"
+                   + "<![CDATA[" + lineSeparator() + "Main flow" + lineSeparator() + "]]>"
+                   + "</doc:description>" + lineSeparator()
                    + "</annotations>" + lineSeparator() + "<logger doc:name=\"echo\">" + "</logger>"
                    + lineSeparator() + "</flow>"));
   }
