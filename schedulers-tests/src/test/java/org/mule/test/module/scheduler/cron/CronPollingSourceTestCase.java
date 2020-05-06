@@ -29,7 +29,7 @@ public class CronPollingSourceTestCase extends AbstractSchedulerTestCase {
   }
 
   @Before
-  public void resetCounter(){
+  public void resetCounter() {
     STARTED_POLLS = 0;
   }
 
