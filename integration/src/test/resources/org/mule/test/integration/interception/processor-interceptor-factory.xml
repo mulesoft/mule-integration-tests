@@ -124,7 +124,7 @@
     </flow>
 
     <flow name="flowFailing">
-        <test:processor throwException="true"/>
+        <raise-error type="TEST:EXPECTED"/>
     </flow>
 
     <flow name="flowRaise">
@@ -132,7 +132,7 @@
     </flow>
 
     <flow name="flowFailingWithErrorHandler">
-        <test:processor throwException="true"/>
+        <raise-error type="TEST:EXPECTED"/>
         <error-handler>
             <on-error-propagate>
                 <logger message="error handled for flow"/>
@@ -149,7 +149,7 @@
     </flow>
 
     <sub-flow name="failing-sub-flow">
-        <test:processor throwException="true"/>
+        <raise-error type="TEST:EXPECTED"/>
     </sub-flow>
 
     <flow name="implicitConfigInNestedScope">

@@ -31,7 +31,6 @@ import static org.mule.test.heisenberg.extension.HeisenbergOperations.CALL_GUS_M
 
 import org.mule.extension.http.api.request.validator.ResponseValidatorException;
 import org.mule.functional.api.exception.ExpectedError;
-import org.mule.functional.api.exception.FunctionalTestException;
 import org.mule.runtime.api.artifact.Registry;
 import org.mule.runtime.api.component.ComponentIdentifier;
 import org.mule.runtime.api.component.location.ComponentLocation;
@@ -517,7 +516,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
   @Test
   @Description("Errors in sub-flows are handled correctly")
   public void failingSubFlow() throws Exception {
-    expectedError.expectCause(instanceOf(FunctionalTestException.class));
+    expectedError.expectErrorType("TEST", "EXPECTED");
 
     try {
       flowRunner("flowWithFailingSubFlowRef").run();
@@ -532,8 +531,8 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
 
       InterceptionParameters failParameter = interceptionParameters.get(1);
 
-      assertThat(failParameter.getParameters().keySet(), containsInAnyOrder("throwException"));
-      assertThat(failParameter.getParameters().get("throwException").resolveValue(), is("true"));
+      assertThat(failParameter.getParameters().keySet(), containsInAnyOrder("type"));
+      assertThat(failParameter.getParameters().get("type").resolveValue(), is("TEST:EXPECTED"));
 
       // the 3rd one is for the global error handler, it is tested separately
     }
@@ -542,14 +541,14 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
   @Test
   @Description("Processors in error handlers are intercepted correctly")
   public void errorHandler() throws Exception {
-    expectedError.expectCause(instanceOf(FunctionalTestException.class));
+    expectedError.expectErrorType("TEST", "EXPECTED");
 
     AtomicBoolean afterCallbackCalledForFailingMP = new AtomicBoolean(false);
     AtomicBoolean afterCallbackCalledForErrorHandlingMp = new AtomicBoolean(false);
 
     AfterWithCallbackInterceptor.callback = (event, thrown) -> {
       if (!afterCallbackCalledForFailingMP.getAndSet(true)) {
-        assertThat(thrown.get(), instanceOf(FunctionalTestException.class));
+        assertThat(thrown.get(), instanceOf(DefaultMuleException.class));
       } else {
         afterCallbackCalledForErrorHandlingMp.set(true);
       }
@@ -573,14 +572,14 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
   @Test
   @Description("Processors in global error handlers are intercepted correctly")
   public void globalErrorHandler() throws Exception {
-    expectedError.expectCause(instanceOf(FunctionalTestException.class));
+    expectedError.expectErrorType("TEST", "EXPECTED");
 
     AtomicBoolean afterCallbackCalledForFailingMP = new AtomicBoolean(false);
     AtomicBoolean afterCallbackCalledForErrorHandlingMp = new AtomicBoolean(false);
 
     AfterWithCallbackInterceptor.callback = (event, thrown) -> {
       if (!afterCallbackCalledForFailingMP.getAndSet(true)) {
-        assertThat(thrown.get(), instanceOf(FunctionalTestException.class));
+        assertThat(thrown.get(), instanceOf(DefaultMuleException.class));
       } else {
         afterCallbackCalledForErrorHandlingMp.set(true);
       }
@@ -734,7 +733,8 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
   @Test
   @Description("Processors in global error handlers are intercepted correctly when error is in referenced flow")
   public void globalErrorHandlerWithFlowRef() throws Exception {
-    expectedError.expectCause(instanceOf(FunctionalTestException.class));
+    expectedError.expectErrorType("TEST", "EXPECTED");
+
 
     AtomicInteger afters = new AtomicInteger(0);
 

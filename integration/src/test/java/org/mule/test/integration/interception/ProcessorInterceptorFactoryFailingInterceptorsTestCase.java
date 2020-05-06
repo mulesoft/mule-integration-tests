@@ -95,24 +95,22 @@ public class ProcessorInterceptorFactoryFailingInterceptorsTestCase extends Abst
   @Test
   public void operationParameters() throws Exception {
     flowRunner("killFromPayload").withPayload("T-1000").withVariable("goodbye", "Hasta la vista, baby").run();
-
   }
 
   @Test
   public void resolvedConfigOperationParameters() throws Exception {
     flowRunner("die").run();
-
   }
 
   @Test
   public void resolvedComplexParametersOperationParameters() throws Exception {
     flowRunner("killWithCustomMessage").withVariable("goodbye", "Hasta la vista, baby").run();
-
   }
 
   @Test
   @Description("The errorType set by an operation is preserved if an interceptor is applied")
   public void failingOperationErrorTypePreserved() throws Exception {
+    expectedError.expectErrorType("TEST", "EXPECTED").expectCause(sameInstance(THROWN));
     expectedError.expectErrorType("HEISENBERG", "CONNECTIVITY").expectCause(sameInstance(THROWN));
     flowRunner("callGusFring").run();
   }
@@ -121,7 +119,6 @@ public class ProcessorInterceptorFactoryFailingInterceptorsTestCase extends Abst
   @Test
   public void scOperation() throws Exception {
     flowRunner("scOperation").run();
-
   }
 
   @Description("Smart Connector simple operation with parameters")
@@ -129,7 +126,6 @@ public class ProcessorInterceptorFactoryFailingInterceptorsTestCase extends Abst
   public void scEchoOperation() throws Exception {
     final String variableValue = "echo message for the win";
     flowRunner("scEchoOperation").withVariable("variable", variableValue).run();
-
   }
 
   @Description("Smart Connector simple operation with parameters through flow-ref")
@@ -137,31 +133,32 @@ public class ProcessorInterceptorFactoryFailingInterceptorsTestCase extends Abst
   public void scEchoOperationFlowRef() throws Exception {
     final String variableValue = "echo message for the win";
     flowRunner("scEchoOperationFlowRef").withVariable("variable", variableValue).run();
-
   }
 
   @Description("Smart Connector that uses a Smart Connector operation without parameters")
   @Test
   public void scUsingScOperation() throws Exception {
     flowRunner("scUsingScOperation").run();
-
   }
 
   @Test
   @Description("Errors in sub-flows are handled correctly")
   public void failingSubFlow() throws Exception {
+    expectedError.expectErrorType("TEST", "EXPECTED").expectCause(sameInstance(THROWN));
     flowRunner("flowWithFailingSubFlowRef").run();
   }
 
   @Test
   @Description("Processors in error handlers are intercepted correctly")
   public void errorHandler() throws Exception {
+    expectedError.expectErrorType("TEST", "EXPECTED").expectCause(sameInstance(THROWN));
     flowRunner("flowFailingWithErrorHandler").run();
   }
 
   @Test
   @Description("Processors in global error handlers are intercepted correctly")
   public void globalErrorHandler() throws Exception {
+    expectedError.expectErrorType("TEST", "EXPECTED").expectCause(sameInstance(THROWN));
     flowRunner("flowFailing").run();
   }
 
@@ -214,6 +211,7 @@ public class ProcessorInterceptorFactoryFailingInterceptorsTestCase extends Abst
   @Test
   @Description("Processors in global error handlers are intercepted correctly when error is in referenced flow")
   public void globalErrorHandlerWithFlowRef() throws Exception {
+    expectedError.expectErrorType("TEST", "EXPECTED").expectCause(sameInstance(THROWN));
     flowRunner("flowWithFailingFlowRef").run();
   }
 
