@@ -18,6 +18,7 @@ import static org.mule.runtime.core.api.util.StringUtils.isEmpty;
 import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.GracefulShutdownStory.GRACEFUL_SHUTDOWN_STORY;
 import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.LIFECYCLE_AND_DEPENDENCY_INJECTION;
 import org.mule.runtime.api.exception.MuleException;
+import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.probe.PollingProber;
 import org.mule.tck.probe.Probe;
@@ -52,7 +53,7 @@ public class HTTPPersistentConnectionsOnShutdownTestCase extends AbstractIntegra
   @Rule
   public DynamicPort dynamicPort = new DynamicPort("listener.port");
 
-  private ExecutorService stopMuleExecutor;
+  private ExecutorService executor;
 
   @Override
   protected String getConfigFile() {
@@ -66,13 +67,13 @@ public class HTTPPersistentConnectionsOnShutdownTestCase extends AbstractIntegra
 
   @Before
   public void setup() {
-    stopMuleExecutor = newSingleThreadExecutor();
+    executor = newSingleThreadExecutor();
   }
 
   @After
   public void tearDown() throws MuleException, InterruptedException {
-    stopMuleExecutor.awaitTermination(1000, MILLISECONDS);
-    stopMuleExecutor.shutdownNow();
+    executor.awaitTermination(1000, MILLISECONDS);
+    executor.shutdownNow();
     if (muleContext.isStopped()) {
       muleContext.start();
     }
@@ -84,7 +85,13 @@ public class HTTPPersistentConnectionsOnShutdownTestCase extends AbstractIntegra
       sendRequest(slowRequestConnection, SLOW_PROCESSING_ENDPOINT);
 
       // Stop mule in parallel.
-      stopMuleExecutor.execute(new MuleContextStopper());
+      executor.submit(() -> {
+        try {
+          muleContext.stop();
+        } catch (MuleException e) {
+          throw new MuleRuntimeException(e);
+        }
+      });
       assertContextIsStopping(SMALL_TIMEOUT_MILLIS);
 
       // Response is ok, but connection close header is added.
@@ -103,7 +110,13 @@ public class HTTPPersistentConnectionsOnShutdownTestCase extends AbstractIntegra
   public void serverIsStoppedWhenPersistentConnectionsAreClosed() throws IOException {
     try (Socket idlePersistentConnection = generateIdlePersistentConnection()) {
       // Stop mule in parallel.
-      stopMuleExecutor.execute(new MuleContextStopper());
+      executor.submit(() -> {
+        try {
+          muleContext.stop();
+        } catch (MuleException e) {
+          throw new MuleRuntimeException(e);
+        }
+      });
       assertContextIsStopping(SMALL_TIMEOUT_MILLIS);
 
       // There is a persistent connection open, so muleContext doesn't stop during the shutdown timeout.
@@ -123,7 +136,13 @@ public class HTTPPersistentConnectionsOnShutdownTestCase extends AbstractIntegra
     Socket persistentConnection3 = generateIdlePersistentConnection();
 
     // Stop mule in parallel.
-    stopMuleExecutor.execute(new MuleContextStopper());
+    executor.submit(() -> {
+      try {
+        muleContext.stop();
+      } catch (MuleException e) {
+        throw new MuleRuntimeException(e);
+      }
+    });
     assertContextIsStopping(SMALL_TIMEOUT_MILLIS);
 
     // One more request with the persistent connections is valid.
@@ -225,18 +244,6 @@ public class HTTPPersistentConnectionsOnShutdownTestCase extends AbstractIntegra
     assertThat(!isEmpty(response), is(shouldBeValid));
     if (shouldBeValid) {
       assertThat(response, containsString("HTTP/1.1 200"));
-    }
-  }
-
-  private static class MuleContextStopper implements Runnable {
-
-    @Override
-    public void run() {
-      try {
-        muleContext.stop();
-      } catch (MuleException e) {
-        e.printStackTrace();
-      }
     }
   }
 }
