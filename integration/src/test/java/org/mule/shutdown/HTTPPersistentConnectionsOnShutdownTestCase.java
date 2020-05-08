@@ -7,6 +7,7 @@
 package org.mule.shutdown;
 
 import static java.lang.String.format;
+import static java.lang.Thread.sleep;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.apache.http.HttpVersion.HTTP_1_1;
 import static org.hamcrest.CoreMatchers.containsString;
@@ -116,7 +117,7 @@ public class HTTPPersistentConnectionsOnShutdownTestCase extends AbstractIntegra
   }
 
   @Test
-  public void onlyOneRequestIsValidUsingAnOldPersistentDuringShutdown() throws IOException {
+  public void onlyOneRequestIsValidUsingAnOldPersistentDuringShutdown() throws IOException, InterruptedException {
     Socket persistentConnection1 = generateIdlePersistentConnection();
     Socket persistentConnection2 = generateIdlePersistentConnection();
     Socket persistentConnection3 = generateIdlePersistentConnection();
@@ -137,7 +138,8 @@ public class HTTPPersistentConnectionsOnShutdownTestCase extends AbstractIntegra
     assertThat(response1, containsString("Connection: close"));
     assertThat(response2, containsString("Connection: close"));
 
-    // Mule isn't stopped yet, since the 3rd connection is still open.
+    // Mule isn't stopped yet, since the 3rd connection is still open (give some time to a possible status change).
+    sleep(50);
     assertThat(muleContext.isStopped(), is(false));
 
     // A second request with the already used connections isn't valid.
@@ -147,6 +149,7 @@ public class HTTPPersistentConnectionsOnShutdownTestCase extends AbstractIntegra
     assertResponse(getResponse(persistentConnection2), false);
 
     // Mule isn't stopped yet, since the 3rd connection is still open.
+    sleep(50);
     assertThat(muleContext.isStopped(), is(false));
 
     // If we close the other connection, mule context stops fast.
