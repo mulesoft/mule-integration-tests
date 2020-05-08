@@ -8,6 +8,7 @@ package org.mule.shutdown;
 
 import static java.lang.String.format;
 import static java.lang.Thread.sleep;
+import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.apache.http.HttpVersion.HTTP_1_1;
 import static org.hamcrest.CoreMatchers.containsString;
@@ -66,7 +67,7 @@ public class HTTPPersistentConnectionsOnShutdownTestCase extends AbstractIntegra
 
   @Before
   public void setup() {
-    stopMuleExecutor = Executors.newSingleThreadExecutor();
+    stopMuleExecutor = newSingleThreadExecutor();
   }
 
   @After
