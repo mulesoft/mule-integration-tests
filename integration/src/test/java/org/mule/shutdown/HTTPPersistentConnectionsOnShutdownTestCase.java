@@ -30,7 +30,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Issue;
