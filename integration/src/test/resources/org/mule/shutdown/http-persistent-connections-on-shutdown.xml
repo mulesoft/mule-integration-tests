@@ -24,9 +24,9 @@
         <scripting:execute engine="groovy">
             <scripting:code>
                 try {
-                Thread.sleep(1000);
+                    Thread.sleep(1000);
                 } catch (InterruptedException e) {
-                Thread.sleep(1000);
+                    Thread.sleep(1000);
                 }
             </scripting:code>
         </scripting:execute>

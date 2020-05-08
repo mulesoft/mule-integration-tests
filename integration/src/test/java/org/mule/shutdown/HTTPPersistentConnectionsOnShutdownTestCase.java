@@ -7,6 +7,8 @@
 package org.mule.shutdown;
 
 import static java.lang.String.format;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static org.apache.http.HttpVersion.HTTP_1_1;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -25,25 +27,31 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.Socket;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
-import org.apache.http.HttpVersion;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+@Issue("MULE-18396")
 @Feature(LIFECYCLE_AND_DEPENDENCY_INJECTION)
 @Story(GRACEFUL_SHUTDOWN_STORY)
 public class HTTPPersistentConnectionsOnShutdownTestCase extends AbstractIntegrationTestCase {
 
-  private static final int SMALL_POLL_TIMEOUT_MILLIS = 300;
+  private static final int SMALL_TIMEOUT_MILLIS = 300;
   private static final int POLL_DELAY_MILLIS = 50;
   private static final String SLOW_PROCESSING_ENDPOINT = "/slow";
   private static final String FAST_PROCESSING_ENDPOINT = "/fast";
 
   @Rule
   public DynamicPort dynamicPort = new DynamicPort("listener.port");
+
+  private ExecutorService stopMuleExecutor;
 
   @Override
   protected String getConfigFile() {
@@ -55,22 +63,28 @@ public class HTTPPersistentConnectionsOnShutdownTestCase extends AbstractIntegra
     return true;
   }
 
+  @Before
+  public void setup() {
+    stopMuleExecutor = Executors.newSingleThreadExecutor();
+  }
+
   @After
-  public void startMuleContextIfStopped() throws MuleException {
+  public void tearDown() throws MuleException, InterruptedException {
+    stopMuleExecutor.awaitTermination(1000, MILLISECONDS);
+    stopMuleExecutor.shutdownNow();
     if (muleContext.isStopped()) {
       muleContext.start();
     }
   }
 
   @Test
-  public void requestInflightDuringShutdownIsRespondedIncludingConnectionCloseHeader() throws IOException, InterruptedException {
-    Thread stopper = new MuleContextStopper();
+  public void requestInflightDuringShutdownIsRespondedIncludingConnectionCloseHeader() throws IOException {
     try (Socket slowRequestConnection = new Socket("localhost", dynamicPort.getNumber())) {
       sendRequest(slowRequestConnection, SLOW_PROCESSING_ENDPOINT);
 
       // Stop mule in parallel.
-      stopper.start();
-      waitForStoppingState();
+      stopMuleExecutor.execute(new MuleContextStopper());
+      assertContextIsStopping(SMALL_TIMEOUT_MILLIS);
 
       // Response is ok, but connection close header is added.
       String slowRequestResponse = getResponse(slowRequestConnection);
@@ -81,18 +95,15 @@ public class HTTPPersistentConnectionsOnShutdownTestCase extends AbstractIntegra
       sendRequest(slowRequestConnection, FAST_PROCESSING_ENDPOINT);
       slowRequestResponse = getResponse(slowRequestConnection);
       assertResponse(slowRequestResponse, false);
-    } finally {
-      stopper.join();
     }
   }
 
   @Test
-  public void serverIsStoppedWhenPersistentConnectionsAreClosed() throws IOException, InterruptedException {
-    Thread stopper = new MuleContextStopper();
+  public void serverIsStoppedWhenPersistentConnectionsAreClosed() throws IOException {
     try (Socket idlePersistentConnection = generateIdlePersistentConnection()) {
       // Stop mule in parallel.
-      stopper.start();
-      waitForStoppingState();
+      stopMuleExecutor.execute(new MuleContextStopper());
+      assertContextIsStopping(SMALL_TIMEOUT_MILLIS);
 
       // There is a persistent connection open, so muleContext doesn't stop during the shutdown timeout.
       assertThat(muleContext.isStopped(), is(false));
@@ -100,23 +111,19 @@ public class HTTPPersistentConnectionsOnShutdownTestCase extends AbstractIntegra
       idlePersistentConnection.close();
 
       // When the persistent connection is closed, muleContext stops.
-      waitForStoppedState();
-    } finally {
-      stopper.join();
+      assertContextHasStopped(SMALL_TIMEOUT_MILLIS);
     }
   }
 
   @Test
   public void onlyOneRequestIsValidUsingAnOldPersistentDuringShutdown() throws IOException {
-    Thread stopper = new MuleContextStopper();
-
     Socket persistentConnection1 = generateIdlePersistentConnection();
     Socket persistentConnection2 = generateIdlePersistentConnection();
     Socket persistentConnection3 = generateIdlePersistentConnection();
 
     // Stop mule in parallel.
-    stopper.start();
-    waitForStoppingState();
+    stopMuleExecutor.execute(new MuleContextStopper());
+    assertContextIsStopping(SMALL_TIMEOUT_MILLIS);
 
     // One more request with the persistent connections is valid.
     sendRequest(persistentConnection1, FAST_PROCESSING_ENDPOINT);
@@ -144,11 +151,11 @@ public class HTTPPersistentConnectionsOnShutdownTestCase extends AbstractIntegra
 
     // If we close the other connection, mule context stops fast.
     persistentConnection3.close();
-    waitForStoppedState();
+    assertContextHasStopped(SMALL_TIMEOUT_MILLIS);
   }
 
-  private void waitForStoppingState() {
-    new PollingProber(SMALL_POLL_TIMEOUT_MILLIS, POLL_DELAY_MILLIS).check(new Probe() {
+  private void assertContextIsStopping(long timeout) {
+    new PollingProber(timeout, POLL_DELAY_MILLIS).check(new Probe() {
 
       @Override
       public boolean isSatisfied() {
@@ -162,8 +169,8 @@ public class HTTPPersistentConnectionsOnShutdownTestCase extends AbstractIntegra
     });
   }
 
-  private void waitForStoppedState() {
-    new PollingProber(SMALL_POLL_TIMEOUT_MILLIS, POLL_DELAY_MILLIS).check(new Probe() {
+  private void assertContextHasStopped(long timeout) {
+    new PollingProber(timeout, POLL_DELAY_MILLIS).check(new Probe() {
 
       @Override
       public boolean isSatisfied() {
@@ -192,7 +199,7 @@ public class HTTPPersistentConnectionsOnShutdownTestCase extends AbstractIntegra
 
   private void sendRequest(Socket socket, String endpoint) throws IOException {
     PrintWriter writer = new PrintWriter(socket.getOutputStream());
-    writer.println(format("GET %s %s", endpoint, HttpVersion.HTTP_1_1));
+    writer.println(format("GET %s %s", endpoint, HTTP_1_1));
     writer.println("Host: www.example.com");
     writer.println("");
     writer.flush();
@@ -218,7 +225,7 @@ public class HTTPPersistentConnectionsOnShutdownTestCase extends AbstractIntegra
     }
   }
 
-  private static class MuleContextStopper extends Thread {
+  private static class MuleContextStopper implements Runnable {
 
     @Override
     public void run() {
