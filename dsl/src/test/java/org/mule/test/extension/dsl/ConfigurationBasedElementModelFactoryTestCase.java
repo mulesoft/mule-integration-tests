@@ -13,6 +13,7 @@ import static org.mule.runtime.extension.api.ExtensionConstants.RECONNECTION_STR
 import static org.mule.runtime.extension.api.ExtensionConstants.TLS_PARAMETER_NAME;
 import static org.mule.runtime.internal.dsl.DslConstants.KEY_ATTRIBUTE_NAME;
 import static org.mule.runtime.internal.dsl.DslConstants.VALUE_ATTRIBUTE_NAME;
+
 import org.mule.metadata.api.model.ObjectType;
 import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.api.meta.model.config.ConfigurationModel;
@@ -47,8 +48,8 @@ public class ConfigurationBasedElementModelFactoryTestCase extends AbstractEleme
   public void defaultGroupResolution() throws Exception {
     ComponentConfiguration flow = getAppElement(applicationModel, COMPONENTS_FLOW);
 
-    DslElementModel<ConfigurationModel> overrideWscConsume = resolve(flow.getNestedComponents().get(6));
-    DslElementModel<ConfigurationModel> defaultWscConsume = resolve(flow.getNestedComponents().get(7));
+    DslElementModel<ConfigurationModel> overrideWscConsume = resolve(flow.getNestedComponents().get(5));
+    DslElementModel<ConfigurationModel> defaultWscConsume = resolve(flow.getNestedComponents().get(6));
 
     assertElementName(overrideWscConsume, "consume");
     assertElementName(defaultWscConsume, "consume");
@@ -517,7 +518,7 @@ public class ConfigurationBasedElementModelFactoryTestCase extends AbstractEleme
     DslElementModel<SourceModel> listenerElement = resolve(listener);
 
     assertHasParameter(listenerElement.getModel(), "path");
-    ComponentConfiguration responseBuilder = listener.getNestedComponents().get(1);
+    ComponentConfiguration responseBuilder = listener.getNestedComponents().get(2);
 
     DslElementModel<ParameterModel> responseBuilderElement = getChild(listenerElement, responseBuilder);
     assertElementName(responseBuilderElement, "response");

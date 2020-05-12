@@ -78,9 +78,9 @@ public abstract class AbstractElementModelTestCase extends MuleArtifactFunctiona
   protected static final String HTTP_NS = "http";
   protected static final String COMPONENTS_FLOW = "testFlow";
   protected static final int LISTENER_PATH = 0;
-  protected static final int DB_BULK_INSERT_PATH = 2;
-  protected static final int REQUESTER_PATH = 3;
-  protected static final int DB_INSERT_PATH = 4;
+  protected static final int DB_BULK_INSERT_PATH = 1;
+  protected static final int REQUESTER_PATH = 2;
+  protected static final int DB_INSERT_PATH = 3;
 
   protected DslResolvingContext dslContext;
   protected DslElementModelFactory modelResolver;

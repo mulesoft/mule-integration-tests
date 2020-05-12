@@ -7,26 +7,22 @@
 package org.mule.test.extension.dsl;
 
 import static org.mule.runtime.core.api.util.IOUtils.getResourceAsString;
-import static org.mule.runtime.internal.dsl.DslConstants.REDELIVERY_POLICY_ELEMENT_IDENTIFIER;
 import static org.mule.test.module.extension.internal.util.ExtensionsTestUtils.compareXML;
 
-import org.mule.runtime.api.meta.NamedObject;
-import org.mule.runtime.config.api.dsl.model.DslElementModel;
 import org.mule.runtime.config.api.dsl.model.XmlDslElementModelConverter;
 import org.mule.runtime.dsl.api.component.config.ComponentConfiguration;
 
 import java.io.IOException;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.w3c.dom.Element;
 
 public class ConfigurationBasedDslElementModelSerializerTestCase extends AbstractElementModelTestCase {
 
-  public static final int SOCKETS_SEND_RECEIVE_PATH = 5;
-  public static final int TRY_PATH = 6;
-  public static final int WSC_CONSUME_PATH = 7;
+  public static final int SOCKETS_SEND_RECEIVE_PATH = 4;
+  public static final int TRY_PATH = 5;
+  public static final int WSC_CONSUME_PATH = 6;
 
   private Element flow;
   private String expectedAppXml;
@@ -63,34 +59,19 @@ public class ConfigurationBasedDslElementModelSerializerTestCase extends Abstrac
     doc.getDocumentElement().appendChild(converter.asXml(resolve(getAppElement(applicationModel, "wsc-config"))));
 
     ComponentConfiguration componentsFlow = getAppElement(applicationModel, COMPONENTS_FLOW);
-    Element httpListenerSource = converter.asXml(resolve(componentsFlow.getNestedComponents().get(LISTENER_PATH)));
-
-    // For some reason mule provides the `redelivery-policy` as an external component, but we need to serialize it
-    // as an http child element to match the original application
-    addRedeliveryPolicy(componentsFlow, httpListenerSource);
-    flow.appendChild(httpListenerSource);
-
+    flow.appendChild(converter.asXml(resolve(componentsFlow.getNestedComponents().get(LISTENER_PATH))));
     flow.appendChild(converter.asXml(resolve(componentsFlow.getNestedComponents().get(DB_BULK_INSERT_PATH))));
     flow.appendChild(converter.asXml(resolve(componentsFlow.getNestedComponents().get(REQUESTER_PATH))));
     flow.appendChild(converter.asXml(resolve(componentsFlow.getNestedComponents().get(DB_INSERT_PATH))));
     flow.appendChild(converter.asXml(resolve(componentsFlow.getNestedComponents().get(SOCKETS_SEND_RECEIVE_PATH))));
     flow.appendChild(converter.asXml(resolve(componentsFlow.getNestedComponents().get(TRY_PATH))));
-    DslElementModel<NamedObject> resolve = resolve(componentsFlow.getNestedComponents().get(WSC_CONSUME_PATH));
-    Element element = converter.asXml(resolve);
-    flow.appendChild(element);
+    flow.appendChild(converter.asXml(resolve(componentsFlow.getNestedComponents().get(WSC_CONSUME_PATH))));
 
     doc.getDocumentElement().appendChild(flow);
 
     String serializationResult = write();
 
     compareXML(expectedAppXml, serializationResult);
-  }
-
-  private void addRedeliveryPolicy(ComponentConfiguration componentsFlow, Element httpListenerSource) {
-    ComponentConfiguration redeliveryPolicy = componentsFlow.getNestedComponents().get(1);
-    Element policyElement = doc.createElement(REDELIVERY_POLICY_ELEMENT_IDENTIFIER);
-    redeliveryPolicy.getParameters().forEach(policyElement::setAttribute);
-    httpListenerSource.insertBefore(policyElement, httpListenerSource.getFirstChild());
   }
 
 }
