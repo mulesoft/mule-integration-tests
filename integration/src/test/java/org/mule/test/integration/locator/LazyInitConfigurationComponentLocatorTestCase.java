@@ -74,7 +74,7 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
   public SystemProperty path = new SystemProperty("path", "path");
 
 
-  private static final int TOTAL_NUMBER_OF_LOCATIONS = 156;
+  private static final int TOTAL_NUMBER_OF_LOCATIONS = 154;
   @Inject
   private Registry registry;
 
@@ -361,14 +361,12 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
                                   "SecureUMO/source",
                                   "SecureUMO/processors/0",
                                   "SecureUMO/processors/1",
-                                  "SecureUMO/processors/1/0",
                                   "SecureUMO2",
                                   "SecureUMO2/source",
                                   "SecureUMO2/processors/0",
                                   "SecureUMO2/processors/0/0",
                                   "SecureUMO2/processors/0/0/0",
                                   "SecureUMO2/processors/1",
-                                  "SecureUMO2/processors/1/0",
                                   "securityManager2",
                                   "securityManager2/0",
 

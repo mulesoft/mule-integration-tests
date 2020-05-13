@@ -17,7 +17,7 @@
     <flow name="globalObjectStoreAggregatorFlow">
         <aggregators:group-based-aggregator name="globalObjectStoreAggregator" content="#[payload]" groupId="#[vars.gid]" groupSize="10" objectStore="globalObjectStore">
             <aggregators:aggregation-complete>
-                <test:processor/>
+                <set-payload value="foo"/>
             </aggregators:aggregation-complete>
         </aggregators:group-based-aggregator>
     </flow>

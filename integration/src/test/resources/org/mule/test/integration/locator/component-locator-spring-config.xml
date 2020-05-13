@@ -30,9 +30,7 @@
     <flow name="SecureUMO">
         <http:listener path="*" config-ref="listenerConfig"/>
         <http:basic-security-filter realm="mule-realm" />
-        <test:processor>
-            <test:return-data>foo</test:return-data>
-        </test:processor>
+        <set-payload value="foo"/>
     </flow>
 
     <flow name="SecureUMO2">
@@ -42,9 +40,7 @@
                 <http:security-provider value="memory-dao2"/>
             </http:security-providers>
         </http:basic-security-filter>
-        <test:processor>
-            <test:return-data>foo</test:return-data>
-        </test:processor>
+        <set-payload value="foo"/>
     </flow>
 
 </mule>
