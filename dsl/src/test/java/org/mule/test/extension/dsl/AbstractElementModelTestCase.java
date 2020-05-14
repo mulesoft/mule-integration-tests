@@ -23,6 +23,7 @@ import org.mule.runtime.api.meta.model.parameter.ParameterizedModel;
 import org.mule.runtime.api.util.ResourceLocator;
 import org.mule.runtime.app.declaration.api.ArtifactDeclaration;
 import org.mule.runtime.app.declaration.api.ElementDeclaration;
+import org.mule.runtime.ast.api.ComponentAst;
 import org.mule.runtime.config.api.dsl.model.DslElementModel;
 import org.mule.runtime.config.api.dsl.model.DslElementModelFactory;
 import org.mule.runtime.config.api.dsl.processor.ArtifactConfig;
@@ -102,6 +103,12 @@ public abstract class AbstractElementModelTestCase extends MuleArtifactFunctiona
   }
 
   // Scaffolding
+  protected <T extends NamedObject> DslElementModel<T> resolve(ComponentAst component) {
+    Optional<DslElementModel<T>> elementModel = modelResolver.create(component);
+    assertThat(elementModel.isPresent(), is(true));
+    return elementModel.get();
+  }
+
   protected <T extends NamedObject> DslElementModel<T> resolve(ComponentConfiguration component) {
     Optional<DslElementModel<T>> elementModel = modelResolver.create(component);
     assertThat(elementModel.isPresent(), is(true));
@@ -114,14 +121,13 @@ public abstract class AbstractElementModelTestCase extends MuleArtifactFunctiona
     return elementModel.get();
   }
 
-  protected ComponentConfiguration getAppElement(ApplicationModel applicationModel, String name) {
-    Optional<ComponentConfiguration> component =
-        applicationModel.findTopLevelNamedComponent(name).map(componentModel -> componentModel.getConfiguration());
+  protected ComponentAst getAppElement(ApplicationModel applicationModel, String name) {
+    Optional<ComponentAst> component = applicationModel.findTopLevelNamedComponent(name);
     assertThat(component.isPresent(), is(true));
     return component.get();
   }
 
-  protected <T> DslElementModel<T> getChild(DslElementModel<? extends NamedObject> parent, ComponentConfiguration component) {
+  protected <T> DslElementModel<T> getChild(DslElementModel<? extends NamedObject> parent, ComponentAst component) {
     return getChild(parent, component.getIdentifier());
   }
 
