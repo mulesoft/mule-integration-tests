@@ -9,8 +9,8 @@ package org.mule.test.extension.dsl;
 import static org.mule.runtime.core.api.util.IOUtils.getResourceAsString;
 import static org.mule.test.module.extension.internal.util.ExtensionsTestUtils.compareXML;
 
+import org.mule.runtime.ast.api.ComponentAst;
 import org.mule.runtime.config.api.dsl.model.XmlDslElementModelConverter;
-import org.mule.runtime.dsl.api.component.config.ComponentConfiguration;
 
 import java.io.IOException;
 
@@ -58,14 +58,21 @@ public class ConfigurationBasedDslElementModelSerializerTestCase extends Abstrac
     doc.getDocumentElement().appendChild(converter.asXml(resolve(getAppElement(applicationModel, "sockets-config"))));
     doc.getDocumentElement().appendChild(converter.asXml(resolve(getAppElement(applicationModel, "wsc-config"))));
 
-    ComponentConfiguration componentsFlow = getAppElement(applicationModel, COMPONENTS_FLOW);
-    flow.appendChild(converter.asXml(resolve(componentsFlow.getNestedComponents().get(LISTENER_PATH))));
-    flow.appendChild(converter.asXml(resolve(componentsFlow.getNestedComponents().get(DB_BULK_INSERT_PATH))));
-    flow.appendChild(converter.asXml(resolve(componentsFlow.getNestedComponents().get(REQUESTER_PATH))));
-    flow.appendChild(converter.asXml(resolve(componentsFlow.getNestedComponents().get(DB_INSERT_PATH))));
-    flow.appendChild(converter.asXml(resolve(componentsFlow.getNestedComponents().get(SOCKETS_SEND_RECEIVE_PATH))));
-    flow.appendChild(converter.asXml(resolve(componentsFlow.getNestedComponents().get(TRY_PATH))));
-    flow.appendChild(converter.asXml(resolve(componentsFlow.getNestedComponents().get(WSC_CONSUME_PATH))));
+    ComponentAst componentsFlow = getAppElement(applicationModel, COMPONENTS_FLOW);
+    flow.appendChild(converter
+        .asXml(resolve(componentsFlow.directChildrenStream().skip(LISTENER_PATH).findFirst().get())));
+    flow.appendChild(converter
+        .asXml(resolve(componentsFlow.directChildrenStream().skip(DB_BULK_INSERT_PATH).findFirst().get())));
+    flow.appendChild(converter
+        .asXml(resolve(componentsFlow.directChildrenStream().skip(REQUESTER_PATH).findFirst().get())));
+    flow.appendChild(converter
+        .asXml(resolve(componentsFlow.directChildrenStream().skip(DB_INSERT_PATH).findFirst().get())));
+    flow.appendChild(converter
+        .asXml(resolve(componentsFlow.directChildrenStream().skip(SOCKETS_SEND_RECEIVE_PATH).findFirst().get())));
+    flow.appendChild(converter
+        .asXml(resolve(componentsFlow.directChildrenStream().skip(TRY_PATH).findFirst().get())));
+    flow.appendChild(converter
+        .asXml(resolve(componentsFlow.directChildrenStream().skip(WSC_CONSUME_PATH).findFirst().get())));
 
     doc.getDocumentElement().appendChild(flow);
 
