@@ -16,7 +16,6 @@ import org.mule.runtime.api.artifact.Registry;
 import org.mule.runtime.api.component.location.Location;
 import org.mule.runtime.config.api.LazyComponentInitializer;
 import org.mule.test.AbstractIntegrationTestCase;
-import org.mule.test.integration.locator.processor.CustomTestComponent;
 
 import javax.inject.Inject;
 
@@ -49,7 +48,6 @@ public class LazyInitPropertyInitTestCase extends AbstractIntegrationTestCase {
   @Test
   @Issue("MULE-18319")
   public void objectWithProperty() {
-    CustomTestComponent.statesByInstances.clear();
     final Location testingObjectLocation = builderFromStringRepresentation("testingObject").build();
 
     lazyComponentInitializer.initializeComponent(testingObjectLocation);

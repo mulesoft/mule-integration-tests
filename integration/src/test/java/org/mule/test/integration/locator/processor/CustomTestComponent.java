@@ -6,7 +6,6 @@
  */
 package org.mule.test.integration.locator.processor;
 
-
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.lifecycle.Disposable;
 import org.mule.runtime.api.lifecycle.Initialisable;
