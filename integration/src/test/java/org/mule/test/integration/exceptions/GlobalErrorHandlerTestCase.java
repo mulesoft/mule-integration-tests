@@ -26,4 +26,18 @@ public class GlobalErrorHandlerTestCase extends AbstractIntegrationTestCase {
     CoreEvent event = flowRunner("flowWithErrorHandlerSelfReferencing").run();
     assertThat(event.getMessage().getPayload().getValue(), is("Chocotorta"));
   }
+
+  @Test
+  public void errorHandlerWithSelfReferenceToContinue() throws Exception {
+    // This should fail, but in 4.2 it didn't so we must accept it in 4.3, since it does work
+    CoreEvent event = flowRunner("flowWithErrorHandlerSelfReferencingContinue").run();
+    assertThat(event.getMessage().getPayload().getValue(), is("Sachertorte"));
+  }
+
+  @Test
+  public void errorHandlerWithSelfReferenceToContinueReferencedInGlobalEH() throws Exception {
+    // This should fail, but in 4.2 it didn't so we must accept it in 4.3, since it does work
+    CoreEvent event = flowRunner("flowWithErrorHandlerSelfReferencingToReferencedContinue").run();
+    assertThat(event.getMessage().getPayload().getValue(), is("Lemon Pie"));
+  }
 }
