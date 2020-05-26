@@ -30,6 +30,7 @@ import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocator
 import org.mule.functional.api.flow.FlowRunner;
 import org.mule.runtime.api.component.Component;
 import org.mule.runtime.api.component.TypedComponentIdentifier;
+import org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType;
 import org.mule.runtime.api.component.location.ConfigurationComponentLocator;
 import org.mule.runtime.api.component.location.Location;
 import org.mule.runtime.api.notification.MessageProcessorNotification;
@@ -174,6 +175,8 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
           .build());
   private static final Optional<TypedComponentIdentifier> CHOICE =
       Optional.of(builder().identifier(buildFromStringRepresentation("mule:choice")).type(ROUTER).build());
+  private static final Optional<TypedComponentIdentifier> WHEN =
+      Optional.of(builder().identifier(buildFromStringRepresentation("mule:when")).type(ComponentType.ROUTE).build());
   private static final Optional<TypedComponentIdentifier> ERROR_HANDLER =
       Optional.of(builder().identifier(buildFromStringRepresentation("mule:error-handler"))
           .type(TypedComponentIdentifier.ComponentType.ERROR_HANDLER).build());
@@ -198,10 +201,16 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
   private static final Optional<TypedComponentIdentifier> ASYNC =
       Optional.of(builder().identifier(buildFromStringRepresentation("mule:async")).type(SCOPE).build());
   private static final Optional<TypedComponentIdentifier> ROUTE =
-      Optional.of(builder().identifier(buildFromStringRepresentation("mule:route")).type(SCOPE).build());
+      Optional.of(builder().identifier(buildFromStringRepresentation("mule:route")).type(ComponentType.ROUTE).build());
 
   private static final Optional<TypedComponentIdentifier> AGGREGATOR =
       Optional.of(builder().identifier(buildFromStringRepresentation("aggregators:size-based-aggregator")).type(ROUTER).build());
+  private static final Optional<TypedComponentIdentifier> AGGREGATION_INCREMENTAL =
+      Optional.of(builder().identifier(buildFromStringRepresentation("aggregators:incremental-aggregation"))
+          .type(ComponentType.ROUTE).build());
+  private static final Optional<TypedComponentIdentifier> AGGREGATION_COMPLETE =
+      Optional.of(builder().identifier(buildFromStringRepresentation("aggregators:aggregation-complete"))
+          .type(ComponentType.ROUTE).build());
 
 
   @Inject
@@ -276,7 +285,7 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
     assertNextProcessorLocationIs(choiceLocation);
     DefaultComponentLocation choiceRoute0 = choiceLocation
         .appendRoutePart()
-        .appendLocationPart("0", ROUTE, CONFIG_FILE_NAME, of(39), of(13));
+        .appendLocationPart("0", WHEN, CONFIG_FILE_NAME, of(39), of(13));
     assertNextProcessorLocationIs(choiceRoute0
         .appendProcessorsPart()
         .appendLocationPart("0", TEST_PROCESSOR, CONFIG_FILE_NAME, of(40), of(17)));
@@ -447,7 +456,7 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
 
     DefaultComponentLocation aggregatorRoute0 = aggregatorLocation
         .appendRoutePart()
-        .appendLocationPart("0", ROUTE, CONFIG_FILE_NAME, of(119), of(13))
+        .appendLocationPart("0", AGGREGATION_COMPLETE, CONFIG_FILE_NAME, of(119), of(13))
         .appendProcessorsPart()
         .appendLocationPart("0", LOGGER, CONFIG_FILE_NAME, of(120), of(17));
 
@@ -471,7 +480,7 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
 
     DefaultComponentLocation aggregatorRoute0 = aggregatorLocation
         .appendRoutePart()
-        .appendLocationPart("0", ROUTE, CONFIG_FILE_NAME, of(127), of(13))
+        .appendLocationPart("0", AGGREGATION_INCREMENTAL, CONFIG_FILE_NAME, of(127), of(13))
         .appendProcessorsPart()
         .appendLocationPart("0", LOGGER, CONFIG_FILE_NAME, of(128), of(17));
 
@@ -484,7 +493,7 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
 
     DefaultComponentLocation aggregatorRoute1 = aggregatorLocation
         .appendRoutePart()
-        .appendLocationPart("1", ROUTE, CONFIG_FILE_NAME, of(130), of(13))
+        .appendLocationPart("1", AGGREGATION_COMPLETE, CONFIG_FILE_NAME, of(130), of(13))
         .appendProcessorsPart()
         .appendLocationPart("0", LOGGER, CONFIG_FILE_NAME, of(131), of(17));
 
@@ -507,7 +516,7 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
 
     DefaultComponentLocation aggregatorRoute0 = aggregatorLocation
         .appendRoutePart()
-        .appendLocationPart("0", ROUTE, CONFIG_FILE_NAME, of(139), of(13))
+        .appendLocationPart("0", AGGREGATION_INCREMENTAL, CONFIG_FILE_NAME, of(139), of(13))
         .appendProcessorsPart()
         .appendLocationPart("0", LOGGER, CONFIG_FILE_NAME, of(140), of(17));
 
@@ -520,7 +529,7 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
 
     DefaultComponentLocation aggregatorRoute1 = aggregatorLocation
         .appendRoutePart()
-        .appendLocationPart("1", ROUTE, CONFIG_FILE_NAME, of(142), of(13))
+        .appendLocationPart("1", AGGREGATION_COMPLETE, CONFIG_FILE_NAME, of(142), of(13))
         .appendProcessorsPart()
         .appendLocationPart("0", LOGGER, CONFIG_FILE_NAME, of(143), of(17));
 

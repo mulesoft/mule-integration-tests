@@ -18,11 +18,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.component.ComponentIdentifier.buildFromStringRepresentation;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.builder;
+import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.BODY;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.FLOW;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.OPERATION;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.ROUTER;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.SCOPE;
-import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.UNKNOWN;
 import static org.mule.runtime.api.dsl.DslResolvingContext.getDefault;
 import static org.mule.runtime.api.util.collection.Collectors.toImmutableList;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.ASYNC_IDENTIFIER;
@@ -44,6 +44,7 @@ import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocator
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentLocationStory.COMPONENT_LOCATION;
 
 import org.mule.runtime.api.component.TypedComponentIdentifier;
+import org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType;
 import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.api.component.location.Location;
 import org.mule.runtime.api.dsl.DslResolvingContext;
@@ -206,10 +207,13 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
   private static final DefaultComponentLocation FLOW_WITH_ASYNC_AND_SC =
       getFlowLocation(FLOW_WITH_ASYNC_AND_SC_NAME, 112);
 
+  private static final Optional<TypedComponentIdentifier> WHEN =
+      Optional.of(builder().identifier(buildFromStringRepresentation("mule:when")).type(ComponentType.ROUTE).build());
+
   private static Optional<TypedComponentIdentifier> getModuleBodyIdentifier() {
     return Optional.of(builder()
         .identifier(buildFromStringRepresentation(MODULE_BODY_NAMESPACE_PREFIX + COLON_SEPARATOR + "body"))
-        .type(UNKNOWN).build());
+        .type(BODY).build());
   }
 
   private static Optional<TypedComponentIdentifier> getModuleOperationIdentifier(final String namespace,
@@ -507,9 +511,7 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
     assertNextProcessorLocationIs(firstComponentLocation);
     assertNextProcessorLocationIs(firstComponentLocation
         .appendLocationPart(ROUTE_ELEMENT, empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
-        .appendLocationPart("0", Optional.of(TypedComponentIdentifier.builder()
-            .identifier(ROUTE_IDENTIFIER)
-            .type(SCOPE).build()), CONFIG_FILE_NAME, of(71), of(13))
+        .appendLocationPart("0", WHEN, CONFIG_FILE_NAME, of(71), of(13))
         .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
         .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(72), of(17)));
 
