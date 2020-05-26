@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+       http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+
+
+    <error-handler name="some">
+        <on-error-continue>
+            <set-payload value="Chocotorta"/>
+        </on-error-continue>
+    </error-handler>
+
+    <error-handler name="someOther">
+        <on-error-continue name="someOtherContinue">
+            <set-payload value="Cheesecake"/>
+        </on-error-continue>
+    </error-handler>
+
+    <on-error-continue name="someOtherContinue">
+        <set-payload value="Lemon Pie"/>
+    </on-error-continue>
+
+    <on-error-continue name="continue">
+        <set-payload value="Sachertorte"/>
+    </on-error-continue>
+
+    <flow name="flowWithErrorHandlerSelfReferencing">
+        <raise-error type="APP:SOME"/>
+        <error-handler name="some" ref="some"/>
+    </flow>
+
+    <flow name="flowWithErrorHandlerSelfReferencingToReferencedContinue">
+        <raise-error type="APP:SOME"/>
+        <error-handler name="someOtherContinue">
+            <on-error ref="someOtherContinue"/>
+        </error-handler>
+    </flow>
+
+    <flow name="flowWithErrorHandlerSelfReferencingContinue">
+        <raise-error type="APP:SOME"/>
+        <error-handler name="continue">
+            <on-error ref="continue"/>
+        </error-handler>
+    </flow>
+
+</mule>
