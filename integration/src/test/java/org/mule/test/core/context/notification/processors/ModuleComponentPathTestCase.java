@@ -18,7 +18,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.component.ComponentIdentifier.buildFromStringRepresentation;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.builder;
-import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.BODY;
+import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.CHAIN;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.FLOW;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.OPERATION;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.ROUTER;
@@ -213,7 +213,7 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
   private static Optional<TypedComponentIdentifier> getModuleBodyIdentifier() {
     return Optional.of(builder()
         .identifier(buildFromStringRepresentation(MODULE_BODY_NAMESPACE_PREFIX + COLON_SEPARATOR + "body"))
-        .type(BODY).build());
+        .type(CHAIN).build());
   }
 
   private static Optional<TypedComponentIdentifier> getModuleOperationIdentifier(final String namespace,
