@@ -36,6 +36,7 @@ import org.mule.functional.api.component.FunctionalTestProcessor;
 import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.functional.api.exception.FunctionalTestException;
 import org.mule.runtime.api.exception.MuleException;
+import org.mule.runtime.api.exception.MuleExceptionInfo;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.event.CoreEvent;
@@ -143,14 +144,14 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
 
     ponderUntilMessageCountReceivedByCustomMP(1);
 
-    Throwable error = CustomMP.getProcessedEvents().get(0).getError().get().getCause();
+    MuleException error = (MuleException) CustomMP.getProcessedEvents().get(0).getError().get().getCause();
     assertThat(error, is(notNullValue()));
     assertThat(error, instanceOf(RetryPolicyExhaustedException.class));
     assertThat(error.getMessage(),
-               containsString("'until-successful' retries exhausted. Last exception message was: Value was expected to be false but it was true instead"));
-    assertThat(error.getCause(), instanceOf(MuleRuntimeException.class));
-    assertThat(error.getMessage(),
+               containsString("'until-successful' retries exhausted"));
+    assertThat(error.getInfo().get(MuleExceptionInfo.INFO_CAUSED_BY_KEY).toString(),
                containsString("Value was expected to be false but it was true instead"));
+    assertThat(error.getCause(), instanceOf(MuleRuntimeException.class));
   }
 
   @Test
@@ -190,7 +191,7 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
   public void executeSynchronously() throws Exception {
     final String payload = randomAlphanumeric(20);
     expectedException.expectCause(instanceOf(RetryPolicyExhaustedException.class));
-    expectedException.expectCause(hasCause(instanceOf(FunctionalTestException.class)));
+    expectedException.expect(hasCause(hasCause(hasClassName(containsString("SuppressedMuleException")))));
     flowRunner("synchronous").withPayload(payload).run();
   }
 
