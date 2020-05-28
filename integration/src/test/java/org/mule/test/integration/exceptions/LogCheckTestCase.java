@@ -112,6 +112,11 @@ public class LogCheckTestCase extends AbstractIntegrationTestCase {
     runSuccesses(false, "noExceptionFlow");
   }
 
+  @Test
+  public void suppressedMuleExceptionGetsLoggedAsSuppressedCause() throws Exception {
+    runSuccesses(false, "suppressedMuleException");
+  }
+
   private void runSuccesses(boolean verboseExceptions, String flowName) throws Exception {
     setVerboseExceptions(verboseExceptions);
     flowRunner(flowName).run();
@@ -136,4 +141,5 @@ public class LogCheckTestCase extends AbstractIntegrationTestCase {
       return MESSAGE;
     }
   }
+
 }
