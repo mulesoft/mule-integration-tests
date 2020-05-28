@@ -11,6 +11,10 @@ import static org.junit.Assert.fail;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.UntilSuccessfulStory.UNTIL_SUCCESSFUL;
 
+import org.junit.Before;
+import org.mule.runtime.api.exception.ErrorTypeRepository;
+import org.mule.runtime.api.exception.MuleRuntimeException;
+import org.mule.runtime.api.i18n.I18nMessageFactory;
 import org.mule.runtime.api.notification.ExceptionNotificationListener;
 import org.mule.runtime.api.util.concurrent.Latch;
 import org.mule.runtime.extension.api.error.MuleErrors;
@@ -26,9 +30,16 @@ import io.qameta.allure.Story;
 @Story(UNTIL_SUCCESSFUL)
 public class UntilSuccessfulRetryExhaustedTestCase extends AbstractIntegrationTestCase {
 
+  private ErrorTypeRepository errorTypeRepository;
+
   @Override
   protected String getConfigFile() {
     return "org/mule/test/integration/routing/outbound/until-successful-retry-exhausted.xml";
+  }
+
+  @Before
+  public void setUp() {
+    errorTypeRepository = muleContext.getErrorTypeRepository();
   }
 
   @Test
@@ -43,15 +54,34 @@ public class UntilSuccessfulRetryExhaustedTestCase extends AbstractIntegrationTe
   }
 
   @Test
-  public void onRetryExhaustedErrorTypeMustBeRetryExhausted() throws Exception {
+  public void onRetryExhaustedCausedByConnectionExceptionErrorTypeMustBeRetryExhausted() throws Exception {
     flowRunner("retryExhaustedCausedByConnectivityError").withPayload("message")
         .runExpectingException(ErrorTypeMatcher.errorType(MuleErrors.RETRY_EXHAUSTED));
   }
 
   @Test
-  public void onRetryExhaustedLoggedMessageMustBeRetryExhausted() throws Exception {
-    flowRunner("retryExhaustedCausedByConnectivityErrorWithErrorHandler").withPayload("message")
+  public void retryExhaustedCausedByConnectionExceptionLogCheck() throws Exception {
+    flowRunner("retryExhaustedCausedByConnectivityErrorLogCheck").withPayload("message")
         .run();
+  }
+
+  @Test
+  public void retryExhaustedCausedByNonConnectionExceptionLogCheck() throws Exception {
+    flowRunner("retryExhaustedCausedByNonConnectivityErrorLogCheck").withPayload("message")
+        .run();
+  }
+
+  @Test
+  public void retryExhaustedCausedByMuleRuntimeExceptionLogCheck() throws Exception {
+    flowRunner("retryExhaustedCausedByMuleRuntimeErrorLogCheck").withPayload("message")
+        .run();
+  }
+
+  public static class MuleRuntimeError extends MuleRuntimeException {
+
+    public MuleRuntimeError() {
+      super(I18nMessageFactory.createStaticMessage("Mule runtime error"));
+    }
   }
 
 }
