@@ -11,6 +11,7 @@ import static org.mule.test.allure.AllureConstants.Logging.LOGGING;
 import static org.mule.test.allure.AllureConstants.Logging.LoggingStory.ERROR_REPORTING;
 
 import org.mule.runtime.api.exception.MuleException;
+import org.mule.runtime.api.i18n.I18nMessageFactory;
 import org.mule.tck.junit4.rule.VerboseExceptions;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -125,6 +126,10 @@ public class LogCheckTestCase extends AbstractIntegrationTestCase {
   public static class CustomException extends MuleException {
 
     private static final String MESSAGE = "Error";
+
+    public CustomException() {
+      super(I18nMessageFactory.createStaticMessage(MESSAGE));
+    }
 
     @Override
     public String getDetailedMessage() {
