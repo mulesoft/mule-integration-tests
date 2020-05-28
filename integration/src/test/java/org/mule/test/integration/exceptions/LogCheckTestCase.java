@@ -10,6 +10,7 @@ import static org.mule.tck.junit4.rule.VerboseExceptions.setVerboseExceptions;
 import static org.mule.test.allure.AllureConstants.Logging.LOGGING;
 import static org.mule.test.allure.AllureConstants.Logging.LoggingStory.ERROR_REPORTING;
 
+import io.qameta.allure.Issue;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.i18n.I18nMessageFactory;
 import org.mule.tck.junit4.rule.VerboseExceptions;
@@ -114,6 +115,7 @@ public class LogCheckTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
+  @Issue("MULE-18041")
   public void suppressedMuleExceptionGetsLoggedAsSuppressedCause() throws Exception {
     runSuccesses(false, "suppressedMuleException");
   }

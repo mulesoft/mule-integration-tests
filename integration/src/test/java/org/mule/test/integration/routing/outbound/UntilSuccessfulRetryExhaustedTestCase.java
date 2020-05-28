@@ -11,8 +11,7 @@ import static org.junit.Assert.fail;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.UntilSuccessfulStory.UNTIL_SUCCESSFUL;
 
-import org.junit.Before;
-import org.mule.runtime.api.exception.ErrorTypeRepository;
+import io.qameta.allure.Issue;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.i18n.I18nMessageFactory;
 import org.mule.runtime.api.notification.ExceptionNotificationListener;
@@ -30,16 +29,9 @@ import io.qameta.allure.Story;
 @Story(UNTIL_SUCCESSFUL)
 public class UntilSuccessfulRetryExhaustedTestCase extends AbstractIntegrationTestCase {
 
-  private ErrorTypeRepository errorTypeRepository;
-
   @Override
   protected String getConfigFile() {
     return "org/mule/test/integration/routing/outbound/until-successful-retry-exhausted.xml";
-  }
-
-  @Before
-  public void setUp() {
-    errorTypeRepository = muleContext.getErrorTypeRepository();
   }
 
   @Test
@@ -60,18 +52,21 @@ public class UntilSuccessfulRetryExhaustedTestCase extends AbstractIntegrationTe
   }
 
   @Test
+  @Issue("MULE-18041")
   public void retryExhaustedCausedByConnectionExceptionLogCheck() throws Exception {
     flowRunner("retryExhaustedCausedByConnectivityErrorLogCheck").withPayload("message")
         .run();
   }
 
   @Test
+  @Issue("MULE-18041")
   public void retryExhaustedCausedByNonConnectionExceptionLogCheck() throws Exception {
     flowRunner("retryExhaustedCausedByNonConnectivityErrorLogCheck").withPayload("message")
         .run();
   }
 
   @Test
+  @Issue("MULE-18041")
   public void retryExhaustedCausedByMuleRuntimeExceptionLogCheck() throws Exception {
     flowRunner("retryExhaustedCausedByMuleRuntimeErrorLogCheck").withPayload("message")
         .run();
