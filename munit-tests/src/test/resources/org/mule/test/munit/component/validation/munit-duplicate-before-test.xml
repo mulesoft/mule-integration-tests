@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+      xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+               http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+               http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+
+    <munit:config name="munitConfig"/>
+
+    <munit:before-suite name="beforeSuite" description="before suite">
+        <logger/>
+    </munit:before-suite>
+
+    <munit:after-suite name="afterSuite" description="after suite">
+        <logger/>
+    </munit:after-suite>
+
+    <munit:before-test name="beforeTest" description="before test">
+        <logger/>
+    </munit:before-test>
+    <munit:before-test name="beforeTestDuplicate" description="before test">
+        <logger/>
+    </munit:before-test>
+
+    <munit:after-test name="afterTest" description="after test">
+        <logger/>
+    </munit:after-test>
+
+    <munit:test name="test" description="Test that the payload set by DW is correct" tags="core,EE">
+        <munit:behavior>
+            <logger/>
+        </munit:behavior>
+        <munit:execution>
+            <logger/>
+        </munit:execution>
+        <munit:validation>
+            <logger/>
+        </munit:validation>
+    </munit:test>
+
+</mule>
