@@ -8,21 +8,16 @@ package org.mule.test.integration.interception;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 import static org.mule.functional.api.exception.ExpectedError.none;
 import static org.mule.runtime.api.interception.ProcessorInterceptorFactory.INTERCEPTORS_ORDER_REGISTRY_KEY;
 import static org.mule.test.allure.AllureConstants.InterceptonApi.INTERCEPTION_API;
 import static org.mule.test.allure.AllureConstants.InterceptonApi.ComponentInterceptionStory.COMPONENT_INTERCEPTION_STORY;
-import static org.mule.test.heisenberg.extension.HeisenbergConnectionProvider.getActiveConnections;
-import static org.mule.test.heisenberg.extension.HeisenbergConnectionProvider.getConnects;
-import static org.mule.test.heisenberg.extension.HeisenbergConnectionProvider.getDisconnects;
 
 import org.mule.functional.api.exception.ExpectedError;
+import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.api.interception.InterceptionAction;
 import org.mule.runtime.api.interception.InterceptionEvent;
@@ -30,8 +25,7 @@ import org.mule.runtime.api.interception.ProcessorInterceptor;
 import org.mule.runtime.api.interception.ProcessorInterceptorFactory;
 import org.mule.runtime.api.interception.ProcessorInterceptorFactory.ProcessorInterceptorOrder;
 import org.mule.runtime.api.interception.ProcessorParameterValue;
-import org.mule.test.AbstractIntegrationTestCase;
-import org.mule.test.heisenberg.extension.HeisenbergConnection;
+import org.mule.test.IntegrationTestCaseRunnerConfig;
 import org.mule.test.integration.interception.ProcessorInterceptorFactoryTestCase.HasInjectedAttributesInterceptor;
 import org.mule.test.integration.interception.ProcessorInterceptorFactoryTestCase.HasInjectedAttributesInterceptorFactory;
 import org.mule.test.integration.interception.ProcessorInterceptorFactoryTestCase.InterceptionParameters;
@@ -58,7 +52,8 @@ import io.qameta.allure.Story;
 @Feature(INTERCEPTION_API)
 @Story(COMPONENT_INTERCEPTION_STORY)
 @RunnerDelegateTo(Parameterized.class)
-public class ProcessorInterceptorFactoryCustomActionTestCase extends AbstractIntegrationTestCase {
+public class ProcessorInterceptorFactoryCustomActionTestCase extends MuleArtifactFunctionalTestCase
+    implements IntegrationTestCaseRunnerConfig {
 
 
   @Rule
@@ -101,89 +96,27 @@ public class ProcessorInterceptorFactoryCustomActionTestCase extends AbstractInt
 
   @After
   public void after() {
-    getActiveConnections().clear();
     HasInjectedAttributesInterceptor.interceptionParameters.clear();
   }
 
+  @Description("Smart Connector simple operation without parameters")
   @Test
-  @Description("The connection was fetched on the interceptor, and released by the interceptor")
-  public void resolvedConnectionParamSkips() throws Exception {
-    int connectsBefore = getConnects();
-    int disconnectsBefore = getDisconnects();
-
-    CustomActionInterceptor.actioner = action -> action.skip();
-
-    flowRunner("callSaul").run();
+  public void scOperation() throws Exception {
+    flowRunner("scOperation").run();
 
     List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
-    assertThat(interceptionParameters, hasSize(1));
+    assertThat(interceptionParameters, hasSize(2));
 
-    InterceptionParameters killInterceptionParameter = interceptionParameters.get(0);
+    InterceptionParameters moduleOperationChain = interceptionParameters.get(0);
+    InterceptionParameters setPayloadOperation = interceptionParameters.get(1);
 
-    assertThat(killInterceptionParameter.getParameters().keySet(), containsInAnyOrder("targetValue", "config-ref", "connection"));
-    assertThat(killInterceptionParameter.getParameters().get("config-ref").resolveValue(), is("heisenberg"));
-    assertThat(killInterceptionParameter.getParameters().get("connection").resolveValue(),
-               is(instanceOf(HeisenbergConnection.class)));
+    assertThat(moduleOperationChain.getParameters().keySet(), containsInAnyOrder("doc:name", "targetValue"));
+    assertThat(moduleOperationChain.getParameters().get("doc:name").resolveValue(), is("mySCName"));
 
-    assertThat(getActiveConnections(), empty());
-    assertThat(getConnects() - connectsBefore, is(mutateEventBefore ? 2 : 1));
-    assertThat(getDisconnects() - disconnectsBefore, is(mutateEventBefore ? 2 : 1));
-  }
-
-  @Test
-  @Description("The connection was fetched on the interceptor, and released by the interceptor")
-  public void resolvedConnectionParamFails() throws Exception {
-    int connectsBefore = getConnects();
-    int disconnectsBefore = getDisconnects();
-
-    CustomActionInterceptor.actioner = action -> action.fail(new RuntimeException());
-
-    try {
-      flowRunner("callSaul").run();
-      fail("Expected an exception. Refer to ReactiveInterceptorAdapterTestCase");
-    } catch (Exception e) {
-      // expected
-    } finally {
-      List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
-      assertThat(interceptionParameters, hasSize(2));
-
-      InterceptionParameters killInterceptionParameter = interceptionParameters.get(0);
-
-      assertThat(killInterceptionParameter.getParameters().keySet(),
-                 containsInAnyOrder("targetValue", "config-ref", "connection"));
-      assertThat(killInterceptionParameter.getParameters().get("config-ref").resolveValue(), is("heisenberg"));
-      assertThat(killInterceptionParameter.getParameters().get("connection").resolveValue(),
-                 is(instanceOf(HeisenbergConnection.class)));
-
-      assertThat(getActiveConnections(), empty());
-      assertThat(getConnects() - connectsBefore, is(mutateEventBefore ? 2 : 1));
-      assertThat(getDisconnects() - disconnectsBefore, is(mutateEventBefore ? 2 : 1));
-
-      // the 2nd one is for the global error handler, it is tested separately
-    }
-  }
-
-  @Test
-  @Description("The connection was fetched on the interceptor, and the operation uses the connection obtained there rather then fetching it again")
-  public void resolvedConnectionParam() throws Exception {
-    int connectsBefore = getConnects();
-    int disconnectsBefore = getDisconnects();
-
-    flowRunner("callSaul").run();
-
-    List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
-    assertThat(interceptionParameters, hasSize(1));
-
-    InterceptionParameters killInterceptionParameter = interceptionParameters.get(0);
-
-    assertThat(killInterceptionParameter.getParameters().keySet(), containsInAnyOrder("targetValue", "config-ref", "connection"));
-    assertThat(killInterceptionParameter.getParameters().get("config-ref").resolveValue(), is("heisenberg"));
-    assertThat(killInterceptionParameter.getParameters().get("connection").resolveValue(),
-               is(instanceOf(HeisenbergConnection.class)));
-
-    assertThat(getActiveConnections(), empty());
-    assertThat(getConnects() - connectsBefore, is(mutateEventBefore ? 2 : 1));
-    assertThat(getDisconnects() - disconnectsBefore, is(mutateEventBefore ? 2 : 1));
+    assertThat(setPayloadOperation.getParameters().keySet(), containsInAnyOrder("value", "mimeType", "encoding"));
+    assertThat(setPayloadOperation.getParameters().get("value").resolveValue(), is("Wubba Lubba Dub Dub"));
+    assertThat(setPayloadOperation.getParameters().get("mimeType").resolveValue(), is("text/plain"));
+    assertThat(setPayloadOperation.getParameters().get("encoding").resolveValue(), is("UTF-8"));
   }
 
   public static class CustomActionInterceptorFactory implements ProcessorInterceptorFactory {

@@ -67,6 +67,49 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.mule.tests</groupId>
+            <artifactId>smart-connector-using-core</artifactId>
+            <classifier>mule-plugin</classifier>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.tests</groupId>
+            <artifactId>smart-connector-using-file</artifactId>
+            <classifier>mule-plugin</classifier>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.tests</groupId>
+            <artifactId>smart-connector-using-http</artifactId>
+            <classifier>mule-plugin</classifier>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.tests</groupId>
+            <artifactId>smart-connector-using-http-noconfig</artifactId>
+            <classifier>mule-plugin</classifier>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.tests</groupId>
+            <artifactId>smart-connector-using-http-oauth</artifactId>
+            <classifier>mule-plugin</classifier>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.tests</groupId>
+            <artifactId>smart-connector-using-http-oauth-authorization-code</artifactId>
+            <classifier>mule-plugin</classifier>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.tests</groupId>
+            <artifactId>smart-connector-using-smart-connector</artifactId>
+            <classifier>mule-plugin</classifier>
+            <version>${project.version}</version>
+        </dependency>
+
         <!-- Dependencies needed for the test runner -->
         <dependency>
             <groupId>org.mule.services</groupId>
@@ -94,6 +137,14 @@
             <classifier>mule-service</classifier>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.mule.services</groupId>
+            <artifactId>mule-service-oauth</artifactId>
+            <version>${muleOAuthServiceTestVersion}</version>
+            <classifier>mule-service</classifier>
+            <scope>provided</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.mule.connectors</groupId>
             <artifactId>mule-sockets-connector</artifactId>

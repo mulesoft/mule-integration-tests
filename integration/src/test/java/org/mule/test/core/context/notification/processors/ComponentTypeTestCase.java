@@ -19,13 +19,15 @@ import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentT
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.UNKNOWN;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentTypeStore.COMPONENT_CONFIGURATION_TYPE;
+
 import org.mule.runtime.api.component.ComponentIdentifier;
 import org.mule.runtime.api.component.TypedComponentIdentifier;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import org.junit.Test;
+
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
-import org.junit.Test;
 
 @Feature(CONFIGURATION_COMPONENT_LOCATOR)
 @Story(COMPONENT_CONFIGURATION_TYPE)
@@ -61,7 +63,6 @@ public class ComponentTypeTestCase extends AbstractIntegrationTestCase {
     assertThat(getComponentType(buildFromStringRepresentation("idempotent-message-validator")), is(OPERATION));
     assertThat(getComponentType(buildFromStringRepresentation("raise-error")), is(OPERATION));
     assertThat(getComponentType(buildFromStringRepresentation("http:request")), is(OPERATION));
-    assertThat(getComponentType(buildFromStringRepresentation("module-using-core:set-payload-hardcoded")), is(OPERATION));
   }
 
   @Test

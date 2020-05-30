@@ -65,4 +65,5 @@ public class LazyInitConfigurationLifecycleTestCase extends AbstractIntegrationT
     assertThat(nestedConfig.isPresent(), is(true));
     assertThat(nestedConfig.get().getTracker(), is(asList("setMuleContext")));
   }
+
 }

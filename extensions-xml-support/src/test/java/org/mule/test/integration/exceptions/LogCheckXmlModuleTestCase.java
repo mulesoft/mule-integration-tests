@@ -10,8 +10,9 @@ import static org.mule.tck.junit4.rule.VerboseExceptions.setVerboseExceptions;
 import static org.mule.test.allure.AllureConstants.Logging.LOGGING;
 import static org.mule.test.allure.AllureConstants.Logging.LoggingStory.ERROR_REPORTING;
 
+import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.tck.junit4.rule.VerboseExceptions;
-import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.test.IntegrationTestCaseRunnerConfig;
 
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -23,7 +24,7 @@ import io.qameta.allure.Story;
 
 @Feature(LOGGING)
 @Story(ERROR_REPORTING)
-public class LogCheckXmlModuleTestCase extends AbstractIntegrationTestCase {
+public class LogCheckXmlModuleTestCase extends MuleArtifactFunctionalTestCase implements IntegrationTestCaseRunnerConfig {
 
   // Just to ensure the previous value is set after the test
   @ClassRule
