@@ -15,6 +15,7 @@
     <global-property name="some.property" value="/origin/topic"/>
 
     <object name="childBean" class="org.mule.test.integration.locator.beans.ChildBean"/>
+    <object name="custom" class="org.mule.test.integration.locator.processor.CustomTestComponent"/>
 
     <flow name="invokeBeanFlow">
         <java:invoke method="getFoo()" instance="childBean" class="org.mule.test.integration.locator.beans.ChildBean"/>
@@ -22,24 +23,24 @@
 
     <sub-flow name="untilSuccessfulFlow">
         <until-successful maxRetries="5" millisBetweenRetries="10000">
-            <test:processor class="org.mule.test.integration.locator.processor.CustomTestComponent"/>
+            <flow-ref name="custom"/>
         </until-successful>
     </sub-flow>
 
     <sub-flow name="untilSuccessfulFlowCopy">
         <until-successful maxRetries="5" millisBetweenRetries="10000">
-            <test:processor class="org.mule.test.integration.locator.processor.CustomTestComponent"/>
+            <flow-ref name="custom"/>
         </until-successful>
     </sub-flow>
 
     <sub-flow name="multipleInitialize">
-        <test:processor class="org.mule.test.integration.locator.processor.CustomTestComponent"/>
-        <test:processor class="org.mule.test.integration.locator.processor.CustomTestComponent"/>
+        <flow-ref name="custom"/>
+        <flow-ref name="custom"/>
     </sub-flow>
 
     <error-handler name="globalErrorHandler">
         <on-error-propagate>
-            <test:processor class="org.mule.test.integration.locator.processor.CustomTestComponent"/>
+            <flow-ref name="custom"/>
             <test:queue name="globalErrorHandlerQueue"/>
         </on-error-propagate>
     </error-handler>
@@ -98,7 +99,7 @@
     </sub-flow>
 
     <flow name="flowFailing">
-        <test:processor throwException="true"/>
+        <raise-error type="APP:EXPECTED"/>
     </flow>
 
     <!-- See MULE-18312: Default Error Handler is located after "flowFailing" to ensure wherever this component is located, it will be loaded at first. -->
@@ -106,7 +107,7 @@
 
     <sub-flow name="async-flow">
         <async>
-            <test:processor class="org.mule.test.integration.locator.processor.CustomTestComponent"/>
+            <flow-ref name="custom"/>
         </async>
     </sub-flow>
 

@@ -186,6 +186,7 @@ public class ConfigurationComponentLocatorTestCase extends AbstractIntegrationTe
                                                      "async-flow",
                                                      "invokeBeanFlow",
                                                      "invokeBeanFlow/processors/0",
-                                                     "childBean"));
+                                                     "childBean",
+                                                     "custom"));
   }
 }

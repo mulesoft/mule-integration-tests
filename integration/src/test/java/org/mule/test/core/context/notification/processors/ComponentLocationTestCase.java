@@ -169,9 +169,9 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
   private static final Optional<TypedComponentIdentifier> SET_PAYLOAD =
       Optional.of(builder().identifier(buildFromStringRepresentation("mule:set-payload"))
           .type(OPERATION).build());
-  private static final Optional<TypedComponentIdentifier> OBJECT_TO_STRING_TRANSFORMER =
-      Optional.of(builder().identifier(buildFromStringRepresentation("mule:object-to-byte-array-transformer")).type(OPERATION)
-          .build());
+  private static final Optional<TypedComponentIdentifier> SET_VARIABLE =
+      Optional.of(builder().identifier(buildFromStringRepresentation("mule:set-variable"))
+          .type(OPERATION).build());
   private static final Optional<TypedComponentIdentifier> CHOICE =
       Optional.of(builder().identifier(buildFromStringRepresentation("mule:choice")).type(ROUTER).build());
   private static final Optional<TypedComponentIdentifier> ERROR_HANDLER =
@@ -181,8 +181,8 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
       Optional.of(builder().identifier(buildFromStringRepresentation("mule:on-error-continue")).type(ON_ERROR).build());
   private static final Optional<TypedComponentIdentifier> VALIDATION_IS_FALSE =
       Optional.of(builder().identifier(buildFromStringRepresentation("validation:is-false")).type(OPERATION).build());
-  private static final Optional<TypedComponentIdentifier> TEST_PROCESSOR =
-      Optional.of(builder().identifier(buildFromStringRepresentation("test:processor")).type(OPERATION).build());
+  private static final Optional<TypedComponentIdentifier> RAISE_ERROR =
+      Optional.of(builder().identifier(buildFromStringRepresentation("mule:raise-error")).type(OPERATION).build());
   private static final Optional<TypedComponentIdentifier> ON_ERROR_PROPAGATE =
       Optional.of(builder().identifier(buildFromStringRepresentation("mule:on-error-propagate")).type(ON_ERROR).build());
   private static final Optional<TypedComponentIdentifier> TRY =
@@ -244,7 +244,7 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
         .appendLocationPart("1", SET_PAYLOAD, CONFIG_FILE_NAME, of(33), of(9)));
     assertNextProcessorLocationIs(FLOW_WITH_MULTIPLE_MP_LOCATION
         .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
-        .appendLocationPart("2", OBJECT_TO_STRING_TRANSFORMER,
+        .appendLocationPart("2", SET_VARIABLE,
                             CONFIG_FILE_NAME, of(34), of(9)));
     assertNoNextProcessorNotification();
   }
@@ -279,7 +279,7 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
         .appendLocationPart("0", ROUTE, CONFIG_FILE_NAME, of(39), of(13));
     assertNextProcessorLocationIs(choiceRoute0
         .appendProcessorsPart()
-        .appendLocationPart("0", TEST_PROCESSOR, CONFIG_FILE_NAME, of(40), of(17)));
+        .appendLocationPart("0", RAISE_ERROR, CONFIG_FILE_NAME, of(40), of(17)));
     assertNextProcessorLocationIs(FLOW_WITH_ERROR_HANDLER
         .appendLocationPart("errorHandler", ERROR_HANDLER, CONFIG_FILE_NAME, of(46), of(9))
         .appendLocationPart("1", ON_ERROR_PROPAGATE, CONFIG_FILE_NAME, of(50), of(13))
@@ -306,7 +306,7 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
     assertNextProcessorLocationIs(blockLocation);
     assertNextProcessorLocationIs(blockLocation
         .appendProcessorsPart()
-        .appendLocationPart("0", TEST_PROCESSOR, CONFIG_FILE_NAME, of(60), of(13)));
+        .appendLocationPart("0", RAISE_ERROR, CONFIG_FILE_NAME, of(60), of(13)));
     DefaultComponentLocation blockOnErrorContinueLocation = blockLocation
         .appendLocationPart("errorHandler", ERROR_HANDLER, CONFIG_FILE_NAME, of(61), of(13))
         .appendLocationPart("0", ON_ERROR_CONTINUE, CONFIG_FILE_NAME,

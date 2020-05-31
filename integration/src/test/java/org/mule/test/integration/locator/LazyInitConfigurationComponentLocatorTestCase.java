@@ -73,7 +73,7 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
   public SystemProperty path = new SystemProperty("path", "path");
 
 
-  private static final int TOTAL_NUMBER_OF_LOCATIONS = 116;
+  private static final int TOTAL_NUMBER_OF_LOCATIONS = 117;
   @Inject
   private Registry registry;
 
@@ -366,6 +366,7 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
                                   "invokeBeanFlow",
                                   "invokeBeanFlow/processors/0",
                                   "childBean",
+                                  "custom",
 
                                   "notificationFlow",
                                   "notificationFlow/processors/0",

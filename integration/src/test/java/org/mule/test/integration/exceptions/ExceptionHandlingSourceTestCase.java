@@ -114,7 +114,7 @@ public class ExceptionHandlingSourceTestCase extends AbstractIntegrationTestCase
     MuleException exception = (MuleException) flowRunner("errorInHandlerHasOrigin").runExpectingException();
 
     assertThat((String) exception.getInfo().get(INFO_LOCATION_KEY), containsString("errorHandler/0/processors/0"));
-    assertThat((String) exception.getInfo().get(INFO_SOURCE_XML_KEY), containsString("insideHandler"));
+    assertThat((String) exception.getInfo().get(INFO_SOURCE_XML_KEY), containsString("APP:EXPECTED_INSIDE_HANDLER"));
   }
 
   public static class OnErrorCounterProcessor extends AbstractComponent implements Processor {
