@@ -87,7 +87,7 @@
                 <set-payload value="banana"/>
             </route>
             <route>
-                <expression-component>java!java::lang::Thread::sleep(10000)</expression-component>
+                <set-payload value="#[java!org::mule::tck::junit4::AbstractMuleContextTestCase::sleepFor(payload, 10000)]"/>
             </route>
         </scatter-gather>
     </flow>
@@ -340,7 +340,7 @@
 
     <sub-flow name="captureThreadAndWait">
         <custom-processor class="org.mule.test.routing.ScatterGatherRouterTestCase$ThreadCaptor" />
-        <expression-component>vars['latch'].await()</expression-component>
+        <set-payload value="#[java!org::mule::tck::junit4::AbstractMuleContextTestCase::awaitLatch(payload, vars.latch)]"/>
     </sub-flow>
 
     <sub-flow name="testRoutesMap">

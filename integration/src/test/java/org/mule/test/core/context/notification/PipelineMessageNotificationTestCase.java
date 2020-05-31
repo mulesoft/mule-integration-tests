@@ -13,6 +13,7 @@ import static org.mule.runtime.api.notification.AsyncMessageNotification.PROCESS
 import static org.mule.runtime.api.notification.PipelineMessageNotification.PROCESS_COMPLETE;
 import static org.mule.runtime.api.notification.PipelineMessageNotification.PROCESS_END;
 import static org.mule.runtime.api.notification.PipelineMessageNotification.PROCESS_START;
+
 import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.notification.AsyncMessageNotification;
 import org.mule.runtime.api.notification.IntegerAction;
@@ -42,7 +43,7 @@ public class PipelineMessageNotificationTestCase extends AbstractNotificationTes
     assertNotNull(flowRunner("service-3").withPayload("hello sweet world").run());
     flowRunner("service-4").withPayload("goodbye cruel world").run();
     queueHandler.read("ow-out", RECEIVE_TIMEOUT);
-    flowRunner("service-5").withPayload("goodbye cruel world").withInboundProperty("fail", "true").run();
+    flowRunner("service-5").withPayload("goodbye cruel world").run();
     queueHandler.read("owException-out", RECEIVE_TIMEOUT);
 
     assertNotifications();
