@@ -59,11 +59,11 @@
     <!-- Async -->
     
     <sub-flow name="subFlowInAsync">
-        <flow-ref ref="flowStackAsyncAsserter"/>
+        <flow-ref name="flowStackAsyncAsserter"/>
     </sub-flow>
     
     <flow name="flowInAsync">
-        <flow-ref ref="flowStackAsyncAsserter2"/>
+        <flow-ref name="flowStackAsyncAsserter2"/>
     </flow>
     
     <flow name="flowStaticWithAsync" initialState="stopped">
