@@ -7,6 +7,7 @@
 
 	<object name="hasSchedulingService" class="org.mule.test.service.scheduler.SchedulerServiceTestCase$HasSchedulingService"/> 
 	<object name="recordThreadName" class="org.mule.test.service.scheduler.SchedulerServiceTestCase$RecordThreadName"/> 
+	<object name="raiseBusy" class="org.mule.test.service.scheduler.SchedulerServiceTestCase$RaiseBusy"/> 
 
     <flow name="willSchedule">
         <processor ref="hasSchedulingService"/>
@@ -15,8 +16,7 @@
 
     <flow name="delaySchedule">
         <test:skeleton-source/>
-        <test:processor throwException="true" exceptionText="JustToBeAbleToInstantiateException"
-                        exceptionToThrow="org.mule.runtime.api.scheduler.SchedulerBusyException"/>
+        <flow-ref name="raiseBusy"/>
     </flow>
 
 </mule>

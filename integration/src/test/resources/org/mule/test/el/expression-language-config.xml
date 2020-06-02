@@ -24,12 +24,6 @@
     </configuration>
 
     <flow name="flow">
-        <expression-component>mel:regexWrap('hello')</expression-component>
-        <validation:is-true expression="#[mel:payload == 'foo']"/>
-        <expression-component>mel:payload='bar';a='1';b=payload+a</expression-component>
-        <test:assert expression="#[mel:payload == 'bar']" />
-        <expression-component file="org/mule/test/el/component.txt" />
-        <test:assert expression="#[mel:payload == 'bar2']" />
         <test:assert expression="#[mel:loc.getName().equals('java.util.Locale')]" />
     </flow>
 

@@ -21,11 +21,11 @@
     </flow>
 
     <flow name="service-2">
-        <expression-component>mel:hola</expression-component>
+        <set-payload value="#[!null.a]"/>
     </flow>
 
     <flow name="service-3">
-        <expression-component>mel:hola</expression-component>
+        <set-payload value="#[!null.a]"/>
     </flow>
 
     <flow name="service-4">
@@ -33,7 +33,7 @@
     </flow>
 
     <flow name="service-5">
-        <expression-component>mel:hola</expression-component>
+        <set-payload value="#[!null.a]"/>
         <error-handler>
             <on-error-continue>
                 <test:queue name="owException-out" />

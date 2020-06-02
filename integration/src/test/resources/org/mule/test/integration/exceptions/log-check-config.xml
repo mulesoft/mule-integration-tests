@@ -7,15 +7,15 @@
 
     <flow name="checkEquals" initialState="stopped">
         <test:skeleton-source/>
-        <test:throw exception="java.lang.RuntimeException" error="ANY"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <test:on-error-check-log>
                 <test:check-equals>
                     <![CDATA[
-                        Message               : null
-                        Error type            : MULE:ANY
+                        Message               : An error occurred.
+                        Error type            : APP:EXPECTED
                         Element               : checkEquals/processors/0 @ LogCheckTestCase#runSuccessesNoVerboseExceptions:org/mule/test/integration/exceptions/log-check-config.xml:10
-                        Element DSL           : <test:throw exception="java.lang.RuntimeException" error="ANY"></test:throw>
+                        Element DSL           : <raise-error type="APP:EXPECTED"></raise-error>
                         (set debug level logging or '-Dmule.verbose.exceptions=true' for everything)
                     ]]>
                 </test:check-equals>
@@ -25,15 +25,15 @@
 
     <flow name="checkEqualsVerbose" initialState="stopped">
         <test:skeleton-source/>
-        <test:throw exception="java.lang.RuntimeException" error="ANY"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <test:on-error-check-log>
                 <test:check-equals>
                     <![CDATA[
-                        Message               : null
+                        Message               : An error occurred.
                         Element               : checkEqualsVerbose/processors/0 @ LogCheckTestCase#runVerboseCheckEqualsVerbose:org/mule/test/integration/exceptions/log-check-config.xml:28
-                        Element DSL           : <test:throw exception="java.lang.RuntimeException" error="ANY"></test:throw>
-                        Error type            : MULE:ANY
+                        Element DSL           : <raise-error type="APP:EXPECTED"></raise-error>
+                        Error type            : APP:EXPECTED
                         FlowStack             : at checkEqualsVerbose(checkEqualsVerbose/processors/0 @ LogCheckTestCase#runVerboseCheckEqualsVerbose:org/mule/test/integration/exceptions/log-check-config.xml:28)
                         Payload               : null
                         Payload Type          : null
@@ -45,12 +45,12 @@
 
     <flow name="checkStacktrace" initialState="stopped">
         <test:skeleton-source/>
-        <test:throw exception="java.lang.RuntimeException" error="ANY"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <test:on-error-check-log>
                 <test:check-stacktrace>
                     <test:method-call class="Thread" method="run"/>
-                    <test:cause exception="java.lang.RuntimeException"/>
+                    <test:cause exception="org.mule.runtime.api.exception.DefaultMuleException"/>
                 </test:check-stacktrace>
             </test:on-error-check-log>
         </error-handler>
@@ -58,11 +58,11 @@
 
     <flow name="checkSummary" initialState="stopped">
         <test:skeleton-source/>
-        <test:throw exception="java.lang.RuntimeException" error="ANY"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <test:on-error-check-log>
                 <test:check-summary>
-                    <test:summary-info key="Error type" value="MULE:ANY"/>
+                    <test:summary-info key="Error type" value="APP:EXPECTED"/>
                 </test:check-summary>
             </test:on-error-check-log>
         </error-handler>
@@ -70,7 +70,7 @@
 
     <flow name="checkFlowStack" initialState="stopped">
         <test:skeleton-source/>
-        <test:throw exception="java.lang.RuntimeException" error="ANY"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <test:on-error-check-log>
                 <test:check-summary>
@@ -114,26 +114,26 @@
 
     <flow name="allChecksTogetherNoneFailing" initialState="stopped">
         <test:skeleton-source/>
-        <test:throw exception="java.lang.RuntimeException" error="ANY"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <test:on-error-check-log>
                 <test:check-equals>
                     <![CDATA[
-                        Message               : null
+                        Message               : An error occurred.
                         Element               : allChecksTogetherNoneFailing/processors/0 @ LogCheckTestCase#runVerboseAllChecksTogetherNoneFailing:org/mule/test/integration/exceptions/log-check-config.xml:117
-                        Element DSL           : <test:throw exception="java.lang.RuntimeException" error="ANY"></test:throw>
-                        Error type            : MULE:ANY
+                        Element DSL           : <raise-error type="APP:EXPECTED"></raise-error>
+                        Error type            : APP:EXPECTED
                         FlowStack             : at allChecksTogetherNoneFailing(allChecksTogetherNoneFailing/processors/0 @ LogCheckTestCase#runVerboseAllChecksTogetherNoneFailing:org/mule/test/integration/exceptions/log-check-config.xml:117)
                         Payload               : null
                         Payload Type          : null
                     ]]>
                 </test:check-equals>
                 <test:check-summary>
-                    <test:summary-info key="Error type" value="MULE:ANY"/>
+                    <test:summary-info key="Error type" value="APP:EXPECTED"/>
                 </test:check-summary>
                 <test:check-stacktrace>
                     <test:method-call class="Thread" method="run"/>
-                    <test:cause exception="java.lang.RuntimeException"/>
+                    <test:cause exception="org.mule.runtime.api.exception.DefaultMuleException"/>
                 </test:check-stacktrace>
             </test:on-error-check-log>
         </error-handler>

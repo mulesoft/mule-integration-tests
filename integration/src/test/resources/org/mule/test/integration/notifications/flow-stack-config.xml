@@ -13,11 +13,11 @@
     <object name="flowStackAsyncAsserter2" class="org.mule.tck.util.FlowTraceUtils$FlowStackAsyncAsserter" />
 
     <sub-flow name="subFlow">
-        <processor ref="flowStackAsserter"/>
+        <flow-ref name="flowStackAsserter"/>
     </sub-flow>
     
     <flow name="flow">
-        <processor ref="flowStackAsserter2"/>
+        <flow-ref name="flowStackAsserter2"/>
     </flow>
 
     <flow name="flowStatic" initialState="stopped">
@@ -59,11 +59,11 @@
     <!-- Async -->
     
     <sub-flow name="subFlowInAsync">
-        <processor ref="flowStackAsyncAsserter"/>
+        <flow-ref name="flowStackAsyncAsserter"/>
     </sub-flow>
     
     <flow name="flowInAsync">
-        <processor ref="flowStackAsyncAsserter2"/>
+        <flow-ref name="flowStackAsyncAsserter2"/>
     </flow>
     
     <flow name="flowStaticWithAsync" initialState="stopped">
@@ -98,7 +98,7 @@
                 <flow-ref name="flow"/>
             </when>
             <otherwise>
-                <test:processor throwException="true"/>
+                <raise-error type="APP:EXPECTED"/>
             </otherwise>
         </choice>
     </flow>
@@ -109,7 +109,7 @@
                 <flow-ref name="subFlow"/>
             </when>
             <otherwise>
-                <test:processor throwException="true"/>
+                <raise-error type="APP:EXPECTED"/>
             </otherwise>
         </choice>
     </flow>
@@ -260,7 +260,7 @@
     
     <flow name="xmlSdkOperationFailAfter">
         <sc:set-payload-hardcoded />
-        <test:processor throwException="true"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <on-error-continue>
                 <flow-ref name="subFlow"/>

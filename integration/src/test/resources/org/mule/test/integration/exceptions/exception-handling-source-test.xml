@@ -7,6 +7,8 @@
        http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
        http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
 
+    <object name="onErrorCounter" class="org.mule.test.integration.exceptions.ExceptionHandlingSourceTestCase$OnErrorCounterProcessor" />
+
     <http:listener-config name="listenerConfig">
         <http:listener-connection host="localhost" port="${port}"/>
     </http:listener-config>
@@ -18,7 +20,7 @@
         <logger/>
         <error-handler>
             <on-error-propagate>
-                <custom-processor class="org.mule.test.integration.exceptions.ExceptionHandlingSourceTestCase$OnErrorCounterProcessor"/>
+                <flow-ref name="onErrorCounter"/>
             </on-error-propagate>
         </error-handler>
     </flow>
@@ -31,7 +33,7 @@
         <logger/>
         <error-handler>
             <on-error-propagate>
-                <custom-processor class="org.mule.test.integration.exceptions.ExceptionHandlingSourceTestCase$OnErrorCounterProcessor"/>
+                <flow-ref name="onErrorCounter"/>
             </on-error-propagate>
         </error-handler>
     </flow>
@@ -40,17 +42,17 @@
         <http:listener path="errorSendingThrownError" allowedMethods="GET" config-ref="listenerConfig">
             <http:error-response statusCode="#['notANumber']"/>
         </http:listener>
-        <test:processor throwException="true"/>
+        <raise-error type="APP:EXPECTED"/>
     </flow>
 
     <flow name="errorSendingErrorFromHandlerFlow">
         <http:listener path="errorSendingErrorFromHandler" allowedMethods="GET" config-ref="listenerConfig">
             <http:error-response  statusCode="#['notANumber']"/>
         </http:listener>
-        <test:processor throwException="true"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <on-error-continue>
-                <custom-processor class="org.mule.test.integration.exceptions.ExceptionHandlingSourceTestCase$OnErrorCounterProcessor"/>
+                <flow-ref name="onErrorCounter"/>
                 <test:processor throwException="true"/>
             </on-error-continue>
         </error-handler>
@@ -60,19 +62,19 @@
         <http:listener path="errorSendingPropagatedError" allowedMethods="GET" config-ref="listenerConfig">
             <http:error-response  statusCode="#['notANumber']"/>
         </http:listener>
-        <test:processor throwException="true"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <on-error-propagate>
-                <custom-processor class="org.mule.test.integration.exceptions.ExceptionHandlingSourceTestCase$OnErrorCounterProcessor"/>
+                <flow-ref name="onErrorCounter"/>
             </on-error-propagate>
         </error-handler>
     </flow>
 
     <flow name="errorInHandlerHasOrigin">
-        <test:processor throwException="true"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <on-error-propagate>
-                <test:processor throwException="true" id="insideHandler"/>
+                <raise-error type="APP:EXPECTED_INSIDE_HANDLER"/>
             </on-error-propagate>
         </error-handler>
     </flow>
