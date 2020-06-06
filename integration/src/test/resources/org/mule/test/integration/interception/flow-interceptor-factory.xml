@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+    xmlns:test="http://www.mulesoft.org/schema/mule/test"
+    xmlns:heisenberg="http://www.mulesoft.org/schema/mule/heisenberg"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+               http://www.mulesoft.org/schema/mule/heisenberg http://www.mulesoft.org/schema/mule/heisenberg/current/mule-heisenberg.xsd">
+
+    <flow name="flowRefOuter" initialState="stopped">
+        <flow-ref name="flowFailing"/>
+    </flow>
+
+    <flow name="lookupOuter" initialState="stopped">
+        <set-payload value="#[lookup('flowFailing', payload)]"/>
+    </flow>
+
+    <flow name="flowFailing">
+        <raise-error type="APP:ERROR"/>
+    </flow>
+
+    <flow name="flowHandleAndFail">
+        <raise-error type="APP:INTERNAL_ERROR"/>
+        <error-handler>
+            <on-error-continue type="APP:INTERNAL_ERROR">
+                <raise-error type="APP:ERROR"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="counting" initialState="stopped">
+        <heisenberg:dea-radio/>
+        <set-payload value="#[java!org::mule::test::integration::interception::FlowInterceptorFactoryCustomActionTestCase::count(payload)]"/>
+    </flow>
+
+    <flow name="withMaxConcurrency" maxConcurrency="1" initialState="stopped">
+        <heisenberg:dea-radio/>
+        <set-payload value="#[java!org::mule::test::integration::interception::FlowInterceptorFactoryTestCase::await(payload)]"/>
+    </flow>
+
+</mule>

@@ -70,7 +70,7 @@ public class ProcessorInterceptorFactoryCustomActionTestCase extends AbstractInt
     this.mutateEventBefore = mutateEventBefore;
   }
 
-  @Parameters(name = "{0}")
+  @Parameters(name = "mutateEventBefore: {0}")
   public static Collection<Object> data() {
     return asList(true, false);
   }
