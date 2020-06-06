@@ -14,6 +14,7 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mule.functional.junit4.TestLegacyMessageUtils.getInboundProperty;
 import static org.mule.functional.junit4.TestLegacyMessageUtils.getOutboundProperty;
+
 import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.functional.junit4.TestLegacyMessageBuilder;
 import org.mule.runtime.api.exception.MuleException;
@@ -22,7 +23,7 @@ import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import com.eaio.uuid.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
@@ -76,6 +77,7 @@ public class FlowAsyncBeforeAfterOutboundTestCase extends AbstractIntegrationTes
   public static class ThreadSensingMessageProcessor implements Processor {
 
     private static final ThreadLocal<String> taskTokenInThread = new ThreadLocal<>();
+    private static final AtomicInteger idgenerator = new AtomicInteger();
 
     @Override
     public CoreEvent process(CoreEvent event) throws MuleException {
@@ -92,7 +94,7 @@ public class FlowAsyncBeforeAfterOutboundTestCase extends AbstractIntegrationTes
     }
 
     protected String generateTaskToken() {
-      return currentThread().getName() + " - " + new UUID().toString();
+      return currentThread().getName() + " - " + idgenerator.getAndIncrement();
     }
   }
 }

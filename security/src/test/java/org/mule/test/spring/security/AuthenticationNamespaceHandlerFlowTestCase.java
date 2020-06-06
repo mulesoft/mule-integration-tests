@@ -16,18 +16,20 @@ import static org.mule.runtime.core.api.config.MuleProperties.OBJECT_SECURITY_MA
 import org.mule.extension.spring.api.security.PreAuthenticatedAuthenticationProvider;
 import org.mule.extension.spring.api.security.SpringProviderAdapter;
 import org.mule.extension.spring.api.security.UserAndPasswordAuthenticationProvider;
+import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.api.component.Component;
 import org.mule.runtime.core.api.security.SecurityManager;
 import org.mule.runtime.core.api.security.SecurityProvider;
 import org.mule.tck.junit4.rule.DynamicPort;
-import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.test.IntegrationTestCaseRunnerConfig;
+
+import java.util.Collection;
 
 import org.junit.Rule;
 import org.junit.Test;
 
-import java.util.Collection;
-
-public class AuthenticationNamespaceHandlerFlowTestCase extends AbstractIntegrationTestCase {
+public class AuthenticationNamespaceHandlerFlowTestCase extends MuleArtifactFunctionalTestCase
+    implements IntegrationTestCaseRunnerConfig {
 
   @Rule
   public DynamicPort port1 = new DynamicPort("port1");

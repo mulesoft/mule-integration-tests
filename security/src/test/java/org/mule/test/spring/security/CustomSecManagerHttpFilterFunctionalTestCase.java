@@ -13,8 +13,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
+import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.tck.junit4.rule.DynamicPort;
-import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.test.IntegrationTestCaseRunnerConfig;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
@@ -24,7 +25,8 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
-public class CustomSecManagerHttpFilterFunctionalTestCase extends AbstractIntegrationTestCase {
+public class CustomSecManagerHttpFilterFunctionalTestCase extends MuleArtifactFunctionalTestCase
+    implements IntegrationTestCaseRunnerConfig {
 
   @Rule
   public DynamicPort dynamicPort = new DynamicPort("port1");

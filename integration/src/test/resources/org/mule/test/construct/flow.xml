@@ -3,15 +3,11 @@
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
       xmlns:script="http://www.mulesoft.org/schema/mule/scripting"
-      xmlns:spring="http://www.mulesoft.org/schema/mule/spring"
       xmlns:test="http://www.mulesoft.org/schema/mule/test"
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
                http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd
                http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
-               http://www.mulesoft.org/schema/mule/spring http://www.mulesoft.org/schema/mule/spring/current/mule-spring.xsd
                http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
-
-    <spring:config name="springConfig" files="org/mule/test/construct/flow-beans.xml"/>
 
     <custom-processor class="org.mule.test.construct.FlowConfigurationFunctionalTestCase.CustomAppender" name="appender"/>
     <custom-processor class="org.mule.test.construct.FlowConfigurationFunctionalTestCase.CustomAppender" name="test-array-appender"/>
@@ -117,33 +113,6 @@
         <flow-ref name="flow"/>
         <flow-ref name="flow"/>
     </flow>
-
-    <flow name="invoke" initialState="stopped">
-        <invoke object-ref="appender" method="transform" methodArguments="#[mel:payload]"/>
-    </flow>
-
-    <flow name="invoke2" initialState="stopped">
-        <invoke object-ref="appender" method="transform" methodArguments="#[mel:message.inboundProperties.one]"/>
-    </flow>
-    
-    <flow name="invoke3" initialState="stopped">
-        <processor ref="invokeme"/>
-    </flow>
-
-    <flow name="invoke4" initialState="stopped">
-        <processor ref="invokeme-noargs"/>
-    </flow>
-    
-   	<flow name="invokeArrayInArgs" initialState="stopped">
-        <invoke object-ref="test-array-appender" method="transformArray" methodArguments="#[['test', 'test']]"/>
-    </flow>
-    
-
-    <invoke name="invokeme" object-ref="pojo" method="method" methodArguments="#[mel:'Account'] ,    #[mel:payload]"
-        methodArgumentTypes="java.lang.String, java.lang.String" />
-
-    <invoke name="invokeme-noargs" object-ref="pojo" method="method"/>
-
 
     <flow name="loggermessage" initialState="stopped">
         <set-payload value="#[payload ++ ' Hello foo']" />

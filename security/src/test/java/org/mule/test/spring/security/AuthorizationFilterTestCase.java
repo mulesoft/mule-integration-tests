@@ -17,8 +17,9 @@ import static org.mule.runtime.http.api.HttpConstants.HttpStatus.OK;
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.UNAUTHORIZED;
 import static org.mule.runtime.http.api.HttpHeaders.Names.WWW_AUTHENTICATE;
 
+import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.tck.junit4.rule.DynamicPort;
-import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.test.IntegrationTestCaseRunnerConfig;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
@@ -27,7 +28,7 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.junit.Rule;
 import org.junit.Test;
 
-public class AuthorizationFilterTestCase extends AbstractIntegrationTestCase {
+public class AuthorizationFilterTestCase extends MuleArtifactFunctionalTestCase implements IntegrationTestCaseRunnerConfig {
 
   @Rule
   public DynamicPort port1 = new DynamicPort("port1");

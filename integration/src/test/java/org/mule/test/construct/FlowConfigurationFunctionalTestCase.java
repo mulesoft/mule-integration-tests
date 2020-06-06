@@ -154,37 +154,6 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
   }
 
   @Test
-  public void testInvoke() throws Exception {
-    final Message message = flowRunner("invoke").withPayload("0").run().getMessage();
-    assertEquals("0recieved", getPayloadAsString(message));
-  }
-
-  @Test
-  public void testInvoke2() throws Exception {
-    final Message response =
-        flowRunner("invoke2").withPayload("0").withInboundProperty("one", "header1val").run().getMessage();
-    assertEquals("header1valrecieved", getPayloadAsString(response));
-  }
-
-  @Test
-  public void testInvoke3() throws Exception {
-    // ensure multiple arguments work
-    flowRunner("invoke3").withPayload("0").run();
-  }
-
-  @Test
-  public void testInvoke4() throws Exception {
-    // ensure no arguments work
-    flowRunner("invoke4").withPayload("0").run();
-  }
-
-  @Test
-  public void testInvokeArrayInArgs() throws Exception {
-    final Message message = flowRunner("invokeArrayInArgs").withPayload("0").run().getMessage();
-    assertThat(message.getPayload().getValue(), equalTo(EXPECTED_ARRAY_IN_ARGS_RESULT));
-  }
-
-  @Test
   public void testLoggerMessage() throws Exception {
     flowRunner("loggermessage").withPayload("0").run();
   }

@@ -11,6 +11,7 @@ import static org.junit.Assert.assertThat;
 import static org.mule.extension.http.api.HttpSystemProperties.refresh;
 import static org.mule.extension.http.internal.HttpConnectorConstants.BASIC_LAX_DECODING_PROPERTY;
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.OK;
+
 import org.mule.tck.junit4.rule.SystemProperty;
 
 import org.junit.AfterClass;

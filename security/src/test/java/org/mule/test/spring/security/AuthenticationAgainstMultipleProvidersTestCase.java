@@ -11,8 +11,9 @@ import static org.apache.commons.httpclient.HttpStatus.SC_UNAUTHORIZED;
 import static org.apache.commons.httpclient.auth.AuthScope.ANY;
 import static org.junit.Assert.assertEquals;
 
+import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.tck.junit4.rule.DynamicPort;
-import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.test.IntegrationTestCaseRunnerConfig;
 
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.HttpClient;
@@ -22,7 +23,8 @@ import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.junit.Rule;
 import org.junit.Test;
 
-public class AuthenticationAgainstMultipleProvidersTestCase extends AbstractIntegrationTestCase {
+public class AuthenticationAgainstMultipleProvidersTestCase extends MuleArtifactFunctionalTestCase
+    implements IntegrationTestCaseRunnerConfig {
 
   @Rule
   public DynamicPort httpPort1 = new DynamicPort("port1");

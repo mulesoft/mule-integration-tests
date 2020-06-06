@@ -12,25 +12,20 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.sameInstance;
 import static org.hamcrest.core.IsCollectionContaining.hasItem;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.component.location.Location.builder;
 import static org.mule.runtime.api.component.location.Location.builderFromStringRepresentation;
 import static org.mule.runtime.config.api.SpringXmlConfigurationBuilderFactory.createConfigurationBuilder;
-import static org.mule.runtime.core.api.config.MuleProperties.OBJECT_SECURITY_MANAGER;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentLocatorStory.SEARCH_CONFIGURATION;
 
-import org.mule.extension.spring.api.SpringConfig;
 import org.mule.runtime.api.artifact.Registry;
 import org.mule.runtime.api.component.Component;
 import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.api.component.location.Location;
 import org.mule.runtime.config.api.LazyComponentInitializer;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
-import org.mule.runtime.core.api.security.SecurityManager;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -42,7 +37,6 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 
-import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -66,7 +60,7 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
   public SystemProperty path = new SystemProperty("path", "path");
 
 
-  private static final int TOTAL_NUMBER_OF_LOCATIONS = 115;
+  private static final int TOTAL_NUMBER_OF_LOCATIONS = 97;
   @Inject
   private Registry registry;
 
@@ -80,7 +74,6 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
         "org/mule/test/integration/locator/component-locator-notifications.xml",
         "org/mule/test/integration/locator/component-locator-levels-config.xml",
         "org/mule/test/integration/locator/component-locator-os-connector.xml",
-        "org/mule/test/integration/locator/component-locator-spring-config.xml",
         "org/mule/test/integration/locator/component-locator-reference-component-models.xml"};
   }
 
@@ -150,7 +143,7 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
                                   "tlsContextRef",
                                   "tlsContextRef/0",
                                   "anonymousProxyConfig",
-                                  "springConfig",
+
                                   "globalObjectStore",
                                   "globalObjectStoreAggregatorFlow",
                                   "globalObjectStoreAggregatorFlow/processors/0",
@@ -167,23 +160,6 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
 
                                   "justAnotherFlowThatShouldNotBeInitialized",
                                   "justAnotherFlowThatShouldNotBeInitialized/processors/0",
-
-                                  "null",
-                                  "null/0",
-                                  "listenerConfig",
-                                  "listenerConfig/connection",
-                                  "SecureUMO",
-                                  "SecureUMO/source",
-                                  "SecureUMO/processors/0",
-                                  "SecureUMO/processors/1",
-                                  "SecureUMO2",
-                                  "SecureUMO2/source",
-                                  "SecureUMO2/processors/0",
-                                  "SecureUMO2/processors/0/0",
-                                  "SecureUMO2/processors/0/0/0",
-                                  "SecureUMO2/processors/1",
-                                  "securityManager2",
-                                  "securityManager2/0",
 
                                   "Matcher",
                                   "fileListWithMatcherReference",
@@ -230,7 +206,6 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
                                   "null/0",
                                   "null",
                                   "null/0",
-                                  "null/1",
 
                                   "os-config",
                                   "os-contains-flow",
@@ -311,7 +286,6 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
     assertThat(locator.find(builderFromStringRepresentation("myFlow/source").build()), is(not(empty())));
     assertThat(locator.find(builderFromStringRepresentation("myFlow/processors/2").build()), is(empty()));
     assertThat(locator.find(builderFromStringRepresentation("myFlow/processors/2/processors/0").build()), is(not(empty())));
-    assertThat(locator.find(builderFromStringRepresentation("springConfig").build()), is(not(empty())));
   }
 
   @Test
@@ -356,87 +330,6 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
     assertThat(locator.find(builder().globalName("flowLvl2").build()), is(empty()));
     assertThat(locator.find(builder().globalName("flowLvl2").addProcessorsPart().addIndexPart(0).build()), is(empty()));
     assertThat(locator.find(builder().globalName("flowLvl2").addProcessorsPart().addIndexPart(1).build()), is(not(empty())));
-  }
-
-  @Description("Lazy init should create spring components without dependencies")
-  @Test
-  public void lazyMuleContextInitializesSpringConfig() throws IllegalAccessException {
-    lazyComponentInitializer.initializeComponents(componentLocation -> componentLocation.getLocation().equals("myFlow"));
-
-
-    assertThat(locator.find(builderFromStringRepresentation("myFlow").build()), is(not(empty())));
-    assertThat(locator.find(builderFromStringRepresentation("myFlow/source").build()), is(not(empty())));
-    assertThat(locator.find(builderFromStringRepresentation("myFlow/processors/0").build()), is(not(empty())));
-    assertThat(locator.find(builderFromStringRepresentation("myFlow/processors/1").build()), is(not(empty())));
-    assertThat(locator.find(builderFromStringRepresentation("myFlow/processors/2").build()), is(not(empty())));
-    assertThat(locator.find(builderFromStringRepresentation("myFlow/processors/2/processors/0").build()), is(not(empty())));
-    assertThat(locator.find(builderFromStringRepresentation("myFlow/processors/2/processors/1").build()), is(not(empty())));
-    assertThat(locator.find(builderFromStringRepresentation("springConfig").build()), is(not(empty())));
-
-    assertThat(registry.lookupByName("springConfig").isPresent(), is(true));
-
-    SpringConfig springConfig = (SpringConfig) registry.lookupByName("springConfig").get();
-    Object applicationContext = FieldUtils.readField(springConfig, "applicationContext", true);
-    assertThat("springConfig was not configured", applicationContext, notNullValue());
-
-    assertThat(springConfig.getObject("child1").isPresent(), is(true));
-  }
-
-  @Description("Lazy init should create spring components without dependencies")
-  @Test
-  public void lazyMuleContextShouldNotFailWhenTryingToInitializeGlobalProperty() throws IllegalAccessException {
-    lazyComponentInitializer.initializeComponents(componentLocation -> componentLocation.getLocation().equals("some.property"));
-    assertThat(locator.find(builderFromStringRepresentation("some.property").build()), is(empty()));
-  }
-
-  @Description("Lazy init should create spring security manager without dependencies")
-  @Test
-  public void lazyMuleContextInitializesSpringSecurityManager() throws IllegalAccessException {
-    lazyComponentInitializer.initializeComponents(componentLocation -> componentLocation.getLocation().equals("SecureUMO"));
-
-    assertThat(locator.find(builderFromStringRepresentation("listenerConfig").build()), is(not(empty())));
-    assertThat(locator.find(Location.builderFromStringRepresentation("listenerConfig/connection").build()), is(not(empty())));
-    assertThat(locator.find(builderFromStringRepresentation("SecureUMO/source").build()), is(not(empty())));
-    assertThat(locator.find(builderFromStringRepresentation("SecureUMO/processors/0").build()), is(not(empty())));
-    assertThat(locator.find(builderFromStringRepresentation("SecureUMO/processors/1").build()), is(not(empty())));
-
-    assertThat(registry.lookupByName(OBJECT_SECURITY_MANAGER).isPresent(), is(true));
-
-    SecurityManager securityManager = (SecurityManager) registry.lookupByName(OBJECT_SECURITY_MANAGER).get();
-    assertThat("spring security provider was not registered", securityManager.getProvider("memory-dao"), notNullValue());
-  }
-
-  @Description("Lazy init should create spring security manager without dependencies")
-  @Test
-  public void lazyMuleContextInitializesNamedSpringSecurityManager() throws IllegalAccessException {
-    lazyComponentInitializer.initializeComponents(componentLocation -> componentLocation.getLocation().equals("SecureUMO2"));
-
-    assertThat(locator.find(builderFromStringRepresentation("listenerConfig").build()), is(not(empty())));
-    assertThat(locator.find(Location.builderFromStringRepresentation("listenerConfig/connection").build()), is(not(empty())));
-    assertThat(locator.find(builderFromStringRepresentation("SecureUMO2/source").build()), is(not(empty())));
-    assertThat(locator.find(builderFromStringRepresentation("SecureUMO2/processors/0").build()), is(not(empty())));
-    assertThat(locator.find(builderFromStringRepresentation("SecureUMO2/processors/1").build()), is(not(empty())));
-
-    assertThat(registry.lookupByName(OBJECT_SECURITY_MANAGER).isPresent(), is(true));
-
-    SecurityManager securityManager = (SecurityManager) registry.lookupByName("securityManager2").get();
-    assertThat("spring security provider was not registered", securityManager.getProvider("memory-dao2"), notNullValue());
-  }
-
-  @Description("Spring component should be created each time as the rest")
-  @Test
-  public void lazyMuleContextSpringConfigRebuilt() throws IllegalAccessException {
-    lazyComponentInitializer.initializeComponents(componentLocation -> componentLocation.getLocation().equals("myFlow"));
-    assertThat(locator.find(builderFromStringRepresentation("springConfig").build()), is(not(empty())));
-    Object firstObj = locator.find(builderFromStringRepresentation("springConfig").build()).get();
-
-    lazyComponentInitializer.initializeComponents(componentLocation -> componentLocation.getLocation().equals("anotherFlow"));
-    assertThat(locator.find(builderFromStringRepresentation("springConfig").build()), is(not(empty())));
-    Object secondObj = locator.find(builderFromStringRepresentation("springConfig").build()).get();
-    Object secondAppContext = FieldUtils.readField(secondObj, "applicationContext", true);
-    assertThat("springConfig was not configured", secondAppContext, notNullValue());
-
-    assertThat(firstObj, not(sameInstance(secondObj)));
   }
 
   @Description("Lazy init should create components that are references by other components, when the reference is not a top level element")
@@ -484,7 +377,7 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
     flowRunner("notificationFlow").run();
     Collection<ProcessorNotificationStore> processorNotificationStores =
         registry.lookupAllByType(ProcessorNotificationStore.class);
-    assertThat(processorNotificationStores, hasSize(2));
+    assertThat(processorNotificationStores, hasSize(1));
 
     processorNotificationStores.stream()
         .forEach(processorNotificationStore -> assertThat(processorNotificationStore.getNotifications(), hasSize(2)));

@@ -11,6 +11,8 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.exception.ExceptionHelper.getRootException;
 import static org.mule.runtime.core.api.config.MuleProperties.OBJECT_EXPRESSION_MANAGER;
+
+import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.api.security.SecurityContext;
 import org.mule.runtime.api.security.SecurityProviderNotFoundException;
@@ -20,7 +22,7 @@ import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.security.AbstractAuthenticationFilter;
 import org.mule.runtime.core.api.security.CryptoFailureException;
 import org.mule.runtime.core.api.security.EncryptionStrategyNotFoundException;
-import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.test.IntegrationTestCaseRunnerConfig;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -32,7 +34,8 @@ import org.springframework.security.authentication.BadCredentialsException;
 /**
  * See MULE-4916: spring beans inside a security filter
  */
-public class CustomSecurityFilterTestCase extends AbstractIntegrationTestCase {
+public class CustomSecurityFilterTestCase extends MuleArtifactFunctionalTestCase
+    implements IntegrationTestCaseRunnerConfig {
 
   private static final String EXPECTED_PASSWORD = "ross";
 

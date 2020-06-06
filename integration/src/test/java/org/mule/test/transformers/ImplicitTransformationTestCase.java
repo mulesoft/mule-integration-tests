@@ -6,21 +6,23 @@
  */
 package org.mule.test.transformers;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.lang3.StringUtils.reverse;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.core.api.util.IOUtils.closeQuietly;
+
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.metadata.DataType;
-import org.mule.runtime.core.api.transformer.TransformerException;
 import org.mule.runtime.core.api.transformer.AbstractTransformer;
+import org.mule.runtime.core.api.transformer.TransformerException;
 import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
-import org.apache.tools.ant.filters.StringInputStream;
 import org.junit.Test;
 
 public class ImplicitTransformationTestCase extends AbstractIntegrationTestCase {
@@ -32,20 +34,20 @@ public class ImplicitTransformationTestCase extends AbstractIntegrationTestCase 
 
   @Test
   public void testImplicitInputStreamToStringConversion() throws Exception {
-    InputStream inputStream = new StringInputStream("TEST");
+    InputStream inputStream = new ByteArrayInputStream("TEST".getBytes(UTF_8));
     Message response = flowRunner("StringEchoService").withPayload(inputStream).run().getMessage();
     assertThat(response.getPayload().getValue(), is("TSET"));
   }
 
   @Test
   public void testImplicitByteArrayToStringConversion() throws Exception {
-    Message response = flowRunner("StringEchoService").withPayload("TEST".getBytes()).run().getMessage();
+    Message response = flowRunner("StringEchoService").withPayload("TEST".getBytes(UTF_8)).run().getMessage();
     assertThat(response.getPayload().getValue(), is("TSET"));
   }
 
   @Test
   public void testImplicitInputStreamToByteArrayConversion() throws Exception {
-    InputStream inputStream = new StringInputStream("TEST");
+    InputStream inputStream = new ByteArrayInputStream("TEST".getBytes(UTF_8));
     Message response = flowRunner("ByteArrayEchoService").withPayload(inputStream).run().getMessage();
     assertThat(response.getPayload().getValue(), is("TSET"));
   }
