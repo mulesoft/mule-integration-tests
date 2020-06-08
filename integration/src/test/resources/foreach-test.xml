@@ -367,6 +367,15 @@
         </foreach>
     </flow>
 
+    <flow name="emptyForEach">
+        <set-variable variableName="work" value="Mondi" />
+        <set-payload value="#[[]]"/>
+        <foreach>
+            <set-variable variableName="work" value="hello" />
+        </foreach>
+        <test:assert expression="#[vars.work == 'Mondi']"/>
+    </flow>
+
     <http:request-config name="httpRequestConfig">
         <http:request-connection host="localhost" port="${port}"/>
     </http:request-config>
