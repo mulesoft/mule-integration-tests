@@ -607,6 +607,12 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
     flowRunner("forEachWithTry").withPayload(ImmutableList.of("one", "two", "three")).run();
   }
 
+  @Test
+  @Issue("MULE-18462")
+  public void forEachEmptyCollection() throws Exception {
+    flowRunner("emptyForEach").run();
+  }
+
   // TODO MULE-17934 remove this
   @Override
   protected boolean isGracefulShutdown() {
