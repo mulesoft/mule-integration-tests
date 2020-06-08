@@ -22,24 +22,25 @@
 
     <sub-flow name="untilSuccessfulFlow">
         <until-successful maxRetries="5" millisBetweenRetries="10000">
-            <logger/>
+            <test:processor class="org.mule.test.integration.locator.processor.CustomTestComponent"/>
         </until-successful>
     </sub-flow>
 
     <sub-flow name="untilSuccessfulFlowCopy">
         <until-successful maxRetries="5" millisBetweenRetries="10000">
-            <logger/>
+            <test:processor class="org.mule.test.integration.locator.processor.CustomTestComponent"/>
         </until-successful>
     </sub-flow>
 
     <sub-flow name="multipleInitialize">
-        <logger/>
-        <logger/>
+        <test:processor class="org.mule.test.integration.locator.processor.CustomTestComponent"/>
+        <test:processor class="org.mule.test.integration.locator.processor.CustomTestComponent"/>
     </sub-flow>
 
     <error-handler name="globalErrorHandler">
         <on-error-propagate>
-            <logger/>
+            <test:processor class="org.mule.test.integration.locator.processor.CustomTestComponent"/>
+            <test:queue name="globalErrorHandlerQueue"/>
         </on-error-propagate>
     </error-handler>
 
@@ -105,7 +106,7 @@
 
     <sub-flow name="async-flow">
         <async>
-            <logger/>
+            <test:processor class="org.mule.test.integration.locator.processor.CustomTestComponent"/>
         </async>
     </sub-flow>
 

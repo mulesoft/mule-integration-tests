@@ -9,17 +9,19 @@ package org.mule.test.integration.parsing;
 import static org.hamcrest.core.StringStartsWith.startsWith;
 import static org.junit.Assert.assertThat;
 
-import javax.inject.Inject;
-
-import org.junit.Test;
-
+import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.api.component.Component;
 import org.mule.runtime.api.component.location.ConfigurationComponentLocator;
 import org.mule.runtime.api.component.location.Location;
 import org.mule.runtime.api.util.ComponentLocationProvider;
-import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.test.IntegrationTestCaseRunnerConfig;
 
-public class XmlExtensionUsingCustomPrefixTestCase extends AbstractIntegrationTestCase {
+import javax.inject.Inject;
+
+import org.junit.Test;
+
+public class XmlExtensionUsingCustomPrefixTestCase extends MuleArtifactFunctionalTestCase
+    implements IntegrationTestCaseRunnerConfig {
 
   @Inject
   private ConfigurationComponentLocator configurationComponentLocator;

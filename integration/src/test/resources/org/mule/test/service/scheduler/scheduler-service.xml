@@ -10,8 +10,8 @@
 	<object name="raiseBusy" class="org.mule.test.service.scheduler.SchedulerServiceTestCase$RaiseBusy"/> 
 
     <flow name="willSchedule">
-        <processor ref="hasSchedulingService"/>
-        <processor ref="recordThreadName"/>
+        <flow-ref name="hasSchedulingService"/>
+        <flow-ref name="recordThreadName"/>
     </flow>
 
     <flow name="delaySchedule">

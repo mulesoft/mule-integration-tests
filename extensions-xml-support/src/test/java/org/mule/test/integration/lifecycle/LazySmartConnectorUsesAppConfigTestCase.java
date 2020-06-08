@@ -10,18 +10,21 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mule.runtime.api.connectivity.ConnectivityTestingService.CONNECTIVITY_TESTING_SERVICE_KEY;
 import static org.mule.runtime.config.api.SpringXmlConfigurationBuilderFactory.createConfigurationBuilder;
+
+import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.api.component.location.Location;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.api.connectivity.ConnectivityTestingService;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
-import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.test.IntegrationTestCaseRunnerConfig;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.junit.Test;
 
-public class LazySmartConnectorUsesAppConfigTestCase extends AbstractIntegrationTestCase {
+public class LazySmartConnectorUsesAppConfigTestCase extends MuleArtifactFunctionalTestCase
+    implements IntegrationTestCaseRunnerConfig {
 
   @Inject
   @Named(CONNECTIVITY_TESTING_SERVICE_KEY)

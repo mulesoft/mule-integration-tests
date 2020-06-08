@@ -140,7 +140,7 @@ public class SourceInterceptorFactoryTestCase extends AbstractIntegrationTestCas
     SourceCallbackInterceptor.afterCallback = (event, thrown) -> {
       if (event.getError().isPresent()) {
         ErrorType errorType = event.getError().get().getErrorType();
-        assertThat(errorType.getNamespace(), equalTo("MODULE-USING-CORE"));
+        assertThat(errorType.getNamespace(), equalTo("APP"));
         assertThat(errorType.getIdentifier(), equalTo("RAISED"));
         afterCalledLatch.countDown();
       }
