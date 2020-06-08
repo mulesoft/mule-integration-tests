@@ -6,28 +6,22 @@
  */
 package org.mule.test.integration.interception;
 
-import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertThat;
 import static org.mule.functional.api.exception.ExpectedError.none;
-import static org.mule.runtime.api.interception.FlowInterceptorFactory.FLOW_INTERCEPTORS_ORDER_REGISTRY_KEY;
 import static org.mule.test.allure.AllureConstants.InterceptonApi.INTERCEPTION_API;
 import static org.mule.test.allure.AllureConstants.InterceptonApi.ComponentInterceptionStory.FLOW_INTERCEPTION_STORY;
 
 import org.mule.functional.api.exception.ExpectedError;
 import org.mule.runtime.api.interception.FlowInterceptor;
 import org.mule.runtime.api.interception.FlowInterceptorFactory;
-import org.mule.runtime.api.interception.FlowInterceptorFactory.FlowInterceptorOrder;
 import org.mule.runtime.api.interception.InterceptionAction;
 import org.mule.runtime.api.interception.InterceptionEvent;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.integration.interception.ProcessorInterceptorFactoryTestCase.HasInjectedAttributesInterceptor;
-import org.mule.test.integration.interception.ProcessorInterceptorFactoryTestCase.HasInjectedAttributesInterceptorFactory;
-import org.mule.test.runner.RunnerDelegateTo;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -41,32 +35,18 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
 
 @Feature(INTERCEPTION_API)
 @Story(FLOW_INTERCEPTION_STORY)
-@RunnerDelegateTo(Parameterized.class)
 public class FlowInterceptorFactoryCustomActionTestCase extends AbstractIntegrationTestCase {
 
   private static AtomicInteger counter = new AtomicInteger();
 
   @Rule
   public ExpectedError expectedError = none();
-
-  private final boolean mutateEventBefore;
-
-  public FlowInterceptorFactoryCustomActionTestCase(boolean mutateEventBefore) {
-    this.mutateEventBefore = mutateEventBefore;
-  }
-
-  @Parameters(name = "mutateEventBefore: {0}")
-  public static Collection<Object> data() {
-    return asList(true, false);
-  }
 
   @Inject
   @Named("counting")
@@ -82,11 +62,6 @@ public class FlowInterceptorFactoryCustomActionTestCase extends AbstractIntegrat
     Map<String, Object> objects = new HashMap<>();
 
     objects.put("_CustomActionInterceptorFactory", new CustomActionInterceptorFactory());
-    objects.put("_HasInjectedAttributesInterceptorFactory", new HasInjectedAttributesInterceptorFactory(mutateEventBefore));
-
-    objects.put(FLOW_INTERCEPTORS_ORDER_REGISTRY_KEY,
-                (FlowInterceptorOrder) () -> asList(CustomActionInterceptorFactory.class.getName(),
-                                                    HasInjectedAttributesInterceptorFactory.class.getName()));
 
     return objects;
   }
