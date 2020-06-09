@@ -17,4 +17,16 @@
         <output type="a-custom-type" doc:description="Payload's output"/>
     </operation>
 
+    <operation name="set-street-name-as-payload">
+        <parameters>
+            <parameter name="customObject"
+                type="a-custom-type" use="OPTIONAL" role="CONTENT"
+                displayName="Custom Object"/>
+        </parameters>
+        <body>
+            <!-- For this case there seems to be an object with its fields as null. This tests just ensures compatibility with previous behavior. -->
+            <mule:set-payload value="#[vars.customObject.street_name]"/>
+        </body>
+    </operation>
+
  </module>
