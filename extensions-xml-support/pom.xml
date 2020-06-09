@@ -109,6 +109,12 @@
             <classifier>mule-plugin</classifier>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.mule.tests</groupId>
+            <artifactId>smart-connector-using-custom-types</artifactId>
+            <classifier>mule-plugin</classifier>
+            <version>${project.version}</version>
+        </dependency>
 
         <!-- Dependencies needed for the test runner -->
         <dependency>
