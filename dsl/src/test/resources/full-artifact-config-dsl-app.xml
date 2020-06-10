@@ -6,11 +6,10 @@
       xmlns:http="http://www.mulesoft.org/schema/mule/http"
       xmlns:os="http://www.mulesoft.org/schema/mule/os"
       xmlns:sockets="http://www.mulesoft.org/schema/mule/sockets"
-      xmlns:test-oauth="http://www.mulesoft.org/schema/mule/test-oauth"
       xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
       xmlns:wsc="http://www.mulesoft.org/schema/mule/wsc"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd http://www.mulesoft.org/schema/mule/test-oauth http://www.mulesoft.org/schema/mule/test-oauth/current/mule-test-oauth.xsd http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd http://www.mulesoft.org/schema/mule/sockets http://www.mulesoft.org/schema/mule/sockets/current/mule-sockets.xsd">
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd http://www.mulesoft.org/schema/mule/sockets http://www.mulesoft.org/schema/mule/sockets/current/mule-sockets.xsd">
     <configuration defaultErrorHandler-ref="referableHandler"/>
 
     <object name="failingProcessor"
@@ -46,10 +45,6 @@
     <file:config name="fileConfig">
         <file:connection/>
     </file:config>
-
-    <test-oauth:mixed-config name="oauth-platform">
-        <test-oauth:platform-managed-oauth-connection connectionId="ocs:348573-495273958273-924852945/salesforce/john-sfdc-1k87kmjt" />
-    </test-oauth:mixed-config>
 
     <wsc:config name="wscConfig">
         <wsc:connection address="http://www.webservicex.com/globalweather.asmx"

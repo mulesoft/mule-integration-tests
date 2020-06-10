@@ -48,7 +48,6 @@ import static org.mule.runtime.extension.api.declaration.type.ReconnectionStrate
 import static org.mule.runtime.extension.api.declaration.type.RedeliveryPolicyTypeBuilder.MAX_REDELIVERY_COUNT;
 import static org.mule.runtime.extension.api.declaration.type.RedeliveryPolicyTypeBuilder.USE_SECURE_HASH;
 import static org.mule.runtime.extension.api.declaration.type.StreamingStrategyTypeBuilder.REPEATABLE_IN_MEMORY_BYTES_STREAM_ALIAS;
-import static org.mule.runtime.extension.internal.ocs.OCSConstants.OCS_ENABLED;
 import static org.mule.test.module.extension.internal.util.ExtensionsTestUtils.compareXML;
 import static org.skyscreamer.jsonassert.JSONCompareMode.NON_EXTENSIBLE;
 
@@ -104,7 +103,6 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
 
   @Parameterized.Parameters(name = "{0}")
   public static Collection<Object[]> data() {
-    System.setProperty(OCS_ENABLED, "true");
     return asList(new Object[][] {
         {"full-artifact-config-dsl-app.xml", createFullArtifactDeclaration(), "full-artifact-config-dsl-app.json"},
         {"multi-flow-dsl-app.xml", createMultiFlowArtifactDeclaration(), "multi-flow-dsl-app.json"},
@@ -306,7 +304,6 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
     ElementDeclarer wsc = ElementDeclarer.forExtension("Web Service Consumer");
     ElementDeclarer file = ElementDeclarer.forExtension("File");
     ElementDeclarer os = ElementDeclarer.forExtension("ObjectStore");
-    ElementDeclarer oauth = ElementDeclarer.forExtension("Test OAuth Extension");
 
     return newArtifact()
         .withCustomParameter("xmlns:doc", NS_MULE_DOCUMENTATION)
@@ -370,15 +367,6 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
         .withGlobalElement(file.newConfiguration("config")
             .withRefName("fileConfig")
             .withConnection(file.newConnection("connection").getDeclaration())
-            .getDeclaration())
-        .withGlobalElement(oauth.newConfiguration("mixed")
-            .withRefName("oauth-platform")
-            .withConnection(oauth.newConnection("platformManagedOauth")
-                .withParameterGroup(newParameterGroup()
-                    .withParameter("connectionId",
-                                   createStringParameter("ocs:348573-495273958273-924852945/salesforce/john-sfdc-1k87kmjt"))
-                    .getDeclaration())
-                .getDeclaration())
             .getDeclaration())
         .withGlobalElement(wsc.newConfiguration("config")
             .withRefName("wscConfig")
@@ -834,7 +822,7 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
     return createParameter(value, NUMBER);
   }
 
-  private static ParameterValue createStringParameter(String value) {
+  protected static ParameterValue createStringParameter(String value) {
     return createParameter(value, STRING);
   }
 

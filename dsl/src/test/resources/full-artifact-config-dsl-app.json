@@ -189,30 +189,6 @@
       }
     },
     {
-      "refName": "oauth-platform",
-      "name": "mixed",
-      "declaringExtension": "Test OAuth Extension",
-      "kind": "CONFIG",
-      "customConfigurationParameters": [],
-      "metadataProperties": {},
-      "parameterGroups": [],
-      "connection": {
-        "name": "platformManagedOauth",
-        "declaringExtension": "Test OAuth Extension",
-        "kind": "CONNECTION",
-        "customConfigurationParameters": [],
-        "metadataProperties": {},
-        "parameterGroups": [
-          {
-  "name": "General",
-  "customConfigurationParameters": [],
-  "metadataProperties": {},
-  "parameters": [{"name":"connectionId","metadataProperties":{},"value":{"text":"ocs:348573-495273958273-924852945/salesforce/john-sfdc-1k87kmjt","isCData":false,"type":"STRING"}}]
-}
-        ]
-      }
-    },
-    {
       "refName": "wscConfig",
       "name": "config",
       "declaringExtension": "Web Service Consumer",
@@ -1041,15 +1017,6 @@
     },
     {
       "value": {
-        "text": "http://www.mulesoft.org/schema/mule/test-oauth",
-        "isCData": false,
-        "type": "STRING"
-      },
-      "properties": {},
-      "name": "xmlns:test-oauth"
-    },
-    {
-      "value": {
         "text": "http://www.mulesoft.org/schema/mule/tls",
         "isCData": false,
         "type": "STRING"
@@ -1059,7 +1026,7 @@
     },
     {
       "value": {
-        "text": "http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd http://www.mulesoft.org/schema/mule/test-oauth http://www.mulesoft.org/schema/mule/test-oauth/current/mule-test-oauth.xsd http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd http://www.mulesoft.org/schema/mule/sockets http://www.mulesoft.org/schema/mule/sockets/current/mule-sockets.xsd",
+        "text": "http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd http://www.mulesoft.org/schema/mule/sockets http://www.mulesoft.org/schema/mule/sockets/current/mule-sockets.xsd",
         "isCData": false,
         "type": "STRING"
       },
