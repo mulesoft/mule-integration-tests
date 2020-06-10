@@ -22,23 +22,23 @@ import static org.mule.runtime.http.api.HttpConstants.HttpStatus.REQUEST_URI_TOO
 @Issue("MULE-18455")
 public class HttpListenerUrlTooLongIssue18455TestCase extends AbstractIntegrationTestCase {
 
-    @Rule
-    public DynamicPort listenPort = new DynamicPort("port");
+  @Rule
+  public DynamicPort listenPort = new DynamicPort("port");
 
-    @Test
-    public void failsWithAppropriateError() throws Exception {
-        final Response response = Request.Get(getListenerUrl(repeat("path", 3000)))
-                .execute();
+  @Test
+  public void failsWithAppropriateError() throws Exception {
+    final Response response = Request.Get(getListenerUrl(repeat("path", 3000)))
+        .execute();
 
-        assertThat(response.returnResponse().getStatusLine().getStatusCode(), is(REQUEST_URI_TOO_LONG.getStatusCode()));
-    }
+    assertThat(response.returnResponse().getStatusLine().getStatusCode(), is(REQUEST_URI_TOO_LONG.getStatusCode()));
+  }
 
-    @Override
-    protected String getConfigFile() {
-        return "org/mule/issues/http-listener-url-too-long-config.xml";
-    }
+  @Override
+  protected String getConfigFile() {
+    return "org/mule/issues/http-listener-url-too-long-config.xml";
+  }
 
-    private String getListenerUrl(String path) {
-        return String.format("http://localhost:%s/%s", listenPort.getNumber(), path);
-    }
+  private String getListenerUrl(String path) {
+    return String.format("http://localhost:%s/%s", listenPort.getNumber(), path);
+  }
 }
