@@ -7,7 +7,6 @@
 package org.mule.issues;
 
 import io.qameta.allure.Issue;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.fluent.Request;
@@ -20,8 +19,11 @@ import org.mule.test.AbstractIntegrationTestCase;
 
 import java.io.IOException;
 
+import static java.lang.Integer.parseInt;
 import static java.lang.String.format;
+import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.apache.commons.lang3.StringUtils.repeat;
+import static org.apache.http.client.fluent.Request.Get;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.core.api.config.MuleProperties.SYSTEM_PROPERTY_PREFIX;
@@ -43,7 +45,7 @@ public class HttpListenerUrlOrHeaderTooLongIssue18455TestCase extends AbstractIn
 
   @Test
   public void maxUrlSizeExceeded() throws Exception {
-    final Response response = Request.Get(getListenerUrl(repeat("path", 3000)))
+    final Response response = Get(getListenerUrl(repeat("path", 3000)))
         .execute();
 
     assertThat(response.returnResponse().getStatusLine().getStatusCode(), is(REQUEST_URI_TOO_LONG.getStatusCode()));
@@ -51,7 +53,7 @@ public class HttpListenerUrlOrHeaderTooLongIssue18455TestCase extends AbstractIn
 
   @Test
   public void maxHeaderSizeExceeded() throws Exception {
-    int queryParamSize = Integer.parseInt(maxHeaderSectionSizeSystemProperty.getValue()) + SIZE_DELTA;
+    int queryParamSize = parseInt(maxHeaderSectionSizeSystemProperty.getValue()) + SIZE_DELTA;
     Response response = sendRequestWithQueryParam(queryParamSize);
     StatusLine statusLine = response.returnResponse().getStatusLine();
     assertThat(statusLine.getStatusCode(), is(REQUEST_TOO_LONG.getStatusCode()));
@@ -60,7 +62,7 @@ public class HttpListenerUrlOrHeaderTooLongIssue18455TestCase extends AbstractIn
 
   @Test
   public void maxHeaderSizeNotExceeded() throws Exception {
-    int queryParamSize = Integer.parseInt(maxHeaderSectionSizeSystemProperty.getValue()) - SIZE_DELTA;
+    int queryParamSize = parseInt(maxHeaderSectionSizeSystemProperty.getValue()) - SIZE_DELTA;
     HttpResponse response = sendRequestWithQueryParam(queryParamSize).returnResponse();
     assertThat(response.getStatusLine().getStatusCode(), is(OK.getStatusCode()));
   }
@@ -71,9 +73,9 @@ public class HttpListenerUrlOrHeaderTooLongIssue18455TestCase extends AbstractIn
   }
 
   private Response sendRequestWithQueryParam(int queryParamSize) throws IOException {
-    String longHeaderValue = RandomStringUtils.randomAlphanumeric(queryParamSize);
+    String longHeaderValue = randomAlphanumeric(queryParamSize);
     String urlWithQueryParameter = format("http://localhost:%d/", listenPort.getNumber());
-    return Request.Get(urlWithQueryParameter).setHeader("header", longHeaderValue)
+    return Get(urlWithQueryParameter).setHeader("header", longHeaderValue)
         .execute();
   }
 
