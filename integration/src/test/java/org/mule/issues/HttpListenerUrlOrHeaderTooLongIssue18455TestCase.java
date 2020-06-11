@@ -42,7 +42,7 @@ public class HttpListenerUrlOrHeaderTooLongIssue18455TestCase extends AbstractIn
   public DynamicPort listenPort = new DynamicPort("port");
 
   @Test
-  public void failsWithAppropriateError() throws Exception {
+  public void maxUrlSizeExceeded() throws Exception {
     final Response response = Request.Get(getListenerUrl(repeat("path", 3000)))
         .execute();
 
