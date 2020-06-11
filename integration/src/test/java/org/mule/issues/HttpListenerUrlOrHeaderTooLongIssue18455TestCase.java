@@ -78,6 +78,6 @@ public class HttpListenerUrlOrHeaderTooLongIssue18455TestCase extends AbstractIn
   }
 
   private String getListenerUrl(String path) {
-    return String.format("http://localhost:%s/%s", listenPort.getNumber(), path);
+    return format("http://localhost:%s/%s", listenPort.getNumber(), path);
   }
 }
