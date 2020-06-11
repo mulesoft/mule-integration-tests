@@ -6,43 +6,47 @@
  */
 package org.mule.issues;
 
+import io.qameta.allure.Issue;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.StatusLine;
+import org.apache.http.client.fluent.Request;
+import org.apache.http.client.fluent.Response;
+import org.junit.Rule;
+import org.junit.Test;
+import org.mule.tck.junit4.rule.DynamicPort;
+import org.mule.tck.junit4.rule.SystemProperty;
+import org.mule.test.AbstractIntegrationTestCase;
+
+import java.io.IOException;
 
 import static java.lang.String.format;
+import static org.apache.commons.lang3.StringUtils.repeat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.core.api.config.MuleProperties.SYSTEM_PROPERTY_PREFIX;
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.OK;
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.REQUEST_TOO_LONG;
-
-import io.qameta.allure.Issue;
-import org.apache.http.HttpResponse;
-import org.apache.http.StatusLine;
-import org.apache.http.client.fluent.Response;
-import org.mule.tck.junit4.rule.DynamicPort;
-import org.mule.tck.junit4.rule.SystemProperty;
-import org.mule.test.AbstractIntegrationTestCase;
-
-import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.http.client.fluent.Request;
-import org.junit.Rule;
-import org.junit.Test;
-
-import java.io.IOException;
+import static org.mule.runtime.http.api.HttpConstants.HttpStatus.REQUEST_URI_TOO_LONG;
 
 @Issue("MULE-18455")
-public class HttpHeadersTooLongIssue18455TestCase extends AbstractIntegrationTestCase {
+public class HttpListenerUrlOrHeaderTooLongIssue18455TestCase extends AbstractIntegrationTestCase {
 
   private static final int SIZE_DELTA = 1000;
+
 
   @Rule
   public SystemProperty maxHeaderSectionSizeSystemProperty =
       new SystemProperty(SYSTEM_PROPERTY_PREFIX + "http.headerSectionSize", "10000");
   @Rule
-  public DynamicPort dynamicPort = new DynamicPort("port");
+  public DynamicPort listenPort = new DynamicPort("port");
 
-  @Override
-  protected String getConfigFile() {
-    return "org/mule/issues/http-listener-max-header-size-config.xml";
+  @Test
+  public void failsWithAppropriateError() throws Exception {
+    final Response response = Request.Get(getListenerUrl(repeat("path", 3000)))
+        .execute();
+
+    assertThat(response.returnResponse().getStatusLine().getStatusCode(), is(REQUEST_URI_TOO_LONG.getStatusCode()));
   }
 
   @Test
@@ -61,10 +65,19 @@ public class HttpHeadersTooLongIssue18455TestCase extends AbstractIntegrationTes
     assertThat(response.getStatusLine().getStatusCode(), is(OK.getStatusCode()));
   }
 
+  @Override
+  protected String getConfigFile() {
+    return "org/mule/issues/http-listener-url-header-too-long-config.xml";
+  }
+
   private Response sendRequestWithQueryParam(int queryParamSize) throws IOException {
     String longHeaderValue = RandomStringUtils.randomAlphanumeric(queryParamSize);
-    String urlWithQueryParameter = format("http://localhost:%d/", dynamicPort.getNumber());
+    String urlWithQueryParameter = format("http://localhost:%d/", listenPort.getNumber());
     return Request.Get(urlWithQueryParameter).setHeader("header", longHeaderValue)
         .execute();
+  }
+
+  private String getListenerUrl(String path) {
+    return String.format("http://localhost:%s/%s", listenPort.getNumber(), path);
   }
 }

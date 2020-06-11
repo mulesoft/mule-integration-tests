@@ -12,7 +12,7 @@
 
     <flow name="inbound">
         <http:listener config-ref="listenerConfig"  path="*"/>
-        <set-payload value="#['Should return 414!']"/>
+        <set-payload value="#['Should return Error!']"/>
     </flow>
 
 </mule>
