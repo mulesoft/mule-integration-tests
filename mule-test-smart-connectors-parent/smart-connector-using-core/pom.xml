@@ -19,4 +19,13 @@
         <formatterConfigPath>../../formatter.xml</formatterConfigPath>
     </properties>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.mulesoft.mule.runtime.modules</groupId>
+            <artifactId>mule-module-spring-config-ee</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
 </project>
