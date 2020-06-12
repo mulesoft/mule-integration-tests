@@ -12,6 +12,7 @@ import static java.util.Arrays.asList;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mule.runtime.api.component.Component.NS_MULE_DOCUMENTATION;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
@@ -133,6 +134,9 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
 
   @Test
   public void serialize() throws Exception {
+    if (applicationDeclaration == null) {
+      fail("There was a problem setting up the artifact declaration for the test case.");
+    }
     String serializationResult = ArtifactDeclarationXmlSerializer.getDefault(dslContext).serialize(applicationDeclaration);
     compareXML(expectedAppXml, serializationResult);
   }

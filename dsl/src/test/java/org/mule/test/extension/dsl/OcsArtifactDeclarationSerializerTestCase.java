@@ -13,6 +13,7 @@ import static org.mule.runtime.extension.internal.ocs.OCSConstants.OCS_ENABLED;
 
 import org.mule.runtime.app.declaration.api.ArtifactDeclaration;
 import org.mule.runtime.app.declaration.api.fluent.ElementDeclarer;
+import org.mule.tck.junit4.rule.SystemProperty;
 
 import java.util.Collection;
 
@@ -22,9 +23,15 @@ public class OcsArtifactDeclarationSerializerTestCase extends ArtifactDeclaratio
 
   @Parameterized.Parameters(name = "{0}")
   public static Collection<Object[]> data() {
-    System.setProperty(OCS_ENABLED, "true");
+    ArtifactDeclaration artifactDeclaration;
+    try {
+      artifactDeclaration = SystemProperty
+          .runWithProperty(OCS_ENABLED, "true", OcsArtifactDeclarationSerializerTestCase::createOcsArtifactDeclaration);
+    } catch (Throwable t) {
+      artifactDeclaration = null;
+    }
     return asList(new Object[][] {
-        {"ocs-artifact-config-dsl-app.xml", createOcsArtifactDeclaration(), "ocs-artifact-config-dsl-app.json"},
+        {"ocs-artifact-config-dsl-app.xml", artifactDeclaration, "ocs-artifact-config-dsl-app.json"},
     });
   }
 
