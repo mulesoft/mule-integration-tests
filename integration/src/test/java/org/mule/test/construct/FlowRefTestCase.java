@@ -32,6 +32,7 @@ import static org.mule.runtime.core.api.exception.Errors.Identifiers.ROUTING_ERR
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.SERVICE_UNAVAILABLE;
 import static org.mule.runtime.http.api.HttpConstants.Method.GET;
 import static org.mule.tck.probe.PollingProber.probe;
+import static org.mule.test.allure.AllureConstants.ExecutionEngineFeature.ExecutionEngineStory.BACKPRESSURE;
 
 import org.mule.functional.api.component.EventCallback;
 import org.mule.functional.api.exception.ExpectedError;
@@ -66,6 +67,7 @@ import org.junit.Test;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Issue;
+import io.qameta.allure.Story;
 
 public class FlowRefTestCase extends AbstractIntegrationTestCase {
 
@@ -251,6 +253,7 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
+  @Story(BACKPRESSURE)
   @Ignore("How to handle backpressure on flow-ref's is not defined yet, but this test will provide a starting point in the future...")
   public void backpressureFlowRef() throws Exception {
     HttpRequest request =
@@ -273,6 +276,7 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
+  @Story(BACKPRESSURE)
   @Ignore("How to handle backpressure on flow-ref's is not defined yet, but this test will provide a starting point in the future...")
   public void backpressureFlowRefSub() throws Exception {
     HttpRequest request =
@@ -295,6 +299,7 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
+  @Story(BACKPRESSURE)
   public void backpressureFlowRefMaxConcurrency() throws Exception {
     HttpRequest request =
         HttpRequest.builder()
@@ -313,6 +318,7 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
+  @Story(BACKPRESSURE)
   public void backpressureFlowRefMaxConcurrencySub() throws Exception {
     HttpRequest request =
         HttpRequest.builder()
@@ -352,6 +358,7 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
 
   @Test
   @Issue("MULE-18178")
+  @Story(BACKPRESSURE)
   @Description("The maxConcurrency of a target flow called via flow-ref is enforced")
   public void backpressureFlowRefMaxConcurrencyStatic() throws Exception {
     flowRunner("backpressureFlowRefOuterMaxConcurrencyStatic").dispatchAsync(asyncFlowRunnerScheduler);

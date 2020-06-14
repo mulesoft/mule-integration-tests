@@ -18,6 +18,7 @@ import static org.mule.functional.api.exception.ExpectedError.none;
 import static org.mule.runtime.api.interception.FlowInterceptorFactory.FLOW_INTERCEPTORS_ORDER_REGISTRY_KEY;
 import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
 import static org.mule.tck.probe.PollingProber.probe;
+import static org.mule.test.allure.AllureConstants.ExecutionEngineFeature.ExecutionEngineStory.BACKPRESSURE;
 import static org.mule.test.allure.AllureConstants.InterceptonApi.INTERCEPTION_API;
 import static org.mule.test.allure.AllureConstants.InterceptonApi.ComponentInterceptionStory.FLOW_INTERCEPTION_STORY;
 
@@ -145,6 +146,7 @@ public class FlowInterceptorFactoryTestCase extends AbstractIntegrationTestCase 
   }
 
   @Test
+  @Story(BACKPRESSURE)
   public void flowInterceptorAppliedAfterBackpressureCheck() throws MuleException, InterruptedException {
     final AtomicInteger beforeCounter = new AtomicInteger();
 
