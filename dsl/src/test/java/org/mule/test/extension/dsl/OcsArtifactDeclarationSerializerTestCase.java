@@ -13,25 +13,21 @@ import static org.mule.runtime.extension.internal.ocs.OCSConstants.OCS_ENABLED;
 
 import org.mule.runtime.app.declaration.api.ArtifactDeclaration;
 import org.mule.runtime.app.declaration.api.fluent.ElementDeclarer;
-import org.mule.tck.junit4.rule.SystemProperty;
 
 import java.util.Collection;
 
+import org.junit.AfterClass;
 import org.junit.runners.Parameterized;
 
 public class OcsArtifactDeclarationSerializerTestCase extends ArtifactDeclarationSerializerTestCase {
 
+  private static String ocsPropertyOldValue;
+
   @Parameterized.Parameters(name = "{0}")
   public static Collection<Object[]> data() {
-    ArtifactDeclaration artifactDeclaration;
-    try {
-      artifactDeclaration = SystemProperty
-          .runWithProperty(OCS_ENABLED, "true", OcsArtifactDeclarationSerializerTestCase::createOcsArtifactDeclaration);
-    } catch (Throwable t) {
-      artifactDeclaration = null;
-    }
+    ocsPropertyOldValue = System.setProperty(OCS_ENABLED, "true");
     return asList(new Object[][] {
-        {"ocs-artifact-config-dsl-app.xml", artifactDeclaration, "ocs-artifact-config-dsl-app.json"},
+        {"ocs-artifact-config-dsl-app.xml", createOcsArtifactDeclaration(), "ocs-artifact-config-dsl-app.json"},
     });
   }
 
@@ -48,6 +44,15 @@ public class OcsArtifactDeclarationSerializerTestCase extends ArtifactDeclaratio
                 .getDeclaration())
             .getDeclaration())
         .getDeclaration();
+  }
+
+  @AfterClass
+  public static void cleanUp() {
+    if (ocsPropertyOldValue == null) {
+      System.clearProperty(OCS_ENABLED);
+    } else {
+      System.setProperty(OCS_ENABLED, ocsPropertyOldValue);
+    }
   }
 
 }
