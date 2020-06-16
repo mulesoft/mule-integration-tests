@@ -9,7 +9,7 @@ package org.mule.test.integration;
 import static java.lang.Thread.sleep;
 import static org.mule.runtime.api.component.location.Location.builderFromStringRepresentation;
 import static org.mule.tck.probe.PollingProber.probe;
-import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
+import static org.mule.test.allure.AllureConstants.ExecutionEngineFeature.ExecutionEngineStory.BACKPRESSURE;
 
 import org.mule.functional.api.component.EventCallback;
 import org.mule.runtime.api.component.AbstractComponent;
@@ -25,7 +25,7 @@ import org.junit.Test;
 
 import io.qameta.allure.Story;
 
-@Story(ERROR_HANDLING)
+@Story(BACKPRESSURE)
 public class SchedulerBackpressureHandlingTestCase extends AbstractSchedulerTestCase {
 
   private static Latch hangLatch = new Latch();

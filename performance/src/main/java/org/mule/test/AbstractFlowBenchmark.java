@@ -9,12 +9,15 @@ package org.mule.test;
 import static java.lang.Class.forName;
 import static java.lang.Thread.sleep;
 import static java.lang.reflect.Proxy.newProxyInstance;
+import static java.util.Collections.singletonMap;
 import static java.util.concurrent.locks.LockSupport.parkNanos;
+import static org.mule.runtime.api.component.AbstractComponent.LOCATION_KEY;
 import static org.mule.runtime.api.message.Message.of;
 import static org.mule.runtime.core.api.construct.Flow.builder;
 import static org.mule.runtime.core.api.event.EventContextFactory.create;
 import static org.mule.runtime.core.api.processor.ReactiveProcessor.ProcessingType.BLOCKING;
 import static org.mule.runtime.core.privileged.registry.LegacyRegistryUtils.registerObject;
+import static org.mule.runtime.dsl.api.component.config.DefaultComponentLocation.from;
 import static org.openjdk.jmh.annotations.Scope.Benchmark;
 import static org.openjdk.jmh.infra.Blackhole.consumeCPU;
 
@@ -257,6 +260,7 @@ public abstract class AbstractFlowBenchmark extends AbstractBenchmark {
     source = new TriggerableMessageSource();
     flow = builder(AbstractBenchmark.FLOW_NAME, muleContext).processors(getMessageProcessors()).source(source)
         .processingStrategyFactory(factory).maxConcurrency(maxConcurrency).build();
+    flow.setAnnotations(singletonMap(LOCATION_KEY, from("flow")));
     registerObject(muleContext, AbstractBenchmark.FLOW_NAME, flow, FlowConstruct.class);
   }
 
