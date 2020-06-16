@@ -13,8 +13,11 @@ import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.util.MuleSystemProperties.MULE_FLOW_TRACE;
 import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.startIfNeeded;
 import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.stopIfNeeded;
+import static org.mule.test.allure.AllureConstants.ExecutionEngineFeature.ExecutionEngineStory.BACKPRESSURE;
+import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.GracefulShutdownStory.GRACEFUL_SHUTDOWN_STORY;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.AsyncStory.ASYNC;
+import static org.mule.test.allure.AllureConstants.TransactionFeature.LocalStory.LOCAL_TRANSACTION;
 
 import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.functional.api.flow.FlowRunner;
@@ -95,12 +98,14 @@ public class AsyncTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
+  @Story(BACKPRESSURE)
   @Description("Assert that async maxConcurrency is honored")
   public void withMaxConcurrency() throws Exception {
     testAsyncMaxConcurrency("with-max-concurrency");
   }
 
   @Test
+  @Story(BACKPRESSURE)
   @Description("Assert that even if async is full, the calling flow continues executing")
   public void withMaxConcurrencyAsyncDispatched() throws Exception {
     CountDownLatch latch = new CountDownLatch(1);
@@ -113,18 +118,21 @@ public class AsyncTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
+  @Story(BACKPRESSURE)
   @Description("Assert that if no maxConcurrency is configured for an async, the value from the flow is inherited")
   public void withFlowMaxConcurrency() throws Exception {
     testAsyncMaxConcurrency("with-flow-max-concurrency");
   }
 
   @Test
+  @Story(BACKPRESSURE)
   @Description("Assert that if both flow and async have maxConcurrency, they are independent")
   public void withLowerFlowMaxConcurrency() throws Exception {
     testAsyncMaxConcurrency("with-lower-flow-max-concurrency");
   }
 
   @Test
+  @Story(LOCAL_TRANSACTION)
   @Description("Assert that async blocks run outside of the transaction from the caller flow")
   public void withSourceTx() throws Exception {
     terminationLatch = new CountDownLatch(0);
@@ -138,6 +146,7 @@ public class AsyncTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
+  @Story(LOCAL_TRANSACTION)
   @Description("Assert that async blocks run outside of the transaction from the `try` in the caller flow")
   public void withTryTx() throws Exception {
     CountDownLatch latch = new CountDownLatch(1);
@@ -149,6 +158,7 @@ public class AsyncTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
+  @Story(LOCAL_TRANSACTION)
   @Description("Assert that txs within async blocks are honored")
   public void txWithinAsync() throws Exception {
     CountDownLatch latch = new CountDownLatch(1);
@@ -176,6 +186,7 @@ public class AsyncTestCase extends AbstractIntegrationTestCase {
 
   @Test
   @Issue("MULE-17048")
+  @Story(GRACEFUL_SHUTDOWN_STORY)
   public void flowStoppedWhileAsyncInFlight() throws Exception {
     CountDownLatch latch = new CountDownLatch(1);
     flowRunner("with-max-concurrency").withPayload("").withVariable("latch", latch).run();
