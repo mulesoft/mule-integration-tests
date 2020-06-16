@@ -247,12 +247,12 @@
                 <test:check-equals>
                     <![CDATA[
                         Message               : 'until-successful' retries exhausted
-                        Caused By             : Error
                         Element               : suppressedMuleException/processors/0 @ LogCheckTestCase#suppressedMuleExceptionGetsLoggedAsSuppressedCause:org/mule/test/integration/exceptions/log-check-config.xml:242
                         Element DSL           : <until-successful maxRetries="1" millisBetweenRetries="10">
                                                     <test:throw exception="org.mule.test.integration.exceptions.LogCheckTestCase.CustomException" error="ANY"></test:throw>
                                                 </until-successful>
                         Error type            : MULE:RETRY_EXHAUSTED
+                        Caused By             : MULE:ANY: Error
                         FlowStack : at suppressedMuleException(suppressedMuleException/processors/0 @ LogCheckTestCase#suppressedMuleExceptionGetsLoggedAsSuppressedCause:org/mule/test/integration/exceptions/log-check-config.xml:242)
 
                         (set debug level logging or '-Dmule.verbose.exceptions=true' for everything)

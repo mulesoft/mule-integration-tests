@@ -38,7 +38,7 @@
                 <test:check-summary>
                     <test:summary-info key="Error type" value="MULE:RETRY_EXHAUSTED"/>
                     <test:summary-info key="Message" value="'until-successful' retries exhausted"/>
-                    <test:summary-info key="Caused by" value="Connection refused"/>
+                    <test:summary-info key="Caused by" value="MULE:CONNECTIVITY: Connection refused"/>
                 </test:check-summary>
             </test:on-error-check-log>
         </error-handler>
@@ -53,7 +53,7 @@
                 <test:check-summary>
                     <test:summary-info key="Error type" value="MULE:RETRY_EXHAUSTED"/>
                     <test:summary-info key="Message" value="'until-successful' retries exhausted"/>
-                    <test:summary-info key="Caused by" value="Functional Test Service Exception"/>
+                    <test:summary-info key="Caused by" value="MULE:UNKNOWN: Functional Test Service Exception"/>
                 </test:check-summary>
             </test:on-error-check-log>
         </error-handler>
@@ -68,7 +68,7 @@
                 <test:check-summary>
                     <test:summary-info key="Error type" value="MULE:RETRY_EXHAUSTED"/>
                     <test:summary-info key="Message" value="'until-successful' retries exhausted"/>
-                    <test:summary-info key="Caused by" value="Mule runtime error"/>
+                    <test:summary-info key="Caused by" value="MULE:SECURITY: Mule runtime error"/>
                 </test:check-summary>
             </test:on-error-check-log>
         </error-handler>
