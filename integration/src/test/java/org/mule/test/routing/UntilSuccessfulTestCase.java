@@ -11,9 +11,7 @@ import static java.lang.System.currentTimeMillis;
 import static java.util.Collections.synchronizedList;
 import static java.util.concurrent.Executors.newFixedThreadPool;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.Is.is;
@@ -21,6 +19,7 @@ import static org.junit.Assert.assertThat;
 import static org.mule.functional.api.component.FunctionalTestProcessor.getFromFlow;
 import static org.mule.functional.junit4.matchers.ThrowableCauseMatcher.hasCause;
 import static org.mule.functional.junit4.matchers.ClassNameMatcher.hasClassName;
+import static org.mule.runtime.api.exception.MuleExceptionInfo.INFO_CAUSED_BY_KEY;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.UntilSuccessfulStory.UNTIL_SUCCESSFUL;
 
@@ -34,7 +33,6 @@ import org.junit.rules.ExpectedException;
 
 import org.mule.functional.api.component.FunctionalTestProcessor;
 import org.mule.functional.api.component.TestConnectorQueueHandler;
-import org.mule.functional.api.exception.FunctionalTestException;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.exception.MuleExceptionInfo;
 import org.mule.runtime.api.exception.MuleRuntimeException;
@@ -148,10 +146,11 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
     assertThat(error, is(notNullValue()));
     assertThat(error, instanceOf(RetryPolicyExhaustedException.class));
     assertThat(error.getMessage(),
-               containsString("'until-successful' retries exhausted"));
-    assertThat(error.getInfo().get(MuleExceptionInfo.INFO_CAUSED_BY_KEY).toString(),
-               containsString("Value was expected to be false but it was true instead"));
-    assertThat(error.getCause(), instanceOf(MuleRuntimeException.class));
+            containsString("'until-successful' retries exhausted"));
+    assertThat(error.getCause(), hasClassName(containsString("org.mule.runtime.internal.exception.SuppressedMuleException")));
+    MuleException causedByException = (MuleException) error.getInfo().get(INFO_CAUSED_BY_KEY);
+    assertThat(causedByException.getExceptionInfo().getErrorType().toString(), equalTo("VALIDATION:INVALID_BOOLEAN"));
+    assertThat(causedByException.getMessage(), equalTo("Value was expected to be false but it was true instead"));
   }
 
   @Test
