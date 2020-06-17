@@ -148,7 +148,7 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
     assertThat(error, is(notNullValue()));
     assertThat(error, instanceOf(RetryPolicyExhaustedException.class));
     assertThat(error.getMessage(),
-            containsString("'until-successful' retries exhausted"));
+               containsString("'until-successful' retries exhausted"));
     assertThat(error.getCause(), hasClassName(containsString("org.mule.runtime.internal.exception.SuppressedMuleException")));
     MuleException causedByException = (MuleException) error.getInfo().get(INFO_CAUSED_BY_KEY);
     assertThat(causedByException.getExceptionInfo().getErrorType().toString(), equalTo("VALIDATION:INVALID_BOOLEAN"));
