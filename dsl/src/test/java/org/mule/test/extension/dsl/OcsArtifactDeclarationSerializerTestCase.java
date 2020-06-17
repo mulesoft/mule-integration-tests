@@ -10,25 +10,39 @@ import static java.util.Arrays.asList;
 import static org.mule.runtime.app.declaration.api.fluent.ElementDeclarer.newArtifact;
 import static org.mule.runtime.app.declaration.api.fluent.ElementDeclarer.newParameterGroup;
 import static org.mule.runtime.extension.internal.ocs.OCSConstants.OCS_ENABLED;
+import static org.mule.tck.junit4.rule.SystemProperty.callWithProperty;
 
 import org.mule.runtime.app.declaration.api.ArtifactDeclaration;
 import org.mule.runtime.app.declaration.api.fluent.ElementDeclarer;
+import org.mule.tck.junit4.rule.SystemProperty;
 
 import java.util.Collection;
 
 import org.junit.AfterClass;
+import org.junit.Rule;
 import org.junit.runners.Parameterized;
 
 public class OcsArtifactDeclarationSerializerTestCase extends ArtifactDeclarationSerializerTestCase {
 
-  private static String ocsPropertyOldValue;
+  @Rule
+  public SystemProperty ocs = new SystemProperty(OCS_ENABLED, "true");
 
   @Parameterized.Parameters(name = "{0}")
   public static Collection<Object[]> data() {
-    ocsPropertyOldValue = System.setProperty(OCS_ENABLED, "true");
-    return asList(new Object[][] {
-        {"ocs-artifact-config-dsl-app.xml", createOcsArtifactDeclaration(), "ocs-artifact-config-dsl-app.json"},
-    });
+    try {
+      return asList(new Object[][] {
+          {"ocs-artifact-config-dsl-app.xml",
+              callWithProperty(OCS_ENABLED, "true", OcsArtifactDeclarationSerializerTestCase::createOcsArtifactDeclaration),
+              "ocs-artifact-config-dsl-app.json"},
+      });
+    } catch (Throwable throwable) {
+      throw new RuntimeException("Failed to create the artifact declaration for the test.");
+    }
+  }
+
+  @Override
+  protected boolean mustRegenerateExtensionModels() {
+    return true;
   }
 
   private static ArtifactDeclaration createOcsArtifactDeclaration() {
@@ -45,14 +59,4 @@ public class OcsArtifactDeclarationSerializerTestCase extends ArtifactDeclaratio
             .getDeclaration())
         .getDeclaration();
   }
-
-  @AfterClass
-  public static void cleanUp() {
-    if (ocsPropertyOldValue == null) {
-      System.clearProperty(OCS_ENABLED);
-    } else {
-      System.setProperty(OCS_ENABLED, ocsPropertyOldValue);
-    }
-  }
-
 }
