@@ -115,6 +115,14 @@
             <classifier>mule-plugin</classifier>
         </dependency>
 
+        <dependency>
+            <groupId>org.mule.tests</groupId>
+            <artifactId>mule-test-oauth-extension</artifactId>
+            <version>${project.version}</version>
+            <classifier>mule-plugin</classifier>
+            <scope>test</scope>
+        </dependency>
+
         <!-- DB Drivers -->
         <dependency>
             <groupId>org.apache.derby</groupId>

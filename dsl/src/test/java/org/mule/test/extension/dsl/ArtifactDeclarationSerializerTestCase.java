@@ -822,7 +822,7 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
     return createParameter(value, NUMBER);
   }
 
-  private static ParameterValue createStringParameter(String value) {
+  protected static ParameterValue createStringParameter(String value) {
     return createParameter(value, STRING);
   }
 
