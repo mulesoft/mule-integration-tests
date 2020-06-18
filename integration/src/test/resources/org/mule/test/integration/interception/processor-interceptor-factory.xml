@@ -122,4 +122,29 @@
         </validation:all>
     </flow>
 
+    <flow name="operationWithChain">
+        <heisenberg:tap-phones>
+            <logger/>
+        </heisenberg:tap-phones>
+    </flow>
+
+    <flow name="operationWithChainFailing">
+        <heisenberg:tap-phones>
+            <raise-error type="TEST:EXPECTED"/>
+        </heisenberg:tap-phones>
+        <error-handler>
+            <test:on-error-check-log>
+                <test:check-equals>
+                    <![CDATA[
+                        Message               : An error occurred.
+                        Error type            : TEST:EXPECTED
+                        Element               : operationWithChainFailing/processors/0/processors/0 @ ProcessorInterceptorFactoryChainTestCase#operationWithChainFailing:org/mule/test/integration/interception/processor-interceptor-factory.xml:133
+                        Element DSL           : <raise-error type="TEST:EXPECTED"></raise-error>
+                        (set debug level logging or '-Dmule.verbose.exceptions=true' for everything)
+                    ]]>
+                </test:check-equals>
+            </test:on-error-check-log>
+        </error-handler>
+    </flow>
+
 </mule>
