@@ -23,6 +23,7 @@ import org.mule.runtime.api.interception.ProcessorInterceptorFactory.ProcessorIn
 import org.mule.runtime.api.interception.ProcessorParameterValue;
 import org.mule.runtime.extension.api.runtime.route.Chain;
 import org.mule.runtime.module.extension.api.runtime.privileged.EventedResult;
+import org.mule.tck.junit4.rule.VerboseExceptions;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.util.HashMap;
@@ -31,6 +32,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -41,6 +43,10 @@ import io.qameta.allure.Story;
 @Feature(INTERCEPTION_API)
 @Story(COMPONENT_INTERCEPTION_STORY)
 public class ProcessorInterceptorFactoryChainTestCase extends AbstractIntegrationTestCase {
+
+  // Just to ensure the previous value is set after the test
+  @ClassRule
+  public static VerboseExceptions verboseExceptions = new VerboseExceptions(false);
 
   @Rule
   public ExpectedError expectedError = none();
