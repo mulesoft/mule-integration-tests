@@ -220,6 +220,7 @@
         </heisenberg:tap-phones>
         <error-handler>
             <test:on-error-check-log>
+                <!-- TODO MULE-18504 fix the location of the component -->
                 <test:check-equals>
                     <![CDATA[
                         Message               : An error occurred.
