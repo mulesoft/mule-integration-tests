@@ -13,7 +13,6 @@ import static org.mule.runtime.http.api.HttpConstants.Method.POST;
 import org.mule.runtime.api.notification.ConnectorMessageNotification;
 import org.mule.runtime.api.notification.IntegerAction;
 import org.mule.runtime.http.api.HttpService;
-import org.mule.runtime.http.api.client.HttpRequestOptions;
 import org.mule.runtime.http.api.domain.message.request.HttpRequest;
 import org.mule.service.http.TestHttpClient;
 import org.mule.tck.junit4.rule.DynamicPort;
@@ -24,6 +23,7 @@ import org.junit.Test;
 public class ConnectorMessageNotificationTestCase extends AbstractNotificationTestCase {
 
   private static final String FLOW_ID = "testFlow";
+  private static final int TIMEOUT = 1000;
 
   @Rule
   public DynamicPort port = new DynamicPort("port");
@@ -41,7 +41,7 @@ public class ConnectorMessageNotificationTestCase extends AbstractNotificationTe
     HttpRequest request =
         HttpRequest.builder().uri(String.format("http://localhost:%s/path", port.getNumber())).method(POST).build();
 
-    httpClient.send(request, HttpRequestOptions.builder().responseTimeout(RECEIVE_TIMEOUT).build());
+    httpClient.send(request, TIMEOUT, false, null);
 
     assertNotifications();
   }
