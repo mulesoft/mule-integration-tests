@@ -4,11 +4,11 @@
       xmlns:http="http://www.mulesoft.org/schema/mule/http"
       xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
       xmlns:test="http://www.mulesoft.org/schema/mule/test"
-      xmlns:aggregators="http://www.mulesoft.org/schema/mule/aggregators"
+      xmlns:aggregators="http://www.mulesoft.org/schema/mule/aggregators" xmlns:heisenberg="http://www.mulesoft.org/schema/mule/heisenberg"
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
                http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
                http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
-               http://www.mulesoft.org/schema/mule/aggregators http://www.mulesoft.org/schema/mule/aggregators/current/mule-aggregators.xsd">
+               http://www.mulesoft.org/schema/mule/aggregators http://www.mulesoft.org/schema/mule/aggregators/current/mule-aggregators.xsd http://www.mulesoft.org/schema/mule/heisenberg http://www.mulesoft.org/schema/mule/heisenberg/current/mule-heisenberg.xsd">
 
     <configuration defaultErrorHandler-ref="defaultErrorHandler"/>
 
@@ -143,6 +143,12 @@
                 <logger/>
             </aggregators:aggregation-complete>
         </aggregators:size-based-aggregator>
+    </flow>
+
+    <flow name="operationWithChain">
+        <heisenberg:tap-phones>
+            <logger/>
+        </heisenberg:tap-phones>
     </flow>
 
 </mule>
