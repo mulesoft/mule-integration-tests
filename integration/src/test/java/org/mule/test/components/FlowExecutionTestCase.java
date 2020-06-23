@@ -14,21 +14,19 @@ import static org.junit.Assert.fail;
 
 import org.mule.runtime.api.component.execution.ComponentExecutionException;
 import org.mule.runtime.api.component.execution.ExecutableComponent;
-import org.mule.runtime.api.component.execution.ExecutionResult;
-import org.mule.runtime.api.component.execution.InputEvent;
 import org.mule.runtime.api.event.Event;
+import org.mule.runtime.api.component.execution.InputEvent;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.metadata.TypedValue;
 import org.mule.test.AbstractIntegrationTestCase;
+
+import org.junit.Test;
 
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-
-import org.junit.After;
-import org.junit.Test;
 
 public class FlowExecutionTestCase extends AbstractIntegrationTestCase {
 
@@ -47,15 +45,6 @@ public class FlowExecutionTestCase extends AbstractIntegrationTestCase {
   @Override
   protected String getConfigFile() {
     return "org/mule/test/components/flow-execution-config.xml";
-  }
-
-  private ExecutionResult executionResult;
-
-  @After
-  public void after() {
-    if (executionResult != null) {
-      executionResult.complete();
-    }
   }
 
   @Test
@@ -77,8 +66,8 @@ public class FlowExecutionTestCase extends AbstractIntegrationTestCase {
       throws InterruptedException, java.util.concurrent.ExecutionException {
     Event resultEvent;
     try {
-      executionResult = executableComponent.execute(createInputEvent()).get();
-      resultEvent = executionResult.getEvent();
+      resultEvent = executableComponent.execute(createInputEvent())
+          .get().getEvent();
       errorIdentifierExpected.ifPresent(error -> fail());
     } catch (ExecutionException e) {
       resultEvent = ((ComponentExecutionException) e.getCause()).getEvent();
