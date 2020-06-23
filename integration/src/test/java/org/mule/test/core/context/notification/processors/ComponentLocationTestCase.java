@@ -55,6 +55,7 @@ import org.junit.After;
 import org.junit.Test;
 
 import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
 
 @Feature(CONFIGURATION_COMPONENT_LOCATOR)
@@ -541,6 +542,7 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
+  @Issue("MULE-18504")
   public void operationWithChain() throws Exception {
     final String flowName = "operationWithChain";
     flowRunner(flowName).run();
