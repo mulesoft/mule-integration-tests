@@ -174,8 +174,7 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
     // TODO MULE-17199 use an ASP parser api
     this.artifactAst = new ApplicationModel(artifactConfig, null, extensionModels, Collections.emptyMap(),
                                             Optional.empty(), of(componentBuildingDefinitionRegistry),
-                                            uri -> muleContext.getExecutionClassLoader().getResourceAsStream(uri),
-                                            false);
+                                            uri -> muleContext.getExecutionClassLoader().getResourceAsStream(uri));
   }
 
   @Test
@@ -217,9 +216,7 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
     assertThat(openRestrictionChildRecursivePojoNextMappedChildsParameter, not(empty()));
     assertThat(getTypeId(openRestrictionChildRecursivePojoNextMappedChildsParameter.get()),
                equalTo(of(RecursivePojo.class.getName())));
-    // TODO MULE-18065 DslSyntax is missing containedElements when recursive-pojo/next/recursive-pojo is used... componentModel should reuse
-    // "parser" definition for types...
-    //assertThat(childRecursivePojoNextMappedChildsParameter.getValue().getRight(), not(nullValue()));
+    assertThat(childRecursivePojoNextMappedChildsParameter.getValue().getRight(), not(nullValue()));
 
     ComponentParameterAst recursivePojoMappedChildsParameter = recursivePojo.getParameter("mappedChilds");
     assertThat(recursivePojoMappedChildsParameter.getModel().getType(), instanceOf(ObjectType.class));
