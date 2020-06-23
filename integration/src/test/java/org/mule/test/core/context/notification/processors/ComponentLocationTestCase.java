@@ -164,6 +164,14 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
                                                                   of(136),
                                                                   of(5))));
 
+  private static final DefaultComponentLocation FLOW_WITH_OPERATION_WITH_CHAIN =
+      new DefaultComponentLocation(Optional.of("operationWithChain"),
+                                   asList(new DefaultLocationPart("operationWithChain",
+                                                                  FLOW_TYPED_COMPONENT_IDENTIFIER,
+                                                                  CONFIG_FILE_NAME,
+                                                                  of(148),
+                                                                  of(5))));
+
   private static final Optional<TypedComponentIdentifier> LOGGER =
       Optional.of(builder().identifier(buildFromStringRepresentation("mule:logger"))
           .type(OPERATION).build());
@@ -203,6 +211,8 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
 
   private static final Optional<TypedComponentIdentifier> AGGREGATOR =
       Optional.of(builder().identifier(buildFromStringRepresentation("aggregators:size-based-aggregator")).type(ROUTER).build());
+  private static final Optional<TypedComponentIdentifier> TAP_PHONES =
+      Optional.of(builder().identifier(buildFromStringRepresentation("heisenberg:tap-phones")).type(OPERATION).build());
 
 
   @Inject
@@ -527,6 +537,26 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
 
     assertNextProcessorLocationIs(aggregatorRoute1);
 
+    assertNoNextProcessorNotification();
+  }
+
+  @Test
+  public void operationWithChain() throws Exception {
+    final String flowName = "operationWithChain";
+    flowRunner(flowName).run();
+    waitUntilNotificationsArrived(2);
+    DefaultComponentLocation operationWithChain =
+        FLOW_WITH_OPERATION_WITH_CHAIN.appendLocationPart("processors", empty(), empty(), OptionalInt.empty(),
+                                                          OptionalInt.empty());
+    DefaultComponentLocation operationWithChainLocation =
+        operationWithChain.appendLocationPart("0", TAP_PHONES, CONFIG_FILE_NAME, of(149), of(9));
+    assertNextProcessorLocationIs(operationWithChainLocation);
+
+    DefaultComponentLocation innerChainRoute = operationWithChainLocation
+        .appendProcessorsPart()
+        .appendLocationPart("0", LOGGER, CONFIG_FILE_NAME, of(150), of(13));
+
+    assertNextProcessorLocationIs(innerChainRoute);
     assertNoNextProcessorNotification();
   }
 

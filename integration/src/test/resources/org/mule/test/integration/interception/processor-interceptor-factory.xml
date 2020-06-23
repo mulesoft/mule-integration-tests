@@ -220,14 +220,13 @@
         </heisenberg:tap-phones>
         <error-handler>
             <test:on-error-check-log>
-                <!-- TODO MULE-18504 fix the location of the component -->
                 <test:check-equals>
                     <![CDATA[
                         Message               : An error occurred.
-                        Element               : tap-phones/processors/0 @ ProcessorInterceptorFactoryChainTestCase#operationWithChainFailingLogsCorrectly:org/mule/test/integration/interception/processor-interceptor-factory.xml:219
+                        Element               : operationWithChainFailing/processors/0/processors/0 @ ProcessorInterceptorFactoryChainTestCase#operationWithChainFailingLogsCorrectly:org/mule/test/integration/interception/processor-interceptor-factory.xml:219
                         Element DSL           : <raise-error type="TEST:EXPECTED"></raise-error>
                         Error type            : TEST:EXPECTED
-                        FlowStack             : at operationWithChainFailing(tap-phones/processors/0 @ ProcessorInterceptorFactoryChainTestCase#operationWithChainFailingLogsCorrectly:org/mule/test/integration/interception/processor-interceptor-factory.xml:219)
+                        FlowStack             : at operationWithChainFailing(operationWithChainFailing/processors/0/processors/0 @ ProcessorInterceptorFactoryChainTestCase#operationWithChainFailingLogsCorrectly:org/mule/test/integration/interception/processor-interceptor-factory.xml:219)
                         (set debug level logging or '-Dmule.verbose.exceptions=true' for everything)
                     ]]>
                 </test:check-equals>
