@@ -13,10 +13,12 @@ import org.mule.runtime.api.meta.NamedObject;
 import org.mule.runtime.config.api.dsl.model.DslElementModel;
 import org.mule.runtime.config.api.dsl.model.XmlDslElementModelConverter;
 import org.mule.runtime.dsl.api.component.config.ComponentConfiguration;
+import org.mule.tck.junit4.rule.DynamicPort;
 
 import java.io.IOException;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.w3c.dom.Element;
 
@@ -28,6 +30,12 @@ public class ConfigurationBasedDslElementModelSerializerTestCase extends Abstrac
 
   private Element flow;
   private String expectedAppXml;
+
+  @Rule
+  public DynamicPort port = new DynamicPort("port");
+
+  @Rule
+  public DynamicPort otherPort = new DynamicPort("otherPort");
 
   @Before
   public void createDocument() throws Exception {
@@ -55,8 +63,18 @@ public class ConfigurationBasedDslElementModelSerializerTestCase extends Abstrac
     XmlDslElementModelConverter converter = XmlDslElementModelConverter.getDefault(this.doc);
 
     doc.getDocumentElement().appendChild(converter.asXml(resolve(getAppElement(applicationModel, DB_CONFIG))));
-    doc.getDocumentElement().appendChild(converter.asXml(resolve(getAppElement(applicationModel, HTTP_LISTENER_CONFIG))));
-    doc.getDocumentElement().appendChild(converter.asXml(resolve(getAppElement(applicationModel, HTTP_REQUESTER_CONFIG))));
+    final Element httpListenerConfig = converter.asXml(resolve(getAppElement(applicationModel, HTTP_LISTENER_CONFIG)));
+    // TODO MULE-17372 AST must allow to access the raw property placeholder and not just the resolved value
+    httpListenerConfig.getElementsByTagName("http:listener-connection").item(0)
+        .getAttributes().getNamedItem("port")
+        .setNodeValue("${port}");
+    doc.getDocumentElement().appendChild(httpListenerConfig);
+    final Element httpRequesterConfig = converter.asXml(resolve(getAppElement(applicationModel, HTTP_REQUESTER_CONFIG)));
+    // TODO MULE-17372 AST must allow to access the raw property placeholder and not just the resolved value
+    httpRequesterConfig.getElementsByTagName("http:request-connection").item(0)
+        .getAttributes().getNamedItem("port")
+        .setNodeValue("${otherPort}");
+    doc.getDocumentElement().appendChild(httpRequesterConfig);
     doc.getDocumentElement().appendChild(converter.asXml(resolve(getAppElement(applicationModel, "sockets-config"))));
     doc.getDocumentElement().appendChild(converter.asXml(resolve(getAppElement(applicationModel, "wsc-config"))));
 

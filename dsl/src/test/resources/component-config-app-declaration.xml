@@ -30,7 +30,7 @@
    <http:listener-config basePath="/" name="httpListener">
       <http:listener-connection connectionIdleTimeout="30000"
                                  host="localhost"
-                                 port="49019"
+                                 port="${port}"
                                  protocol="HTTPS"
                                  usePersistentConnections="true">
             <tls:context>
@@ -56,7 +56,7 @@
       <http:request-connection connectionIdleTimeout="30000"
                                 host="localhost"
                                 maxConnections="-1"
-                                port="49020"
+                                port="${otherPort}"
                                 protocol="HTTP"
                                 responseBufferSize="10240"
                                 streamResponse="false"
