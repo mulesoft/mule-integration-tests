@@ -27,14 +27,22 @@ import org.mule.runtime.ast.api.ComponentAst;
 import org.mule.runtime.config.api.dsl.model.DslElementModel;
 import org.mule.runtime.dsl.api.component.config.ComponentConfiguration;
 import org.mule.runtime.extension.api.dsl.syntax.resolver.DslSyntaxResolver;
+import org.mule.tck.junit4.rule.DynamicPort;
 
 import java.util.List;
 import java.util.Optional;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
 public class ConfigurationBasedElementModelFactoryTestCase extends AbstractElementModelTestCase {
+
+  @Rule
+  public DynamicPort port = new DynamicPort("port");
+
+  @Rule
+  public DynamicPort otherPort = new DynamicPort("otherPort");
 
   @Before
   public void initApp() throws Exception {

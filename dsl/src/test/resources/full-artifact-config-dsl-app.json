@@ -590,7 +590,7 @@
                 "name": "port",
                 "metadataProperties": {},
                 "value": {
-                  "text": "49019",
+                  "text": "${port}",
                   "isCData": false,
                   "type": "NUMBER"
                 }
@@ -724,7 +724,7 @@
                 "name": "port",
                 "metadataProperties": {},
                 "value": {
-                  "text": "49020",
+                  "text": "${otherPort}",
                   "isCData": false,
                   "type": "NUMBER"
                 }
