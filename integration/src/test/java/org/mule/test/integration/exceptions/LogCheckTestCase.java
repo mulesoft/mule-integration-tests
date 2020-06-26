@@ -120,6 +120,12 @@ public class LogCheckTestCase extends AbstractIntegrationTestCase {
     runSuccesses(false, "suppressedMuleException");
   }
 
+  @Test
+  @Issue("MULE-18041")
+  public void suppressedMuleExceptionsGetsLoggedAsSuppressedCauses() throws Exception {
+    runSuccesses(true, "suppressedMuleExceptions");
+  }
+
   private void runSuccesses(boolean verboseExceptions, String flowName) throws Exception {
     setVerboseExceptions(verboseExceptions);
     flowRunner(flowName).run();

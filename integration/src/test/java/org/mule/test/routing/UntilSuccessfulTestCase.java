@@ -22,7 +22,6 @@ import static org.junit.Assert.assertThat;
 import static org.mule.functional.api.component.FunctionalTestProcessor.getFromFlow;
 import static org.mule.functional.junit4.matchers.ThrowableCauseMatcher.hasCause;
 import static org.mule.functional.junit4.matchers.ClassNameMatcher.hasClassName;
-import static org.mule.runtime.api.exception.MuleExceptionInfo.INFO_CAUSED_BY_KEY;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.UntilSuccessfulStory.UNTIL_SUCCESSFUL;
 
@@ -150,9 +149,9 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
     assertThat(error.getMessage(),
                containsString("'until-successful' retries exhausted"));
     assertThat(error.getCause(), hasClassName(containsString("org.mule.runtime.internal.exception.SuppressedMuleException")));
-    MuleException causedByException = (MuleException) error.getInfo().get(INFO_CAUSED_BY_KEY);
-    assertThat(causedByException.getExceptionInfo().getErrorType().toString(), equalTo("VALIDATION:INVALID_BOOLEAN"));
-    assertThat(causedByException.getMessage(), equalTo("Value was expected to be false but it was true instead"));
+    MuleException exhaustionCause = (MuleException) error.getCause().getCause();
+    assertThat(exhaustionCause.getExceptionInfo().getErrorType().toString(), equalTo("VALIDATION:INVALID_BOOLEAN"));
+    assertThat(exhaustionCause.getMessage(), equalTo("Value was expected to be false but it was true instead"));
   }
 
   @Test
