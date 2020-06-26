@@ -28,7 +28,7 @@
     </db:config>
 
     <http:listener-config name="httpListener" basePath="/">
-        <http:listener-connection host="localhost" port="49019" protocol="HTTPS">
+        <http:listener-connection host="localhost" port="${port}" protocol="HTTPS">
             <tls:context>
                 <tls:key-store path="ssltest-keystore.jks" keyPassword="changeit" password="changeit"/>
             </tls:context>
@@ -57,7 +57,7 @@
     </http:listener-config>
 
     <http:request-config name="httpRequester">
-        <http:request-connection host="localhost" port="49020">
+        <http:request-connection host="localhost" port="${otherPort}">
             <http:authentication>
                 <http:basic-authentication username="user" password="pass"/>
             </http:authentication>
