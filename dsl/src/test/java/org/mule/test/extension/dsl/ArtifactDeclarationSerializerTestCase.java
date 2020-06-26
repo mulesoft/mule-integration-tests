@@ -65,6 +65,7 @@ import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.retry.policy.RetryPolicyExhaustedException;
 import org.mule.runtime.extension.api.runtime.ExpirationPolicy;
+import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.runner.RunnerDelegateTo;
 
 import java.io.File;
@@ -76,6 +77,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -88,6 +90,12 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
 
   private static final boolean UPDATE_EXPECTED_FILES_ON_ERROR =
       getBoolean(SYSTEM_PROPERTY_PREFIX + "appJson.updateExpectedFilesOnError");
+
+  @Rule
+  public DynamicPort port = new DynamicPort("port");
+
+  @Rule
+  public DynamicPort otherPort = new DynamicPort("otherPort");
 
   private String expectedAppXml;
   private String expectedAppJson;
@@ -442,7 +450,7 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
                     .getDeclaration())
                 .withParameterGroup(group -> group.withName(CONNECTION)
                     .withParameter("host", createStringParameter("localhost"))
-                    .withParameter("port", createNumberParameter("49019"))
+                    .withParameter("port", createNumberParameter("${port}"))
                     .withParameter("protocol", createStringParameter("HTTPS")))
                 .getDeclaration())
             .getDeclaration())
@@ -464,7 +472,7 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
                                                                      .build()))
                 .withParameterGroup(newParameterGroup(CONNECTION)
                     .withParameter("host", createStringParameter("localhost"))
-                    .withParameter("port", createNumberParameter("49020"))
+                    .withParameter("port", createNumberParameter("${otherPort}"))
                     .withParameter("clientSocketProperties",
                                    newObjectValue()
                                        .withParameter("connectionTimeout", createNumberParameter("1000"))
