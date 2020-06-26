@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+
+    <flow name="detailedDescription">
+        <raise-error type="TEST:EXPECTED" description="An expected error occurred."/>
+        <error-handler>
+            <on-error-continue>
+                <set-payload value="#[error.detailedDescription]"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="infoElement">
+        <raise-error type="TEST:EXPECTED"/>
+        <error-handler>
+            <on-error-continue>
+                <set-payload value="#[error.cause.info.Element]"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="infoElementDeprecated">
+        <raise-error type="TEST:EXPECTED"/>
+        <error-handler>
+            <on-error-continue>
+                <set-payload value="#[message.message.exceptionPayload.info.Element]"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+</mule>
