@@ -16,17 +16,19 @@ import static org.mule.runtime.http.api.HttpConstants.HttpStatus.UNAUTHORIZED;
 
 import org.mule.extension.http.api.HttpResponseAttributes;
 import org.mule.functional.api.component.TestConnectorQueueHandler;
+import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.notification.SecurityNotification;
 import org.mule.runtime.api.notification.SecurityNotificationListener;
 import org.mule.runtime.api.util.concurrent.Latch;
 import org.mule.tck.junit4.rule.DynamicPort;
-import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.test.IntegrationTestCaseRunnerConfig;
 
 import org.junit.Rule;
 import org.junit.Test;
 
-public class SecureHttpPollingFunctionalTestCase extends AbstractIntegrationTestCase {
+public class SecureHttpPollingFunctionalTestCase extends MuleArtifactFunctionalTestCase
+    implements IntegrationTestCaseRunnerConfig {
 
   @Rule
   public DynamicPort port1 = new DynamicPort("port1");

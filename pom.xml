@@ -16,10 +16,11 @@
   <name>Mule Tests</name>
 
   <modules>
-    <module>performance</module>
     <module>integration</module>
+    <module>performance</module>
     <module>dsl</module>
     <module>soap-connect</module>
+    <module>security</module>
     <module>oauth</module>
     <module>schedulers-tests</module>
     <module>mule-test-smart-connectors-parent</module>

@@ -24,7 +24,7 @@
     </spring:security-manager>
 
     <http:listener-config name="listenerConfig">
-        <http:listener-connection host="localhost" port="8080"/>
+        <http:listener-connection host="localhost" port="${http.listener.port}"/>
     </http:listener-config>
 
     <flow name="SecureUMO">
