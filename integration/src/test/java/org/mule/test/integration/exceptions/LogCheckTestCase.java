@@ -133,6 +133,7 @@ public class LogCheckTestCase extends AbstractIntegrationTestCase {
 
   public static class CustomException extends MuleException {
 
+    private static final long serialVersionUID = -5911115770998812278L;
     private static final String MESSAGE = "Error";
 
     public CustomException() {
