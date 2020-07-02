@@ -11,8 +11,6 @@
                http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
                http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
 
-    <spring:config name="springConfig" files="org/mule/test/construct/flow-beans.xml"/>
-
     <test-components:queue-config name="asynchronous-async-out">
         <test-components:connection />
     </test-components:queue-config>
