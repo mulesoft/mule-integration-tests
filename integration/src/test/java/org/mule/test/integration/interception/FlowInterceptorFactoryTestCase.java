@@ -39,6 +39,7 @@ import org.mule.runtime.api.scheduler.SchedulerService;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.runtime.http.api.HttpService;
+import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.util.HashMap;
@@ -71,6 +72,9 @@ public class FlowInterceptorFactoryTestCase extends AbstractIntegrationTestCase 
 
   @Rule
   public ExpectedError expectedError = none();
+
+  @Rule
+  public DynamicPort port = new DynamicPort("port");
 
   @Inject
   @Named("withMaxConcurrency")
