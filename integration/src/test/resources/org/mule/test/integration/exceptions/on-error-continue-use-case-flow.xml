@@ -5,12 +5,14 @@
       xmlns:test="http://www.mulesoft.org/schema/mule/test"
       xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
       xmlns:script="http://www.mulesoft.org/schema/mule/scripting"
+      xmlns:test-components="http://www.mulesoft.org/schema/mule/test-components"
       xsi:schemaLocation="
        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
        http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
        http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd
        http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
-       http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
+       http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd
+       http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
 
     <http:listener-config name="listenerConfig">
         <http:listener-connection host="localhost" port="${port1}"/>
@@ -22,6 +24,18 @@
             </tls:context>
         </http:listener-connection>
     </http:listener-config>
+
+    <test-components:queue-config name="out">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="out1">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="out2">
+        <test-components:connection />
+    </test-components:queue-config>
 
     <object name="failing" class="org.mule.test.integration.exceptions.OnErrorContinueTestCase$FailingProcessor"/>
     <object name="error" class="org.mule.test.integration.exceptions.OnErrorContinueTestCase$ErrorProcessor"/>
@@ -196,7 +210,7 @@
         <set-payload value="#[payload ++ ' hey']"/>
         <error-handler>
             <on-error-continue>
-                <test:queue name="out"/>
+                <test-components:queue-push config-ref="out"/>
             </on-error-continue>
         </error-handler>
     </flow>
@@ -206,13 +220,13 @@
         <test:processor throwException="true"/>
         <error-handler>
             <on-error-continue>
-                <test:queue name="out1"/>
+                <test-components:queue-push config-ref="out1"/>
                 <try>
                     <set-payload value="try"/>
                     <test:processor throwException="true"/>
                     <error-handler>
                         <on-error-continue>
-                            <test:queue name="out2"/>
+                            <test-components:queue-push config-ref="out2"/>
                         </on-error-continue>
                     </error-handler>
                 </try>

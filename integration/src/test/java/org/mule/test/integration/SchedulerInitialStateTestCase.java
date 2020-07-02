@@ -7,6 +7,7 @@
 package org.mule.test.integration;
 
 import static java.util.Arrays.asList;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.stream.Collectors.toList;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
@@ -17,7 +18,6 @@ import static org.mule.runtime.api.deployment.management.ComponentInitialStateMa
 import static org.mule.runtime.config.api.SpringXmlConfigurationBuilderFactory.createConfigurationBuilder;
 import static org.mule.test.allure.AllureConstants.SchedulerServiceFeature.SCHEDULER_SERVICE;
 import static org.mule.test.allure.AllureConstants.SchedulerServiceFeature.SchedulerServiceStory.SOURCE_MANAGEMENT;
-import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.component.Component;
 import org.mule.runtime.api.component.location.Location;
 import org.mule.runtime.api.config.custom.ServiceConfigurator;
@@ -31,6 +31,7 @@ import org.mule.tck.probe.PollingProber;
 import org.mule.tck.probe.Probe;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.runner.RunnerDelegateTo;
+import org.mule.tests.api.TestQueueManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -53,6 +54,9 @@ public class SchedulerInitialStateTestCase extends AbstractIntegrationTestCase {
 
   @Inject
   private LazyComponentInitializer lazyComponentInitializer;
+
+  @Inject
+  private TestQueueManager queueManager;
 
   @Parameterized.Parameter
   public boolean lazyInitEnabled;
@@ -114,7 +118,7 @@ public class SchedulerInitialStateTestCase extends AbstractIntegrationTestCase {
 
   @Description("ComponentInitialStateManager does not allow to start scheduler message sources")
   @Test
-  public void verifyMessageSourcesAreNotStarted() {
+  public void verifyMessageSourcesAreNotStarted() throws InterruptedException {
     lazyComponentInitializer.initializeComponents(componentLocation -> true);
     SchedulerMessageSource schedulerMessageSource = (SchedulerMessageSource) muleContext.getConfigurationComponentLocator()
         .find(Location.builder().globalName("runningSchedulerOnStartup").addSourcePart().build()).get();
@@ -123,13 +127,11 @@ public class SchedulerInitialStateTestCase extends AbstractIntegrationTestCase {
         .find(Location.builder().globalName("notRunningSchedulerOnStartup").addSourcePart().build()).get();
     assertThat(schedulerMessageSource.isStarted(), is(false));
 
-    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
-
     new PollingProber(10000, 100).check(new Probe() {
 
       @Override
       public boolean isSatisfied() {
-        Event response = queueHandler.read("runningSchedulerOnStartupQueue", 100);
+        Event response = queueManager.read("runningSchedulerOnStartupQueue", 100, MILLISECONDS);
         return response != null;
       }
 
@@ -139,7 +141,7 @@ public class SchedulerInitialStateTestCase extends AbstractIntegrationTestCase {
       }
     });
 
-    Event response = queueHandler.read("notRunningSchedulerOnStartupQueue", 100);
+    Event response = queueManager.read("notRunningSchedulerOnStartupQueue", 100, MILLISECONDS);
     assertThat(response, is(nullValue()));
   }
 }

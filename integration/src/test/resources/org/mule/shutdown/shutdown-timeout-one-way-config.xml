@@ -2,21 +2,25 @@
 <mule
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns="http://www.mulesoft.org/schema/mule/core"
-        xmlns:test="http://www.mulesoft.org/schema/mule/test"
+        xmlns:test-components="http://www.mulesoft.org/schema/mule/test-components"
         xmlns:script="http://www.mulesoft.org/schema/mule/scripting"
         xsi:schemaLocation="
 		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-		http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
+		http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd
 		http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
 
     <configuration shutdownTimeout="${contextShutdownTimeout}" />
+
+    <test-components:queue-config name="response">
+        <test-components:connection />
+    </test-components:queue-config>
 
     <flow name="staticComponentFlow">
 
         <custom-processor class="org.mule.shutdown.AbstractShutdownTimeoutRequestResponseTestCase$BlockMessageProcessor"/>
         <set-payload value="staticComponentResponse"/>
 
-        <test:queue name="response"/>
+        <test-components:queue-push config-ref="response"/>
     </flow>
 
     <flow name="scriptComponentFlow">
@@ -26,14 +30,14 @@
             <script:code>return &quot;scriptComponentResponse&quot;;</script:code>
         </script:execute>
 
-        <test:queue name="response"/>
+        <test-components:queue-push config-ref="response"/>
     </flow>
 
     <flow name="setPayloadFlow">
         <custom-processor class="org.mule.shutdown.AbstractShutdownTimeoutRequestResponseTestCase$BlockMessageProcessor"/>
         <set-payload value="#['setPayloadResponse']" />
 
-        <test:queue name="response"/>
+        <test-components:queue-push config-ref="response"/>
     </flow>
 
     <flow name="setPayloadChoiceFlow">
@@ -41,8 +45,8 @@
         <choice>
             <when expression="#[true]">
                 <set-payload value="#['setPayloadResponse']" />
-        
-                <test:queue name="response"/>
+
+                <test-components:queue-push config-ref="response"/>
             </when>
         </choice>
     </flow>

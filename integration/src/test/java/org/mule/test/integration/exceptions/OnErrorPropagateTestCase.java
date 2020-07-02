@@ -8,6 +8,7 @@ package org.mule.test.integration.exceptions;
 
 import static java.lang.String.format;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -27,7 +28,6 @@ import static org.mule.tck.junit4.matcher.EventMatcher.hasVariables;
 import static org.mule.tck.junit4.matcher.HasClassInHierarchy.withClassName;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
 
-import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.functional.api.exception.ExpectedError;
 import org.mule.functional.api.exception.FunctionalTestException;
 import org.mule.runtime.api.event.Event;
@@ -45,8 +45,9 @@ import org.mule.runtime.http.api.domain.message.response.HttpResponse;
 import org.mule.service.http.TestHttpClient;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.tests.api.TestQueueManager;
 
-import java.util.concurrent.TimeUnit;
+import javax.inject.Inject;
 
 import org.hamcrest.Matcher;
 import org.junit.Rule;
@@ -59,7 +60,8 @@ import io.qameta.allure.Story;
 @Story("On Error Propagate")
 public class OnErrorPropagateTestCase extends AbstractIntegrationTestCase {
 
-  private TestConnectorQueueHandler queueHandler;
+  @Inject
+  private TestQueueManager queueManager;
 
   @Rule
   public ExpectedError expectedError = none();
@@ -75,55 +77,49 @@ public class OnErrorPropagateTestCase extends AbstractIntegrationTestCase {
     return "org/mule/test/integration/exceptions/on-error-propagate-use-case-config.xml";
   }
 
-  @Override
-  protected void doSetUp() throws Exception {
-    super.doSetUp();
-    queueHandler = new TestConnectorQueueHandler(registry);
-  }
-
   @Test
   public void typeMatch() throws Exception {
     verifyFlow("onErrorPropagateTypeMatch");
-    Event customPath = queueHandler.read("custom1", RECEIVE_TIMEOUT);
+    Event customPath = queueManager.read("custom1", RECEIVE_TIMEOUT, MILLISECONDS);
     assertThat(customPath, is(nullValue()));
-    Event anyPath = queueHandler.read("any1", RECEIVE_TIMEOUT);
+    Event anyPath = queueManager.read("any1", RECEIVE_TIMEOUT, MILLISECONDS);
     assertThat(anyPath, is(nullValue()));
   }
 
   @Test
   public void typeMatchAny() throws Exception {
     verifyFlow("onErrorPropagateTypeMatchAny");
-    Event customPath = queueHandler.read("custom2", RECEIVE_TIMEOUT);
+    Event customPath = queueManager.read("custom2", RECEIVE_TIMEOUT, MILLISECONDS);
     assertThat(customPath, is(nullValue()));
   }
 
   @Test
   public void typeMatchSeveral() throws Exception {
     verifyFlow("onErrorPropagateTypeMatchSeveral", true);
-    Event anyPath = queueHandler.read("any", RECEIVE_TIMEOUT);
+    Event anyPath = queueManager.read("any", RECEIVE_TIMEOUT, MILLISECONDS);
     assertThat(anyPath, is(nullValue()));
     verifyFlow("onErrorPropagateTypeMatchSeveral", false);
-    anyPath = queueHandler.read("any", RECEIVE_TIMEOUT);
+    anyPath = queueManager.read("any", RECEIVE_TIMEOUT, MILLISECONDS);
     assertThat(anyPath, is(nullValue()));
   }
 
   @Test
   public void typeMatchNameWildcard() throws Exception {
     verifyFlow("onErrorPropagateTypeMatchNameWildcard", true);
-    Event anyPath = queueHandler.read("any", RECEIVE_TIMEOUT);
+    Event anyPath = queueManager.read("any", RECEIVE_TIMEOUT, MILLISECONDS);
     assertThat(anyPath, is(nullValue()));
     verifyFlow("onErrorPropagateTypeMatchNameWildcard", false);
-    anyPath = queueHandler.read("any", RECEIVE_TIMEOUT);
+    anyPath = queueManager.read("any", RECEIVE_TIMEOUT, MILLISECONDS);
     assertThat(anyPath, is(nullValue()));
   }
 
   @Test
   public void typeMatchNamespaceWildcard() throws Exception {
     verifyFlow("onErrorPropagateTypeMatchNamespaceWildcard", true);
-    Event anyPath = queueHandler.read("any", RECEIVE_TIMEOUT);
+    Event anyPath = queueManager.read("any", RECEIVE_TIMEOUT, MILLISECONDS);
     assertThat(anyPath, is(nullValue()));
     verifyFlow("onErrorPropagateTypeMatchNamespaceWildcard", false);
-    anyPath = queueHandler.read("any", RECEIVE_TIMEOUT);
+    anyPath = queueManager.read("any", RECEIVE_TIMEOUT, MILLISECONDS);
     assertThat(anyPath, is(nullValue()));
   }
 
@@ -154,14 +150,14 @@ public class OnErrorPropagateTestCase extends AbstractIntegrationTestCase {
     final HttpResponse response = httpClient.send(request, RECEIVE_TIMEOUT, false, null);
 
     assertThat(response.getStatusCode(), is(INTERNAL_SERVER_ERROR.getStatusCode()));
-    assertThat(queueHandler.read("out", RECEIVE_TIMEOUT).getMessage(), hasPayload(equalTo("Test Message hey")));
+    assertThat(queueManager.read("out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage(), hasPayload(equalTo("Test Message hey")));
   }
 
   @Test
   public void handlesTryScope() throws Exception {
     verifyFlow("withTry");
-    assertThat(queueHandler.read("out1", RECEIVE_TIMEOUT).getMessage(), hasPayload(equalTo("flow")));
-    assertThat(queueHandler.read("out2", RECEIVE_TIMEOUT).getMessage(), hasPayload(equalTo("try")));
+    assertThat(queueManager.read("out1", RECEIVE_TIMEOUT, MILLISECONDS).getMessage(), hasPayload(equalTo("flow")));
+    assertThat(queueManager.read("out2", RECEIVE_TIMEOUT, MILLISECONDS).getMessage(), hasPayload(equalTo("try")));
   }
 
   private String getUrl() {
@@ -173,7 +169,7 @@ public class OnErrorPropagateTestCase extends AbstractIntegrationTestCase {
       flowRunner(flowName).withPayload(payload).dispatch();
     } catch (Exception e) {
       assertThat(e.getCause(), is(instanceOf(FunctionalTestException.class)));
-      if (!CallMessageProcessor.latch.await(RECEIVE_TIMEOUT, TimeUnit.MILLISECONDS)) {
+      if (!CallMessageProcessor.latch.await(RECEIVE_TIMEOUT, MILLISECONDS)) {
         fail("custom message processor wasn't call");
       }
     }

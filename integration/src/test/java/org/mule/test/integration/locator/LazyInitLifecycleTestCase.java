@@ -7,6 +7,7 @@
 package org.mule.test.integration.locator;
 
 import static java.util.Optional.empty;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -21,7 +22,6 @@ import static org.mule.runtime.config.api.SpringXmlConfigurationBuilderFactory.c
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentLocatorStory.SEARCH_CONFIGURATION;
 
-import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.artifact.Registry;
 import org.mule.runtime.api.component.location.Location;
 import org.mule.runtime.config.api.LazyComponentInitializer;
@@ -32,6 +32,7 @@ import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.integration.locator.processor.CustomTestComponent;
+import org.mule.tests.api.TestQueueManager;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -60,6 +61,9 @@ public class LazyInitLifecycleTestCase extends AbstractIntegrationTestCase {
 
   @Inject
   private LazyComponentInitializer lazyComponentInitializer;
+
+  @Inject
+  private TestQueueManager queueManager;
 
   // TODO MULE-18316 (AST) remove this
   @Inject
@@ -243,10 +247,7 @@ public class LazyInitLifecycleTestCase extends AbstractIntegrationTestCase {
   @Test
   public void globalErrorHandlerApplied() throws Exception {
     lazyComponentInitializer.initializeComponent(builder().globalName("flowFailing").build());
-
     flowRunner("flowFailing").runExpectingException();
-
-    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
-    assertThat(queueHandler.read("globalErrorHandlerQueue", RECEIVE_TIMEOUT), is(notNullValue()));
+    assertThat(queueManager.read("globalErrorHandlerQueue", RECEIVE_TIMEOUT, MILLISECONDS), is(notNullValue()));
   }
 }

@@ -12,7 +12,6 @@ import static org.mule.functional.api.component.FunctionalTestProcessor.getFromF
 import static org.mule.runtime.api.component.location.Location.builder;
 import static org.mule.test.allure.AllureConstants.SchedulerServiceFeature.SCHEDULER_SERVICE;
 import static org.mule.test.allure.AllureConstants.SchedulerServiceFeature.SchedulerServiceStory.SOURCE_MANAGEMENT;
-import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.event.Event;
 
 import org.mule.runtime.api.exception.MuleException;
@@ -21,10 +20,13 @@ import org.mule.runtime.api.util.concurrent.Latch;
 import org.mule.tck.probe.PollingProber;
 import org.mule.tck.probe.Probe;
 import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.tests.api.TestQueueManager;
 
 import org.junit.Test;
 
 import java.util.concurrent.atomic.AtomicInteger;
+
+import javax.inject.Inject;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
@@ -33,6 +35,9 @@ import io.qameta.allure.Story;
 @Feature(SCHEDULER_SERVICE)
 @Story(SOURCE_MANAGEMENT)
 public class SchedulerManagementTestCase extends AbstractIntegrationTestCase {
+
+  @Inject
+  private TestQueueManager queueManager;
 
   @Override
   protected String getConfigFile() {
@@ -46,15 +51,12 @@ public class SchedulerManagementTestCase extends AbstractIntegrationTestCase {
         .find(builder().globalName("neverRunningScheduler").addSourcePart().build()).get();
     scheduler.trigger();
 
-    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
-
     new PollingProber(10000, 100).check(new Probe() {
 
       @Override
       public boolean isSatisfied() {
-        Event response = queueHandler.read("neverRunningSchedulerQueue", 100);
+        Event response = queueManager.read("neverRunningSchedulerQueue", 100, MILLISECONDS);
         return response != null;
-
       }
 
       @Override

@@ -3,9 +3,11 @@
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:vm="http://www.mulesoft.org/schema/mule/vm"
       xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xmlns:test-components="http://www.mulesoft.org/schema/mule/test-components"
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
                            http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
-                           http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd">
+                           http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd
+                           http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
 
     <vm:config name="VM_Config">
         <vm:queues >
@@ -14,6 +16,14 @@
           <vm:queue queueName="Q3" />
         </vm:queues>
     </vm:config>
+
+    <test-components:queue-config name="redeliveredMessageQueue">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="processed">
+        <test-components:connection />
+    </test-components:queue-config>
 
     <flow name="redeliveryPolicyFlowDispatch">
         <vm:publish-consume queueName="Q1" config-ref="VM_Config" timeout="1"/>
@@ -27,7 +37,7 @@
         <raise-error type="APP:FLOW_ERROR"/>
         <error-handler>
             <on-error-propagate type="MULE:REDELIVERY_EXHAUSTED">
-                <test:queue name="redeliveredMessageQueue"/>
+                <test-components:queue-push config-ref="redeliveredMessageQueue"/>
             </on-error-propagate>
         </error-handler>
     </flow>
@@ -47,7 +57,7 @@
         
         <error-handler>
             <on-error-propagate type="MULE:REDELIVERY_EXHAUSTED">
-                <test:queue name="redeliveredMessageQueue"/>
+                <test-components:queue-push config-ref="redeliveredMessageQueue"/>
             </on-error-propagate>
         </error-handler>
     </flow>
@@ -60,7 +70,7 @@
         <vm:listener queueName="Q3" config-ref="VM_Config">
             <redelivery-policy/>
         </vm:listener>
-        
-        <test:queue name="processed"/>
+
+        <test-components:queue-push config-ref="processed"/>
     </flow>
 </mule>

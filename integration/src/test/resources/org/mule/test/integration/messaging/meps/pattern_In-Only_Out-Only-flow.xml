@@ -3,10 +3,12 @@
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:test="http://www.mulesoft.org/schema/mule/test"
       xmlns:script="http://www.mulesoft.org/schema/mule/scripting"
+      xmlns:test-components="http://www.mulesoft.org/schema/mule/test-components"
       xsi:schemaLocation="
        http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd
        http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
-       http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+       http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+       http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
 
     <!--// START SNIPPET: full-config -->
     <description>
@@ -15,6 +17,14 @@
 
         MEP TODO: If a message does not originate from the service an exception should be thrown.
     </description>
+
+    <test-components:queue-config name="received">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="notReceived">
+        <test-components:connection />
+    </test-components:queue-config>
 
     <flow name="In-Only_Out-Only-Service">
         <script:execute engine="groovy">
@@ -29,14 +39,14 @@
         <async>
             <choice>
                 <when expression="#[payload == 'foo header received']">
-                    <test:queue name="received"/>
+                    <test-components:queue-push config-ref="received"/>
                 </when>
             </choice>
         </async>
         <async>
             <choice>
                 <when expression="#[payload == 'foo header not received']">
-                    <test:queue name="notReceived"/>
+                    <test-components:queue-push config-ref="notReceived"/>
                 </when>
             </choice>
         </async>

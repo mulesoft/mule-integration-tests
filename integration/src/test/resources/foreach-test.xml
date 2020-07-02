@@ -4,27 +4,61 @@
       xmlns:test="http://www.mulesoft.org/schema/mule/test"
       xmlns:script="http://www.mulesoft.org/schema/mule/scripting"
       xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:test-components="http://www.mulesoft.org/schema/mule/test-components"
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
                http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
                http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
-               http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
+               http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd
+               http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
+
+    <test-components:queue-config name="out">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="splitStringOutQueue">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="splitJsonOutQueue">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="splitJsonArrayOutQueue">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="splitJsonComplexValueOutQueue">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="splitXmlOutQueue">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="splitXmlComplexValueOutQueue">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="splitPayloadOutQueue">
+        <test-components:connection />
+    </test-components:queue-config>
 
     <flow name="minimal-config" initialState="stopped">
         <foreach>
             <test:processor/>
-            <test:queue name="out"/>
+            <test-components:queue-push config-ref="out"/>
         </foreach>
     </flow>
 
     <flow name="minimal-config-plus-mp" initialState="stopped">
         <foreach>
             <test:processor/>
-            <test:queue name="out"/>
+            <test-components:queue-push config-ref="out"/>
         </foreach>
         <script:execute engine="groovy">
             <script:code>
-            	payload.add("added after foreach")
-            	result = payload
+                payload.add("added after foreach")
+                result = payload
             </script:code>
         </script:execute>
     </flow>
@@ -32,14 +66,14 @@
     <flow name="minimal-config-expression" initialState="stopped">
         <foreach collection="#[vars.names]">
             <test:processor/>
-            <test:queue name="out"/>
+            <test-components:queue-push config-ref="out"/>
         </foreach>
     </flow>
 
     <flow name="partitioned-config" initialState="stopped">
         <foreach batchSize="${batch.size}">
             <test:processor/>
-            <test:queue name="out"/>
+            <test-components:queue-push config-ref="out"/>
         </foreach>
     </flow>
 
@@ -135,7 +169,7 @@
         <foreach>
             <foreach>
                 <test:processor/>
-                <test:queue name="out"/>
+                <test-components:queue-push config-ref="out"/>
             </foreach>
         </foreach>
     </flow>
@@ -148,11 +182,11 @@
                 <test:processor/>
                 <test:assert expression="(vars.j as Number) + 1 == vars.counter"/>
                 <set-variable variableName="j" value="#[vars.counter]"/>
-                <test:queue name="out"/>
+                <test-components:queue-push config-ref="out"/>
             </foreach>
             <test:assert expression="(vars.i as Number) + 1 == vars.counter"/>
             <set-variable variableName="i" value="#[vars.counter]"/>
-            <test:queue name="out"/>
+            <test-components:queue-push config-ref="out"/>
         </foreach>
     </flow>
 
@@ -161,7 +195,7 @@
         <set-variable variableName="rootMessage" value="world" />
         <foreach>
             <test:processor/>
-            <test:queue name="out"/>
+            <test-components:queue-push config-ref="out"/>
         </foreach>
         <test:assert expression="#[vars.counter == 'hello']" />
         <test:assert expression="#[vars.rootMessage == 'world']" />
@@ -170,7 +204,7 @@
     <flow name="mvel-list" initialState="stopped">
         <foreach collection="#[mel:['foo', 'bar']]">
             <test:processor/>
-            <test:queue name="out"/>
+            <test-components:queue-push config-ref="out"/>
         </foreach>
     </flow>
 
@@ -178,14 +212,14 @@
         <foreach collection="#[mel:['key1' : 'val1', 'key2':'val2']]">
             <test:processor/>
             <logger level="ERROR" message="message-#[vars.counter]: #[payload]"/>
-            <test:queue name="out"/>
+            <test-components:queue-push config-ref="out"/>
         </foreach>
     </flow>
 
     <flow name="mvel-collection" initialState="stopped">
         <foreach collection="#[mel:['key1' : 'val1', 'key2':'val2'].values()]">
             <test:processor/>
-            <test:queue name="out"/>
+            <test-components:queue-push config-ref="out"/>
         </foreach>
     </flow>
 
@@ -200,74 +234,78 @@
             <flow-ref name="assertIterable" />
         </foreach>
     </flow>
-    
+
     <sub-flow name="assertIterable">
         <test:processor/>
         <test:assert expression="#[mel:payload instanceof String]"  message="hoal"/>
         <logger level="ERROR" message="message-#[vars.counter]: #[payload]"/>
-        <test:queue name="out"/>
+        <test-components:queue-push config-ref="out"/>
     </sub-flow>
-    
+
     <flow name="mvel-error" initialState="stopped">
         <foreach collection="#[vars.invalid]">
             <test:processor/>
         </foreach>
     </flow>
-    
+
     <flow name="foreachWithAsync" initialState="stopped">
-		<foreach>
-			<async>
-				<flow-ref name="setTestProperties" />
-			</async>
-		</foreach>
-		<flow-ref name="setTestProperties" />
-	</flow>
+        <foreach>
+            <async>
+                <flow-ref name="setTestProperties" />
+            </async>
+        </foreach>
+        <flow-ref name="setTestProperties" />
+    </flow>
 
     <flow name="splitStringValueFromPayload" initialState="stopped">
         <foreach collection="#[payload splitBy '-']">
-            <test:queue name="splitStringOutQueue"/>
+            <test-components:queue-push config-ref="splitStringOutQueue"/>
         </foreach>
     </flow>
 
     <flow name="splitStringHardcodedValue" initialState="stopped">
         <foreach collection="#['a-b-c' splitBy '-']">
-            <test:queue name="splitStringOutQueue"/>
+            <test-components:queue-push config-ref="splitStringOutQueue"/>
         </foreach>
     </flow>
 
     <flow name="splitJson" initialState="stopped">
-        <foreach collection="#[[ payload.name, payload.lastname ]]">
-            <test:queue name="splitJsonOutQueue" contentJavaType="java.lang.String"/>
+        <foreach collection="#[output application/java --- [ payload.name, payload.lastname ]]">
+            <test-components:queue-push config-ref="splitJsonOutQueue"/>
         </foreach>
     </flow>
 
     <flow name="splitJsonArray" initialState="stopped">
         <foreach>
-            <test:queue name="splitJsonArrayOutQueue" contentJavaType="java.lang.String"/>
+            <test-components:queue-push config-ref="splitJsonArrayOutQueue">
+                <test-components:content>
+                    #[output application/java --- payload]
+                </test-components:content>
+            </test-components:queue-push>
         </foreach>
     </flow>
 
     <flow name="splitJsonComplexValue" initialState="stopped">
         <foreach collection="#[vars.content.users]" batchSize="2">
             <foreach>
-                <test:queue name="splitJsonComplexValueOutQueue" contentJavaType="java.lang.String">
-                    <test:content>#["$(payload.name) $(payload.lastname)"]</test:content>
-                </test:queue>
+                <test-components:queue-push config-ref="splitJsonComplexValueOutQueue">
+                    <test-components:content>#[output application/java --- "$(payload.name) $(payload.lastname)"]</test-components:content>
+                </test-components:queue-push>
             </foreach>
         </foreach>
     </flow>
 
     <flow name="splitXml" initialState="stopped">
         <foreach collection="#[output application/java --- [ payload.person.name, payload.person.lastname ]]">
-            <test:queue name="splitXmlOutQueue"/>
+            <test-components:queue-push config-ref="splitXmlOutQueue"/>
         </foreach>
     </flow>
 
     <flow name="splitXmlComplexValue" initialState="stopped">
         <foreach collection="#[payload.PurchaseOrder.Items]">
-            <test:queue name="splitXmlComplexValueOutQueue" contentJavaType="java.lang.String">
-                <test:content>#["$(payload.Item.@PartNumber) $(payload.Item.Price)"]</test:content>
-            </test:queue>
+            <test-components:queue-push config-ref="splitXmlComplexValueOutQueue">
+                <test-components:content>#[output application/java --- "$(payload.Item.@PartNumber) $(payload.Item.Price)"]</test-components:content>
+            </test-components:queue-push>
         </foreach>
     </flow>
 
@@ -275,12 +313,12 @@
         <foreach>
             <choice>
                 <when expression="#[vars.useExpression]">
-                    <test:queue name="splitPayloadOutQueue" contentJavaType="java.lang.String">
-                        <test:content>#[payload.name]</test:content>
-                    </test:queue>
+                    <test-components:queue-push config-ref="splitPayloadOutQueue">
+                        <test-components:content>#[output application/java --- "$(payload.name)"]</test-components:content>
+                    </test-components:queue-push>
                 </when>
                 <otherwise>
-                    <test:queue name="splitPayloadOutQueue"/>
+                    <test-components:queue-push config-ref="splitPayloadOutQueue"/>
                 </otherwise>
             </choice>
         </foreach>
@@ -298,14 +336,14 @@
     </flow>
 
     <sub-flow name="setTestProperties">
-		<set-variable variableName="value1" value="value1" />
-		<set-variable variableName="value2" value="value2" />
+        <set-variable variableName="value1" value="value1" />
+        <set-variable variableName="value2" value="value2" />
 
-		<test:assert expression="#[vars.value1 == 'value1']" />
-		<test:assert expression="#[vars.value2 == 'value2']" />
+        <test:assert expression="#[vars.value1 == 'value1']" />
+        <test:assert expression="#[vars.value2 == 'value2']" />
 
         <set-variable variableName="latchString" value="#[java!org::mule::test::routing::ForeachTestCase::coundDownLatch(vars['latch'])]" />
-	</sub-flow>
+    </sub-flow>
 
     <sub-flow name="sub-flow-with-foreach">
         <foreach>
