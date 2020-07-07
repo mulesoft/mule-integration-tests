@@ -29,7 +29,7 @@
         </try>
     </flow>
 
-    <flow name="retryExhaustedCausedByConnectivityErrorWithErrorHandler">
+    <flow name="retryExhaustedCausedByConnectivityErrorLogCheck">
         <until-successful maxRetries="1" millisBetweenRetries="10">
             <test:processor throwException="true" exceptionToThrow="org.mule.runtime.api.connection.ConnectionException" exceptionText="Connection refused"/>
         </until-successful>
@@ -37,7 +37,38 @@
             <test:on-error-check-log>
                 <test:check-summary>
                     <test:summary-info key="Error type" value="MULE:RETRY_EXHAUSTED"/>
-                    <test:summary-info key="Message" value="'until-successful' retries exhausted. Last exception message was: Connection refused"/>
+                    <test:summary-info key="Message" value="'until-successful' retries exhausted"/>
+                    <test:summary-info key="Caused by" value="MULE:CONNECTIVITY: Connection refused"/>
+                </test:check-summary>
+            </test:on-error-check-log>
+        </error-handler>
+    </flow>
+
+    <flow name="retryExhaustedCausedByNonConnectivityErrorLogCheck">
+        <until-successful maxRetries="1" millisBetweenRetries="10">
+            <test:processor throwException="true"/>
+        </until-successful>
+        <error-handler>
+            <test:on-error-check-log>
+                <test:check-summary>
+                    <test:summary-info key="Error type" value="MULE:RETRY_EXHAUSTED"/>
+                    <test:summary-info key="Message" value="'until-successful' retries exhausted"/>
+                    <test:summary-info key="Caused by" value="MULE:UNKNOWN: Functional Test Service Exception"/>
+                </test:check-summary>
+            </test:on-error-check-log>
+        </error-handler>
+    </flow>
+
+    <flow name="retryExhaustedCausedByMuleRuntimeErrorLogCheck">
+        <until-successful maxRetries="1" millisBetweenRetries="10">
+            <test:throw exception="org.mule.test.integration.routing.outbound.UntilSuccessfulRetryExhaustedTestCase.MuleRuntimeError" error="SECURITY"/>
+        </until-successful>
+        <error-handler>
+            <test:on-error-check-log>
+                <test:check-summary>
+                    <test:summary-info key="Error type" value="MULE:RETRY_EXHAUSTED"/>
+                    <test:summary-info key="Message" value="'until-successful' retries exhausted"/>
+                    <test:summary-info key="Caused by" value="MULE:SECURITY: Mule runtime error"/>
                 </test:check-summary>
             </test:on-error-check-log>
         </error-handler>

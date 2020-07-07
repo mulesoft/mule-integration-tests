@@ -11,16 +11,18 @@ import static java.lang.System.currentTimeMillis;
 import static java.util.Collections.synchronizedList;
 import static java.util.concurrent.Executors.newFixedThreadPool;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.functional.api.component.FunctionalTestProcessor.getFromFlow;
 import static org.mule.functional.junit4.matchers.ThrowableCauseMatcher.hasCause;
 import static org.mule.functional.junit4.matchers.ClassNameMatcher.hasClassName;
+import static org.mule.runtime.api.exception.MuleExceptionInfo.INFO_CAUSED_BY_KEY;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.UntilSuccessfulStory.UNTIL_SUCCESSFUL;
 
@@ -142,16 +144,16 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
 
     ponderUntilMessageCountReceivedByCustomMP(1);
 
-    Throwable error = CustomMP.getProcessedEvents().get(0).getError().get().getCause();
+    MuleException error = (MuleException) CustomMP.getProcessedEvents().get(0).getError().get().getCause();
     assertThat(error, is(notNullValue()));
     assertThat(error, instanceOf(RetryPolicyExhaustedException.class));
     assertThat(error.getMessage(),
-               containsString("'until-successful' retries exhausted. Last exception message was: Value was expected to be false but it was true instead"));
-
-    assertThat(error.getCause(), hasClassName(containsString("SuppressedMuleException")));
-    assertThat(error.getCause().getCause(), instanceOf(MuleRuntimeException.class));
-    assertThat(error.getMessage(),
-               containsString("Value was expected to be false but it was true instead"));
+               containsString("'until-successful' retries exhausted"));
+    assertThat(error.getCause(), hasClassName(containsString("org.mule.runtime.internal.exception.SuppressedMuleException")));
+    List<MuleException> exhaustionCause = (List<MuleException>) error.getInfo().get(INFO_CAUSED_BY_KEY);
+    assertThat(exhaustionCause, hasSize(1));
+    assertThat(exhaustionCause.get(0).getExceptionInfo().getErrorType().toString(), equalTo("VALIDATION:INVALID_BOOLEAN"));
+    assertThat(exhaustionCause.get(0).getMessage(), equalTo("Value was expected to be false but it was true instead"));
   }
 
   @Test
