@@ -10,7 +10,9 @@ import static org.mule.tck.junit4.rule.VerboseExceptions.setVerboseExceptions;
 import static org.mule.test.allure.AllureConstants.Logging.LOGGING;
 import static org.mule.test.allure.AllureConstants.Logging.LoggingStory.ERROR_REPORTING;
 
+import io.qameta.allure.Issue;
 import org.mule.runtime.api.exception.MuleException;
+import org.mule.runtime.api.i18n.I18nMessageFactory;
 import org.mule.tck.junit4.rule.VerboseExceptions;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -112,6 +114,18 @@ public class LogCheckTestCase extends AbstractIntegrationTestCase {
     runSuccesses(false, "noExceptionFlow");
   }
 
+  @Test
+  @Issue("MULE-18041")
+  public void suppressedMuleExceptionGetsLoggedAsSuppressedCause() throws Exception {
+    runSuccesses(false, "suppressedMuleException");
+  }
+
+  @Test
+  @Issue("MULE-18041")
+  public void suppressedMuleExceptionsGetsLoggedAsSuppressedCauses() throws Exception {
+    runSuccesses(true, "suppressedMuleExceptions");
+  }
+
   private void runSuccesses(boolean verboseExceptions, String flowName) throws Exception {
     setVerboseExceptions(verboseExceptions);
     flowRunner(flowName).run();
@@ -119,7 +133,12 @@ public class LogCheckTestCase extends AbstractIntegrationTestCase {
 
   public static class CustomException extends MuleException {
 
+    private static final long serialVersionUID = -5911115770998812278L;
     private static final String MESSAGE = "Error";
+
+    public CustomException() {
+      super(I18nMessageFactory.createStaticMessage(MESSAGE));
+    }
 
     @Override
     public String getDetailedMessage() {
@@ -136,4 +155,5 @@ public class LogCheckTestCase extends AbstractIntegrationTestCase {
       return MESSAGE;
     }
   }
+
 }

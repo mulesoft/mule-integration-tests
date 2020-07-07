@@ -238,4 +238,57 @@
         </error-handler>
     </flow>
 
+    <flow name="suppressedMuleException" initialState="stopped">
+        <until-successful maxRetries="1" millisBetweenRetries="10">
+            <test:throw exception="org.mule.test.integration.exceptions.LogCheckTestCase.CustomException" error="ANY"/>
+        </until-successful>
+        <error-handler>
+            <test:on-error-check-log>
+                <test:check-equals>
+                    <![CDATA[
+                        Message               : 'until-successful' retries exhausted
+                        Element               : suppressedMuleException/processors/0 @ LogCheckTestCase#suppressedMuleExceptionGetsLoggedAsSuppressedCause:org/mule/test/integration/exceptions/log-check-config.xml:242
+                        Element DSL           : <until-successful maxRetries="1" millisBetweenRetries="10">
+                                                    <test:throw exception="org.mule.test.integration.exceptions.LogCheckTestCase.CustomException" error="ANY"></test:throw>
+                                                </until-successful>
+                        Error type            : MULE:RETRY_EXHAUSTED
+                        Caused By             : MULE:ANY: Error
+                        FlowStack : at suppressedMuleException(suppressedMuleException/processors/0 @ LogCheckTestCase#suppressedMuleExceptionGetsLoggedAsSuppressedCause:org/mule/test/integration/exceptions/log-check-config.xml:242)
+
+                        (set debug level logging or '-Dmule.verbose.exceptions=true' for everything)
+                    ]]>
+                </test:check-equals>
+            </test:on-error-check-log>
+        </error-handler>
+    </flow>
+
+    <flow name="suppressedMuleExceptions" initialState="stopped">
+        <until-successful maxRetries="1" millisBetweenRetries="10">
+            <until-successful maxRetries="1" millisBetweenRetries="10">
+                <test:throw exception="org.mule.test.integration.exceptions.LogCheckTestCase.CustomException" error="ANY"/>
+            </until-successful>
+        </until-successful>
+        <error-handler>
+            <test:on-error-check-log>
+                <test:check-equals>
+                    <![CDATA[
+                        Message               : 'until-successful' retries exhausted
+                        Element               : suppressedMuleExceptions/processors/0 @ LogCheckTestCase#suppressedMuleExceptionsGetsLoggedAsSuppressedCauses:org/mule/test/integration/exceptions/log-check-config.xml:266
+                        Element DSL           : <until-successful maxRetries="1" millisBetweenRetries="10">
+                        <until-successful maxRetries="1" millisBetweenRetries="10">
+                        <test:throw exception="org.mule.test.integration.exceptions.LogCheckTestCase.CustomException" error="ANY"></test:throw>
+                        </until-successful>
+                        </until-successful>
+                        Error type            : MULE:RETRY_EXHAUSTED
+                        Caused by             : MULE:RETRY_EXHAUSTED: 'until-successful' retries exhausted
+                                                MULE:ANY: Error
+                        FlowStack             : at suppressedMuleExceptions(suppressedMuleExceptions/processors/0 @ LogCheckTestCase#suppressedMuleExceptionsGetsLoggedAsSuppressedCauses:org/mule/test/integration/exceptions/log-check-config.xml:266)
+                        Payload               : null
+                        Payload Type          : null
+                    ]]>
+                </test:check-equals>
+            </test:on-error-check-log>
+        </error-handler>
+    </flow>
+
 </mule>
