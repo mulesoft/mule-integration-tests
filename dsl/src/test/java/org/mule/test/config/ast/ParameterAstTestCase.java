@@ -183,7 +183,7 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
 
     // TODO MULE-17199 use an ASP parser api
     this.artifactAst = new ApplicationModel(artifactConfig, null, extensionModels, Collections.emptyMap(),
-                                            Optional.empty(), of(componentBuildingDefinitionRegistry),
+                                            Optional.empty(),
                                             uri -> muleContext.getExecutionClassLoader().getResourceAsStream(uri));
   }
 

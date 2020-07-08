@@ -18,6 +18,7 @@ import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.component.ComponentIdentifier.buildFromStringRepresentation;
 import static org.mule.runtime.api.component.location.Location.builder;
 import static org.mule.runtime.api.source.SchedulerMessageSource.SCHEDULER_MESSAGE_SOURCE_IDENTIFIER;
+import static org.mule.runtime.core.api.config.MuleProperties.OBJECT_MULE_CONFIGURATION;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentLocatorStory.SEARCH_CONFIGURATION;
 
@@ -152,7 +153,7 @@ public class ConfigurationComponentLocatorTestCase extends AbstractIntegrationTe
                                                      "mySubFlow/processors/0",
                                                      "flowFailing",
                                                      "flowFailing/processors/0",
-                                                     "_muleConfiguration",
+                                                     OBJECT_MULE_CONFIGURATION,
                                                      "globalErrorHandler",
                                                      "globalErrorHandler/0",
                                                      "globalErrorHandler/0/processors/0",
