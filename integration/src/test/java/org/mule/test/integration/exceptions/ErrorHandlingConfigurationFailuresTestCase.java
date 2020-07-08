@@ -8,7 +8,6 @@ package org.mule.test.integration.exceptions;
 
 import static java.lang.String.format;
 import static java.lang.Thread.currentThread;
-import static java.util.Arrays.asList;
 import static java.util.Collections.emptySet;
 import static java.util.Collections.singleton;
 import static org.hamcrest.Matchers.containsString;
@@ -35,16 +34,18 @@ import org.mule.runtime.core.api.config.ConfigurationException;
 import org.mule.runtime.module.extension.api.loader.java.DefaultJavaExtensionModelLoader;
 import org.mule.test.integration.AbstractConfigurationFailuresTestCase;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import io.qameta.allure.Feature;
-import io.qameta.allure.Story;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 
 @Feature(ERROR_HANDLING)
 @Story("Validations")
@@ -234,12 +235,20 @@ public class ErrorHandlingConfigurationFailuresTestCase extends AbstractConfigur
     return format("Source errors are not allowed in 'on-error-continue' handlers. Offending type is '%s'.", type);
   }
 
+  @Override
   protected List<ExtensionModel> getRequiredExtensions() {
     ExtensionModel sockets = loadExtension(SocketsExtension.class, emptySet());
     ExtensionModel http = loadExtension(HttpConnector.class, singleton(sockets));
-    return asList(http, sockets);
+
+    final List<ExtensionModel> extensions = new ArrayList<>();
+    extensions.addAll(super.getRequiredExtensions());
+    extensions.add(http);
+    extensions.add(sockets);
+
+    return extensions;
   }
 
+  @Override
   protected ExtensionModel loadExtension(Class extension, Set<ExtensionModel> deps) {
     DefaultJavaExtensionModelLoader loader = new DefaultJavaExtensionModelLoader();
     Map<String, Object> ctx = new HashMap<>();

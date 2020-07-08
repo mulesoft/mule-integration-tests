@@ -7,13 +7,14 @@
 package org.mule.test.integration;
 
 import static java.lang.Thread.currentThread;
-import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.config.api.SpringXmlConfigurationBuilderFactory.createConfigurationBuilder;
 import static org.mule.runtime.core.api.config.bootstrap.ArtifactType.APP;
 import static org.mule.runtime.core.api.context.notification.MuleContextNotification.CONTEXT_STARTED;
+import static org.mule.runtime.core.api.extension.MuleExtensionModelProvider.getExtensionModel;
 import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.initialiseIfNeeded;
 import static org.mule.runtime.module.extension.api.loader.AbstractJavaExtensionModelLoader.TYPE_PROPERTY_NAME;
 import static org.mule.runtime.module.extension.api.loader.AbstractJavaExtensionModelLoader.VERSION;
@@ -103,7 +104,7 @@ public abstract class AbstractConfigurationFailuresTestCase extends AbstractMule
   }
 
   protected List<ExtensionModel> getRequiredExtensions() {
-    return emptyList();
+    return singletonList(getExtensionModel());
   }
 
   protected ExtensionModel loadExtension(Class extension, Set<ExtensionModel> deps) {
