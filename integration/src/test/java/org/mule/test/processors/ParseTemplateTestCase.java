@@ -180,7 +180,7 @@ public class ParseTemplateTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void nestedExpressionsWithNonexistingValues() throws Exception {
-    expectedException.expectMessage("Unable to resolve reference of pepito");
+    expectedException.expectMessage("Unable to resolve reference of: `pepito`.");
     flowRunner("nestedExpressionsFlowWithNonexistentValues").run();
   }
 
