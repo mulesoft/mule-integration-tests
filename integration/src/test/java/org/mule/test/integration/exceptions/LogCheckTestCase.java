@@ -13,6 +13,7 @@ import static org.mule.test.allure.AllureConstants.Logging.LoggingStory.ERROR_RE
 import io.qameta.allure.Issue;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.i18n.I18nMessageFactory;
+import org.mule.runtime.extension.api.annotation.Ignore;
 import org.mule.tck.junit4.rule.VerboseExceptions;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -116,12 +117,14 @@ public class LogCheckTestCase extends AbstractIntegrationTestCase {
 
   @Test
   @Issue("MULE-18041")
+  @Ignore
   public void suppressedMuleExceptionGetsLoggedAsSuppressedCause() throws Exception {
     runSuccesses(false, "suppressedMuleException");
   }
 
   @Test
   @Issue("MULE-18041")
+  @Ignore
   public void suppressedMuleExceptionsGetsLoggedAsSuppressedCauses() throws Exception {
     runSuccesses(true, "suppressedMuleExceptions");
   }

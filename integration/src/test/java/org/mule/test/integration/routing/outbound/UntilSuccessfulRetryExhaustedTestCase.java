@@ -16,6 +16,7 @@ import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.i18n.I18nMessageFactory;
 import org.mule.runtime.api.notification.ExceptionNotificationListener;
 import org.mule.runtime.api.util.concurrent.Latch;
+import org.mule.runtime.extension.api.annotation.Ignore;
 import org.mule.runtime.extension.api.error.MuleErrors;
 import org.mule.tck.junit4.matcher.ErrorTypeMatcher;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -53,6 +54,7 @@ public class UntilSuccessfulRetryExhaustedTestCase extends AbstractIntegrationTe
 
   @Test
   @Issue("MULE-18041")
+  @Ignore
   public void retryExhaustedCausedByConnectionExceptionLogCheck() throws Exception {
     flowRunner("retryExhaustedCausedByConnectivityErrorLogCheck").withPayload("message")
         .run();
@@ -60,6 +62,7 @@ public class UntilSuccessfulRetryExhaustedTestCase extends AbstractIntegrationTe
 
   @Test
   @Issue("MULE-18041")
+  @Ignore
   public void retryExhaustedCausedByNonConnectionExceptionLogCheck() throws Exception {
     flowRunner("retryExhaustedCausedByNonConnectivityErrorLogCheck").withPayload("message")
         .run();
@@ -67,6 +70,7 @@ public class UntilSuccessfulRetryExhaustedTestCase extends AbstractIntegrationTe
 
   @Test
   @Issue("MULE-18041")
+  @Ignore
   public void retryExhaustedCausedByMuleRuntimeExceptionLogCheck() throws Exception {
     flowRunner("retryExhaustedCausedByMuleRuntimeErrorLogCheck").withPayload("message")
         .run();
