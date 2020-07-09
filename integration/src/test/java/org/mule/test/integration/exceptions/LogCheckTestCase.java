@@ -117,6 +117,7 @@ public class LogCheckTestCase extends AbstractIntegrationTestCase {
 
   @Test
   @Issue("MULE-18041")
+  @Issue("MULE-18562")
   @Ignore
   public void suppressedMuleExceptionGetsLoggedAsSuppressedCause() throws Exception {
     runSuccesses(false, "suppressedMuleException");
@@ -124,6 +125,7 @@ public class LogCheckTestCase extends AbstractIntegrationTestCase {
 
   @Test
   @Issue("MULE-18041")
+  @Issue("MULE-18562")
   @Ignore
   public void suppressedMuleExceptionsGetsLoggedAsSuppressedCauses() throws Exception {
     runSuccesses(true, "suppressedMuleExceptions");

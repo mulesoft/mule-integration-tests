@@ -54,6 +54,7 @@ public class UntilSuccessfulRetryExhaustedTestCase extends AbstractIntegrationTe
 
   @Test
   @Issue("MULE-18041")
+  @Issue("MULE-18562")
   @Ignore
   public void retryExhaustedCausedByConnectionExceptionLogCheck() throws Exception {
     flowRunner("retryExhaustedCausedByConnectivityErrorLogCheck").withPayload("message")
@@ -62,6 +63,7 @@ public class UntilSuccessfulRetryExhaustedTestCase extends AbstractIntegrationTe
 
   @Test
   @Issue("MULE-18041")
+  @Issue("MULE-18562")
   @Ignore
   public void retryExhaustedCausedByNonConnectionExceptionLogCheck() throws Exception {
     flowRunner("retryExhaustedCausedByNonConnectivityErrorLogCheck").withPayload("message")
@@ -70,6 +72,7 @@ public class UntilSuccessfulRetryExhaustedTestCase extends AbstractIntegrationTe
 
   @Test
   @Issue("MULE-18041")
+  @Issue("MULE-18562")
   @Ignore
   public void retryExhaustedCausedByMuleRuntimeExceptionLogCheck() throws Exception {
     flowRunner("retryExhaustedCausedByMuleRuntimeErrorLogCheck").withPayload("message")
