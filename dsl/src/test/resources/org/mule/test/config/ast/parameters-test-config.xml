@@ -5,12 +5,14 @@
       xmlns:subtypes="http://www.mulesoft.org/schema/mule/subtypes"
       xmlns:websocket="http://www.mulesoft.org/schema/mule/websocket"
       xmlns:heisenberg="http://www.mulesoft.org/schema/mule/heisenberg"
+      xmlns:aggregators="http://www.mulesoft.org/schema/mule/aggregators"
       xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
         http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
         http://www.mulesoft.org/schema/mule/websocket http://www.mulesoft.org/schema/mule/http/current/mule-websocket.xsd
         http://www.mulesoft.org/schema/mule/subtypes http://www.mulesoft.org/schema/mule/subtypes/current/mule-subtypes.xsd
+        http://www.mulesoft.org/schema/mule/aggregators http://www.mulesoft.org/schema/mule/aggregators/current/mule-aggregators.xsd
         http://www.mulesoft.org/schema/mule/heisenberg http://www.mulesoft.org/schema/mule/heisenberg/current/mule-heisenberg.xsd">
 
     <tls:context name="listenerTlsContext">
@@ -65,6 +67,44 @@
             </db:connection-properties>
         </db:derby-connection>
     </db:config>
+
+    <http:listener-config name="defaultHttpListenerConfig" basePath="/api">
+        <http:listener-connection host="localhost" port="8081" />
+    </http:listener-config>
+
+    <http:request-config name="clientGlobalConfig">
+        <http:request-connection protocol="HTTPS" host="localhost" port="8082">
+            <tls:context >
+                <tls:trust-store path="tls/ssltest-cacerts.jks" password="changeit"/>
+                <tls:key-store path="tls/ssltest-keystore.jks" keyPassword="changeit" password="changeit"/>
+            </tls:context>
+        </http:request-connection>
+    </http:request-config>
+
+    <flow name="defaultParametersFlow">
+        <http:listener name="listener" config-ref="defaultHttpListenerConfig" path="/run"/>
+        <http:request config-ref="clientGlobalConfig" path="/" method="GET"/>
+    </flow>
+
+    <flow name="defaultContentAggregatorFlow">
+        <aggregators:time-based-aggregator name="defaultContentAggregator" period="1"/>
+    </flow>
+
+    <flow name="payloadContentAggregatorFlow">
+        <aggregators:time-based-aggregator name="payloadContentAggregator" period="10" periodUnit="SECONDS">
+            <aggregators:content>
+                #[payload]
+            </aggregators:content>
+        </aggregators:time-based-aggregator>
+    </flow>
+
+    <flow name="customContentAggregatorFlow">
+        <aggregators:time-based-aggregator name="customContentAggregator" period="20" periodUnit="MINUTES">
+            <aggregators:content>
+                #[message]
+            </aggregators:content>
+        </aggregators:time-based-aggregator>
+    </flow>
 
     <flow name="flowParameters" initialState="stopped" maxConcurrency="2"/>
 

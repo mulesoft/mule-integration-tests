@@ -31,6 +31,7 @@ import static org.mule.runtime.extension.api.util.ExtensionMetadataTypeUtils.isM
 import static org.mule.test.allure.AllureConstants.ArtifactAst.ARTIFACT_AST;
 import static org.mule.test.allure.AllureConstants.ArtifactAst.ParameterAst.PARAMETER_AST;
 
+import org.mule.extension.aggregator.internal.AggregatorsExtension;
 import org.mule.extension.db.internal.DbConnector;
 import org.mule.extension.http.internal.temporary.HttpConnector;
 import org.mule.extension.socket.api.SocketsExtension;
@@ -41,6 +42,7 @@ import org.mule.metadata.api.model.MetadataType;
 import org.mule.metadata.api.model.NumberType;
 import org.mule.metadata.api.model.ObjectType;
 import org.mule.runtime.api.component.ComponentIdentifier;
+import org.mule.runtime.api.functional.Either;
 import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.api.meta.model.config.ConfigurationModel;
 import org.mule.runtime.api.meta.model.connection.ConnectionProviderModel;
@@ -81,6 +83,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.xml.parsers.SAXParserFactory;
 
@@ -149,7 +153,7 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
 
     DefaultJavaExtensionModelLoader extensionModelLoader = new DefaultJavaExtensionModelLoader();
     for (Class<?> annotatedClass : new Class[] {HttpConnector.class, SocketsExtension.class, DbConnector.class,
-        HeisenbergExtension.class, SubTypesMappingConnector.class, VeganExtension.class}) {
+        HeisenbergExtension.class, SubTypesMappingConnector.class, VeganExtension.class, AggregatorsExtension.class}) {
       discoverer.discoverExtension(annotatedClass, extensionModelLoader);
     }
 
@@ -178,11 +182,99 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
   }
 
   @Test
+  public void defaultComponentParameterAst() {
+    // Default flow parameters
+    ComponentAst defaultParametersFlow =
+        findComponent(artifactAst.topLevelComponentsStream(), FLOW_IDENTIFIER, "defaultParametersFlow")
+            .orElseThrow(() -> new AssertionError("Couldn't find 'defaultParametersFlow' flow"));
+    assertThat(defaultParametersFlow.getParameter("initialState").isDefault(), is(true));
+    assertThat(defaultParametersFlow.getParameter("initialState").getValue().getRight(), is("started"));
+    assertThat(defaultParametersFlow.getParameter("maxConcurrency").isDefault(), is(true));
+    assertThat(defaultParametersFlow.getParameter("maxConcurrency").getValue(), is(Either.empty()));
+
+    // Non default flow parameters
+    ComponentAst flowParameters = findComponent(artifactAst.topLevelComponentsStream(), FLOW_IDENTIFIER, "flowParameters")
+        .orElseThrow(() -> new AssertionError("Couldn't find 'flowParameters' flow"));
+    assertThat(flowParameters.getParameter("initialState").isDefault(), is(false));
+    assertThat(flowParameters.getParameter("initialState").getValue().getRight(), is("stopped"));
+    assertThat(flowParameters.getParameter("maxConcurrency").isDefault(), is(false));
+    assertThat(flowParameters.getParameter("maxConcurrency").getValue().getRight(), is(2));
+
+    // HTTP listener parameters
+    ComponentAst httpListener = findComponent(defaultParametersFlow.directChildrenStream(), "http:listener")
+        .orElseThrow(() -> new AssertionError("Couldn't find 'http:listener'"));
+    assertThat(httpListener.getParameter("path").isDefault(), is(false));
+    assertThat(httpListener.getParameter("path").getValue().getRight(), is("/run"));
+    assertThat(httpListener.getParameter("config-ref").isDefault(), is(false));
+    assertThat(httpListener.getParameter("config-ref").getValue().getRight(), is("defaultHttpListenerConfig"));
+    assertThat(httpListener.getParameter("allowedMethods").isDefault(), is(true));
+    assertThat(httpListener.getParameter("allowedMethods").getValue(), is(Either.empty()));
+
+    // HTTP listener config parameters
+    ComponentAst httpListenerConfig =
+        findComponent(artifactAst.topLevelComponentsStream(), "http:listener-config", "defaultHttpListenerConfig")
+            .orElseThrow(() -> new AssertionError("Couldn't find 'defaultHttpListenerConfig' http:listener-config"));
+    ComponentAst httpConnectionConfig = httpListenerConfig.directChildrenStream().findFirst().get();
+    assertThat(httpConnectionConfig.getParameter("protocol").isDefault(), is(true));
+    assertThat(httpConnectionConfig.getParameter("protocol").getValue().getRight(), is("HTTP"));
+    assertThat(httpConnectionConfig.getParameter("port").isDefault(), is(false));
+    assertThat(httpConnectionConfig.getParameter("port").getValue().getRight(), is(8081));
+    assertThat(httpConnectionConfig.getParameter("host").isDefault(), is(false));
+    assertThat(httpConnectionConfig.getParameter("host").getValue().getRight(), is("localhost"));
+    assertThat(httpConnectionConfig.getParameter("usePersistentConnections").isDefault(), is(true));
+    assertThat(httpConnectionConfig.getParameter("usePersistentConnections").getValue().getRight(), is("true"));
+
+    // Aggregator default parameters
+    ComponentAst timeBasedAggregatorFlow =
+        findComponent(artifactAst.topLevelComponentsStream(), FLOW_IDENTIFIER, "defaultContentAggregatorFlow")
+            .orElseThrow(() -> new AssertionError("Couldn't find 'defaultContentAggregatorFlow' flow"));
+    ComponentAst timeBasedAggregator =
+        findComponent(timeBasedAggregatorFlow.directChildrenStream(), "aggregators:time-based-aggregator")
+            .orElseThrow(() -> new AssertionError("Couldn't find 'aggregators:time-based-aggregator'"));
+
+    assertThat(timeBasedAggregator.getParameter("period").isDefault(), is(false));
+    assertThat(timeBasedAggregator.getParameter("period").getValue().getRight(), is(1));
+    assertThat(timeBasedAggregator.getParameter("periodUnit").isDefault(), is(true));
+    assertThat(timeBasedAggregator.getParameter("periodUnit").getValue().getRight(), is("SECONDS"));
+    // Expression not defined should return default
+    assertThat(timeBasedAggregator.getParameter("content").isDefault(), is(true));
+    assertThat(timeBasedAggregator.getParameter("content").getValue().getLeft(), is("payload"));
+
+    // Aggregator default value expression parameter
+    timeBasedAggregatorFlow =
+        findComponent(artifactAst.topLevelComponentsStream(), FLOW_IDENTIFIER, "payloadContentAggregatorFlow")
+            .orElseThrow(() -> new AssertionError("Couldn't find 'payloadContentAggregatorFlow' flow"));
+    timeBasedAggregator = findComponent(timeBasedAggregatorFlow.directChildrenStream(), "aggregators:time-based-aggregator")
+        .orElseThrow(() -> new AssertionError("Couldn't find 'aggregators:time-based-aggregator'"));
+
+    assertThat(timeBasedAggregator.getParameter("period").isDefault(), is(false));
+    assertThat(timeBasedAggregator.getParameter("period").getValue().getRight(), is(10));
+    assertThat(timeBasedAggregator.getParameter("periodUnit").isDefault(), is(true));
+    assertThat(timeBasedAggregator.getParameter("periodUnit").getValue().getRight(), is("SECONDS"));
+    // Expression same as default value
+    assertThat(timeBasedAggregator.getParameter("content").isDefault(), is(true));
+    assertThat(timeBasedAggregator.getParameter("content").getValue().getLeft(), is("payload"));
+
+    // Aggregator non default value expression parameter
+    timeBasedAggregatorFlow =
+        findComponent(artifactAst.topLevelComponentsStream(), FLOW_IDENTIFIER, "customContentAggregatorFlow")
+            .orElseThrow(() -> new AssertionError("Couldn't find 'customContentAggregatorFlow' flow"));
+    timeBasedAggregator = findComponent(timeBasedAggregatorFlow.directChildrenStream(), "aggregators:time-based-aggregator")
+        .orElseThrow(() -> new AssertionError("Couldn't find 'aggregators:time-based-aggregator'"));
+
+    assertThat(timeBasedAggregator.getParameter("period").isDefault(), is(false));
+    assertThat(timeBasedAggregator.getParameter("period").getValue().getRight(), is(20));
+    assertThat(timeBasedAggregator.getParameter("periodUnit").isDefault(), is(false));
+    assertThat(timeBasedAggregator.getParameter("periodUnit").getValue().getRight(), is("MINUTES"));
+    // Non default value expression
+    assertThat(timeBasedAggregator.getParameter("content").isDefault(), is(false));
+    assertThat(timeBasedAggregator.getParameter("content").getValue().getLeft(), is("message"));
+  }
+
+  @Test
   public void recursivePojoOperationParameter() {
-    Optional<ComponentAst> optionalFlowRecursivePojo = artifactAst.topLevelComponentsStream()
-        .filter(componentAst -> componentAst.getIdentifier().equals(FLOW_IDENTIFIER) &&
-            "recursivePojo".equals(componentAst.getComponentId().orElse(null)))
-        .findFirst();
+    Optional<ComponentAst> optionalFlowRecursivePojo =
+        findComponent(artifactAst.topLevelComponentsStream(), FLOW_IDENTIFIER, "recursivePojo");
     assertThat(optionalFlowRecursivePojo, not(empty()));
 
     ComponentAst heisenbergApprove = optionalFlowRecursivePojo.map(flow -> flow.directChildrenStream().findFirst().get())
@@ -323,11 +415,8 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
   }
 
   private ComponentAst getHeisenbergConfiguration() {
-    Optional<ComponentAst> optionalHeisenbergConfig = artifactAst.topLevelComponentsStream()
-        .filter(componentAst -> componentAst.getIdentifier()
-            .equals(ComponentIdentifier.buildFromStringRepresentation("heisenberg:config")) &&
-            "heisenberg".equals(componentAst.getComponentId().orElse(null)))
-        .findFirst();
+    Optional<ComponentAst> optionalHeisenbergConfig =
+        findComponent(artifactAst.topLevelComponentsStream(), "heisenberg:config", "heisenberg");
     assertThat(optionalHeisenbergConfig, not(empty()));
 
     return optionalHeisenbergConfig.get();
@@ -348,10 +437,8 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
 
   @Test
   public void simpleParameters() {
-    Optional<ComponentAst> optionalFlowParameters = artifactAst.topLevelComponentsStream()
-        .filter(componentAst -> componentAst.getIdentifier().equals(FLOW_IDENTIFIER) &&
-            "flowParameters".equals(componentAst.getComponentId().orElse(null)))
-        .findFirst();
+    Optional<ComponentAst> optionalFlowParameters =
+        findComponent(artifactAst.topLevelComponentsStream(), FLOW_IDENTIFIER, "flowParameters");
     assertThat(optionalFlowParameters, not(empty()));
 
     ComponentAst componentAst = optionalFlowParameters.get();
@@ -362,12 +449,14 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
 
     ComponentParameterAst componentParameterAst = componentAst.getParameter("initialState");
     assertThat(componentParameterAst.getRawValue(), equalTo("stopped"));
+    assertThat(componentParameterAst.isDefault(), is((false)));
     assertThat(findParameterModel(constructModel, componentParameterAst), not(empty()));
     String[] values = (String[]) componentParameterAst.getModel().getType().getAnnotation(EnumAnnotation.class).get().getValues();
     assertThat(values, allOf(hasItemInArray(INITIAL_STATE_STARTED), hasItemInArray(INITIAL_STATE_STOPPED)));
 
     componentParameterAst = componentAst.getParameter("maxConcurrency");
     assertThat(findParameterModel(constructModel, componentParameterAst), not(empty()));
+    assertThat(componentParameterAst.isDefault(), is((false)));
     assertThat(componentParameterAst.getModel().getType().getAnnotation(IntAnnotation.class), not(empty()));
 
     assertThat(componentAst.getComponentId(), not(empty()));
@@ -384,11 +473,7 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
 
   @Test
   public void wrappedElementSimpleMapType() {
-    Optional<ComponentAst> optionalDbConfig = artifactAst.topLevelComponentsStream()
-        .filter(componentAst -> componentAst.getIdentifier().getNamespace().equals("db") &&
-            componentAst.getIdentifier().getName().equals("config") &&
-            "dbConfig".equals(componentAst.getComponentId().orElse(null)))
-        .findFirst();
+    Optional<ComponentAst> optionalDbConfig = findComponent(artifactAst.topLevelComponentsStream(), "db:config", "dbConfig");
     assertThat(optionalDbConfig, not(empty()));
     ComponentAst dbConfig = optionalDbConfig.get();
 
@@ -452,11 +537,8 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
 
   @Test
   public void wrappedElementArrayType() {
-    Optional<ComponentAst> optionalHttpListenerConfig = artifactAst.topLevelComponentsStream()
-        .filter(componentAst -> componentAst.getIdentifier().getNamespace().equals("http") &&
-            componentAst.getIdentifier().getName().equals("listener-config") &&
-            "HTTP_Listener_config".equals(componentAst.getComponentId().orElse(null)))
-        .findFirst();
+    Optional<ComponentAst> optionalHttpListenerConfig =
+        findComponent(artifactAst.topLevelComponentsStream(), "http:listener-config", "HTTP_Listener_config");
     assertThat(optionalHttpListenerConfig, not(empty()));
 
     ComponentAst httpListenerConfig = optionalHttpListenerConfig.get();
@@ -535,6 +617,27 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
       return (String) elementParameter.getValue().getRight();
     }).toArray(String[]::new);
     assertThat(actual, arrayContaining(rightValues));
+  }
+
+  private Optional<ComponentAst> findComponent(Stream<ComponentAst> stream, String componentIdentifier, String componentId) {
+    return findComponent(stream, ComponentIdentifier.buildFromStringRepresentation(componentIdentifier), componentId);
+  }
+
+  private Optional<ComponentAst> findComponent(Stream<ComponentAst> stream, ComponentIdentifier identifier, String componentId) {
+    return stream
+        .filter(componentAst -> identifier.equals(componentAst.getIdentifier())
+            && componentId.equals(componentAst.getComponentId().orElse(null)))
+        .findFirst();
+  }
+
+  private Optional<ComponentAst> findComponent(Stream<ComponentAst> stream, String componentIdentifier) {
+    return findComponent(stream, ComponentIdentifier.buildFromStringRepresentation(componentIdentifier));
+  }
+
+  private Optional<ComponentAst> findComponent(Stream<ComponentAst> stream, ComponentIdentifier identifier) {
+    return stream
+        .filter(componentAst -> identifier.equals(componentAst.getIdentifier()))
+        .findFirst();
   }
 
 }
