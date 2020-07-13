@@ -6,13 +6,6 @@
  */
 package org.mule.test.integration.exceptions;
 
-import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
-
-import org.mule.runtime.core.api.transformer.AbstractTransformer;
-import org.mule.runtime.core.api.transformer.TransformerException;
-
-import java.nio.charset.Charset;
-
 import org.junit.Test;
 
 public class SynchronousMessagingExceptionStrategyTestCase extends AbstractExceptionStrategyTestCase {
@@ -20,13 +13,6 @@ public class SynchronousMessagingExceptionStrategyTestCase extends AbstractExcep
   @Override
   protected String getConfigFile() {
     return "org/mule/test/integration/exceptions/synch-messaging-exception-strategy.xml";
-  }
-
-  @Test
-  public void testTransformer() throws Exception {
-    flowRunner("Transformer").withPayload(TEST_PAYLOAD).dispatch();
-    exceptionListener.waitUntilAllNotificationsAreReceived();
-    systemExceptionListener.assertNotInvoked();
   }
 
   @Test
@@ -50,11 +36,4 @@ public class SynchronousMessagingExceptionStrategyTestCase extends AbstractExcep
     systemExceptionListener.assertNotInvoked();
   }
 
-  public static class ThrowTransformer extends AbstractTransformer {
-
-    @Override
-    protected Object doTransform(Object src, Charset enc) throws TransformerException {
-      throw new TransformerException(createStaticMessage("dummyException"));
-    }
-  }
 }

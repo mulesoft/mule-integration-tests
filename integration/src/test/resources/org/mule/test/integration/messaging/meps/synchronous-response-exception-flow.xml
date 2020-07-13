@@ -6,21 +6,12 @@
        http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 
-    <custom-transformer name="validateResponse"
-        class="org.mule.tck.integration.transformer.ValidateResponse" />
-
     <flow name="ComponentException">
         <!-- Component throws an exception -->
         <test:processor throwException="true" />
     </flow>
 
     <flow name="FlowRefInvalidException">
-        <flow-ref name="#[mel:'service999']"/>
-    </flow>
-
-    <flow name="TransformerException">
-        <!-- Transformer throws an exception -->
-        <transformer ref="validateResponse" />
-        <test:processor />
+        <flow-ref name="#['service999']"/>
     </flow>
 </mule>
