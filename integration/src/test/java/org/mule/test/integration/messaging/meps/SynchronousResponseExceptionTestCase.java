@@ -11,7 +11,6 @@ import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.exception.ExceptionHelper.getRootException;
 import static org.mule.runtime.core.api.exception.Errors.CORE_NAMESPACE_NAME;
 import static org.mule.runtime.core.api.exception.Errors.Identifiers.ROUTING_ERROR_IDENTIFIER;
-import static org.mule.runtime.core.api.exception.Errors.Identifiers.TRANSFORMATION_ERROR_IDENTIFIER;
 import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
 
 import org.mule.functional.api.exception.FunctionalTestException;
@@ -41,9 +40,4 @@ public class SynchronousResponseExceptionTestCase extends AbstractIntegrationTes
         .runExpectingException(errorType(CORE_NAMESPACE_NAME, ROUTING_ERROR_IDENTIFIER));
   }
 
-  @Test
-  public void testTransformerException() throws Exception {
-    flowRunner("TransformerException").withPayload("request")
-        .runExpectingException(errorType(CORE_NAMESPACE_NAME, TRANSFORMATION_ERROR_IDENTIFIER));
-  }
 }

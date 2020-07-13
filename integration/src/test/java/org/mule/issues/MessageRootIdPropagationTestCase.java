@@ -7,19 +7,15 @@
 package org.mule.issues;
 
 import static org.junit.Assert.assertEquals;
-import static org.mule.functional.junit4.TestLegacyMessageUtils.getOutboundProperty;
 
 import org.mule.functional.api.flow.FlowRunner;
-
-import io.qameta.allure.Issue;
-
+import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.event.CoreEvent;
-import org.mule.runtime.core.api.transformer.AbstractMessageTransformer;
+import org.mule.runtime.core.api.processor.Processor;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -28,6 +24,8 @@ import java.util.Set;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
+
+import io.qameta.allure.Issue;
 
 @Ignore("See MULE-9195")
 @Issue("MULE-9195")
@@ -54,7 +52,7 @@ public class MessageRootIdPropagationTestCase extends AbstractIntegrationTestCas
     assertEquals(1, RootIDGatherer.getIds().size());
   }
 
-  public static class RootIDGatherer extends AbstractMessageTransformer {
+  public static class RootIDGatherer implements Processor {
 
     static int messageCount;
     static Map<String, Message> idMap;
@@ -76,9 +74,9 @@ public class MessageRootIdPropagationTestCase extends AbstractIntegrationTestCas
     }
 
     @Override
-    public Object transformMessage(CoreEvent event, Charset outputEncoding) {
+    public CoreEvent process(CoreEvent event) throws MuleException {
       process(event.getMessage());
-      return event.getMessage().getPayload().getValue();
+      return event;
     }
 
     public static Set<Message> getIds() {
