@@ -187,27 +187,27 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
     ComponentAst defaultParametersFlow =
         findComponent(artifactAst.topLevelComponentsStream(), FLOW_IDENTIFIER, "defaultParametersFlow")
             .orElseThrow(() -> new AssertionError("Couldn't find 'defaultParametersFlow' flow"));
-    assertThat(defaultParametersFlow.getParameter("initialState").isDefault(), is(true));
+    assertThat(defaultParametersFlow.getParameter("initialState").isDefaultValue(), is(true));
     assertThat(defaultParametersFlow.getParameter("initialState").getValue().getRight(), is("started"));
-    assertThat(defaultParametersFlow.getParameter("maxConcurrency").isDefault(), is(true));
+    assertThat(defaultParametersFlow.getParameter("maxConcurrency").isDefaultValue(), is(true));
     assertThat(defaultParametersFlow.getParameter("maxConcurrency").getValue(), is(Either.empty()));
 
     // Non default flow parameters
     ComponentAst flowParameters = findComponent(artifactAst.topLevelComponentsStream(), FLOW_IDENTIFIER, "flowParameters")
         .orElseThrow(() -> new AssertionError("Couldn't find 'flowParameters' flow"));
-    assertThat(flowParameters.getParameter("initialState").isDefault(), is(false));
+    assertThat(flowParameters.getParameter("initialState").isDefaultValue(), is(false));
     assertThat(flowParameters.getParameter("initialState").getValue().getRight(), is("stopped"));
-    assertThat(flowParameters.getParameter("maxConcurrency").isDefault(), is(false));
+    assertThat(flowParameters.getParameter("maxConcurrency").isDefaultValue(), is(false));
     assertThat(flowParameters.getParameter("maxConcurrency").getValue().getRight(), is(2));
 
     // HTTP listener parameters
     ComponentAst httpListener = findComponent(defaultParametersFlow.directChildrenStream(), "http:listener")
         .orElseThrow(() -> new AssertionError("Couldn't find 'http:listener'"));
-    assertThat(httpListener.getParameter("path").isDefault(), is(false));
+    assertThat(httpListener.getParameter("path").isDefaultValue(), is(false));
     assertThat(httpListener.getParameter("path").getValue().getRight(), is("/run"));
-    assertThat(httpListener.getParameter("config-ref").isDefault(), is(false));
+    assertThat(httpListener.getParameter("config-ref").isDefaultValue(), is(false));
     assertThat(httpListener.getParameter("config-ref").getValue().getRight(), is("defaultHttpListenerConfig"));
-    assertThat(httpListener.getParameter("allowedMethods").isDefault(), is(true));
+    assertThat(httpListener.getParameter("allowedMethods").isDefaultValue(), is(true));
     assertThat(httpListener.getParameter("allowedMethods").getValue(), is(Either.empty()));
 
     // HTTP listener config parameters
@@ -215,13 +215,13 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
         findComponent(artifactAst.topLevelComponentsStream(), "http:listener-config", "defaultHttpListenerConfig")
             .orElseThrow(() -> new AssertionError("Couldn't find 'defaultHttpListenerConfig' http:listener-config"));
     ComponentAst httpConnectionConfig = httpListenerConfig.directChildrenStream().findFirst().get();
-    assertThat(httpConnectionConfig.getParameter("protocol").isDefault(), is(true));
+    assertThat(httpConnectionConfig.getParameter("protocol").isDefaultValue(), is(true));
     assertThat(httpConnectionConfig.getParameter("protocol").getValue().getRight(), is("HTTP"));
-    assertThat(httpConnectionConfig.getParameter("port").isDefault(), is(false));
+    assertThat(httpConnectionConfig.getParameter("port").isDefaultValue(), is(false));
     assertThat(httpConnectionConfig.getParameter("port").getValue().getRight(), is(8081));
-    assertThat(httpConnectionConfig.getParameter("host").isDefault(), is(false));
+    assertThat(httpConnectionConfig.getParameter("host").isDefaultValue(), is(false));
     assertThat(httpConnectionConfig.getParameter("host").getValue().getRight(), is("localhost"));
-    assertThat(httpConnectionConfig.getParameter("usePersistentConnections").isDefault(), is(true));
+    assertThat(httpConnectionConfig.getParameter("usePersistentConnections").isDefaultValue(), is(true));
     assertThat(httpConnectionConfig.getParameter("usePersistentConnections").getValue().getRight(), is("true"));
 
     // Aggregator default parameters
@@ -232,12 +232,12 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
         findComponent(timeBasedAggregatorFlow.directChildrenStream(), "aggregators:time-based-aggregator")
             .orElseThrow(() -> new AssertionError("Couldn't find 'aggregators:time-based-aggregator'"));
 
-    assertThat(timeBasedAggregator.getParameter("period").isDefault(), is(false));
+    assertThat(timeBasedAggregator.getParameter("period").isDefaultValue(), is(false));
     assertThat(timeBasedAggregator.getParameter("period").getValue().getRight(), is(1));
-    assertThat(timeBasedAggregator.getParameter("periodUnit").isDefault(), is(true));
+    assertThat(timeBasedAggregator.getParameter("periodUnit").isDefaultValue(), is(true));
     assertThat(timeBasedAggregator.getParameter("periodUnit").getValue().getRight(), is("SECONDS"));
     // Expression not defined should return default
-    assertThat(timeBasedAggregator.getParameter("content").isDefault(), is(true));
+    assertThat(timeBasedAggregator.getParameter("content").isDefaultValue(), is(true));
     assertThat(timeBasedAggregator.getParameter("content").getValue().getLeft(), is("payload"));
 
     // Aggregator default value expression parameter
@@ -247,12 +247,12 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
     timeBasedAggregator = findComponent(timeBasedAggregatorFlow.directChildrenStream(), "aggregators:time-based-aggregator")
         .orElseThrow(() -> new AssertionError("Couldn't find 'aggregators:time-based-aggregator'"));
 
-    assertThat(timeBasedAggregator.getParameter("period").isDefault(), is(false));
+    assertThat(timeBasedAggregator.getParameter("period").isDefaultValue(), is(false));
     assertThat(timeBasedAggregator.getParameter("period").getValue().getRight(), is(10));
-    assertThat(timeBasedAggregator.getParameter("periodUnit").isDefault(), is(true));
+    assertThat(timeBasedAggregator.getParameter("periodUnit").isDefaultValue(), is(true));
     assertThat(timeBasedAggregator.getParameter("periodUnit").getValue().getRight(), is("SECONDS"));
     // Expression same as default value
-    assertThat(timeBasedAggregator.getParameter("content").isDefault(), is(true));
+    assertThat(timeBasedAggregator.getParameter("content").isDefaultValue(), is(true));
     assertThat(timeBasedAggregator.getParameter("content").getValue().getLeft(), is("payload"));
 
     // Aggregator non default value expression parameter
@@ -262,12 +262,12 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
     timeBasedAggregator = findComponent(timeBasedAggregatorFlow.directChildrenStream(), "aggregators:time-based-aggregator")
         .orElseThrow(() -> new AssertionError("Couldn't find 'aggregators:time-based-aggregator'"));
 
-    assertThat(timeBasedAggregator.getParameter("period").isDefault(), is(false));
+    assertThat(timeBasedAggregator.getParameter("period").isDefaultValue(), is(false));
     assertThat(timeBasedAggregator.getParameter("period").getValue().getRight(), is(20));
-    assertThat(timeBasedAggregator.getParameter("periodUnit").isDefault(), is(false));
+    assertThat(timeBasedAggregator.getParameter("periodUnit").isDefaultValue(), is(false));
     assertThat(timeBasedAggregator.getParameter("periodUnit").getValue().getRight(), is("MINUTES"));
     // Non default value expression
-    assertThat(timeBasedAggregator.getParameter("content").isDefault(), is(false));
+    assertThat(timeBasedAggregator.getParameter("content").isDefaultValue(), is(false));
     assertThat(timeBasedAggregator.getParameter("content").getValue().getLeft(), is("message"));
   }
 
@@ -449,14 +449,14 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
 
     ComponentParameterAst componentParameterAst = componentAst.getParameter("initialState");
     assertThat(componentParameterAst.getRawValue(), equalTo("stopped"));
-    assertThat(componentParameterAst.isDefault(), is((false)));
+    assertThat(componentParameterAst.isDefaultValue(), is((false)));
     assertThat(findParameterModel(constructModel, componentParameterAst), not(empty()));
     String[] values = (String[]) componentParameterAst.getModel().getType().getAnnotation(EnumAnnotation.class).get().getValues();
     assertThat(values, allOf(hasItemInArray(INITIAL_STATE_STARTED), hasItemInArray(INITIAL_STATE_STOPPED)));
 
     componentParameterAst = componentAst.getParameter("maxConcurrency");
     assertThat(findParameterModel(constructModel, componentParameterAst), not(empty()));
-    assertThat(componentParameterAst.isDefault(), is((false)));
+    assertThat(componentParameterAst.isDefaultValue(), is((false)));
     assertThat(componentParameterAst.getModel().getType().getAnnotation(IntAnnotation.class), not(empty()));
 
     assertThat(componentAst.getComponentId(), not(empty()));
