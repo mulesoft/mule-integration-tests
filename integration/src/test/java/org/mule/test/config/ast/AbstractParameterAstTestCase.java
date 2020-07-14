@@ -117,7 +117,8 @@ public abstract class AbstractParameterAstTestCase extends AbstractMuleContextTe
 
     DefaultJavaExtensionModelLoader extensionModelLoader = new DefaultJavaExtensionModelLoader();
 
-    Class[] extensions = new Class[]{HttpConnector.class, SocketsExtension.class, HeisenbergExtension.class, VeganExtension.class};
+    Class[] extensions =
+        new Class[] {HttpConnector.class, SocketsExtension.class, HeisenbergExtension.class, VeganExtension.class};
     for (Class<?> annotatedClass : addAll(extensions, getExtensions())) {
       discoverer.discoverExtension(annotatedClass, extensionModelLoader);
     }
@@ -150,8 +151,11 @@ public abstract class AbstractParameterAstTestCase extends AbstractMuleContextTe
     return findComponent(stream, ComponentIdentifier.buildFromStringRepresentation(componentIdentifier), componentId);
   }
 
-  protected Optional<ComponentAst> findComponent(Stream<ComponentAst> stream, ComponentIdentifier componentIdentifier, String componentId) {
-    return stream.filter(c -> componentIdentifier.equals(c.getIdentifier()) && componentId.equals(c.getComponentId().orElse(null))).findFirst();
+  protected Optional<ComponentAst> findComponent(Stream<ComponentAst> stream, ComponentIdentifier componentIdentifier,
+                                                 String componentId) {
+    return stream
+        .filter(c -> componentIdentifier.equals(c.getIdentifier()) && componentId.equals(c.getComponentId().orElse(null)))
+        .findFirst();
   }
 
   protected Optional<ComponentAst> findComponent(Stream<ComponentAst> stream, String identifier) {

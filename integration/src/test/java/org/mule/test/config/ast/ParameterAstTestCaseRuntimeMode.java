@@ -41,10 +41,12 @@ public class ParameterAstTestCaseRuntimeMode extends AbstractParameterAstTestCas
   @Issue("MULE-18564")
   @Test
   public void oauthCredentialThroughProxyInlineDefinition() {
-    ComponentAst httpRequestConfigWithOAuthProxyInline = findComponentByComponentId(artifactAst.topLevelComponentsStream(), "httpRequestConfigWithOAuthProxyInline")
+    ComponentAst httpRequestConfigWithOAuthProxyInline =
+        findComponentByComponentId(artifactAst.topLevelComponentsStream(), "httpRequestConfigWithOAuthProxyInline")
             .orElseThrow(() -> new AssertionError("Couldn't find 'httpRequestConfigWithOAuthProxyInline'"));
 
-    ComponentAst oAuthHttpRequestConnection = findComponent(httpRequestConfigWithOAuthProxyInline.directChildrenStream(), "http:request-connection")
+    ComponentAst oAuthHttpRequestConnection =
+        findComponent(httpRequestConfigWithOAuthProxyInline.directChildrenStream(), "http:request-connection")
             .orElseThrow(() -> new AssertionError("Couldn't find 'http:request-connection'"));
 
     // Nested parameters with child element should be added as complex ComponentParameterAst
@@ -55,7 +57,7 @@ public class ParameterAstTestCaseRuntimeMode extends AbstractParameterAstTestCas
 
     ComponentAst oauthHttpProxy = (ComponentAst) proxyConfig.getValue().getRight();
     ComponentAst httpProxy = findComponent(oauthHttpProxy.directChildrenStream(), "http:proxy")
-            .orElseThrow(() -> new AssertionError("Couldn't find 'http:proxy'"));
+        .orElseThrow(() -> new AssertionError("Couldn't find 'http:proxy'"));
     ComponentParameterAst portParameter = httpProxy.getParameter("port");
     assertThat(portParameter.getValue().getRight(), is(8083));
     ComponentParameterAst hostParameter = httpProxy.getParameter("host");
