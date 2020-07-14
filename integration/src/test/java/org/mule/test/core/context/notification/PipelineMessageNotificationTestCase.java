@@ -6,6 +6,7 @@
  */
 package org.mule.test.core.context.notification;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.Assert.assertNotNull;
 import static org.mule.runtime.api.notification.AsyncMessageNotification.PROCESS_ASYNC_COMPLETE;
@@ -13,17 +14,23 @@ import static org.mule.runtime.api.notification.AsyncMessageNotification.PROCESS
 import static org.mule.runtime.api.notification.PipelineMessageNotification.PROCESS_COMPLETE;
 import static org.mule.runtime.api.notification.PipelineMessageNotification.PROCESS_END;
 import static org.mule.runtime.api.notification.PipelineMessageNotification.PROCESS_START;
-import org.mule.functional.api.component.TestConnectorQueueHandler;
+
 import org.mule.runtime.api.notification.AsyncMessageNotification;
 import org.mule.runtime.api.notification.IntegerAction;
 import org.mule.runtime.api.notification.PipelineMessageNotification;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
+import org.mule.tests.api.TestQueueManager;
+
+import javax.inject.Inject;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 public class PipelineMessageNotificationTestCase extends AbstractNotificationTestCase {
+
+  @Inject
+  private TestQueueManager queueManager;
 
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
@@ -35,15 +42,14 @@ public class PipelineMessageNotificationTestCase extends AbstractNotificationTes
 
   @Test
   public void doTest() throws Exception {
-    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
     assertNotNull(flowRunner("service-1").withPayload("hello sweet world").run());
     expectedException.expectCause(isA(ExpressionRuntimeException.class));
     assertNotNull(flowRunner("service-2").withPayload("hello sweet world").run());
     assertNotNull(flowRunner("service-3").withPayload("hello sweet world").run());
     flowRunner("service-4").withPayload("goodbye cruel world").run();
-    queueHandler.read("ow-out", RECEIVE_TIMEOUT);
-    flowRunner("service-5").withPayload("goodbye cruel world").withInboundProperty("fail", "true").run();
-    queueHandler.read("owException-out", RECEIVE_TIMEOUT);
+    queueManager.read("ow-out", RECEIVE_TIMEOUT, MILLISECONDS);
+    flowRunner("service-5").withPayload("goodbye cruel world").run();
+    queueManager.read("owException-out", RECEIVE_TIMEOUT, MILLISECONDS);
 
     assertNotifications();
   }

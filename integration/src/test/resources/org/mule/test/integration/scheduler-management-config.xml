@@ -2,8 +2,14 @@
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:test="http://www.mulesoft.org/schema/mule/test"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:test-components="http://www.mulesoft.org/schema/mule/test-components"
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-        http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+        http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
+        http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
+
+    <test-components:queue-config name="neverRunningSchedulerQueue">
+        <test-components:connection />
+    </test-components:queue-config>
 
     <flow name="neverRunningScheduler">
         <scheduler>
@@ -11,7 +17,7 @@
                 <fixed-frequency startDelay="999999" frequency="999999"/>
             </scheduling-strategy>
         </scheduler>
-        <test:queue name="neverRunningSchedulerQueue"/>
+        <test-components:queue-push config-ref="neverRunningSchedulerQueue"/>
     </flow>
 
     <flow name="schedulerControlledFromSameFlow">

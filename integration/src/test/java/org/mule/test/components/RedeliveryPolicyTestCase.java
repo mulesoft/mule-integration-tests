@@ -8,6 +8,7 @@ package org.mule.test.components;
 
 import static java.lang.Runtime.getRuntime;
 import static java.util.Arrays.asList;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -16,17 +17,19 @@ import static org.mule.runtime.api.metadata.MediaType.APPLICATION_JAVA;
 import static org.mule.tck.probe.PollingProber.probe;
 
 import org.mule.functional.api.component.EventCallback;
-import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.runner.RunnerDelegateTo;
+import org.mule.tests.api.TestQueueManager;
 
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import javax.inject.Inject;
 
 import org.junit.After;
 import org.junit.Before;
@@ -46,7 +49,6 @@ public class RedeliveryPolicyTestCase extends AbstractIntegrationTestCase {
       awaiting.incrementAndGet();
       latch.await();
     }
-
   }
 
   @Parameterized.Parameters
@@ -54,7 +56,8 @@ public class RedeliveryPolicyTestCase extends AbstractIntegrationTestCase {
     return asList(DEFAULT_PROCESSING_STRATEGY_CLASSNAME, PROACTOR_PROCESSING_STRATEGY_CLASSNAME);
   }
 
-  private TestConnectorQueueHandler queueHandler;
+  @Inject
+  private TestQueueManager queueManager;
 
   private final String processingStrategyFactoryClassname;
 
@@ -70,7 +73,6 @@ public class RedeliveryPolicyTestCase extends AbstractIntegrationTestCase {
 
   @Before
   public void before() {
-    queueHandler = new TestConnectorQueueHandler(registry);
     latch = new CountDownLatch(1);
     awaiting.set(0);
   }
@@ -95,7 +97,7 @@ public class RedeliveryPolicyTestCase extends AbstractIntegrationTestCase {
   public void hashWorksOverDataWeaveObject() throws Exception {
     sendDataWeaveObjectMessageExpectingError("redeliveryPolicyFlowDispatch");
     sendDataWeaveObjectMessageExpectingError("redeliveryPolicyFlowDispatch");
-    assertThat(queueHandler.read("redeliveredMessageQueue", RECEIVE_TIMEOUT), notNullValue());
+    assertThat(queueManager.read("redeliveredMessageQueue", RECEIVE_TIMEOUT, MILLISECONDS), notNullValue());
   }
 
   @Test
@@ -121,9 +123,7 @@ public class RedeliveryPolicyTestCase extends AbstractIntegrationTestCase {
         .withMediaType(APPLICATION_JAVA)
         .run();
 
-    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
-    assertThat(queueHandler.read("processed", RECEIVE_TIMEOUT), notNullValue());
-
+    assertThat(queueManager.read("processed", RECEIVE_TIMEOUT, MILLISECONDS), notNullValue());
     assertThat(pojoPayload.isHashCodeCalled(), is(true));
   }
 

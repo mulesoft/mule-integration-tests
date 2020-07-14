@@ -2,16 +2,22 @@
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xmlns:test-components="http://www.mulesoft.org/schema/mule/test-components"
       xsi:schemaLocation="
         http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
-        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+        http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
+
+    <test-components:queue-config name="handleException">
+        <test-components:connection />
+    </test-components:queue-config>
 
     <flow name="filter">
         <test:throw exception="java.lang.RuntimeException" error="ANY"/>
         <test:processor appendString=" Received"/>
         <error-handler>
             <on-error-propagate>
-                <test:queue name="handleException"/>
+                <test-components:queue-push config-ref="handleException"/>
             </on-error-propagate>
         </error-handler>
     </flow>

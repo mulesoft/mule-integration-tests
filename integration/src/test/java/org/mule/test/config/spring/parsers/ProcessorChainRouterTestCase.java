@@ -6,6 +6,7 @@
  */
 package org.mule.test.config.spring.parsers;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
@@ -18,7 +19,6 @@ import static org.mule.functional.junit4.matchers.ThrowableCauseMatcher.hasCause
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ProcessorChainRouterStory.PROCESSOR_CHAIN_ROUTER;
 
-import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.functional.junit4.rules.HttpServerRule;
 import org.mule.runtime.api.component.execution.ComponentExecutionException;
 import org.mule.runtime.api.component.execution.ExecutableComponent;
@@ -29,6 +29,7 @@ import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.IntegrationTestCaseRunnerConfig;
+import org.mule.tests.api.TestQueueManager;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -85,6 +86,9 @@ public class ProcessorChainRouterTestCase extends AbstractIntegrationTestCase im
   @Inject
   @Named("invalidExpressionParamCompositeChainRouter")
   private ExecutableComponent invalidExpressionParamCompositeChainRouter;
+
+  @Inject
+  private TestQueueManager queueManager;
 
   @Rule
   public HttpServerRule httpServerRule = new HttpServerRule("httpPort");
@@ -203,10 +207,9 @@ public class ProcessorChainRouterTestCase extends AbstractIntegrationTestCase im
     executionResult = completableFuture.get();
     Event returnedEvent = executionResult.getEvent();
     assertThat(returnedEvent, notNullValue());
-    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
-    assertThat(queueHandler.read("asyncQueue", RECEIVE_TIMEOUT), notNullValue());
-    assertThat(queueHandler.read("sgRoute1Queue", RECEIVE_TIMEOUT), notNullValue());
-    assertThat(queueHandler.read("sgRoute2Queue", RECEIVE_TIMEOUT), notNullValue());
+    assertThat(queueManager.read("asyncQueue", RECEIVE_TIMEOUT, MILLISECONDS), notNullValue());
+    assertThat(queueManager.read("sgRoute1Queue", RECEIVE_TIMEOUT, MILLISECONDS), notNullValue());
+    assertThat(queueManager.read("sgRoute2Queue", RECEIVE_TIMEOUT, MILLISECONDS), notNullValue());
   }
 
   @Test

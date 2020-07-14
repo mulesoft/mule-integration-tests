@@ -12,7 +12,6 @@ import static org.mule.runtime.api.component.location.Location.builderFromString
 import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.LIFECYCLE_AND_DEPENDENCY_INJECTION;
 import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.LifecyclePhaseStory.LIFECYCLE_PHASE_STORY;
 
-import org.mule.functional.api.component.SkeletonSource;
 import org.mule.runtime.api.lifecycle.Startable;
 import org.mule.runtime.core.api.lifecycle.LifecycleStateEnabled;
 import org.mule.tck.junit4.rule.SystemProperty;
@@ -59,8 +58,8 @@ public class FlowStateTestCase extends AbstractIntegrationTestCase {
     assertTrue(flow.getLifecycleState().isStarted());
     assertFalse(flow.getLifecycleState().isStopped());
 
-    assertTrue(((SkeletonSource) locator.find(builderFromStringRepresentation(flowName + "Flow/source").build()).get())
-        .isStarted());
+    assertTrue(((LifecycleStateEnabled) locator.find(builderFromStringRepresentation(flowName + "Flow/source").build()).get())
+        .getLifecycleState().isStarted());
   }
 
   @Test
@@ -70,13 +69,14 @@ public class FlowStateTestCase extends AbstractIntegrationTestCase {
     assertFalse(flow.getLifecycleState().isStarted());
     assertTrue(flow.getLifecycleState().isStopped());
 
-    SkeletonSource source = (SkeletonSource) locator.find(builderFromStringRepresentation("stoppedFlow/source").build()).get();
-    assertFalse(source.isStarted());
+    LifecycleStateEnabled source =
+        (LifecycleStateEnabled) locator.find(builderFromStringRepresentation("stoppedFlow/source").build()).get();
+    assertFalse(source.getLifecycleState().isStarted());
 
     registry.<Startable>lookupByName("stoppedFlow").get().start();
     assertTrue(flow.getLifecycleState().isStarted());
     assertFalse(flow.getLifecycleState().isStopped());
-    assertTrue(source.isStarted());
+    assertTrue(source.getLifecycleState().isStarted());
   }
 
   @Test

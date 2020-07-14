@@ -7,6 +7,7 @@
 package org.mule.test.integration.security;
 
 import static java.lang.String.format;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -19,12 +20,17 @@ import static org.mule.runtime.http.api.HttpHeaders.Names.WWW_AUTHENTICATE;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
 import static org.mule.test.http.functional.matcher.HttpResponseReasonPhraseMatcher.hasReasonPhrase;
 import static org.mule.test.http.functional.matcher.HttpResponseStatusCodeMatcher.hasStatusCode;
+
 import org.mule.functional.api.component.TestConnectorQueueHandler;
+import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.tck.junit4.rule.DynamicPort;
-import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.test.IntegrationTestCaseRunnerConfig;
+import org.mule.tests.api.TestQueueManager;
 
 import java.io.IOException;
+
+import javax.inject.Inject;
 
 import io.qameta.allure.Feature;
 import org.apache.http.Header;
@@ -40,8 +46,11 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 
+import io.qameta.allure.Feature;
+
 @Feature(HTTP_EXTENSION)
-public class HttpListenerAuthenticationTestCase extends AbstractIntegrationTestCase {
+public class HttpListenerAuthenticationTestCase extends MuleArtifactFunctionalTestCase
+    implements IntegrationTestCaseRunnerConfig {
 
   private static final String BASIC_REALM_MULE_REALM = "Basic realm=\"mule-realm\"";
   private static final String VALID_USER = "user";
@@ -51,6 +60,8 @@ public class HttpListenerAuthenticationTestCase extends AbstractIntegrationTestC
   CloseableHttpClient httpClient;
   CloseableHttpResponse httpResponse;
 
+  @Inject
+  private TestQueueManager queueManager;
 
   @Rule
   public DynamicPort listenPort = new DynamicPort("port");
@@ -72,8 +83,7 @@ public class HttpListenerAuthenticationTestCase extends AbstractIntegrationTestC
     getHttpResponse(credsProvider);
 
     assertUnauthorised();
-    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
-    assertThat(queueHandler.read("basicAuthentication", RECEIVE_TIMEOUT).getMessage(), is(notNullValue()));
+    assertThat(queueManager.read("basicAuthentication", RECEIVE_TIMEOUT, MILLISECONDS).getMessage(), is(notNullValue()));
   }
 
   @Test
@@ -92,8 +102,7 @@ public class HttpListenerAuthenticationTestCase extends AbstractIntegrationTestC
 
     assertThat(httpResponse, hasStatusCode(INTERNAL_SERVER_ERROR.getStatusCode()));
     assertThat(httpResponse, hasReasonPhrase(INTERNAL_SERVER_ERROR.getReasonPhrase()));
-    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
-    assertThat(queueHandler.read("basicAuthentication", RECEIVE_TIMEOUT).getMessage(), is(notNullValue()));
+    assertThat(queueManager.read("basicAuthentication", RECEIVE_TIMEOUT, MILLISECONDS).getMessage(), is(notNullValue()));
   }
 
   @Test

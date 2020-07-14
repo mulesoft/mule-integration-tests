@@ -6,34 +6,32 @@
  */
 package org.mule.test.construct;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.message.Message;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.testmodels.fruit.Apple;
 import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.tests.api.TestQueueManager;
 
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.inject.Inject;
 
 import org.junit.Rule;
 import org.junit.Test;
 
 public class FlowNestingTestCase extends AbstractIntegrationTestCase {
 
-  private TestConnectorQueueHandler queueHandler;
+  @Inject
+  private TestQueueManager queueManager;
 
   @Rule
   public DynamicPort dynamicPort = new DynamicPort("port1");
-
-  @Override
-  protected void doSetUp() throws Exception {
-    super.doSetUp();
-    queueHandler = new TestConnectorQueueHandler(registry);
-  }
 
   @Override
   protected String getConfigFile() {
@@ -47,7 +45,7 @@ public class FlowNestingTestCase extends AbstractIntegrationTestCase {
     inboundProperties.put("Amount", "4999");
     flowRunner("NestedChoice").withPayload(new Apple()).withInboundProperties(inboundProperties).run();
 
-    Message result = queueHandler.read("outChoice", RECEIVE_TIMEOUT).getMessage();
+    Message result = queueManager.read("outChoice", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
     assertNotNull(result);
     assertEquals("ABC", getPayloadAsString(result));
   }
@@ -59,7 +57,7 @@ public class FlowNestingTestCase extends AbstractIntegrationTestCase {
     inboundProperties.put("Amount", "5000");
     flowRunner("NestedChoice").withPayload(new Apple()).withInboundProperties(inboundProperties).run();
 
-    Message result = queueHandler.read("outChoice", RECEIVE_TIMEOUT).getMessage();
+    Message result = queueManager.read("outChoice", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
     assertNotNull(result);
     assertEquals("AB", getPayloadAsString(result));
   }

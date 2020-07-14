@@ -6,19 +6,21 @@
  */
 package org.mule.test.routing;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.FirstSuccessfulStory.FIRST_SUCCESSFUL;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
-import static org.mule.functional.junit4.matchers.ThrowableCauseMatcher.hasCause;
 import org.mule.extension.validation.api.ValidationException;
-import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.functional.api.exception.ExpectedError;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.tests.api.TestQueueManager;
+
+import javax.inject.Inject;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
@@ -28,6 +30,9 @@ import org.junit.Test;
 @Feature(ROUTERS)
 @Story(FIRST_SUCCESSFUL)
 public class FirstSuccessfulTestCase extends AbstractIntegrationTestCase {
+
+  @Inject
+  private TestQueueManager queueManager;
 
   @Rule
   public ExpectedError expected = ExpectedError.none();
@@ -69,8 +74,7 @@ public class FirstSuccessfulTestCase extends AbstractIntegrationTestCase {
   public void oneWayEndpoints() throws Exception {
     flowRunner("withOneWayEndpoints").withPayload(TEST_MESSAGE).run();
 
-    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
-    Message response = queueHandler.read("WithOneWayEndpoints.out", RECEIVE_TIMEOUT).getMessage();
+    Message response = queueManager.read("WithOneWayEndpoints.out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
     assertThat(response, is(notNullValue()));
     assertThat(response.getPayload().getValue(), is(TEST_MESSAGE));
   }
