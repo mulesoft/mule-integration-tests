@@ -6,26 +6,24 @@
  */
 package org.mule.test.integration.messaging.meps;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
-import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.message.Message;
 import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.tests.api.TestQueueManager;
+
+import javax.inject.Inject;
 
 import org.junit.Test;
 
 public class InOnlyOptionalOutTestCase extends AbstractIntegrationTestCase {
 
-  private TestConnectorQueueHandler queueHandler;
-
-  @Override
-  protected void doSetUp() throws Exception {
-    super.doSetUp();
-    queueHandler = new TestConnectorQueueHandler(registry);
-  }
+  @Inject
+  private TestQueueManager queueManager;
 
   @Override
   protected String getConfigFile() {
@@ -36,7 +34,7 @@ public class InOnlyOptionalOutTestCase extends AbstractIntegrationTestCase {
   public void testExchangeReceived() throws Exception {
     flowRunner("In-Only_Optional-Out--Service").withPayload("some data").withVariable("foo", "bar").run();
 
-    Message result = queueHandler.read("received", RECEIVE_TIMEOUT).getMessage();
+    Message result = queueManager.read("received", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
     assertNotNull(result);
     assertThat(getPayloadAsString(result), is("foo header received"));
   }
@@ -45,6 +43,6 @@ public class InOnlyOptionalOutTestCase extends AbstractIntegrationTestCase {
   public void testExchangeNotReceived() throws Exception {
     flowRunner("In-Only_Optional-Out--Service").withPayload("some data").run();
 
-    assertThat(queueHandler.read("notReceived", RECEIVE_TIMEOUT), is(nullValue()));
+    assertThat(queueManager.read("notReceived", RECEIVE_TIMEOUT, MILLISECONDS), is(nullValue()));
   }
 }

@@ -7,6 +7,7 @@
 package org.mule.test.integration.security;
 
 import static java.lang.String.format;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -25,9 +26,13 @@ import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.IntegrationTestCaseRunnerConfig;
+import org.mule.tests.api.TestQueueManager;
 
 import java.io.IOException;
 
+import javax.inject.Inject;
+
+import io.qameta.allure.Feature;
 import org.apache.http.Header;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -55,6 +60,8 @@ public class HttpListenerAuthenticationTestCase extends MuleArtifactFunctionalTe
   CloseableHttpClient httpClient;
   CloseableHttpResponse httpResponse;
 
+  @Inject
+  private TestQueueManager queueManager;
 
   @Rule
   public DynamicPort listenPort = new DynamicPort("port");
@@ -76,8 +83,7 @@ public class HttpListenerAuthenticationTestCase extends MuleArtifactFunctionalTe
     getHttpResponse(credsProvider);
 
     assertUnauthorised();
-    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
-    assertThat(queueHandler.read("basicAuthentication", RECEIVE_TIMEOUT).getMessage(), is(notNullValue()));
+    assertThat(queueManager.read("basicAuthentication", RECEIVE_TIMEOUT, MILLISECONDS).getMessage(), is(notNullValue()));
   }
 
   @Test
@@ -96,8 +102,7 @@ public class HttpListenerAuthenticationTestCase extends MuleArtifactFunctionalTe
 
     assertThat(httpResponse, hasStatusCode(INTERNAL_SERVER_ERROR.getStatusCode()));
     assertThat(httpResponse, hasReasonPhrase(INTERNAL_SERVER_ERROR.getReasonPhrase()));
-    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
-    assertThat(queueHandler.read("basicAuthentication", RECEIVE_TIMEOUT).getMessage(), is(notNullValue()));
+    assertThat(queueManager.read("basicAuthentication", RECEIVE_TIMEOUT, MILLISECONDS).getMessage(), is(notNullValue()));
   }
 
   @Test

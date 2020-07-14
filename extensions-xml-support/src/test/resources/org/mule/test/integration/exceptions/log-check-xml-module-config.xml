@@ -4,24 +4,26 @@
       xmlns:test="http://www.mulesoft.org/schema/mule/test"
       xmlns:module-using-core="http://www.mulesoft.org/schema/mule/module-using-core"
       xmlns:module-using-sc="http://www.mulesoft.org/schema/mule/module-using-sc"
+      xmlns:test-components="http://www.mulesoft.org/schema/mule/test-components"
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
                http://www.mulesoft.org/schema/mule/module-using-core http://www.mulesoft.org/schema/mule/module-using-core/current/mule-module-using-core.xsd
                http://www.mulesoft.org/schema/mule/module-using-sc http://www.mulesoft.org/schema/mule/module-using-sc/current/mule-module-using-sc.xsd
+               http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd
                http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
     <flow name="xmlSdkOperationError">
-        <test:skeleton-source/>
+        <test-components:skeleton-source/>
         <module-using-core:raise-error-op />
         <error-handler>
             <test:on-error-check-log>
                 <test:check-equals>
                     <![CDATA[
                         Message               : Expected error
-                        Element               : xmlSdkOperationError/processors/0 @ LogCheckXmlModuleTestCase#runXmlSdkOperationError:org/mule/test/integration/exceptions/log-check-xml-module-config.xml:14
+                        Element               : xmlSdkOperationError/processors/0 @ LogCheckXmlModuleTestCase#runXmlSdkOperationError:org/mule/test/integration/exceptions/log-check-xml-module-config.xml:16
                         Element DSL           : <module-using-core:raise-error-op></module-using-core:raise-error-op>
                         Error type            : MODULE-USING-CORE:RAISED
                         FlowStack             : at module-using-core:raise-error-op(raise-error-op/processors/0 @ LogCheckXmlModuleTestCase#runXmlSdkOperationError:module-using-core.xml:64)
-                                                at xmlSdkOperationError(xmlSdkOperationError/processors/0 @ LogCheckXmlModuleTestCase#runXmlSdkOperationError:org/mule/test/integration/exceptions/log-check-xml-module-config.xml:14)
+                                                at xmlSdkOperationError(xmlSdkOperationError/processors/0 @ LogCheckXmlModuleTestCase#runXmlSdkOperationError:org/mule/test/integration/exceptions/log-check-xml-module-config.xml:16)
                         Payload               : null
                         Payload Type          : null
                     ]]>
@@ -31,19 +33,19 @@
     </flow>
 
     <flow name="xmlSdkOperationErrorNested">
-        <test:skeleton-source/>
+        <test-components:skeleton-source/>
         <module-using-sc:proxy-raise-error-op />
         <error-handler>
             <test:on-error-check-log>
                 <test:check-equals>
                     <![CDATA[
                         Message               : Expected error
-                        Element               : xmlSdkOperationErrorNested/processors/0 @ LogCheckXmlModuleTestCase#runXmlSdkOperationErrorNested:org/mule/test/integration/exceptions/log-check-xml-module-config.xml:35
+                        Element               : xmlSdkOperationErrorNested/processors/0 @ LogCheckXmlModuleTestCase#runXmlSdkOperationErrorNested:org/mule/test/integration/exceptions/log-check-xml-module-config.xml:37
                         Element DSL           : <module-using-sc:proxy-raise-error-op></module-using-sc:proxy-raise-error-op>
                         Error type            : MODULE-USING-CORE:RAISED
                         FlowStack             : at module-using-core:raise-error-op(raise-error-op/processors/0 @ LogCheckXmlModuleTestCase#runXmlSdkOperationErrorNested:module-using-core.xml:64)
                                                 at module-using-sc:proxy-raise-error-op(proxy-raise-error-op/processors/0 @ LogCheckXmlModuleTestCase#runXmlSdkOperationErrorNested:module-using-smart-connector.xml:20)
-                                                at xmlSdkOperationErrorNested(xmlSdkOperationErrorNested/processors/0 @ LogCheckXmlModuleTestCase#runXmlSdkOperationErrorNested:org/mule/test/integration/exceptions/log-check-xml-module-config.xml:35)
+                                                at xmlSdkOperationErrorNested(xmlSdkOperationErrorNested/processors/0 @ LogCheckXmlModuleTestCase#runXmlSdkOperationErrorNested:org/mule/test/integration/exceptions/log-check-xml-module-config.xml:37)
                         Payload               : null
                         Payload Type          : null
                     ]]>

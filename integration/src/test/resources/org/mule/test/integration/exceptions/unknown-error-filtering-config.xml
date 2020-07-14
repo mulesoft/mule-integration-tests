@@ -15,7 +15,7 @@
                 <set-payload value="#[payload ++ ' nope']"/>
             </on-error-propagate>
             <on-error-propagate type="ANY">
-                <test:queue name="any1"/>
+                <logger level="ERROR"/>
             </on-error-propagate>
         </error-handler>
     </flow>

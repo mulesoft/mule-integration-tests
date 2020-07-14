@@ -193,6 +193,13 @@
             <classifier>mule-plugin</classifier>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.mule.tests</groupId>
+            <artifactId>test-components</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+            <classifier>mule-plugin</classifier>
+            <scope>test</scope>
+        </dependency>
 
         <dependency>
             <groupId>org.mule.module</groupId>

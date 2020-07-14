@@ -7,13 +7,13 @@
 package org.mule.test.usecases.sync;
 
 import static java.lang.String.format;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.http.api.HttpConstants.Method.POST;
 import static org.mule.tck.processor.FlowAssert.verify;
 
-import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.http.api.HttpService;
 import org.mule.runtime.api.util.MultiMap;
@@ -22,11 +22,17 @@ import org.mule.runtime.http.api.domain.message.request.HttpRequest;
 import org.mule.service.http.TestHttpClient;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.tests.api.TestQueueManager;
+
+import javax.inject.Inject;
 
 import org.junit.Rule;
 import org.junit.Test;
 
 public class HttpJmsBridgeTestCase extends AbstractIntegrationTestCase {
+
+  @Inject
+  private TestQueueManager queueManager;
 
   @Rule
   public DynamicPort httpPort = new DynamicPort("port");
@@ -51,8 +57,7 @@ public class HttpJmsBridgeTestCase extends AbstractIntegrationTestCase {
         .entity(new ByteArrayHttpEntity(payload.getBytes())).headers(headersMap).method(POST).build();
     httpClient.send(request, RECEIVE_TIMEOUT, false, null);
 
-    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
-    Message msg = queueHandler.read("out", RECEIVE_TIMEOUT).getMessage();
+    Message msg = queueManager.read("out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
 
     assertNotNull(msg);
     assertThat(getPayloadAsString(msg), is(payload));

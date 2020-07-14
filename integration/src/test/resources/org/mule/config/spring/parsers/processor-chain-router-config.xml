@@ -4,11 +4,25 @@
        xmlns:http="http://www.mulesoft.org/schema/mule/http"
        xmlns:parsers-test="http://www.mulesoft.org/schema/mule/parsers-test"
        xmlns:test="http://www.mulesoft.org/schema/mule/test"
-       xsi:schemaLocation="
+      xmlns:test-components="http://www.mulesoft.org/schema/mule/test-components"
+      xsi:schemaLocation="
        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
        http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
        http://www.mulesoft.org/schema/mule/parsers-test http://www.mulesoft.org/schema/mule/parsers-test/current/mule-parsers-test.xsd
-       http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+       http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
+       http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
+
+    <test-components:queue-config name="asyncQueue">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="sgRoute1Queue">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="sgRoute2Queue">
+        <test-components:connection />
+    </test-components:queue-config>
 
     <parsers-test:composite-processor-chain-router name="compositeChainRouter">
         <parsers-test:chain>
@@ -51,14 +65,14 @@
 
     <parsers-test:processor-chain-router name="chainRouterComponents">
         <async>
-            <test:queue name="asyncQueue"/>
+            <test-components:queue-push config-ref="asyncQueue"/>
         </async>
         <scatter-gather>
             <route>
-                <test:queue name="sgRoute1Queue"/>
+                <test-components:queue-push config-ref="sgRoute1Queue"/>
             </route>
             <route>
-                <test:queue name="sgRoute2Queue"/>
+                <test-components:queue-push config-ref="sgRoute2Queue"/>
             </route>
         </scatter-gather>
     </parsers-test:processor-chain-router>

@@ -6,7 +6,6 @@
        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
        http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
-
     <flow name="onErrorPropagateTypeMatch">
         <set-payload value="#[payload ++ ' apt1']"/>
         <test:processor throwException="true"/>
@@ -15,9 +14,8 @@
                 <set-payload value="#[payload ++ ' nope']"/>
             </on-error-propagate>
             <on-error-propagate type="ANY">
-                <test:queue name="any1"/>
+                <logger level="ERROR" />
             </on-error-propagate>
         </error-handler>
     </flow>
-
 </mule>

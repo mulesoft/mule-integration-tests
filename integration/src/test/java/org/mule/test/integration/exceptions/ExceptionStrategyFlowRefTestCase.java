@@ -6,11 +6,14 @@
  */
 package org.mule.test.integration.exceptions;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
-import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.message.Message;
 import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.tests.api.TestQueueManager;
+
+import javax.inject.Inject;
 
 import org.junit.Test;
 
@@ -18,6 +21,9 @@ public class ExceptionStrategyFlowRefTestCase extends AbstractIntegrationTestCas
 
   public static final String MESSAGE = "some message";
   public static final int TIMEOUT = 5000;
+
+  @Inject
+  private TestQueueManager queueManager;
 
   @Override
   protected String getConfigFile() {
@@ -27,10 +33,7 @@ public class ExceptionStrategyFlowRefTestCase extends AbstractIntegrationTestCas
   @Test
   public void testExceptionInFlowCalledWithFlowRef() throws Exception {
     flowRunner("exceptionHandlingBlock").runExpectingException();
-    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
-
-    Message response = queueHandler.read("dlq", RECEIVE_TIMEOUT).getMessage();
-
+    Message response = queueManager.read("dlq", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
     assertThat(response, notNullValue());
   }
 }

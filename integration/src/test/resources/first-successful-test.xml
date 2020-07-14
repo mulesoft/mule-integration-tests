@@ -3,10 +3,17 @@
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
       xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xmlns:test-components="http://www.mulesoft.org/schema/mule/test-components"
       xsi:schemaLocation="
         http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
         http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-        http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+        http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
+        http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
+
+    <test-components:queue-config name="WithOneWayEndpoints.out">
+        <test-components:connection />
+    </test-components:queue-config>
+
 
     <flow name="test-router">
         <first-successful>
@@ -33,7 +40,7 @@
     </flow>
 
     <flow name="withOneWayEndpoints-handler">
-        <test:queue name="WithOneWayEndpoints.out"/>
+        <test-components:queue-push config-ref="WithOneWayEndpoints.out"/>
     </flow>
 
     <flow name="nestedFirstSuccessful">

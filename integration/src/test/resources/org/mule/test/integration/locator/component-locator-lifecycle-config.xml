@@ -5,16 +5,22 @@
       xmlns:http="http://www.mulesoft.org/schema/mule/http"
       xmlns:file="http://www.mulesoft.org/schema/mule/file"
       xmlns:java="http://www.mulesoft.org/schema/mule/java"
+      xmlns:test-components="http://www.mulesoft.org/schema/mule/test-components"
       xsi:schemaLocation="
        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
        http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
        http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd
        http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
-       http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+       http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
+       http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
 
     <global-property name="some.property" value="/origin/topic"/>
 
     <object name="childBean" class="org.mule.test.integration.locator.beans.ChildBean"/>
+
+    <test-components:queue-config name="globalErrorHandlerQueue">
+        <test-components:connection />
+    </test-components:queue-config>
 
     <flow name="invokeBeanFlow">
         <java:invoke method="getFoo()" instance="childBean" class="org.mule.test.integration.locator.beans.ChildBean"/>
@@ -40,7 +46,7 @@
     <error-handler name="globalErrorHandler">
         <on-error-propagate>
             <test:processor class="org.mule.test.integration.locator.processor.CustomTestComponent"/>
-            <test:queue name="globalErrorHandlerQueue"/>
+            <test-components:queue-push config-ref="globalErrorHandlerQueue"/>
         </on-error-propagate>
     </error-handler>
 

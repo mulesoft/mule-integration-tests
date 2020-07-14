@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
-      xmlns:test="http://www.mulesoft.org/schema/mule/test"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:test-components="http://www.mulesoft.org/schema/mule/test-components"
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-        http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+        http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
+
+    <test-components:queue-config name="runningSchedulerOnStartupQueue">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="notRunningSchedulerOnStartupQueue">
+        <test-components:connection />
+    </test-components:queue-config>
 
     <flow name="runningSchedulerOnStartup">
         <scheduler>
@@ -11,7 +19,7 @@
                 <fixed-frequency startDelay="0" frequency="1000"/>
             </scheduling-strategy>
         </scheduler>
-        <test:queue name="runningSchedulerOnStartupQueue"/>
+        <test-components:queue-push config-ref="runningSchedulerOnStartupQueue"/>
     </flow>
 
     <flow name="notRunningSchedulerOnStartup">
@@ -20,7 +28,7 @@
                 <fixed-frequency startDelay="0" frequency="1000"/>
             </scheduling-strategy>
         </scheduler>
-        <test:queue name="notRunningSchedulerOnStartupQueue"/>
+        <test-components:queue-push config-ref="notRunningSchedulerOnStartupQueue"/>
     </flow>
 
 </mule>
