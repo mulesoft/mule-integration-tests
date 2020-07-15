@@ -156,7 +156,8 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
 
     DefaultJavaExtensionModelLoader extensionModelLoader = new DefaultJavaExtensionModelLoader();
     for (Class<?> annotatedClass : new Class[] {HttpConnector.class, SocketsExtension.class, DbConnector.class,
-        HeisenbergExtension.class, SubTypesMappingConnector.class, VeganExtension.class, AggregatorsExtension.class, OAuthExtension.class}) {
+        HeisenbergExtension.class, SubTypesMappingConnector.class, VeganExtension.class, AggregatorsExtension.class,
+        OAuthExtension.class}) {
       discoverer.discoverExtension(annotatedClass, extensionModelLoader);
     }
 
@@ -188,12 +189,12 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
   @Test
   public void oauthCredentialThroughProxyInlineDefinition() {
     ComponentAst httpRequestConfigWithOAuthProxyInline =
-            findComponentByComponentId(artifactAst.topLevelComponentsStream(), "httpRequestConfigWithOAuthProxyInline")
-                    .orElseThrow(() -> new AssertionError("Couldn't find 'httpRequestConfigWithOAuthProxyInline'"));
+        findComponentByComponentId(artifactAst.topLevelComponentsStream(), "httpRequestConfigWithOAuthProxyInline")
+            .orElseThrow(() -> new AssertionError("Couldn't find 'httpRequestConfigWithOAuthProxyInline'"));
 
     ComponentAst oAuthHttpRequestConnection =
-            findComponent(httpRequestConfigWithOAuthProxyInline.directChildrenStream(), "http:request-connection")
-                    .orElseThrow(() -> new AssertionError("Couldn't find 'http:request-connection'"));
+        findComponent(httpRequestConfigWithOAuthProxyInline.directChildrenStream(), "http:request-connection")
+            .orElseThrow(() -> new AssertionError("Couldn't find 'http:request-connection'"));
 
     ComponentParameterAst proxyConfig = oAuthHttpRequestConnection.getParameter("proxyConfig");
     assertThat(proxyConfig.getRawValue(), is(nullValue()));
@@ -201,10 +202,10 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
     assertThat(getTypeId(proxyConfig.getModel().getType()), equalTo(of(HttpProxyConfig.class.getName())));
 
     ComponentAst httpAuthentication = findComponent(oAuthHttpRequestConnection.directChildrenStream(), "http:authentication")
-            .orElseThrow(() -> new AssertionError("Couldn't find 'http:authentication'"));
+        .orElseThrow(() -> new AssertionError("Couldn't find 'http:authentication'"));
 
     ComponentAst grantType = findComponent(httpAuthentication.directChildrenStream(), "oauth:client-credentials-grant-type")
-            .orElseThrow(() -> new AssertionError("Couldn't find 'oauth:client-credentials-grant-type'"));
+        .orElseThrow(() -> new AssertionError("Couldn't find 'oauth:client-credentials-grant-type'"));
 
     ComponentParameterAst proxyConfigParameter = grantType.getParameter("proxyConfig");
     assertThat(proxyConfigParameter.getRawValue(), is(nullValue()));
@@ -212,7 +213,7 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
 
     ComponentAst oauthHttpProxy = (ComponentAst) proxyConfigParameter.getValue().getRight();
     ComponentAst httpProxy = findComponent(oauthHttpProxy.directChildrenStream(), "http:proxy")
-            .orElseThrow(() -> new AssertionError("Couldn't find 'http:proxy'"));
+        .orElseThrow(() -> new AssertionError("Couldn't find 'http:proxy'"));
     ComponentParameterAst portParameter = httpProxy.getParameter("port");
     assertThat(portParameter.getValue().getRight(), is(8083));
     ComponentParameterAst hostParameter = httpProxy.getParameter("host");
