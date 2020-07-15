@@ -31,9 +31,12 @@ import static org.mule.runtime.extension.api.util.ExtensionMetadataTypeUtils.isM
 import static org.mule.test.allure.AllureConstants.ArtifactAst.ARTIFACT_AST;
 import static org.mule.test.allure.AllureConstants.ArtifactAst.ParameterAst.PARAMETER_AST;
 
+import io.qameta.allure.Issue;
 import org.mule.extension.aggregator.internal.AggregatorsExtension;
 import org.mule.extension.db.internal.DbConnector;
+import org.mule.extension.http.api.request.proxy.HttpProxyConfig;
 import org.mule.extension.http.internal.temporary.HttpConnector;
+import org.mule.extension.oauth2.OAuthExtension;
 import org.mule.extension.socket.api.SocketsExtension;
 import org.mule.metadata.api.annotation.EnumAnnotation;
 import org.mule.metadata.api.annotation.IntAnnotation;
@@ -153,7 +156,8 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
 
     DefaultJavaExtensionModelLoader extensionModelLoader = new DefaultJavaExtensionModelLoader();
     for (Class<?> annotatedClass : new Class[] {HttpConnector.class, SocketsExtension.class, DbConnector.class,
-        HeisenbergExtension.class, SubTypesMappingConnector.class, VeganExtension.class, AggregatorsExtension.class}) {
+        HeisenbergExtension.class, SubTypesMappingConnector.class, VeganExtension.class, AggregatorsExtension.class,
+        OAuthExtension.class}) {
       discoverer.discoverExtension(annotatedClass, extensionModelLoader);
     }
 
@@ -179,6 +183,41 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
     this.artifactAst = new ApplicationModel(artifactConfig, null, extensionModels, Collections.emptyMap(),
                                             Optional.empty(), of(componentBuildingDefinitionRegistry),
                                             uri -> muleContext.getExecutionClassLoader().getResourceAsStream(uri));
+  }
+
+  @Issue("MULE-18564")
+  @Test
+  public void oauthCredentialThroughProxyInlineDefinition() {
+    ComponentAst httpRequestConfigWithOAuthProxyInline =
+        findComponentByComponentId(artifactAst.topLevelComponentsStream(), "httpRequestConfigWithOAuthProxyInline")
+            .orElseThrow(() -> new AssertionError("Couldn't find 'httpRequestConfigWithOAuthProxyInline'"));
+
+    ComponentAst oAuthHttpRequestConnection =
+        findComponent(httpRequestConfigWithOAuthProxyInline.directChildrenStream(), "http:request-connection")
+            .orElseThrow(() -> new AssertionError("Couldn't find 'http:request-connection'"));
+
+    ComponentParameterAst proxyConfig = oAuthHttpRequestConnection.getParameter("proxyConfig");
+    assertThat(proxyConfig.getRawValue(), is(nullValue()));
+    assertThat(proxyConfig.getValue(), is(Either.empty()));
+    assertThat(getTypeId(proxyConfig.getModel().getType()), equalTo(of(HttpProxyConfig.class.getName())));
+
+    ComponentAst httpAuthentication = findComponent(oAuthHttpRequestConnection.directChildrenStream(), "http:authentication")
+        .orElseThrow(() -> new AssertionError("Couldn't find 'http:authentication'"));
+
+    ComponentAst grantType = findComponent(httpAuthentication.directChildrenStream(), "oauth:client-credentials-grant-type")
+        .orElseThrow(() -> new AssertionError("Couldn't find 'oauth:client-credentials-grant-type'"));
+
+    ComponentParameterAst proxyConfigParameter = grantType.getParameter("proxyConfig");
+    assertThat(proxyConfigParameter.getRawValue(), is(nullValue()));
+    assertThat(proxyConfigParameter.getValue().getRight(), not(nullValue()));
+
+    ComponentAst oauthHttpProxy = (ComponentAst) proxyConfigParameter.getValue().getRight();
+    ComponentAst httpProxy = findComponent(oauthHttpProxy.directChildrenStream(), "http:proxy")
+        .orElseThrow(() -> new AssertionError("Couldn't find 'http:proxy'"));
+    ComponentParameterAst portParameter = httpProxy.getParameter("port");
+    assertThat(portParameter.getValue().getRight(), is(8083));
+    ComponentParameterAst hostParameter = httpProxy.getParameter("host");
+    assertThat(hostParameter.getValue().getRight(), is("localhost"));
   }
 
   @Test
@@ -638,6 +677,10 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
     return stream
         .filter(componentAst -> identifier.equals(componentAst.getIdentifier()))
         .findFirst();
+  }
+
+  private Optional<ComponentAst> findComponentByComponentId(Stream<ComponentAst> stream, String componentId) {
+    return stream.filter(c -> componentId.equals(c.getComponentId().orElse(null))).findFirst();
   }
 
 }
