@@ -18,7 +18,7 @@
     <flow name="In-Optional-Out_Out-Only-Service">
         <script:execute engine="groovy">
             <script:code>
-                if (message.getInboundProperty("foo") != null)
+                if (vars.foo != null)
                     return "foo header received"
                 else
                     return null
