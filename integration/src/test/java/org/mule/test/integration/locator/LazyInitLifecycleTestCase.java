@@ -17,7 +17,6 @@ import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.component.location.Location.builder;
 import static org.mule.runtime.api.component.location.Location.builderFromStringRepresentation;
-import static org.mule.runtime.config.api.LazyComponentInitializer.LAZY_COMPONENT_INITIALIZER_SERVICE_KEY;
 import static org.mule.runtime.config.api.SpringXmlConfigurationBuilderFactory.createConfigurationBuilder;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentLocatorStory.SEARCH_CONFIGURATION;
@@ -25,7 +24,6 @@ import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocator
 import org.mule.runtime.api.artifact.Registry;
 import org.mule.runtime.api.component.location.Location;
 import org.mule.runtime.config.api.LazyComponentInitializer;
-import org.mule.runtime.config.internal.LazyComponentInitializerAdapter;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.runtime.core.api.config.MuleConfiguration;
 import org.mule.tck.junit4.rule.DynamicPort;
@@ -35,7 +33,6 @@ import org.mule.test.integration.locator.processor.CustomTestComponent;
 import org.mule.tests.api.TestQueueManager;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -64,11 +61,6 @@ public class LazyInitLifecycleTestCase extends AbstractIntegrationTestCase {
 
   @Inject
   private TestQueueManager queueManager;
-
-  // TODO MULE-18316 (AST) remove this
-  @Inject
-  @Named(value = LAZY_COMPONENT_INITIALIZER_SERVICE_KEY)
-  private LazyComponentInitializerAdapter lazyComponentInitializerAdapter;
 
   @Override
   protected String[] getConfigFiles() {
@@ -170,23 +162,6 @@ public class LazyInitLifecycleTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  public void shouldCreateBeansForSameLocationRequestIfDifferentPhaseApplied() {
-    CustomTestComponent.statesByInstances.clear();
-
-    Location location = builderFromStringRepresentation("untilSuccessfulFlow").build();
-    lazyComponentInitializerAdapter.initializeComponent(location, false);
-    lazyComponentInitializer.initializeComponent(location);
-
-    // force dispose to check that components from sub-flow are disposed
-    muleContext.dispose();
-    assertThat(CustomTestComponent.statesByInstances.toString(),
-               CustomTestComponent.statesByInstances.size(), is(2));
-    assertThat(CustomTestComponent.statesByInstances.toString(),
-               CustomTestComponent.statesByInstances.values(),
-               containsInAnyOrder("initialized_started_stopped_disposed", "initialized_started_stopped_disposed"));
-  }
-
-  @Test
   public void shouldNotCreateBeansForSameLocationFilterRequest() {
     CustomTestComponent.statesByInstances.clear();
 
@@ -200,22 +175,6 @@ public class LazyInitLifecycleTestCase extends AbstractIntegrationTestCase {
     assertThat(CustomTestComponent.statesByInstances.size(), is(1));
     assertThat(CustomTestComponent.statesByInstances.values(),
                containsInAnyOrder("initialized_started_stopped_disposed"));
-  }
-
-  @Test
-  public void shouldCreateBeansForSameLocationFilterRequestIfDifferentPhaseApplied() {
-    CustomTestComponent.statesByInstances.clear();
-
-    LazyComponentInitializer.ComponentLocationFilter componentLocationFilter =
-        componentLocation -> componentLocation.getLocation().equals("untilSuccessfulFlow");
-    lazyComponentInitializer.initializeComponents(componentLocationFilter);
-    lazyComponentInitializerAdapter.initializeComponents(componentLocationFilter, false);
-
-    // force dispose to check that components from sub-flow are disposed
-    muleContext.dispose();
-    assertThat(CustomTestComponent.statesByInstances.size(), is(2));
-    assertThat(CustomTestComponent.statesByInstances.values(),
-               containsInAnyOrder("initialized_started_stopped_disposed", "initialized_started_stopped_disposed"));
   }
 
   @Test
