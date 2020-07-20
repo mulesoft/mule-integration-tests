@@ -113,12 +113,68 @@ public class SourceInterceptorFactoryTestCase extends AbstractIntegrationTestCas
   }
 
   @Test
+  public void sourceInterceptedAfterTerminated() throws Exception {
+    startFlow("sourceIntercepted");
+
+    CountDownLatch afterCalledLatch = new CountDownLatch(1);
+
+    SourceCallbackInterceptor.afterTerminated = (event, thrown) -> {
+      if (!thrown.isPresent()) {
+        afterCalledLatch.countDown();
+      }
+    };
+
+    assertThat(afterCalledLatch.await(RECEIVE_TIMEOUT, MILLISECONDS), is(true));
+    List<InterceptionParameters> interceptionParameters = SourceCallbackInterceptor.interceptionParameters;
+
+    assertThat(interceptionParameters, hasSize(greaterThanOrEqualTo(1)));
+    InterceptionParameters heisenbergSourceInterceptionParameter = interceptionParameters.get(0);
+    assertThat(heisenbergSourceInterceptionParameter.toString(),
+               heisenbergSourceInterceptionParameter.getParameters().entrySet(), hasSize(8));
+    assertThat(heisenbergSourceInterceptionParameter.toString(),
+               heisenbergSourceInterceptionParameter.getParameters(), hasKey("fail"));
+    assertThat(heisenbergSourceInterceptionParameter.toString(),
+               heisenbergSourceInterceptionParameter.getParameters(), hasKey("config-ref"));
+    assertThat(heisenbergSourceInterceptionParameter.toString(),
+               heisenbergSourceInterceptionParameter.getParameters(), hasKey("initialBatchNumber"));
+    assertThat(heisenbergSourceInterceptionParameter.toString(),
+               heisenbergSourceInterceptionParameter.getParameters(), hasKey("payment"));
+    assertThat(heisenbergSourceInterceptionParameter.toString(),
+               heisenbergSourceInterceptionParameter.getParameters(), hasKey("frequency"));
+    assertThat(heisenbergSourceInterceptionParameter.toString(),
+               heisenbergSourceInterceptionParameter.getParameters(), hasKey("propagateError"));
+    assertThat(heisenbergSourceInterceptionParameter.toString(),
+               heisenbergSourceInterceptionParameter.getParameters(), hasKey("corePoolSize"));
+    assertThat(heisenbergSourceInterceptionParameter.toString(),
+               heisenbergSourceInterceptionParameter.getParameters(), hasKey("onCapacityOverload"));
+  }
+
+  @Test
   public void sourceErrorIntercepted() throws Exception {
     startFlow("sourceErrorIntercepted");
 
     CountDownLatch afterCalledLatch = new CountDownLatch(1);
 
     SourceCallbackInterceptor.afterCallback = (event, thrown) -> {
+      thrown.ifPresent(t -> afterCalledLatch.countDown());
+    };
+
+    assertThat(afterCalledLatch.await(RECEIVE_TIMEOUT, MILLISECONDS), is(true));
+    List<InterceptionParameters> interceptionParameters = SourceCallbackInterceptor.interceptionParameters;
+
+    assertThat(interceptionParameters, hasSize(greaterThanOrEqualTo(1)));
+    InterceptionParameters heisenbergSourceInterceptionParameter = interceptionParameters.get(interceptionParameters.size() - 1);
+    assertThat(heisenbergSourceInterceptionParameter.toString(),
+               heisenbergSourceInterceptionParameter.getParameters().entrySet(), hasSize(8));
+  }
+
+  @Test
+  public void sourceErrorInterceptedAfterTerminated() throws Exception {
+    startFlow("sourceErrorIntercepted");
+
+    CountDownLatch afterCalledLatch = new CountDownLatch(1);
+
+    SourceCallbackInterceptor.afterTerminated = (event, thrown) -> {
       thrown.ifPresent(t -> afterCalledLatch.countDown());
     };
 
@@ -162,6 +218,68 @@ public class SourceInterceptorFactoryTestCase extends AbstractIntegrationTestCas
     assertThat(heisenbergSourceInterceptionParameter.getParameters(), hasKey("onCapacityOverload"));
   }
 
+  @Test
+  public void sourceInterceptedAfterTerminatedWithFailingProcessor() throws Exception {
+    startFlow("sourceInterceptedWithFailingProcessor");
+
+    CountDownLatch afterCalledLatch = new CountDownLatch(1);
+
+    SourceCallbackInterceptor.afterTerminated = (event, thrown) -> {
+      if (event.getError().isPresent()) {
+        ErrorType errorType = event.getError().get().getErrorType();
+        assertThat(errorType.getNamespace(), equalTo("APP"));
+        assertThat(errorType.getIdentifier(), equalTo("RAISED"));
+        afterCalledLatch.countDown();
+      }
+    };
+
+    assertThat(afterCalledLatch.await(RECEIVE_TIMEOUT, MILLISECONDS), is(true));
+    List<InterceptionParameters> interceptionParameters = SourceCallbackInterceptor.interceptionParameters;
+
+    assertThat(interceptionParameters, hasSize(greaterThanOrEqualTo(1)));
+    InterceptionParameters heisenbergSourceInterceptionParameter = interceptionParameters.get(0);
+    assertThat(heisenbergSourceInterceptionParameter.getParameters().entrySet(), hasSize(8));
+    assertThat(heisenbergSourceInterceptionParameter.getParameters(), hasKey("fail"));
+    assertThat(heisenbergSourceInterceptionParameter.getParameters(), hasKey("config-ref"));
+    assertThat(heisenbergSourceInterceptionParameter.getParameters(), hasKey("initialBatchNumber"));
+    assertThat(heisenbergSourceInterceptionParameter.getParameters(), hasKey("payment"));
+    assertThat(heisenbergSourceInterceptionParameter.getParameters(), hasKey("frequency"));
+    assertThat(heisenbergSourceInterceptionParameter.getParameters(), hasKey("propagateError"));
+    assertThat(heisenbergSourceInterceptionParameter.getParameters(), hasKey("corePoolSize"));
+    assertThat(heisenbergSourceInterceptionParameter.getParameters(), hasKey("onCapacityOverload"));
+  }
+
+  @Test
+  public void sourceInterceptedAfterTerminatedWithFailingReferencedFlow() throws Exception {
+    startFlow("sourceInterceptedWithFailingReferencedFlow");
+
+    CountDownLatch afterCalledLatch = new CountDownLatch(1);
+
+    SourceCallbackInterceptor.afterTerminated = (event, thrown) -> {
+      if (event.getError().isPresent()) {
+        ErrorType errorType = event.getError().get().getErrorType();
+        assertThat(errorType.getNamespace(), equalTo("APP"));
+        assertThat(errorType.getIdentifier(), equalTo("RAISED"));
+        afterCalledLatch.countDown();
+      }
+    };
+
+    assertThat(afterCalledLatch.await(RECEIVE_TIMEOUT, MILLISECONDS), is(true));
+    List<InterceptionParameters> interceptionParameters = SourceCallbackInterceptor.interceptionParameters;
+
+    assertThat(interceptionParameters, hasSize(greaterThanOrEqualTo(1)));
+    InterceptionParameters heisenbergSourceInterceptionParameter = interceptionParameters.get(0);
+    assertThat(heisenbergSourceInterceptionParameter.getParameters().entrySet(), hasSize(8));
+    assertThat(heisenbergSourceInterceptionParameter.getParameters(), hasKey("fail"));
+    assertThat(heisenbergSourceInterceptionParameter.getParameters(), hasKey("config-ref"));
+    assertThat(heisenbergSourceInterceptionParameter.getParameters(), hasKey("initialBatchNumber"));
+    assertThat(heisenbergSourceInterceptionParameter.getParameters(), hasKey("payment"));
+    assertThat(heisenbergSourceInterceptionParameter.getParameters(), hasKey("frequency"));
+    assertThat(heisenbergSourceInterceptionParameter.getParameters(), hasKey("propagateError"));
+    assertThat(heisenbergSourceInterceptionParameter.getParameters(), hasKey("corePoolSize"));
+    assertThat(heisenbergSourceInterceptionParameter.getParameters(), hasKey("onCapacityOverload"));
+  }
+
   public static class SourceCallbackInterceptorFactory implements SourceInterceptorFactory {
 
     @Override
@@ -176,6 +294,9 @@ public class SourceInterceptorFactoryTestCase extends AbstractIntegrationTestCas
     static BiConsumer<InterceptionEvent, Optional<Throwable>> afterCallback = (event, thrown) -> {
     };
 
+    static BiConsumer<InterceptionEvent, Optional<Throwable>> afterTerminated = (event, thrown) -> {
+    };
+
     static final List<InterceptionParameters> interceptionParameters = new LinkedList<>();
 
     @Override
@@ -187,6 +308,11 @@ public class SourceInterceptorFactoryTestCase extends AbstractIntegrationTestCas
     @Override
     public void afterCallback(ComponentLocation location, InterceptionEvent event, Optional<Throwable> thrown) {
       afterCallback.accept(event, thrown);
+    }
+
+    @Override
+    public void afterTerminated(ComponentLocation location, InterceptionEvent event, Optional<Throwable> thrown) {
+      afterTerminated.accept(event, thrown);
     }
   }
 
