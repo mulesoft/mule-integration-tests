@@ -62,14 +62,12 @@
         <dependency>
             <groupId>org.mule.connectors</groupId>
             <artifactId>mule-http-connector</artifactId>
-            <version>${muleHttpConnectorTestVersion}</version>
             <classifier>mule-plugin</classifier>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mule.connectors</groupId>
             <artifactId>mule-sockets-connector</artifactId>
-            <version>${muleSocketsConnectorTestVersion}</version>
             <classifier>mule-plugin</classifier>
             <scope>test</scope>
         </dependency>
@@ -203,7 +201,6 @@
         <dependency>
             <groupId>org.mule.connectors</groupId>
             <artifactId>mule-http-connector</artifactId>
-            <version>${muleHttpConnectorTestVersion}</version>
             <type>test-jar</type>
             <scope>test</scope>
             <exclusions>
