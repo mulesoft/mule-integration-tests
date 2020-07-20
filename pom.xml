@@ -137,10 +137,11 @@
                       <message>No Snapshots Allowed in Deps!</message>
                       <excludes>
                         <exclude>com.mulesoft.munit:*</exclude>
-                          <exclude>org.mule.weave:*</exclude>
-                          <exclude>org.mule.services:*</exclude>
-                          <exclude>org.mule.tools.maven:mule-classloader-model</exclude>
-                          <exclude>org.mule.modules:mule-module-cors-kernel</exclude>
+                        <exclude>org.mule.weave:*</exclude>
+                        <exclude>org.mule.services:*</exclude>
+                        <exclude>org.mule.tools.maven:mule-classloader-model</exclude>
+                        <exclude>org.mule.modules:mule-module-cors-kernel</exclude>
+                        <exclude>org.mule.tests:test-components</exclude>
                       </excludes>
                     </requireReleaseDeps>
                     <requireReleaseVersion>
