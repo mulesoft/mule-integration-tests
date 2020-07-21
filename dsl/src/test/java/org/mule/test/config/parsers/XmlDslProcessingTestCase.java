@@ -118,7 +118,7 @@ public class XmlDslProcessingTestCase extends MuleArtifactFunctionalTestCase {
   }
 
   @Test
-  @Ignore("MULE-")
+  @Ignore("MULE-18586")
   public void complexTypeMapObject() {
     ParameterCollectionParser parsersTestObject = registry.<ParameterCollectionParser>lookupByName("complexTypeMapObject").get();
     Map<Long, ParameterCollectionParser> simpleTypeMap = parsersTestObject.getComplexTypeEntry();
