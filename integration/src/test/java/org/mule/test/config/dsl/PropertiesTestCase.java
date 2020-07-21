@@ -11,7 +11,7 @@ import static org.junit.Assert.assertThat;
 
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
-import org.mule.tests.parsers.api.ParsersTestObject;
+import org.mule.tests.api.pojos.ParameterCollectionParser;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -33,10 +33,10 @@ public class PropertiesTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void propertiesAreCorrectlyConfigured() {
-    ParsersTestObject parsersTestObject = registry.<ParsersTestObject>lookupByName("testObject").get();
-    assertThat(parsersTestObject.getSimpleParameters().get("firstname"), is("testPropertyValue"));
-    assertThat(parsersTestObject.getSimpleParameters().get("lastname"), is(SYSTEM_PROPERTY_VALUE));
-    assertThat(parsersTestObject.getSimpleParameters().get("age"), is("10"));
+    ParameterCollectionParser parsersTestObject = registry.<ParameterCollectionParser>lookupByName("testObject").get();
+    assertThat(parsersTestObject.getFirstname(), is("testPropertyValue"));
+    assertThat(parsersTestObject.getLastname(), is(SYSTEM_PROPERTY_VALUE));
+    assertThat(parsersTestObject.getAge(), is(10));
   }
 
 }

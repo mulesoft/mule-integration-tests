@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:test-components="http://www.mulesoft.org/schema/mule/test-components"
+       xsi:schemaLocation="
+       http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+       http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
+
+    <test-components:parameter-collection-parser name="onlySimpleParametersObject" firstname="Pablo" lastname="La Greca" age="32"/>
+
+    <test-components:parameter-collection-parser name="onlyComplexFirstChildParameterObject">
+        <test-components:first-child firstname="Pablo" lastname="La Greca" age="32"/>
+    </test-components:parameter-collection-parser>
+
+    <test-components:parameter-collection-parser name="onlyComplexSecondChildParameterObject">
+        <test-components:second-child firstname="Mariano" lastname="Gonzalez" age="31"/>
+    </test-components:parameter-collection-parser>
+
+    <test-components:parameter-collection-parser name="onlyComplexChildrenListParameterObject">
+        <test-components:other-children>
+            <test-components:parameter-collection-parser firstname="Pablo" lastname="La Greca" age="32"/>
+            <test-components:parameter-collection-parser firstname="Mariano" lastname="Gonzalez" age="31"/>
+        </test-components:other-children>
+    </test-components:parameter-collection-parser>
+
+    <test-components:parameter-collection-parser name="completeParametersObject" firstname="Pablo" lastname="La Greca" age="32">
+        <test-components:first-child firstname="Pablo" lastname="La Greca" age="32"/>
+        <test-components:second-child firstname="Mariano" lastname="Gonzalez" age="31"/>
+        <test-components:other-children>
+            <test-components:parameter-collection-parser firstname="Pablo" lastname="La Greca" age="32"/>
+            <test-components:parameter-collection-parser firstname="Mariano" lastname="Gonzalez" age="31"/>
+        </test-components:other-children>
+    </test-components:parameter-collection-parser>
+
+    <test-components:parameter-collection-parser name="customCollectionTypeObject">
+        <test-components:other-children-custom-collection-type>
+            <test-components:parameter-collection-parser firstname="Pablo" lastname="La Greca" age="32"/>
+            <test-components:parameter-collection-parser firstname="Mariano" lastname="Gonzalez" age="31"/>
+        </test-components:other-children-custom-collection-type>
+    </test-components:parameter-collection-parser>
+
+    <test-components:parameter-collection-parser name="simpleTypeObject">
+        <test-components:simple-type-child-list>
+            <test-components:simple-type-child-list-item value="value1"/>
+            <test-components:simple-type-child-list-item value="value2"/>
+        </test-components:simple-type-child-list>
+        <test-components:simple-type-child-set>
+            <test-components:simple-type-child-set-item value="value1"/>
+            <test-components:simple-type-child-set-item value="value2"/>
+        </test-components:simple-type-child-set>
+        <test-components:other-simple-type-child-list>
+            <test-components:other-simple-type-child-list-item value="value1"/>
+            <test-components:other-simple-type-child-list-item value="value2"/>
+        </test-components:other-simple-type-child-list>
+    </test-components:parameter-collection-parser>
+
+    <test-components:parameter-collection-parser name="simpleTypeMapObject">
+        <test-components:simple-type-entries>
+            <test-components:simple-type-entry key="key1" value="1"/>
+            <test-components:simple-type-entry key="key2" value="2"/>
+        </test-components:simple-type-entries>
+    </test-components:parameter-collection-parser>
+
+    <test-components:parameter-collection-parser name="complexTypeMapObject">
+        <test-components:complex-type-entries>
+            <test-components:complex-type-entry key="1">
+                <test-components:parameter-collection-parser firstname="Pablo" lastname="La Greca" age="32"/>
+            </test-components:complex-type-entry>
+            <test-components:complex-type-entry key="2">
+                <test-components:parameter-collection-parser firstname="Mariano" lastname="Gonzalez" age="31"/>
+            </test-components:complex-type-entry>
+        </test-components:complex-type-entries>
+    </test-components:parameter-collection-parser>
+
+    <test-components:parameter-collection-parser name="simpleTypeCollectionMapObject">
+        <test-components:simple-list-type-entries>
+            <test-components:simple-list-type-entry key="1">
+                <test-components:simple-list-type-entry-item value="value1"/>
+                <test-components:simple-list-type-entry-item value="value2"/>
+            </test-components:simple-list-type-entry>
+            <test-components:simple-list-type-entry key="2">
+                <test-components:simple-list-type-entry-item value="some value"/>
+            </test-components:simple-list-type-entry>
+        </test-components:simple-list-type-entries>
+    </test-components:parameter-collection-parser>
+
+    <test-components:element-with-attribute-and-child name="pojoWithDefaultValue"/>
+
+    <test-components:my-pojo name="pepe" someParameter="pepe"/>
+    <test-components:element-with-attribute-and-child name="pojoWithAttribute" myPojo="pepe"/>
+
+    <test-components:element-with-attribute-and-child name="pojoWithChild">
+        <test-components:my-pojo someParameter="pepe"/>
+    </test-components:element-with-attribute-and-child>
+
+    <test-components:same-child-type-container name="sameChildTypesObject">
+        <test-components:element-type-a firstname="Pablo" lastname="La Greca" age="32"/>
+        <test-components:another-element-type-a firstname="Mariano" lastname="Gonzalez" age="31"/>
+    </test-components:same-child-type-container>
+
+    <test-components:text-pojo name="textPojo">
+        <test-components:text><![CDATA[select * from PLANET]]></test-components:text>
+    </test-components:text-pojo>
+
+</mule>

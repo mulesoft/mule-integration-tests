@@ -4,26 +4,24 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.test.config.spring.parsers;
+package org.mule.test.config.parsers;
 
 import static org.hamcrest.Matchers.both;
 import static org.hamcrest.Matchers.containsString;
 
-import org.mule.test.IntegrationTestCaseRunnerConfig;
-
 import org.junit.Test;
 
-public class MissingParserTestCase extends AbstractBadConfigTestCase implements IntegrationTestCaseRunnerConfig {
+public class MissingParserTestCase extends AbstractBadConfigTestCase {
 
   @Override
   protected String getConfigFile() {
-    return "org/mule/config/spring/parsers/missing-parser-test.xml";
+    return "org/mule/test/config/parsers/missing-parser-test.xml";
   }
 
   @Test
   public void testHelpfulErrorMessage() throws Exception {
     expected.expectMessage(both(containsString("Invalid content was found starting with element"))
-        .and(containsString("parsers-test")).and(containsString("missing")));
+        .and(containsString("some-namespace")).and(containsString("missing")));
 
     parseConfig();
   }
