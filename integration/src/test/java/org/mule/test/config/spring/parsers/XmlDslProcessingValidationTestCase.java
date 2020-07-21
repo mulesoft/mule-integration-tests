@@ -17,6 +17,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+// TODO MULE-18446 Migrate this test to a unit test where the implementation of the validation will be
+@Ignore("MULE-18446")
 public class XmlDslProcessingValidationTestCase extends AbstractMuleTestCase implements IntegrationTestCaseRunnerConfig {
 
   @Rule

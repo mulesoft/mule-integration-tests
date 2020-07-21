@@ -4,7 +4,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.test.config.spring.parsers;
+package org.mule.test.construct;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.hamcrest.Matchers.instanceOf;
@@ -98,7 +98,7 @@ public class ProcessorChainRouterTestCase extends AbstractIntegrationTestCase im
 
   @Override
   protected String getConfigFile() {
-    return "org/mule/config/spring/parsers/processor-chain-router-config.xml";
+    return "org/mule/construct/processor-chain-router-config.xml";
   }
 
   private ExecutionResult executionResult;
