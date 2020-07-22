@@ -8,6 +8,8 @@ package org.mule.test.extension.dsl;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.lang.String.format;
+import static java.util.Collections.emptyMap;
+import static java.util.Optional.empty;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mule.runtime.api.component.ComponentIdentifier.builder;
@@ -83,6 +85,7 @@ public abstract class AbstractElementModelTestCase extends MuleArtifactFunctiona
   protected static final int REQUESTER_PATH = 2;
   protected static final int DB_INSERT_PATH = 3;
 
+  private Set<ExtensionModel> extensions;
   protected DslResolvingContext dslContext;
   protected DslElementModelFactory modelResolver;
   protected ApplicationModel applicationModel;
@@ -90,7 +93,7 @@ public abstract class AbstractElementModelTestCase extends MuleArtifactFunctiona
 
   @Before
   public void setup() throws Exception {
-    Set<ExtensionModel> extensions = muleContext.getExtensionManager().getExtensions();
+    extensions = muleContext.getExtensionManager().getExtensions();
     dslContext = DslResolvingContext.getDefault(ImmutableSet.<ExtensionModel>builder()
         .addAll(extensions)
         .add(MuleExtensionModelProvider.getExtensionModel()).build());
@@ -229,6 +232,7 @@ public abstract class AbstractElementModelTestCase extends MuleArtifactFunctiona
         .build();
 
     return new ApplicationModel(artifactConfig, new ArtifactDeclaration(),
+                                extensions, emptyMap(), empty(),
                                 uri -> muleContext.getExecutionClassLoader().getResourceAsStream(uri));
   }
 
