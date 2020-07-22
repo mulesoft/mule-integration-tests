@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xmlns:test-components="http://www.mulesoft.org/schema/mule/test-components"
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-              http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+              http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
 
 	<object name="hasSchedulingService" class="org.mule.test.service.scheduler.SchedulerServiceTestCase$HasSchedulingService"/> 
 	<object name="recordThreadName" class="org.mule.test.service.scheduler.SchedulerServiceTestCase$RecordThreadName"/> 
@@ -15,7 +15,7 @@
     </flow>
 
     <flow name="delaySchedule">
-        <test:skeleton-source/>
+        <test-components:skeleton-source/>
         <flow-ref name="raiseBusy"/>
     </flow>
 
