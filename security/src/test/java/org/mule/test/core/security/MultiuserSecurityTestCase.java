@@ -12,6 +12,7 @@ import static org.mule.functional.security.TestSingleUserSecurityProvider.PROPER
 import static org.mule.functional.security.TestSingleUserSecurityProvider.PROPERTY_NUMBER_LOGINS;
 import static org.mule.runtime.core.api.config.MuleProperties.MULE_USER_PROPERTY;
 
+import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
@@ -21,7 +22,7 @@ import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.security.DefaultMuleCredentials;
 import org.mule.runtime.core.api.security.EncryptionStrategy;
-import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.test.IntegrationTestCaseRunnerConfig;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -39,11 +40,13 @@ import org.slf4j.LoggerFactory;
  * see EE-979
  */
 @Ignore
-public class MultiuserSecurityTestCase extends AbstractIntegrationTestCase {
+public class MultiuserSecurityTestCase extends MuleArtifactFunctionalTestCase implements IntegrationTestCaseRunnerConfig {
 
   @Override
   protected String[] getConfigFiles() {
-    return new String[] {"multiuser-security-test-flow.xml", "singleuser-security-provider.xml"};
+    return new String[] {
+        "org/mule/test/core/multiuser-security-test-flow.xml",
+        "org/mule/test/core/singleuser-security-provider.xml"};
   }
 
   @Test

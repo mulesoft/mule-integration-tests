@@ -6,22 +6,23 @@
  */
 package org.mule.test.config;
 
+import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.api.lifecycle.InitialisationException;
+import org.mule.runtime.api.security.SecurityContext;
 import org.mule.runtime.api.security.SecurityProviderNotFoundException;
 import org.mule.runtime.api.security.UnknownAuthenticationTypeException;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.security.AbstractAuthenticationFilter;
 import org.mule.runtime.core.api.security.CryptoFailureException;
 import org.mule.runtime.core.api.security.EncryptionStrategyNotFoundException;
-import org.mule.runtime.api.security.SecurityContext;
-import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.test.IntegrationTestCaseRunnerConfig;
 
 import org.junit.Test;
 
 /**
  * Test configuration of security filters
  */
-public class SecurityFilterNonBlockingTestCase extends AbstractIntegrationTestCase {
+public class SecurityFilterNonBlockingTestCase extends MuleArtifactFunctionalTestCase implements IntegrationTestCaseRunnerConfig {
 
   @Override
   protected String[] getConfigFiles() {
