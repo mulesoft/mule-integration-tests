@@ -12,9 +12,9 @@ import static org.junit.Assert.assertThat;
 import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.LIFECYCLE_AND_DEPENDENCY_INJECTION;
 import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.ArtifactObjectsDependencyInjectionStory.ARTIFACT_OBJECTS_DEPENDENCY_INJECTION_STORY;
 
-import org.mule.functional.api.component.DependencyInjectionObject;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.tests.api.pojos.DependencyInjectionObject;
 
 import org.junit.Test;
 
