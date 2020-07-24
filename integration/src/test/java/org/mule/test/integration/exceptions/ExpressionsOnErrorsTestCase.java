@@ -37,13 +37,26 @@ public class ExpressionsOnErrorsTestCase extends AbstractIntegrationTestCase {
   @Test
   public void infoElement() throws Exception {
     assertThat(flowRunner("infoElement").run().getMessage().getPayload().getValue(),
-               is("infoElement/processors/0 @ ExpressionsOnErrorsTestCase#infoElement:org/mule/test/integration/exceptions/expressions-on-errors.xml:16"));
+               is("infoElement/processors/0 @ ExpressionsOnErrorsTestCase#infoElement:org/mule/test/integration/exceptions/expressions-on-errors.xml:18"));
+  }
+
+  @Test
+  public void infoElementSdkOp() throws Exception {
+    assertThat(flowRunner("infoElementSdkOp").run().getMessage().getPayload().getValue(),
+               is("infoElementSdkOp/processors/0 @ ExpressionsOnErrorsTestCase#infoElementSdkOp:org/mule/test/integration/exceptions/expressions-on-errors.xml:27"));
   }
 
   @Test
   @Issue("MULE-18535")
   public void infoElementDeprecated() throws Exception {
     assertThat(flowRunner("infoElementDeprecated").run().getMessage().getPayload().getValue(),
-               is("infoElementDeprecated/processors/0 @ ExpressionsOnErrorsTestCase#infoElementDeprecated:org/mule/test/integration/exceptions/expressions-on-errors.xml:25"));
+               is("infoElementDeprecated/processors/0 @ ExpressionsOnErrorsTestCase#infoElementDeprecated:org/mule/test/integration/exceptions/expressions-on-errors.xml:36"));
+  }
+
+  @Test
+  @Issue("MULE-18535")
+  public void infoElementDeprecatedSdkOp() throws Exception {
+    assertThat(flowRunner("infoElementDeprecatedSdkOp").run().getMessage().getPayload().getValue(),
+               is("infoElementDeprecatedSdkOp/processors/0 @ ExpressionsOnErrorsTestCase#infoElementDeprecatedSdkOp:org/mule/test/integration/exceptions/expressions-on-errors.xml:47"));
   }
 }
