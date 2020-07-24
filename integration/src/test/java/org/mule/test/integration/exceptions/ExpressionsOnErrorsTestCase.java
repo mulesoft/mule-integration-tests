@@ -43,7 +43,7 @@ public class ExpressionsOnErrorsTestCase extends AbstractIntegrationTestCase {
   @Test
   public void infoElementSdkOp() throws Exception {
     assertThat(flowRunner("infoElementSdkOp").run().getMessage().getPayload().getValue(),
-               is("infoElementSdkOp/processors/0 @ ExpressionsOnErrorsTestCase#infoElementSdkOp:org/mule/test/integration/exceptions/expressions-on-errors.xml:18"));
+               is("infoElementSdkOp/processors/0 @ ExpressionsOnErrorsTestCase#infoElementSdkOp:org/mule/test/integration/exceptions/expressions-on-errors.xml:27"));
   }
 
   @Test
@@ -57,6 +57,6 @@ public class ExpressionsOnErrorsTestCase extends AbstractIntegrationTestCase {
   @Issue("MULE-18535")
   public void infoElementDeprecatedSdkOp() throws Exception {
     assertThat(flowRunner("infoElementDeprecatedSdkOp").run().getMessage().getPayload().getValue(),
-               is("infoElementDeprecatedSdkOp/processors/0 @ ExpressionsOnErrorsTestCase#infoElementDeprecatedSdkOp:org/mule/test/integration/exceptions/expressions-on-errors.xml:38"));
+               is("infoElementDeprecatedSdkOp/processors/0 @ ExpressionsOnErrorsTestCase#infoElementDeprecatedSdkOp:org/mule/test/integration/exceptions/expressions-on-errors.xml:47"));
   }
 }
