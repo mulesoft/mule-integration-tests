@@ -344,14 +344,20 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
     assertThat(openRestrictionChildRecursivePojoNextMappedChildsParameter, not(empty()));
     assertThat(getTypeId(openRestrictionChildRecursivePojoNextMappedChildsParameter.get()),
                equalTo(of(RecursivePojo.class.getName())));
-    List<ComponentAst> childRecursivePojoNextMappedChildsParameterComponent = (List<ComponentAst>) childRecursivePojoNextMappedChildsParameter.getValue().getRight();
+    List<ComponentAst> childRecursivePojoNextMappedChildsParameterComponent =
+        (List<ComponentAst>) childRecursivePojoNextMappedChildsParameter.getValue().getRight();
     assertThat(childRecursivePojoNextMappedChildsParameterComponent, hasSize(1));
-    ComponentParameterAst childRecursivePojoNextMappedChildsParameterComponentKeyParam = childRecursivePojoNextMappedChildsParameterComponent.get(0).getParameter("key");
+    ComponentParameterAst childRecursivePojoNextMappedChildsParameterComponentKeyParam =
+        childRecursivePojoNextMappedChildsParameterComponent.get(0).getParameter("key");
     assertThat(childRecursivePojoNextMappedChildsParameterComponentKeyParam.getValue().getRight(), equalTo("someKey"));
-    assertThat(getTypeId(childRecursivePojoNextMappedChildsParameterComponentKeyParam.getModel().getType()), equalTo(of(String.class.getName())));
-    ComponentParameterAst childRecursivePojoNextMappedChildsParameterComponentValueParam = childRecursivePojoNextMappedChildsParameterComponent.get(0).getParameter("value");
-    assertThat(childRecursivePojoNextMappedChildsParameterComponentValueParam.getValue().getLeft(), equalTo("{} as Object {class: 'new org.mule.test.heisenberg.extension.model.RecursivePojo'}"));
-    assertThat(getTypeId(childRecursivePojoNextMappedChildsParameterComponentValueParam.getModel().getType()), equalTo(of(RecursivePojo.class.getName())));
+    assertThat(getTypeId(childRecursivePojoNextMappedChildsParameterComponentKeyParam.getModel().getType()),
+               equalTo(of(String.class.getName())));
+    ComponentParameterAst childRecursivePojoNextMappedChildsParameterComponentValueParam =
+        childRecursivePojoNextMappedChildsParameterComponent.get(0).getParameter("value");
+    assertThat(childRecursivePojoNextMappedChildsParameterComponentValueParam.getValue().getLeft(),
+               equalTo("{} as Object {class: 'new org.mule.test.heisenberg.extension.model.RecursivePojo'}"));
+    assertThat(getTypeId(childRecursivePojoNextMappedChildsParameterComponentValueParam.getModel().getType()),
+               equalTo(of(RecursivePojo.class.getName())));
 
     ComponentParameterAst recursivePojoMappedChildsParameter = recursivePojo.getParameter("mappedChilds");
     assertThat(recursivePojoMappedChildsParameter.getModel().getType(), instanceOf(ObjectType.class));
