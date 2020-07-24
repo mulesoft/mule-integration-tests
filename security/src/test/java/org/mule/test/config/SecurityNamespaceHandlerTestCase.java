@@ -12,6 +12,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.api.lifecycle.Initialisable;
 import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.api.security.Authentication;
@@ -21,20 +22,20 @@ import org.mule.runtime.api.security.UnknownAuthenticationTypeException;
 import org.mule.runtime.core.api.security.EncryptionStrategy;
 import org.mule.runtime.core.api.security.SecurityManager;
 import org.mule.runtime.core.api.security.SecurityProvider;
-import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.test.IntegrationTestCaseRunnerConfig;
 
 import java.util.Iterator;
 
 import org.junit.Test;
 import org.slf4j.Logger;
 
-public class SecurityNamespaceHandlerTestCase extends AbstractIntegrationTestCase {
+public class SecurityNamespaceHandlerTestCase extends MuleArtifactFunctionalTestCase implements IntegrationTestCaseRunnerConfig {
 
   private static final Logger LOGGER = getLogger(SecurityNamespaceHandlerTestCase.class);
 
   @Override
   protected String getConfigFile() {
-    return "security-namespace-config.xml";
+    return "org/mule/test/config/security-namespace-config.xml";
   }
 
   @Test
