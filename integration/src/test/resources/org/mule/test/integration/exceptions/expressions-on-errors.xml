@@ -18,7 +18,7 @@
         <raise-error type="TEST:EXPECTED"/>
         <error-handler>
             <on-error-continue>
-                <set-payload value="#[error.cause.info.Element]"/>
+                <set-payload value="#[error.failingComponent]"/>
             </on-error-continue>
         </error-handler>
     </flow>
@@ -27,7 +27,7 @@
         <http:request method="GET" config-ref="HTTP_Request_configuration" url="https://httpbin.org/status/500"/>
         <error-handler>
             <on-error-continue>
-                <set-payload value="#[error.cause.info.Element]"/>
+                <set-payload value="#[error.failingComponent]"/>
             </on-error-continue>
         </error-handler>
     </flow>
