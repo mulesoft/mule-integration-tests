@@ -30,8 +30,6 @@ import static org.mule.runtime.dsl.api.xml.parser.XmlConfigurationDocumentLoader
 import static org.mule.runtime.extension.api.util.ExtensionMetadataTypeUtils.isMap;
 import static org.mule.test.allure.AllureConstants.ArtifactAst.ARTIFACT_AST;
 import static org.mule.test.allure.AllureConstants.ArtifactAst.ParameterAst.PARAMETER_AST;
-
-import io.qameta.allure.Issue;
 import org.mule.extension.aggregator.internal.AggregatorsExtension;
 import org.mule.extension.db.internal.DbConnector;
 import org.mule.extension.http.api.request.proxy.HttpProxyConfig;
@@ -77,6 +75,9 @@ import org.mule.test.runner.infrastructure.ExtensionsTestInfrastructureDiscovere
 import org.mule.test.subtypes.extension.SubTypesMappingConnector;
 import org.mule.test.vegan.extension.VeganExtension;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
@@ -86,21 +87,17 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.xml.parsers.SAXParserFactory;
 
+import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
+import io.qameta.allure.Story;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.helpers.DefaultHandler;
-
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
-
-import io.qameta.allure.Feature;
-import io.qameta.allure.Story;
 
 @Feature(ARTIFACT_AST)
 @Story(PARAMETER_AST)
@@ -347,7 +344,20 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
     assertThat(openRestrictionChildRecursivePojoNextMappedChildsParameter, not(empty()));
     assertThat(getTypeId(openRestrictionChildRecursivePojoNextMappedChildsParameter.get()),
                equalTo(of(RecursivePojo.class.getName())));
-    assertThat(childRecursivePojoNextMappedChildsParameter.getValue().getRight(), not(nullValue()));
+    List<ComponentAst> childRecursivePojoNextMappedChildsParameterComponent =
+        (List<ComponentAst>) childRecursivePojoNextMappedChildsParameter.getValue().getRight();
+    assertThat(childRecursivePojoNextMappedChildsParameterComponent, hasSize(1));
+    ComponentParameterAst childRecursivePojoNextMappedChildsParameterComponentKeyParam =
+        childRecursivePojoNextMappedChildsParameterComponent.get(0).getParameter("key");
+    assertThat(childRecursivePojoNextMappedChildsParameterComponentKeyParam.getValue().getRight(), equalTo("someKey"));
+    assertThat(getTypeId(childRecursivePojoNextMappedChildsParameterComponentKeyParam.getModel().getType()),
+               equalTo(of(String.class.getName())));
+    ComponentParameterAst childRecursivePojoNextMappedChildsParameterComponentValueParam =
+        childRecursivePojoNextMappedChildsParameterComponent.get(0).getParameter("value");
+    assertThat(childRecursivePojoNextMappedChildsParameterComponentValueParam.getValue().getLeft(),
+               equalTo("{} as Object {class: 'new org.mule.test.heisenberg.extension.model.RecursivePojo'}"));
+    assertThat(getTypeId(childRecursivePojoNextMappedChildsParameterComponentValueParam.getModel().getType()),
+               equalTo(of(RecursivePojo.class.getName())));
 
     ComponentParameterAst recursivePojoMappedChildsParameter = recursivePojo.getParameter("mappedChilds");
     assertThat(recursivePojoMappedChildsParameter.getModel().getType(), instanceOf(ObjectType.class));
