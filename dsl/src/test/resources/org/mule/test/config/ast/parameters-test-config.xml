@@ -174,10 +174,10 @@
         </heisenberg:labeled-ricins>
     </heisenberg:config>
 
-    <flow name="recursivePojo">
+    <flow name="nestedPojo">
         <heisenberg:approve>
             <heisenberg:investment>
-                <heisenberg:car-wash commercialName="A1" valuation="100" carsPerMinute="5">
+                <heisenberg:car-wash commercialName="A1" carsPerMinute="5">
                     <heisenberg:investment-spin-offs>
                         <heisenberg:investment-spin-off key="other-car-wash">
                             <heisenberg:car-wash commercialName="B1" valuation="10" carsPerMinute="1">
@@ -194,6 +194,11 @@
                     </heisenberg:investment-spin-offs>
                 </heisenberg:car-wash>
             </heisenberg:investment>
+        </heisenberg:approve>
+    </flow>
+
+    <flow name="recursivePojo">
+        <heisenberg:approve>
             <heisenberg:recursive-pojo>
                 <heisenberg:childs>
                     <heisenberg:recursive-pojo>

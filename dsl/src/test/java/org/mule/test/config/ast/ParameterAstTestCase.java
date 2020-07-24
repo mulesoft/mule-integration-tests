@@ -30,6 +30,7 @@ import static org.mule.runtime.dsl.api.xml.parser.XmlConfigurationDocumentLoader
 import static org.mule.runtime.extension.api.util.ExtensionMetadataTypeUtils.isMap;
 import static org.mule.test.allure.AllureConstants.ArtifactAst.ARTIFACT_AST;
 import static org.mule.test.allure.AllureConstants.ArtifactAst.ParameterAst.PARAMETER_AST;
+
 import org.mule.extension.aggregator.internal.AggregatorsExtension;
 import org.mule.extension.db.internal.DbConnector;
 import org.mule.extension.http.api.request.proxy.HttpProxyConfig;
@@ -75,9 +76,6 @@ import org.mule.test.runner.infrastructure.ExtensionsTestInfrastructureDiscovere
 import org.mule.test.subtypes.extension.SubTypesMappingConnector;
 import org.mule.test.vegan.extension.VeganExtension;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
@@ -91,13 +89,17 @@ import java.util.stream.Stream;
 
 import javax.xml.parsers.SAXParserFactory;
 
-import io.qameta.allure.Feature;
-import io.qameta.allure.Issue;
-import io.qameta.allure.Story;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.helpers.DefaultHandler;
+
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
+
+import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
+import io.qameta.allure.Story;
 
 @Feature(ARTIFACT_AST)
 @Story(PARAMETER_AST)
@@ -209,11 +211,10 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
     assertThat(proxyConfigParameter.getValue().getRight(), not(nullValue()));
 
     ComponentAst oauthHttpProxy = (ComponentAst) proxyConfigParameter.getValue().getRight();
-    ComponentAst httpProxy = findComponent(oauthHttpProxy.directChildrenStream(), "http:proxy")
-        .orElseThrow(() -> new AssertionError("Couldn't find 'http:proxy'"));
-    ComponentParameterAst portParameter = httpProxy.getParameter("port");
+    assertThat(oauthHttpProxy.getIdentifier().toString(), is("http:proxy"));
+    ComponentParameterAst portParameter = oauthHttpProxy.getParameter("port");
     assertThat(portParameter.getValue().getRight(), is(8083));
-    ComponentParameterAst hostParameter = httpProxy.getParameter("host");
+    ComponentParameterAst hostParameter = oauthHttpProxy.getParameter("host");
     assertThat(hostParameter.getValue().getRight(), is("localhost"));
   }
 
@@ -305,6 +306,29 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
     // Non default value expression
     assertThat(timeBasedAggregator.getParameter("content").isDefaultValue(), is(false));
     assertThat(timeBasedAggregator.getParameter("content").getValue().getLeft(), is("message"));
+  }
+
+  @Test
+  @Issue("MULE-18602")
+  public void nestedPojoOperationParameter() {
+    Optional<ComponentAst> optionalFlowNestedPojo =
+        findComponent(artifactAst.topLevelComponentsStream(), FLOW_IDENTIFIER, "nestedPojo");
+    assertThat(optionalFlowNestedPojo, not(empty()));
+
+    ComponentAst heisenbergApprove = optionalFlowNestedPojo.map(flow -> flow.directChildrenStream().findFirst().get())
+        .orElseThrow(() -> new AssertionError("Couldn't find heisenberg approve operation"));
+
+    ComponentParameterAst investmentParameter = heisenbergApprove.getParameter("investment");
+    ComponentAst investmentAst = (ComponentAst) investmentParameter.getValue().getRight();
+    assertThat(investmentAst, not(nullValue()));
+
+    ComponentParameterAst commercialName = investmentAst.getParameter("commercialName");
+    ComponentParameterAst carsPerMinute = investmentAst.getParameter("carsPerMinute");
+
+    assertThat(investmentAst.getParameters(), is(not(empty())));
+
+    assertThat(commercialName.getValue().getRight(), is("A1"));
+    assertThat(carsPerMinute.getValue().getRight(), is(5));
   }
 
   @Test
