@@ -7,6 +7,7 @@
 
     <object name="objectStore"
             class="org.mule.runtime.api.store.SimpleMemoryObjectStore"/>
+    <object name="dlq-mp" class="org.mule.test.integration.routing.outbound.UntilSuccessfulRetryExhaustedTestCase$ProcessedEventsRecorder"/>
 
     <flow name="retryExhaustedCausedByUntypedError">
         <async>
@@ -71,6 +72,40 @@
                     <test:summary-info key="Caused by" value="MULE:SECURITY: Mule runtime error"/>
                 </test:check-summary>
             </test:on-error-check-log>
+        </error-handler>
+    </flow>
+
+    <flow name="retryExhaustedUnsuppressedErrorTypeHandling">
+        <until-successful maxRetries="1" millisBetweenRetries="10">
+            <test:throw exception="org.mule.test.integration.routing.outbound.UntilSuccessfulRetryExhaustedTestCase.MuleRuntimeError" error="SECURITY"/>
+        </until-successful>
+        <error-handler>
+            <on-error-continue type="MULE:RETRY_EXHAUSTED">
+                <set-payload value="ok"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="retryExhaustedSuppressedErrorTypeHandling">
+        <until-successful maxRetries="1" millisBetweenRetries="10">
+            <test:throw exception="org.mule.test.integration.routing.outbound.UntilSuccessfulRetryExhaustedTestCase.MuleRuntimeError" error="SECURITY"/>
+        </until-successful>
+        <error-handler>
+            <on-error-continue type="MULE:SECURITY">
+                <set-payload value="ok"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="retryExhaustedErrorCheck">
+        <until-successful maxRetries="1" millisBetweenRetries="10">
+            <test:throw exception="org.mule.test.integration.routing.outbound.UntilSuccessfulRetryExhaustedTestCase.MuleRuntimeError" error="SECURITY"/>
+        </until-successful>
+        <error-handler>
+            <on-error-continue>
+                <set-payload value="ok"/>
+                <processor ref="dlq-mp"/>
+            </on-error-continue>
         </error-handler>
     </flow>
 
