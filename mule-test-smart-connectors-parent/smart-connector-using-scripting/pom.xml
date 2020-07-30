@@ -22,7 +22,6 @@
         <dependency>
             <groupId>org.mule.modules</groupId>
             <artifactId>mule-scripting-module</artifactId>
-            <version>${muleScriptingModuleTestVersion}</version>
             <classifier>mule-plugin</classifier>
             <scope>compile</scope>
         </dependency>

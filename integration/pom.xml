@@ -118,19 +118,16 @@
         <dependency>
             <groupId>org.mule.modules</groupId>
             <artifactId>mule-module-file-extension-common</artifactId>
-            <version>${muleFileCommonsTestVersion}</version>
             <classifier>mule-plugin</classifier>
         </dependency>
         <dependency>
             <groupId>org.mule.modules</groupId>
             <artifactId>mule-validation-module</artifactId>
-            <version>${muleValidationModuleTestVersion}</version>
             <classifier>mule-plugin</classifier>
         </dependency>
         <dependency>
             <groupId>org.mule.module</groupId>
             <artifactId>mule-java-module</artifactId>
-            <version>${muleJavaModuleTestVersion}</version>
             <classifier>mule-plugin</classifier>
             <!-- TODO MULE-14466: BeanCreationException could not autowire JavaModuleLoadingCache -->
             <scope>provided</scope>
@@ -138,25 +135,21 @@
         <dependency>
             <groupId>org.mule.connectors</groupId>
             <artifactId>mule-file-connector</artifactId>
-            <version>${muleFileConnectorTestVersion}</version>
             <classifier>mule-plugin</classifier>
         </dependency>
         <dependency>
             <groupId>org.mule.connectors</groupId>
             <artifactId>mule-sockets-connector</artifactId>
-            <version>${muleSocketsConnectorTestVersion}</version>
             <classifier>mule-plugin</classifier>
         </dependency>
         <dependency>
             <groupId>org.mule.connectors</groupId>
             <artifactId>mule-http-connector</artifactId>
-            <version>${muleHttpConnectorTestVersion}</version>
             <classifier>mule-plugin</classifier>
         </dependency>
         <dependency>
             <groupId>org.mule.connectors</groupId>
-            <artifactId>mule-vm-connector</artifactId>
-            <version>${muleVmConnectorTestVersion}</version>
+            <artifactId>mule-file-connector</artifactId>
             <classifier>mule-plugin</classifier>
         </dependency>
         <dependency>
@@ -168,7 +161,6 @@
         <dependency>
             <groupId>org.mule.connectors</groupId>
             <artifactId>mule-http-connector</artifactId>
-            <version>${muleHttpConnectorTestVersion}</version>
             <type>test-jar</type>
             <scope>test</scope>
             <exclusions>
@@ -187,20 +179,22 @@
         <dependency>
             <groupId>org.mule.connectors</groupId>
             <artifactId>mule-jms-connector</artifactId>
-            <version>${muleJmsConnectorTestVersion}</version>
             <classifier>mule-plugin</classifier>
         </dependency>
         <dependency>
             <groupId>org.mule.connectors</groupId>
             <artifactId>mule-db-connector</artifactId>
-            <version>${muleDbConnectorTestVersion}</version>
             <classifier>mule-plugin</classifier>
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>org.mule.connectors</groupId>
+            <artifactId>mule-vm-connector</artifactId>
+            <classifier>mule-plugin</classifier>
+        </dependency>
+        <dependency>
             <groupId>org.mule.modules</groupId>
             <artifactId>mule-scripting-module</artifactId>
-            <version>${muleScriptingModuleTestVersion}</version>
             <classifier>mule-plugin</classifier>
             <exclusions>
                 <exclusion>
@@ -213,13 +207,11 @@
             <groupId>org.mule.connectors</groupId>
             <artifactId>mule-objectstore-connector</artifactId>
             <classifier>mule-plugin</classifier>
-            <version>${muleObjectStoreConnectorTestVersion}</version>
         </dependency>
         <dependency>
             <groupId>org.mule.modules</groupId>
             <artifactId>mule-aggregators-module</artifactId>
             <classifier>mule-plugin</classifier>
-            <version>${muleAggregatorsModuleTestVersion}</version>
             <scope>provided</scope>
         </dependency>
 
