@@ -14,7 +14,6 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.Is.isA;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
@@ -22,8 +21,6 @@ import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.UntilSuccessfulStory.UNTIL_SUCCESSFUL;
 
 import io.qameta.allure.Issue;
-import org.hamcrest.CoreMatchers;
-import org.hamcrest.collection.IsEmptyCollection;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.i18n.I18nMessageFactory;
@@ -40,8 +37,6 @@ import org.junit.Test;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
-import org.mule.test.routing.UntilSuccessfulTestCase;
-import reactor.retry.RetryExhaustedException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -111,12 +106,14 @@ public class UntilSuccessfulRetryExhaustedTestCase extends AbstractIntegrationTe
   }
 
   @Test
+  @Issue("MULE-18562")
   public void retryExhaustedSuppressedErrorTypeHandling() throws Exception {
     CoreEvent event = flowRunner("retryExhaustedSuppressedErrorTypeHandling").withPayload("message").run();
     assertThat(event.getMessage().getPayload().getValue(), is("ok"));
   }
 
   @Test
+  @Issue("MULE-18562")
   public void retryExhaustedUnsuppressedErrorTypeHandling() throws Exception {
     CoreEvent event = flowRunner("retryExhaustedErrorCheck").withPayload("message").run();
     assertThat(event.getMessage().getPayload().getValue(), is("ok"));
