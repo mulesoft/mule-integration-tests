@@ -67,9 +67,6 @@
         <test-components:connection />
     </test-components:queue-config>
 
-    <custom-processor class="org.mule.test.construct.FlowConfigurationFunctionalTestCase.CustomAppender" name="appender"/>
-    <custom-processor class="org.mule.test.construct.FlowConfigurationFunctionalTestCase.CustomAppender" name="test-array-appender"/>
-
     <sub-flow name="composite1">
         <description>Composite thats appands 'ayz'</description>
         <set-payload value="#[payload ++ 'x']" />
