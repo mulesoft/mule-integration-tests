@@ -19,7 +19,6 @@ import org.mule.runtime.api.component.Component;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.construct.FlowConstruct;
 import org.mule.runtime.core.api.processor.Processor;
-import org.mule.runtime.core.api.transformer.Transformer;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import javax.xml.namespace.QName;
@@ -32,23 +31,8 @@ import org.junit.Test;
 public class ConfigurationAnnotationsTestCase extends AbstractIntegrationTestCase {
 
   @Override
-  protected String[] getConfigFiles() {
-    return new String[] {"org/mule/config/spring/annotations.xml", "org/mule/config/spring/annotations-config.xml"};
-  }
-
-  @Test
-  public void testTransformerAnnotations() {
-    Transformer stb = registry.<Transformer>lookupByName("StringtoByteArray").get();
-    assertThat(stb, not(nullValue()));
-    assertThat(getDocName(stb), is("stb-transformer"));
-    assertThat(getDocDescription(stb), is("Convert a String to a Byte Array"));
-    assertThat(getSourceCode((Component) stb),
-               is("<string-to-byte-array-transformer name=\"StringtoByteArray\" doc:name=\"stb-transformer\">"
-                   + lineSeparator() + "<annotations>" + lineSeparator()
-                   + "<doc:description>"
-                   + "<![CDATA[" + lineSeparator() + "Convert a String to a Byte Array" + lineSeparator() + "]]>" +
-                   "</doc:description>" + lineSeparator()
-                   + "</annotations>" + lineSeparator() + "</string-to-byte-array-transformer>"));
+  protected String getConfigFile() {
+    return "org/mule/config/spring/annotations.xml";
   }
 
   @Test
