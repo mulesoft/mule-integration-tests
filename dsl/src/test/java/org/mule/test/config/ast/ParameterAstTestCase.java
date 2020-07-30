@@ -11,6 +11,7 @@ import static java.lang.String.format;
 import static java.lang.Thread.currentThread;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
+import static java.util.stream.Collectors.toList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
@@ -45,6 +46,7 @@ import org.mule.metadata.api.model.NumberType;
 import org.mule.metadata.api.model.ObjectType;
 import org.mule.runtime.api.component.ComponentIdentifier;
 import org.mule.runtime.api.functional.Either;
+import org.mule.runtime.api.meta.NamedObject;
 import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.api.meta.model.config.ConfigurationModel;
 import org.mule.runtime.api.meta.model.connection.ConnectionProviderModel;
@@ -60,6 +62,7 @@ import org.mule.runtime.config.internal.model.ApplicationModel;
 import org.mule.runtime.core.api.extension.RuntimeExtensionModelProvider;
 import org.mule.runtime.core.api.registry.ServiceRegistry;
 import org.mule.runtime.core.api.registry.SpiServiceRegistry;
+import org.mule.runtime.core.internal.exception.ErrorMapping;
 import org.mule.runtime.dsl.api.component.ComponentBuildingDefinitionProvider;
 import org.mule.runtime.dsl.api.xml.XmlNamespaceInfoProvider;
 import org.mule.runtime.dsl.api.xml.parser.ConfigFile;
@@ -306,6 +309,60 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
     // Non default value expression
     assertThat(timeBasedAggregator.getParameter("content").isDefaultValue(), is(false));
     assertThat(timeBasedAggregator.getParameter("content").getValue().getLeft(), is("message"));
+  }
+
+  @Test
+  @Issue("MULE-18619")
+  public void infrastructureParameters() {
+    Optional<ComponentAst> withInfrastructureParametersFlow =
+        findComponent(artifactAst.topLevelComponentsStream(), FLOW_IDENTIFIER, "withInfrastructureParametersFlow");
+    assertThat(withInfrastructureParametersFlow, not(empty()));
+
+    final List<ComponentAst> flowChildren = withInfrastructureParametersFlow.get().directChildrenStream().collect(toList());
+
+    final ComponentAst source = flowChildren.get(0);
+
+    final ComponentParameterAst primaryNodeOnly = source.getParameter("primaryNodeOnly");
+    assertThat(primaryNodeOnly.getValue().getRight(), is(true));
+
+    final ComponentAst redeliveryPolicy = (ComponentAst) (source.getParameter("redeliveryPolicy").getValue().getRight());
+    assertThat(redeliveryPolicy.getModel(NamedObject.class).get().getName(),
+               is("RedeliveryPolicy"));
+    assertThat(redeliveryPolicy.getParameter("maxRedeliveryCount").getValue().getRight(),
+               is(4));
+    assertThat(redeliveryPolicy.getParameter("idExpression").getValue().getLeft(),
+               is("payload.id"));
+
+    assertThat(((ComponentAst) (source.getParameter("streamingStrategy")
+        .getValue().getRight())).getModel(NamedObject.class).get().getName(),
+               is("non-repeatable-stream"));
+    assertThat(((ComponentAst) (source.getParameter("reconnectionStrategy")
+        .getValue().getRight())).getModel(NamedObject.class).get().getName(),
+               is("reconnect"));
+
+    final ComponentAst operation = flowChildren.get(1);
+
+    final ComponentParameterAst target = operation.getParameter("target");
+    assertThat(target.getValue().getRight(), is("response"));
+    final ComponentParameterAst targetValue = operation.getParameter("targetValue");
+    assertThat(targetValue.getValue().getLeft(), is("payload.body"));
+
+    final List<ErrorMapping> errorMappings = (List<ErrorMapping>) (operation.getParameter("errorMappings").getValue().getRight());
+    assertThat(errorMappings, hasSize(1));
+    assertThat(errorMappings.get(0).getSource(), is("HTTP:SECURITY"));
+    assertThat(errorMappings.get(0).getTarget(), is("APP:GET_OUT"));
+
+    assertThat(((ComponentAst) (operation.getParameter("streamingStrategy")
+        .getValue().getRight())).getModel(NamedObject.class).get().getName(),
+               is("non-repeatable-stream"));
+    final ComponentAst operationReconnection =
+        (ComponentAst) (operation.getParameter("reconnectionStrategy").getValue().getRight());
+    assertThat(operationReconnection.getModel(NamedObject.class).get().getName(),
+               is("reconnect"));
+    assertThat(operationReconnection.getParameter("frequency").getValue().getRight(),
+               is(3000L));
+    assertThat(operationReconnection.getParameter("count").getValue().getRight(),
+               is(3));
   }
 
   @Test
