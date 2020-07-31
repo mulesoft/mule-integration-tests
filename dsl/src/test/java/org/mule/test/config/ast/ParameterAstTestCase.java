@@ -314,6 +314,24 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
   @Test
   @Issue("MULE-18619")
   public void infrastructureParameters() {
+    Optional<ComponentAst> clientGlobalConfig =
+        findComponentByComponentId(artifactAst.topLevelComponentsStream(), "clientGlobalConfig");
+    assertThat(clientGlobalConfig, not(empty()));
+
+    ComponentAst clientGlobalConfigConnection =
+        findComponent(clientGlobalConfig.get().directChildrenStream(), "http:request-connection")
+            .orElseThrow(() -> new AssertionError("Couldn't find 'http:request-connection'"));
+
+    final ComponentAst tlsContext = (ComponentAst) clientGlobalConfigConnection.getParameter("tlsContext").getValue().getRight();
+
+    final ComponentAst trustStore = (ComponentAst) tlsContext.getParameter("trust-store").getValue().getRight();
+    assertThat(trustStore.getParameter("path").getValue().getRight(), is("tls/ssltest-cacerts.jks"));
+    assertThat(trustStore.getParameter("password").getValue().getRight(), is("changeit"));
+    final ComponentAst keyStore = (ComponentAst) tlsContext.getParameter("key-store").getValue().getRight();
+    assertThat(keyStore.getParameter("path").getValue().getRight(), is("tls/ssltest-keystore.jks"));
+    assertThat(keyStore.getParameter("keyPassword").getValue().getRight(), is("changeit"));
+    assertThat(keyStore.getParameter("password").getValue().getRight(), is("changeit"));
+
     Optional<ComponentAst> withInfrastructureParametersFlow =
         findComponent(artifactAst.topLevelComponentsStream(), FLOW_IDENTIFIER, "withInfrastructureParametersFlow");
     assertThat(withInfrastructureParametersFlow, not(empty()));
@@ -328,16 +346,24 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
     final ComponentAst redeliveryPolicy = (ComponentAst) (source.getParameter("redeliveryPolicy").getValue().getRight());
     assertThat(redeliveryPolicy.getModel(NamedObject.class).get().getName(),
                is("RedeliveryPolicy"));
+    assertThat(redeliveryPolicy.getIdentifier().getName(),
+               is("redelivery-policy"));
     assertThat(redeliveryPolicy.getParameter("maxRedeliveryCount").getValue().getRight(),
                is(4));
     assertThat(redeliveryPolicy.getParameter("idExpression").getValue().getLeft(),
                is("payload.id"));
 
-    assertThat(((ComponentAst) (source.getParameter("streamingStrategy")
-        .getValue().getRight())).getModel(NamedObject.class).get().getName(),
+    final ComponentAst streamingStrategy = (ComponentAst) (source.getParameter("streamingStrategy").getValue().getRight());
+    assertThat(streamingStrategy.getModel(NamedObject.class).get().getName(),
+               is("ByteStreamingStrategy"));
+    assertThat(streamingStrategy.getIdentifier().getName(),
                is("non-repeatable-stream"));
-    assertThat(((ComponentAst) (source.getParameter("reconnectionStrategy")
-        .getValue().getRight())).getModel(NamedObject.class).get().getName(),
+
+    final ComponentAst reconnectionStrategy = (ComponentAst) (source.getParameter("reconnectionStrategy")
+        .getValue().getRight());
+    assertThat(reconnectionStrategy.getModel(NamedObject.class).get().getName(),
+               is("ReconnectionStrategy"));
+    assertThat(reconnectionStrategy.getIdentifier().getName(),
                is("reconnect"));
 
     final ComponentAst operation = flowChildren.get(1);
@@ -352,12 +378,17 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
     assertThat(errorMappings.get(0).getSource(), is("HTTP:SECURITY"));
     assertThat(errorMappings.get(0).getTarget(), is("APP:GET_OUT"));
 
-    assertThat(((ComponentAst) (operation.getParameter("streamingStrategy")
-        .getValue().getRight())).getModel(NamedObject.class).get().getName(),
+    final ComponentAst streamingStrategyOp = (ComponentAst) (operation.getParameter("streamingStrategy").getValue().getRight());
+    assertThat(streamingStrategyOp.getModel(NamedObject.class).get().getName(),
+               is("ByteStreamingStrategy"));
+    assertThat(streamingStrategyOp.getIdentifier().getName(),
                is("non-repeatable-stream"));
+
     final ComponentAst operationReconnection =
         (ComponentAst) (operation.getParameter("reconnectionStrategy").getValue().getRight());
     assertThat(operationReconnection.getModel(NamedObject.class).get().getName(),
+               is("ReconnectionStrategy"));
+    assertThat(operationReconnection.getIdentifier().getName(),
                is("reconnect"));
     assertThat(operationReconnection.getParameter("frequency").getValue().getRight(),
                is(3000L));
