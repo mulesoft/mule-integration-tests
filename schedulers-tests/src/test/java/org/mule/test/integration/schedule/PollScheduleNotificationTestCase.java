@@ -11,6 +11,9 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mule.runtime.core.api.extension.MuleExtensionModelProvider.getExtensionModel;
+import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.initialiseIfNeeded;
+import static org.mule.runtime.module.extension.api.util.MuleExtensionUtils.createDefaultExtensionManager;
 
 import org.mule.runtime.api.config.custom.ServiceConfigurator;
 import org.mule.runtime.api.notification.ConnectorMessageNotification;
@@ -18,20 +21,22 @@ import org.mule.runtime.api.notification.ConnectorMessageNotificationListener;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.runtime.core.api.config.ConfigurationException;
+import org.mule.runtime.core.api.config.builders.AbstractConfigurationBuilder;
+import org.mule.runtime.core.api.extension.ExtensionManager;
 import org.mule.tck.probe.JUnitLambdaProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.tck.probe.Prober;
 import org.mule.test.AbstractSchedulerTestCase;
 
-import org.junit.Test;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Test;
+
 public class PollScheduleNotificationTestCase extends AbstractSchedulerTestCase {
 
-  private Prober prober = new PollingProber(RECEIVE_TIMEOUT, 100l);
-  private MyListener listener = new MyListener();
+  private final Prober prober = new PollingProber(RECEIVE_TIMEOUT, 100l);
+  private final MyListener listener = new MyListener();
 
   @Override
   protected String getConfigFile() {
@@ -52,8 +57,21 @@ public class PollScheduleNotificationTestCase extends AbstractSchedulerTestCase 
         // Nothing to do
       }
     });
-  }
+    builders.add(new AbstractConfigurationBuilder() {
 
+      @Override
+      protected void doConfigure(MuleContext muleContext) throws Exception {
+        ExtensionManager extensionManager;
+        if (muleContext.getExtensionManager() == null) {
+          extensionManager = createDefaultExtensionManager();
+          muleContext.setExtensionManager(extensionManager);
+          initialiseIfNeeded(extensionManager, muleContext);
+        }
+        extensionManager = muleContext.getExtensionManager();
+        extensionManager.registerExtension(getExtensionModel());
+      }
+    });
+  }
 
   @Test
   public void validateNotificationsAreSent() throws Exception {
