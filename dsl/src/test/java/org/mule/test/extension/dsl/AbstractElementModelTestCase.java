@@ -232,7 +232,7 @@ public abstract class AbstractElementModelTestCase extends MuleArtifactFunctiona
         .build();
 
     return new ApplicationModel(artifactConfig, new ArtifactDeclaration(),
-                                extensions, emptyMap(), empty(),
+                                extensions, emptyMap(), empty(), empty(),
                                 uri -> muleContext.getExecutionClassLoader().getResourceAsStream(uri));
   }
 
