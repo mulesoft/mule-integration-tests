@@ -6,7 +6,6 @@
  */
 package org.mule.test.integration.routing.outbound;
 
-import static java.util.Collections.synchronizedList;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -21,14 +20,12 @@ import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.UntilSuccessfulStory.UNTIL_SUCCESSFUL;
 
 import io.qameta.allure.Issue;
-import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.i18n.I18nMessageFactory;
 import org.mule.runtime.api.message.Error;
 import org.mule.runtime.api.notification.ExceptionNotificationListener;
 import org.mule.runtime.api.util.concurrent.Latch;
 import org.mule.runtime.core.api.event.CoreEvent;
-import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.extension.api.error.MuleErrors;
 import org.mule.tck.junit4.matcher.ErrorTypeMatcher;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -37,23 +34,20 @@ import org.junit.Test;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
+import org.mule.tests.api.TestQueueManager;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.inject.Inject;
 
 @Feature(ROUTERS)
 @Story(UNTIL_SUCCESSFUL)
 public class UntilSuccessfulRetryExhaustedTestCase extends AbstractIntegrationTestCase {
 
+  @Inject
+  private TestQueueManager queueManager;
+
   @Override
   protected String getConfigFile() {
     return "org/mule/test/integration/routing/outbound/until-successful-retry-exhausted.xml";
-  }
-
-  @Override
-  protected void doTearDown() throws Exception {
-    ProcessedEventsRecorder.clearCount();
-    super.doTearDown();
   }
 
   @Test
@@ -107,23 +101,29 @@ public class UntilSuccessfulRetryExhaustedTestCase extends AbstractIntegrationTe
 
   @Test
   @Issue("MULE-18562")
-  public void retryExhaustedSuppressedErrorTypeHandling() throws Exception {
-    CoreEvent event = flowRunner("retryExhaustedSuppressedErrorTypeHandling").withPayload("message").run();
-    assertThat(event.getMessage().getPayload().getValue(), is("ok"));
+  public void retryExhaustedUnsuppressedErrorTypeHandling() throws Exception {
+    CoreEvent event = flowRunner("retryExhaustedUnsuppressedErrorTypeHandling").withPayload("message").run();
+    assertThat(event.getMessage().getPayload().getValue(), is("handled"));
   }
 
   @Test
   @Issue("MULE-18562")
-  public void retryExhaustedUnsuppressedErrorTypeHandling() throws Exception {
-    CoreEvent event = flowRunner("retryExhaustedErrorCheck").withPayload("message").run();
-    assertThat(event.getMessage().getPayload().getValue(), is("ok"));
+  public void retryExhaustedSuppressedErrorTypeHandling() throws Exception {
+    CoreEvent event = flowRunner("retryExhaustedSuppressedErrorTypeHandling").withPayload("message").run();
+    assertThat(event.getMessage().getPayload().getValue(), is("handled"));
+  }
+
+  @Test
+  @Issue("MULE-18562")
+  public void retryExhaustedErrorWithSuppressionsCheck() throws Exception {
+    flowRunner("retryExhaustedErrorWithSuppressionsCheck").withPayload("message").run();
     // Returned error assertions
-    Error error = UntilSuccessfulRetryExhaustedTestCase.ProcessedEventsRecorder.getProcessedEvents().get(0).getError().get();
+    Error error = (Error) queueManager.read("dlq", RECEIVE_TIMEOUT, MILLISECONDS).getMessage().getPayload().getValue();
     assertThat(error.getErrorType().toString(), equalTo("MULE:RETRY_EXHAUSTED"));
     assertThat(error.getCause(), instanceOf(MuleRuntimeError.class));
     assertThat(error.getDescription(), equalTo("Mule runtime error"));
     assertThat(error.getDetailedDescription(), equalTo("'until-successful' retries exhausted"));
-    assertThat(error.getFailingComponent(), containsString("retryExhaustedErrorCheck/processors/0"));
+    assertThat(error.getFailingComponent(), containsString("retryExhaustedErrorWithSuppressionsCheck/processors/0"));
     assertThat(error.getErrorMessage(), nullValue());
     assertThat(error.getChildErrors(), empty());
     // Suppressed error assertions
@@ -133,7 +133,7 @@ public class UntilSuccessfulRetryExhaustedTestCase extends AbstractIntegrationTe
     assertThat(suppressedError.getErrorType().toString(), equalTo("MULE:SECURITY"));
     assertThat(suppressedError.getDescription(), equalTo("Mule runtime error"));
     assertThat(suppressedError.getDetailedDescription(), equalTo("Mule runtime error"));
-    assertThat(suppressedError.getFailingComponent(), containsString("retryExhaustedErrorCheck/processors/0/processors/0"));
+    assertThat(suppressedError.getFailingComponent(), containsString("retryExhaustedErrorWithSuppressionsCheck/processors/0/processors/0"));
     assertThat(suppressedError.getErrorMessage(), nullValue());
     assertThat(suppressedError.getSuppressedErrors(), empty());
     assertThat(suppressedError.getChildErrors(), empty());
@@ -143,29 +143,6 @@ public class UntilSuccessfulRetryExhaustedTestCase extends AbstractIntegrationTe
 
     public MuleRuntimeError() {
       super(I18nMessageFactory.createStaticMessage("Mule runtime error"));
-    }
-  }
-
-  public static class ProcessedEventsRecorder implements Processor {
-
-    private static List<CoreEvent> processedEvents = synchronizedList(new ArrayList<>());
-
-    public static void clearCount() {
-      processedEvents.clear();
-    }
-
-    public static int getCount() {
-      return processedEvents.size();
-    }
-
-    public static List<CoreEvent> getProcessedEvents() {
-      return processedEvents;
-    }
-
-    @Override
-    public CoreEvent process(final CoreEvent event) throws MuleException {
-      processedEvents.add(event);
-      return event;
     }
   }
 
