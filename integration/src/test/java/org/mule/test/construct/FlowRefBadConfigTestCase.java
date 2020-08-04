@@ -9,17 +9,20 @@ package org.mule.test.construct;
 import static org.hamcrest.Matchers.is;
 import static org.mule.test.allure.AllureConstants.ComponentsFeature.CORE_COMPONENTS;
 import static org.mule.test.allure.AllureConstants.ComponentsFeature.FlowReferenceStory.FLOW_REFERENCE;
+
 import org.mule.functional.junit4.ApplicationContextBuilder;
 import org.mule.tck.junit4.AbstractMuleTestCase;
 
-import io.qameta.allure.Feature;
-import io.qameta.allure.Story;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
+
 @Feature(CORE_COMPONENTS)
 @Story(FLOW_REFERENCE)
+// TODO MULE-18446 Migrate this test to a unit test where the implementation of the validation will be
 public class FlowRefBadConfigTestCase extends AbstractMuleTestCase {
 
   @Rule

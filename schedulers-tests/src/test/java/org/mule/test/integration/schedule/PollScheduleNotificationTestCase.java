@@ -23,15 +23,15 @@ import org.mule.tck.probe.PollingProber;
 import org.mule.tck.probe.Prober;
 import org.mule.test.AbstractSchedulerTestCase;
 
-import org.junit.Test;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Test;
+
 public class PollScheduleNotificationTestCase extends AbstractSchedulerTestCase {
 
-  private Prober prober = new PollingProber(RECEIVE_TIMEOUT, 100l);
-  private MyListener listener = new MyListener();
+  private final Prober prober = new PollingProber(RECEIVE_TIMEOUT, 100l);
+  private final MyListener listener = new MyListener();
 
   @Override
   protected String getConfigFile() {
@@ -52,8 +52,8 @@ public class PollScheduleNotificationTestCase extends AbstractSchedulerTestCase 
         // Nothing to do
       }
     });
+    builders.add(extensionManagerWithMuleExtModelBuilder());
   }
-
 
   @Test
   public void validateNotificationsAreSent() throws Exception {
