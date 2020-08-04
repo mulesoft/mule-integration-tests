@@ -133,7 +133,8 @@ public class UntilSuccessfulRetryExhaustedTestCase extends AbstractIntegrationTe
     assertThat(suppressedError.getErrorType().toString(), equalTo("MULE:SECURITY"));
     assertThat(suppressedError.getDescription(), equalTo("Mule runtime error"));
     assertThat(suppressedError.getDetailedDescription(), equalTo("Mule runtime error"));
-    assertThat(suppressedError.getFailingComponent(), containsString("retryExhaustedErrorWithSuppressionsCheck/processors/0/processors/0"));
+    assertThat(suppressedError.getFailingComponent(),
+               containsString("retryExhaustedErrorWithSuppressionsCheck/processors/0/processors/0"));
     assertThat(suppressedError.getErrorMessage(), nullValue());
     assertThat(suppressedError.getSuppressedErrors(), empty());
     assertThat(suppressedError.getChildErrors(), empty());
