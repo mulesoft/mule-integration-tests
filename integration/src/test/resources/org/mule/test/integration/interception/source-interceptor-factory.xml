@@ -66,4 +66,115 @@
         <raise-error type="APP:RAISED"/>
     </flow>
 
+    <flow name="sourceInterceptedWithFailingReferencedFlow" initialState="stopped">
+        <heisenberg:listen-payments config-ref="heisenberg" initialBatchNumber="0">
+            <heisenberg:next-door address="pollos hermanos" victim="Gustavo Fring">
+                <heisenberg:previous victim="Krazy-8" address="Jesse's"/>
+            </heisenberg:next-door>
+            <heisenberg:success-info age="27">
+                <heisenberg:known-addresses>
+                    <heisenberg:known-address value="success address"/>
+                </heisenberg:known-addresses>
+            </heisenberg:success-info>
+            <heisenberg:error-info knownAddresses="#[[]]"/>
+        </heisenberg:listen-payments>
+    <flow-ref name="referencedFlow"/>
+    </flow>
+
+    <flow name="referencedFlow">
+        <raise-error type="APP:RAISED"/>
+    </flow>
+
+    <flow name="sourceInterceptedAfterTerminated" initialState="stopped">
+        <heisenberg:listen-payments config-ref="heisenberg" initialBatchNumber="0">
+            <heisenberg:next-door address="pollos hermanos" victim="Gustavo Fring">
+                <heisenberg:previous victim="Krazy-8" address="Jesse's"/>
+            </heisenberg:next-door>
+            <heisenberg:success-info age="27">
+                <heisenberg:known-addresses>
+                    <heisenberg:known-address value="success address"/>
+                </heisenberg:known-addresses>
+            </heisenberg:success-info>
+            <heisenberg:error-info knownAddresses="#[[]]"/>
+        </heisenberg:listen-payments>
+        <async>
+            <set-payload value="#[10]"/>
+        </async>
+    </flow>
+
+    <flow name="sourceErrorInterceptedAfterTerminated" initialState="stopped">
+        <heisenberg:listen-payments config-ref="heisenberg" initialBatchNumber="0">
+            <heisenberg:next-door address="pollos hermanos" victim="Gustavo Fring">
+                <heisenberg:previous victim="Krazy-8" address="Jesse's"/>
+            </heisenberg:next-door>
+            <heisenberg:success-info age="27">
+                <heisenberg:known-addresses>
+                    <heisenberg:known-address value="success address"/>
+                </heisenberg:known-addresses>
+            </heisenberg:success-info>
+            <heisenberg:error-info knownAddresses="#[[]]"/>
+        </heisenberg:listen-payments>
+        <async>
+            <set-payload value="Not a number"/>
+        </async>
+    </flow>
+
+    <flow name="sourceInterceptedAfterTerminatedWithFailingProcessor" initialState="stopped">
+        <heisenberg:listen-payments config-ref="heisenberg" initialBatchNumber="0">
+            <heisenberg:next-door address="pollos hermanos" victim="Gustavo Fring">
+                <heisenberg:previous victim="Krazy-8" address="Jesse's"/>
+            </heisenberg:next-door>
+            <heisenberg:success-info age="27">
+                <heisenberg:known-addresses>
+                    <heisenberg:known-address value="success address"/>
+                </heisenberg:known-addresses>
+            </heisenberg:success-info>
+            <heisenberg:error-info knownAddresses="#[[]]"/>
+        </heisenberg:listen-payments>
+        <async>
+            <raise-error type="APP:RAISED"/>
+        </async>
+    </flow>
+
+    <flow name="sourceInterceptedAfterTerminatedWithFailingReferencedFlow" initialState="stopped">
+        <heisenberg:listen-payments config-ref="heisenberg" initialBatchNumber="0">
+            <heisenberg:next-door address="pollos hermanos" victim="Gustavo Fring">
+                <heisenberg:previous victim="Krazy-8" address="Jesse's"/>
+            </heisenberg:next-door>
+            <heisenberg:success-info age="27">
+                <heisenberg:known-addresses>
+                    <heisenberg:known-address value="success address"/>
+                </heisenberg:known-addresses>
+            </heisenberg:success-info>
+            <heisenberg:error-info knownAddresses="#[[]]"/>
+        </heisenberg:listen-payments>
+        <async>
+            <flow-ref name="referencedFlow"/>
+        </async>
+    </flow>
+
+    <flow name="FlowThatEndsAfterAsync">
+        <heisenberg:listen-payments config-ref="heisenberg" initialBatchNumber="0">
+            <heisenberg:next-door address="pollos hermanos" victim="Gustavo Fring">
+                <heisenberg:previous victim="Krazy-8" address="Jesse's"/>
+            </heisenberg:next-door>
+            <heisenberg:success-info age="27">
+                <heisenberg:known-addresses>
+                    <heisenberg:known-address value="success address"/>
+                </heisenberg:known-addresses>
+            </heisenberg:success-info>
+            <heisenberg:error-info knownAddresses="#[[]]"/>
+        </heisenberg:listen-payments>
+        <async>
+            <set-payload value="Not a number"/>
+        </async>
+    </flow>
+
+    <flow name="withMaxConcurrency" maxConcurrency="1" initialState="stopped">
+        <heisenberg:dea-radio/>
+        <async>
+            <set-payload value="#[java!org::mule::test::integration::interception::SourceInterceptorFactoryTestCase::await(payload)]"/>
+        </async>
+    </flow>
+
 </mule>
