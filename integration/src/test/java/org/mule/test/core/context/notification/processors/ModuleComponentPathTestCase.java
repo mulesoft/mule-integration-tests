@@ -331,7 +331,6 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
     ArtifactAst toolingApplicationModel = new ApplicationModel(artifactConfigBuilder.build(), null,
                                                                extensionModels, emptyMap(),
                                                                empty(),
-                                                               empty(),
                                                                uri -> {
                                                                  throw new UnsupportedOperationException();
                                                                });

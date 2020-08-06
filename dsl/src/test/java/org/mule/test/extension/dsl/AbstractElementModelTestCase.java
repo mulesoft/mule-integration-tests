@@ -35,7 +35,6 @@ import org.mule.runtime.core.api.extension.MuleExtensionModelProvider;
 import org.mule.runtime.core.api.util.xmlsecurity.XMLSecureFactories;
 import org.mule.runtime.core.internal.util.DefaultResourceLocator;
 import org.mule.runtime.dsl.api.ConfigResource;
-import org.mule.runtime.dsl.api.component.config.ComponentConfiguration;
 import org.mule.runtime.dsl.api.xml.XmlNamespaceInfoProvider;
 import org.mule.runtime.dsl.api.xml.parser.ConfigFile;
 import org.mule.runtime.dsl.api.xml.parser.ParsingPropertyResolver;
@@ -107,12 +106,6 @@ public abstract class AbstractElementModelTestCase extends MuleArtifactFunctiona
 
   // Scaffolding
   protected <T extends NamedObject> DslElementModel<T> resolve(ComponentAst component) {
-    Optional<DslElementModel<T>> elementModel = modelResolver.create(component);
-    assertThat(elementModel.isPresent(), is(true));
-    return elementModel.get();
-  }
-
-  protected <T extends NamedObject> DslElementModel<T> resolve(ComponentConfiguration component) {
     Optional<DslElementModel<T>> elementModel = modelResolver.create(component);
     assertThat(elementModel.isPresent(), is(true));
     return elementModel.get();
