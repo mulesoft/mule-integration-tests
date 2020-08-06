@@ -14,7 +14,6 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.collection.IsMapContaining.hasKey;
 import static org.junit.Assert.assertThat;
-import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
 import static org.mule.tck.probe.PollingProber.probe;
 import static org.mule.test.allure.AllureConstants.ExecutionEngineFeature.ExecutionEngineStory.BACKPRESSURE;
 import static org.mule.test.allure.AllureConstants.InterceptonApi.INTERCEPTION_API;
@@ -32,7 +31,7 @@ import org.mule.runtime.api.interception.SourceInterceptor;
 import org.mule.runtime.api.interception.SourceInterceptorFactory;
 import org.mule.runtime.api.message.ErrorType;
 import org.mule.runtime.core.api.construct.Flow;
-import org.mule.runtime.core.internal.event.DefaultEventContext;
+import org.mule.runtime.core.privileged.event.BaseEventContext;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.integration.interception.ProcessorInterceptorFactoryTestCase.InterceptionParameters;
 
@@ -44,6 +43,7 @@ import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 
 import org.junit.After;
@@ -189,21 +189,31 @@ public class SourceInterceptorFactoryTestCase extends AbstractIntegrationTestCas
     startFlow("sourceInterceptedAfterTerminated");
 
     CountDownLatch afterCalledLatch = new CountDownLatch(1);
+    AtomicReference<BaseEventContext> eventContextAtomicReference = new AtomicReference<>();
 
-    SourceCallbackInterceptor.afterTerminated = (componentLocation, eventContext) -> afterCalledLatch.countDown();
+    SourceCallbackInterceptor.afterTerminated = (componentLocation, eventContext) -> {
+      afterCalledLatch.countDown();
+      eventContextAtomicReference.set((BaseEventContext) eventContext);
+    };
 
     assertThat(afterCalledLatch.await(RECEIVE_TIMEOUT, MILLISECONDS), is(true));
-  }
+    assertThat(eventContextAtomicReference.get().isTerminated(), is(true));
+   }
 
   @Test
   public void sourceErrorInterceptedAfterTerminated() throws Exception {
     startFlow("sourceErrorInterceptedAfterTerminated");
 
     CountDownLatch afterCalledLatch = new CountDownLatch(1);
+    AtomicReference<BaseEventContext> eventContextAtomicReference = new AtomicReference<>();
 
-    SourceCallbackInterceptor.afterTerminated = (componentLocation, eventContext) -> afterCalledLatch.countDown();
+    SourceCallbackInterceptor.afterTerminated = (componentLocation, eventContext) -> {
+      afterCalledLatch.countDown();
+      eventContextAtomicReference.set((BaseEventContext) eventContext);
+    };
 
     assertThat(afterCalledLatch.await(RECEIVE_TIMEOUT, MILLISECONDS), is(true));
+    assertThat(eventContextAtomicReference.get().isTerminated(), is(true));
     List<InterceptionParameters> interceptionParameters = SourceCallbackInterceptor.interceptionParameters;
 
     assertThat(interceptionParameters, hasSize(greaterThanOrEqualTo(1)));
@@ -217,10 +227,15 @@ public class SourceInterceptorFactoryTestCase extends AbstractIntegrationTestCas
     startFlow("sourceInterceptedAfterTerminatedWithFailingProcessor");
 
     CountDownLatch afterCalledLatch = new CountDownLatch(1);
+    AtomicReference<BaseEventContext> eventContextAtomicReference = new AtomicReference<>();
 
-    SourceCallbackInterceptor.afterTerminated = (componentLocation, eventContext) -> afterCalledLatch.countDown();
+    SourceCallbackInterceptor.afterTerminated = (componentLocation, eventContext) -> {
+      afterCalledLatch.countDown();
+      eventContextAtomicReference.set((BaseEventContext) eventContext);
+    };
 
     assertThat(afterCalledLatch.await(RECEIVE_TIMEOUT, MILLISECONDS), is(true));
+    assertThat(eventContextAtomicReference.get().isTerminated(), is(true));
   }
 
   @Test
@@ -228,33 +243,50 @@ public class SourceInterceptorFactoryTestCase extends AbstractIntegrationTestCas
     startFlow("sourceInterceptedAfterTerminatedWithFailingReferencedFlow");
 
     CountDownLatch afterCalledLatch = new CountDownLatch(1);
+    AtomicReference<BaseEventContext> eventContextAtomicReference = new AtomicReference<>();
 
-    SourceCallbackInterceptor.afterTerminated = (componentLocation, eventContext) -> afterCalledLatch.countDown();
+    SourceCallbackInterceptor.afterTerminated = (componentLocation, eventContext) -> {
+      afterCalledLatch.countDown();
+      eventContextAtomicReference.set((BaseEventContext) eventContext);
+    };
 
     assertThat(afterCalledLatch.await(RECEIVE_TIMEOUT, MILLISECONDS), is(true));
+    assertThat(eventContextAtomicReference.get().isTerminated(), is(true));
   }
 
   @Test
-  public void proceedFlowFailing() throws Exception {
+  public void sourceInterceptedWithFlowThatEndsAfterAsync() throws Exception {
     final AtomicBoolean afterCallbackRun = new AtomicBoolean();
+    AtomicReference<BaseEventContext> eventContextAtomicReference = new AtomicReference<>();
 
-    SourceCallbackInterceptor.afterTerminated = (componentLocation, eventContext) -> afterCallbackRun.set(true);
-    flowRunner("fastAsync").run();
+    SourceCallbackInterceptor.afterTerminated = (componentLocation, eventContext) -> {
+      afterCallbackRun.set(true);
+      eventContextAtomicReference.set((BaseEventContext) eventContext);
+    };
+
+    flowRunner("FlowThatEndsAfterAsync").run();
 
     latch.countDown();
     probe(afterCallbackRun::get);
+    assertThat(eventContextAtomicReference.get().isTerminated(), is(true));
   }
 
   @Test
   @Story(BACKPRESSURE)
-  public void flowInterceptorAppliedAfterBackpressureCheck() throws MuleException {
+  public void sourceInterceptedWithFlowThatEndsBeforeAsync() throws MuleException {
     final AtomicInteger afterCounter = new AtomicInteger();
+    AtomicReference<BaseEventContext> eventContextAtomicReference = new AtomicReference<>();
 
-    SourceCallbackInterceptor.afterTerminated = (componentLocation, eventContext) -> afterCounter.incrementAndGet();
+    SourceCallbackInterceptor.afterTerminated = (componentLocation, eventContext) -> {
+      afterCounter.incrementAndGet();
+      eventContextAtomicReference.set((BaseEventContext) eventContext);
+    };
+
     withMaxConcurrency.start();
 
     latch.countDown();
     probe(() -> afterCounter.get() > 1);
+    assertThat(eventContextAtomicReference.get().isTerminated(), is(true));
   }
 
   public static class SourceCallbackInterceptorFactory implements SourceInterceptorFactory {

@@ -153,7 +153,7 @@
         </async>
     </flow>
 
-    <flow name="fastAsync">
+    <flow name="FlowThatEndsAfterAsync">
         <heisenberg:listen-payments config-ref="heisenberg" initialBatchNumber="0">
             <heisenberg:next-door address="pollos hermanos" victim="Gustavo Fring">
                 <heisenberg:previous victim="Krazy-8" address="Jesse's"/>
