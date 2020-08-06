@@ -198,7 +198,7 @@ public class SourceInterceptorFactoryTestCase extends AbstractIntegrationTestCas
 
     assertThat(afterCalledLatch.await(RECEIVE_TIMEOUT, MILLISECONDS), is(true));
     assertThat(eventContextAtomicReference.get().isTerminated(), is(true));
-   }
+  }
 
   @Test
   public void sourceErrorInterceptedAfterTerminated() throws Exception {
