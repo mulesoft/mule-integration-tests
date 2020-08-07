@@ -201,7 +201,6 @@ public class BulkArtifactDeclarationTestCase extends AbstractElementModelTestCas
             @Override
             public void visit(NestedChainModel component) {
               declarer.withComponent(core.newOperation("logger").getDeclaration());
-              declarer.withComponent(core.newOperation("logger").getDeclaration());
             }
 
             @Override

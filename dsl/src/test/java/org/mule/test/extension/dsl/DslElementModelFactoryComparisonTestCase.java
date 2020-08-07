@@ -117,12 +117,14 @@ public class DslElementModelFactoryComparisonTestCase extends AbstractElementMod
 
   private void validateDsl(DslElementModel<OperationModel> dslElementModel) {
     assertThat(dslElementModel.getModel().getName(), is(OPERATION_NAME));
-    assertThat(dslElementModel.getContainedElements(), hasSize(1));
+    assertThat(dslElementModel.getContainedElements().toString(),
+               dslElementModel.getContainedElements(), hasSize(1));
 
     DslElementModel<ParameterModel> complexActingParameterModel = dslElementModel.getContainedElements().get(0);
     assertThat(complexActingParameterModel.getModel().getName(), is(COMPLEX_ACTING_PARAMETER_NAME));
 
-    assertThat(complexActingParameterModel.getContainedElements(), hasSize(7));
+    assertThat(complexActingParameterModel.getContainedElements().toString(),
+               complexActingParameterModel.getContainedElements(), hasSize(7));
 
     DslElementModel<?> innerPojo = getElement(INNER_POJO_PARAM_NAME, complexActingParameterModel.getContainedElements());
     validateInnerPojo(innerPojo);
@@ -226,7 +228,7 @@ public class DslElementModelFactoryComparisonTestCase extends AbstractElementMod
     assertThat(complexActingParameter.getContainedElements(), hasSize(1));
     DslElementModel<?> listParam = complexActingParameter.getContainedElements().get(0);
     assertThat(listParam.getDsl().getAttributeName(), is(LIST_PARAM_NAME));
-    assertThat(listParam.getContainedElements(), hasSize(3));
+    assertThat(listParam.getContainedElements().toString(), listParam.getContainedElements(), hasSize(3));
   }
 
 }

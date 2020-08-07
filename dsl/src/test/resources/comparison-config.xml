@@ -32,7 +32,7 @@
                             </values:list-param>
                             <values:map-params>
                                 <values:map-param key="0" value="zero"/>
-                                <values:map-param key="1" value="onw"/>
+                                <values:map-param key="1" value="one"/>
                                 <values:map-param key="2" value="two"/>
                             </values:map-params>
                         </values:inner-pojo>
