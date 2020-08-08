@@ -70,6 +70,8 @@
     </flow>
     <flow initialState="started" maxConcurrency="10000" name="globalflow">
         <logger/>
+        <logger/>
+        <logger/>
     </flow>
     <flow name="flowForforeach">
         <foreach batchSize="10000" collection="#[payload]" counterVariableName="counter"
@@ -108,6 +110,7 @@
     </sub-flow>
     <flow name="flowFortry">
         <try transactionType="LOCAL" transactionalAction="INDIFFERENT">
+            <logger/>
             <logger/>
         </try>
     </flow>
