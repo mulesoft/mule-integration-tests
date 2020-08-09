@@ -33,7 +33,8 @@ public class FlowRefBadConfigTestCase extends AbstractMuleTestCase {
     expectedException.expectMessage(
                                     is("flow-ref at org/mule/test/construct/flow-ref-non-existent-flow.xml:6 is pointing to sub-flow-name which does not exist"));
     new ApplicationContextBuilder()
-        .setApplicationResources(new String[] {"org/mule/test/construct/flow-ref-non-existent-flow.xml"}).build();
+        .setApplicationResources(new String[] {"org/mule/test/construct/flow-ref-non-existent-flow.xml"})
+        .build();
   }
 
 }
