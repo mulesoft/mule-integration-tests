@@ -43,6 +43,7 @@ import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.retry.policy.RetryPolicyExhaustedException;
+import org.mule.runtime.core.privileged.message.PrivilegedError;
 import org.mule.tck.probe.JUnitLambdaProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -157,8 +158,8 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
     assertThat(errorCause, is(notNullValue()));
     assertThat(errorCause, instanceOf(ValidationException.class));
 
-    List<Error> suppressedErrors = error.getSuppressedErrors();
-    assertThat(error.getSuppressedErrors(), hasSize(1));
+    List<Error> suppressedErrors = ((PrivilegedError) error).getSuppressedErrors();
+    assertThat(suppressedErrors, hasSize(1));
     Error suppressedError = suppressedErrors.get(0);
     assertThat(suppressedError.getErrorType().toString(), equalTo("VALIDATION:INVALID_BOOLEAN"));
     assertThat(suppressedError.getDescription(), equalTo("Value was expected to be false but it was true instead"));

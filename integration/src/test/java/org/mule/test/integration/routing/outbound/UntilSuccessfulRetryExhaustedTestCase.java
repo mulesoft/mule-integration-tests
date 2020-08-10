@@ -10,7 +10,6 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
@@ -126,18 +125,6 @@ public class UntilSuccessfulRetryExhaustedTestCase extends AbstractIntegrationTe
     assertThat(error.getFailingComponent(), containsString("retryExhaustedErrorWithSuppressionsCheck/processors/0"));
     assertThat(error.getErrorMessage(), nullValue());
     assertThat(error.getChildErrors(), empty());
-    // Suppressed error assertions
-    assertThat(error.getSuppressedErrors(), hasSize(1));
-    Error suppressedError = error.getSuppressedErrors().get(0);
-    assertThat(suppressedError.getCause(), instanceOf(MuleRuntimeError.class));
-    assertThat(suppressedError.getErrorType().toString(), equalTo("MULE:SECURITY"));
-    assertThat(suppressedError.getDescription(), equalTo("Mule runtime error"));
-    assertThat(suppressedError.getDetailedDescription(), equalTo("Mule runtime error"));
-    assertThat(suppressedError.getFailingComponent(),
-               containsString("retryExhaustedErrorWithSuppressionsCheck/processors/0/processors/0"));
-    assertThat(suppressedError.getErrorMessage(), nullValue());
-    assertThat(suppressedError.getSuppressedErrors(), empty());
-    assertThat(suppressedError.getChildErrors(), empty());
   }
 
   public static class MuleRuntimeError extends MuleRuntimeException {
