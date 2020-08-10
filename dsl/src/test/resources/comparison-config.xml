@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:values="http://www.mulesoft.org/schema/mule/values"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+      http://www.mulesoft.org/schema/mule/values http://www.mulesoft.org/schema/mule/values/current/mule-values.xsd">
+
+    <flow initialState="stopped" name="testFlow">
+        <values:with-complex-acting-parameter>
+            <values:complex-acting-parameter intParam="0" stringParam="zero">
+                <values:complex-list-param>
+                    <values:inner-pojo intParam="0" stringParam="zero">
+                        <values:list-param>
+                            <values:list-param-item value="zero"/>
+                            <values:list-param-item value="one"/>
+                            <values:list-param-item value="two"/>
+                        </values:list-param>
+                        <values:map-params>
+                            <values:map-param key="0" value="zero"/>
+                            <values:map-param key="1" value="one"/>
+                            <values:map-param key="2" value="two"/>
+                        </values:map-params>
+                    </values:inner-pojo>
+                </values:complex-list-param>
+                <values:complex-map-params>
+                    <values:complex-map-param key="0">
+                        <values:inner-pojo intParam="0" stringParam="zero">
+                            <values:list-param>
+                                <values:list-param-item value="zero"/>
+                                <values:list-param-item value="one"/>
+                                <values:list-param-item value="two"/>
+                            </values:list-param>
+                            <values:map-params>
+                                <values:map-param key="0" value="zero"/>
+                                <values:map-param key="1" value="one"/>
+                                <values:map-param key="2" value="two"/>
+                            </values:map-params>
+                        </values:inner-pojo>
+                    </values:complex-map-param>
+                    <values:complex-map-param key="1">
+                        <values:inner-pojo intParam="0" stringParam="zero">
+                            <values:list-param>
+                                <values:list-param-item value="zero"/>
+                                <values:list-param-item value="one"/>
+                                <values:list-param-item value="two"/>
+                            </values:list-param>
+                            <values:map-params>
+                                <values:map-param key="0" value="zero"/>
+                                <values:map-param key="1" value="one"/>
+                                <values:map-param key="2" value="two"/>
+                            </values:map-params>
+                        </values:inner-pojo>
+                    </values:complex-map-param>
+                </values:complex-map-params>
+                <values:inner-pojo-param intParam="0" stringParam="zero">
+                    <values:list-param>
+                        <values:list-param-item value="zero"/>
+                        <values:list-param-item value="one"/>
+                        <values:list-param-item value="two"/>
+                    </values:list-param>
+                    <values:map-params>
+                        <values:map-param key="0" value="zero"/>
+                        <values:map-param key="1" value="one"/>
+                        <values:map-param key="2" value="two"/>
+                    </values:map-params>
+                </values:inner-pojo-param>
+                <values:list-param>
+                    <values:list-param-item value="zero"/>
+                    <values:list-param-item value="one"/>
+                    <values:list-param-item value="two"/>
+                </values:list-param>
+                <values:map-params>
+                    <values:map-param key="0" value="zero"/>
+                    <values:map-param key="1" value="one"/>
+                    <values:map-param key="2" value="two"/>
+                </values:map-params>
+            </values:complex-acting-parameter>
+        </values:with-complex-acting-parameter>
+    </flow>
+
+</mule>
