@@ -15,6 +15,7 @@ import static org.mockito.Answers.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.LIFECYCLE_AND_DEPENDENCY_INJECTION;
 import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.LifecyclePhaseFailureStory.LIFECYCLE_PHASE_FAILURE_STORY;
+
 import org.mule.functional.api.component.LifecycleObject;
 import org.mule.functional.junit4.ApplicationContextBuilder;
 import org.mule.runtime.api.el.DefaultExpressionLanguageFactoryService;
@@ -34,12 +35,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import io.qameta.allure.Feature;
-import io.qameta.allure.Story;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 
 @Feature(LIFECYCLE_AND_DEPENDENCY_INJECTION)
 @Story(LIFECYCLE_PHASE_FAILURE_STORY)
@@ -72,6 +74,7 @@ public class MuleContextLifecycleTestCase extends AbstractMuleTestCase {
   }
 
   @Test
+  @Ignore("MULE-18566")
   public void failOnInitialiseInvokesDisposeInOtherComponentsButNotInTheFailedOne() {
     testOnContextLifecycleFailure("lifecycle/component-failing-during-initialise-config.xml",
                                   failOnStartLifecycleBean -> {

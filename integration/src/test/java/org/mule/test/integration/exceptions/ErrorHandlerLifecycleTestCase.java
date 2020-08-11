@@ -25,6 +25,7 @@ import org.mule.test.AbstractIntegrationTestCase;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class ErrorHandlerLifecycleTestCase extends AbstractIntegrationTestCase {
@@ -51,7 +52,8 @@ public class ErrorHandlerLifecycleTestCase extends AbstractIntegrationTestCase {
   private FlowConstruct flowD;
 
   @Test
-  public void testLifecycleErrorHandlerInfLow() throws Exception {
+  @Ignore("MULE-18566")
+  public void testLifecycleErrorHandlerInFlow() throws Exception {
     LifecycleCheckerMessageProcessor lifecycleCheckerMessageProcessorFlowA =
         (LifecycleCheckerMessageProcessor) locator.find(Location.builder().globalName(flowA.getName()).addErrorHandlerPart()
             .addIndexPart(0).addProcessorsPart().addIndexPart(0).build()).get();
