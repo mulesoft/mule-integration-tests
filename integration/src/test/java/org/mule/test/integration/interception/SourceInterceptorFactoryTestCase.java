@@ -196,8 +196,8 @@ public class SourceInterceptorFactoryTestCase extends AbstractIntegrationTestCas
     AtomicReference<BaseEventContext> eventContextAtomicReference = new AtomicReference<>();
 
     SourceCallbackInterceptor.afterTerminated = (componentLocation, eventContext) -> {
-      afterCalledLatch.countDown();
       eventContextAtomicReference.set((BaseEventContext) eventContext);
+      afterCalledLatch.countDown();
     };
 
     assertThat(afterCalledLatch.await(RECEIVE_TIMEOUT, MILLISECONDS), is(true));
@@ -212,8 +212,8 @@ public class SourceInterceptorFactoryTestCase extends AbstractIntegrationTestCas
     AtomicReference<BaseEventContext> eventContextAtomicReference = new AtomicReference<>();
 
     SourceCallbackInterceptor.afterTerminated = (componentLocation, eventContext) -> {
-      afterCalledLatch.countDown();
       eventContextAtomicReference.set((BaseEventContext) eventContext);
+      afterCalledLatch.countDown();
     };
 
     assertThat(afterCalledLatch.await(RECEIVE_TIMEOUT, MILLISECONDS), is(true));
@@ -234,8 +234,8 @@ public class SourceInterceptorFactoryTestCase extends AbstractIntegrationTestCas
     AtomicReference<BaseEventContext> eventContextAtomicReference = new AtomicReference<>();
 
     SourceCallbackInterceptor.afterTerminated = (componentLocation, eventContext) -> {
-      afterCalledLatch.countDown();
       eventContextAtomicReference.set((BaseEventContext) eventContext);
+      afterCalledLatch.countDown();
     };
 
     assertThat(afterCalledLatch.await(RECEIVE_TIMEOUT, MILLISECONDS), is(true));
@@ -250,8 +250,8 @@ public class SourceInterceptorFactoryTestCase extends AbstractIntegrationTestCas
     AtomicReference<BaseEventContext> eventContextAtomicReference = new AtomicReference<>();
 
     SourceCallbackInterceptor.afterTerminated = (componentLocation, eventContext) -> {
-      afterCalledLatch.countDown();
       eventContextAtomicReference.set((BaseEventContext) eventContext);
+      afterCalledLatch.countDown();
     };
 
     assertThat(afterCalledLatch.await(RECEIVE_TIMEOUT, MILLISECONDS), is(true));
@@ -264,8 +264,8 @@ public class SourceInterceptorFactoryTestCase extends AbstractIntegrationTestCas
     AtomicReference<BaseEventContext> eventContextAtomicReference = new AtomicReference<>();
 
     SourceCallbackInterceptor.afterTerminated = (componentLocation, eventContext) -> {
-      afterCallbackRun.set(true);
       eventContextAtomicReference.set((BaseEventContext) eventContext);
+      afterCallbackRun.set(true);
     };
 
     flowRunner("FlowThatEndsAfterAsync").run();
@@ -282,8 +282,8 @@ public class SourceInterceptorFactoryTestCase extends AbstractIntegrationTestCas
     AtomicReference<BaseEventContext> eventContextAtomicReference = new AtomicReference<>();
 
     SourceCallbackInterceptor.afterTerminated = (componentLocation, eventContext) -> {
-      afterCounter.incrementAndGet();
       eventContextAtomicReference.set((BaseEventContext) eventContext);
+      afterCounter.incrementAndGet();
     };
 
     withMaxConcurrency.start();
