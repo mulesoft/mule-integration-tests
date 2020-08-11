@@ -6,13 +6,17 @@
  */
 package org.mule.test.integration.exceptions;
 
+import static java.lang.System.lineSeparator;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ErrorHandlingStory.ERROR_HANDLER;
 
+import org.mule.runtime.api.streaming.bytes.CursorStreamProvider;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
 import io.qameta.allure.Feature;
@@ -58,5 +62,20 @@ public class ExpressionsOnErrorsTestCase extends AbstractIntegrationTestCase {
   public void infoElementDeprecatedSdkOp() throws Exception {
     assertThat(flowRunner("infoElementDeprecatedSdkOp").run().getMessage().getPayload().getValue(),
                is("infoElementDeprecatedSdkOp/processors/0 @ ExpressionsOnErrorsTestCase#infoElementDeprecatedSdkOp:org/mule/test/integration/exceptions/expressions-on-errors.xml:47"));
+  }
+
+  @Test
+  @Issue("MULE-18666")
+  public void mesageToJson() throws Exception {
+    final CursorStreamProvider value = (CursorStreamProvider) flowRunner("mesageToJson")
+        .keepStreamsOpen()
+        .withPayload("Hello World!")
+        .withAttributes("Adios Amigos")
+        .run().getMessage().getPayload().getValue();
+    assertThat(IOUtils.toString(value.openCursor(), UTF_8),
+               is("{" + lineSeparator() +
+                   "  \"payload\": \"Hello World!\"," + lineSeparator() +
+                   "  \"attributes\": \"Adios Amigos\"" + lineSeparator() +
+                   "}"));
   }
 }
