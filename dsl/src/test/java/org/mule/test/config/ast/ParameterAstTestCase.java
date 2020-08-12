@@ -56,20 +56,17 @@ import org.mule.runtime.api.meta.model.parameter.ParameterizedModel;
 import org.mule.runtime.ast.api.ArtifactAst;
 import org.mule.runtime.ast.api.ComponentAst;
 import org.mule.runtime.ast.api.ComponentParameterAst;
-import org.mule.runtime.config.api.dsl.model.ComponentBuildingDefinitionRegistry;
 import org.mule.runtime.config.api.dsl.processor.ArtifactConfig;
 import org.mule.runtime.config.internal.model.ApplicationModel;
 import org.mule.runtime.core.api.extension.RuntimeExtensionModelProvider;
 import org.mule.runtime.core.api.registry.ServiceRegistry;
 import org.mule.runtime.core.api.registry.SpiServiceRegistry;
-import org.mule.runtime.dsl.api.component.ComponentBuildingDefinitionProvider;
 import org.mule.runtime.dsl.api.xml.XmlNamespaceInfoProvider;
 import org.mule.runtime.dsl.api.xml.parser.ConfigFile;
 import org.mule.runtime.dsl.api.xml.parser.ConfigLine;
 import org.mule.runtime.dsl.internal.xml.parser.XmlApplicationParser;
 import org.mule.runtime.extension.api.error.ErrorMapping;
 import org.mule.runtime.module.extension.api.loader.java.DefaultJavaExtensionModelLoader;
-import org.mule.runtime.module.extension.internal.config.ExtensionBuildingDefinitionProvider;
 import org.mule.runtime.module.extension.internal.manager.DefaultExtensionManager;
 import org.mule.tck.junit4.AbstractMuleContextTestCase;
 import org.mule.test.heisenberg.extension.HeisenbergExtension;
@@ -167,19 +164,6 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
         .addAll(muleContext.getExtensionManager().getExtensions())
         .addAll(runtimeExtensionModels)
         .build();
-
-    final ComponentBuildingDefinitionRegistry componentBuildingDefinitionRegistry =
-        new ComponentBuildingDefinitionRegistry();
-    serviceRegistry
-        .lookupProviders(ComponentBuildingDefinitionProvider.class, ComponentBuildingDefinitionProvider.class.getClassLoader())
-        .forEach(componentBuildingDefinitionProvider -> {
-          if (componentBuildingDefinitionProvider instanceof ExtensionBuildingDefinitionProvider) {
-            // Ignore extensions building definition provider, we have to test this works fine without parsers
-          }
-          componentBuildingDefinitionProvider.init();
-          componentBuildingDefinitionProvider.getComponentBuildingDefinitions()
-              .forEach(componentBuildingDefinitionRegistry::register);
-        });
 
     // TODO MULE-17199 use an ASP parser api
     this.artifactAst = new ApplicationModel(artifactConfig, null, extensionModels, Collections.emptyMap(),
