@@ -34,6 +34,7 @@ import org.mule.tests.api.TestQueueManager;
 
 import javax.inject.Inject;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -113,6 +114,7 @@ public class LazyInitLifecycleTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
+  @Ignore("MULE-18566")
   public void lazyMuleContextInitializeMultipleTimesProcessor() {
     CustomTestComponent.statesByInstances.clear();
 

@@ -319,8 +319,8 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
                                                              createStringParameter("referableHandler")))
             .getDeclaration())
         .withGlobalElement(core.newConstruct("object")
+            .withRefName("failingProcessor")
             .withParameterGroup(group -> group
-                .withParameter("name", createStringParameter("failingProcessor"))
                 .withParameter("class",
                                createStringParameter("org.mule.test.extension.dsl.ArtifactDeclarationSerializerTestCase$FailingProcessor")))
             .getDeclaration())

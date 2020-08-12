@@ -46,12 +46,12 @@
     </flow>
     <configuration defaultErrorHandler-ref="MULE:ERROR_HANDLER" defaultObjectSerializer-ref="Attribute"
                    defaultResponseTimeout="10000" defaultTransactionTimeout="30000" inheritIterableRepeatability="false"
-                   maxQueueTransactionFilesSize="500" name="global-configuration" shutdownTimeout="5000">
+                   maxQueueTransactionFilesSize="500" shutdownTimeout="5000">
         <dynamic-config-expiration frequency="5" timeUnit="MINUTES">
             <expiration-policy maxIdleTime="5" timeUnit="MINUTES"/>
         </dynamic-config-expiration>
     </configuration>
-    <configuration-properties file="Attribute" name="global-configurationProperties"/>
+    <configuration-properties file="Attribute"/>
     <error-handler name="global-errorHandler" ref="MULE:ERROR_HANDLER">
         <on-error-continue enableNotifications="true" logException="true" type="Attribute" when="Attribute">
             <logger/>
@@ -79,8 +79,8 @@
             <logger/>
         </foreach>
     </flow>
-    <notifications name="global-notifications"/>
-    <object class="Attribute" name="Attribute" ref="Attribute"/>
+    <notifications/>
+    <object class="Attribute" name="global-object" ref="Attribute"/>
     <flow name="flowFor-onError">
         <on-error ref="MULE:ON_ERROR"/>
     </flow>
