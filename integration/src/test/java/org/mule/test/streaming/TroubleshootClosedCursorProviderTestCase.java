@@ -68,9 +68,6 @@ public class TroubleshootClosedCursorProviderTestCase extends AbstractIntegratio
   public SystemProperty fileNameProp = new SystemProperty("fileName", FILE_NAME);
 
   @Rule
-  public SystemProperty trackCursor = new SystemProperty("mule.track.cursorProvider.close", "true");
-
-  @Rule
   public DynamicPort port = new DynamicPort("port");
 
   @Rule
@@ -87,8 +84,6 @@ public class TroubleshootClosedCursorProviderTestCase extends AbstractIntegratio
     expectedException.expectCause(isA(ExpressionRuntimeException.class));
     expectedException
         .expectMessage(containsString("The cursor provider was open by closeStreamOnOperationFlow/processors/0/processors/0."));
-    expectedException
-        .expectMessage(containsString("at org.mule.test.streaming.TroubleshootClosedCursorProviderTestCase$ClosePayloadProcessor.process"));
 
     writeStringToFile(new File(temporaryFolder.getRoot(), FILE_NAME), "Hello", defaultCharset());
 
@@ -112,8 +107,6 @@ public class TroubleshootClosedCursorProviderTestCase extends AbstractIntegratio
 
     assertThat(payload, containsString("org.mule.runtime.core.internal.streaming.CursorProviderAlreadyClosedException"));
     assertThat(payload, containsString("The cursor provider was open by closeStreamOnSourceFlow/source"));
-    assertThat(payload,
-               containsString("at org.mule.test.streaming.TroubleshootClosedCursorProviderTestCase$ClosePayloadProcessor.process"));
   }
 
   public static class ClosePayloadProcessor extends AbstractComponent implements Processor {
