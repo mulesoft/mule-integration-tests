@@ -22,7 +22,6 @@ import static org.junit.Assert.assertThat;
 import static org.mule.functional.api.component.FunctionalTestProcessor.getFromFlow;
 import static org.mule.functional.junit4.matchers.ThrowableCauseMatcher.hasCause;
 import static org.mule.functional.junit4.matchers.ClassNameMatcher.hasClassName;
-import static org.mule.runtime.api.exception.MuleExceptionInfo.INFO_CAUSED_BY_KEY;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.UntilSuccessfulStory.UNTIL_SUCCESSFUL;
 
@@ -34,10 +33,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import org.mule.extension.validation.api.ValidationException;
 import org.mule.functional.api.component.FunctionalTestProcessor;
 import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.exception.MuleRuntimeException;
+import org.mule.runtime.api.message.Error;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
@@ -144,16 +145,15 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
 
     ponderUntilMessageCountReceivedByCustomMP(1);
 
-    MuleException error = (MuleException) CustomMP.getProcessedEvents().get(0).getError().get().getCause();
-    assertThat(error, is(notNullValue()));
-    assertThat(error, instanceOf(RetryPolicyExhaustedException.class));
-    assertThat(error.getMessage(),
-               containsString("'until-successful' retries exhausted"));
-    assertThat(error.getCause(), hasClassName(containsString("org.mule.runtime.internal.exception.SuppressedMuleException")));
-    List<MuleException> exhaustionCause = (List<MuleException>) error.getInfo().get(INFO_CAUSED_BY_KEY);
-    assertThat(exhaustionCause, hasSize(1));
-    assertThat(exhaustionCause.get(0).getExceptionInfo().getErrorType().toString(), equalTo("VALIDATION:INVALID_BOOLEAN"));
-    assertThat(exhaustionCause.get(0).getMessage(), equalTo("Value was expected to be false but it was true instead"));
+    Error error = CustomMP.getProcessedEvents().get(0).getError().get();
+
+    assertThat(error.getErrorType().toString(), equalTo("MULE:RETRY_EXHAUSTED"));
+    assertThat(error.getDescription(), equalTo("Value was expected to be false but it was true instead"));
+    assertThat(error.getDetailedDescription(), equalTo("'until-successful' retries exhausted"));
+
+    Throwable errorCause = error.getCause();
+    assertThat(errorCause, is(notNullValue()));
+    assertThat(errorCause, instanceOf(ValidationException.class));
   }
 
   @Test

@@ -1,12 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xmlns:test-components="http://www.mulesoft.org/schema/mule/test-components"
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 
-        http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+        http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
+        http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
 
     <object name="objectStore"
             class="org.mule.runtime.api.store.SimpleMemoryObjectStore"/>
+
+    <test-components:queue-config name="dlq">
+        <test-components:connection />
+    </test-components:queue-config>
 
     <flow name="retryExhaustedCausedByUntypedError">
         <async>
@@ -71,6 +77,41 @@
                     <test:summary-info key="Caused by" value="MULE:SECURITY: Mule runtime error"/>
                 </test:check-summary>
             </test:on-error-check-log>
+        </error-handler>
+    </flow>
+
+    <flow name="retryExhaustedUnsuppressedErrorTypeHandling">
+        <until-successful maxRetries="1" millisBetweenRetries="10">
+            <test:throw exception="org.mule.test.integration.routing.outbound.UntilSuccessfulRetryExhaustedTestCase.MuleRuntimeError" error="SECURITY"/>
+        </until-successful>
+        <error-handler>
+            <on-error-continue type="MULE:RETRY_EXHAUSTED">
+                <set-payload value="handled"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="retryExhaustedSuppressedErrorTypeHandling">
+        <until-successful maxRetries="1" millisBetweenRetries="10">
+            <test:throw exception="org.mule.test.integration.routing.outbound.UntilSuccessfulRetryExhaustedTestCase.MuleRuntimeError" error="SECURITY"/>
+        </until-successful>
+        <error-handler>
+            <on-error-continue type="MULE:SECURITY">
+                <set-payload value="handled"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="retryExhaustedErrorWithSuppressionsCheck">
+        <until-successful maxRetries="1" millisBetweenRetries="10">
+            <test:throw exception="org.mule.test.integration.routing.outbound.UntilSuccessfulRetryExhaustedTestCase.MuleRuntimeError" error="SECURITY"/>
+        </until-successful>
+        <error-handler>
+            <on-error-continue>
+                <test-components:queue-push config-ref="dlq">
+                    <test-components:content>#[error]</test-components:content>
+                </test-components:queue-push>
+            </on-error-continue>
         </error-handler>
     </flow>
 
