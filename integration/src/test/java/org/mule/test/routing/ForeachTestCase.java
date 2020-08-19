@@ -112,11 +112,11 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
     assertThat(resultPayload, hasSize(2));
     assertSame(payload, resultPayload);
 
-    Message out = queueManager.read("out", getTestTimeoutSecs(), MILLISECONDS).getMessage();
+    Message out = queueManager.read("out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
     assertThat(out.getPayload().getValue(), instanceOf(String.class));
     assertThat(out.getPayload().getValue(), is("julio"));
 
-    out = queueManager.read("out", getTestTimeoutSecs(), MILLISECONDS).getMessage();
+    out = queueManager.read("out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
     assertThat(out.getPayload().getValue(), instanceOf(String.class));
     assertThat(out.getPayload().getValue(), is("sosa"));
   }
@@ -133,11 +133,11 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
     assertThat(resultPayload, hasSize(3));
     assertSame(payload, resultPayload);
 
-    Message out = queueManager.read("out", getTestTimeoutSecs(), MILLISECONDS).getMessage();
+    Message out = queueManager.read("out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
     assertThat(out.getPayload().getValue(), instanceOf(String.class));
     assertThat(out.getPayload().getValue(), is("syd"));
 
-    out = queueManager.read("out", getTestTimeoutSecs(), MILLISECONDS).getMessage();
+    out = queueManager.read("out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
     assertThat(out.getPayload().getValue(), instanceOf(String.class));
     assertThat(out.getPayload().getValue(), is("barrett"));
   }
@@ -154,11 +154,11 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
     assertThat(result.getMessage().getPayload().getValue(), instanceOf(String.class));
     assertThat((List<String>) result.getVariables().get("names").getValue(), hasSize(names.size()));
 
-    Message out = queueManager.read("out", getTestTimeoutSecs(), MILLISECONDS).getMessage();
+    Message out = queueManager.read("out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
     assertThat(out.getPayload().getValue(), instanceOf(String.class));
     assertThat(out.getPayload().getValue(), is("residente"));
 
-    out = queueManager.read("out", getTestTimeoutSecs(), MILLISECONDS).getMessage();
+    out = queueManager.read("out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
     assertThat(out.getPayload().getValue(), instanceOf(String.class));
     assertThat(out.getPayload().getValue(), is("visitante"));
   }
@@ -178,12 +178,12 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
     assertThat(resultPayload, hasSize(5));
     assertSame(payload, resultPayload);
 
-    Message out = queueManager.read("out", getTestTimeoutSecs(), MILLISECONDS).getMessage();
+    Message out = queueManager.read("out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
     assertThat(out.getPayload().getValue(), instanceOf(Collection.class));
     Collection<?> outPayload = (Collection<?>) out.getPayload().getValue();
     assertThat(outPayload, hasSize(3));
 
-    out = queueManager.read("out", getTestTimeoutSecs(), MILLISECONDS).getMessage();
+    out = queueManager.read("out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
     assertThat(out.getPayload().getValue(), instanceOf(Collection.class));
     outPayload = (Collection<?>) out.getPayload().getValue();
     assertThat(outPayload, hasSize(2));
@@ -418,7 +418,7 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
     Message out;
     for (int i = 0; i < payload.size(); i++) {
       for (int j = 0; j < payload.get(i).size(); j++) {
-        out = queueManager.read("out", getTestTimeoutSecs(), MILLISECONDS).getMessage();
+        out = queueManager.read("out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
         assertThat(out.getPayload().getValue(), instanceOf(String.class));
         assertThat(out.getPayload().getValue(), is(payload.get(i).get(j)));
       }
@@ -437,9 +437,9 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
 
     for (int i = 0; i < payload.size(); i++) {
       for (int j = 0; j < payload.get(i).size(); j++) {
-        queueManager.read("out", getTestTimeoutSecs(), MILLISECONDS).getMessage();
+        queueManager.read("out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
       }
-      queueManager.read("out", getTestTimeoutSecs(), MILLISECONDS).getMessage();
+      queueManager.read("out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
     }
   }
 
@@ -476,12 +476,12 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
   public void mvelList() throws Exception {
     runFlow("mvel-list");
 
-    Message out = queueManager.read("out", getTestTimeoutSecs(), MILLISECONDS).getMessage();
+    Message out = queueManager.read("out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
     assertThat(out.getPayload().getValue(), instanceOf(String.class));
     String outPayload = (String) out.getPayload().getValue();
     assertThat(outPayload, is("foo"));
 
-    out = queueManager.read("out", getTestTimeoutSecs(), MILLISECONDS).getMessage();
+    out = queueManager.read("out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
     assertThat(out.getPayload().getValue(), instanceOf(String.class));
     outPayload = (String) out.getPayload().getValue();
     assertThat(outPayload, is("bar"));
@@ -495,12 +495,12 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
     m.put("key1", "val1");
     m.put("key2", "val2");
 
-    Message out = queueManager.read("out", getTestTimeoutSecs(), MILLISECONDS).getMessage();
+    Message out = queueManager.read("out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
     assertThat(out.getPayload().getValue(), instanceOf(String.class));
     String outPayload = (String) out.getPayload().getValue();
     assertTrue(m.containsValue(outPayload));
 
-    out = queueManager.read("out", getTestTimeoutSecs(), MILLISECONDS).getMessage();
+    out = queueManager.read("out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
     assertThat(out.getPayload().getValue(), instanceOf(String.class));
     outPayload = (String) out.getPayload().getValue();
     assertTrue(m.containsValue(outPayload));
@@ -514,12 +514,12 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
     m.put("key1", "val1");
     m.put("key2", "val2");
 
-    Message out = queueManager.read("out", getTestTimeoutSecs(), MILLISECONDS).getMessage();
+    Message out = queueManager.read("out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
     assertThat(out.getPayload().getValue(), instanceOf(String.class));
     String outPayload = (String) out.getPayload().getValue();
     assertTrue(m.containsValue(outPayload));
 
-    out = queueManager.read("out", getTestTimeoutSecs(), MILLISECONDS).getMessage();
+    out = queueManager.read("out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
     assertThat(out.getPayload().getValue(), instanceOf(String.class));
     outPayload = (String) out.getPayload().getValue();
     assertTrue(m.containsValue(outPayload));
@@ -532,13 +532,13 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
   }
 
   private void assertIterable() {
-    Message out = queueManager.read("out", getTestTimeoutSecs(), MILLISECONDS).getMessage();
+    Message out = queueManager.read("out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
     assertThat(out.getPayload().getValue(), instanceOf(String.class));
     String outPayload = (String) out.getPayload().getValue();
 
     assertThat(outPayload, is("foo"));
 
-    out = queueManager.read("out", getTestTimeoutSecs(), MILLISECONDS).getMessage();
+    out = queueManager.read("out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
     assertThat(out.getPayload().getValue(), instanceOf(String.class));
     outPayload = (String) out.getPayload().getValue();
     assertThat(outPayload, is("bar"));
