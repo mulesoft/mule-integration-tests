@@ -43,7 +43,6 @@
 
     <sub-flow name="consumeStreams">
         <foreach>
-<!--             <logger level="WARN" message="#[payload]"/> -->
             <test-components:queue-push config-ref="queue" consumeStream="true"/>
         </foreach>
         
