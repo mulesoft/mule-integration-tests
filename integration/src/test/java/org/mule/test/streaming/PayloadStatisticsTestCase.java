@@ -125,7 +125,7 @@ public class PayloadStatisticsTestCase extends AbstractIntegrationTestCase {
     assertThat(fileListStatistics.getInputObjectCount(), is(0L));
     assertThat(fileListStatistics.getInputByteCount(), is(0L));
     assertThat(fileListStatistics.getOutputObjectCount(), is(100L));
-    // TODO MULE-18650 the operation used in this test returns a PagingProvider, which needs specific handling
+    // TODO MULE-18652 the operation used in this test returns a PagingProvider, which needs specific handling
     // assertThat(fileListStatistics.getOutputByteCount(), is(1024 * 1024 * 100L));
   }
 }
