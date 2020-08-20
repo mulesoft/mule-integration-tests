@@ -59,16 +59,6 @@ public class FlowErrorStatisticsTestCase extends AbstractIntegrationTestCase {
     return "org/mule/test/integration/exceptions/" + configFile;
   }
 
-  @Before
-  public void before() {
-    statisticsEnabledOriginal = muleContext.getStatistics().isEnabled();
-  }
-
-  @After
-  public void after() {
-    muleContext.getStatistics().setEnabled(statisticsEnabledOriginal);
-  }
-
   @Test
   public void executionErrors() throws Exception {
     flowRunner(flowName).runExpectingException();
