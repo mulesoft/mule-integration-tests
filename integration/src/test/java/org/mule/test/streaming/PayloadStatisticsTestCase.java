@@ -42,11 +42,16 @@ import io.qameta.allure.Story;
 @Story(STATISTICS)
 public class PayloadStatisticsTestCase extends AbstractIntegrationTestCase {
 
+  public static final int BYTES_SIZE = 1343;
+
   @ClassRule
   public static TemporaryFolder temporaryFolder = new TemporaryFolder();
 
   @Rule
   public SystemProperty workingDirSysProp = new SystemProperty("workingDir", temporaryFolder.getRoot().getPath());
+
+  @Rule
+  public SystemProperty bytesSize = new SystemProperty("bytesSize", "" + BYTES_SIZE);
 
   @Inject
   private TestQueueManager queueManager;
@@ -105,15 +110,15 @@ public class PayloadStatisticsTestCase extends AbstractIntegrationTestCase {
     assertThat(fileListStatistics.getInputByteCount(), is(0L));
     // do not count the container message
     assertThat(fileListStatistics.getOutputObjectCount(), is(4L));
-    assertThat(fileListStatistics.getOutputByteCount(), is(1024 * 1024 * 4L));
+    assertThat(fileListStatistics.getOutputByteCount(), is(BYTES_SIZE * 4L));
 
   }
 
   @Test
   @Description("Assert statistics for an operation that returns a PagingProvider of objects with a stream")
   public void pagesOfMessagesOperation() throws Exception {
-    for (int i = 0; i < 100; ++i) {
-      writeStringToFile(new File(temporaryFolder.getRoot(), "file_" + i + ".txt"), randomAlphanumeric(1024 * 1024));
+    for (int i = 0; i < 3; ++i) {
+      writeStringToFile(new File(temporaryFolder.getRoot(), "file_" + i + ".txt"), randomAlphanumeric(BYTES_SIZE));
     }
 
     flowRunner("pagesOfMessagesOperation").withVariable("path", temporaryFolder.getRoot().getPath()).run();
@@ -124,8 +129,8 @@ public class PayloadStatisticsTestCase extends AbstractIntegrationTestCase {
     assertThat(fileListStatistics.getComponentIdentifier(), is("file:list"));
     assertThat(fileListStatistics.getInputObjectCount(), is(0L));
     assertThat(fileListStatistics.getInputByteCount(), is(0L));
-    assertThat(fileListStatistics.getOutputObjectCount(), is(100L));
+    assertThat(fileListStatistics.getOutputObjectCount(), is(3L));
     // TODO MULE-18652 the operation used in this test returns a PagingProvider, which needs specific handling
-    // assertThat(fileListStatistics.getOutputByteCount(), is(1024 * 1024 * 100L));
+    // assertThat(fileListStatistics.getOutputByteCount(), is(BYTES_SIZE * 3L));
   }
 }

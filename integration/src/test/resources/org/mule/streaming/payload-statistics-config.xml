@@ -30,7 +30,7 @@
     </flow>
 
     <flow name="listOfMessagesOperation">
-        <marvel:adamantium-injectors injectorsToCreate="4"/>
+        <marvel:adamantium-injectors injectorsToCreate="4" injectorLoad="${bytesSize}"/>
     
         <flow-ref name="consumeStreams"/>
     </flow>
