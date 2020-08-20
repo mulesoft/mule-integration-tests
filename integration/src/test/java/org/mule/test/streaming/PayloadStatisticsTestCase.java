@@ -11,6 +11,7 @@ import static org.apache.commons.io.FileUtils.writeStringToFile;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mule.runtime.api.util.MuleSystemProperties.MULE_ENABLE_STATISTICS;
 import static org.mule.test.allure.AllureConstants.StreamingFeature.STREAMING;
 import static org.mule.test.allure.AllureConstants.StreamingFeature.StreamingStory.STATISTICS;
 
@@ -18,7 +19,6 @@ import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.management.stats.PayloadStatistics;
 import org.mule.tck.junit4.rule.SystemProperty;
-import org.mule.tck.util.StatisticsEnabled;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.tests.api.TestQueueManager;
 
@@ -27,8 +27,6 @@ import java.io.File;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -53,6 +51,9 @@ public class PayloadStatisticsTestCase extends AbstractIntegrationTestCase {
   @Rule
   public SystemProperty bytesSize = new SystemProperty("bytesSize", "" + BYTES_SIZE);
 
+  @Rule
+  public SystemProperty withStatistics = new SystemProperty(MULE_ENABLE_STATISTICS, "true");
+
   @Inject
   private TestQueueManager queueManager;
 
@@ -60,22 +61,9 @@ public class PayloadStatisticsTestCase extends AbstractIntegrationTestCase {
   @Named("listOfMessagesSource")
   public Flow listOfMessagesSource;
 
-  public StatisticsEnabled withStatistics;
-
   @Override
   protected String getConfigFile() {
     return "org/mule/streaming/payload-statistics-config.xml";
-  }
-
-  @Before
-  public void before() throws Throwable {
-    withStatistics = new StatisticsEnabled(() -> muleContext);
-    withStatistics.before();
-  }
-
-  @After
-  public void after() {
-    withStatistics.after();
   }
 
   @Test
