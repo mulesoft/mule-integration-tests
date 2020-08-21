@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+               http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+               http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+
+    <flow name="rootJustSubFlows" initialState="stopped">
+        <set-payload value="Hello"/>
+        <set-variable variableName="target" value="World!"/>
+        <flow-ref name="nest-040"/>
+    </flow>
+
+    <sub-flow name="nest-001">
+        <set-payload value="Hello"/>
+        <set-variable variableName="target" value="World!"/>
+    </sub-flow>
+
+    <sub-flow name="nest-002">
+        <set-payload value="Hello"/>
+        <set-variable variableName="target" value="World!"/>
+        <flow-ref name="nest-001"/>
+    </sub-flow>
+
+    <sub-flow name="nest-003">
+        <set-payload value="Hello"/>
+        <set-variable variableName="target" value="World!"/>
+        <flow-ref name="nest-002"/>
+    </sub-flow>
+
+    <sub-flow name="nest-004">
+        <set-payload value="Hello"/>
+        <set-variable variableName="target" value="World!"/>
+        <flow-ref name="nest-003"/>
+    </sub-flow>
+
+    <sub-flow name="nest-005">
+        <set-payload value="Hello"/>
+        <set-variable variableName="target" value="World!"/>
+        <flow-ref name="nest-004"/>
+    </sub-flow>
+
+    <sub-flow name="nest-006">
+        <set-payload value="Hello"/>
+        <set-variable variableName="target" value="World!"/>
+        <flow-ref name="nest-005"/>
+    </sub-flow>
+
+    <sub-flow name="nest-007">
+        <set-payload value="Hello"/>
+        <set-variable variableName="target" value="World!"/>
+        <flow-ref name="nest-006"/>
+    </sub-flow>
+
+    <sub-flow name="nest-008">
+        <set-payload value="Hello"/>
+        <set-variable variableName="target" value="World!"/>
+        <flow-ref name="nest-007"/>
+    </sub-flow>
+
+    <sub-flow name="nest-009">
+        <set-payload value="Hello"/>
+        <set-variable variableName="target" value="World!"/>
+        <flow-ref name="nest-008"/>
+    </sub-flow>
+
+    <sub-flow name="nest-010">
+        <set-payload value="Hello"/>
+        <set-variable variableName="target" value="World!"/>
+        <flow-ref name="nest-009"/>
+    </sub-flow>
+
+    <sub-flow name="nest-011">
+        <set-payload value="Hello"/>
+        <set-variable variableName="target" value="World!"/>
+        <flow-ref name="nest-010"/>
+    </sub-flow>
+
+    <sub-flow name="nest-012">
+        <set-payload value="Hello"/>
+        <set-variable variableName="target" value="World!"/>
+        <flow-ref name="nest-011"/>
+    </sub-flow>
+
+    <sub-flow name="nest-013">
+        <set-payload value="Hello"/>
+        <set-variable variableName="target" value="World!"/>
+        <flow-ref name="nest-012"/>
+    </sub-flow>
+
+    <sub-flow name="nest-014">
+        <set-payload value="Hello"/>
+        <set-variable variableName="target" value="World!"/>
+        <flow-ref name="nest-013"/>
+    </sub-flow>
+
+    <sub-flow name="nest-015">
+        <set-payload value="Hello"/>
+        <set-variable variableName="target" value="World!"/>
+        <flow-ref name="nest-014"/>
+    </sub-flow>
+
+    <sub-flow name="nest-016">
+        <set-payload value="Hello"/>
+        <set-variable variableName="target" value="World!"/>
+        <flow-ref name="nest-015"/>
+    </sub-flow>
+
+    <sub-flow name="nest-017">
+        <set-payload value="Hello"/>
+        <set-variable variableName="target" value="World!"/>
+        <flow-ref name="nest-016"/>
+    </sub-flow>
+
+    <sub-flow name="nest-018">
+        <set-payload value="Hello"/>
+        <set-variable variableName="target" value="World!"/>
+        <flow-ref name="nest-017"/>
+    </sub-flow>
+
+    <sub-flow name="nest-019">
+        <set-payload value="Hello"/>
+        <set-variable variableName="target" value="World!"/>
+        <flow-ref name="nest-018"/>
+    </sub-flow>
+
+    <sub-flow name="nest-020">
+        <set-payload value="Hello"/>
+        <set-variable variableName="target" value="World!"/>
+        <flow-ref name="nest-019"/>
+    </sub-flow>
+
+    <sub-flow name="nest-021">
+        <set-payload value="Hello"/>
+        <set-variable variableName="target" value="World!"/>
+        <flow-ref name="nest-020"/>
+    </sub-flow>
+
+    <sub-flow name="nest-022">
+        <set-payload value="Hello"/>
+        <set-variable variableName="target" value="World!"/>
+        <flow-ref name="nest-021"/>
+    </sub-flow>
+
+    <sub-flow name="nest-023">
+        <set-payload value="Hello"/>
+        <set-variable variableName="target" value="World!"/>
+        <flow-ref name="nest-022"/>
+    </sub-flow>
+
+    <sub-flow name="nest-024">
+        <set-payload value="Hello"/>
+        <set-variable variableName="target" value="World!"/>
+        <flow-ref name="nest-023"/>
+    </sub-flow>
+
+    <sub-flow name="nest-025">
+        <set-payload value="Hello"/>
+        <set-variable variableName="target" value="World!"/>
+        <flow-ref name="nest-024"/>
+    </sub-flow>
+
+    <sub-flow name="nest-026">
+        <set-payload value="Hello"/>
+        <set-variable variableName="target" value="World!"/>
+        <flow-ref name="nest-025"/>
+    </sub-flow>
+
+    <sub-flow name="nest-027">
+        <set-payload value="Hello"/>
+        <set-variable variableName="target" value="World!"/>
+        <flow-ref name="nest-026"/>
+    </sub-flow>
+
+    <sub-flow name="nest-028">
+        <set-payload value="Hello"/>
+        <set-variable variableName="target" value="World!"/>
+        <flow-ref name="nest-027"/>
+    </sub-flow>
+
+    <sub-flow name="nest-029">
+        <set-payload value="Hello"/>
+        <set-variable variableName="target" value="World!"/>
+        <flow-ref name="nest-028"/>
+    </sub-flow>
+
+    <sub-flow name="nest-030">
+        <set-payload value="Hello"/>
+        <set-variable variableName="target" value="World!"/>
+        <flow-ref name="nest-029"/>
+    </sub-flow>
+
+    <sub-flow name="nest-031">
+        <set-payload value="Hello"/>
+        <set-variable variableName="target" value="World!"/>
+        <flow-ref name="nest-030"/>
+    </sub-flow>
+
+    <sub-flow name="nest-032">
+        <set-payload value="Hello"/>
+        <set-variable variableName="target" value="World!"/>
+        <flow-ref name="nest-031"/>
+    </sub-flow>
+
+    <sub-flow name="nest-033">
+        <set-payload value="Hello"/>
+        <set-variable variableName="target" value="World!"/>
+        <flow-ref name="nest-032"/>
+    </sub-flow>
+
+    <sub-flow name="nest-034">
+        <set-payload value="Hello"/>
+        <set-variable variableName="target" value="World!"/>
+        <flow-ref name="nest-033"/>
+    </sub-flow>
+
+    <sub-flow name="nest-035">
+        <set-payload value="Hello"/>
+        <set-variable variableName="target" value="World!"/>
+        <flow-ref name="nest-034"/>
+    </sub-flow>
+
+    <sub-flow name="nest-036">
+        <set-payload value="Hello"/>
+        <set-variable variableName="target" value="World!"/>
+        <flow-ref name="nest-035"/>
+    </sub-flow>
+
+    <sub-flow name="nest-037">
+        <set-payload value="Hello"/>
+        <set-variable variableName="target" value="World!"/>
+        <flow-ref name="nest-036"/>
+    </sub-flow>
+
+    <sub-flow name="nest-038">
+        <set-payload value="Hello"/>
+        <set-variable variableName="target" value="World!"/>
+        <flow-ref name="nest-037"/>
+    </sub-flow>
+
+    <sub-flow name="nest-039">
+        <set-payload value="Hello"/>
+        <set-variable variableName="target" value="World!"/>
+        <flow-ref name="nest-038"/>
+    </sub-flow>
+
+    <sub-flow name="nest-040">
+        <set-payload value="Hello"/>
+        <set-variable variableName="target" value="World!"/>
+        <flow-ref name="nest-039"/>
+    </sub-flow>
+
+    <sub-flow name="nest-041">
+        <set-payload value="Hello"/>
+        <set-variable variableName="target" value="World!"/>
+        <flow-ref name="nest-040"/>
+    </sub-flow>
+</mule>
