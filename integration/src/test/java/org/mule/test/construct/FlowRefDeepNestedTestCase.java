@@ -19,6 +19,7 @@ import org.junit.Test;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
 
 @Feature(CORE_COMPONENTS)
@@ -35,7 +36,8 @@ public class FlowRefDeepNestedTestCase extends AbstractIntegrationTestCase {
   private Flow rootJustSubFlows;
 
   @Test
-  @Description("Verify that apps with deep subflow nesting work as expected")
+  @Issue("MULE-18694")
+  @Description("Verify that apps with deep subflow nesting work as expected, falling back to Mono")
   public void deeplyNestedSubFlows() throws Exception {
     rootJustSubFlows.start();
     try {
