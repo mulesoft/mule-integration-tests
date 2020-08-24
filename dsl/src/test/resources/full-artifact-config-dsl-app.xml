@@ -70,7 +70,7 @@
     </db:config>
 
     <http:listener-config basePath="/" name="httpListener">
-        <http:listener-connection host="localhost" port="49019" protocol="HTTPS">
+        <http:listener-connection host="localhost" port="${port}" protocol="HTTPS">
             <tls:context>
                 <tls:key-store keyPassword="changeit" password="changeit" path="ssltest-keystore.jks"/>
                 <tls:trust-store insecure="true"/>
@@ -82,7 +82,7 @@
     </http:listener-config>
 
     <http:request-config name="httpRequester" requestStreamingMode="ALWAYS">
-        <http:request-connection host="localhost" port="49020">
+        <http:request-connection host="localhost" port="${otherPort}">
             <http:authentication>
                 <http:basic-authentication password="pass" username="user"/>
             </http:authentication>
