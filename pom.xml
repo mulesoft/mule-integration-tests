@@ -41,6 +41,7 @@
     <apacheHttpCoreVersion>4.4.6</apacheHttpCoreVersion>
     <apacheHttpClientVersion>4.5.3</apacheHttpClientVersion>
     <springVersion>5.1.6.RELEASE</springVersion>
+    <muleDependenciesVersion>1.x-SNAPSHOT</muleDependenciesVersion>
   </properties>
 
   <build>
@@ -71,7 +72,7 @@
       <dependency>
         <groupId>com.mulesoft.mule.runtime.bom</groupId>
         <artifactId>mule-test-dependencies-bom</artifactId>
-        <version>1.x-SNAPSHOT</version>
+        <version>${muleDependenciesVersion}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
