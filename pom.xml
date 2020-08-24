@@ -51,6 +51,8 @@
     <muleOauthModuleTestVersion>1.1.5</muleOauthModuleTestVersion>
     <muleSocketsConnectorTestVersion>1.1.2</muleSocketsConnectorTestVersion>
 
+    <munitExtensionsMavenPlugin>1.0.0-BETA2</munitExtensionsMavenPlugin>
+
     <apacheHttpCoreVersion>4.4.6</apacheHttpCoreVersion>
     <apacheHttpClientVersion>4.5.3</apacheHttpClientVersion>
     <springVersion>4.3.19.RELEASE</springVersion>
@@ -68,6 +70,16 @@
         </configuration>
       </plugin>
     </plugins>
+
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>com.mulesoft.munit</groupId>
+          <artifactId>munit-extensions-maven-plugin</artifactId>
+          <version>${munitExtensionsMavenPlugin}</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
   </build>
   <dependencies>
     <dependency>
