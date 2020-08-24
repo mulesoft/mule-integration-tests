@@ -32,7 +32,21 @@ import static org.mule.runtime.core.api.exception.Errors.Identifiers.ROUTING_ERR
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.SERVICE_UNAVAILABLE;
 import static org.mule.runtime.http.api.HttpConstants.Method.GET;
 import static org.mule.tck.probe.PollingProber.probe;
+import static org.mule.test.allure.AllureConstants.ComponentsFeature.CORE_COMPONENTS;
+import static org.mule.test.allure.AllureConstants.ComponentsFeature.FlowReferenceStory.FLOW_REFERENCE;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Rule;
+import org.junit.Test;
 import org.mule.functional.api.component.EventCallback;
 import org.mule.functional.api.exception.ExpectedError;
 import org.mule.runtime.api.message.Message;
@@ -50,22 +64,13 @@ import org.mule.tck.junit4.matcher.ErrorTypeMatcher;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.Test;
-
 import io.qameta.allure.Description;
+import io.qameta.allure.Feature;
 import io.qameta.allure.Issue;
+import io.qameta.allure.Story;
 
+@Feature(CORE_COMPONENTS)
+@Story(FLOW_REFERENCE)
 public class FlowRefTestCase extends AbstractIntegrationTestCase {
 
   private static final String CONTEXT_DEPTH_MESSAGE = "Too many child contexts nested.";
