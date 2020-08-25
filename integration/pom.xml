@@ -293,6 +293,12 @@
 
         <dependency>
             <groupId>org.mule.tests</groupId>
+            <artifactId>mule-marvel-extension</artifactId>
+            <version>${project.version}</version>
+            <classifier>mule-plugin</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.tests</groupId>
             <artifactId>mule-heisenberg-extension</artifactId>
             <version>${project.version}</version>
             <classifier>mule-plugin</classifier>

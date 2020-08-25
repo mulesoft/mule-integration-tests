@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:file="http://www.mulesoft.org/schema/mule/file"
+      xmlns:marvel="http://www.mulesoft.org/schema/mule/marvel"
+      xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xsi:schemaLocation="
+       http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+       http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+       http://www.mulesoft.org/schema/mule/marvel http://www.mulesoft.org/schema/mule/marvel/current/mule-marvel.xsd
+       http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+
+    <file:config name="file">
+        <file:connection workingDir="${workingDir}" />
+    </file:config>
+
+    <flow name="listOfMessagesSource" initialState="stopped">
+        <marvel:cerebro-detect-new-mutants/>
+    
+        <flow-ref name="consumeStreams"/>
+
+        <test:queue name="listOfMessagesSourceComplete"/>
+    </flow>
+
+    <flow name="listOfMessagesOperation">
+        <marvel:adamantium-injectors injectorsToCreate="4" injectorLoad="${bytesSize}"/>
+    
+        <flow-ref name="consumeStreams"/>
+    </flow>
+
+    <flow name="pagesOfMessagesOperation">
+        <file:list config-ref="file" directoryPath="#[vars.path]"/>
+    
+        <flow-ref name="consumeStreams"/>
+    </flow>
+
+    <sub-flow name="consumeStreams">
+        <foreach>
+            <file:write config-ref="file" path="#[random() as String]"/>
+        </foreach>
+        
+        <!-- Do a second iteration to make sure that operation output is only accounter for once in the statistics -->
+        <foreach>
+            <file:write config-ref="file" path="#[random() as String]"/>
+            <file:write config-ref="file" path="#[random() as String]"/>
+        </foreach>
+    </sub-flow>
+</mule>
