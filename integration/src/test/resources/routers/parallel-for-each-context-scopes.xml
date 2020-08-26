@@ -10,7 +10,7 @@
     <flow name="parallelForEachWithErorHandling">
         <parallel-foreach>
             <try>
-                <processor ref="eventReferenceProc"/>
+                <flow-ref name="eventReferenceProc"/>
                 <raise-error type="APP:SOME"/>
                 <error-handler>
                     <on-error-continue/>
