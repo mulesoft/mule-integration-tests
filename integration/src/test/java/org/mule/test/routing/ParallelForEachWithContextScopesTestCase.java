@@ -78,14 +78,14 @@ public class ParallelForEachWithContextScopesTestCase extends AbstractIntegratio
     @Override
     public CoreEvent process(CoreEvent event) throws MuleException {
       synchronized (eventRefs) {
-          // We have to verify that previous references are not being referenced any more (the execution of that parallel
-          // foreach route has finished). This is because Parallel For each has a reference to the event to
-          // aggregate results after the entire execution is finished, but that final event shouldn't have references
-          // to inner references
-          if (eventRefs.size() > 0) {
-              assertEventsUnreferenced();
-          }
-          eventRefs.add(new PhantomReference<>(getCurrentEvent(), new ReferenceQueue<>()));
+        // We have to verify that previous references are not being referenced any more (the execution of that parallel
+        // foreach route has finished). This is because Parallel For each has a reference to the event to
+        // aggregate results after the entire execution is finished, but that final event shouldn't have references
+        // to inner references
+        if (eventRefs.size() > 0) {
+          assertEventsUnreferenced();
+        }
+        eventRefs.add(new PhantomReference<>(getCurrentEvent(), new ReferenceQueue<>()));
       }
       return event;
     }
