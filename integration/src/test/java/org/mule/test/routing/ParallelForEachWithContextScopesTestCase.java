@@ -60,7 +60,7 @@ public class ParallelForEachWithContextScopesTestCase extends AbstractIntegratio
   }
 
   private static void assertEventsUnreferenced() {
-    new PollingProber(PROBER_POLLIING_TIMEOUT, PROBER_POLLING_INTERVAL).check(new JUnitProbe() {
+    new PollingProber(PROBER_POLLING_TIMEOUT, PROBER_POLLING_INTERVAL).check(new JUnitProbe() {
 
       @Override
       protected boolean test() throws Exception {
