@@ -140,6 +140,9 @@
                         <exclude>org.mule.tools.maven:mule-classloader-model</exclude>
                         <exclude>org.mule.modules:mule-module-cors-kernel</exclude>
                         <exclude>org.mule.tests:test-components</exclude>
+
+                        <exclude>org.mule.modules:mule-spring-module</exclude>
+                        <exclude>org.mule.modules:mule-spring-module-tests</exclude>
                       </excludes>
                     </requireReleaseDeps>
                     <requireReleaseVersion>
