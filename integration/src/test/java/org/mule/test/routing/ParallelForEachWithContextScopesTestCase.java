@@ -52,9 +52,10 @@ public class ParallelForEachWithContextScopesTestCase extends AbstractIntegratio
 
   @Test
   @Issue("MULE-18696")
-  @Description("sarasa")
+  @Description("Check that parallel for each is not referencing to the original event prior the error handling")
   public void parallelForEachWithErorHandling() throws Exception {
     flowRunner("parallelForEachWithErorHandling").withPayload(FRUIT_LIST).run();
+    // to check last event
     assertEventsUnreferenced();
   }
 
