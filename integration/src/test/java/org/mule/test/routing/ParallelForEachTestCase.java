@@ -72,7 +72,7 @@ public class ParallelForEachTestCase extends AbstractIntegrationTestCase {
 
   @Override
   protected String getConfigFile() {
-    return "parallel-foreach-config.xml";
+    return "routers/parallel-foreach-config.xml";
   }
 
   @Override

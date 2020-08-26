@@ -35,7 +35,7 @@ import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 public class ParallelForEachWithContextScopesTestCase extends AbstractIntegrationTestCase {
 
   private static final int PROBER_POLLING_INTERVAL = 100;
-  private static final int PROBER_POLIING_TIMEOUT = 5000;
+  private static final int PROBER_POLLIING_TIMEOUT = 5000;
   private static final String[] FRUIT_LIST = new String[] {"apple", "banana", "orange"};
 
   private static final Set<PhantomReference<CoreEvent>> eventRefs = new HashSet<>();
@@ -47,7 +47,7 @@ public class ParallelForEachWithContextScopesTestCase extends AbstractIntegratio
 
   @Override
   protected String getConfigFile() {
-    return "parallel-for-each-context-scopes.xml";
+    return "routers/parallel-for-each-context-scopes.xml";
   }
 
   @Test
@@ -60,7 +60,7 @@ public class ParallelForEachWithContextScopesTestCase extends AbstractIntegratio
   }
 
   private static void assertEventsUnreferenced() {
-    new PollingProber(PROBER_POLIING_TIMEOUT, PROBER_POLLING_INTERVAL).check(new JUnitProbe() {
+    new PollingProber(PROBER_POLLIING_TIMEOUT, PROBER_POLLING_INTERVAL).check(new JUnitProbe() {
 
       @Override
       protected boolean test() throws Exception {

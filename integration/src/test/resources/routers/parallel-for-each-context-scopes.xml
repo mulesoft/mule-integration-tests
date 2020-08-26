@@ -4,10 +4,13 @@
       xsi:schemaLocation="
                http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 
+    <object name="eventReferenceProc"
+            class="org.mule.test.routing.ParallelForEachWithContextScopesTestCase$EventReferenceProcessor" />
+
     <flow name="parallelForEachWithErorHandling">
         <parallel-foreach>
             <try>
-                <custom-processor class="org.mule.test.routing.ParallelForEachWithContextScopesTestCase$EventReferenceProcessor"/>
+                <processor ref="eventReferenceProc"/>
                 <raise-error type="APP:SOME"/>
                 <error-handler>
                     <on-error-continue/>
