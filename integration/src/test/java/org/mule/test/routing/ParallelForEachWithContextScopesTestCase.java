@@ -35,7 +35,7 @@ import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 public class ParallelForEachWithContextScopesTestCase extends AbstractIntegrationTestCase {
 
   private static final int PROBER_POLLING_INTERVAL = 100;
-  private static final int PROBER_POLLIING_TIMEOUT = 5000;
+  private static final int PROBER_POLLING_TIMEOUT = 5000;
   private static final String[] FRUIT_LIST = new String[] {"apple", "banana", "orange"};
 
   private static final Set<PhantomReference<CoreEvent>> eventRefs = new HashSet<>();
