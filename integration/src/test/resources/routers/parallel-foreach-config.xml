@@ -235,6 +235,26 @@
         </error-handler>
     </flow>
 
+    <flow name="parallelForEachInNestedErrorHandler">
+        <raise-error type="APP:SOME"/>
+        <error-handler>
+            <on-error-continue>
+                <try>
+                    <raise-error type="APP:SOME2"/>
+                    <error-handler>
+                        <on-error-continue>
+                            <parallel-foreach collection="#[['apple', 'banana', 'orange']]">
+                                <set-payload value="#[payload ++ '-result']"/>
+                            </parallel-foreach>
+                            <flow-ref name="testListAggregation"/>
+                            <set-payload value="hello"/>
+                        </on-error-continue>
+                    </error-handler>
+                </try>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
     <http:request-config name="httpRequestConfig">
         <http:request-connection host="localhost" port="${port}"/>
     </http:request-config>

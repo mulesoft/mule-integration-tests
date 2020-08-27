@@ -72,7 +72,7 @@ public class ParallelForEachTestCase extends AbstractIntegrationTestCase {
 
   @Override
   protected String getConfigFile() {
-    return "parallel-foreach-config.xml";
+    return "routers/parallel-foreach-config.xml";
   }
 
   @Override
@@ -219,6 +219,13 @@ public class ParallelForEachTestCase extends AbstractIntegrationTestCase {
   @Description("Validates that parallel foreach can be used correctly within an error handler")
   public void parallelForEachInErrorHandler() throws Exception {
     CoreEvent event = flowRunner("parallelForEachInErrorHandler").run();
+    assertThat(event.getMessage().getPayload().getValue(), is("hello"));
+  }
+
+  @Test
+  @Description("Validates that parallel foreach can be used correctly within a nested error handler")
+  public void parallelForEachInNestedErrorHandler() throws Exception {
+    CoreEvent event = flowRunner("parallelForEachInNestedErrorHandler").run();
     assertThat(event.getMessage().getPayload().getValue(), is("hello"));
   }
 
