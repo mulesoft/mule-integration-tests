@@ -77,6 +77,9 @@ public class PayloadStatisticsTestCase extends AbstractIntegrationTestCase {
         muleContext.getStatistics().getPayloadStatistics("listOfMessagesSource/source");
 
     assertThat(fileListStatistics.getComponentIdentifier(), is("marvel:cerebro-detect-new-mutants"));
+
+    assertThat(fileListStatistics.getInvocationCount(), is(1L));
+
     assertThat(fileListStatistics.getInputObjectCount(), is(0L));
     assertThat(fileListStatistics.getInputByteCount(), is(0L));
     // do not count the container message
@@ -94,6 +97,9 @@ public class PayloadStatisticsTestCase extends AbstractIntegrationTestCase {
         muleContext.getStatistics().getPayloadStatistics("listOfMessagesOperation/processors/0");
 
     assertThat(fileListStatistics.getComponentIdentifier(), is("marvel:adamantium-injectors"));
+
+    assertThat(fileListStatistics.getInvocationCount(), is(1L));
+
     assertThat(fileListStatistics.getInputObjectCount(), is(0L));
     assertThat(fileListStatistics.getInputByteCount(), is(0L));
     // do not count the container message
@@ -115,6 +121,9 @@ public class PayloadStatisticsTestCase extends AbstractIntegrationTestCase {
         muleContext.getStatistics().getPayloadStatistics("pagesOfMessagesOperation/processors/0");
 
     assertThat(fileListStatistics.getComponentIdentifier(), is("file:list"));
+
+    assertThat(fileListStatistics.getInvocationCount(), is(1L));
+
     assertThat(fileListStatistics.getInputObjectCount(), is(0L));
     assertThat(fileListStatistics.getInputByteCount(), is(0L));
     assertThat(fileListStatistics.getOutputObjectCount(), is(3L));
