@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:vm="http://www.mulesoft.org/schema/mule/vm"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+                           http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd">
+
+	<object
+		class="org.mule.test.components.RedeliveryPolicyWithInterceptorsTestCase$TestInterceptorFactory" />
+
+	<vm:config name="VM_Config">
+		<vm:queues>
+			<vm:queue queueName="Q1" />
+		</vm:queues>
+	</vm:config>
+
+	<flow name="redeliveryPolicyFlowDispatch">
+		<vm:publish-consume queueName="Q1"
+			config-ref="VM_Config" timeout="1" />
+		<logger level="ERROR" message="#[payload]" />
+	</flow>
+
+	<flow name="redeliveryPolicyFlowProcess">
+		<vm:listener queueName="Q1" config-ref="VM_Config">
+			<redelivery-policy maxRedeliveryCount="0" />
+		</vm:listener>
+		<raise-error type="APP:FLOW_ERROR" />
+	</flow>
+</mule>
