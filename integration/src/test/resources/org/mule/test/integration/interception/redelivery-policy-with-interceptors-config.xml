@@ -6,7 +6,7 @@
                            http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd">
 
     <object
-        class="org.mule.test.components.RedeliveryPolicyWithInterceptorsTestCase$TestInterceptorFactory" />
+        class="org.mule.test.integration.interception.RedeliveryPolicyWithInterceptorsTestCase$TestInterceptorFactory" />
 
     <vm:config name="VM_Config">
         <vm:queues>

@@ -4,13 +4,15 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.test.components;
+package org.mule.test.integration.interception;
 
 import static java.lang.Boolean.FALSE;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.metadata.MediaType.APPLICATION_JSON;
 import static org.mule.runtime.api.notification.PipelineMessageNotification.PROCESS_COMPLETE;
+import static org.mule.test.allure.AllureConstants.InterceptonApi.INTERCEPTION_API;
+import static org.mule.test.allure.AllureConstants.InterceptonApi.ComponentInterceptionStory.COMPONENT_INTERCEPTION_STORY;
 
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
@@ -26,8 +28,12 @@ import org.mule.runtime.api.notification.PipelineMessageNotification;
 import org.mule.runtime.api.notification.PipelineMessageNotificationListener;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import io.qameta.allure.Feature;
 import io.qameta.allure.Issue;
+import io.qameta.allure.Story;
 
+@Feature(INTERCEPTION_API)
+@Story(COMPONENT_INTERCEPTION_STORY)
 public class RedeliveryPolicyWithInterceptorsTestCase extends AbstractIntegrationTestCase {
 
   private static final String REDELIVERY_POLICY_FLOW_DISPATCH_FLOW = "redeliveryPolicyFlowDispatch";
@@ -42,7 +48,7 @@ public class RedeliveryPolicyWithInterceptorsTestCase extends AbstractIntegratio
 
   @Override
   protected String getConfigFile() {
-    return "org/mule/test/components/redelivery-policy-with-interceptors-config.xml";
+    return "org/mule/test/integration/interception/redelivery-policy-with-interceptors-config.xml";
   }
 
   @Test
