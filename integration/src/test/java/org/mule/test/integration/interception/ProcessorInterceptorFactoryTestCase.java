@@ -11,6 +11,7 @@ import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItems;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.endsWith;
@@ -19,6 +20,7 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mule.functional.api.exception.ExpectedError.none;
 import static org.mule.runtime.api.interception.ProcessorInterceptorFactory.INTERCEPTORS_ORDER_REGISTRY_KEY;
@@ -760,6 +762,20 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
   public void implicitConfigInNestedScope() throws Exception {
     // before MULE-16730, this execution hanged
     assertThat(flowRunner("implicitConfigInNestedScope").run(), not(nullValue()));
+  }
+
+  @Test
+  @Description("Test the parameter interception using Scripting, which uses the legacy operation executor")
+  public void interceptParametersUsingLegacyOperationExecutorFactory() throws Exception {
+    flowRunner("interceptingScriptingParameters").run();
+
+    List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
+    assertThat(interceptionParameters, hasSize(1));
+
+    Map<String, ProcessorParameterValue> scriptingParameters = interceptionParameters.get(0).getParameters();
+    assertThat(scriptingParameters.keySet(), hasSize(5));
+    assertThat(scriptingParameters.keySet(), containsInAnyOrder("engine", "doc:name", "target", "code", "targetValue"));
+    assertThat(scriptingParameters.get("doc:name").resolveValue(), is("Execute 5"));
   }
 
   public static class HasInjectedAttributesInterceptorFactory implements ProcessorInterceptorFactory {
