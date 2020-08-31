@@ -15,71 +15,68 @@
     </file:config>
 
     <flow name="listOfMessagesSource" initialState="stopped">
-        <marvel:cerebro-detect-new-mutants/>
+        <marvel:cerebro-detect-new-mutants>
+            <!-- Returned value is already non-repeatable -->
+        </marvel:cerebro-detect-new-mutants>
     
-        <flow-ref name="consumeStreams"/>
+        <flow-ref name="consumeStreamsOnce"/>
 
         <test:queue name="listOfMessagesSourceComplete"/>
     </flow>
 
     <flow name="listOfMessagesOperation">
-        <marvel:adamantium-injectors injectorsToCreate="4" injectorLoad="${bytesSize}"/>
+        <marvel:adamantium-injectors injectorsToCreate="4" injectorLoad="${bytesSize}">
+            <!-- Returned value is already non-repeatable -->
+        </marvel:adamantium-injectors>
     
-        <flow-ref name="consumeStreams"/>
+        <flow-ref name="consumeStreamsOnce"/>
     </flow>
 
     <flow name="pagesOfMessagesOperation">
-        <file:list config-ref="file" directoryPath="#[vars.path]"/>
+        <file:list config-ref="file" directoryPath="#[vars.path]">
+            <non-repeatable-iterable />
+        </file:list>
     
-        <flow-ref name="consumeStreams"/>
+        <flow-ref name="consumeStreamsOnce"/>
     </flow>
 
     <flow name="pagedOperation">
-        <marvel:get-relics/>
+        <marvel:get-relics>
+            <non-repeatable-iterable />
+        </marvel:get-relics>
     
-        <flow-ref name="consumeObjects"/>
+        <flow-ref name="consumeObjectsOnce"/>
     </flow>
 
     <flow name="streamOperation">
-        <marvel:to-stream/>
+        <marvel:to-stream>
+            <non-repeatable-stream />
+        </marvel:to-stream>
     
-        <flow-ref name="consumeStream"/>
+        <flow-ref name="consumeStreamOnce"/>
     </flow>
 
     <flow name="iteratorOperation">
-        <marvel:wolverine-blacklist/>
+        <marvel:wolverine-blacklist>
+            <!-- Returned value is already non-repeatable -->
+        </marvel:wolverine-blacklist>
     
-        <flow-ref name="consumeStreams"/>
+        <flow-ref name="consumeStreamsOnce"/>
     </flow>
 
     <!-- Utility sub-flow's -->
 
-    <sub-flow name="consumeStream">
-        <file:write config-ref="file" path="#[random() as String]"/>
-        
-        <!-- Do a second iteration to make sure that operation output is only accounter for once in the statistics -->
-        <file:write config-ref="file" path="#[random() as String]"/>
+    <sub-flow name="consumeStreamOnce">
         <file:write config-ref="file" path="#[random() as String]"/>
     </sub-flow>
 
-    <sub-flow name="consumeStreams">
+    <sub-flow name="consumeStreamsOnce">
         <foreach>
-            <file:write config-ref="file" path="#[random() as String]"/>
-        </foreach>
-        
-        <!-- Do a second iteration to make sure that operation output is only accounter for once in the statistics -->
-        <foreach>
-            <file:write config-ref="file" path="#[random() as String]"/>
             <file:write config-ref="file" path="#[random() as String]"/>
         </foreach>
     </sub-flow>
 
-    <sub-flow name="consumeObjects">
-        <foreach>
-            <logger message="foreach consumes objects form the list/iterator"/>
-        </foreach>
-        
-        <!-- Do a second iteration to make sure that operation output is only accounter for once in the statistics -->
+    <sub-flow name="consumeObjectsOnce">
         <foreach>
             <logger message="foreach consumes objects form the list/iterator"/>
         </foreach>
