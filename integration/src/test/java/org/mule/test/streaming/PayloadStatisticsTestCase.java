@@ -6,6 +6,7 @@
  */
 package org.mule.test.streaming;
 
+import static java.util.Arrays.asList;
 import static org.apache.commons.io.FileUtils.writeStringToFile;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.hamcrest.Matchers.is;
@@ -21,9 +22,11 @@ import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.management.stats.PayloadStatistics;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.test.runner.RunnerDelegateTo;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -33,6 +36,8 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
@@ -40,6 +45,7 @@ import io.qameta.allure.Story;
 
 @Feature(STREAMING)
 @Story(STATISTICS)
+@RunnerDelegateTo(Parameterized.class)
 public class PayloadStatisticsTestCase extends AbstractIntegrationTestCase {
 
   public static final int BYTES_SIZE = 1343;
@@ -62,9 +68,22 @@ public class PayloadStatisticsTestCase extends AbstractIntegrationTestCase {
   @Named("listOfMessagesSource")
   public Flow listOfMessagesSource;
 
+  private final String configFile;
+
+  @Parameters(name = "{0}")
+  public static Collection<String> data() {
+    return asList("payload-statistics-config.xml",
+                  "payload-statistics-non-repeatable-config.xml");
+  }
+
+  public PayloadStatisticsTestCase(String configFile) {
+    this.configFile = configFile;
+  }
+
+
   @Override
   protected String getConfigFile() {
-    return "org/mule/streaming/payload-statistics-config.xml";
+    return "org/mule/streaming/" + configFile;
   }
 
   @Before
@@ -134,7 +153,60 @@ public class PayloadStatisticsTestCase extends AbstractIntegrationTestCase {
     assertThat(fileListStatistics.getInputObjectCount(), is(0L));
     assertThat(fileListStatistics.getInputByteCount(), is(0L));
     assertThat(fileListStatistics.getOutputObjectCount(), is(3L));
-    // TODO MULE-18652 the operation used in this test returns a PagingProvider, which needs specific handling
-    // assertThat(fileListStatistics.getOutputByteCount(), is(BYTES_SIZE * 3L));
+    assertThat(fileListStatistics.getOutputByteCount(), is(BYTES_SIZE * 3L));
+  }
+
+  @Test
+  @Description("Assert statistics for an operation that returns a PagingProvider")
+  public void pagedOperation() throws Exception {
+    flowRunner("pagedOperation").run();
+
+    final PayloadStatistics fileListStatistics =
+        muleContext.getStatistics().getPayloadStatistics("pagedOperation/processors/0");
+
+    assertThat(fileListStatistics.getComponentIdentifier(), is("marvel:get-relics"));
+
+    assertThat(fileListStatistics.getInvocationCount(), is(1L));
+
+    assertThat(fileListStatistics.getInputObjectCount(), is(0L));
+    assertThat(fileListStatistics.getInputByteCount(), is(0L));
+    assertThat(fileListStatistics.getOutputObjectCount(), is(9L));
+    assertThat(fileListStatistics.getOutputByteCount(), is(0L));
+  }
+
+  @Test
+  @Description("Assert statistics for an operation that returns an InputStream")
+  public void streamOperation() throws Exception {
+    flowRunner("streamOperation").withPayload(randomAlphanumeric(BYTES_SIZE)).run();
+
+    final PayloadStatistics fileListStatistics =
+        muleContext.getStatistics().getPayloadStatistics("streamOperation/processors/0");
+
+    assertThat(fileListStatistics.getComponentIdentifier(), is("marvel:to-stream"));
+
+    assertThat(fileListStatistics.getInvocationCount(), is(1L));
+
+    assertThat(fileListStatistics.getInputObjectCount(), is(0L));
+    assertThat(fileListStatistics.getInputByteCount(), is(0L));
+    assertThat(fileListStatistics.getOutputObjectCount(), is(0L));
+    assertThat(fileListStatistics.getOutputByteCount(), is(BYTES_SIZE * 1L));
+  }
+
+  @Test
+  @Description("Assert statistics for an operation that returns an Iterator")
+  public void iteratorOperation() throws Exception {
+    flowRunner("iteratorOperation").run();
+
+    final PayloadStatistics fileListStatistics =
+        muleContext.getStatistics().getPayloadStatistics("iteratorOperation/processors/0");
+
+    assertThat(fileListStatistics.getComponentIdentifier(), is("marvel:wolverine-blacklist"));
+
+    assertThat(fileListStatistics.getInvocationCount(), is(1L));
+
+    assertThat(fileListStatistics.getInputObjectCount(), is(0L));
+    assertThat(fileListStatistics.getInputByteCount(), is(0L));
+    assertThat(fileListStatistics.getOutputObjectCount(), is(6L));
+    assertThat(fileListStatistics.getOutputByteCount(), is(0L));
   }
 }
