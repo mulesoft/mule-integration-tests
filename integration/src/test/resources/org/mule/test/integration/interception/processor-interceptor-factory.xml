@@ -5,11 +5,13 @@
     xmlns:http="http://www.mulesoft.org/schema/mule/http"
     xmlns:heisenberg="http://www.mulesoft.org/schema/mule/heisenberg"
     xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
+    xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
                http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
                http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
                http://www.mulesoft.org/schema/mule/heisenberg http://www.mulesoft.org/schema/mule/heisenberg/current/mule-heisenberg.xsd
+               http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd
                http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
 
     <configuration defaultErrorHandler-ref="globalErrorHandler" />
@@ -137,15 +139,21 @@
                 <test:check-equals>
                     <![CDATA[
                         Message               : An error occurred.
-                        Element               : operationWithChainFailing/processors/0/processors/0 @ ProcessorInterceptorFactoryChainTestCase#operationWithChainFailingLogsCorrectly:org/mule/test/integration/interception/processor-interceptor-factory.xml:133
+                        Element               : operationWithChainFailing/processors/0/processors/0 @ ProcessorInterceptorFactoryChainTestCase#operationWithChainFailingLogsCorrectly:org/mule/test/integration/interception/processor-interceptor-factory.xml:135
                         Element DSL           : <raise-error type="TEST:EXPECTED"></raise-error>
                         Error type            : TEST:EXPECTED
-                        FlowStack             : at operationWithChainFailing(operationWithChainFailing/processors/0/processors/0 @ ProcessorInterceptorFactoryChainTestCase#operationWithChainFailingLogsCorrectly:org/mule/test/integration/interception/processor-interceptor-factory.xml:133)
+                        FlowStack             : at operationWithChainFailing(operationWithChainFailing/processors/0/processors/0 @ ProcessorInterceptorFactoryChainTestCase#operationWithChainFailingLogsCorrectly:org/mule/test/integration/interception/processor-interceptor-factory.xml:135)
                         (set debug level logging or '-Dmule.verbose.exceptions=true' for everything)
                     ]]>
                 </test:check-equals>
             </test:on-error-check-log>
         </error-handler>
+    </flow>
+
+    <flow name="interceptingScriptingParameters">
+        <scripting:execute engine="Groovy" doc:name="Execute 5" target="scriptResult">
+            <scripting:code ><![CDATA[return 5;]]></scripting:code>
+        </scripting:execute>
     </flow>
 
 </mule>
