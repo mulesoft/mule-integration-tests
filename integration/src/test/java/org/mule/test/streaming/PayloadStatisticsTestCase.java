@@ -13,6 +13,7 @@ import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.util.MuleSystemProperties.MULE_ENABLE_STATISTICS;
+import static org.mule.runtime.core.api.util.FileUtils.cleanDirectory;
 import static org.mule.test.allure.AllureConstants.StreamingFeature.STREAMING;
 import static org.mule.test.allure.AllureConstants.StreamingFeature.StreamingStory.STATISTICS;
 
@@ -25,11 +26,13 @@ import org.mule.test.runner.RunnerDelegateTo;
 import org.mule.tests.api.TestQueueManager;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -79,10 +82,14 @@ public class PayloadStatisticsTestCase extends AbstractIntegrationTestCase {
     this.configFile = configFile;
   }
 
-
   @Override
   protected String getConfigFile() {
     return "org/mule/streaming/" + configFile;
+  }
+
+  @Before
+  public void before() throws IOException {
+    cleanDirectory(temporaryFolder.getRoot());
   }
 
   @Test
@@ -202,4 +209,56 @@ public class PayloadStatisticsTestCase extends AbstractIntegrationTestCase {
     assertThat(fileListStatistics.getOutputObjectCount(), is(6L));
     assertThat(fileListStatistics.getOutputByteCount(), is(0L));
   }
+
+  @Test
+  public void streamInputOperation() throws Exception {
+    flowRunner("streamInputOperation").withPayload(randomAlphanumeric(BYTES_SIZE)).run();
+
+    final PayloadStatistics fileListStatistics =
+        muleContext.getStatistics().getPayloadStatistics("streamInputOperation/processors/0");
+
+    assertThat(fileListStatistics.getComponentIdentifier(), is("file:write"));
+
+    assertThat(fileListStatistics.getInvocationCount(), is(1L));
+
+    assertThat(fileListStatistics.getInputObjectCount(), is(0L));
+    assertThat(fileListStatistics.getInputByteCount(), is(BYTES_SIZE * 1L));
+    assertThat(fileListStatistics.getOutputObjectCount(), is(0L));
+    assertThat(fileListStatistics.getOutputByteCount(), is(0L));
+  }
+
+  @Test
+  public void listInputOperation() throws Exception {
+    flowRunner("listInputOperation").withPayload(asList("Sentinel", "Nimrod", "Master Mold")).run();
+
+    final PayloadStatistics shredIterator =
+        muleContext.getStatistics().getPayloadStatistics("listInputOperation/processors/0");
+
+    assertThat(shredIterator.getComponentIdentifier(), is("marvel:wolverine-shred"));
+
+    assertThat(shredIterator.getInvocationCount(), is(1L));
+
+    assertThat(shredIterator.getInputObjectCount(), is(3L));
+    assertThat(shredIterator.getInputByteCount(), is(0L));
+    assertThat(shredIterator.getOutputObjectCount(), is(0L));
+    assertThat(shredIterator.getOutputByteCount(), is(0L));
+  }
+
+  @Test
+  public void iteratorInputOperation() throws Exception {
+    flowRunner("iteratorInputOperation").withPayload(asList("Poker Card", "Pool Stick").iterator()).run();
+
+    final PayloadStatistics fileListStatistics =
+        muleContext.getStatistics().getPayloadStatistics("iteratorInputOperation/processors/0");
+
+    assertThat(fileListStatistics.getComponentIdentifier(), is("marvel:gambit-charge-items"));
+
+    assertThat(fileListStatistics.getInvocationCount(), is(1L));
+
+    assertThat(fileListStatistics.getInputObjectCount(), is(2L));
+    assertThat(fileListStatistics.getInputByteCount(), is(0L));
+    assertThat(fileListStatistics.getOutputObjectCount(), is(0L));
+    assertThat(fileListStatistics.getOutputByteCount(), is(0L));
+  }
+
 }

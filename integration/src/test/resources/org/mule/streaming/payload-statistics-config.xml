@@ -59,6 +59,18 @@
         <flow-ref name="consumeStreams"/>
     </flow>
 
+    <flow name="streamInputOperation">
+        <file:write config-ref="file" path="#[random() as String]"/>
+    </flow>
+
+    <flow name="listInputOperation">
+        <marvel:wolverine-shred/>
+    </flow>
+
+    <flow name="iteratorInputOperation">
+        <marvel:gambit-charge-items/>
+    </flow>
+
     <!-- Utility sub-flow's -->
 
     <sub-flow name="consumeStream">
