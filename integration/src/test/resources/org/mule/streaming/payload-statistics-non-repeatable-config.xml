@@ -18,6 +18,12 @@
     <test-components:queue-config name="listOfMessagesSourceComplete">
         <test-components:connection />
     </test-components:queue-config>
+    <test-components:queue-config name="streamSourceComplete">
+        <test-components:connection />
+    </test-components:queue-config>
+    <test-components:queue-config name="iteratorSourceComplete">
+        <test-components:connection />
+    </test-components:queue-config>
 
     <http:listener-config name="simpleConf">
         <http:listener-connection host="localhost" port="${port}"/>
@@ -45,6 +51,14 @@
         <flow-ref name="consumeStreamsOnce"/>
 
         <test-components:queue-push config-ref="listOfMessagesSourceComplete"/>
+    </flow>
+    
+    <flow name="streamSource" initialState="stopped">
+        <marvel:magneto-mutant-summon/>
+    
+        <flow-ref name="consumeStreamOnce"/>
+        
+        <test-components:queue-push config-ref="streamSourceComplete"/>
     </flow>
 
     <flow name="listOfMessagesOperation">
@@ -85,6 +99,14 @@
         </marvel:wolverine-blacklist>
     
         <flow-ref name="consumeStreamsOnce"/>
+    </flow>
+    
+   <flow name="iteratorSource" initialState="stopped">
+        <marvel:magneto-brotherhood />
+    
+        <flow-ref name="consumeStreamsOnce"/>
+        
+        <test-components:queue-push config-ref="iteratorSourceComplete"/>
     </flow>
 
     <!-- Utility sub-flow's -->

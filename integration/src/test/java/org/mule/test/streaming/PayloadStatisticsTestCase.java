@@ -61,6 +61,8 @@ public class PayloadStatisticsTestCase extends AbstractIntegrationTestCase {
 
   public static final int BYTES_SIZE = 1343;
 
+  public static final int MUTANT_SUMMON_BYTE_SIZE = 84;
+
   @ClassRule
   public static TemporaryFolder temporaryFolder = new TemporaryFolder();
 
@@ -85,6 +87,14 @@ public class PayloadStatisticsTestCase extends AbstractIntegrationTestCase {
   @Inject
   @Named("listOfMessagesSource")
   public Flow listOfMessagesSource;
+
+  @Inject
+  @Named("streamSource")
+  public Flow streamSource;
+
+  @Inject
+  @Named("iteratorSource")
+  public Flow iteratorSource;
 
   private final String configFile;
 
@@ -243,6 +253,47 @@ public class PayloadStatisticsTestCase extends AbstractIntegrationTestCase {
         muleContext.getStatistics().getPayloadStatistics("iteratorOperation/processors/0");
 
     assertThat(fileListStatistics.getComponentIdentifier(), is("marvel:wolverine-blacklist"));
+
+    assertThat(fileListStatistics.getInvocationCount(), is(1L));
+
+    assertThat(fileListStatistics.getInputObjectCount(), is(0L));
+    assertThat(fileListStatistics.getInputByteCount(), is(0L));
+    assertThat(fileListStatistics.getOutputObjectCount(), is(6L));
+    assertThat(fileListStatistics.getOutputByteCount(), is(0L));
+  }
+
+  @Test
+  @Description("Assert statistics for an source that generates an InputStream")
+  public void streamSource() throws Exception {
+    streamSource.start();
+
+    queueManager.read("streamSourceComplete", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
+
+    final PayloadStatistics fileListStatistics =
+        muleContext.getStatistics().getPayloadStatistics("streamSource/source");
+
+    assertThat(fileListStatistics.getComponentIdentifier(), is("marvel:magneto-mutant-summon"));
+
+    assertThat(fileListStatistics.getInvocationCount(), is(1L));
+
+    assertThat(fileListStatistics.getInputObjectCount(), is(0L));
+    assertThat(fileListStatistics.getInputByteCount(), is(0L));
+    // do not count the container message
+    assertThat(fileListStatistics.getOutputObjectCount(), is(0L));
+    assertThat(fileListStatistics.getOutputByteCount(), is(MUTANT_SUMMON_BYTE_SIZE * 1L));
+  }
+
+  @Test
+  @Description("Assert statistics for an operation that returns an Iterator")
+  public void iteratorSource() throws Exception {
+    iteratorSource.start();
+
+    queueManager.read("iteratorSourceComplete", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
+
+    final PayloadStatistics fileListStatistics =
+        muleContext.getStatistics().getPayloadStatistics("iteratorSource/source");
+
+    assertThat(fileListStatistics.getComponentIdentifier(), is("marvel:magneto-brotherhood"));
 
     assertThat(fileListStatistics.getInvocationCount(), is(1L));
 
