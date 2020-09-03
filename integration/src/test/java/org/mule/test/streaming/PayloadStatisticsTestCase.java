@@ -13,6 +13,7 @@ import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.util.MuleSystemProperties.MULE_ENABLE_STATISTICS;
+import static org.mule.runtime.core.api.util.FileUtils.cleanDirectory;
 import static org.mule.test.allure.AllureConstants.StreamingFeature.STREAMING;
 import static org.mule.test.allure.AllureConstants.StreamingFeature.StreamingStory.STATISTICS;
 
@@ -25,11 +26,13 @@ import org.mule.test.runner.RunnerDelegateTo;
 import org.mule.tests.api.TestQueueManager;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -79,10 +82,14 @@ public class PayloadStatisticsTestCase extends AbstractIntegrationTestCase {
     this.configFile = configFile;
   }
 
-
   @Override
   protected String getConfigFile() {
     return "org/mule/streaming/" + configFile;
+  }
+
+  @Before
+  public void before() throws IOException {
+    cleanDirectory(temporaryFolder.getRoot());
   }
 
   @Test
@@ -202,4 +209,5 @@ public class PayloadStatisticsTestCase extends AbstractIntegrationTestCase {
     assertThat(fileListStatistics.getOutputObjectCount(), is(6L));
     assertThat(fileListStatistics.getOutputByteCount(), is(0L));
   }
+
 }
