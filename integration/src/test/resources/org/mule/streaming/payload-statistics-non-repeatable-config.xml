@@ -54,7 +54,11 @@
     </flow>
     
     <flow name="streamSource" initialState="stopped">
-        <marvel:magneto-mutant-summon/>
+        <marvel:magneto-mutant-summon>
+            <marvel:response>
+                <marvel:body>#[payload]</marvel:body>
+            </marvel:response>
+        </marvel:magneto-mutant-summon>
     
         <flow-ref name="consumeStreamOnce"/>
         
