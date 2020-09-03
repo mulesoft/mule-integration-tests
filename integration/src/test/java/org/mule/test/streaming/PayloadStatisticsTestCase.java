@@ -80,7 +80,6 @@ public class PayloadStatisticsTestCase extends AbstractIntegrationTestCase {
     this.configFile = configFile;
   }
 
-
   @Override
   protected String getConfigFile() {
     return "org/mule/streaming/" + configFile;
@@ -209,4 +208,5 @@ public class PayloadStatisticsTestCase extends AbstractIntegrationTestCase {
     assertThat(fileListStatistics.getOutputObjectCount(), is(6L));
     assertThat(fileListStatistics.getOutputByteCount(), is(0L));
   }
+
 }
