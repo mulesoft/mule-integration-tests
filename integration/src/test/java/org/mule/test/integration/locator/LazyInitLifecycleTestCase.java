@@ -114,7 +114,6 @@ public class LazyInitLifecycleTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  @Ignore("MULE-18566")
   public void lazyMuleContextInitializeMultipleTimesProcessor() {
     CustomTestComponent.statesByInstances.clear();
 

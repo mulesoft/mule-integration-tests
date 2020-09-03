@@ -57,7 +57,6 @@ public class LazyInitConfigurationLifecycleTestCase extends AbstractIntegrationT
 
   @Test
   @Issue("MULE-18417")
-  @Ignore("MULE-18566")
   public void nestedConfigLifecycle() {
     lazyComponentInitializer.initializeComponents(componentLocation -> componentLocation.getLocation().equals("rootConfig"));
 

@@ -74,7 +74,6 @@ public class MuleContextLifecycleTestCase extends AbstractMuleTestCase {
   }
 
   @Test
-  @Ignore("MULE-18566")
   public void failOnInitialiseInvokesDisposeInOtherComponentsButNotInTheFailedOne() {
     testOnContextLifecycleFailure("lifecycle/component-failing-during-initialise-config.xml",
                                   failOnStartLifecycleBean -> {
