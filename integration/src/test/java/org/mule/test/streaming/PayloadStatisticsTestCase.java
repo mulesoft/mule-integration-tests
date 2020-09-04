@@ -6,12 +6,14 @@
  */
 package org.mule.test.streaming;
 
+import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static org.apache.commons.io.FileUtils.writeStringToFile;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.util.MuleSystemProperties.MULE_ENABLE_STATISTICS;
+import static org.mule.runtime.http.api.HttpConstants.Method.POST;
 import static org.mule.runtime.core.api.util.FileUtils.cleanDirectory;
 import static org.mule.test.allure.AllureConstants.StreamingFeature.STREAMING;
 import static org.mule.test.allure.AllureConstants.StreamingFeature.StreamingStory.STATISTICS;
@@ -20,6 +22,13 @@ import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.management.stats.PayloadStatistics;
+import org.mule.runtime.http.api.HttpService;
+import org.mule.runtime.http.api.client.HttpRequestOptions;
+import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;
+import org.mule.runtime.http.api.domain.message.request.HttpRequest;
+import org.mule.runtime.http.api.domain.message.response.HttpResponse;
+import org.mule.service.http.TestHttpClient;
+import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.runner.RunnerDelegateTo;
@@ -27,6 +36,7 @@ import org.mule.test.runner.RunnerDelegateTo;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.concurrent.TimeoutException;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -62,6 +72,12 @@ public class PayloadStatisticsTestCase extends AbstractIntegrationTestCase {
   @Rule
   public SystemProperty withStatistics = new SystemProperty(MULE_ENABLE_STATISTICS, "true");
 
+  @Rule
+  public DynamicPort port = new DynamicPort("port");
+
+  @Rule
+  public TestHttpClient httpClient = new TestHttpClient.Builder(getService(HttpService.class)).build();
+
   private TestConnectorQueueHandler queueHandler;
 
   @Inject
@@ -89,6 +105,32 @@ public class PayloadStatisticsTestCase extends AbstractIntegrationTestCase {
   public void before() throws IOException {
     cleanDirectory(temporaryFolder.getRoot());
     queueHandler = new TestConnectorQueueHandler(registry);
+  }
+
+  @Test
+  @Description("Assert statistics for a source that generates a List of objects with an iterator")
+  public void bytesSource() throws MuleException, IOException, TimeoutException {
+    HttpRequest httpRequest = HttpRequest.builder()
+        .method(POST)
+        .uri(format("http://localhost:%d", port.getNumber()))
+        .entity(new ByteArrayHttpEntity(randomAlphanumeric(BYTES_SIZE).getBytes()))
+        .build();
+
+    HttpRequestOptions options = HttpRequestOptions.builder().responseTimeout(RECEIVE_TIMEOUT).build();
+
+    HttpResponse httpResponse = httpClient.send(httpRequest, options);
+
+    final PayloadStatistics fileListStatistics =
+        muleContext.getStatistics().getPayloadStatistics("bytesSource/source");
+
+    assertThat(fileListStatistics.getComponentIdentifier(), is("http:listener"));
+
+    assertThat(fileListStatistics.getInvocationCount(), is(1L));
+
+    assertThat(fileListStatistics.getInputObjectCount(), is(0L));
+    assertThat(fileListStatistics.getInputByteCount(), is(0L));
+    assertThat(fileListStatistics.getOutputObjectCount(), is(0L));
+    assertThat(fileListStatistics.getOutputByteCount(), is(BYTES_SIZE * 1L));
   }
 
   @Test
