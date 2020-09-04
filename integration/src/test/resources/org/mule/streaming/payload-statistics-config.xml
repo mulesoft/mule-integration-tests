@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
       xmlns:file="http://www.mulesoft.org/schema/mule/file"
       xmlns:marvel="http://www.mulesoft.org/schema/mule/marvel"
       xmlns:test-components="http://www.mulesoft.org/schema/mule/test-components"
       xsi:schemaLocation="
        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
        http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+       http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
        http://www.mulesoft.org/schema/mule/marvel http://www.mulesoft.org/schema/mule/marvel/current/mule-marvel.xsd
        http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
 
@@ -17,9 +19,19 @@
         <test-components:connection />
     </test-components:queue-config>
 
+    <http:listener-config name="simpleConf">
+        <http:listener-connection host="localhost" port="${port}"/>
+    </http:listener-config>
+
     <file:config name="file">
         <file:connection workingDir="${workingDir}" />
     </file:config>
+
+    <flow name="bytesSource">
+        <http:listener path="/" config-ref="simpleConf"/>
+    
+        <flow-ref name="consumeStream"/>
+    </flow>
 
     <flow name="listOfMessagesSource" initialState="stopped">
         <marvel:cerebro-detect-new-mutants/>
