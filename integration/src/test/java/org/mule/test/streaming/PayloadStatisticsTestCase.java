@@ -13,6 +13,7 @@ import static org.apache.commons.io.FileUtils.writeStringToFile;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.verify;
 import static org.mule.runtime.api.util.MuleSystemProperties.MULE_ENABLE_STATISTICS;
 import static org.mule.runtime.core.api.util.FileUtils.cleanDirectory;
 import static org.mule.runtime.http.api.HttpConstants.Method.POST;
@@ -20,6 +21,8 @@ import static org.mule.test.allure.AllureConstants.StreamingFeature.STREAMING;
 import static org.mule.test.allure.AllureConstants.StreamingFeature.StreamingStory.STATISTICS;
 
 import org.mule.runtime.api.exception.MuleException;
+import org.mule.runtime.api.exception.MuleRuntimeException;
+import org.mule.runtime.api.lifecycle.Disposable;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.management.stats.PayloadStatistics;
 import org.mule.runtime.http.api.HttpService;
@@ -30,6 +33,9 @@ import org.mule.runtime.http.api.domain.message.response.HttpResponse;
 import org.mule.service.http.TestHttpClient;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
+import org.mule.tck.probe.JUnitLambdaProbe;
+import org.mule.tck.probe.PollingProber;
+import org.mule.tck.probe.Probe;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.runner.RunnerDelegateTo;
 import org.mule.tests.api.TestQueueManager;
@@ -95,6 +101,10 @@ public class PayloadStatisticsTestCase extends AbstractIntegrationTestCase {
   @Inject
   @Named("iteratorSource")
   public Flow iteratorSource;
+
+  @Inject
+  @Named("iteratorSourceConsumeOnResponse")
+  public Flow iteratorSourceConsumeOnResponse;
 
   private final String configFile;
 
@@ -281,10 +291,15 @@ public class PayloadStatisticsTestCase extends AbstractIntegrationTestCase {
     // do not count the container message
     assertThat(fileListStatistics.getOutputObjectCount(), is(0L));
     assertThat(fileListStatistics.getOutputByteCount(), is(MUTANT_SUMMON_BYTE_SIZE * 1L));
+
+    new PollingProber().check(new JUnitLambdaProbe(() -> {
+      assertThat(fileListStatistics.getInputByteCount(), is(MUTANT_SUMMON_BYTE_SIZE * 1L));
+      return true;
+    }));
   }
 
   @Test
-  @Description("Assert statistics for an operation that returns an Iterator")
+  @Description("Assert statistics for a source that returns an Iterator")
   public void iteratorSource() throws Exception {
     iteratorSource.start();
 
@@ -301,6 +316,29 @@ public class PayloadStatisticsTestCase extends AbstractIntegrationTestCase {
     assertThat(fileListStatistics.getInputByteCount(), is(0L));
     assertThat(fileListStatistics.getOutputObjectCount(), is(6L));
     assertThat(fileListStatistics.getOutputByteCount(), is(0L));
+  }
+
+  @Test
+  @Description("Assert statistics for a source that consumes an iterator on response")
+  public void iteratorSourceConsumeElementsOnResponse() throws Exception {
+    iteratorSourceConsumeOnResponse.start();
+
+    queueManager.read("iteratorSourceConsumeOnResponseComplete", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
+
+    final PayloadStatistics fileListStatistics =
+        muleContext.getStatistics().getPayloadStatistics("iteratorSourceConsumeOnResponse/source");
+
+    assertThat(fileListStatistics.getComponentIdentifier(), is("marvel:magneto-brotherhood"));
+
+    assertThat(fileListStatistics.getInvocationCount(), is(1L));
+    assertThat(fileListStatistics.getInputByteCount(), is(0L));
+    assertThat(fileListStatistics.getOutputObjectCount(), is(0L));
+    assertThat(fileListStatistics.getOutputByteCount(), is(0L));
+
+    new PollingProber().check(new JUnitLambdaProbe(() -> {
+      assertThat(fileListStatistics.getInputObjectCount(), is(6L));
+      return true;
+    }));
   }
 
 }

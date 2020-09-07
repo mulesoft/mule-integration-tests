@@ -24,6 +24,9 @@
     <test-components:queue-config name="iteratorSourceComplete">
         <test-components:connection />
     </test-components:queue-config>
+    <test-components:queue-config name="iteratorSourceConsumeOnResponseComplete">
+        <test-components:connection />
+    </test-components:queue-config>
 
     <http:listener-config name="simpleConf">
         <http:listener-connection host="localhost" port="${port}"/>
@@ -93,6 +96,16 @@
         <flow-ref name="consumeStreams"/>
         
         <test-components:queue-push config-ref="iteratorSourceComplete"/>
+    </flow>
+    
+    <flow name="iteratorSourceConsumeOnResponse" initialState="stopped">
+        <marvel:magneto-brotherhood>
+            <marvel:response>
+                <marvel:body>#[payload]</marvel:body>
+            </marvel:response>
+        </marvel:magneto-brotherhood>
+    
+        <test-components:queue-push config-ref="iteratorSourceConsumeOnResponseComplete"/>
     </flow>
 
     <flow name="iteratorOperation">
