@@ -286,7 +286,6 @@ public class PayloadStatisticsTestCase extends AbstractIntegrationTestCase {
     assertThat(fileListStatistics.getInvocationCount(), is(1L));
 
     assertThat(fileListStatistics.getInputObjectCount(), is(0L));
-    assertThat(fileListStatistics.getInputByteCount(), is(0L));
     // do not count the container message
     assertThat(fileListStatistics.getOutputObjectCount(), is(0L));
     assertThat(fileListStatistics.getOutputByteCount(), is(MUTANT_SUMMON_BYTE_SIZE * 1L));
