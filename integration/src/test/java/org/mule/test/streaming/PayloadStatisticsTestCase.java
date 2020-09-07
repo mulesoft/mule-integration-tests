@@ -13,7 +13,6 @@ import static org.apache.commons.io.FileUtils.writeStringToFile;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.verify;
 import static org.mule.runtime.api.util.MuleSystemProperties.MULE_ENABLE_STATISTICS;
 import static org.mule.runtime.core.api.util.FileUtils.cleanDirectory;
 import static org.mule.runtime.http.api.HttpConstants.Method.POST;
