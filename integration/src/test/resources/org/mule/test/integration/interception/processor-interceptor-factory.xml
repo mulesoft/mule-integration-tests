@@ -59,7 +59,7 @@
     </flow>
 
     <flow name="callGusFring">
-        <heisenberg:call-gus-fring />
+        <heisenberg:call-gus-fring config-ref="heisenberg" />
     </flow>
 
     <flow name="executeKillWithClient">
