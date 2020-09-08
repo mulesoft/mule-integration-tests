@@ -6,15 +6,12 @@
  */
 package org.mule.test.integration.exceptions;
 
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.tck.MuleTestUtils.getExceptionListeners;
 import static org.mule.tck.MuleTestUtils.getMessageProcessors;
 
 import org.mule.runtime.api.component.AbstractComponent;
-import org.mule.runtime.api.component.location.Location;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.lifecycle.Initialisable;
 import org.mule.runtime.api.lifecycle.InitialisationException;
@@ -32,9 +29,6 @@ import java.util.Collection;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.hamcrest.Matchers;
-import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class ErrorHandlerLifecycleTestCase extends AbstractIntegrationTestCase {
