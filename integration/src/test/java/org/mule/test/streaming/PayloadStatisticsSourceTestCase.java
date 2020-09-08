@@ -63,7 +63,6 @@ public class PayloadStatisticsSourceTestCase extends AbstractIntegrationTestCase
     return "org/mule/streaming/payload-statistics-source-config.xml";
   }
 
-
   @Test
   @Description("Assert statistics for an source that generates an InputStream")
   public void streamSource() throws Exception {
@@ -77,13 +76,12 @@ public class PayloadStatisticsSourceTestCase extends AbstractIntegrationTestCase
     assertThat(fileListStatistics.getComponentIdentifier(), is("marvel:magneto-mutant-summon"));
 
     assertThat(fileListStatistics.getInvocationCount(), is(1L));
-
-    assertThat(fileListStatistics.getInputObjectCount(), is(0L));
     // do not count the container message
     assertThat(fileListStatistics.getOutputObjectCount(), is(0L));
     assertThat(fileListStatistics.getOutputByteCount(), is(MUTANT_SUMMON_BYTE_SIZE * 1L));
 
     new PollingProber().check(new JUnitLambdaProbe(() -> {
+      assertThat(fileListStatistics.getInputObjectCount(), is(0L));
       assertThat(fileListStatistics.getInputByteCount(), is(MUTANT_SUMMON_BYTE_SIZE * 1L));
       return true;
     }));
@@ -102,11 +100,14 @@ public class PayloadStatisticsSourceTestCase extends AbstractIntegrationTestCase
     assertThat(fileListStatistics.getComponentIdentifier(), is("marvel:magneto-brotherhood"));
 
     assertThat(fileListStatistics.getInvocationCount(), is(1L));
-
-    assertThat(fileListStatistics.getInputObjectCount(), is(0L));
-    assertThat(fileListStatistics.getInputByteCount(), is(0L));
     assertThat(fileListStatistics.getOutputObjectCount(), is(6L));
     assertThat(fileListStatistics.getOutputByteCount(), is(0L));
+
+    new PollingProber().check(new JUnitLambdaProbe(() -> {
+      assertThat(fileListStatistics.getInputObjectCount(), is(0L));
+      assertThat(fileListStatistics.getInputByteCount(), is(0L));
+      return true;
+    }));
   }
 
   @Test
@@ -122,11 +123,11 @@ public class PayloadStatisticsSourceTestCase extends AbstractIntegrationTestCase
     assertThat(fileListStatistics.getComponentIdentifier(), is("marvel:magneto-brotherhood"));
 
     assertThat(fileListStatistics.getInvocationCount(), is(1L));
-    assertThat(fileListStatistics.getInputByteCount(), is(0L));
     assertThat(fileListStatistics.getOutputObjectCount(), is(0L));
     assertThat(fileListStatistics.getOutputByteCount(), is(0L));
 
     new PollingProber().check(new JUnitLambdaProbe(() -> {
+      assertThat(fileListStatistics.getInputByteCount(), is(0L));
       assertThat(fileListStatistics.getInputObjectCount(), is(6L));
       return true;
     }));
