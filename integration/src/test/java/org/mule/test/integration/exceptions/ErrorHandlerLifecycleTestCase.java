@@ -63,8 +63,8 @@ public class ErrorHandlerLifecycleTestCase extends AbstractIntegrationTestCase {
     flowRunner(flowA.getName()).run();
     flowRunner(flowB.getName()).run();
 
-    Collection<String> flowAErrorHandlerPhases = trackersRegistry.get("flowAErrorHandlerTracker");
-    Collection<String> flowBErrorHandlerPhases = trackersRegistry.get("flowBErrorHandlerTracker");
+    Collection<String> flowAErrorHandlerPhases = trackersRegistry.get("flowAErrorHandlerTracker").getCalledPhases();
+    Collection<String> flowBErrorHandlerPhases = trackersRegistry.get("flowBErrorHandlerTracker").getCalledPhases();
 
     assertThat(flowAErrorHandlerPhases.contains(Initialisable.PHASE_NAME), is(true));
     assertThat(flowBErrorHandlerPhases.contains(Initialisable.PHASE_NAME), is(true));

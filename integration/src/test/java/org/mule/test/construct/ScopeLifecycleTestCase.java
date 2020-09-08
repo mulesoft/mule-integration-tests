@@ -10,23 +10,28 @@ import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-import org.mule.functional.api.component.LifecycleTrackerScope;
 import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.tests.api.LifecycleTrackerRegistry;
+
+import javax.inject.Inject;
 
 import org.junit.Test;
 
 public class ScopeLifecycleTestCase extends AbstractIntegrationTestCase {
 
+  @Inject
+  private LifecycleTrackerRegistry trackerRegistry;
+
   @Override
   protected String getConfigFile() {
-    return "org/mule/test/construct/source.xml";
+    return "org/mule/test/construct/scope.xml";
   }
 
   @Test
-  public void sourceLifecycle() throws Exception {
-    LifecycleTrackerScope.getScopes().forEach(src -> {
-      assertThat(src.getTracker(), is(asList("setMuleContext", "initialise", "start")));
-    });
+  public void scopeLifecycle() throws Exception {
+    // Run the flow so the scope is initialized.
+    flowRunner("flow").run();
+    assertThat(trackerRegistry.get("scope").getCalledPhases(), is(asList("setMuleContext", "initialise", "start")));
   }
 
 }
