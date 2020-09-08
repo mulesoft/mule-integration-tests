@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:marvel="http://www.mulesoft.org/schema/mule/marvel"
+    xmlns:file="http://www.mulesoft.org/schema/mule/file"
+    xmlns:test="http://www.mulesoft.org/schema/mule/test"
+    xsi:schemaLocation="
+       http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+       http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+       http://www.mulesoft.org/schema/mule/marvel http://www.mulesoft.org/schema/mule/marvel/current/mule-marvel.xsd
+       http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+
+    <flow name="streamSource" initialState="stopped">
+        <marvel:magneto-mutant-summon>
+            <marvel:response>
+                <marvel:body>#[payload]</marvel:body>
+            </marvel:response>
+        </marvel:magneto-mutant-summon>
+
+        <flow-ref name="consumeStream" />
+
+        <test:queue name="streamSourceComplete" />
+    </flow>
+
+    <file:config name="file">
+        <file:connection workingDir="${workingDir}" />
+    </file:config>
+
+    <flow name="iteratorSource" initialState="stopped">
+        <marvel:magneto-brotherhood>
+            <marvel:response>
+                <marvel:body>#[payload]</marvel:body>
+            </marvel:response>
+        </marvel:magneto-brotherhood>
+
+        <flow-ref name="consumeStreams" />
+
+        <test:queue name="iteratorSourceComplete" />
+    </flow>
+
+    <flow name="iteratorSourceConsumeOnResponse"
+        initialState="stopped">
+        <marvel:magneto-brotherhood>
+            <marvel:response>
+                <marvel:body>#[payload]</marvel:body>
+            </marvel:response>
+        </marvel:magneto-brotherhood>
+
+        <test:queue
+            name="iteratorSourceConsumeOnResponseComplete" />
+    </flow>
+
+    <!-- Utility sub-flow's -->
+
+    <sub-flow name="consumeStream">
+        <file:write config-ref="file"
+            path="#[random() as String]" />
+
+        <!-- Do a second iteration to make sure that operation output is 
+            only accounter for once in the statistics -->
+        <file:write config-ref="file"
+            path="#[random() as String]" />
+        <file:write config-ref="file"
+            path="#[random() as String]" />
+    </sub-flow>
+
+    <sub-flow name="consumeStreams">
+        <foreach>
+            <file:write config-ref="file"
+                path="#[random() as String]" />
+        </foreach>
+
+        <!-- Do a second iteration to make sure that operation output is 
+            only accounter for once in the statistics -->
+        <foreach>
+            <file:write config-ref="file"
+                path="#[random() as String]" />
+            <file:write config-ref="file"
+                path="#[random() as String]" />
+        </foreach>
+    </sub-flow>
+</mule>
