@@ -13,11 +13,6 @@ import static org.mule.runtime.api.util.MuleSystemProperties.MULE_ENABLE_STATIST
 import static org.mule.test.allure.AllureConstants.StreamingFeature.STREAMING;
 import static org.mule.test.allure.AllureConstants.StreamingFeature.StreamingStory.STATISTICS;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
-import org.junit.Rule;
-import org.junit.Test;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.management.stats.PayloadStatistics;
 import org.mule.tck.junit4.rule.SystemProperty;
@@ -25,6 +20,12 @@ import org.mule.tck.probe.JUnitLambdaProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.tests.api.TestQueueManager;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import org.junit.Rule;
+import org.junit.Test;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
@@ -76,11 +77,11 @@ public class PayloadStatisticsSourceTestCase extends AbstractIntegrationTestCase
     assertThat(fileListStatistics.getComponentIdentifier(), is("marvel:magneto-mutant-summon"));
 
     assertThat(fileListStatistics.getInvocationCount(), is(1L));
-    // do not count the container message
-    assertThat(fileListStatistics.getOutputObjectCount(), is(0L));
-    assertThat(fileListStatistics.getOutputByteCount(), is(MUTANT_SUMMON_BYTE_SIZE * 1L));
-
     new PollingProber().check(new JUnitLambdaProbe(() -> {
+      // do not count the container message
+      assertThat(fileListStatistics.getOutputObjectCount(), is(0L));
+      assertThat(fileListStatistics.getOutputByteCount(), is(MUTANT_SUMMON_BYTE_SIZE * 1L));
+
       assertThat(fileListStatistics.getInputObjectCount(), is(0L));
       assertThat(fileListStatistics.getInputByteCount(), is(MUTANT_SUMMON_BYTE_SIZE * 1L));
       return true;
@@ -100,10 +101,10 @@ public class PayloadStatisticsSourceTestCase extends AbstractIntegrationTestCase
     assertThat(fileListStatistics.getComponentIdentifier(), is("marvel:magneto-brotherhood"));
 
     assertThat(fileListStatistics.getInvocationCount(), is(1L));
-    assertThat(fileListStatistics.getOutputObjectCount(), is(6L));
-    assertThat(fileListStatistics.getOutputByteCount(), is(0L));
-
     new PollingProber().check(new JUnitLambdaProbe(() -> {
+      assertThat(fileListStatistics.getOutputObjectCount(), is(6L));
+      assertThat(fileListStatistics.getOutputByteCount(), is(0L));
+
       assertThat(fileListStatistics.getInputObjectCount(), is(0L));
       assertThat(fileListStatistics.getInputByteCount(), is(0L));
       return true;
@@ -123,10 +124,10 @@ public class PayloadStatisticsSourceTestCase extends AbstractIntegrationTestCase
     assertThat(fileListStatistics.getComponentIdentifier(), is("marvel:magneto-brotherhood"));
 
     assertThat(fileListStatistics.getInvocationCount(), is(1L));
-    assertThat(fileListStatistics.getOutputObjectCount(), is(0L));
-    assertThat(fileListStatistics.getOutputByteCount(), is(0L));
-
     new PollingProber().check(new JUnitLambdaProbe(() -> {
+      assertThat(fileListStatistics.getOutputObjectCount(), is(6L));
+      assertThat(fileListStatistics.getOutputByteCount(), is(0L));
+
       assertThat(fileListStatistics.getInputByteCount(), is(0L));
       assertThat(fileListStatistics.getInputObjectCount(), is(6L));
       return true;
