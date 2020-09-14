@@ -88,11 +88,11 @@ public class PayloadStatisticsSourceTestCase extends AbstractIntegrationTestCase
     assertThat(fileListStatistics.getComponentIdentifier(), is("marvel:magneto-mutant-summon"));
 
     assertThat(fileListStatistics.getInvocationCount(), is(1L));
-    // do not count the container message
-    assertThat(fileListStatistics.getOutputObjectCount(), is(0L));
-    assertThat(fileListStatistics.getOutputByteCount(), is(MUTANT_SUMMON_BYTE_SIZE * 1L));
-
     new PollingProber().check(new JUnitLambdaProbe(() -> {
+      // do not count the container message
+      assertThat(fileListStatistics.getOutputObjectCount(), is(0L));
+      assertThat(fileListStatistics.getOutputByteCount(), is(MUTANT_SUMMON_BYTE_SIZE * 1L));
+
       assertThat(fileListStatistics.getInputObjectCount(), is(0L));
       assertThat(fileListStatistics.getInputByteCount(), is(MUTANT_SUMMON_BYTE_SIZE * 1L));
       return true;
@@ -112,10 +112,10 @@ public class PayloadStatisticsSourceTestCase extends AbstractIntegrationTestCase
     assertThat(fileListStatistics.getComponentIdentifier(), is("marvel:magneto-brotherhood"));
 
     assertThat(fileListStatistics.getInvocationCount(), is(1L));
-    assertThat(fileListStatistics.getOutputObjectCount(), is(6L));
-    assertThat(fileListStatistics.getOutputByteCount(), is(0L));
-
     new PollingProber().check(new JUnitLambdaProbe(() -> {
+      assertThat(fileListStatistics.getOutputObjectCount(), is(6L));
+      assertThat(fileListStatistics.getOutputByteCount(), is(0L));
+
       assertThat(fileListStatistics.getInputObjectCount(), is(0L));
       assertThat(fileListStatistics.getInputByteCount(), is(0L));
       return true;
@@ -135,10 +135,10 @@ public class PayloadStatisticsSourceTestCase extends AbstractIntegrationTestCase
     assertThat(fileListStatistics.getComponentIdentifier(), is("marvel:magneto-brotherhood"));
 
     assertThat(fileListStatistics.getInvocationCount(), is(1L));
-    assertThat(fileListStatistics.getOutputObjectCount(), is(0L));
-    assertThat(fileListStatistics.getOutputByteCount(), is(0L));
-
     new PollingProber().check(new JUnitLambdaProbe(() -> {
+      assertThat(fileListStatistics.getOutputObjectCount(), is(6L));
+      assertThat(fileListStatistics.getOutputByteCount(), is(0L));
+
       assertThat(fileListStatistics.getInputByteCount(), is(0L));
       assertThat(fileListStatistics.getInputObjectCount(), is(6L));
       return true;
