@@ -8,6 +8,7 @@ package org.mule.test.extension.dsl;
 
 import static java.lang.Boolean.getBoolean;
 import static java.util.Collections.emptyList;
+import static java.util.Optional.ofNullable;
 import static org.mule.metadata.api.utils.MetadataTypeUtils.getDefaultValue;
 import static org.mule.runtime.api.meta.ExpressionSupport.REQUIRED;
 import static org.mule.runtime.api.util.MuleSystemProperties.SYSTEM_PROPERTY_PREFIX;
@@ -248,7 +249,7 @@ public class BulkArtifactDeclarationTestCase extends AbstractElementModelTestCas
               .forEach(param -> addParameter(param.getType(),
                                              isContent(param) || param.getExpressionSupport().equals(REQUIRED),
                                              isText(param),
-                                             Optional.ofNullable(param.getDefaultValue()),
+                                             ofNullable(param.getDefaultValue()),
                                              param.getAllowedStereotypes(),
                                              value -> groupDeclarer.withParameter(param.getName(), value)));
         }));
@@ -302,7 +303,7 @@ public class BulkArtifactDeclarationTestCase extends AbstractElementModelTestCas
 
         objectType.getFields()
             .forEach(field -> addParameter(field.getValue(), false, false,
-                                           Optional.ofNullable(getDefaultValue(field.getValue()).orElse(null)),
+                                           ofNullable(getDefaultValue(field.getValue()).orElse(null)),
                                            emptyList(),
                                            fieldValue -> objectValue.withParameter(getAlias(field), fieldValue)));
 
