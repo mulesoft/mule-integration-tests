@@ -16,6 +16,7 @@ import org.mule.runtime.api.notification.NotificationListenerRegistry;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.apache.commons.lang3.SerializationUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -43,6 +44,7 @@ public class MessageChunkingTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
+  @Ignore("MULE-18767")
   public void testMessageChunkingWith100Splits() throws Exception {
     doMessageChunking("0123456789012345678901234567890123456789012345678901234567890123456789"
         + "01234567890123456789012345678901234567890123456789012345678901234567890123456789"
