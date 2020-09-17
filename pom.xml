@@ -113,7 +113,7 @@
 
   <profiles>
     <profile>
-      <id>release</id>
+      <id>release-dry-run</id>
       <properties>
         <skipNoSnapshotsEnforcerPluginRule>false</skipNoSnapshotsEnforcerPluginRule>
       </properties>
@@ -136,6 +136,7 @@
                       <excludes>
                         <exclude>com.mulesoft.munit:*</exclude>
                         <exclude>org.mule.weave:*</exclude>
+                        <exclude>org.mule.runtime:mule-dwb-api</exclude>
                         <exclude>org.mule.services:*</exclude>
                         <exclude>org.mule.tools.maven:mule-classloader-model</exclude>
                         <exclude>org.mule.modules:mule-module-cors-kernel</exclude>
