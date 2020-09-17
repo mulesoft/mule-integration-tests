@@ -102,7 +102,20 @@ public class LazyInitConfigurationComponentLocatorTestCase extends BaseOAuthExte
                                   "pagedOperationFailsAtThirdPage/processors/0",
                                   "pagedOperationFailsAtThirdPage/processors/1",
                                   "pagedOperationFailsAtThirdPage/processors/2",
-                                  "pagedOperationFailsAtThirdPage/processors/2/processors/0"));
+                                  "pagedOperationFailsAtThirdPage/processors/2/processors/0",
+
+                                  "metadata",
+                                  "metadata/processors/0",
+
+                                  "anotherMetadata",
+                                  "anotherMetadata/processors/0",
+
+                                  "entitiesMetadata",
+                                  "entitiesMetadata/processors/0",
+                                  "entitiesMetadata/processors/0/0",
+
+                                  "values",
+                                  "values/processors/0"));
 
     assertThat(locator.find(builder().globalName("oauth").build()), is(empty()));
     assertThat(locator.find(builder().globalName("listenerConfig").build()), is(empty()));
