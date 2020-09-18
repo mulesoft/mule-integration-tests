@@ -39,4 +39,22 @@
         </foreach>
     </flow>
 
+    <flow name="metadata">
+        <test-oauth:metadata-operation metadataKey="key" inputParameter="parameter" config-ref="oauth"/>
+    </flow>
+
+    <flow name="anotherMetadata">
+        <test-oauth:another-metadata-operation metadataKey="key" inputParameter="parameter" config-ref="oauth"/>
+    </flow>
+
+    <flow name="entitiesMetadata">
+        <test-oauth:entities-metadata-operation config-ref="oauth">
+            <test-oauth:key>key</test-oauth:key>
+        </test-oauth:entities-metadata-operation>
+    </flow>
+
+    <flow name="values">
+        <test-oauth:values-operation parameter="values" config-ref="oauth"/>
+    </flow>
+
 </mule>
