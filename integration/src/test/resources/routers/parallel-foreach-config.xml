@@ -8,6 +8,8 @@
                http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
                http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
+    <object name="threadCaptor" class="org.mule.test.routing.ThreadCaptor"/>
+
     <flow name="minimalConfig">
         <parallel-foreach>
             <set-payload value="#[payload ++ '-result']"/>
@@ -142,7 +144,7 @@
     <flow name="sequentialProcessing">
         <parallel-foreach maxConcurrency="1">
             <set-payload value="#[payload ++ '-result']"/>
-            <custom-processor class="org.mule.test.routing.ParallelForEachTestCase$ThreadCaptor"/>
+            <flow-ref name="threadCaptor"/>
             <test:assert count="3"/>
         </parallel-foreach>
         <flow-ref name="testListAggregation"/>
@@ -212,7 +214,7 @@
     </flow>
 
     <sub-flow name="captureThreadAndWait">
-        <custom-processor class="org.mule.test.routing.ParallelForEachTestCase$ThreadCaptor"/>
+        <flow-ref name="threadCaptor"/>
         <set-payload value="#[java!org::mule::tck::junit4::AbstractMuleContextTestCase::awaitLatch(payload, vars.latch)]"/>
     </sub-flow>
 

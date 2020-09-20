@@ -6,23 +6,25 @@
     xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
     http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
 
+    <object name="retrieveRequestContext" class="org.mule.shutdown.ShutdownAppInDomainTestCase$RetrieveRequestContext"/>
+
     <flow name="http">
         <http:listener config-ref="httpListenerConfig" path="/sync" />
-        <custom-processor class="org.mule.shutdown.ShutdownAppInDomainTestCase$RetrieveRequestContext"/>
+        <flow-ref name="retrieveRequestContext"/>
         <logger />
     </flow>
 
     <flow name="httponBlocking">
         <http:listener config-ref="httpListenerConfig" path="/nonBlocking"/>
-        <custom-processor class="org.mule.shutdown.ShutdownAppInDomainTestCase$RetrieveRequestContext"/>
+        <flow-ref name="retrieveRequestContext"/>
         <logger />
     </flow>
 
     <flow name="httpRequest">
         <http:listener config-ref="httpListenerConfig" path="/request"/>
-        <custom-processor class="org.mule.shutdown.ShutdownAppInDomainTestCase$RetrieveRequestContext"/>
+        <flow-ref name="retrieveRequestContext"/>
         <http:request config-ref="httpRequester" path="/sync" method="GET"/>
-        <custom-processor class="org.mule.shutdown.ShutdownAppInDomainTestCase$RetrieveRequestContext"/>
+        <flow-ref name="retrieveRequestContext"/>
         <logger />
     </flow>
 </mule>

@@ -5,18 +5,22 @@
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
        http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
+    <object name="newsError" class="org.mule.test.integration.exceptions.OnErrorContinueTestCase$NewsErrorProcessor"/>
+    <object name="loadNews" class="org.mule.test.integration.exceptions.OnErrorContinueTestCase$LoadNewsProcessor"/>
+    <object name="verifyTxNotResolved" class="org.mule.test.integration.exceptions.OnErrorContinueFlowRefTestCase$VerifyTransactionNotResolvedProcessor"/>
+
     <flow name="exceptionHandlingBlock">
         <flow-ref name="blockWithOwnExceptionStrategy"/>
     </flow>
 
     <error-handler name="global">
         <on-error-continue>
-            <custom-processor class="org.mule.test.integration.exceptions.OnErrorContinueTestCase$NewsErrorProcessor"/>
+            <flow-ref name="newsError"/>
         </on-error-continue>
     </error-handler>
 
     <flow name="blockWithOwnExceptionStrategy">
-        <custom-processor class="org.mule.test.integration.exceptions.OnErrorContinueTestCase$LoadNewsProcessor"/>
+        <flow-ref name="loadNews"/>
         <test:processor throwException="true"/>
         <error-handler ref="global"/>
     </flow>
@@ -24,8 +28,7 @@
     <flow name="transactionNotResolvedAfterException">
         <try transactionalAction="ALWAYS_BEGIN">
             <flow-ref name="blockWithOwnExceptionStrategy"/>
-            <custom-processor
-                    class="org.mule.test.integration.exceptions.OnErrorContinueFlowRefTestCase$VerifyTransactionNotResolvedProcessor"/>
+            <flow-ref name="verifyTxNotResolved"/>
         </try>
     </flow>
 
