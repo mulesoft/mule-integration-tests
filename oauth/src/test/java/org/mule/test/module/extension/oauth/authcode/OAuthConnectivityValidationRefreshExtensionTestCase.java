@@ -41,7 +41,7 @@ public class OAuthConnectivityValidationRefreshExtensionTestCase extends BaseOAu
   }
 
   @Test
-  public void refreshTokenOnConnectionCreation() throws Exception {
+  public void refreshTokenOnConnectionValidation() throws Exception {
     simulateCallback();
 
     WireMock.reset();
