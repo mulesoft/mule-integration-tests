@@ -40,7 +40,7 @@ public class OAuthValuesRefreshExtensionTestCase extends BaseOAuthExtensionTestC
   }
 
   @Test
-  public void tokenRefreshOnOutputMetadataResolution() throws Exception {
+  public void tokenRefreshOnValuesResolution() throws Exception {
     simulateCallback();
 
     WireMock.reset();
