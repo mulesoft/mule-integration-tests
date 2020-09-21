@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:test-oauth="http://www.mulesoft.org/schema/mule/test-oauth"
+      xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+               http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
+               http://www.mulesoft.org/schema/mule/test-oauth http://www.mulesoft.org/schema/mule/test-oauth/current/mule-test-oauth.xsd">
+
+    <flow name="getConnection">
+        <test-oauth:get-connection config-ref="oauth" />
+    </flow>
+
+    <flow name="beforeFlow">
+        <set-variable variableName="authCodeRequest" value="#[payload]" />
+    </flow>
+
+    <flow name="afterFlow">
+        <set-variable variableName="ownerId" value="#[payload.resourceOwnerId]" />
+        <test-oauth:capture-callback-payloads request="#[vars.authCodeRequest]" state="#[payload]" config-ref="oauth"/>
+    </flow>
+
+    <flow name="pollingSource" initialState="stopped">
+        <test-oauth:poller config-ref="oauth">
+            <scheduling-strategy>
+                <fixed-frequency frequency="500"/>
+            </scheduling-strategy>
+        </test-oauth:poller>
+        <test:processor class="org.mule.test.module.extension.oauth.authcode.OAuthSourceRefreshExtensionTestCase$Collector" />
+    </flow>
+
+    <flow name="source" initialState="stopped">
+        <test-oauth:listener config-ref="oauth"/>
+        <test:processor class="org.mule.test.module.extension.oauth.authcode.OAuthSourceRefreshExtensionTestCase$Collector" />
+    </flow>
+
+</mule>
