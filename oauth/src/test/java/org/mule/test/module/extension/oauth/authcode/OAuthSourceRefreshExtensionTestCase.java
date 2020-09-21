@@ -6,6 +6,8 @@
  */
 package org.mule.test.module.extension.oauth.authcode;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static org.mule.tck.probe.PollingProber.check;
 
 import org.junit.Before;
@@ -77,6 +79,7 @@ public class OAuthSourceRefreshExtensionTestCase extends BaseOAuthExtensionTestC
     startFlow("pollingSource");
 
     check(PROBE_TIMEOUT, PROBE_FREQUENCY, () -> EVENTS.size() > 0);
+    wireMock.verify(postRequestedFor(urlPathEqualTo("/" + TOKEN_PATH)));
   }
 
   @Test
@@ -89,6 +92,7 @@ public class OAuthSourceRefreshExtensionTestCase extends BaseOAuthExtensionTestC
     startFlow("source");
 
     check(PROBE_TIMEOUT, PROBE_FREQUENCY, () -> EVENTS.size() > 0);
+    wireMock.verify(postRequestedFor(urlPathEqualTo("/" + TOKEN_PATH)));
   }
 
   protected void startFlow(String flowName) throws Exception {
