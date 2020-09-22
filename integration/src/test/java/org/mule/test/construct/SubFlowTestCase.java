@@ -6,13 +6,9 @@
  */
 package org.mule.test.construct;
 
-import static java.util.Arrays.asList;
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertThat;
-import static org.mule.tck.core.lifecycle.LifecycleTrackerProcessor.FLOW_CONSRUCT_PROPERTY;
-import static org.mule.tck.core.lifecycle.LifecycleTrackerProcessor.LIFECYCLE_TRACKER_PROCESSOR_PROPERTY;
 
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -37,7 +33,8 @@ public class SubFlowTestCase extends AbstractIntegrationTestCase {
     CoreEvent result = flowRunner("SubFlowViaProcessorRef").withPayload("").run();
     assertThat(result.getMessage().getPayload().getValue(), is("1xyz2"));
 
-    assertThat(trackersRegistry.get("subFlowTracker"), equalTo(asList("setMuleContext", "initialise", "start")));
+    assertThat(trackersRegistry.get("subFlowTracker").getCalledPhases(),
+               containsInAnyOrder("setMuleContext", "initialise", "start"));
   }
 
   @Test
@@ -45,7 +42,8 @@ public class SubFlowTestCase extends AbstractIntegrationTestCase {
     CoreEvent result = flowRunner("SubFlowViaFlowRef").withPayload("").run();
     assertThat(result.getMessage().getPayload().getValue(), is("1xyz2"));
 
-    assertThat(trackersRegistry.get("subFlowTracker"), equalTo(asList("setMuleContext", "initialise", "start")));
+    assertThat(trackersRegistry.get("subFlowTracker").getCalledPhases(),
+               containsInAnyOrder("setMuleContext", "initialise", "start"));
   }
 
   @Test
