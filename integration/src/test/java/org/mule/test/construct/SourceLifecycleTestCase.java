@@ -12,12 +12,18 @@ import static org.junit.Assert.assertThat;
 
 import org.mule.functional.api.component.LifecycleTrackerSource;
 import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.tests.api.LifecycleTrackerRegistry;
+
+import javax.inject.Inject;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 public class SourceLifecycleTestCase extends AbstractIntegrationTestCase {
+
+  @Inject
+  private LifecycleTrackerRegistry trackerRegistry;
 
   @Override
   protected String getConfigFile() {
@@ -36,9 +42,7 @@ public class SourceLifecycleTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void sourceLifecycle() throws Exception {
-    LifecycleTrackerSource.getSources().forEach(src -> {
-      assertThat(src.getTracker(), is(asList("setMuleContext", "initialise", "start")));
-    });
+    assertThat(trackerRegistry.get("source").getCalledPhases(), is(asList("setMuleContext", "initialise", "start")));
   }
 
 }

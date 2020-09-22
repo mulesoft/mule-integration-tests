@@ -34,8 +34,10 @@ import org.mule.runtime.core.api.context.MuleContextBuilder;
 import org.mule.runtime.core.api.context.MuleContextFactory;
 import org.mule.runtime.core.api.context.notification.MuleContextNotification;
 import org.mule.runtime.core.api.context.notification.MuleContextNotificationListener;
+import org.mule.runtime.core.internal.context.MuleContextWithRegistry;
 import org.mule.runtime.module.extension.api.loader.java.DefaultJavaExtensionModelLoader;
 import org.mule.runtime.module.extension.internal.manager.DefaultExtensionManager;
+import org.mule.tck.config.TestNotificationListenerRegistryConfigurationBuilder;
 import org.mule.tck.config.TestPolicyProviderConfigurationBuilder;
 import org.mule.tck.config.TestServicesConfigurationBuilder;
 import org.mule.tck.junit4.AbstractMuleTestCase;
@@ -48,15 +50,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
-import javax.inject.Inject;
-
 import org.junit.Rule;
 
-
 public abstract class AbstractConfigurationFailuresTestCase extends AbstractMuleTestCase {
-
-  @Inject
-  private NotificationListenerRegistry notificationListenerRegistry;
 
   @Rule
   public TestServicesConfigurationBuilder testServicesConfigurationBuilder = new TestServicesConfigurationBuilder();
@@ -78,13 +74,17 @@ public abstract class AbstractConfigurationFailuresTestCase extends AbstractMule
     builders.add(createConfigurationBuilder(configuration));
     builders.add(testServicesConfigurationBuilder);
     builders.add(new TestPolicyProviderConfigurationBuilder());
+    builders.add(new TestNotificationListenerRegistryConfigurationBuilder());
     MuleContextBuilder contextBuilder = MuleContextBuilder.builder(APP);
     final DefaultMuleConfiguration muleConfiguration = new DefaultMuleConfiguration();
     muleConfiguration.setId(ErrorHandlingConfigurationFailuresTestCase.class.getSimpleName());
     contextBuilder.setMuleConfiguration(muleConfiguration);
-    MuleContext muleContext = muleContextFactory.createMuleContext(builders, contextBuilder);
+    MuleContextWithRegistry muleContext =
+        (MuleContextWithRegistry) muleContextFactory.createMuleContext(builders, contextBuilder);
     final AtomicReference<Latch> contextStartedLatch = new AtomicReference<>();
     contextStartedLatch.set(new Latch());
+    NotificationListenerRegistry notificationListenerRegistry =
+        muleContext.getRegistry().get(NotificationListenerRegistry.REGISTRY_KEY);
     notificationListenerRegistry.registerListener(new MuleContextNotificationListener<MuleContextNotification>() {
 
       @Override

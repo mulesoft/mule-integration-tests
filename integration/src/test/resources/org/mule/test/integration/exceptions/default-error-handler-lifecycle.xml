@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:test-components="http://www.mulesoft.org/schema/mule/test-components"
       xsi:schemaLocation="
-       http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+       http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+       http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
 
     <configuration defaultErrorHandler-ref="defaultEh"/>
 
@@ -19,19 +21,19 @@
     </error-handler>
 
     <flow name="flowA">
-        <logger/>
+        <raise-error type="CUSTOM:ERROR" />
         <error-handler>
             <on-error-continue>
-                <custom-processor class="org.mule.test.integration.exceptions.ErrorHandlerLifecycleTestCase$LifecycleCheckerMessageProcessor"/>
+                <test-components:lifecycle-tracker name="flowAErrorHandlerTracker"/>
             </on-error-continue>
         </error-handler>
     </flow>
 
     <flow name="flowB">
-        <logger/>
+        <raise-error type="CUSTOM:ERROR" />
         <error-handler>
             <on-error-continue>
-                <custom-processor class="org.mule.test.integration.exceptions.ErrorHandlerLifecycleTestCase$LifecycleCheckerMessageProcessor"/>
+                <test-components:lifecycle-tracker name="flowBErrorHandlerTracker"/>
             </on-error-continue>
         </error-handler>
     </flow>

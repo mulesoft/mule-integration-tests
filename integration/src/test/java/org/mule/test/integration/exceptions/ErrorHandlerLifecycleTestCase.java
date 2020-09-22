@@ -12,20 +12,23 @@ import static org.mule.tck.MuleTestUtils.getExceptionListeners;
 import static org.mule.tck.MuleTestUtils.getMessageProcessors;
 
 import org.mule.runtime.api.component.AbstractComponent;
-import org.mule.runtime.api.component.location.Location;
 import org.mule.runtime.api.exception.MuleException;
+import org.mule.runtime.api.lifecycle.Initialisable;
 import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.api.lifecycle.Lifecycle;
+import org.mule.runtime.api.lifecycle.Stoppable;
 import org.mule.runtime.core.api.construct.FlowConstruct;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.AbstractMessageProcessorOwner;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.tests.api.LifecycleTrackerRegistry;
+
+import java.util.Collection;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class ErrorHandlerLifecycleTestCase extends AbstractIntegrationTestCase {
@@ -34,6 +37,9 @@ public class ErrorHandlerLifecycleTestCase extends AbstractIntegrationTestCase {
   protected String getConfigFile() {
     return "org/mule/test/integration/exceptions/default-error-handler-lifecycle.xml";
   }
+
+  @Inject
+  private LifecycleTrackerRegistry trackersRegistry;
 
   @Inject
   @Named("flowA")
@@ -52,20 +58,21 @@ public class ErrorHandlerLifecycleTestCase extends AbstractIntegrationTestCase {
   private FlowConstruct flowD;
 
   @Test
-  @Ignore("MULE-18566")
   public void testLifecycleErrorHandlerInFlow() throws Exception {
-    LifecycleCheckerMessageProcessor lifecycleCheckerMessageProcessorFlowA =
-        (LifecycleCheckerMessageProcessor) locator.find(Location.builder().globalName(flowA.getName()).addErrorHandlerPart()
-            .addIndexPart(0).addProcessorsPart().addIndexPart(0).build()).get();
-    LifecycleCheckerMessageProcessor lifecycleCheckerMessageProcessorFlowB =
-        (LifecycleCheckerMessageProcessor) locator.find(Location.builder().globalName(flowB.getName()).addErrorHandlerPart()
-            .addIndexPart(0).addProcessorsPart().addIndexPart(0).build()).get();
+    // Trigger the flows so the lifecycle-trackers are added to the registry
+    flowRunner(flowA.getName()).run();
+    flowRunner(flowB.getName()).run();
 
-    assertThat(lifecycleCheckerMessageProcessorFlowA.isInitialized(), is(true));
-    assertThat(lifecycleCheckerMessageProcessorFlowB.isInitialized(), is(true));
+    Collection<String> flowAErrorHandlerPhases = trackersRegistry.get("flowAErrorHandlerTracker").getCalledPhases();
+    Collection<String> flowBErrorHandlerPhases = trackersRegistry.get("flowBErrorHandlerTracker").getCalledPhases();
+
+    assertThat(flowAErrorHandlerPhases.contains(Initialisable.PHASE_NAME), is(true));
+    assertThat(flowBErrorHandlerPhases.contains(Initialisable.PHASE_NAME), is(true));
+
     ((Lifecycle) flowA).stop();
-    assertThat(lifecycleCheckerMessageProcessorFlowA.isStopped(), is(true));
-    assertThat(lifecycleCheckerMessageProcessorFlowB.isStopped(), is(false));
+
+    assertThat(flowAErrorHandlerPhases.contains(Stoppable.PHASE_NAME), is(true));
+    assertThat(flowBErrorHandlerPhases.contains(Stoppable.PHASE_NAME), is(false));
   }
 
   @Test

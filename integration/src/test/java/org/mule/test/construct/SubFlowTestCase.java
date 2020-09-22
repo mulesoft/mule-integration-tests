@@ -7,16 +7,21 @@
 package org.mule.test.construct;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertThat;
-import static org.mule.tck.core.lifecycle.LifecycleTrackerProcessor.FLOW_CONSRUCT_PROPERTY;
-import static org.mule.tck.core.lifecycle.LifecycleTrackerProcessor.LIFECYCLE_TRACKER_PROCESSOR_PROPERTY;
 
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.tests.api.LifecycleTrackerRegistry;
+
+import javax.inject.Inject;
 
 import org.junit.Test;
 
 public class SubFlowTestCase extends AbstractIntegrationTestCase {
+
+  @Inject
+  private LifecycleTrackerRegistry trackersRegistry;
 
   @Override
   protected String getConfigFile() {
@@ -28,10 +33,7 @@ public class SubFlowTestCase extends AbstractIntegrationTestCase {
     CoreEvent result = flowRunner("SubFlowViaProcessorRef").withPayload("").run();
     assertThat(result.getMessage().getPayload().getValue(), is("1xyz2"));
 
-    assertThat(result.getVariables().get(LIFECYCLE_TRACKER_PROCESSOR_PROPERTY).getValue(),
-               is("[setMuleContext, initialise, start]"));
-    assertThat(result.getVariables().get(FLOW_CONSRUCT_PROPERTY).getValue(),
-               is(registry.lookupByName("SubFlowViaProcessorRef").get()));
+    assertThat(trackersRegistry.get("subFlowTracker").getCalledPhases(), contains("setMuleContext", "initialise", "start"));
   }
 
   @Test
@@ -39,10 +41,7 @@ public class SubFlowTestCase extends AbstractIntegrationTestCase {
     CoreEvent result = flowRunner("SubFlowViaFlowRef").withPayload("").run();
     assertThat(result.getMessage().getPayload().getValue(), is("1xyz2"));
 
-    assertThat(result.getVariables().get(LIFECYCLE_TRACKER_PROCESSOR_PROPERTY).getValue(),
-               is("[setMuleContext, initialise, start]"));
-    assertThat(result.getVariables().get(FLOW_CONSRUCT_PROPERTY).getValue(),
-               is(registry.lookupByName("SubFlowViaFlowRef").get()));
+    assertThat(trackersRegistry.get("subFlowTracker").getCalledPhases(), contains("setMuleContext", "initialise", "start"));
   }
 
   @Test
