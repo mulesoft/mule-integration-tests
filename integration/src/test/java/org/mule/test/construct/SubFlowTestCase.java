@@ -7,7 +7,7 @@
 package org.mule.test.construct;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertThat;
 
 import org.mule.runtime.core.api.event.CoreEvent;
@@ -33,8 +33,7 @@ public class SubFlowTestCase extends AbstractIntegrationTestCase {
     CoreEvent result = flowRunner("SubFlowViaProcessorRef").withPayload("").run();
     assertThat(result.getMessage().getPayload().getValue(), is("1xyz2"));
 
-    assertThat(trackersRegistry.get("subFlowTracker").getCalledPhases(),
-               containsInAnyOrder("setMuleContext", "initialise", "start"));
+    assertThat(trackersRegistry.get("subFlowTracker").getCalledPhases(), contains("setMuleContext", "initialise", "start"));
   }
 
   @Test
@@ -42,8 +41,7 @@ public class SubFlowTestCase extends AbstractIntegrationTestCase {
     CoreEvent result = flowRunner("SubFlowViaFlowRef").withPayload("").run();
     assertThat(result.getMessage().getPayload().getValue(), is("1xyz2"));
 
-    assertThat(trackersRegistry.get("subFlowTracker").getCalledPhases(),
-               containsInAnyOrder("setMuleContext", "initialise", "start"));
+    assertThat(trackersRegistry.get("subFlowTracker").getCalledPhases(), contains("setMuleContext", "initialise", "start"));
   }
 
   @Test
