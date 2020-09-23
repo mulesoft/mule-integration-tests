@@ -115,7 +115,10 @@ public class LazyInitConfigurationComponentLocatorTestCase extends BaseOAuthExte
                                   "entitiesMetadata/processors/0/0",
 
                                   "values",
-                                  "values/processors/0"));
+                                  "values/processors/0",
+
+                                  "sampleData",
+                                  "sampleData/processors/0"));
 
     assertThat(locator.find(builder().globalName("oauth").build()), is(empty()));
     assertThat(locator.find(builder().globalName("listenerConfig").build()), is(empty()));
