@@ -12,7 +12,7 @@
     <artifactId>tooling-support-tests</artifactId>
 
     <properties>
-        <formatterConfigPath>../../../formatter.xml</formatterConfigPath>
+        <formatterConfigPath>../formatter.xml</formatterConfigPath>
         <settingsFile>${java.io.tmpdir}/settings.xml</settingsFile>
         <testExtensionVersion>1.0.0-SNAPSHOT</testExtensionVersion>
     </properties>
@@ -60,7 +60,6 @@
                     <systemPropertyVariables>
                         <mule.version>${project.version}</mule.version>
                         <settings.file>${settingsFile}</settings.file>
-                        <maven.home>${maven.home}</maven.home>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
