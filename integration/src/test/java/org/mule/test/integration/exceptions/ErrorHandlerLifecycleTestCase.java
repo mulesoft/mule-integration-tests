@@ -8,19 +8,11 @@ package org.mule.test.integration.exceptions;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.mule.tck.MuleTestUtils.getExceptionListeners;
-import static org.mule.tck.MuleTestUtils.getMessageProcessors;
 
-import org.mule.runtime.api.component.AbstractComponent;
-import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.lifecycle.Initialisable;
-import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.api.lifecycle.Lifecycle;
 import org.mule.runtime.api.lifecycle.Stoppable;
 import org.mule.runtime.core.api.construct.FlowConstruct;
-import org.mule.runtime.core.api.event.CoreEvent;
-import org.mule.runtime.core.api.processor.AbstractMessageProcessorOwner;
-import org.mule.runtime.core.api.processor.Processor;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.tests.api.LifecycleTrackerRegistry;
 
@@ -76,69 +68,29 @@ public class ErrorHandlerLifecycleTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  public void testLifecycleDefaultErrorHandler() throws Exception {
-    AbstractMessageProcessorOwner flowCExceptionStrategy =
-        (AbstractMessageProcessorOwner) getExceptionListeners(flowC).get(1);
-    AbstractMessageProcessorOwner flowDExceptionStrategy =
-        (AbstractMessageProcessorOwner) getExceptionListeners(flowD).get(1);
-    LifecycleCheckerMessageProcessor lifecycleCheckerMessageProcessorFlowC =
-        (LifecycleCheckerMessageProcessor) getMessageProcessors(flowCExceptionStrategy).get(0);
-    LifecycleCheckerMessageProcessor lifecycleCheckerMessageProcessorFlowD =
-        (LifecycleCheckerMessageProcessor) getMessageProcessors(flowDExceptionStrategy).get(0);
+  public void testLifecycleReferencedErrorHandler() throws Exception {
+    flowRunner(flowC.getName()).run();
 
-    assertThat(lifecycleCheckerMessageProcessorFlowC.isInitialized(), is(true));
-    assertThat(lifecycleCheckerMessageProcessorFlowD.isInitialized(), is(true));
+    Collection<String> defaultEhErrorHandlerPhases = trackersRegistry.get("esAErrorHandlerTracker").getCalledPhases();
+
+    assertThat(defaultEhErrorHandlerPhases.contains(Initialisable.PHASE_NAME), is(true));
+
     ((Lifecycle) flowC).stop();
-    assertThat(lifecycleCheckerMessageProcessorFlowC.isStopped(), is(true));
-    assertThat(lifecycleCheckerMessageProcessorFlowD.isStopped(), is(false));
+
+    assertThat(defaultEhErrorHandlerPhases.contains(Stoppable.PHASE_NAME), is(true));
   }
 
-  public static class LifecycleCheckerMessageProcessor extends AbstractComponent implements Processor, Lifecycle {
+  @Test
+  public void testLifecycleDefaultErrorHandler() throws Exception {
+    flowRunner(flowD.getName()).run();
 
-    private boolean initialized;
-    private boolean disposed;
-    private boolean started;
-    private boolean stopped;
+    Collection<String> defaultEhErrorHandlerPhases = trackersRegistry.get("defaultEhErrorHandlerTracker").getCalledPhases();
 
-    @Override
-    public CoreEvent process(CoreEvent event) throws MuleException {
-      return event;
-    }
+    assertThat(defaultEhErrorHandlerPhases.contains(Initialisable.PHASE_NAME), is(true));
 
-    @Override
-    public void dispose() {
-      disposed = true;
-    }
+    ((Lifecycle) flowD).stop();
 
-    @Override
-    public void initialise() throws InitialisationException {
-      initialized = true;
-    }
-
-    @Override
-    public void start() throws MuleException {
-      started = true;
-    }
-
-    @Override
-    public void stop() throws MuleException {
-      stopped = true;
-    }
-
-    public boolean isInitialized() {
-      return initialized;
-    }
-
-    public boolean isDisposed() {
-      return disposed;
-    }
-
-    public boolean isStarted() {
-      return started;
-    }
-
-    public boolean isStopped() {
-      return stopped;
-    }
+    assertThat(defaultEhErrorHandlerPhases.contains(Stoppable.PHASE_NAME), is(true));
   }
+
 }
