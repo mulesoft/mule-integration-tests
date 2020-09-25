@@ -80,7 +80,7 @@
                 </until-successful>
                 <error-handler>
                     <on-error-continue type="RETRY_EXHAUSTED">
-                        <processor ref="dlq-mp"/>
+                        <flow-ref name="dlq-mp"/>
                     </on-error-continue>
                 </error-handler>
             </try>
@@ -95,7 +95,7 @@
         </until-successful>
         <error-handler>
             <on-error-continue type="RETRY_EXHAUSTED">
-                <processor ref="dlq-mp"/>
+                <flow-ref name="dlq-mp"/>
             </on-error-continue>
         </error-handler>
     </flow>
@@ -174,7 +174,7 @@
 
     <flow name="measureSynchronousWait">
         <until-successful maxRetries="1" millisBetweenRetries="1000">
-            <processor ref="wait-measure"/>
+            <flow-ref name="wait-measure"/>
             <test:processor throwException="true"/>
         </until-successful>
     </flow>
@@ -184,7 +184,7 @@
         <error-handler>
             <on-error-continue>
                 <until-successful>
-                    <processor ref="dlq-mp"/>
+                    <flow-ref name="dlq-mp"/>
                 </until-successful>
                 <set-payload value="hello"/>
             </on-error-continue>

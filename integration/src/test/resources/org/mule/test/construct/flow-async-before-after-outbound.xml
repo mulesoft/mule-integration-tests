@@ -38,12 +38,12 @@
 
     <sub-flow name="set-rr-thread-property">
         <set-variable variableName="property-name" value="request-response-thread" />
-        <processor ref="threadSensingProcessor" />
+        <flow-ref name="threadSensingProcessor" />
     </sub-flow>
 
     <sub-flow name="set-async-thread-property">
         <set-variable variableName="property-name" value="async-thread" />
-        <processor ref="threadSensingProcessor" />
+        <flow-ref name="threadSensingProcessor" />
     </sub-flow>
 
 </mule>

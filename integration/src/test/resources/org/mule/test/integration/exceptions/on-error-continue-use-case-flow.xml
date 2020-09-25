@@ -44,32 +44,32 @@
 
     <flow name="httpContinueProcessingActualMessage">
         <http:listener path="service" config-ref="listenerConfig"/>
-        <processor ref="load-news"/>
+        <flow-ref name="load-news"/>
         <test:processor throwException="true"/>
         <error-handler>
             <on-error-continue>
-                <processor ref="news"/>
+                <flow-ref name="news"/>
             </on-error-continue>
         </error-handler>
     </flow>
 
     <flow name="httpsContinueProcessingActualMessage">
         <http:listener config-ref="listenerConfigHttps" path="httpsservice"/>
-        <processor ref="load-news"/>
+        <flow-ref name="load-news"/>
         <test:processor throwException="true"/>
         <error-handler>
             <on-error-continue>
-                <processor ref="news"/>
+                <flow-ref name="news"/>
             </on-error-continue>
         </error-handler>
     </flow>
 
     <flow name="continueProcessingActualMessage">
-        <processor ref="load-news"/>
+        <flow-ref name="load-news"/>
         <test:processor throwException="true"/>
         <error-handler>
             <on-error-continue>
-                <processor ref="news"/>
+                <flow-ref name="news"/>
             </on-error-continue>
         </error-handler>
     </flow>
@@ -104,7 +104,7 @@
 
     <flow name="onErrorTypeMatch">
         <set-payload value="#[payload ++ ' apt1']"/>
-        <processor ref="failing"/>
+        <flow-ref name="failing"/>
         <error-handler>
             <on-error-continue type="EXPRESSION">
                 <set-payload value="#[payload ++ ' nope']"/>
@@ -135,7 +135,7 @@
         <choice>
             <when expression="#[payload]">
                 <set-payload value="#[payload ++ ' apt1']"/>
-                <processor ref="failing"/>
+                <flow-ref name="failing"/>
             </when>
             <otherwise>
                 <set-payload value="#[payload ++ ' apt1']"/>
@@ -156,7 +156,7 @@
         <choice>
             <when expression="#[payload]">
                 <set-payload value="#[payload ++ ' apt1']"/>
-                <processor ref="failing"/>
+                <flow-ref name="failing"/>
             </when>
             <otherwise>
                 <set-payload value="#[payload ++ ' apt1']"/>
@@ -177,7 +177,7 @@
         <choice>
             <when expression="#[payload]">
                 <set-payload value="#[payload ++ ' apt1']"/>
-                <processor ref="failing"/>
+                <flow-ref name="failing"/>
             </when>
             <otherwise>
                 <set-payload value="#[payload ++ ' apt1']"/>
@@ -198,7 +198,7 @@
         <test:processor throwException="true"/>
         <error-handler>
             <on-error-continue>
-                <processor ref="error"/>
+                <flow-ref name="error"/>
             </on-error-continue>
         </error-handler>
     </flow>
