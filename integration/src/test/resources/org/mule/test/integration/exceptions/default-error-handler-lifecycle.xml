@@ -10,13 +10,13 @@
 
     <error-handler name="esA">
         <on-error-continue>
-            <custom-processor class="org.mule.test.integration.exceptions.ErrorHandlerLifecycleTestCase$LifecycleCheckerMessageProcessor"/>
+            <test-components:lifecycle-tracker name="esAErrorHandlerTracker"/>
         </on-error-continue>
     </error-handler>
 
     <error-handler name="defaultEh">
         <on-error-continue>
-            <custom-processor class="org.mule.test.integration.exceptions.ErrorHandlerLifecycleTestCase$LifecycleCheckerMessageProcessor"/>
+            <test-components:lifecycle-tracker name="defaultEhErrorHandlerTracker"/>
         </on-error-continue>
     </error-handler>
 
@@ -39,11 +39,12 @@
     </flow>
 
     <flow name="flowC">
-        <logger/>
+        <raise-error type="CUSTOM:ERROR" />
+        <error-handler ref="esA"/>
     </flow>
 
     <flow name="flowD">
-        <logger/>
+        <raise-error type="CUSTOM:ERROR" />
     </flow>
 
 </mule>

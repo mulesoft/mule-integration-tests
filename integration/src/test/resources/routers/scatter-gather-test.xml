@@ -8,6 +8,8 @@
                http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
                http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
+    <object name="threadCaptor" class="org.mule.test.routing.ThreadCaptor" />
+
     <flow name="minimalConfig">
         <scatter-gather>
             <route>
@@ -166,15 +168,15 @@
         <scatter-gather maxConcurrency="1">
             <route>
                 <set-payload value="apple"/>
-                <custom-processor class="org.mule.test.routing.ScatterGatherRouterTestCase$ThreadCaptor" />
+                <flow-ref name="threadCaptor"/>
             </route>
             <route>
                 <set-payload value="banana"/>
-                <custom-processor class="org.mule.test.routing.ScatterGatherRouterTestCase$ThreadCaptor" />
+                <flow-ref name="threadCaptor"/>
             </route>
             <route>
                 <set-payload value="orange"/>
-                <custom-processor class="org.mule.test.routing.ScatterGatherRouterTestCase$ThreadCaptor" />
+                <flow-ref name="threadCaptor"/>
             </route>
         </scatter-gather>
 
@@ -339,7 +341,7 @@
     </sub-flow>
 
     <sub-flow name="captureThreadAndWait">
-        <custom-processor class="org.mule.test.routing.ScatterGatherRouterTestCase$ThreadCaptor" />
+        <flow-ref name="threadCaptor"/>
         <set-payload value="#[java!org::mule::tck::junit4::AbstractMuleContextTestCase::awaitLatch(payload, vars.latch)]"/>
     </sub-flow>
 
@@ -359,29 +361,29 @@
 
     <flow name="withinTransaction">
         <try transactionalAction="ALWAYS_BEGIN">
-            <custom-processor class="org.mule.test.routing.ScatterGatherRouterTestCase$ThreadCaptor" />
+            <flow-ref name="threadCaptor"/>
             <scatter-gather>
                 <route>
                     <test:non-blocking-processor />
                     <test:assert expression="#[java!org::mule::runtime::core::api::transaction::TransactionCoordination::isTransactionActive()]"/>
                     <set-payload value="apple"/>
-                    <custom-processor class="org.mule.test.routing.ScatterGatherRouterTestCase$ThreadCaptor" />
+                    <flow-ref name="threadCaptor"/>
                 </route>
                 <route>
                     <test:processor processingType="CPU_INTENSIVE"/>
                     <test:assert expression="#[java!org::mule::runtime::core::api::transaction::TransactionCoordination::isTransactionActive()]"/>
                     <set-payload value="banana"/>
-                    <custom-processor class="org.mule.test.routing.ScatterGatherRouterTestCase$ThreadCaptor" />
+                    <flow-ref name="threadCaptor"/>
                 </route>
                 <route>
                     <test:processor processingType="BLOCKING"/>
                     <test:assert expression="#[java!org::mule::runtime::core::api::transaction::TransactionCoordination::isTransactionActive()]"/>
                     <set-payload value="orange"/>
-                    <custom-processor class="org.mule.test.routing.ScatterGatherRouterTestCase$ThreadCaptor" />
+                    <flow-ref name="threadCaptor"/>
                 </route>
             </scatter-gather>
         </try>
-        <custom-processor class="org.mule.test.routing.ScatterGatherRouterTestCase$ThreadCaptor" />
+        <flow-ref name="threadCaptor"/>
 
         <flow-ref name="testRoutesMap"/>
     </flow>

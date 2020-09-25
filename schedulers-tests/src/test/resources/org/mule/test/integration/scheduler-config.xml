@@ -47,13 +47,14 @@
         </test:processor>
     </flow>
 
+    <object name="eventWireTrap" class="org.mule.test.integration.SchedulerTestCase$EventWireTrap" />
     <flow name="pollWithRequestContextEvent">
         <scheduler>
             <scheduling-strategy>
                 <fixed-frequency frequency="1000" />
             </scheduling-strategy>
         </scheduler>
-        <custom-processor class="org.mule.test.integration.SchedulerTestCase$EventWireTrap" />
+        <flow-ref name="eventWireTrap" />
         <logger message="hello" />
     </flow>
 

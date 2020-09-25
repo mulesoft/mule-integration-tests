@@ -7,9 +7,7 @@
 
 package org.mule.test.routing;
 
-import static java.lang.Thread.currentThread;
 import static java.util.Arrays.asList;
-import static java.util.concurrent.ConcurrentHashMap.newKeySet;
 import static org.apache.commons.io.IOUtils.LINE_SEPARATOR;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -26,22 +24,19 @@ import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
 import static org.mule.tck.junit4.matcher.HasClassInHierarchy.withClassName;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ParallelForEachStory.PARALLEL_FOR_EACH;
+import static org.mule.test.routing.ThreadCaptor.getCapturedThreads;
 
 import org.mule.functional.api.exception.FunctionalTestException;
 import org.mule.functional.junit4.rules.HttpServerRule;
-import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.component.ComponentIdentifier;
 import org.mule.runtime.api.exception.ComposedErrorException;
-import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.util.concurrent.Latch;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
-import org.mule.runtime.core.api.processor.Processor;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.util.List;
-import java.util.Set;
 import java.util.function.Consumer;
 
 import org.junit.Rule;
@@ -58,7 +53,6 @@ import io.qameta.allure.Story;
 public class ParallelForEachTestCase extends AbstractIntegrationTestCase {
 
   private static final String EXCEPTION_MESSAGE_TITLE_PREFIX = "Exception(s) were found for route(s): " + LINE_SEPARATOR;
-  private static Set<Thread> capturedThreads;
   private final String[] fruitList = new String[] {"apple", "banana", "orange"};
 
   @Rule
@@ -73,16 +67,6 @@ public class ParallelForEachTestCase extends AbstractIntegrationTestCase {
   @Override
   protected String getConfigFile() {
     return "routers/parallel-foreach-config.xml";
-  }
-
-  @Override
-  protected void doSetUp() throws Exception {
-    capturedThreads = newKeySet();
-  }
-
-  @Override
-  protected void doTearDown() throws Exception {
-    capturedThreads = null;
   }
 
   @Test
@@ -200,7 +184,7 @@ public class ParallelForEachTestCase extends AbstractIntegrationTestCase {
   @Description("Only a single thread is used to process all routes when configured with maxConcurrency=1.")
   public void sequentialProcessing() throws Exception {
     flowRunner("sequentialProcessing").withPayload(fruitList).withVariable("latch", new Latch()).run();
-    assertThat(capturedThreads, hasSize(1));
+    assertThat(getCapturedThreads(), hasSize(1));
   }
 
   @Test
@@ -233,7 +217,7 @@ public class ParallelForEachTestCase extends AbstractIntegrationTestCase {
   @Description("By default routes are run concurrently and multiple threads are used.")
   public void concurrent() throws Exception {
     flowRunner("concurrent").withPayload(fruitList).withVariable("latch", new Latch()).run();
-    assertThat(capturedThreads, hasSize(3));
+    assertThat(getCapturedThreads(), hasSize(3));
   }
 
   @Test
@@ -241,22 +225,6 @@ public class ParallelForEachTestCase extends AbstractIntegrationTestCase {
   @Description("Check that parallel execution routes do not cause race conditions when handling SdkInternalContext")
   public void parallelForEachWithSdkOperation() throws Exception {
     flowRunner("parallelForEachWithSdkOperation").run();
-  }
-
-  public static class ThreadCaptor extends AbstractComponent implements Processor {
-
-    @Override
-    public CoreEvent process(CoreEvent event) throws MuleException {
-      capturedThreads.add(currentThread());
-      if (capturedThreads.size() > 2) {
-        Latch latch = (Latch) event.getVariables().get("latch").getValue();
-        if (latch != null) {
-          latch.release();
-        }
-      }
-
-      return event;
-    }
   }
 
 }

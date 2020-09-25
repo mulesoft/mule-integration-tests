@@ -4,12 +4,9 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-
 package org.mule.test.routing;
 
-import static java.lang.Thread.currentThread;
 import static java.util.Arrays.asList;
-import static java.util.concurrent.ConcurrentHashMap.newKeySet;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.io.IOUtils.LINE_SEPARATOR;
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -28,18 +25,16 @@ import static org.mule.runtime.api.metadata.MediaType.TEXT;
 import static org.mule.tck.junit4.matcher.HasClassInHierarchy.withClassName;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ScatterGatherStory.SCATTER_GATHER;
+import static org.mule.test.routing.ThreadCaptor.getCapturedThreads;
 
 import org.mule.functional.api.exception.FunctionalTestException;
 import org.mule.functional.junit4.rules.HttpServerRule;
-import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.exception.ComposedErrorException;
-import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.util.concurrent.Latch;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
-import org.mule.runtime.core.api.processor.Processor;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -47,7 +42,6 @@ import org.mule.test.AbstractIntegrationTestCase;
 import java.io.ByteArrayInputStream;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Consumer;
 
 import org.hamcrest.Matchers;
@@ -65,7 +59,6 @@ import io.qameta.allure.Story;
 public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
 
   private static final String EXCEPTION_MESSAGE_TITLE_PREFIX = "Exception(s) were found for route(s): " + LINE_SEPARATOR;
-  private static Set<Thread> capturedThreads;
 
   @Rule
   public ExpectedException expectedException = none();
@@ -81,17 +74,7 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
 
   @Override
   protected String getConfigFile() {
-    return "scatter-gather-test.xml";
-  }
-
-  @Override
-  protected void doSetUp() throws Exception {
-    capturedThreads = newKeySet();
-  }
-
-  @Override
-  protected void doTearDown() throws Exception {
-    capturedThreads = null;
+    return "routers/scatter-gather-test.xml";
   }
 
   @Test
@@ -200,14 +183,14 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
   @Description("Only a single thread is used to process all routes when configured with maxConcurrency=1.")
   public void sequentialProcessing() throws Exception {
     flowRunner("sequentialProcessing").withVariable("latch", new Latch()).run();
-    assertThat(capturedThreads, hasSize(1));
+    assertThat(getCapturedThreads(), hasSize(1));
   }
 
   @Test
   @Description("Only a single thread is used to process all routes when a transaction is active.")
   public void withinTransaction() throws Exception {
     flowRunner("withinTransaction").withVariable("latch", new Latch()).run();
-    assertThat(capturedThreads, hasSize(1));
+    assertThat(getCapturedThreads(), hasSize(1));
   }
 
   @Test
@@ -247,7 +230,7 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
   @Description("By default routes are run concurrently and multiple threads are used.")
   public void concurrent() throws Exception {
     flowRunner("concurrent").withVariable("latch", new Latch()).run();
-    assertThat(capturedThreads, hasSize(3));
+    assertThat(getCapturedThreads(), hasSize(3));
   }
 
   @Test
@@ -280,22 +263,6 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
   @Description("Check that parallel execution routes do not cause race conditions when handling SdkInternalContext")
   public void foreachWithinScatterGatherWithSdkOperation() throws Exception {
     flowRunner("foreachWithinScatterGatherWithSdkOperation").run();
-  }
-
-  public static class ThreadCaptor extends AbstractComponent implements Processor {
-
-    @Override
-    public CoreEvent process(CoreEvent event) throws MuleException {
-      capturedThreads.add(currentThread());
-      if (capturedThreads.size() > 2) {
-        Latch latch = (Latch) event.getVariables().get("latch").getValue();
-        if (latch != null) {
-          latch.release();
-        }
-      }
-
-      return event;
-    }
   }
 
 }
