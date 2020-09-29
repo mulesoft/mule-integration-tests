@@ -34,7 +34,7 @@ public abstract class DeclarationSessionTestCase extends AbstractFakeMuleServerT
 
   protected static final String EXTENSION_GROUP_ID = "org.mule.tooling";
   protected static final String EXTENSION_ARTIFACT_ID = "tooling-support-test-extension";
-  protected static final String EXTENSION_VERSION = "1.0.0-SNAPSHOT";
+  protected static final String EXTENSION_VERSION = "4.4.0-SNAPSHOT";
   protected static final String EXTENSION_CLASSIFIER = "mule-plugin";
   protected static final String EXTENSION_TYPE = "jar";
 
