@@ -23,7 +23,6 @@
     <module>security</module>
     <module>oauth</module>
     <module>schedulers-tests</module>
-    <module>mule-test-smart-connectors-parent</module>
     <module>munit-tests</module>
     <module>extensions-xml-support</module>
     <module>logging</module>
@@ -58,16 +57,7 @@
         </configuration>
       </plugin>
     </plugins>
-
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>com.mulesoft.munit</groupId>
-          <artifactId>munit-extensions-maven-plugin</artifactId>
-          <version>${munitExtensionsMavenPlugin}</version>
-        </plugin>
-      </plugins>
-    </pluginManagement>
+    
   </build>
 
   <dependencyManagement>
