@@ -17,12 +17,15 @@ import static org.mule.test.allure.AllureConstants.ScopeFeature.ChoiceStory.CHOI
 import static org.mule.test.routing.ThreadCaptor.getCapturedThreads;
 
 import org.mule.functional.api.component.InvocationCountMessageProcessor;
+import org.mule.functional.api.flow.FlowRunner;
 import org.mule.runtime.api.message.Message;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Test;
 
+import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
 
 @Feature(ROUTERS)
@@ -123,5 +126,15 @@ public class ChoiceRouterTestCase extends AbstractIntegrationTestCase {
     assertThat(getCapturedThreads(), hasSize(1));
   }
 
-}
+  @Test
+  @Issue("MULE-18803")
+  @Description("Verify that using a non-blocking processor in the default route of a choice is not flaky."
+      + "This was flaky because of a race condition between the processing of the defaut route and the completion of that flux for that route when the choice was iniside a Mono component.")
+  public void nonBlockingProcessorInDefaultRoute() throws Exception {
+    for (int i = 0; i < 5000; ++i) {
+      final FlowRunner flowRunner = flowRunner("nonBlockingProcessorInDefaultRoute").withPayload("ooo");
+      flowRunner.run();
+    }
+  }
 
+}
