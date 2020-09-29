@@ -92,7 +92,13 @@
         <groupId>org.mule.runtime</groupId>
         <artifactId>mule-dwb-api</artifactId> 
         <scope>provided</scope>         
-    </dependency> 
+    </dependency>
+    <dependency>
+      <groupId>org.mule.tests</groupId>
+      <artifactId>test-components</artifactId>
+      <version>${project.version}</version>
+      <classifier>mule-plugin</classifier>
+    </dependency>
   </dependencies>
 
   <repositories>
