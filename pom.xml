@@ -58,6 +58,15 @@
       </plugin>
     </plugins>
 
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>com.mulesoft.munit</groupId>
+          <artifactId>munit-extensions-maven-plugin</artifactId>
+          <version>${munitExtensionsMavenPlugin}</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
   </build>
 
   <dependencyManagement>
