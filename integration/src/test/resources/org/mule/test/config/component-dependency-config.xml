@@ -40,7 +40,7 @@
 
     <flow name="clientFlow">
         <http:request config-ref="requestConfigWithCertificate" url="#['https://localhost:$(vars.port)/']" method="POST"/>
-        <object-to-string-transformer />
+        <set-payload value="#[%dw 2.0 output application/java --- payload.^raw as String]"/>
     </flow>
 
     <tls:context name="requestTlsContextWithCertificate" >

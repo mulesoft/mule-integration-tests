@@ -15,7 +15,6 @@
 
     <flow name="customHeaders">
         <soap:invoke config-ref="config" service="2" operation="noParamsWithHeader"/>
-        <set-payload value="#[payload.body]"/>
-        <object-to-string-transformer/>
+        <set-payload value="#[%dw 2.0 output application/java --- payload.body.^raw as String]"/>
     </flow>
 </mule>

@@ -20,7 +20,7 @@
 
     <flow name="bridge">
         <http:listener path="in" config-ref="listenerConfig"/>
-        <object-to-string-transformer/>
+        <set-payload value="#[%dw 2.0 output application/java --- payload.^raw as String]"/>
         <test:processor logMessageDetails="true"/>
         <!-- TODO MULE-9857 Make message properties case sensitive -->
         <test:assert expression="#[attributes.headers['x-custom-header'] == 'value']"/>

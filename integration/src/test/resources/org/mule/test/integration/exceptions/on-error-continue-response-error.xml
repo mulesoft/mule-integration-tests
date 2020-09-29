@@ -5,7 +5,7 @@
        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 
     <flow name="onErrorContinue">
-        <object-to-string-transformer/>
+        <set-payload value="#[%dw 2.0 output application/java --- payload.^raw as String]"/>
         <error-handler>
             <on-error-continue type="SOURCE_RESPONSE">
                 <set-payload value="#[payload ++ ' nope']"/>

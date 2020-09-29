@@ -46,7 +46,7 @@
                 <http:success-status-code-validator values="0..599"/>
             </http:response-validator>
         </http:request>
-        <object-to-string-transformer />
+        <set-payload value="#[%dw 2.0 output application/java --- payload.^raw as String]"/>
         <test-components:queue-push config-ref="toclient"/>
     </flow>
 
@@ -61,7 +61,7 @@
                 <http:success-status-code-validator values="0..599"/>
             </http:response-validator>
         </http:request>
-        <object-to-string-transformer />
+        <set-payload value="#[%dw 2.0 output application/java --- payload.^raw as String]"/>
         <test-components:queue-push config-ref="toclient2"/>
     </flow>
 
