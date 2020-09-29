@@ -179,4 +179,16 @@
         <custom-processor class="org.mule.test.integration.routing.ChoiceRouterTestCase$ThreadCaptor" />
     </flow>
 
+    <flow name="nonBlockingProcessorInDefaultRoute" maxConcurrency="1">
+        <parallel-foreach collection="#[[payload]]">
+            <choice>
+                <when expression="#[1==2]">
+                    <logger/>
+                </when>
+                <otherwise>
+                    <test:non-blocking-processor />
+                </otherwise>
+            </choice>
+        </parallel-foreach>
+    </flow>
 </mule>
