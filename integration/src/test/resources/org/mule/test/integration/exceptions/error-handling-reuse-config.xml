@@ -31,12 +31,12 @@
     </on-error-continue>
 
     <flow name="withSharedHandler">
-        <processor ref="throw-exception"/>
+        <flow-ref name="throw-exception"/>
         <error-handler ref="sharedErrorHandler"/>
     </flow>
 
     <flow name="withSharedHandlersInline">
-        <processor ref="throw-exception"/>
+        <flow-ref name="throw-exception"/>
         <error-handler>
             <on-error ref="sharedExpressionErrorHandler"/>
             <on-error-continue type="ROUTING">
@@ -51,7 +51,7 @@
     <flow name="withTryAndSharedHandler">
         <set-payload value="#[payload ++ ' hey']"/>
         <try>
-            <processor ref="throw-exception"/>
+            <flow-ref name="throw-exception"/>
             <error-handler ref="sharedErrorHandler"/>
         </try>
     </flow>
@@ -59,7 +59,7 @@
     <flow name="withTryAndSharedHandlersInline">
         <set-payload value="#[payload ++ ' hey']"/>
         <try>
-            <processor ref="throw-exception"/>
+            <flow-ref name="throw-exception"/>
             <error-handler>
                 <on-error ref="sharedExpressionErrorHandler"/>
                 <on-error-continue type="ROUTING">

@@ -79,12 +79,12 @@
     <flow name="flow">
         <set-payload value="#[payload ++ '1']" />
         <set-payload value="#[payload ++ '2']" />
-        <processor ref="composite1" />
-        <processor-chain>
+        <flow-ref name="composite1" />
+        <try>
             <set-payload value="#[payload ++ 'a']" />
             <set-payload value="#[payload ++ 'b']" />
             <set-payload value="#[payload ++ 'c']" />
-        </processor-chain>
+        </try>
         <set-payload value="#[payload ++ '3']" />
     </flow>
 
@@ -177,7 +177,7 @@
     </flow>
 
     <flow name="loggerheader" initialState="stopped">
-        <logger message="Ths is my header value: #[mel:message.inboundProperties.toLog]" level="ERROR" category="mycategory"/>
+        <logger message="Ths is my header value: #[vars.toLog]" level="ERROR" category="mycategory"/>
     </flow>
 
     <flow name="poll">

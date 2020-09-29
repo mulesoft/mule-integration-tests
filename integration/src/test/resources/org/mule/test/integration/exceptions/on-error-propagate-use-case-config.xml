@@ -53,7 +53,7 @@
                 <test-components:queue-push config-ref="custom1"/>
             </on-error-propagate>
             <on-error-propagate type="ROUTING">
-                <processor ref="call"/>
+                <flow-ref name="call"/>
             </on-error-propagate>
             <on-error-propagate type="ANY">
                 <test-components:queue-push config-ref="any1"/>
@@ -69,7 +69,7 @@
                 <test-components:queue-push config-ref="custom2"/>
             </on-error-propagate>
             <on-error-propagate type="ANY">
-                <processor ref="call"/>
+                <flow-ref name="call"/>
             </on-error-propagate>
         </error-handler>
     </flow>
@@ -87,7 +87,7 @@
         </choice>
         <error-handler>
             <on-error-propagate type="ROUTING,TRANSFORMATION">
-                <processor ref="call"/>
+                <flow-ref name="call"/>
             </on-error-propagate>
             <on-error-propagate type="ANY">
                 <test-components:queue-push config-ref="any"/>
@@ -108,7 +108,7 @@
         </choice>
         <error-handler>
             <on-error-propagate type="MULE:*">
-                <processor ref="call"/>
+                <flow-ref name="call"/>
             </on-error-propagate>
             <on-error-propagate type="ANY">
                 <test-components:queue-push config-ref="any"/>
@@ -129,7 +129,7 @@
         </choice>
         <error-handler>
             <on-error-propagate type="*:ROUTING, *:TRANSFORMATION">
-                <processor ref="call"/>
+                <flow-ref name="call"/>
             </on-error-propagate>
             <on-error-propagate type="ANY">
                 <test-components:queue-push config-ref="any"/>
@@ -152,7 +152,7 @@
         <test:processor throwException="true"/>
         <error-handler>
             <on-error-propagate>
-                <processor ref="error"/>
+                <flow-ref name="error"/>
             </on-error-propagate>
         </error-handler>
     </flow>

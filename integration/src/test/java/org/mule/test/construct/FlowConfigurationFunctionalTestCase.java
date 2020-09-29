@@ -161,7 +161,7 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
 
   @Test
   public void testLoggerHeader() throws Exception {
-    flowRunner("loggerheader").withPayload("0").withOutboundProperty("toLog", "valueToLog").run();
+    flowRunner("loggerheader").withPayload("0").withVariable("toLog", "valueToLog").run();
   }
 
   public static class Pojo {

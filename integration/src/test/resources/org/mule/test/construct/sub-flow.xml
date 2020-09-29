@@ -8,7 +8,7 @@
 
     <flow name="SubFlowViaProcessorRef">
         <set-payload value="#[payload ++ '1']"/>
-        <processor ref="sub-flow"/>
+        <flow-ref name="sub-flow"/>
         <set-payload value="#[payload ++ '2']"/>
     </flow>
 

@@ -11,7 +11,7 @@
 
 
     <flow name="Flow">
-        <processor ref="threadSensingProcessor"/>
+        <flow-ref name="threadSensingProcessor"/>
         <test:queue name="out"/>
     </flow>
 

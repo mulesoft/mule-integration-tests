@@ -80,10 +80,10 @@
 
     <flow name="processorChain" initialState="stopped">
         <test:assert-intercepting responseSameTask="false" responseExpression="#[payload == 'Test Message']"/>
-        <processor-chain>
+        <try>
             <test:assert-intercepting responseSameTask="false" responseExpression="#[payload == 'Test Message']"/>
             <test:non-blocking-processor/>
-        </processor-chain>
+        </try>
         <test:non-blocking-processor/>
         <test:assert expression="#[payload == 'Test Message']"/>
     </flow>
