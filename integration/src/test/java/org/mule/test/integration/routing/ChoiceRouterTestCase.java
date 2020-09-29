@@ -6,9 +6,9 @@
  */
 package org.mule.test.integration.routing;
 
+import static java.lang.Runtime.getRuntime;
 import static java.lang.Thread.currentThread;
 import static java.util.concurrent.ConcurrentHashMap.newKeySet;
-import static java.lang.Runtime.getRuntime;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
@@ -18,6 +18,7 @@ import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 import static org.mule.test.allure.AllureConstants.ScopeFeature.ChoiceStory.CHOICE;
 
 import org.mule.functional.api.component.InvocationCountMessageProcessor;
+import org.mule.functional.api.flow.FlowRunner;
 import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
@@ -30,7 +31,9 @@ import java.util.Set;
 
 import org.junit.Test;
 
+import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
 
 @Feature(ROUTERS)
@@ -141,6 +144,17 @@ public class ChoiceRouterTestCase extends AbstractIntegrationTestCase {
   public void txWithNoOtherwise() throws Exception {
     Message result = flowRunner("txNoOtherwise").withPayload("ooo").run().getMessage();
     assertThat(capturedThreads, hasSize(1));
+  }
+
+  @Test
+  @Issue("MULE-18803")
+  @Description("Verify that using a non-blocking processor in the default route of a choice is not flaky."
+      + "This was flaky because of a race condition between the processing of the defaut route and the completion of that flux for that route when the choice was iniside a Mono component.")
+  public void nonBlockingProcessorInDefaultRoute() throws Exception {
+    for (int i = 0; i < 5000; ++i) {
+      final FlowRunner flowRunner = flowRunner("nonBlockingProcessorInDefaultRoute").withPayload("ooo");
+      flowRunner.run();
+    }
   }
 
   public static class ThreadCaptor extends AbstractComponent implements Processor {
