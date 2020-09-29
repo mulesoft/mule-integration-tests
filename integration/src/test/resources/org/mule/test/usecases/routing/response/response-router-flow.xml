@@ -30,7 +30,7 @@
     </flow>
 
     <flow name="W10FO">
-        <byte-array-to-string-transformer />
+        <set-payload value="#[%dw 2.0 output application/java --- payload.^raw as String]"/>
         <flow-ref name="testReceiver"/>
         <test-components:queue-push config-ref="someOtherQueue" />
     </flow>

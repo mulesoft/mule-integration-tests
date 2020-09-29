@@ -36,13 +36,13 @@
 	<flow name="flow-default">
 		<http:request config-ref="default"
 			path="/" method="GET"  />
-		<object-to-string-transformer />		
+    <set-payload value="#[%dw 2.0 output application/java --- payload.^raw as String]"/>
 	</flow>
 	
 	<flow name="flow-custom">
 		<http:request config-ref="custom"
 			path="/" method="GET" />
-		<object-to-string-transformer />		
+    <set-payload value="#[%dw 2.0 output application/java --- payload.^raw as String] "/>
 	</flow>
 	
 	<flow name="flow-ssl">

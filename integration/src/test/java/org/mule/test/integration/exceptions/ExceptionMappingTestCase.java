@@ -13,11 +13,11 @@ import org.mule.functional.api.exception.ExpectedError;
 import org.mule.functional.api.flow.FlowRunner;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import org.junit.Rule;
-import org.junit.Test;
-
 import java.io.IOException;
 import java.io.InputStream;
+
+import org.junit.Rule;
+import org.junit.Test;
 
 public class ExceptionMappingTestCase extends AbstractIntegrationTestCase {
 
@@ -31,7 +31,7 @@ public class ExceptionMappingTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void transformationError() throws Exception {
-    expected.expectErrorType(any(String.class), is("TRANSFORMATION"));
+    expected.expectErrorType(any(String.class), is("EXPRESSION"));
 
     new FlowRunner(registry, "transformationErrorFlow").withPayload(new InputStream() {
 
