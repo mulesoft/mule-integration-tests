@@ -75,5 +75,25 @@
         </error-handler>
     </flow>
 
+    <on-error-continue name="sharedContinue">
+        <logger/>
+    </on-error-continue>
+
+    <error-handler name="withSharedContinueHandler">
+        <on-error ref="sharedContinue"/>
+    </error-handler>
+
+    <flow name="withSharedContinue">
+        <logger/>
+        <error-handler>
+            <on-error ref="sharedContinue"/>
+        </error-handler>
+    </flow>
+
+    <flow name="globalErrorHandlerWithOnError">
+        <logger/>
+        <error-handler ref="withSharedContinueHandler"/>
+    </flow>
+
 </mule>
 
