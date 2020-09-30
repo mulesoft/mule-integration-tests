@@ -36,6 +36,7 @@ import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
@@ -132,6 +133,20 @@ public class ErrorHandlerLazyInitTestCase extends AbstractIntegrationTestCase {
   public void invalidErrorTypeOnErrorHandler() {
     doCustomErrorTypesShouldDiscoveredTest(builder().globalName("invalidErrorTypeOnErrorHandler").build(),
                                            "ERROR_NON_EXISTING_1");
+  }
+
+  @Test
+  @Issue("MULE-18805")
+  @Description("Checks that configuration can be built when having an onError")
+  public void withOnErrorReference() {
+    doCustomErrorTypesShouldDiscoveredTest(builder().globalName("withSharedContinue").build());
+  }
+
+  @Test
+  @Issue("MULE-18805")
+  @Description("Checks that configuration can be built when having an onError in a global error handler")
+  public void globalErrorHandlerWithOnError() {
+    doCustomErrorTypesShouldDiscoveredTest(builder().globalName("globalErrorHandlerWithOnError").build());
   }
 
   @Test
