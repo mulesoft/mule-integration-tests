@@ -23,7 +23,6 @@
     <module>security</module>
     <module>oauth</module>
     <module>schedulers-tests</module>
-    <module>mule-test-smart-connectors-parent</module>
     <module>munit-tests</module>
     <module>extensions-xml-support</module>
     <module>logging</module>
@@ -93,7 +92,13 @@
         <groupId>org.mule.runtime</groupId>
         <artifactId>mule-dwb-api</artifactId> 
         <scope>provided</scope>         
-    </dependency> 
+    </dependency>
+    <dependency>
+      <groupId>org.mule.tests</groupId>
+      <artifactId>test-components</artifactId>
+      <version>${project.version}</version>
+      <classifier>mule-plugin</classifier>
+    </dependency>
   </dependencies>
 
   <repositories>

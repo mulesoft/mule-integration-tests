@@ -253,7 +253,7 @@ public class ErrorHandlingConfigurationFailuresTestCase extends AbstractConfigur
     DefaultJavaExtensionModelLoader loader = new DefaultJavaExtensionModelLoader();
     Map<String, Object> ctx = new HashMap<>();
     ctx.put(TYPE_PROPERTY_NAME, extension.getName());
-    ctx.put(VERSION, "1.0.0-SNAPSHOT");
+    ctx.put(VERSION, "4.4.0-SNAPSHOT");
     return loader.loadExtensionModel(currentThread().getContextClassLoader(), DslResolvingContext.getDefault(deps), ctx);
   }
 }
