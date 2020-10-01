@@ -45,12 +45,6 @@
         <dependency>
             <groupId>org.mule.tooling</groupId>
             <artifactId>tooling-support-test-extension</artifactId>
-            <version>${testExtensionVersion}</version>
-            <classifier>mule-plugin</classifier>
-        </dependency>
-        <dependency>
-            <groupId>org.mule.tooling</groupId>
-            <artifactId>tooling-support-test-extension</artifactId>
             <type>test-jar</type>
             <version>${testExtensionVersion}</version>
             <scope>test</scope>
