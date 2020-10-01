@@ -6,6 +6,7 @@
  */
 package org.mule.runtime.module.tooling;
 
+import static java.util.Optional.empty;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
@@ -15,7 +16,9 @@ import static org.mule.runtime.app.declaration.api.fluent.ElementDeclarer.newArt
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.TEST_EXTENSION_DECLARER;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.configurationDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.connectionDeclaration;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.connectionDeclarationWithResource;
 import static org.mule.test.infrastructure.maven.MavenTestUtils.getMavenLocalRepository;
+import org.mule.runtime.api.util.Pair;
 import org.mule.runtime.api.value.ResolvingFailure;
 import org.mule.runtime.api.value.ValueResult;
 import org.mule.runtime.app.declaration.api.ConstructElementDeclaration;
@@ -23,8 +26,11 @@ import org.mule.runtime.app.declaration.api.ParameterizedElementDeclaration;
 import org.mule.runtime.app.declaration.api.fluent.ArtifactDeclarer;
 import org.mule.runtime.app.declaration.api.fluent.ElementDeclarer;
 import org.mule.runtime.module.tooling.api.artifact.DeclarationSession;
+import org.mule.runtime.module.tooling.api.artifact.DeclarationSessionBuilder;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.infrastructure.deployment.AbstractFakeMuleServerTestCase;
+
+import java.util.Optional;
 
 import org.junit.After;
 import org.junit.ClassRule;
@@ -58,7 +64,8 @@ public abstract class DeclarationSessionTestCase extends AbstractFakeMuleServerT
     ArtifactDeclarer artifactDeclarer = newArtifact();
     declareArtifact(artifactDeclarer);
     super.setUp();
-    this.session = this.muleServer
+
+    DeclarationSessionBuilder declarationSessionBuilder = this.muleServer
         .toolingService()
         .newDeclarationSessionBuilder()
         .addDependency(EXTENSION_GROUP_ID,
@@ -66,13 +73,21 @@ public abstract class DeclarationSessionTestCase extends AbstractFakeMuleServerT
                        EXTENSION_VERSION,
                        EXTENSION_CLASSIFIER,
                        EXTENSION_TYPE)
-        .setArtifactDeclaration(artifactDeclarer.getDeclaration())
-        .build();
+        .setArtifactDeclaration(artifactDeclarer.getDeclaration());
+    getResource().ifPresent(resource -> declarationSessionBuilder.addResource(resource.getFirst(), resource.getSecond()));
+
+    this.session = declarationSessionBuilder.build();
     this.muleServer.start();
   }
 
+  protected Optional<Pair<String, byte[]>> getResource() {
+    return empty();
+  }
+
   protected void declareArtifact(ArtifactDeclarer artifactDeclarer) {
-    artifactDeclarer.withGlobalElement(configurationDeclaration(CONFIG_NAME, connectionDeclaration(CLIENT_NAME)));
+    artifactDeclarer.withGlobalElement(configurationDeclaration(CONFIG_NAME, getResource()
+        .map(resource -> connectionDeclarationWithResource(CLIENT_NAME, resource.getFirst()))
+        .orElse(connectionDeclaration(CLIENT_NAME))));
   }
 
   @After
