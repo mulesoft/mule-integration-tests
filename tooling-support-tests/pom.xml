@@ -55,6 +55,25 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>download-extensions</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>get</goal>
+                        </goals>
+                        <configuration>
+                            <groupId>org.mule.tooling</groupId>
+                            <artifactId>tooling-support-test-extension</artifactId>
+                            <version>${testExtensionVersion}</version>
+                            <classifier>mule-plugin</classifier>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <systemPropertyVariables>
