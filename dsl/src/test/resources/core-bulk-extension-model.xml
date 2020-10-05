@@ -79,6 +79,7 @@
             <logger/>
         </foreach>
     </flow>
+    <global-property name="Attribute" value="Attribute"/>
     <notifications/>
     <object class="Attribute" name="global-object" ref="Attribute"/>
     <flow name="flowFor-onError">
