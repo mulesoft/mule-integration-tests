@@ -24,6 +24,7 @@ import org.mule.test.AbstractIntegrationTestCase;
 
 import com.eaio.uuid.UUID;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class FlowAsyncBeforeAfterOutboundTestCase extends AbstractIntegrationTestCase {
@@ -42,6 +43,7 @@ public class FlowAsyncBeforeAfterOutboundTestCase extends AbstractIntegrationTes
   }
 
   @Test
+  @Ignore("MULE-18836")
   public void testAsyncBefore() throws Exception {
     Message msgSync = flowRunner("test-async-block-before-outbound").withPayload("message").run().getMessage();
     Message msgAsync = queueHandler.read("test.before.async.out", RECEIVE_TIMEOUT).getMessage();
@@ -51,6 +53,7 @@ public class FlowAsyncBeforeAfterOutboundTestCase extends AbstractIntegrationTes
   }
 
   @Test
+  @Ignore("MULE-18836")
   public void testAsyncAfter() throws Exception {
     Message msgSync = flowRunner("test-async-block-after-outbound").withPayload("message").run().getMessage();
     Message msgAsync = queueHandler.read("test.after.async.out", RECEIVE_TIMEOUT).getMessage();
