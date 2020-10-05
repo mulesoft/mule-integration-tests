@@ -11,6 +11,7 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mule.tck.processor.FlowAssert.verify;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
@@ -197,6 +198,7 @@ public class NonBlockingFunctionalTestCase extends AbstractIntegrationTestCase {
     flowRunner("untilSuccessfulWithRetryTransactional").withPayload(TEST_MESSAGE).run();
   }
 
+  @Ignore("MULE-18827")
   @Test
   public void foreach() throws Exception {
     flowRunner("foreach").withPayload(asList(new String[] {"1", "2", "3"}, new String[] {"a", "b", "c"})).run();
