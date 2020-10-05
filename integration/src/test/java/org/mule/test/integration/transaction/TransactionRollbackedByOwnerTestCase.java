@@ -11,6 +11,7 @@ import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
+import org.junit.Ignore;
 import org.junit.runners.Parameterized;
 import org.mule.runtime.api.notification.TransactionNotificationListener;
 import org.mule.runtime.api.notification.TransactionNotification;
@@ -92,6 +93,7 @@ public class TransactionRollbackedByOwnerTestCase extends AbstractIntegrationTes
   }
 
   @Test
+  @Ignore("MULE-18838")
   public void checkRollback() throws Exception {
     final TransactionNotificationListener listener = notification -> notifications.add((TransactionNotification) notification);
     muleContext.getNotificationManager().addListener(listener);
