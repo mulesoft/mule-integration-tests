@@ -68,6 +68,7 @@ import io.qameta.allure.Feature;
 import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -229,6 +230,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
 
   @Description("Smart Connector simple operation without parameters")
   @Test
+  @Ignore("MULE-17570")
   public void scOperation() throws Exception {
     flowRunner("scOperation").run();
 
@@ -395,6 +397,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
 
   @Description("Smart Connector simple operation with parameters")
   @Test
+  @Ignore("MULE-17570")
   public void scEchoOperation() throws Exception {
     final String variableValue = "echo message for the win";
     flowRunner("scEchoOperation").withVariable("variable", variableValue).run();
@@ -418,6 +421,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
 
   @Description("Smart Connector simple operation with parameters through flow-ref")
   @Test
+  @Ignore("MULE-17570")
   public void scEchoOperationFlowRef() throws Exception {
     final String variableValue = "echo message for the win";
     flowRunner("scEchoOperationFlowRef").withVariable("variable", variableValue).run();
@@ -445,6 +449,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
 
   @Description("Smart Connector that uses a Smart Connector operation without parameters")
   @Test
+  @Ignore("MULE-17570")
   public void scUsingScOperation() throws Exception {
     flowRunner("scUsingScOperation").run();
 

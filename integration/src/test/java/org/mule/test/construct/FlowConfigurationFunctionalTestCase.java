@@ -43,6 +43,7 @@ import java.util.Map;
 import org.junit.Ignore;
 import org.junit.Test;
 
+@Ignore("MULE-17630")
 public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTestCase {
 
   private static final String EXPECTED_ARRAY_IN_ARGS_RESULT = "testtestrecieved";
@@ -118,8 +119,8 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
     assertTrue(results.contains(orange));
   }
 
-  @Ignore("MULE-12407")
   @Test
+  @Ignore("MULE-12407, MULE-17630")
   public void testSplitNoParts() throws Exception {
     String MESSAGE = "<Order></Order>";
     Message result = flowRunner("split-no-parts").withPayload(MESSAGE).withMediaType(APPLICATION_XML).run().getMessage();
