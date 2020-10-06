@@ -13,6 +13,7 @@ import org.mule.tck.testmodels.fruit.Apple;
 import org.mule.tck.testmodels.fruit.Orange;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class JndiFunctionalTestCase extends AbstractIntegrationTestCase {
@@ -23,6 +24,7 @@ public class JndiFunctionalTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
+  @Ignore("MULE-17628")
   public void testJndi() {
     Object obj;
 
