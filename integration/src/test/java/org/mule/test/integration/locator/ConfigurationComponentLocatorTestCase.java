@@ -35,6 +35,7 @@ import java.util.Optional;
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -129,6 +130,7 @@ public class ConfigurationComponentLocatorTestCase extends AbstractIntegrationTe
 
   @Description("Search for all the components in the configuration")
   @Test
+  @Ignore("MULE-18843")
   public void findAllComponents() {
     List<ComponentLocation> componentLocs = muleContext.getConfigurationComponentLocator().findAllLocations();
     List<String> allComponentPaths = componentLocs.stream().map(ComponentLocation::getLocation).collect(toList());

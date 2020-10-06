@@ -35,6 +35,7 @@ import org.mule.runtime.api.util.concurrent.Latch;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.runtime.core.api.processor.Processor;
+import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.io.ByteArrayInputStream;
@@ -43,6 +44,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.hamcrest.Matchers;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -61,6 +63,9 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
   @Rule
   public ExpectedException expectedException = none();
 
+  @Rule
+  public SystemProperty timeout = new SystemProperty("scatterGather.timeout", "" + RECEIVE_TIMEOUT);
+
   @Override
   protected String getConfigFile() {
     return "scatter-gather-test.xml";
@@ -69,6 +74,11 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
   @Override
   protected void doSetUp() throws Exception {
     capturedThreads = newKeySet();
+  }
+
+  @Override
+  protected void doTearDown() throws Exception {
+    capturedThreads = null;
   }
 
   @Test
@@ -178,6 +188,7 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
 
   @Test
   @Description("Only a single thread is used to process all routes when a transaction is active.")
+  @Ignore("MULE-18845")
   public void withinTransaction() throws Exception {
     flowRunner("withinTransaction").withVariable("latch", new Latch()).run();
     assertThat(capturedThreads, hasSize(1));

@@ -28,6 +28,7 @@ import org.mule.test.AbstractIntegrationTestCase;
 
 import java.util.Set;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import io.qameta.allure.Feature;
@@ -114,30 +115,35 @@ public class ChoiceRouterTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
+  @Ignore("MULE-18844")
   public void txWithNonBlockingRoute() throws Exception {
     Message result = flowRunner("txNonBlocking").withPayload("nonBlocking").run().getMessage();
     assertThat(capturedThreads, hasSize(1));
   }
 
   @Test
+  @Ignore("MULE-18844")
   public void txWithCpuIntensiveRoute() throws Exception {
     Message result = flowRunner("txCpuIntensive").withPayload("cpuIntensive").run().getMessage();
     assertThat(capturedThreads, hasSize(1));
   }
 
   @Test
+  @Ignore("MULE-18844")
   public void txWithBlockingRoute() throws Exception {
     Message result = flowRunner("txBlocking").withPayload("blocking").run().getMessage();
     assertThat(capturedThreads, hasSize(1));
   }
 
   @Test
+  @Ignore("MULE-18844")
   public void txWithOtherwise() throws Exception {
     Message result = flowRunner("txOtherwise").withPayload("ooo").run().getMessage();
     assertThat(capturedThreads, hasSize(1));
   }
 
   @Test
+  @Ignore("MULE-18844")
   public void txWithNoOtherwise() throws Exception {
     Message result = flowRunner("txNoOtherwise").withPayload("ooo").run().getMessage();
     assertThat(capturedThreads, hasSize(1));
