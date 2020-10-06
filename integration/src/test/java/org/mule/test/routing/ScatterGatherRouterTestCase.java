@@ -44,6 +44,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.hamcrest.Matchers;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -187,6 +188,7 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
 
   @Test
   @Description("Only a single thread is used to process all routes when a transaction is active.")
+  @Ignore("MULE-18845")
   public void withinTransaction() throws Exception {
     flowRunner("withinTransaction").withVariable("latch", new Latch()).run();
     assertThat(capturedThreads, hasSize(1));
