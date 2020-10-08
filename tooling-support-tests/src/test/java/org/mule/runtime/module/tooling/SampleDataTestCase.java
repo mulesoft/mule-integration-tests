@@ -6,11 +6,21 @@
  */
 package org.mule.runtime.module.tooling;
 
+import static java.lang.String.format;
+import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.actingParameterGroupOPDeclaration;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.actingParameterGroupOPWithAliasDeclaration;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.actingParameterGroupWithOptionalProviderParamOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.actingParameterOPDeclaration;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.actingParameterOptionalOPDeclaration;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.complexActingParameterOPDeclaration;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.complexParameterValue;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.configLessConnectionLessOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.configLessOPDeclaration;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.innerPojo;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.multiLevelOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.sourceDeclaration;
 import static org.mule.sdk.api.data.sample.SampleDataException.MISSING_REQUIRED_PARAMETERS;
@@ -20,6 +30,12 @@ import org.mule.runtime.api.sampledata.SampleDataFailure;
 import org.mule.runtime.api.sampledata.SampleDataResult;
 import org.mule.runtime.app.declaration.api.ComponentElementDeclaration;
 import org.mule.runtime.app.declaration.api.OperationElementDeclaration;
+import org.mule.runtime.app.declaration.api.ParameterValue;
+
+import com.google.common.collect.ImmutableMap;
+
+import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 
@@ -64,6 +80,75 @@ public class SampleDataTestCase extends DeclarationSessionTestCase {
   }
 
   @Test
+  public void actingParameterOptionalMissingOperationFails() {
+    String actingParameter = "actingParameter";
+    String message = "Unable to retrieve Sample Data. There are missing required parameters for the resolution: [actingParameter]";
+    String reason = "org.mule.sdk.api.data.sample.SampleDataException: " + message + "\n";
+    ComponentElementDeclaration<?> elementDeclaration = actingParameterOptionalOPDeclaration(CONFIG_NAME);
+    assertSampleDataFailure(elementDeclaration, message, reason, "MISSING_REQUIRED_PARAMETERS");
+  }
+
+  @Test
+  public void complexActingParameterOperation() {
+    int intParam = 0;
+    String stringParam = "zero";
+    List<String> listParam = asList("zero", "one", "two");
+    Map<String, String> mapParam = ImmutableMap.of("0", "zero", "1", "one", "2", "two");
+    ParameterValue innerPojoValue = innerPojo(intParam, stringParam, listParam, mapParam);
+    List<ParameterValue> complexListParam = asList(innerPojoValue);
+    Map<String, ParameterValue> complexMapParam = ImmutableMap.of("0", innerPojoValue, "1", innerPojoValue);
+    ComponentElementDeclaration<?> elementDeclaration =
+        complexActingParameterOPDeclaration(CONFIG_NAME,
+            complexParameterValue(intParam, stringParam, listParam, mapParam, innerPojoValue,
+                complexListParam, complexMapParam));
+    String innerPojoStringValue = intParam +
+        stringParam +
+        "zeroonetwo" + //listParam
+        "0zero1one2two"; //mapParam
+
+    String expectedValue = intParam +
+        stringParam +
+        "zeroonetwo" + //listParam
+        "0zero1one2two" + //mapParam
+        innerPojoStringValue + //all inner pojo parameters
+        innerPojoStringValue + //complex list with 1 inner pojo
+        "0" + innerPojoStringValue + "1" + innerPojoStringValue; //complexMap
+
+    assertSampleDataSuccess(elementDeclaration, null, expectedValue);
+  }
+
+  @Test
+  public void actingParameterGroupOperation() {
+    String stringValue = "stringValue";
+    int intValue = 1;
+    List<String> listValue = singletonList("single");
+
+    ComponentElementDeclaration<?> elementDeclaration = actingParameterGroupOPDeclaration(CONFIG_NAME, stringValue, intValue, listValue);
+    assertSampleDataSuccess(elementDeclaration, null, format("%s-%s-%s", stringValue, intValue, listValue.get(0)));
+  }
+
+  @Test
+  public void actingParameterGroupMissingOptionalParamOperationFails() {
+    int intValue = 1;
+    List<String> listValue = singletonList("single");
+    String message = "Unable to retrieve Sample Data. There are missing required parameters for the resolution: [stringParam]";
+    String reason = "org.mule.sdk.api.data.sample.SampleDataException: " + message + "\n";
+
+    ComponentElementDeclaration<?> elementDeclaration = actingParameterGroupOPDeclaration(CONFIG_NAME, null, intValue, listValue);
+    assertSampleDataFailure(elementDeclaration, message, reason, "MISSING_REQUIRED_PARAMETERS");
+  }
+
+  @Test
+  public void actingParameterGroupMissingRequiredParamOperationFails() {
+    String actingParameter = "actingParameter";
+    List<String> listValue = singletonList("single");
+    String message = "Unable to retrieve Sample Data. There are missing required parameters for the resolution: [intParam]";
+    String reason = "org.mule.sdk.api.data.sample.SampleDataException: " + message + "\n";
+    ComponentElementDeclaration<?> elementDeclaration = actingParameterGroupOPDeclaration(CONFIG_NAME, actingParameter, null, listValue);
+    assertSampleDataFailure(elementDeclaration, message, reason, "MISSING_REQUIRED_PARAMETERS");
+  }
+
+  @Test
   public void actingParameterMissingOperationFails() {
     ComponentElementDeclaration<?> elementDeclaration = actingParameterOPDeclaration(CONFIG_NAME, "");
     elementDeclaration.getParameterGroups().get(0).getParameters().remove(0);
@@ -71,6 +156,24 @@ public class SampleDataTestCase extends DeclarationSessionTestCase {
         "Unable to retrieve Sample Data. There are missing required parameters for the resolution: [actingParameter]";
     String reason = "org.mule.sdk.api.data.sample.SampleDataException: " + message + "\n";
     assertSampleDataFailure(elementDeclaration, message, reason, MISSING_REQUIRED_PARAMETERS);
+  }
+
+  @Test // TODO optional params does not appear in the model (MULE-18875)
+  public void actingParameterGroupWithOptionalProviderParamOperation() {
+    String stringValue = "stringValue";
+    List<String> listValue = singletonList("single");
+    Integer intProviderDefaultValue = 0;
+    ComponentElementDeclaration<?> elementDeclaration = actingParameterGroupWithOptionalProviderParamOPDeclaration(CONFIG_NAME, stringValue, null, listValue);
+    assertSampleDataSuccess(elementDeclaration, null, format("%s-%s-%s", stringValue, intProviderDefaultValue, listValue.get(0)));
+  }
+
+  @Test
+  public void actingParameterGroupWithAliasOperation() {
+    String stringValue = "stringValue";
+    int intValue = 1;
+    List<String> listValue = singletonList("single");
+    ComponentElementDeclaration<?> elementDeclaration = actingParameterGroupOPWithAliasDeclaration(CONFIG_NAME, stringValue, intValue, listValue);
+    assertSampleDataSuccess(elementDeclaration, null, format("%s-%s-%s", stringValue, intValue, listValue.get(0)));
   }
 
   @Test
