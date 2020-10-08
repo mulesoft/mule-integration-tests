@@ -22,6 +22,7 @@ import java.util.concurrent.Future;
 
 import javax.inject.Inject;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -59,6 +60,7 @@ public class ValidShutdownTimeoutOneWayTestCase extends AbstractShutdownTimeoutR
   }
 
   @Test
+  @Ignore("MULE-18879")
   public void testSetPayload() throws Throwable {
     doShutDownTest("setPayloadResponse", "setPayloadFlow");
   }
