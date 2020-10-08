@@ -564,7 +564,7 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
   @Description("Smart Connector inside a scatter-gather")
   @Issue("MULE-16285")
   @Test
-  @Ignore("EE-7523")
+  @Ignore("MULE-18878")
   public void flowWithScatterGather() throws Exception {
     flowRunner("flowWithScatterGather").run();
 
