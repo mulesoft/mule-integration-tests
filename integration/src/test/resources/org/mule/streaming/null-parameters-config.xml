@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xsi:schemaLocation="
+        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+        http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+        http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+
+    <http:listener-config name="listenerConfig">
+        <http:listener-connection host="localhost" port="${port}"/>
+    </http:listener-config>
+
+    <http:request-config name="requesterConfig">
+        <http:request-connection host="localhost" port="${port}"/>
+    </http:request-config>
+
+    <flow name="sourceExplicit">
+        <http:listener path="/testExplicit" config-ref="listenerConfig">
+            <http:response statusCode="200">
+                <http:body>#[null]</http:body>
+                <http:headers>#[null]</http:headers>
+            </http:response>
+        </http:listener>
+        
+        <logger/>
+    </flow>
+
+    <flow name="operationExplicit">
+        <http:request method="GET" config-ref="requesterConfig" path="/">
+            <http:body>#[null]</http:body>
+            <http:headers>#[null]</http:headers>
+        </http:request>
+    </flow>
+
+    <flow name="sourceVar">
+        <http:listener path="/testVar" config-ref="listenerConfig">
+            <http:response statusCode="200">
+                <http:body>#[vars.notExists]</http:body>
+                <http:headers>#[vars.notExists]</http:headers>
+            </http:response>
+        </http:listener>
+        
+        <logger/>
+    </flow>
+
+    <flow name="operationVar">
+        <http:request method="GET" config-ref="requesterConfig" path="/">
+            <http:body>#[vars.notExists]</http:body>
+            <http:headers>#[vars.notExists]</http:headers>
+        </http:request>
+    </flow>
+
+    <flow name="operationListener">
+        <http:listener path="/" config-ref="listenerConfig"/>
+        <logger/>
+    </flow>
+
+</mule>
+
