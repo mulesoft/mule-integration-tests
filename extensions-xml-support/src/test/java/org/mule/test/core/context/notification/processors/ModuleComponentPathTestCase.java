@@ -6,7 +6,6 @@
  */
 package org.mule.test.core.context.notification.processors;
 
-import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
@@ -24,7 +23,6 @@ import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentT
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.ROUTER;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.SCOPE;
 import static org.mule.runtime.api.dsl.DslResolvingContext.getDefault;
-import static org.mule.runtime.api.util.collection.Collectors.toImmutableList;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.ASYNC_IDENTIFIER;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.CHOICE_IDENTIFIER;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.FLOW_IDENTIFIER;
@@ -37,8 +35,6 @@ import static org.mule.runtime.config.api.dsl.CoreDslConstants.SCATTER_GATHER_ID
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.SUBFLOW_IDENTIFIER;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.TRY_IDENTIFIER;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.UNTIL_SUCCESSFUL_IDENTIFIER;
-import static org.mule.runtime.dsl.api.xml.parser.XmlConfigurationDocumentLoader.noValidationDocumentLoader;
-import static org.mule.runtime.dsl.api.xml.parser.XmlConfigurationProcessor.processXmlConfiguration;
 import static org.mule.tck.probe.PollingProber.check;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentLocationStory.COMPONENT_LOCATION;
@@ -51,34 +47,20 @@ import org.mule.runtime.api.component.location.Location;
 import org.mule.runtime.api.dsl.DslResolvingContext;
 import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.api.notification.MessageProcessorNotification;
-import org.mule.runtime.api.util.ResourceLocator;
 import org.mule.runtime.ast.api.ArtifactAst;
-import org.mule.runtime.config.api.dsl.processor.ArtifactConfig;
-import org.mule.runtime.config.internal.ModuleDelegatingEntityResolver;
+import org.mule.runtime.ast.api.xml.AstXmlParser;
 import org.mule.runtime.config.internal.model.ApplicationModel;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.runtime.core.api.config.builders.AbstractConfigurationBuilder;
 import org.mule.runtime.core.api.extension.ExtensionManager;
-import org.mule.runtime.core.api.registry.SpiServiceRegistry;
-import org.mule.runtime.core.api.util.xmlsecurity.XMLSecureFactories;
-import org.mule.runtime.dsl.api.ConfigResource;
 import org.mule.runtime.dsl.api.component.config.DefaultComponentLocation;
 import org.mule.runtime.dsl.api.component.config.DefaultComponentLocation.DefaultLocationPart;
-import org.mule.runtime.dsl.api.xml.XmlNamespaceInfo;
-import org.mule.runtime.dsl.api.xml.XmlNamespaceInfoProvider;
-import org.mule.runtime.dsl.api.xml.parser.ConfigFile;
-import org.mule.runtime.dsl.api.xml.parser.ConfigLine;
-import org.mule.runtime.dsl.api.xml.parser.ParsingPropertyResolver;
-import org.mule.runtime.dsl.api.xml.parser.XmlConfigurationDocumentLoader;
-import org.mule.runtime.dsl.api.xml.parser.XmlParsingConfiguration;
 import org.mule.runtime.extension.api.loader.xml.XmlExtensionModelLoader;
 import org.mule.test.IntegrationTestCaseRunnerConfig;
 import org.mule.test.runner.api.IsolatedClassLoaderExtensionsManagerConfigurationBuilder;
 
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -88,14 +70,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.Set;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-
-import javax.xml.parsers.SAXParserFactory;
 
 import org.junit.After;
 import org.junit.Test;
-import org.xml.sax.EntityResolver;
 
 import com.google.common.collect.ImmutableList;
 
@@ -318,23 +295,17 @@ public class ModuleComponentPathTestCase extends MuleArtifactFunctionalTestCase 
 
   @Test
   public void validateComponentLocationCreatedFromExtensionModelsWithoutUsingParsers() throws Exception {
-    final Set<ExtensionModel> extensionModels = muleContext.getExtensionManager().getExtensions();
+    AstXmlParser xmlToAstParser = AstXmlParser.builder()
+        .withExtensionModels(muleContext.getExtensionManager().getExtensions())
+        .withSchemaValidationsDisabled()
+        .build();
 
-    ArtifactConfig.Builder artifactConfigBuilder = new ArtifactConfig.Builder();
-    artifactConfigBuilder.addConfigFile(new ConfigFile(CONFIG_FILE_NAME.get(), Collections
-        // TODO MULE-17199 (AST) use an AST parser api
-        .singletonList(loadConfigLines(extensionModels,
-                                       this.getClass().getClassLoader().getResourceAsStream(CONFIG_FILE_NAME.get()))
-                                           .orElseThrow(() -> new IllegalArgumentException(format("Failed to parse %s.",
-                                                                                                  CONFIG_FILE_NAME.get()))))));
-
-    // TODO MULE-17199 (AST) use an AST parser api
-    ArtifactAst toolingApplicationModel = new ApplicationModel(artifactConfigBuilder.build(), null,
-                                                               extensionModels, emptyMap(),
-                                                               empty(),
-                                                               uri -> {
-                                                                 throw new UnsupportedOperationException();
-                                                               });
+    ArtifactAst toolingApplicationModel =
+        new ApplicationModel(xmlToAstParser.parse(getClass().getClassLoader().getResource(CONFIG_FILE_NAME.get()).toURI()),
+                             emptyMap(), empty(),
+                             uri -> {
+                               throw new UnsupportedOperationException();
+                             });
 
     List<String> componentLocations = new ArrayList<>();
     toolingApplicationModel.recursiveStream().forEach(componentModel -> {
@@ -917,84 +888,6 @@ public class ModuleComponentPathTestCase extends MuleArtifactFunctionalTestCase 
     element.loadExtensionModels();
     builders.add(0, element);
 
-  }
-
-  // TODO: MULE-17049
-  private Optional<ConfigLine> loadConfigLines(Set<ExtensionModel> extensionModels, InputStream inputStream) {
-    List<XmlNamespaceInfoProvider> xmlNamespaceInfoProviders =
-        ImmutableList.<XmlNamespaceInfoProvider>builder()
-            .add(createStaticNamespaceInfoProviders(extensionModels))
-            .addAll(discoverRuntimeXmlNamespaceInfoProvider())
-            .build();
-    List<ConfigFile> configFiles = processXmlConfiguration(new XmlParsingConfiguration() {
-
-      @Override
-      public ParsingPropertyResolver getParsingPropertyResolver() {
-        return key -> null;
-      }
-
-      @Override
-      public ConfigResource[] getArtifactConfigResources() {
-        return new ConfigResource[] {
-            new ConfigResource("config", inputStream)
-        };
-      }
-
-      @Override
-      public ResourceLocator getResourceLocator() {
-        return null;
-      }
-
-      @Override
-      public Supplier<SAXParserFactory> getSaxParserFactory() {
-        return () -> XMLSecureFactories.createDefault().getSAXParserFactory();
-      }
-
-      @Override
-      public XmlConfigurationDocumentLoader getXmlConfigurationDocumentLoader() {
-        return noValidationDocumentLoader();
-      }
-
-      @Override
-      public EntityResolver getEntityResolver() {
-        return new ModuleDelegatingEntityResolver(extensionModels);
-      }
-
-      @Override
-      public List<XmlNamespaceInfoProvider> getXmlNamespaceInfoProvider() {
-        return xmlNamespaceInfoProviders;
-      }
-    });
-    return configFiles.isEmpty() ? empty() : Optional.of(configFiles.get(0).getConfigLines().get(0));
-  }
-
-  private XmlNamespaceInfoProvider createStaticNamespaceInfoProviders(Set<ExtensionModel> extensionModels) {
-    List<XmlNamespaceInfoProvider> xmlNamesInfoProviders =
-        extensionModels.stream()
-            .map(ext -> (XmlNamespaceInfoProvider) () -> Collections.singleton(new XmlNamespaceInfo() {
-
-              @Override
-              public String getNamespaceUriPrefix() {
-                return ext.getXmlDslModel().getNamespace();
-              }
-
-              @Override
-              public String getNamespace() {
-                return ext.getXmlDslModel().getPrefix();
-              }
-            }))
-            .collect(toImmutableList());
-    return () -> xmlNamesInfoProviders.stream().map(XmlNamespaceInfoProvider::getXmlNamespacesInfo)
-        .flatMap(collection -> collection.stream())
-        .collect(Collectors.toCollection(() -> new ArrayList<>()));
-  }
-
-  private List<XmlNamespaceInfoProvider> discoverRuntimeXmlNamespaceInfoProvider() {
-    ImmutableList.Builder namespaceInfoProvidersBuilder = ImmutableList.builder();
-    namespaceInfoProvidersBuilder
-        .addAll(new SpiServiceRegistry().lookupProviders(XmlNamespaceInfoProvider.class,
-                                                         muleContext.getClass().getClassLoader()));
-    return namespaceInfoProvidersBuilder.build();
   }
 
   private void assertNoNextProcessorNotification() {

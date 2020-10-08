@@ -7,7 +7,6 @@
 package org.mule.test.config.ast;
 
 import static java.lang.Boolean.TRUE;
-import static java.lang.String.format;
 import static java.lang.Thread.currentThread;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
@@ -27,7 +26,6 @@ import static org.mule.runtime.config.api.dsl.CoreDslConstants.FLOW_IDENTIFIER;
 import static org.mule.runtime.core.api.construct.Flow.INITIAL_STATE_STARTED;
 import static org.mule.runtime.core.api.construct.Flow.INITIAL_STATE_STOPPED;
 import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.initialiseIfNeeded;
-import static org.mule.runtime.dsl.api.xml.parser.XmlConfigurationDocumentLoader.noValidationDocumentLoader;
 import static org.mule.runtime.extension.api.util.ExtensionMetadataTypeUtils.isMap;
 import static org.mule.test.allure.AllureConstants.ArtifactAst.ARTIFACT_AST;
 import static org.mule.test.allure.AllureConstants.ArtifactAst.ParameterAst.PARAMETER_AST;
@@ -56,15 +54,9 @@ import org.mule.runtime.api.meta.model.parameter.ParameterizedModel;
 import org.mule.runtime.ast.api.ArtifactAst;
 import org.mule.runtime.ast.api.ComponentAst;
 import org.mule.runtime.ast.api.ComponentParameterAst;
-import org.mule.runtime.config.api.dsl.processor.ArtifactConfig;
-import org.mule.runtime.config.internal.model.ApplicationModel;
+import org.mule.runtime.ast.api.xml.AstXmlParser;
 import org.mule.runtime.core.api.extension.RuntimeExtensionModelProvider;
-import org.mule.runtime.core.api.registry.ServiceRegistry;
 import org.mule.runtime.core.api.registry.SpiServiceRegistry;
-import org.mule.runtime.dsl.api.xml.XmlNamespaceInfoProvider;
-import org.mule.runtime.dsl.api.xml.parser.ConfigFile;
-import org.mule.runtime.dsl.api.xml.parser.ConfigLine;
-import org.mule.runtime.dsl.internal.xml.parser.XmlApplicationParser;
 import org.mule.runtime.extension.api.error.ErrorMapping;
 import org.mule.runtime.module.extension.api.loader.java.DefaultJavaExtensionModelLoader;
 import org.mule.runtime.module.extension.internal.manager.DefaultExtensionManager;
@@ -76,26 +68,14 @@ import org.mule.test.runner.infrastructure.ExtensionsTestInfrastructureDiscovere
 import org.mule.test.subtypes.extension.SubTypesMappingConnector;
 import org.mule.test.vegan.extension.VeganExtension;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UncheckedIOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import javax.xml.parsers.SAXParserFactory;
-
 import org.junit.Before;
 import org.junit.Test;
-import org.w3c.dom.Document;
-import org.xml.sax.helpers.DefaultHandler;
-
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Issue;
@@ -111,38 +91,9 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
 
   @Before
   public void before() throws Exception {
-    ArtifactConfig.Builder artifactConfigBuilder = new ArtifactConfig.Builder();
-
-    URL resource = this.getClass().getClassLoader().getResource("org/mule/test/config/ast/parameters-test-config.xml");
-
-    Optional<ConfigLine> configLine;
-    ServiceRegistry serviceRegistry = new SpiServiceRegistry();
-    try (InputStream configFileStream = resource.openStream()) {
-      Document document =
-          noValidationDocumentLoader().loadDocument(SAXParserFactory::newInstance, "config", configFileStream,
-                                                    new DefaultHandler());
-
-      ImmutableList.Builder<XmlNamespaceInfoProvider> namespaceInfoProvidersBuilder = ImmutableList.builder();
-      namespaceInfoProvidersBuilder
-          .addAll(serviceRegistry.lookupProviders(XmlNamespaceInfoProvider.class, currentThread().getContextClassLoader()));
-      ImmutableList<XmlNamespaceInfoProvider> xmlNamespaceInfoProviders = namespaceInfoProvidersBuilder.build();
-
-      XmlApplicationParser xmlApplicationParser = new XmlApplicationParser(xmlNamespaceInfoProviders);
-      configLine = xmlApplicationParser.parse(document.getDocumentElement());
-    } catch (IOException e) {
-      throw new UncheckedIOException(e);
-    }
-
-    artifactConfigBuilder.addConfigFile(new ConfigFile(resource.getFile(), Collections.singletonList(
-                                                                                                     configLine
-                                                                                                         .orElseThrow(() -> new IllegalArgumentException(format("Failed to parse %s.",
-                                                                                                                                                                resource))))));
-
-    ArtifactConfig artifactConfig = artifactConfigBuilder.build();
-
     List<ExtensionModel> runtimeExtensionModels = new ArrayList<>();
     Collection<RuntimeExtensionModelProvider> runtimeExtensionModelProviders = new SpiServiceRegistry()
-        .lookupProviders(RuntimeExtensionModelProvider.class, Thread.currentThread().getContextClassLoader());
+        .lookupProviders(RuntimeExtensionModelProvider.class, currentThread().getContextClassLoader());
     for (RuntimeExtensionModelProvider runtimeExtensionModelProvider : runtimeExtensionModelProviders) {
       runtimeExtensionModels.add(runtimeExtensionModelProvider.createExtensionModel());
     }
@@ -160,15 +111,12 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
       discoverer.discoverExtension(annotatedClass, extensionModelLoader);
     }
 
-    ImmutableSet<ExtensionModel> extensionModels = ImmutableSet.<ExtensionModel>builder()
-        .addAll(muleContext.getExtensionManager().getExtensions())
-        .addAll(runtimeExtensionModels)
-        .build();
-
-    // TODO MULE-17199 use an ASP parser api
-    this.artifactAst = new ApplicationModel(artifactConfig, null, extensionModels, Collections.emptyMap(),
-                                            Optional.empty(),
-                                            uri -> muleContext.getExecutionClassLoader().getResourceAsStream(uri));
+    this.artifactAst = AstXmlParser.builder()
+        .withExtensionModels(muleContext.getExtensionManager().getExtensions())
+        .withExtensionModels(runtimeExtensionModels)
+        .withSchemaValidationsDisabled()
+        .build()
+        .parse(this.getClass().getClassLoader().getResource("org/mule/test/config/ast/parameters-test-config.xml").toURI());
   }
 
   @Issue("MULE-18564")
