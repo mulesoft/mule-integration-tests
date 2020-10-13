@@ -41,6 +41,7 @@ public abstract class DeclarationSessionTestCase extends AbstractFakeMuleServerT
   protected static final String CONFIG_NAME = "dummyConfig";
   protected static final String CLIENT_NAME = "client";
   protected static final String PROVIDED_PARAMETER_NAME = "providedParameter";
+  protected static final String ERROR_PROVIDED_PARAMETER_NAME = "errorProvidedParameter";
   protected static final String WITH_ACTING_PARAMETER = "WITH-ACTING-PARAMETER-";
 
   protected DeclarationSession session;

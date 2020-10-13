@@ -11,6 +11,7 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.CUSTOM_ERROR_CODE;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.actingParameterGroupOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.actingParameterGroupOPWithAliasDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.actingParameterGroupWithOptionalProviderParamOPDeclaration;
@@ -20,11 +21,12 @@ import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.comp
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.complexParameterValue;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.configLessConnectionLessOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.configLessOPDeclaration;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.errorSampleDataOP;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.innerPojo;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.multiLevelOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.sourceDeclaration;
+import static org.mule.runtime.module.tooling.internal.artifact.AbstractParameterResolverExecutor.INVALID_PARAMETER_VALUE;
 import static org.mule.sdk.api.data.sample.SampleDataException.MISSING_REQUIRED_PARAMETERS;
-
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.sampledata.SampleDataFailure;
 import org.mule.runtime.api.sampledata.SampleDataResult;
@@ -179,6 +181,22 @@ public class SampleDataTestCase extends DeclarationSessionTestCase {
     ComponentElementDeclaration<?> elementDeclaration =
         actingParameterGroupOPWithAliasDeclaration(CONFIG_NAME, stringValue, intValue, listValue);
     assertSampleDataSuccess(elementDeclaration, null, format("%s-%s-%s", stringValue, intValue, listValue.get(0)));
+  }
+
+  @Test
+  public void customErrorCodeFromProvider() {
+    ComponentElementDeclaration<?> elementDeclaration = errorSampleDataOP(CONFIG_NAME);
+    String message = "Expected error";
+    String reason = "org.mule.sdk.api.data.sample.SampleDataException: " + message + "\n";
+    assertSampleDataFailure(elementDeclaration, message, reason, CUSTOM_ERROR_CODE);
+  }
+
+  @Test
+  public void actingParameterValueDefineWithExpression() {
+    ComponentElementDeclaration<?> elementDeclaration = actingParameterOPDeclaration(CONFIG_NAME, "#[payload]");
+    String message = "Error resolving value for parameter: 'actingParameter' from declaration, it cannot be an EXPRESSION value";
+    String reason = "org.mule.sdk.api.data.sample.SampleDataException: " + message + "\n";
+    assertSampleDataFailure(elementDeclaration, message, reason, INVALID_PARAMETER_VALUE);
   }
 
   @Test

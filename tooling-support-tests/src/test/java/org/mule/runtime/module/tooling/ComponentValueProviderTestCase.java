@@ -15,6 +15,7 @@ import static org.mule.runtime.app.declaration.api.fluent.ElementDeclarer.newPar
 import static org.mule.runtime.extension.api.values.ValueResolvingException.INVALID_VALUE_RESOLVER_NAME;
 import static org.mule.runtime.extension.api.values.ValueResolvingException.MISSING_REQUIRED_PARAMETERS;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.ACTING_PARAMETER_NAME;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.CUSTOM_ERROR_CODE;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.actingParameterGroupOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.actingParameterGroupOPWithAliasDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.actingParameterOPDeclaration;
@@ -25,6 +26,7 @@ import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.conf
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.innerPojo;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.parameterValueProviderWithConfig;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.sourceWithMultiLevelValue;
+import static org.mule.runtime.module.tooling.internal.artifact.AbstractParameterResolverExecutor.INVALID_PARAMETER_VALUE;
 import org.mule.runtime.api.value.Value;
 import org.mule.runtime.api.value.ValueResult;
 import org.mule.runtime.app.declaration.api.ComponentElementDeclaration;
@@ -84,6 +86,23 @@ public class ComponentValueProviderTestCase extends DeclarationSessionTestCase {
     validateValuesFailure(session, elementDeclaration, PROVIDED_PARAMETER_NAME,
                           "Unable to retrieve values. There are missing required parameters for the resolution: [actingParameter]",
                           MISSING_REQUIRED_PARAMETERS);
+  }
+
+  @Test
+  public void customErrorCodeFromProvider() {
+    ComponentElementDeclaration elementDeclaration = actingParameterOPDeclaration(CONFIG_NAME, "");
+    validateValuesFailure(session, elementDeclaration, ERROR_PROVIDED_PARAMETER_NAME,
+                          "Expected error",
+                          CUSTOM_ERROR_CODE);
+  }
+
+  @Test
+  public void expressionRequiresContext() {
+    final String actingParameter = "#[vars.account]";
+    ComponentElementDeclaration elementDeclaration = actingParameterOPDeclaration(CONFIG_NAME, actingParameter);
+    validateValuesFailure(session, elementDeclaration, PROVIDED_PARAMETER_NAME,
+                          "Error resolving value for parameter: 'actingParameter' from declaration, it cannot be an EXPRESSION value",
+                          INVALID_PARAMETER_VALUE);
   }
 
   @Test
