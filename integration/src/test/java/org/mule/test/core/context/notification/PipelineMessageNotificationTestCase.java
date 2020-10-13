@@ -13,6 +13,7 @@ import static org.mule.runtime.api.notification.PipelineMessageNotification.PROC
 import static org.mule.runtime.api.notification.PipelineMessageNotification.PROCESS_END;
 import static org.mule.runtime.api.notification.PipelineMessageNotification.PROCESS_START;
 
+import org.mule.runtime.api.exception.DefaultMuleException;
 import org.mule.runtime.api.notification.IntegerAction;
 import org.mule.runtime.api.notification.PipelineMessageNotification;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
@@ -38,7 +39,6 @@ public class PipelineMessageNotificationTestCase extends AbstractNotificationTes
   public ExpectedException expectedException = ExpectedException.none();
 
   private String flowName;
-  private Class<? extends Throwable> expectedExceptionClz;
   private RestrictedNode spec;
   private Consumer<PipelineMessageNotificationTestCase> assertions;
 
@@ -64,7 +64,7 @@ public class PipelineMessageNotificationTestCase extends AbstractNotificationTes
         {
             "Request-Response Request Exception",
             "service-2",
-            ExpressionRuntimeException.class,
+            DefaultMuleException.class,
             new Node()
                 .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_START)))
                 .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_COMPLETE))),
@@ -99,7 +99,7 @@ public class PipelineMessageNotificationTestCase extends AbstractNotificationTes
         {
             "One-Way Nested flow-ref Request Exception",
             "nestedFlowFailingRoot",
-            ExpressionRuntimeException.class,
+            DefaultMuleException.class,
             new Node()
                 .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_START)))
                 .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_START)))
@@ -118,7 +118,9 @@ public class PipelineMessageNotificationTestCase extends AbstractNotificationTes
   public PipelineMessageNotificationTestCase(String caseName, String flowName, Class<? extends Throwable> expectedExceptionClass,
                                              RestrictedNode spec, Consumer<PipelineMessageNotificationTestCase> assertions) {
     this.flowName = flowName;
-    this.expectedExceptionClz = expectedExceptionClass;
+    if (expectedExceptionClass != null) {
+      this.expectedException.expectCause(isA(expectedExceptionClass));
+    }
     this.spec = spec;
     this.assertions = assertions;
   }
@@ -126,12 +128,9 @@ public class PipelineMessageNotificationTestCase extends AbstractNotificationTes
   @Test
   public void doTest() throws Exception {
     try {
-      if (expectedExceptionClz != null) {
-        expectedException.expectCause(isA(expectedExceptionClz));
-      }
-      assertNotNull(flowRunner(flowName).withPayload("hi").run());
-      assertions.accept(this);
+      flowRunner(flowName).withPayload("hi").run();
     } finally {
+      assertions.accept(this);
       assertNotifications();
     }
   }

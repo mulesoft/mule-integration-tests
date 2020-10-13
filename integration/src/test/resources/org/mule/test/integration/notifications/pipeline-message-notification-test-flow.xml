@@ -9,7 +9,8 @@
         <notification event="ASYNC-MESSAGE"/>
     </notifications>
 
-    <object name="notificationLogger" class="org.mule.test.core.context.notification.PipelineMessageNotificationLogger" />
+    <object name="notificationLogger"
+            class="org.mule.test.core.context.notification.PipelineMessageNotificationLogger"/>
     <test-components:queue-config name="ow-out">
         <test-components:connection/>
     </test-components:queue-config>
@@ -27,7 +28,7 @@
     </flow>
 
     <flow name="service-2">
-        <set-payload value="#[!null.a]"/>
+        <raise-error type="APP:ERROR" description="An error"/>
     </flow>
 
     <flow name="service-3">
@@ -39,7 +40,7 @@
     </flow>
 
     <flow name="service-5">
-        <set-payload value="#[!null.a]"/>
+        <raise-error type="APP:ERROR" description="An error"/>
         <error-handler>
             <on-error-continue>
                 <test-components:queue-push config-ref="owException-out"/>
@@ -60,7 +61,7 @@
     </flow>
 
     <flow name="nestedFlowFailingThree">
-        <set-payload value="#[!null.a]"/>
+        <raise-error type="APP:ERROR" description="An error"/>
     </flow>
 
 </mule>
