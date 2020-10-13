@@ -95,6 +95,22 @@ public class PipelineMessageNotificationTestCase extends AbstractNotificationTes
             (Consumer<PipelineMessageNotificationTestCase>) (t) -> {
               assertNotNull(t.queueManager.read("owException-out", RECEIVE_TIMEOUT, MILLISECONDS));
             }
+        },
+        {
+            "One-Way Nested flow-ref Request Exception",
+            "nestedFlowFailingRoot",
+            ExpressionRuntimeException.class,
+            new Node()
+                .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_START)))
+                .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_START)))
+                .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_START)))
+                .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_START)))
+                .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_COMPLETE)))
+                .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_COMPLETE)))
+                .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_COMPLETE)))
+                .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_COMPLETE))),
+            (Consumer<PipelineMessageNotificationTestCase>) (t) -> {
+            }
         }
     };
   }

@@ -10,7 +10,6 @@
     </notifications>
 
     <object name="notificationLogger" class="org.mule.test.core.context.notification.PipelineMessageNotificationLogger" />
-
     <test-components:queue-config name="ow-out">
         <test-components:connection/>
     </test-components:queue-config>
@@ -46,6 +45,22 @@
                 <test-components:queue-push config-ref="owException-out"/>
             </on-error-continue>
         </error-handler>
+    </flow>
+
+    <flow name="nestedFlowFailingRoot">
+        <flow-ref name="nestedFlowFailingOne"/>
+    </flow>
+
+    <flow name="nestedFlowFailingOne">
+        <flow-ref name="nestedFlowFailingTwo"/>
+    </flow>
+
+    <flow name="nestedFlowFailingTwo">
+        <flow-ref name="nestedFlowFailingThree"/>
+    </flow>
+
+    <flow name="nestedFlowFailingThree">
+        <set-payload value="#[!null.a]"/>
     </flow>
 
 </mule>
