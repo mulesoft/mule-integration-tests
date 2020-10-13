@@ -5,27 +5,26 @@
                http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
 
     <notifications>
-        <notification event="PIPELINE-MESSAGE" />
-        <notification event="ASYNC-MESSAGE" />
+        <notification event="PIPELINE-MESSAGE"/>
+        <notification event="ASYNC-MESSAGE"/>
     </notifications>
 
     <object name="notificationLogger" class="org.mule.test.core.context.notification.PipelineMessageNotificationLogger" />
-    <object name="notificationLogger2" class="org.mule.test.core.context.notification.AsyncMessageNotificationLogger" />
 
     <test-components:queue-config name="ow-out">
-        <test-components:connection />
+        <test-components:connection/>
     </test-components:queue-config>
 
     <test-components:queue-config name="owException-out">
-        <test-components:connection />
+        <test-components:connection/>
     </test-components:queue-config>
 
     <notifications>
-        <notification-listener ref="notificationLogger" />
+        <notification-listener ref="notificationLogger"/>
     </notifications>
 
     <flow name="service-1">
-        <logger />
+        <logger/>
     </flow>
 
     <flow name="service-2">
@@ -37,14 +36,14 @@
     </flow>
 
     <flow name="service-4">
-        <test-components:queue-push config-ref="ow-out" />
+        <test-components:queue-push config-ref="ow-out"/>
     </flow>
 
     <flow name="service-5">
         <set-payload value="#[!null.a]"/>
         <error-handler>
             <on-error-continue>
-                <test-components:queue-push config-ref="owException-out" />
+                <test-components:queue-push config-ref="owException-out"/>
             </on-error-continue>
         </error-handler>
     </flow>
