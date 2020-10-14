@@ -133,8 +133,6 @@ public class PipelineMessageNotificationTestCase extends AbstractNotificationTes
         assertThat(expectedErrorType.size(), is(2));
         expectedError.expectErrorType(expectedErrorType.get(0), expectedErrorType.get(1));
       }
-
-      // this.expectedException.expectCause(isA(expectedExceptionClass));
     }
     this.spec = spec;
     this.assertions = assertions;
