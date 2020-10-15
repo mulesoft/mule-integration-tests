@@ -25,7 +25,6 @@ import org.mule.test.runner.RunnerDelegateTo;
 import java.util.List;
 import java.util.function.Consumer;
 
-
 import javax.inject.Inject;
 
 import org.junit.Rule;
