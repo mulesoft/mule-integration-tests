@@ -80,6 +80,8 @@ import com.google.common.collect.ImmutableSet;
 
 public class BulkArtifactDeclarationTestCase extends AbstractElementModelTestCase {
 
+  private static final String EXPECTED_XML = "core-bulk-extension-model.xml";
+
   private static final boolean UPDATE_EXPECTED_FILES_ON_ERROR =
       getBoolean(SYSTEM_PROPERTY_PREFIX + "appXml.updateExpectedFilesOnError");
 
@@ -156,10 +158,10 @@ public class BulkArtifactDeclarationTestCase extends AbstractElementModelTestCas
         populateNested(model, declarer);
 
         if (model.allowsTopLevelDeclaration()) {
-          artifactDeclarer.withGlobalElement(declarer.withRefName("global" + model.getName()).getDeclaration());
+          artifactDeclarer.withGlobalElement(declarer.withRefName("global-" + model.getName()).getDeclaration());
         } else {
           artifactDeclarer.withGlobalElement(core.newConstruct("flow")
-              .withRefName("flowFor" + model.getName())
+              .withRefName("flowFor-" + model.getName())
               .withComponent(declarer.getDeclaration())
               .getDeclaration());
         }
@@ -174,7 +176,7 @@ public class BulkArtifactDeclarationTestCase extends AbstractElementModelTestCas
         populateParameterized(model, declarer);
         populateNested(model, declarer);
         artifactDeclarer.withGlobalElement(core.newConstruct("flow")
-            .withRefName("flowFor" + model.getName())
+            .withRefName("flowFor-" + model.getName())
             .withComponent(declarer.getDeclaration())
             .getDeclaration());
       }
@@ -184,7 +186,7 @@ public class BulkArtifactDeclarationTestCase extends AbstractElementModelTestCas
         SourceElementDeclarer declarer = core.newSource(model.getName());
         populateParameterized(model, declarer);
         artifactDeclarer.withGlobalElement(core.newConstruct("flow")
-            .withRefName("flowFor" + model.getName())
+            .withRefName("flowFor-" + model.getName())
             .withComponent(declarer.getDeclaration())
             .getDeclaration());
       }
@@ -218,16 +220,16 @@ public class BulkArtifactDeclarationTestCase extends AbstractElementModelTestCas
     }.walk(extensionModel);
 
     String serializationResult = serializer.serialize(artifactDeclarer.getDeclaration());
-    String expected = getResourceAsString("core-bulk-extension-model.xml", getClass());
+    String expected = getResourceAsString(EXPECTED_XML, getClass());
 
     try {
       compareXML(expected, serializationResult);
     } catch (Throwable t) {
       if (shouldUpdateExpectedFilesOnError()) {
-        File root = new File(getResourceAsUrl("core-bulk-extension-model.xml", getClass()).toURI()).getParentFile()
+        File root = new File(getResourceAsUrl(EXPECTED_XML, getClass()).toURI()).getParentFile()
             .getParentFile().getParentFile();
         File testDir = new File(root, "src/test/resources");
-        File target = new File(testDir, "core-bulk-extension-model.xml");
+        File target = new File(testDir, EXPECTED_XML);
         stringToFile(target.getAbsolutePath(), serializationResult);
 
         System.out.println(expected + " fixed");
