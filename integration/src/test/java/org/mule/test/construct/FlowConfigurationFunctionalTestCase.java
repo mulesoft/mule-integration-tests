@@ -43,7 +43,6 @@ import java.util.Map;
 import org.junit.Ignore;
 import org.junit.Test;
 
-@Ignore("MULE-17630")
 public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTestCase {
 
   private static final String EXPECTED_ARRAY_IN_ARGS_RESULT = "testtestrecieved";
