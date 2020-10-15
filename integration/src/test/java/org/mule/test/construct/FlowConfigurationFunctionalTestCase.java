@@ -119,7 +119,7 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
   }
 
   @Test
-  @Ignore("MULE-12407, MULE-17630")
+  @Ignore("MULE-12407")
   public void testSplitNoParts() throws Exception {
     String MESSAGE = "<Order></Order>";
     Message result = flowRunner("split-no-parts").withPayload(MESSAGE).withMediaType(APPLICATION_XML).run().getMessage();
