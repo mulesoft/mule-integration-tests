@@ -82,7 +82,8 @@ public class SampleDataTestCase extends DeclarationSessionTestCase {
   @Test
   public void actingParameterOptionalMissingOperationFails() {
     String actingParameter = "actingParameter";
-    String message = "Unable to retrieve Sample Data. There are missing required parameters for the resolution: [actingParameter]";
+    String message =
+        "Unable to retrieve Sample Data. There are missing required parameters for the resolution: [actingParameter]";
     String reason = "org.mule.sdk.api.data.sample.SampleDataException: " + message + "\n";
     ComponentElementDeclaration<?> elementDeclaration = actingParameterOptionalOPDeclaration(CONFIG_NAME);
     assertSampleDataFailure(elementDeclaration, message, reason, "MISSING_REQUIRED_PARAMETERS");
@@ -99,8 +100,8 @@ public class SampleDataTestCase extends DeclarationSessionTestCase {
     Map<String, ParameterValue> complexMapParam = ImmutableMap.of("0", innerPojoValue, "1", innerPojoValue);
     ComponentElementDeclaration<?> elementDeclaration =
         complexActingParameterOPDeclaration(CONFIG_NAME,
-            complexParameterValue(intParam, stringParam, listParam, mapParam, innerPojoValue,
-                complexListParam, complexMapParam));
+                                            complexParameterValue(intParam, stringParam, listParam, mapParam, innerPojoValue,
+                                                                  complexListParam, complexMapParam));
     String innerPojoStringValue = intParam +
         stringParam +
         "zeroonetwo" + //listParam
@@ -123,7 +124,8 @@ public class SampleDataTestCase extends DeclarationSessionTestCase {
     int intValue = 1;
     List<String> listValue = singletonList("single");
 
-    ComponentElementDeclaration<?> elementDeclaration = actingParameterGroupOPDeclaration(CONFIG_NAME, stringValue, intValue, listValue);
+    ComponentElementDeclaration<?> elementDeclaration =
+        actingParameterGroupOPDeclaration(CONFIG_NAME, stringValue, intValue, listValue);
     assertSampleDataSuccess(elementDeclaration, null, format("%s-%s-%s", stringValue, intValue, listValue.get(0)));
   }
 
@@ -144,7 +146,8 @@ public class SampleDataTestCase extends DeclarationSessionTestCase {
     List<String> listValue = singletonList("single");
     String message = "Unable to retrieve Sample Data. There are missing required parameters for the resolution: [intParam]";
     String reason = "org.mule.sdk.api.data.sample.SampleDataException: " + message + "\n";
-    ComponentElementDeclaration<?> elementDeclaration = actingParameterGroupOPDeclaration(CONFIG_NAME, actingParameter, null, listValue);
+    ComponentElementDeclaration<?> elementDeclaration =
+        actingParameterGroupOPDeclaration(CONFIG_NAME, actingParameter, null, listValue);
     assertSampleDataFailure(elementDeclaration, message, reason, "MISSING_REQUIRED_PARAMETERS");
   }
 
@@ -163,7 +166,8 @@ public class SampleDataTestCase extends DeclarationSessionTestCase {
     String stringValue = "stringValue";
     List<String> listValue = singletonList("single");
     Integer intProviderDefaultValue = 0;
-    ComponentElementDeclaration<?> elementDeclaration = actingParameterGroupWithOptionalProviderParamOPDeclaration(CONFIG_NAME, stringValue, null, listValue);
+    ComponentElementDeclaration<?> elementDeclaration =
+        actingParameterGroupWithOptionalProviderParamOPDeclaration(CONFIG_NAME, stringValue, null, listValue);
     assertSampleDataSuccess(elementDeclaration, null, format("%s-%s-%s", stringValue, intProviderDefaultValue, listValue.get(0)));
   }
 
@@ -172,7 +176,8 @@ public class SampleDataTestCase extends DeclarationSessionTestCase {
     String stringValue = "stringValue";
     int intValue = 1;
     List<String> listValue = singletonList("single");
-    ComponentElementDeclaration<?> elementDeclaration = actingParameterGroupOPWithAliasDeclaration(CONFIG_NAME, stringValue, intValue, listValue);
+    ComponentElementDeclaration<?> elementDeclaration =
+        actingParameterGroupOPWithAliasDeclaration(CONFIG_NAME, stringValue, intValue, listValue);
     assertSampleDataSuccess(elementDeclaration, null, format("%s-%s-%s", stringValue, intValue, listValue.get(0)));
   }
 
