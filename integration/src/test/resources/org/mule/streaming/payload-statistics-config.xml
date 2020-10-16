@@ -47,6 +47,14 @@
         <flow-ref name="consumeStreams"/>
     </flow>
 
+    <flow name="passthroughOperation">
+        <http:listener path="/passthrough" config-ref="simpleConf"/>
+
+        <marvel:wounds-passthrough>
+            <marvel:wounds>#[payload]</marvel:wounds>
+        </marvel:wounds-passthrough>
+    </flow>
+
     <flow name="pagesOfMessagesOperation">
         <file:list config-ref="file" directoryPath="#[vars.path]"/>
     
