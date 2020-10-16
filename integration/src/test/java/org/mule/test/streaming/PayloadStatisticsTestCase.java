@@ -135,6 +135,45 @@ public class PayloadStatisticsTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
+  @Issue("MULE-18894")
+  @Description("Assert statistics for a source that generates a List of objects with an iterator through VM with serialization")
+  public void bytesSourceThroughVM() throws MuleException, IOException, TimeoutException {
+    HttpRequest httpRequest = HttpRequest.builder()
+        .method(POST)
+        .uri(format("http://localhost:%d/throughVM", port.getNumber()))
+        .entity(new ByteArrayHttpEntity(randomAlphanumeric(BYTES_SIZE).getBytes()))
+        .build();
+
+    HttpRequestOptions options = HttpRequestOptions.builder().responseTimeout(RECEIVE_TIMEOUT).build();
+
+    HttpResponse httpResponse = httpClient.send(httpRequest, options);
+
+    final PayloadStatistics fileListStatistics =
+        muleContext.getStatistics().getPayloadStatistics("bytesSourceThroughVM/source");
+
+    assertThat(fileListStatistics.getComponentIdentifier(), is("http:listener"));
+
+    assertThat(fileListStatistics.getInvocationCount(), is(1L));
+
+    assertThat(fileListStatistics.getInputObjectCount(), is(0L));
+    assertThat(fileListStatistics.getInputByteCount(), is(0L));
+    assertThat(fileListStatistics.getOutputObjectCount(), is(0L));
+    assertThat(fileListStatistics.getOutputByteCount(), is(BYTES_SIZE * 1L));
+
+    final PayloadStatistics vmOperatorStats =
+        muleContext.getStatistics().getPayloadStatistics("bytesSourceThroughVM/processors/0");
+    assertThat(vmOperatorStats.getComponentIdentifier(), is("vm:publish-consume"));
+
+    assertThat(vmOperatorStats.getInvocationCount(), is(1L));
+
+    assertThat(vmOperatorStats.getInputObjectCount(), is(0L));
+    assertThat(vmOperatorStats.getInputByteCount(), is(BYTES_SIZE * 1L));
+    assertThat(vmOperatorStats.getOutputObjectCount(), is(0L));
+    assertThat(vmOperatorStats.getOutputByteCount(), is(0L));
+
+  }
+
+  @Test
   @Description("Assert statistics for a source that generates a List of objects with an iterator")
   public void listOfMessagesSource() throws MuleException {
     listOfMessagesSource.start();

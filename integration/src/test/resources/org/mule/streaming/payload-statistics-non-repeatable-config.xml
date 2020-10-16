@@ -5,13 +5,21 @@
       xmlns:file="http://www.mulesoft.org/schema/mule/file"
       xmlns:marvel="http://www.mulesoft.org/schema/mule/marvel"
       xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xmlns:vm="http://www.mulesoft.org/schema/mule/vm"
       xsi:schemaLocation="
        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
        http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
        http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
        http://www.mulesoft.org/schema/mule/marvel http://www.mulesoft.org/schema/mule/marvel/current/mule-marvel.xsd
-       http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+       http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
+       http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd">
 
+    <vm:config name="VM_Config">
+        <vm:queues >
+          <vm:queue queueName="Q1" queueType="PERSISTENT" />
+        </vm:queues>
+    </vm:config>
+    
     <http:listener-config name="simpleConf">
         <http:listener-connection host="localhost" port="${port}"/>
     </http:listener-config>
@@ -28,6 +36,14 @@
         <logger level="WARN" message="#[payload]"/>
     
         <flow-ref name="consumeStreamsOnce"/>
+    </flow>
+
+    <flow name="bytesSourceThroughVM">
+        <http:listener path="/throughVM" config-ref="simpleConf">
+            <non-repeatable-stream />
+        </http:listener>
+        
+        <vm:publish-consume queueName="Q1" config-ref="VM_Config" timeout="10"/>
     </flow>
 
     <flow name="listOfMessagesSource" initialState="stopped">
@@ -107,4 +123,10 @@
             <logger message="foreach consumes objects form the list/iterator"/>
         </foreach>
     </sub-flow>
+
+    <flow name="consumeStreamThroughVM">
+        <vm:listener queueName="Q1" config-ref="VM_Config"/>
+
+        <test:processor />
+    </flow>
 </mule>
