@@ -51,6 +51,7 @@ import org.junit.runners.Parameterized.Parameters;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
 
 @Feature(STREAMING)
@@ -173,6 +174,37 @@ public class PayloadStatisticsTestCase extends AbstractIntegrationTestCase {
     assertThat(fileListStatistics.getOutputObjectCount(), is(4L));
     assertThat(fileListStatistics.getOutputByteCount(), is(BYTES_SIZE * 4L));
 
+  }
+
+  @Test
+  @Issue("MULE-18896")
+  @Description("Check that statistics are calculated even for passthrough operations."
+      + " Also useful for debugging the interaction between cursor management and PayloadStatistics decorators.")
+  public void passthroughOperation() throws MuleException, IOException, TimeoutException {
+    HttpRequest httpRequest = HttpRequest.builder()
+        .method(POST)
+        .uri(format("http://localhost:%d/passthrough", port.getNumber()))
+        .entity(new ByteArrayHttpEntity(randomAlphanumeric(BYTES_SIZE).getBytes()))
+        .build();
+
+    HttpRequestOptions options = HttpRequestOptions.builder().responseTimeout(RECEIVE_TIMEOUT).build();
+
+    HttpResponse httpResponse = httpClient.send(httpRequest, options);
+
+    final PayloadStatistics woundsPassThroughStatistics =
+        muleContext.getStatistics().getPayloadStatistics("passthroughOperation/processors/0");
+
+    assertThat(woundsPassThroughStatistics.getComponentIdentifier(), is("marvel:wounds-passthrough"));
+
+    assertThat(woundsPassThroughStatistics.getInvocationCount(), is(1L));
+
+    assertThat(woundsPassThroughStatistics.getInputObjectCount(), is(0L));
+    assertThat(woundsPassThroughStatistics.getInputByteCount(), is(BYTES_SIZE * 1L));
+    assertThat(woundsPassThroughStatistics.getOutputObjectCount(), is(0L));
+    // This one is 0 because the operation is not marked as @Streaming
+    assertThat(woundsPassThroughStatistics.getOutputByteCount(), is(0L));
+
+    assertThat(httpResponse.getEntity().getBytes().length, is(BYTES_SIZE));
   }
 
   @Test
