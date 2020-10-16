@@ -160,6 +160,18 @@ public class PayloadStatisticsTestCase extends AbstractIntegrationTestCase {
     assertThat(fileListStatistics.getInputByteCount(), is(0L));
     assertThat(fileListStatistics.getOutputObjectCount(), is(0L));
     assertThat(fileListStatistics.getOutputByteCount(), is(BYTES_SIZE * 1L));
+
+    final PayloadStatistics vmOperatorStats =
+        muleContext.getStatistics().getPayloadStatistics("bytesSourceThroughVM/processors/0");
+    assertThat(vmOperatorStats.getComponentIdentifier(), is("vm:publish-consume"));
+
+    assertThat(vmOperatorStats.getInvocationCount(), is(1L));
+
+    assertThat(vmOperatorStats.getInputObjectCount(), is(0L));
+    assertThat(vmOperatorStats.getInputByteCount(), is(BYTES_SIZE * 1L));
+    assertThat(vmOperatorStats.getOutputObjectCount(), is(0L));
+    assertThat(vmOperatorStats.getOutputByteCount(), is(0L));
+
   }
 
   @Test

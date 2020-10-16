@@ -52,8 +52,6 @@
             <non-repeatable-stream />
         </http:listener>
         
-        <logger level="WARN" message="#[payload]"/>
-    
         <vm:publish-consume queueName="Q1" config-ref="VM_Config" timeout="10"/>
     </flow>
 
