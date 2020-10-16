@@ -6,81 +6,154 @@
  */
 package org.mule.test.core.context.notification;
 
+import static java.util.Arrays.asList;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.isA;
-import static org.junit.Assert.assertNotNull;
-import static org.mule.runtime.api.notification.AsyncMessageNotification.PROCESS_ASYNC_COMPLETE;
-import static org.mule.runtime.api.notification.AsyncMessageNotification.PROCESS_ASYNC_SCHEDULED;
+import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.notification.PipelineMessageNotification.PROCESS_COMPLETE;
 import static org.mule.runtime.api.notification.PipelineMessageNotification.PROCESS_END;
 import static org.mule.runtime.api.notification.PipelineMessageNotification.PROCESS_START;
 import org.mule.functional.api.component.TestConnectorQueueHandler;
-import org.mule.runtime.api.notification.AsyncMessageNotification;
+import org.mule.runtime.api.artifact.Registry;
 import org.mule.runtime.api.notification.IntegerAction;
 import org.mule.runtime.api.notification.PipelineMessageNotification;
-import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
+
+import org.mule.functional.api.exception.ExpectedError;
+import org.mule.runtime.api.exception.DefaultMuleException;
+import org.mule.test.runner.RunnerDelegateTo;
+
+import java.util.List;
+import java.util.function.Consumer;
+
+import javax.inject.Inject;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.runners.Parameterized;
 
+@RunnerDelegateTo(Parameterized.class)
 public class PipelineMessageNotificationTestCase extends AbstractNotificationTestCase {
 
+  @Inject
+  protected Registry registry;
+
   @Rule
-  public ExpectedException expectedException = ExpectedException.none();
+  public ExpectedError expectedError = ExpectedError.none();
+
+  private String flowName;
+  private RestrictedNode spec;
+  private Consumer<Registry> assertions;
 
   @Override
   protected String getConfigFile() {
     return "org/mule/test/integration/notifications/pipeline-message-notification-test-flow.xml";
   }
 
+  @Parameterized.Parameters(name = "{0}")
+  public static Object[][] parameters() {
+    return new Object[][] {
+        {
+            "Request-Response",
+            "service-1",
+            null,
+            null,
+            new Node()
+                .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_START)))
+                .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_END)))
+                .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_COMPLETE))),
+            null
+        },
+        {
+            "Request-Response Request Exception",
+            "service-2",
+            DefaultMuleException.class,
+            asList("APP", "ERROR"),
+            new Node()
+                .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_START)))
+                .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_COMPLETE))),
+            null
+        },
+        {
+            "One-Way",
+            "service-4",
+            null,
+            null,
+            new Node()
+                .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_START)))
+                .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_END)))
+                .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_COMPLETE))),
+            (Consumer<Registry>) (r) -> {
+              TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(r);
+              queueHandler.read("ow-out", RECEIVE_TIMEOUT);
+            }
+        },
+        {
+            "One-Way Request Exception",
+            "service-5",
+            null,
+            null,
+            new Node()
+                .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_START)))
+                .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_END)))
+                .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_COMPLETE))),
+            (Consumer<Registry>) (r) -> {
+              TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(r);
+              queueHandler.read("owException-out", RECEIVE_TIMEOUT);
+            }
+        },
+        {
+            "One-Way Nested flow-ref Request Exception",
+            "nestedFlowFailingRoot",
+            DefaultMuleException.class,
+            asList("APP", "ERROR"),
+            new Node()
+                .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_START)))
+                .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_START)))
+                .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_START)))
+                .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_START)))
+                .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_COMPLETE)))
+                .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_COMPLETE)))
+                .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_COMPLETE)))
+                .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_COMPLETE))),
+            null
+        }
+    };
+  }
+
+  public PipelineMessageNotificationTestCase(String caseName, String flowName, Class<? extends Throwable> expectedExceptionClass,
+                                             List<String> expectedErrorType,
+                                             RestrictedNode spec, Consumer<Registry> assertions) {
+    this.flowName = flowName;
+    if (expectedExceptionClass != null) {
+      expectedError.expectCause(isA(expectedExceptionClass));
+      if (expectedErrorType != null) {
+        assertThat(expectedErrorType.size(), is(2));
+        expectedError.expectErrorType(expectedErrorType.get(0), expectedErrorType.get(1));
+      }
+    }
+    this.spec = spec;
+    this.assertions = assertions;
+  }
+
   @Test
   public void doTest() throws Exception {
-    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
-    assertNotNull(flowRunner("service-1").withPayload("hello sweet world").run());
-    expectedException.expectCause(isA(ExpressionRuntimeException.class));
-    assertNotNull(flowRunner("service-2").withPayload("hello sweet world").run());
-    assertNotNull(flowRunner("service-3").withPayload("hello sweet world").run());
-    flowRunner("service-4").withPayload("goodbye cruel world").run();
-    queueHandler.read("ow-out", RECEIVE_TIMEOUT);
-    flowRunner("service-5").withPayload("goodbye cruel world").withInboundProperty("fail", "true").run();
-    queueHandler.read("owException-out", RECEIVE_TIMEOUT);
-
-    assertNotifications();
+    try {
+      flowRunner(flowName).withPayload("hi").run();
+    } finally {
+      if (assertions != null) {
+        assertions.accept(registry);
+      }
+      assertNotifications();
+    }
   }
 
   @Override
   public RestrictedNode getSpecification() {
-    return new Node()
-        // Request-Response
-        .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_START)))
-        .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_END)))
-        .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_COMPLETE)))
-        // Request-Response Request Exception
-        .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_START)))
-        .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_COMPLETE)))
-        // Request-Response Response Exception
-        .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_START)))
-        .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_END)))
-        .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_COMPLETE)))
-        // One-Way
-        .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_START)))
-        .serial(new Node(AsyncMessageNotification.class, new IntegerAction(PROCESS_ASYNC_SCHEDULED))
-            .parallel(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_COMPLETE)))
-            .parallel(new Node(AsyncMessageNotification.class, new IntegerAction(PROCESS_ASYNC_SCHEDULED)))
-            .parallel(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_END)))
-            .parallel(new Node(AsyncMessageNotification.class, new IntegerAction(PROCESS_ASYNC_COMPLETE)))
-            .parallel(new Node(AsyncMessageNotification.class, new IntegerAction(PROCESS_ASYNC_COMPLETE))))
-        // One-Way Request Exception
-        .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_START)))
-        .serial(new Node(AsyncMessageNotification.class, new IntegerAction(PROCESS_ASYNC_SCHEDULED))
-            .parallel(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_COMPLETE)))
-            .parallel(new Node(AsyncMessageNotification.class, new IntegerAction(PROCESS_ASYNC_COMPLETE)))
-            .parallel(new Node(AsyncMessageNotification.class, new IntegerAction(PROCESS_ASYNC_SCHEDULED)))
-            .parallel(new Node(AsyncMessageNotification.class, new IntegerAction(PROCESS_ASYNC_COMPLETE))));
+    return spec;
   }
 
   @Override
-  public void validateSpecification(RestrictedNode spec) throws Exception {
+  public void validateSpecification(RestrictedNode spec) {
     // Nothing to do
   }
 }
