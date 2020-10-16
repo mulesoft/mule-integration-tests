@@ -136,7 +136,7 @@ public class PayloadStatisticsTestCase extends AbstractIntegrationTestCase {
 
   @Test
   @Issue("MULE-18894")
-  @Description("Assert statistics for a source that generates a List of objects with an iterator")
+  @Description("Assert statistics for a source that generates a List of objects with an iterator through VM with serialization")
   public void bytesSourceThroughVM() throws MuleException, IOException, TimeoutException {
     HttpRequest httpRequest = HttpRequest.builder()
         .method(POST)
