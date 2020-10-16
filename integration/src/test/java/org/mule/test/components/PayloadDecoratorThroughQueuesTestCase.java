@@ -32,6 +32,7 @@ import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.runner.RunnerDelegateTo;
 import org.mule.tests.api.TestQueueManager;
 
+import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
@@ -70,6 +71,7 @@ public class PayloadDecoratorThroughQueuesTestCase extends AbstractIntegrationTe
 
   @Test
   @Issue("MULE-18894")
+  @Description("Assert statistics for a component that serializes the payload")
   public void testPayload() throws Exception {
     sendPayload("publishConsumeThroughVM", payload);
     assertThat(queueManager.read("processed", RECEIVE_TIMEOUT, MILLISECONDS), notNullValue());
