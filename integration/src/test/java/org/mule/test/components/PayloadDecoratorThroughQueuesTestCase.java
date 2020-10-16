@@ -7,7 +7,6 @@
 package org.mule.test.components;
 
 import static java.util.Arrays.asList;
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -15,22 +14,22 @@ import static org.mule.runtime.api.util.MuleSystemProperties.MULE_ENABLE_STATIST
 import static org.mule.test.allure.AllureConstants.SerializationFeature.SERIALIZATION;
 import static org.mule.test.allure.AllureConstants.SerializationFeature.SerializationStory.STATISTICS;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Vector;
 
-import javax.inject.Inject;
-
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.core.api.management.stats.PayloadStatistics;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.runner.RunnerDelegateTo;
-import org.mule.tests.api.TestQueueManager;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
@@ -45,10 +44,7 @@ public class PayloadDecoratorThroughQueuesTestCase extends AbstractIntegrationTe
   @Rule
   public SystemProperty withStatistics = new SystemProperty(MULE_ENABLE_STATISTICS, "true");
 
-
-
-  @Inject
-  private TestQueueManager queueManager;
+  private TestConnectorQueueHandler queueHandler;
 
   private Object payload;
 
@@ -58,6 +54,11 @@ public class PayloadDecoratorThroughQueuesTestCase extends AbstractIntegrationTe
         {new HashSet(asList("cat", "cow", "dog"))},
         {new Vector(asList("cat", "cow", "dog"))}
     });
+  }
+
+  @Before
+  public void before() throws IOException {
+    queueHandler = new TestConnectorQueueHandler(registry);
   }
 
   public PayloadDecoratorThroughQueuesTestCase(Object payload) {
@@ -74,7 +75,7 @@ public class PayloadDecoratorThroughQueuesTestCase extends AbstractIntegrationTe
   @Description("Assert statistics for a component that serializes the payload")
   public void testPayload() throws Exception {
     sendPayload("publishConsumeThroughVM", payload);
-    assertThat(queueManager.read("processed", RECEIVE_TIMEOUT, MILLISECONDS), notNullValue());
+    assertThat(queueHandler.read("processed", RECEIVE_TIMEOUT), notNullValue());
     final PayloadStatistics stats =
         muleContext.getStatistics().getPayloadStatistics("publishConsumeThroughVM/processors/0");
 
