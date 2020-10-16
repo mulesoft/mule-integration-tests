@@ -37,6 +37,7 @@ public class GracefulShutdownTestCase extends AbstractIntegrationTestCase {
     return asList("org/mule/shutdown/flow-with-operation.xml",
                   "org/mule/shutdown/flow-with-failing-operation.xml",
                   "org/mule/shutdown/flow-with-flow-ref.xml",
+                  "org/mule/shutdown/flow-with-operation-in-error-handler.xml",
                   "org/mule/shutdown/flow-with-tx-flow-ref.xml",
                   "org/mule/shutdown/flow-with-tx-scope.xml");
   }
