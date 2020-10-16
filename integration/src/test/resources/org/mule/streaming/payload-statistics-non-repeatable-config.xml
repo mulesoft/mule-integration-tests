@@ -55,6 +55,16 @@
         <flow-ref name="consumeStreamsOnce"/>
     </flow>
 
+    <flow name="passthroughOperation">
+        <http:listener path="/passthrough" config-ref="simpleConf">
+            <non-repeatable-stream />
+        </http:listener>
+
+        <marvel:wounds-passthrough>
+            <marvel:wounds>#[payload]</marvel:wounds>
+        </marvel:wounds-passthrough>
+    </flow>
+
     <flow name="pagesOfMessagesOperation">
         <file:list config-ref="file" directoryPath="#[vars.path]">
             <non-repeatable-iterable />
