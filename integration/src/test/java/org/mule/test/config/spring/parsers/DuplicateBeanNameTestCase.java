@@ -6,7 +6,6 @@
  */
 package org.mule.test.config.spring.parsers;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class DuplicateBeanNameTestCase extends AbstractBadConfigTestCase {
@@ -17,7 +16,6 @@ public class DuplicateBeanNameTestCase extends AbstractBadConfigTestCase {
   }
 
   @Test
-  @Ignore("MULE-17629")
   public void testBeanError() throws Exception {
     assertErrorContains("Bean name 'child1' is already used in this <beans> element");
   }
