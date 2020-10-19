@@ -92,6 +92,7 @@ import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
 import io.qameta.allure.junit4.DisplayName;
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.xml.sax.EntityResolver;
 
@@ -603,6 +604,7 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
 
   @Description("Smart Connector inside a scatter-gather")
   @Issue("MULE-16285")
+  @Ignore("MULE-18878")
   @Test
   public void flowWithScatterGather() throws Exception {
     flowRunner("flowWithScatterGather").run();
