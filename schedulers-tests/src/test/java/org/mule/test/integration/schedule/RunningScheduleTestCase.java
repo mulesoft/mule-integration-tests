@@ -16,7 +16,6 @@ import org.mule.tck.probe.JUnitLambdaProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.test.AbstractSchedulerTestCase;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -35,7 +34,6 @@ public class RunningScheduleTestCase extends AbstractSchedulerTestCase {
   }
 
   @Test
-  @Ignore("MULE-17635")
   public void test() throws Exception {
     MockScheduler scheduler = findScheduler(SCHEDULER_NAME);
     new PollingProber(2000, 50).check(new JUnitLambdaProbe(() -> {
