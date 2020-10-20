@@ -66,6 +66,7 @@ import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -561,6 +562,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
 
   @Test
   @Description("Processors in global error handlers are intercepted correctly when error is in referenced flow")
+  @Ignore("MULE-18901")
   public void globalErrorHandlerWithFlowRef() throws Exception {
     expectedError.expectCause(instanceOf(FunctionalTestException.class));
 
