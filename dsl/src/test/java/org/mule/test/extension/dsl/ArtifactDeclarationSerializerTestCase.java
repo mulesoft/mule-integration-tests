@@ -70,7 +70,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -110,7 +109,6 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
   }
 
   @Test
-  @Ignore("MULE-17633")
   public void serialize() throws Exception {
     String serializationResult = ArtifactDeclarationXmlSerializer.getDefault(dslContext).serialize(applicationDeclaration);
     compareXML(expectedAppXml, serializationResult);
@@ -131,7 +129,6 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
   }
 
   @Test
-  @Ignore("MULE-17633")
   public void loadAndSerialize() throws Exception {
     InputStream configIs = currentThread().getContextClassLoader().getResourceAsStream(configFile);
     ArtifactDeclarationXmlSerializer serializer = ArtifactDeclarationXmlSerializer.getDefault(dslContext);
@@ -144,7 +141,6 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
   }
 
   @Test
-  @Ignore("MULE-17633")
   public void serializesToJson() {
     InputStream configIs = currentThread().getContextClassLoader().getResourceAsStream(configFile);
     ArtifactDeclarationXmlSerializer serializer = ArtifactDeclarationXmlSerializer.getDefault(dslContext);
