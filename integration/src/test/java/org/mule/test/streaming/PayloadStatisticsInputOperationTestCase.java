@@ -11,14 +11,11 @@ import static java.util.Arrays.asList;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mule.runtime.api.util.MuleSystemProperties.MULE_DISABLE_PAYLOAD_STATISTICS;
 import static org.mule.runtime.api.util.MuleSystemProperties.MULE_ENABLE_STATISTICS;
 import static org.mule.runtime.core.api.util.FileUtils.cleanDirectory;
 import static org.mule.test.allure.AllureConstants.StreamingFeature.STREAMING;
 import static org.mule.test.allure.AllureConstants.StreamingFeature.StreamingStory.STATISTICS;
-
-import org.mule.runtime.core.api.management.stats.PayloadStatistics;
-import org.mule.tck.junit4.rule.SystemProperty;
-import org.mule.test.AbstractIntegrationTestCase;
 
 import java.io.IOException;
 
@@ -28,6 +25,9 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.mule.runtime.core.api.management.stats.PayloadStatistics;
+import org.mule.tck.junit4.rule.SystemProperty;
+import org.mule.test.AbstractIntegrationTestCase;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
@@ -49,6 +49,9 @@ public class PayloadStatisticsInputOperationTestCase extends AbstractIntegration
 
   @Rule
   public SystemProperty withStatistics = new SystemProperty(MULE_ENABLE_STATISTICS, "true");
+
+  @Rule
+  public SystemProperty withPayloadStatistics = new SystemProperty(MULE_DISABLE_PAYLOAD_STATISTICS, "false");
 
   @Override
   protected String getConfigFile() {

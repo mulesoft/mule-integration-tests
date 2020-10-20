@@ -12,6 +12,7 @@ import static org.apache.commons.io.FileUtils.writeStringToFile;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mule.runtime.api.util.MuleSystemProperties.MULE_DISABLE_PAYLOAD_STATISTICS;
 import static org.mule.runtime.api.util.MuleSystemProperties.MULE_ENABLE_STATISTICS;
 import static org.mule.runtime.http.api.HttpConstants.Method.POST;
 import static org.mule.runtime.core.api.util.FileUtils.cleanDirectory;
@@ -72,6 +73,9 @@ public class PayloadStatisticsTestCase extends AbstractIntegrationTestCase {
 
   @Rule
   public SystemProperty withStatistics = new SystemProperty(MULE_ENABLE_STATISTICS, "true");
+
+  @Rule
+  public SystemProperty withPayloadStatistics = new SystemProperty(MULE_DISABLE_PAYLOAD_STATISTICS, "false");
 
   @Rule
   public DynamicPort port = new DynamicPort("port");
