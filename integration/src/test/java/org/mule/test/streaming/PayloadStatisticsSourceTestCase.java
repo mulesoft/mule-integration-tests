@@ -9,6 +9,7 @@ package org.mule.test.streaming;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mule.runtime.api.util.MuleSystemProperties.MULE_DISABLE_PAYLOAD_STATISTICS;
 import static org.mule.runtime.api.util.MuleSystemProperties.MULE_ENABLE_STATISTICS;
 import static org.mule.test.allure.AllureConstants.StreamingFeature.STREAMING;
 import static org.mule.test.allure.AllureConstants.StreamingFeature.StreamingStory.STATISTICS;
@@ -43,6 +44,9 @@ public class PayloadStatisticsSourceTestCase extends AbstractIntegrationTestCase
 
   @Rule
   public SystemProperty withStatistics = new SystemProperty(MULE_ENABLE_STATISTICS, "true");
+
+  @Rule
+  public SystemProperty withPayloadStatistics = new SystemProperty(MULE_DISABLE_PAYLOAD_STATISTICS, "false");
 
   @Inject
   private TestQueueManager queueManager;
