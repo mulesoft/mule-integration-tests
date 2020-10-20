@@ -6,6 +6,7 @@
  */
 package org.mule.runtime.module.tooling;
 
+import static java.nio.charset.Charset.defaultCharset;
 import static java.util.Optional.of;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -18,9 +19,17 @@ import org.junit.Test;
 
 public class DeclarationSessionWithResourcesTestCase extends DeclarationSessionTestCase {
 
+  private static final String SOME_SECRET = "some secret";
+
   @Override
   protected Optional<Pair<String, byte[]>> getResource() {
-    return of(new Pair("connection/secrets/keyStore.jks", "someValue".getBytes()));
+    // Just use default encoding as connector is going to compare Strings using defaultCharset too.
+    return of(new Pair("connection/secrets/keyStore.jks", SOME_SECRET.getBytes(defaultCharset())));
+  }
+
+  @Override
+  protected Optional<String> getExpectedResourceContent() {
+    return of(SOME_SECRET);
   }
 
   @Test

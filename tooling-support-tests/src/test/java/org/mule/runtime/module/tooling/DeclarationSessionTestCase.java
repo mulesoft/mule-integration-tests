@@ -84,9 +84,13 @@ public abstract class DeclarationSessionTestCase extends AbstractFakeMuleServerT
     return empty();
   }
 
+  protected Optional<String> getExpectedResourceContent() {
+    return empty();
+  }
+
   protected void declareArtifact(ArtifactDeclarer artifactDeclarer) {
     artifactDeclarer.withGlobalElement(configurationDeclaration(CONFIG_NAME, getResource()
-        .map(resource -> connectionDeclarationWithResource(CLIENT_NAME, resource.getFirst()))
+        .map(resource -> connectionDeclarationWithResource(CLIENT_NAME, resource.getFirst(), getExpectedResourceContent()))
         .orElse(connectionDeclaration(CLIENT_NAME))));
   }
 

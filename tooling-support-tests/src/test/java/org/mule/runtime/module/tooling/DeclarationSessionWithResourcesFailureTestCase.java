@@ -6,6 +6,7 @@
  */
 package org.mule.runtime.module.tooling;
 
+import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
@@ -32,7 +33,7 @@ public class DeclarationSessionWithResourcesFailureTestCase extends DeclarationS
 
   protected void declareArtifact(ArtifactDeclarer artifactDeclarer) {
     artifactDeclarer.withGlobalElement(configurationDeclaration(CONFIG_NAME, getResource()
-        .map(resource -> connectionDeclarationWithResource(CLIENT_NAME, nonExistentResourcePath))
+        .map(resource -> connectionDeclarationWithResource(CLIENT_NAME, nonExistentResourcePath, empty()))
         .orElse(connectionDeclaration(CLIENT_NAME))));
   }
 
