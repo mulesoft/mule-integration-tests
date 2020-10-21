@@ -9,12 +9,22 @@ package org.mule.test.module.extension.oauth.authcode;
 import static com.github.tomakehurst.wiremock.client.WireMock.containing;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
+
+import com.github.tomakehurst.wiremock.client.WireMock;
+import org.hamcrest.Matchers;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.extension.api.connectivity.oauth.AuthCodeRequest;
 
 import org.junit.Before;
+
+import java.util.List;
 
 public class ScopelessOAuthExtensionTestCase extends OAuthExtensionTestCase {
 
@@ -32,6 +42,13 @@ public class ScopelessOAuthExtensionTestCase extends OAuthExtensionTestCase {
   public void setOwnerId() {
     ownerId = getCustomOwnerId();
     storedOwnerId = getCustomOwnerId() + "-oauth";
+  }
+
+  @Test
+  @Ignore("MULE-18893")
+  @Override
+  public void refreshTokenForPagedOperationOnThirdPage() throws Exception {
+    //Implemented in the supperclass. Overriden in order to ignore it
   }
 
   @Override
