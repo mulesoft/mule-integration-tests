@@ -23,6 +23,7 @@ import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.comp
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.configLessConnectionLessOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.configLessOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.innerPojo;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.intActingParameterOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.parameterValueProviderWithConfig;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.sourceWithMultiLevelValue;
 import org.mule.runtime.api.value.Value;
@@ -133,6 +134,13 @@ public class ComponentValueProviderTestCase extends DeclarationSessionTestCase {
     validateValuesFailure(session, elementDeclaration, PROVIDED_PARAMETER_NAME,
                           "Unable to retrieve values. There are missing required parameters for the resolution: [intParam, listParams]",
                           MISSING_REQUIRED_PARAMETERS);
+  }
+
+  @Test
+  public void intActingParameterOnOperation() {
+    final int actingParameter = 10;
+    ComponentElementDeclaration elementDeclaration = intActingParameterOPDeclaration(CONFIG_NAME, actingParameter);
+    validateValuesSuccess(session, elementDeclaration, PROVIDED_PARAMETER_NAME, Integer.toString(actingParameter));
   }
 
   @Test
