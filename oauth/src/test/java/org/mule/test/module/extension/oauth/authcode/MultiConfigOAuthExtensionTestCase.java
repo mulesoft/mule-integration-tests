@@ -9,6 +9,8 @@ package org.mule.test.module.extension.oauth.authcode;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.store.ObjectStoreManager.BASE_PERSISTENT_OBJECT_STORE_KEY;
+
+import org.junit.Ignore;
 import org.mule.runtime.api.store.ObjectStore;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.module.extension.oauth.BaseOAuthExtensionTestCase;
@@ -40,6 +42,7 @@ public class MultiConfigOAuthExtensionTestCase extends BaseOAuthExtensionTestCas
   }
 
   @Test
+  @Ignore("MULE-18892")
   public void authorizeAndStartDancingBaby() throws Exception {
     storedOwnerId = OAUTH_RESOLVED_OWNER;
     startDance(callbackPort.getNumber());
