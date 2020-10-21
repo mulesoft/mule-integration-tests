@@ -28,14 +28,12 @@ import static org.mule.test.allure.AllureConstants.RoutersFeature.ScatterGatherS
 import static org.mule.test.routing.ThreadCaptor.getCapturedThreads;
 
 import org.mule.functional.api.exception.FunctionalTestException;
-import org.mule.functional.junit4.rules.HttpServerRule;
 import org.mule.runtime.api.exception.ComposedErrorException;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.util.concurrent.Latch;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
-import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -62,12 +60,6 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
 
   @Rule
   public ExpectedException expectedException = none();
-
-  @Rule
-  public DynamicPort port = new DynamicPort("port");
-
-  @Rule
-  public HttpServerRule httpServerRules = new HttpServerRule("port");
 
   @Rule
   public SystemProperty timeout = new SystemProperty("scatterGather.timeout", "" + RECEIVE_TIMEOUT);

@@ -2,25 +2,19 @@
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xmlns:test-components="http://www.mulesoft.org/schema/mule/test-components"
       xmlns:http="http://www.mulesoft.org/schema/mule/http"
       xsi:schemaLocation="
                http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
                http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
-               http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+               http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
+               http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
 
     <object name="customFilter" class="org.mule.test.core.NonBlockingFunctionalTestCase$CustomSecurityFilter"/>
 
-    <configuration>
-        <expression-language>
-            <global-functions>
-                def assertPayload(){payload == org.mule.tck.junit4.AbstractMuleContextTestCase.TEST_MESSAGE}
-            </global-functions>
-        </expression-language>
-    </configuration>
-
     <flow name="flow" initialState="stopped">
         <test:assert-intercepting responseSameTask="false" responseExpression="#[payload == 'Test Message']"/>
-        <test:non-blocking-processor/>
+        <test-components:non-blocking/>
         <test:assert expression="#[payload == 'Test Message']"/>
     </flow>
 
@@ -31,7 +25,7 @@
     </flow>
     <sub-flow name="subFlowChild">
         <test:assert-intercepting responseSameTask="false" responseExpression="#[payload == 'Test Message']"/>
-        <test:non-blocking-processor/>
+        <test-components:non-blocking/>
         <test:assert expression="#[payload == 'Test Message']"/>
     </sub-flow>
 
@@ -43,7 +37,7 @@
     </flow>
     <flow name="childFlowChild">
         <test:assert-intercepting responseSameTask="false" responseExpression="#[payload == 'Test Message']"/>
-        <test:non-blocking-processor/>
+        <test-components:non-blocking/>
         <test:assert expression="#[payload == 'Test Message']"/>
     </flow>
 
@@ -51,7 +45,7 @@
         <flow-ref name="childAsyncFlowChild"/>
     </flow>
     <flow name="childAsyncFlowChild">
-        <test:non-blocking-processor/>
+        <test-components:non-blocking/>
         <test:assert expression="#[payload == 'Test Message']"/>
     </flow>
 
@@ -59,16 +53,16 @@
         <test:assert-intercepting responseSameTask="false" responseExpression="#[payload == 'Test Message']"/>
         <try>
             <test:assert-intercepting responseSameTask="false" responseExpression="#[payload == 'Test Message']"/>
-            <test:non-blocking-processor/>
+            <test-components:non-blocking/>
         </try>
-        <test:non-blocking-processor/>
+        <test-components:non-blocking/>
         <test:assert expression="#[payload == 'Test Message']"/>
     </flow>
 
     <flow name="security-filter" initialState="stopped">
         <test:assert-intercepting responseSameTask="false" responseExpression="#[payload == 'Test Message']"/>
         <custom-security-filter ref="customFilter"/>
-        <test:non-blocking-processor/>
+        <test-components:non-blocking/>
         <test:assert expression="#[payload == 'Test Message']"/>
     </flow>
 
@@ -77,11 +71,11 @@
         <choice>
             <when expression="#[true]">
                 <test:assert-intercepting responseSameTask="false" responseExpression="#[payload == 'Test Message']"/>
-                <test:non-blocking-processor/>
+                <test-components:non-blocking/>
             </when>
         </choice>
         <test:assert-intercepting responseSameTask="false" responseExpression="#[payload == 'Test Message']"/>
-        <test:non-blocking-processor/>
+        <test-components:non-blocking/>
         <test:assert expression="#[payload == 'Test Message']"/>
     </flow>
 
@@ -89,9 +83,9 @@
         <test:assert-intercepting responseSameTask="false" responseExpression="#[payload == 'Test Message']"/>
         <async>
             <test:assert-intercepting responseSameTask="false" responseExpression="#[payload == 'Test Message']"/>
-            <test:non-blocking-processor/>
+            <test-components:non-blocking/>
         </async>
-        <test:non-blocking-processor/>
+        <test-components:non-blocking/>
     </flow>
 
     <flow name="catchExceptionStrategy" initialState="stopped">
@@ -104,7 +98,7 @@
         <error-handler>
             <on-error-continue>
                 <test:assert-intercepting responseSameTask="false" responseExpression="#[payload == 'Test Message']"/>
-                <test:non-blocking-processor/>
+                <test-components:non-blocking/>
             </on-error-continue>
         </error-handler>
     </flow>
@@ -125,7 +119,7 @@
         <test:processor throwException="true"/>
         <error-handler>
             <on-error-propagate>
-                <test:non-blocking-processor/>
+                <test-components:non-blocking/>
             </on-error-propagate>
         </error-handler>
     </flow>
@@ -134,7 +128,7 @@
         <test:assert-intercepting responseSameTask="false" responseExpression="#[payload == 'Test Message']"/>
         <try>
             <test:assert-intercepting responseSameTask="false" responseExpression="#[payload == 'Test Message']"/>
-            <test:non-blocking-processor/>
+            <test-components:non-blocking/>
         </try>
     </flow>
 
@@ -144,7 +138,7 @@
             <error-handler>
                 <on-error-continue>
                     <test:assert-intercepting responseSameTask="false" responseExpression="#[payload == 'Test Message']"/>
-                    <test:non-blocking-processor/>
+                    <test-components:non-blocking/>
                 </on-error-continue>
             </error-handler>
         </try>
@@ -153,7 +147,7 @@
     <flow name="transactionalTryEmitter" initialState="stopped">
         <try transactionalAction="ALWAYS_BEGIN">
             <test:assert-intercepting responseSameTask="true" responseExpression="#[payload == 'Test Message']"/>
-            <test:non-blocking-processor/>
+            <test-components:non-blocking/>
         </try>
     </flow>
 
@@ -161,7 +155,7 @@
         <test:assert-intercepting responseSameTask="false" responseExpression="#[payload == 'Test Message']"/>
         <try transactionalAction="ALWAYS_BEGIN">
             <test:assert-intercepting responseSameTask="true" responseExpression="#[payload == 'Test Message']"/>
-            <test:non-blocking-processor/>
+            <test-components:non-blocking/>
         </try>
     </flow>
 
@@ -171,7 +165,7 @@
             <error-handler>
                 <on-error-continue>
                     <test:assert-intercepting responseSameTask="true" responseExpression="#[payload == 'Test Message']"/>
-                    <test:non-blocking-processor/>
+                    <test-components:non-blocking/>
                 </on-error-continue>
             </error-handler>
         </try>
@@ -181,19 +175,19 @@
         <test:assert-intercepting responseSameTask="false" responseExpression="#[payload == 'Test Message']"/>
         <flow-ref name="childDefaultFlowChild"/>
         <test:assert expression="#[payload == 'Test Message']"/>
-        <test:non-blocking-processor/>
+        <test-components:non-blocking/>
     </flow>
     
     <flow name="childDefaultFlowChild">
         <test:assert-intercepting responseSameTask="false" responseExpression="#[payload == 'Test Message']" message="2"/>
-        <test:non-blocking-processor/>
+        <test-components:non-blocking/>
         <test:assert expression="#[payload == 'Test Message']"/>
     </flow>
 
     <flow name="untilSuccessfulNoRetry" initialState="stopped">
         <test:assert-intercepting responseSameTask="false" responseExpression="#[payload == 'Test Message']"/>
         <until-successful>
-            <test:non-blocking-processor/>
+            <test-components:non-blocking/>
         </until-successful>
         <test:assert expression="#[payload == 'Test Message']"/>
     </flow>
@@ -203,14 +197,14 @@
         <until-successful>
             <test:assert expression="#[payload == 'Test Message']"/>
         </until-successful>
-        <test:non-blocking-processor/>
+        <test-components:non-blocking/>
     </flow>
 
     <flow name="untilSuccessfulWithRetryExceptionBefore" initialState="stopped">
         <test:assert-intercepting responseSameTask="false" responseExpression="#[payload == 'Test Message']"/>
         <until-successful millisBetweenRetries="100">
             <test:throw exception="java.lang.RuntimeException" error="ANY" count="2"/>
-            <test:non-blocking-processor/>
+            <test-components:non-blocking/>
         </until-successful>
         <test:assert expression="#[payload == 'Test Message']"/>
     </flow>
@@ -218,7 +212,7 @@
     <flow name="untilSuccessfulWithRetryExceptionAfter" initialState="stopped">
         <test:assert-intercepting responseSameTask="false" responseExpression="#[payload == 'Test Message']"/>
         <until-successful millisBetweenRetries="100">
-            <test:non-blocking-processor/>
+            <test-components:non-blocking/>
             <test:throw exception="java.lang.RuntimeException" error="ANY" count="2"/>
         </until-successful>
         <test:assert expression="#[payload == 'Test Message']"/>
@@ -229,14 +223,14 @@
         <until-successful millisBetweenRetries="100">
             <test:throw exception="java.lang.RuntimeException" error="ANY" count="2"/>
         </until-successful>
-        <test:non-blocking-processor/>
+        <test-components:non-blocking/>
     </flow>
 
     <flow name="untilSuccessfulWithRetryTransactional" initialState="stopped">
         <test:assert-intercepting responseSameTask="true" responseExpression="#[payload == 'Test Message']"/>
         <until-successful millisBetweenRetries="100">
             <test:throw exception="java.lang.RuntimeException" error="ANY" count="2"/>
-            <test:non-blocking-processor/>
+            <test-components:non-blocking/>
         </until-successful>
         <test:assert expression="#[payload == 'Test Message']"/>
     </flow>
@@ -245,10 +239,10 @@
         <test:assert-intercepting responseSameTask="false"/>
         <foreach>
             <test:assert-intercepting responseSameTask="false" count="2"/>
-            <test:non-blocking-processor/>
+            <test-components:non-blocking/>
             <foreach>
                 <test:assert-intercepting responseSameTask="false" count="6"/>
-                <test:non-blocking-processor/>
+                <test-components:non-blocking/>
             </foreach>
         </foreach>
     </flow>
@@ -257,10 +251,10 @@
         <test:assert-intercepting responseSameTask="false"/>
         <until-successful>
             <test:assert-intercepting responseSameTask="false" count="2"/>
-            <test:non-blocking-processor/>
+            <test-components:non-blocking/>
             <until-successful>
                 <test:assert-intercepting responseSameTask="false" count="6"/>
-                <test:non-blocking-processor/>
+                <test-components:non-blocking/>
             </until-successful>
         </until-successful>
         <test:assert expression="#[payload == 'Test Message']"/>
@@ -270,10 +264,10 @@
         <test:assert-intercepting responseSameTask="false"/>
         <foreach>
             <test:assert-intercepting responseSameTask="false" count="2"/>
-            <test:non-blocking-processor/>
+            <test-components:non-blocking/>
             <until-successful>
                 <test:assert-intercepting responseSameTask="false" count="6"/>
-                <test:non-blocking-processor/>
+                <test-components:non-blocking/>
             </until-successful>
         </foreach>
     </flow>
@@ -283,33 +277,24 @@
         <set-payload value="#[['A', 'B']]" />
         <until-successful maxRetries="1" >
             <test:assert-intercepting responseSameTask="false" count="2"/>
-            <test:non-blocking-processor/>
+            <test-components:non-blocking/>
             <foreach>
                 <test:assert-intercepting responseSameTask="false" count="4"/>
-                <!-- TODO MULE-18135 Migrate this extension using mule SDK -->
-                <http:request config-ref="http-request-config2" path="/test" method="POST" >
-                    <http:response-validator >
-                        <http:success-status-code-validator values="0..599" />
-                    </http:response-validator>
-                </http:request>
+                <test-components:non-blocking/>
             </foreach>
         </until-successful>
     </flow>
-
-    <http:request-config name="http-request-config2">
-        <http:request-connection host="localhost" port="${requesterPort2}"/>
-    </http:request-config>
 
     <flow name="scatterGather" initialState="stopped">
         <test:assert-intercepting responseSameTask="false"/>
         <scatter-gather>
             <route>
                 <test:assert-intercepting responseSameTask="false"/>
-                <test:non-blocking-processor/>
+                <test-components:non-blocking/>
             </route>
             <route>
                 <test:assert-intercepting responseSameTask="false"/>
-                <test:non-blocking-processor/>
+                <test-components:non-blocking/>
             </route>
         </scatter-gather>
     </flow>
@@ -318,10 +303,10 @@
         <test:assert-intercepting responseSameTask="false"/>
         <parallel-foreach>
             <test:assert-intercepting responseSameTask="false" count="2"/>
-            <test:non-blocking-processor/>
+            <test-components:non-blocking/>
             <parallel-foreach>
                 <test:assert-intercepting responseSameTask="false" count="6"/>
-                <test:non-blocking-processor/>
+                <test-components:non-blocking/>
             </parallel-foreach>
         </parallel-foreach>
     </flow>
