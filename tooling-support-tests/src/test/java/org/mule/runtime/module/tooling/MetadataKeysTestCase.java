@@ -12,6 +12,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.metadata.resolving.FailureCode.COMPONENT_NOT_FOUND;
+import static org.mule.runtime.api.metadata.resolving.FailureCode.INVALID_METADATA_KEY;
 import static org.mule.runtime.api.metadata.resolving.FailureCode.UNKNOWN;
 import static org.mule.runtime.api.metadata.resolving.MetadataComponent.KEYS;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.configLessConnectionLessOPDeclaration;
@@ -23,6 +24,7 @@ import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.sour
 import static org.mule.tck.junit4.matcher.MetadataKeyMatcher.metadataKeyWithId;
 import org.mule.runtime.api.metadata.MetadataKey;
 import org.mule.runtime.api.metadata.MetadataKeysContainer;
+import org.mule.runtime.api.metadata.resolving.MetadataFailure;
 import org.mule.runtime.api.metadata.resolving.MetadataResult;
 import org.mule.runtime.app.declaration.api.ComponentElementDeclaration;
 
@@ -78,6 +80,18 @@ public class MetadataKeysTestCase extends DeclarationSessionTestCase {
     assertThat(continents, hasSize(2));
     assertThat(continents, hasItem(metadataKeyWithId("AMERICA")));
     assertThat(continents, hasItem(metadataKeyWithId("EUROPE")));
+  }
+
+  @Test
+  public void expressionRequiresContext() {
+    MetadataResult<MetadataKeysContainer> metadataResult =
+        session.getMetadataKeys(multiLevelOPDeclarationPartialTypeKeys(CONFIG_NAME, "#[vars.continent]", null));
+    assertThat(metadataResult.isSuccess(), is(false));
+    assertThat(metadataResult.getFailures(), hasSize(1));
+    MetadataFailure metadataFailure = metadataResult.getFailures().get(0);
+    assertThat(metadataFailure.getMessage(),
+               is("Error resolving value for parameter: 'continent' from declaration, it cannot be an EXPRESSION value"));
+    assertThat(metadataFailure.getFailureCode(), is(INVALID_METADATA_KEY));
   }
 
   @Test
