@@ -10,6 +10,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.http.api.HttpConstants.Method.GET;
 
+import org.junit.Ignore;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.runtime.http.api.HttpService;
@@ -55,6 +56,7 @@ public class ValidShutdownTimeoutRequestResponseTestCase extends AbstractShutdow
   }
 
   @Test
+  @Ignore("MULE-18918")
   public void testExpressionTransformer() throws Throwable {
     doShutDownTest("expressionTransformerResponse", "http://localhost:" + httpPort.getNumber() + "/expressionTransformer");
   }
