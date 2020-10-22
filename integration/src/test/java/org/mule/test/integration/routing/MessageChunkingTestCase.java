@@ -15,13 +15,15 @@ import org.mule.runtime.api.notification.AbstractServerNotification;
 import org.mule.runtime.api.notification.NotificationListenerRegistry;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.SerializationUtils;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
-import javax.inject.Inject;
+import io.qameta.allure.Flaky;
 
 public class MessageChunkingTestCase extends AbstractIntegrationTestCase {
 
@@ -57,6 +59,8 @@ public class MessageChunkingTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
+  @Flaky
+  @Ignore("MULE-18914")
   public void testMessageChunkingObject() throws Exception {
     final AtomicInteger messagePartsCount = new AtomicInteger(0);
     final SimpleSerializableObject simpleSerializableObject = new SimpleSerializableObject("Test String", true, 99);
