@@ -159,6 +159,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
   }
 
   @Test
+  @Ignore("MULE-18917")
   public void operationThatUsesExtensionsClientInternally() throws Exception {
     assertThat(flowRunner("executeKillWithClient").run().getMessage().getPayload().getValue().toString(),
                is("Now he sleeps with the fishes."));
