@@ -9,7 +9,6 @@ package org.mule.runtime.module.tooling;
 import static java.time.Instant.now;
 import static java.util.Arrays.asList;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static javax.xml.datatype.DatatypeConstants.FIELD_UNDEFINED;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertThat;
@@ -27,7 +26,8 @@ import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.conf
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.configLessOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.innerPojo;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.parameterValueProviderWithConfig;
-import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.simpleActingParameterOPDeclaration;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.simpleActingParametersInContainerOPDeclaration;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.simpleActingParametersOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.sourceWithMultiLevelValue;
 import org.mule.runtime.api.value.Value;
 import org.mule.runtime.api.value.ValueResult;
@@ -37,29 +37,20 @@ import org.mule.runtime.app.declaration.api.ParameterValue;
 import org.mule.runtime.app.declaration.api.fluent.ElementDeclarer;
 
 import com.google.common.collect.ImmutableMap;
-import com.sun.org.apache.xerces.internal.jaxp.datatype.XMLGregorianCalendarImpl;
 
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.OffsetTime;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.temporal.Temporal;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
-import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.json.XML;
 import org.junit.Test;
 
 public class ComponentValueProviderTestCase extends DeclarationSessionTestCase {
@@ -162,26 +153,23 @@ public class ComponentValueProviderTestCase extends DeclarationSessionTestCase {
   public void simpleActingParametersOnOperation() throws Exception {
     final int intParameter = 10;
     final boolean booleanParameter = true;
-    final Date dateParameter = Date.from(now());
+    final Instant instant = now();
+    final Date dateParameter = Date.from(instant);
 
-    final TimeZone utcTimeZone = TimeZone.getTimeZone(ZoneId.of("UTC"));
     final java.sql.Date sqlDate = new java.sql.Date(dateParameter.toInstant().toEpochMilli());
-    final Calendar calendar = Calendar.getInstance(utcTimeZone, Locale.US);
-    calendar.setTimeInMillis(dateParameter.toInstant().getEpochSecond() * 1000);
     final TimeUnit enumParameter = MILLISECONDS;
     final GregorianCalendar gregorianCalendar = new GregorianCalendar();
-    gregorianCalendar.setTimeZone(utcTimeZone);
-    gregorianCalendar.setTimeInMillis(dateParameter.toInstant().getEpochSecond() * 1000);
+    gregorianCalendar.setTime(dateParameter);
     final XMLGregorianCalendar xmlGregorianCalendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(gregorianCalendar);
     final LocalDate localDate = LocalDate.parse(sqlDate.toString());
-    final LocalDateTime localDateTime = LocalDateTime.ofInstant(dateParameter.toInstant(), ZoneId.systemDefault()).withNano(0);
+    final LocalDateTime localDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
 
     ComponentElementDeclaration elementDeclaration =
-        simpleActingParameterOPDeclaration(CONFIG_NAME,
-                                           intParameter,
-                                           booleanParameter,
-                                           dateParameter,
-                                           enumParameter);
+        simpleActingParametersOPDeclaration(CONFIG_NAME,
+                                            intParameter,
+                                            booleanParameter,
+                                            dateParameter,
+                                            enumParameter);
     validateValuesSuccess(session, elementDeclaration, PROVIDED_PARAMETER_NAME,
                           Integer.toString(intParameter)
                               + Boolean.toString(booleanParameter)
@@ -189,7 +177,40 @@ public class ComponentValueProviderTestCase extends DeclarationSessionTestCase {
                               + sqlDate.toString()
                               + localDate.toString()
                               + localDateTime.toString()
-                              + calendar.toString()
+                              + gregorianCalendar.toString()
+                              + xmlGregorianCalendar.toString()
+                              + enumParameter.toString());
+  }
+
+  @Test
+  public void simpleActingParametersContainerOnOperation() throws Exception {
+    final int intParameter = 10;
+    final boolean booleanParameter = true;
+    final Instant instant = now();
+    final Date dateParameter = Date.from(instant);
+
+    final java.sql.Date sqlDate = new java.sql.Date(dateParameter.toInstant().toEpochMilli());
+    final TimeUnit enumParameter = MILLISECONDS;
+    final GregorianCalendar gregorianCalendar = new GregorianCalendar();
+    gregorianCalendar.setTime(dateParameter);
+    final XMLGregorianCalendar xmlGregorianCalendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(gregorianCalendar);
+    final LocalDate localDate = LocalDate.parse(sqlDate.toString());
+    final LocalDateTime localDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+
+    ComponentElementDeclaration elementDeclaration =
+        simpleActingParametersInContainerOPDeclaration(CONFIG_NAME,
+                                                       intParameter,
+                                                       booleanParameter,
+                                                       dateParameter,
+                                                       enumParameter);
+    validateValuesSuccess(session, elementDeclaration, PROVIDED_PARAMETER_NAME,
+                          Integer.toString(intParameter)
+                              + Boolean.toString(booleanParameter)
+                              + dateParameter.toString()
+                              + sqlDate.toString()
+                              + localDate.toString()
+                              + localDateTime.toString()
+                              + gregorianCalendar.toString()
                               + xmlGregorianCalendar.toString()
                               + enumParameter.toString());
   }
