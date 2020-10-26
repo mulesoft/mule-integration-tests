@@ -110,7 +110,7 @@ public class ProcessorInterceptorFactoryCustomActionTestCase extends MuleArtifac
     InterceptionParameters moduleOperationChain = interceptionParameters.get(0);
     InterceptionParameters setPayloadOperation = interceptionParameters.get(1);
 
-    assertThat(moduleOperationChain.getParameters().keySet(), containsInAnyOrder("doc:name", "targetValue"));
+    assertThat(moduleOperationChain.getParameters().keySet(), containsInAnyOrder("doc:name", "targetValue", "errorMappings"));
     assertThat(moduleOperationChain.getParameters().get("doc:name").resolveValue(), is("mySCName"));
 
     assertThat(setPayloadOperation.getParameters().keySet(), containsInAnyOrder("value", "mimeType", "encoding"));
