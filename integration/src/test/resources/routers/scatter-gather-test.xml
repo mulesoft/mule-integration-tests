@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xmlns:test-components="http://www.mulesoft.org/schema/mule/test-components"
       xmlns:http="http://www.mulesoft.org/schema/mule/http"
       xmlns="http://www.mulesoft.org/schema/mule/core"
       xsi:schemaLocation="
                http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
                http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
-               http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+               http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
+               http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
 
     <object name="threadCaptor" class="org.mule.test.routing.ThreadCaptor" />
 
@@ -267,7 +269,7 @@
                     <raise-error type="APP:SOME"/>
                     <error-handler>
                         <on-error-continue>
-                            <test:non-blocking-processor />
+                            <test-components:non-blocking/>
                             <set-payload value="v2"/>
                         </on-error-continue>
                     </error-handler>
@@ -364,7 +366,7 @@
             <flow-ref name="threadCaptor"/>
             <scatter-gather>
                 <route>
-                    <test:non-blocking-processor />
+                    <test-components:non-blocking/>
                     <test:assert expression="#[java!org::mule::runtime::core::api::transaction::TransactionCoordination::isTransactionActive()]"/>
                     <set-payload value="apple"/>
                     <flow-ref name="threadCaptor"/>
@@ -429,23 +431,19 @@
         </scatter-gather>
     </flow>
 
-    <http:request-config name="httpRequestConfig">
-        <http:request-connection host="localhost" port="${port}"/>
-    </http:request-config>
-
     <flow name="foreachWithinScatterGatherWithSdkOperation">
         <!-- This first operation call is needed so that the SdkInternalContext for the event is initialized -->
-        <http:request config-ref="httpRequestConfig" path="/test"/>
+        <test-components:non-blocking/>
         <set-payload value="#[['apple', 'banana', 'orange']]"/>
         <scatter-gather>
             <route>
                 <foreach>
-                    <http:request config-ref="httpRequestConfig" path="/test"/>
+                    <test-components:non-blocking/>
                 </foreach>
             </route>
             <route>
                 <foreach>
-                    <http:request config-ref="httpRequestConfig" path="/test"/>
+                    <test-components:non-blocking/>
                 </foreach>
             </route>
         </scatter-gather>

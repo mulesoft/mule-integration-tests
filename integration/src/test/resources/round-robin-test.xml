@@ -52,10 +52,10 @@
         <test:assert-intercepting responseSameTask="false" />
         <round-robin>
             <route>
-                <test:non-blocking-processor />
+                <test-components:non-blocking/>
             </route>
             <route>
-                <test:non-blocking-processor />
+                <test-components:non-blocking/>
             </route>
         </round-robin>
     </flow>

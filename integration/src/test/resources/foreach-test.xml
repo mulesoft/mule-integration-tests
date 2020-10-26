@@ -356,7 +356,7 @@
 
         <test:assert-intercepting responseSameTask="false"/>
         <foreach>
-            <test:non-blocking-processor />
+            <test-components:non-blocking/>
             <set-variable variableName="work" value="#[vars.work ++ payload]" />
         </foreach>
         <test:assert expression="#[vars.work == '0123456789']"/>

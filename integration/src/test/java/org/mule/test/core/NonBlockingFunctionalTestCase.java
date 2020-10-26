@@ -11,22 +11,18 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mule.tck.processor.FlowAssert.verify;
 
-import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runners.Parameterized;
-import org.mule.functional.junit4.rules.HttpServerRule;
 import org.mule.runtime.api.security.SecurityContext;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.security.AbstractAuthenticationFilter;
 import org.mule.runtime.core.api.transaction.Transaction;
 import org.mule.runtime.core.api.transaction.TransactionCoordination;
-import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.runner.RunnerDelegateTo;
 
 import java.util.Collection;
 
+import org.junit.Test;
+import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 @RunnerDelegateTo(Parameterized.class)
@@ -46,18 +42,6 @@ public class NonBlockingFunctionalTestCase extends AbstractIntegrationTestCase {
 
   private final String config;
   private final String processingStrategyFactory;
-
-  @Rule
-  public DynamicPort requesterPort = new DynamicPort("requesterPort");
-
-  @Rule
-  public HttpServerRule httpServerRule = new HttpServerRule("requesterPort");
-
-  @Rule
-  public DynamicPort requesterPort2 = new DynamicPort("requesterPort2");
-
-  @Rule
-  public HttpServerRule httpServerRules = new HttpServerRule("requesterPort2");
 
   public NonBlockingFunctionalTestCase(String type, String config, String processingStrategyFactory) {
     this.config = config;
@@ -198,7 +182,6 @@ public class NonBlockingFunctionalTestCase extends AbstractIntegrationTestCase {
     flowRunner("untilSuccessfulWithRetryTransactional").withPayload(TEST_MESSAGE).run();
   }
 
-  @Ignore("MULE-18827")
   @Test
   public void foreach() throws Exception {
     flowRunner("foreach").withPayload(asList(new String[] {"1", "2", "3"}, new String[] {"a", "b", "c"})).run();
