@@ -35,7 +35,6 @@ import java.util.Optional;
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
