@@ -28,6 +28,7 @@ import static org.mule.test.allure.AllureConstants.InterceptonApi.ComponentInter
 import static org.mule.test.heisenberg.extension.HeisenbergConnectionProvider.getActiveConnections;
 import static org.mule.test.heisenberg.extension.HeisenbergOperations.CALL_GUS_MESSAGE;
 
+import org.junit.Ignore;
 import org.mule.extension.http.api.request.validator.ResponseValidatorException;
 import org.mule.functional.api.exception.ExpectedError;
 import org.mule.functional.api.exception.FunctionalTestException;
@@ -232,7 +233,6 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
 
   @Description("Smart Connector simple operation without parameters")
   @Test
-  @Ignore("MULE-17570")
   public void scOperation() throws Exception {
     flowRunner("scOperation").run();
 
@@ -397,7 +397,6 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
 
   @Description("Smart Connector simple operation with parameters")
   @Test
-  @Ignore("MULE-17570")
   public void scEchoOperation() throws Exception {
     final String variableValue = "echo message for the win";
     flowRunner("scEchoOperation").withVariable("variable", variableValue).run();
@@ -420,7 +419,6 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
 
   @Description("Smart Connector simple operation with parameters through flow-ref")
   @Test
-  @Ignore("MULE-17570")
   public void scEchoOperationFlowRef() throws Exception {
     final String variableValue = "echo message for the win";
     flowRunner("scEchoOperationFlowRef").withVariable("variable", variableValue).run();
@@ -447,7 +445,6 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
 
   @Description("Smart Connector that uses a Smart Connector operation without parameters")
   @Test
-  @Ignore("MULE-17570")
   public void scUsingScOperation() throws Exception {
     flowRunner("scUsingScOperation").run();
 
