@@ -189,7 +189,7 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
 
   @Test
   @Description("Only a single thread is used to process all routes when a transaction is active.")
-  @Ignore("MULE-17575")
+  @Ignore("MULE-18940")
   public void withinTransaction() throws Exception {
     flowRunner("withinTransaction").withVariable("latch", new Latch()).run();
     assertThat(capturedThreads, hasSize(1));
