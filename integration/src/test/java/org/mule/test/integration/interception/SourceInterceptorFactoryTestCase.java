@@ -21,7 +21,6 @@ import static org.mule.test.allure.AllureConstants.InterceptonApi.ComponentInter
 import static org.mule.test.heisenberg.extension.HeisenbergConnectionProvider.getActiveConnections;
 import static org.mule.test.heisenberg.extension.HeisenbergSource.resetHeisenbergSource;
 
-import org.junit.Before;
 import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.api.event.EventContext;
 import org.mule.runtime.api.exception.MuleException;
@@ -46,14 +45,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
-
-import javax.inject.Inject;
-import javax.inject.Named;
 
 @Feature(INTERCEPTION_API)
 @Story(COMPONENT_INTERCEPTION_STORY)
@@ -117,7 +117,7 @@ public class SourceInterceptorFactoryTestCase extends AbstractIntegrationTestCas
     assertThat(interceptionParameters, hasSize(greaterThanOrEqualTo(1)));
     InterceptionParameters heisenbergSourceInterceptionParameter = interceptionParameters.get(0);
     assertThat(heisenbergSourceInterceptionParameter.toString(),
-               heisenbergSourceInterceptionParameter.getParameters().entrySet(), hasSize(10));
+               heisenbergSourceInterceptionParameter.getParameters().entrySet(), hasSize(11));
     assertThat(heisenbergSourceInterceptionParameter.toString(),
                heisenbergSourceInterceptionParameter.getParameters(), hasKey("fail"));
     assertThat(heisenbergSourceInterceptionParameter.toString(),
@@ -136,6 +136,7 @@ public class SourceInterceptorFactoryTestCase extends AbstractIntegrationTestCas
                heisenbergSourceInterceptionParameter.getParameters(), hasKey("onCapacityOverload"));
     assertThat(heisenbergSourceInterceptionParameter.getParameters(), hasKey("myName"));
     assertThat(heisenbergSourceInterceptionParameter.getParameters(), hasKey("age"));
+    assertThat(heisenbergSourceInterceptionParameter.getParameters(), hasKey("knownAddresses"));
   }
 
   @Test
@@ -152,7 +153,7 @@ public class SourceInterceptorFactoryTestCase extends AbstractIntegrationTestCas
     assertThat(interceptionParameters, hasSize(greaterThanOrEqualTo(1)));
     InterceptionParameters heisenbergSourceInterceptionParameter = interceptionParameters.get(interceptionParameters.size() - 1);
     assertThat(heisenbergSourceInterceptionParameter.toString(),
-               heisenbergSourceInterceptionParameter.getParameters().entrySet(), hasSize(10));
+               heisenbergSourceInterceptionParameter.getParameters().entrySet(), hasSize(11));
   }
 
   @Test
@@ -175,7 +176,7 @@ public class SourceInterceptorFactoryTestCase extends AbstractIntegrationTestCas
 
     assertThat(interceptionParameters, hasSize(greaterThanOrEqualTo(1)));
     InterceptionParameters heisenbergSourceInterceptionParameter = interceptionParameters.get(0);
-    assertThat(heisenbergSourceInterceptionParameter.getParameters().entrySet(), hasSize(10));
+    assertThat(heisenbergSourceInterceptionParameter.getParameters().entrySet(), hasSize(11));
     assertThat(heisenbergSourceInterceptionParameter.getParameters(), hasKey("fail"));
     assertThat(heisenbergSourceInterceptionParameter.getParameters(), hasKey("config-ref"));
     assertThat(heisenbergSourceInterceptionParameter.getParameters(), hasKey("initialBatchNumber"));
@@ -186,6 +187,7 @@ public class SourceInterceptorFactoryTestCase extends AbstractIntegrationTestCas
     assertThat(heisenbergSourceInterceptionParameter.getParameters(), hasKey("onCapacityOverload"));
     assertThat(heisenbergSourceInterceptionParameter.getParameters(), hasKey("myName"));
     assertThat(heisenbergSourceInterceptionParameter.getParameters(), hasKey("age"));
+    assertThat(heisenbergSourceInterceptionParameter.getParameters(), hasKey("knownAddresses"));
   }
 
   @Test
@@ -223,7 +225,7 @@ public class SourceInterceptorFactoryTestCase extends AbstractIntegrationTestCas
     assertThat(interceptionParameters, hasSize(greaterThanOrEqualTo(1)));
     InterceptionParameters heisenbergSourceInterceptionParameter = interceptionParameters.get(interceptionParameters.size() - 1);
     assertThat(heisenbergSourceInterceptionParameter.toString(),
-               heisenbergSourceInterceptionParameter.getParameters().entrySet(), hasSize(10));
+               heisenbergSourceInterceptionParameter.getParameters().entrySet(), hasSize(11));
   }
 
   @Test
