@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xmlns:test-components="http://www.mulesoft.org/schema/mule/test-components"
+      xsi:schemaLocation="
+               http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+               http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
+               http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
+
+    <object name="customFilter" class="org.mule.test.core.NonBlockingFunctionalTestCase$CustomSecurityFilter"/>
+
+    <error-handler name="globalEmptyHandler">
+        <on-error-continue type="TEST:SOME"/>
+    </error-handler>
+    <error-handler name="globalCatchExceptionStrategyChild">
+        <on-error-continue>
+            <test-components:assert-intercepting responseSameTask="false">
+                <test-components:non-blocking/>
+            </test-components:assert-intercepting>
+        </on-error-continue>
+    </error-handler>
+
+    <error-handler name="globalNonBlocking">
+        <on-error-propagate>
+            <test-components:non-blocking/>
+        </on-error-propagate>
+    </error-handler>
+
+    <error-handler name="globalAssert">
+        <on-error-continue>
+            <test-components:assert-intercepting responseSameTask="false">
+                <test-components:non-blocking/>
+            </test-components:assert-intercepting>
+        </on-error-continue>
+    </error-handler>
+
+    <flow name="catchExceptionStrategyChild">
+        <raise-error type="TEST:SOME"/>
+        <error-handler ref="globalCatchExceptionStrategyChild"/>
+    </flow>
+
+    <flow name="rollbackExceptionStrategyChild">
+        <flow-ref name="rollbackExceptionStrategyGrandChild"/>
+        <raise-error type="TEST:FAIL"/>
+        <error-handler ref="globalEmptyHandler"/>
+    </flow>
+
+    <flow name="rollbackExceptionStrategyGrandChild">
+        <raise-error type="TEST:SOME"/>
+        <error-handler ref="globalNonBlocking"/>
+    </flow>
+
+    <flow name="nonTransactionalTryErrorHandler" initialState="stopped">
+        <try>
+            <raise-error type="TEST:SOME"/>
+            <error-handler ref="globalAssert"/>
+        </try>
+    </flow>
+
+    <error-handler name="globalAssertResponse">
+        <on-error-continue>
+            <test-components:assert-intercepting>
+                <test-components:non-blocking/>
+            </test-components:assert-intercepting>
+            <test:assert expression="#[payload == 'Test Message']"/>
+        </on-error-continue>
+    </error-handler>
+
+    <flow name="transactionalTryErrorHandler" initialState="stopped">
+        <try transactionalAction="ALWAYS_BEGIN">
+            <raise-error type="TEST:SOME"/>
+            <error-handler ref="globalAssertResponse"/>
+        </try>
+    </flow>
+
+</mule>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xmlns:test-components="http://www.mulesoft.org/schema/mule/test-components"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xsi:schemaLocation="
+               http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+               http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+               http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
+               http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
+
+    <object name="customFilter" class="org.mule.test.core.NonBlockingFunctionalTestCase$CustomSecurityFilter"/>
+
+    <flow name="catchExceptionStrategyChild">
+        <raise-error type="TEST:SOME"/>
+        <error-handler>
+            <on-error-continue>
+                <test-components:assert-intercepting responseSameTask="false">
+                    <test-components:non-blocking/>
+                </test-components:assert-intercepting>
+                <test:assert expression="#[payload == 'Test Message']"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="rollbackExceptionStrategyChild">
+        <flow-ref name="rollbackExceptionStrategyGrandChild"/>
+        <raise-error type="TEST:FAIL"/>
+        <error-handler>
+            <on-error-continue type="TEST:SOME"/>
+        </error-handler>
+    </flow>
+    <flow name="rollbackExceptionStrategyGrandChild">
+        <raise-error type="TEST:SOME"/>
+        <error-handler>
+            <on-error-propagate>
+                <test-components:non-blocking/>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+
+    <flow name="nonTransactionalTryErrorHandler" initialState="stopped">
+        <try>
+            <raise-error type="TEST:SOME"/>
+            <error-handler>
+                <on-error-continue>
+                    <test-components:assert-intercepting responseSameTask="false">
+                        <test-components:non-blocking/>
+                    </test-components:assert-intercepting>
+                    <test:assert expression="#[payload == 'Test Message']"/>
+                </on-error-continue>
+            </error-handler>
+        </try>
+    </flow>
+
+    <flow name="transactionalTryErrorHandler" initialState="stopped">
+        <try transactionalAction="ALWAYS_BEGIN">
+            <raise-error type="TEST:SOME"/>
+            <error-handler>
+                <on-error-continue>
+                    <test-components:assert-intercepting responseSameTask="true">
+                        <test-components:non-blocking/>
+                    </test-components:assert-intercepting>
+                    <test:assert expression="#[payload == 'Test Message']"/>
+                </on-error-continue>
+            </error-handler>
+        </try>
+    </flow>
+
+</mule>
