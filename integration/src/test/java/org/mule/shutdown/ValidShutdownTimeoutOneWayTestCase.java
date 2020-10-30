@@ -74,9 +74,6 @@ public class ValidShutdownTimeoutOneWayTestCase extends AbstractShutdownTimeoutR
     final Future<?> requestTask = executor.submit(() -> {
       try {
         flowRunner(flowName).withPayload(payload).dispatch();
-
-        Message response = queueManager.read("response", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
-        assertThat("Was not able to process message ", getPayloadAsString(response), is(payload));
       } catch (Exception e) {
         throw new MuleRuntimeException(e);
       }
@@ -85,6 +82,9 @@ public class ValidShutdownTimeoutOneWayTestCase extends AbstractShutdownTimeoutR
     // Make sure to give the request enough time to get to the waiting portion of the feed.
     waitLatch.await();
     contextStopLatch.release();
+
+    Message response = queueManager.read("response", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
+    assertThat("Was not able to process message", getPayloadAsString(response), is(payload));
 
     muleContext.stop();
 
