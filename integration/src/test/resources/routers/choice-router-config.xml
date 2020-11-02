@@ -12,37 +12,37 @@
     <flow name="flow">
         <choice>
             <when expression="#[payload == 'A']">
-                <test:invocation-counter name="whenRouteCounter"/>
+                <raise-error type="TEST:UNEXPECTED_ROUTE" description="Unexpected route execution"/>
             </when>
         </choice>
-        <test:invocation-counter name="afterRouteMpCounter"/>
+        <set-payload value="#[payload ++ 'afterRouteMpCounter']"/>
     </flow>
 
     <flow name="otherwise">
         <choice>
             <when expression="#[payload == 'A']">
-                <test:invocation-counter name="routeCounter"/>
+                <raise-error type="TEST:UNEXPECTED_ROUTE" description="Unexpected route execution"/>
             </when>
             <otherwise>
-                <test:invocation-counter name="otherwiseCounter"/>
+                <set-payload value="#[payload ++ 'otherwiseCounter']"/>
             </otherwise>
         </choice>
-        <test:invocation-counter name="afterCounter"/>
+        <set-payload value="#[payload ++ 'afterCounter']"/>
     </flow>
 
     <flow name="multiple">
         <choice>
             <when expression="#[payload == 'test']">
-                <test:invocation-counter name="first"/>
+                <set-payload value="#[payload ++ 'first']"/>
             </when>
             <when expression="#[payload == 'test']">
-                <test:invocation-counter name="second"/>
+                <raise-error type="TEST:UNEXPECTED_ROUTE" description="Unexpected route execution"/>
             </when>
             <otherwise>
-                <test:invocation-counter name="default"/>
+                <raise-error type="TEST:UNEXPECTED_ROUTE" description="Unexpected route execution"/>
             </otherwise>
         </choice>
-        <test:invocation-counter name="after"/>
+        <set-payload value="#[payload ++ 'after']"/>
     </flow>
 
     <flow name="error-handler">

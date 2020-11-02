@@ -18,7 +18,6 @@ import static org.mule.runtime.api.metadata.MediaType.APPLICATION_JSON;
 import static org.mule.runtime.api.metadata.MediaType.JSON;
 
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.api.metadata.TypedValue;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -111,7 +110,7 @@ public class ParseTemplateTestCase extends AbstractIntegrationTestCase {
   public void withTargetDefaultTargetValueDefinedInline() throws Exception {
     String startingPayload = "Starting payload";
     CoreEvent event = flowRunner("with-target").withPayload(startingPayload).withVariable("flowName", "dw-expression").run();
-    String msg = (String) ((Message) event.getVariables().get("targetVar").getValue()).getPayload().getValue();
+    String msg = (String) event.getVariables().get("targetVar").getValue();
     String previousdPayload = (String) event.getMessage().getPayload().getValue();
     assertEquals(PARSED_DW_EXPRESSION, msg);
     assertEquals(previousdPayload, startingPayload);

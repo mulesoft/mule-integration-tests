@@ -2,11 +2,17 @@
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xmlns:test-components="http://www.mulesoft.org/schema/mule/test-components"
       xmlns:script="http://www.mulesoft.org/schema/mule/scripting"
       xsi:schemaLocation="
             http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
             http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
+            http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd
             http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
+
+    <test-components:queue-config name="invocationQueue">
+        <test-components:connection />
+    </test-components:queue-config>
 
     <!--Triggers-->
     <flow name="trigger-sync" >
@@ -40,7 +46,7 @@
                     </on-error-continue>
                 </error-handler>
             </try>
-            <test:invocation-counter name="invocation-counter" />
+            <test-components:queue-push config-ref="invocationQueue"/>
             <script:execute engine="groovy">
                 <script:code>
                     vars['latch'].release()
@@ -70,7 +76,7 @@
                 </on-error-continue>
             </error-handler>
         </try>
-        <test:invocation-counter name="invocation-counter" />
+        <test-components:queue-push config-ref="invocationQueue"/>
         <script:execute engine="groovy">
             <script:code>
                 vars['latch'].release()

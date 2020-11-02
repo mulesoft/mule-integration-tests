@@ -16,7 +16,6 @@ import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 import static org.mule.test.allure.AllureConstants.ScopeFeature.ChoiceStory.CHOICE;
 import static org.mule.test.routing.ThreadCaptor.getCapturedThreads;
 
-import org.mule.functional.api.component.InvocationCountMessageProcessor;
 import org.mule.functional.api.flow.FlowRunner;
 import org.mule.runtime.api.message.Message;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -42,31 +41,19 @@ public class ChoiceRouterTestCase extends AbstractIntegrationTestCase {
   @Test
   public void noDefaultAndNoMatchingRoute() throws Exception {
     Message result = flowRunner("flow").withPayload(TEST_PAYLOAD).run().getMessage();
-    assertThat(result.getPayload().getValue(), is(TEST_PAYLOAD));
-
-    assertThat(InvocationCountMessageProcessor.getNumberOfInvocationsFor("whenRouteCounter"), is(0));
-    assertThat(InvocationCountMessageProcessor.getNumberOfInvocationsFor("afterRouteMpCounter"), is(1));
+    assertThat(result.getPayload().getValue(), is(TEST_PAYLOAD + "afterRouteMpCounter"));
   }
 
   @Test
   public void defaultAndNoMatchingRoute() throws Exception {
     Message result = flowRunner("otherwise").withPayload(TEST_PAYLOAD).run().getMessage();
-    assertThat(result.getPayload().getValue(), is(TEST_PAYLOAD));
-
-    assertThat(InvocationCountMessageProcessor.getNumberOfInvocationsFor("routeCounter"), is(0));
-    assertThat(InvocationCountMessageProcessor.getNumberOfInvocationsFor("otherwiseCounter"), is(1));
-    assertThat(InvocationCountMessageProcessor.getNumberOfInvocationsFor("afterCounter"), is(1));
+    assertThat(result.getPayload().getValue(), is(TEST_PAYLOAD + "otherwiseCounter" + "afterCounter"));
   }
 
   @Test
   public void multipleMatchingRoutes() throws Exception {
     Message result = flowRunner("multiple").withPayload(TEST_PAYLOAD).run().getMessage();
-    assertThat(result.getPayload().getValue(), is(TEST_PAYLOAD));
-
-    assertThat(InvocationCountMessageProcessor.getNumberOfInvocationsFor("first"), is(1));
-    assertThat(InvocationCountMessageProcessor.getNumberOfInvocationsFor("second"), is(0));
-    assertThat(InvocationCountMessageProcessor.getNumberOfInvocationsFor("default"), is(0));
-    assertThat(InvocationCountMessageProcessor.getNumberOfInvocationsFor("after"), is(1));
+    assertThat(result.getPayload().getValue(), is(TEST_PAYLOAD + "first" + "after"));
   }
 
   @Test

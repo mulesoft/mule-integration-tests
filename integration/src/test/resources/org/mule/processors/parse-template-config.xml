@@ -62,7 +62,7 @@
     </flow>
 
     <flow name="with-target-value-no-target" initialState="stopped">
-        <parse-template targetValue="#[payload]">
+        <parse-template targetValue="#[payload ++ '!']">
             <content>#['This template has a DW expression to parse from ' ++ vars.flowName ++ ' flow. Remember, the name of the flow is $(vars.flowName)']</content>
         </parse-template>
     </flow>
