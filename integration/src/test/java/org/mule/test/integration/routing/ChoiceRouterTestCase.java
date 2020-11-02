@@ -115,35 +115,35 @@ public class ChoiceRouterTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  @Ignore("MULE-18844")
+  @Ignore("MULE-18940")
   public void txWithNonBlockingRoute() throws Exception {
     Message result = flowRunner("txNonBlocking").withPayload("nonBlocking").run().getMessage();
     assertThat(capturedThreads, hasSize(1));
   }
 
   @Test
-  @Ignore("MULE-18844")
+  @Ignore("MULE-18940")
   public void txWithCpuIntensiveRoute() throws Exception {
     Message result = flowRunner("txCpuIntensive").withPayload("cpuIntensive").run().getMessage();
     assertThat(capturedThreads, hasSize(1));
   }
 
   @Test
-  @Ignore("MULE-18844")
+  @Ignore("MULE-18940")
   public void txWithBlockingRoute() throws Exception {
     Message result = flowRunner("txBlocking").withPayload("blocking").run().getMessage();
     assertThat(capturedThreads, hasSize(1));
   }
 
   @Test
-  @Ignore("MULE-18844")
+  @Ignore("MULE-18940")
   public void txWithOtherwise() throws Exception {
     Message result = flowRunner("txOtherwise").withPayload("ooo").run().getMessage();
     assertThat(capturedThreads, hasSize(1));
   }
 
   @Test
-  @Ignore("MULE-18844")
+  @Ignore("MULE-18940")
   public void txWithNoOtherwise() throws Exception {
     Message result = flowRunner("txNoOtherwise").withPayload("ooo").run().getMessage();
     assertThat(capturedThreads, hasSize(1));
