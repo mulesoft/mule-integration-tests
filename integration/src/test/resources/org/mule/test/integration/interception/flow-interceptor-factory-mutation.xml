@@ -7,32 +7,55 @@
 
     <flow name="mutated">
         <flow-ref name="#[vars.targetFlow]"/>
-        
         <choice>
             <when expression="#[vars.targetFlow == 'mutatedAfter' || vars.targetFlow == 'mutatedBeforeAfter']">
-                <test:assert expression="#[vars.mutatedAfter != null]"/>
+                <choice>
+                    <when expression="#[vars.mutatedAfter == null]">
+                        <raise-error type="TEST:ASSERTION"/>
+                    </when>
+                </choice>
             </when>
             <otherwise>
-                <test:assert expression="#[vars.mutatedAfter == null]"/>
+                <choice>
+                    <when expression="#[vars.mutatedAfter != null]">
+                        <raise-error type="TEST:ASSERTION"/>
+                    </when>
+                </choice>
             </otherwise>
         </choice>
         
     </flow>
 
     <flow name="mutatedNone">
-        <test:assert expression="#[vars.mutatedBefore == null]"/>
+        <choice>
+            <when expression="#[vars.mutatedBefore != null]">
+                <raise-error type="TEST:ASSERTION"/>
+            </when>
+        </choice>
     </flow>
 
     <flow name="mutatedBefore">
-        <test:assert expression="#[vars.mutatedBefore != null]"/>
+        <choice>
+            <when expression="#[vars.mutatedBefore == null]">
+                <raise-error type="TEST:ASSERTION"/>
+            </when>
+        </choice>
     </flow>
 
     <flow name="mutatedAfter">
-        <test:assert expression="#[vars.mutatedBefore == null]"/>
+        <choice>
+            <when expression="#[vars.mutatedBefore != null]">
+                <raise-error type="TEST:ASSERTION"/>
+            </when>
+        </choice>
     </flow>
 
     <flow name="mutatedBeforeAfter">
-        <test:assert expression="#[vars.mutatedBefore != null]"/>
+        <choice>
+            <when expression="#[vars.mutatedBefore == null]">
+                <raise-error type="TEST:ASSERTION"/>
+            </when>
+        </choice>
     </flow>
 
 </mule>

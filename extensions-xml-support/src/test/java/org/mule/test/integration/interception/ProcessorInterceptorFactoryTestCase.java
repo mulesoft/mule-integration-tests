@@ -112,7 +112,7 @@ public class ProcessorInterceptorFactoryTestCase extends MuleArtifactFunctionalT
     InterceptionParameters moduleOperationChain = interceptionParameters.get(0);
     InterceptionParameters setPayloadOperation = interceptionParameters.get(1);
 
-    assertThat(moduleOperationChain.getParameters().keySet(), containsInAnyOrder("doc:name", "targetValue"));
+    assertThat(moduleOperationChain.getParameters().keySet(), containsInAnyOrder("doc:name", "targetValue", "errorMappings"));
     assertThat(moduleOperationChain.getParameters().get("doc:name").resolveValue(), is("mySCName"));
 
     assertThat(setPayloadOperation.getParameters().keySet(), containsInAnyOrder("value", "mimeType", "encoding"));
@@ -341,7 +341,7 @@ public class ProcessorInterceptorFactoryTestCase extends MuleArtifactFunctionalT
     InterceptionParameters moduleOperationChain = interceptionParameters.get(0);
     InterceptionParameters setPayloadOperation = interceptionParameters.get(1);
 
-    assertThat(moduleOperationChain.getParameters().keySet(), containsInAnyOrder("echoMessage", "targetValue"));
+    assertThat(moduleOperationChain.getParameters().keySet(), containsInAnyOrder("echoMessage", "targetValue", "errorMappings"));
     assertThat(moduleOperationChain.getParameters().get("echoMessage").resolveValue(), is("echo message for the win"));
 
     assertThat(setPayloadOperation.getParameters().keySet(), containsInAnyOrder("value", "mimeType", "encoding"));
@@ -367,7 +367,7 @@ public class ProcessorInterceptorFactoryTestCase extends MuleArtifactFunctionalT
     assertThat(flowRef.getParameters().keySet(), containsInAnyOrder("name", "targetValue"));
     assertThat(flowRef.getParameters().get("name").resolveValue(), is("scEchoOperation"));
 
-    assertThat(moduleOperationChain.getParameters().keySet(), containsInAnyOrder("echoMessage", "targetValue"));
+    assertThat(moduleOperationChain.getParameters().keySet(), containsInAnyOrder("echoMessage", "targetValue", "errorMappings"));
     assertThat(moduleOperationChain.getParameters().get("echoMessage").resolveValue(), is("echo message for the win"));
 
     assertThat(setPayloadOperation.getParameters().keySet(), containsInAnyOrder("value", "mimeType", "encoding"));
@@ -389,8 +389,8 @@ public class ProcessorInterceptorFactoryTestCase extends MuleArtifactFunctionalT
     InterceptionParameters innerModuleOperationChain = interceptionParameters.get(1);
     InterceptionParameters setPayloadOperation = interceptionParameters.get(2);
 
-    assertThat(proxyModuleOperationChain.getParameters().keySet(), containsInAnyOrder("targetValue"));
-    assertThat(innerModuleOperationChain.getParameters().keySet(), containsInAnyOrder("targetValue"));
+    assertThat(proxyModuleOperationChain.getParameters().keySet(), containsInAnyOrder("targetValue", "errorMappings"));
+    assertThat(innerModuleOperationChain.getParameters().keySet(), containsInAnyOrder("targetValue", "errorMappings"));
 
     assertThat(setPayloadOperation.getParameters().keySet(), containsInAnyOrder("value", "mimeType", "encoding"));
     assertThat(setPayloadOperation.getParameters().get("value").resolveValue(), is("Wubba Lubba Dub Dub"));

@@ -60,7 +60,6 @@ import io.qameta.allure.Story;
 @RunnerDelegateTo(Parameterized.class)
 public class ProcessorInterceptorFactoryCustomActionTestCase extends AbstractIntegrationTestCase {
 
-
   @Rule
   public ExpectedError expectedError = none();
 
@@ -120,7 +119,8 @@ public class ProcessorInterceptorFactoryCustomActionTestCase extends AbstractInt
 
     InterceptionParameters killInterceptionParameter = interceptionParameters.get(0);
 
-    assertThat(killInterceptionParameter.getParameters().keySet(), containsInAnyOrder("targetValue", "config-ref", "connection"));
+    assertThat(killInterceptionParameter.getParameters().keySet(),
+               containsInAnyOrder("targetValue", "errorMappings", "config-ref", "connection"));
     assertThat(killInterceptionParameter.getParameters().get("config-ref").resolveValue(), is("heisenberg"));
     assertThat(killInterceptionParameter.getParameters().get("connection").resolveValue(),
                is(instanceOf(HeisenbergConnection.class)));
@@ -150,7 +150,7 @@ public class ProcessorInterceptorFactoryCustomActionTestCase extends AbstractInt
       InterceptionParameters killInterceptionParameter = interceptionParameters.get(0);
 
       assertThat(killInterceptionParameter.getParameters().keySet(),
-                 containsInAnyOrder("targetValue", "config-ref", "connection"));
+                 containsInAnyOrder("targetValue", "errorMappings", "config-ref", "connection"));
       assertThat(killInterceptionParameter.getParameters().get("config-ref").resolveValue(), is("heisenberg"));
       assertThat(killInterceptionParameter.getParameters().get("connection").resolveValue(),
                  is(instanceOf(HeisenbergConnection.class)));
@@ -176,7 +176,8 @@ public class ProcessorInterceptorFactoryCustomActionTestCase extends AbstractInt
 
     InterceptionParameters killInterceptionParameter = interceptionParameters.get(0);
 
-    assertThat(killInterceptionParameter.getParameters().keySet(), containsInAnyOrder("targetValue", "config-ref", "connection"));
+    assertThat(killInterceptionParameter.getParameters().keySet(),
+               containsInAnyOrder("targetValue", "errorMappings", "config-ref", "connection"));
     assertThat(killInterceptionParameter.getParameters().get("config-ref").resolveValue(), is("heisenberg"));
     assertThat(killInterceptionParameter.getParameters().get("connection").resolveValue(),
                is(instanceOf(HeisenbergConnection.class)));
