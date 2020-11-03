@@ -19,7 +19,7 @@ import org.junit.Test;
 public class ValidShutdownTimeoutOneWayTestCase extends AbstractShutdownTimeoutRequestResponseTestCase {
 
   @Rule
-  public SystemProperty contextShutdownTimeout = new SystemProperty("contextShutdownTimeout", "5000");
+  public SystemProperty contextShutdownTimeout = new SystemProperty("contextShutdownTimeout", "" + RECEIVE_TIMEOUT);
 
   @Override
   protected String getConfigFile() {
@@ -51,19 +51,25 @@ public class ValidShutdownTimeoutOneWayTestCase extends AbstractShutdownTimeoutR
     final boolean[] results = new boolean[] {false};
 
     Thread t = new Thread(() -> {
+
       try {
         flowRunner(flowName).withPayload(payload).dispatch();
-
-        Message response = queueHandler.read("response", RECEIVE_TIMEOUT).getMessage();
-        results[0] = payload.equals(getPayloadAsString(response));
-      } catch (Exception e) {
-        // Ignore
+      } catch (Exception exception) {
+        //Ignore
       }
+
     });
     t.start();
 
     // Make sure to give the request enough time to get to the waiting portion of the feed.
     waitLatch.await();
+
+    try {
+      Message response = queueHandler.read("response", RECEIVE_TIMEOUT).getMessage();
+      results[0] = payload.equals(getPayloadAsString(response));
+    } catch (Exception e) {
+      // Ignore
+    }
 
     muleContext.stop();
 
