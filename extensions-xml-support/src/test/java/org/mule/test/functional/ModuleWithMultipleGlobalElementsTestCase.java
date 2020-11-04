@@ -151,4 +151,9 @@ public class ModuleWithMultipleGlobalElementsTestCase extends AbstractCeXmlExten
       return event;
     });
   }
+
+  @Override
+  public boolean mustRegenerateExtensionModels() {
+    return true;
+  }
 }
