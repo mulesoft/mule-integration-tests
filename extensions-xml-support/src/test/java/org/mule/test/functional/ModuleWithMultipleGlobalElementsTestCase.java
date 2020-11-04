@@ -153,7 +153,9 @@ public class ModuleWithMultipleGlobalElementsTestCase extends AbstractCeXmlExten
   }
 
   @Override
-  public boolean mustRegenerateExtensionModels() {
+  public boolean mustRegenerateComponentBuildingDefinitionRegistryFactory() {
+    // returns true because not same extensions are loaded by all tests. 
+    // returning false will fails while creating application context on some tests. 
     return true;
   }
 }
