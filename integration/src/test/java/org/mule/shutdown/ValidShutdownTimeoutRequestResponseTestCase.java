@@ -35,7 +35,6 @@ import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjecti
 
 @Feature(LIFECYCLE_AND_DEPENDENCY_INJECTION)
 @Story(GRACEFUL_SHUTDOWN_STORY)
-@RunnerDelegateTo(FlakinessDetectorTestRunner.class)
 public class ValidShutdownTimeoutRequestResponseTestCase extends AbstractShutdownTimeoutRequestResponseTestCase {
 
   @Rule
