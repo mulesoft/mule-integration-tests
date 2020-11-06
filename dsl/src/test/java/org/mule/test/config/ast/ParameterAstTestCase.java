@@ -246,7 +246,7 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
     assertThat(httpConnectionConfig.getParameter("host").isDefaultValue(), is(false));
     assertThat(httpConnectionConfig.getParameter("host").getValue().getRight(), is("localhost"));
     assertThat(httpConnectionConfig.getParameter("usePersistentConnections").isDefaultValue(), is(true));
-    assertThat(httpConnectionConfig.getParameter("usePersistentConnections").getValue().getRight(), is("true"));
+    assertThat(httpConnectionConfig.getParameter("usePersistentConnections").getValue().getRight(), is(true));
 
     // Aggregator default parameters
     ComponentAst timeBasedAggregatorFlow =
