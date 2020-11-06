@@ -82,7 +82,7 @@ public class ValidShutdownTimeoutRequestResponseTestCase extends AbstractShutdow
   private void doShutDownTest(final String payload, final String url) throws Throwable {
     final Future<?> requestTask = executor.submit(() -> {
       try {
-        new PollingProber().check(new JUnitLambdaProbe(() ->{
+        new PollingProber().check(new JUnitLambdaProbe(() -> {
           HttpRequest request =
               HttpRequest.builder().uri(url).method(GET).entity(new ByteArrayHttpEntity(payload.getBytes())).build();
           final HttpResponse response =
