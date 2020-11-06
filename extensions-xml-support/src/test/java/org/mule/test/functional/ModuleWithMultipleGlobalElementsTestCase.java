@@ -151,4 +151,10 @@ public class ModuleWithMultipleGlobalElementsTestCase extends AbstractCeXmlExten
       return event;
     });
   }
+
+  @Override
+  public boolean mustRegenerateComponentBuildingDefinitionRegistryFactory() {
+    // returns true because not same extensions are loaded by all tests.
+    return true;
+  }
 }

@@ -103,4 +103,10 @@ public class ModuleWithGlobalElementTestCase extends AbstractModuleWithHttpTestC
   public void testHttpDoLoginGonnet() throws Exception {
     assertFlowForUsername("testHttpDoLoginGonnet", "userGonnet");
   }
+
+  @Override
+  public boolean mustRegenerateComponentBuildingDefinitionRegistryFactory() {
+    // returns true because not same extensions are loaded by all tests.
+    return true;
+  }
 }
