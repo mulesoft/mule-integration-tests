@@ -118,6 +118,19 @@ public class MetadataTypesTestCase extends DeclarationSessionTestCase {
   }
 
   @Test
+  public void expressionNotSupportedMetadataKey() {
+    OperationElementDeclaration operationElementDeclaration =
+        multiLevelOPDeclarationPartialTypeKeys(CONFIG_NAME, "America", "#['USA']");
+    MetadataResult<ComponentMetadataTypesDescriptor> containerTypeMetadataResult =
+        session.resolveComponentMetadata(operationElementDeclaration);
+    assertThat(containerTypeMetadataResult.isSuccess(), is(false));
+    assertThat(containerTypeMetadataResult.getFailures(), hasSize(1));
+    assertThat(containerTypeMetadataResult.getFailures().get(0).getFailureCode(), is(INVALID_METADATA_KEY));
+    assertThat(containerTypeMetadataResult.getFailures().get(0).getMessage(),
+               containsString("Error resolving value for parameter: 'country' from declaration, it cannot be an EXPRESSION value"));
+  }
+
+  @Test
   public void operationDynamicTypesSingleLevelKey() {
     OperationElementDeclaration operationElementDeclaration = configLessOPDeclaration(CONFIG_NAME, "item");
     MetadataResult<ComponentMetadataTypesDescriptor> metadataTypes =
