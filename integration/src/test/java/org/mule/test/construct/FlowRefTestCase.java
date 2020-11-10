@@ -340,20 +340,6 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
     flowRunner("stoppedTargetFlow1").runExpectingException(ErrorTypeMatcher.errorType("MULE", "UNKNOWN"));
   }
 
-  private void testRecursiveFlowrefsAreDetectedFor(String callingFlowName, String offendingFlowName) {
-    try {
-      // This will attempt to start the flow. That's the moment the subscription is triggered from downstream, and that's where
-      // the inter-flow-ref cycle is checked.
-      flowRunner(callingFlowName);
-      fail("Expected and error regarding a flowref cycle from " + callingFlowName + ", and with the offending flow being "
-          + offendingFlowName);
-    } catch (Exception e) {
-      Throwable rootCause = getRootCause(e);
-      assertThat(rootCause.getMessage(),
-                 endsWith(format("Found a possible infinite recursion involving flow named %s", offendingFlowName)));
-    }
-  }
-
   @Test
   @Issue("MULE-18178")
   @Description("The maxConcurrency of a target flow called via flow-ref is enforced")
