@@ -69,7 +69,7 @@ public class ValidShutdownTimeoutRequestResponseTestCase extends AbstractShutdow
           HttpRequest request =
               HttpRequest.builder().uri(url).method(GET).entity(new ByteArrayHttpEntity(payload.getBytes())).build();
           final HttpResponse response =
-              httpClient.send(request, 5000, false, null);
+              httpClient.send(request, HttpRequestOptions.builder().responseTimeout(RECEIVE_TIMEOUT * 5).build());
           assertThat(IOUtils.toString(response.getEntity().getContent()), is(payload));
           return true;
         }, "Was not able to process message "));
