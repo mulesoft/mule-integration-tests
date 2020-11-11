@@ -32,7 +32,21 @@ import static org.mule.runtime.core.api.exception.Errors.Identifiers.ROUTING_ERR
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.SERVICE_UNAVAILABLE;
 import static org.mule.runtime.http.api.HttpConstants.Method.GET;
 import static org.mule.tck.probe.PollingProber.probe;
+import static org.mule.test.allure.AllureConstants.ComponentsFeature.CORE_COMPONENTS;
+import static org.mule.test.allure.AllureConstants.ComponentsFeature.FlowReferenceStory.FLOW_REFERENCE;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Rule;
+import org.junit.Test;
 import org.mule.functional.api.component.EventCallback;
 import org.mule.functional.api.exception.ExpectedError;
 import org.mule.runtime.api.message.Message;
@@ -50,22 +64,13 @@ import org.mule.tck.junit4.matcher.ErrorTypeMatcher;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.Test;
-
 import io.qameta.allure.Description;
+import io.qameta.allure.Feature;
 import io.qameta.allure.Issue;
+import io.qameta.allure.Story;
 
+@Feature(CORE_COMPONENTS)
+@Story(FLOW_REFERENCE)
 public class FlowRefTestCase extends AbstractIntegrationTestCase {
 
   private static final String CONTEXT_DEPTH_MESSAGE = "Too many child contexts nested.";
@@ -231,17 +236,17 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void recursiveSubFlow() throws Exception {
-    testRecursiveFlowrefsAreDetectedFor("recursiveSubFlowCaller", "recursiveSubFlow");
+    flowRunner("recursiveSubFlowCaller").runExpectingException(hasMessage(containsString(CONTEXT_DEPTH_MESSAGE)));
   }
 
   @Test
-  public void crossedRecursiveSubFlow() {
-    testRecursiveFlowrefsAreDetectedFor("crossedRecursiveSubflow", "recurse1");
+  public void crossedRecursiveSubFlow() throws Exception {
+    flowRunner("crossedRecursiveSubflow").runExpectingException(hasMessage(containsString(CONTEXT_DEPTH_MESSAGE)));
   }
 
   @Test
   public void tripleCrossedRecursiveSubFlow() throws Exception {
-    testRecursiveFlowrefsAreDetectedFor("tripleCrossedRecursiveSubflow", "tripleRecurse1");
+    flowRunner("tripleCrossedRecursiveSubflow").runExpectingException(hasMessage(containsString(CONTEXT_DEPTH_MESSAGE)));
   }
 
   @Test
@@ -333,20 +338,6 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
   @Test
   public void flowWithStoppedTargetFlowFailsToProcess() throws Exception {
     flowRunner("stoppedTargetFlow1").runExpectingException(ErrorTypeMatcher.errorType("MULE", "UNKNOWN"));
-  }
-
-  private void testRecursiveFlowrefsAreDetectedFor(String callingFlowName, String offendingFlowName) {
-    try {
-      // This will attempt to start the flow. That's the moment the subscription is triggered from downstream, and that's where
-      // the inter-flow-ref cycle is checked.
-      flowRunner(callingFlowName);
-      fail("Expected and error regarding a flowref cycle from " + callingFlowName + ", and with the offending flow being "
-          + offendingFlowName);
-    } catch (Exception e) {
-      Throwable rootCause = getRootCause(e);
-      assertThat(rootCause.getMessage(),
-                 endsWith(format("Found a possible infinite recursion involving flow named %s", offendingFlowName)));
-    }
   }
 
   @Test
