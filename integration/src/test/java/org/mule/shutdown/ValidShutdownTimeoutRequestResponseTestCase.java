@@ -24,6 +24,8 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 
+import org.mule.tck.probe.JUnitLambdaProbe;
+import org.mule.tck.probe.PollingProber;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -63,11 +65,15 @@ public class ValidShutdownTimeoutRequestResponseTestCase extends AbstractShutdow
   private void doShutDownTest(final String payload, final String url) throws Throwable {
     final Future<?> requestTask = executor.submit(() -> {
       try {
-        HttpRequest request =
-            HttpRequest.builder().uri(url).method(GET).entity(new ByteArrayHttpEntity(payload.getBytes())).build();
-        final HttpResponse response =
-            httpClient.send(request, HttpRequestOptions.builder().responseTimeout(RECEIVE_TIMEOUT * 5).build());
-        assertThat("Was not able to process message ", IOUtils.toString(response.getEntity().getContent()), is(payload));
+        new PollingProber().check(new JUnitLambdaProbe(() -> {
+          HttpRequest request =
+              HttpRequest.builder().uri(url).method(GET).entity(new ByteArrayHttpEntity(payload.getBytes())).build();
+          final HttpResponse response =
+              httpClient.send(request, HttpRequestOptions.builder().responseTimeout(RECEIVE_TIMEOUT * 5).build());
+          assertThat(IOUtils.toString(response.getEntity().getContent()), is(payload));
+          return true;
+        }, "Was not able to process message "));
+
       } catch (Exception e) {
         throw new MuleRuntimeException(e);
       }
