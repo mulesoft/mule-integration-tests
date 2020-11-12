@@ -8,9 +8,8 @@ package org.mule.test.firewall;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
-import static org.springframework.util.SocketUtils.findAvailableTcpPort;
-import static org.springframework.util.SocketUtils.findAvailableUdpPort;
 
+import org.junit.Rule;
 import org.mule.runtime.core.internal.config.factory.HostNameFactory;
 import org.mule.runtime.core.api.util.NetworkUtils;
 import org.mule.tck.junit4.AbstractMuleTestCase;
@@ -25,6 +24,7 @@ import java.net.UnknownHostException;
 import java.security.SecureRandom;
 
 import org.junit.Test;
+import org.mule.tck.junit4.rule.DynamicPort;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +37,9 @@ public class FirewallTestCase extends AbstractMuleTestCase {
   protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
   private SecureRandom random = new SecureRandom();
+
+  @Rule
+  public DynamicPort port = new DynamicPort("port1");
 
   @Test
   public void testLoopback() throws Exception {
@@ -86,28 +89,28 @@ public class FirewallTestCase extends AbstractMuleTestCase {
   @Test
   public void testLocalhostTcp() throws Exception {
     for (int i = 0; i < TEST_COUNT; ++i) {
-      doTestTcp(InetAddress.getByName(LOCALHOST), randomPrivateTCPPort());
+      doTestTcp(InetAddress.getByName(LOCALHOST), port.getNumber());
     }
   }
 
   @Test
   public void testHostnameTcp() throws Exception {
     for (int i = 0; i < TEST_COUNT; ++i) {
-      doTestTcp(NetworkUtils.getLocalHost(), randomPrivateTCPPort());
+      doTestTcp(NetworkUtils.getLocalHost(), port.getNumber());
     }
   }
 
   @Test
   public void testLocalhostUdp() throws Exception {
     for (int i = 0; i < TEST_COUNT; ++i) {
-      doTestUdp(InetAddress.getByName(LOCALHOST), randomPrivateUDPPort());
+      doTestUdp(InetAddress.getByName(LOCALHOST), port.getNumber());
     }
   }
 
   @Test
   public void testHostnameUdp() throws Exception {
     for (int i = 0; i < TEST_COUNT; ++i) {
-      doTestUdp(NetworkUtils.getLocalHost(), randomPrivateUDPPort());
+      doTestUdp(NetworkUtils.getLocalHost(), port.getNumber());
     }
   }
 
@@ -186,13 +189,5 @@ public class FirewallTestCase extends AbstractMuleTestCase {
 
   protected String addressToString(InetAddress address) {
     return address.getHostName() + "/" + address.getCanonicalHostName() + "/" + address.getHostAddress();
-  }
-
-  protected int randomPrivateTCPPort() {
-    return findAvailableTcpPort(49152);
-  }
-
-  protected int randomPrivateUDPPort() {
-    return findAvailableUdpPort(49152);
   }
 }
