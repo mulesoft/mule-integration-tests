@@ -21,7 +21,6 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.security.SecureRandom;
 
 import org.junit.Test;
 import org.mule.tck.junit4.rule.DynamicPort;
@@ -35,8 +34,6 @@ public class FirewallTestCase extends AbstractMuleTestCase {
   public static final int TEST_COUNT = 1;
 
   protected final Logger logger = LoggerFactory.getLogger(this.getClass());
-
-  private SecureRandom random = new SecureRandom();
 
   @Rule
   public DynamicPort port = new DynamicPort("port1");
