@@ -8,6 +8,9 @@ package org.mule.test.firewall;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
+import static org.springframework.util.SocketUtils.findAvailableTcpPort;
+import static org.springframework.util.SocketUtils.findAvailableUdpPort;
+
 import org.mule.runtime.core.internal.config.factory.HostNameFactory;
 import org.mule.runtime.core.api.util.NetworkUtils;
 import org.mule.tck.junit4.AbstractMuleTestCase;
@@ -83,28 +86,28 @@ public class FirewallTestCase extends AbstractMuleTestCase {
   @Test
   public void testLocalhostTcp() throws Exception {
     for (int i = 0; i < TEST_COUNT; ++i) {
-      doTestTcp(InetAddress.getByName(LOCALHOST), randomPrivatePort());
+      doTestTcp(InetAddress.getByName(LOCALHOST), randomPrivateTCPPort());
     }
   }
 
   @Test
   public void testHostnameTcp() throws Exception {
     for (int i = 0; i < TEST_COUNT; ++i) {
-      doTestTcp(NetworkUtils.getLocalHost(), randomPrivatePort());
+      doTestTcp(NetworkUtils.getLocalHost(), randomPrivateTCPPort());
     }
   }
 
   @Test
   public void testLocalhostUdp() throws Exception {
     for (int i = 0; i < TEST_COUNT; ++i) {
-      doTestUdp(InetAddress.getByName(LOCALHOST), randomPrivatePort());
+      doTestUdp(InetAddress.getByName(LOCALHOST), randomPrivateUDPPort());
     }
   }
 
   @Test
   public void testHostnameUdp() throws Exception {
     for (int i = 0; i < TEST_COUNT; ++i) {
-      doTestUdp(NetworkUtils.getLocalHost(), randomPrivatePort());
+      doTestUdp(NetworkUtils.getLocalHost(), randomPrivateUDPPort());
     }
   }
 
@@ -185,17 +188,11 @@ public class FirewallTestCase extends AbstractMuleTestCase {
     return address.getHostName() + "/" + address.getCanonicalHostName() + "/" + address.getHostAddress();
   }
 
-  protected int randomPrivatePort() {
-    return randomPort(49152, 65535);
+  protected int randomPrivateTCPPort() {
+    return findAvailableTcpPort(49152);
   }
 
-  /**
-   * @param lo
-   * @param hi
-   * @return A number between lo and hi (inclusive)
-   */
-  protected int randomPort(int lo, int hi) {
-    return lo + random.nextInt(hi - lo + 1);
+  protected int randomPrivateUDPPort() {
+    return findAvailableUdpPort(49152);
   }
-
 }
