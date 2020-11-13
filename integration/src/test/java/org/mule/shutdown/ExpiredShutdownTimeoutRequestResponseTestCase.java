@@ -26,6 +26,8 @@ import org.junit.Test;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import org.mule.tck.probe.JUnitLambdaProbe;
+import org.mule.tck.probe.PollingProber;
 
 public class ExpiredShutdownTimeoutRequestResponseTestCase extends AbstractShutdownTimeoutRequestResponseTestCase {
 
@@ -53,13 +55,16 @@ public class ExpiredShutdownTimeoutRequestResponseTestCase extends AbstractShutd
   private void doShutDownTest(final String url) throws Throwable {
     final Future<?> requestTask = executor.submit(() -> {
       try {
-        HttpRequest request = HttpRequest.builder().uri(url).entity(new ByteArrayHttpEntity(TEST_MESSAGE.getBytes()))
-            .method(POST).build();
+        new PollingProber().check(new JUnitLambdaProbe(() -> {
+          HttpRequest request = HttpRequest.builder().uri(url).entity(new ByteArrayHttpEntity(TEST_MESSAGE.getBytes()))
+              .method(POST).build();
 
-        HttpResponse response =
-            httpClient.send(request, HttpRequestOptions.builder().responseTimeout(RECEIVE_TIMEOUT * 5).build());
+          HttpResponse response =
+              httpClient.send(request, HttpRequestOptions.builder().responseTimeout(RECEIVE_TIMEOUT * 5).build());
 
-        assertThat("Was able to process message ", response.getStatusCode(), is(not(OK.getStatusCode())));
+          assertThat("Was able to process message ", response.getStatusCode(), is(not(OK.getStatusCode())));
+          return true;
+        }, "Was not able to process message "));
       } catch (Exception e) {
         throw new MuleRuntimeException(e);
       }
