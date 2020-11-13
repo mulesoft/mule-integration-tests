@@ -7,8 +7,10 @@
 package org.mule.runtime.module.tooling;
 
 import static java.lang.String.format;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.metadata.resolving.FailureCode.COMPONENT_NOT_FOUND;
@@ -24,12 +26,14 @@ import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.sour
 import static org.mule.tck.junit4.matcher.MetadataKeyMatcher.metadataKeyWithId;
 import org.mule.runtime.api.metadata.MetadataKey;
 import org.mule.runtime.api.metadata.MetadataKeysContainer;
+import org.mule.runtime.api.metadata.resolving.FailureCode;
 import org.mule.runtime.api.metadata.resolving.MetadataFailure;
 import org.mule.runtime.api.metadata.resolving.MetadataResult;
 import org.mule.runtime.app.declaration.api.ComponentElementDeclaration;
 
 import java.util.Set;
 
+import org.hamcrest.collection.IsCollectionWithSize;
 import org.junit.Test;
 
 public class MetadataKeysTestCase extends DeclarationSessionTestCase {
@@ -49,6 +53,21 @@ public class MetadataKeysTestCase extends DeclarationSessionTestCase {
     assertThat(keys.stream().findFirst().map(metadataKey -> metadataKey.getId())
         .orElseThrow(() -> new AssertionError("MetadataKey not resolved")), is(CONFIG_LESS_CONNECTION_METADATA_RESOLVER));
   }
+
+  @Test
+  public void connectionFailure() {
+    ComponentElementDeclaration<?> elementDeclaration = configLessOPDeclaration(CONFIG_FAILING_CONNECTION_PROVIDER);
+    MetadataResult<MetadataKeysContainer> metadataKeys = session.getMetadataKeys(elementDeclaration);
+    assertThat(metadataKeys.isSuccess(), is(false));
+    assertThat(metadataKeys.getFailures(), IsCollectionWithSize.hasSize(1));
+    MetadataFailure failure = metadataKeys.getFailures().get(0);
+    assertThat(failure.getFailureCode(), equalTo(FailureCode.CONNECTION_FAILURE));
+    assertThat(failure.getMessage(),
+               equalTo("Failed to establish connection: ConnectionException: Expected connection exception"));
+    assertThat(failure.getReason(),
+               containsString("org.mule.runtime.api.connection.ConnectionException: Expected connection exception"));
+  }
+
 
   @Test
   public void configLessOPMetadataKeys() {

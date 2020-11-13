@@ -9,6 +9,7 @@ package org.mule.runtime.module.tooling;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.CUSTOM_ERROR_CODE;
@@ -205,6 +206,14 @@ public class SampleDataTestCase extends DeclarationSessionTestCase {
     assertSampleDataSuccess(elementDeclaration, "client-actingParameter", "dummyConfig");
   }
 
+  @Test
+  public void connectionFailure() {
+    assertSampleDataFailure(configLessOPDeclaration(CONFIG_FAILING_CONNECTION_PROVIDER),
+                            "Failed to establish connection: org.mule.runtime.api.connection.ConnectionException: Expected connection exception",
+                            "org.mule.sdk.api.data.sample.SampleDataException: Failed to establish connection: org.mule.runtime.api.connection.ConnectionException: Expected connection exception",
+                            "CONNECTION_FAILURE");
+  }
+
   private void assertSampleDataSuccess(ComponentElementDeclaration<?> elementDeclaration, String expectedPayload,
                                        Object expectedAttributes) {
     SampleDataResult sampleData = session.getSampleData(elementDeclaration);
@@ -224,7 +233,7 @@ public class SampleDataTestCase extends DeclarationSessionTestCase {
 
     SampleDataFailure sampleDataFailure = sampleData.getFailure().get();
     assertThat(sampleDataFailure.getMessage(), is(expectedMessage));
-    assertThat(sampleDataFailure.getReason(), is(expectedReason));
+    assertThat(sampleDataFailure.getReason(), containsString(expectedReason));
     assertThat(sampleDataFailure.getFailureCode(), is(expectedCode));
   }
 }

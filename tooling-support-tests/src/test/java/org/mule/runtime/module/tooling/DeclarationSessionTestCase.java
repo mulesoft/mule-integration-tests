@@ -15,6 +15,7 @@ import static org.mule.runtime.app.declaration.api.fluent.ElementDeclarer.newArt
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.TEST_EXTENSION_DECLARER;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.configurationDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.connectionDeclaration;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.failingConnectionDeclaration;
 import static org.mule.test.infrastructure.maven.MavenTestUtils.getMavenLocalRepository;
 import org.mule.runtime.api.value.ResolvingFailure;
 import org.mule.runtime.api.value.ValueResult;
@@ -39,6 +40,8 @@ public abstract class DeclarationSessionTestCase extends AbstractFakeMuleServerT
   protected static final String EXTENSION_TYPE = "jar";
 
   protected static final String CONFIG_NAME = "dummyConfig";
+  protected static final String CONFIG_FAILING_CONNECTION_PROVIDER = "configNameFailingConnectionProvider";
+
   protected static final String CLIENT_NAME = "client";
   protected static final String PROVIDED_PARAMETER_NAME = "providedParameter";
   protected static final String ERROR_PROVIDED_PARAMETER_NAME = "errorProvidedParameter";
@@ -74,6 +77,9 @@ public abstract class DeclarationSessionTestCase extends AbstractFakeMuleServerT
 
   protected void declareArtifact(ArtifactDeclarer artifactDeclarer) {
     artifactDeclarer.withGlobalElement(configurationDeclaration(CONFIG_NAME, connectionDeclaration(CLIENT_NAME)));
+    artifactDeclarer.withGlobalElement(configurationDeclaration(CONFIG_FAILING_CONNECTION_PROVIDER,
+                                                                failingConnectionDeclaration()));
+
   }
 
   @After

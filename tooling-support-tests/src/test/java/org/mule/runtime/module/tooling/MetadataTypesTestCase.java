@@ -28,10 +28,14 @@ import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.requ
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.sourceDeclaration;
 import org.mule.metadata.internal.utils.MetadataTypeWriter;
 import org.mule.runtime.api.metadata.descriptor.ComponentMetadataTypesDescriptor;
+import org.mule.runtime.api.metadata.resolving.FailureCode;
+import org.mule.runtime.api.metadata.resolving.MetadataFailure;
 import org.mule.runtime.api.metadata.resolving.MetadataResult;
 import org.mule.runtime.app.declaration.api.OperationElementDeclaration;
 import org.mule.runtime.app.declaration.api.SourceElementDeclaration;
 
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.Matchers;
 import org.hamcrest.collection.IsCollectionWithSize;
 import org.junit.Test;
 
@@ -139,6 +143,21 @@ public class MetadataTypesTestCase extends DeclarationSessionTestCase {
     assertThat(metadataTypes.get().getOutputMetadata().isPresent(), is(true));
     assertThat(getTypeId(metadataTypes.get().getOutputMetadata().get()),
                is(of("org.mule.tooling.extensions.metadata.api.parameters.ItemOutput")));
+  }
+
+  @Test
+  public void connectionFailure() {
+    OperationElementDeclaration operationElementDeclaration = configLessOPDeclaration(CONFIG_FAILING_CONNECTION_PROVIDER, "item");
+    MetadataResult<ComponentMetadataTypesDescriptor> metadataTypes =
+        session.resolveComponentMetadata(operationElementDeclaration);
+    assertThat(metadataTypes.isSuccess(), is(false));
+    assertThat(metadataTypes.getFailures(), hasSize(1));
+    MetadataFailure failure = metadataTypes.getFailures().get(0);
+    assertThat(failure.getFailureCode(), equalTo(FailureCode.CONNECTION_FAILURE));
+    assertThat(failure.getMessage(),
+               Matchers.equalTo("Failed to establish connection: ConnectionException: Expected connection exception"));
+    assertThat(failure.getReason(),
+               CoreMatchers.containsString("org.mule.runtime.api.connection.ConnectionException: Expected connection exception"));
   }
 
   @Test
