@@ -7,6 +7,9 @@
 package org.mule.shutdown;
 
 import static org.junit.Assert.assertTrue;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertThat;
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.OK;
 import static org.mule.runtime.http.api.HttpConstants.Method.POST;
 
@@ -20,6 +23,8 @@ import org.mule.tck.junit4.rule.SystemProperty;
 
 import org.junit.Rule;
 import org.junit.Test;
+import org.mule.tck.probe.JUnitLambdaProbe;
+import org.mule.tck.probe.PollingProber;
 
 public class ExpiredShutdownTimeoutRequestResponseTestCase extends AbstractShutdownTimeoutRequestResponseTestCase {
 
@@ -49,12 +54,15 @@ public class ExpiredShutdownTimeoutRequestResponseTestCase extends AbstractShutd
 
     Thread t = new Thread(() -> {
       try {
-        HttpRequest request = HttpRequest.builder().uri(url).entity(new ByteArrayHttpEntity(TEST_MESSAGE.getBytes()))
-            .method(POST).build();
+        new PollingProber().check(new JUnitLambdaProbe(() -> {
+          HttpRequest request = HttpRequest.builder().uri(url).entity(new ByteArrayHttpEntity(TEST_MESSAGE.getBytes()))
+              .method(POST).build();
 
-        HttpResponse response = httpClient.send(request, RECEIVE_TIMEOUT, false, null);
+          HttpResponse response = httpClient.send(request, RECEIVE_TIMEOUT, false, null);
 
-        results[0] = response.getStatusCode() != OK.getStatusCode();
+          results[0] = response.getStatusCode() != OK.getStatusCode();
+          return true;
+        }, "Was not able to process message "));
       } catch (Exception e) {
         // Ignore
       }
