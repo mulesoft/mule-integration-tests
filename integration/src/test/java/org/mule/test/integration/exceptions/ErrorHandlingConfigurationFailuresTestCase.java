@@ -54,35 +54,12 @@ public class ErrorHandlingConfigurationFailuresTestCase extends AbstractConfigur
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
 
-  @Test
-  public void errorHandlerCantHaveOnErrorWithoutTypeOrExpression() throws Exception {
-    expectedException.expect(ConfigurationException.class);
-    expectedException
-        .expectMessage(containsString("Every handler (except for the last one) within an 'error-handler' must specify a 'when' or 'type' attribute."));
-    loadConfiguration("org/mule/test/integration/exceptions/exception-strategy-in-choice-without-expression.xml");
-  }
-
-  @Test
-  public void onErrorReferenceMustHaveTypeOrExpression() throws Exception {
-    expectedException.expect(ConfigurationException.class);
-    expectedException
-        .expectMessage(containsString("Every handler (except for the last one) within an 'error-handler' must specify a 'when' or 'type' attribute."));
-    loadConfiguration("org/mule/test/integration/exceptions/on-error-ref-without-matcher-config.xml");
-  }
-
   // TODO MULE-10061 - Review once the MuleContext lifecycle is clearly defined
   @Test
   public void defaultErrorHandlerReferencesNonExistentErrorHandler() throws Exception {
     expectedException.expect(InitialisationException.class);
     expectedException.expectMessage(containsString("No global error handler defined with name 'nonExistentEh'."));
     loadConfiguration("org/mule/test/integration/exceptions/default-error-handler-reference-non-existent-es.xml");
-  }
-
-  @Test
-  public void errorHandlerReferenceAndDefinitionNotAllowed() throws Exception {
-    expectedException.expect(ConfigurationException.class);
-    expectedException.expectMessage(containsString("A reference error-handler cannot have on-errors."));
-    loadConfiguration("org/mule/test/integration/exceptions/error-handler-reference-and-definition-config.xml");
   }
 
   @Test
@@ -143,32 +120,10 @@ public class ErrorHandlingConfigurationFailuresTestCase extends AbstractConfigur
   }
 
   @Test
-  public void severalAnyMappingsNotAllowed() throws Exception {
-    expectedException.expect(ConfigurationException.class);
-    expectedException.expectMessage(containsString("Only one mapping for 'ANY' or an empty source type is allowed."));
-    loadConfiguration("org/mule/test/integration/exceptions/several-any-mappings-config.xml");
-  }
-
-  @Test
   public void nonExistingSourceMappingNotAllowed() throws Exception {
     expectedException.expect(InitialisationException.class);
     expectedException.expectMessage(containsString("Could not find error 'NON_EXISTING'."));
     loadConfiguration("org/mule/test/integration/exceptions/non-existing-source-mapping-config.xml");
-  }
-
-  @Test
-  public void middleAnyMappingsNotAllowed() throws Exception {
-    expectedException.expect(ConfigurationException.class);
-    expectedException.expectMessage(containsString("Only the last error mapping can have 'ANY' or an empty source type."));
-    loadConfiguration("org/mule/test/integration/exceptions/middle-any-mapping-config.xml");
-  }
-
-  @Test
-  public void repeatedMappingsNotAllowed() throws Exception {
-    expectedException.expect(ConfigurationException.class);
-    expectedException
-        .expectMessage(containsString("Repeated source types are not allowed. Offending types are 'ROUTING', 'EXPRESSION'."));
-    loadConfiguration("org/mule/test/integration/exceptions/repeated-mappings-config.xml");
   }
 
   @Test
