@@ -8,6 +8,8 @@ package org.mule.test.firewall;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
+
+import org.junit.Rule;
 import org.mule.runtime.core.internal.config.factory.HostNameFactory;
 import org.mule.runtime.core.api.util.NetworkUtils;
 import org.mule.tck.junit4.AbstractMuleTestCase;
@@ -19,9 +21,9 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.security.SecureRandom;
 
 import org.junit.Test;
+import org.mule.tck.junit4.rule.DynamicPort;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +35,8 @@ public class FirewallTestCase extends AbstractMuleTestCase {
 
   protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-  private SecureRandom random = new SecureRandom();
+  @Rule
+  public DynamicPort port = new DynamicPort("port1");
 
   @Test
   public void testLoopback() throws Exception {
@@ -83,28 +86,28 @@ public class FirewallTestCase extends AbstractMuleTestCase {
   @Test
   public void testLocalhostTcp() throws Exception {
     for (int i = 0; i < TEST_COUNT; ++i) {
-      doTestTcp(InetAddress.getByName(LOCALHOST), randomPrivatePort());
+      doTestTcp(InetAddress.getByName(LOCALHOST), port.getNumber());
     }
   }
 
   @Test
   public void testHostnameTcp() throws Exception {
     for (int i = 0; i < TEST_COUNT; ++i) {
-      doTestTcp(NetworkUtils.getLocalHost(), randomPrivatePort());
+      doTestTcp(NetworkUtils.getLocalHost(), port.getNumber());
     }
   }
 
   @Test
   public void testLocalhostUdp() throws Exception {
     for (int i = 0; i < TEST_COUNT; ++i) {
-      doTestUdp(InetAddress.getByName(LOCALHOST), randomPrivatePort());
+      doTestUdp(InetAddress.getByName(LOCALHOST), port.getNumber());
     }
   }
 
   @Test
   public void testHostnameUdp() throws Exception {
     for (int i = 0; i < TEST_COUNT; ++i) {
-      doTestUdp(NetworkUtils.getLocalHost(), randomPrivatePort());
+      doTestUdp(NetworkUtils.getLocalHost(), port.getNumber());
     }
   }
 
@@ -184,18 +187,4 @@ public class FirewallTestCase extends AbstractMuleTestCase {
   protected String addressToString(InetAddress address) {
     return address.getHostName() + "/" + address.getCanonicalHostName() + "/" + address.getHostAddress();
   }
-
-  protected int randomPrivatePort() {
-    return randomPort(49152, 65535);
-  }
-
-  /**
-   * @param lo
-   * @param hi
-   * @return A number between lo and hi (inclusive)
-   */
-  protected int randomPort(int lo, int hi) {
-    return lo + random.nextInt(hi - lo + 1);
-  }
-
 }
