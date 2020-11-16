@@ -18,7 +18,9 @@ import org.junit.Test;
 public class SdkApiClassloadingTestCase extends AbstractIntegrationTestCase {
 
   private static final String OVERRIDEN_INTERFACE = "org.mule.sdk.api.runtime.connectivity.ReconnectionCallback";
-  private static final String INTERFACE_NEW_METHOD_NAME = "doSomething";
+  private static final String NEW_INTERFACE_NOT_PRESENT_IN_DISTRO =
+      "org.mule.sdk.api.runtime.connectivity.NonExistingInterfaceInDistribution";
+  private static final String METHOD_IN_NEW_INTERFACE = "doSomething";
   private static final String SUCCESS_METHOD_NAME = "success";
   private static final String FAILED_METHOD_NAME = "failed";
 
@@ -28,11 +30,19 @@ public class SdkApiClassloadingTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  public void testSdkApiClassLoading() throws Exception {
+  public void sdkApiClassLoadingParentResolution() throws Exception {
     List<String> methods =
         (List<String>) flowRunner("getMethods").withPayload(OVERRIDEN_INTERFACE).run().getMessage().getPayload().getValue();
-    assertThat(methods, hasSize(3));
-    assertThat(methods, containsInAnyOrder(INTERFACE_NEW_METHOD_NAME, SUCCESS_METHOD_NAME, FAILED_METHOD_NAME));
+    assertThat(methods, hasSize(2));
+    assertThat(methods, containsInAnyOrder(SUCCESS_METHOD_NAME, FAILED_METHOD_NAME));
+  }
 
+  @Test
+  public void sdkApiClassLoadingChildResolution() throws Exception {
+    List<String> methods =
+        (List<String>) flowRunner("getMethods").withPayload(NEW_INTERFACE_NOT_PRESENT_IN_DISTRO).run().getMessage().getPayload()
+            .getValue();
+    assertThat(methods, hasSize(1));
+    assertThat(methods, containsInAnyOrder(METHOD_IN_NEW_INTERFACE));
   }
 }
