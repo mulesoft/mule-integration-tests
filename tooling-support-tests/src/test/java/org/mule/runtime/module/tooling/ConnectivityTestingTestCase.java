@@ -9,8 +9,10 @@ package org.mule.runtime.module.tooling;
 import static java.lang.String.format;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.configurationDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.connectionDeclaration;
+import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.app.declaration.api.fluent.ArtifactDeclarer;
 
@@ -50,6 +52,14 @@ public class ConnectivityTestingTestCase extends DeclarationSessionTestCase {
     assertThat(connectionValidationResult.getMessage(),
                equalTo(format("Could not perform test connection for configuration: '%s'. Connection provider is not defined",
                               invalidConfigName)));
+  }
+
+  @Test
+  public void testConnectionOnFailingConnectionProvider() {
+    ConnectionValidationResult connectionValidationResult = session.testConnection(CONFIG_FAILING_CONNECTION_PROVIDER);
+    assertThat(connectionValidationResult.isValid(), equalTo(false));
+    assertThat(connectionValidationResult.getMessage(), equalTo("Exception was found trying to test connectivity"));
+    assertThat(connectionValidationResult.getException(), instanceOf(ConnectionException.class));
   }
 
 }

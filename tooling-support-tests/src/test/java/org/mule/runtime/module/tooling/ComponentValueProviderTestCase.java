@@ -314,4 +314,16 @@ public class ComponentValueProviderTestCase extends DeclarationSessionTestCase {
     assertThat(america.getId(), is("America"));
     assertThat(america.getChilds(), hasSize(2));
   }
+
+  @Test
+  public void connectionFailure() {
+    ComponentElementDeclaration elementDeclaration = configLessOPDeclaration(CONFIG_FAILING_CONNECTION_PROVIDER);
+    validateValuesFailure(session, elementDeclaration,
+                          PROVIDED_PARAMETER_NAME,
+                          "Failed to establish connection: org.mule.runtime.api.connection.ConnectionException: Expected connection exception",
+                          "CONNECTION_FAILURE",
+                          "");
+  }
+
+
 }
