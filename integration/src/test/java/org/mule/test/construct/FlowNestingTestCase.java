@@ -15,10 +15,6 @@ import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.testmodels.fruit.Apple;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -42,10 +38,10 @@ public class FlowNestingTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void testNestingChoiceAccepted() throws Exception {
-    Map<String, Serializable> inboundProperties = new HashMap<>();
-    inboundProperties.put("AcquirerCountry", "MyCountry");
-    inboundProperties.put("Amount", "4999");
-    flowRunner("NestedChoice").withPayload(new Apple()).withInboundProperties(inboundProperties).run();
+    flowRunner("NestedChoice").withPayload(new Apple())
+        .withVariable("AcquirerCountry", "MyCountry")
+        .withVariable("Amount", "4999")
+        .run();
 
     Message result = queueHandler.read("outChoice", RECEIVE_TIMEOUT).getMessage();
     assertNotNull(result);
@@ -54,10 +50,10 @@ public class FlowNestingTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void testNestingChoiceRejected() throws Exception {
-    Map<String, Serializable> inboundProperties = new HashMap<>();
-    inboundProperties.put("AcquirerCountry", "MyCountry");
-    inboundProperties.put("Amount", "5000");
-    flowRunner("NestedChoice").withPayload(new Apple()).withInboundProperties(inboundProperties).run();
+    flowRunner("NestedChoice").withPayload(new Apple())
+        .withVariable("AcquirerCountry", "MyCountry")
+        .withVariable("Amount", "5000")
+        .run();
 
     Message result = queueHandler.read("outChoice", RECEIVE_TIMEOUT).getMessage();
     assertNotNull(result);

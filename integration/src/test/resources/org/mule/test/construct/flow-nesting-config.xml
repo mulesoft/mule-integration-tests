@@ -10,18 +10,13 @@
 
     <flow name="NestedChoice">
         <choice>
-            <when expression="mel:payload is org.mule.tck.testmodels.fruit.Apple">
-                <script:execute engine="groovy">
-                    <script:code>
-                        return new org.mule.functional.junit4.TestLegacyMessageBuilder(message).value("").build()
-                    </script:code>
-                </script:execute>
-                <set-payload value="#[payload ++ 'A']"/>
+            <when expression="#[payload.^class == 'org.mule.tck.testmodels.fruit.Apple']">
+                <set-payload value="#['A']"/>
                 <choice>
-                    <when expression="mel:message.inboundProperties.AcquirerCountry=='MyCountry'">
+                    <when expression="#[vars.AcquirerCountry == 'MyCountry']">
                         <set-payload value="#[payload ++ 'B']"/>
                         <choice>
-                            <when expression="#[mel:message.inboundProperties['Amount'] &lt; 5000]">
+                            <when expression="#[vars['Amount'] &lt; 5000]">
                                 <set-payload value="#[payload ++ 'C']"/>
                                 <test:queue name="outChoice"/>
                             </when>
