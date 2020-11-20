@@ -68,6 +68,7 @@ import io.qameta.allure.Feature;
 import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -366,6 +367,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
   @Description("Smart Connector inside a scatter-gather declares a simple operation without parameters")
   @Issue("MULE-16285")
   @Test
+  @Ignore("MULE-18881")
   public void flowWithScatterGather() throws Exception {
     flowRunner("flowWithScatterGather").run();
 

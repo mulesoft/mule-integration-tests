@@ -26,6 +26,7 @@ import org.mule.tck.probe.Probe;
 import org.mule.test.AbstractSchedulerTestCase;
 
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -57,6 +58,7 @@ public class PollScheduleTestCase extends AbstractSchedulerTestCase {
    * stopped) Checks that the polls where not executed. Runs the polls on demand Checks that the polls where executed only once.
    */
   @Test
+  @Ignore("MULE-18846")
   public void test() throws Exception {
     new PollingProber(10000, 100l).check(new Probe() {
 
