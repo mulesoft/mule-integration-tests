@@ -53,8 +53,8 @@ public class ParallelForEachWithContextScopesTestCase extends AbstractIntegratio
   @Test
   @Issue("MULE-18696")
   @Description("Check that parallel for each is not referencing to the original event prior the error handling")
-  public void parallelForEachWithErorHandling() throws Exception {
-    flowRunner("parallelForEachWithErorHandling").withPayload(FRUIT_LIST).run();
+  public void parallelForEachWithErrorHandling() throws Exception {
+    flowRunner("parallelForEachWithErrorHandling").withPayload(FRUIT_LIST).run();
     // to check last event
     assertEventsUnreferenced();
   }
@@ -71,6 +71,11 @@ public class ParallelForEachWithContextScopesTestCase extends AbstractIntegratio
         return true;
       }
     });
+  }
+
+  @Override
+  protected boolean isGracefulShutdown() {
+    return true;
   }
 
   public static class EventReferenceProcessor implements Processor {
