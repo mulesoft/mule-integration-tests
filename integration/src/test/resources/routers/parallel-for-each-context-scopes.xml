@@ -7,7 +7,7 @@
     <object name="eventReferenceProc"
             class="org.mule.test.routing.ParallelForEachWithContextScopesTestCase$EventReferenceProcessor" />
 
-    <flow name="parallelForEachWithErorHandling">
+    <flow name="parallelForEachWithErrorHandling">
         <parallel-foreach>
             <try>
                 <flow-ref name="eventReferenceProc"/>
