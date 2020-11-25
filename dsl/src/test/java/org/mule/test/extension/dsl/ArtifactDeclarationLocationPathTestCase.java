@@ -10,26 +10,26 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mule.runtime.app.declaration.api.fluent.ElementDeclarer.newParameterGroup;
 import static org.mule.runtime.core.api.util.IOUtils.getResourceAsString;
-import static org.mule.test.module.extension.internal.util.ExtensionsTestUtils.compareXML;
+
+import org.mule.runtime.api.dsl.DslResolvingContext;
+import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.app.declaration.api.ArtifactDeclaration;
 import org.mule.runtime.app.declaration.api.ConstructElementDeclaration;
 import org.mule.runtime.app.declaration.api.ParameterElementDeclaration;
+import org.mule.runtime.app.declaration.api.component.location.Location;
 import org.mule.runtime.app.declaration.api.fluent.ElementDeclarer;
 import org.mule.runtime.app.declaration.api.fluent.ParameterSimpleValue;
 import org.mule.runtime.config.api.dsl.ArtifactDeclarationXmlSerializer;
 import org.mule.runtime.config.api.dsl.model.DslElementModelFactory;
-import org.mule.runtime.app.declaration.api.component.location.Location;
-import org.mule.runtime.api.dsl.DslResolvingContext;
-import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.core.api.extension.MuleExtensionModelProvider;
-
-import com.google.common.collect.ImmutableSet;
 
 import java.util.Optional;
 import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import com.google.common.collect.ImmutableSet;
 
 public class ArtifactDeclarationLocationPathTestCase extends AbstractElementModelTestCase {
 
@@ -44,6 +44,7 @@ public class ArtifactDeclarationLocationPathTestCase extends AbstractElementMode
   }
 
 
+  @Override
   @Before
   public void setup() throws Exception {
     Set<ExtensionModel> extensions = muleContext.getExtensionManager().getExtensions();

@@ -7,7 +7,6 @@
 package org.mule.test.extension.dsl;
 
 import static org.mule.runtime.core.api.util.IOUtils.getResourceAsString;
-import static org.mule.test.module.extension.internal.util.ExtensionsTestUtils.compareXML;
 
 import org.mule.runtime.ast.api.ComponentAst;
 import org.mule.runtime.config.api.dsl.model.XmlDslElementModelConverter;

@@ -30,6 +30,7 @@ import org.mule.runtime.core.api.extension.MuleExtensionModelProvider;
 import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
 
 import java.io.StringWriter;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -42,6 +43,10 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.custommonkey.xmlunit.DetailedDiff;
+import org.custommonkey.xmlunit.Diff;
+import org.custommonkey.xmlunit.Difference;
+import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.Before;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -205,4 +210,32 @@ public abstract class AbstractElementModelTestCase extends MuleArtifactFunctiona
     assertThat(elementModel.getValue().get(), is(value));
   }
 
+  /**
+   * Receives to {@link String} representation of two XML files and verify that they are semantically equivalent
+   *
+   * @param expected the reference content
+   * @param actual the actual content
+   * @throws Exception if comparison fails
+   */
+  public static void compareXML(String expected, String actual) throws Exception {
+    XMLUnit.setNormalizeWhitespace(true);
+    XMLUnit.setIgnoreWhitespace(true);
+    XMLUnit.setIgnoreComments(true);
+    XMLUnit.setIgnoreAttributeOrder(false);
+
+    Diff diff = XMLUnit.compareXML(expected, actual);
+    if (!(diff.similar() && diff.identical())) {
+      System.out.println(actual);
+      DetailedDiff detDiff = new DetailedDiff(diff);
+      @SuppressWarnings("rawtypes")
+      List differences = detDiff.getAllDifferences();
+      StringBuilder diffLines = new StringBuilder();
+      for (Object object : differences) {
+        Difference difference = (Difference) object;
+        diffLines.append(difference.toString() + '\n');
+      }
+
+      throw new IllegalArgumentException("Actual XML differs from expected: \n" + diffLines.toString());
+    }
+  }
 }

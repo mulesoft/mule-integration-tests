@@ -12,9 +12,7 @@ import static java.util.Arrays.asList;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.mock;
 import static org.mule.runtime.api.component.Component.NS_MULE_DOCUMENTATION;
-import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 import static org.mule.runtime.api.meta.model.parameter.ParameterGroupModel.CONNECTION;
 import static org.mule.runtime.api.util.MuleSystemProperties.SYSTEM_PROPERTY_PREFIX;
 import static org.mule.runtime.app.declaration.api.fluent.ElementDeclarer.newArtifact;
@@ -48,22 +46,16 @@ import static org.mule.runtime.extension.api.declaration.type.ReconnectionStrate
 import static org.mule.runtime.extension.api.declaration.type.RedeliveryPolicyTypeBuilder.MAX_REDELIVERY_COUNT;
 import static org.mule.runtime.extension.api.declaration.type.RedeliveryPolicyTypeBuilder.USE_SECURE_HASH;
 import static org.mule.runtime.extension.api.declaration.type.StreamingStrategyTypeBuilder.REPEATABLE_IN_MEMORY_BYTES_STREAM_ALIAS;
-import static org.mule.test.module.extension.internal.util.ExtensionsTestUtils.compareXML;
 import static org.skyscreamer.jsonassert.JSONCompareMode.NON_EXTENSIBLE;
 
 import org.mule.extensions.jms.api.connection.caching.NoCachingConfiguration;
 import org.mule.runtime.api.app.declaration.serialization.ArtifactDeclarationJsonSerializer;
-import org.mule.runtime.api.exception.MuleException;
-import org.mule.runtime.api.lifecycle.Initialisable;
 import org.mule.runtime.app.declaration.api.ArtifactDeclaration;
 import org.mule.runtime.app.declaration.api.ParameterElementDeclaration;
 import org.mule.runtime.app.declaration.api.ParameterValue;
 import org.mule.runtime.app.declaration.api.fluent.ElementDeclarer;
 import org.mule.runtime.app.declaration.api.fluent.SimpleValueType;
 import org.mule.runtime.config.api.dsl.ArtifactDeclarationXmlSerializer;
-import org.mule.runtime.core.api.event.CoreEvent;
-import org.mule.runtime.core.api.processor.Processor;
-import org.mule.runtime.core.api.retry.policy.RetryPolicyExhaustedException;
 import org.mule.runtime.extension.api.runtime.ExpirationPolicy;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.runner.RunnerDelegateTo;
@@ -319,10 +311,10 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
                                                              createStringParameter("referableHandler")))
             .getDeclaration())
         .withGlobalElement(core.newConstruct("object")
-            .withRefName("failingProcessor")
+            .withRefName("myString")
             .withParameterGroup(group -> group
                 .withParameter("class",
-                               createStringParameter("org.mule.test.extension.dsl.ArtifactDeclarationSerializerTestCase$FailingProcessor")))
+                               createStringParameter("java.lang.String")))
             .getDeclaration())
         .withGlobalElement(core.newConstruct("errorHandler")
             .withRefName("referableHandler")
@@ -843,15 +835,6 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
 
   private static ParameterValue createStringCDataParameter(String value) {
     return cdata(value, STRING);
-  }
-
-  public static class FailingProcessor implements Processor {
-
-    @Override
-    public CoreEvent process(CoreEvent event) throws MuleException {
-      throw new RetryPolicyExhaustedException(createStaticMessage("Error."), mock(Initialisable.class));
-    }
-
   }
 
 }
