@@ -21,13 +21,13 @@ public abstract class SoapFootballExtensionArtifactFunctionalTestCase extends Mu
 
   @Rule
   public TestRule chain =
-          RuleChain
-                  .outerRule(footballPort = new DynamicPort("footballPort"))
-                  .around(laLigaPort = new DynamicPort("laLigaPort"))
-                  .around(footballAddress = getFootballAddress())
-                  .around(laLigaAddress = getLaLigaAddress())
-                  .around(footballServiceServer = getFootballServiceServer())
-                  .around(laLigaServiceServer = getLaLigaServiceServer());
+      RuleChain
+          .outerRule(footballPort = new DynamicPort("footballPort"))
+          .around(laLigaPort = new DynamicPort("laLigaPort"))
+          .around(footballAddress = getFootballAddress())
+          .around(laLigaAddress = getLaLigaAddress())
+          .around(footballServiceServer = getFootballServiceServer())
+          .around(laLigaServiceServer = getLaLigaServiceServer());
 
   public DynamicPort footballPort;
 
@@ -46,22 +46,22 @@ public abstract class SoapFootballExtensionArtifactFunctionalTestCase extends Mu
   // hierarchy, in order to avoid a LinkageError when running in JDK 11 or higher.
   public ExternalProcess getLaLigaServiceServer() {
     return new ExternalProcess(line -> line
-            .contains("org.eclipse.jetty.server.ServerConnector: Started ServerConnector"),
-            "java", "-cp",
-            System.getProperty("soapHttpServerClasspath"),
-            "org.mule.service.soap.server.HttpServer",
-            "" + laLigaPort.getNumber(),
-            "org.mule.it.soap.connect.services.LaLigaService");
+        .contains("org.eclipse.jetty.server.ServerConnector: Started ServerConnector"),
+                               "java", "-cp",
+                               System.getProperty("soapHttpServerClasspath"),
+                               "org.mule.service.soap.server.HttpServer",
+                               "" + laLigaPort.getNumber(),
+                               "org.mule.it.soap.connect.services.LaLigaService");
   }
 
   public ExternalProcess getFootballServiceServer() {
     return new ExternalProcess(line -> line
-            .contains("org.eclipse.jetty.server.ServerConnector: Started ServerConnector"),
-            "java", "-cp",
-            System.getProperty("soapHttpServerClasspath"),
-            "org.mule.service.soap.server.HttpServer",
-            "" + footballPort.getNumber(),
-            "org.mule.it.soap.connect.services.FootballService");
+        .contains("org.eclipse.jetty.server.ServerConnector: Started ServerConnector"),
+                               "java", "-cp",
+                               System.getProperty("soapHttpServerClasspath"),
+                               "org.mule.service.soap.server.HttpServer",
+                               "" + footballPort.getNumber(),
+                               "org.mule.it.soap.connect.services.FootballService");
   }
 
   public SystemProperty getFootballAddress() {
