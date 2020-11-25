@@ -6,6 +6,8 @@
  */
 package org.mule.it.soap.connect;
 
+import org.junit.rules.RuleChain;
+import org.junit.rules.TestRule;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.ExternalProcess;
@@ -18,32 +20,57 @@ public abstract class SoapFootballExtensionArtifactFunctionalTestCase extends Mu
   private static final String SOAP_CONFIG = "soap-football-extension-config.xml";
 
   @Rule
-  public DynamicPort footballPort = new DynamicPort("footballPort");
+  public TestRule chain =
+          RuleChain
+                  .outerRule(footballPort = new DynamicPort("footballPort"))
+                  .around(laLigaPort = new DynamicPort("laLigaPort"))
+                  .around(footballAddress = getFootballAddress())
+                  .around(laLigaAddress = getLaLigaAddress())
+                  .around(footballServiceServer = getFootballServiceServer())
+                  .around(laLigaServiceServer = getLaLigaServiceServer());
 
-  @Rule
-  public DynamicPort laLigaPort = new DynamicPort("laLigaPort");
+  public DynamicPort footballPort;
+
+  public DynamicPort laLigaPort;
+
+  public ExternalProcess footballServiceServer;
+
+  public ExternalProcess laLigaServiceServer;
+
+  public SystemProperty footballAddress;
+
+  public SystemProperty laLigaAddress;
 
   // TODO MULE-16661 Use a Docker image instead of this
   // These need to run with a plain classloader to avoid conflicting libs in different artifacts in the Mule classloader
   // hierarchy, in order to avoid a LinkageError when running in JDK 11 or higher.
-  @Rule
-  public final ExternalProcess footballServiceServer =
-      new ExternalProcess(line -> line.contains("org.eclipse.jetty.server.ServerConnector: Started ServerConnector"),
-                          "java", "-cp", System.getProperty("soapHttpServerClasspath"), "org.mule.service.soap.server.HttpServer",
-                          "" + footballPort.getNumber(), "org.mule.it.soap.connect.services.FootballService");
-  @Rule
-  public final ExternalProcess laLigaServiceServer =
-      new ExternalProcess(line -> line.contains("org.eclipse.jetty.server.ServerConnector: Started ServerConnector"),
-                          "java", "-cp", System.getProperty("soapHttpServerClasspath"), "org.mule.service.soap.server.HttpServer",
-                          "" + laLigaPort.getNumber(), "org.mule.it.soap.connect.services.LaLigaService");
+  public ExternalProcess getLaLigaServiceServer() {
+    return new ExternalProcess(line -> line
+            .contains("org.eclipse.jetty.server.ServerConnector: Started ServerConnector"),
+            "java", "-cp",
+            System.getProperty("soapHttpServerClasspath"),
+            "org.mule.service.soap.server.HttpServer",
+            "" + laLigaPort.getNumber(),
+            "org.mule.it.soap.connect.services.LaLigaService");
+  }
 
-  @Rule
-  public SystemProperty footballAddress =
-      new SystemProperty("footballAddress", "http://localhost:" + footballPort.getNumber() + "/server");
+  public ExternalProcess getFootballServiceServer() {
+    return new ExternalProcess(line -> line
+            .contains("org.eclipse.jetty.server.ServerConnector: Started ServerConnector"),
+            "java", "-cp",
+            System.getProperty("soapHttpServerClasspath"),
+            "org.mule.service.soap.server.HttpServer",
+            "" + footballPort.getNumber(),
+            "org.mule.it.soap.connect.services.FootballService");
+  }
 
-  @Rule
-  public SystemProperty laLigaAddress =
-      new SystemProperty("laLigaAddress", "http://localhost:" + laLigaPort.getNumber() + "/server");
+  public SystemProperty getFootballAddress() {
+    return new SystemProperty("footballAddress", "http://localhost:" + footballPort.getNumber() + "/server");
+  }
+
+  public SystemProperty getLaLigaAddress() {
+    return new SystemProperty("laLigaAddress", "http://localhost:" + laLigaPort.getNumber() + "/server");
+  }
 
   @Override
   protected String getConfigFile() {
@@ -54,5 +81,4 @@ public abstract class SoapFootballExtensionArtifactFunctionalTestCase extends Mu
     String ns = "http://services.connect.soap.it.mule.org/";
     return String.format("<con:%s xmlns:con=\"%s\">%s</con:%s>", tagName, ns, content, tagName);
   }
-
 }
