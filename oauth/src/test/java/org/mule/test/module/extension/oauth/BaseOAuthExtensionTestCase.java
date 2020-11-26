@@ -27,6 +27,7 @@ import static org.mule.runtime.oauth.internal.OAuthConstants.ACCESS_TOKEN_PARAME
 import static org.mule.runtime.oauth.internal.OAuthConstants.EXPIRES_IN_PARAMETER;
 import static org.mule.runtime.oauth.internal.OAuthConstants.REFRESH_TOKEN_PARAMETER;
 import static org.mule.tck.probe.PollingProber.check;
+
 import org.mule.runtime.api.store.ObjectStore;
 import org.mule.runtime.extension.api.connectivity.oauth.AuthorizationCodeState;
 import org.mule.runtime.oauth.api.state.ResourceOwnerOAuthContext;
@@ -35,12 +36,12 @@ import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.module.extension.AbstractExtensionFunctionalTestCase;
 import org.mule.test.oauth.TestOAuthConnectionState;
 
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import com.google.common.collect.ImmutableMap;
-
 import java.io.IOException;
 import java.util.Map;
 
+import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.google.common.collect.ImmutableMap;
 import org.apache.http.client.fluent.Response;
 import org.junit.Rule;
 
@@ -173,10 +174,14 @@ public abstract class BaseOAuthExtensionTestCase extends AbstractExtensionFuncti
   }
 
   protected void stubTokenUrl(String responseContent) {
-    wireMock.stubFor(post(urlMatching("/" + TOKEN_PATH)).willReturn(aResponse()
+    wireMock.stubFor(post(urlMatching("/" + TOKEN_PATH)).willReturn(buildResponseContent(responseContent)));
+  }
+
+  protected ResponseDefinitionBuilder buildResponseContent(String responseContent) {
+    return aResponse()
         .withStatus(OK.getStatusCode())
         .withBody(responseContent)
-        .withHeader(CONTENT_TYPE, "application/json")));
+        .withHeader(CONTENT_TYPE, "application/json");
   }
 
   protected String accessTokenContent() {
@@ -208,6 +213,10 @@ public abstract class BaseOAuthExtensionTestCase extends AbstractExtensionFuncti
   protected void assertConnectionState(TestOAuthConnectionState connection) {
     assertConnectionProperties(connection);
     assertAuthCodeState(connection);
+  }
+
+  protected String getRefreshTokenResponse() {
+    return accessTokenContent(ACCESS_TOKEN + "-refreshed");
   }
 
   protected void assertAuthCodeState(TestOAuthConnectionState connection) {

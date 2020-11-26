@@ -6,8 +6,11 @@
  */
 package org.mule.test.module.extension.oauth.authcode;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
@@ -37,11 +40,15 @@ import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 public class OAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
 
   @Rule
   public ExpectedError expectedError = none();
+
+  @Rule
+  public ExpectedException expectedException = ExpectedException.none();
 
   @Override
   protected String[] getConfigFiles() {
@@ -84,10 +91,61 @@ public class OAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
   }
 
   @Test
+  public void refreshTokenWasAlreadyExpired() throws Exception {
+    receiveAccessTokenAndUserConnection();
+    WireMock.reset();
+
+    wireMock.stubFor(post(urlMatching("/" + TOKEN_PATH))
+        .inScenario("refreshTokenWasAlreadyExpired")
+        .whenScenarioStateIs(STARTED)
+        .willReturn(buildResponseContent(accessTokenContent(ACCESS_TOKEN)))
+        .willSetStateTo("refresh"));
+
+    wireMock.stubFor(post(urlMatching("/" + TOKEN_PATH))
+        .inScenario("refreshTokenWasAlreadyExpired")
+        .whenScenarioStateIs("refresh")
+        .willReturn(buildResponseContent(getRefreshTokenResponse())));
+
+    flowRunner("refreshToken").withVariable(OWNER_ID_VARIABLE_NAME, getCustomOwnerId()).run();
+    wireMock.verify(2, postRequestedFor(urlPathEqualTo("/" + TOKEN_PATH)));
+  }
+
+  @Test
+  public void refreshTokenWasAlreadyExpiredTwice() throws Exception {
+    receiveAccessTokenAndUserConnection();
+    WireMock.reset();
+
+    wireMock.stubFor(post(urlMatching("/" + TOKEN_PATH))
+        .inScenario("refreshTokenWasAlreadyExpiredTwice")
+        .whenScenarioStateIs(STARTED)
+        .willReturn(buildResponseContent(accessTokenContent(ACCESS_TOKEN)))
+        .willSetStateTo("2"));
+
+    wireMock.stubFor(post(urlMatching("/" + TOKEN_PATH))
+        .inScenario("refreshTokenWasAlreadyExpiredTwice")
+        .whenScenarioStateIs("2")
+        .willReturn(buildResponseContent(accessTokenContent(ACCESS_TOKEN)))
+        .willSetStateTo("refresh"));
+
+    wireMock.stubFor(post(urlMatching("/" + TOKEN_PATH))
+        .inScenario("refreshTokenWasAlreadyExpiredTwice")
+        .whenScenarioStateIs("refresh")
+        .willReturn(buildResponseContent(getRefreshTokenResponse())));
+
+    expectedException.expectMessage("Access Token expired for resource owner id MG");
+
+    try {
+      flowRunner("refreshToken").withVariable(OWNER_ID_VARIABLE_NAME, getCustomOwnerId()).run();
+    } finally {
+      wireMock.verify(2, postRequestedFor(urlPathEqualTo("/" + TOKEN_PATH)));
+    }
+  }
+
+  @Test
   public void refreshTokenForPagedOperationOnFirstPage() throws Exception {
     receiveAccessTokenAndUserConnection();
     WireMock.reset();
-    stubTokenUrl(accessTokenContent(ACCESS_TOKEN + "-refreshed"));
+    stubTokenUrl(getRefreshTokenResponse());
     flowRunner("pagedOperationFailsAtFirstPage").withVariable(OWNER_ID_VARIABLE_NAME, getCustomOwnerId()).run();
     wireMock.verify(postRequestedFor(urlPathEqualTo("/" + TOKEN_PATH)));
   }
@@ -96,7 +154,7 @@ public class OAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
   public void refreshTokenForPagedOperationOnThirdPage() throws Exception {
     receiveAccessTokenAndUserConnection();
     WireMock.reset();
-    stubTokenUrl(accessTokenContent(ACCESS_TOKEN + "-refreshed"));
+    stubTokenUrl(getRefreshTokenResponse());
     CoreEvent event = flowRunner("pagedOperationFailsAtThirdPage")
         .withVariable(OWNER_ID_VARIABLE_NAME, getCustomOwnerId())
         .run();
