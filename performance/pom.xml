@@ -218,6 +218,9 @@
         </profile>
         <profile>
             <id>micro-benchmark</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
             <build>
                 <plugins>
                     <plugin>
@@ -228,6 +231,7 @@
                                 <enablePerformanceTests>false</enablePerformanceTests>
                                 <contiperf.active>false</contiperf.active>
                                 <mule.test.timeoutSecs>300</mule.test.timeoutSecs>
+                                <jmh.ignoreLock>true</jmh.ignoreLock>
                             </systemPropertyVariables>
                         </configuration>
                     </plugin>
