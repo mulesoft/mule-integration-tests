@@ -10,10 +10,14 @@ package org.mule.test.config;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.mule.test.allure.AllureConstants.DeploymentConfiguration.DEPLOYMENT_CONFIGURATION;
+import static org.mule.test.allure.AllureConstants.DeploymentConfiguration.FeatureFlaggingStory.FEATURE_FLAGGING;
 import static org.mule.test.petstore.extension.PetStoreOperations.operationExecutionCounter;
 
 import java.util.List;
 
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
@@ -27,6 +31,8 @@ import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.runner.RunnerDelegateTo;
 
 @RunnerDelegateTo(Parameterized.class)
+@Feature(DEPLOYMENT_CONFIGURATION)
+@Story(FEATURE_FLAGGING)
 public class FeatureFlaggedApplicationTestCase extends AbstractIntegrationTestCase {
 
   private static final String FLOW_NAME = "echo";
