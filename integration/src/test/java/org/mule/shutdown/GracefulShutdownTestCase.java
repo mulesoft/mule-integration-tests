@@ -12,6 +12,12 @@ import static org.mule.runtime.api.util.MuleSystemProperties.MULE_LIFECYCLE_FAIL
 import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.LIFECYCLE_AND_DEPENDENCY_INJECTION;
 import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.GracefulShutdownStory.GRACEFUL_SHUTDOWN_STORY;
 
+import org.junit.Before;
+import org.mule.runtime.api.component.AbstractComponent;
+import org.mule.runtime.api.exception.MuleException;
+import org.mule.runtime.api.util.concurrent.Latch;
+import org.mule.runtime.core.api.event.CoreEvent;
+import org.mule.runtime.core.api.processor.Processor;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.runner.RunnerDelegateTo;
@@ -32,14 +38,12 @@ import io.qameta.allure.Story;
 @RunnerDelegateTo(Parameterized.class)
 public class GracefulShutdownTestCase extends AbstractIntegrationTestCase {
 
+  protected static Latch waitLatch;
+  protected static Latch contextStopLatch;
+
   @Parameters(name = "{0}")
   public static List<String> parameters() {
-    return asList("org/mule/shutdown/flow-with-operation.xml",
-                  "org/mule/shutdown/flow-with-failing-operation.xml",
-                  "org/mule/shutdown/flow-with-flow-ref.xml",
-                  "org/mule/shutdown/flow-with-operation-in-error-handler.xml",
-                  "org/mule/shutdown/flow-with-tx-flow-ref.xml",
-                  "org/mule/shutdown/flow-with-tx-scope.xml");
+    return asList("org/mule/shutdown/flow-with-scatter-gather-and-flow-ref.xml");
   }
 
   @Rule
@@ -51,6 +55,12 @@ public class GracefulShutdownTestCase extends AbstractIntegrationTestCase {
     this.configFile = configFile;
   }
 
+  @Before
+  public void setUpWaitLatch() throws Exception {
+    waitLatch = new Latch();
+    contextStopLatch = new Latch();
+  }
+
   @Override
   protected String getConfigFile() {
     return configFile;
@@ -58,13 +68,9 @@ public class GracefulShutdownTestCase extends AbstractIntegrationTestCase {
 
   @Test
   @Description("Verify that the graceful shutdown occurs in a timely manner")
-  public void flowStopTimelyManner() {
+  public void flowStopTimelyManner() throws Exception {
     for (int i = 0; i < getRuntime().availableProcessors() * 4; ++i) {
-      try {
-        flowRunner("flow").run();
-      } catch (Exception e) {
-        // Nothing to do
-      }
+      flowRunner("flow").run();
     }
   }
 
@@ -72,4 +78,12 @@ public class GracefulShutdownTestCase extends AbstractIntegrationTestCase {
   protected boolean isGracefulShutdown() {
     return true;
   }
+
+  public static class BlockMessageProcessor extends AbstractComponent implements Processor {
+    @Override
+    public CoreEvent process(CoreEvent event) throws MuleException {
+      return sleepFor(event, 1000);
+    }
+  }
+
 }

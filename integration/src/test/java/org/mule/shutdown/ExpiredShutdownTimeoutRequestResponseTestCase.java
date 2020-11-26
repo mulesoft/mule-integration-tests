@@ -49,24 +49,25 @@ public class ExpiredShutdownTimeoutRequestResponseTestCase extends AbstractShutd
     return "org/mule/shutdown/shutdown-timeout-request-response-config.xml";
   }
 
-  @Test
   public void testScriptComponent() throws Throwable {
     doShutDownTest("http://localhost:" + httpPort.getNumber() + "/scriptComponent");
   }
 
-  @Test
   public void testSetPayload() throws Throwable {
     doShutDownTest("http://localhost:" + httpPort.getNumber() + "/setPayload");
   }
 
-  @Test
   public void testSetPayloadChoice() throws Throwable {
     doShutDownTest("http://localhost:" + httpPort.getNumber() + "/setPayloadChoice");
   }
 
-  @Test
   public void testSetPayloadTx() throws Throwable {
     doShutDownTest("http://localhost:" + httpPort.getNumber() + "/setPayloadTx");
+  }
+
+  @Test
+  public void testSetPayloadThroughScatterGatherFlowRef() throws Throwable {
+    doShutDownTest("http://localhost:" + httpPort.getNumber() + "/setPayloadSgFr");
   }
 
   private void doShutDownTest(final String url) throws Throwable {
@@ -89,7 +90,6 @@ public class ExpiredShutdownTimeoutRequestResponseTestCase extends AbstractShutd
 
     // Make sure to give the request enough time to get to the waiting portion of the feed.
     waitLatch.await();
-
     muleContext.stop();
     contextStopLatch.release();
 
@@ -98,5 +98,10 @@ public class ExpiredShutdownTimeoutRequestResponseTestCase extends AbstractShutd
     } catch (ExecutionException e) {
       throw e.getCause();
     }
+  }
+
+  @Override
+  protected boolean isGracefulShutdown() {
+    return true;
   }
 }

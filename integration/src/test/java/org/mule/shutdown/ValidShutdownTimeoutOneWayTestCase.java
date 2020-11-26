@@ -36,9 +36,6 @@ public class ValidShutdownTimeoutOneWayTestCase extends AbstractShutdownTimeoutR
   @Inject
   private TestQueueManager queueManager;
 
-  @Rule
-  public SystemProperty contextShutdownTimeout = new SystemProperty("contextShutdownTimeout", "" + RECEIVE_TIMEOUT);
-
   @Override
   protected String getConfigFile() {
     return "org/mule/shutdown/shutdown-timeout-one-way-config.xml";
@@ -68,6 +65,11 @@ public class ValidShutdownTimeoutOneWayTestCase extends AbstractShutdownTimeoutR
   @Test
   public void testSetPayloadChoice() throws Throwable {
     doShutDownTest("setPayloadResponse", "setPayloadChoiceFlow");
+  }
+
+  @Test
+  public void testSetPayloadScatterGather() throws Throwable {
+    doShutDownTest("setPayloadResponse", "setPayloadThroughScatterGatherFlowRef");
   }
 
   private void doShutDownTest(final String payload, final String flowName) throws Throwable {

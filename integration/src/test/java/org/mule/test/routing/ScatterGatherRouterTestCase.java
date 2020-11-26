@@ -11,6 +11,7 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.io.IOUtils.LINE_SEPARATOR;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.Matchers.both;
 import static org.hamcrest.Matchers.containsString;
@@ -28,12 +29,18 @@ import static org.mule.test.allure.AllureConstants.RoutersFeature.ScatterGatherS
 import static org.mule.test.routing.ThreadCaptor.getCapturedThreads;
 
 import org.mule.functional.api.exception.FunctionalTestException;
+import org.mule.functional.api.flow.FlowConstructRunner;
+import org.mule.functional.api.flow.FlowRunner;
+import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.exception.ComposedErrorException;
+import org.mule.runtime.api.exception.DefaultMuleException;
+import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.util.concurrent.Latch;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
+import org.mule.runtime.core.api.processor.Processor;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -72,7 +79,8 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
   @Test
   @Description("Minimal configuration with default collect-map strategy.")
   public void minimalConfiguration() throws Exception {
-    flowRunner("minimalConfig").withPayload("foo").run();
+    FlowRunner runner = flowRunner("minimalConfig").withPayload("foo");
+    runner.run();
   }
 
   @Test
@@ -257,4 +265,15 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
     flowRunner("foreachWithinScatterGatherWithSdkOperation").run();
   }
 
+  public static class DelayedMessageProcessor extends AbstractComponent implements Processor {
+    @Override
+    public CoreEvent process(CoreEvent event) throws MuleException {
+        return sleepFor(event, 1000);
+    }
+  }
+
+  @Override
+  protected boolean isGracefulShutdown() {
+    return false;
+  }
 }

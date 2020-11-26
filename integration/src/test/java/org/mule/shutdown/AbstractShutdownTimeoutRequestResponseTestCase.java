@@ -25,7 +25,6 @@ import org.junit.Rule;
 
 public abstract class AbstractShutdownTimeoutRequestResponseTestCase extends AbstractIntegrationTestCase {
 
-  protected static int WAIT_TIME = 2000;
   protected static Latch waitLatch;
   protected static Latch contextStopLatch;
 
