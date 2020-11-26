@@ -211,7 +211,6 @@
                         <configuration>
                             <systemPropertyVariables>
                                 <enablePerformanceTests>false</enablePerformanceTests>
-                                <contiperf.active>false</contiperf.active>
                                 <jmh.ignoreLock>true</jmh.ignoreLock>
                             </systemPropertyVariables>
                         </configuration>
