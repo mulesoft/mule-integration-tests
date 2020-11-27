@@ -7,12 +7,19 @@
 package org.mule.test.extension.dsl;
 
 import static java.lang.String.format;
+import static java.lang.System.lineSeparator;
 import static java.lang.Thread.currentThread;
 import static java.util.Collections.emptyMap;
 import static java.util.Optional.empty;
+import static org.custommonkey.xmlunit.XMLUnit.setIgnoreAttributeOrder;
+import static org.custommonkey.xmlunit.XMLUnit.setIgnoreComments;
+import static org.custommonkey.xmlunit.XMLUnit.setIgnoreWhitespace;
+import static org.custommonkey.xmlunit.XMLUnit.setNormalizeWhitespace;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.fail;
 import static org.mule.runtime.api.component.ComponentIdentifier.builder;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.api.component.ComponentIdentifier;
@@ -30,6 +37,7 @@ import org.mule.runtime.core.api.extension.MuleExtensionModelProvider;
 import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
 
 import java.io.StringWriter;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -42,7 +50,12 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.custommonkey.xmlunit.DetailedDiff;
+import org.custommonkey.xmlunit.Diff;
+import org.custommonkey.xmlunit.Difference;
+import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.Before;
+import org.slf4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -54,6 +67,8 @@ import com.google.common.collect.ImmutableSet;
     "org.apache.activemq:activemq-broker",
     "org.apache.activemq:activemq-kahadb-store"})
 public abstract class AbstractElementModelTestCase extends MuleArtifactFunctionalTestCase {
+
+  private static final Logger LOGGER = getLogger(AbstractElementModelTestCase.class);
 
   protected static final String DB_CONFIG = "dbConfig";
   protected static final String DB_NS = "db";
@@ -205,4 +220,35 @@ public abstract class AbstractElementModelTestCase extends MuleArtifactFunctiona
     assertThat(elementModel.getValue().get(), is(value));
   }
 
+  /**
+   * Receives to {@link String} representation of two XML files and verify that they are semantically equivalent
+   *
+   * @param expected the reference content
+   * @param actual the actual content
+   * @throws Exception if comparison fails
+   */
+  public static void compareXML(String expected, String actual) throws Exception {
+    setNormalizeWhitespace(true);
+    setIgnoreWhitespace(true);
+    setIgnoreComments(true);
+    setIgnoreAttributeOrder(false);
+
+    Diff diff = XMLUnit.compareXML(expected, actual);
+    if (!(diff.similar() && diff.identical())) {
+      LOGGER.error(actual);
+      fail("Actual XML differs from expected: " + lineSeparator() + buildDifferencesMessage(diff));
+    }
+  }
+
+  private static String buildDifferencesMessage(Diff diff) {
+    DetailedDiff detDiff = new DetailedDiff(diff);
+    @SuppressWarnings("rawtypes")
+    List differences = detDiff.getAllDifferences();
+    StringBuilder diffLines = new StringBuilder();
+    for (Object object : differences) {
+      Difference difference = (Difference) object;
+      diffLines.append(difference.toString()).append(lineSeparator());
+    }
+    return diffLines.toString();
+  }
 }
