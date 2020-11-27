@@ -53,7 +53,7 @@
         </choice>
     </flow>
 
-    <flow name="setPayloadScatterGather">
+    <flow name="setPayloadThroughScatterGatherWithFlowRefs">
         <scatter-gather>
             <route>
                 <flow-ref name="flowWithBlockedProcessor" />
@@ -67,8 +67,7 @@
 
     <flow name="flowWithBlockedProcessor">
         <flow-ref name="block"/>
-        <set-payload value="staticComponentResponse"/>
-        <test-components:queue-push config-ref="response"/>
+        <set-payload value="setPayloadResponse"/>
     </flow>
 
 </mule>

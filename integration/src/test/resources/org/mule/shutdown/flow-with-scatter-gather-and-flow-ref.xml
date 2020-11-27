@@ -6,21 +6,19 @@
     xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
                         http://www.mulesoft.org/schema/mule/heisenberg http://www.mulesoft.org/schema/mule/heisenberg/current/mule-heisenberg.xsd">
 
-    <object name="block" class="org.mule.shutdown.GracefulShutdownTestCase$BlockMessageProcessor"/>
-
     <flow name="flow">
         <scatter-gather>
             <route>
-                <flow-ref name="flowWithBlockedProcessor" />
+                <flow-ref name="referencedFlow" />
             </route>
             <route>
-                <flow-ref name="flowWithBlockedProcessor" />
+                <flow-ref name="referencedFlow" />
             </route>
         </scatter-gather>
     </flow>
 
-    <flow name="flowWithBlockedProcessor">
-        <flow-ref name="block" />
+    <flow name="referencedFlow">
+        <heisenberg:kill-with-custom-message victim="T-1000" goodbyeMessage="Hasta la vista, baby" />
     </flow>
 
 </mule>

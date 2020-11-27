@@ -11,40 +11,341 @@
                http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
 
     <object name="threadCaptor" class="org.mule.test.routing.ThreadCaptor" />
-    <object name="delayedProcessor" class="org.mule.test.routing.ScatterGatherRouterTestCase$DelayedMessageProcessor" />
 
-    <flow name="minimalConfig" maxConcurrency="1">
+    <flow name="minimalConfig">
         <scatter-gather>
             <route>
-<!--                <set-payload value="apple"/>-->
-                <flow-ref name="appleFlow"/>
+                <test:assert count="1"/>
+                <set-payload value="apple"/>
             </route>
             <route>
-<!--                <set-payload value="banana"/>-->
-                <flow-ref name="bananaFlow"/>
+                <test:assert count="1"/>
+                <set-payload value="banana"/>
             </route>
             <route>
-<!--                <set-payload value="orange"/>-->
-                <flow-ref name="orangeFlow"/>
+                <test:assert count="1"/>
+                <set-payload value="orange"/>
             </route>
         </scatter-gather>
-<!--        <flow-ref name="testRoutesMap"/>-->
+        <flow-ref name="testRoutesMap"/>
     </flow>
 
-    <flow name="appleFlow">
-        <flow-ref name="delayedProcessor"/>
-<!--        <set-payload value="apple"/>-->
+    <flow name="minimalConfigCollectList">
+        <scatter-gather>
+            <route>
+                <test:assert count="1"/>
+                <set-payload value="apple"/>
+            </route>
+            <route>
+                <test:assert count="1"/>
+                <set-payload value="banana"/>
+            </route>
+            <route>
+                <set-payload value="orange"/>
+            </route>
+            <collect-list/>
+        </scatter-gather>
+        <flow-ref name="testRoutesList"/>
     </flow>
 
-    <flow name="bananaFlow">
-        <flow-ref name="delayedProcessor"/>
-<!--        <set-payload value="banana"/>-->
+    <flow name="minimalConfigTarget">
+        <scatter-gather target="result">
+            <route>
+                <set-payload value="apple"/>
+            </route>
+            <route>
+                <set-payload value="banana"/>
+            </route>
+            <route>
+                <set-payload value="orange"/>
+            </route>
+        </scatter-gather>
+        <test:assert expression="#[vars.result != null]"/>
+        <set-payload value="#[vars.result]"/>
+        <flow-ref name="testRoutesMap"/>
     </flow>
 
-    <flow name="orangeFlow">
-        <flow-ref name="delayedProcessor"/>
-<!--        <set-payload value="orange"/>-->
+    <flow name="minimalConfigTargetMessage">
+        <scatter-gather target="result" targetValue="#[message]">
+            <route>
+                <set-payload value="apple"/>
+            </route>
+            <route>
+                <set-payload value="banana"/>
+            </route>
+            <route>
+                <set-payload value="orange"/>
+            </route>
+        </scatter-gather>
+        <test:assert expression="#[vars.result != null]"/>
+        <set-payload value="#[vars.result.payload]"/>
+        <flow-ref name="testRoutesMap"/>
     </flow>
+
+    <flow name="timeout">
+        <scatter-gather timeout="${scatterGather.timeout}">
+            <route>
+                <set-payload value="apple"/>
+            </route>
+            <route>
+                <set-payload value="banana"/>
+            </route>
+            <route>
+                <set-payload value="#[java!org::mule::tck::junit4::AbstractMuleContextTestCase::sleepFor(payload, 10000)]"/>
+            </route>
+        </scatter-gather>
+    </flow>
+
+    <flow name="routeWithException">
+        <scatter-gather timeout="${scatterGather.timeout}">
+            <route>
+                <set-payload value="apple"/>
+            </route>
+            <route>
+                <test:processor throwException="true"/>
+            </route>
+            <route>
+                <set-payload value="orange"/>
+            </route>
+        </scatter-gather>
+    </flow>
+
+    <flow name="routeWithExceptionWithMessage">
+        <scatter-gather timeout="${scatterGather.timeout}">
+            <route>
+                <set-payload value="apple"/>
+            </route>
+            <route>
+                <test:processor throwException="true" exceptionText="I'm a message"/>
+            </route>
+            <route>
+                <set-payload value="orange"/>
+            </route>
+        </scatter-gather>
+    </flow>
+
+    <flow name="routeWithNonMuleException">
+        <scatter-gather timeout="${scatterGather.timeout}">
+            <route>
+                <set-payload value="apple"/>
+            </route>
+            <route>
+                <test:processor throwException="true" exceptionToThrow="java.lang.NullPointerException" exceptionText="nonMule"/>
+            </route>
+            <route>
+                <set-payload value="orange"/>
+            </route>
+        </scatter-gather>
+    </flow>
+
+    <flow name="routeWithExpressionException">
+        <scatter-gather timeout="${scatterGather.timeout}">
+            <route>
+                <set-payload value="apple"/>
+            </route>
+            <route>
+                <set-payload value="#[invalidExpr]"/>
+            </route>
+            <route>
+                <set-payload value="orange"/>
+            </route>
+        </scatter-gather>
+    </flow>
+
+    <flow name="routeWithExceptionInSequentialProcessing">
+        <scatter-gather maxConcurrency="1">
+            <route>
+                <set-payload value="apple"/>
+            </route>
+            <route>
+                <test:processor throwException="true"/>
+            </route>
+            <route>
+                <set-payload value="orange"/>
+            </route>
+        </scatter-gather>
+    </flow>
+
+    <flow name="sequentialProcessing">
+        <scatter-gather maxConcurrency="1">
+            <route>
+                <set-payload value="apple"/>
+                <flow-ref name="threadCaptor"/>
+            </route>
+            <route>
+                <set-payload value="banana"/>
+                <flow-ref name="threadCaptor"/>
+            </route>
+            <route>
+                <set-payload value="orange"/>
+                <flow-ref name="threadCaptor"/>
+            </route>
+        </scatter-gather>
+
+        <flow-ref name="testRoutesMap"/>
+    </flow>
+
+    <flow name="errorHandler">
+        <scatter-gather timeout="${scatterGather.timeout}">
+            <route>
+                <set-payload value="apple"/>
+            </route>
+            <route>
+                <test:processor throwException="true"/>
+            </route>
+            <route>
+                <test:processor throwException="true"/>
+            </route>
+        </scatter-gather>
+        <error-handler>
+            <on-error-continue type="COMPOSITE_ROUTING">
+                <test:assert expression="#[error.cause.^class == 'org.mule.runtime.core.privileged.routing.CompositeRoutingException']"/>
+                <test:assert expression="#[error.errorMessage.payload.failures['0'] == null]"/>
+                <test:assert expression="#[error.errorMessage.payload.failures['1'] != null]"/>
+                <test:assert expression="#[error.errorMessage.payload.failures['2'] != null]"/>
+                <test:assert expression="#[error.errorMessage.payload.results['0'] != null]"/>
+                <test:assert expression="#[error.errorMessage.payload.results['1'] == null]"/>
+                <test:assert expression="#[error.errorMessage.payload.results['2'] == null]"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="scatterGatherInsideErrorHandler">
+        <raise-error type="APP:SOME"/>
+        <error-handler>
+            <on-error-continue>
+                <scatter-gather>
+                    <route>
+                        <set-payload value="v1"/>
+                    </route>
+                    <route>
+                        <set-payload value="v2"/>
+                    </route>
+                </scatter-gather>
+                <test:assert expression="#[payload[0].payload == 'v1']"/>
+                <test:assert expression="#[payload[1].payload == 'v2']"/>
+                <set-payload value="hello"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="scatterGatherInsideErrorHandlerThrowsError">
+        <try>
+            <raise-error type="APP:SOME"/>
+            <error-handler>
+                <on-error-continue>
+                    <scatter-gather>
+                        <route>
+                            <logger level="ERROR" message="Hello World"/>
+                        </route>
+                        <route>
+                            <raise-error type="APP:SOME"/>
+                            <logger level="ERROR" message="Hello World"/>
+                        </route>
+                    </scatter-gather>
+                    <set-payload value="hello"/>
+                </on-error-continue>
+            </error-handler>
+        </try>
+        <error-handler>
+            <on-error-continue type="COMPOSITE_ROUTING">
+                <test:assert expression="#[error.cause.^class == 'org.mule.runtime.core.privileged.routing.CompositeRoutingException']"/>
+                <test:assert expression="#[error.errorMessage.payload.failures['0'] == null]"/>
+                <test:assert expression="#[error.errorMessage.payload.failures['1'] != null]"/>
+                <test:assert expression="#[error.errorMessage.payload.results['0'] != null]"/>
+                <test:assert expression="#[error.errorMessage.payload.results['1'] == null]"/>
+                <set-payload value="hello"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="errorHandlerInsideScatterGather">
+        <scatter-gather>
+            <route>
+                <set-payload value="v1"/>
+            </route>
+            <route>
+                <try>
+                    <raise-error type="APP:SOME"/>
+                    <error-handler>
+                        <on-error-continue>
+                            <test-components:non-blocking/>
+                            <set-payload value="v2"/>
+                        </on-error-continue>
+                    </error-handler>
+                </try>
+            </route>
+        </scatter-gather>
+        <test:assert expression="#[payload[0].payload == 'v1']"/>
+        <test:assert expression="#[payload[1].payload == 'v2']"/>
+    </flow>
+
+    <flow name="variables">
+        <set-variable variableName="var1" value="var"/>
+        <set-variable variableName="var2" value="var"/>
+        <scatter-gather>
+            <route>
+                <set-payload value="apple"/>
+                <set-variable variableName="var2" value="newValue"/>
+                <set-variable variableName="var3" value="var"/>
+                <set-variable variableName="var4" value="val1"/>
+            </route>
+            <route>
+                <set-payload value="banana"/>
+                <set-variable variableName="var4" value="val2"/>
+            </route>
+            <route>
+                <set-payload value="orange"/>
+                <set-variable variableName="var4" value="val3"/>
+            </route>
+        </scatter-gather>
+
+        <test:assert expression="#[vars.var1 == 'var']"/>
+        <test:assert expression="#[vars.var2 == 'newValue']"/>
+        <test:assert expression="#[vars.var3 == 'var']"/>
+        <test:assert expression="#[vars.var4 == ['val1','val2','val3']]"/>
+    </flow>
+
+    <flow name="concurrent">
+        <scatter-gather>
+            <route>
+                <flow-ref name="captureThreadAndWait" />
+                <test:assert count="1"/>
+            </route>
+            <route>
+                <flow-ref name="captureThreadAndWait" />
+                <test:assert count="1"/>
+            </route>
+            <route>
+                <flow-ref name="captureThreadAndWait" />
+                <test:assert count="1"/>
+            </route>
+        </scatter-gather>
+        <test:assert expression="#[sizeOf(payload) == 3]"/>
+    </flow>
+
+    <flow name="dataType">
+        <scatter-gather>
+            <route>
+                <set-payload value="apple" mimeType="text/plain"/>
+            </route>
+            <route>
+                <set-payload value="banana"/>
+            </route>
+            <route>
+                <set-payload value="orange"/>
+            </route>
+        </scatter-gather>
+    </flow>
+
+    <sub-flow name="assertFlowVars">
+        <test:assert expression="#[vars.foo == 'bar']" />
+    </sub-flow>
+
+    <sub-flow name="captureThreadAndWait">
+        <flow-ref name="threadCaptor"/>
+        <set-payload value="#[java!org::mule::tck::junit4::AbstractMuleContextTestCase::awaitLatch(payload, vars.latch)]"/>
+    </sub-flow>
 
     <sub-flow name="testRoutesMap">
         <test:assert expression="#[sizeOf(payload) == 3]"/>
@@ -52,5 +353,100 @@
         <test:assert expression="#[payload['1'].payload == 'banana']"/>
         <test:assert expression="#[payload['2'].payload == 'orange']"/>
     </sub-flow>
+
+    <sub-flow name="testRoutesList">
+        <test:assert expression="#[sizeOf(payload) == 3]"/>
+        <test:assert expression="#[payload[0].payload == 'apple']"/>
+        <test:assert expression="#[payload[1].payload == 'banana']"/>
+        <test:assert expression="#[payload[2].payload == 'orange']"/>
+    </sub-flow>
+
+    <flow name="withinTransaction">
+        <try transactionalAction="ALWAYS_BEGIN">
+            <flow-ref name="threadCaptor"/>
+            <scatter-gather>
+                <route>
+                    <test-components:non-blocking/>
+                    <test:assert expression="#[java!org::mule::runtime::core::api::transaction::TransactionCoordination::isTransactionActive()]"/>
+                    <set-payload value="apple"/>
+                    <flow-ref name="threadCaptor"/>
+                </route>
+                <route>
+                    <test:processor processingType="CPU_INTENSIVE"/>
+                    <test:assert expression="#[java!org::mule::runtime::core::api::transaction::TransactionCoordination::isTransactionActive()]"/>
+                    <set-payload value="banana"/>
+                    <flow-ref name="threadCaptor"/>
+                </route>
+                <route>
+                    <test:processor processingType="BLOCKING"/>
+                    <test:assert expression="#[java!org::mule::runtime::core::api::transaction::TransactionCoordination::isTransactionActive()]"/>
+                    <set-payload value="orange"/>
+                    <flow-ref name="threadCaptor"/>
+                </route>
+            </scatter-gather>
+        </try>
+        <flow-ref name="threadCaptor"/>
+
+        <flow-ref name="testRoutesMap"/>
+    </flow>
+
+    <flow name="resultsInOrder">
+        <scatter-gather>
+            <route>
+                <set-payload value="A"/>
+            </route>
+            <route>
+                <set-payload value="B"/>
+            </route>
+            <route>
+                <set-payload value="C"/>
+            </route>
+            <route>
+                <set-payload value="D"/>
+            </route>
+            <route>
+                <set-payload value="E"/>
+            </route>
+            <route>
+                <set-payload value="F"/>
+            </route>
+            <route>
+                <set-payload value="G"/>
+            </route>
+            <route>
+                <set-payload value="H"/>
+            </route>
+            <route>
+                <set-payload value="I"/>
+            </route>
+            <route>
+                <set-payload value="J"/>
+            </route>
+            <route>
+                <set-payload value="K"/>
+            </route>
+            <route>
+                <set-payload value="L"/>
+            </route>
+        </scatter-gather>
+    </flow>
+
+    <flow name="foreachWithinScatterGatherWithSdkOperation">
+        <!-- This first operation call is needed so that the SdkInternalContext for the event is initialized -->
+        <test-components:non-blocking/>
+        <set-payload value="#[['apple', 'banana', 'orange']]"/>
+        <scatter-gather>
+            <route>
+                <foreach>
+                    <test-components:non-blocking/>
+                </foreach>
+            </route>
+            <route>
+                <foreach>
+                    <test-components:non-blocking/>
+                </foreach>
+            </route>
+        </scatter-gather>
+    </flow>
 
 </mule>
