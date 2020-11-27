@@ -12,18 +12,17 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mule.runtime.api.connectivity.ConnectivityTestingService.CONNECTIVITY_TESTING_SERVICE_KEY;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
-import org.junit.Before;
-import org.junit.Test;
-
 import org.mule.runtime.api.component.location.Location;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.api.connectivity.ConnectivityTestingService;
 import org.mule.test.module.extension.oauth.BaseOAuthExtensionTestCase;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import com.github.tomakehurst.wiremock.client.WireMock;
+import org.junit.Before;
+import org.junit.Test;
 
 public class OAuthConnectivityValidationRefreshExtensionTestCase extends BaseOAuthExtensionTestCase {
 
@@ -49,11 +48,38 @@ public class OAuthConnectivityValidationRefreshExtensionTestCase extends BaseOAu
     WireMock.reset();
     stubTokenUrl(accessTokenContent(ACCESS_TOKEN + "-refreshed"));
 
-    ConnectionValidationResult connectionValidationResult = connectivityTestingService
-        .testConnection(Location.builder().globalName("oauth").build());
+    ConnectionValidationResult connectionValidationResult = testConnection();
     assertThat(connectionValidationResult.isValid(), is(true));
     wireMock.verify(postRequestedFor(urlPathEqualTo("/" + TOKEN_PATH)));
   }
 
+  @Test
+  public void refreshedTokenAlreadyExpiredOnConnectionValidation() throws Exception {
+    simulateCallback();
+
+    stubRefreshToken();
+
+    ConnectionValidationResult connectionValidationResult = testConnection();
+    verifyTokenRefreshedTwice();
+    assertThat(connectionValidationResult.isValid(), is(true));
+  }
+
+  @Test
+  public void refreshedTokenAlreadyExpiredTwiceOnConnectionValidation() throws Exception {
+    simulateCallback();
+
+    stubRefreshedTokenAlreadyExpiredTwice();
+
+    ConnectionValidationResult connectionValidationResult = testConnection();
+    verifyTokenRefreshedTwice();
+    assertThat(connectionValidationResult.isValid(), is(false));
+
+    expectExpiredTokenException();
+    throw connectionValidationResult.getException();
+  }
+
+  private ConnectionValidationResult testConnection() {
+    return connectivityTestingService.testConnection(Location.builder().globalName("oauth").build());
+  }
 }
 
