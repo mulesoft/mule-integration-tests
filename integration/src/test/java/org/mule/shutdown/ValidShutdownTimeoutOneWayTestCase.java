@@ -13,7 +13,6 @@ import static org.junit.Assert.fail;
 import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.LIFECYCLE_AND_DEPENDENCY_INJECTION;
 import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.GracefulShutdownStory.GRACEFUL_SHUTDOWN_STORY;
 
-
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.metadata.MapDataType;
@@ -96,14 +95,14 @@ public class ValidShutdownTimeoutOneWayTestCase extends AbstractShutdownTimeoutR
     if (response.getPayload().getDataType() instanceof MapDataType) {
       Map<String, Message> values = (Map) response.getPayload().getValue();
       values.entrySet().forEach(
-              value -> {
-                try {
-                  assertThat("Was not able to process message", getPayloadAsString(value.getValue()), is(payload));
-                } catch (Exception e) {
-                  fail("Was not able to process message");
-                }
-              }
-      );
+                                value -> {
+                                  try {
+                                    assertThat("Was not able to process message", getPayloadAsString(value.getValue()),
+                                               is(payload));
+                                  } catch (Exception e) {
+                                    fail("Was not able to process message");
+                                  }
+                                });
     } else {
       assertThat("Was not able to process message", getPayloadAsString(response), is(payload));
     }
