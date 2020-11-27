@@ -60,7 +60,6 @@ public class ValidShutdownTimeoutOneWayTestCase extends AbstractShutdownTimeoutR
   }
 
   @Test
-  @Ignore("MULE-18879")
   public void testSetPayload() throws Throwable {
     doShutDownTest("setPayloadResponse", "setPayloadFlow");
   }
