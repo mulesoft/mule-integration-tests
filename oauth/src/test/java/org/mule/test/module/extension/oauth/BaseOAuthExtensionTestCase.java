@@ -12,9 +12,11 @@ import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
+import static com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED;
 import static java.lang.String.format;
 import static org.apache.http.client.fluent.Request.Get;
 import static org.hamcrest.CoreMatchers.is;
@@ -27,6 +29,7 @@ import static org.mule.runtime.oauth.internal.OAuthConstants.ACCESS_TOKEN_PARAME
 import static org.mule.runtime.oauth.internal.OAuthConstants.EXPIRES_IN_PARAMETER;
 import static org.mule.runtime.oauth.internal.OAuthConstants.REFRESH_TOKEN_PARAMETER;
 import static org.mule.tck.probe.PollingProber.check;
+
 import org.mule.runtime.api.store.ObjectStore;
 import org.mule.runtime.extension.api.connectivity.oauth.AuthorizationCodeState;
 import org.mule.runtime.oauth.api.state.ResourceOwnerOAuthContext;
@@ -35,14 +38,16 @@ import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.module.extension.AbstractExtensionFunctionalTestCase;
 import org.mule.test.oauth.TestOAuthConnectionState;
 
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import com.google.common.collect.ImmutableMap;
-
 import java.io.IOException;
 import java.util.Map;
 
+import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
+import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.google.common.collect.ImmutableMap;
 import org.apache.http.client.fluent.Response;
 import org.junit.Rule;
+import org.junit.rules.ExpectedException;
 
 public abstract class BaseOAuthExtensionTestCase extends AbstractExtensionFunctionalTestCase {
 
@@ -105,6 +110,9 @@ public abstract class BaseOAuthExtensionTestCase extends AbstractExtensionFuncti
 
   @Rule
   public SystemProperty accessTokenUrl = new SystemProperty("accessTokenUrl", tokenUrl);
+
+  @Rule
+  public ExpectedException expectedException = ExpectedException.none();
 
   protected String ownerId;
   protected String storedOwnerId;
@@ -173,10 +181,14 @@ public abstract class BaseOAuthExtensionTestCase extends AbstractExtensionFuncti
   }
 
   protected void stubTokenUrl(String responseContent) {
-    wireMock.stubFor(post(urlMatching("/" + TOKEN_PATH)).willReturn(aResponse()
+    wireMock.stubFor(post(urlMatching("/" + TOKEN_PATH)).willReturn(buildResponseContent(responseContent)));
+  }
+
+  protected ResponseDefinitionBuilder buildResponseContent(String responseContent) {
+    return aResponse()
         .withStatus(OK.getStatusCode())
         .withBody(responseContent)
-        .withHeader(CONTENT_TYPE, "application/json")));
+        .withHeader(CONTENT_TYPE, "application/json");
   }
 
   protected String accessTokenContent() {
@@ -210,6 +222,10 @@ public abstract class BaseOAuthExtensionTestCase extends AbstractExtensionFuncti
     assertAuthCodeState(connection);
   }
 
+  protected String getRefreshTokenResponse() {
+    return accessTokenContent(ACCESS_TOKEN + "-refreshed");
+  }
+
   protected void assertAuthCodeState(TestOAuthConnectionState connection) {
     AuthorizationCodeState state = (AuthorizationCodeState) connection.getState();
     assertThat(state.getAccessToken(), is(ACCESS_TOKEN));
@@ -229,7 +245,59 @@ public abstract class BaseOAuthExtensionTestCase extends AbstractExtensionFuncti
     assertThat(connection.getUserId(), is(USER_ID));
   }
 
+  protected void stubRefreshedTokenAlreadyExpired() {
+    WireMock.reset();
+
+    wireMock.stubFor(post(urlMatching("/" + TOKEN_PATH))
+        .inScenario("refreshTokenWasAlreadyExpired")
+        .whenScenarioStateIs(STARTED)
+        .willReturn(buildResponseContent(accessTokenContent(ACCESS_TOKEN)))
+        .willSetStateTo("refresh"));
+
+    wireMock.stubFor(post(urlMatching("/" + TOKEN_PATH))
+        .inScenario("refreshTokenWasAlreadyExpired")
+        .whenScenarioStateIs("refresh")
+        .willReturn(buildResponseContent(getRefreshTokenResponse())));
+  }
+
+  protected void stubRefreshedTokenAlreadyExpiredTwice() {
+    WireMock.reset();
+
+    wireMock.stubFor(post(urlMatching("/" + TOKEN_PATH))
+        .inScenario("refreshTokenWasAlreadyExpiredTwice")
+        .whenScenarioStateIs(STARTED)
+        .willReturn(buildResponseContent(accessTokenContent(ACCESS_TOKEN)))
+        .willSetStateTo("2"));
+
+    wireMock.stubFor(post(urlMatching("/" + TOKEN_PATH))
+        .inScenario("refreshTokenWasAlreadyExpiredTwice")
+        .whenScenarioStateIs("2")
+        .willReturn(buildResponseContent(accessTokenContent(ACCESS_TOKEN)))
+        .willSetStateTo("refresh"));
+
+    wireMock.stubFor(post(urlMatching("/" + TOKEN_PATH))
+        .inScenario("refreshTokenWasAlreadyExpiredTwice")
+        .whenScenarioStateIs("refresh")
+        .willReturn(buildResponseContent(getRefreshTokenResponse())));
+  }
+
+  protected void stubRefreshToken() {
+    stubTokenUrl(accessTokenContent(ACCESS_TOKEN + "-refreshed"));
+  }
+
   protected String getCustomOwnerId() {
     return "MG";
+  }
+
+  protected void verifyTokenRefreshedTwice() {
+    wireMock.verify(2, postRequestedFor(urlPathEqualTo("/" + TOKEN_PATH)));
+  }
+
+  protected void expectExpiredTokenException() {
+    expectedException.expectMessage(getExpirationMessageSubstring());
+  }
+
+  protected String getExpirationMessageSubstring() {
+    return "Access Token expired for resource owner id";
   }
 }

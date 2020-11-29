@@ -78,25 +78,70 @@ public class OAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
   public void refreshToken() throws Exception {
     receiveAccessTokenAndUserConnection();
     WireMock.reset();
-    stubTokenUrl(accessTokenContent(ACCESS_TOKEN + "-refreshed"));
+    stubRefreshToken();
     flowRunner("refreshToken").withVariable(OWNER_ID_VARIABLE_NAME, getCustomOwnerId()).run();
     wireMock.verify(postRequestedFor(urlPathEqualTo("/" + TOKEN_PATH)));
+  }
+
+  @Test
+  public void refreshedTokenWasAlreadyExpired() throws Exception {
+    receiveAccessTokenAndUserConnection();
+    stubRefreshedTokenAlreadyExpired();
+
+    flowRunner("refreshToken").withVariable(OWNER_ID_VARIABLE_NAME, getCustomOwnerId()).run();
+    verifyTokenRefreshedTwice();
+  }
+
+  @Test
+  public void refreshedTokenWasAlreadyExpiredTwice() throws Exception {
+    receiveAccessTokenAndUserConnection();
+    stubRefreshedTokenAlreadyExpiredTwice();
+
+    expectExpiredTokenException();
+
+    try {
+      flowRunner("refreshToken").withVariable(OWNER_ID_VARIABLE_NAME, getCustomOwnerId()).run();
+    } finally {
+      verifyTokenRefreshedTwice();
+    }
   }
 
   @Test
   public void refreshTokenForPagedOperationOnFirstPage() throws Exception {
     receiveAccessTokenAndUserConnection();
     WireMock.reset();
-    stubTokenUrl(accessTokenContent(ACCESS_TOKEN + "-refreshed"));
+    stubTokenUrl(getRefreshTokenResponse());
     flowRunner("pagedOperationFailsAtFirstPage").withVariable(OWNER_ID_VARIABLE_NAME, getCustomOwnerId()).run();
     wireMock.verify(postRequestedFor(urlPathEqualTo("/" + TOKEN_PATH)));
+  }
+
+  @Test
+  public void refreshedTokenAlreadyExpiredForPagedOperationOnFirstPage() throws Exception {
+    receiveAccessTokenAndUserConnection();
+    stubRefreshedTokenAlreadyExpired();
+    flowRunner("pagedOperationFailsAtFirstPage").withVariable(OWNER_ID_VARIABLE_NAME, getCustomOwnerId()).run();
+    verifyTokenRefreshedTwice();
+  }
+
+  @Test
+  public void refreshedTokenAlreadyExpiredTwiceForPagedOperationOnFirstPage() throws Exception {
+    receiveAccessTokenAndUserConnection();
+
+    stubRefreshedTokenAlreadyExpiredTwice();
+    expectExpiredTokenException();
+
+    try {
+      flowRunner("pagedOperationFailsAtFirstPage").withVariable(OWNER_ID_VARIABLE_NAME, getCustomOwnerId()).run();
+    } finally {
+      verifyTokenRefreshedTwice();
+    }
   }
 
   @Test
   public void refreshTokenForPagedOperationOnThirdPage() throws Exception {
     receiveAccessTokenAndUserConnection();
     WireMock.reset();
-    stubTokenUrl(accessTokenContent(ACCESS_TOKEN + "-refreshed"));
+    stubTokenUrl(getRefreshTokenResponse());
     CoreEvent event = flowRunner("pagedOperationFailsAtThirdPage")
         .withVariable(OWNER_ID_VARIABLE_NAME, getCustomOwnerId())
         .run();
@@ -105,6 +150,36 @@ public class OAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
     List<String> accumulator = (List<String>) event.getVariables().get("accumulator").getValue();
     assertThat(accumulator, hasSize(3));
     assertThat(accumulator, Matchers.contains("item 1", "item 2", "item 3"));
+  }
+
+  @Test
+  public void refreshedTokenAlreadyExpiredForPagedOperationOnThirdPage() throws Exception {
+    receiveAccessTokenAndUserConnection();
+    stubRefreshedTokenAlreadyExpired();
+    CoreEvent event = flowRunner("pagedOperationFailsAtThirdPage")
+        .withVariable(OWNER_ID_VARIABLE_NAME, getCustomOwnerId())
+        .run();
+
+    verifyTokenRefreshedTwice();
+    List<String> accumulator = (List<String>) event.getVariables().get("accumulator").getValue();
+    assertThat(accumulator, hasSize(3));
+    assertThat(accumulator, Matchers.contains("item 1", "item 2", "item 3"));
+  }
+
+  @Test
+  public void refreshedTokenAlreadyExpiredTwiceForPagedOperationOnThirdPage() throws Exception {
+    receiveAccessTokenAndUserConnection();
+
+    stubRefreshedTokenAlreadyExpiredTwice();
+    expectExpiredTokenException();
+
+    try {
+      flowRunner("pagedOperationFailsAtThirdPage")
+          .withVariable(OWNER_ID_VARIABLE_NAME, getCustomOwnerId())
+          .run();
+    } finally {
+      verifyTokenRefreshedTwice();
+    }
   }
 
   @Test
