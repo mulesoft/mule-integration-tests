@@ -25,6 +25,7 @@ import org.mule.runtime.api.message.Error;
 import org.mule.runtime.api.notification.ExceptionNotificationListener;
 import org.mule.runtime.api.util.concurrent.Latch;
 import org.mule.runtime.core.api.event.CoreEvent;
+import org.mule.runtime.core.api.retry.policy.RetryPolicyExhaustedException;
 import org.mule.runtime.extension.api.error.MuleErrors;
 import org.mule.tck.junit4.matcher.ErrorTypeMatcher;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -119,7 +120,7 @@ public class UntilSuccessfulRetryExhaustedTestCase extends AbstractIntegrationTe
     // Returned error assertions
     Error error = (Error) queueManager.read("dlq", RECEIVE_TIMEOUT, MILLISECONDS).getMessage().getPayload().getValue();
     assertThat(error.getErrorType().toString(), equalTo("MULE:RETRY_EXHAUSTED"));
-    assertThat(error.getCause(), instanceOf(MuleRuntimeError.class));
+    assertThat(error.getCause(), instanceOf(RetryPolicyExhaustedException.class));
     assertThat(error.getDescription(), equalTo("Mule runtime error"));
     assertThat(error.getDetailedDescription(), equalTo("'until-successful' retries exhausted"));
     assertThat(error.getFailingComponent(), containsString("retryExhaustedErrorWithSuppressionsCheck/processors/0"));
