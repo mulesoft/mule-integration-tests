@@ -26,7 +26,7 @@ import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.erro
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.innerPojo;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.multiLevelOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.sourceDeclaration;
-import static org.mule.runtime.module.tooling.internal.artifact.AbstractParameterResolverExecutor.INVALID_PARAMETER_VALUE;
+import static org.mule.runtime.module.tooling.internal.artifact.AbstractParameterResolverExecutor.INVALID_ACTING_PARAMETER_VALUE;
 import static org.mule.sdk.api.data.sample.SampleDataException.MISSING_REQUIRED_PARAMETERS;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.sampledata.SampleDataFailure;
@@ -197,7 +197,7 @@ public class SampleDataTestCase extends DeclarationSessionTestCase {
     ComponentElementDeclaration<?> elementDeclaration = actingParameterOPDeclaration(CONFIG_NAME, "#[payload]");
     String message = "Error resolving value for parameter: 'actingParameter' from declaration, it cannot be an EXPRESSION value";
     String reason = "org.mule.sdk.api.data.sample.SampleDataException: " + message + "\n";
-    assertSampleDataFailure(elementDeclaration, message, reason, INVALID_PARAMETER_VALUE);
+    assertSampleDataFailure(elementDeclaration, message, reason, INVALID_ACTING_PARAMETER_VALUE);
   }
 
   @Test

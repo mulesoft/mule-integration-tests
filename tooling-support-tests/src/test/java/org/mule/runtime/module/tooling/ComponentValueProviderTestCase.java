@@ -30,7 +30,7 @@ import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.para
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.simpleActingParametersInContainerOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.simpleActingParametersOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.sourceWithMultiLevelValue;
-import static org.mule.runtime.module.tooling.internal.artifact.AbstractParameterResolverExecutor.INVALID_PARAMETER_VALUE;
+import static org.mule.runtime.module.tooling.internal.artifact.AbstractParameterResolverExecutor.INVALID_ACTING_PARAMETER_VALUE;
 import org.mule.runtime.api.value.Value;
 import org.mule.runtime.api.value.ValueResult;
 import org.mule.runtime.app.declaration.api.ComponentElementDeclaration;
@@ -116,7 +116,7 @@ public class ComponentValueProviderTestCase extends DeclarationSessionTestCase {
     ComponentElementDeclaration elementDeclaration = actingParameterOPDeclaration(CONFIG_NAME, actingParameter);
     validateValuesFailure(session, elementDeclaration, PROVIDED_PARAMETER_NAME,
                           "Error resolving value for parameter: 'actingParameter' from declaration, it cannot be an EXPRESSION value",
-                          INVALID_PARAMETER_VALUE);
+                          INVALID_ACTING_PARAMETER_VALUE);
   }
 
   @Test
