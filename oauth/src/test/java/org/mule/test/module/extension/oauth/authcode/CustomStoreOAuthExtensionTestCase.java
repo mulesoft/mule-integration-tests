@@ -41,7 +41,7 @@ public class CustomStoreOAuthExtensionTestCase extends BaseOAuthExtensionTestCas
   }
 
   @Test
-  @FlakyTest(times = 1000)
+  @FlakyTest(times = 500)
   public void useCustomStore() throws Exception {
     System.out.println(i++);
     System.out.println("oauthServerPort" + oauthServerPort.getNumber());

@@ -135,11 +135,11 @@ public abstract class BaseOAuthExtensionTestCase extends AbstractExtensionFuncti
   }
 
   protected void simulateDanceStart() throws IOException {
-    simulateDanceStart(callbackPort.getNumber());
+    simulateDanceStart(oauthServerPort.getNumber());
   }
 
   protected void simulateDanceStart(int port) throws IOException {
-    wireMock.stubFor(get(urlMatching("/" + LOCAL_AUTH_PATH)).willReturn(aResponse().withStatus(OK.getStatusCode())));
+    wireMock.stubFor(get(urlMatching("/" + LOCAL_AUTH_PATH + ".*")).willReturn(aResponse().withStatus(OK.getStatusCode())));
     ImmutableMap.Builder<String, String> queryParamsBuilder = ImmutableMap.builder();
     if (ownerId != null) {
       queryParamsBuilder.put("resourceOwnerId", ownerId);

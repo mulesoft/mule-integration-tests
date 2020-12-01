@@ -25,6 +25,8 @@ import org.mule.runtime.core.privileged.event.BaseEventContext;
 import org.mule.runtime.extension.api.connectivity.oauth.AuthCodeRequest;
 import org.mule.runtime.extension.api.connectivity.oauth.AuthorizationCodeState;
 import org.mule.runtime.extension.api.error.MuleErrors;
+import org.mule.tck.junit4.FlakinessDetectorTestRunner;
+import org.mule.tck.junit4.FlakyTest;
 import org.mule.test.module.extension.oauth.BaseOAuthExtensionTestCase;
 import org.mule.test.oauth.AuthCodeConfig;
 import org.mule.test.oauth.TestOAuthConnection;
@@ -37,7 +39,9 @@ import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.mule.test.runner.RunnerDelegateTo;
 
+@RunnerDelegateTo(FlakinessDetectorTestRunner.class)
 public class OAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
 
   @Rule
@@ -55,6 +59,7 @@ public class OAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
   }
 
   @Test
+  @FlakyTest(times = 500)
   public void authorizeAndStartDancingBaby() throws Exception {
     simulateDanceStart();
     verifyAuthUrlRequest();
@@ -138,6 +143,7 @@ public class OAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
   }
 
   @Test
+  @FlakyTest(times = 500)
   public void refreshTokenForPagedOperationOnThirdPage() throws Exception {
     receiveAccessTokenAndUserConnection();
     WireMock.reset();
