@@ -21,8 +21,6 @@ public class CustomStoreOAuthExtensionTestCase extends BaseOAuthExtensionTestCas
 
   private ObjectStore objectStore;
 
-  static int i = 0;
-
   @Override
   protected String getConfigFile() {
     return "custom-store-oauth-extension-config.xml";
@@ -43,12 +41,6 @@ public class CustomStoreOAuthExtensionTestCase extends BaseOAuthExtensionTestCas
   @Test
   @FlakyTest(times = 500)
   public void useCustomStore() throws Exception {
-    System.out.println(i++);
-    System.out.println("oauthServerPort" + oauthServerPort.getNumber());
-    System.out.println("wireMock port " + wireMock.port());
-    System.out.println("callbackPort" + callbackPort.getNumber());
-    System.out.println("accessTokenUrl" + accessTokenUrl.getValue());
-    System.out.println("authorizationUrl" + authorizationUrl.getValue());
     simulateDanceStart();
     simulateCallback();
 
