@@ -82,7 +82,7 @@ public class ExpiredShutdownTimeoutOneWayTestCase extends AbstractShutdownTimeou
   }
 
   @Test
-  public void testSetPayloadScatterGather() throws Throwable {
+  public void testSetPayloadThroughScatterGatherWithFlowRefs() throws Throwable {
     doShutDownTest("setPayloadThroughScatterGatherWithFlowRefs");
   }
 

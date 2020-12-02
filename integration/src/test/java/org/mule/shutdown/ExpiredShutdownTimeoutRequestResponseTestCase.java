@@ -70,7 +70,7 @@ public class ExpiredShutdownTimeoutRequestResponseTestCase extends AbstractShutd
   }
 
   @Test
-  public void testSetPayloadThroughScatterGatherFlowRef() throws Throwable {
+  public void testSetPayloadThroughScatterGatherWithFlowRefs() throws Throwable {
     doShutDownTest("http://localhost:" + httpPort.getNumber() + "/setPayloadSgFr");
   }
 
