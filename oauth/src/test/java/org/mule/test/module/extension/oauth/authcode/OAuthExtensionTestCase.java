@@ -58,9 +58,13 @@ public class OAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
     storedOwnerId = getCustomOwnerId() + "-oauth";
   }
 
+  static int i = 0;
+
+
   @Test
   @FlakyTest(times = 500)
   public void authorizeAndStartDancingBaby() throws Exception {
+    System.out.println(i++);
     simulateDanceStart();
     verifyAuthUrlRequest();
   }

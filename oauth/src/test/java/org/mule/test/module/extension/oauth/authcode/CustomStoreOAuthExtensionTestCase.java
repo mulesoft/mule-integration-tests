@@ -38,9 +38,17 @@ public class CustomStoreOAuthExtensionTestCase extends BaseOAuthExtensionTestCas
     muleContext.getObjectStoreManager().disposeStore(CUSTOM_STORE_NAME);
   }
 
+  static int i = 0;
+
   @Test
-  @FlakyTest(times = 500)
+  @FlakyTest(times = 10000)
   public void useCustomStore() throws Exception {
+    System.out.println(i++);
+    System.out.println("oauthServerPort" + oauthServerPort.getNumber());
+    System.out.println("wireMock port " + wireMock.port());
+    System.out.println("callbackPort" + callbackPort.getNumber());
+    System.out.println("accessTokenUrl" + accessTokenUrl.getValue());
+    System.out.println("authorizationUrl" + authorizationUrl.getValue());
     simulateDanceStart();
     simulateCallback();
 

@@ -9,6 +9,7 @@ package org.mule.test.module.extension.oauth;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.containing;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
@@ -138,6 +139,7 @@ public abstract class BaseOAuthExtensionTestCase extends AbstractExtensionFuncti
   }
 
   protected void simulateDanceStart(int port) throws IOException {
+    wireMock.stubFor(get(urlMatching("/" + LOCAL_AUTH_PATH + ".*")).willReturn(aResponse().withStatus(OK.getStatusCode())));
     ImmutableMap.Builder<String, String> queryParamsBuilder = ImmutableMap.builder();
     if (ownerId != null) {
       queryParamsBuilder.put("resourceOwnerId", ownerId);
@@ -147,8 +149,11 @@ public abstract class BaseOAuthExtensionTestCase extends AbstractExtensionFuncti
         .build();
 
     String localAuthUrl = toUrl(LOCAL_AUTH_PATH, port);
-    Get(localAuthUrl + "?" + encodeQueryString(queryParams)).addHeader("Connection", "close")
-        .connectTimeout(REQUEST_TIMEOUT).socketTimeout(REQUEST_TIMEOUT).execute();
+    Response response =
+        Get(localAuthUrl + "?" + encodeQueryString(queryParams)).addHeader("Connection", "close")
+            .connectTimeout(REQUEST_TIMEOUT).socketTimeout(REQUEST_TIMEOUT).execute();
+    System.out.println("RESPONSE " + response.returnResponse().getStatusLine().getStatusCode());
+
   }
 
   protected void simulateCallback() {
