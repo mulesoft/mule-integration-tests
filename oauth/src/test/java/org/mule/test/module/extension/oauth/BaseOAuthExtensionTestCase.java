@@ -149,10 +149,8 @@ public abstract class BaseOAuthExtensionTestCase extends AbstractExtensionFuncti
         .build();
 
     String localAuthUrl = toUrl(LOCAL_AUTH_PATH, port);
-    Response response =
-        Get(localAuthUrl + "?" + encodeQueryString(queryParams)).addHeader("Connection", "close")
-            .connectTimeout(REQUEST_TIMEOUT).socketTimeout(REQUEST_TIMEOUT).execute();
-    System.out.println("RESPONSE " + response.returnResponse().getStatusLine().getStatusCode());
+    Get(localAuthUrl + "?" + encodeQueryString(queryParams)).addHeader("Connection", "close")
+        .connectTimeout(REQUEST_TIMEOUT).socketTimeout(REQUEST_TIMEOUT).execute();
 
   }
 

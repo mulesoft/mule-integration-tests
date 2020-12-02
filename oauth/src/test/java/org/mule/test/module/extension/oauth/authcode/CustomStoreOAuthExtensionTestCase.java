@@ -8,16 +8,11 @@ package org.mule.test.module.extension.oauth.authcode;
 
 import static org.mule.runtime.api.store.ObjectStoreSettings.unmanagedTransient;
 import org.mule.runtime.api.store.ObjectStore;
-import org.mule.tck.junit4.FlakinessDetectorTestRunner;
-import org.mule.tck.junit4.FlakyTest;
 import org.mule.test.module.extension.oauth.BaseOAuthExtensionTestCase;
 
 import org.junit.Test;
-import org.mule.test.runner.RunnerDelegateTo;
 
-@RunnerDelegateTo(FlakinessDetectorTestRunner.class)
 public class CustomStoreOAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
-
 
   private ObjectStore objectStore;
 
@@ -38,17 +33,8 @@ public class CustomStoreOAuthExtensionTestCase extends BaseOAuthExtensionTestCas
     muleContext.getObjectStoreManager().disposeStore(CUSTOM_STORE_NAME);
   }
 
-  static int i = 0;
-
   @Test
-  @FlakyTest(times = 10000)
   public void useCustomStore() throws Exception {
-    System.out.println(i++);
-    System.out.println("oauthServerPort" + oauthServerPort.getNumber());
-    System.out.println("wireMock port " + wireMock.port());
-    System.out.println("callbackPort" + callbackPort.getNumber());
-    System.out.println("accessTokenUrl" + accessTokenUrl.getValue());
-    System.out.println("authorizationUrl" + authorizationUrl.getValue());
     simulateDanceStart();
     simulateCallback();
 
