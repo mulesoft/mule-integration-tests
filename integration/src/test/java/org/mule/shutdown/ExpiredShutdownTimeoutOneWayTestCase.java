@@ -65,18 +65,22 @@ public class ExpiredShutdownTimeoutOneWayTestCase extends AbstractShutdownTimeou
     return "org/mule/shutdown/shutdown-timeout-one-way-config.xml";
   }
 
+  @Test
   public void testStaticComponent() throws Throwable {
     doShutDownTest("staticComponentFlow");
   }
 
+  @Test
   public void testScriptComponent() throws Throwable {
     doShutDownTest("scriptComponentFlow");
   }
 
+  @Test
   public void testSetPayload() throws Throwable {
     doShutDownTest("setPayloadFlow");
   }
 
+  @Test
   public void testSetPayloadChoice() throws Throwable {
     doShutDownTest("setPayloadChoiceFlow");
   }
