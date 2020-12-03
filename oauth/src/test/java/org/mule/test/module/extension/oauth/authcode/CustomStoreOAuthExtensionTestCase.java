@@ -14,7 +14,6 @@ import org.junit.Test;
 
 public class CustomStoreOAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
 
-
   private ObjectStore objectStore;
 
   @Override
