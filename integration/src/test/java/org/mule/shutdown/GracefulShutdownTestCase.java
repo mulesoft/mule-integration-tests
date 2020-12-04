@@ -39,7 +39,8 @@ public class GracefulShutdownTestCase extends AbstractIntegrationTestCase {
                   "org/mule/shutdown/flow-with-flow-ref.xml",
                   "org/mule/shutdown/flow-with-operation-in-error-handler.xml",
                   "org/mule/shutdown/flow-with-tx-flow-ref.xml",
-                  "org/mule/shutdown/flow-with-tx-scope.xml");
+                  "org/mule/shutdown/flow-with-tx-scope.xml",
+                  "org/mule/shutdown/flow-with-scatter-gather-and-flow-ref.xml");
   }
 
   @Rule
@@ -72,4 +73,5 @@ public class GracefulShutdownTestCase extends AbstractIntegrationTestCase {
   protected boolean isGracefulShutdown() {
     return true;
   }
+
 }

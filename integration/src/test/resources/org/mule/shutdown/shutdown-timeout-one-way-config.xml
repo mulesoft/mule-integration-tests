@@ -47,4 +47,21 @@
         </choice>
     </flow>
 
+    <flow name="setPayloadThroughScatterGatherWithFlowRefs">
+        <scatter-gather>
+            <route>
+                <flow-ref name="flowWithBlockedProcessor" />
+            </route>
+            <route>
+                <flow-ref name="flowWithBlockedProcessor" />
+            </route>
+        </scatter-gather>
+        <test-components:queue-push config-ref="response"/>
+    </flow>
+
+    <flow name="flowWithBlockedProcessor">
+        <flow-ref name="block"/>
+        <set-payload value="setPayloadResponse"/>
+    </flow>
+
 </mule>

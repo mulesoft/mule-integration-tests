@@ -48,4 +48,20 @@
         </try>
     </flow>
 
+    <flow name="setPayloadThroughScatterGatherFlowRef">
+        <http:listener path="setPayloadSgFr" config-ref="listenerConfig"/>
+        <scatter-gather>
+            <route>
+                <flow-ref name="flowWithBlockedProcessor" />
+            </route>
+            <route>
+                <flow-ref name="flowWithBlockedProcessor" />
+            </route>
+        </scatter-gather>
+    </flow>
+
+    <flow name="flowWithBlockedProcessor">
+        <flow-ref name="block" />
+    </flow>
+
 </mule>
