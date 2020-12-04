@@ -110,7 +110,7 @@ public class MetadataKeysTestCase extends DeclarationSessionTestCase {
     MetadataFailure metadataFailure = metadataResult.getFailures().get(0);
     assertThat(metadataFailure.getMessage(),
                is("Error resolving value for parameter: 'continent' from declaration, it cannot be an EXPRESSION value"));
-    assertThat(metadataFailure.getFailureCode(), is(INVALID_METADATA_KEY));
+    assertThat(metadataFailure.getFailureCode(), is(new FailureCode("INVALID_PARAMETER_VALUE")));
   }
 
   @Test
