@@ -131,7 +131,7 @@ public abstract class BaseOAuthExtensionTestCase extends AbstractExtensionFuncti
   }
 
   protected void simulateDanceStart(int port) throws IOException {
-    wireMock.stubFor(get(urlMatching("/" + LOCAL_AUTH_PATH)).willReturn(aResponse().withStatus(OK.getStatusCode())));
+    wireMock.stubFor(get(urlMatching("/" + LOCAL_AUTH_PATH + ".*")).willReturn(aResponse().withStatus(OK.getStatusCode())));
     ImmutableMap.Builder<String, String> queryParamsBuilder = ImmutableMap.builder();
     if (ownerId != null) {
       queryParamsBuilder.put("resourceOwnerId", ownerId);
@@ -141,8 +141,9 @@ public abstract class BaseOAuthExtensionTestCase extends AbstractExtensionFuncti
         .build();
 
     String localAuthUrl = toUrl(LOCAL_AUTH_PATH, port);
-    Get(localAuthUrl + "?" + encodeQueryString(queryParams))
+    Get(localAuthUrl + "?" + encodeQueryString(queryParams)).addHeader("Connection", "close")
         .connectTimeout(REQUEST_TIMEOUT).socketTimeout(REQUEST_TIMEOUT).execute();
+
   }
 
   protected void simulateCallback() {
@@ -164,7 +165,7 @@ public abstract class BaseOAuthExtensionTestCase extends AbstractExtensionFuncti
     stubTokenUrl(accessTokenContent());
 
     check(REQUEST_TIMEOUT, 500, () -> {
-      Response response = Get(toUrl(CALLBACK_PATH, port) + "?" + encodeQueryString(queryParams))
+      Response response = Get(toUrl(CALLBACK_PATH, port) + "?" + encodeQueryString(queryParams)).addHeader("Connection", "close")
           .connectTimeout(REQUEST_TIMEOUT).socketTimeout(REQUEST_TIMEOUT).execute();
 
       assertThat(response.returnResponse().getStatusLine().getStatusCode(), is(OK.getStatusCode()));
