@@ -261,6 +261,21 @@ public abstract class BaseOAuthExtensionTestCase extends AbstractExtensionFuncti
         .willReturn(buildResponseContent(getRefreshTokenResponse())));
   }
 
+  protected void stubRefreshedTokenAlreadyExpiredOnce() {
+    WireMock.reset();
+
+    wireMock.stubFor(post(urlMatching("/" + TOKEN_PATH))
+        .inScenario("refreshTokenWasAlreadyExpiredTwice")
+        .whenScenarioStateIs(STARTED)
+        .willReturn(buildResponseContent(accessTokenContent(ACCESS_TOKEN)))
+        .willSetStateTo("refresh"));
+
+    wireMock.stubFor(post(urlMatching("/" + TOKEN_PATH))
+        .inScenario("refreshTokenWasAlreadyExpiredTwice")
+        .whenScenarioStateIs("refresh")
+        .willReturn(buildResponseContent(getRefreshTokenResponse())));
+  }
+
   protected void stubRefreshedTokenAlreadyExpiredTwice() {
     WireMock.reset();
 
