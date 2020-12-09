@@ -26,6 +26,7 @@ import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.conf
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.multiLevelCompleteOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.multiLevelOPDeclarationPartialTypeKeys;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.multiLevelShowInDslGroupOPDeclaration;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.multiLevelTypeKeyMetadataKeyWithDefaultsOP;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.requiresConfigurationOutputTypeKeyResolverOP;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.sourceDeclaration;
 import org.mule.metadata.internal.utils.MetadataTypeWriter;
@@ -82,9 +83,7 @@ public class MetadataTypesTestCase extends DeclarationSessionTestCase {
 
   private void assertAmericaUsaSfoMetadata(MetadataResult<ComponentMetadataTypesDescriptor> containerTypeMetadataResult) {
     //input parameters
-    assertThat(containerTypeMetadataResult.get().getInputMetadata().size(), is(1));
-    assertThat(new MetadataTypeWriter().toString(containerTypeMetadataResult.get().getInputMetadata().get("dynamicParam")),
-               equalTo("%type _:Java = @default(\"value\" : \"America|USA|SFO\") String"));
+    assertInputDynamicTypeAmericaUsaSfoMetadata(containerTypeMetadataResult);
 
     //output
     assertThat(containerTypeMetadataResult.get().getOutputMetadata().isPresent(), is(true));
@@ -100,24 +99,30 @@ public class MetadataTypesTestCase extends DeclarationSessionTestCase {
                    "}"));
   }
 
+  private void assertInputDynamicTypeAmericaUsaSfoMetadata(MetadataResult<ComponentMetadataTypesDescriptor> containerTypeMetadataResult) {
+    assertThat(containerTypeMetadataResult.get().getInputMetadata().size(), is(1));
+    assertThat(new MetadataTypeWriter().toString(containerTypeMetadataResult.get().getInputMetadata().get("dynamicParam")),
+               equalTo("%type _:Java = @default(\"value\" : \"America|USA|SFO\") String"));
+  }
+
   @Test
   public void operationDynamicTypesPartialKey() {
     OperationElementDeclaration operationElementDeclaration =
-        multiLevelOPDeclarationPartialTypeKeys(CONFIG_NAME, "America", "USA");
+        multiLevelTypeKeyMetadataKeyWithDefaultsOP(CONFIG_NAME, "America", "USA", null);
     MetadataResult<ComponentMetadataTypesDescriptor> containerTypeMetadataResult =
         session.resolveComponentMetadata(operationElementDeclaration);
     assertThat(containerTypeMetadataResult.isSuccess(), is(true));
-    assertAmericaUsaSfoMetadata(containerTypeMetadataResult);
+    assertInputDynamicTypeAmericaUsaSfoMetadata(containerTypeMetadataResult);
   }
 
-  // TODO MULE-18680 Optional levels are required for multi-level keys!
   @Test
   public void operationDynamicTypesNoKey() {
-    OperationElementDeclaration operationElementDeclaration = multiLevelOPDeclarationPartialTypeKeys(CONFIG_NAME, null, null);
+    OperationElementDeclaration operationElementDeclaration =
+        multiLevelTypeKeyMetadataKeyWithDefaultsOP(CONFIG_NAME, null, null, null);
     MetadataResult<ComponentMetadataTypesDescriptor> containerTypeMetadataResult =
         session.resolveComponentMetadata(operationElementDeclaration);
     assertThat(containerTypeMetadataResult.isSuccess(), is(true));
-    assertAmericaUsaSfoMetadata(containerTypeMetadataResult);
+    assertInputDynamicTypeAmericaUsaSfoMetadata(containerTypeMetadataResult);
   }
 
   @Test
