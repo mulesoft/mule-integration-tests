@@ -8,7 +8,6 @@ package org.mule.runtime.module.tooling;
 
 import static java.lang.String.format;
 import static java.util.Optional.of;
-import static java.util.Optional.ofNullable;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.containsString;
@@ -29,6 +28,7 @@ import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.mult
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.multiLevelTypeKeyMetadataKeyWithDefaultsOP;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.requiresConfigurationOutputTypeKeyResolverOP;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.sourceDeclaration;
+
 import org.mule.metadata.internal.utils.MetadataTypeWriter;
 import org.mule.runtime.api.metadata.descriptor.ComponentMetadataTypesDescriptor;
 import org.mule.runtime.api.metadata.resolving.FailureCode;
@@ -39,7 +39,6 @@ import org.mule.runtime.app.declaration.api.SourceElementDeclaration;
 
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
-import org.hamcrest.collection.IsCollectionWithSize;
 import org.junit.Test;
 
 public class MetadataTypesTestCase extends DeclarationSessionTestCase {
@@ -204,7 +203,7 @@ public class MetadataTypesTestCase extends DeclarationSessionTestCase {
     MetadataResult<ComponentMetadataTypesDescriptor> metadataTypes =
         session.resolveComponentMetadata(operationElementDeclaration);
     assertThat(metadataTypes.isSuccess(), is(false));
-    assertThat(metadataTypes.getFailures(), IsCollectionWithSize.hasSize(1));
+    assertThat(metadataTypes.getFailures(), hasSize(1));
     assertThat(metadataTypes.getFailures().get(0).getFailureCode(), is(INVALID_METADATA_KEY));
     assertThat(metadataTypes.getFailures().get(0).getFailingComponent(), is(OUTPUT_PAYLOAD));
     assertThat(metadataTypes.getFailures().get(0).getMessage(),
@@ -217,7 +216,7 @@ public class MetadataTypesTestCase extends DeclarationSessionTestCase {
     MetadataResult<ComponentMetadataTypesDescriptor> metadataTypes =
         session.resolveComponentMetadata(invalidComponentDeclaration(invalidComponentName));
     assertThat(metadataTypes.isSuccess(), is(false));
-    assertThat(metadataTypes.getFailures(), IsCollectionWithSize.hasSize(1));
+    assertThat(metadataTypes.getFailures(), hasSize(1));
     assertThat(metadataTypes.getFailures().get(0).getFailureCode(), is(COMPONENT_NOT_FOUND));
     assertThat(metadataTypes.getFailures().get(0).getFailingComponent(), is(COMPONENT));
     assertThat(metadataTypes.getFailures().get(0).getMessage(),
@@ -230,7 +229,7 @@ public class MetadataTypesTestCase extends DeclarationSessionTestCase {
     MetadataResult<ComponentMetadataTypesDescriptor> metadataTypes =
         session.resolveComponentMetadata(invalidExtensionModel(invalidExtensionModel));
     assertThat(metadataTypes.isSuccess(), is(false));
-    assertThat(metadataTypes.getFailures(), IsCollectionWithSize.hasSize(1));
+    assertThat(metadataTypes.getFailures(), hasSize(1));
     assertThat(metadataTypes.getFailures().get(0).getFailureCode(), is(COMPONENT_NOT_FOUND));
     assertThat(metadataTypes.getFailures().get(0).getFailingComponent(), is(COMPONENT));
     assertThat(metadataTypes.getFailures().get(0).getMessage(),
@@ -244,7 +243,7 @@ public class MetadataTypesTestCase extends DeclarationSessionTestCase {
     MetadataResult<ComponentMetadataTypesDescriptor> metadataTypes =
         session.resolveComponentMetadata(multiLevelShowInDslGroupOPDeclaration(missingConfigName, null, null));
     assertThat(metadataTypes.isSuccess(), is(false));
-    assertThat(metadataTypes.getFailures(), IsCollectionWithSize.hasSize(1));
+    assertThat(metadataTypes.getFailures(), hasSize(1));
     assertThat(metadataTypes.getFailures().get(0).getFailureCode(), is(COMPONENT_NOT_FOUND));
     assertThat(metadataTypes.getFailures().get(0).getFailingComponent(), is(COMPONENT));
     assertThat(metadataTypes.getFailures().get(0).getMessage(),
@@ -257,7 +256,7 @@ public class MetadataTypesTestCase extends DeclarationSessionTestCase {
     MetadataResult<ComponentMetadataTypesDescriptor> metadataTypes =
         session.resolveComponentMetadata(requiresConfigurationOutputTypeKeyResolverOP("someType"));
     assertThat(metadataTypes.isSuccess(), is(false));
-    assertThat(metadataTypes.getFailures(), IsCollectionWithSize.hasSize(1));
+    assertThat(metadataTypes.getFailures(), hasSize(1));
     assertThat(metadataTypes.getFailures().get(0).getFailureCode(), is(UNKNOWN));
     assertThat(metadataTypes.getFailures().get(0).getFailingComponent(), is(OUTPUT_PAYLOAD));
     assertThat(metadataTypes.getFailures().get(0).getMessage(),
