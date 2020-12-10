@@ -305,7 +305,7 @@ public class ModuleComponentPathTestCase extends MuleArtifactFunctionalTestCase 
                              emptyMap(), empty(),
                              uri -> {
                                throw new UnsupportedOperationException();
-                             });
+                             }, getFeatureFlaggingService());
 
     List<String> componentLocations = new ArrayList<>();
     toolingApplicationModel.recursiveStream().forEach(componentModel -> {

@@ -182,7 +182,8 @@ public abstract class AbstractElementModelTestCase extends MuleArtifactFunctiona
   protected ApplicationModel loadApplicationModel(String configFile) throws Exception {
     return new ApplicationModel(xmlToAstParser.parse(currentThread().getContextClassLoader().getResource(configFile).toURI()),
                                 emptyMap(), empty(),
-                                uri -> muleContext.getExecutionClassLoader().getResourceAsStream(uri));
+                                uri -> muleContext.getExecutionClassLoader().getResourceAsStream(uri),
+                                getFeatureFlaggingService());
   }
 
   protected String write() throws Exception {
