@@ -33,6 +33,8 @@ import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.simp
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.simpleActingParametersOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.sourceWithMultiLevelValue;
 import static org.mule.runtime.module.tooling.internal.artifact.AbstractParameterResolverExecutor.INVALID_PARAMETER_VALUE;
+import static org.mule.sdk.api.values.ValueResolvingException.UNKNOWN;
+
 import org.mule.runtime.api.value.Value;
 import org.mule.runtime.api.value.ValueResult;
 import org.mule.runtime.app.declaration.api.ComponentElementDeclaration;
@@ -127,6 +129,14 @@ public class ComponentValueProviderTestCase extends DeclarationSessionTestCase {
     validateValuesFailure(session, elementDeclaration, ERROR_PROVIDED_PARAMETER_NAME,
                           "Expected error",
                           CUSTOM_ERROR_CODE);
+  }
+
+  @Test
+  public void internalErrorFromProvider() {
+    ComponentElementDeclaration elementDeclaration = actingParameterOPDeclaration(CONFIG_NAME, "");
+    validateValuesFailure(session, elementDeclaration, INTERNAL_ERROR_PROVIDED_PARAMETER_NAME,
+                          "An error occurred trying to resolve the Values for parameter 'internalErrorProvidedParameter' of component 'actingParameterOP'. Cause: org.mule.tooling.extensions.metadata.internal.value.InternalErrorVP has thrown unexpected exception",
+                          UNKNOWN);
   }
 
   @Test

@@ -10,6 +10,7 @@ import static java.lang.String.format;
 import static java.util.Optional.of;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
@@ -18,10 +19,13 @@ import static org.mule.runtime.api.metadata.resolving.FailureCode.COMPONENT_NOT_
 import static org.mule.runtime.api.metadata.resolving.FailureCode.INVALID_METADATA_KEY;
 import static org.mule.runtime.api.metadata.resolving.FailureCode.UNKNOWN;
 import static org.mule.runtime.api.metadata.resolving.MetadataComponent.COMPONENT;
+import static org.mule.runtime.api.metadata.resolving.MetadataComponent.INPUT;
+import static org.mule.runtime.api.metadata.resolving.MetadataComponent.OUTPUT_ATTRIBUTES;
 import static org.mule.runtime.api.metadata.resolving.MetadataComponent.OUTPUT_PAYLOAD;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.configLessConnectionLessOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.configLessMetadataKeyExpressionDefaultValueOP;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.configLessOPDeclaration;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.internalErrorMetadataResolverOP;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.multiLevelCompleteOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.multiLevelOPDeclarationPartialTypeKeys;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.multiLevelShowInDslGroupOPDeclaration;
@@ -262,5 +266,20 @@ public class MetadataTypesTestCase extends DeclarationSessionTestCase {
     assertThat(metadataTypes.getFailures().get(0).getMessage(),
                is("Configuration is not present, a message from resolver"));
   }
+
+  @Test
+  public void internalErrorInsideResolver() {
+    MetadataResult<ComponentMetadataTypesDescriptor> metadataTypes =
+        session.resolveComponentMetadata(internalErrorMetadataResolverOP());
+    assertThat(metadataTypes.isSuccess(), is(false));
+    assertThat(metadataTypes.getFailures(), IsCollectionWithSize.hasSize(3));
+    for (MetadataFailure metadataFailure : metadataTypes.getFailures()) {
+      assertThat(metadataFailure.getFailureCode(), is(UNKNOWN));
+      assertThat(metadataFailure.getFailingComponent(), anyOf(is(INPUT), is(OUTPUT_PAYLOAD), is(OUTPUT_ATTRIBUTES)));
+      assertThat(metadataFailure.getMessage(),
+                 is("InternalErrorMetadataResolver has thrown unexpected exception"));
+    }
+  }
+
 
 }

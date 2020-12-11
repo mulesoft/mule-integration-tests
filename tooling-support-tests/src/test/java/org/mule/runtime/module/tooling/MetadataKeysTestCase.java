@@ -19,6 +19,7 @@ import static org.mule.runtime.api.metadata.resolving.FailureCode.UNKNOWN;
 import static org.mule.runtime.api.metadata.resolving.MetadataComponent.KEYS;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.configLessConnectionLessOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.configLessOPDeclaration;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.internalErrorMetadataResolverOP;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.multiLevelOPDeclarationPartialTypeKeys;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.multiLevelShowInDslGroupOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.requiresConfigurationOutputTypeKeyResolverOP;
@@ -195,6 +196,18 @@ public class MetadataKeysTestCase extends DeclarationSessionTestCase {
     assertThat(metadataKeys.getFailures().get(0).getFailingComponent(), is(KEYS));
     assertThat(metadataKeys.getFailures().get(0).getMessage(),
                is("Configuration is not present, a message from resolver"));
+  }
+
+  @Test
+  public void internalErrorInsideResolver() {
+    MetadataResult<MetadataKeysContainer> metadataKeys =
+        session.getMetadataKeys(internalErrorMetadataResolverOP());
+    assertThat(metadataKeys.isSuccess(), is(false));
+    assertThat(metadataKeys.getFailures(), hasSize(1));
+    assertThat(metadataKeys.getFailures().get(0).getFailureCode(), is(UNKNOWN));
+    assertThat(metadataKeys.getFailures().get(0).getFailingComponent(), is(KEYS));
+    assertThat(metadataKeys.getFailures().get(0).getMessage(),
+               is("InternalErrorMetadataResolver has thrown unexpected exception"));
   }
 
 }
