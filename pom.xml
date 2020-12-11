@@ -30,7 +30,7 @@
     <muleHttpServiceTestVersion>1.1.3</muleHttpServiceTestVersion>
     <muleOAuthServiceTestVersion>1.1.2</muleOAuthServiceTestVersion>
     <muleSoapServiceTestVersion>1.1.6</muleSoapServiceTestVersion>
-    <muleExtensionTestSoapTestVersion>1.1.1</muleExtensionTestSoapTestVersion>
+    <muleExtensionTestSoapTestVersion>1.1.2</muleExtensionTestSoapTestVersion>
 
     <muleSpringModuleTestVersion>1.1.1</muleSpringModuleTestVersion>
     <muleValidationModuleTestVersion>1.2.2</muleValidationModuleTestVersion>
@@ -41,7 +41,7 @@
     <muleFileConnectorTestVersion>1.1.3</muleFileConnectorTestVersion>
     <muleObjectStoreConnectorTestVersion>1.1.1</muleObjectStoreConnectorTestVersion>
     <muleJavaModuleTestVersion>1.1.1</muleJavaModuleTestVersion>
-    <muleAggregatorsModuleTestVersion>1.0.0-SNAPSHOT</muleAggregatorsModuleTestVersion>
+    <muleAggregatorsModuleTestVersion>1.0.0</muleAggregatorsModuleTestVersion>
     <muleDbConnectorTestVersion>1.3.4</muleDbConnectorTestVersion>
     <muleFtpConnectorTestVersion>1.2.2</muleFtpConnectorTestVersion>
     <muleFileConnectorTestVersion>1.1.3</muleFileConnectorTestVersion>
