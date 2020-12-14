@@ -36,6 +36,14 @@ public class ConnectivityTestingTestCase extends DeclarationSessionTestCase {
   }
 
   @Test
+  public void testConnectionWrongConfigName() {
+    ConnectionValidationResult connectionValidationResult = session.testConnection("invalid_config_name");
+    assertThat(connectionValidationResult.isValid(), equalTo(false));
+    assertThat(connectionValidationResult.getMessage(),
+               equalTo("Could not perform test connection for configuration: 'invalid_config_name'. Connection provider is not defined"));
+  }
+
+  @Test
   public void testConnectionShouldNotBeDoneOnDeployment() {
     ConnectionValidationResult connectionValidationResult = session.testConnection(CONFIG_NAME_TEST_CONNECTION_FAILS);
     assertThat(connectionValidationResult.isValid(), equalTo(false));

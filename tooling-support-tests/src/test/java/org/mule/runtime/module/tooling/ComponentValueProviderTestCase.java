@@ -21,6 +21,8 @@ import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.CUST
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.actingParameterGroupOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.actingParameterGroupOPWithAliasDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.actingParameterOPDeclaration;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.actingParameterOptionalOPDeclaration;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.actingParameterOptionalWithDefaultContextDependentExpressionValueOP;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.complexActingParameterOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.complexParameterValue;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.configLessConnectionLessOPDeclaration;
@@ -93,10 +95,27 @@ public class ComponentValueProviderTestCase extends DeclarationSessionTestCase {
   }
 
   @Test
-  public void missingActingParameterFails() {
+  public void missingActingRequiredParameterFails() {
     final String actingParameter = "actingParameter";
     ComponentElementDeclaration elementDeclaration = actingParameterOPDeclaration(CONFIG_NAME, actingParameter);
     elementDeclaration.getParameterGroups().get(0).getParameters().remove(0);
+    validateValuesFailure(session, elementDeclaration, PROVIDED_PARAMETER_NAME,
+                          "Unable to retrieve values. There are missing required parameters for the resolution: [actingParameter]",
+                          MISSING_REQUIRED_PARAMETERS);
+  }
+
+  @Test
+  public void missingActingRequiredParameterFromDeclarationUsesDefaultValue() {
+    final String actingParameterDefaultValue = "actingDefault";
+    ComponentElementDeclaration elementDeclaration = actingParameterOptionalOPDeclaration(CONFIG_NAME);
+    validateValuesSuccess(session, elementDeclaration, PROVIDED_PARAMETER_NAME,
+                          WITH_ACTING_PARAMETER + actingParameterDefaultValue);
+  }
+
+  @Test
+  public void missingActingRequiredParameterFromDeclarationUsesDefaultContextDependentExpressionValueFails() {
+    ComponentElementDeclaration elementDeclaration =
+        actingParameterOptionalWithDefaultContextDependentExpressionValueOP(CONFIG_NAME);
     validateValuesFailure(session, elementDeclaration, PROVIDED_PARAMETER_NAME,
                           "Unable to retrieve values. There are missing required parameters for the resolution: [actingParameter]",
                           MISSING_REQUIRED_PARAMETERS);

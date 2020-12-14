@@ -20,12 +20,15 @@ import static org.mule.runtime.api.metadata.resolving.FailureCode.UNKNOWN;
 import static org.mule.runtime.api.metadata.resolving.MetadataComponent.COMPONENT;
 import static org.mule.runtime.api.metadata.resolving.MetadataComponent.OUTPUT_PAYLOAD;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.configLessConnectionLessOPDeclaration;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.configLessMetadataKeyExpressionDefaultValueOP;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.configLessOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.multiLevelCompleteOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.multiLevelOPDeclarationPartialTypeKeys;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.multiLevelShowInDslGroupOPDeclaration;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.multiLevelTypeKeyMetadataKeyWithDefaultsOP;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.requiresConfigurationOutputTypeKeyResolverOP;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.sourceDeclaration;
+
 import org.mule.metadata.internal.utils.MetadataTypeWriter;
 import org.mule.runtime.api.metadata.descriptor.ComponentMetadataTypesDescriptor;
 import org.mule.runtime.api.metadata.resolving.FailureCode;
@@ -36,7 +39,6 @@ import org.mule.runtime.app.declaration.api.SourceElementDeclaration;
 
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
-import org.hamcrest.collection.IsCollectionWithSize;
 import org.junit.Test;
 
 public class MetadataTypesTestCase extends DeclarationSessionTestCase {
@@ -75,11 +77,12 @@ public class MetadataTypesTestCase extends DeclarationSessionTestCase {
     MetadataResult<ComponentMetadataTypesDescriptor> containerTypeMetadataResult =
         session.resolveComponentMetadata(operationElementDeclaration);
     assertThat(containerTypeMetadataResult.isSuccess(), is(true));
+    assertAmericaUsaSfoMetadata(containerTypeMetadataResult);
+  }
 
+  private void assertAmericaUsaSfoMetadata(MetadataResult<ComponentMetadataTypesDescriptor> containerTypeMetadataResult) {
     //input parameters
-    assertThat(containerTypeMetadataResult.get().getInputMetadata().size(), is(1));
-    assertThat(new MetadataTypeWriter().toString(containerTypeMetadataResult.get().getInputMetadata().get("dynamicParam")),
-               equalTo("%type _:Java = @default(\"value\" : \"America|USA|SFO\") String"));
+    assertInputDynamicTypeAmericaUsaSfoMetadata(containerTypeMetadataResult);
 
     //output
     assertThat(containerTypeMetadataResult.get().getOutputMetadata().isPresent(), is(true));
@@ -95,30 +98,30 @@ public class MetadataTypesTestCase extends DeclarationSessionTestCase {
                    "}"));
   }
 
-  // TODO MULE-18680: Optional levels are required for multi-level keys!
+  private void assertInputDynamicTypeAmericaUsaSfoMetadata(MetadataResult<ComponentMetadataTypesDescriptor> containerTypeMetadataResult) {
+    assertThat(containerTypeMetadataResult.get().getInputMetadata().size(), is(1));
+    assertThat(new MetadataTypeWriter().toString(containerTypeMetadataResult.get().getInputMetadata().get("dynamicParam")),
+               equalTo("%type _:Java = @default(\"value\" : \"America|USA|SFO\") String"));
+  }
+
   @Test
   public void operationDynamicTypesPartialKey() {
     OperationElementDeclaration operationElementDeclaration =
-        multiLevelOPDeclarationPartialTypeKeys(CONFIG_NAME, "America", "USA");
+        multiLevelTypeKeyMetadataKeyWithDefaultsOP(CONFIG_NAME, "America", "USA", null);
     MetadataResult<ComponentMetadataTypesDescriptor> containerTypeMetadataResult =
         session.resolveComponentMetadata(operationElementDeclaration);
-    assertThat(containerTypeMetadataResult.isSuccess(), is(false));
-    assertThat(containerTypeMetadataResult.getFailures(), hasSize(1));
-    assertThat(containerTypeMetadataResult.getFailures().get(0).getFailureCode(), is(INVALID_METADATA_KEY));
-    assertThat(containerTypeMetadataResult.getFailures().get(0).getMessage(), containsString("Missing levels: [city]"));
+    assertThat(containerTypeMetadataResult.isSuccess(), is(true));
+    assertInputDynamicTypeAmericaUsaSfoMetadata(containerTypeMetadataResult);
   }
 
-  // TODO MULE-18680 Optional levels are required for multi-level keys!
   @Test
   public void operationDynamicTypesNoKey() {
-    OperationElementDeclaration operationElementDeclaration = multiLevelOPDeclarationPartialTypeKeys(CONFIG_NAME, null, null);
+    OperationElementDeclaration operationElementDeclaration =
+        multiLevelTypeKeyMetadataKeyWithDefaultsOP(CONFIG_NAME, null, null, null);
     MetadataResult<ComponentMetadataTypesDescriptor> containerTypeMetadataResult =
         session.resolveComponentMetadata(operationElementDeclaration);
-    assertThat(containerTypeMetadataResult.isSuccess(), is(false));
-    assertThat(containerTypeMetadataResult.getFailures(), hasSize(1));
-    assertThat(containerTypeMetadataResult.getFailures().get(0).getFailureCode(), is(INVALID_METADATA_KEY));
-    assertThat(containerTypeMetadataResult.getFailures().get(0).getMessage(),
-               containsString("Missing levels: [continent, country, city]"));
+    assertThat(containerTypeMetadataResult.isSuccess(), is(true));
+    assertInputDynamicTypeAmericaUsaSfoMetadata(containerTypeMetadataResult);
   }
 
   @Test
@@ -137,6 +140,17 @@ public class MetadataTypesTestCase extends DeclarationSessionTestCase {
   @Test
   public void operationDynamicTypesSingleLevelKey() {
     OperationElementDeclaration operationElementDeclaration = configLessOPDeclaration(CONFIG_NAME, "item");
+    MetadataResult<ComponentMetadataTypesDescriptor> metadataTypes =
+        session.resolveComponentMetadata(operationElementDeclaration);
+    assertThat(metadataTypes.isSuccess(), is(true));
+    assertThat(metadataTypes.get().getOutputMetadata().isPresent(), is(true));
+    assertThat(getTypeId(metadataTypes.get().getOutputMetadata().get()),
+               is(of("org.mule.tooling.extensions.metadata.api.parameters.ItemOutput")));
+  }
+
+  @Test
+  public void operationDynamicTypesSingleLevelKeyDefaultValue() {
+    OperationElementDeclaration operationElementDeclaration = configLessOPDeclaration(CONFIG_NAME, null);
     MetadataResult<ComponentMetadataTypesDescriptor> metadataTypes =
         session.resolveComponentMetadata(operationElementDeclaration);
     assertThat(metadataTypes.isSuccess(), is(true));
@@ -173,15 +187,27 @@ public class MetadataTypesTestCase extends DeclarationSessionTestCase {
   }
 
   @Test
-  public void metadataKeyDefaultValueNotUsed() {
+  public void simpleMetadataKeyWithDefaultValue() {
     OperationElementDeclaration operationElementDeclaration = configLessOPDeclaration(CONFIG_NAME);
+    MetadataResult<ComponentMetadataTypesDescriptor> metadataTypes =
+        session.resolveComponentMetadata(operationElementDeclaration);
+    assertThat(metadataTypes.isSuccess(), is(true));
+    assertThat(metadataTypes.get().getOutputMetadata().isPresent(), is(true));
+    assertThat(getTypeId(metadataTypes.get().getOutputMetadata().get()),
+               is(of("org.mule.tooling.extensions.metadata.api.parameters.ItemOutput")));
+  }
+
+  @Test
+  public void simpleMetadataKeyWithNullValue() {
+    OperationElementDeclaration operationElementDeclaration = configLessMetadataKeyExpressionDefaultValueOP(CONFIG_NAME, null);
     MetadataResult<ComponentMetadataTypesDescriptor> metadataTypes =
         session.resolveComponentMetadata(operationElementDeclaration);
     assertThat(metadataTypes.isSuccess(), is(false));
     assertThat(metadataTypes.getFailures(), hasSize(1));
-    assertThat(metadataTypes.getFailures().get(0).getFailingComponent(), is(OUTPUT_PAYLOAD));
     assertThat(metadataTypes.getFailures().get(0).getFailureCode(), is(INVALID_METADATA_KEY));
-    assertThat(metadataTypes.getFailures().get(0).getReason(), containsString("MetadataResolvingException: Unknown key:"));
+    assertThat(metadataTypes.getFailures().get(0).getFailingComponent(), is(OUTPUT_PAYLOAD));
+    assertThat(metadataTypes.getFailures().get(0).getMessage(),
+               is("Null key provided to the resolver, this resolver doesn't support null values"));
   }
 
   @Test
@@ -190,7 +216,7 @@ public class MetadataTypesTestCase extends DeclarationSessionTestCase {
     MetadataResult<ComponentMetadataTypesDescriptor> metadataTypes =
         session.resolveComponentMetadata(invalidComponentDeclaration(invalidComponentName));
     assertThat(metadataTypes.isSuccess(), is(false));
-    assertThat(metadataTypes.getFailures(), IsCollectionWithSize.hasSize(1));
+    assertThat(metadataTypes.getFailures(), hasSize(1));
     assertThat(metadataTypes.getFailures().get(0).getFailureCode(), is(COMPONENT_NOT_FOUND));
     assertThat(metadataTypes.getFailures().get(0).getFailingComponent(), is(COMPONENT));
     assertThat(metadataTypes.getFailures().get(0).getMessage(),
@@ -203,7 +229,7 @@ public class MetadataTypesTestCase extends DeclarationSessionTestCase {
     MetadataResult<ComponentMetadataTypesDescriptor> metadataTypes =
         session.resolveComponentMetadata(invalidExtensionModel(invalidExtensionModel));
     assertThat(metadataTypes.isSuccess(), is(false));
-    assertThat(metadataTypes.getFailures(), IsCollectionWithSize.hasSize(1));
+    assertThat(metadataTypes.getFailures(), hasSize(1));
     assertThat(metadataTypes.getFailures().get(0).getFailureCode(), is(COMPONENT_NOT_FOUND));
     assertThat(metadataTypes.getFailures().get(0).getFailingComponent(), is(COMPONENT));
     assertThat(metadataTypes.getFailures().get(0).getMessage(),
@@ -217,7 +243,7 @@ public class MetadataTypesTestCase extends DeclarationSessionTestCase {
     MetadataResult<ComponentMetadataTypesDescriptor> metadataTypes =
         session.resolveComponentMetadata(multiLevelShowInDslGroupOPDeclaration(missingConfigName, null, null));
     assertThat(metadataTypes.isSuccess(), is(false));
-    assertThat(metadataTypes.getFailures(), IsCollectionWithSize.hasSize(1));
+    assertThat(metadataTypes.getFailures(), hasSize(1));
     assertThat(metadataTypes.getFailures().get(0).getFailureCode(), is(COMPONENT_NOT_FOUND));
     assertThat(metadataTypes.getFailures().get(0).getFailingComponent(), is(COMPONENT));
     assertThat(metadataTypes.getFailures().get(0).getMessage(),
@@ -230,7 +256,7 @@ public class MetadataTypesTestCase extends DeclarationSessionTestCase {
     MetadataResult<ComponentMetadataTypesDescriptor> metadataTypes =
         session.resolveComponentMetadata(requiresConfigurationOutputTypeKeyResolverOP("someType"));
     assertThat(metadataTypes.isSuccess(), is(false));
-    assertThat(metadataTypes.getFailures(), IsCollectionWithSize.hasSize(1));
+    assertThat(metadataTypes.getFailures(), hasSize(1));
     assertThat(metadataTypes.getFailures().get(0).getFailureCode(), is(UNKNOWN));
     assertThat(metadataTypes.getFailures().get(0).getFailingComponent(), is(OUTPUT_PAYLOAD));
     assertThat(metadataTypes.getFailures().get(0).getMessage(),
