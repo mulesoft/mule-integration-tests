@@ -75,4 +75,55 @@
         </first-successful>
         <logger message="ZARAZA" category="ERROR"/>
     </flow>
+
+    <flow name="firstSuccessfulInErrorHandler">
+        <raise-error type="APP:SOME"/>
+        <error-handler>
+            <on-error-continue>
+                <first-successful>
+                    <route>
+                        <set-payload value="La pelota no se mancha"/>
+                    </route>
+                    <route>
+                        <set-payload value="Yo me equivoque y pague"/>
+                    </route>
+                </first-successful>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="firstSuccessfulInErrorHandlerWithError">
+        <test:processor throwException="true"/>
+        <error-handler>
+            <on-error-continue>
+                <first-successful>
+                    <route>
+                        <set-payload value="La pelota no se mancha"/>
+                        <test:processor throwException="true"/>
+                    </route>
+                    <route>
+                        <set-payload value="Yo me equivoque y pague"/>
+                    </route>
+                </first-successful>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="firstSuccessfulInErrorHandlerWithFailing">
+        <test:processor throwException="true"/>
+        <error-handler>
+            <on-error-continue>
+                <first-successful>
+                    <route>
+                        <set-payload value="La pelota no se mancha"/>
+                        <test:processor throwException="true"/>
+                    </route>
+                    <route>
+                        <set-payload value="Yo me equivoque y pague"/>
+                        <validation:is-true expression="#[false]"/>
+                    </route>
+                </first-successful>
+            </on-error-continue>
+        </error-handler>
+    </flow>
 </mule>
