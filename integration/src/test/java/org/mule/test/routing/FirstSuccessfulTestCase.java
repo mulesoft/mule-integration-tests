@@ -75,4 +75,23 @@ public class FirstSuccessfulTestCase extends AbstractIntegrationTestCase {
     assertThat(response.getPayload().getValue(), is(TEST_MESSAGE));
   }
 
+  @Test
+  public void insideErrorHandler() throws Exception {
+    CoreEvent event = flowRunner("firstSuccessfulInErrorHandler").withPayload(TEST_PAYLOAD).run();
+    assertThat(event.getMessage().getPayload().getValue(), is("La pelota no se mancha"));
+  }
+
+  @Test
+  public void insideErrorHandlerWithError() throws Exception {
+    CoreEvent event = flowRunner("firstSuccessfulInErrorHandlerWithError").withPayload(TEST_PAYLOAD).run();
+    assertThat(event.getMessage().getPayload().getValue(), is("Yo me equivoque y pague"));
+  }
+
+  @Test
+  public void insideErrorHandlerFailing() throws Exception {
+    expected.expectCause(instanceOf(ValidationException.class));
+    expected.expectErrorType("VALIDATION", "INVALID_BOOLEAN");
+    flowRunner("firstSuccessfulInErrorHandlerWithFailing").withPayload(Boolean.TRUE).run().getMessage();
+  }
+
 }
