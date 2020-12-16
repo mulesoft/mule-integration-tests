@@ -47,7 +47,15 @@
     <flow name="iteratorInputOperation">
         <marvel:gambit-charge-items/>
     </flow>
+    
+    <flow name="optionalStreamInputOperation">
+        <marvel:gambit-reluctant-charge/>
+    </flow>
 
+    <flow name="optionalIteratorInputOperation">
+        <marvel:gambit-reluctant-charge-items/>
+    </flow>
+    
 <!--     Utility sub-flow's -->
 
     <sub-flow name="consumeStream">

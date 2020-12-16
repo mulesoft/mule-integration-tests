@@ -148,4 +148,30 @@ public class PayloadStatisticsInputOperationTestCase extends AbstractIntegration
     assertThat(fileListStatistics.getOutputByteCount(), is(0L));
   }
 
+  @Test
+  public void nullInputOperation() throws Exception {
+    testNullContent("optionalStreamInputOperation", "optionalStreamInputOperation", "marvel:gambit-reluctant-charge");
+  }
+
+  @Test
+  public void nullInputIteratorOperation() throws Exception {
+    testNullContent("optionalIteratorInputOperation", "optionalIteratorInputOperation", "marvel:gambit-reluctant-charge-items");
+  }
+
+  private void testNullContent(String flow, String operation, String operationName) throws Exception {
+    flowRunner(flow).withPayload(null).run();
+
+    final PayloadStatistics payloadStatistics =
+        muleContext.getStatistics().getPayloadStatistics(operation + "/processors/0");
+
+    assertThat(payloadStatistics.getComponentIdentifier(), is(operationName));
+
+    assertThat(payloadStatistics.getInvocationCount(), is(1L));
+
+    assertThat(payloadStatistics.getInputObjectCount(), is(0L));
+    assertThat(payloadStatistics.getInputByteCount(), is(0L));
+    assertThat(payloadStatistics.getOutputObjectCount(), is(0L));
+    assertThat(payloadStatistics.getOutputByteCount(), is(0L));
+  }
+
 }
