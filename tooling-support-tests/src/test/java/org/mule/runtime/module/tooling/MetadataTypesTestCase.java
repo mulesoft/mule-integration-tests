@@ -272,7 +272,7 @@ public class MetadataTypesTestCase extends DeclarationSessionTestCase {
     MetadataResult<ComponentMetadataTypesDescriptor> metadataTypes =
         session.resolveComponentMetadata(internalErrorMetadataResolverOP());
     assertThat(metadataTypes.isSuccess(), is(false));
-    assertThat(metadataTypes.getFailures(), IsCollectionWithSize.hasSize(3));
+    assertThat(metadataTypes.getFailures(), hasSize(3));
     for (MetadataFailure metadataFailure : metadataTypes.getFailures()) {
       assertThat(metadataFailure.getFailureCode(), is(UNKNOWN));
       assertThat(metadataFailure.getFailingComponent(), anyOf(is(INPUT), is(OUTPUT_PAYLOAD), is(OUTPUT_ATTRIBUTES)));
