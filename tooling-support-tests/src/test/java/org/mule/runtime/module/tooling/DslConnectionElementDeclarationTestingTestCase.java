@@ -6,21 +6,25 @@
  */
 package org.mule.runtime.module.tooling;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.junit.rules.ExpectedException.none;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.configurationDeclaration;
-import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.configurationDeclarationMissingRequiredParameter;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.connectionDeclaration;
 
-import org.mule.runtime.api.connection.ConnectionValidationResult;
+import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.app.declaration.api.fluent.ArtifactDeclarer;
+import org.mule.runtime.deployment.model.api.DeploymentInitException;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 public class DslConnectionElementDeclarationTestingTestCase extends DeclarationSessionTestCase {
 
   private static final String CONFIG_CONNECTION_MISSING_REQUIRED_PARAM_NAME = "CONFIG_CONNECTION_MISSING_REQUIRED_PARAM_NAME";
+
+  @Rule
+  public ExpectedException expectedException = none();
 
   @Override
   protected void declareArtifact(ArtifactDeclarer artifactDeclarer) {
@@ -31,10 +35,10 @@ public class DslConnectionElementDeclarationTestingTestCase extends DeclarationS
 
   @Test
   public void testConnectionMissingRequiredParameterOnConnectionProvider() {
-    ConnectionValidationResult connectionValidationResult = session.testConnection(CONFIG_CONNECTION_MISSING_REQUIRED_PARAM_NAME);
-    assertThat(connectionValidationResult.isValid(), equalTo(false));
-    assertThat(connectionValidationResult.getMessage(),
-               containsString("RequiredParameterNotSetException: Parameter 'acting-parameter' is required but was not found"));
+    expectedException.expect(MuleRuntimeException.class);
+    expectedException.expectCause(instanceOf(DeploymentInitException.class));
+    expectedException.expectMessage("Parameter 'acting-parameter' is required but was not found");
+    session.testConnection(CONFIG_CONNECTION_MISSING_REQUIRED_PARAM_NAME);
   }
 
 }
