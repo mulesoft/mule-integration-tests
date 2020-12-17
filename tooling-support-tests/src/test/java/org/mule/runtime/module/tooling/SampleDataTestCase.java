@@ -28,6 +28,7 @@ import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.mult
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.sourceDeclaration;
 import static org.mule.runtime.module.tooling.internal.artifact.AbstractParameterResolverExecutor.INVALID_PARAMETER_VALUE;
 import static org.mule.sdk.api.data.sample.SampleDataException.MISSING_REQUIRED_PARAMETERS;
+
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.sampledata.SampleDataFailure;
 import org.mule.runtime.api.sampledata.SampleDataResult;
@@ -35,11 +36,14 @@ import org.mule.runtime.app.declaration.api.ComponentElementDeclaration;
 import org.mule.runtime.app.declaration.api.OperationElementDeclaration;
 import org.mule.runtime.app.declaration.api.ParameterValue;
 
-import com.google.common.collect.ImmutableMap;
-
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
+import com.google.common.collect.ImmutableMap;
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
 import org.junit.Test;
 
 public class SampleDataTestCase extends DeclarationSessionTestCase {
@@ -203,7 +207,19 @@ public class SampleDataTestCase extends DeclarationSessionTestCase {
   @Test
   public void actingParameterConfigConnectionSource() {
     ComponentElementDeclaration<?> elementDeclaration = sourceDeclaration(CONFIG_NAME, "actingParameter");
-    assertSampleDataSuccess(elementDeclaration, "client-actingParameter", "dummyConfig");
+    assertSampleDataSuccessWithMatcher(elementDeclaration, "client-actingParameter", new BaseMatcher() {
+
+      @Override
+      public boolean matches(Object o) {
+        Supplier<String> supplier = (Supplier<String>) o;
+        return "dummyConfig".equals(supplier.get());
+      }
+
+      @Override
+      public void describeTo(Description description) {
+        description.appendText("Acting parameter didn't match");
+      }
+    });
   }
 
   @Test
@@ -214,15 +230,22 @@ public class SampleDataTestCase extends DeclarationSessionTestCase {
                             "CONNECTION_FAILURE");
   }
 
-  private void assertSampleDataSuccess(ComponentElementDeclaration<?> elementDeclaration, String expectedPayload,
+  private void assertSampleDataSuccess(ComponentElementDeclaration<?> elementDeclaration,
+                                       String expectedPayload,
                                        Object expectedAttributes) {
+    assertSampleDataSuccessWithMatcher(elementDeclaration, expectedPayload, is(expectedAttributes));
+  }
+
+  private void assertSampleDataSuccessWithMatcher(ComponentElementDeclaration<?> elementDeclaration,
+                                                  String expectedPayload,
+                                                  Matcher matcher) {
     SampleDataResult sampleData = session.getSampleData(elementDeclaration);
     assertThat(sampleData.isSuccess(), is(true));
     assertThat(sampleData.getSampleData().isPresent(), is(true));
     Message message = sampleData.getSampleData().get();
 
     assertThat(message.getPayload().getValue(), is(expectedPayload));
-    assertThat(message.getAttributes().getValue(), is(expectedAttributes));
+    assertThat(message.getAttributes().getValue(), matcher);
   }
 
   private void assertSampleDataFailure(ComponentElementDeclaration<?> elementDeclaration, String expectedMessage,
