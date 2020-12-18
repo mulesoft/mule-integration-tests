@@ -10,16 +10,18 @@ import static java.lang.String.format;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.metadata.resolving.FailureCode.COMPONENT_NOT_FOUND;
-import static org.mule.runtime.api.metadata.resolving.FailureCode.INVALID_METADATA_KEY;
 import static org.mule.runtime.api.metadata.resolving.FailureCode.UNKNOWN;
 import static org.mule.runtime.api.metadata.resolving.MetadataComponent.KEYS;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.configLessConnectionLessOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.configLessOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.internalErrorMetadataResolverOP;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.multiLevelOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.multiLevelOPDeclarationPartialTypeKeys;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.multiLevelShowInDslGroupOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.requiresConfigurationOutputTypeKeyResolverOP;
@@ -30,10 +32,12 @@ import org.mule.runtime.api.metadata.MetadataKeysContainer;
 import org.mule.runtime.api.metadata.resolving.FailureCode;
 import org.mule.runtime.api.metadata.resolving.MetadataFailure;
 import org.mule.runtime.api.metadata.resolving.MetadataResult;
+import org.mule.runtime.api.value.ValueResult;
 import org.mule.runtime.app.declaration.api.ComponentElementDeclaration;
 
 import java.util.Set;
 
+import org.hamcrest.Matchers;
 import org.hamcrest.collection.IsCollectionWithSize;
 import org.junit.Test;
 
@@ -42,6 +46,18 @@ public class MetadataKeysTestCase extends DeclarationSessionTestCase {
   private static final String CONFIG_LESS_CONNECTION_METADATA_RESOLVER = "ConfigLessConnectionLessMetadataResolver";
   private static final String CONFIG_LESS_METADATA_RESOLVER = "ConfigLessMetadataResolver";
   private static final String MULTI_LEVEL_PARTIAL_TYPE_KEYS_OUTPUT_RESOLVER = "MultiLevelPartialTypeKeysOutputTypeResolver";
+  private static final String MULTI_LEVEL_TYPE_KEYS_OUTPUT_RESOLVER = "MultiLevelTypeKeysOutputTypeResolver";
+
+  @Test
+  public void preserveOrder() {
+    ComponentElementDeclaration elementDeclaration = multiLevelOPDeclaration(CONFIG_NAME, null, null);
+    MetadataResult<MetadataKeysContainer> metadataKeys = session.getMetadataKeys(elementDeclaration);
+    assertThat(metadataKeys.isSuccess(), Matchers.is(true));
+
+    Set<MetadataKey> keys = metadataKeys.get().getKeysByCategory().get(MULTI_LEVEL_TYPE_KEYS_OUTPUT_RESOLVER);
+    assertThat(keys, contains(hasProperty("id", equalTo("EUROPE")),
+                              hasProperty("id", equalTo("AMERICA"))));
+  }
 
   @Test
   public void configLessConnectionLessOnOperationMetadataKeys() {
