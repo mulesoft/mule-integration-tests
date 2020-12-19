@@ -9,6 +9,9 @@ package org.mule.runtime.module.tooling;
 import static java.time.Instant.now;
 import static java.util.Arrays.asList;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertThat;
@@ -28,6 +31,7 @@ import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.comp
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.configLessConnectionLessOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.configLessOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.innerPojo;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.multipleNestedVPsOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.parameterValueProviderWithConfig;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.simpleActingParametersInContainerOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.simpleActingParametersOPDeclaration;
@@ -42,8 +46,6 @@ import org.mule.runtime.app.declaration.api.OperationElementDeclaration;
 import org.mule.runtime.app.declaration.api.ParameterValue;
 import org.mule.runtime.app.declaration.api.fluent.ElementDeclarer;
 
-import com.google.common.collect.ImmutableMap;
-
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -54,9 +56,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import com.google.common.collect.ImmutableMap;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-
 import org.junit.Test;
 
 public class ComponentValueProviderTestCase extends DeclarationSessionTestCase {
@@ -342,6 +344,17 @@ public class ComponentValueProviderTestCase extends DeclarationSessionTestCase {
     Value america = valueResult.getValues().stream().findFirst().get();
     assertThat(america.getId(), is("America"));
     assertThat(america.getChilds(), hasSize(2));
+  }
+
+  @Test
+  public void preserverOrderValuesResolver() {
+    ComponentElementDeclaration elementDeclaration = multipleNestedVPsOPDeclaration(CONFIG_NAME);
+    ValueResult valueResult = getValueResult(session, elementDeclaration, "levelOne");
+    assertThat(valueResult.isSuccess(), is(true));
+    assertThat(valueResult.getValues(), contains(
+                                                 hasProperty("id", equalTo("ONE")),
+                                                 hasProperty("id", equalTo("TWO")),
+                                                 hasProperty("id", equalTo("THREE"))));
   }
 
   @Test
