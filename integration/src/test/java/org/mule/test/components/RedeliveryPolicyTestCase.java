@@ -10,6 +10,7 @@ import static java.lang.Runtime.getRuntime;
 import static java.util.Arrays.asList;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assume.assumeThat;
@@ -35,6 +36,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
+
+import io.qameta.allure.Issue;
 
 @RunnerDelegateTo(Parameterized.class)
 public class RedeliveryPolicyTestCase extends AbstractIntegrationTestCase {
@@ -125,6 +128,18 @@ public class RedeliveryPolicyTestCase extends AbstractIntegrationTestCase {
 
     assertThat(queueManager.read("processed", RECEIVE_TIMEOUT, MILLISECONDS), notNullValue());
     assertThat(pojoPayload.isHashCodeCalled(), is(true));
+  }
+
+  @Test
+  @Issue("MULE-19085")
+  public void redeliveryPolicyAndErrorHandler() throws Exception {
+    flowRunner("redeliveryPolicyAndErrorHandlerFlowDispatch")
+        .runExpectingException();
+
+    assertThat("Error handler was not called",
+               queueManager.read("errorHandlerMessageQueue", RECEIVE_TIMEOUT, MILLISECONDS), notNullValue());
+    assertThat("Error handler was called more than once",
+               queueManager.read("errorHandlerMessageQueue", RECEIVE_TIMEOUT, MILLISECONDS), nullValue());
   }
 
   private static class PojoPayload {
