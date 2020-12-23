@@ -12,6 +12,7 @@
           <vm:queue queueName="Q1" />
           <vm:queue queueName="Q2" />
           <vm:queue queueName="Q3" />
+          <vm:queue queueName="Q4" />
         </vm:queues>
     </vm:config>
 
@@ -62,5 +63,22 @@
         </vm:listener>
         
         <test:queue name="processed"/>
+    </flow>
+
+    <flow name="redeliveryPolicyAndErrorHandlerFlowDispatch">
+        <vm:publish-consume queueName="Q4" config-ref="VM_Config" timeout="10"/>
+    </flow>
+
+    <flow name="redeliveryPolicyAndErrorHandlerFlowProcess">
+        <vm:listener queueName="Q4" config-ref="VM_Config">
+            <redelivery-policy idExpression="#['fixedId']"/>
+        </vm:listener>
+
+        <raise-error type="APP:TEST" />
+        <error-handler>
+            <on-error-propagate type="APP:TEST">
+                <test:queue name="errorHandlerMessageQueue"/>
+            </on-error-propagate>
+        </error-handler>
     </flow>
 </mule>

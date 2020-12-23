@@ -8,6 +8,7 @@ package org.mule.test.components;
 
 import static java.lang.Runtime.getRuntime;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.metadata.MediaType.APPLICATION_JAVA;
@@ -93,6 +94,18 @@ public class RedeliveryPolicyTestCase extends AbstractIntegrationTestCase {
     assertThat(queueHandler.read("processed", RECEIVE_TIMEOUT), notNullValue());
 
     assertThat(pojoPayload.isHashCodeCalled(), is(true));
+  }
+
+  @Test
+  public void redeliveryPolicyAndErrorHandler() throws Exception {
+    flowRunner("redeliveryPolicyAndErrorHandlerFlowDispatch")
+        .runExpectingException();
+
+    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
+    assertThat("Error handler was not called",
+               queueHandler.read("errorHandlerMessageQueue", RECEIVE_TIMEOUT), notNullValue());
+    assertThat("Error handler was called more than once",
+               queueHandler.read("errorHandlerMessageQueue", RECEIVE_TIMEOUT), nullValue());
   }
 
   private static class PojoPayload {
