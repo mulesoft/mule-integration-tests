@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xmlns:test="http://www.mulesoft.org/schema/mule/test"
       xmlns:test-components="http://www.mulesoft.org/schema/mule/test-components"
       xsi:schemaLocation="
                http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-               http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
                http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
 
     <test-components:queue-config name="output0">
@@ -49,15 +47,16 @@
     </flow>
 
     <flow name="test-router-nb">
-        <test:assert-intercepting responseSameTask="false" />
-        <round-robin>
-            <route>
-                <test-components:non-blocking/>
-            </route>
-            <route>
-                <test-components:non-blocking/>
-            </route>
-        </round-robin>
+        <test-components:assert-intercepting responseSameTask="false">
+            <round-robin>
+                <route>
+                    <test-components:non-blocking/>
+                </route>
+                <route>
+                    <test-components:non-blocking/>
+                </route>
+            </round-robin>
+        </test-components:assert-intercepting>
     </flow>
 
 </mule>

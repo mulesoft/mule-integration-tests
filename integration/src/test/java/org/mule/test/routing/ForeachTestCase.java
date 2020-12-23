@@ -20,9 +20,9 @@ import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.junit.rules.ExpectedException.none;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mule.functional.api.exception.ExpectedError.none;
 import static org.mule.functional.junit4.matchers.MessageMatchers.hasPayload;
 import static org.mule.runtime.api.exception.MuleException.INFO_LOCATION_KEY;
 import static org.mule.runtime.api.message.Message.of;
@@ -30,16 +30,16 @@ import static org.mule.runtime.api.metadata.DataType.JSON_STRING;
 import static org.mule.runtime.api.metadata.MediaType.APPLICATION_JAVA;
 import static org.mule.runtime.api.metadata.MediaType.APPLICATION_JSON;
 import static org.mule.runtime.api.metadata.MediaType.APPLICATION_XML;
+import static org.mule.sdk.api.error.MuleErrors.CONNECTIVITY;
 import static org.mule.tck.processor.FlowAssert.verify;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ForeachStory.FOR_EACH;
 
+import org.mule.functional.api.exception.ExpectedError;
 import org.mule.functional.junit4.TestLegacyMessageBuilder;
-import org.mule.functional.junit4.rules.HttpServerRule;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.event.CoreEvent;
-import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.tests.api.TestQueueManager;
@@ -52,17 +52,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
+import javax.inject.Inject;
+
 import org.apache.commons.text.RandomStringGenerator;
 import org.hamcrest.core.Is;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import com.google.common.collect.ImmutableList;
-
-import javax.inject.Inject;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
@@ -80,13 +79,7 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
   public SystemProperty systemProperty = new SystemProperty("batch.size", "3");
 
   @Rule
-  public ExpectedException expectedException = none();
-
-  @Rule
-  public DynamicPort port = new DynamicPort("port");
-
-  @Rule
-  public HttpServerRule httpServerRules = new HttpServerRule("port");
+  public ExpectedError expectedException = none();
 
   private RandomStringGenerator randomStringGenerator;
 
@@ -594,7 +587,7 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void errorAfterThreadChange() throws Exception {
-    expectedException.expectCause(instanceOf(java.io.IOException.class));
+    expectedException.expectErrorType("MULE", CONNECTIVITY.name());
     flowRunner("errorAfterThreadChange").withPayload(asList("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")).run();
   }
 
