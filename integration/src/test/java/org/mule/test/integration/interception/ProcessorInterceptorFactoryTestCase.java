@@ -91,8 +91,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     objects.put(INTERCEPTORS_ORDER_REGISTRY_KEY,
                 (ProcessorInterceptorOrder) () -> asList(AfterWithCallbackInterceptorFactory.class.getName(),
                                                          HasInjectedAttributesInterceptorFactory.class.getName(),
-                                                         EvaluatesExpressionInterceptorFactory.class.getName())
-    );
+                                                         EvaluatesExpressionInterceptorFactory.class.getName()));
 
     return objects;
   }
