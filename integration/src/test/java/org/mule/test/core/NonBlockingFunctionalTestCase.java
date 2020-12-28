@@ -14,12 +14,13 @@ import static org.mule.tck.processor.FlowAssert.verify;
 import org.mule.runtime.api.security.SecurityContext;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.security.AbstractAuthenticationFilter;
-import org.mule.runtime.core.api.transaction.Transaction;
 import org.mule.runtime.core.api.transaction.TransactionCoordination;
+import org.mule.runtime.core.privileged.transaction.TransactionAdapter;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.runner.RunnerDelegateTo;
 
 import java.util.Collection;
+import java.util.concurrent.CountDownLatch;
 
 import org.junit.Test;
 import org.junit.runners.Parameterized;
@@ -49,8 +50,8 @@ public class NonBlockingFunctionalTestCase extends AbstractIntegrationTestCase {
   }
 
   @Override
-  protected String getConfigFile() {
-    return config;
+  protected String[] getConfigFiles() {
+    return new String[] {"org/mule/engine/non-blocking-test-common-config.xml", "org/mule/engine/" + config};
   }
 
   @Override
@@ -163,23 +164,45 @@ public class NonBlockingFunctionalTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void untilSuccessfulWithRetryExceptionBefore() throws Exception {
-    flowRunner("untilSuccessfulWithRetryExceptionBefore").withPayload(TEST_MESSAGE).run();
+    final CountDownLatch countDownLatch = new CountDownLatch(2);
+
+    flowRunner("untilSuccessfulWithRetryExceptionBefore")
+        .withVariable("counter", countDownLatch)
+        .withPayload(TEST_MESSAGE).run();
   }
 
   @Test
   public void untilSuccessfulWithRetryExceptionAfter() throws Exception {
-    flowRunner("untilSuccessfulWithRetryExceptionAfter").withPayload(TEST_MESSAGE).run();
+    final CountDownLatch countDownLatch = new CountDownLatch(2);
+
+    flowRunner("untilSuccessfulWithRetryExceptionAfter")
+        .withVariable("counter", countDownLatch)
+        .withPayload(TEST_MESSAGE).run();
   }
 
   @Test
   public void untilSuccessfulWithRetryNonBlockingAfterScope() throws Exception {
-    flowRunner("untilSuccessfulWithRetryNonBlockingAfterScope").withPayload(TEST_MESSAGE).run();
+    final CountDownLatch countDownLatch = new CountDownLatch(2);
+
+    flowRunner("untilSuccessfulWithRetryNonBlockingAfterScope")
+        .withVariable("counter", countDownLatch)
+        .withPayload(TEST_MESSAGE).run();
   }
 
   @Test
   public void untilSuccessfulWithRetryTransactional() throws Exception {
-    TransactionCoordination.getInstance().bindTransaction(mock(Transaction.class));
-    flowRunner("untilSuccessfulWithRetryTransactional").withPayload(TEST_MESSAGE).run();
+    TransactionCoordination.getInstance().bindTransaction(mock(TransactionAdapter.class));
+
+    final CountDownLatch countDownLatch = new CountDownLatch(2);
+
+    flowRunner("untilSuccessfulWithRetryTransactional")
+        .withVariable("counter", countDownLatch)
+        .withPayload(TEST_MESSAGE).run();
+  }
+
+  public static Object countdownLatch(Object payload, CountDownLatch latch) {
+    latch.countDown();
+    return payload;
   }
 
   @Test

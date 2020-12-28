@@ -326,7 +326,7 @@
 
     <flow name="error-handler" initialState="stopped">
         <foreach>
-            <test:throw exception="java.io.IOException" error="CONNECTIVITY"/>
+            <raise-error type="MULE:CONNECTIVITY"/>
         </foreach>
         <error-handler>
             <on-error-continue type="CONNECTIVITY">
@@ -354,29 +354,31 @@
     <flow name="nonBlocking" initialState="stopped">
         <set-variable variableName="work" value="" />
 
-        <test:assert-intercepting responseSameTask="false"/>
-        <foreach>
-            <test-components:non-blocking/>
-            <set-variable variableName="work" value="#[vars.work ++ payload]" />
-        </foreach>
-        <test:assert expression="#[vars.work == '0123456789']"/>
+        <test-components:assert-intercepting responseSameTask="false">
+            <foreach>
+                <test-components:non-blocking/>
+                <set-variable variableName="work" value="#[vars.work ++ payload]" />
+            </foreach>
+            <test:assert expression="#[vars.work == '0123456789']"/>
+        </test-components:assert-intercepting>
     </flow>
 
     <flow name="threadChange" initialState="stopped">
         <set-variable variableName="work" value="" />
 
-        <test:assert-intercepting responseSameTask="false"/>
-        <foreach>
-            <test:processor processingType="CPU_INTENSIVE"/>
-            <set-variable variableName="work" value="#[vars.work ++ payload]" />
-        </foreach>
-        <test:assert expression="#[vars.work == '0123456789']"/>
+        <test-components:assert-intercepting responseSameTask="false">
+            <foreach>
+                <test:processor processingType="CPU_INTENSIVE"/>
+                <set-variable variableName="work" value="#[vars.work ++ payload]" />
+            </foreach>
+            <test:assert expression="#[vars.work == '0123456789']"/>
+        </test-components:assert-intercepting>
     </flow>
 
     <flow name="errorAfterThreadChange" initialState="stopped">
         <foreach>
             <test:processor processingType="CPU_INTENSIVE"/>
-            <test:throw exception="java.io.IOException" error="CONNECTIVITY"/>
+            <raise-error type="MULE:CONNECTIVITY"/>
         </foreach>
     </flow>
 
@@ -395,10 +397,10 @@
     <flow name="forEachWithTry">
         <foreach>
             <try>
-                <test:processor throwException="true"/>
+                <raise-error type="APP:SOME"/>
                 <error-handler>
                     <on-error-continue>
-                        <http:request config-ref="httpRequestConfig" path="/test"/>
+                        <test-components:non-blocking/>
                     </on-error-continue>
                 </error-handler>
             </try>
@@ -413,9 +415,5 @@
         </foreach>
         <test:assert expression="#[vars.work == 'Mondi']"/>
     </flow>
-
-    <http:request-config name="httpRequestConfig">
-        <http:request-connection host="localhost" port="${port}"/>
-    </http:request-config>
 
 </mule>
