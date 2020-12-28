@@ -16,7 +16,6 @@ import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.security.AbstractAuthenticationFilter;
 import org.mule.runtime.core.api.transaction.TransactionCoordination;
 import org.mule.runtime.core.privileged.transaction.TransactionAdapter;
-import org.mule.tck.junit4.FlakinessDetectorTestRunnerWithParameters.FlakinessDetectorTestRunnerWithParametersFactory;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.runner.RunnerDelegateTo;
 
@@ -26,10 +25,8 @@ import java.util.concurrent.CountDownLatch;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 @RunnerDelegateTo(Parameterized.class)
-@UseParametersRunnerFactory(FlakinessDetectorTestRunnerWithParametersFactory.class)
 public class NonBlockingFunctionalTestCase extends AbstractIntegrationTestCase {
 
   @Parameters(name = "{0}")
