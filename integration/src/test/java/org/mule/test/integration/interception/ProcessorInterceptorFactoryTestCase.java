@@ -26,7 +26,6 @@ import static org.mule.test.allure.AllureConstants.InterceptonApi.ComponentInter
 import static org.mule.test.heisenberg.extension.HeisenbergConnectionProvider.getActiveConnections;
 import static org.mule.test.heisenberg.extension.HeisenbergOperations.CALL_GUS_MESSAGE;
 
-import io.qameta.allure.Issue;
 import org.mule.extension.http.api.request.validator.ResponseValidatorException;
 import org.mule.functional.api.exception.ExpectedError;
 import org.mule.runtime.api.artifact.Registry;
@@ -380,18 +379,6 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
 
       InterceptionParameters mpInGlobalErrorHandler = interceptionParameters.get(1);
       assertThat(mpInGlobalErrorHandler.getLocation().getLocation(), is("globalErrorHandler/0/processors/0"));
-    }
-  }
-
-  @Test
-  @Issue("MULE-18099")
-  public void operationWithChain() throws Exception {
-    AtomicBoolean afterCallbackCalled = new AtomicBoolean(false);
-    AfterWithCallbackInterceptor.callback = (interceptionEvent, throwable) -> afterCallbackCalled.getAndSet(true);
-    try {
-      flowRunner("operationWithChain").run();
-    } finally {
-      assertThat(afterCallbackCalled.get(), is(true));
     }
   }
 
