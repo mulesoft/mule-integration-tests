@@ -8,6 +8,7 @@ package org.mule.test.integration.properties;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+import static org.mule.runtime.api.util.MuleSystemProperties.HONOUR_RESERVED_PROPERTIES_PROPERTY;
 import static org.mule.test.allure.AllureConstants.ConfigurationProperties.CONFIGURATION_PROPERTIES;
 import static org.mule.test.allure.AllureConstants.ConfigurationProperties.ComponentConfigurationAttributesStory.CONFIGURATION_PROPERTIES_RESOLVER_STORY;
 
@@ -18,6 +19,7 @@ import java.util.Optional;
 import javax.inject.Inject;
 
 import com.google.common.collect.ImmutableMap;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
@@ -27,6 +29,7 @@ import org.mule.runtime.api.meta.MuleVersion;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.runtime.core.api.config.DefaultMuleConfiguration;
+import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import io.qameta.allure.Feature;
@@ -45,6 +48,9 @@ public class ReservedPropertyNamesTestCase extends AbstractIntegrationTestCase {
   @Inject
   private ConfigurationProperties configurationProperties;
 
+  @Rule
+  public SystemProperty systemProperty;
+
   private final String minMuleVersion;
 
   private final String expectedPropertyValue;
@@ -52,15 +58,26 @@ public class ReservedPropertyNamesTestCase extends AbstractIntegrationTestCase {
   @Parameters(name = "With minMuleVersion {0}")
   public static Object[][] parameters() {
     return new Object[][] {
-        new Object[] {"4.1.5", "overridden.value"},
-        new Object[] {"4.2.2", "overridden.value"},
-        new Object[] {"4.3.0", "value"}
+        new Object[] {"4.1.5", "true", "value"},
+        new Object[] {"4.2.2", "true", "value"},
+        new Object[] {"4.3.0", "true", "value"},
+
+        new Object[] {"4.1.5", null, "overridden.value"},
+        new Object[] {"4.2.2", null, "overridden.value"},
+        new Object[] {"4.3.0", null, "value"},
+
+        new Object[] {"4.1.5", "false", "overridden.value"},
+        new Object[] {"4.2.2", "false", "overridden.value"},
+        new Object[] {"4.3.0", "false", "overridden.value"}
     };
   }
 
-  public ReservedPropertyNamesTestCase(String minMuleVersion, String expectedPropertyValue) {
+  public ReservedPropertyNamesTestCase(String minMuleVersion, String systemPropertyValue, String expectedPropertyValue) {
     this.minMuleVersion = minMuleVersion;
     this.expectedPropertyValue = expectedPropertyValue;
+    if (systemPropertyValue != null) {
+      systemProperty = new SystemProperty(HONOUR_RESERVED_PROPERTIES_PROPERTY, systemPropertyValue);
+    }
   }
 
   @Test
