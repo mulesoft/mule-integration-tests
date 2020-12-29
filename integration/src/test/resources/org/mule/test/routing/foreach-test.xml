@@ -85,28 +85,12 @@
         <test:assert expression="#[payload == vars.parent2.payload]"/>
     </flow>
 
-    <flow name="message-collection-config" initialState="stopped">
-        <foreach>
-            <test:assert expression="#[mel:message.outboundProperties['out']=='out'+counter]" />
-            <set-variable variableName="totalMessages" value="#[vars.counter]"/>
-        </foreach>
-        <test:assert expression="#[vars.totalMessages==10]" />
-    </flow>
-
     <flow name="map-config" initialState="stopped">
         <foreach collection="#[dw::core::Objects::entrySet(payload)]">
             <test:processor/>
             <set-variable variableName="totalMessages" value="#[vars.counter]" />
         </foreach>
         <test:assert expression="#[vars.totalMessages == 2]" />
-    </flow>
-
-    <flow name="map-expression-config" initialState="stopped">
-        <foreach collection="#[mel:message.inboundProperties.names]">
-            <test:processor/>
-            <set-variable variableName="totalMessages" value="#[vars.counter]" />
-        </foreach>
-        <test:assert expression="#[vars.totalMessages == 3]"/>
     </flow>
 
     <flow name="process-order-update" initialState="stopped">
@@ -128,8 +112,6 @@
                 </script:code>
             </script:execute>
         </foreach>
-        <test:assert expression="#[mel:payload is Map]" />
-        <test:assert expression="#[sizeOf(payload.order.items) == 4]" />
     </flow>
 
     <flow name="array-expression-config" initialState="stopped">
@@ -201,34 +183,6 @@
         <test:assert expression="#[vars.rootMessage == 'world']" />
     </flow>
 
-    <flow name="mvel-list" initialState="stopped">
-        <foreach collection="#[mel:['foo', 'bar']]">
-            <test:processor/>
-            <test-components:queue-push config-ref="out"/>
-        </foreach>
-    </flow>
-
-    <flow name="mvel-map" initialState="stopped">
-        <foreach collection="#[mel:['key1' : 'val1', 'key2':'val2']]">
-            <test:processor/>
-            <logger level="ERROR" message="message-#[vars.counter]: #[payload]"/>
-            <test-components:queue-push config-ref="out"/>
-        </foreach>
-    </flow>
-
-    <flow name="mvel-collection" initialState="stopped">
-        <foreach collection="#[mel:['key1' : 'val1', 'key2':'val2'].values()]">
-            <test:processor/>
-            <test-components:queue-push config-ref="out"/>
-        </foreach>
-    </flow>
-
-    <flow name="mvel-array" initialState="stopped">
-        <foreach collection="#[mel:{'foo', 'bar'}]">
-            <flow-ref name="assertIterable" />
-        </foreach>
-    </flow>
-
     <flow name="expression-iterable" initialState="stopped">
         <foreach collection="#[vars.iterable]">
             <flow-ref name="assertIterable" />
@@ -237,12 +191,12 @@
 
     <sub-flow name="assertIterable">
         <test:processor/>
-        <test:assert expression="#[mel:payload instanceof String]"  message="hoal"/>
+        <test:assert expression="#[payload.^class == 'java.lang.String']" />
         <logger level="ERROR" message="message-#[vars.counter]: #[payload]"/>
         <test-components:queue-push config-ref="out"/>
     </sub-flow>
 
-    <flow name="mvel-error" initialState="stopped">
+    <flow name="errorExpression" initialState="stopped">
         <foreach collection="#[vars.invalid]">
             <test:processor/>
         </foreach>
