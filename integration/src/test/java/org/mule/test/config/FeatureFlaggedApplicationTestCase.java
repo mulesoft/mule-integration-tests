@@ -12,6 +12,7 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.mule.test.allure.AllureConstants.DeploymentConfiguration.DEPLOYMENT_CONFIGURATION;
 import static org.mule.test.allure.AllureConstants.DeploymentConfiguration.FeatureFlaggingStory.FEATURE_FLAGGING;
+import static org.mule.test.petstore.extension.PetStoreFeatures.LEGACY_FEATURE;
 import static org.mule.test.petstore.extension.PetStoreOperations.operationExecutionCounter;
 
 import java.util.List;
@@ -19,6 +20,7 @@ import java.util.List;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
 import org.mule.runtime.api.config.custom.ServiceConfigurator;
@@ -27,6 +29,7 @@ import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.runtime.core.api.config.DefaultMuleConfiguration;
 import org.mule.runtime.core.api.event.CoreEvent;
+import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.runner.RunnerDelegateTo;
 
@@ -43,18 +46,32 @@ public class FeatureFlaggedApplicationTestCase extends AbstractIntegrationTestCa
 
   private final boolean isLegacy;
 
-  @Parameterized.Parameters(name = "With minMuleVersion {1}")
+  @Rule
+  public SystemProperty systemProperty;
+
+  @Parameterized.Parameters(name = "Legacy behavior is {0} for minMuleVersion={1} and System Property={2}")
   public static Object[][] parameters() {
     return new Object[][] {
-        new Object[] {true, "4.2.2"},
-        new Object[] {false, "4.3.0"},
-        new Object[] {false, null}
+        new Object[] {true, "4.2.2", "true"},
+        new Object[] {false, "4.2.2", "false"},
+        new Object[] {true, "4.2.2", null},
+
+        new Object[] {true, "4.3.0", "true"},
+        new Object[] {false, "4.3.0", "false"},
+        new Object[] {false, "4.3.0", null},
+
+        new Object[] {true, null, "true"},
+        new Object[] {false, null, "false"},
+        new Object[] {false, null, null}
     };
   }
 
-  public FeatureFlaggedApplicationTestCase(boolean isLegacy, String minMuleVersion) {
+  public FeatureFlaggedApplicationTestCase(boolean isLegacy, String minMuleVersion, String systemPropertyValue) {
     this.isLegacy = isLegacy;
     this.minMuleVersion = minMuleVersion;
+    if (systemPropertyValue != null && LEGACY_FEATURE.getOverridingSystemPropertyName().isPresent()) {
+      this.systemProperty = new SystemProperty(LEGACY_FEATURE.getOverridingSystemPropertyName().get(), systemPropertyValue);
+    }
   }
 
   @BeforeClass
