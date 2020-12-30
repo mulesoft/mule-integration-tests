@@ -19,13 +19,11 @@ import static org.hamcrest.collection.IsArrayWithSize.arrayWithSize;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mule.functional.api.exception.ExpectedError.none;
 import static org.mule.functional.junit4.matchers.MessageMatchers.hasPayload;
 import static org.mule.runtime.api.exception.MuleException.INFO_LOCATION_KEY;
-import static org.mule.runtime.api.message.Message.of;
 import static org.mule.runtime.api.metadata.DataType.JSON_STRING;
 import static org.mule.runtime.api.metadata.MediaType.APPLICATION_JAVA;
 import static org.mule.runtime.api.metadata.MediaType.APPLICATION_JSON;
@@ -36,7 +34,6 @@ import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ForeachStory.FOR_EACH;
 
 import org.mule.functional.api.exception.ExpectedError;
-import org.mule.functional.junit4.TestLegacyMessageBuilder;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.event.CoreEvent;
@@ -90,7 +87,7 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
 
   @Override
   protected String getConfigFile() {
-    return "foreach-test.xml";
+    return "org/mule/test/routing/foreach-test.xml";
   }
 
   @Test
@@ -196,19 +193,6 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  public void messageCollectionConfiguration() throws Exception {
-    List<Message> list = new ArrayList<>();
-    for (int i = 0; i < 10; i++) {
-      list.add(new TestLegacyMessageBuilder().value("message-" + i).addOutboundProperty("out", "out" + (i + 1)).build());
-    }
-
-    Message msgCollection = of(list);
-    Message result = flowRunner("message-collection-config").withPayload(list).run().getMessage();
-
-    assertThat(result.getPayload().getValue(), equalTo(msgCollection.getPayload().getValue()));
-  }
-
-  @Test
   public void mapPayload() throws Exception {
     final Map<String, String> payload = new HashMap<>();
     payload.put("name", "david");
@@ -220,19 +204,6 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
     Map<?, ?> resultPayload = (Map<?, ?>) result.getPayload().getValue();
     assertThat(resultPayload.entrySet(), hasSize(payload.size()));
     assertSame(payload, resultPayload);
-  }
-
-  @Test
-  public void mapExpression() throws Exception {
-    final ArrayList<String> names = new ArrayList<>();
-    names.add("Sergei");
-    names.add("Vasilievich");
-    names.add("Rachmaninoff");
-
-    Message result = flowRunner("map-expression-config").withPayload("message payload").withInboundProperty("names", names)
-        .run().getMessage();
-
-    assertThat(result.getPayload().getValue(), instanceOf(String.class));
   }
 
   @Test
@@ -465,65 +436,6 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
     assertSame(payload, resultPayload);
   }
 
-  @Test
-  public void mvelList() throws Exception {
-    runFlow("mvel-list");
-
-    Message out = queueManager.read("out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
-    assertThat(out.getPayload().getValue(), instanceOf(String.class));
-    String outPayload = (String) out.getPayload().getValue();
-    assertThat(outPayload, is("foo"));
-
-    out = queueManager.read("out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
-    assertThat(out.getPayload().getValue(), instanceOf(String.class));
-    outPayload = (String) out.getPayload().getValue();
-    assertThat(outPayload, is("bar"));
-  }
-
-  @Test
-  public void mvelMap() throws Exception {
-    runFlow("mvel-map");
-
-    Map<String, String> m = new HashMap<>();
-    m.put("key1", "val1");
-    m.put("key2", "val2");
-
-    Message out = queueManager.read("out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
-    assertThat(out.getPayload().getValue(), instanceOf(String.class));
-    String outPayload = (String) out.getPayload().getValue();
-    assertTrue(m.containsValue(outPayload));
-
-    out = queueManager.read("out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
-    assertThat(out.getPayload().getValue(), instanceOf(String.class));
-    outPayload = (String) out.getPayload().getValue();
-    assertTrue(m.containsValue(outPayload));
-  }
-
-  @Test
-  public void mvelCollection() throws Exception {
-    runFlow("mvel-collection");
-
-    Map<String, String> m = new HashMap<>();
-    m.put("key1", "val1");
-    m.put("key2", "val2");
-
-    Message out = queueManager.read("out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
-    assertThat(out.getPayload().getValue(), instanceOf(String.class));
-    String outPayload = (String) out.getPayload().getValue();
-    assertTrue(m.containsValue(outPayload));
-
-    out = queueManager.read("out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
-    assertThat(out.getPayload().getValue(), instanceOf(String.class));
-    outPayload = (String) out.getPayload().getValue();
-    assertTrue(m.containsValue(outPayload));
-  }
-
-  @Test
-  public void mvelArray() throws Exception {
-    runFlow("mvel-array");
-    assertIterable();
-  }
-
   private void assertIterable() {
     Message out = queueManager.read("out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
     assertThat(out.getPayload().getValue(), instanceOf(String.class));
@@ -548,8 +460,8 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void mvelError() throws Exception {
-    MuleException me = (MuleException) flowRunner("mvel-error").runExpectingException();
-    assertThat((String) me.getInfo().get(INFO_LOCATION_KEY), startsWith("mvel-error/processors/0 @"));
+    MuleException me = (MuleException) flowRunner("errorExpression").runExpectingException();
+    assertThat((String) me.getInfo().get(INFO_LOCATION_KEY), startsWith("errorExpression/processors/0 @"));
   }
 
   @Test
