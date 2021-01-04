@@ -161,15 +161,6 @@
     <flow name="asyncFlowWithSdkOperation" initialState="stopped">
         <flow-ref name="outerSubFlowWithSdkOperation"/>
     </flow>
-    <sub-flow name="outerSubFlowWithSdkOperation">
-        <async>
-            <flow-ref name="innerSubFlowWithSdkOperation"/>
-            <test:queue name="asyncFinished"/>
-        </async>
-    </sub-flow>
-    <sub-flow name="innerSubFlowWithSdkOperation">
-        <http:request config-ref="requestConfig" path="/echo"/>
-    </sub-flow>
 
     <flow name="asyncFlowWithSdkOperationInErrorHandler" initialState="stopped">
         <raise-error type="TEST:EXPECTED"/>

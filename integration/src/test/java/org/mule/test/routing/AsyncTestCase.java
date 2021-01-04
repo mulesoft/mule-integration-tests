@@ -216,10 +216,10 @@ public class AsyncTestCase extends AbstractIntegrationTestCase {
   @Description("Verify that operations inner fluxes are not terminated when within error-handler/async/sub-flow combination.")
   public void asyncFlowWithSdkOperationInErrorHandler() throws Exception {
     flowRunner("asyncFlowWithSdkOperationInErrorHandler").runExpectingException();
-    assertThat(queueManager.read("asyncFinished", 1000, MILLISECONDS), not(nullValue()));
+    assertThat(queueHandler.read("asyncFinished", 1000), not(nullValue()));
 
     flowRunner("asyncFlowWithSdkOperationInErrorHandler").runExpectingException();
-    assertThat(queueManager.read("asyncFinished", 1000, MILLISECONDS), not(nullValue()));
+    assertThat(queueHandler.read("asyncFinished", 1000), not(nullValue()));
   }
 
   @Test
@@ -227,10 +227,10 @@ public class AsyncTestCase extends AbstractIntegrationTestCase {
   @Description("Verify that operations inner fluxes are not terminated when within error-handler/async/sub-flow combination.")
   public void asyncFlowWithSdkOperationInRefErrorHandler() throws Exception {
     flowRunner("asyncFlowWithSdkOperationInRefErrorHandler").runExpectingException();
-    assertThat(queueManager.read("asyncFinished", 1000, MILLISECONDS), not(nullValue()));
+    assertThat(queueHandler.read("asyncFinished", 1000), not(nullValue()));
 
     flowRunner("asyncFlowWithSdkOperationInRefErrorHandler").runExpectingException();
-    assertThat(queueManager.read("asyncFinished", 1000, MILLISECONDS), not(nullValue()));
+    assertThat(queueHandler.read("asyncFinished", 1000), not(nullValue()));
   }
 
   private void testAsyncMaxConcurrency(String flowName) throws Exception {
