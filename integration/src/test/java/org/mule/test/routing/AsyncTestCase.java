@@ -211,6 +211,28 @@ public class AsyncTestCase extends AbstractIntegrationTestCase {
     assertThat(queueHandler.read("asyncFinished", 1000), not(nullValue()));
   }
 
+  @Test
+  @Issue("MULE-18304")
+  @Description("Verify that operations inner fluxes are not terminated when within error-handler/async/sub-flow combination.")
+  public void asyncFlowWithSdkOperationInErrorHandler() throws Exception {
+    flowRunner("asyncFlowWithSdkOperationInErrorHandler").runExpectingException();
+    assertThat(queueManager.read("asyncFinished", 1000, MILLISECONDS), not(nullValue()));
+
+    flowRunner("asyncFlowWithSdkOperationInErrorHandler").runExpectingException();
+    assertThat(queueManager.read("asyncFinished", 1000, MILLISECONDS), not(nullValue()));
+  }
+
+  @Test
+  @Issue("MULE-19091")
+  @Description("Verify that operations inner fluxes are not terminated when within error-handler/async/sub-flow combination.")
+  public void asyncFlowWithSdkOperationInRefErrorHandler() throws Exception {
+    flowRunner("asyncFlowWithSdkOperationInRefErrorHandler").runExpectingException();
+    assertThat(queueManager.read("asyncFinished", 1000, MILLISECONDS), not(nullValue()));
+
+    flowRunner("asyncFlowWithSdkOperationInRefErrorHandler").runExpectingException();
+    assertThat(queueManager.read("asyncFinished", 1000, MILLISECONDS), not(nullValue()));
+  }
+
   private void testAsyncMaxConcurrency(String flowName) throws Exception {
     CountDownLatch latch = new CountDownLatch(1);
     runFlows(flowName, latch);

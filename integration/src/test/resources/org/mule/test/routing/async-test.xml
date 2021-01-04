@@ -171,9 +171,42 @@
         <http:request config-ref="requestConfig" path="/echo"/>
     </sub-flow>
 
+    <flow name="asyncFlowWithSdkOperationInErrorHandler" initialState="stopped">
+        <raise-error type="TEST:EXPECTED"/>
+        
+        <error-handler>
+            <on-error-propagate>
+                <flow-ref name="outerSubFlowWithSdkOperation"/>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+
+    <flow name="asyncFlowWithSdkOperationInRefErrorHandler" initialState="stopped">
+        <raise-error type="TEST:EXPECTED"/>
+        
+        <error-handler ref="errorHandlerWithAsyncAndNonBlocking"/>
+    </flow>
+
+    <error-handler name="errorHandlerWithAsyncAndNonBlocking">
+        <on-error-propagate>
+            <flow-ref name="outerSubFlowWithSdkOperation"/>
+        </on-error-propagate>
+    </error-handler>
+
     <flow name="httpEcho">
         <http:listener config-ref="listenerConfig" path="echo"/>
         <logger/>
     </flow>
     
+    <sub-flow name="outerSubFlowWithSdkOperation">
+        <async>
+            <flow-ref name="innerSubFlowWithSdkOperation"/>
+            <test:queue name="asyncFinished"/>
+        </async>
+    </sub-flow>
+
+    <sub-flow name="innerSubFlowWithSdkOperation">
+        <http:request config-ref="requestConfig" path="/echo"/>
+    </sub-flow>
+
 </mule>
