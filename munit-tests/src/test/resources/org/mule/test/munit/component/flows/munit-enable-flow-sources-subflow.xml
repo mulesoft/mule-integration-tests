@@ -26,7 +26,6 @@
 
     <flow name="main-flow">
         <flow-ref name="#['sub-flow']"/>
-<!--         <flow-ref name="sub-flow"/> -->
     </flow>
     
     <sub-flow name="sub-flow">
