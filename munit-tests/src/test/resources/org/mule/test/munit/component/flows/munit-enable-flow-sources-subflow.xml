@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+      xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+    xsi:schemaLocation="
+    http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+    http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+    http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+
+    <munit:config name="munit-enable-flow-sources-subflow.xml" />
+
+    <munit:test name="munit-enable-flow-sources-subflow">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="sub-flow" />
+        </munit:enable-flow-sources>
+
+        <munit:execution>
+            <flow-ref name="main-flow" />
+        </munit:execution>
+
+        <munit:validation>
+            <logger />
+        </munit:validation>
+    </munit:test>
+
+    <flow name="main-flow">
+        <flow-ref name="#['sub-flow']"/>
+    </flow>
+    
+    <sub-flow name="sub-flow">
+        <logger />
+    </sub-flow>
+
+</mule>
