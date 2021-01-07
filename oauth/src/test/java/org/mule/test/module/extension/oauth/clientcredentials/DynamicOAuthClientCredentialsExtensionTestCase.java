@@ -49,8 +49,6 @@ public class DynamicOAuthClientCredentialsExtensionTestCase extends BaseOAuthExt
   private static final String TOKEN_URL_VARIABLE = "tokenUrl";
   private static final String SCOPES_VARIABLE = "scopes";
 
-  private static final String CONFIG_ID_SEPARATOR = "//";
-
   private LazyValue<ObjectStore> objectStore =
       new LazyValue<>(() -> muleContext.getObjectStoreManager().getObjectStore(CUSTOM_STORE_NAME));
 
@@ -63,7 +61,6 @@ public class DynamicOAuthClientCredentialsExtensionTestCase extends BaseOAuthExt
   protected void doSetUp() throws Exception {
     super.doSetUp();
     storedOwnerId = DEFAULT_RESOURCE_OWNER_ID + "-oauth";
-    //storedOwnerId = DEFAULT_RESOURCE_OWNER_ID + CONFIG_ID_SEPARATOR + CLIENT_ID + CONFIG_ID_SEPARATOR + CLIENT_SECRET + CONFIG_ID_SEPARATOR + TOKEN_PATH + CONFIG_ID_SEPARATOR + SCOPES;
     wireMock.stubFor(post(urlPathMatching("/" + TOKEN_PATH)).willReturn(aResponse()
         .withStatus(OK.getStatusCode())
         .withBody(accessTokenContent())

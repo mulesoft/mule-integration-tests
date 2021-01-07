@@ -32,6 +32,8 @@ import org.junit.Test;
 
 public class OAuthClientCredentialsExtensionTestCase extends BaseOAuthExtensionTestCase {
 
+  private static final String CONFIG_ID_SEPARATOR = "//";
+
   private LazyValue<ObjectStore> objectStore =
       new LazyValue<>(() -> muleContext.getObjectStoreManager().getObjectStore(CUSTOM_STORE_NAME));
 
@@ -43,7 +45,9 @@ public class OAuthClientCredentialsExtensionTestCase extends BaseOAuthExtensionT
   @Override
   protected void doSetUp() throws Exception {
     super.doSetUp();
-    storedOwnerId = DEFAULT_RESOURCE_OWNER_ID + "-oauth";
+    storedOwnerId =
+        DEFAULT_RESOURCE_OWNER_ID + "-oauth" + CONFIG_ID_SEPARATOR + CONSUMER_KEY + CONFIG_ID_SEPARATOR + CONSUMER_SECRET
+            + CONFIG_ID_SEPARATOR + tokenUrl + CONFIG_ID_SEPARATOR + SCOPES;
     wireMock.stubFor(post(urlPathMatching("/" + TOKEN_PATH)).willReturn(aResponse()
         .withStatus(OK.getStatusCode())
         .withBody(accessTokenContent())
@@ -111,7 +115,10 @@ public class OAuthClientCredentialsExtensionTestCase extends BaseOAuthExtensionT
   @Test
   public void authenticateWithCustomParameters() throws Exception {
     WireMock.reset();
-    storedOwnerId = DEFAULT_RESOURCE_OWNER_ID + "-customParametersOAuth";
+    storedOwnerId =
+        DEFAULT_RESOURCE_OWNER_ID + "-customParametersOAuth" + CONFIG_ID_SEPARATOR + CONSUMER_KEY + CONFIG_ID_SEPARATOR
+            + CONSUMER_SECRET
+            + CONFIG_ID_SEPARATOR + tokenUrl + CONFIG_ID_SEPARATOR + SCOPES;
     wireMock.stubFor(post(urlPathMatching("/" + TOKEN_PATH))
         .withHeader("foo", equalTo("bar"))
         .withHeader("foo", equalTo("manchu"))
