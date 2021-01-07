@@ -13,14 +13,24 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertThat;
 import static org.mule.extension.http.api.HttpHeaders.Names.CONTENT_TYPE;
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.OK;
 import static org.mule.runtime.oauth.api.state.ResourceOwnerOAuthContext.DEFAULT_RESOURCE_OWNER_ID;
 
 import org.mule.runtime.api.store.ObjectStore;
 import org.mule.runtime.api.util.LazyValue;
+import org.mule.runtime.core.api.event.CoreEvent;
+import org.mule.tck.probe.JUnitLambdaProbe;
+import org.mule.tck.probe.PollingProber;
 import org.mule.test.module.extension.oauth.BaseOAuthExtensionTestCase;
+import org.mule.test.oauth.ClientCredentialsConfig;
+import org.mule.test.oauth.TestOAuthConnection;
+import org.mule.test.oauth.TestOAuthConnectionState;
 
+import com.github.tomakehurst.wiremock.client.WireMock;
 import io.qameta.allure.Description;
 import org.junit.Test;
 
@@ -39,6 +49,8 @@ public class DynamicOAuthClientCredentialsExtensionTestCase extends BaseOAuthExt
   private static final String TOKEN_URL_VARIABLE = "tokenUrl";
   private static final String SCOPES_VARIABLE = "scopes";
 
+  private static final String CONFIG_ID_SEPARATOR = "//";
+
   private LazyValue<ObjectStore> objectStore =
       new LazyValue<>(() -> muleContext.getObjectStoreManager().getObjectStore(CUSTOM_STORE_NAME));
 
@@ -51,6 +63,7 @@ public class DynamicOAuthClientCredentialsExtensionTestCase extends BaseOAuthExt
   protected void doSetUp() throws Exception {
     super.doSetUp();
     storedOwnerId = DEFAULT_RESOURCE_OWNER_ID + "-oauth";
+    //storedOwnerId = DEFAULT_RESOURCE_OWNER_ID + CONFIG_ID_SEPARATOR + CLIENT_ID + CONFIG_ID_SEPARATOR + CLIENT_SECRET + CONFIG_ID_SEPARATOR + TOKEN_PATH + CONFIG_ID_SEPARATOR + SCOPES;
     wireMock.stubFor(post(urlPathMatching("/" + TOKEN_PATH)).willReturn(aResponse()
         .withStatus(OK.getStatusCode())
         .withBody(accessTokenContent())
@@ -72,8 +85,39 @@ public class DynamicOAuthClientCredentialsExtensionTestCase extends BaseOAuthExt
     verifyCall(ANOTHER_CLIENT_ID, ANOTHER_CLIENT_SECRET, ANOTHER_SCOPES);
   }
 
-  private void getConnectionFlow(String clientId, String clientSecret, String scopes) throws Exception {
-    flowRunner("getConnection")
+  @Test
+  @Description("Create two dynamic configurations with different values and check their access tokens do not overwrite each other.")
+  public void dynamicConfigsUseDifferentTokens() throws Exception {
+    CoreEvent firstEvent = getConnectionFlow(CLIENT_ID, CLIENT_SECRET, SCOPES);
+    TestOAuthConnectionState firstConnectionState =
+        ((TestOAuthConnection) firstEvent.getMessage().getPayload().getValue()).getState();
+    ClientCredentialsConfig config = (ClientCredentialsConfig) muleContext.getExtensionManager()
+        .getConfiguration("oauth", firstEvent).getValue();
+
+    WireMock.reset();
+    wireMock.stubFor(post(urlPathMatching("/" + TOKEN_PATH))
+        .willReturn(aResponse()
+            .withStatus(OK.getStatusCode())
+            .withBody(accessTokenContent(REFRESH_TOKEN))
+            .withHeader(CONTENT_TYPE, "application/json")));
+    TestOAuthConnectionState secondConnectionState =
+        ((TestOAuthConnection) getConnectionFlow(ANOTHER_CLIENT_ID, ANOTHER_CLIENT_SECRET, ANOTHER_SCOPES).getMessage()
+            .getPayload().getValue()).getState();
+
+    new PollingProber(10000, 1000).check(new JUnitLambdaProbe(() -> {
+      assertThat(config.getDispose(), is(1));
+      return true;
+    }, "config was not disposed")); // Wait for the dynamic config to expire so that another connection is created, but the underlying dancer is still the same.
+    TestOAuthConnectionState thirdConnectionState =
+        ((TestOAuthConnection) getConnectionFlow(CLIENT_ID, CLIENT_SECRET, SCOPES).getMessage().getPayload().getValue())
+            .getState();
+
+    assertThat(firstConnectionState.getState().getAccessToken(), is(thirdConnectionState.getState().getAccessToken()));
+    assertThat(firstConnectionState.getState().getAccessToken(), not(secondConnectionState.getState().getAccessToken()));
+  }
+
+  private CoreEvent getConnectionFlow(String clientId, String clientSecret, String scopes) throws Exception {
+    return flowRunner("getConnection")
         .withVariable(TOKEN_URL_VARIABLE, tokenUrl)
         .withVariable(CLIENT_ID_VARIABLE, clientId)
         .withVariable(CLIENT_SECRET_VARIABLE, clientSecret)
