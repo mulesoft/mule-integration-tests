@@ -12,6 +12,7 @@ import static org.junit.Assert.fail;
 import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.LIFECYCLE_AND_DEPENDENCY_INJECTION;
 import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.GracefulShutdownStory.GRACEFUL_SHUTDOWN_STORY;
 
+import io.qameta.allure.Issue;
 import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.message.Message;
@@ -66,6 +67,7 @@ public class ValidShutdownTimeoutOneWayTestCase extends AbstractShutdownTimeoutR
   }
 
   @Test
+  @Issue("MULE-18873")
   public void setPayloadThroughScatterGatherWithFlowRefs() throws Throwable {
     doShutDownTest("setPayloadResponse", "setPayloadThroughScatterGatherWithFlowRefs");
   }
