@@ -91,14 +91,14 @@ public class ValidShutdownTimeoutOneWayTestCase extends AbstractShutdownTimeoutR
     if (response.getPayload().getDataType() instanceof MapDataType) {
       Map<String, Message> values = (Map) response.getPayload().getValue();
       values.entrySet().forEach(
-              value -> {
-                  try {
-                      assertThat("Was not able to process message", getPayloadAsString(value.getValue()),
-                              is(payload));
-                  } catch (Exception e) {
-                      fail("Was not able to process message");
-                  }
-              });
+                                value -> {
+                                  try {
+                                    assertThat("Was not able to process message", getPayloadAsString(value.getValue()),
+                                               is(payload));
+                                  } catch (Exception e) {
+                                    fail("Was not able to process message");
+                                  }
+                                });
     } else {
       assertThat("Was not able to process message", getPayloadAsString(response), is(payload));
     }
