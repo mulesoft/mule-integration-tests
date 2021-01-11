@@ -14,6 +14,7 @@ import static org.mule.runtime.http.api.HttpConstants.Method.POST;
 import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.LIFECYCLE_AND_DEPENDENCY_INJECTION;
 import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.GracefulShutdownStory.GRACEFUL_SHUTDOWN_STORY;
 
+import io.qameta.allure.Issue;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.http.api.HttpService;
 import org.mule.runtime.http.api.client.HttpRequestOptions;
@@ -70,6 +71,7 @@ public class ExpiredShutdownTimeoutRequestResponseTestCase extends AbstractShutd
   }
 
   @Test
+  @Issue("MULE-18873")
   public void testSetPayloadThroughScatterGatherWithFlowRefs() throws Throwable {
     doShutDownTest("http://localhost:" + httpPort.getNumber() + "/setPayloadSgFr");
   }

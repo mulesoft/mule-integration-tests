@@ -15,6 +15,7 @@ import static org.mule.functional.api.flow.TransactionConfigEnum.ACTION_ALWAYS_B
 import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.LIFECYCLE_AND_DEPENDENCY_INJECTION;
 import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.GracefulShutdownStory.GRACEFUL_SHUTDOWN_STORY;
 
+import io.qameta.allure.Issue;
 import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.functional.api.flow.FlowRunner;
 import org.mule.runtime.api.exception.MuleRuntimeException;
@@ -80,6 +81,7 @@ public class ExpiredShutdownTimeoutOneWayTestCase extends AbstractShutdownTimeou
   }
 
   @Test
+  @Issue("MULE-18873")
   public void testSetPayloadThroughScatterGatherWithFlowRefs() throws Throwable {
     doShutDownTest("setPayloadThroughScatterGatherWithFlowRefs");
   }
