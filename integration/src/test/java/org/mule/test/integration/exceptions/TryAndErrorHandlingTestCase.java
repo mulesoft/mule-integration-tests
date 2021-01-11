@@ -29,8 +29,6 @@ import javax.inject.Inject;
 @Story(ERROR_HANDLER)
 public class TryAndErrorHandlingTestCase extends AbstractIntegrationTestCase {
 
-  public static final int TIMEOUT = 5000;
-
   @Inject
   private TestQueueManager queueManager;
 
