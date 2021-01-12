@@ -9,6 +9,8 @@
 		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 		http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
 
+    <object name="block" class="org.mule.shutdown.AbstractShutdownTimeoutRequestResponseTestCase$BlockMessageProcessor"/>
+
     <configuration shutdownTimeout="${contextShutdownTimeout}"/>
 
     <http:listener-config name="listenerConfig">
@@ -17,7 +19,7 @@
 
     <flow name="scriptComponentFlow">
         <http:listener path="scriptComponent" config-ref="listenerConfig"/>
-        <custom-processor class="org.mule.shutdown.AbstractShutdownTimeoutRequestResponseTestCase$BlockMessageProcessor"/>
+        <flow-ref name="block"/>
         <script:execute engine="groovy">
             <script:code>return &quot;scriptComponentResponse&quot;;</script:code>
         </script:execute>
@@ -25,14 +27,14 @@
 
     <flow name="setPayloadFlow">
         <http:listener path="setPayload" config-ref="listenerConfig"/>
-        <custom-processor class="org.mule.shutdown.AbstractShutdownTimeoutRequestResponseTestCase$BlockMessageProcessor"/>
+        <flow-ref name="block"/>
         <set-payload value="#['setPayloadResponse']" />
     </flow>
 
     <flow name="setPayloadChoiceFlow">
         <http:listener path="setPayloadChoice" config-ref="listenerConfig"/>
         
-        <custom-processor class="org.mule.shutdown.AbstractShutdownTimeoutRequestResponseTestCase$BlockMessageProcessor"/>
+        <flow-ref name="block"/>
         <choice>
             <when expression="#[true]">
                 <set-payload value="#['setPayloadResponse']" />
@@ -43,9 +45,25 @@
     <flow name="setPayloadTxFlow">
         <http:listener path="setPayloadTx" config-ref="listenerConfig"/>
         <try transactionalAction="ALWAYS_BEGIN">
-            <custom-processor class="org.mule.shutdown.AbstractShutdownTimeoutRequestResponseTestCase$BlockMessageProcessor"/>
+            <flow-ref name="block"/>
             <set-payload value="#['setPayloadResponse']" />
         </try>
+    </flow>
+
+    <flow name="setPayloadThroughScatterGatherFlowRef">
+        <http:listener path="setPayloadSgFr" config-ref="listenerConfig"/>
+        <scatter-gather>
+            <route>
+                <flow-ref name="flowWithBlockedProcessor" />
+            </route>
+            <route>
+                <flow-ref name="flowWithBlockedProcessor" />
+            </route>
+        </scatter-gather>
+    </flow>
+
+    <flow name="flowWithBlockedProcessor">
+        <flow-ref name="block" />
     </flow>
 
 </mule>

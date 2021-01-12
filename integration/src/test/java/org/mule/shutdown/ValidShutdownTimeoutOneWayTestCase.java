@@ -8,14 +8,18 @@ package org.mule.shutdown;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.LIFECYCLE_AND_DEPENDENCY_INJECTION;
 import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.GracefulShutdownStory.GRACEFUL_SHUTDOWN_STORY;
 
+import io.qameta.allure.Issue;
 import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.message.Message;
+import org.mule.runtime.api.metadata.MapDataType;
 import org.mule.tck.junit4.rule.SystemProperty;
 
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -62,6 +66,12 @@ public class ValidShutdownTimeoutOneWayTestCase extends AbstractShutdownTimeoutR
     doShutDownTest("setPayloadResponse", "setPayloadChoiceFlow");
   }
 
+  @Test
+  @Issue("MULE-18873")
+  public void setPayloadThroughScatterGatherWithFlowRefs() throws Throwable {
+    doShutDownTest("setPayloadResponse", "setPayloadThroughScatterGatherWithFlowRefs");
+  }
+
   private void doShutDownTest(final String payload, final String flowName) throws Throwable {
     final TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
 
@@ -78,7 +88,20 @@ public class ValidShutdownTimeoutOneWayTestCase extends AbstractShutdownTimeoutR
     contextStopLatch.release();
 
     Message response = queueHandler.read("response", RECEIVE_TIMEOUT).getMessage();
-    assertThat("Was not able to process message", getPayloadAsString(response), is(payload));
+    if (response.getPayload().getDataType() instanceof MapDataType) {
+      Map<String, Message> values = (Map) response.getPayload().getValue();
+      values.entrySet().forEach(
+                                value -> {
+                                  try {
+                                    assertThat("Was not able to process message", getPayloadAsString(value.getValue()),
+                                               is(payload));
+                                  } catch (Exception e) {
+                                    fail("Was not able to process message");
+                                  }
+                                });
+    } else {
+      assertThat("Was not able to process message", getPayloadAsString(response), is(payload));
+    }
 
     muleContext.stop();
 
