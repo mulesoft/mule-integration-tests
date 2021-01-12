@@ -144,7 +144,7 @@ public abstract class AbstractParameterAstTestCase extends AbstractMuleContextTe
     this.artifactAst = new ApplicationModel(artifactConfig, null, extensionModels, Collections.emptyMap(),
                                             Optional.empty(), of(componentBuildingDefinitionRegistry),
                                             uri -> muleContext.getExecutionClassLoader().getResourceAsStream(uri),
-                                            runtimeMode());
+                                            runtimeMode(), getFeatureFlaggingService());
   }
 
   protected Optional<ComponentAst> findComponent(Stream<ComponentAst> stream, String componentIdentifier, String componentId) {

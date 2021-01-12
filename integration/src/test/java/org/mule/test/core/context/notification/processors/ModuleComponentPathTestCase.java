@@ -313,7 +313,7 @@ public class ModuleComponentPathTestCase extends AbstractIntegrationTestCase {
                                                                     empty(),
                                                                     uri -> {
                                                                       throw new UnsupportedOperationException();
-                                                                    });
+                                                                    }, getFeatureFlaggingService());
 
     List<String> componentLocations = new ArrayList<>();
     toolingApplicationModel.executeOnEveryComponentTree(componentModel -> {

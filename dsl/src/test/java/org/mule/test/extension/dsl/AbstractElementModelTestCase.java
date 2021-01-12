@@ -222,7 +222,8 @@ public abstract class AbstractElementModelTestCase extends MuleArtifactFunctiona
         .build();
 
     return new ApplicationModel(artifactConfig, new ArtifactDeclaration(),
-                                uri -> muleContext.getExecutionClassLoader().getResourceAsStream(uri));
+                                uri -> muleContext.getExecutionClassLoader().getResourceAsStream(uri),
+                                getFeatureFlaggingService());
   }
 
   protected String write() throws Exception {
