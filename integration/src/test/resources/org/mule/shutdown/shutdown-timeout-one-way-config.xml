@@ -15,7 +15,7 @@
 
     <flow name="staticComponentFlow">
 
-        <custom-processor class="org.mule.shutdown.AbstractShutdownTimeoutRequestResponseTestCase$BlockMessageProcessor"/>
+        <flow-ref name="block"/>
         <set-payload value="staticComponentResponse"/>
 
         <test:queue name="response"/>
@@ -23,7 +23,7 @@
 
     <flow name="scriptComponentFlow">
 
-        <custom-processor class="org.mule.shutdown.AbstractShutdownTimeoutRequestResponseTestCase$BlockMessageProcessor"/>
+        <flow-ref name="block"/>
         <script:execute engine="groovy">
             <script:code>return &quot;scriptComponentResponse&quot;;</script:code>
         </script:execute>
@@ -32,14 +32,14 @@
     </flow>
 
     <flow name="setPayloadFlow">
-        <custom-processor class="org.mule.shutdown.AbstractShutdownTimeoutRequestResponseTestCase$BlockMessageProcessor"/>
+        <flow-ref name="block"/>
         <set-payload value="#['setPayloadResponse']" />
 
         <test:queue name="response"/>
     </flow>
 
     <flow name="setPayloadChoiceFlow">
-        <custom-processor class="org.mule.shutdown.AbstractShutdownTimeoutRequestResponseTestCase$BlockMessageProcessor"/>
+        <flow-ref name="block"/>
         <choice>
             <when expression="#[true]">
                 <set-payload value="#['setPayloadResponse']" />
