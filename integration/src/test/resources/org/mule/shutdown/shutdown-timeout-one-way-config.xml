@@ -9,6 +9,8 @@
 		http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
 		http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
 
+    <object name="block" class="org.mule.shutdown.AbstractShutdownTimeoutRequestResponseTestCase$BlockMessageProcessor"/>
+
     <configuration shutdownTimeout="${contextShutdownTimeout}" />
 
     <flow name="staticComponentFlow">
@@ -56,7 +58,7 @@
                 <flow-ref name="flowWithBlockedProcessor" />
             </route>
         </scatter-gather>
-        <test-components:queue-push config-ref="response"/>
+        <test:queue name="response"/>
     </flow>
 
     <flow name="flowWithBlockedProcessor">
