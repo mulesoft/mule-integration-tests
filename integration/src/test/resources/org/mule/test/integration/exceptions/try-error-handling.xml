@@ -1,17 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:test="http://www.mulesoft.org/schema/mule/test"
-      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xmlns:test-components="http://www.mulesoft.org/schema/mule/test-components" xsi:schemaLocation="
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
     http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-    http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
-    http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
+    http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
-    <test-components:queue-config name="dlq">
-        <test-components:connection />
-    </test-components:queue-config>
-
-    <flow name="tryInErrorHandler">
+   <flow name="tryInErrorHandler">
         <raise-error type="APP:SOME"/>
         <error-handler>
             <on-error-continue>
@@ -32,7 +26,7 @@
         <error-handler >
             <on-error-continue type="CUSTOM:CUSTOM_ERROR">
                 <logger level="INFO" message="Main flow strategy reached." />
-                <test-components:queue-push config-ref="dlq"/>
+                <test:queue name="dlq"/>
             </on-error-continue>
         </error-handler>
     </flow>
@@ -42,7 +36,7 @@
         <error-handler >
             <on-error-continue type="CUSTOM:CUSTOM_ERROR">
                 <logger level="INFO" message="Main flow strategy reached." />
-                <test-components:queue-push config-ref="dlq"/>
+                <test:queue name="dlq"/>
             </on-error-continue>
         </error-handler>
     </flow>
