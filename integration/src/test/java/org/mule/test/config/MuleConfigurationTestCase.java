@@ -15,6 +15,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mule.runtime.core.api.config.MuleProperties.OBJECT_CLUSTER_SERVICE;
 import static org.mule.runtime.core.api.config.MuleProperties.SYSTEM_PROPERTY_PREFIX;
 import static org.mule.runtime.core.api.config.bootstrap.ArtifactType.APP;
 import static java.util.Optional.empty;
@@ -23,6 +24,7 @@ import org.mule.runtime.api.component.ConfigurationProperties;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.config.DefaultMuleConfiguration;
 import org.mule.runtime.core.api.config.MuleConfiguration;
+import org.mule.runtime.core.api.config.MuleProperties;
 import org.mule.runtime.core.api.context.DefaultMuleContextFactory;
 import org.mule.runtime.core.api.context.MuleContextBuilder;
 import org.mule.runtime.core.internal.config.builders.DefaultsConfigurationBuilder;
@@ -59,9 +61,7 @@ public class MuleConfigurationTestCase extends AbstractMuleTestCase {
   public void setUp() {
     when(mockedClusterService.isPrimaryPollingInstance()).thenReturn(true);
     when(mockedConfigurationProperties.resolveStringProperty(anyString())).thenReturn(empty());
-    when(mockedConfigurationProperties.resolveBooleanProperty(anyString())).thenReturn(empty());
-    when(mockedConfigurationProperties.resolveProperty(anyString())).thenReturn(empty());
-    testServicesConfigurationBuilder.registerAdditionalService("mockedClusterService", mockedClusterService);
+    testServicesConfigurationBuilder.registerOverriddenService(OBJECT_CLUSTER_SERVICE, mockedClusterService);
     testServicesConfigurationBuilder.registerAdditionalService("mockedConfigurationProperties", mockedConfigurationProperties);
   }
 
