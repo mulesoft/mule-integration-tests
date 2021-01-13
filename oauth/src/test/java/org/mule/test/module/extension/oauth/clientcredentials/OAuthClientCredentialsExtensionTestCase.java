@@ -26,13 +26,13 @@ import org.mule.test.module.extension.oauth.BaseOAuthExtensionTestCase;
 import org.mule.test.oauth.TestOAuthConnection;
 import org.mule.test.oauth.TestOAuthConnectionState;
 
+import java.util.Map;
+
 import com.github.tomakehurst.wiremock.client.WireMock;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 public class OAuthClientCredentialsExtensionTestCase extends BaseOAuthExtensionTestCase {
-
-  private static final String CONFIG_ID_SEPARATOR = "//";
 
   private LazyValue<ObjectStore> objectStore =
       new LazyValue<>(() -> muleContext.getObjectStoreManager().getObjectStore(CUSTOM_STORE_NAME));
@@ -45,9 +45,7 @@ public class OAuthClientCredentialsExtensionTestCase extends BaseOAuthExtensionT
   @Override
   protected void doSetUp() throws Exception {
     super.doSetUp();
-    storedOwnerId =
-        DEFAULT_RESOURCE_OWNER_ID + "-oauth" + CONFIG_ID_SEPARATOR + CONSUMER_KEY + CONFIG_ID_SEPARATOR + CONSUMER_SECRET
-            + CONFIG_ID_SEPARATOR + tokenUrl + CONFIG_ID_SEPARATOR + SCOPES;
+    objectStore.get().clear();
     wireMock.stubFor(post(urlPathMatching("/" + TOKEN_PATH)).willReturn(aResponse()
         .withStatus(OK.getStatusCode())
         .withBody(accessTokenContent())
@@ -61,7 +59,7 @@ public class OAuthClientCredentialsExtensionTestCase extends BaseOAuthExtensionT
 
     assertConnectionState(connection);
 
-    assertOAuthStateStored(CUSTOM_STORE_NAME, storedOwnerId, DEFAULT_RESOURCE_OWNER_ID);
+    assertOAuthStateStored(CUSTOM_STORE_NAME, DEFAULT_RESOURCE_OWNER_ID);
   }
 
   @Test
@@ -76,7 +74,10 @@ public class OAuthClientCredentialsExtensionTestCase extends BaseOAuthExtensionT
 
   private void assertRefreshToken(String refreshedToken) throws Exception {
     wireMock.verify(postRequestedFor(urlPathEqualTo("/" + TOKEN_PATH)));
-    ResourceOwnerOAuthContext context = (ResourceOwnerOAuthContext) objectStore.get().retrieve(storedOwnerId);
+
+    Map entries = objectStore.get().retrieveAll();
+    assertThat(entries.size(), is(1));
+    ResourceOwnerOAuthContext context = (ResourceOwnerOAuthContext) entries.values().toArray()[0];
     assertThat(context.getAccessToken(), CoreMatchers.equalTo(refreshedToken));
   }
 
@@ -95,7 +96,7 @@ public class OAuthClientCredentialsExtensionTestCase extends BaseOAuthExtensionT
 
     flowRunner("unauthorize").run();
     ObjectStore objectStore = getObjectStore(CUSTOM_STORE_NAME);
-    assertThat(objectStore.contains(storedOwnerId), is(false));
+    assertThat(objectStore.retrieveAll().size(), is(0));
 
     String refreshedToken = configureRefreshResponse();
     TestOAuthConnectionState connection = ((TestOAuthConnection) flowRunner("getConnection")
@@ -115,10 +116,6 @@ public class OAuthClientCredentialsExtensionTestCase extends BaseOAuthExtensionT
   @Test
   public void authenticateWithCustomParameters() throws Exception {
     WireMock.reset();
-    storedOwnerId =
-        DEFAULT_RESOURCE_OWNER_ID + "-customParametersOAuth" + CONFIG_ID_SEPARATOR + CONSUMER_KEY + CONFIG_ID_SEPARATOR
-            + CONSUMER_SECRET
-            + CONFIG_ID_SEPARATOR + tokenUrl + CONFIG_ID_SEPARATOR + SCOPES;
     wireMock.stubFor(post(urlPathMatching("/" + TOKEN_PATH))
         .withHeader("foo", equalTo("bar"))
         .withHeader("foo", equalTo("manchu"))
@@ -134,6 +131,6 @@ public class OAuthClientCredentialsExtensionTestCase extends BaseOAuthExtensionT
         .run().getMessage().getPayload().getValue()).getState();
 
     assertConnectionState(connection);
-    assertOAuthStateStored(CUSTOM_STORE_NAME, storedOwnerId, DEFAULT_RESOURCE_OWNER_ID);
+    assertOAuthStateStored(CUSTOM_STORE_NAME, DEFAULT_RESOURCE_OWNER_ID);
   }
 }

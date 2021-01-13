@@ -53,7 +53,6 @@ public class OAuthSampleDataRefreshExtensionTestCase extends BaseOAuthExtensionT
   @Before
   public void setOwnerId() throws Exception {
     ownerId = getCustomOwnerId();
-    storedOwnerId = getCustomOwnerId() + "-oauth";
   }
 
   @Test

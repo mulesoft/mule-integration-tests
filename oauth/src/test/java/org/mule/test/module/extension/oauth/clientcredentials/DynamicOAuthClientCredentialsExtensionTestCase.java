@@ -18,10 +18,7 @@ import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 import static org.mule.extension.http.api.HttpHeaders.Names.CONTENT_TYPE;
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.OK;
-import static org.mule.runtime.oauth.api.state.ResourceOwnerOAuthContext.DEFAULT_RESOURCE_OWNER_ID;
 
-import org.mule.runtime.api.store.ObjectStore;
-import org.mule.runtime.api.util.LazyValue;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.tck.probe.JUnitLambdaProbe;
 import org.mule.tck.probe.PollingProber;
@@ -48,9 +45,10 @@ public class DynamicOAuthClientCredentialsExtensionTestCase extends BaseOAuthExt
   private static final String CLIENT_SECRET_VARIABLE = "clientSecret";
   private static final String TOKEN_URL_VARIABLE = "tokenUrl";
   private static final String SCOPES_VARIABLE = "scopes";
+  private static final String DYNAMIC_PARAMETER_NAME = "apiVersion";
 
-  private LazyValue<ObjectStore> objectStore =
-      new LazyValue<>(() -> muleContext.getObjectStoreManager().getObjectStore(CUSTOM_STORE_NAME));
+  private static final Integer POLLING_TIMEOUT = 10000;
+  private static final Integer POLLING_INTERVAL = 1000;
 
   @Override
   protected String[] getConfigFiles() {
@@ -60,7 +58,6 @@ public class DynamicOAuthClientCredentialsExtensionTestCase extends BaseOAuthExt
   @Override
   protected void doSetUp() throws Exception {
     super.doSetUp();
-    storedOwnerId = DEFAULT_RESOURCE_OWNER_ID + "-oauth";
     wireMock.stubFor(post(urlPathMatching("/" + TOKEN_PATH)).willReturn(aResponse()
         .withStatus(OK.getStatusCode())
         .withBody(accessTokenContent())
@@ -83,8 +80,41 @@ public class DynamicOAuthClientCredentialsExtensionTestCase extends BaseOAuthExt
   }
 
   @Test
-  @Description("Create two dynamic configurations with different values and check their access tokens do not overwrite each other.")
-  public void dynamicConfigsUseDifferentTokens() throws Exception {
+  @Description("Create two different configurations with the same oauth config and check their access tokens do not overwrite each other.")
+  public void differentConfigsWithSameOAuthConfigUseDifferentTokens() throws Exception {
+    CoreEvent firstEvent = runFlow("getConnection", CLIENT_ID, CLIENT_SECRET, SCOPES, "34.0");
+    TestOAuthConnectionState firstConnectionState =
+        ((TestOAuthConnection) firstEvent.getMessage().getPayload().getValue()).getState();
+    ClientCredentialsConfig config = (ClientCredentialsConfig) muleContext.getExtensionManager()
+        .getConfiguration("oauth", firstEvent).getValue();
+
+    WireMock.reset();
+    wireMock.stubFor(post(urlPathMatching("/" + TOKEN_PATH))
+        .willReturn(aResponse()
+            .withStatus(OK.getStatusCode())
+            .withBody(accessTokenContent(REFRESH_TOKEN))
+            .withHeader(CONTENT_TYPE, "application/json")));
+    TestOAuthConnectionState secondConnectionState =
+        ((TestOAuthConnection) runFlow("getAnotherConnection", CLIENT_ID, CLIENT_SECRET, SCOPES, "34.0")
+            .getMessage()
+            .getPayload().getValue()).getState();
+
+    new PollingProber(POLLING_TIMEOUT, POLLING_INTERVAL).check(new JUnitLambdaProbe(() -> {
+      assertThat(config.getDispose(), is(1));
+      return true;
+    }, "config was not disposed")); // Wait for the dynamic config to expire so that the token is fetched from the store
+    TestOAuthConnectionState thirdConnectionState =
+        ((TestOAuthConnection) runFlow("getConnection", CLIENT_ID, CLIENT_SECRET, SCOPES, "34.0").getMessage().getPayload()
+            .getValue())
+                .getState();
+
+    assertThat(firstConnectionState.getState().getAccessToken(), is(thirdConnectionState.getState().getAccessToken()));
+    assertThat(firstConnectionState.getState().getAccessToken(), not(secondConnectionState.getState().getAccessToken()));
+  }
+
+  @Test
+  @Description("Create two instances of a dynamic configuration with different oauth configs and check their access tokens do not overwrite each other.")
+  public void dynamicConfigsWithDifferentCredentialsUseDifferentTokens() throws Exception {
     CoreEvent firstEvent = getConnectionFlow(CLIENT_ID, CLIENT_SECRET, SCOPES);
     TestOAuthConnectionState firstConnectionState =
         ((TestOAuthConnection) firstEvent.getMessage().getPayload().getValue()).getState();
@@ -101,10 +131,10 @@ public class DynamicOAuthClientCredentialsExtensionTestCase extends BaseOAuthExt
         ((TestOAuthConnection) getConnectionFlow(ANOTHER_CLIENT_ID, ANOTHER_CLIENT_SECRET, ANOTHER_SCOPES).getMessage()
             .getPayload().getValue()).getState();
 
-    new PollingProber(10000, 1000).check(new JUnitLambdaProbe(() -> {
+    new PollingProber(POLLING_TIMEOUT, POLLING_INTERVAL).check(new JUnitLambdaProbe(() -> {
       assertThat(config.getDispose(), is(1));
       return true;
-    }, "config was not disposed")); // Wait for the dynamic config to expire so that another connection is created, but the underlying dancer is still the same.
+    }, "config was not disposed")); // Wait for the dynamic config to expire so that the token is fetched from the store
     TestOAuthConnectionState thirdConnectionState =
         ((TestOAuthConnection) getConnectionFlow(CLIENT_ID, CLIENT_SECRET, SCOPES).getMessage().getPayload().getValue())
             .getState();
@@ -113,12 +143,56 @@ public class DynamicOAuthClientCredentialsExtensionTestCase extends BaseOAuthExt
     assertThat(firstConnectionState.getState().getAccessToken(), not(secondConnectionState.getState().getAccessToken()));
   }
 
+  @Test
+  @Description("Create two instances of a dynamic configuration with different config parameters but the same oauth config and check they use the same token")
+  public void dynamicConfigsWithSameOAuthConfigUseSameToken() throws Exception {
+    CoreEvent firstEvent = getConnectionFlow(CLIENT_ID, CLIENT_SECRET, SCOPES, "34.0");
+    TestOAuthConnectionState firstConnectionState =
+        ((TestOAuthConnection) firstEvent.getMessage().getPayload().getValue()).getState();
+    ClientCredentialsConfig config = (ClientCredentialsConfig) muleContext.getExtensionManager()
+        .getConfiguration("oauth", firstEvent).getValue();
+
+    WireMock.reset();
+    wireMock.stubFor(post(urlPathMatching("/" + TOKEN_PATH))
+        .willReturn(aResponse()
+            .withStatus(OK.getStatusCode())
+            .withBody(accessTokenContent(REFRESH_TOKEN))
+            .withHeader(CONTENT_TYPE, "application/json")));
+    TestOAuthConnectionState secondConnectionState =
+        ((TestOAuthConnection) getConnectionFlow(CLIENT_ID, CLIENT_SECRET, SCOPES, "34.1")
+            .getMessage()
+            .getPayload().getValue()).getState();
+
+    new PollingProber(POLLING_TIMEOUT, POLLING_INTERVAL).check(new JUnitLambdaProbe(() -> {
+      assertThat(config.getDispose(), is(1));
+      return true;
+    }, "config was not disposed")); // Wait for the dynamic config to expire so that the token is fetched from the store
+    TestOAuthConnectionState thirdConnectionState =
+        ((TestOAuthConnection) getConnectionFlow(CLIENT_ID, CLIENT_SECRET, SCOPES, "34.0").getMessage()
+            .getPayload().getValue())
+                .getState();
+
+    assertThat(firstConnectionState.getState().getAccessToken(), is(thirdConnectionState.getState().getAccessToken()));
+    assertThat(firstConnectionState.getState().getAccessToken(), is(secondConnectionState.getState().getAccessToken()));
+  }
+
   private CoreEvent getConnectionFlow(String clientId, String clientSecret, String scopes) throws Exception {
-    return flowRunner("getConnection")
+    return getConnectionFlow(clientId, clientSecret, scopes, "34.0");
+  }
+
+  private CoreEvent getConnectionFlow(String clientId, String clientSecret, String scopes, String dynamicParameterValue)
+      throws Exception {
+    return runFlow("getConnection", clientId, clientSecret, scopes, dynamicParameterValue);
+  }
+
+  private CoreEvent runFlow(String flowName, String clientId, String clientSecret, String scopes, String dynamicParameterValue)
+      throws Exception {
+    return flowRunner(flowName)
         .withVariable(TOKEN_URL_VARIABLE, tokenUrl)
         .withVariable(CLIENT_ID_VARIABLE, clientId)
         .withVariable(CLIENT_SECRET_VARIABLE, clientSecret)
         .withVariable(SCOPES_VARIABLE, scopes)
+        .withVariable(DYNAMIC_PARAMETER_NAME, dynamicParameterValue)
         .run();
   }
 

@@ -115,16 +115,15 @@ public abstract class BaseOAuthExtensionTestCase extends AbstractExtensionFuncti
   public ExpectedException expectedException = ExpectedException.none();
 
   protected String ownerId;
-  protected String storedOwnerId;
 
   protected String toUrl(String path, int port) {
     return format("http://127.0.0.1:%d/%s", port, path);
   }
 
-  protected void assertOAuthStateStored(String objectStoreName, String expectedKey, String expectedValue) throws Exception {
-    ObjectStore objectStore = getObjectStore(objectStoreName);
-
-    ResourceOwnerOAuthContext context = (ResourceOwnerOAuthContext) objectStore.retrieve(expectedKey);
+  protected void assertOAuthStateStored(String objectStoreName, String expectedValue) throws Exception {
+    Map entries = getObjectStore(objectStoreName).retrieveAll();
+    assertThat(entries.size(), is(1));
+    ResourceOwnerOAuthContext context = (ResourceOwnerOAuthContext) entries.values().toArray()[0];
     assertThat(context.getResourceOwnerId(), is(expectedValue));
   }
 

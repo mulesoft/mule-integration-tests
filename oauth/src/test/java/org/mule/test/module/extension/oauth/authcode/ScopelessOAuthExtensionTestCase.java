@@ -31,7 +31,6 @@ public class ScopelessOAuthExtensionTestCase extends OAuthExtensionTestCase {
   @Before
   public void setOwnerId() {
     ownerId = getCustomOwnerId();
-    storedOwnerId = getCustomOwnerId() + "-oauth";
   }
 
   @Override
