@@ -24,7 +24,6 @@ public class CustomStoreOAuthExtensionTestCase extends BaseOAuthExtensionTestCas
   @Override
   protected void doSetUp() throws Exception {
     ownerId = getCustomOwnerId();
-    storedOwnerId = getCustomOwnerId() + "-oauth";
     objectStore = muleContext.getObjectStoreManager().createObjectStore(CUSTOM_STORE_NAME, unmanagedTransient());
   }
 
@@ -38,6 +37,6 @@ public class CustomStoreOAuthExtensionTestCase extends BaseOAuthExtensionTestCas
     simulateDanceStart();
     simulateCallback();
 
-    assertOAuthStateStored(CUSTOM_STORE_NAME, storedOwnerId, ownerId);
+    assertOAuthStateStored(CUSTOM_STORE_NAME, ownerId);
   }
 }

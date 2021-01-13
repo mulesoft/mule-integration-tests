@@ -51,7 +51,6 @@ public class OAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
   @Before
   public void setOwnerId() throws Exception {
     ownerId = getCustomOwnerId();
-    storedOwnerId = getCustomOwnerId() + "-oauth";
   }
 
   @Test
@@ -71,7 +70,7 @@ public class OAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
     assertConnectionState(connection);
     assertExternalCallbackUrl((AuthorizationCodeState) connection.getState());
 
-    assertOAuthStateStored(BASE_PERSISTENT_OBJECT_STORE_KEY, storedOwnerId, ownerId);
+    assertOAuthStateStored(BASE_PERSISTENT_OBJECT_STORE_KEY, ownerId);
   }
 
   @Test
@@ -141,7 +140,7 @@ public class OAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
 
     flowRunner("unauthorize").withVariable(OWNER_ID_VARIABLE_NAME, ownerId).run();
     ObjectStore objectStore = getObjectStore(BASE_PERSISTENT_OBJECT_STORE_KEY);
-    assertThat(objectStore.contains(storedOwnerId), is(false));
+    assertThat(objectStore.retrieveAll().size(), is(0));
 
     if (expectedError != null) {
       expectedError.expectErrorType("TEST-OAUTH", MuleErrors.CONNECTIVITY.name());

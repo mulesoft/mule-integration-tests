@@ -23,9 +23,6 @@ import org.junit.Test;
 
 public class MultiConfigOAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
 
-  public static final String OAUTH_RESOLVED_OWNER = DEFAULT_OWNER_ID + "-oauth";
-  public static final String OTHER_RESOLVED_OWNER = DEFAULT_OWNER_ID + "-otherOauth";
-
   @Rule
   public DynamicPort otherCallbackPort = new DynamicPort("otherCallbackPort");
 
@@ -41,63 +38,56 @@ public class MultiConfigOAuthExtensionTestCase extends BaseOAuthExtensionTestCas
 
   @Test
   public void authorizeAndStartDancingBaby() throws Exception {
-    storedOwnerId = OAUTH_RESOLVED_OWNER;
     startDance(callbackPort.getNumber());
 
-    storedOwnerId = OTHER_RESOLVED_OWNER;
     simulateDanceStart(otherCallbackPort.getNumber());
     verifyAuthUrlRequest(otherCallbackPort.getNumber());
   }
 
   @Test
   public void receiveAccessTokenAndUserConnection() throws Exception {
-    storedOwnerId = OAUTH_RESOLVED_OWNER;
     simulateCallback();
 
     TestOAuthConnectionState connection = ((TestOAuthConnection) flowRunner("getConnection")
         .run().getMessage().getPayload().getValue()).getState();
 
     assertConnectionState(connection);
-    assertOAuthStateStored(BASE_PERSISTENT_OBJECT_STORE_KEY, storedOwnerId, ownerId);
+    assertOAuthStateStored(BASE_PERSISTENT_OBJECT_STORE_KEY, ownerId);
 
-
-    storedOwnerId = OTHER_RESOLVED_OWNER;
+    getObjectStore(BASE_PERSISTENT_OBJECT_STORE_KEY).clear();
     simulateCallback(otherCallbackPort.getNumber());
 
     TestOAuthConnectionState otherConnection = ((TestOAuthConnection) flowRunner("getOtherConnection")
         .run().getMessage().getPayload().getValue()).getState();
 
     assertConnectionState(otherConnection);
-    assertOAuthStateStored(BASE_PERSISTENT_OBJECT_STORE_KEY, storedOwnerId, ownerId);
+    assertOAuthStateStored(BASE_PERSISTENT_OBJECT_STORE_KEY, ownerId);
   }
 
   @Test
   public void unauthorize() throws Exception {
-    storedOwnerId = OAUTH_RESOLVED_OWNER;
     startDance(callbackPort.getNumber());
-    getConnection(callbackPort.getNumber());
+    getConnection(callbackPort.getNumber(), "getConnection");
 
     flowRunner("unauthorize").run();
     ObjectStore objectStore = getObjectStore(BASE_PERSISTENT_OBJECT_STORE_KEY);
-    assertThat(objectStore.contains(storedOwnerId), is(false));
+    assertThat(objectStore.retrieveAll().size(), is(0));
 
-    storedOwnerId = OTHER_RESOLVED_OWNER;
     startDance(otherCallbackPort.getNumber());
-    getConnection(otherCallbackPort.getNumber());
+    getConnection(otherCallbackPort.getNumber(), "getOtherConnection");
 
     flowRunner("unauthorizeOther").run();
-    assertThat(objectStore.contains(storedOwnerId), is(false));
+    assertThat(objectStore.retrieveAll().size(), is(0));
   }
 
-  private void getConnection(int port) throws Exception {
+  private void getConnection(int port, String flowName) throws Exception {
     simulateCallback(port);
 
-    String flowName = storedOwnerId.equals(OAUTH_RESOLVED_OWNER) ? "getConnection" : "getOtherConnection";
     TestOAuthConnectionState connection = ((TestOAuthConnection) flowRunner(flowName)
         .run().getMessage().getPayload().getValue()).getState();
 
     assertConnectionState(connection);
-    assertOAuthStateStored(BASE_PERSISTENT_OBJECT_STORE_KEY, storedOwnerId, ownerId);
+    assertOAuthStateStored(BASE_PERSISTENT_OBJECT_STORE_KEY, ownerId);
   }
 
 
