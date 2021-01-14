@@ -93,7 +93,8 @@ public abstract class AbstractElementModelTestCase extends MuleArtifactFunctiona
     extensions = muleContext.getExtensionManager().getExtensions();
     dslContext = DslResolvingContext.getDefault(ImmutableSet.<ExtensionModel>builder()
         .addAll(extensions)
-        .add(MuleExtensionModelProvider.getExtensionModel()).build());
+        .add(MuleExtensionModelProvider.getExtensionModel())
+        .add(MuleExtensionModelProvider.getTlsExtensionModel()).build());
     modelResolver = DslElementModelFactory.getDefault(dslContext);
 
     xmlToAstParser = AstXmlParser.builder()
