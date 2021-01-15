@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:test-components="http://www.mulesoft.org/schema/mule/test-components"
+      xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xsi:schemaLocation="
+    http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+    http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd
+    http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
+
+    <test-components:queue-config name="dlq">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <flow name="validationAllWithErrorMapping">
+        <validation:all>
+            <validation:is-not-null value="#[null]">
+                <error-mapping sourceType="VALIDATION:NULL" targetType="TEST:NULL" />
+            </validation:is-not-null>
+        </validation:all>
+        <error-handler>
+            <on-error-continue type="TEST:NULL">
+                <test-components:queue-push config-ref="dlq"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+</mule>
