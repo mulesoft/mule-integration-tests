@@ -21,19 +21,19 @@ import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ErrorHan
 @Story(ERROR_MAPPINGS)
 public class ValidationModuleErrorHandlingTestCase extends AbstractIntegrationTestCase {
 
-    @Inject
-    private TestQueueManager queueManager;
+  @Inject
+  private TestQueueManager queueManager;
 
-    @Override
-    protected String getConfigFile() {
-        return "org/mule/test/integration/exceptions/validation-module-error-handling.xml";
-    }
+  @Override
+  protected String getConfigFile() {
+    return "org/mule/test/integration/exceptions/validation-module-error-handling.xml";
+  }
 
-    @Test
-    public void validationAllWithErrorMapping() throws Exception {
-        flowRunner("validationAllWithErrorMapping").run();
-        Message response = queueManager.read("dlq", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
-        assertThat(response, notNullValue());
-    }
+  @Test
+  public void validationAllWithErrorMapping() throws Exception {
+    flowRunner("validationAllWithErrorMapping").run();
+    Message response = queueManager.read("dlq", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
+    assertThat(response, notNullValue());
+  }
 
 }
