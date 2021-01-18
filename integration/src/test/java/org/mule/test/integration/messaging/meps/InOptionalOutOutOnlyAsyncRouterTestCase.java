@@ -14,8 +14,10 @@ import org.mule.functional.api.flow.FlowRunner;
 import org.mule.runtime.api.message.Message;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
+@Ignore("MULE-19149")
 public class InOptionalOutOutOnlyAsyncRouterTestCase extends AbstractIntegrationTestCase {
 
   @Override
