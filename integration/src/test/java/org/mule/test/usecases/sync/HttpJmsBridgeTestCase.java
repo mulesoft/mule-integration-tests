@@ -15,17 +15,19 @@ import static org.mule.tck.processor.FlowAssert.verify;
 
 import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.http.api.HttpService;
 import org.mule.runtime.api.util.MultiMap;
+import org.mule.runtime.http.api.HttpService;
 import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;
 import org.mule.runtime.http.api.domain.message.request.HttpRequest;
 import org.mule.service.http.TestHttpClient;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
+@Ignore("MULE-19149")
 public class HttpJmsBridgeTestCase extends AbstractIntegrationTestCase {
 
   @Rule
