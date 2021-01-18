@@ -7,6 +7,7 @@
 package org.mule.test.integration.exceptions;
 
 import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
 import org.junit.Test;
 import org.mule.runtime.api.message.Message;
@@ -36,6 +37,7 @@ public class ValidationModuleErrorHandlingTestCase extends AbstractIntegrationTe
   }
 
   @Test
+  @Issue("MULE-19139")
   public void validationAllWithErrorMapping() throws Exception {
     flowRunner("validationAllWithErrorMapping").run();
     Message response = queueManager.read("dlq", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
