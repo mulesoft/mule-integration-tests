@@ -21,8 +21,10 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 
 import org.apache.tools.ant.filters.StringInputStream;
+import org.junit.Ignore;
 import org.junit.Test;
 
+@Ignore("MULE-19149")
 public class ImplicitTransformationTestCase extends AbstractIntegrationTestCase {
 
   @Override

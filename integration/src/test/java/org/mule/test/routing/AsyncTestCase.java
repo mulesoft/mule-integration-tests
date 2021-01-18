@@ -20,17 +20,19 @@ import org.mule.runtime.core.privileged.event.BaseEventContext;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import java.util.concurrent.CountDownLatch;
+
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
-
-import java.util.concurrent.CountDownLatch;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
 
+@Ignore("MULE-19149")
 @Feature(ROUTERS)
 @Story(ASYNC)
 public class AsyncTestCase extends AbstractIntegrationTestCase {

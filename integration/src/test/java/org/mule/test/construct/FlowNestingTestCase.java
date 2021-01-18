@@ -19,9 +19,11 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
+@Ignore("MULE-19149")
 public class FlowNestingTestCase extends AbstractIntegrationTestCase {
 
   private TestConnectorQueueHandler queueHandler;
