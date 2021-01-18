@@ -16,9 +16,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mule.functional.junit4.matchers.MessageMatchers.hasMediaType;
 import static org.mule.runtime.api.metadata.MediaType.APPLICATION_JSON;
 import static org.mule.runtime.api.metadata.MediaType.JSON;
-
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.api.metadata.TypedValue;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -180,7 +178,7 @@ public class ParseTemplateTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void nestedExpressionsWithNonexistingValues() throws Exception {
-    expectedException.expectMessage("Unable to resolve reference of: `pepito`.");
+    expectedException.expectMessage("Unable to resolve reference of pepito");
     flowRunner("nestedExpressionsFlowWithNonexistentValues").run();
   }
 
