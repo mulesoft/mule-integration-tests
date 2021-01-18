@@ -15,13 +15,15 @@ import org.mule.runtime.api.notification.AbstractServerNotification;
 import org.mule.runtime.api.notification.NotificationListenerRegistry;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import org.apache.commons.lang3.SerializationUtils;
-import org.junit.Test;
-
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.SerializationUtils;
+import org.junit.Ignore;
+import org.junit.Test;
+
+@Ignore("MULE-19149")
 public class MessageChunkingTestCase extends AbstractIntegrationTestCase {
 
   @Inject

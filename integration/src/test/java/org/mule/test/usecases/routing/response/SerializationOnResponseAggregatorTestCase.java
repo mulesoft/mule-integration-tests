@@ -29,9 +29,11 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
+@Ignore("MULE-19149")
 public class SerializationOnResponseAggregatorTestCase extends AbstractIntegrationTestCase {
 
   @Rule

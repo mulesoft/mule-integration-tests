@@ -9,6 +9,7 @@ package org.mule.test.transformers;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.util.IOUtils;
@@ -18,11 +19,13 @@ import org.mule.test.AbstractIntegrationTestCase;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
  * Functional test case for the GZipCompressTransformer and GZipUncompressTransformer.
  */
+@Ignore("MULE-19149")
 public class GZipTransformerFunctionalTestCase extends AbstractIntegrationTestCase {
 
   private static final String TEST_DATA =
