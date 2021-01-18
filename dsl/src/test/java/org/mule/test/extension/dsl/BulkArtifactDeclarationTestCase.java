@@ -18,6 +18,7 @@ import static org.mule.runtime.extension.api.util.ExtensionMetadataTypeUtils.get
 import static org.mule.runtime.extension.api.util.ExtensionModelUtils.isContent;
 import static org.mule.runtime.extension.api.util.ExtensionModelUtils.isText;
 import static org.mule.test.module.extension.internal.util.ExtensionsTestUtils.compareXML;
+
 import org.mule.metadata.api.model.ArrayType;
 import org.mule.metadata.api.model.MetadataType;
 import org.mule.metadata.api.model.NumberType;
@@ -61,8 +62,6 @@ import org.mule.runtime.core.api.extension.MuleExtensionModelProvider;
 import org.mule.runtime.extension.api.dsl.syntax.DslElementSyntax;
 import org.mule.runtime.extension.api.dsl.syntax.resolver.DslSyntaxResolver;
 
-import com.google.common.collect.ImmutableSet;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -70,8 +69,12 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
+import com.google.common.collect.ImmutableSet;
+
+@Ignore("MULE-19149")
 public class BulkArtifactDeclarationTestCase extends AbstractElementModelTestCase {
 
   private ArtifactDeclarationXmlSerializer serializer;
@@ -82,6 +85,7 @@ public class BulkArtifactDeclarationTestCase extends AbstractElementModelTestCas
     return new String[] {};
   }
 
+  @Override
   @Before
   public void setup() throws Exception {
     Set<ExtensionModel> extensions = muleContext.getExtensionManager().getExtensions();
