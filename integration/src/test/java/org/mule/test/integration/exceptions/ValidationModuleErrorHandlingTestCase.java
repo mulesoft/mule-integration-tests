@@ -44,4 +44,12 @@ public class ValidationModuleErrorHandlingTestCase extends AbstractIntegrationTe
     assertThat(response, notNullValue());
   }
 
+  @Test
+  @Issue("MULE-19139")
+  public void validationWithErrorMapping() throws Exception {
+    flowRunner("validationWithErrorMapping").run();
+    Message response = queueManager.read("dlq", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
+    assertThat(response, notNullValue());
+  }
+
 }

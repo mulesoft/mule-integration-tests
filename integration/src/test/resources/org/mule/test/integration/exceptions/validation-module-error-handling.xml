@@ -24,4 +24,15 @@
         </error-handler>
     </flow>
 
+    <flow name="validationWithErrorMapping">
+        <validation:is-not-null value="#[null]">
+            <error-mapping sourceType="VALIDATION:NULL" targetType="TEST:NULL" />
+        </validation:is-not-null>
+        <error-handler>
+            <on-error-continue type="TEST:NULL">
+                <test-components:queue-push config-ref="dlq"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
 </mule>
