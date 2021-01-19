@@ -172,8 +172,6 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
     ArtifactDeclarationJsonSerializer jsonSerializer = ArtifactDeclarationJsonSerializer.getDefault(true);
     String actualAppJson = jsonSerializer.serialize(expectedDeclaration);
 
-    System.out.println(actualAppJson);
-
     try {
       JSONAssert.assertEquals(expectedAppJson, actualAppJson, NON_EXTENSIBLE);
     } catch (AssertionError e) {
