@@ -6,6 +6,7 @@
  */
 package org.mule.test.extension.dsl;
 
+import static java.lang.Thread.currentThread;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mule.runtime.app.declaration.api.fluent.ElementDeclarer.newParameterGroup;
@@ -54,7 +55,7 @@ public class ArtifactDeclarationLocationPathTestCase extends AbstractElementMode
     modelResolver = DslElementModelFactory.getDefault(dslContext);
     serializer = ArtifactDeclarationXmlSerializer.getDefault(dslContext);
     multiFlowDeclaration = serializer.deserialize(getConfigFile(),
-                                                  Thread.currentThread().getContextClassLoader()
+                                                  currentThread().getContextClassLoader()
                                                       .getResourceAsStream(getConfigFile()));
   }
 

@@ -46,7 +46,7 @@
     },
     {
       "value": {
-        "text": "http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/test-oauth http://www.mulesoft.org/schema/mule/test-oauth/current/mule-test-oauth.xsd ",
+        "text": "http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/test-oauth http://www.mulesoft.org/schema/mule/test-oauth/current/mule-test-oauth.xsd",
         "isCData": false,
         "type": "STRING"
       },
