@@ -10,15 +10,8 @@ import io.qameta.allure.Feature;
 import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
 import org.junit.Test;
-import org.mule.runtime.api.message.Message;
 import org.mule.test.AbstractIntegrationTestCase;
-import org.mule.tests.api.TestQueueManager;
-
-import javax.inject.Inject;
-
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.IsNull.notNullValue;
+import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ErrorHandlingStory.ERROR_HANDLER;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ErrorHandlingStory.ERROR_MAPPINGS;
@@ -28,9 +21,6 @@ import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ErrorHan
 @Story(ERROR_MAPPINGS)
 public class ValidationModuleErrorHandlingTestCase extends AbstractIntegrationTestCase {
 
-  @Inject
-  private TestQueueManager queueManager;
-
   @Override
   protected String getConfigFile() {
     return "org/mule/test/integration/exceptions/validation-module-error-handling.xml";
@@ -39,17 +29,13 @@ public class ValidationModuleErrorHandlingTestCase extends AbstractIntegrationTe
   @Test
   @Issue("MULE-19139")
   public void validationAllWithErrorMapping() throws Exception {
-    flowRunner("validationAllWithErrorMapping").run();
-    Message response = queueManager.read("dlq", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
-    assertThat(response, notNullValue());
+    flowRunner("validationAllWithErrorMapping").runExpectingException(errorType("TEST", "NULL"));
   }
 
   @Test
   @Issue("MULE-19139")
   public void validationWithErrorMapping() throws Exception {
-    flowRunner("validationWithErrorMapping").run();
-    Message response = queueManager.read("dlq", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
-    assertThat(response, notNullValue());
+    flowRunner("validationWithErrorMapping").runExpectingException(errorType("TEST", "NULL"));
   }
 
 }
