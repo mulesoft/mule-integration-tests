@@ -374,7 +374,7 @@ public class ConfigurationBasedElementModelFactoryTestCase extends AbstractEleme
     DslElementModel<ParameterModel> responseBuilderElement = getChild(schedulerElement, schedulingStrategy);
     assertElementName(responseBuilderElement, "scheduling-strategy");
 
-    // TODO MULE-XXXXX uncomment this
+    // TODO MULE-19167 uncomment this
     // assertThat(responseBuilderElement.getDsl().getChild("fixed-frequency").isPresent(), is(true));
     final DslElementModel<Object> fixedFrequency =
         responseBuilderElement.findElement(newIdentifier("fixed-frequency", CORE_PREFIX)).get();
