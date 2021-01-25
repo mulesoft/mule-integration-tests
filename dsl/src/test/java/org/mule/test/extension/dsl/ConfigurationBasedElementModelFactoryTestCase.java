@@ -12,6 +12,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.core.Is.is;
 import static org.mule.runtime.extension.api.ExtensionConstants.RECONNECTION_STRATEGY_PARAMETER_NAME;
 import static org.mule.runtime.extension.api.ExtensionConstants.TLS_PARAMETER_NAME;
+import static org.mule.runtime.internal.dsl.DslConstants.CORE_PREFIX;
 import static org.mule.runtime.internal.dsl.DslConstants.KEY_ATTRIBUTE_NAME;
 import static org.mule.runtime.internal.dsl.DslConstants.VALUE_ATTRIBUTE_NAME;
 
@@ -172,7 +173,7 @@ public class ConfigurationBasedElementModelFactoryTestCase extends AbstractEleme
   }
 
   @Test
-  public void resolveConnectionNoExtreParametersDirectly() {
+  public void resolveConnectionNoExtraParametersDirectly() {
     ComponentAst config = getAppElement(applicationModel, DB_CONFIG);
     ComponentAst connection = config.directChildrenStream().findFirst().get();
     validateConnectionNoExtraParameters(resolve(connection));
@@ -358,6 +359,27 @@ public class ConfigurationBasedElementModelFactoryTestCase extends AbstractEleme
     assertSendPayloadLoaded(publishModel, jmsDslResolver);
     assertBridgeLoaded(publishModel, consumeModel, jmsDslResolver);
     assertBridgeReceiverLoaded(consumeModel, jmsDslResolver);
+  }
+
+  @Test
+  public void schedulerSource() {
+    ComponentAst flow = getAppElement(applicationModel, "testFlowScheduler");
+
+    ComponentAst scheduler = flow.directChildrenStream().findFirst().get();
+
+    DslElementModel<SourceModel> schedulerElement = resolve(scheduler);
+
+    ComponentAst schedulingStrategy = scheduler.directChildrenStream().findFirst().get();
+
+    DslElementModel<ParameterModel> responseBuilderElement = getChild(schedulerElement, schedulingStrategy);
+    assertElementName(responseBuilderElement, "scheduling-strategy");
+
+    // TODO MULE-XXXXX uncomment this
+    // assertThat(responseBuilderElement.getDsl().getChild("fixed-frequency").isPresent(), is(true));
+    final DslElementModel<Object> fixedFrequency =
+        responseBuilderElement.findElement(newIdentifier("fixed-frequency", CORE_PREFIX)).get();
+
+    assertValue(fixedFrequency.findElement("frequency").get(), "5");
   }
 
   private void assertSendPayloadLoaded(OperationModel publishModel,
