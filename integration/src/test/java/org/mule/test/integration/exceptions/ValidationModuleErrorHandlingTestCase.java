@@ -9,7 +9,6 @@ package org.mule.test.integration.exceptions;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mule.test.AbstractIntegrationTestCase;
 import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
@@ -29,14 +28,12 @@ public class ValidationModuleErrorHandlingTestCase extends AbstractIntegrationTe
 
   @Test
   @Issue("MULE-19139")
-  @Ignore
   public void validationAllWithErrorMapping() throws Exception {
     flowRunner("validationAllWithErrorMapping").runExpectingException(errorType("TEST", "NULL"));
   }
 
   @Test
   @Issue("MULE-19139")
-  @Ignore
   public void validationWithErrorMapping() throws Exception {
     flowRunner("validationWithErrorMapping").runExpectingException(errorType("TEST", "NULL"));
   }
