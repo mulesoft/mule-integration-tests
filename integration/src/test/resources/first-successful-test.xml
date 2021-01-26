@@ -126,4 +126,16 @@
             </on-error-continue>
         </error-handler>
     </flow>
+
+    <flow name="firstSuccessfulInParallelForEach">
+        <set-payload value="#[[1, 2]]"/>
+        <parallel-foreach>
+            <first-successful>
+                <route>
+                    <test:processor processingType="CPU_INTENSIVE"/>
+                </route>
+            </first-successful>
+        </parallel-foreach>
+        <set-payload value="Se te escapo la tortuga"/>
+    </flow>
 </mule>

@@ -98,4 +98,10 @@ public class FirstSuccessfulTestCase extends AbstractIntegrationTestCase {
     flowRunner("firstSuccessfulInErrorHandlerWithFailing").withPayload(Boolean.TRUE).run().getMessage();
   }
 
+  @Test
+  public void firstSuccessfulInsideParalleLForEach() throws Exception {
+    Message response = flowRunner("firstSuccessfulInParallelForEach").run().getMessage();
+    assertThat(getPayloadAsString(response), is("Se te escapo la tortuga"));
+  }
+
 }
