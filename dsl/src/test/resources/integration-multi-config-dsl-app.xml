@@ -125,4 +125,13 @@
 
     </flow>
 
+    <flow name="testFlowScheduler" initialState="stopped">
+        <scheduler>
+            <scheduling-strategy>
+                <fixed-frequency frequency="5"/>
+            </scheduling-strategy>
+        </scheduler>
+
+        <logger/>
+    </flow>
 </mule>
