@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.mule.tests</groupId>
         <artifactId>mule-test-smart-connectors-parent</artifactId>
-        <version>4.2.2-20210122</version>
+        <version>4.2.2-20210129</version>
     </parent>
 
     <artifactId>smart-connector-using-core</artifactId>
