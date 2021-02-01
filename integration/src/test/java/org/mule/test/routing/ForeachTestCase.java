@@ -17,6 +17,7 @@ import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.collection.IsArrayWithSize.arrayWithSize;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
+import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
@@ -34,6 +35,7 @@ import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ForeachStory.FOR_EACH;
 
 import org.mule.functional.api.exception.ExpectedError;
+import org.mule.runtime.api.el.ExpressionExecutionException;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.event.CoreEvent;
@@ -43,7 +45,6 @@ import org.mule.tests.api.TestQueueManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -329,7 +330,8 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
     order.put("name", "Ellen");
     order.put("email", "ellen.mail.com");
     order.put("items", items);
-    expectedException.expectCause(instanceOf(ConcurrentModificationException.class));
+    expectedException.expectCause(instanceOf(ExpressionExecutionException.class));
+    expectedException.expectMessage(containsString("ConcurrentModificationException"));
     flowRunner("process-json-update").withPayload(singletonMap("order", order)).run();
   }
 
