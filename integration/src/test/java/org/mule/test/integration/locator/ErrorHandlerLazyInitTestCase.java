@@ -8,7 +8,7 @@ package org.mule.test.integration.locator;
 
 import static java.util.Arrays.stream;
 import static java.util.Optional.empty;
-import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertThat;
@@ -19,16 +19,15 @@ import static org.mule.runtime.config.api.SpringXmlConfigurationBuilderFactory.c
 import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentLocatorStory.SEARCH_CONFIGURATION;
+
 import org.mule.runtime.api.artifact.Registry;
 import org.mule.runtime.api.component.ComponentIdentifier;
 import org.mule.runtime.api.component.location.Location;
 import org.mule.runtime.api.exception.ErrorTypeRepository;
 import org.mule.runtime.api.exception.MuleRuntimeException;
-import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.api.message.ErrorType;
 import org.mule.runtime.config.api.LazyComponentInitializer;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
-import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.util.Optional;
@@ -36,13 +35,14 @@ import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 @Feature(CONFIGURATION_COMPONENT_LOCATOR)
 @Story(SEARCH_CONFIGURATION)
@@ -54,9 +54,6 @@ public class ErrorHandlerLazyInitTestCase extends AbstractIntegrationTestCase {
   @Inject
   @Named(value = LAZY_COMPONENT_INITIALIZER_SERVICE_KEY)
   private LazyComponentInitializer lazyComponentInitializer;
-
-  @Rule
-  public DynamicPort httpPort = new DynamicPort("http.port");
 
   @Rule
   public ExpectedException expectedException = none();
@@ -116,16 +113,14 @@ public class ErrorHandlerLazyInitTestCase extends AbstractIntegrationTestCase {
   @Test
   public void emptyRaiseErrorType() {
     expectedException.expect(MuleRuntimeException.class);
-    expectedException.expectCause(instanceOf(InitialisationException.class));
-    expectedException.expectMessage("type cannot be an empty string or null");
+    expectedException.expectMessage(containsString("type cannot be an empty string or null"));
     doCustomErrorTypesShouldDiscoveredTest(builder().globalName("emptyRaiseErrorType").build());
   }
 
   @Test
   public void invalidErrorTypeOnRaiseError() {
     expectedException.expect(MuleRuntimeException.class);
-    expectedException.expectCause(instanceOf(InitialisationException.class));
-    expectedException.expectMessage("Could not find error 'ERROR_NON_EXISTING'");
+    expectedException.expectMessage(containsString("Could not find error 'ERROR_NON_EXISTING'"));
     doCustomErrorTypesShouldDiscoveredTest(builder().globalName("invalidErrorTypeOnRaiseError").build());
   }
 
@@ -164,13 +159,18 @@ public class ErrorHandlerLazyInitTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void notEnabledErrorFlow() {
-    doCustomErrorTypesShouldDiscoveredTest(builder().globalName("raiseErrorSubFlow").build(), "APP:ERROR_TYPE_1",
+    doCustomErrorTypesShouldDiscoveredTest(builder().globalName("notEnabledFlow").build(), "APP:ERROR_TYPE_1",
                                            "APP:ERROR_TYPE_3");
   }
 
   @Test
   public void errorShouldNotBeRegisteredFromErrorHandlerNotReferenced() {
-    doCustomErrorTypesShouldDiscoveredTest(builder().globalName("notEnabledErrorHandler").build(), false, "APP:ERROR_TYPE_4");
+    doCustomErrorTypesShouldDiscoveredTest(builder().globalName("notEnabledErrorHandler").build(),
+                                           // Before the error repository was determined from the AST, it was populated during the
+                                           // initialization of each component.
+                                           // Now, this case is consistent regardless of lifecycle or where an error handler is.
+                                           // false,
+                                           "APP:ERROR_TYPE_4");
   }
 
   private void doCustomErrorTypesShouldDiscoveredTest(Location location, boolean includeErrorTypes, String... errorTypes) {
@@ -184,10 +184,10 @@ public class ErrorHandlerLazyInitTestCase extends AbstractIntegrationTestCase {
           errorTypeRepository.getErrorType(ComponentIdentifier.buildFromStringRepresentation(errorType));
 
       if (includeErrorTypes) {
-        assertThat(appMyErrorType, not(empty()));
-        assertThat(appMyErrorType.get().getParentErrorType(), equalTo(errorTypeRepository.getAnyErrorType()));
+        assertThat(errorType, appMyErrorType, not(empty()));
+        assertThat(errorType, appMyErrorType.get().getParentErrorType(), equalTo(errorTypeRepository.getAnyErrorType()));
       } else {
-        assertThat(appMyErrorType, equalTo(empty()));
+        assertThat(errorType, appMyErrorType, equalTo(empty()));
       }
     });
   }

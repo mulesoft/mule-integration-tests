@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:heisenberg="http://www.mulesoft.org/schema/mule/heisenberg"
       xsi:schemaLocation="
        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-       http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+       http://www.mulesoft.org/schema/mule/heisenberg http://www.mulesoft.org/schema/mule/heisenberg/current/mule-heisenberg.xsd">
 
     <error-handler name="notEnabledErrorHandler">
         <on-error-continue type="APP:ERROR_TYPE_4">
@@ -29,25 +29,21 @@
                 <fixed-frequency frequency="1000"/>
             </scheduling-strategy>
         </scheduler>
-        <http:request method="POST" url="http://localhost:8080/sample"/>
+        <heisenberg:call-gus-fring/>
         <logger/>
     </flow>
 
     <flow name="errorMappingFlow">
-        <http:request method="GET" config-ref="HTTP_Request_configuration">
+        <heisenberg:call-gus-fring>
             <error-mapping targetType="APP:ERROR_TYPE_MAPPING_1"/>
-        </http:request>
+        </heisenberg:call-gus-fring>
     </flow>
 
     <flow name="errorMappingFlow2">
-        <http:request method="GET" config-ref="HTTP_Request_configuration">
+        <heisenberg:call-gus-fring>
             <error-mapping targetType="APP:ERROR_TYPE_MAPPING_2"/>
-        </http:request>
+        </heisenberg:call-gus-fring>
     </flow>
-
-    <http:request-config name="HTTP_Request_configuration">
-        <http:request-connection host="localhost" port="${http.port}"/>
-    </http:request-config>
 
     <sub-flow name="raiseErrorSubFlow">
         <raise-error type="APP:ERROR_TYPE_1"/>
