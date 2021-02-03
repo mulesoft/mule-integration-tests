@@ -321,7 +321,7 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  @Ignore("MULE-19197")
+  @Ignore("MULE-19198")
   public void jsonUpdate() throws Exception {
     List<Object> items = new ArrayList<>();
     items.add(singletonMap("key1", "value1"));
