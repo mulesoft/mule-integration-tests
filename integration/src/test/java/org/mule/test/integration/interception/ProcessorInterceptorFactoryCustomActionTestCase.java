@@ -16,6 +16,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mule.functional.api.exception.ExpectedError.none;
 import static org.mule.runtime.api.interception.ProcessorInterceptorFactory.INTERCEPTORS_ORDER_REGISTRY_KEY;
+import static org.mule.runtime.extension.api.ExtensionConstants.ERROR_MAPPINGS_PARAMETER_NAME;
 import static org.mule.test.allure.AllureConstants.InterceptonApi.INTERCEPTION_API;
 import static org.mule.test.allure.AllureConstants.InterceptonApi.ComponentInterceptionStory.COMPONENT_INTERCEPTION_STORY;
 import static org.mule.test.heisenberg.extension.HeisenbergConnectionProvider.getActiveConnections;
@@ -120,7 +121,7 @@ public class ProcessorInterceptorFactoryCustomActionTestCase extends AbstractInt
     InterceptionParameters killInterceptionParameter = interceptionParameters.get(0);
 
     assertThat(killInterceptionParameter.getParameters().keySet(),
-               containsInAnyOrder("targetValue", "errorMappings", "config-ref", "connection"));
+               containsInAnyOrder("targetValue", ERROR_MAPPINGS_PARAMETER_NAME, "config-ref", "connection"));
     assertThat(killInterceptionParameter.getParameters().get("config-ref").resolveValue(), is("heisenberg"));
     assertThat(killInterceptionParameter.getParameters().get("connection").resolveValue(),
                is(instanceOf(HeisenbergConnection.class)));
@@ -150,7 +151,7 @@ public class ProcessorInterceptorFactoryCustomActionTestCase extends AbstractInt
       InterceptionParameters killInterceptionParameter = interceptionParameters.get(0);
 
       assertThat(killInterceptionParameter.getParameters().keySet(),
-                 containsInAnyOrder("targetValue", "errorMappings", "config-ref", "connection"));
+                 containsInAnyOrder("targetValue", ERROR_MAPPINGS_PARAMETER_NAME, "config-ref", "connection"));
       assertThat(killInterceptionParameter.getParameters().get("config-ref").resolveValue(), is("heisenberg"));
       assertThat(killInterceptionParameter.getParameters().get("connection").resolveValue(),
                  is(instanceOf(HeisenbergConnection.class)));
@@ -177,7 +178,7 @@ public class ProcessorInterceptorFactoryCustomActionTestCase extends AbstractInt
     InterceptionParameters killInterceptionParameter = interceptionParameters.get(0);
 
     assertThat(killInterceptionParameter.getParameters().keySet(),
-               containsInAnyOrder("targetValue", "errorMappings", "config-ref", "connection"));
+               containsInAnyOrder("targetValue", ERROR_MAPPINGS_PARAMETER_NAME, "config-ref", "connection"));
     assertThat(killInterceptionParameter.getParameters().get("config-ref").resolveValue(), is("heisenberg"));
     assertThat(killInterceptionParameter.getParameters().get("connection").resolveValue(),
                is(instanceOf(HeisenbergConnection.class)));

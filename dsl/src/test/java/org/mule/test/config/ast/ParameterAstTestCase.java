@@ -26,6 +26,7 @@ import static org.mule.runtime.config.api.dsl.CoreDslConstants.FLOW_IDENTIFIER;
 import static org.mule.runtime.core.api.construct.Flow.INITIAL_STATE_STARTED;
 import static org.mule.runtime.core.api.construct.Flow.INITIAL_STATE_STOPPED;
 import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.initialiseIfNeeded;
+import static org.mule.runtime.extension.api.ExtensionConstants.ERROR_MAPPINGS_PARAMETER_NAME;
 import static org.mule.runtime.extension.api.util.ExtensionMetadataTypeUtils.isMap;
 import static org.mule.test.allure.AllureConstants.ArtifactAst.ARTIFACT_AST;
 import static org.mule.test.allure.AllureConstants.ArtifactAst.ParameterAst.PARAMETER_AST;
@@ -305,7 +306,8 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
     final ComponentParameterAst targetValue = operation.getParameter("targetValue");
     assertThat(targetValue.getValue().getLeft(), is("payload.body"));
 
-    final List<ErrorMapping> errorMappings = (List<ErrorMapping>) (operation.getParameter("errorMappings").getValue().getRight());
+    final List<ErrorMapping> errorMappings =
+        (List<ErrorMapping>) (operation.getParameter(ERROR_MAPPINGS_PARAMETER_NAME).getValue().getRight());
     assertThat(errorMappings, hasSize(1));
     assertThat(errorMappings.get(0).getSource(), is("HTTP:SECURITY"));
     assertThat(errorMappings.get(0).getTarget(), is("APP:GET_OUT"));
