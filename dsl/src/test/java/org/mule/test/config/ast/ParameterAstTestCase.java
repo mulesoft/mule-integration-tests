@@ -580,6 +580,10 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
     assertThat(poolingProfileParameterAst, not(empty()));
     Optional<ComponentAst> poolingProfileParameter = poolingProfileParameterAst.getValue().getValue();
     assertThat(poolingProfileParameter, not(empty()));
+    ComponentParameterAst maxWaitUnit = poolingProfileParameter.get().getParameter("maxWaitUnit");
+    assertThat(maxWaitUnit.getValue().isRight(), is(true));
+    assertThat(maxWaitUnit.getValue().getRight(), is("")); // MULE-19183
+
     Optional<ComponentParameterAst> additionalPropertiesParameterAst = poolingProfileParameter.map(
                                                                                                    ppp -> ppp
                                                                                                        .getParameter("additionalProperties"));
