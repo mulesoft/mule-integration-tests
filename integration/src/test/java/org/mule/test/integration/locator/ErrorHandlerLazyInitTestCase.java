@@ -120,7 +120,7 @@ public class ErrorHandlerLazyInitTestCase extends AbstractIntegrationTestCase {
   @Test
   public void invalidErrorTypeOnRaiseError() {
     expectedException.expect(MuleRuntimeException.class);
-    expectedException.expectMessage(containsString("Could not find error 'ERROR_NON_EXISTING'"));
+    expectedException.expectMessage(containsString("There's no MULE error named 'ERROR_NON_EXISTING"));
     doCustomErrorTypesShouldDiscoveredTest(builder().globalName("invalidErrorTypeOnRaiseError").build());
   }
 
