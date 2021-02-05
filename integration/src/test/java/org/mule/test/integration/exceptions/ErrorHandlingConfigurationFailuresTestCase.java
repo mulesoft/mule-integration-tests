@@ -122,7 +122,7 @@ public class ErrorHandlingConfigurationFailuresTestCase extends AbstractConfigur
   @Test
   public void nonExistingSourceMappingNotAllowed() throws Exception {
     expectedException.expect(ConfigurationException.class);
-    expectedException.expectMessage(containsString("Could not find error 'NON_EXISTING'."));
+    expectedException.expectMessage(containsString("Could not find error 'NON_EXISTING'"));
     loadConfiguration("org/mule/test/integration/exceptions/non-existing-source-mapping-config.xml");
   }
 
