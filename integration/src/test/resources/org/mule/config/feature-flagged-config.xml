@@ -11,4 +11,8 @@
         <petstore:feature-flagged-echo message="#[payload]"/>
     </flow>
 
+    <flow name="splitter-exception">
+        <petstore:is-splitter-exception-handled />
+    </flow>
+
 </mule>

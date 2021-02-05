@@ -10,12 +10,14 @@ package org.mule.test.config;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.mule.runtime.api.config.MuleRuntimeFeature.HANDLE_SPLITTER_EXCEPTION;
 import static org.mule.test.allure.AllureConstants.DeploymentConfiguration.DEPLOYMENT_CONFIGURATION;
 import static org.mule.test.allure.AllureConstants.DeploymentConfiguration.FeatureFlaggingStory.FEATURE_FLAGGING;
 import static org.mule.test.petstore.extension.PetStoreFeatures.LEGACY_FEATURE;
 import static org.mule.test.petstore.extension.PetStoreOperations.operationExecutionCounter;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
@@ -23,6 +25,7 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
+
 import org.mule.runtime.api.config.custom.ServiceConfigurator;
 import org.mule.runtime.api.meta.MuleVersion;
 import org.mule.runtime.core.api.MuleContext;
@@ -38,39 +41,56 @@ import org.mule.test.runner.RunnerDelegateTo;
 @Story(FEATURE_FLAGGING)
 public class FeatureFlaggedApplicationTestCase extends AbstractIntegrationTestCase {
 
-  private static final String FLOW_NAME = "echo";
+  private static final String ECHO_FLOW = "echo";
+  private static final String SPLITTER_EXCEPTION_FLOW = "splitter-exception";
 
   private static final String PAYLOAD = "bla";
 
+  private final String flowName;
   private final String minMuleVersion;
-
-  private final boolean isLegacy;
+  private final Consumer<CoreEvent> assertions;
 
   @Rule
   public SystemProperty systemProperty;
 
-  @Parameterized.Parameters(name = "Legacy behavior is {0} for minMuleVersion={1} and System Property={2}")
+  @Parameterized.Parameters(name = "Feature {0} for minMuleVersion={2} and System Property={3}")
   public static Object[][] parameters() {
     return new Object[][] {
-        new Object[] {true, "4.2.2", "true"},
-        new Object[] {false, "4.2.2", "false"},
-        new Object[] {true, "4.2.2", null},
+        new Object[] {LEGACY_FEATURE, ECHO_FLOW, "4.2.2", "true", assertEcho(true)},
+        new Object[] {LEGACY_FEATURE, ECHO_FLOW, "4.2.2", "false", assertEcho(false)},
+        new Object[] {LEGACY_FEATURE, ECHO_FLOW, "4.2.2", null, assertEcho(true)},
 
-        new Object[] {true, "4.3.0", "true"},
-        new Object[] {false, "4.3.0", "false"},
-        new Object[] {false, "4.3.0", null},
+        new Object[] {LEGACY_FEATURE, ECHO_FLOW, "4.3.0", "true", assertEcho(true)},
+        new Object[] {LEGACY_FEATURE, ECHO_FLOW, "4.3.0", "false", assertEcho(false)},
+        new Object[] {LEGACY_FEATURE, ECHO_FLOW, "4.3.0", null, assertEcho(false)},
 
-        new Object[] {true, null, "true"},
-        new Object[] {false, null, "false"},
-        new Object[] {false, null, null}
+        new Object[] {LEGACY_FEATURE, ECHO_FLOW, null, "true", assertEcho(true)},
+        new Object[] {LEGACY_FEATURE, ECHO_FLOW, null, "false", assertEcho(false)},
+        new Object[] {LEGACY_FEATURE, ECHO_FLOW, null, null, assertEcho(false)},
+
+        new Object[] {HANDLE_SPLITTER_EXCEPTION, SPLITTER_EXCEPTION_FLOW, "4.2.2", "true", assertSplitterException(true)},
+        new Object[] {HANDLE_SPLITTER_EXCEPTION, SPLITTER_EXCEPTION_FLOW, "4.2.2", "false", assertSplitterException(false)},
+        new Object[] {HANDLE_SPLITTER_EXCEPTION, SPLITTER_EXCEPTION_FLOW, "4.2.2", null, assertSplitterException(false)},
+
+        new Object[] {HANDLE_SPLITTER_EXCEPTION, SPLITTER_EXCEPTION_FLOW, "4.4.0", "true", assertSplitterException(true)},
+        new Object[] {HANDLE_SPLITTER_EXCEPTION, SPLITTER_EXCEPTION_FLOW, "4.4.0", "false", assertSplitterException(false)},
+        new Object[] {HANDLE_SPLITTER_EXCEPTION, SPLITTER_EXCEPTION_FLOW, "4.4.0", null, assertSplitterException(true)},
+
+        new Object[] {HANDLE_SPLITTER_EXCEPTION, SPLITTER_EXCEPTION_FLOW, null, "true", assertSplitterException(true)},
+        new Object[] {HANDLE_SPLITTER_EXCEPTION, SPLITTER_EXCEPTION_FLOW, null, "false", assertSplitterException(false)},
+        new Object[] {HANDLE_SPLITTER_EXCEPTION, SPLITTER_EXCEPTION_FLOW, null, null, assertSplitterException(false)}
     };
   }
 
-  public FeatureFlaggedApplicationTestCase(boolean isLegacy, String minMuleVersion, String systemPropertyValue) {
-    this.isLegacy = isLegacy;
+
+  public FeatureFlaggedApplicationTestCase(org.mule.runtime.api.config.Feature testingFeature, String flowName,
+                                           String minMuleVersion, String systemPropertyValue,
+                                           Consumer<CoreEvent> assertions) {
+    this.flowName = flowName;
     this.minMuleVersion = minMuleVersion;
-    if (systemPropertyValue != null && LEGACY_FEATURE.getOverridingSystemPropertyName().isPresent()) {
-      this.systemProperty = new SystemProperty(LEGACY_FEATURE.getOverridingSystemPropertyName().get(), systemPropertyValue);
+    this.assertions = assertions;
+    if (systemPropertyValue != null && testingFeature.getOverridingSystemPropertyName().isPresent()) {
+      this.systemProperty = new SystemProperty(testingFeature.getOverridingSystemPropertyName().get(), systemPropertyValue);
     }
   }
 
@@ -87,13 +107,10 @@ public class FeatureFlaggedApplicationTestCase extends AbstractIntegrationTestCa
 
   @Test
   public void getProperMessageDependingOnFeatureFlag() throws Exception {
-    CoreEvent responseEvent = flowRunner(FLOW_NAME).withPayload(PAYLOAD).run();
-    StringBuilder expected = new StringBuilder(PAYLOAD);
-    if (isLegacy) {
-      expected.append(" [old way]");
-    }
-    assertThat(responseEvent.getMessage().getPayload(), is(notNullValue()));
-    assertThat(responseEvent.getMessage().getPayload().getValue(), is(expected.toString()));
+    CoreEvent result = flowRunner(flowName).withPayload(PAYLOAD).run();
+    assertThat(result.getMessage().getPayload(), is(notNullValue()));
+
+    assertions.accept(result);
   }
 
   @Override
@@ -113,6 +130,21 @@ public class FeatureFlaggedApplicationTestCase extends AbstractIntegrationTestCa
       }
     });
     super.addBuilders(builders);
+  }
+
+  private static Consumer<CoreEvent> assertEcho(boolean isLegacy) {
+    return response -> {
+      StringBuilder expected = new StringBuilder(PAYLOAD);
+      if (isLegacy) {
+        expected.append(" [old way]");
+      }
+      assertThat(response.getMessage().getPayload(), is(notNullValue()));
+      assertThat(response.getMessage().getPayload().getValue(), is(expected.toString()));
+    };
+  }
+
+  private static Consumer<CoreEvent> assertSplitterException(boolean expected) {
+    return response -> assertThat(response.getMessage().getPayload().getValue(), is(expected));
   }
 
 }
