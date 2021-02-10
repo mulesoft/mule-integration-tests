@@ -16,8 +16,10 @@ import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.CUST
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.actingParameterGroupOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.actingParameterGroupOPWithAliasDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.actingParameterGroupWithOptionalProviderParamOPDeclaration;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.actingParameterGroupWithOptionalWithDefaultInContainerProviderParamOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.actingParameterOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.actingParameterOptionalOPDeclaration;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.actingParameterOptionalWithoutDefaultOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.complexActingParameterOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.complexParameterValue;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.configLessConnectionLessOPDeclaration;
@@ -92,7 +94,7 @@ public class SampleDataTestCase extends DeclarationSessionTestCase {
     String message =
         "Unable to retrieve Sample Data. There are missing required parameters for the resolution: [actingParameter]";
     String reason = "org.mule.sdk.api.data.sample.SampleDataException: " + message + "\n";
-    ComponentElementDeclaration<?> elementDeclaration = actingParameterOptionalOPDeclaration(CONFIG_NAME);
+    ComponentElementDeclaration<?> elementDeclaration = actingParameterOptionalWithoutDefaultOPDeclaration(CONFIG_NAME, null);
     assertSampleDataFailure(elementDeclaration, message, reason, "MISSING_REQUIRED_PARAMETERS");
   }
 
@@ -137,14 +139,11 @@ public class SampleDataTestCase extends DeclarationSessionTestCase {
   }
 
   @Test
-  public void actingParameterGroupMissingOptionalParamOperationFails() {
+  public void actingParameterGroupOptionalParamWithDefaultOperation() {
     int intValue = 1;
     List<String> listValue = singletonList("single");
-    String message = "Unable to retrieve Sample Data. There are missing required parameters for the resolution: [stringParam]";
-    String reason = "org.mule.sdk.api.data.sample.SampleDataException: " + message + "\n";
-
     ComponentElementDeclaration<?> elementDeclaration = actingParameterGroupOPDeclaration(CONFIG_NAME, null, intValue, listValue);
-    assertSampleDataFailure(elementDeclaration, message, reason, "MISSING_REQUIRED_PARAMETERS");
+    assertSampleDataSuccess(elementDeclaration, null, format("%s-%s-%s", "defaultStringValue", intValue, listValue.get(0)));
   }
 
   @Test
@@ -168,14 +167,25 @@ public class SampleDataTestCase extends DeclarationSessionTestCase {
     assertSampleDataFailure(elementDeclaration, message, reason, MISSING_REQUIRED_PARAMETERS);
   }
 
-  @Test // TODO optional params does not appear in the model (MULE-18875)
+  @Test
   public void actingParameterGroupWithOptionalProviderParamOperation() {
-    String stringValue = "stringValue";
     List<String> listValue = singletonList("single");
     Integer intProviderDefaultValue = 0;
     ComponentElementDeclaration<?> elementDeclaration =
-        actingParameterGroupWithOptionalProviderParamOPDeclaration(CONFIG_NAME, stringValue, null, listValue);
-    assertSampleDataSuccess(elementDeclaration, null, format("%s-%s-%s", stringValue, intProviderDefaultValue, listValue.get(0)));
+        actingParameterGroupWithOptionalWithDefaultInContainerProviderParamOPDeclaration(CONFIG_NAME, null, null, listValue);
+    assertSampleDataSuccess(elementDeclaration, null,
+                            format("%s-%s-%s", "defaultStringValue", intProviderDefaultValue, listValue.get(0)));
+  }
+
+  @Test
+  public void actingParameterGroupWithOptionalProviderParamOperationExplicitValueInDSL() {
+    String stringValue = "explicitStringValue";
+    List<String> listValue = singletonList("single");
+    Integer intExplicitValue = 99;
+    ComponentElementDeclaration<?> elementDeclaration =
+        actingParameterGroupWithOptionalWithDefaultInContainerProviderParamOPDeclaration(CONFIG_NAME, stringValue,
+                                                                                         intExplicitValue, listValue);
+    assertSampleDataSuccess(elementDeclaration, null, format("%s-%s-%s", stringValue, intExplicitValue, listValue.get(0)));
   }
 
   @Test
