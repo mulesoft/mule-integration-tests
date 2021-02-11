@@ -11,7 +11,6 @@ import org.junit.Test;
 import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.runtime.http.api.HttpService;
 import org.mule.runtime.http.api.client.HttpRequestOptions;
-import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;
 import org.mule.runtime.http.api.domain.message.request.HttpRequest;
 import org.mule.runtime.http.api.domain.message.response.HttpResponse;
 import org.mule.service.http.TestHttpClient;
@@ -24,7 +23,7 @@ import static org.mule.runtime.http.api.HttpConstants.Method.GET;
 
 public class SourceCorrelationIdExpressionGenerationTestCase extends AbstractIntegrationTestCase {
 
-  private static final String EXPECTED_CORRELATION_ID_FORMAT = "^\\d{4}\\*doge$";
+  private static final String EXPECTED_CORRELATION_ID_FORMAT = "^.{4}\\*doge$";
 
   @Rule
   public DynamicPort listenPort = new DynamicPort("port");
