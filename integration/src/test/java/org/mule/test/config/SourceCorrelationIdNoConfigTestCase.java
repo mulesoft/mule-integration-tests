@@ -23,26 +23,26 @@ import static org.mule.runtime.http.api.HttpConstants.Method.GET;
 
 public class SourceCorrelationIdNoConfigTestCase extends AbstractIntegrationTestCase {
 
-    private static final String EXPECTED_CORRELATION_ID_UUID_FORMAT = "^.+-.+-.+-.+-.+$";
+  private static final String EXPECTED_CORRELATION_ID_UUID_FORMAT = "^.+-.+-.+-.+-.+$";
 
-    @Rule
-    public DynamicPort listenPort = new DynamicPort("port");
+  @Rule
+  public DynamicPort listenPort = new DynamicPort("port");
 
-    @Rule
-    public TestHttpClient httpClient = new TestHttpClient.Builder(getService(HttpService.class)).build();
+  @Rule
+  public TestHttpClient httpClient = new TestHttpClient.Builder(getService(HttpService.class)).build();
 
-    @Override
-    protected String getConfigFile() {
-        return "org/mule/test/config/correlation-id/no-config.xml";
-    }
+  @Override
+  protected String getConfigFile() {
+    return "org/mule/test/config/correlation-id/no-config.xml";
+  }
 
-    @Test
-    public void execute() throws Exception {
-        HttpRequest request = HttpRequest.builder().uri("http://localhost:" + listenPort.getNumber() + "/test").method(GET).build();
-        HttpResponse response = httpClient.send(request, HttpRequestOptions.builder().responseTimeout(10000).build());
-        assertThat(response.getStatusCode(), is(200));
-        String result = IOUtils.toString(response.getEntity().getContent());
-        assertThat(result.matches(EXPECTED_CORRELATION_ID_UUID_FORMAT), is(true));
-    }
+  @Test
+  public void execute() throws Exception {
+    HttpRequest request = HttpRequest.builder().uri("http://localhost:" + listenPort.getNumber() + "/test").method(GET).build();
+    HttpResponse response = httpClient.send(request, HttpRequestOptions.builder().responseTimeout(10000).build());
+    assertThat(response.getStatusCode(), is(200));
+    String result = IOUtils.toString(response.getEntity().getContent());
+    assertThat(result.matches(EXPECTED_CORRELATION_ID_UUID_FORMAT), is(true));
+  }
 
 }
