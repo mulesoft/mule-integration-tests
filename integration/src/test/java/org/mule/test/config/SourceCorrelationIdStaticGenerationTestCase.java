@@ -9,19 +9,26 @@ package org.mule.test.config;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 import static org.mule.runtime.http.api.HttpConstants.Method.GET;
+import static org.mule.test.allure.AllureConstants.CorrelationIdFeature.CORRELATION_ID;
+import static org.mule.test.allure.AllureConstants.CorrelationIdFeature.CorrelationIdOnSourcesStory.CORRELATION_ID_ON_SOURCES;
 
+import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
+import io.qameta.allure.Story;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.runtime.http.api.HttpService;
 import org.mule.runtime.http.api.client.HttpRequestOptions;
-import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;
 import org.mule.runtime.http.api.domain.message.request.HttpRequest;
 import org.mule.runtime.http.api.domain.message.response.HttpResponse;
 import org.mule.service.http.TestHttpClient;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
 
+@Issue("MULE-18770")
+@Feature(CORRELATION_ID)
+@Story(CORRELATION_ID_ON_SOURCES)
 public class SourceCorrelationIdStaticGenerationTestCase extends AbstractIntegrationTestCase {
 
   private static final String EXPECTED_CORRELATION_ID = "doge";

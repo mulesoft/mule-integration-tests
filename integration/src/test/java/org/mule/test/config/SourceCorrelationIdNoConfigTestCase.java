@@ -6,6 +6,9 @@
  */
 package org.mule.test.config;
 
+import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
+import io.qameta.allure.Story;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mule.runtime.core.api.util.IOUtils;
@@ -20,7 +23,12 @@ import org.mule.test.AbstractIntegrationTestCase;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mule.runtime.http.api.HttpConstants.Method.GET;
+import static org.mule.test.allure.AllureConstants.CorrelationIdFeature.CORRELATION_ID;
+import static org.mule.test.allure.AllureConstants.CorrelationIdFeature.CorrelationIdOnSourcesStory.CORRELATION_ID_ON_SOURCES;
 
+@Issue("MULE-18770")
+@Feature(CORRELATION_ID)
+@Story(CORRELATION_ID_ON_SOURCES)
 public class SourceCorrelationIdNoConfigTestCase extends AbstractIntegrationTestCase {
 
   private static final String EXPECTED_CORRELATION_ID_UUID_FORMAT = "^.+-.+-.+-.+-.+$";
