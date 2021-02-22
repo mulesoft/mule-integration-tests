@@ -16,6 +16,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mule.runtime.api.lifecycle.InitialisationException;
+import org.mule.runtime.core.api.config.ConfigurationException;
 import org.mule.test.integration.AbstractConfigurationFailuresTestCase;
 
 @Issue("MULE-18770")
@@ -28,8 +29,8 @@ public class SourceCorrelationIdErrorGenerationTestCase extends AbstractConfigur
 
   @Test
   public void errorStaticValue() throws Exception {
-    expectedException.expect(InitialisationException.class);
-    expectedException.expectMessage(containsString("Invalid Correlation ID Generation expression: 'doge'"));
+    expectedException.expect(ConfigurationException.class);
+    expectedException.expectMessage(containsString("An expression value was not given for parameter 'correlationIdGeneratorExpression' but it requires a expression"));
     loadConfiguration("org/mule/test/config/correlation-id/static-generation.xml");
   }
 
