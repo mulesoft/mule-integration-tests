@@ -40,7 +40,7 @@ public class ValidShutdownTimeoutOneWayTestCase extends AbstractShutdownTimeoutR
   private TestQueueManager queueManager;
 
   @Rule
-  public SystemProperty contextShutdownTimeout = new SystemProperty("contextShutdownTimeout", "1" + RECEIVE_TIMEOUT);
+  public SystemProperty contextShutdownTimeout = new SystemProperty("contextShutdownTimeout", "" + RECEIVE_TIMEOUT);
 
   @Override
   protected String getConfigFile() {
