@@ -1,4 +1,4 @@
-def UPSTREAM_PROJECTS_LIST = [ "Mule-runtime/mule/support/4.2.0" ]
+def UPSTREAM_PROJECTS_LIST = [ "Mule-runtime/mule/4.2.0-FEBRUARY" ]
 
 Map pipelineParams = [ "upstreamProjects" : UPSTREAM_PROJECTS_LIST.join(','),
                        // Comment public setting to get org.mule.runtime:api-annotations:jar:1.1.0-20200709 from private
