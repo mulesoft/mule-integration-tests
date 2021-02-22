@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.mule.tests</groupId>
         <artifactId>mule-extensions-integration-tests</artifactId>
-        <version>4.1.5-HF-SNAPSHOT</version>
+        <version>4.1.5-20210222</version>
     </parent>
     <artifactId>mule-tests-logging</artifactId>
     <name>Logging Integration Tests</name>
