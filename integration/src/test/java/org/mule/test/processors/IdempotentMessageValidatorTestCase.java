@@ -9,8 +9,8 @@ package org.mule.test.processors;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static org.mule.runtime.core.api.exception.Errors.CORE_NAMESPACE_NAME;
-import static org.mule.runtime.core.api.exception.Errors.Identifiers.DUPLICATE_MESSAGE_ERROR_IDENTIFIER;
+import static org.mule.runtime.core.api.error.Errors.CORE_NAMESPACE_NAME;
+import static org.mule.runtime.core.api.error.Errors.Identifiers.DUPLICATE_MESSAGE_ERROR_IDENTIFIER;
 import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
 
 import org.mule.functional.api.exception.ExpectedError;

@@ -9,8 +9,8 @@ package org.mule.test.integration.messaging.meps;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.exception.ExceptionHelper.getRootException;
-import static org.mule.runtime.core.api.exception.Errors.CORE_NAMESPACE_NAME;
-import static org.mule.runtime.core.api.exception.Errors.Identifiers.ROUTING_ERROR_IDENTIFIER;
+import static org.mule.runtime.core.api.error.Errors.CORE_NAMESPACE_NAME;
+import static org.mule.runtime.core.api.error.Errors.Identifiers.ROUTING_ERROR_IDENTIFIER;
 import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
 
 import org.mule.functional.api.exception.FunctionalTestException;
