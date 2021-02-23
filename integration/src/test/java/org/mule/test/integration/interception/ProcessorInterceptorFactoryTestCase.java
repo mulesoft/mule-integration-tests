@@ -20,6 +20,7 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mule.functional.api.exception.ExpectedError.none;
 import static org.mule.runtime.api.interception.ProcessorInterceptorFactory.INTERCEPTORS_ORDER_REGISTRY_KEY;
+import static org.mule.runtime.extension.api.ExtensionConstants.ERROR_MAPPINGS_PARAMETER_NAME;
 import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
 import static org.mule.test.allure.AllureConstants.InterceptonApi.INTERCEPTION_API;
 import static org.mule.test.allure.AllureConstants.InterceptonApi.ComponentInterceptionStory.COMPONENT_INTERCEPTION_STORY;
@@ -113,7 +114,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     InterceptionParameters killInterceptionParameter = interceptionParameters.get(0);
 
     assertThat(killInterceptionParameter.getParameters().keySet(),
-               containsInAnyOrder("targetValue", "errorMappings", "victim", "goodbyeMessage"));
+               containsInAnyOrder("targetValue", ERROR_MAPPINGS_PARAMETER_NAME, "victim", "goodbyeMessage"));
     assertThat(killInterceptionParameter.getParameters().get("victim").resolveValue(), is("T-1000"));
     assertThat(killInterceptionParameter.getParameters().get("goodbyeMessage").resolveValue(), is("Hasta la vista, baby"));
   }
@@ -127,7 +128,8 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
 
     InterceptionParameters dieInterceptionParameter = interceptionParameters.get(0);
 
-    assertThat(dieInterceptionParameter.getParameters().keySet(), containsInAnyOrder("config-ref", "config", "errorMappings"));
+    assertThat(dieInterceptionParameter.getParameters().keySet(),
+               containsInAnyOrder("config-ref", "config", ERROR_MAPPINGS_PARAMETER_NAME));
     final Object config = dieInterceptionParameter.getParameters().get("config").resolveValue();
     assertThat(config, instanceOf(HeisenbergExtension.class));
     assertThat(((HeisenbergExtension) config).getConfigName(), is("heisenberg"));
@@ -154,7 +156,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     InterceptionParameters killInterceptionParameter = interceptionParameters.get(0);
 
     assertThat(killInterceptionParameter.getParameters().keySet(),
-               containsInAnyOrder("targetValue", "errorMappings", "victim", "goodbyeMessage", "killParameters"));
+               containsInAnyOrder("targetValue", ERROR_MAPPINGS_PARAMETER_NAME, "victim", "goodbyeMessage", "killParameters"));
     assertThat(killInterceptionParameter.getParameters().get("victim").resolveValue(), is("T-1000"));
     assertThat(killInterceptionParameter.getParameters().get("goodbyeMessage").resolveValue(), is("Hasta la vista, baby"));
     assertThat(killInterceptionParameter.getParameters().get("killParameters").resolveValue(),
@@ -173,7 +175,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     InterceptionParameters killInterceptionParameter = interceptionParameters.get(0);
 
     assertThat(killInterceptionParameter.getParameters().keySet(),
-               containsInAnyOrder("targetValue", "errorMappings", "victim", "goodbyeMessage"));
+               containsInAnyOrder("targetValue", ERROR_MAPPINGS_PARAMETER_NAME, "victim", "goodbyeMessage"));
     assertThat(killInterceptionParameter.getParameters().get("victim").resolveValue(), is("T-1000"));
     assertThat(killInterceptionParameter.getParameters().containsKey("goodbyeMessage"), is(true));
   }
@@ -436,7 +438,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     Map<String, ProcessorParameterValue> scriptingParameters = interceptionParameters.get(0).getParameters();
     assertThat(scriptingParameters.keySet(), hasSize(6));
     assertThat(scriptingParameters.keySet(),
-               containsInAnyOrder("engine", "doc:name", "target", "code", "targetValue", "errorMappings"));
+               containsInAnyOrder("engine", "doc:name", "target", "code", "targetValue", ERROR_MAPPINGS_PARAMETER_NAME));
     assertThat(scriptingParameters.get("doc:name").resolveValue(), is("Execute 5"));
   }
 

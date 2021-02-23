@@ -13,14 +13,14 @@ import static java.util.Collections.singleton;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mule.functional.junit4.matchers.ThrowableMessageMatcher.hasMessage;
-import static org.mule.runtime.core.api.exception.Errors.Identifiers.CRITICAL_IDENTIFIER;
-import static org.mule.runtime.core.api.exception.Errors.Identifiers.SOURCE_ERROR_IDENTIFIER;
-import static org.mule.runtime.core.api.exception.Errors.Identifiers.SOURCE_ERROR_RESPONSE_GENERATE_ERROR_IDENTIFIER;
-import static org.mule.runtime.core.api.exception.Errors.Identifiers.SOURCE_ERROR_RESPONSE_SEND_ERROR_IDENTIFIER;
-import static org.mule.runtime.core.api.exception.Errors.Identifiers.SOURCE_RESPONSE_ERROR_IDENTIFIER;
-import static org.mule.runtime.core.api.exception.Errors.Identifiers.SOURCE_RESPONSE_GENERATE_ERROR_IDENTIFIER;
-import static org.mule.runtime.core.api.exception.Errors.Identifiers.SOURCE_RESPONSE_SEND_ERROR_IDENTIFIER;
-import static org.mule.runtime.core.api.exception.Errors.Identifiers.UNKNOWN_ERROR_IDENTIFIER;
+import static org.mule.runtime.core.api.error.Errors.Identifiers.CRITICAL_IDENTIFIER;
+import static org.mule.runtime.core.api.error.Errors.Identifiers.SOURCE_ERROR_IDENTIFIER;
+import static org.mule.runtime.core.api.error.Errors.Identifiers.SOURCE_ERROR_RESPONSE_GENERATE_ERROR_IDENTIFIER;
+import static org.mule.runtime.core.api.error.Errors.Identifiers.SOURCE_ERROR_RESPONSE_SEND_ERROR_IDENTIFIER;
+import static org.mule.runtime.core.api.error.Errors.Identifiers.SOURCE_RESPONSE_ERROR_IDENTIFIER;
+import static org.mule.runtime.core.api.error.Errors.Identifiers.SOURCE_RESPONSE_GENERATE_ERROR_IDENTIFIER;
+import static org.mule.runtime.core.api.error.Errors.Identifiers.SOURCE_RESPONSE_SEND_ERROR_IDENTIFIER;
+import static org.mule.runtime.core.api.error.Errors.Identifiers.UNKNOWN_ERROR_IDENTIFIER;
 import static org.mule.runtime.module.extension.api.loader.AbstractJavaExtensionModelLoader.TYPE_PROPERTY_NAME;
 import static org.mule.runtime.module.extension.api.loader.AbstractJavaExtensionModelLoader.VERSION;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
@@ -121,35 +121,35 @@ public class ErrorHandlingConfigurationFailuresTestCase extends AbstractConfigur
 
   @Test
   public void nonExistingSourceMappingNotAllowed() throws Exception {
-    expectedException.expect(InitialisationException.class);
-    expectedException.expectMessage(containsString("Could not find error 'NON_EXISTING'."));
+    expectedException.expect(ConfigurationException.class);
+    expectedException.expectMessage(containsString("Could not find error 'NON_EXISTING'"));
     loadConfiguration("org/mule/test/integration/exceptions/non-existing-source-mapping-config.xml");
   }
 
   @Test
   public void nonExistingCoreMappingsNotAllowed() throws Exception {
-    expectedException.expect(InitialisationException.class);
-    expectedException.expectMessage(containsString("There's no MULE error named 'NON_EXISTING'."));
+    expectedException.expect(ConfigurationException.class);
+    expectedException.expectMessage(containsString("There's no MULE error named 'NON_EXISTING'"));
     loadConfiguration("org/mule/test/integration/exceptions/non-existent-core-mapping-config.xml");
   }
 
   @Test
   public void usedNamespaceMappingsNotAllowed() throws Exception {
-    expectedException.expect(InitialisationException.class);
+    expectedException.expect(ConfigurationException.class);
     expectedException.expectMessage(containsString("Cannot use error type 'HTTP:NOT_FOUND': namespace already exists."));
     loadConfiguration("org/mule/test/integration/exceptions/used-namespace-mappings-config.xml");
   }
 
   @Test
   public void nonExistingCoreErrorCannotBeRaised() throws Exception {
-    expectedException.expect(InitialisationException.class);
-    expectedException.expectMessage(containsString("There's no MULE error named 'NONEXISTENT'."));
+    expectedException.expect(ConfigurationException.class);
+    expectedException.expectMessage(containsString("There's no MULE error named 'NONEXISTENT'"));
     loadConfiguration("org/mule/test/integration/exceptions/non-existent-core-raise-error-config.xml");
   }
 
   @Test
   public void usedNamespaceErrorCannotBeRaised() throws Exception {
-    expectedException.expect(InitialisationException.class);
+    expectedException.expect(ConfigurationException.class);
     expectedException.expectMessage(containsString("Cannot use error type 'HTTP:TIMEOUT': namespace already exists."));
     loadConfiguration("org/mule/test/integration/exceptions/used-namespace-raise-error-config.xml");
   }

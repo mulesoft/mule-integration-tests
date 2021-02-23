@@ -24,6 +24,7 @@ import static org.mule.runtime.app.declaration.api.fluent.ParameterSimpleValue.p
 import static org.mule.runtime.app.declaration.api.fluent.SimpleValueType.BOOLEAN;
 import static org.mule.runtime.app.declaration.api.fluent.SimpleValueType.NUMBER;
 import static org.mule.runtime.app.declaration.api.fluent.SimpleValueType.STRING;
+import static org.mule.runtime.ast.api.DependencyResolutionMode.MINIMAL;
 import static org.mule.runtime.core.api.util.FileUtils.stringToFile;
 import static org.mule.runtime.core.api.util.IOUtils.getResourceAsString;
 import static org.mule.runtime.core.api.util.IOUtils.getResourceAsUrl;
@@ -55,9 +56,11 @@ import org.mule.runtime.app.declaration.api.ParameterElementDeclaration;
 import org.mule.runtime.app.declaration.api.ParameterValue;
 import org.mule.runtime.app.declaration.api.fluent.ElementDeclarer;
 import org.mule.runtime.app.declaration.api.fluent.SimpleValueType;
+import org.mule.runtime.ast.api.DependencyResolutionMode;
 import org.mule.runtime.config.api.dsl.ArtifactDeclarationXmlSerializer;
 import org.mule.runtime.extension.api.runtime.ExpirationPolicy;
 import org.mule.tck.junit4.rule.DynamicPort;
+import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.runner.RunnerDelegateTo;
 
 import java.io.File;
@@ -79,6 +82,10 @@ import com.google.gson.stream.JsonReader;
 
 @RunnerDelegateTo(Parameterized.class)
 public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelTestCase {
+
+  @Rule
+  public SystemProperty minimalDependencies =
+      new SystemProperty(SYSTEM_PROPERTY_PREFIX + DependencyResolutionMode.class.getName(), MINIMAL.name());
 
   private static final boolean UPDATE_EXPECTED_FILES_ON_ERROR =
       getBoolean(SYSTEM_PROPERTY_PREFIX + "appJson.updateExpectedFilesOnError");

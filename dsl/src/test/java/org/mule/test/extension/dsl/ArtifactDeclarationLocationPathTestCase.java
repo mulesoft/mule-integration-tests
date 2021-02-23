@@ -9,7 +9,9 @@ package org.mule.test.extension.dsl;
 import static java.lang.Thread.currentThread;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.mule.runtime.api.util.MuleSystemProperties.SYSTEM_PROPERTY_PREFIX;
 import static org.mule.runtime.app.declaration.api.fluent.ElementDeclarer.newParameterGroup;
+import static org.mule.runtime.ast.api.DependencyResolutionMode.MINIMAL;
 import static org.mule.runtime.core.api.util.IOUtils.getResourceAsString;
 
 import org.mule.runtime.api.dsl.DslResolvingContext;
@@ -20,19 +22,26 @@ import org.mule.runtime.app.declaration.api.ParameterElementDeclaration;
 import org.mule.runtime.app.declaration.api.component.location.Location;
 import org.mule.runtime.app.declaration.api.fluent.ElementDeclarer;
 import org.mule.runtime.app.declaration.api.fluent.ParameterSimpleValue;
+import org.mule.runtime.ast.api.DependencyResolutionMode;
 import org.mule.runtime.config.api.dsl.ArtifactDeclarationXmlSerializer;
 import org.mule.runtime.config.api.dsl.model.DslElementModelFactory;
 import org.mule.runtime.core.api.extension.MuleExtensionModelProvider;
+import org.mule.tck.junit4.rule.SystemProperty;
 
 import java.util.Optional;
 import java.util.Set;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
 import com.google.common.collect.ImmutableSet;
 
 public class ArtifactDeclarationLocationPathTestCase extends AbstractElementModelTestCase {
+
+  @Rule
+  public SystemProperty minimalDependencies =
+      new SystemProperty(SYSTEM_PROPERTY_PREFIX + DependencyResolutionMode.class.getName(), MINIMAL.name());
 
   public static final String ORIGINAL_CONFIG = "multi-flow-dsl-app.xml";
   public static final String EXPECTED_UPDATED_CONFIG = "location-path-update-multi-flow-dsl-app.xml";
