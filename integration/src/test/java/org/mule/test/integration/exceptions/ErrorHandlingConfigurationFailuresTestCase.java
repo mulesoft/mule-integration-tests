@@ -12,7 +12,6 @@ import static java.util.Collections.emptySet;
 import static java.util.Collections.singleton;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
-import static org.mule.functional.junit4.matchers.ThrowableMessageMatcher.hasMessage;
 import static org.mule.runtime.core.api.error.Errors.Identifiers.CRITICAL_IDENTIFIER;
 import static org.mule.runtime.core.api.error.Errors.Identifiers.SOURCE_ERROR_IDENTIFIER;
 import static org.mule.runtime.core.api.error.Errors.Identifiers.SOURCE_ERROR_RESPONSE_GENERATE_ERROR_IDENTIFIER;
@@ -78,15 +77,15 @@ public class ErrorHandlingConfigurationFailuresTestCase extends AbstractConfigur
 
   @Test
   public void unknownErrorFilteringNotAllowed() throws Exception {
-    expectedException.expect(InitialisationException.class);
-    expectedException.expectCause(hasMessage(equalTo(notFound(UNKNOWN_ERROR_IDENTIFIER))));
+    expectedException.expect(ConfigurationException.class);
+    expectedException.expectMessage(containsString(notFound(UNKNOWN_ERROR_IDENTIFIER)));
     loadConfiguration("org/mule/test/integration/exceptions/unknown-error-filtering-config.xml");
   }
 
   @Test
   public void sourceErrorResponseFilteringNotAllowed() throws Exception {
-    expectedException.expect(InitialisationException.class);
-    expectedException.expectCause(hasMessage(equalTo(notFound(SOURCE_ERROR_IDENTIFIER))));
+    expectedException.expect(ConfigurationException.class);
+    expectedException.expectMessage(containsString(notFound(SOURCE_ERROR_IDENTIFIER)));
     loadConfiguration("org/mule/test/integration/exceptions/source-error-response-filtering-config.xml");
   }
 
@@ -94,28 +93,28 @@ public class ErrorHandlingConfigurationFailuresTestCase extends AbstractConfigur
   public void raisesErrorEmptyErrorTypeNotAllowed() throws Exception {
     expectedException.expect(ConfigurationException.class);
     expectedException
-        .expectCause(hasMessage(containsString("The value '' of attribute 'type' on element 'raise-error' is not valid with respect to its type, 'nonBlankString'")));
+        .expectMessage(containsString("The value '' of attribute 'type' on element 'raise-error' is not valid with respect to its type, 'nonBlankString'"));
     loadConfiguration("org/mule/test/integration/exceptions/raise-error-empty-type-config.xml");
   }
 
   @Test
   public void sourceErrorResponseSendFilteringNotAllowed() throws Exception {
-    expectedException.expect(InitialisationException.class);
-    expectedException.expectCause(hasMessage(equalTo(notFound(SOURCE_ERROR_RESPONSE_SEND_ERROR_IDENTIFIER))));
+    expectedException.expect(ConfigurationException.class);
+    expectedException.expectMessage(containsString(notFound(SOURCE_ERROR_RESPONSE_SEND_ERROR_IDENTIFIER)));
     loadConfiguration("org/mule/test/integration/exceptions/source-error-response-send-filtering-config.xml");
   }
 
   @Test
   public void sourceErrorResponseGenerateFilteringNotAllowed() throws Exception {
-    expectedException.expect(InitialisationException.class);
-    expectedException.expectCause(hasMessage(equalTo(notFound(SOURCE_ERROR_RESPONSE_GENERATE_ERROR_IDENTIFIER))));
+    expectedException.expect(ConfigurationException.class);
+    expectedException.expectMessage(containsString(notFound(SOURCE_ERROR_RESPONSE_GENERATE_ERROR_IDENTIFIER)));
     loadConfiguration("org/mule/test/integration/exceptions/source-error-response-generate-filtering-config.xml");
   }
 
   @Test
   public void criticalErrorFilteringNotAllowed() throws Exception {
-    expectedException.expect(InitialisationException.class);
-    expectedException.expectCause(hasMessage(equalTo(notFound(CRITICAL_IDENTIFIER))));
+    expectedException.expect(ConfigurationException.class);
+    expectedException.expectMessage(containsString(notFound(CRITICAL_IDENTIFIER)));
     loadConfiguration("org/mule/test/integration/exceptions/critical-error-filtering-config.xml");
   }
 
@@ -136,7 +135,7 @@ public class ErrorHandlingConfigurationFailuresTestCase extends AbstractConfigur
   @Test
   public void usedNamespaceMappingsNotAllowed() throws Exception {
     expectedException.expect(ConfigurationException.class);
-    expectedException.expectMessage(containsString("Cannot use error type 'HTTP:NOT_FOUND': namespace already exists."));
+    expectedException.expectMessage(containsString("An error type with identifier 'HTTP:NOT_FOUND' already exists"));
     loadConfiguration("org/mule/test/integration/exceptions/used-namespace-mappings-config.xml");
   }
 
@@ -150,7 +149,7 @@ public class ErrorHandlingConfigurationFailuresTestCase extends AbstractConfigur
   @Test
   public void usedNamespaceErrorCannotBeRaised() throws Exception {
     expectedException.expect(ConfigurationException.class);
-    expectedException.expectMessage(containsString("Cannot use error type 'HTTP:TIMEOUT': namespace already exists."));
+    expectedException.expectMessage(containsString("An error type with identifier 'HTTP:TIMEOUT' already exists"));
     loadConfiguration("org/mule/test/integration/exceptions/used-namespace-raise-error-config.xml");
   }
 
@@ -183,7 +182,7 @@ public class ErrorHandlingConfigurationFailuresTestCase extends AbstractConfigur
   }
 
   private String notFound(String type) {
-    return format("Could not find ErrorType for the given identifier: '%s'", type);
+    return format("Could not find error '%s'", type);
   }
 
   private String notAllowed(String type) {
