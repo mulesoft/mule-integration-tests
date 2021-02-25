@@ -46,7 +46,7 @@
     </flow>
     <configuration defaultErrorHandler-ref="MULE:ERROR_HANDLER" defaultObjectSerializer-ref="MULE:SERIALIZER"
                    defaultResponseTimeout="10000" defaultTransactionTimeout="30000" inheritIterableRepeatability="false"
-                   maxQueueTransactionFilesSize="500" shutdownTimeout="5000">
+                   maxQueueTransactionFilesSize="500" shutdownTimeout="5000" correlationIdGeneratorExpression="#['ExpressionAttribute']">
         <dynamic-config-expiration frequency="5" timeUnit="MINUTES">
             <expiration-policy maxIdleTime="5" timeUnit="MINUTES"/>
         </dynamic-config-expiration>
