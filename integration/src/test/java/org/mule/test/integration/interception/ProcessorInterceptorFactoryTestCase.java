@@ -204,6 +204,25 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
   }
 
   @Test
+  @Description("The errorType set by an operation and then mapped is preserved if an interceptor is applied")
+  public void failingOperationMappedErrorTypePreserved() throws Exception {
+    AtomicBoolean afterCallbackCalled = new AtomicBoolean(false);
+
+    AfterWithCallbackInterceptor.callback = (event, thrown) -> {
+      assertThat(event.getError().get().getErrorType(), errorType("APP", "MAPPED_CONNECTIVITY"));
+
+      afterCallbackCalled.set(true);
+    };
+
+    expectedError.expectErrorType("APP", "MAPPED_CONNECTIVITY");
+    try {
+      flowRunner("operationErrorWithMappings").run();
+    } finally {
+      assertThat(afterCallbackCalled.get(), is(true));
+    }
+  }
+
+  @Test
   public void expressionsInInterception() throws Exception {
     assertThat(flowRunner("expressionsInInterception").run().getVariables().get("addedVar").getValue(), is("value2"));
   }
