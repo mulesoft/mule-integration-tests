@@ -65,8 +65,8 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import io.qameta.allure.Description;
-import io.qameta.allure.Issue;
 import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
 
 @Feature(INTERCEPTION_API)
