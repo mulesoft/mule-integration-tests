@@ -135,15 +135,16 @@ public class SampleDataTestCase extends DeclarationSessionTestCase {
 
     ComponentElementDeclaration<?> elementDeclaration =
         actingParameterGroupOPDeclaration(CONFIG_NAME, stringValue, intValue, listValue);
-    assertSampleDataSuccess(elementDeclaration, null, format("%s-%s-%s", stringValue, intValue, listValue.get(0)));
+    assertSampleDataSuccess(elementDeclaration, null, format("%s-%s--100-%s", stringValue, intValue, listValue.get(0)));
   }
 
   @Test
   public void actingParameterGroupOptionalParamWithDefaultOperation() {
     int intValue = 1;
     List<String> listValue = singletonList("single");
-    ComponentElementDeclaration<?> elementDeclaration = actingParameterGroupOPDeclaration(CONFIG_NAME, null, intValue, listValue);
-    assertSampleDataSuccess(elementDeclaration, null, format("%s-%s-%s", "defaultStringValue", intValue, listValue.get(0)));
+    ComponentElementDeclaration<?> elementDeclaration =
+        actingParameterGroupOPDeclaration(CONFIG_NAME, null, intValue, null, listValue);
+    assertSampleDataSuccess(elementDeclaration, null, format("%s-%s-%s-%s", "defaultStringValue", "1", "-100", listValue.get(0)));
   }
 
   @Test
@@ -195,7 +196,7 @@ public class SampleDataTestCase extends DeclarationSessionTestCase {
     List<String> listValue = singletonList("single");
     ComponentElementDeclaration<?> elementDeclaration =
         actingParameterGroupOPWithAliasDeclaration(CONFIG_NAME, stringValue, intValue, listValue);
-    assertSampleDataSuccess(elementDeclaration, null, format("%s-%s-%s", stringValue, intValue, listValue.get(0)));
+    assertSampleDataSuccess(elementDeclaration, null, format("%s-%s--100-%s", stringValue, intValue, listValue.get(0)));
   }
 
   @Test
