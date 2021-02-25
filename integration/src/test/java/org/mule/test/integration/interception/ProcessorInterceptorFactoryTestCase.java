@@ -65,6 +65,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import io.qameta.allure.Description;
+import io.qameta.allure.Issue;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
 
@@ -204,6 +205,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
   }
 
   @Test
+  @Issue("MULE-19236")
   @Description("The errorType set by an operation and then mapped is preserved if an interceptor is applied")
   public void failingOperationMappedErrorTypePreserved() throws Exception {
     AtomicBoolean afterCallbackCalled = new AtomicBoolean(false);
