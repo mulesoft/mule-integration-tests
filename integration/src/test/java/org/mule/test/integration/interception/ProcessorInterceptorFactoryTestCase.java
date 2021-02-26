@@ -66,6 +66,7 @@ import org.junit.Test;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
 
 @Feature(INTERCEPTION_API)
@@ -198,6 +199,26 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     expectedError.expectErrorType("HEISENBERG", "CONNECTIVITY");
     try {
       flowRunner("callGusFring").run();
+    } finally {
+      assertThat(afterCallbackCalled.get(), is(true));
+    }
+  }
+
+  @Test
+  @Issue("MULE-19236")
+  @Description("The errorType set by an operation and then mapped is preserved if an interceptor is applied")
+  public void failingOperationMappedErrorTypePreserved() throws Exception {
+    AtomicBoolean afterCallbackCalled = new AtomicBoolean(false);
+
+    AfterWithCallbackInterceptor.callback = (event, thrown) -> {
+      assertThat(event.getError().get().getErrorType(), errorType("APP", "MAPPED_CONNECTIVITY"));
+
+      afterCallbackCalled.set(true);
+    };
+
+    expectedError.expectErrorType("APP", "MAPPED_CONNECTIVITY");
+    try {
+      flowRunner("operationErrorWithMappings").run();
     } finally {
       assertThat(afterCallbackCalled.get(), is(true));
     }

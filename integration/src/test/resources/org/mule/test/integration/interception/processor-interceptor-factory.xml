@@ -62,6 +62,14 @@
         <heisenberg:call-gus-fring />
     </flow>
 
+    <flow name="operationErrorWithMappings">
+        <!-- This test uses http because the original issue couldn't be reproduced with heisenberg:call-gus-fring -->
+        <http:request method="GET" config-ref="HTTP_Request_configuration" url="https://httpbin.org/status/404">
+            <error-mapping sourceType="HTTP:NOT_FOUND" targetType="APP:MAPPED_CONNECTIVITY"/>
+            <error-mapping targetType="APP:ANYTHING_ELSE" />
+        </http:request>
+    </flow>
+
     <flow name="executeKillWithClient">
         <heisenberg:execute-remote-kill extension="HTTP" configName="HTTP_Request_configuration" operation="request" >
             <heisenberg:parameters>#[{'url': 'https://httpbin.org/status/200'}]</heisenberg:parameters>
@@ -139,10 +147,10 @@
                 <test:check-equals>
                     <![CDATA[
                         Message               : An error occurred.
-                        Element               : operationWithChainFailing/processors/0/processors/0 @ ProcessorInterceptorFactoryChainTestCase#operationWithChainFailingLogsCorrectly:org/mule/test/integration/interception/processor-interceptor-factory.xml:135
+                        Element               : operationWithChainFailing/processors/0/processors/0 @ ProcessorInterceptorFactoryChainTestCase#operationWithChainFailingLogsCorrectly:org/mule/test/integration/interception/processor-interceptor-factory.xml:143
                         Element DSL           : <raise-error type="TEST:EXPECTED"></raise-error>
                         Error type            : TEST:EXPECTED
-                        FlowStack             : at operationWithChainFailing(operationWithChainFailing/processors/0/processors/0 @ ProcessorInterceptorFactoryChainTestCase#operationWithChainFailingLogsCorrectly:org/mule/test/integration/interception/processor-interceptor-factory.xml:135)
+                        FlowStack             : at operationWithChainFailing(operationWithChainFailing/processors/0/processors/0 @ ProcessorInterceptorFactoryChainTestCase#operationWithChainFailingLogsCorrectly:org/mule/test/integration/interception/processor-interceptor-factory.xml:143)
                         (set debug level logging or '-Dmule.verbose.exceptions=true' for everything)
                     ]]>
                 </test:check-equals>
