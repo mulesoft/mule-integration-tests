@@ -13,6 +13,8 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.FirstSuccessfulStory.FIRST_SUCCESSFUL;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
+
+import io.qameta.allure.Issue;
 import org.mule.extension.validation.api.ValidationException;
 import org.mule.functional.api.exception.ExpectedError;
 import org.mule.runtime.api.message.Message;
@@ -96,6 +98,14 @@ public class FirstSuccessfulTestCase extends AbstractIntegrationTestCase {
     expected.expectCause(instanceOf(ValidationException.class));
     expected.expectErrorType("VALIDATION", "INVALID_BOOLEAN");
     flowRunner("firstSuccessfulInErrorHandlerWithFailing").withPayload(Boolean.TRUE).run().getMessage();
+  }
+
+  @Test
+  @Issue("MULE-19169")
+  public void firstSuccessfulInsideParalleLForEach() throws Exception {
+    CoreEvent event = flowRunner("firstSuccessfulInParallelForEach").run();
+    assertThat(getPayloadAsString(event.getMessage()), is("Se te escapo la tortuga"));
+    assertThat(event.getVariables().get("wasExecuted").getValue(), is("true"));
   }
 
 }
