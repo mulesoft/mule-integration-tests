@@ -131,6 +131,7 @@
         <set-payload value="false"/>
         <parallel-foreach collection="#[[1]]">
             <first-successful>
+                <!-- TODO(MULE-19244): Add validation -->
                 <route>
                     <test:processor processingType="CPU_INTENSIVE"/>
                     <set-payload value="true"/>
