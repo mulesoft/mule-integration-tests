@@ -128,14 +128,16 @@
     </flow>
 
     <flow name="firstSuccessfulInParallelForEach">
-        <set-payload value="#[[1, 2]]"/>
-        <parallel-foreach>
+        <set-payload value="false"/>
+        <parallel-foreach collection="#[[1]]">
             <first-successful>
                 <route>
                     <test:processor processingType="CPU_INTENSIVE"/>
+                    <set-payload value="true"/>
                 </route>
             </first-successful>
         </parallel-foreach>
+        <set-variable variableName="wasExecuted" value="#[payload[0].payload]"/>
         <set-payload value="Se te escapo la tortuga"/>
     </flow>
 </mule>
