@@ -256,4 +256,9 @@
         </heisenberg:tap-phones>
     </flow>
 
+    <flow name="operationWithDeferredStreamParam">
+        <!-- deferred=true means that the generated stream is not repeatable, to force the issue -->
+        <set-variable variableName="door" value="#[%dw 2.0 output application/json deferred=true --- {'victim': 'Jim Malone', 'address': '1634 Racine Ave'}]"/>
+        <heisenberg:knock knockedDoor="#[vars.door]"/>
+    </flow>
 </mule>

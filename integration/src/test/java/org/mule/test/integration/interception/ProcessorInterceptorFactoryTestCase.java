@@ -48,6 +48,7 @@ import org.mule.runtime.api.interception.ProcessorInterceptorFactory.ProcessorIn
 import org.mule.runtime.api.interception.ProcessorParameterValue;
 import org.mule.runtime.api.lock.LockFactory;
 import org.mule.runtime.api.scheduler.SchedulerService;
+import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.runtime.http.api.HttpService;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -796,6 +797,13 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     assertThat(scriptingParameters.keySet(), hasSize(5));
     assertThat(scriptingParameters.keySet(), containsInAnyOrder("engine", "doc:name", "target", "code", "targetValue"));
     assertThat(scriptingParameters.get("doc:name").resolveValue(), is("Execute 5"));
+  }
+
+  @Test
+  @Issue("MULE-19245")
+  public void operationWithDeferredStreamParam() throws Exception {
+    final CoreEvent result = flowRunner("operationWithDeferredStreamParam").run();
+    assertThat(result.getMessage().getPayload().getValue(), is("Knocked on Jim Malone"));
   }
 
   public static class HasInjectedAttributesInterceptorFactory implements ProcessorInterceptorFactory {
