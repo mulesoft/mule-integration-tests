@@ -280,16 +280,16 @@ public class ComponentValueProviderTestCase extends DeclarationSessionTestCase {
                                                                   complexListParam, complexMapParam));
     String innerPojoStringValue = intParam +
         stringParam +
-        "zeroonetwo" + //listParam
-        "0zero1one2two"; //mapParam
+        "zeroonetwo" + // listParam
+        "0zero1one2two"; // mapParam
 
     String expectedValue = intParam +
         stringParam +
-        "zeroonetwo" + //listParam
-        "0zero1one2two" + //mapParam
-        innerPojoStringValue + //all inner pojo parameters
-        innerPojoStringValue + //complex list with 1 inner pojo
-        "0" + innerPojoStringValue + "1" + innerPojoStringValue; //complexMap
+        "zeroonetwo" + // listParam
+        "0zero1one2two" + // mapParam
+        innerPojoStringValue + // all inner pojo parameters
+        innerPojoStringValue + // complex list with 1 inner pojo
+        "0" + innerPojoStringValue + "1" + innerPojoStringValue; // complexMap
     validateValuesSuccess(session, elementDeclaration, PROVIDED_PARAMETER_NAME, expectedValue);
   }
 

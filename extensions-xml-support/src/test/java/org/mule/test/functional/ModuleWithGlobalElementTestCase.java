@@ -47,26 +47,26 @@ public class ModuleWithGlobalElementTestCase extends AbstractModuleWithHttpTestC
   }
 
   private static Object[] simpleScenario(boolean shouldValidate) {
-    //simple scenario
+    // simple scenario
     return new Object[] {"flows/flows-using-module-global-elements.xml", new String[] {MODULE_GLOBAL_ELEMENT_XML},
         shouldValidate};
   }
 
   private static Object[] nestedScenario(boolean shouldValidate) {
-    //nested modules scenario
+    // nested modules scenario
     return new Object[] {"flows/nested/flows-using-module-global-elements-proxy.xml",
         new String[] {MODULE_GLOBAL_ELEMENT_XML, MODULE_GLOBAL_ELEMENT_PROXY_XML}, shouldValidate};
   }
 
   private static Object[] nestedNestedScenario(boolean shouldValidate) {
-    //nested^2 modules scenario
+    // nested^2 modules scenario
     return new Object[] {"flows/nested/flows-using-module-global-elements-another-proxy.xml",
         new String[] {MODULE_GLOBAL_ELEMENT_XML, MODULE_GLOBAL_ELEMENT_PROXY_XML, MODULE_GLOBAL_ELEMENT_ANOTHER_PROXY_XML},
         shouldValidate};
   }
 
   private static Object[] literalAndExpressionScenario(boolean shouldValidate) {
-    //using literals and expressions that will be resolved accordingly scenario
+    // using literals and expressions that will be resolved accordingly scenario
     return new Object[] {"flows/flows-using-module-global-elements-with-expressions.xml",
         new String[] {MODULE_GLOBAL_ELEMENT_XML}, shouldValidate};
   }

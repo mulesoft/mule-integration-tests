@@ -58,8 +58,9 @@ public abstract class AbstractModuleWithHttpTestCase extends AbstractCeXmlExtens
   }
 
   /**
-   * Asserts that a given flow can successfully be executed and it also checks that the authorization against the {@link SimpleBasicAuthentication}
-   * handler does return a success response for the parametrized username
+   * Asserts that a given flow can successfully be executed and it also checks that the authorization against the
+   * {@link SimpleBasicAuthentication} handler does return a success response for the parametrized username
+   * 
    * @param flowName to execute
    * @param username to validate after hitting the HTTP endpoint
    */
@@ -69,9 +70,9 @@ public abstract class AbstractModuleWithHttpTestCase extends AbstractCeXmlExtens
   }
 
   /**
-   * Really simple handler for basic authentication where the user and pass, once decoded, must match the path of the request.
-   * For example: "/basic-auth/userLP/passLP" request must have an "Authorization" header with "userLP:passLP" encoded in Base64
-   * to return 200, otherwise it will be 401 (unauthorized)
+   * Really simple handler for basic authentication where the user and pass, once decoded, must match the path of the request. For
+   * example: "/basic-auth/userLP/passLP" request must have an "Authorization" header with "userLP:passLP" encoded in Base64 to
+   * return 200, otherwise it will be 401 (unauthorized)
    */
   private class SimpleBasicAuthentication extends AbstractHandler {
 
