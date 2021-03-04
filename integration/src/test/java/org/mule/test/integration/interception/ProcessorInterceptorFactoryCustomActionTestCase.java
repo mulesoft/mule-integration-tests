@@ -14,6 +14,7 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeThat;
 import static org.mule.functional.api.exception.ExpectedError.none;
 import static org.mule.runtime.api.interception.ProcessorInterceptorFactory.INTERCEPTORS_ORDER_REGISTRY_KEY;
 import static org.mule.test.allure.AllureConstants.InterceptonApi.INTERCEPTION_API;
@@ -30,6 +31,7 @@ import org.mule.runtime.api.interception.ProcessorInterceptor;
 import org.mule.runtime.api.interception.ProcessorInterceptorFactory;
 import org.mule.runtime.api.interception.ProcessorInterceptorFactory.ProcessorInterceptorOrder;
 import org.mule.runtime.api.interception.ProcessorParameterValue;
+import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.heisenberg.extension.HeisenbergConnection;
 import org.mule.test.integration.interception.ProcessorInterceptorFactoryTestCase.HasInjectedAttributesInterceptor;
@@ -53,6 +55,7 @@ import org.junit.runners.Parameterized.Parameters;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
 
 @Feature(INTERCEPTION_API)
@@ -204,6 +207,17 @@ public class ProcessorInterceptorFactoryCustomActionTestCase extends AbstractInt
     assertThat(setPayloadOperation.getParameters().get("value").resolveValue(), is("Wubba Lubba Dub Dub"));
     assertThat(setPayloadOperation.getParameters().get("mimeType").resolveValue(), is("text/plain"));
     assertThat(setPayloadOperation.getParameters().get("encoding").resolveValue(), is("UTF-8"));
+  }
+
+  @Test
+  @Issue("MULE-19245")
+  public void operationWithDeferredStreamParam() throws Exception {
+    // If the event is mutated, it will force the re-evaluation of the operation params with the modified event, effectively
+    // attempting to consume any repeatable streams again.
+    assumeThat(mutateEventBefore, is(false));
+
+    final CoreEvent result = flowRunner("operationWithDeferredStreamParam").run();
+    assertThat(result.getMessage().getPayload().getValue(), is("Knocked on Jim Malone"));
   }
 
   public static class CustomActionInterceptorFactory implements ProcessorInterceptorFactory {
