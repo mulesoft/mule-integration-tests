@@ -226,7 +226,7 @@ public abstract class AbstractElementModelTestCase extends MuleArtifactFunctiona
    * Receives to {@link String} representation of two XML files and verify that they are semantically equivalent
    *
    * @param expected the reference content
-   * @param actual the actual content
+   * @param actual   the actual content
    * @throws Exception if comparison fails
    */
   public static void compareXML(String expected, String actual) throws Exception {
