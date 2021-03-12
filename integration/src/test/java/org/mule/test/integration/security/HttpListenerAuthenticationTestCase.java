@@ -24,6 +24,9 @@ import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import java.io.IOException;
+
+import io.qameta.allure.Feature;
 import org.apache.http.Header;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -37,14 +40,10 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 
-import java.io.IOException;
-
-import io.qameta.allure.Feature;
-
 @Feature(HTTP_EXTENSION)
 public class HttpListenerAuthenticationTestCase extends AbstractIntegrationTestCase {
 
-  private static final String BASIC_REALM_MULE_REALM = "Basic realm=\"mule-realm\"";
+  private static final String BASIC_REALM_MULE_REALM = "Basic realm=\"mule-realm\", charset=\"UTF-8\"";
   private static final String VALID_USER = "user";
   private static final String VALID_PASSWORD = "password";
   private static final String INVALID_PASSWORD = "invalidPassword";
