@@ -14,7 +14,8 @@
     </flow>
 
     <flow name="getStringAfterRefresh">
-        <test-oauth:get-stream-with-flacky-connection config-ref="oauth-platform" parameter='#["hello"]' />
+        <test-oauth:get-stream content="STREAM_CONTENT" />
+        <test-oauth:get-stream-content-with-flacky-connection config-ref="oauth-platform" content='#[payload]' />
     </flow>
 
     <flow name="unauthorizeConnection">
