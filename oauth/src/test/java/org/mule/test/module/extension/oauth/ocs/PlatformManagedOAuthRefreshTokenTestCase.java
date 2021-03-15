@@ -30,4 +30,16 @@ public class PlatformManagedOAuthRefreshTokenTestCase extends PlatformManagedOAu
     verify(mockPlatformDancer, times(TIMES_CALLED_FLAKY_OPERATION)).refreshToken();
   }
 
+  @Test
+  public void getStringAfterRefresh() throws Exception {
+    String result = null;
+
+    for (int i = 0; i < 1; i++) {
+      result = (String) flowRunner("getStringAfterRefresh").run().getMessage().getPayload().getValue();
+    }
+    System.out.println("  **  /" + result + "/     ****");
+    assertThat(result, is("hello"));
+    verify(mockPlatformDancer, times(0)).refreshToken();
+  }
+
 }
