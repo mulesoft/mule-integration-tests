@@ -26,10 +26,10 @@ import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
 
 /**
- * Test case to ensure {@link ModuleOperationProcessorChain#apply(org.reactivestreams.Publisher)}
- * does the correct handle of the chaining when working with events and context child. It also checks if in those cases when
- * an exception happens, {@link ModuleOperationProcessorChain#workOutInternalError(MessagingException, CoreEvent)} does handle
- * the {@link MessagingException} correctly (setting the right {@link CoreEvent} to it).
+ * Test case to ensure {@link ModuleOperationProcessorChain#apply(org.reactivestreams.Publisher)} does the correct handle of the
+ * chaining when working with events and context child. It also checks if in those cases when an exception happens,
+ * {@link ModuleOperationProcessorChain#workOutInternalError(MessagingException, CoreEvent)} does handle the
+ * {@link MessagingException} correctly (setting the right {@link CoreEvent} to it).
  * <p/>
  * The idea is ensure all the streams created within a Smart Connector operation are accessible from within a <flow/>, or another
  * Smart Connector.

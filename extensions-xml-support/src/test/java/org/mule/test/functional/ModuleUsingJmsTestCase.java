@@ -29,11 +29,11 @@ public class ModuleUsingJmsTestCase extends AbstractCeXmlExtensionMuleArtifactFu
   @Test
   public void publishAndConsumeOnce() throws Exception {
     final String content = "a message";
-    //produce the message in the queue
+    // produce the message in the queue
     flowRunner("producer-flow")
         .withVariable("content", content)
         .run();
-    //consume the message from the queue
+    // consume the message from the queue
     final Message consumedMessage = flowRunner("consumer-flow").run().getMessage();
     assertThat(consumedMessage, hasPayload(equalTo(content)));
   }

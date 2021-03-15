@@ -54,17 +54,17 @@ public class MetadataTypesTestCase extends DeclarationSessionTestCase {
         session.resolveComponentMetadata(sourceElementDeclaration);
     assertThat(containerTypeMetadataResult.isSuccess(), is(true));
 
-    //input parameters
+    // input parameters
     assertThat(containerTypeMetadataResult.get().getInputMetadata().size(), is(1));
     assertThat(new MetadataTypeWriter().toString(containerTypeMetadataResult.get().getInputMetadata().get("onSuccessParameter")),
                equalTo("%type _:Java = @default(\"value\" : \"America|USA|SFO\") String"));
 
-    //output
+    // output
     assertThat(containerTypeMetadataResult.get().getOutputMetadata().isPresent(), is(true));
     assertThat(new MetadataTypeWriter().toString(containerTypeMetadataResult.get().getOutputMetadata().get()),
                equalTo("%type _:Java = @default(\"value\" : \"America|USA|SFO\") String"));
 
-    //output attributes
+    // output attributes
     assertThat(containerTypeMetadataResult.get().getOutputAttributesMetadata().isPresent(), is(true));
     assertThat(new MetadataTypeWriter().toString(containerTypeMetadataResult.get().getOutputAttributesMetadata().get()),
                equalTo("%type _:Java = @typeId(\"value\" : \"org.mule.tooling.extensions.metadata.api.source.StringAttributes\") {\n"
@@ -85,15 +85,15 @@ public class MetadataTypesTestCase extends DeclarationSessionTestCase {
   }
 
   private void assertAmericaUsaSfoMetadata(MetadataResult<ComponentMetadataTypesDescriptor> containerTypeMetadataResult) {
-    //input parameters
+    // input parameters
     assertInputDynamicTypeAmericaUsaSfoMetadata(containerTypeMetadataResult);
 
-    //output
+    // output
     assertThat(containerTypeMetadataResult.get().getOutputMetadata().isPresent(), is(true));
     assertThat(new MetadataTypeWriter().toString(containerTypeMetadataResult.get().getOutputMetadata().get()),
                equalTo("%type _:Java = @default(\"value\" : \"America|USA|SFO\") String"));
 
-    //output attributes
+    // output attributes
     assertThat(containerTypeMetadataResult.get().getOutputAttributesMetadata().isPresent(), is(true));
     assertThat(new MetadataTypeWriter().toString(containerTypeMetadataResult.get().getOutputAttributesMetadata().get()),
                equalTo("%type _:Java = @typeId(\"value\" : \"org.mule.tooling.extensions.metadata.api.source.StringAttributes\") {\n"
