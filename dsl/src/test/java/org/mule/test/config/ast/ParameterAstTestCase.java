@@ -22,6 +22,7 @@ import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertThat;
 import static org.mule.metadata.api.utils.MetadataTypeUtils.getTypeId;
+import static org.mule.runtime.api.component.ComponentIdentifier.builder;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.FLOW_IDENTIFIER;
 import static org.mule.runtime.core.api.construct.Flow.INITIAL_STATE_STARTED;
 import static org.mule.runtime.core.api.construct.Flow.INITIAL_STATE_STOPPED;
@@ -31,6 +32,7 @@ import static org.mule.runtime.extension.api.util.ExtensionMetadataTypeUtils.isM
 import static org.mule.test.allure.AllureConstants.ArtifactAst.ARTIFACT_AST;
 import static org.mule.test.allure.AllureConstants.ArtifactAst.ParameterAst.PARAMETER_AST;
 
+import org.hamcrest.Matchers;
 import org.mule.extension.aggregator.internal.AggregatorsExtension;
 import org.mule.extension.db.internal.DbConnector;
 import org.mule.extension.http.api.request.proxy.HttpProxyConfig;
@@ -65,6 +67,7 @@ import org.mule.tck.junit4.AbstractMuleContextTestCase;
 import org.mule.test.heisenberg.extension.HeisenbergExtension;
 import org.mule.test.heisenberg.extension.model.RecursivePojo;
 import org.mule.test.heisenberg.extension.model.Weapon;
+import org.mule.test.petstore.extension.PetStoreConnector;
 import org.mule.test.runner.infrastructure.ExtensionsTestInfrastructureDiscoverer;
 import org.mule.test.subtypes.extension.SubTypesMappingConnector;
 import org.mule.test.vegan.extension.VeganExtension;
@@ -106,11 +109,11 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
     ExtensionsTestInfrastructureDiscoverer discoverer = new ExtensionsTestInfrastructureDiscoverer(extensionManager);
 
     DefaultJavaExtensionModelLoader extensionModelLoader = new DefaultJavaExtensionModelLoader();
-    for (Class<?> annotatedClass : new Class[] {HttpConnector.class, SocketsExtension.class, DbConnector.class,
-        HeisenbergExtension.class, SubTypesMappingConnector.class, VeganExtension.class, AggregatorsExtension.class,
-        OAuthExtension.class}) {
-      discoverer.discoverExtension(annotatedClass, extensionModelLoader);
-    }
+        for (Class<?> annotatedClass : new Class[] {HttpConnector.class, SocketsExtension.class, DbConnector.class,
+            HeisenbergExtension.class, SubTypesMappingConnector.class, VeganExtension.class, AggregatorsExtension.class,
+            OAuthExtension.class, PetStoreConnector.class}) {
+          discoverer.discoverExtension(annotatedClass, extensionModelLoader);
+        }
 
     this.artifactAst = AstXmlParser.builder()
         .withExtensionModels(muleContext.getExtensionManager().getExtensions())
@@ -701,6 +704,31 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
     assertParameters(origin, "allowedMethods", "methodName", "POST", "GET");
     assertParameters(origin, "allowedHeaders", "headerName", "x-allow-origin");
     assertParameters(origin, "exposeHeaders", "headerName", "x-forwarded-for");
+  }
+
+  @Test
+  public void parameterGroupNameWithSpacesIsMatchedWithDslWhenItShowsInTheDsl() {
+    ComponentIdentifier PETSTORE_CONFIG_IDENTIFIER = builder().namespace("petstore").name("config").build();
+
+    Optional<ComponentAst> optionalPetstoreConfigComponentAst = artifactAst.topLevelComponentsStream()
+        .filter(componentAst -> componentAst.getIdentifier().equals(PETSTORE_CONFIG_IDENTIFIER))
+        .findFirst();
+    assertThat(optionalPetstoreConfigComponentAst, not(empty()));
+
+    ComponentAst petstoreConfigComponentAst = optionalPetstoreConfigComponentAst.get();
+
+    // The "brand" parameter belongs to the "Advanced Leash Configuration" parameter group which shows in the DSL
+    ComponentParameterAst brandParameter =
+        petstoreConfigComponentAst.getParameter("brand");
+    assertThat(brandParameter, not(nullValue()));
+    assertThat(brandParameter.getValue().getLeft(), Matchers.is(nullValue()));
+    assertThat(brandParameter.getValue().getRight(), not(nullValue()));
+
+    // The "material" parameter belongs to the "Advanced Leash Configuration" parameter group which shows in the DSL
+    ComponentParameterAst materialParameter = petstoreConfigComponentAst.getParameter("material");
+    assertThat(materialParameter, not(nullValue()));
+    assertThat(materialParameter.getValue().getLeft(), Matchers.is(nullValue()));
+    assertThat(materialParameter.getValue().getRight(), not(nullValue()));
   }
 
   private void assertParameters(ComponentAst container, String containerParameterName, String elementParameterName,
