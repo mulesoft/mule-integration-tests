@@ -109,11 +109,11 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
     ExtensionsTestInfrastructureDiscoverer discoverer = new ExtensionsTestInfrastructureDiscoverer(extensionManager);
 
     DefaultJavaExtensionModelLoader extensionModelLoader = new DefaultJavaExtensionModelLoader();
-        for (Class<?> annotatedClass : new Class[] {HttpConnector.class, SocketsExtension.class, DbConnector.class,
-            HeisenbergExtension.class, SubTypesMappingConnector.class, VeganExtension.class, AggregatorsExtension.class,
-            OAuthExtension.class, PetStoreConnector.class}) {
-          discoverer.discoverExtension(annotatedClass, extensionModelLoader);
-        }
+    for (Class<?> annotatedClass : new Class[] {HttpConnector.class, SocketsExtension.class, DbConnector.class,
+        HeisenbergExtension.class, SubTypesMappingConnector.class, VeganExtension.class, AggregatorsExtension.class,
+        OAuthExtension.class, PetStoreConnector.class}) {
+      discoverer.discoverExtension(annotatedClass, extensionModelLoader);
+    }
 
     this.artifactAst = AstXmlParser.builder()
         .withExtensionModels(muleContext.getExtensionManager().getExtensions())
