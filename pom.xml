@@ -33,7 +33,7 @@
     <munitVersion>2.3.0</munitVersion>
     <muleSchedulerServiceTestVersion>1.4.0-20210316</muleSchedulerServiceTestVersion>
     <muleHttpServiceTestVersion>1.6.0-20210316</muleHttpServiceTestVersion>
-    <muleOAuthServiceTestVersion>2.1.0-20210226</muleOAuthServiceTestVersion>
+    <muleOAuthServiceTestVersion>2.1.0-20210316</muleOAuthServiceTestVersion>
     <muleSoapServiceTestVersion>1.4.0-20210226</muleSoapServiceTestVersion>
     <muleExtensionTestSoapTestVersion>1.4.0-20210226</muleExtensionTestSoapTestVersion>
     <muleSpringModuleTestVersion>1.4.0-SNAPSHOT</muleSpringModuleTestVersion>
