@@ -18,6 +18,7 @@ import org.junit.Test;
 public class PlatformManagedOAuthRefreshTokenTestCase extends PlatformManagedOAuthConfigurationTestCase {
 
   private static final int TIMES_CALLED_FLAKY_OPERATION = 10;
+  private static String STREAM_CONTENT = "STREAM_CONTENT";
 
   @Test
   public void accessTokenRetrieval() throws Exception {
@@ -28,6 +29,13 @@ public class PlatformManagedOAuthRefreshTokenTestCase extends PlatformManagedOAu
     }
     assertThat(connection.getState().getState().getAccessToken(), is(TEST_ACCESS_TOKEN));
     verify(mockPlatformDancer, times(TIMES_CALLED_FLAKY_OPERATION)).refreshToken();
+  }
+
+  @Test
+  public void resetStreamAfterRefresh() throws Exception {
+    String result = (String) flowRunner("getStringAfterRefresh").run().getMessage().getPayload().getValue();
+    assertThat(result, is(STREAM_CONTENT));
+    verify(mockPlatformDancer, times(1)).refreshToken();
   }
 
 }
