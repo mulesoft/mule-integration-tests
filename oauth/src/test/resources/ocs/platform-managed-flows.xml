@@ -13,6 +13,11 @@
         <test-oauth:get-flacky-connection config-ref="oauth-platform" />
     </flow>
 
+    <flow name="getStringAfterRefresh">
+        <test-oauth:get-stream content="STREAM_CONTENT" />
+        <test-oauth:get-stream-content-with-flacky-connection config-ref="oauth-platform" content='#[payload]' />
+    </flow>
+
     <flow name="unauthorizeConnection">
         <test-oauth:unauthorize config-ref="oauth-platform" />
     </flow>
