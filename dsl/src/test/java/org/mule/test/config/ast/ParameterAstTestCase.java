@@ -707,6 +707,7 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
   }
 
   @Test
+  @Issue("MULE-19264")
   public void parameterGroupNameWithSpacesIsMatchedWithDslWhenItShowsInTheDsl() {
     ComponentIdentifier PETSTORE_CONFIG_IDENTIFIER = builder().namespace("petstore").name("config").build();
 
@@ -721,13 +722,13 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
     ComponentParameterAst brandParameter =
         petstoreConfigComponentAst.getParameter("brand");
     assertThat(brandParameter, not(nullValue()));
-    assertThat(brandParameter.getValue().getLeft(), Matchers.is(nullValue()));
+    assertThat(brandParameter.getValue().getLeft(), is(nullValue()));
     assertThat(brandParameter.getValue().getRight(), not(nullValue()));
 
     // The "material" parameter belongs to the "Advanced Leash Configuration" parameter group which shows in the DSL
     ComponentParameterAst materialParameter = petstoreConfigComponentAst.getParameter("material");
     assertThat(materialParameter, not(nullValue()));
-    assertThat(materialParameter.getValue().getLeft(), Matchers.is(nullValue()));
+    assertThat(materialParameter.getValue().getLeft(), is(nullValue()));
     assertThat(materialParameter.getValue().getRight(), not(nullValue()));
   }
 
