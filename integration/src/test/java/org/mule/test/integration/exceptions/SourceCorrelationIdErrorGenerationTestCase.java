@@ -33,7 +33,7 @@ public class SourceCorrelationIdErrorGenerationTestCase extends AbstractConfigur
   public void errorStaticValue() throws Exception {
     expectedException.expect(ConfigurationException.class);
     expectedException
-        .expectMessage(containsString("A static value ('doge') was given for parameter 'correlationIdGeneratorExpression' but it requires an expression"));
+        .expectMessage(containsString("A static value (''doge'') was given for parameter 'correlationIdGeneratorExpression' but it requires an expression"));
     loadConfiguration("org/mule/test/config/correlation-id/static-generation.xml");
   }
 
