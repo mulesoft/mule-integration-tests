@@ -9,6 +9,8 @@
 
     <configuration-properties file="org/mule/test/dsl/test-properties.properties"/>
 
+    <configuration defaultResponseTimeout="${testTimeoutProperty}"/>
+
     <parsers-test:parameter-collection-parser name="testObject" firstname="${testProperty}" lastname="${systemProperty}" age="${testPropertyOverrided}"/>
 
 </mule>
