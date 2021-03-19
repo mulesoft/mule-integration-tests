@@ -9,15 +9,17 @@ package org.mule.test.integration.exceptions;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.mule.test.allure.AllureConstants.CorrelationIdFeature.CORRELATION_ID;
 
-import io.qameta.allure.Feature;
-import io.qameta.allure.Issue;
-import io.qameta.allure.Story;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.core.api.config.ConfigurationException;
 import org.mule.test.integration.AbstractConfigurationFailuresTestCase;
+
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+
+import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
+import io.qameta.allure.Story;
 
 @Issue("MULE-18770")
 @Feature(CORRELATION_ID)
@@ -31,7 +33,7 @@ public class SourceCorrelationIdErrorGenerationTestCase extends AbstractConfigur
   public void errorStaticValue() throws Exception {
     expectedException.expect(ConfigurationException.class);
     expectedException
-        .expectMessage(containsString("A static value was given for parameter 'correlationIdGeneratorExpression' but it requires a expression"));
+        .expectMessage(containsString("A static value (''doge'') was given for parameter 'correlationIdGeneratorExpression' but it requires an expression"));
     loadConfiguration("org/mule/test/config/correlation-id/static-generation.xml");
   }
 

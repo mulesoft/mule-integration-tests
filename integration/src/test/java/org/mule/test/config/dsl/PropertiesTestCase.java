@@ -16,6 +16,8 @@ import org.mule.tests.api.pojos.ParameterCollectionParser;
 import org.junit.Rule;
 import org.junit.Test;
 
+import io.qameta.allure.Issue;
+
 public class PropertiesTestCase extends AbstractIntegrationTestCase {
 
   public static final String SYSTEM_PROPERTY_VALUE = "systemPropertyValue";
@@ -30,13 +32,18 @@ public class PropertiesTestCase extends AbstractIntegrationTestCase {
     return "org/mule/test/dsl/properties-config.xml";
   }
 
-
   @Test
   public void propertiesAreCorrectlyConfigured() {
     ParameterCollectionParser parsersTestObject = registry.<ParameterCollectionParser>lookupByName("testObject").get();
     assertThat(parsersTestObject.getFirstname(), is("testPropertyValue"));
     assertThat(parsersTestObject.getLastname(), is(SYSTEM_PROPERTY_VALUE));
     assertThat(parsersTestObject.getAge(), is(10));
+  }
+
+  @Test
+  @Issue("MULE-19271")
+  public void configurationPropertiesAreCorrectlyConfigured() {
+    assertThat(muleContext.getConfiguration().getDefaultResponseTimeout(), is(1000));
   }
 
 }
