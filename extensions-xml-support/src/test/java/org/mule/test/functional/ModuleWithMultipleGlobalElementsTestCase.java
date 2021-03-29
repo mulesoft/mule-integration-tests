@@ -11,6 +11,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.core.api.util.StreamingUtils.withCursoredEvent;
+import static org.mule.test.allure.AllureConstants.XmlSdk.XML_SDK;
 
 import org.mule.extension.file.common.api.FileAttributes;
 import org.mule.runtime.api.connection.ConnectionProvider;
@@ -32,6 +33,9 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runners.Parameterized;
 
+import io.qameta.allure.Feature;
+
+@Feature(XML_SDK)
 @RunnerDelegateTo(Parameterized.class)
 public class ModuleWithMultipleGlobalElementsTestCase extends AbstractCeXmlExtensionMuleArtifactFunctionalTestCase {
 

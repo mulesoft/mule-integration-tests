@@ -8,6 +8,7 @@ package org.mule.test.integration.lifecycle;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.mule.test.allure.AllureConstants.XmlSdk.XML_SDK;
 
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.api.component.location.Location;
@@ -22,8 +23,10 @@ import javax.inject.Inject;
 import org.junit.Rule;
 import org.junit.Test;
 
+import io.qameta.allure.Feature;
 import io.qameta.allure.Issue;
 
+@Feature(XML_SDK)
 @Issue("MULE-14827")
 public class SmartConnectorUsesAppConfigTestCase extends MuleArtifactFunctionalTestCase
     implements IntegrationTestCaseRunnerConfig {

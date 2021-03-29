@@ -8,6 +8,7 @@ package org.mule.test.integration.parsing;
 
 import static org.hamcrest.core.StringStartsWith.startsWith;
 import static org.junit.Assert.assertThat;
+import static org.mule.test.allure.AllureConstants.XmlSdk.XML_SDK;
 
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.api.component.Component;
@@ -20,6 +21,9 @@ import javax.inject.Inject;
 
 import org.junit.Test;
 
+import io.qameta.allure.Feature;
+
+@Feature(XML_SDK)
 public class XmlExtensionUsingCustomPrefixTestCase extends MuleArtifactFunctionalTestCase
     implements IntegrationTestCaseRunnerConfig {
 

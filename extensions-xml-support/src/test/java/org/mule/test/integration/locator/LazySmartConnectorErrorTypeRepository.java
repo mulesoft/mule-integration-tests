@@ -11,6 +11,8 @@ import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.component.ComponentIdentifier.buildFromStringRepresentation;
 import static org.mule.runtime.api.component.location.Location.builderFromStringRepresentation;
 import static org.mule.runtime.config.api.SpringXmlConfigurationBuilderFactory.createConfigurationBuilder;
+import static org.mule.test.allure.AllureConstants.LazyInitializationFeature.LAZY_INITIALIZATION;
+import static org.mule.test.allure.AllureConstants.XmlSdk.XML_SDK;
 
 import org.mule.runtime.config.api.LazyComponentInitializer;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
@@ -22,8 +24,11 @@ import javax.inject.Inject;
 import org.junit.Test;
 
 import io.qameta.allure.Description;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Features;
 import io.qameta.allure.Issue;
 
+@Features({@Feature(XML_SDK), @Feature(LAZY_INITIALIZATION)})
 public class LazySmartConnectorErrorTypeRepository extends AbstractXmlExtensionMuleArtifactFunctionalTestCase
     implements IntegrationTestCaseRunnerConfig {
 

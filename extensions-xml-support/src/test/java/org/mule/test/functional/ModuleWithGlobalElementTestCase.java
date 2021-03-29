@@ -9,6 +9,8 @@ package org.mule.test.functional;
 import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.mule.test.allure.AllureConstants.XmlSdk.XML_SDK;
+
 import org.mule.extension.http.api.request.validator.ResponseValidatorTypedException;
 import org.mule.functional.api.exception.ExpectedError;
 import org.mule.test.runner.RunnerDelegateTo;
@@ -19,6 +21,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
 
+import io.qameta.allure.Feature;
+
+@Feature(XML_SDK)
 @RunnerDelegateTo(Parameterized.class)
 public class ModuleWithGlobalElementTestCase extends AbstractModuleWithHttpTestCase {
 
