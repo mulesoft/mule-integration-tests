@@ -9,6 +9,9 @@ package org.mule.runtime.module.tooling;
 import static java.time.Instant.now;
 import static java.util.Arrays.asList;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.stream.Collectors.toSet;
+import static org.hamcrest.CoreMatchers.hasItems;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasProperty;
@@ -36,6 +39,7 @@ import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.para
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.simpleActingParametersInContainerOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.simpleActingParametersOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.sourceWithMultiLevelValue;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.withFieldValuesOP;
 import static org.mule.runtime.module.tooling.internal.artifact.AbstractParameterResolverExecutor.INVALID_PARAMETER_VALUE;
 import static org.mule.sdk.api.values.ValueResolvingException.UNKNOWN;
 
@@ -54,11 +58,14 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import com.google.common.collect.ImmutableMap;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.core.Is;
 import org.junit.Test;
 
 public class ComponentValueProviderTestCase extends DeclarationSessionTestCase {
@@ -366,6 +373,18 @@ public class ComponentValueProviderTestCase extends DeclarationSessionTestCase {
                           "CONNECTION_FAILURE",
                           "");
   }
+
+  @Test
+  public void withFieldValues() {
+    ComponentElementDeclaration elementDeclaration = withFieldValuesOP();
+    ValueResult valueResult = getValueResult(session, elementDeclaration, "body", "account.channel");
+    assertThat(valueResult.isSuccess(), is(true));
+    assertThat(valueResult.getValues(), contains(
+                                                 hasProperty("id", equalTo("channel1")),
+                                                 hasProperty("id", equalTo("channel2")),
+                                                 hasProperty("id", equalTo("channel3"))));
+  }
+
 
 
 }

@@ -105,6 +105,11 @@ public abstract class DeclarationSessionTestCase extends AbstractFakeMuleServerT
     return session.getValues(elementDeclaration, parameterName);
   }
 
+  protected ValueResult getValueResult(DeclarationSession session, ParameterizedElementDeclaration elementDeclaration,
+                                       String parameterName, String targetPath) {
+    return session.getFieldValues(elementDeclaration, parameterName, targetPath);
+  }
+
   protected void validateValuesFailure(DeclarationSession session,
                                        ParameterizedElementDeclaration elementDeclaration,
                                        String parameterName,
