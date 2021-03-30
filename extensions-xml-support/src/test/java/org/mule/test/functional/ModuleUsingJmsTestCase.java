@@ -9,11 +9,15 @@ package org.mule.test.functional;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mule.functional.junit4.matchers.MessageMatchers.hasPayload;
+import static org.mule.test.allure.AllureConstants.XmlSdk.XML_SDK;
 
 import org.mule.runtime.api.message.Message;
 
 import org.junit.Test;
 
+import io.qameta.allure.Feature;
+
+@Feature(XML_SDK)
 public class ModuleUsingJmsTestCase extends AbstractCeXmlExtensionMuleArtifactFunctionalTestCase {
 
   @Override

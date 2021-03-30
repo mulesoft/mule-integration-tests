@@ -38,6 +38,7 @@ import static org.mule.runtime.config.api.dsl.CoreDslConstants.UNTIL_SUCCESSFUL_
 import static org.mule.tck.probe.PollingProber.check;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentLocationStory.COMPONENT_LOCATION;
+import static org.mule.test.allure.AllureConstants.XmlSdk.XML_SDK;
 
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.api.component.TypedComponentIdentifier;
@@ -78,12 +79,13 @@ import com.google.common.collect.ImmutableList;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
+import io.qameta.allure.Features;
 import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
 import io.qameta.allure.junit4.DisplayName;
 
 @DisplayName("XML Connectors Path generation")
-@Feature(CONFIGURATION_COMPONENT_LOCATOR)
+@Features({@Feature(XML_SDK), @Feature(CONFIGURATION_COMPONENT_LOCATOR)})
 @Story(COMPONENT_LOCATION)
 public class ModuleComponentPathTestCase extends MuleArtifactFunctionalTestCase implements IntegrationTestCaseRunnerConfig {
 

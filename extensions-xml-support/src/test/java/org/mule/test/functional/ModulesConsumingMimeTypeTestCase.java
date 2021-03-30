@@ -13,6 +13,7 @@ import static org.mule.runtime.api.metadata.MediaType.BINARY;
 import static org.mule.runtime.api.metadata.MediaType.JSON;
 import static org.mule.runtime.api.metadata.MediaType.XML;
 import static org.mule.runtime.core.api.util.IOUtils.closeQuietly;
+import static org.mule.test.allure.AllureConstants.XmlSdk.XML_SDK;
 
 import org.mule.functional.api.flow.FlowRunner;
 import org.mule.runtime.api.metadata.MediaType;
@@ -32,6 +33,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import io.qameta.allure.Feature;
+
+@Feature(XML_SDK)
 public class ModulesConsumingMimeTypeTestCase extends AbstractCeXmlExtensionMuleArtifactFunctionalTestCase {
 
   private static final String JSON_CONTENT_FILE = "{\n"

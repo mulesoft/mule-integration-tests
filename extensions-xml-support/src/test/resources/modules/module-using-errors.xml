@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="module-using-errors"
+        xmlns="http://www.mulesoft.org/schema/mule/module"
+        xmlns:mule="http://www.mulesoft.org/schema/mule/core"
+        xmlns:java="http://www.mulesoft.org/schema/mule/java"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+           http://www.mulesoft.org/schema/mule/module http://www.mulesoft.org/schema/mule/module/current/mule-module.xsd
+           http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+           http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd">
+
+    <operation name="raise">
+        <body>
+            <mule:raise-error type="MODULE-USING-ERRORS:SOME_ERROR"/>
+        </body>
+    </operation>
+
+    <operation name="mapping">
+        <body>
+            <java:invoke-static class="org.mule.test.integration.locator.LazySmartConnectorErrorTypeRepository.Util" method="util">
+                <mule:error-mapping targetType="MODULE-USING-ERRORS:SOME_ERROR"/>
+            </java:invoke-static>
+        </body>
+    </operation>
+
+</module>

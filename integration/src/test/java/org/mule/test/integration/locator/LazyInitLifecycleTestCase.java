@@ -20,6 +20,7 @@ import static org.mule.runtime.api.component.location.Location.builderFromString
 import static org.mule.runtime.config.api.SpringXmlConfigurationBuilderFactory.createConfigurationBuilder;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentLocatorStory.SEARCH_CONFIGURATION;
+import static org.mule.test.allure.AllureConstants.LazyInitializationFeature.LAZY_INITIALIZATION;
 
 import org.mule.runtime.api.artifact.Registry;
 import org.mule.runtime.api.component.location.Location;
@@ -40,9 +41,10 @@ import org.junit.Test;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
+import io.qameta.allure.Features;
 import io.qameta.allure.Story;
 
-@Feature(CONFIGURATION_COMPONENT_LOCATOR)
+@Features({@Feature(LAZY_INITIALIZATION), @Feature(CONFIGURATION_COMPONENT_LOCATOR)})
 @Story(SEARCH_CONFIGURATION)
 public class LazyInitLifecycleTestCase extends AbstractIntegrationTestCase {
 

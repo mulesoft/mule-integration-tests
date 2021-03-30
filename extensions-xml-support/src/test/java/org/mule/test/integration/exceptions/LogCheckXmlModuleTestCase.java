@@ -9,6 +9,7 @@ package org.mule.test.integration.exceptions;
 import static org.mule.tck.junit4.rule.VerboseExceptions.setVerboseExceptions;
 import static org.mule.test.allure.AllureConstants.Logging.LOGGING;
 import static org.mule.test.allure.AllureConstants.Logging.LoggingStory.ERROR_REPORTING;
+import static org.mule.test.allure.AllureConstants.XmlSdk.XML_SDK;
 
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.tck.junit4.rule.VerboseExceptions;
@@ -20,9 +21,10 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import io.qameta.allure.Feature;
+import io.qameta.allure.Features;
 import io.qameta.allure.Story;
 
-@Feature(LOGGING)
+@Features({@Feature(LOGGING), @Feature(XML_SDK)})
 @Story(ERROR_REPORTING)
 public class LogCheckXmlModuleTestCase extends MuleArtifactFunctionalTestCase implements IntegrationTestCaseRunnerConfig {
 

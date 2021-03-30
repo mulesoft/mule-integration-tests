@@ -14,6 +14,7 @@ import static org.mule.tck.util.FlowTraceUtils.isFlowStackElement;
 import static org.mule.tck.util.FlowTraceUtils.FlowStackAsserter.stackToAssert;
 import static org.mule.test.allure.AllureConstants.Logging.LOGGING;
 import static org.mule.test.allure.AllureConstants.Logging.LoggingStory.FLOW_STACK;
+import static org.mule.test.allure.AllureConstants.XmlSdk.XML_SDK;
 
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.api.notification.MessageProcessorNotification;
@@ -27,9 +28,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import io.qameta.allure.Feature;
+import io.qameta.allure.Features;
 import io.qameta.allure.Story;
 
-@Feature(LOGGING)
+@Features({@Feature(XML_SDK), @Feature(LOGGING)})
 @Story(FLOW_STACK)
 public class FlowStackTestCase extends MuleArtifactFunctionalTestCase implements IntegrationTestCaseRunnerConfig {
 

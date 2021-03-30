@@ -10,6 +10,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mule.runtime.api.connectivity.ConnectivityTestingService.CONNECTIVITY_TESTING_SERVICE_KEY;
 import static org.mule.runtime.config.api.SpringXmlConfigurationBuilderFactory.createConfigurationBuilder;
+import static org.mule.test.allure.AllureConstants.XmlSdk.XML_SDK;
 
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.api.component.location.Location;
@@ -23,6 +24,9 @@ import javax.inject.Named;
 
 import org.junit.Test;
 
+import io.qameta.allure.Feature;
+
+@Feature(XML_SDK)
 public class LazySmartConnectorUsesAppConfigTestCase extends MuleArtifactFunctionalTestCase
     implements IntegrationTestCaseRunnerConfig {
 
