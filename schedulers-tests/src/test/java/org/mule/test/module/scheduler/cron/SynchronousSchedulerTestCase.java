@@ -6,13 +6,13 @@
  */
 package org.mule.test.module.scheduler.cron;
 
-
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertThat;
 import static org.mule.tck.probe.PollingProber.probe;
+import static org.mule.test.allure.AllureConstants.SchedulerFeature.SCHEDULER;
 
 import org.mule.functional.api.component.EventCallback;
 import org.mule.runtime.api.component.AbstractComponent;
@@ -31,11 +31,14 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import io.qameta.allure.Feature;
+
 /**
  * <p>
  * Validates that a synchronous flow processing strategy implies a synchronous poll execution
  * </p>
  */
+@Feature(SCHEDULER)
 public class SynchronousSchedulerTestCase extends AbstractSchedulerTestCase {
 
   private static final int PROBE_TIMEOUT = 10000 + RECEIVE_TIMEOUT;

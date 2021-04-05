@@ -6,11 +6,11 @@
  */
 package org.mule.test.integration.schedule;
 
-
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mule.test.allure.AllureConstants.SchedulerFeature.SCHEDULER;
 
 import org.mule.runtime.api.config.custom.ServiceConfigurator;
 import org.mule.runtime.api.notification.ConnectorMessageNotification;
@@ -28,6 +28,9 @@ import java.util.List;
 
 import org.junit.Test;
 
+import io.qameta.allure.Feature;
+
+@Feature(SCHEDULER)
 public class PollScheduleNotificationTestCase extends AbstractSchedulerTestCase {
 
   private final Prober prober = new PollingProber(RECEIVE_TIMEOUT, 100l);

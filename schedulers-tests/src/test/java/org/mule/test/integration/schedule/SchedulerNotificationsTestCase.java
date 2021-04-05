@@ -8,6 +8,8 @@ package org.mule.test.integration.schedule;
 
 import static org.mule.runtime.api.notification.ConnectorMessageNotification.MESSAGE_RECEIVED;
 import static org.mule.tck.probe.PollingProber.check;
+import static org.mule.test.allure.AllureConstants.SchedulerFeature.SCHEDULER;
+
 import org.mule.functional.api.component.EventCallback;
 import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.notification.ConnectorMessageNotification;
@@ -22,6 +24,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Before;
 import org.junit.Test;
 
+import io.qameta.allure.Feature;
+
+@Feature(SCHEDULER)
 public class SchedulerNotificationsTestCase extends AbstractSchedulerTestCase {
 
   private static AtomicInteger eventsReceivedCount = new AtomicInteger(0);

@@ -10,6 +10,7 @@ import static java.lang.Thread.sleep;
 import static org.mule.runtime.api.component.location.Location.builderFromStringRepresentation;
 import static org.mule.tck.probe.PollingProber.probe;
 import static org.mule.test.allure.AllureConstants.ExecutionEngineFeature.ExecutionEngineStory.BACKPRESSURE;
+import static org.mule.test.allure.AllureConstants.SchedulerFeature.SCHEDULER;
 
 import org.mule.functional.api.component.EventCallback;
 import org.mule.runtime.api.component.AbstractComponent;
@@ -23,8 +24,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
+import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
 
+@Feature(SCHEDULER)
 @Story(BACKPRESSURE)
 public class SchedulerBackpressureHandlingTestCase extends AbstractSchedulerTestCase {
 

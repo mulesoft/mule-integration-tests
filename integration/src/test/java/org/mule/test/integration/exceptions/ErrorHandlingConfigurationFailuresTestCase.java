@@ -7,7 +7,6 @@
 package org.mule.test.integration.exceptions;
 
 import static java.lang.String.format;
-import static java.lang.Thread.currentThread;
 import static java.util.Collections.emptySet;
 import static java.util.Collections.singleton;
 import static org.hamcrest.Matchers.containsString;
@@ -20,24 +19,17 @@ import static org.mule.runtime.core.api.error.Errors.Identifiers.SOURCE_RESPONSE
 import static org.mule.runtime.core.api.error.Errors.Identifiers.SOURCE_RESPONSE_GENERATE_ERROR_IDENTIFIER;
 import static org.mule.runtime.core.api.error.Errors.Identifiers.SOURCE_RESPONSE_SEND_ERROR_IDENTIFIER;
 import static org.mule.runtime.core.api.error.Errors.Identifiers.UNKNOWN_ERROR_IDENTIFIER;
-import static org.mule.runtime.module.extension.api.loader.AbstractJavaExtensionModelLoader.TYPE_PROPERTY_NAME;
-import static org.mule.runtime.module.extension.api.loader.AbstractJavaExtensionModelLoader.VERSION;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
 
 import org.mule.extension.http.internal.temporary.HttpConnector;
 import org.mule.extension.socket.api.SocketsExtension;
-import org.mule.runtime.api.dsl.DslResolvingContext;
+import org.mule.functional.junit4.AbstractConfigurationFailuresTestCase;
 import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.core.api.config.ConfigurationException;
-import org.mule.runtime.module.extension.api.loader.java.DefaultJavaExtensionModelLoader;
-import org.mule.test.integration.AbstractConfigurationFailuresTestCase;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -202,12 +194,4 @@ public class ErrorHandlingConfigurationFailuresTestCase extends AbstractConfigur
     return extensions;
   }
 
-  @Override
-  protected ExtensionModel loadExtension(Class extension, Set<ExtensionModel> deps) {
-    DefaultJavaExtensionModelLoader loader = new DefaultJavaExtensionModelLoader();
-    Map<String, Object> ctx = new HashMap<>();
-    ctx.put(TYPE_PROPERTY_NAME, extension.getName());
-    ctx.put(VERSION, "4.4.0-SNAPSHOT");
-    return loader.loadExtensionModel(currentThread().getContextClassLoader(), DslResolvingContext.getDefault(deps), ctx);
-  }
 }

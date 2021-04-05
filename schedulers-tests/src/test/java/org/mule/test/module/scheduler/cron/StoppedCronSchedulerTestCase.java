@@ -10,6 +10,7 @@ import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.component.location.Location.builderFromStringRepresentation;
+import static org.mule.test.allure.AllureConstants.SchedulerFeature.SCHEDULER;
 
 import org.mule.functional.api.component.EventCallback;
 import org.mule.runtime.api.component.AbstractComponent;
@@ -28,7 +29,9 @@ import java.util.function.Supplier;
 
 import org.junit.Test;
 
+import io.qameta.allure.Feature;
 
+@Feature(SCHEDULER)
 public class StoppedCronSchedulerTestCase extends AbstractSchedulerTestCase {
 
   private static List<String> foo = new ArrayList<>();

@@ -16,6 +16,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mule.runtime.api.component.ComponentIdentifier.buildFromStringRepresentation;
+import static org.mule.test.allure.AllureConstants.SchedulerFeature.SCHEDULER;
 
 import org.mule.functional.api.component.EventCallback;
 import org.mule.runtime.api.component.AbstractComponent;
@@ -33,6 +34,9 @@ import java.util.List;
 
 import org.junit.Test;
 
+import io.qameta.allure.Feature;
+
+@Feature(SCHEDULER)
 public class SchedulerTestCase extends AbstractSchedulerTestCase {
 
   private static List<String> foo;

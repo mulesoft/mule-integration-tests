@@ -13,6 +13,7 @@ import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.component.location.Location.builderFromStringRepresentation;
 import static org.mule.runtime.core.api.util.ClassUtils.withContextClassLoader;
+import static org.mule.test.allure.AllureConstants.SchedulerFeature.SCHEDULER;
 
 import org.mule.functional.api.component.EventCallback;
 import org.mule.runtime.api.component.AbstractComponent;
@@ -30,6 +31,9 @@ import java.util.concurrent.CountDownLatch;
 import org.junit.ClassRule;
 import org.junit.Test;
 
+import io.qameta.allure.Feature;
+
+@Feature(SCHEDULER)
 public class TriggerScheduleTestCase extends AbstractSchedulerTestCase {
 
   public static final String SCHEDULER_NAME = "testScheduler";

@@ -9,9 +9,9 @@ package org.mule.test.integration.exceptions;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.mule.test.allure.AllureConstants.CorrelationIdFeature.CORRELATION_ID;
 
+import org.mule.functional.junit4.AbstractConfigurationFailuresTestCase;
 import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.core.api.config.ConfigurationException;
-import org.mule.test.integration.AbstractConfigurationFailuresTestCase;
 
 import org.junit.Rule;
 import org.junit.Test;
