@@ -12,6 +12,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.component.location.Location.builderFromStringRepresentation;
+import static org.mule.test.allure.AllureConstants.SchedulerFeature.SCHEDULER;
 
 import org.mule.functional.api.component.EventCallback;
 import org.mule.runtime.api.component.AbstractComponent;
@@ -33,12 +34,14 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 
+import io.qameta.allure.Feature;
 
 /**
  * <p>
  * Uses the API to stop and start cron schedulers.
  * </p>
  */
+@Feature(SCHEDULER)
 public class CronSchedulerTestCase extends AbstractSchedulerTestCase {
 
   private static List<String> foo = new ArrayList<>();

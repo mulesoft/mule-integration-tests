@@ -10,14 +10,18 @@ import static java.lang.System.currentTimeMillis;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mule.tck.probe.PollingProber.check;
+import static org.mule.test.allure.AllureConstants.SchedulerFeature.SCHEDULER;
 import static org.mule.test.petstore.extension.PetFailingPollingSource.STARTED_POLLS;
-
-import org.junit.Before;
-import org.junit.Test;
 
 import org.mule.runtime.api.lifecycle.Startable;
 import org.mule.test.AbstractSchedulerTestCase;
 
+import org.junit.Before;
+import org.junit.Test;
+
+import io.qameta.allure.Feature;
+
+@Feature(SCHEDULER)
 public class CronPollingSourceTestCase extends AbstractSchedulerTestCase {
 
   private static final int PROBE_TIMEOUT = 10000;

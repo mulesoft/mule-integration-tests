@@ -11,6 +11,8 @@ import static java.lang.Thread.sleep;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.component.location.Location.builderFromStringRepresentation;
+import static org.mule.test.allure.AllureConstants.SchedulerFeature.SCHEDULER;
+import static org.mule.test.allure.AllureConstants.SchedulerFeature.SchedulerStories.SCHEDULED_FLOW_EXECUTION;
 
 import org.mule.functional.api.component.EventCallback;
 import org.mule.runtime.api.component.AbstractComponent;
@@ -32,9 +34,14 @@ import java.util.List;
 import org.junit.ClassRule;
 import org.junit.Test;
 
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
+
 /**
  * This is a test for poll with schedulers. It validates that the polls can be executed, stopped, run.
  */
+@Feature(SCHEDULER)
+@Story(SCHEDULED_FLOW_EXECUTION)
 public class PollScheduleTestCase extends AbstractSchedulerTestCase {
 
   private static List<String> foo = new ArrayList<>();

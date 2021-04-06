@@ -10,6 +10,7 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
+import static org.mule.test.allure.AllureConstants.SchedulerFeature.SCHEDULER;
 
 import org.mule.functional.api.component.EventCallback;
 import org.mule.runtime.api.component.AbstractComponent;
@@ -20,8 +21,10 @@ import org.mule.test.AbstractSchedulerTestCase;
 
 import org.junit.Test;
 
+import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
 
+@Feature(SCHEDULER)
 @Story(ERROR_HANDLING)
 public class SchedulerErrorHandlingTestCase extends AbstractSchedulerTestCase {
 

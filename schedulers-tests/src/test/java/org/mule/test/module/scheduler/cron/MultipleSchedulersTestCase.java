@@ -8,6 +8,7 @@
 package org.mule.test.module.scheduler.cron;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.mule.test.allure.AllureConstants.SchedulerFeature.SCHEDULER;
 
 import org.mule.functional.api.component.EventCallback;
 import org.mule.runtime.api.component.AbstractComponent;
@@ -24,6 +25,9 @@ import java.util.concurrent.CountDownLatch;
 import org.junit.Before;
 import org.junit.Test;
 
+import io.qameta.allure.Feature;
+
+@Feature(SCHEDULER)
 public class MultipleSchedulersTestCase extends AbstractSchedulerTestCase {
 
   private static CountDownLatch firstRequest = new CountDownLatch(2);
