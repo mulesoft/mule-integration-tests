@@ -5,9 +5,7 @@
 
     <flow name="scheduledFlow">
         <scheduler>
-<!--             <scheduling-strategy> -->
-<!--                 <fixed-frequency frequency="1000"/> -->
-<!--             </scheduling-strategy> -->
+            <!-- no <scheduling-strategy> -->
         </scheduler>
         <logger/>
     </flow>

@@ -20,6 +20,7 @@ import static org.mule.runtime.core.api.error.Errors.Identifiers.SOURCE_RESPONSE
 import static org.mule.runtime.core.api.error.Errors.Identifiers.SOURCE_RESPONSE_SEND_ERROR_IDENTIFIER;
 import static org.mule.runtime.core.api.error.Errors.Identifiers.UNKNOWN_ERROR_IDENTIFIER;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
+import static org.mule.test.allure.AllureConstants.MuleDsl.DslValidationStory.DSL_VALIDATION_STORY;
 
 import org.mule.extension.http.internal.temporary.HttpConnector;
 import org.mule.extension.socket.api.SocketsExtension;
@@ -39,7 +40,7 @@ import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
 
 @Feature(ERROR_HANDLING)
-@Story("Validations")
+@Story(DSL_VALIDATION_STORY)
 public class ErrorHandlingConfigurationFailuresTestCase extends AbstractConfigurationFailuresTestCase {
 
   @Rule

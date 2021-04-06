@@ -8,6 +8,7 @@ package org.mule.test.integration.schedule;
 
 import static java.util.Collections.emptySet;
 import static org.hamcrest.Matchers.containsString;
+import static org.mule.test.allure.AllureConstants.MuleDsl.DslValidationStory.DSL_VALIDATION_STORY;
 import static org.mule.test.allure.AllureConstants.SchedulerFeature.SCHEDULER;
 
 import org.mule.functional.junit4.AbstractConfigurationFailuresTestCase;
@@ -26,7 +27,7 @@ import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
 
 @Feature(SCHEDULER)
-@Story("Validations")
+@Story(DSL_VALIDATION_STORY)
 public class SchedulerConfigurationFailuresTestCase extends AbstractConfigurationFailuresTestCase {
 
   @Rule

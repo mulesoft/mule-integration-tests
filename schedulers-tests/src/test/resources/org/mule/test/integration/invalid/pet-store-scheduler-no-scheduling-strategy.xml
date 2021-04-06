@@ -7,9 +7,7 @@
 
     <flow name="scheduledFlow">
         <petstore:pet-adoption-source>
-<!--             <scheduling-strategy> -->
-<!--                 <fixed-frequency frequency="1000"/> -->
-<!--             </scheduling-strategy> -->
+            <!-- no <scheduling-strategy> -->
         </petstore:pet-adoption-source>
         <logger/>
     </flow>

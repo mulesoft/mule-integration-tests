@@ -10,6 +10,7 @@ import static java.util.Arrays.asList;
 import static org.mule.runtime.api.component.location.Location.builder;
 import static org.mule.runtime.config.api.SpringXmlConfigurationBuilderFactory.createConfigurationBuilder;
 import static org.mule.test.allure.AllureConstants.LazyInitializationFeature.LAZY_INITIALIZATION;
+import static org.mule.test.allure.AllureConstants.MuleDsl.DslValidationStory.DSL_VALIDATION_STORY;
 import static org.mule.test.allure.AllureConstants.SchedulerFeature.SCHEDULER;
 
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
@@ -32,7 +33,7 @@ import io.qameta.allure.Features;
 import io.qameta.allure.Story;
 
 @Features({@Feature(LAZY_INITIALIZATION), @Feature(SCHEDULER)})
-@Story("Validations")
+@Story(DSL_VALIDATION_STORY)
 @RunnerDelegateTo(Parameterized.class)
 public class SchedulerConfigurationFailuresLazyInitTestCase extends MuleArtifactFunctionalTestCase {
 
