@@ -390,8 +390,10 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
   @Issue("MULE-19319")
   @Description("For each with a flow ref and max concurrency finish processing")
   public void forEachWithFlowRefAndMaxConcurrency() throws Exception {
-    flowRunner("foreachWithFlowRefAndMaxConcurrency").dispatchAsync(asyncFlowRunnerScheduler);
-    probe(RECEIVE_TIMEOUT, 50, () -> awaiting.get() == 1);
+    Integer[] payload = new Integer[] {1, 2, 3};
+    assertThat(flowRunner("foreachWithFlowRefAndMaxConcurrency").withPayload(payload).run().getMessage()
+        .getPayload()
+        .getValue(), is(payload));
   }
 
   private static CountDownLatch latch;
