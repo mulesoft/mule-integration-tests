@@ -28,6 +28,7 @@ import static org.mule.test.heisenberg.extension.HeisenbergConnectionProvider.ge
 import static org.mule.test.heisenberg.extension.HeisenbergOperations.CALL_GUS_MESSAGE;
 
 import org.mule.extension.http.api.request.validator.ResponseValidatorException;
+import org.mule.extension.test.extension.reconnection.ReconnectableConnectionProvider;
 import org.mule.functional.api.exception.ExpectedError;
 import org.mule.runtime.api.artifact.Registry;
 import org.mule.runtime.api.component.location.ComponentLocation;
@@ -98,8 +99,18 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     return objects;
   }
 
+  @Override
+  protected void doSetUpBeforeMuleContextCreation() throws Exception {
+    super.doSetUpBeforeMuleContextCreation();
+    ReconnectableConnectionProvider.fail = true;
+  }
+
+  @Override
+  protected void doSetUp() throws Exception {}
+
   @After
   public void after() {
+    ReconnectableConnectionProvider.fail = false;
     getActiveConnections().clear();
     HasInjectedAttributesInterceptor.interceptionParameters.clear();
     AfterWithCallbackInterceptor.callback = (event, thrown) -> {
@@ -469,6 +480,24 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
   public void operationWithDeferredStreamParam() throws Exception {
     final CoreEvent result = flowRunner("operationWithDeferredStreamParam").run();
     assertThat(result.getMessage().getPayload().getValue(), is("Knocked on Jim Malone"));
+  }
+
+  @Test
+  @Issue("MULE-19315")
+  @Description("Reconnection configuration is honored when resolving params through interception API")
+  public void reconnectionWorksWithInterceptors() throws Exception {
+    ReconnectableConnectionProvider.fail = true;
+    flowRunner("reconnectionWorksWithInterceptors").run();
+    assertThat(ReconnectableConnectionProvider.fail, is(false));
+  }
+
+  @Test
+  @Issue("MULE-19315")
+  @Description("Connectivity errors are propagated consistenly when interception API is present.")
+  public void reconnectionFailureWorksWithInterceptors() throws Exception {
+    ReconnectableConnectionProvider.fail = true;
+    flowRunner("reconnectionFailureWorksWithInterceptors").runExpectingException(errorType("RECONNECTION", "CONNECTIVITY"));
+    assertThat(ReconnectableConnectionProvider.fail, is(true));
   }
 
   public static class HasInjectedAttributesInterceptorFactory implements ProcessorInterceptorFactory {
