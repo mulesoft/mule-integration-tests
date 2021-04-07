@@ -251,5 +251,20 @@
     <sub-flow name="dynamicFlowRefWithSdkOperationInner">
         <http:request config-ref="requestConfig" path="/echo"/>
     </sub-flow>
-    
+
+    <flow name="foreachWithFlowRefAndMaxConcurrency">
+        <set-payload value="#[['apple', 'banana', 'orange']]"/>
+        <foreach>
+            <flow-ref name="flowWithMaxConcurrency" />
+        </foreach>
+        <test:processor processingType="CPU_INTENSIVE">
+            <test:callback class="org.mule.test.construct.FlowRefTestCase$LatchAwaitCallback"/>
+        </test:processor>
+    </flow>
+
+    <flow name="flowWithMaxConcurrency" maxConcurrency="1">
+        <set-payload value="holis"></set-payload>
+    </flow>
+
+
 </mule>
