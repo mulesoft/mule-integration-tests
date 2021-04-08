@@ -251,5 +251,15 @@
     <sub-flow name="dynamicFlowRefWithSdkOperationInner">
         <http:request config-ref="requestConfig" path="/echo"/>
     </sub-flow>
-    
+
+    <flow name="foreachWithFlowRefAndMaxConcurrency">
+        <foreach>
+            <flow-ref name="flowWithMaxConcurrency" />
+        </foreach>
+    </flow>
+
+    <flow name="flowWithMaxConcurrency" maxConcurrency="1">
+        <set-payload value="holis"></set-payload>
+    </flow>
+
 </mule>
