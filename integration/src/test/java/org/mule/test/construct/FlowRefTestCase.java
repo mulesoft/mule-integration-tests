@@ -386,6 +386,16 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
     flowRunner("dynamicFlowRefWithSdkOperation").run();
   }
 
+  @Test
+  @Issue("MULE-19319")
+  @Description("For each with a flow ref and max concurrency finish processing")
+  public void forEachWithFlowRefAndMaxConcurrency() throws Exception {
+    Integer[] payload = new Integer[] {1, 2, 3};
+    assertThat(flowRunner("foreachWithFlowRefAndMaxConcurrency").withPayload(payload).run().getMessage()
+        .getPayload()
+        .getValue(), is(payload));
+  }
+
   private static CountDownLatch latch;
   private static AtomicInteger callbackInFlight = new AtomicInteger();
   private static AtomicInteger awaiting = new AtomicInteger();
