@@ -262,4 +262,23 @@
     <flow name="groupInlineParametersWithSpacesShowInDslTransform">
         <petstore:get-cage config-ref="parameterGroupInlineShowInDslConfig"/>
     </flow>
+    
+    <flow name="schedulerFlowFixed">
+        <scheduler>
+            <scheduling-strategy>
+                <fixed-frequency frequency="50" startDelay="20" timeUnit="SECONDS"/>
+            </scheduling-strategy>
+        </scheduler>
+        <logger message="#[payload]"/>
+    </flow>
+
+    <flow name="dbSchedulerFlowCron">
+        <db:listener table="person" config-ref="dbConfig" watermarkColumn="timestamp" idColumn="id">
+            <scheduling-strategy>
+                <cron expression="0,4,25,26,51 0 0 ? * * *"/>
+            </scheduling-strategy>
+        </db:listener>
+        <logger message="#[payload]"/>
+    </flow>
+    
 </mule>

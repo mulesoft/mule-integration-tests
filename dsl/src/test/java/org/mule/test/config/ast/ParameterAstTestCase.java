@@ -32,7 +32,6 @@ import static org.mule.runtime.extension.api.util.ExtensionMetadataTypeUtils.isM
 import static org.mule.test.allure.AllureConstants.ArtifactAst.ARTIFACT_AST;
 import static org.mule.test.allure.AllureConstants.ArtifactAst.ParameterAst.PARAMETER_AST;
 
-import org.hamcrest.Matchers;
 import org.mule.extension.aggregator.internal.AggregatorsExtension;
 import org.mule.extension.db.internal.DbConnector;
 import org.mule.extension.http.api.request.proxy.HttpProxyConfig;
@@ -730,6 +729,33 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
     assertThat(materialParameter, not(nullValue()));
     assertThat(materialParameter.getValue().getLeft(), is(nullValue()));
     assertThat(materialParameter.getValue().getRight(), not(nullValue()));
+  }
+
+  @Test
+  @Issue("MULE-19331")
+  public void schedulingStrategyParameter() {
+    final ComponentAst schedulerFlowFixedSource = artifactAst.topLevelComponentsStream()
+        .filter(componentAst -> componentAst.getComponentId().map(id -> id.equals("schedulerFlowFixed")).orElse(false))
+        .map(schedulerFlowFixed -> schedulerFlowFixed.directChildrenStream().findFirst().get())
+        .findFirst()
+        .get();
+
+    final ComponentParameterAst schedulerFlowFixedSourceSchStrategy = schedulerFlowFixedSource.getParameter("schedulingStrategy");
+    assertThat(schedulerFlowFixedSourceSchStrategy, not(nullValue()));
+    assertThat(((ComponentAst) (schedulerFlowFixedSourceSchStrategy.getValue().getRight()))
+        .getIdentifier().getName(), is("fixed-frequency"));
+
+
+    final ComponentAst dbSchedulerFlowCronSource = artifactAst.topLevelComponentsStream()
+        .filter(componentAst -> componentAst.getComponentId().map(id -> id.equals("dbSchedulerFlowCron")).orElse(false))
+        .map(schedulerFlowFixed -> schedulerFlowFixed.directChildrenStream().findFirst().get())
+        .findFirst()
+        .get();
+
+    final ComponentParameterAst dbSchedulerFlowCronSchStrategy = dbSchedulerFlowCronSource.getParameter("schedulingStrategy");
+    assertThat(dbSchedulerFlowCronSchStrategy, not(nullValue()));
+    assertThat(((ComponentAst) (dbSchedulerFlowCronSchStrategy.getValue().getRight()))
+        .getIdentifier().getName(), is("cron"));
   }
 
   private void assertParameters(ComponentAst container, String containerParameterName, String elementParameterName,
