@@ -39,13 +39,13 @@ import static org.mule.test.allure.AllureConstants.ExecutionEngineFeature.Execut
 
 import org.mule.functional.api.component.EventCallback;
 import org.mule.functional.api.exception.ExpectedError;
-import org.mule.functional.api.flow.FlowRunner;
 import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.notification.MessageProcessorNotification;
 import org.mule.runtime.api.notification.MessageProcessorNotificationListener;
 import org.mule.runtime.api.scheduler.Scheduler;
 import org.mule.runtime.core.api.MuleContext;
+import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.http.api.HttpService;
 import org.mule.runtime.http.api.client.HttpRequestOptions;
@@ -74,6 +74,8 @@ import io.qameta.allure.Feature;
 import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
 
+import javax.inject.Inject;
+
 @Feature(CORE_COMPONENTS)
 @Story(FLOW_REFERENCE)
 public class FlowRefTestCase extends AbstractIntegrationTestCase {
@@ -92,6 +94,9 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
   public TestHttpClient httpClient = new TestHttpClient.Builder(getService(HttpService.class)).build();
 
   private Scheduler asyncFlowRunnerScheduler;
+
+  @Inject
+  private Flow backpressureFlowRefOuterMaxConcurrency;
 
   @Override
   protected String getConfigFile() {
@@ -347,21 +352,7 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
   @Test
   @Story(BACKPRESSURE)
   @Issue("MULE-19328")
-  public void backpressureMustNotBeTriggeredAfterReferencedFlowRestart() throws Exception {
-    FlowRunner outerFlow = flowRunner("outerFlow");
-    FlowRunner referencedFlowWithMaxConcurrency = flowRunner("referencedFlowWithMaxConcurrency");
-    outerFlow.dispatchAsync(asyncFlowRunnerScheduler);
-    probe(RECEIVE_TIMEOUT, 50, () -> awaiting.get() == 1);
-    referencedFlowWithMaxConcurrency.restartFlow();
-    latch.countDown();
-    outerFlow.dispatchAsync(asyncFlowRunnerScheduler);
-    probe(RECEIVE_TIMEOUT, 50, () -> awaiting.get() == 2);
-  }
-
-  @Test
-  @Story(BACKPRESSURE)
-  @Issue("MULE-19328")
-  public void backPressureMustNotBeTriggeredAfterMainFlowRestart() throws Exception {
+  public void backPressureMustNotBeTriggeredAfterFlowRestart() throws Exception {
     HttpRequest request =
         HttpRequest.builder()
             .uri(format("http://localhost:%s/backpressureFlowRefMaxConcurrency?ref=backpressureFlowRefInner", port.getNumber()))
@@ -369,7 +360,8 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
             .build();
     sendAsyncs.add(httpClient.sendAsync(request, HttpRequestOptions.builder().responseTimeout(RECEIVE_TIMEOUT * 2).build()));
     probe(RECEIVE_TIMEOUT, 50, () -> awaiting.get() == 1);
-    flowRunner("backpressureFlowRefOuterMaxConcurrency").restartFlow();
+    backpressureFlowRefOuterMaxConcurrency.stop();
+    backpressureFlowRefOuterMaxConcurrency.start();
     latch.countDown();
     assertThat(httpClient.send(request).getStatusCode(), is(OK.getStatusCode()));
   }

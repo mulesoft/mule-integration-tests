@@ -262,12 +262,4 @@
         <set-payload value="holis"></set-payload>
     </flow>
 
-    <flow name="outerFlow">
-        <flow-ref name="referencedFlowWithMaxConcurrency"/>
-    </flow>
-
-    <flow name="referencedFlowWithMaxConcurrency" maxConcurrency="1">
-        <flow-ref name="backpressureFlowRefInner"/>
-    </flow>
-
 </mule>
