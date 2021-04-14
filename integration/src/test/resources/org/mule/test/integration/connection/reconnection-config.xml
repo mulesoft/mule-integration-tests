@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:petstore="http://www.mulesoft.org/schema/mule/petstore"
+    xmlns="http://www.mulesoft.org/schema/mule/core"
+    xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+               http://www.mulesoft.org/schema/mule/petstore http://www.mulesoft.org/schema/mule/petstore/current/mule-petstore.xsd">
+
+
+    <petstore:config name="petstore-config"
+        cashierName="jim">
+        <petstore:connection username="john"
+            password="doe">
+            <reconnection failsDeployment="false">
+                <reconnect count="3" frequency="5000" />
+            </reconnection>
+        </petstore:connection>
+        <petstore:pets>
+            <petstore:pet value="Lassie" />
+        </petstore:pets>
+    </petstore:config>
+
+    <petstore:config
+        name="petstore-config-with-dynamic-config" cashierName="jim">
+        <petstore:connection username="#['john']"
+            password="#['doe']">
+            <reconnection failsDeployment="false">
+                <reconnect count="3" frequency="5000" />
+            </reconnection>
+        </petstore:connection>
+        <petstore:pets>
+            <petstore:pet value="Lassie" />
+        </petstore:pets>
+    </petstore:config>
+
+    <petstore:config
+        name="petstore-config-without-reconnection" cashierName="jim">
+        <petstore:connection username="john"
+            password="doe" />
+        <petstore:pets>
+            <petstore:pet value="Lassie" />
+        </petstore:pets>
+    </petstore:config>
+    
+    <petstore:config
+        name="petstore-config-without-reconnection-with-dynamic-config" cashierName="jim">
+        <petstore:connection username="#['john']"
+            password="doe" />
+        <petstore:pets>
+            <petstore:pet value="Lassie" />
+        </petstore:pets>
+    </petstore:config>
+
+    <flow name="reconnectionTest">
+        <petstore:fail-connection
+            config-ref="petstore-config" />
+    </flow>
+
+    <flow name="reconnectionWithDynamicConfigTest">
+        <petstore:fail-connection
+            config-ref="petstore-config-with-dynamic-config" />
+    </flow>
+
+    <flow name="noReconnectionTest">
+        <petstore:fail-connection
+            config-ref="petstore-config-without-reconnection" />
+    </flow>
+
+    <flow name=" noReconnectionWithDynamicConfigTest">
+        <petstore:fail-connection
+            config-ref="petstore-config-without-reconnection-with-dynamic-config" />
+    </flow>
+</mule>
