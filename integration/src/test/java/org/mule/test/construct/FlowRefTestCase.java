@@ -29,6 +29,7 @@ import static org.mule.runtime.api.notification.MessageProcessorNotification.MES
 import static org.mule.runtime.api.notification.MessageProcessorNotification.MESSAGE_PROCESSOR_PRE_INVOKE;
 import static org.mule.runtime.core.api.error.Errors.CORE_NAMESPACE_NAME;
 import static org.mule.runtime.core.api.error.Errors.Identifiers.ROUTING_ERROR_IDENTIFIER;
+import static org.mule.runtime.http.api.HttpConstants.HttpStatus.OK;
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.SERVICE_UNAVAILABLE;
 import static org.mule.runtime.http.api.HttpConstants.Method.GET;
 import static org.mule.tck.probe.PollingProber.probe;
@@ -38,6 +39,7 @@ import static org.mule.test.allure.AllureConstants.ExecutionEngineFeature.Execut
 
 import org.mule.functional.api.component.EventCallback;
 import org.mule.functional.api.exception.ExpectedError;
+import org.mule.functional.api.flow.FlowRunner;
 import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.notification.MessageProcessorNotification;
@@ -340,6 +342,36 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
 
     probe(RECEIVE_TIMEOUT, 50, () -> awaiting.get() >= 1);
     assertThat(httpClient.send(request).getStatusCode(), is(SERVICE_UNAVAILABLE.getStatusCode()));
+  }
+
+  @Test
+  @Story(BACKPRESSURE)
+  @Issue("MULE-19328")
+  public void backpressureMustNotBeTriggeredAfterReferencedFlowRestart() throws Exception {
+    FlowRunner outerFlow = flowRunner("outerFlow");
+    FlowRunner referencedFlowWithMaxConcurrency = flowRunner("referencedFlowWithMaxConcurrency");
+    outerFlow.dispatchAsync(asyncFlowRunnerScheduler);
+    probe(RECEIVE_TIMEOUT, 50, () -> awaiting.get() == 1);
+    referencedFlowWithMaxConcurrency.restartFlow();
+    latch.countDown();
+    outerFlow.dispatchAsync(asyncFlowRunnerScheduler);
+    probe(RECEIVE_TIMEOUT, 50, () -> awaiting.get() == 2);
+  }
+
+  @Test
+  @Story(BACKPRESSURE)
+  @Issue("MULE-19328")
+  public void backPressureMustNotBeTriggeredAfterMainFlowRestart() throws Exception {
+    HttpRequest request =
+            HttpRequest.builder()
+                    .uri(format("http://localhost:%s/backpressureFlowRefMaxConcurrency?ref=backpressureFlowRefInner", port.getNumber()))
+                    .method(GET)
+                    .build();
+    sendAsyncs.add(httpClient.sendAsync(request, HttpRequestOptions.builder().responseTimeout(RECEIVE_TIMEOUT * 2).build()));
+    probe(RECEIVE_TIMEOUT, 50, () -> awaiting.get() == 1);
+    flowRunner("backpressureFlowRefOuterMaxConcurrency").restartFlow();
+    latch.countDown();
+    assertThat(httpClient.send(request).getStatusCode(), is(OK.getStatusCode()));
   }
 
   @Test

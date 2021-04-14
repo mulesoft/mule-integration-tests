@@ -49,7 +49,7 @@
     <flow name="targetToSubFlow" initialState="stopped">
         <flow-ref name="nestedTargetSubFlow" target="flowRefResult" targetValue="#[payload[0]]"/>
     </flow>
-    
+
     <sub-flow name="nestedTargetSubFlow">
         <set-payload value="#[['result']]"/>
     </sub-flow>
@@ -233,7 +233,7 @@
                 <raise-error type="FR:CONCURRENT_EXECUTION"/>
             </when>
         </choice>
-        
+
         <test:processor processingType="CPU_INTENSIVE">
             <test:callback class="org.mule.test.construct.FlowRefTestCase$LatchAwaitCallback"/>
         </test:processor>
@@ -247,7 +247,7 @@
             <flow-ref name="#['dynamicFlowRefWithSdkOperationInner']"/>
         </foreach>
     </flow>
-    
+
     <sub-flow name="dynamicFlowRefWithSdkOperationInner">
         <http:request config-ref="requestConfig" path="/echo"/>
     </sub-flow>
@@ -260,6 +260,14 @@
 
     <flow name="flowWithMaxConcurrency" maxConcurrency="1">
         <set-payload value="holis"></set-payload>
+    </flow>
+
+    <flow name="outerFlow">
+        <flow-ref name="referencedFlowWithMaxConcurrency"/>
+    </flow>
+
+    <flow name="referencedFlowWithMaxConcurrency" maxConcurrency="1">
+        <flow-ref name="backpressureFlowRefInner"/>
     </flow>
 
 </mule>
