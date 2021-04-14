@@ -363,10 +363,10 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
   @Issue("MULE-19328")
   public void backPressureMustNotBeTriggeredAfterMainFlowRestart() throws Exception {
     HttpRequest request =
-            HttpRequest.builder()
-                    .uri(format("http://localhost:%s/backpressureFlowRefMaxConcurrency?ref=backpressureFlowRefInner", port.getNumber()))
-                    .method(GET)
-                    .build();
+        HttpRequest.builder()
+            .uri(format("http://localhost:%s/backpressureFlowRefMaxConcurrency?ref=backpressureFlowRefInner", port.getNumber()))
+            .method(GET)
+            .build();
     sendAsyncs.add(httpClient.sendAsync(request, HttpRequestOptions.builder().responseTimeout(RECEIVE_TIMEOUT * 2).build()));
     probe(RECEIVE_TIMEOUT, 50, () -> awaiting.get() == 1);
     flowRunner("backpressureFlowRefOuterMaxConcurrency").restartFlow();
