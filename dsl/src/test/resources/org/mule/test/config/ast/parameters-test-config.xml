@@ -281,4 +281,13 @@
         <logger message="#[payload]"/>
     </flow>
     
+    <flow name="dbSchedulerFlowFixed">
+        <db:listener table="person" config-ref="dbConfig" watermarkColumn="timestamp" idColumn="id">
+            <scheduling-strategy>
+                <fixed-frequency frequency="50" startDelay="20" timeUnit="SECONDS"/>
+            </scheduling-strategy>
+        </db:listener>
+        <logger message="#[payload]"/>
+    </flow>
+    
 </mule>

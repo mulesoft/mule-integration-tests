@@ -64,7 +64,7 @@ public class AsyncTryTestCase extends AbstractIntegrationTestCase {
 
   @Override
   protected String getConfigFile() {
-    return "async-try-config.xml";
+    return "org/mule/test/integration/async-try-config.xml";
   }
 
   @Before

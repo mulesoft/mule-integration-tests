@@ -746,6 +746,18 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
         .getIdentifier().getName(), is("fixed-frequency"));
 
 
+    final ComponentAst dbSchedulerFlowFixed = artifactAst.topLevelComponentsStream()
+        .filter(componentAst -> componentAst.getComponentId().map(id -> id.equals("dbSchedulerFlowFixed")).orElse(false))
+        .map(schedulerFlowFixed -> schedulerFlowFixed.directChildrenStream().findFirst().get())
+        .findFirst()
+        .get();
+
+    final ComponentParameterAst dbSchedulerFlowFixedSchStrategy = dbSchedulerFlowFixed.getParameter("schedulingStrategy");
+    assertThat(dbSchedulerFlowFixedSchStrategy, not(nullValue()));
+    assertThat(((ComponentAst) (dbSchedulerFlowFixedSchStrategy.getValue().getRight()))
+        .getIdentifier().getName(), is("fixed-frequency"));
+
+
     final ComponentAst dbSchedulerFlowCronSource = artifactAst.topLevelComponentsStream()
         .filter(componentAst -> componentAst.getComponentId().map(id -> id.equals("dbSchedulerFlowCron")).orElse(false))
         .map(schedulerFlowFixed -> schedulerFlowFixed.directChildrenStream().findFirst().get())
