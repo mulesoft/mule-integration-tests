@@ -26,7 +26,7 @@ import io.qameta.allure.Story;
 @Feature(RECONNECTION_POLICIES)
 @Story(RETRY_TEMPLATE)
 @RunnerDelegateTo(Parameterized.class)
-public class ReconnectionTestCase extends AbstractIntegrationTestCase { 
+public class ReconnectionTestCase extends AbstractIntegrationTestCase {
 
   private String flow;
 
