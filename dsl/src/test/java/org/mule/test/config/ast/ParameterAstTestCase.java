@@ -733,7 +733,7 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
 
   @Test
   @Issue("MULE-19331")
-  public void schedulingStrategyParameter() {
+  public void schedulingStrategyParameterSchedulerSource() {
     final ComponentAst schedulerFlowFixedSource = artifactAst.topLevelComponentsStream()
         .filter(componentAst -> componentAst.getComponentId().map(id -> id.equals("schedulerFlowFixed")).orElse(false))
         .map(schedulerFlowFixed -> schedulerFlowFixed.directChildrenStream().findFirst().get())
@@ -744,8 +744,11 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
     assertThat(schedulerFlowFixedSourceSchStrategy, not(nullValue()));
     assertThat(((ComponentAst) (schedulerFlowFixedSourceSchStrategy.getValue().getRight()))
         .getIdentifier().getName(), is("fixed-frequency"));
+  }
 
-
+  @Test
+  @Issue("MULE-19331")
+  public void fixedSchedulingStrategyParameterSdkPollingSource() {
     final ComponentAst dbSchedulerFlowFixed = artifactAst.topLevelComponentsStream()
         .filter(componentAst -> componentAst.getComponentId().map(id -> id.equals("dbSchedulerFlowFixed")).orElse(false))
         .map(schedulerFlowFixed -> schedulerFlowFixed.directChildrenStream().findFirst().get())
@@ -756,8 +759,11 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
     assertThat(dbSchedulerFlowFixedSchStrategy, not(nullValue()));
     assertThat(((ComponentAst) (dbSchedulerFlowFixedSchStrategy.getValue().getRight()))
         .getIdentifier().getName(), is("fixed-frequency"));
+  }
 
-
+  @Test
+  @Issue("MULE-19331")
+  public void cronSchedulingStrategyParameterSdkPollingSource() {
     final ComponentAst dbSchedulerFlowCronSource = artifactAst.topLevelComponentsStream()
         .filter(componentAst -> componentAst.getComponentId().map(id -> id.equals("dbSchedulerFlowCron")).orElse(false))
         .map(schedulerFlowFixed -> schedulerFlowFixed.directChildrenStream().findFirst().get())
