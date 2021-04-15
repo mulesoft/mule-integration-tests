@@ -29,7 +29,6 @@ import static org.mule.runtime.api.notification.MessageProcessorNotification.MES
 import static org.mule.runtime.api.notification.MessageProcessorNotification.MESSAGE_PROCESSOR_PRE_INVOKE;
 import static org.mule.runtime.core.api.error.Errors.CORE_NAMESPACE_NAME;
 import static org.mule.runtime.core.api.error.Errors.Identifiers.ROUTING_ERROR_IDENTIFIER;
-import static org.mule.runtime.http.api.HttpConstants.HttpStatus.OK;
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.SERVICE_UNAVAILABLE;
 import static org.mule.runtime.http.api.HttpConstants.Method.GET;
 import static org.mule.tck.probe.PollingProber.probe;
@@ -97,6 +96,9 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
 
   @Inject
   private Flow backpressureFlowRefOuterMaxConcurrency;
+
+  @Inject
+  private Flow referencedFlowWithMaxConcurrency;
 
   @Override
   protected String getConfigFile() {
@@ -352,18 +354,13 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
   @Test
   @Story(BACKPRESSURE)
   @Issue("MULE-19328")
-  public void backPressureMustNotBeTriggeredAfterFlowRestart() throws Exception {
-    HttpRequest request =
-        HttpRequest.builder()
-            .uri(format("http://localhost:%s/backpressureFlowRefMaxConcurrency?ref=backpressureFlowRefInner", port.getNumber()))
-            .method(GET)
-            .build();
-    sendAsyncs.add(httpClient.sendAsync(request, HttpRequestOptions.builder().responseTimeout(RECEIVE_TIMEOUT * 2).build()));
+  public void backpressureMustNotBeTriggeredAfterFlowRestart() throws Exception {
+    flowRunner("outerFlow").dispatchAsync(asyncFlowRunnerScheduler);
     probe(RECEIVE_TIMEOUT, 50, () -> awaiting.get() == 1);
-    backpressureFlowRefOuterMaxConcurrency.stop();
-    backpressureFlowRefOuterMaxConcurrency.start();
+    referencedFlowWithMaxConcurrency.stop();
+    referencedFlowWithMaxConcurrency.start();
     latch.countDown();
-    assertThat(httpClient.send(request).getStatusCode(), is(OK.getStatusCode()));
+    flowRunner("outerFlow").run();
   }
 
   @Test
