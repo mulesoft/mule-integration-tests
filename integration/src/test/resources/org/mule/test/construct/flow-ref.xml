@@ -262,7 +262,7 @@
         <set-payload value="holis"></set-payload>
     </flow>
 
-    <flow name="outerFlow">
+    <flow name="outerFlowWithMaxConcurrency">
         <flow-ref name="referencedFlowWithMaxConcurrency"/>
     </flow>
 

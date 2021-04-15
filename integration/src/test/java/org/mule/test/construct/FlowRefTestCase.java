@@ -95,9 +95,6 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
   private Scheduler asyncFlowRunnerScheduler;
 
   @Inject
-  private Flow backpressureFlowRefOuterMaxConcurrency;
-
-  @Inject
   private Flow referencedFlowWithMaxConcurrency;
 
   @Override
@@ -355,12 +352,12 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
   @Story(BACKPRESSURE)
   @Issue("MULE-19328")
   public void backpressureMustNotBeTriggeredAfterFlowRestart() throws Exception {
-    flowRunner("outerFlow").dispatchAsync(asyncFlowRunnerScheduler);
+    flowRunner("outerFlowWithMaxConcurrency").dispatchAsync(asyncFlowRunnerScheduler);
     probe(RECEIVE_TIMEOUT, 50, () -> awaiting.get() == 1);
     referencedFlowWithMaxConcurrency.stop();
     referencedFlowWithMaxConcurrency.start();
     latch.countDown();
-    flowRunner("outerFlow").run();
+    flowRunner("outerFlowWithMaxConcurrency").run();
   }
 
   @Test
