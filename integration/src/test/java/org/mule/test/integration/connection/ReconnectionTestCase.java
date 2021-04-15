@@ -6,6 +6,7 @@
  */
 package org.mule.test.integration.connection;
 
+import static java.util.Arrays.asList;
 import static org.mule.runtime.core.api.error.Errors.Identifiers.CONNECTIVITY_ERROR_IDENTIFIER;
 import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
 import static org.mule.test.allure.AllureConstants.ReconnectionPolicyFeature.RECONNECTION_POLICIES;
@@ -36,8 +37,8 @@ public class ReconnectionTestCase extends AbstractIntegrationTestCase {
 
   @Parameters(name = "flow: {0}")
   public static List<String> parameters() {
-    return Arrays.asList("reconnectionTest", "reconnectionWithDynamicConfigTest", "noReconnectionTest",
-                         "noReconnectionWithDynamicConfigTest");
+    return asList("reconnectionTest", "reconnectionWithDynamicConfigTest", "noReconnectionTest",
+                  "noReconnectionWithDynamicConfigTest");
   }
 
   @Override
