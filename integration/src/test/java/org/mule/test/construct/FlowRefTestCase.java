@@ -44,6 +44,7 @@ import org.mule.runtime.api.notification.MessageProcessorNotification;
 import org.mule.runtime.api.notification.MessageProcessorNotificationListener;
 import org.mule.runtime.api.scheduler.Scheduler;
 import org.mule.runtime.core.api.MuleContext;
+import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.http.api.HttpService;
 import org.mule.runtime.http.api.client.HttpRequestOptions;
@@ -72,6 +73,8 @@ import io.qameta.allure.Feature;
 import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
 
+import javax.inject.Inject;
+
 @Feature(CORE_COMPONENTS)
 @Story(FLOW_REFERENCE)
 public class FlowRefTestCase extends AbstractIntegrationTestCase {
@@ -90,6 +93,9 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
   public TestHttpClient httpClient = new TestHttpClient.Builder(getService(HttpService.class)).build();
 
   private Scheduler asyncFlowRunnerScheduler;
+
+  @Inject
+  private Flow referencedFlowWithMaxConcurrency;
 
   @Override
   protected String getConfigFile() {
@@ -340,6 +346,18 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
 
     probe(RECEIVE_TIMEOUT, 50, () -> awaiting.get() >= 1);
     assertThat(httpClient.send(request).getStatusCode(), is(SERVICE_UNAVAILABLE.getStatusCode()));
+  }
+
+  @Test
+  @Story(BACKPRESSURE)
+  @Issue("MULE-19328")
+  public void backpressureMustNotBeTriggeredAfterFlowRestart() throws Exception {
+    flowRunner("outerFlowWithMaxConcurrency").dispatchAsync(asyncFlowRunnerScheduler);
+    probe(RECEIVE_TIMEOUT, 50, () -> awaiting.get() == 1);
+    referencedFlowWithMaxConcurrency.stop();
+    referencedFlowWithMaxConcurrency.start();
+    latch.countDown();
+    flowRunner("outerFlowWithMaxConcurrency").run();
   }
 
   @Test
