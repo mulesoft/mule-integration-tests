@@ -31,6 +31,7 @@ import static org.mule.runtime.extension.api.ExtensionConstants.ERROR_MAPPINGS_P
 import static org.mule.runtime.extension.api.util.ExtensionMetadataTypeUtils.isMap;
 import static org.mule.test.allure.AllureConstants.ArtifactAst.ARTIFACT_AST;
 import static org.mule.test.allure.AllureConstants.ArtifactAst.ParameterAst.PARAMETER_AST;
+import static org.mule.test.allure.AllureConstants.SourcesFeature.SOURCES;
 
 import org.mule.extension.aggregator.internal.AggregatorsExtension;
 import org.mule.extension.db.internal.DbConnector;
@@ -732,6 +733,7 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
   }
 
   @Test
+  @Feature(SOURCES)
   @Issue("MULE-19331")
   public void schedulingStrategyParameterSchedulerSource() {
     final ComponentAst schedulerFlowFixedSource = artifactAst.topLevelComponentsStream()
@@ -747,6 +749,7 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
   }
 
   @Test
+  @Feature(SOURCES)
   @Issue("MULE-19331")
   public void fixedSchedulingStrategyParameterSdkPollingSource() {
     final ComponentAst dbSchedulerFlowFixed = artifactAst.topLevelComponentsStream()
@@ -762,6 +765,7 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
   }
 
   @Test
+  @Feature(SOURCES)
   @Issue("MULE-19331")
   public void cronSchedulingStrategyParameterSdkPollingSource() {
     final ComponentAst dbSchedulerFlowCronSource = artifactAst.topLevelComponentsStream()
