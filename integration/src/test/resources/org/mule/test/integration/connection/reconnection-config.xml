@@ -65,7 +65,7 @@
             config-ref="petstore-config-without-reconnection" />
     </flow>
 
-    <flow name=" noReconnectionWithDynamicConfigTest">
+    <flow name="noReconnectionWithDynamicConfigTest">
         <petstore:fail-connection
             config-ref="petstore-config-without-reconnection-with-dynamic-config" />
     </flow>
