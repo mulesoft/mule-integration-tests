@@ -79,6 +79,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import io.qameta.allure.Feature;
@@ -91,41 +92,48 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
 
   private static final String NAME = "name";
 
-  private ArtifactAst artifactAst;
+  private static List<ExtensionModel> runtimeExtensionModels;
+  private DefaultExtensionManager extensionManager;
 
-  @Before
-  public void before() throws Exception {
-    List<ExtensionModel> runtimeExtensionModels = new ArrayList<>();
+  @BeforeClass
+  public static void beforeClass() throws Exception {
+    runtimeExtensionModels = new ArrayList<>();
     Collection<RuntimeExtensionModelProvider> runtimeExtensionModelProviders = new SpiServiceRegistry()
         .lookupProviders(RuntimeExtensionModelProvider.class, currentThread().getContextClassLoader());
     for (RuntimeExtensionModelProvider runtimeExtensionModelProvider : runtimeExtensionModelProviders) {
       runtimeExtensionModels.add(runtimeExtensionModelProvider.createExtensionModel());
     }
+  }
 
-    DefaultExtensionManager extensionManager = new DefaultExtensionManager();
+  @Before
+  public void before() throws Exception {
+    extensionManager = new DefaultExtensionManager();
     muleContext.setExtensionManager(extensionManager);
     initialiseIfNeeded(extensionManager, muleContext);
+  }
 
+  protected ArtifactAst buildArtifactAst(final String configFile, final Class... extensions) {
     ExtensionsTestInfrastructureDiscoverer discoverer = new ExtensionsTestInfrastructureDiscoverer(extensionManager);
 
     DefaultJavaExtensionModelLoader extensionModelLoader = new DefaultJavaExtensionModelLoader();
-    for (Class<?> annotatedClass : new Class[] {HttpConnector.class, SocketsExtension.class, DbConnector.class,
-        HeisenbergExtension.class, SubTypesMappingConnector.class, VeganExtension.class, AggregatorsExtension.class,
-        OAuthExtension.class, PetStoreConnector.class}) {
+    for (Class<?> annotatedClass : extensions) {
       discoverer.discoverExtension(annotatedClass, extensionModelLoader);
     }
 
-    this.artifactAst = AstXmlParser.builder()
+    return AstXmlParser.builder()
         .withExtensionModels(muleContext.getExtensionManager().getExtensions())
         .withExtensionModels(runtimeExtensionModels)
         .withSchemaValidationsDisabled()
         .build()
-        .parse(this.getClass().getClassLoader().getResource("org/mule/test/config/ast/parameters-test-config.xml").toURI());
+        .parse(this.getClass().getClassLoader().getResource("org/mule/test/config/ast/" + configFile));
   }
 
   @Issue("MULE-18564")
   @Test
   public void oauthCredentialThroughProxyInlineDefinition() {
+    ArtifactAst artifactAst = buildArtifactAst("parameters-test-http-oauth-proxy-config.xml",
+                                               HttpConnector.class, SocketsExtension.class, OAuthExtension.class);
+
     ComponentAst httpRequestConfigWithOAuthProxyInline =
         findComponentByComponentId(artifactAst.topLevelComponentsStream(), "httpRequestConfigWithOAuthProxyInline")
             .orElseThrow(() -> new AssertionError("Couldn't find 'httpRequestConfigWithOAuthProxyInline'"));
@@ -158,7 +166,10 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
   }
 
   @Test
-  public void defaultComponentParameterAst() {
+  public void defaultComponentHttpParameterAst() {
+    ArtifactAst artifactAst = buildArtifactAst("parameters-test-http-oauth-proxy-config.xml",
+                                               HttpConnector.class, SocketsExtension.class, OAuthExtension.class);
+
     // Default flow parameters
     ComponentAst defaultParametersFlow =
         findComponent(artifactAst.topLevelComponentsStream(), FLOW_IDENTIFIER, "defaultParametersFlow")
@@ -199,6 +210,11 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
     assertThat(httpConnectionConfig.getParameter("host").getValue().getRight(), is("localhost"));
     assertThat(httpConnectionConfig.getParameter("usePersistentConnections").isDefaultValue(), is(true));
     assertThat(httpConnectionConfig.getParameter("usePersistentConnections").getValue().getRight(), is(true));
+  }
+
+  @Test
+  public void defaultComponentAggregatorsParameterAst() {
+    ArtifactAst artifactAst = buildArtifactAst("parameters-test-aggregators-config.xml", AggregatorsExtension.class);
 
     // Aggregator default parameters
     ComponentAst timeBasedAggregatorFlow =
@@ -250,6 +266,9 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
   @Test
   @Issue("MULE-18619")
   public void infrastructureParameters() {
+    ArtifactAst artifactAst = buildArtifactAst("parameters-test-http-oauth-proxy-config.xml",
+                                               HttpConnector.class, SocketsExtension.class, OAuthExtension.class);
+
     Optional<ComponentAst> clientGlobalConfig =
         findComponentByComponentId(artifactAst.topLevelComponentsStream(), "clientGlobalConfig");
     assertThat(clientGlobalConfig, not(empty()));
@@ -336,6 +355,9 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
   @Test
   @Issue("MULE-18602")
   public void nestedPojoOperationParameter() {
+    ArtifactAst artifactAst = buildArtifactAst("parameters-test-pojo-config.xml",
+                                               HeisenbergExtension.class, SubTypesMappingConnector.class, VeganExtension.class);
+
     Optional<ComponentAst> optionalFlowNestedPojo =
         findComponent(artifactAst.topLevelComponentsStream(), FLOW_IDENTIFIER, "nestedPojo");
     assertThat(optionalFlowNestedPojo, not(empty()));
@@ -358,6 +380,9 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
 
   @Test
   public void recursivePojoOperationParameter() {
+    ArtifactAst artifactAst = buildArtifactAst("parameters-test-pojo-config.xml",
+                                               HeisenbergExtension.class, SubTypesMappingConnector.class, VeganExtension.class);
+
     Optional<ComponentAst> optionalFlowRecursivePojo =
         findComponent(artifactAst.topLevelComponentsStream(), FLOW_IDENTIFIER, "recursivePojo");
     assertThat(optionalFlowRecursivePojo, not(empty()));
@@ -434,7 +459,10 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
 
   @Test
   public void mapListOfSimpleValueType() {
-    ComponentAst heisenbergConfig = getHeisenbergConfiguration();
+    ArtifactAst artifactAst = buildArtifactAst("parameters-test-pojo-config.xml",
+                                               HeisenbergExtension.class, SubTypesMappingConnector.class, VeganExtension.class);
+
+    ComponentAst heisenbergConfig = getHeisenbergConfiguration(artifactAst);
 
     ComponentParameterAst deathsBySeasonsParam = heisenbergConfig.getParameter("deathsBySeasons");
     assertThat(isMap(deathsBySeasonsParam.getModel().getType()), is(true));
@@ -460,7 +488,10 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
 
   @Test
   public void mapListOfComplexValueType() {
-    ComponentAst heisenbergConfig = getHeisenbergConfiguration();
+    ArtifactAst artifactAst = buildArtifactAst("parameters-test-pojo-config.xml",
+                                               HeisenbergExtension.class, SubTypesMappingConnector.class, VeganExtension.class);
+
+    ComponentAst heisenbergConfig = getHeisenbergConfiguration(artifactAst);
 
     ComponentParameterAst weaponValueMapsParam = heisenbergConfig.getParameter("weaponValueMap");
     assertThat(isMap(weaponValueMapsParam.getModel().getType()), is(true));
@@ -494,7 +525,10 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
 
   @Test
   public void mapSimpleValueType() {
-    ComponentAst heisenbergConfig = getHeisenbergConfiguration();
+    ArtifactAst artifactAst = buildArtifactAst("parameters-test-pojo-config.xml",
+                                               HeisenbergExtension.class, SubTypesMappingConnector.class, VeganExtension.class);
+
+    ComponentAst heisenbergConfig = getHeisenbergConfiguration(artifactAst);
 
     ComponentParameterAst recipesParam = heisenbergConfig.getParameter("recipe");
     assertThat(isMap(recipesParam.getModel().getType()), is(true));
@@ -512,7 +546,7 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
     assertThat(valueParameter.getValue().getRight(), is(Long.valueOf(75)));
   }
 
-  private ComponentAst getHeisenbergConfiguration() {
+  private ComponentAst getHeisenbergConfiguration(ArtifactAst artifactAst) {
     Optional<ComponentAst> optionalHeisenbergConfig =
         findComponent(artifactAst.topLevelComponentsStream(), "heisenberg:config", "heisenberg");
     assertThat(optionalHeisenbergConfig, not(empty()));
@@ -522,7 +556,10 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
 
   @Test
   public void listSimpleValueType() {
-    ComponentAst heisenbergConfig = getHeisenbergConfiguration();
+    ArtifactAst artifactAst = buildArtifactAst("parameters-test-pojo-config.xml",
+                                               HeisenbergExtension.class, SubTypesMappingConnector.class, VeganExtension.class);
+
+    ComponentAst heisenbergConfig = getHeisenbergConfiguration(artifactAst);
 
     ComponentParameterAst enemiesParam = heisenbergConfig.getParameter("enemies");
     List<ComponentAst> enemies = (List<ComponentAst>) enemiesParam.getValue().getRight();
@@ -535,6 +572,8 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
 
   @Test
   public void simpleParameters() {
+    ArtifactAst artifactAst = buildArtifactAst("parameters-test-config.xml", DbConnector.class, PetStoreConnector.class);
+
     Optional<ComponentAst> optionalFlowParameters =
         findComponent(artifactAst.topLevelComponentsStream(), FLOW_IDENTIFIER, "flowParameters");
     assertThat(optionalFlowParameters, not(empty()));
@@ -571,6 +610,8 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
 
   @Test
   public void wrappedElementSimpleMapType() {
+    ArtifactAst artifactAst = buildArtifactAst("parameters-test-config.xml", DbConnector.class, PetStoreConnector.class);
+
     Optional<ComponentAst> optionalDbConfig = findComponent(artifactAst.topLevelComponentsStream(), "db:config", "dbConfig");
     assertThat(optionalDbConfig, not(empty()));
     ComponentAst dbConfig = optionalDbConfig.get();
@@ -639,6 +680,9 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
 
   @Test
   public void wrappedElementArrayType() {
+    ArtifactAst artifactAst = buildArtifactAst("parameters-test-http-oauth-proxy-config.xml",
+                                               HttpConnector.class, SocketsExtension.class, OAuthExtension.class);
+
     Optional<ComponentAst> optionalHttpListenerConfig =
         findComponent(artifactAst.topLevelComponentsStream(), "http:listener-config", "HTTP_Listener_config");
     assertThat(optionalHttpListenerConfig, not(empty()));
@@ -709,6 +753,8 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
   @Test
   @Issue("MULE-19264")
   public void parameterGroupNameWithSpacesIsMatchedWithDslWhenItShowsInTheDsl() {
+    ArtifactAst artifactAst = buildArtifactAst("parameters-test-config.xml", DbConnector.class, PetStoreConnector.class);
+
     ComponentIdentifier PETSTORE_CONFIG_IDENTIFIER = builder().namespace("petstore").name("config").build();
 
     Optional<ComponentAst> optionalPetstoreConfigComponentAst = artifactAst.topLevelComponentsStream()
@@ -736,6 +782,8 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
   @Feature(SOURCES)
   @Issue("MULE-19331")
   public void schedulingStrategyParameterSchedulerSource() {
+    ArtifactAst artifactAst = buildArtifactAst("parameters-test-config.xml", DbConnector.class, PetStoreConnector.class);
+
     final ComponentAst schedulerFlowFixedSource = artifactAst.topLevelComponentsStream()
         .filter(componentAst -> componentAst.getComponentId().map(id -> id.equals("schedulerFlowFixed")).orElse(false))
         .map(schedulerFlowFixed -> schedulerFlowFixed.directChildrenStream().findFirst().get())
@@ -752,6 +800,8 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
   @Feature(SOURCES)
   @Issue("MULE-19331")
   public void fixedSchedulingStrategyParameterSdkPollingSource() {
+    ArtifactAst artifactAst = buildArtifactAst("parameters-test-config.xml", DbConnector.class, PetStoreConnector.class);
+
     final ComponentAst dbSchedulerFlowFixed = artifactAst.topLevelComponentsStream()
         .filter(componentAst -> componentAst.getComponentId().map(id -> id.equals("dbSchedulerFlowFixed")).orElse(false))
         .map(schedulerFlowFixed -> schedulerFlowFixed.directChildrenStream().findFirst().get())
@@ -768,6 +818,8 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
   @Feature(SOURCES)
   @Issue("MULE-19331")
   public void cronSchedulingStrategyParameterSdkPollingSource() {
+    ArtifactAst artifactAst = buildArtifactAst("parameters-test-config.xml", DbConnector.class, PetStoreConnector.class);
+
     final ComponentAst dbSchedulerFlowCronSource = artifactAst.topLevelComponentsStream()
         .filter(componentAst -> componentAst.getComponentId().map(id -> id.equals("dbSchedulerFlowCron")).orElse(false))
         .map(schedulerFlowFixed -> schedulerFlowFixed.directChildrenStream().findFirst().get())
@@ -778,6 +830,22 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
     assertThat(dbSchedulerFlowCronSchStrategy, not(nullValue()));
     assertThat(((ComponentAst) (dbSchedulerFlowCronSchStrategy.getValue().getRight()))
         .getIdentifier().getName(), is("cron"));
+  }
+
+  @Test
+  public void configPojoParameter() {
+    ArtifactAst artifactAst = buildArtifactAst("parameters-test-pojo-config.xml",
+                                               HeisenbergExtension.class, SubTypesMappingConnector.class, VeganExtension.class);
+
+    final ComponentAst appleConfig = artifactAst.topLevelComponentsStream()
+        .filter(componentAst -> componentAst.getComponentId().map(id -> id.equals("apple")).orElse(false))
+        .findFirst()
+        .get();
+
+    final ComponentParameterAst cookBookParam = appleConfig.getParameter("cookBook");
+    assertThat(cookBookParam, not(nullValue()));
+    assertThat(((ComponentAst) (cookBookParam.getValue().getRight()))
+        .getIdentifier().getName(), is("vegan-cook-book"));
   }
 
   private void assertParameters(ComponentAst container, String containerParameterName, String elementParameterName,
