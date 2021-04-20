@@ -6,7 +6,6 @@
  */
 package org.mule.test.components;
 
-import static org.hamcrest.Matchers.containsString;
 import org.mule.functional.junit4.ApplicationContextBuilder;
 import org.mule.tck.junit4.AbstractMuleTestCase;
 
@@ -21,7 +20,8 @@ public class ObjectConfigurationTestCase extends AbstractMuleTestCase {
 
   @Test
   public void objectMustContainRefOrClassAttribute() throws Exception {
-    expectedException.expectMessage(containsString("Object must contain 'ref' or 'class' parameter."));
+    expectedException.expectMessage("[org/mule/test/components/object-missing-ref-and-class-attributes-config.xml:5]:"
+        + " Element <General> requires that one of its optional parameters must be set, but all of them are missing. One of the following must be set: [ref, class].");
     new ApplicationContextBuilder()
         .setApplicationResources(new String[] {"org/mule/test/components/object-missing-ref-and-class-attributes-config.xml"})
         .build();
@@ -29,7 +29,8 @@ public class ObjectConfigurationTestCase extends AbstractMuleTestCase {
 
   @Test
   public void objectCannotContainBothRefAndClassAttribute() throws Exception {
-    expectedException.expectMessage(containsString("Object cannot contain both 'ref' and 'class' parameters."));
+    expectedException.expectMessage("[org/mule/test/components/object-ref-and-class-attributes-config.xml:6]: "
+        + "Element <object>, the following parameters cannot be set at the same time: [ref, class]");
     new ApplicationContextBuilder()
         .setApplicationResources(new String[] {"org/mule/test/components/object-ref-and-class-attributes-config.xml"})
         .build();
