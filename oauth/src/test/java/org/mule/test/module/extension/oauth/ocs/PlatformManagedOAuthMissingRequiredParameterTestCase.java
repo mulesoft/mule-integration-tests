@@ -12,6 +12,7 @@ import static org.mule.runtime.extension.internal.ocs.OCSConstants.OCS_CLIENT_SE
 import static org.mule.runtime.extension.internal.ocs.OCSConstants.OCS_ORG_ID;
 import static org.mule.runtime.extension.internal.ocs.OCSConstants.OCS_PLATFORM_AUTH_URL;
 import static org.mule.runtime.extension.internal.ocs.OCSConstants.OCS_SERVICE_URL;
+
 import org.mule.tck.junit4.rule.SystemProperty;
 
 import java.util.HashMap;
@@ -20,6 +21,7 @@ import java.util.Map;
 import org.junit.ClassRule;
 import org.junit.rules.ExpectedException;
 
+// This test checks the validation done on the data fetched from OCS, not on data provided in the DSL.
 public class PlatformManagedOAuthMissingRequiredParameterTestCase extends PlatformManagedOAuthNegativeTestCase {
 
   @ClassRule
