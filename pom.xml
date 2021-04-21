@@ -30,7 +30,7 @@
 
   <properties>
     <muleSchedulerServiceTestVersion>1.3.3-SNAPSHOT</muleSchedulerServiceTestVersion>
-    <muleHttpServiceTestVersion>1.5.11-SNAPSHOT</muleHttpServiceTestVersion>
+    <muleHttpServiceTestVersion>1.5.12-SNAPSHOT</muleHttpServiceTestVersion>
     <muleOAuthServiceTestVersion>2.0.1-SNAPSHOT</muleOAuthServiceTestVersion>
     <muleSoapServiceTestVersion>1.3.1-SNAPSHOT</muleSoapServiceTestVersion>
     <muleExtensionTestSoapTestVersion>1.3.1-SNAPSHOT</muleExtensionTestSoapTestVersion>
