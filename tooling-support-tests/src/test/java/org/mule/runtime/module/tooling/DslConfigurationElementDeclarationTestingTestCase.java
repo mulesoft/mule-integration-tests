@@ -14,7 +14,6 @@ import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.conn
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.app.declaration.api.fluent.ArtifactDeclarer;
 import org.mule.runtime.deployment.model.api.DeploymentInitException;
-import org.mule.runtime.module.extension.internal.runtime.exception.RequiredParameterNotSetException;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -38,7 +37,7 @@ public class DslConfigurationElementDeclarationTestingTestCase extends Declarati
   public void testConnectionMissingRequiredParameterOnConfiguration() {
     expectedException.expect(MuleRuntimeException.class);
     expectedException.expectCause(instanceOf(DeploymentInitException.class));
-    expectedException.expectMessage("Parameter 'not-acting-parameter' is required but was not found");
+    expectedException.expectMessage("[unknown:-1]: Element <tst:config> is missing required parameter 'notActingParameter'.");
     session.testConnection(CONFIG_MISSING_PARAMETERS_NAME);
   }
 

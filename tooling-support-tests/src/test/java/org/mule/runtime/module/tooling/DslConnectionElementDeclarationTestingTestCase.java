@@ -37,7 +37,7 @@ public class DslConnectionElementDeclarationTestingTestCase extends DeclarationS
   public void testConnectionMissingRequiredParameterOnConnectionProvider() {
     expectedException.expect(MuleRuntimeException.class);
     expectedException.expectCause(instanceOf(DeploymentInitException.class));
-    expectedException.expectMessage("Parameter 'acting-parameter' is required but was not found");
+    expectedException.expectMessage("[unknown:-1]: Element <tst:tst-connection> is missing required parameter 'actingParameter'");
     session.testConnection(CONFIG_CONNECTION_MISSING_REQUIRED_PARAM_NAME);
   }
 
