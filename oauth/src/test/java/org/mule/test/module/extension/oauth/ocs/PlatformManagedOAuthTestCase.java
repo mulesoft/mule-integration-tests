@@ -13,6 +13,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mule.runtime.extension.internal.ocs.OCSConstants.OCS_ENABLED;
 import static org.mule.runtime.oauth.api.state.DancerState.HAS_TOKEN;
+import static org.mule.test.allure.AllureConstants.OauthFeature.OCS_SUPPORT;
 
 import org.mule.runtime.api.el.MuleExpressionLanguage;
 import org.mule.runtime.api.lock.LockFactory;
@@ -40,6 +41,8 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.runners.Parameterized;
 
+import io.qameta.allure.Feature;
+
 /**
  * Base class for Test cases that use the Platform Managed OAuth connection features.
  * <p>
@@ -53,6 +56,7 @@ import org.junit.runners.Parameterized;
  * @since 4.3.0
  */
 
+@Feature(OCS_SUPPORT)
 @RunnerDelegateTo(Parameterized.class)
 public abstract class PlatformManagedOAuthTestCase extends BaseOAuthExtensionTestCase {
 
@@ -125,6 +129,7 @@ public abstract class PlatformManagedOAuthTestCase extends BaseOAuthExtensionTes
     return false;
   }
 
+  @Override
   @Before
   public void doSetUpBeforeMuleContextCreation() throws Exception {
     CompletableFuture<PlatformManagedConnectionDescriptor> connectionDescriptorCompletableFuture = mock(CompletableFuture.class);
