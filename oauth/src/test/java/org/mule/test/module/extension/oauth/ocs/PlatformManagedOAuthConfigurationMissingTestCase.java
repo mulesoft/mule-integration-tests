@@ -11,6 +11,8 @@ import static org.mule.functional.junit4.matchers.ThrowableMessageMatcher.hasMes
 import static org.mule.runtime.extension.internal.ocs.OCSConstants.OCS_CLIENT_ID;
 import static org.mule.runtime.extension.internal.ocs.OCSConstants.OCS_PLATFORM_AUTH_URL;
 import static org.mule.runtime.extension.internal.ocs.OCSConstants.OCS_SERVICE_URL;
+import static org.mule.test.allure.AllureConstants.OauthFeature.OCS_SUPPORT;
+import static org.mule.test.allure.AllureConstants.OauthFeature.OcsStory.OCS_CONNECTION_VALIDATION;
 
 import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.tck.junit4.rule.SystemProperty;
@@ -20,6 +22,11 @@ import org.junit.ClassRule;
 import org.junit.rules.ExpectedException;
 import org.junit.runners.Parameterized;
 
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
+
+@Feature(OCS_SUPPORT)
+@Story(OCS_CONNECTION_VALIDATION)
 @RunnerDelegateTo(Parameterized.class)
 public class PlatformManagedOAuthConfigurationMissingTestCase extends PlatformManagedOAuthNegativeTestCase {
 
