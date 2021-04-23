@@ -15,6 +15,7 @@
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
         <settingsFile>${java.io.tmpdir}/settings.xml</settingsFile>
         <testExtensionVersion>4.4.0-SNAPSHOT</testExtensionVersion>
+        <weave.service.location>services/weave</weave.service.location>
     </properties>
 
     <dependencies>
@@ -49,6 +50,12 @@
             <version>${testExtensionVersion}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.mule</groupId>
+            <artifactId>mule-maven-client-test</artifactId>
+            <version>${muleMavenClientTest}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -81,6 +88,30 @@
                         <settings.file>${settingsFile}</settings.file>
                     </systemPropertyVariables>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-agent-mule-LATEST</id>
+                        <phase>process-test-resources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.mule.services</groupId>
+                                    <artifactId>mule-service-weave</artifactId>
+                                    <version>${weaveVersion}</version>
+                                    <classifier>mule-service</classifier>
+                                    <outputDirectory>${project.build.directory}/${weave.service.location}</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
