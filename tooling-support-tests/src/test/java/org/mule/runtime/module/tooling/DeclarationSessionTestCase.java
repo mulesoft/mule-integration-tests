@@ -11,6 +11,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.mule.maven.client.test.MavenTestUtils.getMavenProperty;
 import static org.mule.runtime.app.declaration.api.fluent.ElementDeclarer.newArtifact;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.TEST_EXTENSION_DECLARER;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.configurationDeclaration;
@@ -27,11 +28,29 @@ import org.mule.runtime.module.tooling.api.artifact.DeclarationSession;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.infrastructure.deployment.AbstractFakeMuleServerTestCase;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+
 import org.junit.After;
 import org.junit.ClassRule;
 import org.junit.Rule;
 
 public abstract class DeclarationSessionTestCase extends AbstractFakeMuleServerTestCase {
+
+  private static final String WEAVE_SERVICE_LOCATION_PROPERTY = "weave.service.location";
+  private static final File WEAVE_SERVICE_LOCATION;
+
+  static {
+    try {
+      File targetFolder =
+          new File(DeclarationSessionTestCase.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile();
+      String weaveServiceLocation = getMavenProperty(WEAVE_SERVICE_LOCATION_PROPERTY, targetFolder::getParentFile);
+      WEAVE_SERVICE_LOCATION = new File(targetFolder, weaveServiceLocation);
+    } catch (URISyntaxException e) {
+      throw new RuntimeException("Could not find Weave Service Location", e);
+    }
+  }
 
   protected static final String EXTENSION_GROUP_ID = "org.mule.tooling";
   protected static final String EXTENSION_ARTIFACT_ID = "tooling-support-test-extension";
@@ -74,6 +93,11 @@ public abstract class DeclarationSessionTestCase extends AbstractFakeMuleServerT
         .setArtifactDeclaration(artifactDeclarer.getDeclaration())
         .build();
     this.muleServer.start();
+  }
+
+  @Override
+  protected File getExpressionLanguageService() throws IOException {
+    return WEAVE_SERVICE_LOCATION;
   }
 
   protected void declareArtifact(ArtifactDeclarer artifactDeclarer) {
