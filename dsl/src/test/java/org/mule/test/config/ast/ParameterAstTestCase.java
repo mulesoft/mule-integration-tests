@@ -848,6 +848,45 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
         .getIdentifier().getName(), is("vegan-cook-book"));
   }
 
+  @Test
+  @Issue("MULE-19379")
+  public void streamingStrategies() {
+    ArtifactAst artifactAst = buildArtifactAst("parameters-test-streaming-strategy.xml",
+                                               DbConnector.class, HttpConnector.class, SocketsExtension.class);
+
+    final ComponentAst bytesStreamingOperationsFlow = artifactAst.topLevelComponentsStream()
+        .filter(componentAst -> componentAst.getComponentId().map(id -> id.equals("bytesStreamingOperations")).orElse(false))
+        .findFirst()
+        .get();
+
+    final ComponentAst nonRepeatableStream = (ComponentAst) bytesStreamingOperationsFlow.directChildrenStream().findFirst().get()
+        .getParameter("streamingStrategy").getValue().getRight();
+    assertThat(nonRepeatableStream.getGenerationInformation().getSyntax().get().getElementName(), is("non-repeatable-stream"));
+
+    final ComponentAst repeatableInMemoryStream =
+        (ComponentAst) bytesStreamingOperationsFlow.directChildrenStream().skip(1).findFirst().get()
+            .getParameter("streamingStrategy").getValue().getRight();
+    assertThat(repeatableInMemoryStream.getGenerationInformation().getSyntax().get().getElementName(),
+               is("repeatable-in-memory-stream"));
+
+    final ComponentAst objectsStreamingOperations = artifactAst.topLevelComponentsStream()
+        .filter(componentAst -> componentAst.getComponentId().map(id -> id.equals("objectsStreamingOperations")).orElse(false))
+        .findFirst()
+        .get();
+
+    final ComponentAst nonRepeatableIterable = (ComponentAst) objectsStreamingOperations.directChildrenStream().findFirst().get()
+        .getParameter("streamingStrategy").getValue().getRight();
+    assertThat(nonRepeatableIterable.getGenerationInformation().getSyntax().get().getElementName(),
+               is("non-repeatable-iterable"));
+
+    final ComponentAst repeatableInMemoryIterable =
+        (ComponentAst) objectsStreamingOperations.directChildrenStream().skip(1).findFirst().get()
+            .getParameter("streamingStrategy").getValue().getRight();
+    assertThat(repeatableInMemoryIterable.getGenerationInformation().getSyntax().get().getElementName(),
+               is("repeatable-in-memory-iterable"));
+
+  }
+
   private void assertParameters(ComponentAst container, String containerParameterName, String elementParameterName,
                                 String... rightValues) {
     ComponentParameterAst containerParameter = container.getParameter(containerParameterName);

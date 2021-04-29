@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+        http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+        http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+
+    <db:config name="dbConfig">
+        <db:derby-connection create="true" database="target/muleEmbeddedDB"/>
+    </db:config>
+
+    <http:request-config name="httpConfig">
+        <http:request-connection protocol="HTTP" host="localhost" port="8081"/>
+    </http:request-config>
+
+    <flow name="bytesStreamingOperations">
+        <http:request config-ref="httpConfig" path="/" method="GET">
+            <non-repeatable-stream />
+        </http:request>
+        <http:request config-ref="httpConfig" path="/" method="GET">
+            <repeatable-in-memory-stream initialBufferSize="10" bufferSizeIncrement="5" maxBufferSize="50" bufferUnit="KB" />
+        </http:request>
+    </flow>
+    
+    <flow name="objectsStreamingOperations">
+        <db:select config-ref="dbConfig">
+            <db:sql>select * from some_table</db:sql>
+            <non-repeatable-iterable />
+        </db:select>
+        <db:select config-ref="dbConfig">
+            <db:sql>select * from some_table</db:sql>
+            <repeatable-in-memory-iterable maxBufferSize="20000" />
+        </db:select>
+    </flow>
+    
+</mule>
