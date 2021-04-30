@@ -11,8 +11,8 @@ import static org.junit.rules.ExpectedException.none;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.configurationDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.connectionDeclaration;
 
-import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.app.declaration.api.fluent.ArtifactDeclarer;
+import org.mule.runtime.core.api.config.ConfigurationException;
 import org.mule.runtime.deployment.model.api.DeploymentInitException;
 
 import org.junit.Rule;
@@ -35,8 +35,8 @@ public class DslConnectionElementDeclarationTestingTestCase extends DeclarationS
 
   @Test
   public void testConnectionMissingRequiredParameterOnConnectionProvider() {
-    expectedException.expect(MuleRuntimeException.class);
-    expectedException.expectCause(instanceOf(DeploymentInitException.class));
+    expectedException.expect(DeploymentInitException.class);
+    expectedException.expectCause(instanceOf(ConfigurationException.class));
     expectedException.expectMessage("[unknown:-1]: Element <tst:tst-connection> is missing required parameter 'actingParameter'");
     session.testConnection(CONFIG_CONNECTION_MISSING_REQUIRED_PARAM_NAME);
   }
