@@ -137,7 +137,7 @@ public class ComponentValueProviderTestCase extends DeclarationSessionTestCase {
   public void internalErrorFromProvider() {
     ComponentElementDeclaration elementDeclaration = actingParameterOPDeclaration(CONFIG_NAME, "");
     validateValuesFailure(session, elementDeclaration, INTERNAL_ERROR_PROVIDED_PARAMETER_NAME,
-                          "An error occurred trying to resolve the Values for parameter 'internalErrorProvidedParameter' of component 'actingParameterOP'. Cause: org.mule.tooling.extensions.metadata.internal.value.InternalErrorVP has thrown unexpected exception",
+                          "An error occurred trying to resolve the Values for parameter 'internalErrorProvidedParameter' of component 'actingParameterOP'. Cause: org.mule.tooling.extensions.metadata.internal.value.provider.extensions.InternalErrorVP has thrown unexpected exception",
                           UNKNOWN);
   }
 
