@@ -8,7 +8,6 @@ package org.mule.test.core.context.notification.processors;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
-import static java.util.Collections.emptyMap;
 import static java.util.Optional.empty;
 import static java.util.OptionalInt.of;
 import static org.hamcrest.Matchers.hasItems;
@@ -50,7 +49,6 @@ import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.api.notification.MessageProcessorNotification;
 import org.mule.runtime.ast.api.ArtifactAst;
 import org.mule.runtime.ast.api.xml.AstXmlParser;
-import org.mule.runtime.config.internal.model.ApplicationModel;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.runtime.core.api.config.builders.AbstractConfigurationBuilder;
@@ -303,11 +301,7 @@ public class ModuleComponentPathTestCase extends MuleArtifactFunctionalTestCase 
         .build();
 
     ArtifactAst toolingApplicationModel =
-        new ApplicationModel(xmlToAstParser.parse(getClass().getClassLoader().getResource(CONFIG_FILE_NAME.get()).toURI()),
-                             emptyMap(), empty(),
-                             uri -> {
-                               throw new UnsupportedOperationException();
-                             }, getFeatureFlaggingService());
+        xmlToAstParser.parse(getClass().getClassLoader().getResource(CONFIG_FILE_NAME.get()).toURI());
 
     List<String> componentLocations = new ArrayList<>();
     toolingApplicationModel.recursiveStream().forEach(componentModel -> {
