@@ -7,16 +7,16 @@
 package org.mule.test.extension.dsl;
 
 import static java.lang.String.format;
+import static java.lang.System.getProperty;
 import static java.lang.System.lineSeparator;
 import static java.lang.Thread.currentThread;
-import static java.util.Collections.emptyMap;
-import static java.util.Optional.empty;
 import static org.custommonkey.xmlunit.XMLUnit.setIgnoreAttributeOrder;
 import static org.custommonkey.xmlunit.XMLUnit.setIgnoreComments;
 import static org.custommonkey.xmlunit.XMLUnit.setIgnoreWhitespace;
 import static org.custommonkey.xmlunit.XMLUnit.setNormalizeWhitespace;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.fail;
 import static org.mule.runtime.api.component.ComponentIdentifier.builder;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -28,16 +28,18 @@ import org.mule.runtime.api.meta.NamedObject;
 import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.api.meta.model.parameter.ParameterizedModel;
 import org.mule.runtime.app.declaration.api.ElementDeclaration;
+import org.mule.runtime.ast.api.ArtifactAst;
 import org.mule.runtime.ast.api.ComponentAst;
 import org.mule.runtime.ast.api.xml.AstXmlParser;
 import org.mule.runtime.config.api.dsl.model.DslElementModel;
 import org.mule.runtime.config.api.dsl.model.DslElementModelFactory;
-import org.mule.runtime.config.internal.model.ApplicationModel;
 import org.mule.runtime.core.api.extension.MuleExtensionModelProvider;
 import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
 
 import java.io.StringWriter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -81,11 +83,12 @@ public abstract class AbstractElementModelTestCase extends MuleArtifactFunctiona
   protected static final int REQUESTER_PATH = 2;
   protected static final int DB_INSERT_PATH = 3;
 
+  private final Map<String, ComponentAst> namedTopLevelComponentModels = new HashMap<>();
   private Set<ExtensionModel> extensions;
   protected DslResolvingContext dslContext;
   protected DslElementModelFactory modelResolver;
   private AstXmlParser xmlToAstParser;
-  protected ApplicationModel applicationModel;
+  protected ArtifactAst applicationModel;
   protected Document doc;
 
   @Before
@@ -120,10 +123,10 @@ public abstract class AbstractElementModelTestCase extends MuleArtifactFunctiona
     return elementModel.get();
   }
 
-  protected ComponentAst getAppElement(ApplicationModel applicationModel, String name) {
-    Optional<ComponentAst> component = applicationModel.findTopLevelNamedComponent(name);
-    assertThat(component.isPresent(), is(true));
-    return component.get();
+  protected ComponentAst getAppElement(ArtifactAst applicationModel, String name) {
+    ComponentAst component = namedTopLevelComponentModels.get(name);
+    assertThat(component, notNullValue());
+    return component;
   }
 
   protected <T> DslElementModel<T> getChild(DslElementModel<? extends NamedObject> parent, ComponentAst component) {
@@ -176,15 +179,29 @@ public abstract class AbstractElementModelTestCase extends MuleArtifactFunctiona
   }
 
   // Scaffolding
-  protected ApplicationModel loadApplicationModel() throws Exception {
+  protected ArtifactAst loadApplicationModel() throws Exception {
     return loadApplicationModel(getConfigFile());
   }
 
-  protected ApplicationModel loadApplicationModel(String configFile) throws Exception {
-    return new ApplicationModel(xmlToAstParser.parse(currentThread().getContextClassLoader().getResource(configFile).toURI()),
-                                emptyMap(), empty(),
-                                uri -> muleContext.getExecutionClassLoader().getResourceAsStream(uri),
-                                getFeatureFlaggingService());
+  protected ArtifactAst loadApplicationModel(String configFile) throws Exception {
+    final ArtifactAst applicationModel =
+        xmlToAstParser.parse(currentThread().getContextClassLoader().getResource(configFile).toURI());
+    // just being able to resolve system properties is ok for this test
+    applicationModel.updatePropertiesResolver(param -> {
+      if (param.startsWith("${") && param.endsWith("}")) {
+        return getProperty(param.substring(2, param.length() - 1), param);
+      } else {
+        return param;
+      }
+    });
+    indexComponentModels(applicationModel);
+    return applicationModel;
+  }
+
+  private void indexComponentModels(ArtifactAst originalAst) {
+    originalAst.topLevelComponentsStream()
+        .forEach(componentModel -> componentModel.getComponentId()
+            .ifPresent(name -> namedTopLevelComponentModels.put(name, componentModel)));
   }
 
   protected String write() throws Exception {
