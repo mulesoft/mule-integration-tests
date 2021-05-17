@@ -8,14 +8,12 @@ package org.mule.test.integration.schedule;
 
 import static java.util.Arrays.asList;
 import static org.mule.runtime.api.component.location.Location.builder;
-import static org.mule.runtime.config.api.SpringXmlConfigurationBuilderFactory.createConfigurationBuilder;
 import static org.mule.test.allure.AllureConstants.LazyInitializationFeature.LAZY_INITIALIZATION;
 import static org.mule.test.allure.AllureConstants.MuleDsl.DslValidationStory.DSL_VALIDATION_STORY;
 import static org.mule.test.allure.AllureConstants.SchedulerFeature.SCHEDULER;
 
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.config.api.LazyComponentInitializer;
-import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.test.runner.RunnerDelegateTo;
 
 import java.util.Collection;
@@ -56,8 +54,8 @@ public class SchedulerConfigurationFailuresLazyInitTestCase extends MuleArtifact
   }
 
   @Override
-  protected String[] getConfigFiles() {
-    return new String[] {"org/mule/test/integration/invalid/" + configFile};
+  protected String getConfigFile() {
+    return "org/mule/test/integration/invalid/" + configFile;
   }
 
   @Override
@@ -66,10 +64,8 @@ public class SchedulerConfigurationFailuresLazyInitTestCase extends MuleArtifact
   }
 
   @Override
-  protected ConfigurationBuilder getBuilder() throws Exception {
-    final ConfigurationBuilder configurationBuilder = createConfigurationBuilder(getConfigFiles(), true);
-    configureSpringXmlConfigurationBuilder(configurationBuilder);
-    return configurationBuilder;
+  public boolean disableXmlValidations() {
+    return true;
   }
 
   @Test

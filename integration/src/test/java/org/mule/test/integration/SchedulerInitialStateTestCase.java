@@ -16,7 +16,6 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.deployment.management.ComponentInitialStateManager.SERVICE_ID;
-import static org.mule.runtime.config.api.SpringXmlConfigurationBuilderFactory.createConfigurationBuilder;
 import static org.mule.test.allure.AllureConstants.SchedulerServiceFeature.SCHEDULER_SERVICE;
 import static org.mule.test.allure.AllureConstants.SchedulerServiceFeature.SchedulerServiceStory.SOURCE_MANAGEMENT;
 
@@ -75,11 +74,13 @@ public class SchedulerInitialStateTestCase extends AbstractIntegrationTestCase {
     return "org/mule/test/integration/scheduler-initial-state-management-config.xml";
   }
 
+  public boolean isLazyInitEnabled() {
+    return lazyInitEnabled;
+  }
+
   @Override
-  protected ConfigurationBuilder getBuilder() throws Exception {
-    final ConfigurationBuilder configurationBuilder = createConfigurationBuilder(getConfigFile(), lazyInitEnabled);
-    configureSpringXmlConfigurationBuilder(configurationBuilder);
-    return configurationBuilder;
+  public boolean disableXmlValidations() {
+    return lazyInitEnabled;
   }
 
   @Override

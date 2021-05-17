@@ -10,12 +10,10 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.component.ComponentIdentifier.buildFromStringRepresentation;
 import static org.mule.runtime.api.component.location.Location.builderFromStringRepresentation;
-import static org.mule.runtime.config.api.SpringXmlConfigurationBuilderFactory.createConfigurationBuilder;
 import static org.mule.test.allure.AllureConstants.LazyInitializationFeature.LAZY_INITIALIZATION;
 import static org.mule.test.allure.AllureConstants.XmlSdk.XML_SDK;
 
 import org.mule.runtime.config.api.LazyComponentInitializer;
-import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.test.IntegrationTestCaseRunnerConfig;
 import org.mule.test.functional.AbstractXmlExtensionMuleArtifactFunctionalTestCase;
 
@@ -46,14 +44,12 @@ public class LazySmartConnectorErrorTypeRepository extends AbstractXmlExtensionM
   }
 
   @Override
-  protected ConfigurationBuilder getBuilder() throws Exception {
-    final ConfigurationBuilder configurationBuilder = createConfigurationBuilder(getConfigFile(), true);
-    configureSpringXmlConfigurationBuilder(configurationBuilder);
-    return configurationBuilder;
+  public boolean enableLazyInit() {
+    return true;
   }
 
   @Override
-  public boolean enableLazyInit() {
+  public boolean disableXmlValidations() {
     return true;
   }
 
