@@ -2,11 +2,13 @@
 <mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:http="http://www.mulesoft.org/schema/mule/http"
       xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xmlns:petstore="http://www.mulesoft.org/schema/mule/petstore"
       xmlns="http://www.mulesoft.org/schema/mule/core"
       xsi:schemaLocation="
                http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
                http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
-               http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+               http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
+               http://www.mulesoft.org/schema/mule/petstore http://www.mulesoft.org/schema/mule/petstore/current/mule-petstore.xsd">
 
     <object name="threadCaptor" class="org.mule.test.routing.ThreadCaptor"/>
 
@@ -267,6 +269,39 @@
         <set-payload value="#[['apple', 'banana', 'orange']]"/>
         <parallel-foreach>
             <http:request config-ref="httpRequestConfig" path="/test"/>
+        </parallel-foreach>
+    </flow>
+
+    <heisenberg:config>
+<!--     <heisenberg:config name="heisenberg" cancer="true" money="1000000" finalHealth="CANCER"> -->
+<!--         <heisenberg:enemies> -->
+<!--             <heisenberg:enemy value="Gustavo Fring" /> -->
+<!--             <heisenberg:enemy value="Hank" /> -->
+<!--         </heisenberg:enemies> -->
+<!--         <heisenberg:monthly-incomes> -->
+<!--             <heisenberg:monthly-income value="12000" /> -->
+<!--             <heisenberg:monthly-income value="500" /> -->
+<!--         </heisenberg:monthly-incomes> -->
+<!--         <heisenberg:known-addresses> -->
+<!--             <heisenberg:known-address value="one address" /> -->
+<!--         </heisenberg:known-addresses> -->
+    </heisenberg:config>
+<!--     <petstore:config name="customPoolingPoolable" cashierName="jim"> -->
+<!--         <petstore:pooled-connection username="john" password="doe"> -->
+<!--             <pooling-profile initialisationPolicy="INITIALISE_ALL" maxActive="2" exhaustedAction="WHEN_EXHAUSTED_WAIT" maxWait="10000000" minEvictionMillis="-1" maxIdle="10"/> -->
+<!--         </petstore:pooled-connection> -->
+<!--         <petstore:pets> -->
+<!--             <petstore:pet value="Lassie" /> -->
+<!--             <petstore:pet value="Sapo Pepe" /> -->
+<!--             <petstore:pet value="My mother's parrot" /> -->
+<!--         </petstore:pets> -->
+<!--     </petstore:config> -->
+
+    <flow name="parallelForEachWithPooledConnection">
+        <set-payload value="#[1 to 500]"/>
+<!--         <set-payload value="#[['apple', 'banana', 'orange']]"/> -->
+        <parallel-foreach>
+            <heisenberg:call-saul config-ref="customPoolingPoolable"/>
         </parallel-foreach>
     </flow>
 

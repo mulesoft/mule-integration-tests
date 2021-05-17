@@ -227,4 +227,11 @@ public class ParallelForEachTestCase extends AbstractIntegrationTestCase {
     flowRunner("parallelForEachWithSdkOperation").run();
   }
 
+  @Test
+  // @Issue("MULE-18227")
+  // @Description("Check that parallel execution routes do not cause race conditions when handling SdkInternalContext")
+  public void parallelForEachWithPooledConnection() throws Exception {
+    flowRunner("parallelForEachWithPooledConnection").run();
+  }
+
 }
