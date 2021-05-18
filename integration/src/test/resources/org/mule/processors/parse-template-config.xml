@@ -73,12 +73,6 @@
         </parse-template>
     </flow>
 
-    <flow name="with-wrong-target-value" initialState="stopped">
-        <parse-template target="targetVar" targetValue="not_an_expression">
-            <content>#['This template has a DW expression to parse from ' ++ vars.flowName ++ ' flow. Remember, the name of the flow is $(vars.flowName)']</content>
-        </parse-template>
-    </flow>
-
     <flow name="with-message-binding-target-value" initialState="stopped">
         <parse-template target="targetVar" targetValue="#[message]">
             <content>#['This template has a DW expression to parse from ' ++ vars.flowName ++ ' flow. Remember, the name of the flow is $(vars.flowName)']</content>
