@@ -15,7 +15,6 @@ import static org.junit.Assert.assertThat;
 import static org.junit.rules.ExpectedException.none;
 import static org.mule.runtime.api.component.location.Location.builder;
 import static org.mule.runtime.config.api.LazyComponentInitializer.LAZY_COMPONENT_INITIALIZER_SERVICE_KEY;
-import static org.mule.runtime.config.api.SpringXmlConfigurationBuilderFactory.createConfigurationBuilder;
 import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentLocatorStory.SEARCH_CONFIGURATION;
@@ -28,7 +27,6 @@ import org.mule.runtime.api.exception.ErrorTypeRepository;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.message.ErrorType;
 import org.mule.runtime.config.api.LazyComponentInitializer;
-import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.util.Optional;
@@ -61,8 +59,8 @@ public class ErrorHandlerLazyInitTestCase extends AbstractIntegrationTestCase {
   public ExpectedException expectedException = none();
 
   @Override
-  protected String[] getConfigFiles() {
-    return new String[] {"org/mule/test/integration/locator/component-locator-error-mapping.xml"};
+  protected String getConfigFile() {
+    return "org/mule/test/integration/locator/component-locator-error-mapping.xml";
   }
 
   @Override
@@ -71,10 +69,8 @@ public class ErrorHandlerLazyInitTestCase extends AbstractIntegrationTestCase {
   }
 
   @Override
-  protected ConfigurationBuilder getBuilder() throws Exception {
-    final ConfigurationBuilder configurationBuilder = createConfigurationBuilder(getConfigFiles(), true);
-    configureSpringXmlConfigurationBuilder(configurationBuilder);
-    return configurationBuilder;
+  public boolean disableXmlValidations() {
+    return true;
   }
 
   @Test

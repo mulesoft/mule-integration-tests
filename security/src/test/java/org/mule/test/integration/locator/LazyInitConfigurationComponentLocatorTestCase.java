@@ -15,7 +15,6 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.component.location.Location.builderFromStringRepresentation;
-import static org.mule.runtime.config.api.SpringXmlConfigurationBuilderFactory.createConfigurationBuilder;
 import static org.mule.runtime.core.api.config.MuleProperties.OBJECT_SECURITY_MANAGER;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentLocatorStory.SEARCH_CONFIGURATION;
@@ -26,7 +25,6 @@ import org.mule.runtime.api.artifact.Registry;
 import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.api.component.location.Location;
 import org.mule.runtime.config.api.LazyComponentInitializer;
-import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.runtime.core.api.security.SecurityManager;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.IntegrationTestCaseRunnerConfig;
@@ -58,8 +56,8 @@ public class LazyInitConfigurationComponentLocatorTestCase extends MuleArtifactF
   private LazyComponentInitializer lazyComponentInitializer;
 
   @Override
-  protected String[] getConfigFiles() {
-    return new String[] {"org/mule/test/integration/locator/component-locator-spring-config.xml"};
+  protected String getConfigFile() {
+    return "org/mule/test/integration/locator/component-locator-spring-config.xml";
   }
 
   @Override
@@ -68,10 +66,8 @@ public class LazyInitConfigurationComponentLocatorTestCase extends MuleArtifactF
   }
 
   @Override
-  protected ConfigurationBuilder getBuilder() throws Exception {
-    final ConfigurationBuilder configurationBuilder = createConfigurationBuilder(getConfigFiles(), true);
-    configureSpringXmlConfigurationBuilder(configurationBuilder);
-    return configurationBuilder;
+  public boolean disableXmlValidations() {
+    return true;
   }
 
   @Description("Lazy init should not create components until an operation is done")

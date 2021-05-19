@@ -16,7 +16,6 @@ import static org.hamcrest.core.IsCollectionContaining.hasItem;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.component.location.Location.builder;
 import static org.mule.runtime.api.component.location.Location.builderFromStringRepresentation;
-import static org.mule.runtime.config.api.SpringXmlConfigurationBuilderFactory.createConfigurationBuilder;
 import static org.mule.runtime.core.api.config.MuleProperties.OBJECT_MULE_CONFIGURATION;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentLocatorStory.SEARCH_CONFIGURATION;
@@ -27,7 +26,6 @@ import org.mule.runtime.api.component.Component;
 import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.api.component.location.Location;
 import org.mule.runtime.config.api.LazyComponentInitializer;
-import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -86,10 +84,8 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
   }
 
   @Override
-  protected ConfigurationBuilder getBuilder() throws Exception {
-    final ConfigurationBuilder configurationBuilder = createConfigurationBuilder(getConfigFiles(), true);
-    configureSpringXmlConfigurationBuilder(configurationBuilder);
-    return configurationBuilder;
+  public boolean disableXmlValidations() {
+    return true;
   }
 
   @Description("Lazy init should not create components until an operation is done")

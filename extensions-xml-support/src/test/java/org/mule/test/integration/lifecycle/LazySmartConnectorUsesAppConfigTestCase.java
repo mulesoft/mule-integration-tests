@@ -9,14 +9,12 @@ package org.mule.test.integration.lifecycle;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mule.runtime.api.connectivity.ConnectivityTestingService.CONNECTIVITY_TESTING_SERVICE_KEY;
-import static org.mule.runtime.config.api.SpringXmlConfigurationBuilderFactory.createConfigurationBuilder;
 import static org.mule.test.allure.AllureConstants.XmlSdk.XML_SDK;
 
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.api.component.location.Location;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.api.connectivity.ConnectivityTestingService;
-import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.test.IntegrationTestCaseRunnerConfig;
 
 import javax.inject.Inject;
@@ -40,14 +38,12 @@ public class LazySmartConnectorUsesAppConfigTestCase extends MuleArtifactFunctio
   }
 
   @Override
-  protected ConfigurationBuilder getBuilder() throws Exception {
-    final ConfigurationBuilder configurationBuilder = createConfigurationBuilder(getConfigFile(), true);
-    configureSpringXmlConfigurationBuilder(configurationBuilder);
-    return configurationBuilder;
+  public boolean enableLazyInit() {
+    return true;
   }
 
   @Override
-  public boolean enableLazyInit() {
+  public boolean disableXmlValidations() {
     return true;
   }
 

@@ -10,14 +10,12 @@ import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.component.location.Location.builderFromStringRepresentation;
-import static org.mule.runtime.config.api.SpringXmlConfigurationBuilderFactory.createConfigurationBuilder;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentLocatorStory.SEARCH_CONFIGURATION;
 import static org.mule.test.allure.AllureConstants.LazyInitializationFeature.LAZY_INITIALIZATION;
 
 import org.mule.functional.api.component.LifecycleTrackerConfig;
 import org.mule.runtime.config.api.LazyComponentInitializer;
-import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.util.Optional;
@@ -40,9 +38,8 @@ public class LazyInitConfigurationLifecycleTestCase extends AbstractIntegrationT
   private LazyComponentInitializer lazyComponentInitializer;
 
   @Override
-  protected String[] getConfigFiles() {
-    return new String[] {
-        "org/mule/test/integration/locator/component-lifecycle-config.xml"};
+  protected String getConfigFile() {
+    return "org/mule/test/integration/locator/component-lifecycle-config.xml";
   }
 
   @Override
@@ -51,10 +48,8 @@ public class LazyInitConfigurationLifecycleTestCase extends AbstractIntegrationT
   }
 
   @Override
-  protected ConfigurationBuilder getBuilder() throws Exception {
-    final ConfigurationBuilder configurationBuilder = createConfigurationBuilder(getConfigFiles(), true);
-    configureSpringXmlConfigurationBuilder(configurationBuilder);
-    return configurationBuilder;
+  public boolean disableXmlValidations() {
+    return true;
   }
 
   @Test
