@@ -16,7 +16,6 @@ import static org.mule.test.allure.AllureConstants.DeploymentConfiguration.Featu
 import static org.mule.test.petstore.extension.PetStoreFeatures.LEGACY_FEATURE;
 import static org.mule.test.petstore.extension.PetStoreOperations.operationExecutionCounter;
 
-import java.util.List;
 import java.util.function.Consumer;
 
 import io.qameta.allure.Feature;
@@ -26,10 +25,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
 
-import org.mule.runtime.api.config.custom.ServiceConfigurator;
+
 import org.mule.runtime.api.meta.MuleVersion;
-import org.mule.runtime.core.api.MuleContext;
-import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.runtime.core.api.config.DefaultMuleConfiguration;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.tck.junit4.rule.SystemProperty;
@@ -114,22 +111,12 @@ public class FeatureFlaggedApplicationTestCase extends AbstractIntegrationTestCa
   }
 
   @Override
-  protected void addBuilders(List<ConfigurationBuilder> builders) {
-    builders.add(new ConfigurationBuilder() {
-
-      @Override
-      public void addServiceConfigurator(ServiceConfigurator serviceConfigurator) {
-
-      }
-
-      @Override
-      public void configure(MuleContext muleContext) {
-        if (minMuleVersion != null) {
-          ((DefaultMuleConfiguration) muleContext.getConfiguration()).setMinMuleVersion(new MuleVersion(minMuleVersion));
-        }
-      }
-    });
-    super.addBuilders(builders);
+  protected DefaultMuleConfiguration createMuleConfiguration() {
+    DefaultMuleConfiguration muleConfiguration = super.createMuleConfiguration();
+    if (minMuleVersion != null) {
+      muleConfiguration.setMinMuleVersion(new MuleVersion(minMuleVersion));
+    }
+    return muleConfiguration;
   }
 
   private static Consumer<CoreEvent> assertEcho(boolean isLegacy) {
