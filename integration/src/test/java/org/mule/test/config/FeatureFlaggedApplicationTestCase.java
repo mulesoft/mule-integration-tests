@@ -25,7 +25,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
 
-
 import org.mule.runtime.api.meta.MuleVersion;
 import org.mule.runtime.core.api.config.DefaultMuleConfiguration;
 import org.mule.runtime.core.api.event.CoreEvent;
