@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:crafted-localisation-properties="http://www.mulesoft.org/schema/mule/crafted-localisation-properties"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+               http://www.mulesoft.org/schema/mule/crafted-localisation-properties http://www.mulesoft.org/schema/mule/crafted-localisation-properties/current/mule-crafted-localisation-properties.xsd">
+
+    <crafted-localisation-properties:localisation-configuration-properties-config name="config" file="properties/language.yaml">
+    </crafted-localisation-properties:localisation-configuration-properties-config>
+
+    <global-property name="key1" value="${locale::25837889.4535}"/>
+
+</mule>
