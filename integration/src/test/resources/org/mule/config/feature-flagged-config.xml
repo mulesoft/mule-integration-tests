@@ -19,8 +19,4 @@
         <petstore:is-splitter-exception-handled />
     </flow>
 
-    <flow name="splitter-exception_2">
-        <petstore:is-splitter-exception-handled />
-    </flow>
-
 </mule>
