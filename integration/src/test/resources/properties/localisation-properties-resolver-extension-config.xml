@@ -6,6 +6,7 @@
                http://www.mulesoft.org/schema/mule/crafted-localisation-properties http://www.mulesoft.org/schema/mule/crafted-localisation-properties/current/mule-crafted-localisation-properties.xsd">
 
     <crafted-localisation-properties:localisation-configuration-properties-config name="config" file="properties/language.yaml">
+        <crafted-localisation-properties:language locale="pt_PT"/>
     </crafted-localisation-properties:localisation-configuration-properties-config>
 
     <global-property name="key1" value="${locale::25837889.4535}"/>
