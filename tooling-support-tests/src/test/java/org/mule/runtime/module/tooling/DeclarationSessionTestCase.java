@@ -17,6 +17,8 @@ import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.TEST
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.configurationDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.connectionDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.failingConnectionDeclaration;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.failingOnInitConnectionDeclaration;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.failingOnStartConnectionDeclaration;
 import static org.mule.test.infrastructure.maven.MavenTestUtils.getMavenLocalRepository;
 import org.mule.runtime.api.value.ResolvingFailure;
 import org.mule.runtime.api.value.ValueResult;
@@ -104,7 +106,6 @@ public abstract class DeclarationSessionTestCase extends AbstractFakeMuleServerT
     artifactDeclarer.withGlobalElement(configurationDeclaration(CONFIG_NAME, connectionDeclaration(CLIENT_NAME)));
     artifactDeclarer.withGlobalElement(configurationDeclaration(CONFIG_FAILING_CONNECTION_PROVIDER,
                                                                 failingConnectionDeclaration()));
-
   }
 
   @After
