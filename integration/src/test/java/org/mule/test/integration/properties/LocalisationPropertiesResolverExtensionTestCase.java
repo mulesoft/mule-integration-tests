@@ -6,7 +6,7 @@
  */
 package org.mule.test.integration.properties;
 
-import static java.util.Arrays.asList;
+import static java.lang.Double.parseDouble;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.test.allure.AllureConstants.ConfigurationProperties.CONFIGURATION_PROPERTIES;
@@ -14,37 +14,30 @@ import static org.mule.test.allure.AllureConstants.ConfigurationProperties.Compo
 
 import org.mule.runtime.api.component.ConfigurationProperties;
 import org.mule.test.AbstractIntegrationTestCase;
-import org.mule.test.runner.RunnerDelegateTo;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.Collection;
 import java.util.Locale;
 
 import javax.inject.Inject;
 
+import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
 import org.junit.Test;
-import org.junit.runners.Parameterized;
 
 @Feature(CONFIGURATION_PROPERTIES)
 @Story(CONFIGURATION_PROPERTIES_RESOLVER_STORY)
-@RunnerDelegateTo(Parameterized.class)
 public class LocalisationPropertiesResolverExtensionTestCase extends AbstractIntegrationTestCase {
-
-  @Parameterized.Parameters(name = "{0}")
-  public static Collection<String> configs() {
-    return asList("properties/localisation-properties-resolver-extension-config.xml");
-  }
 
   @Inject
   private ConfigurationProperties configurationProperties;
 
   private final String configFile;
 
-  public LocalisationPropertiesResolverExtensionTestCase(String configFile) {
-    this.configFile = configFile;
+  public LocalisationPropertiesResolverExtensionTestCase() {
+    this.configFile = "properties/localisation-properties-resolver-extension-config.xml";
   }
 
   @Override
@@ -53,12 +46,15 @@ public class LocalisationPropertiesResolverExtensionTestCase extends AbstractInt
   }
 
   @Test
+  @Issue("MULE-19428")
+  @Description("Verifies that given a locale and a pattern, a certain number can be formatted correctly using a properties resolver extension")
   public void propertiesAreResolvedCorrectlyAndNumberIsFormattedAccordingToLocale() {
-    NumberFormat nf = NumberFormat.getInstance(new Locale("pt", "PT"));
-    DecimalFormat formatter = (DecimalFormat) nf;
+    // The locale is given because DecimalFormat requires one to match the pattern with the desired region.
+    // If a locale is not specified, DecimalFormat formats the number according to the english way
+    DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(new Locale("pt", "PT"));
+    // The pattern is given to imitate the annotated issue as much as possible
     formatter.applyPattern("#,##0.00");
-    String expectedResult = formatter.format(Double.parseDouble("25837889.4535"));
-    assertThat(configurationProperties.resolveStringProperty("key1").get(), is(expectedResult));
+    assertThat(configurationProperties.resolveStringProperty("key1").get(), is(formatter.format(parseDouble("25837889.4535"))));
   }
 }
 
