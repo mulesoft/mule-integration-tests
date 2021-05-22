@@ -13,10 +13,10 @@ import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.config.MuleRuntimeFeature.HANDLE_SPLITTER_EXCEPTION;
 import static org.mule.test.allure.AllureConstants.DeploymentConfiguration.DEPLOYMENT_CONFIGURATION;
 import static org.mule.test.allure.AllureConstants.DeploymentConfiguration.FeatureFlaggingStory.FEATURE_FLAGGING;
-import static org.mule.test.petstore.extension.PetStoreFeatures.LEGACY_FEATURE;
+import static org.mule.test.petstore.extension.PetStoreFeatures.LEGACY_FEATURE_ONE;
+import static org.mule.test.petstore.extension.PetStoreFeatures.LEGACY_FEATURE_TWO;
 import static org.mule.test.petstore.extension.PetStoreOperations.operationExecutionCounter;
 
-import java.util.List;
 import java.util.function.Consumer;
 
 import io.qameta.allure.Feature;
@@ -26,10 +26,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
 
-import org.mule.runtime.api.config.custom.ServiceConfigurator;
 import org.mule.runtime.api.meta.MuleVersion;
-import org.mule.runtime.core.api.MuleContext;
-import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.runtime.core.api.config.DefaultMuleConfiguration;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.tck.junit4.rule.SystemProperty;
@@ -41,7 +38,9 @@ import org.mule.test.runner.RunnerDelegateTo;
 @Story(FEATURE_FLAGGING)
 public class FeatureFlaggedApplicationTestCase extends AbstractIntegrationTestCase {
 
-  private static final String ECHO_FLOW = "echo";
+  private static final String ECHO_MULE_CONTEXT = "echo-mule-context";
+  private static final String ECHO_FEATURE_CONTEXT = "echo-feature-context";
+
   private static final String SPLITTER_EXCEPTION_FLOW = "splitter-exception";
 
   private static final String PAYLOAD = "bla";
@@ -56,17 +55,29 @@ public class FeatureFlaggedApplicationTestCase extends AbstractIntegrationTestCa
   @Parameterized.Parameters(name = "Feature {0} for minMuleVersion={2} and System Property={3}")
   public static Object[][] parameters() {
     return new Object[][] {
-        new Object[] {LEGACY_FEATURE, ECHO_FLOW, "4.2.2", "true", assertEcho(true)},
-        new Object[] {LEGACY_FEATURE, ECHO_FLOW, "4.2.2", "false", assertEcho(false)},
-        new Object[] {LEGACY_FEATURE, ECHO_FLOW, "4.2.2", null, assertEcho(true)},
+        new Object[] {LEGACY_FEATURE_ONE, ECHO_MULE_CONTEXT, "4.2.2", "true", assertEcho(true)},
+        new Object[] {LEGACY_FEATURE_ONE, ECHO_MULE_CONTEXT, "4.2.2", "false", assertEcho(false)},
+        new Object[] {LEGACY_FEATURE_ONE, ECHO_MULE_CONTEXT, "4.2.2", null, assertEcho(true)},
 
-        new Object[] {LEGACY_FEATURE, ECHO_FLOW, "4.3.0", "true", assertEcho(true)},
-        new Object[] {LEGACY_FEATURE, ECHO_FLOW, "4.3.0", "false", assertEcho(false)},
-        new Object[] {LEGACY_FEATURE, ECHO_FLOW, "4.3.0", null, assertEcho(false)},
+        new Object[] {LEGACY_FEATURE_ONE, ECHO_MULE_CONTEXT, "4.3.0", "true", assertEcho(true)},
+        new Object[] {LEGACY_FEATURE_ONE, ECHO_MULE_CONTEXT, "4.3.0", "false", assertEcho(false)},
+        new Object[] {LEGACY_FEATURE_ONE, ECHO_MULE_CONTEXT, "4.3.0", null, assertEcho(false)},
 
-        new Object[] {LEGACY_FEATURE, ECHO_FLOW, null, "true", assertEcho(true)},
-        new Object[] {LEGACY_FEATURE, ECHO_FLOW, null, "false", assertEcho(false)},
-        new Object[] {LEGACY_FEATURE, ECHO_FLOW, null, null, assertEcho(false)},
+        new Object[] {LEGACY_FEATURE_ONE, ECHO_MULE_CONTEXT, null, "true", assertEcho(true)},
+        new Object[] {LEGACY_FEATURE_ONE, ECHO_MULE_CONTEXT, null, "false", assertEcho(false)},
+        new Object[] {LEGACY_FEATURE_ONE, ECHO_MULE_CONTEXT, null, null, assertEcho(false)},
+
+        new Object[] {LEGACY_FEATURE_TWO, ECHO_FEATURE_CONTEXT, "4.2.2", "true", assertEcho(true)},
+        new Object[] {LEGACY_FEATURE_TWO, ECHO_FEATURE_CONTEXT, "4.2.2", "false", assertEcho(false)},
+        new Object[] {LEGACY_FEATURE_TWO, ECHO_FEATURE_CONTEXT, "4.2.2", null, assertEcho(true)},
+
+        new Object[] {LEGACY_FEATURE_TWO, ECHO_FEATURE_CONTEXT, "4.3.0", "true", assertEcho(true)},
+        new Object[] {LEGACY_FEATURE_TWO, ECHO_FEATURE_CONTEXT, "4.3.0", "false", assertEcho(false)},
+        new Object[] {LEGACY_FEATURE_TWO, ECHO_FEATURE_CONTEXT, "4.3.0", null, assertEcho(false)},
+
+        new Object[] {LEGACY_FEATURE_TWO, ECHO_FEATURE_CONTEXT, null, "true", assertEcho(true)},
+        new Object[] {LEGACY_FEATURE_TWO, ECHO_FEATURE_CONTEXT, null, "false", assertEcho(false)},
+        new Object[] {LEGACY_FEATURE_TWO, ECHO_FEATURE_CONTEXT, null, null, assertEcho(false)},
 
         new Object[] {HANDLE_SPLITTER_EXCEPTION, SPLITTER_EXCEPTION_FLOW, "4.2.2", "true", assertSplitterException(true)},
         new Object[] {HANDLE_SPLITTER_EXCEPTION, SPLITTER_EXCEPTION_FLOW, "4.2.2", "false", assertSplitterException(false)},
@@ -109,27 +120,16 @@ public class FeatureFlaggedApplicationTestCase extends AbstractIntegrationTestCa
   public void getProperMessageDependingOnFeatureFlag() throws Exception {
     CoreEvent result = flowRunner(flowName).withPayload(PAYLOAD).run();
     assertThat(result.getMessage().getPayload(), is(notNullValue()));
-
     assertions.accept(result);
   }
 
   @Override
-  protected void addBuilders(List<ConfigurationBuilder> builders) {
-    builders.add(new ConfigurationBuilder() {
-
-      @Override
-      public void addServiceConfigurator(ServiceConfigurator serviceConfigurator) {
-
-      }
-
-      @Override
-      public void configure(MuleContext muleContext) {
-        if (minMuleVersion != null) {
-          ((DefaultMuleConfiguration) muleContext.getConfiguration()).setMinMuleVersion(new MuleVersion(minMuleVersion));
-        }
-      }
-    });
-    super.addBuilders(builders);
+  protected DefaultMuleConfiguration createMuleConfiguration() {
+    DefaultMuleConfiguration muleConfiguration = super.createMuleConfiguration();
+    if (minMuleVersion != null) {
+      muleConfiguration.setMinMuleVersion(new MuleVersion(minMuleVersion));
+    }
+    return muleConfiguration;
   }
 
   private static Consumer<CoreEvent> assertEcho(boolean isLegacy) {

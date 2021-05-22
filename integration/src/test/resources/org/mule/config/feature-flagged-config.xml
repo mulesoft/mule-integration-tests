@@ -7,8 +7,12 @@
                http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
                http://www.mulesoft.org/schema/mule/petstore http://www.mulesoft.org/schema/mule/petstore/current/mule-petstore.xsd">
 
-    <flow name="echo">
-        <petstore:feature-flagged-echo message="#[payload]"/>
+    <flow name="echo-mule-context">
+        <petstore:feature-flagged-echo-mule-context message="#[payload]"/>
+    </flow>
+
+    <flow name="echo-feature-context">
+        <petstore:feature-flagged-echo-feature-context message="#[payload]"/>
     </flow>
 
     <flow name="splitter-exception">
