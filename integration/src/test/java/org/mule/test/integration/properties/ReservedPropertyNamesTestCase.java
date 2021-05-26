@@ -12,7 +12,6 @@ import static org.mule.runtime.api.util.MuleSystemProperties.HONOUR_RESERVED_PRO
 import static org.mule.test.allure.AllureConstants.ConfigurationProperties.CONFIGURATION_PROPERTIES;
 import static org.mule.test.allure.AllureConstants.ConfigurationProperties.ComponentConfigurationAttributesStory.CONFIGURATION_PROPERTIES_RESOLVER_STORY;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -24,10 +23,7 @@ import org.junit.Test;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.mule.runtime.api.component.ConfigurationProperties;
-import org.mule.runtime.api.config.custom.ServiceConfigurator;
 import org.mule.runtime.api.meta.MuleVersion;
-import org.mule.runtime.core.api.MuleContext;
-import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.runtime.core.api.config.DefaultMuleConfiguration;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -55,7 +51,7 @@ public class ReservedPropertyNamesTestCase extends AbstractIntegrationTestCase {
 
   private final String expectedPropertyValue;
 
-  @Parameters(name = "With minMuleVersion {0}")
+  @Parameters(name = "With minMuleVersion {0} and override value \"{1}\"")
   public static Object[][] parameters() {
     return new Object[][] {
         new Object[] {"4.1.5", "true", "value"},
@@ -94,22 +90,12 @@ public class ReservedPropertyNamesTestCase extends AbstractIntegrationTestCase {
   }
 
   @Override
-  protected void addBuilders(List<ConfigurationBuilder> builders) {
-    builders.add(new ConfigurationBuilder() {
-
-      @Override
-      public void addServiceConfigurator(ServiceConfigurator serviceConfigurator) {
-
-      }
-
-      @Override
-      public void configure(MuleContext muleContext) {
-        if (minMuleVersion != null) {
-          ((DefaultMuleConfiguration) muleContext.getConfiguration()).setMinMuleVersion(new MuleVersion(minMuleVersion));
-        }
-      }
-    });
-    super.addBuilders(builders);
+  protected DefaultMuleConfiguration createMuleConfiguration() {
+    DefaultMuleConfiguration muleConfiguration = super.createMuleConfiguration();
+    if (minMuleVersion != null) {
+      muleConfiguration.setMinMuleVersion(new MuleVersion(minMuleVersion));
+    }
+    return muleConfiguration;
   }
 
   @Override
