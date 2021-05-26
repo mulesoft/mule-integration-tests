@@ -15,6 +15,7 @@ import org.mule.functional.junit4.ApplicationContextBuilder;
 import org.mule.functional.junit4.DomainContextBuilder;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.util.IOUtils;
+import org.mule.runtime.deployment.model.api.artifact.ArtifactContext;
 import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;
 import org.mule.runtime.http.api.domain.message.request.HttpRequest;
 import org.mule.runtime.http.api.domain.message.response.HttpResponse;
@@ -47,17 +48,25 @@ public class AppAndDomainLifecycleTestCase extends AbstractMuleTestCase {
     MuleContext firstAppContext = null;
     MuleContext secondAppContext = null;
     try {
-      domainContext = new DomainContextBuilder().setDomainConfig("lifecycle/domain/http/http-shared-listener-config.xml").build();
+      final ArtifactContext domainArtifactContext = new DomainContextBuilder()
+          .setDomainConfig("lifecycle/domain/http/http-shared-listener-config.xml")
+          .build();
+      domainContext = domainArtifactContext.getMuleContext();
       firstAppContext = new ApplicationContextBuilder()
-          .setApplicationResources(new String[] {"lifecycle/domain/http/http-hello-mule-app.xml"}).setDomainContext(domainContext)
+          .setApplicationResources("lifecycle/domain/http/http-hello-mule-app.xml")
+          .setDomainArtifactContext(domainArtifactContext)
           .build();
       ApplicationContextBuilder secondApp = new ApplicationContextBuilder();
-      secondAppContext = secondApp.setApplicationResources(new String[] {"lifecycle/domain/http/http-hello-world-app.xml"})
-          .setDomainContext(domainContext).build();
+      secondAppContext = secondApp
+          .setApplicationResources("lifecycle/domain/http/http-hello-world-app.xml")
+          .setDomainArtifactContext(domainArtifactContext)
+          .build();
       firstAppContext.stop();
 
-      HttpRequest request = HttpRequest.builder().uri("http://localhost:" + dynamicPort.getNumber() + "/service/helloWorld")
-          .method(GET).entity(new ByteArrayHttpEntity("test".getBytes())).build();
+      HttpRequest request = HttpRequest.builder()
+          .uri("http://localhost:" + dynamicPort.getNumber() + "/service/helloWorld")
+          .method(GET)
+          .entity(new ByteArrayHttpEntity("test".getBytes())).build();
       final HttpResponse response = httpClient.send(request, DEFAULT_TEST_TIMEOUT_SECS, false, null);
 
       assertThat(response, notNullValue());
