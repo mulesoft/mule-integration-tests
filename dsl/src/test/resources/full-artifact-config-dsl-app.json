@@ -166,7 +166,7 @@
   "name": "General",
   "customConfigurationParameters": [],
   "metadataProperties": {},
-  "parameters": [{"name":"poolingProfile","metadataProperties":{},"value":{"fields":{"maxPoolSize":{"text":"10","isCData":false,"type":"NUMBER"}},"typeId":"org.mule.extension.db.api.config.DbPoolingProfile"}}]
+  "parameters": [{"name":"poolingProfile","metadataProperties":{},"value":{"fields":{"maxPoolSize":{"text":"10","isCData":false,"type":"NUMBER"}},"typeId":"org.mule.db.commons.api.config.DbPoolingProfile"}}]
 }
         ]
       }
@@ -250,7 +250,7 @@
   "name": "General",
   "customConfigurationParameters": [],
   "metadataProperties": {},
-  "parameters": [{"name":"poolingProfile","metadataProperties":{},"value":{"fields":{"maxPoolSize":{"text":"10","isCData":false,"type":"NUMBER"}},"typeId":"org.mule.extension.db.api.config.DbPoolingProfile"}}]
+  "parameters": [{"name":"poolingProfile","metadataProperties":{},"value":{"fields":{"maxPoolSize":{"text":"10","isCData":false,"type":"NUMBER"}},"typeId":"org.mule.db.commons.api.config.DbPoolingProfile"}}]
 }
         ]
       }
@@ -434,7 +434,7 @@
   "name": "Query",
   "customConfigurationParameters": [],
   "metadataProperties": {},
-  "parameters": [{"name":"sql","metadataProperties":{},"value":{"text":"INSERT INTO PLANET(POSITION, NAME) VALUES (:position, :name)","isCData":false,"type":"STRING"}},{"name":"parameterTypes","metadataProperties":{},"value":[{"fields":{"type":{"text":"VARCHAR","isCData":false,"type":"STRING"},"key":{"text":"name","isCData":false,"type":"STRING"}},"typeId":"org.mule.extension.db.api.param.ParameterType"},{"fields":{"type":{"text":"INTEGER","isCData":false,"type":"STRING"},"key":{"text":"position","isCData":false,"type":"STRING"}},"typeId":"org.mule.extension.db.api.param.ParameterType"}]}]
+  "parameters": [{"name":"sql","metadataProperties":{},"value":{"text":"INSERT INTO PLANET(POSITION, NAME) VALUES (:position, :name)","isCData":false,"type":"STRING"}},{"name":"parameterTypes","metadataProperties":{},"value":[{"fields":{"type":{"text":"VARCHAR","isCData":false,"type":"STRING"},"key":{"text":"name","isCData":false,"type":"STRING"}},"typeId":"org.mule.db.commons.api.param.ParameterType"},{"fields":{"type":{"text":"INTEGER","isCData":false,"type":"STRING"},"key":{"text":"position","isCData":false,"type":"STRING"}},"typeId":"org.mule.db.commons.api.param.ParameterType"}]}]
 }
     ],
     "components": []
@@ -503,7 +503,7 @@
   "name": "Query",
   "customConfigurationParameters": [],
   "metadataProperties": {},
-  "parameters": [{"name":"sql","metadataProperties":{},"value":{"text":"INSERT INTO PLANET(POSITION, NAME) VALUES (:position, :name)","isCData":false,"type":"STRING"}},{"name":"parameterTypes","metadataProperties":{},"value":[{"fields":{"type":{"text":"VARCHAR","isCData":false,"type":"STRING"},"key":{"text":"name","isCData":false,"type":"STRING"}},"typeId":"org.mule.extension.db.api.param.ParameterType"},{"fields":{"type":{"text":"INTEGER","isCData":false,"type":"STRING"},"key":{"text":"position","isCData":false,"type":"STRING"}},"typeId":"org.mule.extension.db.api.param.ParameterType"}]}]
+  "parameters": [{"name":"sql","metadataProperties":{},"value":{"text":"INSERT INTO PLANET(POSITION, NAME) VALUES (:position, :name)","isCData":false,"type":"STRING"}},{"name":"parameterTypes","metadataProperties":{},"value":[{"fields":{"type":{"text":"VARCHAR","isCData":false,"type":"STRING"},"key":{"text":"name","isCData":false,"type":"STRING"}},"typeId":"org.mule.db.commons.api.param.ParameterType"},{"fields":{"type":{"text":"INTEGER","isCData":false,"type":"STRING"},"key":{"text":"position","isCData":false,"type":"STRING"}},"typeId":"org.mule.db.commons.api.param.ParameterType"}]}]
 }
     ],
     "components": []
@@ -542,7 +542,7 @@
   "name": "Query",
   "customConfigurationParameters": [],
   "metadataProperties": {},
-  "parameters": [{"name":"sql","metadataProperties":{},"value":{"text":"INSERT INTO PLANET(POSITION, NAME, DESCRIPTION) VALUES (777, \u0027Pluto\u0027, :description)","isCData":false,"type":"STRING"}},{"name":"parameterTypes","metadataProperties":{},"value":[{"fields":{"type":{"text":"CLOB","isCData":false,"type":"STRING"},"key":{"text":"description","isCData":false,"type":"STRING"}},"typeId":"org.mule.extension.db.api.param.ParameterType"}]},{"name":"inputParameters","metadataProperties":{},"value":{"text":"#[{{\u0027description\u0027 : payload}}]","isCData":false,"type":"STRING"}}]
+  "parameters": [{"name":"sql","metadataProperties":{},"value":{"text":"INSERT INTO PLANET(POSITION, NAME, DESCRIPTION) VALUES (777, \u0027Pluto\u0027, :description)","isCData":false,"type":"STRING"}},{"name":"parameterTypes","metadataProperties":{},"value":[{"fields":{"type":{"text":"CLOB","isCData":false,"type":"STRING"},"key":{"text":"description","isCData":false,"type":"STRING"}},"typeId":"org.mule.db.commons.api.param.ParameterType"}]},{"name":"inputParameters","metadataProperties":{},"value":{"text":"#[{{\u0027description\u0027 : payload}}]","isCData":false,"type":"STRING"}}]
 }
     ],
     "configRef": "dbConfig",
