@@ -17,6 +17,7 @@ import org.mule.functional.junit4.DomainContextBuilder;
 import org.mule.runtime.api.component.ConfigurationProperties;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.internal.registry.DefaultRegistry;
+import org.mule.runtime.deployment.model.api.artifact.ArtifactContext;
 import org.mule.tck.junit4.AbstractMuleTestCase;
 
 import org.junit.After;
@@ -73,11 +74,17 @@ public class DomainPropertiesPlaceHolderPropagationTestCase extends AbstractMule
   }
 
   private void configureContexts(String domainConfig, String appConfig) throws Exception {
-    domainContext = new DomainContextBuilder().setContextId(DomainPropertiesPlaceHolderPropagationTestCase.class.getSimpleName())
-        .setDomainConfig(domainConfig).build();
-    applicationContext =
-        new ApplicationContextBuilder().setContextId(DomainPropertiesPlaceHolderPropagationTestCase.class.getSimpleName())
-            .setApplicationResources(new String[] {appConfig}).setDomainContext(domainContext).build();
+    final ArtifactContext domainArtifactContext = new DomainContextBuilder()
+        .setContextId(DomainPropertiesPlaceHolderPropagationTestCase.class.getSimpleName())
+        .setDomainConfig(domainConfig)
+        .build();
+    domainContext = domainArtifactContext
+        .getMuleContext();
+    applicationContext = new ApplicationContextBuilder()
+        .setContextId(DomainPropertiesPlaceHolderPropagationTestCase.class.getSimpleName())
+        .setApplicationResources(appConfig)
+        .setDomainArtifactContext(domainArtifactContext)
+        .build();
   }
 
   @After

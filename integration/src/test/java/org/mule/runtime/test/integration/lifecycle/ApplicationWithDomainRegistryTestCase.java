@@ -32,6 +32,7 @@ import org.mule.runtime.api.lifecycle.Startable;
 import org.mule.runtime.api.util.concurrent.Latch;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.privileged.registry.RegistrationException;
+import org.mule.runtime.deployment.model.api.artifact.ArtifactContext;
 import org.mule.tck.junit4.AbstractMuleTestCase;
 import org.mule.tck.probe.JUnitLambdaProbe;
 import org.mule.tck.probe.PollingProber;
@@ -60,12 +61,16 @@ public class ApplicationWithDomainRegistryTestCase extends AbstractMuleTestCase 
 
   @Before
   public void createContexts() throws Exception {
-    domainContext = new DomainContextBuilder()
+    final ArtifactContext domainArtifactContext = new DomainContextBuilder()
         .setContextId(MuleContextLifecycleTestCase.class.getSimpleName())
         .setDomainConfig("domain/empty-domain-config.xml")
         .build();
-    applicationContext = new ApplicationContextBuilder().setContextId(ApplicationWithDomainRegistryTestCase.class.getSimpleName())
-        .setDomainContext(domainContext).build();
+    domainContext = domainArtifactContext
+        .getMuleContext();
+    applicationContext = new ApplicationContextBuilder()
+        .setContextId(ApplicationWithDomainRegistryTestCase.class.getSimpleName())
+        .setDomainArtifactContext(domainArtifactContext)
+        .build();
   }
 
   @After

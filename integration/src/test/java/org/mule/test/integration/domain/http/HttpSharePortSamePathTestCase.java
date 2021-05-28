@@ -8,11 +8,11 @@ package org.mule.test.integration.domain.http;
 
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 
-import io.qameta.allure.Issue;
 import org.mule.functional.junit4.ApplicationContextBuilder;
 import org.mule.functional.junit4.DomainContextBuilder;
-import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.api.lifecycle.InitialisationException;
+import org.mule.runtime.core.api.MuleContext;
+import org.mule.runtime.deployment.model.api.artifact.ArtifactContext;
 import org.mule.tck.junit4.AbstractMuleTestCase;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
@@ -22,6 +22,8 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import io.qameta.allure.Issue;
 
 @Ignore("MULE-10633")
 @Issue("MULE-10633")
@@ -50,13 +52,20 @@ public class HttpSharePortSamePathTestCase extends AbstractMuleTestCase {
 
   @Test
   public void samePathDefinedInTwoAppsWithinSameDomain() throws Exception {
-    domainContext = new DomainContextBuilder().setDomainConfig("domain/http/http-shared-listener-config.xml").build();
+    final ArtifactContext domainArtifactContext = new DomainContextBuilder()
+        .setDomainConfig("domain/http/http-shared-listener-config.xml")
+        .build();
+    domainContext = domainArtifactContext
+        .getMuleContext();
     firstAppContext = new ApplicationContextBuilder()
-        .setApplicationResources(new String[] {"domain/http/http-hello-mule-app.xml"}).setDomainContext(domainContext).build();
+        .setApplicationResources("domain/http/http-hello-mule-app.xml")
+        .setDomainArtifactContext(domainArtifactContext)
+        .build();
     ApplicationContextBuilder secondApp = new ApplicationContextBuilder();
 
     expected.expect(instanceOf(InitialisationException.class));
-    secondApp.setApplicationResources(new String[] {"domain/http/http-hello-mule-app.xml"}).setDomainContext(domainContext)
+    secondApp.setApplicationResources("domain/http/http-hello-mule-app.xml")
+        .setDomainArtifactContext(domainArtifactContext)
         .build();
   }
 
