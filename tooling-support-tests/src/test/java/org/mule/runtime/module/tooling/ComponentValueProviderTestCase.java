@@ -36,6 +36,9 @@ import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.para
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.simpleActingParametersInContainerOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.simpleActingParametersOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.sourceWithMultiLevelValue;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.vpWithBindingToFieldOPDeclaration;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.vpWithBindingToFieldOPDeclarer;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.vpWithBindingToTopLevelOPDeclaration;
 import static org.mule.runtime.module.tooling.internal.artifact.AbstractParameterResolverExecutor.INVALID_PARAMETER_VALUE;
 import static org.mule.sdk.api.values.ValueResolvingException.UNKNOWN;
 
@@ -367,5 +370,24 @@ public class ComponentValueProviderTestCase extends DeclarationSessionTestCase {
                           "");
   }
 
+  @Test
+  public void vpWithBindingToTopLevel() {
+    final String actingParameter = "actingParameter";
+    ComponentElementDeclaration<?> operationDeclaration = vpWithBindingToTopLevelOPDeclaration(actingParameter);
+    validateValuesSuccess(session, operationDeclaration, PROVIDED_PARAMETER_NAME, actingParameter);
+  }
+
+  @Test
+  public void vpWithBindingToField() {
+    final String actingParameter = "actingParameter";
+    ComponentElementDeclaration<?> operationDeclaration = vpWithBindingToFieldOPDeclaration(actingParameter);
+    validateValuesSuccess(session, operationDeclaration, PROVIDED_PARAMETER_NAME, actingParameter);
+  }
+
+  @Test
+  public void vpWithBindingToFieldMissingTopLevel() {
+    ComponentElementDeclaration<?> operationDeclaration = vpWithBindingToFieldOPDeclarer().getDeclaration();
+    validateValuesFailure(session, operationDeclaration, PROVIDED_PARAMETER_NAME, "Unable to retrieve values. There are missing required parameters for the resolution: [innerPojo.stringParam]", MISSING_REQUIRED_PARAMETERS);
+  }
 
 }
