@@ -17,6 +17,7 @@ import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.metadata.resolving.FailureCode.COMPONENT_NOT_FOUND;
 import static org.mule.runtime.app.declaration.api.fluent.ElementDeclarer.newParameterGroup;
+import static org.mule.runtime.app.declaration.api.fluent.ParameterSimpleValue.plain;
 import static org.mule.runtime.extension.api.values.ValueResolvingException.INVALID_VALUE_RESOLVER_NAME;
 import static org.mule.runtime.extension.api.values.ValueResolvingException.MISSING_REQUIRED_PARAMETERS;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.ACTING_PARAMETER_NAME;
@@ -385,9 +386,22 @@ public class ComponentValueProviderTestCase extends DeclarationSessionTestCase {
   }
 
   @Test
-  public void vpWithBindingToFieldMissingTopLevel() {
+  public void vpWithBindingMissing() {
     ComponentElementDeclaration<?> operationDeclaration = vpWithBindingToFieldOPDeclarer().getDeclaration();
-    validateValuesFailure(session, operationDeclaration, PROVIDED_PARAMETER_NAME, "Unable to retrieve values. There are missing required parameters for the resolution: [innerPojo.stringParam]", MISSING_REQUIRED_PARAMETERS);
+    validateValuesFailure(session, operationDeclaration, PROVIDED_PARAMETER_NAME,
+                          "Unable to retrieve values. There are missing required parameters for the resolution: [actingParameter(taken from: innerPojo.stringParam)]",
+                          MISSING_REQUIRED_PARAMETERS);
+  }
+
+  @Test
+  public void vpWithBindingOnPojoFromExpression() {
+    final String actingParameter = "actingParameter";
+    ComponentElementDeclaration<?> operationDeclaration = vpWithBindingToFieldOPDeclarer()
+        .withParameterGroup(newParameterGroup()
+            .withParameter("innerPojo", plain("#[{'stringParam': '" + actingParameter + "'}]"))
+            .getDeclaration())
+        .getDeclaration();
+    validateValuesSuccess(session, operationDeclaration, PROVIDED_PARAMETER_NAME, actingParameter);
   }
 
 }
