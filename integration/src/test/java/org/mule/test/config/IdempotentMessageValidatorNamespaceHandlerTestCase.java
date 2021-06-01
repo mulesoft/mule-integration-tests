@@ -8,14 +8,10 @@ package org.mule.test.config;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.mule.runtime.api.store.ObjectStoreSettings.unmanagedTransient;
 
 import org.mule.runtime.api.store.ObjectStore;
-import org.mule.runtime.api.store.ObjectStoreSettings;
-import org.mule.runtime.api.store.SimpleMemoryObjectStore;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.construct.FlowConstruct;
 import org.mule.runtime.core.api.processor.Processor;
@@ -23,12 +19,12 @@ import org.mule.runtime.core.internal.routing.IdempotentMessageValidator;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import org.junit.Rule;
-import org.junit.Test;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
+
+import org.junit.Rule;
+import org.junit.Test;
 
 /**
  * Tests for all object stores that can be configured on an {@link IdempotentMessageValidator}.
@@ -64,11 +60,11 @@ public class IdempotentMessageValidatorNamespaceHandlerTestCase extends Abstract
 
   private Processor idempotentMessageFilterFromFlow(final String flowName) throws Exception {
     final FlowConstruct flow = registry.<FlowConstruct>lookupByName(flowName).get();
-    assertTrue(flow instanceof Flow);
+    assertThat(flow, instanceOf(Flow.class));
 
     final Flow simpleFlow = (Flow) flow;
     final List<Processor> processors = simpleFlow.getProcessors();
-    assertEquals(1, processors.size());
+    assertThat(processors, hasSize(1));
 
     final Processor firstMP = processors.get(0);
     assertThat(firstMP.getClass().getName(), equalTo("org.mule.runtime.core.internal.routing.IdempotentMessageValidator"));
@@ -80,5 +76,10 @@ public class IdempotentMessageValidatorNamespaceHandlerTestCase extends Abstract
       throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
     Method method = router.getClass().getMethod("getObjectStore");
     return (ObjectStore) method.invoke(router);
+  }
+
+  @Override
+  protected boolean mustRegenerateAstXmlParser() {
+    return true;
   }
 }
