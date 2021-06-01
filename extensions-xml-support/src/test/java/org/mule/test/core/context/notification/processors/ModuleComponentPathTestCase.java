@@ -7,7 +7,6 @@
 package org.mule.test.core.context.notification.processors;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
 import static java.util.Optional.empty;
 import static java.util.OptionalInt.of;
 import static org.hamcrest.Matchers.hasItems;
@@ -21,7 +20,6 @@ import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentT
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.OPERATION;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.ROUTER;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.SCOPE;
-import static org.mule.runtime.api.dsl.DslResolvingContext.getDefault;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.ASYNC_IDENTIFIER;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.CHOICE_IDENTIFIER;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.FLOW_IDENTIFIER;
@@ -39,36 +37,24 @@ import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocator
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentLocationStory.COMPONENT_LOCATION;
 import static org.mule.test.allure.AllureConstants.XmlSdk.XML_SDK;
 
-import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.api.component.TypedComponentIdentifier;
 import org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType;
 import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.api.component.location.Location;
-import org.mule.runtime.api.dsl.DslResolvingContext;
-import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.api.notification.MessageProcessorNotification;
 import org.mule.runtime.ast.api.ArtifactAst;
 import org.mule.runtime.ast.api.xml.AstXmlParser;
-import org.mule.runtime.core.api.MuleContext;
-import org.mule.runtime.core.api.config.ConfigurationBuilder;
-import org.mule.runtime.core.api.config.builders.AbstractConfigurationBuilder;
-import org.mule.runtime.core.api.extension.ExtensionManager;
 import org.mule.runtime.dsl.api.component.config.DefaultComponentLocation;
 import org.mule.runtime.dsl.api.component.config.DefaultComponentLocation.DefaultLocationPart;
-import org.mule.runtime.extension.api.loader.xml.XmlExtensionModelLoader;
 import org.mule.test.IntegrationTestCaseRunnerConfig;
-import org.mule.test.runner.api.IsolatedClassLoaderExtensionsManagerConfigurationBuilder;
+import org.mule.test.functional.AbstractCeXmlExtensionMuleArtifactFunctionalTestCase;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalInt;
-import java.util.Set;
 
 import org.junit.After;
 import org.junit.Test;
@@ -85,7 +71,8 @@ import io.qameta.allure.junit4.DisplayName;
 @DisplayName("XML Connectors Path generation")
 @Features({@Feature(XML_SDK), @Feature(CONFIGURATION_COMPONENT_LOCATOR)})
 @Story(COMPONENT_LOCATION)
-public class ModuleComponentPathTestCase extends MuleArtifactFunctionalTestCase implements IntegrationTestCaseRunnerConfig {
+public class ModuleComponentPathTestCase extends AbstractCeXmlExtensionMuleArtifactFunctionalTestCase
+    implements IntegrationTestCaseRunnerConfig {
 
   private static final String COLON_SEPARATOR = ":";
   private static final String MODULE_SIMPLE_XML = "module-simple.xml";
@@ -94,6 +81,12 @@ public class ModuleComponentPathTestCase extends MuleArtifactFunctionalTestCase 
   private static final String BASE_PATH_XML_MODULES = "org/mule/test/integration/notifications/modules/";
   private static final int POLLING_TIMEOUT = 5000;
   private static final int POLLING_DELAY = 500;
+
+  @Override
+  protected String[] getModulePaths() {
+    return new String[] {BASE_PATH_XML_MODULES + MODULE_SIMPLE_XML,
+        BASE_PATH_XML_MODULES + MODULE_SIMPLE_PROXY_XML};
+  }
 
   @Override
   protected String getConfigFile() {
@@ -846,46 +839,6 @@ public class ModuleComponentPathTestCase extends MuleArtifactFunctionalTestCase 
     assertNoNextProcessorNotification();
   }
 
-  private String[] getModulePaths() {
-    return new String[] {BASE_PATH_XML_MODULES + MODULE_SIMPLE_XML,
-        BASE_PATH_XML_MODULES + MODULE_SIMPLE_PROXY_XML};
-  }
-
-  // TODO(fernandezlautaro): MULE-10982 implement a testing framework for XML based connectors
-  @Override
-  protected void addBuilders(List<ConfigurationBuilder> builders) {
-    super.addBuilders(builders);
-    builders.add(0, new AbstractConfigurationBuilder() {
-
-      @Override
-      protected void doConfigure(MuleContext muleContext) throws Exception {
-        ExtensionManager extensionManager = muleContext.getExtensionManager();
-        registerXmlExtensions(extensionManager);
-      }
-
-      private void registerXmlExtensions(ExtensionManager extensionManager) {
-        final Set<ExtensionModel> extensions = new HashSet<>();
-        extensions.addAll(extensionManager.getExtensions());
-        for (String modulePath : getModulePaths()) {
-          Map<String, Object> params = new HashMap<>();
-          params.put(XmlExtensionModelLoader.RESOURCE_XML, modulePath);
-          final DslResolvingContext dslResolvingContext = getDefault(extensions);
-          final ExtensionModel extensionModel =
-              new XmlExtensionModelLoader().loadExtensionModel(getClass().getClassLoader(), dslResolvingContext, params);
-          extensions.add(extensionModel);
-        }
-        for (ExtensionModel extension : extensions) {
-          extensionManager.registerExtension(extension);
-        }
-      }
-    });
-    final IsolatedClassLoaderExtensionsManagerConfigurationBuilder element =
-        new IsolatedClassLoaderExtensionsManagerConfigurationBuilder(emptyList());
-    element.loadExtensionModels();
-    builders.add(0, element);
-
-  }
-
   private void assertNoNextProcessorNotification() {
     Iterator iterator = listener.getNotifications().iterator();
     assertThat(iterator.hasNext(), is(false));
@@ -903,5 +856,4 @@ public class ModuleComponentPathTestCase extends MuleArtifactFunctionalTestCase 
         listener.getNotifications().remove(0);
     return processorNotification;
   }
-
 }
