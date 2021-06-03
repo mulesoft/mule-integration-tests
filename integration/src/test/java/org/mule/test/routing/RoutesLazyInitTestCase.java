@@ -10,6 +10,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mule.runtime.api.component.location.Location.builderFromStringRepresentation;
 import static org.mule.runtime.api.metadata.MetadataService.METADATA_SERVICE_KEY;
 import static org.mule.tck.junit4.matcher.metadata.MetadataKeyResultSuccessMatcher.isSuccess;
+import static org.mule.test.allure.AllureConstants.LazyInitializationFeature.LAZY_INITIALIZATION;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ScatterGatherStory.SCATTER_GATHER;
 
@@ -27,9 +28,10 @@ import org.junit.Test;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
+import io.qameta.allure.Features;
 import io.qameta.allure.Story;
 
-@Feature(ROUTERS)
+@Features({@Feature(LAZY_INITIALIZATION), @Feature(ROUTERS)})
 @Story(SCATTER_GATHER)
 public class RoutesLazyInitTestCase extends AbstractIntegrationTestCase {
 
