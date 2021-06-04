@@ -36,6 +36,7 @@ import org.mule.runtime.app.declaration.api.ComponentElementDeclaration;
 import org.mule.runtime.app.declaration.api.OperationElementDeclaration;
 import org.mule.runtime.module.tooling.api.artifact.DeclarationSession;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class FieldValueProviderTestCase extends DeclarationSessionTestCase {
@@ -92,6 +93,7 @@ public class FieldValueProviderTestCase extends DeclarationSessionTestCase {
   }
 
   @Test
+  @Ignore("MULE-19465")
   public void vpOnPojoMultipleFields() {
     OperationElementDeclaration operationDeclaration = vpOnPojoMultipleFieldsOPDeclaration();
     validateFieldValuesSuccess(operationDeclaration, "complexActingParameter", "stringParam", "simpleValue");
@@ -136,6 +138,7 @@ public class FieldValueProviderTestCase extends DeclarationSessionTestCase {
   }
 
   @Test
+  @Ignore("MULE-19465")
   public void vpOnContentMultipleFields() {
     OperationElementDeclaration operationElementDeclaration = vpOnContentMultipleFieldsOPDeclaration();
     validateFieldValuesSuccess(operationElementDeclaration, "parameter", "innerPojoParam.stringParam", "simpleValue");
@@ -168,6 +171,7 @@ public class FieldValueProviderTestCase extends DeclarationSessionTestCase {
   }
 
   @Test
+  @Ignore("MULE-19465")
   public void vpOnStreamMultipleFields() {
     OperationElementDeclaration operationElementDeclaration = vpOnStreamMultipleFieldsOPDeclaration();
     validateFieldValuesSuccess(operationElementDeclaration, "parameter", "innerPojoParam.stringParam", "simpleValue");
