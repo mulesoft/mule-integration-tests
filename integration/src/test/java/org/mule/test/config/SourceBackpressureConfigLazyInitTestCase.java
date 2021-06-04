@@ -9,6 +9,7 @@ package org.mule.test.config;
 import static org.mule.runtime.api.component.location.Location.builder;
 import static org.mule.runtime.config.api.LazyComponentInitializer.LAZY_COMPONENT_INITIALIZER_SERVICE_KEY;
 import static org.mule.test.allure.AllureConstants.ExecutionEngineFeature.ExecutionEngineStory.BACKPRESSURE;
+import static org.mule.test.allure.AllureConstants.LazyInitializationFeature.LAZY_INITIALIZATION;
 
 import org.mule.runtime.api.component.location.Location;
 import org.mule.runtime.config.api.LazyComponentInitializer;
@@ -19,9 +20,11 @@ import javax.inject.Named;
 
 import org.junit.Test;
 
+import io.qameta.allure.Feature;
 import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
 
+@Feature(LAZY_INITIALIZATION)
 @Story(BACKPRESSURE)
 public class SourceBackpressureConfigLazyInitTestCase extends AbstractIntegrationTestCase {
 
