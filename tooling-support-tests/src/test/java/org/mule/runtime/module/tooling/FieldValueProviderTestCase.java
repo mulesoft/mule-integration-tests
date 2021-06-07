@@ -12,6 +12,9 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.vpOnContentDeepFieldOPDeclaration;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.vpOnContentDependsOnOwnAttributeOPDeclaration;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.vpOnContentDependsOnOwnDeepFieldAsPojoOPDeclaration;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.vpOnContentDependsOnOwnDeepFieldOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.vpOnContentDependsOnOwnFieldOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.vpOnContentDependsOnTopLevelOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.vpOnContentFieldOPDeclaration;
@@ -135,6 +138,37 @@ public class FieldValueProviderTestCase extends DeclarationSessionTestCase {
     OperationElementDeclaration operationElementDeclaration =
         vpOnContentDependsOnOwnFieldOPDeclaration("#[{'field':'value'}]");
     validateFieldValuesSuccess(operationElementDeclaration, "parameter", "stringParam", "value");
+  }
+
+  @Test
+  public void vpOnContentDependsOnOwnAttribute() {
+    OperationElementDeclaration operationElementDeclaration =
+        vpOnContentDependsOnOwnAttributeOPDeclaration("#[{field @(attribute: 'value'): 'dont-care'}]");
+    validateFieldValuesSuccess(operationElementDeclaration, "parameter", "stringParam", "value");
+  }
+
+  @Test
+  public void vpOnContentDependsOnOwnDeepField() {
+    OperationElementDeclaration operationElementDeclaration =
+        vpOnContentDependsOnOwnDeepFieldOPDeclaration("#[{'levelOne': {'levelTwo': {'field':'value'}}}]");
+    validateFieldValuesSuccess(operationElementDeclaration, "parameter", "stringParam", "value");
+  }
+
+  @Test
+  public void vpOnContentDependsOnOwnDeepFieldAsPojo() {
+    OperationElementDeclaration operationElementDeclaration =
+        vpOnContentDependsOnOwnDeepFieldAsPojoOPDeclaration(
+                                                            "#[{" +
+                                                                "    'levelOne': { " +
+                                                                "        'complexField':{" +
+                                                                "            'stringParam':'value'," +
+                                                                "            'innerPojoParam': { " +
+                                                                "                'stringParam':'value'" +
+                                                                "            }" +
+                                                                "        }" +
+                                                                "    }" +
+                                                                "}]");
+    validateFieldValuesSuccess(operationElementDeclaration, "parameter", "stringParam", "0value0value");
   }
 
   @Test
