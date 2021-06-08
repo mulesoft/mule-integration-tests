@@ -108,12 +108,24 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
   @Parameterized.Parameter(2)
   public String declarationFile;
 
+  @Parameterized.Parameter(3)
+  public String declarationFileOld;
+
   @Parameterized.Parameters(name = "{0}")
   public static Collection<Object[]> data() {
     return asList(new Object[][] {
-        {"full-artifact-config-dsl-app.xml", createFullArtifactDeclaration(), "full-artifact-config-dsl-app.json"},
-        {"multi-flow-dsl-app.xml", createMultiFlowArtifactDeclaration(), "multi-flow-dsl-app.json"},
-        {"no-mule-components-dsl-app.xml", createNoMuleComponentsArtifactDeclaration(), "no-mule-components-dsl-app.json"}
+        {"full-artifact-config-dsl-app.xml",
+            createFullArtifactDeclaration(),
+            "full-artifact-config-dsl-app.json",
+            "full-artifact-config-dsl-app-old.json"},
+        {"multi-flow-dsl-app.xml",
+            createMultiFlowArtifactDeclaration(),
+            "multi-flow-dsl-app.json",
+            "multi-flow-dsl-app.json"},
+        {"no-mule-components-dsl-app.xml",
+            createNoMuleComponentsArtifactDeclaration(),
+            "no-mule-components-dsl-app.json",
+            "no-mule-components-dsl-app.json"}
     });
   }
 
@@ -136,6 +148,18 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
     JsonReader reader = new JsonReader(new InputStreamReader(currentThread().getContextClassLoader()
         .getResourceAsStream(declarationFile)));
     expectedAppJson = parser.parse(reader).toString();
+  }
+
+  @Test
+  public void deserialize() throws Exception {
+    JsonParser parser = new JsonParser();
+    JsonReader reader = new JsonReader(new InputStreamReader(currentThread().getContextClassLoader()
+        .getResourceAsStream(declarationFileOld)));
+
+    ArtifactDeclarationJsonSerializer jsonSerializer = ArtifactDeclarationJsonSerializer.getDefault(true);
+    final ArtifactDeclaration deserialized = jsonSerializer.deserialize(parser.parse(reader).toString());
+
+    compareXML(expectedAppXml, ArtifactDeclarationXmlSerializer.getDefault(dslContext).serialize(deserialized));
   }
 
   @Test
