@@ -18,7 +18,6 @@ import org.mule.tck.junit4.rule.SystemProperty;
 
 import java.util.Collection;
 
-import org.junit.AfterClass;
 import org.junit.Rule;
 import org.junit.runners.Parameterized;
 
@@ -33,7 +32,7 @@ public class OcsArtifactDeclarationSerializerTestCase extends ArtifactDeclaratio
       return asList(new Object[][] {
           {"ocs-artifact-config-dsl-app.xml",
               callWithProperty(OCS_ENABLED, "true", OcsArtifactDeclarationSerializerTestCase::createOcsArtifactDeclaration),
-              "ocs-artifact-config-dsl-app.json"},
+              "ocs-artifact-config-dsl-app.json", "ocs-artifact-config-dsl-app.json"},
       });
     } catch (Throwable throwable) {
       throw new RuntimeException("Failed to create the artifact declaration for the test.");

@@ -200,7 +200,7 @@
   "name": "General",
   "customConfigurationParameters": [],
   "metadataProperties": {},
-  "parameters": [{"name":"expirationPolicy","metadataProperties":{},"value":{"fields":{"maxIdleTime":{"text":"1","isCData":false,"type":"NUMBER"},"timeUnit":{"text":"MINUTES","isCData":false,"type":"STRING"}},"typeId":"org.mule.runtime.extension.api.runtime.ExpirationPolicy"}}]
+  "parameters": [{"name":"expirationPolicy","metadataProperties":{},"value":{"fields":{"maxIdleTime":{"text":"1","isCData":false,"type":"NUMBER"},"timeUnit":{"text":"MINUTES","isCData":false,"type":"STRING"}}}}]
 }
       ],
       "connection": {
@@ -244,7 +244,7 @@
   "name": "Connection",
   "customConfigurationParameters": [],
   "metadataProperties": {},
-  "parameters": [{"name":"database","metadataProperties":{},"value":{"text":"target/muleEmbeddedDB","isCData":false,"type":"STRING"}},{"name":"create","metadataProperties":{},"value":{"text":"true","isCData":false,"type":"BOOLEAN"}},{"name":"connectionProperties","metadataProperties":{},"value":{"fields":{"first":{"text":"propertyOne","isCData":false,"type":"STRING"},"second":{"text":"propertyTwo","isCData":false,"type":"STRING"}}}},{"name":"reconnection","metadataProperties":{},"value":{"fields":{"failsDeployment":{"text":"true","isCData":false,"type":"BOOLEAN"},"reconnectionStrategy":{"fields":{"count":{"text":"1","isCData":false,"type":"NUMBER"},"frequency":{"text":"0","isCData":false,"type":"NUMBER"}},"typeId":"reconnect"}},"typeId":"Reconnection"}}]
+  "parameters": [{"name":"database","metadataProperties":{},"value":{"text":"target/muleEmbeddedDB","isCData":false,"type":"STRING"}},{"name":"create","metadataProperties":{},"value":{"text":"true","isCData":false,"type":"BOOLEAN"}},{"name":"reconnection","metadataProperties":{},"value":{"fields":{"failsDeployment":{"text":"true","isCData":false,"type":"BOOLEAN"},"reconnectionStrategy":{"fields":{"count":{"text":"1","isCData":false,"type":"NUMBER"},"frequency":{"text":"0","isCData":false,"type":"NUMBER"}},"typeId":"reconnect"}},"typeId":"reconnection"}},{"name":"connectionProperties","metadataProperties":{},"value":{"fields":{"first":{"text":"propertyOne","isCData":false,"type":"STRING"},"second":{"text":"propertyTwo","isCData":false,"type":"STRING"}}}}]
 },
           {
   "name": "General",
@@ -287,7 +287,7 @@
   "name": "General",
   "customConfigurationParameters": [],
   "metadataProperties": {},
-  "parameters": [{"name":"tlsContext","metadataProperties":{},"value":{"fields":{"key-store":{"fields":{"path":{"text":"ssltest-keystore.jks","isCData":false,"type":"STRING"},"password":{"text":"changeit","isCData":false,"type":"STRING"},"keyPassword":{"text":"changeit","isCData":false,"type":"STRING"}},"typeId":"KeyStore"},"trust-store":{"fields":{"insecure":{"text":"true","isCData":false,"type":"BOOLEAN"}},"typeId":"TrustStore"},"revocation-check":{"fields":{"onlyEndEntities":{"text":"true","isCData":false,"type":"BOOLEAN"}},"typeId":"standard-revocation-check"}},"typeId":"org.mule.runtime.api.tls.TlsContextFactory"}}]
+  "parameters": [{"name":"tlsContext","metadataProperties":{},"value":{"fields":{"key-store":{"fields":{"path":{"text":"ssltest-keystore.jks","isCData":false,"type":"STRING"},"password":{"text":"changeit","isCData":false,"type":"STRING"},"keyPassword":{"text":"changeit","isCData":false,"type":"STRING"}}},"trust-store":{"fields":{"insecure":{"text":"true","isCData":false,"type":"BOOLEAN"}}},"revocation-check":{"fields":{"onlyEndEntities":{"text":"true","isCData":false,"type":"BOOLEAN"}},"typeId":"standard-revocation-check"}}}}]
 }
         ]
       }
@@ -376,7 +376,7 @@
   "name": "General",
   "customConfigurationParameters": [],
   "metadataProperties": {},
-  "parameters": [{"name":"path","metadataProperties":{},"value":{"text":"testBuilder","isCData":false,"type":"STRING"}},{"name":"redeliveryPolicy","metadataProperties":{},"value":{"fields":{"useSecureHash":{"text":"true","isCData":false,"type":"BOOLEAN"},"maxRedeliveryCount":{"text":"2","isCData":false,"type":"NUMBER"}},"typeId":"RedeliveryPolicy"}}]
+  "parameters": [{"name":"path","metadataProperties":{},"value":{"text":"testBuilder","isCData":false,"type":"STRING"}},{"name":"redeliveryPolicy","metadataProperties":{},"value":{"fields":{"useSecureHash":{"text":"true","isCData":false,"type":"BOOLEAN"},"maxRedeliveryCount":{"text":"2","isCData":false,"type":"NUMBER"}}}}]
 },
       {
   "name": "Connection",
