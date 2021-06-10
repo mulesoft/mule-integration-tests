@@ -63,6 +63,7 @@ import java.util.concurrent.TimeUnit;
 import com.google.common.collect.ImmutableMap;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class ComponentValueProviderTestCase extends DeclarationSessionTestCase {
@@ -394,6 +395,7 @@ public class ComponentValueProviderTestCase extends DeclarationSessionTestCase {
   }
 
   @Test
+  @Ignore("CCNS-26")
   public void vpWithBindingOnPojoFromExpression() {
     final String actingParameter = "actingParameter";
     ComponentElementDeclaration<?> operationDeclaration = vpWithBindingToFieldOPDeclarer()
