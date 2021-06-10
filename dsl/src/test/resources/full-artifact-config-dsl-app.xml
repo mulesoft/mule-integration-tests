@@ -72,8 +72,8 @@
     <http:listener-config basePath="/" name="httpListener">
         <http:listener-connection host="localhost" port="${port}" protocol="HTTPS">
             <tls:context>
-                <tls:key-store keyPassword="changeit" password="changeit" path="ssltest-keystore.jks"/>
                 <tls:trust-store insecure="true"/>
+                <tls:key-store keyPassword="changeit" password="changeit" path="ssltest-keystore.jks"/>
                 <tls:revocation-check>
                     <tls:standard-revocation-check onlyEndEntities="true"/>
                 </tls:revocation-check>
