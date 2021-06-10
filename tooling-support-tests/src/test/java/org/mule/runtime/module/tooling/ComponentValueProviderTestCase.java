@@ -17,6 +17,7 @@ import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.metadata.resolving.FailureCode.COMPONENT_NOT_FOUND;
 import static org.mule.runtime.app.declaration.api.fluent.ElementDeclarer.newParameterGroup;
+import static org.mule.runtime.app.declaration.api.fluent.ParameterSimpleValue.plain;
 import static org.mule.runtime.extension.api.values.ValueResolvingException.INVALID_VALUE_RESOLVER_NAME;
 import static org.mule.runtime.extension.api.values.ValueResolvingException.MISSING_REQUIRED_PARAMETERS;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.ACTING_PARAMETER_NAME;
@@ -36,6 +37,9 @@ import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.para
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.simpleActingParametersInContainerOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.simpleActingParametersOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.sourceWithMultiLevelValue;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.vpWithBindingToFieldOPDeclaration;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.vpWithBindingToFieldOPDeclarer;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.vpWithBindingToTopLevelOPDeclaration;
 import static org.mule.runtime.module.tooling.internal.artifact.AbstractParameterResolverExecutor.INVALID_PARAMETER_VALUE;
 import static org.mule.sdk.api.values.ValueResolvingException.UNKNOWN;
 
@@ -59,6 +63,7 @@ import java.util.concurrent.TimeUnit;
 import com.google.common.collect.ImmutableMap;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class ComponentValueProviderTestCase extends DeclarationSessionTestCase {
@@ -367,5 +372,38 @@ public class ComponentValueProviderTestCase extends DeclarationSessionTestCase {
                           "");
   }
 
+  @Test
+  public void vpWithBindingToTopLevel() {
+    final String actingParameter = "actingParameter";
+    ComponentElementDeclaration<?> operationDeclaration = vpWithBindingToTopLevelOPDeclaration(actingParameter);
+    validateValuesSuccess(session, operationDeclaration, PROVIDED_PARAMETER_NAME, actingParameter);
+  }
+
+  @Test
+  public void vpWithBindingToField() {
+    final String actingParameter = "actingParameter";
+    ComponentElementDeclaration<?> operationDeclaration = vpWithBindingToFieldOPDeclaration(actingParameter);
+    validateValuesSuccess(session, operationDeclaration, PROVIDED_PARAMETER_NAME, actingParameter);
+  }
+
+  @Test
+  public void vpWithBindingMissing() {
+    ComponentElementDeclaration<?> operationDeclaration = vpWithBindingToFieldOPDeclarer().getDeclaration();
+    validateValuesFailure(session, operationDeclaration, PROVIDED_PARAMETER_NAME,
+                          "Unable to retrieve values. There are missing required parameters for the resolution: [actingParameter(taken from: innerPojo.stringParam)]",
+                          MISSING_REQUIRED_PARAMETERS);
+  }
+
+  @Test
+  @Ignore("CCNS-26")
+  public void vpWithBindingOnPojoFromExpression() {
+    final String actingParameter = "actingParameter";
+    ComponentElementDeclaration<?> operationDeclaration = vpWithBindingToFieldOPDeclarer()
+        .withParameterGroup(newParameterGroup()
+            .withParameter("innerPojo", plain("#[{'stringParam': '" + actingParameter + "'}]"))
+            .getDeclaration())
+        .getDeclaration();
+    validateValuesSuccess(session, operationDeclaration, PROVIDED_PARAMETER_NAME, actingParameter);
+  }
 
 }
