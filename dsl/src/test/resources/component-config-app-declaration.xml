@@ -22,7 +22,6 @@
                                 minPoolSize="0"
                                 preparedStatementCacheSize="5"
                                 maxIdleTime="0">
-                <db:additional-properties/>
             </db:pooling-profile>
             <db:connection-properties>
                 <db:connection-property key="first" value="propertyOne"/>
