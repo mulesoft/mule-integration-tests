@@ -308,16 +308,21 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
     assertThat(redeliveryPolicy.getParameter("idExpression").getValue().getLeft(),
                is("payload.id"));
 
-    final ComponentAst streamingStrategy = (ComponentAst) (source.getParameter("streamingStrategy").getValue().getRight());
-    assertThat(streamingStrategy.getModel(NamedObject.class).get().getName(),
+    final ComponentParameterAst streamingStrategyParameter = source.getParameter("streamingStrategy");
+    assertThat(getTypeId(streamingStrategyParameter.getModel().getType()).get(),
                is("ByteStreamingStrategy"));
+    final ComponentAst streamingStrategy = (ComponentAst) (streamingStrategyParameter.getValue().getRight());
+    assertThat(streamingStrategy.getModel(NamedObject.class).get().getName(),
+               is("non-repeatable-stream"));
     assertThat(streamingStrategy.getIdentifier().getName(),
                is("non-repeatable-stream"));
 
-    final ComponentAst reconnectionStrategy = (ComponentAst) (source.getParameter("reconnectionStrategy")
-        .getValue().getRight());
-    assertThat(reconnectionStrategy.getModel(NamedObject.class).get().getName(),
+    final ComponentParameterAst reconnectionStrategyParam = source.getParameter("reconnectionStrategy");
+    assertThat(getTypeId(reconnectionStrategyParam.getModel().getType()).get(),
                is("ReconnectionStrategy"));
+    final ComponentAst reconnectionStrategy = (ComponentAst) (reconnectionStrategyParam.getValue().getRight());
+    assertThat(reconnectionStrategy.getModel(NamedObject.class).get().getName(),
+               is("reconnect"));
     assertThat(reconnectionStrategy.getIdentifier().getName(),
                is("reconnect"));
 
@@ -334,16 +339,21 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
     assertThat(errorMappings.get(0).getSource(), is("HTTP:SECURITY"));
     assertThat(errorMappings.get(0).getTarget(), is("APP:GET_OUT"));
 
-    final ComponentAst streamingStrategyOp = (ComponentAst) (operation.getParameter("streamingStrategy").getValue().getRight());
-    assertThat(streamingStrategyOp.getModel(NamedObject.class).get().getName(),
+    final ComponentParameterAst streamingStrategyOpParam = operation.getParameter("streamingStrategy");
+    assertThat(getTypeId(streamingStrategyOpParam.getModel().getType()).get(),
                is("ByteStreamingStrategy"));
+    final ComponentAst streamingStrategyOp = (ComponentAst) (streamingStrategyOpParam.getValue().getRight());
+    assertThat(streamingStrategyOp.getModel(NamedObject.class).get().getName(),
+               is("non-repeatable-stream"));
     assertThat(streamingStrategyOp.getIdentifier().getName(),
                is("non-repeatable-stream"));
 
-    final ComponentAst operationReconnection =
-        (ComponentAst) (operation.getParameter("reconnectionStrategy").getValue().getRight());
-    assertThat(operationReconnection.getModel(NamedObject.class).get().getName(),
+    final ComponentParameterAst operationReconnectionParam = operation.getParameter("reconnectionStrategy");
+    assertThat(getTypeId(operationReconnectionParam.getModel().getType()).get(),
                is("ReconnectionStrategy"));
+    final ComponentAst operationReconnection = (ComponentAst) (operationReconnectionParam.getValue().getRight());
+    assertThat(operationReconnection.getModel(NamedObject.class).get().getName(),
+               is("reconnect"));
     assertThat(operationReconnection.getIdentifier().getName(),
                is("reconnect"));
     assertThat(operationReconnection.getParameter("frequency").getValue().getRight(),
