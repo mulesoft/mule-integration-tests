@@ -31,6 +31,7 @@ import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.mult
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.multiLevelShowInDslGroupOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.multiLevelTypeKeyMetadataKeyWithDefaultsOP;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.requiresConfigurationOutputTypeKeyResolverOP;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.resolverUsesResourcesCacheOP;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.sourceDeclaration;
 
 import org.mule.metadata.internal.utils.MetadataTypeWriter;
@@ -281,5 +282,33 @@ public class MetadataTypesTestCase extends DeclarationSessionTestCase {
     }
   }
 
+  @Test
+  public void metadataCache() {
+    OperationElementDeclaration operationElementDeclaration = resolverUsesResourcesCacheOP(CONFIG_NAME, "KEY_1");
+    // We need to clean up cache first...
+    session.disposeMetadataCache(operationElementDeclaration);
+
+    // First call
+    validateMetadataCacheResolve(operationElementDeclaration, "KEY_1");
+
+    // Second call
+    validateMetadataCacheResolve(resolverUsesResourcesCacheOP(CONFIG_NAME, "KEY_2"), "KEY_1 KEY_2");
+
+    // Dispose
+    session.disposeMetadataCache(operationElementDeclaration);
+
+    // New call again
+    validateMetadataCacheResolve(resolverUsesResourcesCacheOP(CONFIG_NAME, "KEY_3"), "KEY_3");
+  }
+
+  private void validateMetadataCacheResolve(OperationElementDeclaration operationElementDeclaration,
+                                            String expectedDefaultValue) {
+    MetadataResult<ComponentMetadataTypesDescriptor> metadataTypes =
+        session.resolveComponentMetadata(operationElementDeclaration);
+    assertThat(metadataTypes.isSuccess(), is(true));
+    assertThat(metadataTypes.get().getOutputMetadata().isPresent(), is(true));
+    assertThat(new MetadataTypeWriter().toString(metadataTypes.get().getOutputMetadata().get()),
+               equalTo("%type _:Java = @default(\"value\" : \"" + expectedDefaultValue + "\") String"));
+  }
 
 }
