@@ -17,4 +17,9 @@
             </on-error-propagate>
         </error-handler>
     </flow>
+
+    <flow name="okFlow">
+        <test:processor class="org.mule.functional.junit4.FlowRunnerTestCase$TestProcessor"/>
+    </flow>
+
 </mule>

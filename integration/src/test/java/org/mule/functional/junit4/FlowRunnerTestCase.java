@@ -6,13 +6,20 @@
  */
 package org.mule.functional.junit4;
 
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
+import org.mule.runtime.api.exception.MuleException;
+import org.mule.runtime.core.api.event.CoreEvent;
+import org.mule.runtime.core.api.processor.Processor;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import io.qameta.allure.Issue;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.reactivestreams.Publisher;
 
 public class FlowRunnerTestCase extends AbstractIntegrationTestCase {
 
@@ -38,4 +45,33 @@ public class FlowRunnerTestCase extends AbstractIntegrationTestCase {
     throw exception;
   }
 
+  @Test
+  @Issue("MULE-19444")
+  public void applyIsCalledOnlyDuringStartup() throws Exception {
+    // Apply is called when the flow is constructed.
+    assertThat(TestProcessor.applyCalled, is(true));
+
+    // Reset the flag, build the runnerZ and run the flow.
+    TestProcessor.applyCalled = false;
+    flowRunner("okFlow").run();
+
+    // Apply isn't called as part of the flowRunner run() execution.
+    assertThat(TestProcessor.applyCalled, is(false));
+  }
+
+  public static class TestProcessor implements Processor {
+
+    static boolean applyCalled = false;
+
+    @Override
+    public CoreEvent process(CoreEvent event) throws MuleException {
+      return event;
+    }
+
+    @Override
+    public Publisher<CoreEvent> apply(Publisher<CoreEvent> publisher) {
+      applyCalled = true;
+      return publisher;
+    }
+  }
 }
