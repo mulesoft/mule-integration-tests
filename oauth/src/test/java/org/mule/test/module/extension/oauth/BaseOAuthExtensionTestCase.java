@@ -41,13 +41,14 @@ import org.mule.test.oauth.TestOAuthConnectionState;
 import java.io.IOException;
 import java.util.Map;
 
+import org.apache.http.client.fluent.Response;
+import org.junit.Rule;
+import org.junit.rules.ExpectedException;
+
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.google.common.collect.ImmutableMap;
-import org.apache.http.client.fluent.Response;
-import org.junit.Rule;
-import org.junit.rules.ExpectedException;
 
 public abstract class BaseOAuthExtensionTestCase extends AbstractExtensionFunctionalTestCase {
 
@@ -100,19 +101,17 @@ public abstract class BaseOAuthExtensionTestCase extends AbstractExtensionFuncti
       .bindAddress("127.0.0.1")
       .port(oauthServerPort.getNumber()));
 
+  @Rule
+  public ExpectedException expectedException = ExpectedException.none();
   protected String authUrl = toUrl(AUTHORIZE_PATH, oauthServerPort.getNumber());
 
   @Rule
   public SystemProperty authorizationUrl = new SystemProperty("authorizationUrl", authUrl);
 
-
   protected String tokenUrl = toUrl(TOKEN_PATH, oauthServerPort.getNumber());
 
   @Rule
   public SystemProperty accessTokenUrl = new SystemProperty("accessTokenUrl", tokenUrl);
-
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
 
   protected String ownerId;
 
@@ -210,11 +209,22 @@ public abstract class BaseOAuthExtensionTestCase extends AbstractExtensionFuncti
   }
 
   protected void verifyAuthUrlRequest(int port) {
-    wireMock.verify(getRequestedFor(urlPathEqualTo("/" + AUTHORIZE_PATH))
-        .withQueryParam("redirect_uri", equalTo(toUrl(CALLBACK_PATH, port)))
-        .withQueryParam("client_id", equalTo(CONSUMER_KEY))
-        .withQueryParam("scope", equalTo(SCOPES.replaceAll(" ", "\\+")))
-        .withQueryParam("state", containing(STATE)));
+    verifyAuthUrlRequest(port, SCOPES);
+  }
+
+  protected void verifyAuthUrlRequest(int port, String scopes) {
+    if (scopes != null) {
+      wireMock.verify(getRequestedFor(urlPathEqualTo("/" + AUTHORIZE_PATH))
+          .withQueryParam("redirect_uri", equalTo(toUrl(CALLBACK_PATH, port)))
+          .withQueryParam("client_id", equalTo(CONSUMER_KEY))
+          .withQueryParam("state", containing(STATE))
+          .withQueryParam("scope", equalTo(scopes.replaceAll(" ", "\\+"))));
+    } else {
+      wireMock.verify(getRequestedFor(urlPathEqualTo("/" + AUTHORIZE_PATH))
+          .withQueryParam("redirect_uri", equalTo(toUrl(CALLBACK_PATH, port)))
+          .withQueryParam("client_id", equalTo(CONSUMER_KEY))
+          .withQueryParam("state", containing(STATE)));
+    }
   }
 
   protected void assertConnectionState(TestOAuthConnectionState connection) {
