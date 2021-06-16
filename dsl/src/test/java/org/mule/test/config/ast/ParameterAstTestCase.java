@@ -147,11 +147,7 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
     assertThat(proxyConfig.getValue(), is(Either.empty()));
     assertThat(getTypeId(proxyConfig.getModel().getType()), equalTo(of(HttpProxyConfig.class.getName())));
 
-    ComponentAst httpAuthentication = findComponent(oAuthHttpRequestConnection.directChildrenStream(), "http:authentication")
-        .orElseThrow(() -> new AssertionError("Couldn't find 'http:authentication'"));
-
-    ComponentAst grantType = findComponent(httpAuthentication.directChildrenStream(), "oauth:client-credentials-grant-type")
-        .orElseThrow(() -> new AssertionError("Couldn't find 'oauth:client-credentials-grant-type'"));
+    ComponentAst grantType = (ComponentAst) oAuthHttpRequestConnection.getParameter("authentication").getValue().getRight();
 
     ComponentParameterAst proxyConfigParameter = grantType.getParameter("proxyConfig");
     assertThat(proxyConfigParameter.getRawValue(), is(nullValue()));
