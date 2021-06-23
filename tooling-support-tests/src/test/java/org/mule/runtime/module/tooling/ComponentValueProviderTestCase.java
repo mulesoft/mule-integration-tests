@@ -41,7 +41,6 @@ import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.sour
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.vpWithBindingToFieldOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.vpWithBindingToFieldOPDeclarer;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.vpWithBindingToTopLevelOPDeclaration;
-import static org.mule.runtime.module.tooling.internal.artifact.AbstractParameterResolverExecutor.INVALID_PARAMETER_VALUE;
 import static org.mule.sdk.api.values.ValueResolvingException.UNKNOWN;
 
 import org.mule.runtime.api.value.Value;
@@ -151,15 +150,6 @@ public class ComponentValueProviderTestCase extends DeclarationSessionTestCase {
   }
 
   @Test
-  public void expressionRequiresContext() {
-    final String actingParameter = "#[vars.account]";
-    ComponentElementDeclaration elementDeclaration = actingParameterOPDeclaration(CONFIG_NAME, actingParameter);
-    validateValuesFailure(session, elementDeclaration, PROVIDED_PARAMETER_NAME,
-                          "Error resolving value for parameter: 'actingParameter' from declaration, it cannot be an EXPRESSION value",
-                          INVALID_PARAMETER_VALUE);
-  }
-
-  @Test
   public void actingParameterGroup() {
     final String stringValue = "stringValue";
     final int intValue = 0;
@@ -218,7 +208,6 @@ public class ComponentValueProviderTestCase extends DeclarationSessionTestCase {
     final java.sql.Date sqlDate = new java.sql.Date(dateParameter.toInstant().toEpochMilli());
     final TimeUnit enumParameter = MILLISECONDS;
     final GregorianCalendar gregorianCalendar = new GregorianCalendar();
-    gregorianCalendar.setTime(dateParameter);
     final XMLGregorianCalendar xmlGregorianCalendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(gregorianCalendar);
     final LocalDate localDate = LocalDate.parse(sqlDate.toString());
     final LocalDateTime localDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
@@ -236,7 +225,7 @@ public class ComponentValueProviderTestCase extends DeclarationSessionTestCase {
                               + sqlDate.toString()
                               + localDate.toString()
                               + localDateTime.toString()
-                              + gregorianCalendar.toString()
+                              + gregorianCalendar.toInstant().toString()
                               + xmlGregorianCalendar.toString()
                               + enumParameter.toString());
   }
@@ -269,7 +258,7 @@ public class ComponentValueProviderTestCase extends DeclarationSessionTestCase {
                               + sqlDate.toString()
                               + localDate.toString()
                               + localDateTime.toString()
-                              + gregorianCalendar.toString()
+                              + gregorianCalendar.toInstant().toString()
                               + xmlGregorianCalendar.toString()
                               + enumParameter.toString());
   }
@@ -408,7 +397,6 @@ public class ComponentValueProviderTestCase extends DeclarationSessionTestCase {
   }
 
   @Test
-  @Ignore("CCNS-26")
   public void vpWithBindingOnPojoFromExpression() {
     final String actingParameter = "actingParameter";
     ComponentElementDeclaration<?> operationDeclaration = vpWithBindingToFieldOPDeclarer()
