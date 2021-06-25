@@ -15,10 +15,8 @@ import static org.junit.Assert.assertThat;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.CUSTOM_ERROR_CODE;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.actingParameterGroupOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.actingParameterGroupOPWithAliasDeclaration;
-import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.actingParameterGroupWithOptionalProviderParamOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.actingParameterGroupWithOptionalWithDefaultInContainerProviderParamOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.actingParameterOPDeclaration;
-import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.actingParameterOptionalOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.actingParameterOptionalWithoutDefaultOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.complexActingParameterOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.complexParameterValue;
@@ -28,7 +26,13 @@ import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.erro
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.innerPojo;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.multiLevelOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.sourceDeclaration;
-import static org.mule.runtime.module.tooling.internal.artifact.AbstractParameterResolverExecutor.INVALID_PARAMETER_VALUE;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.vpOnContentDependsOnOwnAttributeOPDeclaration;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.vpOnContentDependsOnOwnDeepFieldAsPojoOPDeclaration;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.vpOnContentDependsOnOwnDeepFieldOPDeclaration;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.vpOnContentDependsOnOwnFieldOPDeclaration;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.vpOnPojoDependsOnOwnFieldOPDeclaration;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.vpOnStreamDependsOnOwnFieldOPDeclaration;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.vpWithBindingToTopLevelOPDeclaration;
 import static org.mule.sdk.api.data.sample.SampleDataException.MISSING_REQUIRED_PARAMETERS;
 
 import org.mule.runtime.api.message.Message;
@@ -208,14 +212,6 @@ public class SampleDataTestCase extends DeclarationSessionTestCase {
   }
 
   @Test
-  public void actingParameterValueDefineWithExpression() {
-    ComponentElementDeclaration<?> elementDeclaration = actingParameterOPDeclaration(CONFIG_NAME, "#[payload]");
-    String message = "Error resolving value for parameter: 'actingParameter' from declaration, it cannot be an EXPRESSION value";
-    String reason = "org.mule.sdk.api.data.sample.SampleDataException: " + message + "\n";
-    assertSampleDataFailure(elementDeclaration, message, reason, INVALID_PARAMETER_VALUE);
-  }
-
-  @Test
   public void actingParameterConfigConnectionSource() {
     ComponentElementDeclaration<?> elementDeclaration = sourceDeclaration(CONFIG_NAME, "actingParameter");
     assertSampleDataSuccessWithMatcher(elementDeclaration, "client-actingParameter", new BaseMatcher() {
@@ -239,6 +235,61 @@ public class SampleDataTestCase extends DeclarationSessionTestCase {
                             "Failed to establish connection: org.mule.runtime.api.connection.ConnectionException: Expected connection exception",
                             "org.mule.sdk.api.data.sample.SampleDataException: Failed to establish connection: org.mule.runtime.api.connection.ConnectionException: Expected connection exception",
                             "CONNECTION_FAILURE");
+  }
+
+  @Test
+  public void sampleDataWithBindingOnTopLevel() {
+    final String ap = "sampleData!";
+    assertSampleDataSuccess(vpWithBindingToTopLevelOPDeclaration(ap), ap, null);
+  }
+
+  @Test
+  public void sampleDataWithBindingOnPojoField() {
+    final String ap = "sampleData!";
+    assertSampleDataSuccess(vpOnPojoDependsOnOwnFieldOPDeclaration(ap), ap, null);
+  }
+
+  @Test
+  public void sampleDataWithBindingOnContentField() {
+    final String ap = "SampleData!";
+    assertSampleDataSuccess(vpOnContentDependsOnOwnFieldOPDeclaration("#[{field:'" + ap + "'}]"), ap, null);
+  }
+
+  @Test
+  public void sampleDataWithBindingOnContentDeepField() {
+    final String ap = "SampleData!";
+    assertSampleDataSuccess(vpOnContentDependsOnOwnDeepFieldOPDeclaration("#[{'levelOne': {'levelTwo': {'field':'" + ap
+        + "'}}}]"), ap, null);
+  }
+
+  @Test
+  public void sampleDataWithBindingOnContentDeepFieldAsPojo() {
+    final String ap = "SampleData!";
+    assertSampleDataSuccess(vpOnContentDependsOnOwnDeepFieldAsPojoOPDeclaration(
+                                                                                "#[{" +
+                                                                                    "    'levelOne': { " +
+                                                                                    "        'complexField':{" +
+                                                                                    "            'stringParam':'" + ap + "'," +
+                                                                                    "            'innerPojoParam': { " +
+                                                                                    "                'stringParam':'" + ap + "'" +
+                                                                                    "            }" +
+                                                                                    "        }" +
+                                                                                    "    }" +
+                                                                                    "}]"),
+                            null, "0" + ap + "0" + ap);
+  }
+
+  @Test
+  public void sampleDataWithBindingOnContentAttribute() {
+    final String ap = "SampleData!";
+    assertSampleDataSuccess(vpOnContentDependsOnOwnAttributeOPDeclaration("#[{field @(attribute: '" + ap + "'): 'dont-care'}]"),
+                            ap, null);
+  }
+
+  @Test
+  public void sampleDataWithBindingOnStreamField() {
+    final String ap = "SampleData!";
+    assertSampleDataSuccess(vpOnStreamDependsOnOwnFieldOPDeclaration("#[{'field':'" + ap + "'}]"), ap, null);
   }
 
   private void assertSampleDataSuccess(ComponentElementDeclaration<?> elementDeclaration,
