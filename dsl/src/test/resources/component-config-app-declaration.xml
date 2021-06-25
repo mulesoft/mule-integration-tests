@@ -17,11 +17,13 @@
                              useXaTransactions="false">
             <db:pooling-profile acquireIncrement="1"
                                 maxPoolSize="10"
+                                maxStatements="0"
                                 maxWait="0"
                                 maxWaitUnit="SECONDS"
                                 minPoolSize="0"
                                 preparedStatementCacheSize="5"
-                                maxIdleTime="0">
+                                maxIdleTime="0"
+                                testConnectionOnCheckout="false">
             </db:pooling-profile>
             <db:connection-properties>
                 <db:connection-property key="first" value="propertyOne"/>
