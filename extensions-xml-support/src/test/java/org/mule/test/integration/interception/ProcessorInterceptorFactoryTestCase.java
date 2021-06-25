@@ -42,7 +42,6 @@ import org.mule.runtime.api.interception.ProcessorInterceptorFactory.ProcessorIn
 import org.mule.runtime.api.interception.ProcessorParameterValue;
 import org.mule.runtime.api.lock.LockFactory;
 import org.mule.runtime.api.scheduler.SchedulerService;
-import org.mule.runtime.api.util.Reference;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.runtime.http.api.HttpService;
 import org.mule.test.IntegrationTestCaseRunnerConfig;
