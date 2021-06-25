@@ -12,6 +12,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
@@ -41,6 +42,7 @@ import org.mule.runtime.api.interception.ProcessorInterceptorFactory.ProcessorIn
 import org.mule.runtime.api.interception.ProcessorParameterValue;
 import org.mule.runtime.api.lock.LockFactory;
 import org.mule.runtime.api.scheduler.SchedulerService;
+import org.mule.runtime.api.util.Reference;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.runtime.http.api.HttpService;
 import org.mule.test.IntegrationTestCaseRunnerConfig;
@@ -73,6 +75,9 @@ public class ProcessorInterceptorFactoryTestCase extends MuleArtifactFunctionalT
   private static final int POLLING_TIMEOUT = 5000;
   private static final int POLLING_DELAY = 500;
 
+  private AfterWithCallbackInterceptorFactory afterWithCallbackInterceptorFactory;
+  private List<ProcessorInterceptor> processorInterceptors;
+
   @Rule
   public ExpectedError expectedError = none();
 
@@ -84,8 +89,9 @@ public class ProcessorInterceptorFactoryTestCase extends MuleArtifactFunctionalT
   @Override
   protected Map<String, Object> getStartUpRegistryObjects() {
     Map<String, Object> objects = new HashMap<>();
-
-    objects.put("_AfterWithCallbackInterceptorFactory", new AfterWithCallbackInterceptorFactory());
+    processorInterceptors = new LinkedList<>();
+    afterWithCallbackInterceptorFactory = new AfterWithCallbackInterceptorFactory(processorInterceptors);
+    objects.put("_AfterWithCallbackInterceptorFactory", afterWithCallbackInterceptorFactory);
     objects.put("_HasInjectedAttributesInterceptorFactory", new HasInjectedAttributesInterceptorFactory(false));
     objects.put("_EvaluatesExpressionInterceptorFactory", new EvaluatesExpressionInterceptorFactory());
 
@@ -123,6 +129,16 @@ public class ProcessorInterceptorFactoryTestCase extends MuleArtifactFunctionalT
     assertThat(setPayloadOperation.getParameters().get("value").resolveValue(), is("Wubba Lubba Dub Dub"));
     assertThat(setPayloadOperation.getParameters().get("mimeType").resolveValue(), is("text/plain"));
     assertThat(setPayloadOperation.getParameters().get("encoding").resolveValue(), is("UTF-8"));
+  }
+
+  @Test
+  public void interceptionClassLoader() throws Exception {
+    flowRunner("scOperation").run();
+
+    assertThat(processorInterceptors, is(not(empty())));
+    processorInterceptors.stream().map(i -> (AfterWithCallbackInterceptor) i).forEach(processorInterceptor -> {
+      assertThat(processorInterceptor.getAfterClassLoader(), is(processorInterceptor.getClassLoader()));
+    });
   }
 
   @Description("Smart Connector inside a sub-flow declares a simple operation without parameters")
@@ -596,9 +612,15 @@ public class ProcessorInterceptorFactoryTestCase extends MuleArtifactFunctionalT
 
   public static class AfterWithCallbackInterceptorFactory implements ProcessorInterceptorFactory {
 
+    List<ProcessorInterceptor> processorInterceptors;
+
+    public AfterWithCallbackInterceptorFactory(List<ProcessorInterceptor> processorInterceptors) {
+      this.processorInterceptors = processorInterceptors;
+    }
+
     @Override
     public ProcessorInterceptor get() {
-      return new AfterWithCallbackInterceptor();
+      return new AfterWithCallbackInterceptor(processorInterceptors);
     }
   }
 
@@ -607,9 +629,27 @@ public class ProcessorInterceptorFactoryTestCase extends MuleArtifactFunctionalT
     static BiConsumer<InterceptionEvent, Optional<Throwable>> callback = (event, thrown) -> {
     };
 
+    private ClassLoader afterClassLoader;
+
+    List<ProcessorInterceptor> processorInterceptors;
+
+    public AfterWithCallbackInterceptor(List<ProcessorInterceptor> processorInterceptors) {
+      this.processorInterceptors = processorInterceptors;
+    }
+
     @Override
     public void after(ComponentLocation location, InterceptionEvent event, Optional<Throwable> thrown) {
+      processorInterceptors.add(this);
+      this.afterClassLoader = Thread.currentThread().getContextClassLoader();
       callback.accept(event, thrown);
+    }
+
+    public ClassLoader getAfterClassLoader() {
+      return afterClassLoader;
+    }
+
+    public ClassLoader getClassLoader() {
+      return this.getClass().getClassLoader();
     }
   }
 
