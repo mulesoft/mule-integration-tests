@@ -7,6 +7,7 @@
 package org.mule.test.integration.interception;
 
 import static java.lang.Math.random;
+import static java.lang.Thread.currentThread;
 import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItems;
@@ -131,6 +132,7 @@ public class ProcessorInterceptorFactoryTestCase extends MuleArtifactFunctionalT
   }
 
   @Test
+  @Issue("MULE-19092")
   public void interceptionClassLoader() throws Exception {
     flowRunner("scOperation").run();
 
@@ -639,7 +641,7 @@ public class ProcessorInterceptorFactoryTestCase extends MuleArtifactFunctionalT
     @Override
     public void after(ComponentLocation location, InterceptionEvent event, Optional<Throwable> thrown) {
       processorInterceptors.add(this);
-      this.afterClassLoader = Thread.currentThread().getContextClassLoader();
+      this.afterClassLoader = currentThread().getContextClassLoader();
       callback.accept(event, thrown);
     }
 
