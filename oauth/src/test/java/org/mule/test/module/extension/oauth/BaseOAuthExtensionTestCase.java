@@ -18,6 +18,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED;
 import static java.lang.String.format;
+import static org.apache.commons.codec.binary.Base64.encodeBase64String;
 import static org.apache.http.client.fluent.Request.Get;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -324,5 +325,9 @@ public abstract class BaseOAuthExtensionTestCase extends AbstractExtensionFuncti
 
   protected String getExpirationMessageSubstring() {
     return "Access Token expired for resource owner id";
+  }
+
+  protected String toBasicAuthorizationHeader(String clientId, String clientSecret) {
+    return "Basic " + encodeBase64String(format("%s:%s", clientId, clientSecret).getBytes());
   }
 }
