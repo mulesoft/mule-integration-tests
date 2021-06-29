@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:operation="http://www.mulesoft.org/schema/mule/operation-dsl"
+      xsi:schemaLocation="
+        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+        http://www.mulesoft.org/schema/mule/operation-dsl http://www.mulesoft.org/schema/mule/operation-dsl/current/mule-operation-dsl">
+
+    <operation:def name="hello">
+        <operation:parameters>
+            <operation:parameter name="subject" type="STRING" optional="false">
+                <operation:description>
+                    The name of the person you want to greet
+                </operation:description>
+            </operation:parameter>
+        </operation:parameters>
+        <operation:output>
+            <operation:payload-type type="STRING"/>
+        </operation:output>
+        <operation:body>
+            <set-payload value="#['Hello ' ++ params.subject ++ '!'" />
+        </operation:body>
+    </operation:def>
+
+</mule>
