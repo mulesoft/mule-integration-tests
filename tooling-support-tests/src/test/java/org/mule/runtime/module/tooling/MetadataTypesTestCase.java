@@ -27,6 +27,7 @@ import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.conf
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.configLessOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.internalErrorMetadataResolverOP;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.multiLevelCompleteOPDeclaration;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.multiLevelOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.multiLevelOPDeclarationPartialTypeKeys;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.multiLevelShowInDslGroupOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.multiLevelTypeKeyMetadataKeyWithDefaultsOP;
@@ -299,6 +300,30 @@ public class MetadataTypesTestCase extends DeclarationSessionTestCase {
 
     // New call again
     validateMetadataCacheResolve(resolverUsesResourcesCacheOP(CONFIG_NAME, "KEY_3"), "KEY_3");
+  }
+
+  @Test
+  public void multiLevelKeyWithOptionalParameters() {
+    final OperationElementDeclaration operationElementDeclaration = multiLevelOPDeclaration(CONFIG_NAME, "America", "USA");
+    MetadataResult<ComponentMetadataTypesDescriptor> result = session.resolveComponentMetadata(operationElementDeclaration);
+    assertThat(result.isSuccess(), is(true));
+    // input parameters
+    assertThat(result.get().getInputMetadata().size(), is(1));
+    assertThat(new MetadataTypeWriter().toString(result.get().getInputMetadata().get("dynamicParam")),
+               equalTo("%type _:Java = @default(\"value\" : \"America|USA|null\") String"));
+
+    // output
+    assertThat(result.get().getOutputMetadata().isPresent(), is(true));
+    assertThat(new MetadataTypeWriter().toString(result.get().getOutputMetadata().get()),
+               equalTo("%type _:Java = @default(\"value\" : \"America|USA|null\") String"));
+
+    // output attributes
+    assertThat(result.get().getOutputAttributesMetadata().isPresent(), is(true));
+    assertThat(new MetadataTypeWriter().toString(result.get().getOutputAttributesMetadata().get()),
+               equalTo("%type _:Java = @typeId(\"value\" : \"org.mule.tooling.extensions.metadata.api.source.StringAttributes\") {\n"
+                   +
+                   "  \"value\"? : @default(\"value\" : \"America|USA|null\") String\n" +
+                   "}"));
   }
 
   private void validateMetadataCacheResolve(OperationElementDeclaration operationElementDeclaration,
