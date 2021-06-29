@@ -26,8 +26,9 @@ import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.conf
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.configLessMetadataKeyExpressionDefaultValueOP;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.configLessOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.internalErrorMetadataResolverOP;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.metadataKeyWithOptionalsAndPartialKeyOPDeclaration;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.metadataKeyWithOptionalsOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.multiLevelCompleteOPDeclaration;
-import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.multiLevelOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.multiLevelOPDeclarationPartialTypeKeys;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.multiLevelShowInDslGroupOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.multiLevelTypeKeyMetadataKeyWithDefaultsOP;
@@ -35,6 +36,7 @@ import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.requ
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.resolverUsesResourcesCacheOP;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.sourceDeclaration;
 
+import org.mule.metadata.api.annotation.DefaultValueAnnotation;
 import org.mule.metadata.internal.utils.MetadataTypeWriter;
 import org.mule.runtime.api.metadata.descriptor.ComponentMetadataTypesDescriptor;
 import org.mule.runtime.api.metadata.resolving.FailureCode;
@@ -303,27 +305,73 @@ public class MetadataTypesTestCase extends DeclarationSessionTestCase {
   }
 
   @Test
-  public void multiLevelKeyWithOptionalParameters() {
-    final OperationElementDeclaration operationElementDeclaration = multiLevelOPDeclaration(CONFIG_NAME, "America", "USA");
+  public void multiLevelKeyWithAllOptionalParametersProvidingSome() {
+    final OperationElementDeclaration operationElementDeclaration = metadataKeyWithOptionalsOPDeclaration("America", "USA", null);
     MetadataResult<ComponentMetadataTypesDescriptor> result = session.resolveComponentMetadata(operationElementDeclaration);
     assertThat(result.isSuccess(), is(true));
-    // input parameters
-    assertThat(result.get().getInputMetadata().size(), is(1));
-    assertThat(new MetadataTypeWriter().toString(result.get().getInputMetadata().get("dynamicParam")),
-               equalTo("%type _:Java = @default(\"value\" : \"America|USA|null\") String"));
 
     // output
     assertThat(result.get().getOutputMetadata().isPresent(), is(true));
-    assertThat(new MetadataTypeWriter().toString(result.get().getOutputMetadata().get()),
-               equalTo("%type _:Java = @default(\"value\" : \"America|USA|null\") String"));
+    assertThat(result.get().getOutputMetadata().get().getAnnotation(DefaultValueAnnotation.class).get().getValue(),
+               equalTo("America|USA|null"));
 
     // output attributes
     assertThat(result.get().getOutputAttributesMetadata().isPresent(), is(true));
-    assertThat(new MetadataTypeWriter().toString(result.get().getOutputAttributesMetadata().get()),
-               equalTo("%type _:Java = @typeId(\"value\" : \"org.mule.tooling.extensions.metadata.api.source.StringAttributes\") {\n"
-                   +
-                   "  \"value\"? : @default(\"value\" : \"America|USA|null\") String\n" +
-                   "}"));
+    assertThat(result.get().getOutputAttributesMetadata().get().getAnnotation(DefaultValueAnnotation.class).get().getValue(),
+               equalTo("America|USA|null"));
+  }
+
+  @Test
+  public void multiLevelKeyWithAllOptionalParametersProvidingNone() {
+    final OperationElementDeclaration operationElementDeclaration = metadataKeyWithOptionalsOPDeclaration(null, null, null);
+    MetadataResult<ComponentMetadataTypesDescriptor> result = session.resolveComponentMetadata(operationElementDeclaration);
+    assertThat(result.isSuccess(), is(true));
+
+    // output
+    assertThat(result.get().getOutputMetadata().isPresent(), is(true));
+    assertThat(result.get().getOutputMetadata().get().getAnnotation(DefaultValueAnnotation.class).get().getValue(),
+               equalTo("null|null|null"));
+
+    // output attributes
+    assertThat(result.get().getOutputAttributesMetadata().isPresent(), is(true));
+    assertThat(result.get().getOutputAttributesMetadata().get().getAnnotation(DefaultValueAnnotation.class).get().getValue(),
+               equalTo("null|null|null"));
+  }
+
+  @Test
+  public void multiLevelKeyWithAllOptionalParametersAndPartialKeyProvidingSome() {
+    final OperationElementDeclaration operationElementDeclaration =
+        metadataKeyWithOptionalsAndPartialKeyOPDeclaration("America", "USA", null);
+    MetadataResult<ComponentMetadataTypesDescriptor> result = session.resolveComponentMetadata(operationElementDeclaration);
+    assertThat(result.isSuccess(), is(true));
+
+    // output
+    assertThat(result.get().getOutputMetadata().isPresent(), is(true));
+    assertThat(result.get().getOutputMetadata().get().getAnnotation(DefaultValueAnnotation.class).get().getValue(),
+               equalTo("America|USA|null"));
+
+    // output attributes
+    assertThat(result.get().getOutputAttributesMetadata().isPresent(), is(true));
+    assertThat(result.get().getOutputAttributesMetadata().get().getAnnotation(DefaultValueAnnotation.class).get().getValue(),
+               equalTo("America|USA|null"));
+  }
+
+  @Test
+  public void multiLevelKeyWithAllOptionalParametersAndPartialKeyProvidingNone() {
+    final OperationElementDeclaration operationElementDeclaration =
+        metadataKeyWithOptionalsAndPartialKeyOPDeclaration(null, null, null);
+    MetadataResult<ComponentMetadataTypesDescriptor> result = session.resolveComponentMetadata(operationElementDeclaration);
+    assertThat(result.isSuccess(), is(true));
+
+    // output
+    assertThat(result.get().getOutputMetadata().isPresent(), is(true));
+    assertThat(result.get().getOutputMetadata().get().getAnnotation(DefaultValueAnnotation.class).get().getValue(),
+               equalTo("null|null|null"));
+
+    // output attributes
+    assertThat(result.get().getOutputAttributesMetadata().isPresent(), is(true));
+    assertThat(result.get().getOutputAttributesMetadata().get().getAnnotation(DefaultValueAnnotation.class).get().getValue(),
+               equalTo("null|null|null"));
   }
 
   private void validateMetadataCacheResolve(OperationElementDeclaration operationElementDeclaration,
