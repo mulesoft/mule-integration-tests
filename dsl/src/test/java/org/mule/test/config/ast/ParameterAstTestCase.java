@@ -757,7 +757,7 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
   }
 
   @Test
-  @Issue("MULE-")
+  @Issue("MULE-19563")
   public void complexParamWithDefaultValue() {
     ArtifactAst artifactAst = buildArtifactAst("parameters-test-pojo-config.xml",
                                                HeisenbergExtension.class, SubTypesMappingConnector.class, VeganExtension.class);
