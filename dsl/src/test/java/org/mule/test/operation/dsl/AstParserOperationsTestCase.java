@@ -9,6 +9,7 @@ package org.mule.test.operation.dsl;
 import static java.util.stream.Collectors.toList;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 import static org.junit.rules.ExpectedException.none;
@@ -21,6 +22,7 @@ import org.mule.runtime.api.meta.model.construct.ConstructModel;
 import org.mule.runtime.api.meta.model.nested.NestedChainModel;
 import org.mule.runtime.ast.api.ArtifactAst;
 import org.mule.runtime.ast.api.ComponentAst;
+import org.mule.runtime.ast.api.ComponentParameterAst;
 import org.mule.runtime.ast.api.xml.AstXmlParser;
 import org.mule.runtime.core.api.extension.CoreRuntimeExtensionModelProvider;
 import org.mule.runtime.core.api.extension.OperationDslExtensionModelProvider;
@@ -41,6 +43,7 @@ public class AstParserOperationsTestCase {
   private AstXmlParser parser;
 
   private final Map<String, String> properties = new HashMap<>();
+  private ArtifactAst ast;
 
   @Rule
   public ExpectedException expectedException = none();
@@ -56,17 +59,33 @@ public class AstParserOperationsTestCase {
         .withExtensionModel(new CoreRuntimeExtensionModelProvider().createExtensionModel())
         .withExtensionModel(new OperationDslExtensionModelProvider().createExtensionModel())
         .build();
+
+    ast = parser.parse(classLoader.getResource("org/mule/test/config/operation/mule-operations.xml"));
   }
 
   @Test
   public void parseHelloOperation() {
-    final ArtifactAst importAst = parser.parse(classLoader.getResource("org/mule/test/config/operation/mule-operations.xml"));
-    ComponentAst helloOp = findOperationByName(importAst, "hello");
-    assertThat(helloOp.getComponentType(), equalTo(OPERATION_DEF));
-    assertThat(helloOp.getParameter("public").getValue().getRight(), is(false));
+    ComponentAst operation = findOperationByName(ast, "hello");
+    assertHelloOperationStructure(operation);
+  }
 
-    assertThat(helloOp.getModel(ConstructModel.class).isPresent(), is(true));
-    ComponentAst parameter  = singleNode(helloOp.directChildrenStreamByIdentifier(null, "parameters")
+  @Test
+  public void parseOperationWithAttributesDefinition() {
+    ComponentAst operation = findOperationByName(ast, "helloWithAttributes");
+    assertHelloOperationStructure(operation);
+
+    ComponentAst attributesType = singleNode(operation.directChildrenStreamByIdentifier(null, "output")
+            .flatMap(c -> c.directChildrenStreamByIdentifier(null, "attributes-type")));
+
+    assertSimpleParameter(attributesType, "type", "OBJECT");
+    assertSimpleParameter(attributesType, "mimeType", "application/json");
+  }
+
+  private void assertHelloOperationStructure(ComponentAst operation) {
+    assertThat(operation.getComponentType(), equalTo(OPERATION_DEF));
+    assertThat(operation.getParameter("public").getValue().getRight(), is(false));
+    assertThat(operation.getModel(ConstructModel.class).isPresent(), is(true));
+    ComponentAst parameter  = singleNode(operation.directChildrenStreamByIdentifier(null, "parameters")
             .flatMap(c -> c.directChildrenStreamByIdentifier(null, "parameter")));
 
     assertSimpleParameter(parameter, "name", "subject");
@@ -74,13 +93,13 @@ public class AstParserOperationsTestCase {
     assertSimpleParameter(parameter, "optional", false);
     assertSimpleParameter(parameter, "description", "The name of the person you want to greet");
 
-    ComponentAst payloadType = singleNode(helloOp.directChildrenStreamByIdentifier(null, "output")
+    ComponentAst payloadType = singleNode(operation.directChildrenStreamByIdentifier(null, "output")
             .flatMap(c -> c.directChildrenStreamByIdentifier(null, "payload-type")));
 
     assertThat(payloadType.getComponentType(), is(OUTPUT_PAYLOAD_TYPE));
     assertSimpleParameter(payloadType, "type", "STRING");
 
-    ComponentAst body = singleNode(helloOp.directChildrenStreamByIdentifier(null, "body"));
+    ComponentAst body = singleNode(operation.directChildrenStreamByIdentifier(null, "body"));
     assertThat(body.getModel(NestedChainModel.class).isPresent(), is(true));
     assertThat(body.directChildrenStream().allMatch(c -> c.getComponentType().equals(OPERATION)), is(true));
   }
@@ -93,7 +112,9 @@ public class AstParserOperationsTestCase {
   }
 
   private void assertSimpleParameter(ComponentAst component, String paramName, Object expected) {
-    assertThat(component.getParameter(paramName).getValue().getRight(), equalTo(expected));
+    ComponentParameterAst parameter = component.getParameter(paramName);
+    assertThat("Parameter " + paramName + " not found", parameter, is(notNullValue()));
+    assertThat(parameter.getValue().getRight(), equalTo(expected));
   }
 
   private ComponentAst findOperationByName(ArtifactAst importAst, String name) {

@@ -22,4 +22,21 @@
         </operation:body>
     </operation:def>
 
+    <operation:def name="helloWithAttributes">
+        <operation:parameters>
+            <operation:parameter name="subject" type="STRING" optional="false">
+                <operation:description>
+                    The name of the person you want to greet
+                </operation:description>
+            </operation:parameter>
+        </operation:parameters>
+        <operation:output>
+            <operation:payload-type type="STRING"/>
+            <operation:attributes-type type="OBJECT" mimeType="application/json" />
+        </operation:output>
+        <operation:body>
+            <set-payload value="#['Hello ' ++ params.subject ++ '!'" />
+        </operation:body>
+    </operation:def>
+
 </mule>
