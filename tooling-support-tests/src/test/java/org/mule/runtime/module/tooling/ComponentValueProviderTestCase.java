@@ -31,6 +31,7 @@ import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.comp
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.complexParameterValue;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.configLessConnectionLessOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.configLessOPDeclaration;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.enumExportedWithDefaultValueOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.innerPojo;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.multipleNestedVPsOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.parameterValueProviderWithConfig;
@@ -63,6 +64,9 @@ import java.util.concurrent.TimeUnit;
 import com.google.common.collect.ImmutableMap;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.core.Is;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -360,6 +364,15 @@ public class ComponentValueProviderTestCase extends DeclarationSessionTestCase {
                                                  hasProperty("id", equalTo("ONE")),
                                                  hasProperty("id", equalTo("TWO")),
                                                  hasProperty("id", equalTo("THREE"))));
+  }
+
+  @Test
+  public void enumExportedParameterWithDefaultValue() {
+    OperationElementDeclaration elementDeclaration = enumExportedWithDefaultValueOPDeclaration();
+    ValueResult valueResult = getValueResult(session, elementDeclaration, "vpParam");
+    assertThat(valueResult.isSuccess(), is(true));
+    assertThat(valueResult.getValues(), contains(
+                                                 hasProperty("id", equalTo("ConfigLessConnectionLessNoActingParameter"))));
   }
 
   @Test

@@ -9,7 +9,10 @@ package org.mule.runtime.module.tooling;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.CUSTOM_ERROR_CODE;
@@ -22,6 +25,7 @@ import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.comp
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.complexParameterValue;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.configLessConnectionLessOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.configLessOPDeclaration;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.enumExportedWithDefaultValueOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.errorSampleDataOP;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.innerPojo;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.multiLevelOPDeclaration;
@@ -38,6 +42,7 @@ import static org.mule.sdk.api.data.sample.SampleDataException.MISSING_REQUIRED_
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.sampledata.SampleDataFailure;
 import org.mule.runtime.api.sampledata.SampleDataResult;
+import org.mule.runtime.api.value.ValueResult;
 import org.mule.runtime.app.declaration.api.ComponentElementDeclaration;
 import org.mule.runtime.app.declaration.api.OperationElementDeclaration;
 import org.mule.runtime.app.declaration.api.ParameterValue;
@@ -74,6 +79,11 @@ public class SampleDataTestCase extends DeclarationSessionTestCase {
   @Test
   public void configLessOperation() {
     assertSampleDataSuccess(configLessOPDeclaration(CONFIG_NAME), "client", null);
+  }
+
+  @Test
+  public void enumExportedParameterWithDefaultValue() {
+    assertSampleDataSuccess(enumExportedWithDefaultValueOPDeclaration(), "Sample Data!", null);
   }
 
   @Test
