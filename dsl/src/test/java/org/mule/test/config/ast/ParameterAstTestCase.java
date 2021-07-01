@@ -359,6 +359,29 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
   }
 
   @Test
+  @Issue("MULE-19561")
+  public void tlsContextParameter() {
+    ArtifactAst artifactAst = buildArtifactAst("parameters-test-tls-config.xml", PetStoreConnector.class);
+
+    final ComponentAst petStoreInlineTls = artifactAst.topLevelComponentsStream()
+        .filter(componentAst -> componentAst.getComponentId().map(id -> id.equals("inlineTls")).orElse(false))
+        .findFirst()
+        .get();
+
+    final ComponentParameterAst configTls = petStoreInlineTls.getParameter("tlsContext");
+    assertThat(configTls, not(nullValue()));
+    assertThat(configTls.getValue().getRight(), not(nullValue()));
+
+    final ComponentParameterAst cageParam = petStoreInlineTls.getParameter("cage");
+    final ComponentAst cagePojo = (ComponentAst) cageParam.getValue().getRight();
+
+    // this is the param name as defined in the pojo field, no additional handling is done for pojos
+    final ComponentParameterAst pojoTls = cagePojo.getParameter("tls");
+    assertThat(pojoTls, not(nullValue()));
+    assertThat(pojoTls.getValue().getRight(), not(nullValue()));
+  }
+
+  @Test
   @Issue("MULE-18602")
   public void nestedPojoOperationParameter() {
     ArtifactAst artifactAst = buildArtifactAst("parameters-test-pojo-config.xml",
