@@ -758,7 +758,7 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
 
   @Test
   @Issue("MULE-19563")
-  public void complexParamWithDefaultValue() {
+  public void complexParamWithDefaultValueFixed() {
     ArtifactAst artifactAst = buildArtifactAst("parameters-test-pojo-config.xml",
                                                HeisenbergExtension.class, SubTypesMappingConnector.class, VeganExtension.class);
 
@@ -774,6 +774,46 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
     final Either<String, Object> ricinsValue = killWithRicinsOperation.getParameter("ricins").getValue();
     assertThat(ricinsValue.toString(), ricinsValue.isRight(), is(true));
     assertThat(ricinsValue.toString(), ricinsValue.getRight(), instanceOf(List.class));
+  }
+
+  @Test
+  @Issue("MULE-19563")
+  public void complexParamWithDefaultValueExpression() {
+    ArtifactAst artifactAst = buildArtifactAst("parameters-test-pojo-config.xml",
+                                               HeisenbergExtension.class, SubTypesMappingConnector.class, VeganExtension.class);
+
+    final ComponentAst killWithRicinAsChildElementFlow = artifactAst.topLevelComponentsStream()
+        .filter(componentAst -> componentAst.getComponentId()
+            .map(id -> id.equals("killWithRicinAsExpression"))
+            .orElse(false))
+        .findFirst()
+        .get();
+
+    final ComponentAst killWithRicinsOperation = killWithRicinAsChildElementFlow.directChildrenStream().findFirst().get();
+
+    final Either<String, Object> ricinsValue = killWithRicinsOperation.getParameter("ricins").getValue();
+    assertThat(ricinsValue.toString(), ricinsValue.isLeft(), is(true));
+    assertThat(ricinsValue.toString(), ricinsValue.getLeft(), is("{}"));
+  }
+
+  @Test
+  @Issue("MULE-19563")
+  public void complexParamWithDefaultValue() {
+    ArtifactAst artifactAst = buildArtifactAst("parameters-test-pojo-config.xml",
+                                               HeisenbergExtension.class, SubTypesMappingConnector.class, VeganExtension.class);
+
+    final ComponentAst killWithRicinAsChildElementFlow = artifactAst.topLevelComponentsStream()
+        .filter(componentAst -> componentAst.getComponentId()
+            .map(id -> id.equals("killWithRicinDefault"))
+            .orElse(false))
+        .findFirst()
+        .get();
+
+    final ComponentAst killWithRicinsOperation = killWithRicinAsChildElementFlow.directChildrenStream().findFirst().get();
+
+    final Either<String, Object> ricinsValue = killWithRicinsOperation.getParameter("ricins").getValue();
+    assertThat(ricinsValue.toString(), ricinsValue.isLeft(), is(true));
+    assertThat(ricinsValue.toString(), ricinsValue.getLeft(), is("payload"));
   }
 
   @Test
