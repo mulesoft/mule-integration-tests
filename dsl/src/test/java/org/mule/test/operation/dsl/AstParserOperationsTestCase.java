@@ -66,21 +66,21 @@ public class AstParserOperationsTestCase {
     assertThat(helloOp.getParameter("public").getValue().getRight(), is(false));
 
     assertThat(helloOp.getModel(ConstructModel.class).isPresent(), is(true));
-    ComponentAst parameter  = singleNode(helloOp.directChildrenStreamByIdentifier(null, "parameters"::equals)
-            .flatMap(c -> c.directChildrenStreamByIdentifier(null, "parameter"::equals)));
+    ComponentAst parameter  = singleNode(helloOp.directChildrenStreamByIdentifier(null, "parameters")
+            .flatMap(c -> c.directChildrenStreamByIdentifier(null, "parameter")));
 
     assertSimpleParameter(parameter, "name", "subject");
     assertSimpleParameter(parameter, "type", "STRING");
     assertSimpleParameter(parameter, "optional", false);
     assertSimpleParameter(parameter, "description", "The name of the person you want to greet");
 
-    ComponentAst payloadType = singleNode(helloOp.directChildrenStreamByIdentifier(null, "output"::equals)
-            .flatMap(c -> c.directChildrenStreamByIdentifier(null, "payload-type"::equals)));
+    ComponentAst payloadType = singleNode(helloOp.directChildrenStreamByIdentifier(null, "output")
+            .flatMap(c -> c.directChildrenStreamByIdentifier(null, "payload-type")));
 
     assertThat(payloadType.getComponentType(), is(OUTPUT_PAYLOAD_TYPE));
     assertSimpleParameter(payloadType, "type", "STRING");
 
-    ComponentAst body = singleNode(helloOp.directChildrenStreamByIdentifier(null, "body"::equals));
+    ComponentAst body = singleNode(helloOp.directChildrenStreamByIdentifier(null, "body"));
     assertThat(body.getModel(NestedChainModel.class).isPresent(), is(true));
     assertThat(body.directChildrenStream().allMatch(c -> c.getComponentType().equals(OPERATION)), is(true));
   }
