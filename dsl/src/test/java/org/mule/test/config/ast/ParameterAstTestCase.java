@@ -757,6 +757,26 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
   }
 
   @Test
+  @Issue("MULE-")
+  public void complexParamWithDefaultValue() {
+    ArtifactAst artifactAst = buildArtifactAst("parameters-test-pojo-config.xml",
+                                               HeisenbergExtension.class, SubTypesMappingConnector.class, VeganExtension.class);
+
+    final ComponentAst killWithRicinAsChildElementFlow = artifactAst.topLevelComponentsStream()
+        .filter(componentAst -> componentAst.getComponentId()
+            .map(id -> id.equals("killWithRicinAsChildElement"))
+            .orElse(false))
+        .findFirst()
+        .get();
+
+    final ComponentAst killWithRicinsOperation = killWithRicinAsChildElementFlow.directChildrenStream().findFirst().get();
+
+    final Either<String, Object> ricinsValue = killWithRicinsOperation.getParameter("ricins").getValue();
+    assertThat(ricinsValue.toString(), ricinsValue.isRight(), is(true));
+    assertThat(ricinsValue.toString(), ricinsValue.getRight(), instanceOf(List.class));
+  }
+
+  @Test
   @Issue("MULE-19264")
   public void parameterGroupNameWithSpacesIsMatchedWithDslWhenItShowsInTheDsl() {
     ArtifactAst artifactAst = buildArtifactAst("parameters-test-config.xml", DbConnector.class, PetStoreConnector.class);
