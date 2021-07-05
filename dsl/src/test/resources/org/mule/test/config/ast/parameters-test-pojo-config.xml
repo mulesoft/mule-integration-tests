@@ -101,4 +101,25 @@
         </heisenberg:approve>
     </flow>
 
+    <flow name="killWithRicinAsChildElement">
+        <heisenberg:kill-with-ricins>
+            <heisenberg:ricins>
+                <heisenberg:ricin microgramsPerKilo="20">
+                    <heisenberg:destination victim="Lidia" address="Stevia coffe shop"/>
+                </heisenberg:ricin>
+                <heisenberg:ricin microgramsPerKilo="22">
+                    <heisenberg:destination address="pollos hermanos" victim="Gustavo Fring"/>
+                </heisenberg:ricin>
+            </heisenberg:ricins>
+        </heisenberg:kill-with-ricins>
+    </flow>
+
+    <flow name="killWithRicinAsExpression">
+        <heisenberg:kill-with-ricins ricins="#[{}]"/>
+    </flow>
+
+    <flow name="killWithRicinDefault">
+        <heisenberg:kill-with-ricins/>
+    </flow>
+
 </mule>
