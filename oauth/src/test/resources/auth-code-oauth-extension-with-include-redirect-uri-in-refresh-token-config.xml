@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:test-oauth="http://www.mulesoft.org/schema/mule/test-oauth"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+               http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+               http://www.mulesoft.org/schema/mule/test-oauth http://www.mulesoft.org/schema/mule/test-oauth/current/mule-test-oauth.xsd">
+
+    <http:listener-config name="listenerConfig">
+        <http:listener-connection host="localhost" port="${callbackPort}"/>
+    </http:listener-config>
+
+    <http:listener-config name="otherListenerConfig">
+        <http:listener-connection host="localhost" port="${otherCallbackPort}"/>
+    </http:listener-config>
+
+    <test-oauth:auth-code-config name="oauth">
+        <test-oauth:do-not-include-redirect-uri-in-refresh-token-connection display="PAGE" immediate="true" prompt="false">
+            <test-oauth:oauth-authorization-code consumerKey="${consumerKey}"
+                                                 consumerSecret="${consumerSecret}"
+                                                 authorizationUrl="${authorizationUrl}"
+                                                 accessTokenUrl="${accessTokenUrl}"
+                                                 scopes="${scopes}"
+                                                 resourceOwnerId="MG"
+                                                 before="beforeFlow"
+                                                 after="afterFlow"/>
+            <test-oauth:oauth-callback-config listenerConfig="listenerConfig"
+                                              callbackPath="${callbackPath}"
+                                              authorizePath="${localAuthPath}"/>
+        </test-oauth:do-not-include-redirect-uri-in-refresh-token-connection>
+    </test-oauth:auth-code-config>
+
+    <test-oauth:auth-code-config name="otherOAuth">
+        <test-oauth:scopeless-connection display="PAGE" immediate="true" prompt="false">
+            <test-oauth:oauth-authorization-code consumerKey="${consumerKey}"
+                                                 consumerSecret="${consumerSecret}"
+                                                 authorizationUrl="${authorizationUrl}"
+                                                 accessTokenUrl="${accessTokenUrl}"
+                                                 resourceOwnerId="MG"
+                                                 before="beforeFlow"
+                                                 after="afterFlow"/>
+            <test-oauth:oauth-callback-config listenerConfig="otherListenerConfig"
+                                              callbackPath="${callbackPath}"
+                                              authorizePath="${localAuthPath}"/>
+        </test-oauth:scopeless-connection>
+    </test-oauth:auth-code-config>
+
+    <flow name="refreshOtherToken">
+        <test-oauth:token-expired config-ref="otherOAuth"/>
+    </flow>
+
+</mule>
