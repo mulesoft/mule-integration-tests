@@ -22,12 +22,39 @@
         </operation:body>
     </operation:def>
 
+    <operation:def name="helloWithAttributes" summary="Says hellos in an attributed way" displayName="Hello with Attributes">
+        <operation:parameters>
+            <operation:parameter name="subject" type="STRING" optional="false">
+                <operation:description>
+                    The name of the person you want to greet
+                </operation:description>
+            </operation:parameter>
+        </operation:parameters>
+        <operation:output>
+            <operation:payload-type type="STRING"/>
+            <operation:attributes-type type="OBJECT" mimeType="application/json" />
+        </operation:output>
+        <operation:body>
+            <set-payload value="#['Hello ' ++ params.subject ++ '!'" />
+        </operation:body>
+    </operation:def>
+
     <operation:def name="helloWithAttributes">
         <operation:parameters>
             <operation:parameter name="subject" type="STRING" optional="false">
                 <operation:description>
                     The name of the person you want to greet
                 </operation:description>
+            </operation:parameter>
+            <operation:parameter name="conversationStarter" type="STRING">
+                <operation:optional defaultValue="How are you?">
+                    <operation:exclusive-optional parameters="exitSalute" oneRequired="true" />
+                </operation:optional>
+            </operation:parameter>
+            <operation:parameter name="exitSalute" type="STRING">
+                <operation:optional>
+                    <operation:exclusive-optional parameters="conversationStarter" oneRequired="true" />
+                </operation:optional>
             </operation:parameter>
         </operation:parameters>
         <operation:output>
