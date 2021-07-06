@@ -391,4 +391,10 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
     assertThat(locator.find(builder().globalName("redeliveryPolicyFlow").build()), is(not(empty())));
   }
 
+  @Test
+  public void listenerWithRedeliveryPolicyWithOSInitializeMultipleTimes() {
+    lazyComponentInitializer.initializeComponent(builder().globalName("redeliveryPolicyWithObjectStoreFlow").build());
+    assertThat(locator.find(builder().globalName("redeliveryPolicyWithObjectStoreFlow").build()), is(not(empty())));
+  }
+
 }
