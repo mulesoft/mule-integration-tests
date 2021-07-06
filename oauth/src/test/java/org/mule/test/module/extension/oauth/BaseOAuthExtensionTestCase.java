@@ -72,6 +72,7 @@ public abstract class BaseOAuthExtensionTestCase extends AbstractExtensionFuncti
   protected static final String STATE_PARAMETER = "state";
   protected static final String CODE_PARAMETER = "code";
   protected static final String CUSTOM_STORE_NAME = "customStore";
+  protected static final String REDIRECT_URI = "redirect_uri";
 
   @Rule
   public SystemProperty consumerKey = new SystemProperty("consumerKey", CONSUMER_KEY);
