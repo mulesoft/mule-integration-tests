@@ -16,6 +16,7 @@ import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.util.MuleSystemProperties.MULE_DISABLE_PAYLOAD_STATISTICS;
 import static org.mule.runtime.api.util.MuleSystemProperties.MULE_ENABLE_STATISTICS;
 import static org.mule.runtime.core.api.util.FileUtils.cleanDirectory;
+import static org.mule.runtime.http.api.HttpConstants.HttpStatus.OK;
 import static org.mule.runtime.http.api.HttpConstants.Method.POST;
 import static org.mule.test.allure.AllureConstants.StreamingFeature.STREAMING;
 import static org.mule.test.allure.AllureConstants.StreamingFeature.StreamingStory.STATISTICS;
@@ -45,6 +46,7 @@ import javax.inject.Named;
 
 import org.junit.Before;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -114,7 +116,7 @@ public class PayloadStatisticsTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  @Description("Assert statistics for a source that generates a List of objects with an iterator")
+  @Description("Assert statistics for a source that generates a bytes stream")
   public void bytesSource() throws MuleException, IOException, TimeoutException {
     HttpRequest httpRequest = HttpRequest.builder()
         .method(POST)
@@ -125,18 +127,48 @@ public class PayloadStatisticsTestCase extends AbstractIntegrationTestCase {
     HttpRequestOptions options = HttpRequestOptions.builder().responseTimeout(RECEIVE_TIMEOUT).build();
 
     HttpResponse httpResponse = httpClient.send(httpRequest, options);
+    assertThat(httpResponse.getStatusCode(), is(OK.getStatusCode()));
 
-    final PayloadStatistics fileListStatistics =
+    final PayloadStatistics httpListenerStatistics =
         muleContext.getStatistics().getPayloadStatistics("bytesSource/source");
 
-    assertThat(fileListStatistics.getComponentIdentifier(), is("http:listener"));
+    assertThat(httpListenerStatistics.getComponentIdentifier(), is("http:listener"));
 
-    assertThat(fileListStatistics.getInvocationCount(), is(1L));
+    assertThat(httpListenerStatistics.getInvocationCount(), is(1L));
 
-    assertThat(fileListStatistics.getInputObjectCount(), is(0L));
-    assertThat(fileListStatistics.getInputByteCount(), is(0L));
-    assertThat(fileListStatistics.getOutputObjectCount(), is(0L));
-    assertThat(fileListStatistics.getOutputByteCount(), is(BYTES_SIZE * 1L));
+    assertThat(httpListenerStatistics.getInputObjectCount(), is(0L));
+    assertThat(httpListenerStatistics.getInputByteCount(), is(0L));
+    assertThat(httpListenerStatistics.getOutputObjectCount(), is(0L));
+    assertThat(httpListenerStatistics.getOutputByteCount(), is(BYTES_SIZE * 1L));
+  }
+
+  @Test
+  @Ignore
+  @Issue("MULE-")
+  @Description("Assert statistics for a source that responds with a bytes stream")
+  public void bytesSourceResponse() throws MuleException, IOException, TimeoutException {
+    HttpRequest httpRequest = HttpRequest.builder()
+        .method(POST)
+        .uri(format("http://localhost:%d/response", port.getNumber()))
+        .entity(new ByteArrayHttpEntity(randomAlphanumeric(BYTES_SIZE).getBytes()))
+        .build();
+
+    HttpRequestOptions options = HttpRequestOptions.builder().responseTimeout(RECEIVE_TIMEOUT).build();
+
+    HttpResponse httpResponse = httpClient.send(httpRequest, options);
+    assertThat(httpResponse.getStatusCode(), is(OK.getStatusCode()));
+
+    final PayloadStatistics httpListenerStatistics =
+        muleContext.getStatistics().getPayloadStatistics("bytesSourceResponse/source");
+
+    assertThat(httpListenerStatistics.getComponentIdentifier(), is("http:listener"));
+
+    assertThat(httpListenerStatistics.getInvocationCount(), is(1L));
+
+    assertThat(httpListenerStatistics.getInputObjectCount(), is(0L));
+    assertThat(httpListenerStatistics.getInputByteCount(), is("A fixed response".length() * 1L));
+    assertThat(httpListenerStatistics.getOutputObjectCount(), is(0L));
+    assertThat(httpListenerStatistics.getOutputByteCount(), is(BYTES_SIZE * 1L));
   }
 
   @Test
@@ -153,17 +185,17 @@ public class PayloadStatisticsTestCase extends AbstractIntegrationTestCase {
 
     HttpResponse httpResponse = httpClient.send(httpRequest, options);
 
-    final PayloadStatistics fileListStatistics =
+    final PayloadStatistics httpListenerStatistics =
         muleContext.getStatistics().getPayloadStatistics("bytesSourceThroughVM/source");
 
-    assertThat(fileListStatistics.getComponentIdentifier(), is("http:listener"));
+    assertThat(httpListenerStatistics.getComponentIdentifier(), is("http:listener"));
 
-    assertThat(fileListStatistics.getInvocationCount(), is(1L));
+    assertThat(httpListenerStatistics.getInvocationCount(), is(1L));
 
-    assertThat(fileListStatistics.getInputObjectCount(), is(0L));
-    assertThat(fileListStatistics.getInputByteCount(), is(0L));
-    assertThat(fileListStatistics.getOutputObjectCount(), is(0L));
-    assertThat(fileListStatistics.getOutputByteCount(), is(BYTES_SIZE * 1L));
+    assertThat(httpListenerStatistics.getInputObjectCount(), is(0L));
+    assertThat(httpListenerStatistics.getInputByteCount(), is(0L));
+    assertThat(httpListenerStatistics.getOutputObjectCount(), is(0L));
+    assertThat(httpListenerStatistics.getOutputByteCount(), is(BYTES_SIZE * 1L));
 
     final PayloadStatistics vmOperatorStats =
         muleContext.getStatistics().getPayloadStatistics("bytesSourceThroughVM/processors/0");
