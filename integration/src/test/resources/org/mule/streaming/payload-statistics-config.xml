@@ -41,12 +41,24 @@
         <http:listener path="/" config-ref="simpleConf"/>
     
         <flow-ref name="consumeStream"/>
+
+        <set-payload value=""/>
+    </flow>
+    
+    <flow name="bytesSourceResponse">
+        <http:listener path="/response" config-ref="simpleConf"/>
+    
+        <flow-ref name="consumeStream"/>
+
+        <set-payload value="A fixed response"/>
     </flow>
     
     <flow name="bytesSourceThroughVM">
         <http:listener path="/throughVM" config-ref="simpleConf"/>
     
         <vm:publish-consume queueName="Q1" config-ref="VM_Config" timeout="10"/>
+
+        <set-payload value=""/>
     </flow>
 
     <flow name="listOfMessagesSource" initialState="stopped">

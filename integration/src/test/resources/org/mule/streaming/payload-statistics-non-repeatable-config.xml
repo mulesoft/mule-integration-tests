@@ -42,9 +42,19 @@
             <non-repeatable-stream />
         </http:listener>
         
-        <logger level="WARN" message="#[payload]"/>
+        <flow-ref name="consumeStreamOnce"/>
+        
+        <set-payload value=""/>
+    </flow>
     
-        <flow-ref name="consumeStreamsOnce"/>
+    <flow name="bytesSourceResponse">
+        <http:listener path="/response" config-ref="simpleConf">
+            <non-repeatable-stream />
+        </http:listener>
+        
+        <flow-ref name="consumeStreamOnce"/>
+        
+        <set-payload value="A fixed response"/>
     </flow>
     
     <flow name="bytesSourceThroughVM">
@@ -53,6 +63,8 @@
         </http:listener>
         
         <vm:publish-consume queueName="Q1" config-ref="VM_Config" timeout="10"/>
+
+        <set-payload value=""/>
     </flow>
 
     <flow name="listOfMessagesSource" initialState="stopped">
