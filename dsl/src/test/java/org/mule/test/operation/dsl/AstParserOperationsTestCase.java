@@ -54,11 +54,11 @@ public class AstParserOperationsTestCase {
     classLoader = getClass().getClassLoader();
 
     parser = builder()
-        .withSchemaValidationsDisabled()
-        .withPropertyResolver(propertyKey -> properties.getOrDefault(propertyKey, propertyKey))
-        .withExtensionModel(new CoreRuntimeExtensionModelProvider().createExtensionModel())
-        .withExtensionModel(new OperationDslExtensionModelProvider().createExtensionModel())
-        .build();
+            .withSchemaValidationsDisabled()
+            .withPropertyResolver(propertyKey -> properties.getOrDefault(propertyKey, propertyKey))
+            .withExtensionModel(new CoreRuntimeExtensionModelProvider().createExtensionModel())
+            .withExtensionModel(new OperationDslExtensionModelProvider().createExtensionModel())
+            .build();
 
     ast = parser.parse(classLoader.getResource("org/mule/test/config/operation/mule-operations.xml"));
   }
@@ -73,6 +73,8 @@ public class AstParserOperationsTestCase {
   public void parseOperationWithAttributesDefinition() {
     ComponentAst operation = findOperationByName(ast, "helloWithAttributes");
     assertHelloOperationStructure(operation);
+    assertThat(operation.getParameter("summary").getResolvedRawValue(), equalTo("Says hello in an attributed way"));
+    assertThat(operation.getParameter("displayName").getResolvedRawValue(), equalTo("Hello with Attributes"));
 
     ComponentAst attributesType = singleNode(operation.directChildrenStreamByIdentifier(null, "output")
             .flatMap(c -> c.directChildrenStreamByIdentifier(null, "attributes-type")));
@@ -81,17 +83,46 @@ public class AstParserOperationsTestCase {
     assertSimpleParameter(attributesType, "mimeType", "application/json");
   }
 
+  @Test
+  public void parseOperationWithOptionalParameter() {
+    ComponentAst operation = findOperationByName(ast, "helloWithOptional");
+
+    List<ComponentAst> parameters = (List<ComponentAst>) operation.getParameter("parameters").getValue().getRight();
+    assertThat(parameters, hasSize(3));
+
+    ComponentAst param = parameters.get(1);
+    assertSimpleParameter(param, "name", "conversationStarter");
+
+    ComponentAst optionalElement = (ComponentAst) param.getParameter("optional").getValue().getRight();
+    ComponentAst exclusiveOptionals = (ComponentAst) optionalElement.getParameter("exclusiveOptional").getValue().getRight();
+
+    assertSimpleParameter(optionalElement,"defaultValue", "How are you?");
+    assertSimpleParameter(exclusiveOptionals, "parameters", "exitSalute");
+    assertSimpleParameter(exclusiveOptionals, "oneRequired", true);
+
+    param = parameters.get(2);
+    assertSimpleParameter(param, "name", "exitSalute");
+
+    optionalElement = (ComponentAst) param.getParameter("optional").getValue().getRight();
+    exclusiveOptionals = (ComponentAst) optionalElement.getParameter("exclusiveOptional").getValue().getRight();
+
+    assertSimpleParameter(optionalElement,"defaultValue", null);
+    assertSimpleParameter(exclusiveOptionals, "parameters", "conversationStarter");
+    assertSimpleParameter(exclusiveOptionals, "oneRequired", true);
+  }
+
   private void assertHelloOperationStructure(ComponentAst operation) {
     assertThat(operation.getComponentType(), equalTo(OPERATION_DEF));
     assertThat(operation.getParameter("public").getValue().getRight(), is(false));
     assertThat(operation.getModel(ConstructModel.class).isPresent(), is(true));
-    ComponentAst parameter  = singleNode(operation.directChildrenStreamByIdentifier(null, "parameters")
-            .flatMap(c -> c.directChildrenStreamByIdentifier(null, "parameter")));
+
+    List<ComponentAst> parameters = (List<ComponentAst>) operation.getParameter("parameters").getValue().getRight();
+    assertThat(parameters, hasSize(1));
+    ComponentAst parameter = parameters.get(0);
 
     assertSimpleParameter(parameter, "name", "subject");
     assertSimpleParameter(parameter, "type", "STRING");
-    assertSimpleParameter(parameter, "optional", false);
-    assertSimpleParameter(parameter, "description", "The name of the person you want to greet");
+//    assertSimpleParameter(parameter, "description", "The name of the person you want to greet");
 
     ComponentAst payloadType = singleNode(operation.directChildrenStreamByIdentifier(null, "output")
             .flatMap(c -> c.directChildrenStreamByIdentifier(null, "payload-type")));

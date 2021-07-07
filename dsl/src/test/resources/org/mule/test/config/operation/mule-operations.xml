@@ -22,7 +22,7 @@
         </operation:body>
     </operation:def>
 
-    <operation:def name="helloWithAttributes" summary="Says hellos in an attributed way" displayName="Hello with Attributes">
+    <operation:def name="helloWithAttributes" summary="Says hello in an attributed way" displayName="Hello with Attributes">
         <operation:parameters>
             <operation:parameter name="subject" type="STRING" optional="false">
                 <operation:description>
@@ -39,7 +39,7 @@
         </operation:body>
     </operation:def>
 
-    <operation:def name="helloWithAttributes">
+    <operation:def name="helloWithOptional">
         <operation:parameters>
             <operation:parameter name="subject" type="STRING" optional="false">
                 <operation:description>
