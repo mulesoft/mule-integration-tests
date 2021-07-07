@@ -144,7 +144,7 @@ public class PayloadStatisticsTestCase extends AbstractIntegrationTestCase {
 
   @Test
   @Ignore
-  @Issue("MULE-")
+  @Issue("MULE-19568")
   @Description("Assert statistics for a source that responds with a bytes stream")
   public void bytesSourceResponse() throws MuleException, IOException, TimeoutException {
     HttpRequest httpRequest = HttpRequest.builder()
