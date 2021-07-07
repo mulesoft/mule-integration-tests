@@ -15,6 +15,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.collection.IsArrayContaining.hasItemInArray;
 import static org.hamcrest.collection.IsArrayContainingInOrder.arrayContaining;
@@ -143,11 +144,13 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
             .orElseThrow(() -> new AssertionError("Couldn't find 'http:request-connection'"));
 
     ComponentParameterAst proxyConfig = oAuthHttpRequestConnection.getParameter("proxyConfig");
-    assertThat(proxyConfig.getRawValue(), is(nullValue()));
-    assertThat(proxyConfig.getValue(), is(Either.empty()));
-    assertThat(getTypeId(proxyConfig.getModel().getType()), equalTo(of(HttpProxyConfig.class.getName())));
+    assertThat(proxyConfig, is(nullValue()));
 
-    ComponentAst grantType = (ComponentAst) oAuthHttpRequestConnection.getParameter("authentication").getValue().getRight();
+    ComponentParameterAst authentication = oAuthHttpRequestConnection.getParameter("authentication");
+    assertThat(authentication, is(notNullValue()));
+
+    ComponentAst grantType = (ComponentAst) authentication.getValue().getRight();
+    assertThat(grantType, is(notNullValue()));
 
     ComponentParameterAst proxyConfigParameter = grantType.getParameter("proxyConfig");
     assertThat(proxyConfigParameter.getRawValue(), is(nullValue()));
@@ -172,8 +175,7 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
             .orElseThrow(() -> new AssertionError("Couldn't find 'defaultParametersFlow' flow"));
     assertThat(defaultParametersFlow.getParameter("initialState").isDefaultValue(), is(true));
     assertThat(defaultParametersFlow.getParameter("initialState").getValue().getRight(), is("started"));
-    assertThat(defaultParametersFlow.getParameter("maxConcurrency").isDefaultValue(), is(true));
-    assertThat(defaultParametersFlow.getParameter("maxConcurrency").getValue(), is(Either.empty()));
+    assertThat(defaultParametersFlow.getParameter("maxConcurrency"), is(nullValue()));
 
     // Non default flow parameters
     ComponentAst flowParameters = findComponent(artifactAst.topLevelComponentsStream(), FLOW_IDENTIFIER, "flowParameters")
@@ -190,8 +192,7 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
     assertThat(httpListener.getParameter("path").getValue().getRight(), is("/run"));
     assertThat(httpListener.getParameter("config-ref").isDefaultValue(), is(false));
     assertThat(httpListener.getParameter("config-ref").getValue().getRight(), is("defaultHttpListenerConfig"));
-    assertThat(httpListener.getParameter("allowedMethods").isDefaultValue(), is(true));
-    assertThat(httpListener.getParameter("allowedMethods").getValue(), is(Either.empty()));
+    assertThat(httpListener.getParameter("allowedMethods"), is(nullValue()));
 
     // HTTP listener config parameters
     ComponentAst httpListenerConfig =
@@ -401,8 +402,7 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
     assertThat(recursivePojo, not(nullValue()));
 
     ComponentParameterAst recursivePojoNextParameter = recursivePojo.getParameter("next");
-    assertThat(getTypeId(recursivePojoNextParameter.getModel().getType()), equalTo(of(RecursivePojo.class.getName())));
-    assertThat(recursivePojoNextParameter.getValue().getRight(), is(nullValue()));
+    assertThat(recursivePojoNextParameter, is(nullValue()));
 
     ComponentParameterAst recursivePojoChildsParameter = recursivePojo.getParameter("childs");
     assertThat(recursivePojoChildsParameter.getModel().getType(), instanceOf(ArrayType.class));
