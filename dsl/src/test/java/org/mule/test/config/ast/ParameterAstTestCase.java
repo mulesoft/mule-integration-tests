@@ -125,7 +125,7 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
         .withExtensionModels(runtimeExtensionModels)
         .withSchemaValidationsDisabled()
         .build()
-        .parse(this.getClass().getClassLoader().getResource("org/mule/test/config/ast/" + configFile));
+        .parse(this.getClass().getClassLoader().getResource("ast/" + configFile));
   }
 
   @Issue("MULE-18564")
