@@ -952,22 +952,23 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
     assertThat(actual, arrayContaining(rightValues));
   }
 
-  private Optional<ComponentAst> findComponent(Stream<ComponentAst> stream, String componentIdentifier, String componentId) {
+  protected Optional<ComponentAst> findComponent(Stream<ComponentAst> stream, String componentIdentifier, String componentId) {
     return findComponent(stream, ComponentIdentifier.buildFromStringRepresentation(componentIdentifier), componentId);
   }
 
-  private Optional<ComponentAst> findComponent(Stream<ComponentAst> stream, ComponentIdentifier identifier, String componentId) {
+  protected Optional<ComponentAst> findComponent(Stream<ComponentAst> stream, ComponentIdentifier identifier,
+                                                 String componentId) {
     return stream
         .filter(componentAst -> identifier.equals(componentAst.getIdentifier())
             && componentId.equals(componentAst.getComponentId().orElse(null)))
         .findFirst();
   }
 
-  private Optional<ComponentAst> findComponent(Stream<ComponentAst> stream, String componentIdentifier) {
+  protected Optional<ComponentAst> findComponent(Stream<ComponentAst> stream, String componentIdentifier) {
     return findComponent(stream, ComponentIdentifier.buildFromStringRepresentation(componentIdentifier));
   }
 
-  private Optional<ComponentAst> findComponent(Stream<ComponentAst> stream, ComponentIdentifier identifier) {
+  protected Optional<ComponentAst> findComponent(Stream<ComponentAst> stream, ComponentIdentifier identifier) {
     return stream
         .filter(componentAst -> identifier.equals(componentAst.getIdentifier()))
         .findFirst();
