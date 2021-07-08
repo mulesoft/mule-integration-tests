@@ -7,7 +7,6 @@
 package org.mule.test.config.ast;
 
 import static java.lang.Boolean.TRUE;
-import static java.lang.Thread.currentThread;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static java.util.stream.Collectors.toList;
@@ -26,7 +25,6 @@ import static org.mule.runtime.api.component.ComponentIdentifier.builder;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.FLOW_IDENTIFIER;
 import static org.mule.runtime.core.api.construct.Flow.INITIAL_STATE_STARTED;
 import static org.mule.runtime.core.api.construct.Flow.INITIAL_STATE_STOPPED;
-import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.initialiseIfNeeded;
 import static org.mule.runtime.extension.api.ExtensionConstants.ERROR_MAPPINGS_PARAMETER_NAME;
 import static org.mule.runtime.extension.api.util.ExtensionMetadataTypeUtils.isMap;
 import static org.mule.test.allure.AllureConstants.ArtifactAst.ARTIFACT_AST;
@@ -48,7 +46,6 @@ import org.mule.metadata.api.model.ObjectType;
 import org.mule.runtime.api.component.ComponentIdentifier;
 import org.mule.runtime.api.functional.Either;
 import org.mule.runtime.api.meta.NamedObject;
-import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.api.meta.model.config.ConfigurationModel;
 import org.mule.runtime.api.meta.model.connection.ConnectionProviderModel;
 import org.mule.runtime.api.meta.model.construct.ConstructModel;
@@ -57,29 +54,17 @@ import org.mule.runtime.api.meta.model.parameter.ParameterizedModel;
 import org.mule.runtime.ast.api.ArtifactAst;
 import org.mule.runtime.ast.api.ComponentAst;
 import org.mule.runtime.ast.api.ComponentParameterAst;
-import org.mule.runtime.ast.api.xml.AstXmlParser;
-import org.mule.runtime.core.api.extension.RuntimeExtensionModelProvider;
-import org.mule.runtime.core.api.registry.SpiServiceRegistry;
 import org.mule.runtime.extension.api.error.ErrorMapping;
-import org.mule.runtime.module.extension.api.loader.java.DefaultJavaExtensionModelLoader;
-import org.mule.runtime.module.extension.internal.manager.DefaultExtensionManager;
-import org.mule.tck.junit4.AbstractMuleContextTestCase;
 import org.mule.test.heisenberg.extension.HeisenbergExtension;
 import org.mule.test.heisenberg.extension.model.RecursivePojo;
 import org.mule.test.heisenberg.extension.model.Weapon;
 import org.mule.test.petstore.extension.PetStoreConnector;
-import org.mule.test.runner.infrastructure.ExtensionsTestInfrastructureDiscoverer;
 import org.mule.test.subtypes.extension.SubTypesMappingConnector;
 import org.mule.test.vegan.extension.VeganExtension;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import io.qameta.allure.Feature;
@@ -88,45 +73,9 @@ import io.qameta.allure.Story;
 
 @Feature(ARTIFACT_AST)
 @Story(PARAMETER_AST)
-public class ParameterAstTestCase extends AbstractMuleContextTestCase {
+public class ParameterAstTestCase extends BaseParameterAstTestCase {
 
   private static final String NAME = "name";
-
-  private static List<ExtensionModel> runtimeExtensionModels;
-  private DefaultExtensionManager extensionManager;
-
-  @BeforeClass
-  public static void beforeClass() throws Exception {
-    runtimeExtensionModels = new ArrayList<>();
-    Collection<RuntimeExtensionModelProvider> runtimeExtensionModelProviders = new SpiServiceRegistry()
-        .lookupProviders(RuntimeExtensionModelProvider.class, currentThread().getContextClassLoader());
-    for (RuntimeExtensionModelProvider runtimeExtensionModelProvider : runtimeExtensionModelProviders) {
-      runtimeExtensionModels.add(runtimeExtensionModelProvider.createExtensionModel());
-    }
-  }
-
-  @Before
-  public void before() throws Exception {
-    extensionManager = new DefaultExtensionManager();
-    muleContext.setExtensionManager(extensionManager);
-    initialiseIfNeeded(extensionManager, muleContext);
-  }
-
-  protected ArtifactAst buildArtifactAst(final String configFile, final Class... extensions) {
-    ExtensionsTestInfrastructureDiscoverer discoverer = new ExtensionsTestInfrastructureDiscoverer(extensionManager);
-
-    DefaultJavaExtensionModelLoader extensionModelLoader = new DefaultJavaExtensionModelLoader();
-    for (Class<?> annotatedClass : extensions) {
-      discoverer.discoverExtension(annotatedClass, extensionModelLoader);
-    }
-
-    return AstXmlParser.builder()
-        .withExtensionModels(muleContext.getExtensionManager().getExtensions())
-        .withExtensionModels(runtimeExtensionModels)
-        .withSchemaValidationsDisabled()
-        .build()
-        .parse(this.getClass().getClassLoader().getResource("ast/" + configFile));
-  }
 
   @Issue("MULE-18564")
   @Test
@@ -950,32 +899,6 @@ public class ParameterAstTestCase extends AbstractMuleContextTestCase {
       return (String) elementParameter.getValue().getRight();
     }).toArray(String[]::new);
     assertThat(actual, arrayContaining(rightValues));
-  }
-
-  protected Optional<ComponentAst> findComponent(Stream<ComponentAst> stream, String componentIdentifier, String componentId) {
-    return findComponent(stream, ComponentIdentifier.buildFromStringRepresentation(componentIdentifier), componentId);
-  }
-
-  protected Optional<ComponentAst> findComponent(Stream<ComponentAst> stream, ComponentIdentifier identifier,
-                                                 String componentId) {
-    return stream
-        .filter(componentAst -> identifier.equals(componentAst.getIdentifier())
-            && componentId.equals(componentAst.getComponentId().orElse(null)))
-        .findFirst();
-  }
-
-  protected Optional<ComponentAst> findComponent(Stream<ComponentAst> stream, String componentIdentifier) {
-    return findComponent(stream, ComponentIdentifier.buildFromStringRepresentation(componentIdentifier));
-  }
-
-  protected Optional<ComponentAst> findComponent(Stream<ComponentAst> stream, ComponentIdentifier identifier) {
-    return stream
-        .filter(componentAst -> identifier.equals(componentAst.getIdentifier()))
-        .findFirst();
-  }
-
-  private Optional<ComponentAst> findComponentByComponentId(Stream<ComponentAst> stream, String componentId) {
-    return stream.filter(c -> componentId.equals(c.getComponentId().orElse(null))).findFirst();
   }
 
 }
