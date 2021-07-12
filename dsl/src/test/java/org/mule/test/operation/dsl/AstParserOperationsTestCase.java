@@ -122,6 +122,8 @@ public class AstParserOperationsTestCase {
 
     assertSimpleParameter(parameter, "name", "subject");
     assertSimpleParameter(parameter, "type", "STRING");
+
+    //TODO: remove after MULE-19571
 //    assertSimpleParameter(parameter, "description", "The name of the person you want to greet");
 
     ComponentAst payloadType = singleNode(operation.directChildrenStreamByIdentifier(null, "output")
