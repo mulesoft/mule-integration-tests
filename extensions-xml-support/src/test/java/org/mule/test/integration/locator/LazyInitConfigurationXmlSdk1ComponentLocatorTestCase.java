@@ -54,7 +54,7 @@ public class LazyInitConfigurationXmlSdk1ComponentLocatorTestCase extends MuleAr
   public SystemProperty path = new SystemProperty("path", "path");
 
 
-  private static final int TOTAL_NUMBER_OF_LOCATIONS = 38;
+  private static final int TOTAL_NUMBER_OF_LOCATIONS = 36;
 
   @Inject
   private LazyComponentInitializer lazyComponentInitializer;
@@ -94,8 +94,6 @@ public class LazyInitConfigurationXmlSdk1ComponentLocatorTestCase extends MuleAr
                                   "github-httpreq-config-sample-config/connection/0",
                                   "github-httpreq-config-sample-config/connection/0/0",
                                   "get-channels/processors/0",
-                                  "get-channels/processors/0/0",
-                                  "get-channels/processors/0/1",
                                   "get-channels/processors/1",
 
                                   "sample-config",
