@@ -72,8 +72,6 @@ public class LazyInitConfigurationComponentLocatorTestCase extends BaseOAuthExte
 
                                   "oauth",
                                   "oauth/connection",
-                                  "oauth/connection/0",
-                                  "oauth/connection/1",
 
                                   "getConnection",
                                   "getConnection/processors/0",
@@ -108,7 +106,6 @@ public class LazyInitConfigurationComponentLocatorTestCase extends BaseOAuthExte
 
                                   "entitiesMetadata",
                                   "entitiesMetadata/processors/0",
-                                  "entitiesMetadata/processors/0/0",
 
                                   "values",
                                   "values/processors/0",
