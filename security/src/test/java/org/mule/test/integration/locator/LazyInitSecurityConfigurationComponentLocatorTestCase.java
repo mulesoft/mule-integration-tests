@@ -43,7 +43,7 @@ import io.qameta.allure.Story;
 
 @Feature(CONFIGURATION_COMPONENT_LOCATOR)
 @Story(SEARCH_CONFIGURATION)
-public class LazyInitConfigurationComponentLocatorTestCase extends MuleArtifactFunctionalTestCase
+public class LazyInitSecurityConfigurationComponentLocatorTestCase extends MuleArtifactFunctionalTestCase
     implements IntegrationTestCaseRunnerConfig {
 
   @Rule
@@ -93,7 +93,6 @@ public class LazyInitConfigurationComponentLocatorTestCase extends MuleArtifactF
                                   "SecureUMO2",
                                   "SecureUMO2/source",
                                   "SecureUMO2/processors/0",
-                                  "SecureUMO2/processors/0/0",
                                   "SecureUMO2/processors/0/0/0",
                                   "SecureUMO2/processors/1"));
   }

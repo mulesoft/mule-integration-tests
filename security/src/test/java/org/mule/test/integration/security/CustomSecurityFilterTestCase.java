@@ -40,10 +40,8 @@ public class CustomSecurityFilterTestCase extends MuleArtifactFunctionalTestCase
   private static final String EXPECTED_PASSWORD = "ross";
 
   @Override
-  protected String[] getConfigFiles() {
-    return new String[] {
-        "org/mule/test/integration/security/custom-security-filter-test.xml"
-    };
+  protected String getConfigFile() {
+    return "org/mule/test/integration/security/custom-security-filter-test.xml";
   }
 
   @Test
