@@ -7,9 +7,7 @@
        http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
 
     <test-components:element-with-attribute-and-child name="pojoWithChild" myPojo="jose">
-        <test-components:my-pojo>
-            <test-components:my-pojo someParameter="pepe"/>
-        </test-components:my-pojo>
+        <test-components:my-pojo someParameter="pepe"/>
     </test-components:element-with-attribute-and-child>
 
 </mule>
