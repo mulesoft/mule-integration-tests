@@ -12,6 +12,7 @@ import static java.util.Arrays.asList;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.mule.metadata.api.model.MetadataFormat.JAVA;
 import static org.mule.runtime.api.component.Component.NS_MULE_DOCUMENTATION;
 import static org.mule.runtime.api.meta.model.parameter.ParameterGroupModel.CONNECTION;
 import static org.mule.runtime.api.util.MuleSystemProperties.SYSTEM_PROPERTY_PREFIX;
@@ -25,6 +26,7 @@ import static org.mule.runtime.app.declaration.api.fluent.SimpleValueType.BOOLEA
 import static org.mule.runtime.app.declaration.api.fluent.SimpleValueType.NUMBER;
 import static org.mule.runtime.app.declaration.api.fluent.SimpleValueType.STRING;
 import static org.mule.runtime.ast.api.DependencyResolutionMode.MINIMAL;
+import static org.mule.runtime.core.api.extension.MuleExtensionModelProvider.STRING_TYPE;
 import static org.mule.runtime.core.api.util.FileUtils.stringToFile;
 import static org.mule.runtime.core.api.util.IOUtils.getResourceAsString;
 import static org.mule.runtime.core.api.util.IOUtils.getResourceAsUrl;
@@ -50,6 +52,8 @@ import static org.mule.runtime.extension.api.declaration.type.StreamingStrategyT
 import static org.skyscreamer.jsonassert.JSONCompareMode.NON_EXTENSIBLE;
 
 import org.mule.extensions.jms.api.connection.caching.NoCachingConfiguration;
+import org.mule.metadata.api.builder.BaseTypeBuilder;
+import org.mule.metadata.java.api.annotation.ClassInformationAnnotation;
 import org.mule.runtime.api.app.declaration.serialization.ArtifactDeclarationJsonSerializer;
 import org.mule.runtime.app.declaration.api.ArtifactDeclaration;
 import org.mule.runtime.app.declaration.api.ParameterElementDeclaration;
@@ -70,6 +74,7 @@ import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -342,7 +347,13 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
         .withGlobalElement(core.newConstruct("object")
             .withRefName("myString")
             .withParameterGroup(group -> group.withParameter("class", createStringParameter("java.lang.String")))
-            .withComponent(core.newConstruct("property").getDeclaration())
+            .withParameterGroup(newParameterGroup()
+                .withParameter("property", newObjectValue()
+                    .ofType(BaseTypeBuilder.create(JAVA).objectType()
+                        .with(new ClassInformationAnnotation(Map.class, asList(String.class, String.class))).openWith(STRING_TYPE)
+                        .build().toString())
+                    .build())
+                .getDeclaration())
             .getDeclaration())
         .withGlobalElement(core.newConstruct("errorHandler")
             .withRefName("referableHandler")
