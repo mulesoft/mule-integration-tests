@@ -24,7 +24,7 @@ public class ObjectPropertiesExtensionModelTestCase extends AbstractIntegrationT
   }
 
   @Test
-  public void warap() throws Exception {
+  public void propertiesAreCorrectlySetted() throws Exception {
     CoreEvent event = flowRunner("test").run();
     assertThat(event.getMessage().getPayload().getValue(),
                is("El campeón de la Copa América es Argentina, gracias a Lionel Messi"));
