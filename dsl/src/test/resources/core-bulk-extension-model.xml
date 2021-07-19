@@ -80,7 +80,11 @@
         </foreach>
     </flow>
     <global-property name="Attribute" value="Attribute"/>
-    <notifications/>
+    <notifications dynamic="false">
+        <logger/>
+        <logger/>
+        <logger/>
+    </notifications>
     <object class="Attribute" name="global-object" ref="Attribute"/>
     <flow name="flowFor-onError">
         <on-error ref="MULE:ON_ERROR"/>
