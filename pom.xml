@@ -198,6 +198,8 @@
                         <exclude>org.mule.modules:mule-spring-module</exclude>
                         <exclude>org.mule.modules:mule-spring-module-tests</exclude>
                         <exclude>org.mule.modules:mule-spring-test-plugin</exclude>
+
+                        <exclude>org.mule.tooling:tooling-support-test-extension</exclude>
                       </excludes>
                     </requireReleaseDeps>
                     <requireReleaseVersion>
