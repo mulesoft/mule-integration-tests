@@ -28,7 +28,7 @@
   "name": "General",
   "customConfigurationParameters": [],
   "metadataProperties": {},
-  "parameters": [{"name":"name","metadataProperties":{},"value":{"text":"myString","isCData":false,"type":"STRING"}},{"name":"class","metadataProperties":{},"value":{"text":"java.lang.String","isCData":false,"type":"STRING"}}]
+  "parameters": [{"name":"name","metadataProperties":{},"value":{"text":"myString","isCData":false,"type":"STRING"}},{"name":"class","metadataProperties":{},"value":{"text":"java.lang.String","isCData":false,"type":"STRING"}},{"name":"property","metadataProperties":{},"value":{"fields":{}}}]
 }
       ],
       "components": []

@@ -341,9 +341,8 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
             .getDeclaration())
         .withGlobalElement(core.newConstruct("object")
             .withRefName("myString")
-            .withParameterGroup(group -> group
-                .withParameter("class",
-                               createStringParameter("java.lang.String")))
+            .withParameterGroup(group -> group.withParameter("class", createStringParameter("java.lang.String")))
+            .withComponent(core.newConstruct("property").getDeclaration())
             .getDeclaration())
         .withGlobalElement(core.newConstruct("errorHandler")
             .withRefName("referableHandler")

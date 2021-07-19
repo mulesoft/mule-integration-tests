@@ -85,7 +85,9 @@
         <logger/>
         <logger/>
     </notifications>
-    <object class="Attribute" name="global-object" ref="Attribute"/>
+    <object class="Attribute" name="global-object" ref="Attribute">
+        <properties/>
+    </object>
     <flow name="flowFor-onError">
         <on-error ref="MULE:ON_ERROR"/>
     </flow>
