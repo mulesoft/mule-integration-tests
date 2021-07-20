@@ -48,39 +48,7 @@ public class ExpressionLanguageConfigTestCase extends AbstractIntegrationTestCas
   public void testExpressionLanguageAlias() {
     assertEquals(muleContext.getConfiguration().getId(), evaluate("appName"));
   }
-
-  @Test
-  public void testExpressionLanguageGlobalFunction() {
-    // NOTE: This indirectly asserts that echo() function defined in config file rather than external
-    // function definition file is being used (otherwise hiOTHER' would be returned
-
-    assertEquals("hi", evaluate("echo('hi')"));
-  }
-
-  @Test
-  public void testExpressionLanguageGlobalFunctionFromFile() {
-    assertEquals("hi", evaluate("echo2('hi')"));
-  }
-
-  @Test
-  public void testExpressionLanguageGlobalFunctionUsingStaticContext() {
-    assertEquals("Hello " + muleContext.getConfiguration().getId() + "!", evaluate("hello()"));
-  }
-
-  @Test
-  public void testExpressionLanguageGlobalFunctionUsingMessageContext() throws Exception {
-    assertEquals("123appended", el.evaluate("mel:appendPayload()", CoreEvent.builder(testEvent()).message(of("123")).build(),
-                                            getTestFlow(muleContext).getLocation())
-        .getValue());
-  }
-
-  @Test
-  public void testExpressionLanguageGlobalFunctionUsingMessageContextAndImport() throws Exception {
-    assertEquals("321", el.evaluate("mel:reversePayload()", CoreEvent.builder(testEvent()).message(of("123")).build(),
-                                    getTestFlow(muleContext).getLocation())
-        .getValue());
-  }
-
+  
   @Test
   public void testExpressionLanguageExecuteElement() throws Exception {
     flowRunner("flow").withPayload("foo").run();
