@@ -10,8 +10,6 @@
                http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
                http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
 
-    <object name="customFilter" class="org.mule.test.core.NonBlockingFunctionalTestCase$CustomSecurityFilter"/>
-
     <flow name="flow" initialState="stopped">
         <test-components:assert-intercepting responseSameTask="false">
             <test-components:non-blocking/>
@@ -67,15 +65,6 @@
                 </test-components:assert-intercepting>
                 <test:assert expression="#[payload == 'Test Message']"/>
             </try>
-            <test-components:non-blocking/>
-            <test:assert expression="#[payload == 'Test Message']"/>
-        </test-components:assert-intercepting>
-        <test:assert expression="#[payload == 'Test Message']"/>
-    </flow>
-
-    <flow name="security-filter" initialState="stopped">
-        <test-components:assert-intercepting responseSameTask="false">
-            <custom-security-filter ref="customFilter"/>
             <test-components:non-blocking/>
             <test:assert expression="#[payload == 'Test Message']"/>
         </test-components:assert-intercepting>
