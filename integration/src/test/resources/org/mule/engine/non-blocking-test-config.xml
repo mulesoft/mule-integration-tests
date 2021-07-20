@@ -10,8 +10,6 @@
                http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
                http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
 
-    <object name="customFilter" class="org.mule.test.core.NonBlockingFunctionalTestCase$CustomSecurityFilter"/>
-
     <flow name="catchExceptionStrategyChild">
         <raise-error type="TEST:SOME"/>
         <error-handler>

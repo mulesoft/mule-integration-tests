@@ -11,9 +11,6 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mule.tck.processor.FlowAssert.verify;
 
-import org.mule.runtime.api.security.SecurityContext;
-import org.mule.runtime.core.api.event.CoreEvent;
-import org.mule.runtime.core.api.security.AbstractAuthenticationFilter;
 import org.mule.runtime.core.api.transaction.TransactionCoordination;
 import org.mule.runtime.core.privileged.transaction.TransactionAdapter;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -87,11 +84,6 @@ public class NonBlockingFunctionalTestCase extends AbstractIntegrationTestCase {
   @Test
   public void processorChain() throws Exception {
     flowRunner("processorChain").withPayload(TEST_MESSAGE).run();
-  }
-
-  @Test
-  public void securityFilter() throws Exception {
-    flowRunner("security-filter").withPayload(TEST_MESSAGE).run();
   }
 
   @Test
@@ -236,12 +228,5 @@ public class NonBlockingFunctionalTestCase extends AbstractIntegrationTestCase {
     flowRunner("parallelForeach").withPayload(asList(new String[] {"1", "2", "3"}, new String[] {"a", "b", "c"})).run();
   }
 
-  public static class CustomSecurityFilter extends AbstractAuthenticationFilter {
-
-    @Override
-    public SecurityContext authenticate(CoreEvent event) throws SecurityException {
-      return event.getSecurityContext();
-    }
-  }
 }
 
