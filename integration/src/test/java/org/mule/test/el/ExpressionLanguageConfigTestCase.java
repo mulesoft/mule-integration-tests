@@ -48,7 +48,7 @@ public class ExpressionLanguageConfigTestCase extends AbstractIntegrationTestCas
   public void testExpressionLanguageAlias() {
     assertEquals(muleContext.getConfiguration().getId(), evaluate("appName"));
   }
-  
+
   @Test
   public void testExpressionLanguageExecuteElement() throws Exception {
     flowRunner("flow").withPayload("foo").run();
