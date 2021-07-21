@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+
+
+    <object name="testObject" class="org.mule.test.components.ObjectPropertiesExtensionModelTestCase$TestDto">
+        <property key="champion" value="Argentina"/>
+        <property key="KeyPlayer" value="Lionel Messi" />
+    </object>
+
+    <flow name="test">
+        <flow-ref name="testObject"/>
+    </flow>
+
+</mule>

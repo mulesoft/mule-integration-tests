@@ -13,7 +13,9 @@
     <configuration defaultErrorHandler-ref="referableHandler"/>
 
     <object name="myString"
-            class="java.lang.String"/>
+            class="java.lang.String">
+        <properties/>
+    </object>
 
     <error-handler name="referableHandler">
         <on-error-continue enableNotifications="false" logException="false" type="MULE:SOURCE_RESPONSE">
