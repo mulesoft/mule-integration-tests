@@ -13,13 +13,6 @@
             <import class="org.apache.commons.lang3.StringUtils" />
             <import class="java.text.DateFormat" />
             <alias name="appName" expression="app.name" />
-            <global-functions file="org/mule/test/el/functions.txt">
-                def echo(text) {text}
-                def hello() {'Hello '+appName+'!'}
-                def appendPayload() {payload+'appended'}
-                def reversePayload() {StringUtils.reverse(payload)}
-                def regexWrap(text) {regex(text)}
-            </global-functions>
         </expression-language>
     </configuration>
 
