@@ -44,6 +44,7 @@
     <springVersion>5.1.6.RELEASE</springVersion>
 
     <muleDependenciesVersion>1.x-SNAPSHOT</muleDependenciesVersion>
+    <muleTestComponentsVersion>4.4.0-SNAPSHOT</muleTestComponentsVersion>
   </properties>
 
   <build>
@@ -96,7 +97,7 @@
     <dependency>
       <groupId>org.mule.tests</groupId>
       <artifactId>test-components</artifactId>
-      <version>${project.version}</version>
+      <version>${muleTestComponentsVersion}</version>
       <classifier>mule-plugin</classifier>
     </dependency>
   </dependencies>
@@ -143,8 +144,6 @@
                         <exclude>org.mule.modules:mule-spring-module</exclude>
                         <exclude>org.mule.modules:mule-spring-module-tests</exclude>
                         <exclude>org.mule.modules:mule-spring-test-plugin</exclude>
-                        <exclude>org.mule.tests:test-components</exclude>
-                        <exclude>org.mule.tooling:tooling-support-test-extension</exclude>
                       </excludes>
                     </requireReleaseDeps>
                     <requireReleaseVersion>
@@ -193,13 +192,10 @@
                         <exclude>org.mule.services:*</exclude>
                         <exclude>org.mule.tools.maven:mule-classloader-model</exclude>
                         <exclude>org.mule.modules:mule-module-cors-kernel</exclude>
-                        <exclude>org.mule.tests:test-components</exclude>
 
                         <exclude>org.mule.modules:mule-spring-module</exclude>
                         <exclude>org.mule.modules:mule-spring-module-tests</exclude>
                         <exclude>org.mule.modules:mule-spring-test-plugin</exclude>
-
-                        <exclude>org.mule.tooling:tooling-support-test-extension</exclude>
                       </excludes>
                     </requireReleaseDeps>
                     <requireReleaseVersion>
