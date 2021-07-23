@@ -2,7 +2,9 @@
 <mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
     <flow name="flowFor-scheduler">
-        <scheduler schedulingStrategy="Attribute" disallowConcurrentExecution="false"/>
+        <scheduler disallowConcurrentExecution="false">
+        	<scheduling-strategy/>
+        </scheduler>
     </flow>
     <flow name="flowFor-idempotentMessageValidator">
         <idempotent-message-validator idExpression="#[correlationId]" objectStore="OS:OBJECT_STORE"
