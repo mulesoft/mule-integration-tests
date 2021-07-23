@@ -44,7 +44,7 @@ import io.qameta.allure.Story;
  */
 @Features({@Feature(XML_SDK), @Feature(INTERCEPTION_API)})
 @Story(COMPONENT_INTERCEPTION_STORY)
-public class ProcessorInterceptorFactoryFailingInterceptorsTestCase extends MuleArtifactFunctionalTestCase
+public class XmlSdkProcessorInterceptorFactoryFailingInterceptorsTestCase extends MuleArtifactFunctionalTestCase
     implements IntegrationTestCaseRunnerConfig {
 
   @Rule
