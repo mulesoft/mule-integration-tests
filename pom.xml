@@ -38,7 +38,7 @@
     <muleExtensionTestSoapTestVersion>1.4.0-SNAPSHOT</muleExtensionTestSoapTestVersion>
     <muleSpringModuleTestVersion>1.4.0-SNAPSHOT</muleSpringModuleTestVersion>
 
-    <munitExtensionsMavenPlugin>1.0.0</munitExtensionsMavenPlugin>
+    <munitExtensionsMavenPlugin>1.1.1</munitExtensionsMavenPlugin>
 
     <apacheHttpClientVersion>4.5.13</apacheHttpClientVersion>
     <springVersion>5.1.6.RELEASE</springVersion>
