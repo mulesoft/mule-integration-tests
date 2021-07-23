@@ -13,7 +13,6 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.functional.api.exception.ExpectedError.none;
 import static org.mule.runtime.api.interception.ProcessorInterceptorFactory.INTERCEPTORS_ORDER_REGISTRY_KEY;
-import static org.mule.runtime.extension.api.ExtensionConstants.ERROR_MAPPINGS_PARAMETER_NAME;
 import static org.mule.test.allure.AllureConstants.InterceptonApi.INTERCEPTION_API;
 import static org.mule.test.allure.AllureConstants.InterceptonApi.ComponentInterceptionStory.COMPONENT_INTERCEPTION_STORY;
 import static org.mule.test.allure.AllureConstants.XmlSdk.XML_SDK;
@@ -28,9 +27,9 @@ import org.mule.runtime.api.interception.ProcessorInterceptorFactory;
 import org.mule.runtime.api.interception.ProcessorInterceptorFactory.ProcessorInterceptorOrder;
 import org.mule.runtime.api.interception.ProcessorParameterValue;
 import org.mule.test.IntegrationTestCaseRunnerConfig;
-import org.mule.test.integration.interception.ProcessorInterceptorFactoryTestCase.HasInjectedAttributesInterceptor;
-import org.mule.test.integration.interception.ProcessorInterceptorFactoryTestCase.HasInjectedAttributesInterceptorFactory;
-import org.mule.test.integration.interception.ProcessorInterceptorFactoryTestCase.InterceptionParameters;
+import org.mule.test.integration.interception.XmlSdkProcessorInterceptorFactoryTestCase.HasInjectedAttributesInterceptor;
+import org.mule.test.integration.interception.XmlSdkProcessorInterceptorFactoryTestCase.HasInjectedAttributesInterceptorFactory;
+import org.mule.test.integration.interception.XmlSdkProcessorInterceptorFactoryTestCase.InterceptionParameters;
 import org.mule.test.runner.RunnerDelegateTo;
 
 import java.util.Collection;
@@ -55,7 +54,7 @@ import io.qameta.allure.Story;
 @Features({@Feature(XML_SDK), @Feature(INTERCEPTION_API)})
 @Story(COMPONENT_INTERCEPTION_STORY)
 @RunnerDelegateTo(Parameterized.class)
-public class ProcessorInterceptorFactoryCustomActionTestCase extends MuleArtifactFunctionalTestCase
+public class XmlSdkProcessorInterceptorFactoryCustomActionTestCase extends MuleArtifactFunctionalTestCase
     implements IntegrationTestCaseRunnerConfig {
 
 
@@ -64,7 +63,7 @@ public class ProcessorInterceptorFactoryCustomActionTestCase extends MuleArtifac
 
   private final boolean mutateEventBefore;
 
-  public ProcessorInterceptorFactoryCustomActionTestCase(boolean mutateEventBefore) {
+  public XmlSdkProcessorInterceptorFactoryCustomActionTestCase(boolean mutateEventBefore) {
     this.mutateEventBefore = mutateEventBefore;
   }
 
@@ -114,7 +113,7 @@ public class ProcessorInterceptorFactoryCustomActionTestCase extends MuleArtifac
     InterceptionParameters setPayloadOperation = interceptionParameters.get(1);
 
     assertThat(moduleOperationChain.getParameters().keySet(),
-               containsInAnyOrder("doc:name", "targetValue", ERROR_MAPPINGS_PARAMETER_NAME));
+               containsInAnyOrder("doc:name", "targetValue"));
     assertThat(moduleOperationChain.getParameters().get("doc:name").resolveValue(), is("mySCName"));
 
     assertThat(setPayloadOperation.getParameters().keySet(), containsInAnyOrder("value", "mimeType", "encoding"));

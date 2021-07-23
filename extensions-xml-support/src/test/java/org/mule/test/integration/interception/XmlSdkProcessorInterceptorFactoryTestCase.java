@@ -22,7 +22,6 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mule.functional.api.exception.ExpectedError.none;
 import static org.mule.runtime.api.interception.ProcessorInterceptorFactory.INTERCEPTORS_ORDER_REGISTRY_KEY;
-import static org.mule.runtime.extension.api.ExtensionConstants.ERROR_MAPPINGS_PARAMETER_NAME;
 import static org.mule.tck.probe.PollingProber.check;
 import static org.mule.test.allure.AllureConstants.InterceptonApi.INTERCEPTION_API;
 import static org.mule.test.allure.AllureConstants.InterceptonApi.ComponentInterceptionStory.COMPONENT_INTERCEPTION_STORY;
@@ -69,7 +68,7 @@ import io.qameta.allure.Story;
 
 @Features({@Feature(XML_SDK), @Feature(INTERCEPTION_API)})
 @Story(COMPONENT_INTERCEPTION_STORY)
-public class ProcessorInterceptorFactoryTestCase extends MuleArtifactFunctionalTestCase
+public class XmlSdkProcessorInterceptorFactoryTestCase extends MuleArtifactFunctionalTestCase
     implements IntegrationTestCaseRunnerConfig {
 
   private static final int POLLING_TIMEOUT = 5000;
@@ -122,7 +121,7 @@ public class ProcessorInterceptorFactoryTestCase extends MuleArtifactFunctionalT
     InterceptionParameters setPayloadOperation = interceptionParameters.get(1);
 
     assertThat(moduleOperationChain.getParameters().keySet(),
-               containsInAnyOrder("doc:name", "targetValue", ERROR_MAPPINGS_PARAMETER_NAME));
+               containsInAnyOrder("doc:name", "targetValue"));
     assertThat(moduleOperationChain.getParameters().get("doc:name").resolveValue(), is("mySCName"));
 
     assertThat(setPayloadOperation.getParameters().keySet(), containsInAnyOrder("value", "mimeType", "encoding"));
@@ -363,7 +362,7 @@ public class ProcessorInterceptorFactoryTestCase extends MuleArtifactFunctionalT
     InterceptionParameters setPayloadOperation = interceptionParameters.get(1);
 
     assertThat(moduleOperationChain.getParameters().keySet(),
-               containsInAnyOrder("echoMessage", "targetValue", ERROR_MAPPINGS_PARAMETER_NAME));
+               containsInAnyOrder("echoMessage", "targetValue"));
     assertThat(moduleOperationChain.getParameters().get("echoMessage").resolveValue(), is("echo message for the win"));
 
     assertThat(setPayloadOperation.getParameters().keySet(), containsInAnyOrder("value", "mimeType", "encoding"));
@@ -390,7 +389,7 @@ public class ProcessorInterceptorFactoryTestCase extends MuleArtifactFunctionalT
     assertThat(flowRef.getParameters().get("name").resolveValue(), is("scEchoOperation"));
 
     assertThat(moduleOperationChain.getParameters().keySet(),
-               containsInAnyOrder("echoMessage", "targetValue", ERROR_MAPPINGS_PARAMETER_NAME));
+               containsInAnyOrder("echoMessage", "targetValue"));
     assertThat(moduleOperationChain.getParameters().get("echoMessage").resolveValue(), is("echo message for the win"));
 
     assertThat(setPayloadOperation.getParameters().keySet(), containsInAnyOrder("value", "mimeType", "encoding"));
@@ -413,9 +412,9 @@ public class ProcessorInterceptorFactoryTestCase extends MuleArtifactFunctionalT
     InterceptionParameters setPayloadOperation = interceptionParameters.get(2);
 
     assertThat(proxyModuleOperationChain.getParameters().keySet(),
-               containsInAnyOrder("targetValue", ERROR_MAPPINGS_PARAMETER_NAME));
+               containsInAnyOrder("targetValue"));
     assertThat(innerModuleOperationChain.getParameters().keySet(),
-               containsInAnyOrder("targetValue", ERROR_MAPPINGS_PARAMETER_NAME));
+               containsInAnyOrder("targetValue"));
 
     assertThat(setPayloadOperation.getParameters().keySet(), containsInAnyOrder("value", "mimeType", "encoding"));
     assertThat(setPayloadOperation.getParameters().get("value").resolveValue(), is("Wubba Lubba Dub Dub"));
