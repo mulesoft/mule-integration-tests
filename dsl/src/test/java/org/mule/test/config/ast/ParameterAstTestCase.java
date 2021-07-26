@@ -724,19 +724,19 @@ public class ParameterAstTestCase extends BaseParameterAstTestCase {
     assertParameters(origin, "origin", "allowedMethods", "Method", "methodName", "POST", "PUT", "GET");
     assertParameters(origin, "origin", "allowedHeaders", "Header", "headerName", "x-allow-origin",
                      "x-yet-another-valid-header");
-    assertParameters(origin, DEFAULT_GROUP_NAME, "exposeHeaders", DEFAULT_GROUP_NAME, "headerName", "x-forwarded-for");
+    assertParameters(origin, "origin", "exposeHeaders", "Header", "headerName", "x-forwarded-for");
 
     origin = origins.stream().skip(1).findFirst().get();
-    originUrlParameter = origin.getParameter(DEFAULT_GROUP_NAME, "url");
+    originUrlParameter = origin.getParameter("origin", "url");
     assertThat(originUrlParameter.getValue().getLeft(), nullValue());
     assertThat(originUrlParameter.getValue().getRight(), is("http://www.the-origin-of-life.com"));
-    originAccessControlMaxAgeParameter = origin.getParameter(DEFAULT_GROUP_NAME, "accessControlMaxAge");
+    originAccessControlMaxAgeParameter = origin.getParameter("origin", "accessControlMaxAge");
     assertThat(originAccessControlMaxAgeParameter.getValue().getLeft(), nullValue());
     assertThat(originAccessControlMaxAgeParameter.getValue().getRight(), is(60l));
 
-    assertParameters(origin, DEFAULT_GROUP_NAME, "allowedMethods", DEFAULT_GROUP_NAME, "methodName", "POST", "GET");
-    assertParameters(origin, DEFAULT_GROUP_NAME, "allowedHeaders", DEFAULT_GROUP_NAME, "headerName", "x-allow-origin");
-    assertParameters(origin, DEFAULT_GROUP_NAME, "exposeHeaders", DEFAULT_GROUP_NAME, "headerName", "x-forwarded-for");
+    assertParameters(origin, "origin", "allowedMethods", "Method", "methodName", "POST", "GET");
+    assertParameters(origin, "origin", "allowedHeaders", "Header", "headerName", "x-allow-origin");
+    assertParameters(origin, "origin", "exposeHeaders", "Header", "headerName", "x-forwarded-for");
   }
 
   @Test
