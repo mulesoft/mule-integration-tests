@@ -8,6 +8,7 @@ package org.mule.test.extension.dsl;
 
 import static java.lang.Boolean.getBoolean;
 import static java.util.Collections.emptyList;
+import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
 import static org.mule.metadata.api.utils.MetadataTypeUtils.getDefaultValue;
 import static org.mule.runtime.api.meta.ExpressionSupport.REQUIRED;
@@ -292,8 +293,8 @@ public class BulkArtifactDeclarationTestCase extends AbstractElementModelTestCas
         }
 
         ParameterListValue.Builder listValue = newListValue();
-        addParameter(arrayType.getType(), false, false, false, null, emptyList(), listValue::withValue);
-        addParameter(arrayType.getType(), false, false, false, null, emptyList(), listValue::withValue);
+        addParameter(arrayType.getType(), false, false, false, empty(), emptyList(), listValue::withValue);
+        addParameter(arrayType.getType(), false, false, false, empty(), emptyList(), listValue::withValue);
         valueConsumer.accept(listValue.build());
       }
 
