@@ -10,6 +10,7 @@ import static java.util.stream.Collectors.toList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.core.Is.is;
+import static org.mule.runtime.api.meta.model.parameter.ParameterGroupModel.DEFAULT_GROUP_NAME;
 import static org.mule.runtime.extension.api.ExtensionConstants.RECONNECTION_STRATEGY_PARAMETER_NAME;
 import static org.mule.runtime.extension.api.ExtensionConstants.TLS_PARAMETER_NAME;
 import static org.mule.runtime.internal.dsl.DslConstants.KEY_ATTRIBUTE_NAME;
@@ -142,7 +143,7 @@ public class ConfigurationBasedElementModelFactoryTestCase extends AbstractEleme
     assertAttributeIsPresent(connectionElement, "create");
     assertThat(connectionElement.findElement(newIdentifier("connection-properties", DB_NS)).isPresent(), is(true));
 
-    ComponentAst pooling = (ComponentAst) connection.getParameter("poolingProfile").getValue().getRight();
+    ComponentAst pooling = (ComponentAst) connection.getParameter(DEFAULT_GROUP_NAME, "poolingProfile").getValue().getRight();
     DslElementModel<ConnectionProviderModel> poolingElement = getChild(connectionElement, pooling);
 
     assertValue(poolingElement.findElement("maxPoolSize").get(), "10");
@@ -270,7 +271,8 @@ public class ConfigurationBasedElementModelFactoryTestCase extends AbstractEleme
     assertHasParameter(connectionElement.getModel(), "port");
     assertAttributeIsPresent(connectionElement, "port");
 
-    final ComponentAst authentication = (ComponentAst) connection.getParameter("authentication").getValue().getRight();
+    final ComponentAst authentication =
+        (ComponentAst) connection.getParameter(DEFAULT_GROUP_NAME, "authentication").getValue().getRight();
     DslElementModel<ParameterModel> basicAuthElement = getChild(connectionElement, authentication);
     assertElementName(basicAuthElement, "basic-authentication");
     assertThat(basicAuthElement.getDsl().isWrapped(), is(false));
@@ -310,7 +312,8 @@ public class ConfigurationBasedElementModelFactoryTestCase extends AbstractEleme
     assertHasParameter(connectionElement.getModel(), "port");
     assertAttributeIsPresent(connectionElement, "port");
 
-    ComponentAst properties = (ComponentAst) connection.getParameter("clientSocketProperties").getValue().getRight();
+    ComponentAst properties =
+        (ComponentAst) connection.getParameter(DEFAULT_GROUP_NAME, "clientSocketProperties").getValue().getRight();
     DslElementModel<ObjectType> propertiesElement = getChild(connectionElement, properties);
 
     assertElementName(propertiesElement, "tcp-client-socket-properties");
@@ -364,7 +367,8 @@ public class ConfigurationBasedElementModelFactoryTestCase extends AbstractEleme
 
     DslElementModel<SourceModel> schedulerElement = resolve(scheduler);
 
-    ComponentAst schedulingStrategy = (ComponentAst) scheduler.getParameter("schedulingStrategy").getValue().getRight();
+    ComponentAst schedulingStrategy =
+        (ComponentAst) scheduler.getParameter(DEFAULT_GROUP_NAME, "schedulingStrategy").getValue().getRight();
 
     DslElementModel<ParameterModel> fixedFrequency = getChild(schedulerElement, schedulingStrategy);
     assertElementName(fixedFrequency, "fixed-frequency");
@@ -526,7 +530,8 @@ public class ConfigurationBasedElementModelFactoryTestCase extends AbstractEleme
     assertElementName(sqlElement, "sql");
     assertValue(sqlElement, "INSERT INTO PLANET(POSITION, NAME) VALUES (:position, :name)");
 
-    List<ComponentAst> parameterTypes = (List<ComponentAst>) dbInsert.getParameter("parameterTypes").getValue().getRight();
+    List<ComponentAst> parameterTypes =
+        (List<ComponentAst>) dbInsert.getParameter(DEFAULT_GROUP_NAME, "parameterTypes").getValue().getRight();
     DslElementModel<ParameterModel> parameterTypesElement = getChild(bulkInsertElement, ComponentIdentifier.builder()
         .namespace(dbInsert.getIdentifier().getNamespace())
         .namespaceUri(dbInsert.getIdentifier().getNamespaceUri())
@@ -534,14 +539,14 @@ public class ConfigurationBasedElementModelFactoryTestCase extends AbstractEleme
     assertElementName(parameterTypesElement, "parameter-types");
 
     ComponentAst parameterOne = parameterTypes.get(0);
-    assertThat(parameterOne.getParameter("key").getValue().getRight(), is("name"));
+    assertThat(parameterOne.getParameter(DEFAULT_GROUP_NAME, "key").getValue().getRight(), is("name"));
     DslElementModel<ObjectType> elementOne = parameterTypesElement.getContainedElements().get(0);
     assertElementName(elementOne, parameterOne.getIdentifier().getName());
     assertValue(elementOne.findElement("key").get(), "name");
     assertValue(elementOne.findElement("type").get(), "VARCHAR");
 
     ComponentAst parameterTwo = parameterTypes.get(1);
-    assertThat(parameterTwo.getParameter("key").getValue().getRight(), is("position"));
+    assertThat(parameterTwo.getParameter(DEFAULT_GROUP_NAME, "key").getValue().getRight(), is("position"));
     DslElementModel<ObjectType> elementTwo = parameterTypesElement.getContainedElements().get(1);
     assertElementName(elementTwo, parameterTwo.getIdentifier().getName());
     assertValue(elementTwo.findElement("key").get(), "position");
