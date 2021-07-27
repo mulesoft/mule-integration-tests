@@ -152,7 +152,7 @@
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-io</artifactId>
-            <version>9.0.7.v20131107</version>
+            <version>9.4.40.v20210413</version>
             <scope>test</scope>
         </dependency>
         <dependency>
