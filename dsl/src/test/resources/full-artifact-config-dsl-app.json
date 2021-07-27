@@ -275,7 +275,7 @@
                       "type": "NUMBER"
                     }
                   },
-                  "typeId": "org.mule.extension.db.api.config.DbPoolingProfile"
+                  "typeId": "org.mule.db.commons.shaded.api.config.DbPoolingProfile"
                 }
               }
             ]
@@ -515,7 +515,7 @@
                       "type": "NUMBER"
                     }
                   },
-                  "typeId": "org.mule.extension.db.api.config.DbPoolingProfile"
+                  "typeId": "org.mule.db.commons.shaded.api.config.DbPoolingProfile"
                 }
               }
             ]
@@ -1020,7 +1020,7 @@
                                   "type": "STRING"
                                 }
                               },
-                              "typeId": "org.mule.extension.db.api.param.ParameterType"
+                              "typeId": "org.mule.db.commons.shaded.api.param.ParameterType"
                             },
                             {
                               "fields": {
@@ -1035,7 +1035,7 @@
                                   "type": "STRING"
                                 }
                               },
-                              "typeId": "org.mule.extension.db.api.param.ParameterType"
+                              "typeId": "org.mule.db.commons.shaded.api.param.ParameterType"
                             }
                           ]
                         }
@@ -1165,7 +1165,7 @@
                           "type": "STRING"
                         }
                       },
-                      "typeId": "org.mule.extension.db.api.param.ParameterType"
+                      "typeId": "org.mule.db.commons.shaded.api.param.ParameterType"
                     },
                     {
                       "fields": {
@@ -1180,7 +1180,7 @@
                           "type": "STRING"
                         }
                       },
-                      "typeId": "org.mule.extension.db.api.param.ParameterType"
+                      "typeId": "org.mule.db.commons.shaded.api.param.ParameterType"
                     }
                   ]
                 }
@@ -1270,7 +1270,7 @@
                           "type": "STRING"
                         }
                       },
-                      "typeId": "org.mule.extension.db.api.param.ParameterType"
+                      "typeId": "org.mule.db.commons.shaded.api.param.ParameterType"
                     }
                   ]
                 },
