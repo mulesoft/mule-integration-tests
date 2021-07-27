@@ -275,7 +275,7 @@
                       "type": "NUMBER"
                     }
                   },
-                  "typeId": "org.mule.extension.db.api.config.DbPoolingProfile"
+                  "typeId": "org.mule.db.commons.shaded.api.config.DbPoolingProfile"
                 }
               }
             ]
@@ -515,7 +515,7 @@
                       "type": "NUMBER"
                     }
                   },
-                  "typeId": "org.mule.extension.db.api.config.DbPoolingProfile"
+                  "typeId": "org.mule.db.commons.shaded.api.config.DbPoolingProfile"
                 }
               }
             ]
