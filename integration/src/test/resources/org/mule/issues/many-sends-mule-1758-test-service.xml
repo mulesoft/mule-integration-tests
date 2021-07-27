@@ -10,9 +10,7 @@
     </configuration>
 
     <flow name="mySynchService">
-        <test:processor>
-            <test:return-data>Polo</test:return-data>
-        </test:processor>
+    	<set-payload value="Polo"/>
     </flow>
 
 </mule>
