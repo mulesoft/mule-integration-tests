@@ -15,13 +15,15 @@
                            subsubProtocol="directory"
                            transactionIsolation="NOT_CONFIGURED"
                            useXaTransactions="false">
-         <db:pooling-profile acquireIncrement="1"
-                             maxIdleTime="0"
-                             maxPoolSize="10"
-                             maxWait="0"
-                             maxWaitUnit="SECONDS"
-                             minPoolSize="0"
-                             preparedStatementCacheSize="5">
+          <db:pooling-profile acquireIncrement="1"
+                              maxPoolSize="10"
+                              maxStatements="0"
+                              maxWait="0"
+                              maxWaitUnit="SECONDS"
+                              minPoolSize="0"
+                              preparedStatementCacheSize="5"
+                              maxIdleTime="0"
+                              testConnectionOnCheckout="false">
              <db:additional-properties/>
          </db:pooling-profile>
             <db:connection-properties>
