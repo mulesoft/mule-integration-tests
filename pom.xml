@@ -4,13 +4,13 @@
   <parent>
     <groupId>org.mule.runtime</groupId>
     <artifactId>mule</artifactId>
-    <version>4.4.0-SNAPSHOT</version>
+    <version>4.5.0-SNAPSHOT</version>
     <relativePath></relativePath>
   </parent>
   
   <groupId>org.mule.tests</groupId>
   <artifactId>mule-extensions-integration-tests</artifactId>
-  <version>4.4.0-SNAPSHOT</version>
+  <version>4.5.0-SNAPSHOT</version>
 
   <packaging>pom</packaging>
   <name>Mule Tests</name>
@@ -30,12 +30,12 @@
   </modules>
 
   <properties>
-    <munitVersion>2.2.6-SNAPSHOT</munitVersion>
-    <muleSchedulerServiceTestVersion>1.4.0-SNAPSHOT</muleSchedulerServiceTestVersion>
-    <muleHttpServiceTestVersion>1.6.0-SNAPSHOT</muleHttpServiceTestVersion>
-    <muleOAuthServiceTestVersion>2.1.0-SNAPSHOT</muleOAuthServiceTestVersion>
-    <muleSoapServiceTestVersion>1.4.0-SNAPSHOT</muleSoapServiceTestVersion>
-    <muleExtensionTestSoapTestVersion>1.4.0-SNAPSHOT</muleExtensionTestSoapTestVersion>
+    <munitVersion>2.4.0-SNAPSHOT</munitVersion>
+    <muleSchedulerServiceTestVersion>1.5.0-SNAPSHOT</muleSchedulerServiceTestVersion>
+    <muleHttpServiceTestVersion>1.7.0-SNAPSHOT</muleHttpServiceTestVersion>
+    <muleOAuthServiceTestVersion>2.2.0-SNAPSHOT</muleOAuthServiceTestVersion>
+    <muleSoapServiceTestVersion>1.5.0-SNAPSHOT</muleSoapServiceTestVersion>
+    <muleExtensionTestSoapTestVersion>1.5.0-SNAPSHOT</muleExtensionTestSoapTestVersion>
     <muleSpringModuleTestVersion>1.4.0-SNAPSHOT</muleSpringModuleTestVersion>
 
     <munitExtensionsMavenPlugin>1.1.1</munitExtensionsMavenPlugin>
@@ -44,7 +44,7 @@
     <springVersion>5.1.6.RELEASE</springVersion>
 
     <muleDependenciesVersion>1.x-SNAPSHOT</muleDependenciesVersion>
-    <muleTestComponentsVersion>4.4.0-SNAPSHOT</muleTestComponentsVersion>
+    <muleTestComponentsVersion>4.5.0-SNAPSHOT</muleTestComponentsVersion>
   </properties>
 
   <build>
