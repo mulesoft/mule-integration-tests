@@ -407,12 +407,12 @@ public class ParameterAstTestCase extends BaseParameterAstTestCase {
         (List<ComponentAst>) childRecursivePojoNextMappedChildsParameter.getValue().getRight();
     assertThat(childRecursivePojoNextMappedChildsParameterComponent, hasSize(1));
     ComponentParameterAst childRecursivePojoNextMappedChildsParameterComponentKeyParam =
-        childRecursivePojoNextMappedChildsParameterComponent.get(0).getParameter("RecursivePojo", "key");
+        childRecursivePojoNextMappedChildsParameterComponent.get(0).getParameter(DEFAULT_GROUP_NAME, "key");
     assertThat(childRecursivePojoNextMappedChildsParameterComponentKeyParam.getValue().getRight(), equalTo("someKey"));
     assertThat(getTypeId(childRecursivePojoNextMappedChildsParameterComponentKeyParam.getModel().getType()),
                equalTo(of(String.class.getName())));
     ComponentParameterAst childRecursivePojoNextMappedChildsParameterComponentValueParam =
-        childRecursivePojoNextMappedChildsParameterComponent.get(0).getParameter("RecursivePojo", "value");
+        childRecursivePojoNextMappedChildsParameterComponent.get(0).getParameter(DEFAULT_GROUP_NAME, "value");
     assertThat(childRecursivePojoNextMappedChildsParameterComponentValueParam.getValue().getLeft(),
                equalTo("{} as Object {class: 'new org.mule.test.heisenberg.extension.model.RecursivePojo'}"));
     assertThat(getTypeId(childRecursivePojoNextMappedChildsParameterComponentValueParam.getModel().getType()),
@@ -646,8 +646,8 @@ public class ParameterAstTestCase extends BaseParameterAstTestCase {
             .findFirst().orElseThrow(() -> new AssertionError("connection-properties model is missing key parameter"));
     assertThat(getTypeId(valueParameterModel.getType()), equalTo(of(String.class.getName())));
 
-    assertThat(connectionProperty.getParameter("Connection", "key").getValue().getRight(), equalTo("first"));
-    assertThat(connectionProperty.getParameter("Connection", "value").getValue().getRight(), equalTo("propertyOne"));
+    assertThat(connectionProperty.getParameter(DEFAULT_GROUP_NAME, "key").getValue().getRight(), equalTo("first"));
+    assertThat(connectionProperty.getParameter(DEFAULT_GROUP_NAME, "value").getValue().getRight(), equalTo("propertyOne"));
 
     connectionProperty = connectionProperties.stream().skip(1).findFirst()
         .orElseThrow(() -> new AssertionError("Couldn't find connection property entry"));
@@ -660,8 +660,8 @@ public class ParameterAstTestCase extends BaseParameterAstTestCase {
         connectionPropertyModel.getAllParameterModels().stream().filter(paramModel -> paramModel.getName().equals("value"))
             .findFirst().orElseThrow(() -> new AssertionError("connection-properties model is missing key parameter"));
     assertThat(getTypeId(valueParameterModel.getType()), equalTo(of(String.class.getName())));
-    assertThat(connectionProperty.getParameter("Connection", "key").getValue().getRight(), equalTo("second"));
-    assertThat(connectionProperty.getParameter("Connection", "value").getValue().getRight(), equalTo("propertyTwo"));
+    assertThat(connectionProperty.getParameter(DEFAULT_GROUP_NAME, "key").getValue().getRight(), equalTo("second"));
+    assertThat(connectionProperty.getParameter(DEFAULT_GROUP_NAME, "value").getValue().getRight(), equalTo("propertyTwo"));
   }
 
   @Test

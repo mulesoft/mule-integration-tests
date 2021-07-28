@@ -313,7 +313,7 @@ public class ConfigurationBasedElementModelFactoryTestCase extends AbstractEleme
     assertAttributeIsPresent(connectionElement, "port");
 
     ComponentAst properties =
-        (ComponentAst) connection.getParameter(DEFAULT_GROUP_NAME, "clientSocketProperties").getValue().getRight();
+        (ComponentAst) connection.getParameter("Connection", "clientSocketProperties").getValue().getRight();
     DslElementModel<ObjectType> propertiesElement = getChild(connectionElement, properties);
 
     assertElementName(propertiesElement, "tcp-client-socket-properties");
@@ -531,7 +531,7 @@ public class ConfigurationBasedElementModelFactoryTestCase extends AbstractEleme
     assertValue(sqlElement, "INSERT INTO PLANET(POSITION, NAME) VALUES (:position, :name)");
 
     List<ComponentAst> parameterTypes =
-        (List<ComponentAst>) dbInsert.getParameter(DEFAULT_GROUP_NAME, "parameterTypes").getValue().getRight();
+        (List<ComponentAst>) dbInsert.getParameter("Query", "parameterTypes").getValue().getRight();
     DslElementModel<ParameterModel> parameterTypesElement = getChild(bulkInsertElement, ComponentIdentifier.builder()
         .namespace(dbInsert.getIdentifier().getNamespace())
         .namespaceUri(dbInsert.getIdentifier().getNamespaceUri())
@@ -539,14 +539,14 @@ public class ConfigurationBasedElementModelFactoryTestCase extends AbstractEleme
     assertElementName(parameterTypesElement, "parameter-types");
 
     ComponentAst parameterOne = parameterTypes.get(0);
-    assertThat(parameterOne.getParameter(DEFAULT_GROUP_NAME, "key").getValue().getRight(), is("name"));
+    assertThat(parameterOne.getParameter("ParameterType", "key").getValue().getRight(), is("name"));
     DslElementModel<ObjectType> elementOne = parameterTypesElement.getContainedElements().get(0);
     assertElementName(elementOne, parameterOne.getIdentifier().getName());
     assertValue(elementOne.findElement("key").get(), "name");
     assertValue(elementOne.findElement("type").get(), "VARCHAR");
 
     ComponentAst parameterTwo = parameterTypes.get(1);
-    assertThat(parameterTwo.getParameter(DEFAULT_GROUP_NAME, "key").getValue().getRight(), is("position"));
+    assertThat(parameterTwo.getParameter("ParameterType", "key").getValue().getRight(), is("position"));
     DslElementModel<ObjectType> elementTwo = parameterTypesElement.getContainedElements().get(1);
     assertElementName(elementTwo, parameterTwo.getIdentifier().getName());
     assertValue(elementTwo.findElement("key").get(), "position");
