@@ -48,9 +48,7 @@
     
 
     <flow name="ExternalApp">
-        <test:processor>
-            <test:return-data>got it!</test:return-data>
-        </test:processor>
+    	<set-payload value="got it!"/>
     </flow>
     
     <!--// END SNIPPET: full-config -->
