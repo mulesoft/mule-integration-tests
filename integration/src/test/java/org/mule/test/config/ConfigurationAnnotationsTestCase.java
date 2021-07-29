@@ -14,6 +14,8 @@ import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.component.Component.NS_MULE_DOCUMENTATION;
 import static org.mule.runtime.api.component.Component.Annotations.NAME_ANNOTATION_KEY;
 import static org.mule.runtime.api.util.ComponentLocationProvider.getSourceCode;
+import static org.mule.test.allure.AllureConstants.MuleDsl.MULE_DSL;
+import static org.mule.test.allure.AllureConstants.MuleDsl.DslAnnotationsStory.DSL_ANNOTATIONS_STORY;
 
 import org.mule.runtime.api.component.Component;
 import org.mule.runtime.core.api.construct.Flow;
@@ -24,10 +26,15 @@ import org.mule.test.AbstractIntegrationTestCase;
 import javax.xml.namespace.QName;
 
 import org.junit.Test;
+import org.springframework.context.annotation.Description;
 
-/**
- * Test that configuration-based annotations are propagated to the appropriate runtime objects
- */
+import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
+import io.qameta.allure.Story;
+
+@Description("Test that configuration-based annotations are propagated to the appropriate runtime objects")
+@Feature(MULE_DSL)
+@Story(DSL_ANNOTATIONS_STORY)
 public class ConfigurationAnnotationsTestCase extends AbstractIntegrationTestCase {
 
   @Override
@@ -82,6 +89,14 @@ public class ConfigurationAnnotationsTestCase extends AbstractIntegrationTestCas
     Flow flow = (Flow) registry.<FlowConstruct>lookupByName("Bridge").get();
     Processor logger = flow.getProcessors().get(0);
     assertThat(getSourceCode((Component) logger), is("<logger doc:name=\"echo\">" + "</logger>"));
+  }
+
+  @Test
+  @Issue("MULE-19631")
+  public void annotationAvailableInComponent() {
+    Flow flow = (Flow) registry.<FlowConstruct>lookupByName("withCustomAnnotation").get();
+
+    assertThat(flow.getAnnotation(new QName("http://www.my-org.org/schema/custom", "anything")), is("This is something custom"));
   }
 
   protected String getDocName(Object obj) {
