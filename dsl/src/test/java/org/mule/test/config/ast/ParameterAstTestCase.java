@@ -307,9 +307,9 @@ public class ParameterAstTestCase extends BaseParameterAstTestCase {
                is("reconnect"));
     assertThat(operationReconnection.getIdentifier().getName(),
                is("reconnect"));
-    assertThat(operationReconnection.getParameter("Connection", "frequency").getValue().getRight(),
+    assertThat(operationReconnection.getParameter("reconnect", "frequency").getValue().getRight(),
                is(3000L));
-    assertThat(operationReconnection.getParameter("Connection", "count").getValue().getRight(),
+    assertThat(operationReconnection.getParameter("reconnect", "count").getValue().getRight(),
                is(3));
   }
 
