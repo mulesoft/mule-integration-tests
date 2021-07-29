@@ -7,7 +7,7 @@
 
     <flow name="testService3">
         <test:processor enableMessageHistory="false"
-            appendString=" received" />
+            appendString="#[' received']" />
     </flow>
 
     <flow name="testService4">
