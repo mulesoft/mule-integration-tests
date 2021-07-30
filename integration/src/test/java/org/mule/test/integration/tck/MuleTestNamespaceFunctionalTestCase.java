@@ -6,17 +6,13 @@
  */
 package org.mule.test.integration.tck;
 
-import static org.apache.commons.lang3.exception.ExceptionUtils.getRootCause;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.test.AbstractIntegrationTestCase;
-
-import java.io.FileNotFoundException;
 
 import org.junit.Test;
 
@@ -36,14 +32,4 @@ public class MuleTestNamespaceFunctionalTestCase extends AbstractIntegrationTest
     assertThat(getPayloadAsString(message), is("foo received"));
   }
 
-  @Test
-  public void testService4() throws Exception {
-    flowRunner("testService4").withPayload("foo").runExpectingException();
-  }
-
-  @Test
-  public void testService5() throws Exception {
-    Exception e = flowRunner("testService5").withPayload("foo").runExpectingException();
-    assertTrue(getRootCause(e) instanceof FileNotFoundException);
-  }
 }

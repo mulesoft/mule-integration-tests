@@ -103,7 +103,7 @@
     </flow>
 
     <flow name="errorFlow">
-        <test:processor throwException="true" exceptionToThrow="java.lang.IllegalStateException"/>
+        <raise-error type="TEST:EXPECTED"/>
     </flow>
 
     <flow name="flowRefSubFlowErrorNotifications" initialState="stopped">
@@ -111,7 +111,7 @@
     </flow>
 
     <sub-flow name="errorSubFlow">
-        <test:processor throwException="true" exceptionToThrow="java.lang.IllegalStateException" />
+        <raise-error type="TEST:EXPECTED"/>
     </sub-flow>
 
     <!-- Infinite recursion handling -->

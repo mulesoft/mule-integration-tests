@@ -6,12 +6,13 @@
  */
 package org.mule.test.integration.exceptions;
 
-import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
+import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ErrorHandlingStory.ON_ERROR_CONTINUE;
 
 import org.mule.functional.api.component.EventCallback;
-import org.mule.functional.api.exception.FunctionalTestException;
+import org.mule.functional.api.exception.ExpectedError;
 import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.event.CoreEvent;
@@ -20,16 +21,22 @@ import org.mule.test.AbstractIntegrationTestCase;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+
+import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
+import io.qameta.allure.Story;
 
 /**
  * Assert that flows do not propagate exceptions via runFlow or use of flow-ref. Also assert that a sub-flow/processor-chain does
  * not handle it's own exception but they are rather handled by calling flow.
  */
+@Issue("MULE-5737")
+@Feature(ERROR_HANDLING)
+@Story(ON_ERROR_CONTINUE)
 public class ExceptionPropagationMule5737TestCase extends AbstractIntegrationTestCase {
 
   @Rule
-  public ExpectedException expectedException = ExpectedException.none();
+  public ExpectedError expectedError = ExpectedError.none();
 
   @Override
   protected String getConfigFile() {
@@ -44,7 +51,7 @@ public class ExceptionPropagationMule5737TestCase extends AbstractIntegrationTes
 
   @Test
   public void testRequestResponseEndpointExceptionPropagation() throws Exception {
-    expectedException.expectCause(instanceOf(FunctionalTestException.class));
+    expectedError.expectErrorType("TEST", "EXPECTED");
     runFlow("flow");
   }
 

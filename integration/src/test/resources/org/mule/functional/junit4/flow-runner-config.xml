@@ -6,11 +6,11 @@
        http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
     <flow name="okFailFlow">
-        <test:processor throwException="true"/>
+        <raise-error type="TEST:EXPECTED"/>
     </flow>
 
     <flow name="badFailFlow">
-        <test:processor throwException="true"/>
+        <raise-error type="TEST:EXPECTED"/>
         <error-handler>
             <on-error-propagate>
                 <test:assert expression="#[false]"/>

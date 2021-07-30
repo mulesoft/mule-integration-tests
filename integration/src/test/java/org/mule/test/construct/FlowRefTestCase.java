@@ -31,6 +31,7 @@ import static org.mule.runtime.core.api.error.Errors.CORE_NAMESPACE_NAME;
 import static org.mule.runtime.core.api.error.Errors.Identifiers.ROUTING_ERROR_IDENTIFIER;
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.SERVICE_UNAVAILABLE;
 import static org.mule.runtime.http.api.HttpConstants.Method.GET;
+import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
 import static org.mule.tck.probe.PollingProber.probe;
 import static org.mule.test.allure.AllureConstants.ComponentsFeature.CORE_COMPONENTS;
 import static org.mule.test.allure.AllureConstants.ComponentsFeature.FlowReferenceStory.FLOW_REFERENCE;
@@ -39,6 +40,7 @@ import static org.mule.test.allure.AllureConstants.ExecutionEngineFeature.Execut
 import org.mule.functional.api.component.EventCallback;
 import org.mule.functional.api.exception.ExpectedError;
 import org.mule.runtime.api.component.AbstractComponent;
+import org.mule.runtime.api.exception.DefaultMuleException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.notification.MessageProcessorNotification;
 import org.mule.runtime.api.notification.MessageProcessorNotificationListener;
@@ -62,6 +64,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.inject.Inject;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -72,8 +76,6 @@ import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
-
-import javax.inject.Inject;
 
 @Feature(CORE_COMPONENTS)
 @Story(FLOW_REFERENCE)
@@ -187,8 +189,7 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
     List<MessageProcessorNotification> notificationList = synchronizedList(new ArrayList<>());
     setupMessageProcessorNotificationListener(notificationList);
 
-    assertThat(flowRunner("flowRefFlowErrorNotifications").runExpectingException().getCause(),
-               instanceOf(IllegalStateException.class));
+    flowRunner("flowRefFlowErrorNotifications").runExpectingException(errorType("TEST", "EXPECTED"));
 
     assertNotifications(notificationList, "flowRefFlowErrorNotifications/processors/0");
   }
@@ -199,8 +200,7 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
     List<MessageProcessorNotification> notificationList = synchronizedList(new ArrayList<>());
     setupMessageProcessorNotificationListener(notificationList);
 
-    assertThat(flowRunner("flowRefSubFlowErrorNotifications").runExpectingException().getCause(),
-               instanceOf(IllegalStateException.class));
+    flowRunner("flowRefSubFlowErrorNotifications").runExpectingException(errorType("TEST", "EXPECTED"));
 
     assertNotifications(notificationList, "flowRefSubFlowErrorNotifications/processors/0");
   }
@@ -225,9 +225,9 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
       MessageProcessorNotification postNotification = notificationList.get(3);
       assertThat(postNotification.getAction().getActionId(), equalTo(MESSAGE_PROCESSOR_POST_INVOKE));
       assertThat(postNotification.getComponent().getLocation().getLocation(), equalTo(name));
-      assertThat(postNotification.getException().getCause(), instanceOf(IllegalStateException.class));
+      assertThat(postNotification.getException().getCause(), instanceOf(DefaultMuleException.class));
       assertThat(postNotification.getEvent().getError().isPresent(), is(true));
-      assertThat(postNotification.getEvent().getError().get().getCause(), instanceOf(IllegalStateException.class));
+      assertThat(postNotification.getEvent().getError().get().getCause(), instanceOf(DefaultMuleException.class));
 
       return true;
     });

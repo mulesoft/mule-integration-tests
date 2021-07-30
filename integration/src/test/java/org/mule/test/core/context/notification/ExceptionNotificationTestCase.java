@@ -6,22 +6,20 @@
  */
 package org.mule.test.core.context.notification;
 
-import static org.hamcrest.Matchers.instanceOf;
 import static org.mule.runtime.api.notification.ExceptionNotification.EXCEPTION_ACTION;
 
-import org.mule.functional.api.exception.FunctionalTestException;
+import org.mule.functional.api.exception.ExpectedError;
 import org.mule.functional.listener.ExceptionListener;
 import org.mule.runtime.api.notification.ExceptionNotification;
 import org.mule.runtime.api.notification.IntegerAction;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 public class ExceptionNotificationTestCase extends AbstractNotificationTestCase {
 
   @Rule
-  public ExpectedException expectedException = ExpectedException.none();
+  public ExpectedError expectedError = ExpectedError.none();
 
   @Override
   protected String getConfigFile() {
@@ -31,7 +29,7 @@ public class ExceptionNotificationTestCase extends AbstractNotificationTestCase 
   @Test
   public void doTest() throws Exception {
     ExceptionListener exceptionListener = new ExceptionListener(notificationListenerRegistry);
-    expectedException.expectCause(instanceOf(FunctionalTestException.class));
+    expectedError.expectErrorType("TEST", "EXPECTED");
     try {
       flowRunner("the-service").withPayload(TEST_PAYLOAD).run().getMessage();
     } finally {

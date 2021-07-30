@@ -15,8 +15,7 @@ http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/tes
 
     <flow name="in-flow">
         <try transactionalAction="BEGIN_OR_JOIN">
-            <test:processor throwException="true"
-                exceptionToThrow="java.lang.RuntimeException" />
+            <raise-error type="TEST:EXPECTED"/>
             <error-handler ref="global"/>
         </try>
     </flow>

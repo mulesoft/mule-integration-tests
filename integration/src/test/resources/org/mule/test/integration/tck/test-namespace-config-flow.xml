@@ -10,13 +10,4 @@
             appendString="#[' received']" />
     </flow>
 
-    <flow name="testService4">
-        <test:processor throwException="true" />
-    </flow>
-
-    <flow name="testService5">
-        <test:processor throwException="true"
-            exceptionToThrow="java.io.FileNotFoundException" />
-    </flow>
-
 </mule>

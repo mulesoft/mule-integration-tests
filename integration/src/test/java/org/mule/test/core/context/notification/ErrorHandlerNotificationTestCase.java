@@ -6,13 +6,12 @@
  */
 package org.mule.test.core.context.notification;
 
-import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.rules.ExpectedException.none;
+import static org.mule.functional.api.exception.ExpectedError.none;
 import static org.mule.runtime.api.notification.ErrorHandlerNotification.PROCESS_END;
 import static org.mule.runtime.api.notification.ErrorHandlerNotification.PROCESS_START;
 
-import org.mule.functional.api.exception.FunctionalTestException;
+import org.mule.functional.api.exception.ExpectedError;
 import org.mule.runtime.api.notification.ErrorHandlerNotification;
 import org.mule.runtime.api.notification.IntegerAction;
 import org.mule.runtime.api.notification.Notification.Action;
@@ -22,34 +21,33 @@ import java.util.function.Consumer;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 @RunnerDelegateTo(Parameterized.class)
 public class ErrorHandlerNotificationTestCase extends AbstractNotificationTestCase {
 
-  private String flowName;
+  private final String flowName;
 
-  private Consumer<ExpectedException> expected;
+  private final Consumer<ExpectedError> expected;
   @Rule
-  public ExpectedException expectedException = none();
+  public ExpectedError expectedError = none();
 
   @Parameters(name = "{0}")
   public static Object[][] params() {
     return new Object[][] {
-        new Object[] {"catch-es", (Consumer<ExpectedException>) (expected -> {
+        new Object[] {"catch-es", (Consumer<ExpectedError>) (expected -> {
         })},
-        new Object[] {"choice-es", (Consumer<ExpectedException>) (expected -> {
+        new Object[] {"choice-es", (Consumer<ExpectedError>) (expected -> {
         })},
         new Object[] {"rollback-es",
-            (Consumer<ExpectedException>) (expected -> expected.expectCause(instanceOf(FunctionalTestException.class)))},
+            (Consumer<ExpectedError>) (expected -> expected.expectErrorType("TEST", "EXPECTED"))},
         new Object[] {"default-es",
-            (Consumer<ExpectedException>) (expected -> expected.expectCause(instanceOf(FunctionalTestException.class)))}
+            (Consumer<ExpectedError>) (expected -> expected.expectErrorType("TEST", "EXPECTED"))}
     };
   }
 
-  public ErrorHandlerNotificationTestCase(String flowName, Consumer<ExpectedException> expected) {
+  public ErrorHandlerNotificationTestCase(String flowName, Consumer<ExpectedError> expected) {
     this.flowName = flowName;
     this.expected = expected;
   }
@@ -61,7 +59,7 @@ public class ErrorHandlerNotificationTestCase extends AbstractNotificationTestCa
 
   @Test
   public void doTest() throws Exception {
-    expected.accept(expectedException);
+    expected.accept(expectedError);
 
     try {
       assertNotNull(flowRunner(flowName).withPayload(TEST_PAYLOAD).run());

@@ -18,7 +18,7 @@
         <async>
             <try>
                 <until-successful maxRetries="1" millisBetweenRetries="1000">
-                    <test:processor throwException="true"/>
+                    <raise-error type="TEST:EXPECTED"/>
                 </until-successful>
                 <error-handler>
                     <on-error-continue/>
@@ -30,14 +30,14 @@
     <flow name="retryExhaustedCausedByConnectivityError">
         <try>
             <until-successful maxRetries="1" millisBetweenRetries="10">
-                <test:processor throwException="true" exceptionToThrow="org.mule.runtime.api.connection.ConnectionException" exceptionText="Connection refused"/>
+                <raise-error type="MULE:CONNECTIVITY"/>
             </until-successful>
         </try>
     </flow>
 
     <flow name="retryExhaustedCausedByConnectivityErrorLogCheck">
         <until-successful maxRetries="1" millisBetweenRetries="10">
-            <test:processor throwException="true" exceptionToThrow="org.mule.runtime.api.connection.ConnectionException" exceptionText="Connection refused"/>
+            <raise-error type="MULE:CONNECTIVITY" description="Connection refused"/>
         </until-successful>
         <error-handler>
             <test:on-error-check-log>
@@ -52,14 +52,14 @@
 
     <flow name="retryExhaustedCausedByNonConnectivityErrorLogCheck">
         <until-successful maxRetries="1" millisBetweenRetries="10">
-            <test:processor throwException="true"/>
+            <raise-error type="TEST:EXPECTED" description="Expected error"/>
         </until-successful>
         <error-handler>
             <test:on-error-check-log>
                 <test:check-summary>
                     <test:summary-info key="Error type" value="MULE:RETRY_EXHAUSTED"/>
                     <test:summary-info key="Message" value="'until-successful' retries exhausted"/>
-                    <test:summary-info key="Caused by" value="MULE:UNKNOWN: Functional Test Service Exception"/>
+                    <test:summary-info key="Caused by" value="TEST:EXPECTED: Expected error"/>
                 </test:check-summary>
             </test:on-error-check-log>
         </error-handler>

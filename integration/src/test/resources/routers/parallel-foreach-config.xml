@@ -75,7 +75,7 @@
             <test:assert count="3"/>
             <choice>
                 <when expression="#[payload == 'banana']">
-                    <test:processor throwException="true"/>
+                    <raise-error type="TEST:EXPECTED"/>
                 </when>
                 <otherwise>
                     <set-payload value="#[payload ++ '-result']"/>
@@ -89,7 +89,7 @@
             <test:assert count="3"/>
             <choice>
                 <when expression="#[payload == 'banana']">
-                    <test:processor throwException="true" exceptionText="I'm a message"/>
+                    <raise-error type="TEST:EXPECTED" description="I'm a message"/>
                 </when>
                 <otherwise>
                     <set-payload value="#[payload ++ '-result']"/>
@@ -103,8 +103,7 @@
             <test:assert count="3"/>
             <choice>
                 <when expression="#[payload == 'banana']">
-                    <test:processor throwException="true" exceptionToThrow="java.lang.NullPointerException"
-                                    exceptionText="nonMule"/>
+                	<flow-ref name="throwNpe"/>
                 </when>
                 <otherwise>
                     <set-payload value="#[payload ++ '-result']"/>
@@ -132,7 +131,7 @@
             <test:assert count="3"/>
             <choice>
                 <when expression="#[payload == 'banana']">
-                    <test:processor throwException="true"/>
+                    <raise-error type="TEST:EXPECTED"/>
                 </when>
                 <otherwise>
                     <set-payload value="#[payload ++ '-result']"/>
@@ -155,10 +154,10 @@
             <test:assert count="3"/>
             <choice>
                 <when expression="#[payload == 'banana']">
-                    <test:processor throwException="true"/>
+                    <raise-error type="TEST:EXPECTED"/>
                 </when>
                 <when expression="#[payload == 'orange']">
-                    <test:processor throwException="true"/>
+                    <raise-error type="TEST:EXPECTED"/>
                 </when>
                 <otherwise>
                     <set-payload value="#[payload ++ '-result']"/>
@@ -269,5 +268,7 @@
             <http:request config-ref="httpRequestConfig" path="/test"/>
         </parallel-foreach>
     </flow>
+
+	<object name="throwNpe" class="org.mule.test.routing.ParallelForEachTestCase$ThrowNpeProcessor"/>
 
 </mule>

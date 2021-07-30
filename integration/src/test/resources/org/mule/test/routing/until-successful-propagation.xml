@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xmlns:test="http://www.mulesoft.org/schema/mule/test"
-      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-
-        http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 
     <flow name="variablePropagationToErrorHandler" initialState="stopped">
         <until-successful maxRetries="1" millisBetweenRetries="1000">
             <set-variable variableName="message" value="#[payload ++ ' executed once']"/>
-            <test:processor throwException="true"/>
+            <raise-error type="TEST:EXPECTED"/>
         </until-successful>
         <error-handler>
             <on-error-continue>
@@ -21,7 +19,7 @@
         <try>
             <until-successful maxRetries="1" millisBetweenRetries="1000">
                 <set-variable variableName="message" value="#[payload ++ ' executed once']"/>
-                <test:processor throwException="true"/>
+                <raise-error type="TEST:EXPECTED"/>
             </until-successful>
             <error-handler>
                 <on-error-continue/>
@@ -42,7 +40,7 @@
         <try>
             <until-successful maxRetries="10" millisBetweenRetries="1000">
                 <set-variable variableName="message" value="#[vars.message ++ ' executed once']"/>
-                <test:processor throwException="true"/>
+                <raise-error type="TEST:EXPECTED"/>
             </until-successful>
             <error-handler>
                 <on-error-continue/>
@@ -54,7 +52,7 @@
     <flow name="payloadPropagation" initialState="stopped">
         <until-successful maxRetries="0" millisBetweenRetries="1000">
             <set-payload value="#[payload ++ ' executed once']"/>
-            <test:processor throwException="true"/>
+            <raise-error type="TEST:EXPECTED"/>
         </until-successful>
         <error-handler>
             <on-error-continue/>
