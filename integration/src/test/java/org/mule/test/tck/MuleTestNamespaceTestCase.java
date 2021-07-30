@@ -13,6 +13,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mule.functional.api.component.FunctionalTestProcessor.getFromFlow;
 
+import org.junit.Ignore;
 import org.mule.functional.api.component.EventCallback;
 import org.mule.functional.api.component.FunctionalTestProcessor;
 import org.mule.runtime.api.component.AbstractComponent;
@@ -22,6 +23,7 @@ import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Test;
 
+@Ignore("MULE-19629")
 public class MuleTestNamespaceTestCase extends AbstractIntegrationTestCase {
 
   @Override
