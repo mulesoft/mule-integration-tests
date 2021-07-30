@@ -900,6 +900,19 @@ public class ParameterAstTestCase extends BaseParameterAstTestCase {
         .getIdentifier().getName(), is("vegan-cook-book"));
   }
 
+  @Test
+  public void configPojoParameterWithWrappedParamsHasNotTheWrapperAsChild() {
+    ArtifactAst artifactAst = buildArtifactAst("parameters-test-pojo-config.xml",
+                                               HeisenbergExtension.class, SubTypesMappingConnector.class, VeganExtension.class);
+
+    final ComponentAst appleConfig = artifactAst.topLevelComponentsStream()
+        .filter(componentAst -> componentAst.getComponentId().map(id -> id.equals("apple")).orElse(false))
+        .findFirst()
+        .get();
+
+    assertThat(appleConfig.directChildren(), hasSize(0));
+  }
+
   private void assertParameters(ComponentAst container, String containerParameterGroupName, String containerParameterName,
                                 String elementParameterGroupName, String elementParameterName, String... rightValues) {
     ComponentParameterAst containerParameter = container.getParameter(containerParameterGroupName, containerParameterName);
