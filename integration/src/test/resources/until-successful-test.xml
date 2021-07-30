@@ -111,7 +111,7 @@
     </flow>
 
     <flow name="target-mp">
-        <test:processor appendString="ERROR" enableMessageHistory="true"/>
+        <test:processor appendString="ERROR"/>
     </flow>
 
     <flow name="target-flow">
