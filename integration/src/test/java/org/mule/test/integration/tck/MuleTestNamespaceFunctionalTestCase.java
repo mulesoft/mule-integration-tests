@@ -12,6 +12,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Ignore;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -20,6 +21,7 @@ import org.junit.Test;
 
 import java.io.FileNotFoundException;
 
+@Ignore("MULE-19629: fix this")
 public class MuleTestNamespaceFunctionalTestCase extends AbstractIntegrationTestCase {
 
   @Override
