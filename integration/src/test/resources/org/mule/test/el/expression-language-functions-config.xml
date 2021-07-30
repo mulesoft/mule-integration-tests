@@ -47,11 +47,11 @@
     </flow>
 
     <flow name="propagation">
-        <test:assert expression="payload.key == 'value'"/>
-        <test:assert expression="vars.text.^mimeType == 'text/plain'"/>
-        <test:assert expression="vars.text == 'some text'"/>
-        <test:assert expression="attributes[0] == 'first' and attributes[1] == 'second'"/>
-        <test:assert expression="error.errorType.identifier == 'CONNECTIVITY'"/>
+        <test:assert expression="#[payload.key == 'value']"/>
+        <test:assert expression="#[vars.text.^mimeType == 'text/plain']"/>
+        <test:assert expression="#[vars.text == 'some text']"/>
+        <test:assert expression="#[attributes[0] == 'first' and attributes[1] == 'second']"/>
+        <test:assert expression="#[error.errorType.identifier == 'CONNECTIVITY']"/>
         <set-payload value="#[output text/plain --- 'Propagation was successful']"/>
     </flow>
 

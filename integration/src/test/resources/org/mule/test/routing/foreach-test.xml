@@ -162,11 +162,11 @@
             <set-variable variableName="j" value="0"/>
             <foreach>
                 <test:processor/>
-                <test:assert expression="(vars.j as Number) + 1 == vars.counter"/>
+                <test:assert expression="#[(vars.j as Number) + 1 == vars.counter]"/>
                 <set-variable variableName="j" value="#[vars.counter]"/>
                 <test-components:queue-push config-ref="out"/>
             </foreach>
-            <test:assert expression="(vars.i as Number) + 1 == vars.counter"/>
+            <test:assert expression="#[(vars.i as Number) + 1 == vars.counter]"/>
             <set-variable variableName="i" value="#[vars.counter]"/>
             <test-components:queue-push config-ref="out"/>
         </foreach>
