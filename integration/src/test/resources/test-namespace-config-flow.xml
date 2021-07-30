@@ -15,7 +15,7 @@
 
     <flow name="testService3">
         <test:processor enableMessageHistory="false"
-            appendString=" #[mel:context:serviceName]" />
+            appendString="#[mel:context:serviceName]" />
     </flow>
 
 </mule>

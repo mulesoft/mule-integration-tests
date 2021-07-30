@@ -19,11 +19,11 @@
         <first-successful>
             <route>
                 <validation:is-true expression="#[payload is String]"/>
-                <test:processor appendString=" is a string"/>
+                <test:processor appendString="#[' is a string']"/>
             </route>
             <route>
                 <validation:is-true expression="#[payload is Number]"/>
-                <test:processor appendString=" is a number"/>
+                <test:processor appendString="#[' is a number']"/>
             </route>
         </first-successful>
     </flow>
