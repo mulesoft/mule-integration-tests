@@ -19,6 +19,6 @@
     </flow>
 
     <flow name="handle-request-reply">
-        <test:processor appendString=" processed"/>
+        <test:processor appendString="#[' processed']"/>
     </flow>
 </mule>
