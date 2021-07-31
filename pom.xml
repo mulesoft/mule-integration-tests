@@ -30,7 +30,7 @@
   </modules>
 
   <properties>
-    <munitVersion>2.2.6-SNAPSHOT</munitVersion>
+    <munitVersion>2.3.5</munitVersion>
     <muleSchedulerServiceTestVersion>1.4.0-SNAPSHOT</muleSchedulerServiceTestVersion>
     <muleHttpServiceTestVersion>1.6.0-SNAPSHOT</muleHttpServiceTestVersion>
     <muleOAuthServiceTestVersion>2.1.0-SNAPSHOT</muleOAuthServiceTestVersion>
