@@ -66,6 +66,7 @@ import org.mule.test.vegan.extension.VeganExtension;
 import java.util.List;
 import java.util.Optional;
 
+import org.hamcrest.Matchers;
 import org.junit.Test;
 
 import io.qameta.allure.Feature;
@@ -901,6 +902,7 @@ public class ParameterAstTestCase extends BaseParameterAstTestCase {
   }
 
   @Test
+  @Issue("MULE-19676")
   public void configPojoParameterWithWrappedParamsHasNotTheWrapperAsChild() {
     ArtifactAst artifactAst = buildArtifactAst("parameters-test-pojo-config.xml",
                                                HeisenbergExtension.class, SubTypesMappingConnector.class, VeganExtension.class);
@@ -910,7 +912,7 @@ public class ParameterAstTestCase extends BaseParameterAstTestCase {
         .findFirst()
         .get();
 
-    assertThat(appleConfig.directChildren(), hasSize(0));
+    assertThat(appleConfig.directChildren(), is(Matchers.empty()));
   }
 
   private void assertParameters(ComponentAst container, String containerParameterGroupName, String containerParameterName,
