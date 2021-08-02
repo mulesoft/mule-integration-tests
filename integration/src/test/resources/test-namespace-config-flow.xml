@@ -9,6 +9,7 @@
     <flow name="testService1">
         <test:processor enableNotifications="false"
             enableMessageHistory="false">
+            <test:return-data>Foo Bar Car Jar</test:return-data>
             <test:callback class="org.mule.test.tck.MuleTestNamespaceTestCase$TestCallback" />
         </test:processor>
     </flow>

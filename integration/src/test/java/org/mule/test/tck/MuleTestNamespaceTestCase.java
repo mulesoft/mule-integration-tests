@@ -36,6 +36,7 @@ public class MuleTestNamespaceTestCase extends AbstractIntegrationTestCase {
     assertFalse(ftc.isEnableMessageHistory());
     assertFalse(ftc.isEnableNotifications());
     assertNull(ftc.getAppendString());
+    assertEquals("Foo Bar Car Jar", ftc.getReturnData());
     assertNotNull(ftc.getEventCallback());
     assertTrue(ftc.getEventCallback() instanceof TestCallback);
   }

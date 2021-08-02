@@ -16,15 +16,34 @@ import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import java.io.FileNotFoundException;
-
 import org.junit.Test;
+
+import java.io.FileNotFoundException;
 
 public class MuleTestNamespaceFunctionalTestCase extends AbstractIntegrationTestCase {
 
   @Override
   protected String getConfigFile() {
     return "org/mule/test/integration/tck/test-namespace-config-flow.xml";
+  }
+
+  @Test
+  public void testService1() throws Exception {
+    CoreEvent event = flowRunner("testService1").withPayload("foo").run();
+    Message message = event.getMessage();
+
+    assertNotNull(message);
+    assertThat(event.getError().isPresent(), is(false));
+    assertThat(getPayloadAsString(message), is("Foo Bar Car Jar"));
+  }
+
+  @Test
+  public void testService2() throws Exception {
+    CoreEvent event = flowRunner("testService2").withPayload("foo").run();
+    Message message = event.getMessage();
+    assertNotNull(message);
+    assertThat(event.getError().isPresent(), is(false));
+    assertThat(getPayloadAsString(message), is(loadResourceAsString("org/mule/test/integration/tck/test-data.txt")));
   }
 
   @Test

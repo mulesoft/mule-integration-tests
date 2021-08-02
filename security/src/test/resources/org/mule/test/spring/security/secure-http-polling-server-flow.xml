@@ -23,7 +23,10 @@
     <flow name="SecureUMO">
         <http:listener path="*" config-ref="listenerConfig"/>
         <http:basic-security-filter realm="mule-realm" />
-        <set-payload value="foo"/>
+        <test:processor>
+            <test:return-data>foo</test:return-data>
+        </test:processor>
     </flow>
+
 
 </mule>
