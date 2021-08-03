@@ -66,6 +66,7 @@ import org.mule.test.vegan.extension.VeganExtension;
 import java.util.List;
 import java.util.Optional;
 
+import org.hamcrest.Matchers;
 import org.junit.Test;
 
 import io.qameta.allure.Feature;
@@ -898,6 +899,20 @@ public class ParameterAstTestCase extends BaseParameterAstTestCase {
     assertThat(cookBookParam, not(nullValue()));
     assertThat(((ComponentAst) (cookBookParam.getValue().getRight()))
         .getIdentifier().getName(), is("vegan-cook-book"));
+  }
+
+  @Test
+  @Issue("MULE-19676")
+  public void configPojoParameterWithWrappedParamsHasNotTheWrapperAsChild() {
+    ArtifactAst artifactAst = buildArtifactAst("parameters-test-pojo-config.xml",
+                                               HeisenbergExtension.class, SubTypesMappingConnector.class, VeganExtension.class);
+
+    final ComponentAst appleConfig = artifactAst.topLevelComponentsStream()
+        .filter(componentAst -> componentAst.getComponentId().map(id -> id.equals("apple")).orElse(false))
+        .findFirst()
+        .get();
+
+    assertThat(appleConfig.directChildren(), is(Matchers.empty()));
   }
 
   private void assertParameters(ComponentAst container, String containerParameterGroupName, String containerParameterName,
