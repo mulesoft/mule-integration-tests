@@ -43,6 +43,16 @@
         </error-handler>
     </flow>
 
+    <flow name="defaultWhenConditionNotMet">
+        <set-variable variableName="var1" value="c"/>
+        <raise-error type="MULE:ANY"/>
+        <error-handler>
+            <on-error-propagate when="#[vars.var1 == 'a']" type="ANY">
+                <set-payload value="Incorrect"/>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+
     <flow name="withIncorrectWhen">
         <set-variable variableName="var1" value="b"/>
         <raise-error type="APP:SOME"/>
