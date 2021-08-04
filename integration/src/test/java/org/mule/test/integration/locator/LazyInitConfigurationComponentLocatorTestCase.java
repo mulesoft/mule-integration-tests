@@ -61,7 +61,7 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
   public SystemProperty path = new SystemProperty("path", "path");
 
 
-  private static final int TOTAL_NUMBER_OF_LOCATIONS = 96;
+  private static final int TOTAL_NUMBER_OF_LOCATIONS = 93;
   @Inject
   private Registry registry;
 
@@ -99,7 +99,6 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
     assertThat(allLocations.toString(), allLocations,
                containsInAnyOrder("myFlow",
                                   "myFlow/source",
-                                  "myFlow/source/0",
                                   "myFlow/source/0/0",
                                   "myFlow/processors/0",
                                   "myFlow/processors/1",
@@ -109,7 +108,6 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
 
                                   "anotherFlow",
                                   "anotherFlow/source",
-                                  "anotherFlow/source/0",
                                   "anotherFlow/source/0/0",
                                   "anotherFlow/processors/0",
 
@@ -162,7 +160,6 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
                                   "Matcher",
                                   "fileListWithMatcherReference",
                                   "fileListWithMatcherReference/source",
-                                  "fileListWithMatcherReference/source/0",
                                   "fileListWithMatcherReference/source/0/0",
                                   "fileListWithMatcherReference/processors/0",
 
