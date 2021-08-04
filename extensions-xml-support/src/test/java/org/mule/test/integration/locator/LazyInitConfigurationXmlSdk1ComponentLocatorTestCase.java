@@ -54,7 +54,7 @@ public class LazyInitConfigurationXmlSdk1ComponentLocatorTestCase extends MuleAr
   public SystemProperty path = new SystemProperty("path", "path");
 
 
-  private static final int TOTAL_NUMBER_OF_LOCATIONS = 36;
+  private static final int TOTAL_NUMBER_OF_LOCATIONS = 33;
 
   @Inject
   private LazyComponentInitializer lazyComponentInitializer;
@@ -91,7 +91,6 @@ public class LazyInitConfigurationXmlSdk1ComponentLocatorTestCase extends MuleAr
                containsInAnyOrder("tokenManagerConfig-sample-config",
                                   "github-httpreq-config-sample-config",
                                   "github-httpreq-config-sample-config/connection",
-                                  "github-httpreq-config-sample-config/connection/0",
                                   "github-httpreq-config-sample-config/connection/0/0",
                                   "get-channels/processors/0",
                                   "get-channels/processors/1",
@@ -99,7 +98,6 @@ public class LazyInitConfigurationXmlSdk1ComponentLocatorTestCase extends MuleAr
                                   "sample-config",
                                   "GetChannels",
                                   "GetChannels/source",
-                                  "GetChannels/source/0",
                                   "GetChannels/source/0/0",
                                   "GetChannels/processors/0",
 
@@ -113,7 +111,6 @@ public class LazyInitConfigurationXmlSdk1ComponentLocatorTestCase extends MuleAr
 
                                   "request-with-oauth-auth-code-config-scConfig",
                                   "request-with-oauth-auth-code-config-scConfig/connection",
-                                  "request-with-oauth-auth-code-config-scConfig/connection/0",
                                   "request-with-oauth-auth-code-config-scConfig/connection/0/0",
                                   "request-with-oauth-auth-code/processors/0",
                                   "tokenManagerConfig-scConfig",
