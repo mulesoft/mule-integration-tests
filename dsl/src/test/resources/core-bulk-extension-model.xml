@@ -52,6 +52,7 @@
         <dynamic-config-expiration frequency="5" timeUnit="MINUTES">
             <expiration-policy maxIdleTime="5" timeUnit="MINUTES"/>
         </dynamic-config-expiration>
+        <logger/>
     </configuration>
     <configuration-properties file="Attribute"/>
     <error-handler name="global-errorHandler" ref="MULE:ERROR_HANDLER">
