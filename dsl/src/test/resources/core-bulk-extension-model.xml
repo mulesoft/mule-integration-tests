@@ -3,7 +3,7 @@
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
     <flow name="flowFor-scheduler">
         <scheduler disallowConcurrentExecution="false">
-        	<scheduling-strategy/>
+            <scheduling-strategy/>
         </scheduler>
     </flow>
     <flow name="flowFor-idempotentMessageValidator">
@@ -48,7 +48,8 @@
     </flow>
     <configuration defaultErrorHandler-ref="MULE:ERROR_HANDLER" defaultObjectSerializer-ref="MULE:SERIALIZER"
                    defaultResponseTimeout="10000" defaultTransactionTimeout="30000" inheritIterableRepeatability="false"
-                   maxQueueTransactionFilesSize="500" shutdownTimeout="5000" correlationIdGeneratorExpression="#['ExpressionAttribute']">
+                   maxQueueTransactionFilesSize="500" shutdownTimeout="5000"
+                   correlationIdGeneratorExpression="#['ExpressionAttribute']">
         <dynamic-config-expiration frequency="5" timeUnit="MINUTES">
             <expiration-policy maxIdleTime="5" timeUnit="MINUTES"/>
         </dynamic-config-expiration>
@@ -91,16 +92,16 @@
         <logger/>
         <logger/>
     </notifications>
-    <object class="Attribute" name="global-object" ref="Attribute">
-        <properties/>
-    </object>
+    <object class="Attribute" name="global-object" ref="Attribute"/>
     <flow name="flowFor-onError">
         <on-error ref="MULE:ON_ERROR"/>
     </flow>
-    <on-error-continue name="global-onErrorContinue" enableNotifications="true" logException="true" type="Attribute" when="Attribute">
+    <on-error-continue name="global-onErrorContinue" enableNotifications="true" logException="true" type="Attribute"
+                       when="Attribute">
         <logger/>
     </on-error-continue>
-    <on-error-propagate name="global-onErrorPropagate" enableNotifications="true" logException="true" type="Attribute" when="Attribute">
+    <on-error-propagate name="global-onErrorPropagate" enableNotifications="true" logException="true" type="Attribute"
+                        when="Attribute">
         <logger/>
     </on-error-propagate>
     <flow name="flowFor-parallelForeach">
@@ -124,12 +125,14 @@
             </route>
         </scatter-gather>
     </flow>
+
     <security-manager>
         <logger/>
         <logger/>
         <logger/>
         <logger/>
     </security-manager>
+
     <sub-flow name="global-subFlow">
         <logger/>
     </sub-flow>
