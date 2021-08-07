@@ -18,6 +18,8 @@ import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.conf
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.connectionDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.failingConnectionDeclaration;
 import static org.mule.test.infrastructure.maven.MavenTestUtils.getMavenLocalRepository;
+
+import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.value.ResolvingFailure;
 import org.mule.runtime.api.value.ValueResult;
 import org.mule.runtime.app.declaration.api.ConstructElementDeclaration;
@@ -54,9 +56,10 @@ public abstract class DeclarationSessionTestCase extends AbstractFakeMuleServerT
 
   protected static final String EXTENSION_GROUP_ID = "org.mule.tooling";
   protected static final String EXTENSION_ARTIFACT_ID = "tooling-support-test-extension";
-  protected static final String EXTENSION_VERSION = "4.4.0-SNAPSHOT";
+  protected static final String EXTENSION_VERSION = getToolingSupportTestExtensionVersion();
   protected static final String EXTENSION_CLASSIFIER = "mule-plugin";
   protected static final String EXTENSION_TYPE = "jar";
+  protected static final String EXTENSION_VERSION_MAVEN_PROPERTY_NAME = "testExtensionVersion";
 
   protected static final String CONFIG_NAME = "dummyConfig";
   protected static final String CONFIG_FAILING_CONNECTION_PROVIDER = "configNameFailingConnectionProvider";
@@ -152,6 +155,17 @@ public abstract class DeclarationSessionTestCase extends AbstractFakeMuleServerT
 
   protected ConstructElementDeclaration invalidExtensionModel(String invalidExtensionModel) {
     return ElementDeclarer.forExtension(invalidExtensionModel).newConstruct("invalid").getDeclaration();
+  }
+
+  private static String getToolingSupportTestExtensionVersion() {
+    return getMavenProperty(EXTENSION_VERSION_MAVEN_PROPERTY_NAME, () -> {
+      try {
+        return new File(DeclarationSessionTestCase.class.getProtectionDomain().getCodeSource().getLocation().toURI())
+            .getParentFile().getParentFile();
+      } catch (URISyntaxException e) {
+        throw new MuleRuntimeException(e);
+      }
+    });
   }
 
 }
