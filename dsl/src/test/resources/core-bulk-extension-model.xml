@@ -55,6 +55,9 @@
         <logger/>
     </configuration>
     <configuration-properties file="Attribute"/>
+    <flow name="flowFor-encryptionSecurityFilter">
+        <encryption-security-filter strategy-ref="Attribute"/>
+    </flow>
     <error-handler name="global-errorHandler" ref="MULE:ERROR_HANDLER">
         <on-error-continue enableNotifications="true" logException="true" type="Attribute" when="Attribute">
             <logger/>
