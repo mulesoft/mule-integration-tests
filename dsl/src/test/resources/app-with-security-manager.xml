@@ -8,10 +8,8 @@
     <object name="dummyEncryptionStrategy" class="org.mule.functional.security.MockEncryptionStrategy"/>
 
     <security-manager>
-        <!--        <custom-security-provider name="dummySecurityProvider" provider-ref="dummySecurityProvider"/>
-                <custom-encryption-strategy name="dummyEncryptionStrategy" strategy-ref="dummyEncryptionStrategy"/>-->
-        <security-provider/>
-        <encryption-strategy/>
+        <custom-security-provider name="dummySecurityProvider" provider-ref="dummySecurityProvider"/>
+        <custom-encryption-strategy name="dummyEncryptionStrategy" strategy-ref="dummyEncryptionStrategy"/>
     </security-manager>
 
 </mule>
