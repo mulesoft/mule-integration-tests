@@ -82,6 +82,7 @@ import com.google.common.collect.ImmutableSet;
 
 public class BulkArtifactDeclarationTestCase extends AbstractElementModelTestCase {
 
+  // TODO MULE-19700: Review the generated core-bulk-extension-model.xml.
   private static final String EXPECTED_XML = "core-bulk-extension-model.xml";
 
   private static final boolean UPDATE_EXPECTED_FILES_ON_ERROR =
