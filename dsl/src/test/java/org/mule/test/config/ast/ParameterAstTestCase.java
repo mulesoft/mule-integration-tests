@@ -12,6 +12,7 @@ import static java.util.Optional.of;
 import static java.util.stream.Collectors.toList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
@@ -65,6 +66,7 @@ import org.mule.test.vegan.extension.VeganExtension;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.junit.Test;
 
@@ -360,6 +362,22 @@ public class ParameterAstTestCase extends BaseParameterAstTestCase {
 
     assertThat(commercialName.getValue().getRight(), is("A1"));
     assertThat(carsPerMinute.getValue().getRight(), is(5));
+
+    List investmentSpinOffs = (List) investmentAst.getParameter("CarWash", "investmentSpinOffs").getValue().getRight();
+    ComponentAst firstSpinOff = (ComponentAst) investmentSpinOffs.get(0);
+    ComponentAst carWash = (ComponentAst) firstSpinOff.getParameter(DEFAULT_GROUP_NAME, "value").getValue().getRight();
+    List discardedInvestments = (List) carWash.getParameter("CarWash", "discardedInvestments").getValue().getRight();
+    ComponentAst firstDiscardedInvestment = (ComponentAst) discardedInvestments.get(0);
+
+    assertThat(firstDiscardedInvestment.directChildren(), is(Matchers.empty()));
+
+    ComponentParameterAst investmentPlanB = firstDiscardedInvestment.getParameter("CarDealer", "investmentPlanB");
+    assertThat(investmentPlanB.getValue().getValue().isPresent(), is(true));
+    ComponentAst carDealer = (ComponentAst) investmentPlanB.getValue().getRight();
+
+    List<String> presentParameterNames = carDealer.getParameters().stream()
+        .filter(param -> param.getValue().getValue().isPresent()).map(param -> param.getModel().getName()).collect(toList());
+    assertThat(presentParameterNames, containsInAnyOrder("carStock", "commercialName", "valuation"));
   }
 
   @Test
