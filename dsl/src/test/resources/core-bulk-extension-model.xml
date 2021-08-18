@@ -44,7 +44,7 @@
             </otherwise>
         </choice>
     </flow>
-    <configuration defaultErrorHandler-ref="MULE:ERROR_HANDLER" defaultObjectSerializer-ref="Attribute"
+    <configuration defaultErrorHandler-ref="MULE:ERROR_HANDLER" defaultObjectSerializer-ref="MULE:SERIALIZER"
                    defaultResponseTimeout="10000" defaultTransactionTimeout="30000" inheritIterableRepeatability="false"
                    maxQueueTransactionFilesSize="500" name="global-configuration" shutdownTimeout="5000">
         <dynamic-config-expiration frequency="5" timeUnit="MINUTES">
