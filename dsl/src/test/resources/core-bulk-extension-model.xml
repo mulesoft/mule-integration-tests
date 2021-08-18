@@ -122,10 +122,7 @@
         </scatter-gather>
     </flow>
 
-    <security-manager>
-        <providers/>
-        <encryption-strategies/>
-    </security-manager>
+    <security-manager/>
 
     <sub-flow name="global-subFlow">
         <logger/>
