@@ -53,8 +53,12 @@
         <dynamic-config-expiration frequency="5" timeUnit="MINUTES">
             <expiration-policy maxIdleTime="5" timeUnit="MINUTES"/>
         </dynamic-config-expiration>
+        <logger/>
     </configuration>
     <configuration-properties file="Attribute"/>
+    <flow name="flowFor-encryptionSecurityFilter">
+        <encryption-security-filter strategy-ref="Attribute"/>
+    </flow>
     <error-handler name="global-errorHandler" ref="MULE:ERROR_HANDLER">
         <on-error-continue enableNotifications="true" logException="true" type="Attribute" when="Attribute">
             <logger/>
@@ -121,9 +125,12 @@
             </route>
         </scatter-gather>
     </flow>
-
-    <security-manager/>
-
+    <security-manager>
+        <logger/>
+        <logger/>
+        <logger/>
+        <logger/>
+    </security-manager>
     <sub-flow name="global-subFlow">
         <logger/>
     </sub-flow>
