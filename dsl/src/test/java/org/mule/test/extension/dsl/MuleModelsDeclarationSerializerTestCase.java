@@ -95,6 +95,48 @@ public class MuleModelsDeclarationSerializerTestCase extends AbstractElementMode
     assertApplicationArtifactSerialization(appXmlFile, artifact);
   }
 
+  @Test
+  public void loadAndSerializeAppWithChoice() throws Exception {
+    String appXmlFile = "app-with-choice.xml";
+    ArtifactDeclaration artifact = loadApplicationDeclaration(appXmlFile);
+    assertApplicationArtifactSerialization(appXmlFile, artifact);
+  }
+
+  @Test
+  public void loadAndSerializeAppWithForEach() throws Exception {
+    String appXmlFile = "app-with-foreach.xml";
+    ArtifactDeclaration artifact = loadApplicationDeclaration(appXmlFile);
+    assertApplicationArtifactSerialization(appXmlFile, artifact);
+  }
+
+  @Test
+  public void loadAndSerializeAppWithFirstSuccessful() throws Exception {
+    String appXmlFile = "app-with-first-successful.xml";
+    ArtifactDeclaration artifact = loadApplicationDeclaration(appXmlFile);
+    assertApplicationArtifactSerialization(appXmlFile, artifact);
+  }
+
+  @Test
+  public void loadAndSerializeAppWithRoundRobin() throws Exception {
+    String appXmlFile = "app-with-round-robin.xml";
+    ArtifactDeclaration artifact = loadApplicationDeclaration(appXmlFile);
+    assertApplicationArtifactSerialization(appXmlFile, artifact);
+  }
+
+  @Test
+  public void loadAndSerializeAppWithScatterGather() throws Exception {
+    String appXmlFile = "app-with-scatter-gather.xml";
+    ArtifactDeclaration artifact = loadApplicationDeclaration(appXmlFile);
+    assertApplicationArtifactSerialization(appXmlFile, artifact);
+  }
+
+  @Test
+  public void loadAndSerializeAppWithSubflow() throws Exception {
+    String appXmlFile = "app-with-subflow.xml";
+    ArtifactDeclaration artifact = loadApplicationDeclaration(appXmlFile);
+    assertApplicationArtifactSerialization(appXmlFile, artifact);
+  }
+
   private String getResourceContent(String xmlFile) throws IOException {
     return getResourceAsString(xmlFile, getClass());
   }
