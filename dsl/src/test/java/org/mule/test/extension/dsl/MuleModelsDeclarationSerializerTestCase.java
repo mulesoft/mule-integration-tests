@@ -11,7 +11,6 @@ import static org.mule.runtime.api.util.MuleSystemProperties.SYSTEM_PROPERTY_PRE
 import static org.mule.runtime.ast.api.DependencyResolutionMode.MINIMAL;
 import static org.mule.runtime.core.api.util.IOUtils.getResourceAsString;
 
-import org.junit.Ignore;
 import org.mule.runtime.api.security.Authentication;
 import org.mule.runtime.api.security.SecurityException;
 import org.mule.runtime.app.declaration.api.ArtifactDeclaration;
@@ -24,7 +23,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -90,7 +88,6 @@ public class MuleModelsDeclarationSerializerTestCase extends AbstractElementMode
     assertApplicationArtifactSerialization(appXmlFile, artifact);
   }
 
-  @Ignore
   @Test
   public void loadAndSerializeAppWithSecurityManager() throws Exception {
     String appXmlFile = "app-with-security-manager.xml";
