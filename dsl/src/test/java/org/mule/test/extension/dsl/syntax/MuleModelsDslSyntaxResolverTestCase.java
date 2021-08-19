@@ -31,6 +31,14 @@ public class MuleModelsDslSyntaxResolverTestCase {
   private static final String PARALLEL_FOREACH_COMPONENT = "parallelForeach";
   private static final String TRY_COMPONENT = "try";
   private static final String ERROR_HANDLER_COMPONENT = "errorHandler";
+  private static final String CHOICE_COMPONENT = "choice";
+  private static final String FOREACH_COMPONENT = "foreach";
+  private static final String FIRST_SUCCESSFUL_COMPONENT = "firstSuccessful";
+  private static final String SCATTER_GATHER_COMPONENT = "scatterGather";
+  private static final String ROUND_ROBIN_COMPONENT = "roundRobin";
+  private static final String FLOW_COMPONENT = "flow";
+  private static final String SUBFLOW_COMPONENT = "subFlow";
+
 
   private DslSyntaxResolver dslSyntaxResolver;
   private ExtensionModel extensionModel = MuleExtensionModelProvider.getExtensionModel();
@@ -79,7 +87,65 @@ public class MuleModelsDslSyntaxResolverTestCase {
     assertThat(onErrorPropagateSyntax.get().getChild("processors").isPresent(), is(false));
   }
 
+  @Test
+  public void choiceComponentDslSyntax() {
+    ConstructModel construct = extensionModel.getConstructModel(CHOICE_COMPONENT).get();
+    DslElementSyntax constructSyntax = dslSyntaxResolver.resolve(construct);
+
+    Optional<DslElementSyntax> whenSyntax = constructSyntax.getChild("when");
+    Optional<DslElementSyntax> otherwiseSyntax = constructSyntax.getChild("otherwise");
+    assertThat(whenSyntax.isPresent(), is(true));
+    assertThat(otherwiseSyntax.isPresent(), is(true));
+
+    assertThat(whenSyntax.get().getChild("processors").isPresent(), is(false));
+    assertThat(otherwiseSyntax.get().getChild("processors").isPresent(), is(false));
+  }
+
+  @Test
+  public void foreachComponentDslSyntax() {
+    assertComponentDsl(FOREACH_COMPONENT);
+  }
+
+  @Test
+  public void flowComponentDslSyntax() {
+    assertComponentDsl(FLOW_COMPONENT, "name");
+  }
+
+  @Test
+  public void subFlowComponentDslSyntax() {
+    assertComponentDsl(SUBFLOW_COMPONENT, "name");
+  }
+
+  @Test
+  public void firstSuccessfulComponentDslSyntax() {
+    assertComponentWithRouteDsl(FIRST_SUCCESSFUL_COMPONENT);
+  }
+
+  @Test
+  public void scatterGatherComponentDslSyntax() {
+    assertComponentWithRouteDsl(SCATTER_GATHER_COMPONENT);
+  }
+
+  @Test
+  public void roundRobinComponentDslSyntax() {
+    assertComponentWithRouteDsl(ROUND_ROBIN_COMPONENT);
+  }
+
   private void assertComponentDsl(String modelName, String... attributes) {
+    DslElementSyntax constructSyntax = getAndAssertConstruct(modelName, attributes);
+    Optional<DslElementSyntax> processorsSyntax = constructSyntax.getChild("processors");
+    assertThat(processorsSyntax.isPresent(), is(false));
+  }
+
+  private void assertComponentWithRouteDsl(String modelName, String... attributes) {
+    DslElementSyntax constructSyntax = getAndAssertConstruct(modelName, attributes);
+    Optional<DslElementSyntax> routeSyntax = constructSyntax.getChild("route");
+    assertThat(routeSyntax.isPresent(), is(true));
+    Optional<DslElementSyntax> processorsSyntax = routeSyntax.get().getChild("processors");
+    assertThat(processorsSyntax.isPresent(), is(false));
+  }
+
+  private DslElementSyntax getAndAssertConstruct(String modelName, String[] attributes) {
     ConstructModel construct = extensionModel.getConstructModel(modelName).get();
     DslElementSyntax constructSyntax = dslSyntaxResolver.resolve(construct);
 
@@ -87,9 +153,7 @@ public class MuleModelsDslSyntaxResolverTestCase {
     assertThat(constructSyntax.getNamespace(), is(CORE_NAMESPACE));
 
     Arrays.stream(attributes).forEach(attribute -> assertParameterAttribute(constructSyntax, attribute));
-
-    Optional<DslElementSyntax> processorsSyntax = constructSyntax.getChild("processors");
-    assertThat(processorsSyntax.isPresent(), is(false));
+    return constructSyntax;
   }
 
   private void assertParameterAttribute(DslElementSyntax dslElementSyntax, String parameterName) {
