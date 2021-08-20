@@ -19,6 +19,9 @@
         <activemqVersion>5.15.3</activemqVersion>
         <hawtbufVersion>1.1</hawtbufVersion>
         <activemqProtobuf>1.1</activemqProtobuf>
+        <jython.version>2.7.2</jython.version>
+        <groovy.version>2.4.16</groovy.version>
+        <jruby.version>9.2.11.1</jruby.version>
     </properties>
 
     <build>
@@ -366,6 +369,13 @@
             <version>${muleTestComponentsVersion}</version>
             <classifier>mule-plugin</classifier>
             <scope>test</scope>
+        </dependency>
+        <!--Groovy-->
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-all</artifactId>
+            <version>${groovy.version}</version>
+            <classifier>indy</classifier>
         </dependency>
     </dependencies>
 </project>
