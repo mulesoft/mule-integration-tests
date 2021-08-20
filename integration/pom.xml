@@ -374,6 +374,7 @@
             <artifactId>groovy-all</artifactId>
             <version>${groovy.version}</version>
             <classifier>indy</classifier>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>
