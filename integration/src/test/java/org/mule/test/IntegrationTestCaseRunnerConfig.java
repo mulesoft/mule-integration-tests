@@ -18,7 +18,8 @@ import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
         "org.fusesource.hawtbuf:hawtbuf",
         "org.apache.activemq.protobuf:activemq-protobuf",
         "org.mule.tests:mule-tests-model",
-        "org.apache.derby:derby"
+        "org.apache.derby:derby",
+        "org.codehaus.groovy:groovy-all"
     },
     extraPrivilegedArtifacts = {"org.mule.tests:mule-tests-parsers-plugin"},
     testRunnerExportedRuntimeLibs = {"org.mule.tests:mule-tests-functional"})
