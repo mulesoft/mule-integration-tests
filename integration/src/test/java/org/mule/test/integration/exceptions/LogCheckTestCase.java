@@ -10,9 +10,11 @@ import static org.mule.tck.junit4.rule.VerboseExceptions.setVerboseExceptions;
 import static org.mule.test.allure.AllureConstants.Logging.LOGGING;
 import static org.mule.test.allure.AllureConstants.Logging.LoggingStory.ERROR_REPORTING;
 
-import io.qameta.allure.Issue;
+import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.i18n.I18nMessageFactory;
+import org.mule.runtime.core.api.event.CoreEvent;
+import org.mule.runtime.core.api.processor.Processor;
 import org.mule.tck.junit4.rule.VerboseExceptions;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -22,6 +24,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
 
 @Feature(LOGGING)
@@ -153,6 +156,14 @@ public class LogCheckTestCase extends AbstractIntegrationTestCase {
     @Override
     public String getSummaryMessage() {
       return MESSAGE;
+    }
+  }
+
+  public static final class ThrowNpeProcessor extends AbstractComponent implements Processor {
+
+    @Override
+    public CoreEvent process(CoreEvent event) throws MuleException {
+      throw new NullPointerException("expected");
     }
   }
 

@@ -7,7 +7,7 @@
 
 
     <flow name="flow">
-        <test:processor throwException="true"/>
+        <raise-error type="TEST:EXPECTED"/>
     </flow>
 
     <flow name="flowWithChildFlow">
@@ -44,7 +44,7 @@
     </flow>
 
     <flow name="childFlow">
-        <test:processor throwException="true"/>
+        <raise-error type="TEST:EXPECTED"/>
         <error-handler>
             <on-error-continue>
                 <test:processor>
@@ -55,11 +55,11 @@
     </flow>
 
     <sub-flow name="subFlow">
-        <test:processor throwException="true"/>
+        <raise-error type="TEST:EXPECTED"/>
     </sub-flow>
 
     <flow name="childService">
-        <test:processor throwException="true"/>
+        <raise-error type="TEST:EXPECTED"/>
         <error-handler>
             <on-error-continue>
                 <test:processor>

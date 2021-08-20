@@ -6,18 +6,24 @@
  */
 package org.mule.test.integration.exceptions;
 
-import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.functional.junit4.matchers.MessageMatchers.hasPayload;
+import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
 import static org.mule.tck.junit4.matcher.EventMatcher.hasMessage;
+import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
+import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ErrorHandlingStory.ERROR_HANDLER;
 
-import org.mule.functional.api.exception.FunctionalTestException;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Test;
 
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
+
+@Feature(ERROR_HANDLING)
+@Story(ERROR_HANDLER)
 public class ExceptionStrategyCommonScenariosTestCase extends AbstractIntegrationTestCase {
 
   public static final String MESSAGE_TO_SEND = "A message";
@@ -31,7 +37,7 @@ public class ExceptionStrategyCommonScenariosTestCase extends AbstractIntegratio
   @Test
   public void testPreservePayloadPropagate() throws Exception {
     flowRunner("PreservePayloadPropagate").withPayload(MESSAGE_TO_SEND)
-        .runExpectingException(instanceOf(FunctionalTestException.class), hasMessage(hasPayload(is(MESSAGE_MODIFIED))));
+        .runExpectingException(errorType("TEST", "EXPECTED"), hasMessage(hasPayload(is(MESSAGE_MODIFIED))));
   }
 
   @Test

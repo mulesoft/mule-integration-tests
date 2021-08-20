@@ -23,7 +23,7 @@
     </flow>
 
     <flow name="blockWithOwnExceptionStrategy">
-        <test:processor throwException="true"/>
+        <raise-error type="TEST:EXPECTED"/>
         <error-handler>
             <on-error-propagate>
                 <set-variable variableName="flowRefEs" value="yes"/>

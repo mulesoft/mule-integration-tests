@@ -84,7 +84,7 @@
 
     <flow name="unknownFiltered" initialState="stopped">
         <test-components:skeleton-source/>
-        <test:processor throwException="true" exceptionToThrow="java.lang.NullPointerException"/>
+        <flow-ref name="throwNpe"/>
         <error-handler>
             <test:on-error-check-log>
                 <test:check-summary>
@@ -100,7 +100,7 @@
 
     <flow name="unknownFull" initialState="stopped">
         <test-components:skeleton-source/>
-        <test:processor throwException="true" exceptionToThrow="java.lang.NullPointerException"/>
+        <flow-ref name="throwNpe"/>
         <error-handler>
             <test:on-error-check-log>
                 <test:check-summary>
@@ -292,5 +292,7 @@
             </test:on-error-check-log>
         </error-handler>
     </flow>
+
+    <object name="throwNpe" class="org.mule.test.integration.exceptions.LogCheckTestCase$ThrowNpeProcessor"/>
 
 </mule>

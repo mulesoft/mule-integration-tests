@@ -130,7 +130,7 @@ public class ExpressionLanguageFunctionsTestCase extends AbstractIntegrationTest
   public void lookupFailsWhenCalledFlowThrowsError() throws Exception {
     expectedError.expectErrorType("MULE", "EXPRESSION");
     expectedError.expectCause(both(isA(ExpressionRuntimeException.class))
-        .and(hasMessage(containsString(("Flow 'failingFlow' has failed with error 'MULE:UNKNOWN' (Functional Test Service Exception)")))));
+        .and(hasMessage(containsString(("Flow 'failingFlow' has failed with error 'TEST:EXPECTED' (expected error)")))));
     flowRunner("expressionParams")
         .withVariable("flow", "failingFlow")
         .withPayload(TEST_PAYLOAD)

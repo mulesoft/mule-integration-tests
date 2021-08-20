@@ -12,7 +12,7 @@
                 <fixed-frequency frequency="1000" timeUnit="MILLISECONDS" />
             </scheduling-strategy>
         </scheduler>
-        <test:processor throwException="true"/>
+        <raise-error type="TEST:EXPECTED"/>
         <error-handler>
             <on-error-continue>
                 <test:processor>

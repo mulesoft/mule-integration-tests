@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xmlns:test="http://www.mulesoft.org/schema/mule/test"
-      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-               http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 
     <flow name="defaultErrorHandlerFlow">
-        <test:processor throwException="true"/>
+        <raise-error type="TEST:EXPECTED"/>
     </flow>
 
     <error-handler name="sharedErrorHandler">
@@ -16,12 +14,12 @@
     </error-handler>
 
     <flow name="referencedErrorHandlerFlow">
-        <test:processor throwException="true"/>
+        <raise-error type="TEST:EXPECTED"/>
         <error-handler ref="sharedErrorHandler"/>
     </flow>
 
     <flow name="innerErrorHandlerFlow">
-        <test:processor throwException="true"/>
+        <raise-error type="TEST:EXPECTED"/>
         <error-handler>
             <on-error-propagate type="ANY">
                 <logger/>

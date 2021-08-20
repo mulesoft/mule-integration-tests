@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xmlns:test="http://www.mulesoft.org/schema/mule/test"
-      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-               http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 
     <object name="notificationLogger" class="org.mule.test.core.context.notification.ErrorHandlerNotificationLogger"/>
 
@@ -12,7 +10,7 @@
     </notifications>
 
     <flow name="catch-es">
-        <test:processor throwException="true"/>
+        <raise-error type="TEST:EXPECTED"/>
         <error-handler>
             <on-error-continue>
                 <logger/>
@@ -21,7 +19,7 @@
     </flow>
 
     <flow name="rollback-es">
-        <test:processor throwException="true"/>
+        <raise-error type="TEST:EXPECTED"/>
         <error-handler>
             <on-error-continue type="REDELIVERY_EXHAUSTED">
                 <logger/>
@@ -33,7 +31,7 @@
     </flow>
 
     <flow name="choice-es">
-        <test:processor throwException="true"/>
+        <raise-error type="TEST:EXPECTED"/>
         <error-handler>
             <on-error-continue type="REDELIVERY_EXHAUSTED">
                 <logger/>
@@ -48,6 +46,6 @@
     </flow>
 
     <flow name="default-es">
-        <test:processor throwException="true"/>
+        <raise-error type="TEST:EXPECTED"/>
     </flow>
 </mule>
