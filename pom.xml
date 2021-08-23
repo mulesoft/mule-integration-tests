@@ -35,7 +35,7 @@
     <muleHttpServiceTestVersion>1.6.0-rc2</muleHttpServiceTestVersion>
     <muleOAuthServiceTestVersion>2.1.0-rc2</muleOAuthServiceTestVersion>
     <muleSoapServiceTestVersion>1.4.0-rc2</muleSoapServiceTestVersion>
-    <muleExtensionTestSoapTestVersion>1.4.0-SNAPSHOT</muleExtensionTestSoapTestVersion>
+    <muleExtensionTestSoapTestVersion>1.4.0-rc2</muleExtensionTestSoapTestVersion>
     <muleSpringModuleTestVersion>1.4.0-SNAPSHOT</muleSpringModuleTestVersion>
 
     <munitExtensionsMavenPlugin>1.1.1</munitExtensionsMavenPlugin>
