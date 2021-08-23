@@ -9,6 +9,8 @@
                            http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd
                            http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
 
+    <object name="awaitLatch" class="org.mule.test.components.RedeliveryPolicyTestCase$LatchAwaitBlockingProcessor"/>
+
     <vm:config name="VM_Config">
         <vm:queues >
           <vm:queue queueName="Q1" />
@@ -56,9 +58,7 @@
             <redelivery-policy maxRedeliveryCount="1" idExpression="#[random()]"/>
         </vm:listener>
         
-        <test:processor processingType="BLOCKING">
-            <test:callback class="org.mule.test.components.RedeliveryPolicyTestCase$LatchAwaitCallback"/>
-        </test:processor>
+        <flow-ref name="awaitLatch"/>
         
         <error-handler>
             <on-error-propagate type="MULE:REDELIVERY_EXHAUSTED">

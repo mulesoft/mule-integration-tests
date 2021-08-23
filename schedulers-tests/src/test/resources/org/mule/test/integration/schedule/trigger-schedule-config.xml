@@ -13,8 +13,6 @@
                 <fixed-frequency frequency="${frequency.millis}"/>
             </scheduling-strategy>
         </scheduler>
-        <test:processor>
-            <test:callback class="org.mule.test.integration.schedule.TriggerScheduleTestCase$Foo"/>
-        </test:processor>
+        <set-payload value="#[java!org::mule::test::integration::schedule::TriggerScheduleTestCase::foo(payload)]"/>
     </flow>
 </mule>

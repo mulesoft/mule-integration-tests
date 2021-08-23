@@ -9,11 +9,7 @@ package org.mule.test.integration.exceptions;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-import org.mule.functional.api.component.EventCallback;
-import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.event.Event;
-import org.mule.runtime.core.api.MuleContext;
-import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.runner.RunnerDelegateTo;
@@ -83,24 +79,18 @@ public class ErrorHandlerWorksWithTxTestCase extends AbstractIntegrationTestCase
     assertThat(executedInSameThread, is(true));
   }
 
-  public static class StartProcess extends AbstractComponent implements EventCallback {
+  public static Object startProcess(String payload) {
+    execution.set(true);
 
-    @Override
-    public void eventReceived(CoreEvent event, Object component, MuleContext muleContext) throws Exception {
-      execution.set(true);
-    }
-
+    return payload;
   }
 
-  public static class FinishProcess extends AbstractComponent implements EventCallback {
-
-    @Override
-    public void eventReceived(CoreEvent event, Object component, MuleContext muleContext) throws Exception {
-      if (execution.get()) {
-        executedInSameThread = true;
-      }
+  public static Object finishProcess(String payload) {
+    if (execution.get()) {
+      executedInSameThread = true;
     }
 
+    return payload;
   }
 
 }

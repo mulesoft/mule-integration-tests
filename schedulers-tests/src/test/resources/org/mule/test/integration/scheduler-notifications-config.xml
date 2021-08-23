@@ -12,9 +12,7 @@
                 <fixed-frequency frequency="1" timeUnit="SECONDS"/>
             </scheduling-strategy>
         </scheduler>
-        <test:processor>
-            <test:callback class="org.mule.test.integration.schedule.SchedulerNotificationsTestCase$EventReceptionsCounter"/>
-        </test:processor>
+        <set-payload value="#[java!org::mule::test::integration::schedule::SchedulerNotificationsTestCase::countEventReception(payload)]"/>
     </flow>
 
 </mule>

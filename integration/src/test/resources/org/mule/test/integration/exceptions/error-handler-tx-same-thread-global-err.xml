@@ -13,27 +13,19 @@
 
     <error-handler name="errorHandlerWithTestNonBlocking">
         <on-error-continue>
-            <test:processor>
-                <test:callback class="org.mule.test.integration.exceptions.ErrorHandlerWorksWithTxTestCase$StartProcess"/>
-            </test:processor>
+            <set-payload value="#[java!org::mule::test::integration::exceptions::ErrorHandlerWorksWithTxTestCase::startProcess(payload)]"/>
             <test-components:non-blocking/>
             <set-payload value="zaraza"/>
-            <test:processor>
-                <test:callback class="org.mule.test.integration.exceptions.ErrorHandlerWorksWithTxTestCase$FinishProcess"/>
-            </test:processor>
+            <set-payload value="#[java!org::mule::test::integration::exceptions::ErrorHandlerWorksWithTxTestCase::finishProcess(payload)]"/>
         </on-error-continue>
     </error-handler>
 
     <error-handler name="errorHandlerWithProcessingTypeChange">
         <on-error-continue>
-            <test:processor>
-                <test:callback class="org.mule.test.integration.exceptions.ErrorHandlerWorksWithTxTestCase$StartProcess"/>
-            </test:processor>
+            <set-payload value="#[java!org::mule::test::integration::exceptions::ErrorHandlerWorksWithTxTestCase::startProcess(payload)]"/>
             <test:processor processingType="CPU_INTENSIVE"/>
             <set-payload value="zaraza"/>
-            <test:processor>
-                <test:callback class="org.mule.test.integration.exceptions.ErrorHandlerWorksWithTxTestCase$FinishProcess"/>
-            </test:processor>
+            <set-payload value="#[java!org::mule::test::integration::exceptions::ErrorHandlerWorksWithTxTestCase::finishProcess(payload)]"/>
         </on-error-continue>
     </error-handler>
 
@@ -46,28 +38,20 @@
 
     <error-handler name="errorHandlerWithNonBlockingOp">
         <on-error-continue>
-            <test:processor>
-                <test:callback class="org.mule.test.integration.exceptions.ErrorHandlerWorksWithTxTestCase$StartProcess"/>
-            </test:processor>
+            <set-payload value="#[java!org::mule::test::integration::exceptions::ErrorHandlerWorksWithTxTestCase::startProcess(payload)]"/>
             <vm:publish queueName="Q1" config-ref="VM_Config"/>
             <set-payload value="zaraza"/>
-            <test:processor>
-                <test:callback class="org.mule.test.integration.exceptions.ErrorHandlerWorksWithTxTestCase$FinishProcess"/>
-            </test:processor>
+            <set-payload value="#[java!org::mule::test::integration::exceptions::ErrorHandlerWorksWithTxTestCase::finishProcess(payload)]"/>
         </on-error-continue>
     </error-handler>
 
     <error-handler name="errorHandlerWithNonBlockingOpAndProcessingTypeChange">
         <on-error-continue>
-            <test:processor>
-                <test:callback class="org.mule.test.integration.exceptions.ErrorHandlerWorksWithTxTestCase$StartProcess"/>
-            </test:processor>
+            <set-payload value="#[java!org::mule::test::integration::exceptions::ErrorHandlerWorksWithTxTestCase::startProcess(payload)]"/>
             <vm:publish queueName="Q1" config-ref="VM_Config"/>
             <test:processor processingType="CPU_INTENSIVE"/>
             <set-payload value="zaraza"/>
-            <test:processor>
-                <test:callback class="org.mule.test.integration.exceptions.ErrorHandlerWorksWithTxTestCase$FinishProcess"/>
-            </test:processor>
+            <set-payload value="#[java!org::mule::test::integration::exceptions::ErrorHandlerWorksWithTxTestCase::finishProcess(payload)]"/>
         </on-error-continue>
     </error-handler>
 

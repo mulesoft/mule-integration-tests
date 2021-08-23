@@ -17,9 +17,7 @@
             </scheduling-strategy>
         </scheduler>
         <flow-ref name="echo"/>
-        <test:processor>
-            <test:callback class="org.mule.test.integration.SchedulerTestCase$Foo"/>
-        </test:processor>
+        <set-payload value="#[java!org::mule::test::integration::SchedulerTestCase::addFoo(payload)]"/>
     </flow>
 
     <flow name="pollbar">
@@ -29,9 +27,7 @@
             </scheduling-strategy>
         </scheduler>
         <set-payload value="bar"/>
-        <test:processor>
-            <test:callback class="org.mule.test.integration.SchedulerTestCase$Bar"/>
-        </test:processor>
+        <set-payload value="#[java!org::mule::test::integration::SchedulerTestCase::addBar(payload)]"/>
     </flow>
 
     <flow name="pollbarNever">
@@ -42,9 +38,7 @@
             </scheduling-strategy>
         </scheduler>
         <set-payload value="barNever"/>
-        <test:processor>
-            <test:callback class="org.mule.test.integration.SchedulerTestCase$Bar"/>
-        </test:processor>
+        <set-payload value="#[java!org::mule::test::integration::SchedulerTestCase::addBar(payload)]"/>
     </flow>
 
     <object name="eventWireTrap" class="org.mule.test.integration.SchedulerTestCase$EventWireTrap" />

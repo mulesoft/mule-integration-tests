@@ -8,16 +8,11 @@ package org.mule.test.tck;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mule.functional.api.component.FunctionalTestProcessor.getFromFlow;
 
-import org.mule.functional.api.component.EventCallback;
 import org.mule.functional.api.component.FunctionalTestProcessor;
-import org.mule.runtime.api.component.AbstractComponent;
-import org.mule.runtime.core.api.MuleContext;
-import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Test;
@@ -36,8 +31,6 @@ public class MuleTestNamespaceTestCase extends AbstractIntegrationTestCase {
     assertFalse(ftc.isEnableMessageHistory());
     assertFalse(ftc.isEnableNotifications());
     assertNull(ftc.getAppendString());
-    assertNotNull(ftc.getEventCallback());
-    assertTrue(ftc.getEventCallback() instanceof TestCallback);
   }
 
   @Test
@@ -51,12 +44,4 @@ public class MuleTestNamespaceTestCase extends AbstractIntegrationTestCase {
     assertNull(ftc.getEventCallback());
   }
 
-  public static final class TestCallback extends AbstractComponent implements EventCallback {
-
-    @Override
-    public void eventReceived(CoreEvent event, Object component, MuleContext muleContext) throws Exception {
-      // Nothing to do
-    }
-
-  }
 }

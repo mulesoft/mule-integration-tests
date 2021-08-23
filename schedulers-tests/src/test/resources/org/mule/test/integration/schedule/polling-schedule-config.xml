@@ -18,9 +18,7 @@
             </scheduling-strategy>
         </scheduler>
         <flow-ref name="echo"/>
-        <test:processor>
-            <test:callback class="org.mule.test.integration.schedule.PollScheduleTestCase$Foo"/>
-        </test:processor>
+        <set-payload value="#[java!org::mule::test::integration::schedule::PollScheduleTestCase::addFoo(payload)]"/>
     </flow>
 
     <flow name="pollbar">
@@ -30,9 +28,7 @@
             </scheduling-strategy>
         </scheduler>
         <set-payload value="bar"/>
-        <test:processor>
-            <test:callback class="org.mule.test.integration.schedule.PollScheduleTestCase$Bar"/>
-        </test:processor>
+        <set-payload value="#[java!org::mule::test::integration::schedule::PollScheduleTestCase::addBar(payload)]"/>
     </flow>
 
     <flow name="pollbarNever">
@@ -43,8 +39,6 @@
             </scheduling-strategy>
         </scheduler>
         <set-payload value="barNever"/>
-        <test:processor>
-            <test:callback class="org.mule.test.integration.schedule.PollScheduleTestCase$Bar"/>
-        </test:processor>
+        <set-payload value="#[java!org::mule::test::integration::schedule::PollScheduleTestCase::addBar(payload)]"/>
     </flow>
 </mule>
