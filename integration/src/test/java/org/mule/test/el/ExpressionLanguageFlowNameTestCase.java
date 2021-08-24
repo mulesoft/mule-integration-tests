@@ -12,9 +12,9 @@ import static org.mule.functional.junit4.matchers.MessageMatchers.hasPayload;
 import static org.mule.test.allure.AllureConstants.ExpressionLanguageFeature.EXPRESSION_LANGUAGE;
 import static org.mule.test.allure.AllureConstants.ExpressionLanguageFeature.ExpressionLanguageStory.SUPPORT_EXPRESSION_BINDINGS;
 
-import io.qameta.allure.Story;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import io.qameta.allure.Story;
 import io.qameta.allure.Issue;
 import io.qameta.allure.Feature;
 import org.junit.Test;
