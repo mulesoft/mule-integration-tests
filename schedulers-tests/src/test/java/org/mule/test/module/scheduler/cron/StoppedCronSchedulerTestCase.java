@@ -12,13 +12,9 @@ import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.component.location.Location.builderFromStringRepresentation;
 import static org.mule.test.allure.AllureConstants.SchedulerFeature.SCHEDULER;
 
-import org.mule.functional.api.component.EventCallback;
-import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.lifecycle.Startable;
 import org.mule.runtime.api.lifecycle.Stoppable;
 import org.mule.runtime.api.source.SchedulerMessageSource;
-import org.mule.runtime.core.api.MuleContext;
-import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.tck.probe.JUnitLambdaProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.test.AbstractSchedulerTestCase;
@@ -27,9 +23,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-import org.junit.Test;
-
 import io.qameta.allure.Feature;
+
+import org.junit.Test;
 
 @Feature(SCHEDULER)
 public class StoppedCronSchedulerTestCase extends AbstractSchedulerTestCase {
@@ -52,14 +48,11 @@ public class StoppedCronSchedulerTestCase extends AbstractSchedulerTestCase {
     });
   }
 
-  public static class Foo extends AbstractComponent implements EventCallback {
-
-    @Override
-    public void eventReceived(CoreEvent event, Object component, MuleContext muleContext) throws Exception {
-      synchronized (foo) {
-        foo.add((String) event.getMessage().getPayload().getValue());
-      }
+  public static Object addFoo(String payload) {
+    synchronized (foo) {
+      foo.add(payload);
     }
+    return payload;
   }
 
   private void runSchedulersOnce(Supplier<Void> assertionSupplier) throws Exception {

@@ -14,9 +14,7 @@
             </scheduling-strategy>
         </scheduler>
         <set-payload value="poll1"/>
-        <test:processor>
-            <test:callback class="org.mule.test.module.scheduler.cron.MultipleSchedulersTestCase$SynchronizedPollExecutionCounter"/>
-        </test:processor>
+        <set-payload value="#[java!org::mule::test::module::scheduler::cron::MultipleSchedulersTestCase::synchronizedPollExecutionCount(payload)]"/>
     </flow>
 
     <flow name="poll2">
@@ -26,8 +24,6 @@
             </scheduling-strategy>
         </scheduler>
         <set-payload value="poll2"/>
-        <test:processor>
-            <test:callback class="org.mule.test.module.scheduler.cron.MultipleSchedulersTestCase$SynchronizedPollExecutionCounter"/>
-        </test:processor>
+        <set-payload value="#[java!org::mule::test::module::scheduler::cron::MultipleSchedulersTestCase::synchronizedPollExecutionCount(payload)]"/>
     </flow>
 </mule>

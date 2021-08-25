@@ -6,6 +6,8 @@
                http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
                http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
+    <object name="awaitLatchCpuIntensive" class="org.mule.test.construct.FlowRefTestCase$LatchAwaitCpuIntensiveProcessor"/>
+
     <http:listener-config name="listenerConfig">
         <http:listener-connection host="localhost" port="${port}"/>
     </http:listener-config>
@@ -167,14 +169,10 @@
     </flow>
 
     <flow name="backpressureFlowRefInner">
-        <test:processor processingType="CPU_INTENSIVE">
-            <test:callback class="org.mule.test.construct.FlowRefTestCase$LatchAwaitCallback"/>
-        </test:processor>
+        <flow-ref name="awaitLatchCpuIntensive"/>
     </flow>
     <sub-flow name="backpressureFlowRefInnerSub">
-        <test:processor processingType="CPU_INTENSIVE">
-            <test:callback class="org.mule.test.construct.FlowRefTestCase$LatchAwaitCallback"/>
-        </test:processor>
+        <flow-ref name="awaitLatchCpuIntensive"/>
     </sub-flow>
 
     <!-- Multiple recursive subflows -->
@@ -234,9 +232,7 @@
             </when>
         </choice>
 
-        <test:processor processingType="CPU_INTENSIVE">
-            <test:callback class="org.mule.test.construct.FlowRefTestCase$LatchAwaitCallback"/>
-        </test:processor>
+        <flow-ref name="awaitLatchCpuIntensive"/>
     </flow>
 
     <flow name="dynamicFlowRefWithSdkOperation">

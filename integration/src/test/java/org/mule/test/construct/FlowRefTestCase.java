@@ -29,6 +29,7 @@ import static org.mule.runtime.api.notification.MessageProcessorNotification.MES
 import static org.mule.runtime.api.notification.MessageProcessorNotification.MESSAGE_PROCESSOR_PRE_INVOKE;
 import static org.mule.runtime.core.api.error.Errors.CORE_NAMESPACE_NAME;
 import static org.mule.runtime.core.api.error.Errors.Identifiers.ROUTING_ERROR_IDENTIFIER;
+import static org.mule.runtime.core.api.processor.ReactiveProcessor.ProcessingType.CPU_INTENSIVE;
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.SERVICE_UNAVAILABLE;
 import static org.mule.runtime.http.api.HttpConstants.Method.GET;
 import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
@@ -37,17 +38,18 @@ import static org.mule.test.allure.AllureConstants.ComponentsFeature.CORE_COMPON
 import static org.mule.test.allure.AllureConstants.ComponentsFeature.FlowReferenceStory.FLOW_REFERENCE;
 import static org.mule.test.allure.AllureConstants.ExecutionEngineFeature.ExecutionEngineStory.BACKPRESSURE;
 
-import org.mule.functional.api.component.EventCallback;
 import org.mule.functional.api.exception.ExpectedError;
 import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.exception.DefaultMuleException;
+import org.mule.runtime.api.exception.MuleException;
+import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.notification.MessageProcessorNotification;
 import org.mule.runtime.api.notification.MessageProcessorNotificationListener;
 import org.mule.runtime.api.scheduler.Scheduler;
-import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.event.CoreEvent;
+import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.http.api.HttpService;
 import org.mule.runtime.http.api.client.HttpRequestOptions;
 import org.mule.runtime.http.api.domain.message.request.HttpRequest;
@@ -66,16 +68,16 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.inject.Inject;
 
+import io.qameta.allure.Description;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
+import io.qameta.allure.Story;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
-
-import io.qameta.allure.Description;
-import io.qameta.allure.Feature;
-import io.qameta.allure.Issue;
-import io.qameta.allure.Story;
 
 @Feature(CORE_COMPONENTS)
 @Story(FLOW_REFERENCE)
@@ -418,14 +420,25 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
   private static AtomicInteger callbackInFlight = new AtomicInteger();
   private static AtomicInteger awaiting = new AtomicInteger();
 
-  public static class LatchAwaitCallback extends AbstractComponent implements EventCallback {
+  public static class LatchAwaitCpuIntensiveProcessor extends AbstractComponent implements Processor {
 
     @Override
-    public void eventReceived(CoreEvent event, Object component, MuleContext muleContext) throws Exception {
+    public ProcessingType getProcessingType() {
+      return CPU_INTENSIVE;
+    }
+
+    @Override
+    public CoreEvent process(CoreEvent event) throws MuleException {
       callbackInFlight.incrementAndGet();
       awaiting.incrementAndGet();
-      latch.await();
+      try {
+        latch.await();
+      } catch (InterruptedException e) {
+        throw new MuleRuntimeException(e);
+      }
       callbackInFlight.decrementAndGet();
+
+      return event;
     }
 
   }

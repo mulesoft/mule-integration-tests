@@ -15,13 +15,15 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assume.assumeThat;
 import static org.mule.runtime.api.metadata.MediaType.APPLICATION_JAVA;
+import static org.mule.runtime.core.api.processor.ReactiveProcessor.ProcessingType.BLOCKING;
 import static org.mule.tck.probe.PollingProber.probe;
 
-import org.mule.functional.api.component.EventCallback;
 import org.mule.runtime.api.component.AbstractComponent;
+import org.mule.runtime.api.exception.MuleException;
+import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.metadata.MediaType;
-import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.event.CoreEvent;
+import org.mule.runtime.core.api.processor.Processor;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.runner.RunnerDelegateTo;
 import org.mule.tests.api.TestQueueManager;
@@ -32,12 +34,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.inject.Inject;
 
+import io.qameta.allure.Issue;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
-
-import io.qameta.allure.Issue;
 
 @RunnerDelegateTo(Parameterized.class)
 public class RedeliveryPolicyTestCase extends AbstractIntegrationTestCase {
@@ -45,13 +47,25 @@ public class RedeliveryPolicyTestCase extends AbstractIntegrationTestCase {
   private static CountDownLatch latch;
   private static AtomicInteger awaiting = new AtomicInteger();
 
-  public static class LatchAwaitCallback extends AbstractComponent implements EventCallback {
+  public static class LatchAwaitBlockingProcessor extends AbstractComponent implements Processor {
 
     @Override
-    public void eventReceived(CoreEvent event, Object component, MuleContext muleContext) throws Exception {
-      awaiting.incrementAndGet();
-      latch.await();
+    public ProcessingType getProcessingType() {
+      return BLOCKING;
     }
+
+    @Override
+    public CoreEvent process(CoreEvent event) throws MuleException {
+      awaiting.incrementAndGet();
+      try {
+        latch.await();
+      } catch (InterruptedException e) {
+        throw new MuleRuntimeException(e);
+      }
+
+      return event;
+    }
+
   }
 
   @Parameterized.Parameters

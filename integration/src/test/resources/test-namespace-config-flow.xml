@@ -8,9 +8,7 @@
 
     <flow name="testService1">
         <test:processor enableNotifications="false"
-            enableMessageHistory="false">
-            <test:callback class="org.mule.test.tck.MuleTestNamespaceTestCase$TestCallback" />
-        </test:processor>
+            enableMessageHistory="false"/>
     </flow>
 
     <flow name="testService3">

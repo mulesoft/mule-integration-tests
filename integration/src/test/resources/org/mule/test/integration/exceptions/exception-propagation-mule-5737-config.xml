@@ -14,9 +14,7 @@
         <flow-ref name="childFlow"/>
         <error-handler>
             <on-error-continue>
-                <test:processor>
-                    <test:callback class="org.mule.test.integration.exceptions.ExceptionPropagationMule5737TestCase$SensingExceptionParentCallback"/>
-                </test:processor>
+                <set-payload value="#[java!org::mule::test::integration::exceptions::ExceptionPropagationMule5737TestCase::senseParent(payload)]"/>
             </on-error-continue>
         </error-handler>
     </flow>
@@ -25,9 +23,7 @@
         <flow-ref name="subFlow"/>
         <error-handler>
             <on-error-continue>
-                <test:processor>
-                    <test:callback class="org.mule.test.integration.exceptions.ExceptionPropagationMule5737TestCase$SensingExceptionParentCallback"/>
-                </test:processor>
+                <set-payload value="#[java!org::mule::test::integration::exceptions::ExceptionPropagationMule5737TestCase::senseParent(payload)]"/>
             </on-error-continue>
         </error-handler>
     </flow>
@@ -36,9 +32,7 @@
         <flow-ref name="childService"/>
         <error-handler>
             <on-error-continue>
-                <test:processor>
-                    <test:callback class="org.mule.test.integration.exceptions.ExceptionPropagationMule5737TestCase$SensingExceptionParentCallback"/>
-                </test:processor>
+                <set-payload value="#[java!org::mule::test::integration::exceptions::ExceptionPropagationMule5737TestCase::senseParent(payload)]"/>
             </on-error-continue>
         </error-handler>
     </flow>
@@ -47,9 +41,7 @@
         <raise-error type="TEST:EXPECTED"/>
         <error-handler>
             <on-error-continue>
-                <test:processor>
-                    <test:callback class="org.mule.test.integration.exceptions.ExceptionPropagationMule5737TestCase$SensingExceptionChildCallback"/>
-                </test:processor>
+                <set-payload value="#[java!org::mule::test::integration::exceptions::ExceptionPropagationMule5737TestCase::senseChild(payload)]"/>
             </on-error-continue>
         </error-handler>
     </flow>
@@ -62,9 +54,7 @@
         <raise-error type="TEST:EXPECTED"/>
         <error-handler>
             <on-error-continue>
-                <test:processor>
-                    <test:callback class="org.mule.test.integration.exceptions.ExceptionPropagationMule5737TestCase$SensingExceptionChildCallback"/>
-                </test:processor>
+                <set-payload value="#[java!org::mule::test::integration::exceptions::ExceptionPropagationMule5737TestCase::senseChild(payload)]"/>
             </on-error-continue>
         </error-handler>
     </flow>

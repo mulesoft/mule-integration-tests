@@ -11,20 +11,16 @@ import static org.junit.Assert.assertThat;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ErrorHandlingStory.ON_ERROR_CONTINUE;
 
-import org.mule.functional.api.component.EventCallback;
 import org.mule.functional.api.exception.ExpectedError;
-import org.mule.runtime.api.component.AbstractComponent;
-import org.mule.runtime.core.api.MuleContext;
-import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.test.AbstractIntegrationTestCase;
-
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
+
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
 
 /**
  * Assert that flows do not propagate exceptions via runFlow or use of flow-ref. Also assert that a sub-flow/processor-chain does
@@ -45,8 +41,8 @@ public class ExceptionPropagationMule5737TestCase extends AbstractIntegrationTes
 
   @Before
   public void before() {
-    SensingExceptionParentCallback.caught = false;
-    SensingExceptionChildCallback.caught = true;
+    parentCaught = false;
+    childCaught = true;
   }
 
   @Test
@@ -59,42 +55,38 @@ public class ExceptionPropagationMule5737TestCase extends AbstractIntegrationTes
   public void testFlowWithChildFlowExceptionPropagation() throws Exception {
     runFlow("flowWithChildFlow");
 
-    assertThat(SensingExceptionParentCallback.caught, is(false));
-    assertThat(SensingExceptionChildCallback.caught, is(true));
+    assertThat(parentCaught, is(false));
+    assertThat(childCaught, is(true));
   }
 
   @Test
   public void testFlowWithSubFlowExceptionPropagation() throws Exception {
     runFlow("flowWithSubFlow");
 
-    assertThat(SensingExceptionParentCallback.caught, is(true));
+    assertThat(parentCaught, is(true));
   }
 
   @Test
   public void testFlowWithChildServiceExceptionPropagation() throws Exception {
     runFlow("flowWithChildService");
 
-    assertThat(SensingExceptionParentCallback.caught, is(false));
-    assertThat(SensingExceptionChildCallback.caught, is(true));
+    assertThat(parentCaught, is(false));
+    assertThat(childCaught, is(true));
   }
 
-  public static class SensingExceptionParentCallback extends AbstractComponent implements EventCallback {
+  static boolean parentCaught;
+  static boolean childCaught;
 
-    static boolean caught;
+  public static Object senseParent(String payload) {
+    parentCaught = true;
 
-    @Override
-    public void eventReceived(CoreEvent event, Object component, MuleContext muleContext) throws Exception {
-      caught = true;
-    }
+    return payload;
   }
 
-  public static class SensingExceptionChildCallback extends AbstractComponent implements EventCallback {
+  public static Object senseChild(String payload) {
+    childCaught = true;
 
-    static boolean caught;
-
-    @Override
-    public void eventReceived(CoreEvent event, Object component, MuleContext muleContext) throws Exception {
-      caught = true;
-    }
+    return payload;
   }
+
 }

@@ -20,9 +20,7 @@
             </scheduling-strategy>
         </scheduler>
         <flow-ref name="echo"/>
-        <test:processor>
-            <test:callback class="org.mule.test.module.scheduler.cron.CronSchedulerTestCase$Foo"/>
-        </test:processor>
+        <set-payload value="#[java!org::mule::test::module::scheduler::cron::CronSchedulerTestCase::addFoo(payload)]"/>
     </flow>
 
 
@@ -33,9 +31,7 @@
             </scheduling-strategy>
         </scheduler>
         <set-payload value="bar"/>
-        <test:processor>
-            <test:callback class="org.mule.test.module.scheduler.cron.CronSchedulerTestCase$Bar"/>
-        </test:processor>
+        <set-payload value="#[java!org::mule::test::module::scheduler::cron::CronSchedulerTestCase::addBar(payload)]"/>
     </flow>
 
 </mule>

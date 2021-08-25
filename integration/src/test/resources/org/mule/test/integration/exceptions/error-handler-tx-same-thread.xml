@@ -23,9 +23,7 @@
             <raise-error type="APP:SOMETYPE"/>
             <error-handler>
                 <on-error-continue>
-                    <test:processor>
-                        <test:callback class="org.mule.test.integration.exceptions.ErrorHandlerWorksWithTxTestCase$StartProcess"/>
-                    </test:processor>
+                    <set-payload value="#[java!org::mule::test::integration::exceptions::ErrorHandlerWorksWithTxTestCase::startProcess(payload)]"/>
                     <choice>
                         <when expression="'${errorHandlerName}' == 'errorHandlerWithTestNonBlocking'">
                             <test-components:non-blocking/>
@@ -48,9 +46,7 @@
                         </otherwise>
                     </choice>
                     <set-payload value="zaraza"/>
-                    <test:processor>
-                        <test:callback class="org.mule.test.integration.exceptions.ErrorHandlerWorksWithTxTestCase$FinishProcess"/>
-                    </test:processor>
+                    <set-payload value="#[java!org::mule::test::integration::exceptions::ErrorHandlerWorksWithTxTestCase::finishProcess(payload)]"/>
                 </on-error-continue>
             </error-handler>
         </try>

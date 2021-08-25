@@ -15,23 +15,19 @@ import static org.mule.runtime.api.component.location.Location.builderFromString
 import static org.mule.runtime.core.api.util.ClassUtils.withContextClassLoader;
 import static org.mule.test.allure.AllureConstants.SchedulerFeature.SCHEDULER;
 
-import org.mule.functional.api.component.EventCallback;
-import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.component.location.ConfigurationComponentLocator;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.source.SchedulerMessageSource;
-import org.mule.runtime.core.api.MuleContext;
-import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractSchedulerTestCase;
 
 import java.util.concurrent.CountDownLatch;
 
+import io.qameta.allure.Feature;
+
 import org.junit.ClassRule;
 import org.junit.Test;
-
-import io.qameta.allure.Feature;
 
 @Feature(SCHEDULER)
 public class TriggerScheduleTestCase extends AbstractSchedulerTestCase {
@@ -78,16 +74,13 @@ public class TriggerScheduleTestCase extends AbstractSchedulerTestCase {
     assertThat(l2.await(RECEIVE_TIMEOUT, MILLISECONDS), is(true));
   }
 
-  public static class Foo extends AbstractComponent implements EventCallback {
+  public static Object foo(String payload) {
+    assertThat(currentThread().getContextClassLoader(), sameInstance(muleContext.getExecutionClassLoader()));
 
-    @Override
-    public void eventReceived(CoreEvent event, Object component, MuleContext muleContext) throws Exception {
-      assertThat(currentThread().getContextClassLoader(), sameInstance(muleContext.getExecutionClassLoader()));
+    l1.countDown();
+    l2.countDown();
 
-      l1.countDown();
-      l2.countDown();
-    }
+    return payload;
   }
-
 
 }
