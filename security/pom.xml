@@ -74,7 +74,6 @@
         <dependency>
             <groupId>org.mule.modules</groupId>
             <artifactId>mule-spring-module</artifactId>
-            <version>${muleSpringModuleTestVersion}</version>
             <classifier>mule-plugin</classifier>
         </dependency>
 
@@ -128,6 +127,12 @@
             <artifactId>mule-dwb-api</artifactId> 
             <scope>provided</scope>         
         </dependency>         
+        <dependency>
+            <groupId>org.mule.runtime</groupId>
+            <artifactId>mule-module-spring-config</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-module-extensions-support</artifactId>
