@@ -146,6 +146,7 @@
         <dependency>
             <groupId>org.apache.activemq</groupId>
             <artifactId>activemq-broker</artifactId>
+            <version>${activemqVersion}</version>
             <scope>test</scope>
             <exclusions>
                 <exclusion>
@@ -301,13 +302,11 @@
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-core-asl</artifactId>
-            <version>${jacksonVersion}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-mapper-asl</artifactId>
-            <version>${jacksonVersion}</version>
             <scope>test</scope>
         </dependency>
 
