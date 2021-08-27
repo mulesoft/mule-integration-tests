@@ -605,7 +605,7 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
   // Check in any order
   private void assertNextProcessorLocationsAre(List<DefaultComponentLocation> componentLocations) {
     StringBuilder errors = new StringBuilder();
-    for (DefaultComponentLocation componentLocation2 : componentLocations) {
+    for (DefaultComponentLocation loc : componentLocations) {
       for (DefaultComponentLocation componentLocation : componentLocations) {
         try {
           assertNextProcessorLocationIs(componentLocation);
