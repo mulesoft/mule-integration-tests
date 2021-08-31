@@ -34,7 +34,7 @@
     <muleSchedulerServiceTestVersion>1.4.0-SNAPSHOT</muleSchedulerServiceTestVersion>
     <muleHttpServiceTestVersion>1.6.0-SNAPSHOT</muleHttpServiceTestVersion>
     <muleOAuthServiceTestVersion>2.1.0-SNAPSHOT</muleOAuthServiceTestVersion>
-    <muleSoapServiceTestVersion>1.4.0-rc2</muleSoapServiceTestVersion>
+    <muleSoapServiceTestVersion>1.4.0-SNAPSHOT</muleSoapServiceTestVersion>
     <muleExtensionTestSoapTestVersion>1.4.0-rc2</muleExtensionTestSoapTestVersion>
     <muleSpringModuleTestVersion>1.4.0-SNAPSHOT</muleSpringModuleTestVersion>
 
