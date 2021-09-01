@@ -31,10 +31,6 @@
 
   <properties>
     <munitVersion>2.4.0-SNAPSHOT</munitVersion>
-    <muleSchedulerServiceTestVersion>1.5.0-SNAPSHOT</muleSchedulerServiceTestVersion>
-    <muleHttpServiceTestVersion>1.7.0-SNAPSHOT</muleHttpServiceTestVersion>
-    <muleOAuthServiceTestVersion>2.2.0-SNAPSHOT</muleOAuthServiceTestVersion>
-    <muleSoapServiceTestVersion>1.5.0-SNAPSHOT</muleSoapServiceTestVersion>
     <muleExtensionTestSoapTestVersion>1.5.0-SNAPSHOT</muleExtensionTestSoapTestVersion>
     <muleSpringModuleTestVersion>1.4.0-SNAPSHOT</muleSpringModuleTestVersion>
 
