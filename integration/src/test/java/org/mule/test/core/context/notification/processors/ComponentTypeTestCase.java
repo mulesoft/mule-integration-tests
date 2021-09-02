@@ -9,6 +9,7 @@ package org.mule.test.core.context.notification.processors;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.component.ComponentIdentifier.buildFromStringRepresentation;
+import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.CONFIG;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.ERROR_HANDLER;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.FLOW;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.ON_ERROR;
@@ -16,7 +17,6 @@ import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentT
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.ROUTER;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.SCOPE;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.SOURCE;
-import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.UNKNOWN;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentTypeStore.COMPONENT_CONFIGURATION_TYPE;
 
@@ -24,10 +24,10 @@ import org.mule.runtime.api.component.ComponentIdentifier;
 import org.mule.runtime.api.component.TypedComponentIdentifier;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import org.junit.Test;
-
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
+
+import org.junit.Test;
 
 @Feature(CONFIGURATION_COMPONENT_LOCATOR)
 @Story(COMPONENT_CONFIGURATION_TYPE)
@@ -77,8 +77,8 @@ public class ComponentTypeTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  public void unknownComponentType() {
-    assertThat(getComponentType(buildFromStringRepresentation("http:request-config")), is(UNKNOWN));
+  public void configComponentType() {
+    assertThat(getComponentType(buildFromStringRepresentation("http:request-config")), is(CONFIG));
   }
 
   @Test
