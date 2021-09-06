@@ -32,7 +32,7 @@
   <properties>
     <munitVersion>2.3.5</munitVersion>
     <muleSchedulerServiceTestVersion>1.4.0-SNAPSHOT</muleSchedulerServiceTestVersion>
-    <muleHttpServiceTestVersion>1.6.0-SNAPSHOT</muleHttpServiceTestVersion>
+    <muleHttpServiceTestVersion>1.6.0-20210906</muleHttpServiceTestVersion>
     <muleOAuthServiceTestVersion>2.1.0-SNAPSHOT</muleOAuthServiceTestVersion>
     <muleSoapServiceTestVersion>1.4.0-SNAPSHOT</muleSoapServiceTestVersion>
     <muleExtensionTestSoapTestVersion>1.4.0-SNAPSHOT</muleExtensionTestSoapTestVersion>
