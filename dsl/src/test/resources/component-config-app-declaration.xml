@@ -31,7 +31,7 @@
             </db:connection-properties>
         </db:derby-connection>
     </db:config>
-    <http:listener-config basePath="/" name="httpListener">
+    <http:listener-config basePath="/" name="httpListener" rejectInvalidTransferEncoding="false">
         <http:listener-connection connectionIdleTimeout="30000"
                                   host="localhost"
                                   port="${port}"
