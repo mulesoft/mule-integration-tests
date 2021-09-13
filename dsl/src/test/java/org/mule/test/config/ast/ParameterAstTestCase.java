@@ -7,6 +7,7 @@
 package org.mule.test.config.ast;
 
 import static java.lang.Boolean.TRUE;
+import static java.lang.System.lineSeparator;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static java.util.stream.Collectors.toList;
@@ -66,14 +67,14 @@ import org.mule.test.vegan.extension.VeganExtension;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-
-import org.hamcrest.Matchers;
-import org.junit.Test;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
+
+import org.junit.Test;
+
+import org.hamcrest.Matchers;
 
 @Feature(ARTIFACT_AST)
 @Story(PARAMETER_AST)
@@ -931,6 +932,30 @@ public class ParameterAstTestCase extends BaseParameterAstTestCase {
         .get();
 
     assertThat(appleConfig.directChildren(), is(Matchers.empty()));
+  }
+
+  @Test
+  @Issue("MULE-19770")
+  public void cdataParameterNotTrimmed() {
+    ArtifactAst artifactAst = buildArtifactAst("parameters-test-http-through-sockets-config.xml",
+                                               SocketsExtension.class);
+
+    final ComponentAst httpRequestThroughSocketsFlow = artifactAst.topLevelComponentsStream()
+        .filter(componentAst -> componentAst.getComponentId().map(id -> id.equals("httpRequestThroughSockets")).orElse(false))
+        .findFirst()
+        .get();
+
+    ComponentAst sendAndReceiveOp = httpRequestThroughSocketsFlow.directChildren().get(0);
+
+    ComponentParameterAst contentParam = sendAndReceiveOp.getParameter(DEFAULT_GROUP_NAME, "content");
+
+    assertThat(contentParam.getValue().getRight(), is("POST /test HTTP/1.1\n" +
+        "Host: localhost:8081" + lineSeparator() +
+        "Transfer-Encoding: chunked, deflate" + lineSeparator() +
+        "2" + lineSeparator() +
+        "OK" + lineSeparator() +
+        // This trailing double line separator MUST be kept!
+        "0" + lineSeparator() + lineSeparator()));
   }
 
   private void assertParameters(ComponentAst container, String containerParameterGroupName, String containerParameterName,
