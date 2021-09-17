@@ -472,19 +472,16 @@
         <dependency>
             <groupId>commons-dbutils</groupId>
             <artifactId>commons-dbutils</artifactId>
-            <version>${commonsDbUtilsVersion}</version>
         </dependency>
         <!-- required for AssertionMessageProcessorTestCase -->
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>${jsonVersion}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.mashape.unirest</groupId>
             <artifactId>unirest-java</artifactId>
-            <version>${unirestVersion}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
