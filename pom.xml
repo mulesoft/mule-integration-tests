@@ -40,7 +40,7 @@
     <springVersion>5.1.6.RELEASE</springVersion>
 
     <muleDependenciesVersion>1.x-SNAPSHOT</muleDependenciesVersion>
-    <muleTestComponentsVersion>4.5.0-SNAPSHOT</muleTestComponentsVersion>
+    <muleTestComponentsVersion>4.5.0-20210917</muleTestComponentsVersion>
   </properties>
 
   <build>
