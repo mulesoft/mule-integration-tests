@@ -434,7 +434,6 @@
         <dependency>
             <groupId>com.experlog</groupId>
             <artifactId>xapool</artifactId>
-            <version>${xaPoolVersion}</version>
         </dependency>
         <dependency>
             <groupId>com.icegreen</groupId>
