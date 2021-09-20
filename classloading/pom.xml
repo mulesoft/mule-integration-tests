@@ -34,6 +34,11 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>org.mule.services</groupId>
+            <artifactId>mule-service-http</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-service-soap-api</artifactId>
             <version>${project.version}</version>
@@ -64,7 +69,6 @@
         <dependency>
             <groupId>org.mule.services</groupId>
             <artifactId>mule-service-scheduler</artifactId>
-            <version>${muleSchedulerServiceTestVersion}</version>
             <classifier>mule-service</classifier>
             <scope>provided</scope>
         </dependency>
@@ -97,7 +101,7 @@
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-dwb-api</artifactId> 
             <scope>provided</scope>         
-        </dependency> 
+        </dependency>
         <dependency>
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-module-extensions-support</artifactId>
