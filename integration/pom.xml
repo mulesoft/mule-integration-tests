@@ -356,6 +356,7 @@
         <dependency>
             <groupId>org.apache.activemq</groupId>
             <artifactId>activemq-broker</artifactId>
+            <version>${activemqVersion}</version>
             <scope>test</scope>
             <exclusions>
                 <exclusion>
@@ -391,13 +392,11 @@
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-core-asl</artifactId>
-            <version>${jacksonVersion}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-mapper-asl</artifactId>
-            <version>${jacksonVersion}</version>
             <scope>test</scope>
         </dependency>
         <!-- Used by ActiveMQ if persistent=true -->
@@ -434,7 +433,6 @@
         <dependency>
             <groupId>com.experlog</groupId>
             <artifactId>xapool</artifactId>
-            <version>${xaPoolVersion}</version>
         </dependency>
         <dependency>
             <groupId>com.icegreen</groupId>
@@ -474,19 +472,16 @@
         <dependency>
             <groupId>commons-dbutils</groupId>
             <artifactId>commons-dbutils</artifactId>
-            <version>${commonsDbUtilsVersion}</version>
         </dependency>
         <!-- required for AssertionMessageProcessorTestCase -->
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>${jsonVersion}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.mashape.unirest</groupId>
             <artifactId>unirest-java</artifactId>
-            <version>${unirestVersion}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
