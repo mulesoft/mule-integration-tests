@@ -37,7 +37,8 @@
                                   host="localhost"
                                   port="${port}"
                                   protocol="HTTPS"
-                                  usePersistentConnections="true">
+                                  usePersistentConnections="true"
+                                  readTimeout="30000">
             <tls:context>
                 <tls:trust-store algorithm="PKIX" insecure="false"/>
                 <tls:key-store keyPassword="changeit"
