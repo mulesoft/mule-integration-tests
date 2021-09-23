@@ -82,6 +82,12 @@
             <version>${project.version}</version>
             <classifier>mule-plugin</classifier>
         </dependency>
+        <dependency>
+            <groupId>org.mule.tests</groupId>
+            <artifactId>test-extension-using-http-auth</artifactId>
+            <version>${muleTestComponentsVersion}</version>
+            <classifier>mule-plugin</classifier>
+        </dependency>
 
         <dependency>
             <groupId>org.mule.runtime</groupId>
