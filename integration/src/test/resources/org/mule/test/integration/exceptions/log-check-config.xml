@@ -254,7 +254,7 @@
                                                     <test:throw exception="org.mule.test.integration.exceptions.LogCheckTestCase.CustomException" error="ANY"></test:throw>
                                                 </until-successful>
                         Error type            : MULE:RETRY_EXHAUSTED
-                        Caused By             : MULE:ANY: Error
+                        Caused by             : MULE:ANY: Error
                         FlowStack : at suppressedMuleException(suppressedMuleException/processors/0 @ LogCheckTestCase#suppressedMuleExceptionGetsLoggedAsSuppressedCause:org/mule/test/integration/exceptions/log-check-config.xml:244)
 
                         (set debug level logging or '-Dmule.verbose.exceptions=true' for everything)
