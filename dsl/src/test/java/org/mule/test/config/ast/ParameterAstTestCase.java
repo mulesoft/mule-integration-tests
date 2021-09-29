@@ -57,6 +57,7 @@ import org.mule.runtime.api.meta.model.parameter.ParameterizedModel;
 import org.mule.runtime.ast.api.ArtifactAst;
 import org.mule.runtime.ast.api.ComponentAst;
 import org.mule.runtime.ast.api.ComponentParameterAst;
+import org.mule.runtime.extension.api.dsl.syntax.DslElementSyntax;
 import org.mule.runtime.extension.api.error.ErrorMapping;
 import org.mule.test.heisenberg.extension.HeisenbergExtension;
 import org.mule.test.heisenberg.extension.model.RecursivePojo;
@@ -68,13 +69,13 @@ import org.mule.test.vegan.extension.VeganExtension;
 import java.util.List;
 import java.util.Optional;
 
-import io.qameta.allure.Feature;
-import io.qameta.allure.Issue;
-import io.qameta.allure.Story;
-
 import org.junit.Test;
 
 import org.hamcrest.Matchers;
+
+import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
+import io.qameta.allure.Story;
 
 @Feature(ARTIFACT_AST)
 @Story(PARAMETER_AST)
@@ -956,6 +957,23 @@ public class ParameterAstTestCase extends BaseParameterAstTestCase {
         "OK" + lineSeparator() +
         // This trailing double line separator MUST be kept!
         "0" + lineSeparator() + lineSeparator()));
+  }
+
+  @Test
+  @Issue("MULE-19809")
+  public void generationInformationSyntaxForNotAllowInlineDefinitionNestedParam() {
+    ArtifactAst artifactAst = buildArtifactAst("parameters-test-pojo-config.xml",
+                                               HeisenbergExtension.class, SubTypesMappingConnector.class, VeganExtension.class);
+
+    ComponentAst heisenbergConfig = artifactAst.topLevelComponentsStream()
+        .filter(componentAst -> componentAst.getComponentId().map(id -> id.equals("heisenberg")).orElse(false))
+        .findFirst()
+        .get();
+
+    Optional<DslElementSyntax> wildCardsSyntax =
+        heisenbergConfig.getParameter("General", "wildCards").getGenerationInformation().getSyntax();
+    assertThat(wildCardsSyntax.isPresent(), is(true));
+    assertThat(wildCardsSyntax.get().getElementName(), is("wild-cards"));
   }
 
   private void assertParameters(ComponentAst container, String containerParameterGroupName, String containerParameterName,
