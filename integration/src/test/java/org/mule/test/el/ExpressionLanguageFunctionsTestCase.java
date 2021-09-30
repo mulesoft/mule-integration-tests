@@ -83,11 +83,11 @@ public class ExpressionLanguageFunctionsTestCase extends AbstractIntegrationTest
   @Test
   public void lookupCallsFlowThroughExpressions() throws Exception {
     assertThat(flowRunner("expressionParams")
-                   .withVariable("flow", "callApi")
-                   .withPayload(TEST_PAYLOAD)
-                   .keepStreamsOpen()
-                   .run()
-                   .getMessage(),
+        .withVariable("flow", "callApi")
+        .withPayload(TEST_PAYLOAD)
+        .keepStreamsOpen()
+        .run()
+        .getMessage(),
                hasPayload(equalTo(API_RESPONSE)));
   }
 
@@ -116,11 +116,11 @@ public class ExpressionLanguageFunctionsTestCase extends AbstractIntegrationTest
   @Test
   public void lookupCallsFlowThatHandlesError() throws Exception {
     assertThat(flowRunner("expressionParams")
-                   .withVariable("flow", "failureHandledFlow")
-                   .withPayload(TEST_PAYLOAD)
-                   .keepStreamsOpen()
-                   .run()
-                   .getMessage(),
+        .withVariable("flow", "failureHandledFlow")
+        .withPayload(TEST_PAYLOAD)
+        .keepStreamsOpen()
+        .run()
+        .getMessage(),
                hasPayload(equalTo("Flow failed but lets move on")));
   }
 
@@ -150,10 +150,10 @@ public class ExpressionLanguageFunctionsTestCase extends AbstractIntegrationTest
   @Test
   public void lookupCallsFlowThatHandlesConnectorError() throws Exception {
     assertThat(flowRunner("staticParams")
-                   .withVariable("status", SC_UNAUTHORIZED)
-                   .keepStreamsOpen()
-                   .run()
-                   .getMessage(),
+        .withVariable("status", SC_UNAUTHORIZED)
+        .keepStreamsOpen()
+        .run()
+        .getMessage(),
                hasPayload(equalTo("Request was unauthorized but lets move on")));
   }
 
@@ -163,8 +163,8 @@ public class ExpressionLanguageFunctionsTestCase extends AbstractIntegrationTest
     expectedError.expectCause(isA(ExpressionRuntimeException.class));
     expectedError
         .expectMessage(containsString(format("\"Exception while executing lookup(\"callApi\",\"data\",2000 as Number {class: \"java.lang.Integer\"}) cause: Flow 'callApi' has failed "
-                                                 + "with error 'HTTP:METHOD_NOT_ALLOWED' (HTTP GET on resource 'http://localhost:%s/405' "
-                                                 + "failed: method not allowed (405).) \n", port.getValue())));
+            + "with error 'HTTP:METHOD_NOT_ALLOWED' (HTTP GET on resource 'http://localhost:%s/405' "
+            + "failed: method not allowed (405).) \n", port.getValue())));
     flowRunner("staticParams").withVariable("status", SC_METHOD_NOT_ALLOWED).run();
   }
 
