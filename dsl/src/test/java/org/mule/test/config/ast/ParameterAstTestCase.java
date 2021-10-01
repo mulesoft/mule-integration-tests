@@ -936,6 +936,20 @@ public class ParameterAstTestCase extends BaseParameterAstTestCase {
   }
 
   @Test
+  @Issue("MULE-19824")
+  public void objectTagPropertiesHasNotTheWrapperAsChild() {
+    ArtifactAst artifactAst = buildArtifactAst("parameters-test-pojo-config.xml",
+                                               HeisenbergExtension.class, SubTypesMappingConnector.class, VeganExtension.class);
+
+    final ComponentAst object = artifactAst.topLevelComponentsStream()
+        .filter(componentAst -> componentAst.getComponentId().map(id -> id.equals("anObject")).orElse(false))
+        .findFirst()
+        .get();
+
+    assertThat(object.directChildren(), is(Matchers.empty()));
+  }
+
+  @Test
   @Issue("MULE-19770")
   public void cdataParameterNotTrimmed() {
     ArtifactAst artifactAst = buildArtifactAst("parameters-test-http-through-sockets-config.xml",
