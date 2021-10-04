@@ -9,6 +9,10 @@
         http://www.mulesoft.org/schema/mule/subtypes http://www.mulesoft.org/schema/mule/subtypes/current/mule-subtypes.xsd
         http://www.mulesoft.org/schema/mule/heisenberg http://www.mulesoft.org/schema/mule/heisenberg/current/mule-heisenberg.xsd">
 
+    <object name="anObject" class="com.mycompany.myproject.MyClass">
+        <property key="someKey" value="someValue"/>
+    </object>
+
     <vegan:apple-config name="apple">
         <vegan:cook-book>
             <vegan:vegan-cook-book/>
