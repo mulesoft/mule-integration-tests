@@ -12,15 +12,13 @@ import static java.lang.Thread.sleep;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.http.HttpStatus.SC_METHOD_NOT_ALLOWED;
 import static org.apache.http.HttpStatus.SC_UNAUTHORIZED;
-import static org.hamcrest.Matchers.both;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
-import static org.hamcrest.core.IsCollectionContaining.hasItems;
+import static org.hamcrest.core.IsIterableContaining.hasItems;
 import static org.junit.Assert.assertThat;
 import static org.mule.functional.junit4.matchers.MessageMatchers.hasPayload;
-import static org.mule.functional.junit4.matchers.ThrowableMessageMatcher.hasMessage;
 import static org.mule.runtime.api.metadata.DataType.TEXT_STRING;
 import static org.mule.runtime.api.metadata.MediaType.APPLICATION_JAVA;
 import static org.mule.runtime.api.metadata.MediaType.JSON;
@@ -129,8 +127,9 @@ public class ExpressionLanguageFunctionsTestCase extends AbstractIntegrationTest
   @Test
   public void lookupFailsWhenCalledFlowThrowsError() throws Exception {
     expectedError.expectErrorType("MULE", "EXPRESSION");
-    expectedError.expectCause(both(isA(ExpressionRuntimeException.class))
-        .and(hasMessage(containsString(("Flow 'failingFlow' has failed with error 'MULE:UNKNOWN' (Functional Test Service Exception)")))));
+    expectedError.expectCause(isA(ExpressionRuntimeException.class));
+    expectedError
+        .expectMessage(containsString("Flow 'failingFlow' has failed with error 'MULE:UNKNOWN' (Functional Test Service Exception)"));
     flowRunner("expressionParams")
         .withVariable("flow", "failingFlow")
         .withPayload(TEST_PAYLOAD)
@@ -140,8 +139,8 @@ public class ExpressionLanguageFunctionsTestCase extends AbstractIntegrationTest
   @Test
   public void lookupFailsWhenCalledFlowTimesOut() throws Exception {
     expectedError.expectErrorType("MULE", "EXPRESSION");
-    expectedError.expectCause(both(isA(ExpressionRuntimeException.class))
-        .and(hasMessage(containsString(("Flow 'timeoutFlow' has timed out after 100 millis")))));
+    expectedError.expectCause(isA(ExpressionRuntimeException.class));
+    expectedError.expectMessage(containsString("Flow 'timeoutFlow' has timed out after 100 millis"));
 
     flowRunner("expressionParamsWithTimeout")
         .withVariable("flow", "timeoutFlow")
@@ -162,26 +161,27 @@ public class ExpressionLanguageFunctionsTestCase extends AbstractIntegrationTest
   @Test
   public void lookupFailsWhenCalledFlowThrowsConnectorError() throws Exception {
     expectedError.expectErrorType("MULE", "EXPRESSION");
-    expectedError.expectCause(both(isA(ExpressionRuntimeException.class))
-        .and(hasMessage(containsString(format("\"Exception while executing lookup(\"callApi\",\"data\",2000 as Number {class: \"java.lang.Integer\"}) cause: Flow 'callApi' has failed "
+    expectedError.expectCause(isA(ExpressionRuntimeException.class));
+    expectedError
+        .expectMessage(containsString(format("\"Exception while executing lookup(\"callApi\",\"data\",2000 as Number {class: \"java.lang.Integer\"}) cause: Flow 'callApi' has failed "
             + "with error 'HTTP:METHOD_NOT_ALLOWED' (HTTP GET on resource 'http://localhost:%s/405' "
-            + "failed: method not allowed (405).) \n", port.getValue())))));
+            + "failed: method not allowed (405).) \n", port.getValue())));
     flowRunner("staticParams").withVariable("status", SC_METHOD_NOT_ALLOWED).run();
   }
 
   @Test
   public void lookupFailsWhenFlowDoesNotExist() throws Exception {
     expectedError.expectErrorType("MULE", "EXPRESSION");
-    expectedError.expectCause(both(isA(ExpressionRuntimeException.class))
-        .and(hasMessage(containsString(("There is no component named 'non-existent'.")))));
+    expectedError.expectCause(isA(ExpressionRuntimeException.class));
+    expectedError.expectMessage(containsString("There is no component named 'non-existent'."));
     flowRunner("expressionParams").withVariable("flow", "non-existent").withPayload(TEST_PAYLOAD).run();
   }
 
   @Test
   public void lookupFailsWhenReferenceIsNotAFlow() throws Exception {
     expectedError.expectErrorType("MULE", "EXPRESSION");
-    expectedError.expectCause(both(isA(ExpressionRuntimeException.class))
-        .and(hasMessage(containsString(("Component 'request-config' is not a flow.")))));
+    expectedError.expectCause(isA(ExpressionRuntimeException.class));
+    expectedError.expectMessage(containsString("Component 'request-config' is not a flow."));
     flowRunner("expressionParams").withVariable("flow", "request-config").withPayload(TEST_PAYLOAD).run();
   }
 
