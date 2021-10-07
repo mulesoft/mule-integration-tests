@@ -6,10 +6,11 @@
  */
 package org.mule.test.processors;
 
-import static org.hamcrest.Matchers.containsString;
 import static org.mule.test.allure.AllureConstants.ComponentsFeature.CORE_COMPONENTS;
 import static org.mule.test.allure.AllureConstants.ComponentsFeature.ParseTemplateStory.PARSE_TEMPLATE;
 import static org.mule.test.allure.AllureConstants.MuleDsl.DslValidationStory.DSL_VALIDATION_STORY;
+
+import static org.hamcrest.Matchers.containsString;
 
 import org.mule.functional.junit4.AbstractConfigurationFailuresTestCase;
 import org.mule.runtime.core.api.config.ConfigurationException;
@@ -35,6 +36,24 @@ public class ParseTemplateFailuresTestCase extends AbstractConfigurationFailures
     expectedException
         .expectMessage(containsString("A static value ('not_an_expression') was given for parameter 'targetValue' but it requires an expression"));
     loadConfiguration("org/mule/processors/parse-template-wrong-target-value-config.xml");
+  }
+
+  @Test
+  public void locationNotExists() throws Exception {
+    expectedException.expect(ConfigurationException.class);
+    expectedException
+        .expectMessage(containsString("[org/mule/processors/parse-template-location-not-exists.xml:9]: "
+            + "Template location: 'notExists.tem' not found"));
+    loadConfiguration("org/mule/processors/parse-template-location-not-exists.xml");
+  }
+
+  @Test
+  public void locationAndContent() throws Exception {
+    expectedException.expect(ConfigurationException.class);
+    expectedException
+        .expectMessage(containsString("[org/mule/processors/parse-template-location-and-content.xml:9]: "
+            + "Element <parseTemplate>, the following parameters cannot be set at the same time: [content, location]"));
+    loadConfiguration("org/mule/processors/parse-template-location-and-content.xml");
   }
 
 }
