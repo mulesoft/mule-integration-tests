@@ -6,17 +6,19 @@
  */
 package org.mule.runtime.test.integration.logging;
 
+import static org.mule.runtime.api.util.MuleSystemProperties.MULE_SIMPLE_LOG;
+
+import static java.lang.String.format;
+
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
-import static org.mule.runtime.core.api.config.MuleProperties.MULE_SIMPLE_LOG;
 
 import org.mule.runtime.deployment.model.api.application.Application;
 import org.mule.runtime.module.deployment.impl.internal.builder.ApplicationFileBuilder;
 import org.mule.runtime.module.deployment.impl.internal.builder.DomainFileBuilder;
 import org.mule.test.infrastructure.deployment.AbstractFakeMuleServerTestCase;
 
-import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -28,6 +30,7 @@ import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.appender.ConsoleAppender;
 import org.apache.logging.log4j.core.appender.RollingFileAppender;
+
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -112,7 +115,7 @@ public class LogConfigurationTestCase extends AbstractFakeMuleServerTestCase {
 
     RollingFileAppender fileAppender = (RollingFileAppender) selectByClass(APP_NAME, RollingFileAppender.class).get(0);
     assertThat("defaultFileAppender", equalTo(fileAppender.getName()));
-    assertThat(fileAppender.getFileName(), containsString(String.format("mule-app-%s.log", APP_NAME)));
+    assertThat(fileAppender.getFileName(), containsString(format("mule-app-%s.log", APP_NAME)));
   }
 
   private void ensureArtifactAppender(final String appenderName, final Class<? extends Appender> appenderClass) throws Exception {
