@@ -58,6 +58,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 import javax.inject.Inject;
 
@@ -89,11 +90,13 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     objects.put("_AfterWithCallbackInterceptorFactory", new AfterWithCallbackInterceptorFactory());
     objects.put("_HasInjectedAttributesInterceptorFactory", new HasInjectedAttributesInterceptorFactory(false));
     objects.put("_EvaluatesExpressionInterceptorFactory", new EvaluatesExpressionInterceptorFactory());
+    objects.put("_ErrorMappingRequiredInterceptorFactory", new ErrorMappingRequiredInterceptorFactory());
 
     objects.put(INTERCEPTORS_ORDER_REGISTRY_KEY,
                 (ProcessorInterceptorOrder) () -> asList(AfterWithCallbackInterceptorFactory.class.getName(),
                                                          HasInjectedAttributesInterceptorFactory.class.getName(),
-                                                         EvaluatesExpressionInterceptorFactory.class.getName()));
+                                                         EvaluatesExpressionInterceptorFactory.class.getName(),
+                                                         ErrorMappingRequiredInterceptorFactory.class.getName()));
 
     return objects;
   }
@@ -233,6 +236,16 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     } finally {
       assertThat(afterCallbackCalled.get(), is(true));
     }
+  }
+
+  @Test
+  @Issue("MULE-19866")
+  @Description("The errorType set by an operation and then mapped, is mapped again if an interceptor that requires error mapping is applied")
+  public void failingOperationMappedErrorTypeRemapped() throws Exception {
+    ErrorMappingRequiredInterceptor.callback = (location) -> true;
+
+    expectedError.expectErrorType("APP", "ANYTHING_ELSE");
+    flowRunner("operationErrorWithMappings").run();
   }
 
   @Test
@@ -674,6 +687,31 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     public void after(ComponentLocation location, InterceptionEvent event, Optional<Throwable> thrown) {
       callback.accept(event, thrown);
     }
+  }
+
+  public static class ErrorMappingRequiredInterceptorFactory implements ProcessorInterceptorFactory {
+
+    @Override
+    public ProcessorInterceptor get() {
+      return new ErrorMappingRequiredInterceptor();
+    }
+  }
+
+  public static class ErrorMappingRequiredInterceptor implements ProcessorInterceptor {
+
+    static Function<ComponentLocation, Boolean> callback = (location) -> false;
+
+    @Override
+    public boolean isErrorMappingRequired(ComponentLocation location) {
+      return callback.apply(location);
+    }
+
+    /*
+     * Implementing this method is necessary because the requirement for an error mapping will only be checked for interceptors
+     * that implement the after or before methods
+     */
+    @Override
+    public void after(ComponentLocation location, InterceptionEvent event, Optional<Throwable> thrown) {}
   }
 
   // TODO MULE-17934 remove this
