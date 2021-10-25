@@ -15,6 +15,7 @@
 
     <properties>
         <cxfVersion>3.3.1</cxfVersion>
+        <muleSdkApiVersion>1.0.0-SNAPSHOT</muleSdkApiVersion>
         <javax.jws-api.version>1.1</javax.jws-api.version>
         <formatterConfigPath>../../formatter.xml</formatterConfigPath>
     </properties>
@@ -66,6 +67,12 @@
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-module-extensions-support</artifactId>
             <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.sdk</groupId>
+            <artifactId>mule-sdk-api</artifactId>
+            <version>${muleSdkApiVersion}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
