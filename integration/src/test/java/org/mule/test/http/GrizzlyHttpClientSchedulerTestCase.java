@@ -103,7 +103,6 @@ public class GrizzlyHttpClientSchedulerTestCase extends AbstractIntegrationTestC
     }
     ThreadPoolExecutor executor = (ThreadPoolExecutor) getPrivateField(schedulerReference.get(), "executor");
     assertThat(executor.getQueue(), is(eventually(empty())));
-
   }
 
   private static class TestSchedulerService implements SchedulerService {
@@ -195,5 +194,4 @@ public class GrizzlyHttpClientSchedulerTestCase extends AbstractIntegrationTestC
     f.setAccessible(true);
     return f.get(obj);
   }
-
 }
