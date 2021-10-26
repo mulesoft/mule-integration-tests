@@ -13,6 +13,8 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mule.runtime.api.scheduler.SchedulerConfig.config;
 import static org.mule.tck.junit4.matcher.Eventually.eventually;
+import io.qameta.allure.Description;
+import io.qameta.allure.Issue;
 import org.junit.Before;
 import org.junit.Test;
 import org.mule.runtime.api.scheduler.Scheduler;
@@ -34,8 +36,10 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicReference;
 
+@Issue("MULE-19774")
 public class GrizzlyHttpClientSchedulerTestCase extends AbstractIntegrationTestCase {
 
+  // need empty app to get the scheduler service
   @Override
   protected String getConfigFile() {
     return "org/mule/test/integration/http/dummy-app.xml";
@@ -88,7 +92,9 @@ public class GrizzlyHttpClientSchedulerTestCase extends AbstractIntegrationTestC
   }
 
   @Test
+  @Description("Start the pool with an scheduler running a blocked task. The selector pool should success to start sending one task to the queue.")
   public void testSchedulerWithNonFinishTask() throws NoSuchFieldException, IllegalAccessException {
+    // We need to run in a scheduler thread to ensure it fail with a rejectedExecution if the queue size is 0
     Future future = schedulerService.customScheduler(config()
         .withDirectRunCpuLightWhenTargetBusy(true)
         .withMaxConcurrentTasks(1)
