@@ -39,7 +39,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @Issue("MULE-19774")
 public class GrizzlyHttpClientSchedulerTestCase extends AbstractIntegrationTestCase {
 
-  // need empty app to get the scheduler service
+  // We need an empty app in order to run an integration test to get the scheduler Service and http Service
   @Override
   protected String getConfigFile() {
     return "org/mule/test/integration/http/dummy-app.xml";
