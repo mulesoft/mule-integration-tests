@@ -10,7 +10,7 @@
 
   <groupId>org.mule.tests</groupId>
   <artifactId>mule-extensions-integration-tests</artifactId>
-  <version>4.3.0-20211018</version>
+  <version>4.3.0-20211026</version>
 
   <packaging>pom</packaging>
   <name>Mule Tests</name>
