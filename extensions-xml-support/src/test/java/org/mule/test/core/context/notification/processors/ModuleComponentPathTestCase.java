@@ -6,14 +6,6 @@
  */
 package org.mule.test.core.context.notification.processors;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
-import static java.util.Optional.empty;
-import static java.util.OptionalInt.of;
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.component.ComponentIdentifier.buildFromStringRepresentation;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.builder;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.CHAIN;
@@ -38,6 +30,16 @@ import static org.mule.tck.probe.PollingProber.check;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentLocationStory.COMPONENT_LOCATION;
 import static org.mule.test.allure.AllureConstants.XmlSdk.XML_SDK;
+
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
+import static java.util.Optional.empty;
+import static java.util.OptionalInt.of;
+
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.api.component.TypedComponentIdentifier;
@@ -70,10 +72,10 @@ import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.Set;
 
+import com.google.common.collect.ImmutableList;
+
 import org.junit.After;
 import org.junit.Test;
-
-import com.google.common.collect.ImmutableList;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
@@ -875,7 +877,7 @@ public class ModuleComponentPathTestCase extends MuleArtifactFunctionalTestCase 
           extensions.add(extensionModel);
         }
         for (ExtensionModel extension : extensions) {
-          extensionManager.registerExtension(extension);
+          extensionManager.registerExtension(extension, false);
         }
       }
     });
