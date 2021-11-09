@@ -20,6 +20,7 @@ import static org.mule.runtime.http.api.HttpConstants.HttpStatus.SERVICE_UNAVAIL
 import static org.mule.runtime.http.api.HttpConstants.Method.POST;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
 
+import io.qameta.allure.Issue;
 import org.mule.functional.api.exception.ExpectedError;
 import org.mule.runtime.api.message.Error;
 import org.mule.runtime.core.api.event.CoreEvent;
@@ -95,6 +96,7 @@ public class RedeliveryExhaustedTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
+  @Issue("MULE-19915")
   @Description("Test that once the redelivery is exhausted for a message from a source configured with transactions, the transaction is not rollbacked by the source because of the flow finishing with an error.")
   public void redeliveryExhaustedWithTransactionalSourceAndCustomErrorHandler() throws Exception {
     flowRunner("redeliveryExhaustedWithTransactionalSourceAndCustomErrorHandlerDispatch").runExpectingException();
@@ -102,6 +104,7 @@ public class RedeliveryExhaustedTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
+  @Issue("MULE-19915")
   @Description("Test that once the redelivery is exhausted for a message from a source configured with transactions, the transaction is not rollbacked by the error handler.")
   public void redeliveryExhaustedWithTransactionalSourceAndDefaultErrorHandler() throws Exception {
     flowRunner("redeliveryExhaustedWithTransactionalSourceAndDefaultErrorHandlerDispatch").runExpectingException();
