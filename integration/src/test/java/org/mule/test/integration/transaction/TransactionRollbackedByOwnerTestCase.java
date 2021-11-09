@@ -55,6 +55,10 @@ public class TransactionRollbackedByOwnerTestCase extends AbstractIntegrationTes
             "no-rollback-error-in-flow-ref-with-try", false, "commit"},
         new Object[] {"Local Error Handler", "org/mule/test/integration/transaction/transaction-owner.xml",
             "no-rollback-error-in-flow-ref-with-try-join-tx", false, "commit"},
+        new Object[] {"Local Error Handler", "org/mule/test/integration/transaction/transaction-owner.xml",
+            "with-implicit-default-EH-executed-commits", false, "commit"},
+        new Object[] {"Local Error Handler", "org/mule/test/integration/transaction/transaction-owner.xml",
+            "with-implicit-default-EH-executed-rollback", true, "rollback"},
 
         new Object[] {"Local Error Handler", "org/mule/test/integration/transaction/transaction-owner-subflow.xml",
             "rollback-on-error-prop", false, "rollback"},
