@@ -113,7 +113,8 @@ public class RedeliveryExhaustedTestCase extends AbstractIntegrationTestCase {
 
   private void assertRedeliveryExhaustedErrorRaisedOnlyOnce(String queueName) {
     assertThat("Message redelivery not exhausted", queueManager.read(queueName, RECEIVE_TIMEOUT, MILLISECONDS), notNullValue());
-    assertThat("Redelivery exhausted error thrown more than once", queueManager.read(queueName, RECEIVE_TIMEOUT, MILLISECONDS), nullValue());
+    assertThat("Redelivery exhausted error thrown more than once", queueManager.read(queueName, RECEIVE_TIMEOUT, MILLISECONDS),
+               nullValue());
   }
 
   private HttpResponse sendThroughHttp() throws IOException, TimeoutException {
