@@ -9,6 +9,8 @@ package org.mule.test.integration.exceptions;
 import static java.lang.String.format;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.functional.api.exception.ExpectedError.none;
@@ -90,6 +92,25 @@ public class RedeliveryExhaustedTestCase extends AbstractIntegrationTestCase {
     for (Error childError : error.getChildErrors()) {
       assertThat(childError.getErrorType().getIdentifier(), is("ROUTING"));
     }
+  }
+
+  @Test
+  @Description("Test that once the redelivery is exhausted for a message from a source configured with transactions, the transaction is not rollbacked by the source because of the flow finishing with an error.")
+  public void redeliveryExhaustedWithTransactionalSourceAndCustomErrorHandler() throws Exception {
+    flowRunner("redeliveryExhaustedWithTransactionalSourceAndCustomErrorHandlerDispatch").runExpectingException();
+    assertRedeliveryExhaustedErrorRaisedOnlyOnce("customErrorHandler");
+  }
+
+  @Test
+  @Description("Test that once the redelivery is exhausted for a message from a source configured with transactions, the transaction is not rollbacked by the error handler.")
+  public void redeliveryExhaustedWithTransactionalSourceAndDefaultErrorHandler() throws Exception {
+    flowRunner("redeliveryExhaustedWithTransactionalSourceAndDefaultErrorHandlerDispatch").runExpectingException();
+    assertRedeliveryExhaustedErrorRaisedOnlyOnce("defaultErrorHandler");
+  }
+
+  private void assertRedeliveryExhaustedErrorRaisedOnlyOnce(String queueName) {
+    assertThat("Message redelivery not exhausted", queueManager.read(queueName, RECEIVE_TIMEOUT, MILLISECONDS), notNullValue());
+    assertThat("Redelivery exhausted error thrown more than once", queueManager.read(queueName, RECEIVE_TIMEOUT, MILLISECONDS), nullValue());
   }
 
   private HttpResponse sendThroughHttp() throws IOException, TimeoutException {
