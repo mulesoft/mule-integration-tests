@@ -109,4 +109,34 @@
                         exceptionToThrow="java.lang.RuntimeException" />
     </flow>
 
+    <flow name="with-implicit-default-EH-executed-commits">
+        <try transactionalAction="ALWAYS_BEGIN">
+            <test:processor/>
+            <try>
+                <raise-error type="TEST:EXPECTED"/>
+                <error-handler>
+                    <on-error-continue type="EXPRESSION"/>
+                </error-handler>
+            </try>
+            <error-handler>
+                <on-error-continue/>
+            </error-handler>
+        </try>
+    </flow>
+
+    <flow name="with-implicit-default-EH-executed-rollback">
+        <try transactionalAction="ALWAYS_BEGIN">
+            <test:processor/>
+            <try>
+                <raise-error type="TEST:EXPECTED"/>
+                <error-handler>
+                    <on-error-continue type="EXPRESSION"/>
+                </error-handler>
+            </try>
+            <error-handler>
+                <on-error-continue type="EXPRESSION"/>
+            </error-handler>
+        </try>
+    </flow>
+
 </mule>
