@@ -3,10 +3,40 @@
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:http="http://www.mulesoft.org/schema/mule/http"
       xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xmlns:vm="http://www.mulesoft.org/schema/mule/vm"
       xsi:schemaLocation="
        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
        http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+       http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd
        http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+
+    <configuration defaultErrorHandler-ref="globalErrorHandler" />
+
+    <error-handler name="globalErrorHandler">
+        <on-error-propagate type="REDELIVERY_EXHAUSTED">
+            <set-payload value="#[error]"/>
+            <test-components:queue-push config-ref="defaultErrorHandler"/>
+        </on-error-propagate>
+    </error-handler>
+
+    <vm:config name="VM_Config">
+        <vm:queues >
+          <vm:queue queueName="Q1" />
+          <vm:queue queueName="Q2" />
+        </vm:queues>
+    </vm:config>
+
+    <test-components:queue-config name="out">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="customErrorHandler">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="defaultErrorHandler">
+        <test-components:connection />
+    </test-components:queue-config>
 
     <http:listener-config name="listenerConfig">
         <http:listener-connection host="localhost" port="${port}"/>
@@ -28,6 +58,36 @@
                 <test:queue name="out"/>
             </on-error-propagate>
         </error-handler>
+    </flow>
+
+    <flow name="redeliveryExhaustedWithTransactionalSourceAndCustomErrorHandlerDispatch">
+        <vm:publish-consume queueName="Q1" config-ref="VM_Config"/>
+    </flow>
+
+    <flow name="redeliveryExhaustedWithTransactionalSourceAndCustomErrorHandlerProcess">
+        <vm:listener queueName="Q1" config-ref="VM_Config" transactionalAction="ALWAYS_BEGIN">
+            <redelivery-policy maxRedeliveryCount="${maxRedeliveryCount}" idExpression="#['theSame']"/>
+        </vm:listener>
+
+        <raise-error type="APP:TEST" />
+        <error-handler>
+            <on-error-propagate type="REDELIVERY_EXHAUSTED">
+                <set-payload value="#[error]"/>
+                <test-components:queue-push config-ref="customErrorHandler"/>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+
+    <flow name="redeliveryExhaustedWithTransactionalSourceAndDefaultErrorHandlerDispatch">
+        <vm:publish-consume queueName="Q2" config-ref="VM_Config"/>
+    </flow>
+
+    <flow name="redeliveryExhaustedWithTransactionalSourceAndDefaultErrorHandlerProcess">
+        <vm:listener queueName="Q2" config-ref="VM_Config" transactionalAction="ALWAYS_BEGIN">
+            <redelivery-policy maxRedeliveryCount="${maxRedeliveryCount}" idExpression="#['theSame']"/>
+        </vm:listener>
+
+        <raise-error type="APP:TEST" />
     </flow>
 
 </mule>
