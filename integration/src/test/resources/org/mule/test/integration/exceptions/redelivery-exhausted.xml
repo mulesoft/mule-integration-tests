@@ -15,7 +15,7 @@
     <error-handler name="globalErrorHandler">
         <on-error-propagate type="REDELIVERY_EXHAUSTED">
             <set-payload value="#[error]"/>
-            <test-components:queue-push config-ref="defaultErrorHandler"/>
+            <test:queue name="defaultErrorHandler"/>
         </on-error-propagate>
     </error-handler>
 
@@ -25,18 +25,6 @@
           <vm:queue queueName="Q2" />
         </vm:queues>
     </vm:config>
-
-    <test-components:queue-config name="out">
-        <test-components:connection />
-    </test-components:queue-config>
-
-    <test-components:queue-config name="customErrorHandler">
-        <test-components:connection />
-    </test-components:queue-config>
-
-    <test-components:queue-config name="defaultErrorHandler">
-        <test-components:connection />
-    </test-components:queue-config>
 
     <http:listener-config name="listenerConfig">
         <http:listener-connection host="localhost" port="${port}"/>
@@ -73,7 +61,7 @@
         <error-handler>
             <on-error-propagate type="REDELIVERY_EXHAUSTED">
                 <set-payload value="#[error]"/>
-                <test-components:queue-push config-ref="customErrorHandler"/>
+                <test:queue name="customErrorHandler"/>
             </on-error-propagate>
         </error-handler>
     </flow>
