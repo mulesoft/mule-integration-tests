@@ -14,6 +14,8 @@
 
     <object name="childBean" class="org.mule.test.integration.locator.beans.ChildBean"/>
 
+    <os:object-store name="myObjectStore" />
+
     <flow name="invokeBeanFlow">
         <java:invoke method="getFoo()" instance="childBean" class="org.mule.test.integration.locator.beans.ChildBean"/>
     </flow>
@@ -73,6 +75,13 @@
     <flow name="redeliveryPolicyFlow">
         <http:listener path="/service/helloWorld" config-ref="listenerConfigRedeliveryPolicy">
             <redelivery-policy maxRedeliveryCount="6" useSecureHash="true"/>
+        </http:listener>
+        <set-payload value="anotherValue"/>
+    </flow>
+
+    <flow name="redeliveryPolicyWithObjectStoreFlow">
+        <http:listener path="/service/helloWorldWithOS" config-ref="listenerConfigRedeliveryPolicy">
+            <redelivery-policy maxRedeliveryCount="6" useSecureHash="true" objectStore="myObjectStore"/>
         </http:listener>
         <set-payload value="anotherValue"/>
     </flow>
