@@ -4,11 +4,13 @@
       xmlns:http="http://www.mulesoft.org/schema/mule/http"
       xmlns:file="http://www.mulesoft.org/schema/mule/file"
       xmlns:java="http://www.mulesoft.org/schema/mule/java"
+      xmlns:os="http://www.mulesoft.org/schema/mule/os"
       xsi:schemaLocation="
        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
        http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
        http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd
-       http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+       http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+       http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd">
 
     <global-property name="some.property" value="/origin/topic"/>
 
