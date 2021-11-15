@@ -395,7 +395,6 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
     assertThat(locator.find(builder().globalName("redeliveryPolicyFlow").build()), is(not(empty())));
   }
 
-
   @Test
   @Issue("MULE-19928")
   @Description("Initialize an Object Store inside a redelivery policy")
