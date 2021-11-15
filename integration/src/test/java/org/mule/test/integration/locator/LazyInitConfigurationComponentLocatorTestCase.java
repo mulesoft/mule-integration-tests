@@ -43,6 +43,7 @@ import org.junit.Test;
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Features;
+import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
 
 @Features({@Feature(LAZY_INITIALIZATION), @Feature(CONFIGURATION_COMPONENT_LOCATOR)})
@@ -394,7 +395,10 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
     assertThat(locator.find(builder().globalName("redeliveryPolicyFlow").build()), is(not(empty())));
   }
 
+
   @Test
+  @Issue("MULE-19928")
+  @Description("Initialize an Object Store inside a redelivery policy")
   public void listenerWithRedeliveryPolicyWithOSInitializeMultipleTimes() {
     lazyComponentInitializer.initializeComponent(builder().globalName("redeliveryPolicyWithObjectStoreFlow").build());
     assertThat(locator.find(builder().globalName("redeliveryPolicyWithObjectStoreFlow").build()), is(not(empty())));
