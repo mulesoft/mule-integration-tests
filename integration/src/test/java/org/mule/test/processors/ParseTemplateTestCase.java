@@ -19,6 +19,8 @@ import static org.mule.runtime.api.metadata.MediaType.JSON;
 import static org.mule.test.allure.AllureConstants.ComponentsFeature.CORE_COMPONENTS;
 import static org.mule.test.allure.AllureConstants.ComponentsFeature.ParseTemplateStory.PARSE_TEMPLATE;
 
+import io.qameta.allure.Description;
+import io.qameta.allure.Issue;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -238,6 +240,13 @@ public class ParseTemplateTestCase extends AbstractIntegrationTestCase {
     CoreEvent event = flowRunner("targetVariableAndValue").run();
     String msg = (String) event.getVariables().get("someVar").getValue();
     assertEquals(PARSED_NO_EXPRESSION, msg);
+  }
+
+  @Test
+  @Issue("MULE-19900")
+  public void nestedBackslash() throws Exception {
+    CoreEvent event = flowRunner("nestedBackslash").withVariable("method", "GET").run();
+    assertThat(event.getMessage().getPayload().getValue(), equalTo("get:\\test\\GET"));
   }
 
 }
