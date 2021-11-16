@@ -153,5 +153,4 @@
             <content>#["get:\\test\\" ++ vars.method]</content>
         </parse-template>
     </flow>
-
 </mule>
