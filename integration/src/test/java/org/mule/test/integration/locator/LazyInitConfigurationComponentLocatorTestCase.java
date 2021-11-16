@@ -73,8 +73,8 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
   @Rule
   public SystemProperty path = new SystemProperty("path", "path");
 
+  private static final int TOTAL_NUMBER_OF_LOCATIONS = 161;
 
-  private static final int TOTAL_NUMBER_OF_LOCATIONS = 156;
   @Inject
   private Registry registry;
 
@@ -369,6 +369,12 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
                                   "redeliveryPolicyFlow/source",
                                   "redeliveryPolicyFlow/source/0",
                                   "redeliveryPolicyFlow/processors/0",
+
+                                  "redeliveryPolicyWithObjectStoreFlow",
+                                  "redeliveryPolicyWithObjectStoreFlow/source",
+                                  "redeliveryPolicyWithObjectStoreFlow/source/0",
+                                  "redeliveryPolicyWithObjectStoreFlow/processors/0",
+
                                   "redeliveryPolicyFlowRef1",
                                   "redeliveryPolicyFlowRef1/processors/0",
                                   "redeliveryPolicyFlowRef2",
@@ -393,6 +399,7 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
                                   "invokeBeanFlow",
                                   "invokeBeanFlow/processors/0",
                                   "childBean",
+                                  "myObjectStore",
 
                                   "notificationFlow",
                                   "notificationFlow/processors/0",
@@ -748,6 +755,14 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractInteg
   public void xmlSdkOperationWithDefaultConfig() {
     lazyComponentInitializer.initializeComponent(builder().globalName("RequestWithNoConfig").build());
     assertThat(locator.find(builder().globalName("RequestWithNoConfig").build()), is(not(empty())));
+  }
+
+  @Test
+  @Issue("MULE-19928")
+  @Description("Initialize an Object Store inside a redelivery policy")
+  public void listenerWithRedeliveryPolicyWithOSInitializeMultipleTimes() {
+    lazyComponentInitializer.initializeComponent(builder().globalName("redeliveryPolicyWithObjectStoreFlow").build());
+    assertThat(locator.find(builder().globalName("redeliveryPolicyWithObjectStoreFlow").build()), is(not(empty())));
   }
 
 }
