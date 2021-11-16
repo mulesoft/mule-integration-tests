@@ -3,9 +3,20 @@
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:vm="http://www.mulesoft.org/schema/mule/vm"
       xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
                            http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
-                           http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd">
+                           http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd
+                           http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+
+    <configuration defaultErrorHandler-ref="globalErrorHandler" />
+
+    <error-handler name="globalErrorHandler">
+        <on-error-propagate type="EXPRESSION">
+            <set-payload value="#[error]"/>
+            <test:queue name="expressionErrorDefaultErrorHandlerMessageQueue"/>
+        </on-error-propagate>
+    </error-handler>
 
     <vm:config name="VM_Config">
         <vm:queues >
@@ -13,8 +24,14 @@
           <vm:queue queueName="Q2" />
           <vm:queue queueName="Q3" />
           <vm:queue queueName="Q4" />
+          <vm:queue queueName="Q5" />
+          <vm:queue queueName="Q6" />
         </vm:queues>
     </vm:config>
+
+    <http:listener-config name="listenerConfig">
+        <http:listener-connection host="localhost" port="${port}"/>
+    </http:listener-config>
 
     <flow name="redeliveryPolicyFlowDispatch">
         <vm:publish-consume queueName="Q1" config-ref="VM_Config" timeout="1"/>
@@ -45,7 +62,7 @@
         <test:processor processingType="BLOCKING">
             <test:callback class="org.mule.test.components.RedeliveryPolicyTestCase$LatchAwaitCallback"/>
         </test:processor>
-        
+
         <error-handler>
             <on-error-propagate type="MULE:REDELIVERY_EXHAUSTED">
                 <test:queue name="redeliveredMessageQueue"/>
@@ -80,5 +97,44 @@
                 <test:queue name="errorHandlerMessageQueue"/>
             </on-error-propagate>
         </error-handler>
+    </flow>
+
+    <flow name="redeliveryInvalidMessageIdWithTransactionalSourceAndCustomErrorHandlerDispatch">
+        <vm:publish-consume queueName="Q5" config-ref="VM_Config"/>
+    </flow>
+
+    <flow name="redeliveryInvalidMessageIdWithTransactionalSourceAndCustomErrorHandlerProcess">
+        <vm:listener queueName="Q5" config-ref="VM_Config" transactionalAction="ALWAYS_BEGIN">
+            <redelivery-policy idExpression="!null.a"/>
+        </vm:listener>
+
+        <logger/>
+
+        <error-handler>
+            <on-error-propagate type="EXPRESSION">
+                <set-payload value="#[error]"/>
+                <test:queue name="transactionalSourceCustomErrorHandlerMessageQueue"/>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+
+    <flow name="redeliveryInvalidMessageIdWithTransactionalSourceAndDefaultErrorHandlerDispatch">
+        <vm:publish-consume queueName="Q6" config-ref="VM_Config"/>
+    </flow>
+
+    <flow name="redeliveryInvalidMessageIdWithTransactionalSourceAndDefaultErrorHandlerProcess">
+        <vm:listener queueName="Q6" config-ref="VM_Config" transactionalAction="ALWAYS_BEGIN">
+            <redelivery-policy idExpression="!null.a"/>
+        </vm:listener>
+
+        <logger/>
+    </flow>
+
+    <flow name="redeliveryInvalidMessageIdWithHttpListener">
+        <http:listener path="invalidMessageId" config-ref="listenerConfig">
+            <redelivery-policy idExpression="!null.a"/>
+        </http:listener>
+
+        <logger/>
     </flow>
 </mule>
