@@ -30,6 +30,8 @@
           <vm:queue queueName="Q4" />
           <vm:queue queueName="Q5" />
           <vm:queue queueName="Q6" />
+          <vm:queue queueName="Q7" />
+          <vm:queue queueName="Q8" />
         </vm:queues>
     </vm:config>
 
@@ -156,6 +158,37 @@
         <http:listener path="invalidMessageId" config-ref="listenerConfig">
             <redelivery-policy idExpression="!null.a"/>
         </http:listener>
+
+        <logger/>
+    </flow>
+
+    <flow name="redeliveryBlankMessageIdWithTransactionalSourceAndCustomErrorHandlerDispatch">
+        <vm:publish-consume queueName="Q7" config-ref="VM_Config"/>
+    </flow>
+
+    <flow name="redeliveryBlankMessageIdWithTransactionalSourceAndCustomErrorHandlerProcess">
+        <vm:listener queueName="Q7" config-ref="VM_Config" transactionalAction="ALWAYS_BEGIN">
+            <redelivery-policy idExpression="payload.id"/>
+        </vm:listener>
+
+        <logger/>
+
+        <error-handler>
+            <on-error-propagate type="EXPRESSION">
+                <set-payload value="#[error]"/>
+                <test-components:queue-push config-ref="transactionalSourceCustomErrorHandlerMessageQueue"/>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+
+    <flow name="redeliveryBlankMessageIdWithTransactionalSourceAndDefaultErrorHandlerDispatch">
+        <vm:publish-consume queueName="Q8" config-ref="VM_Config"/>
+    </flow>
+
+    <flow name="redeliveryBlankMessageIdWithTransactionalSourceAndDefaultErrorHandlerProcess">
+        <vm:listener queueName="Q8" config-ref="VM_Config" transactionalAction="ALWAYS_BEGIN">
+            <redelivery-policy idExpression="payload.id"/>
+        </vm:listener>
 
         <logger/>
     </flow>
