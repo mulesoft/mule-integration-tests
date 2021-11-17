@@ -165,20 +165,20 @@ public class RedeliveryPolicyTestCase extends AbstractIntegrationTestCase {
   @Test
   @Issue("MULE-19916")
   @Description("Test that when the evaluation of the message ID expression for the redelivery policy fails " +
-      "for a message from a source configured with transactions, the transaction is not rollbacked by the source " +
+      "for a message from a source configured with transactions, the transaction is not rolled back by the source " +
       "because of the flow finishing with an error.")
   public void redeliveryInvalidMessageIdWithTransactionalSourceAndCustomErrorHandler() throws Exception {
     flowRunner("redeliveryInvalidMessageIdWithTransactionalSourceAndCustomErrorHandlerDispatch").runExpectingException();
-    assertRedeliveryInvalidMessageIdErrorRaisedOnlyOnce("transactionalSourceCustomErrorHandlerMessageQueue");
+    assertExpressionErrorRaisedOnlyOnce("transactionalSourceCustomErrorHandlerMessageQueue");
   }
 
   @Test
   @Issue("MULE-19916")
   @Description("Test that when the evaluation of the message ID expression for the redelivery policy fails " +
-      "for a message from a source configured with transactions, the transaction is not rollbacked by the error handler.")
+      "for a message from a source configured with transactions, the transaction is not rolled back by the error handler.")
   public void redeliveryInvalidMessageIdWithTransactionalSourceAndDefaultErrorHandler() throws Exception {
     flowRunner("redeliveryInvalidMessageIdWithTransactionalSourceAndDefaultErrorHandlerDispatch").runExpectingException();
-    assertRedeliveryInvalidMessageIdErrorRaisedOnlyOnce("expressionErrorDefaultErrorHandlerMessageQueue");
+    assertExpressionErrorRaisedOnlyOnce("expressionErrorDefaultErrorHandlerMessageQueue");
   }
 
   @Test
@@ -187,10 +187,29 @@ public class RedeliveryPolicyTestCase extends AbstractIntegrationTestCase {
       "the flow finishes and a response is sent.")
   public void redeliveryInvalidMessageIdWithHttpListener() throws Exception {
     assertThat(sendThroughHttp("invalidMessageId").getStatusCode(), is(INTERNAL_SERVER_ERROR.getStatusCode()));
-    assertRedeliveryInvalidMessageIdErrorRaisedOnlyOnce("expressionErrorDefaultErrorHandlerMessageQueue");
+    assertExpressionErrorRaisedOnlyOnce("expressionErrorDefaultErrorHandlerMessageQueue");
   }
 
-  private void assertRedeliveryInvalidMessageIdErrorRaisedOnlyOnce(String queueName) {
+  @Test
+  @Issue("MULE-19921")
+  @Description("Test that when the message ID of the redelivery policy is blank for a message from a source " +
+      "configured with transactions, the transaction is not rolled back by the source " +
+      "because of the flow finishing with an error.")
+  public void redeliveryBlankMessageIdWithTransactionalSourceAndCustomErrorHandler() throws Exception {
+    flowRunner("redeliveryBlankMessageIdWithTransactionalSourceAndCustomErrorHandlerDispatch").runExpectingException();
+    assertExpressionErrorRaisedOnlyOnce("transactionalSourceCustomErrorHandlerMessageQueue");
+  }
+
+  @Test
+  @Issue("MULE-19921")
+  @Description("Test that when the message ID of the redelivery policy is blank for a message from a source " +
+      "configured with transactions, the transaction is not rolled back by the error handler.")
+  public void redeliveryBlankMessageIdWithTransactionalSourceAndDefaultErrorHandler() throws Exception {
+    flowRunner("redeliveryBlankMessageIdWithTransactionalSourceAndDefaultErrorHandlerDispatch").runExpectingException();
+    assertExpressionErrorRaisedOnlyOnce("expressionErrorDefaultErrorHandlerMessageQueue");
+  }
+
+  private void assertExpressionErrorRaisedOnlyOnce(String queueName) {
     assertThat("Message ID was not invalid", queueManager.read(queueName, RECEIVE_TIMEOUT, MILLISECONDS), notNullValue());
     assertThat("Invalid message ID error thrown more than once", queueManager.read(queueName, RECEIVE_TIMEOUT, MILLISECONDS),
                nullValue());
