@@ -6,11 +6,6 @@
  */
 package org.mule.test.integration.exceptions;
 
-import static java.lang.String.format;
-import static java.util.Collections.emptySet;
-import static java.util.Collections.singleton;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
 import static org.mule.runtime.core.api.error.Errors.Identifiers.CRITICAL_IDENTIFIER;
 import static org.mule.runtime.core.api.error.Errors.Identifiers.SOURCE_ERROR_IDENTIFIER;
 import static org.mule.runtime.core.api.error.Errors.Identifiers.SOURCE_ERROR_RESPONSE_GENERATE_ERROR_IDENTIFIER;
@@ -21,6 +16,13 @@ import static org.mule.runtime.core.api.error.Errors.Identifiers.SOURCE_RESPONSE
 import static org.mule.runtime.core.api.error.Errors.Identifiers.UNKNOWN_ERROR_IDENTIFIER;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
 import static org.mule.test.allure.AllureConstants.MuleDsl.DslValidationStory.DSL_VALIDATION_STORY;
+
+import static java.lang.String.format;
+import static java.util.Collections.emptySet;
+import static java.util.Collections.singleton;
+
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
 
 import org.mule.extension.http.internal.temporary.HttpConnector;
 import org.mule.extension.socket.api.SocketsExtension;
@@ -70,15 +72,15 @@ public class ErrorHandlingConfigurationFailuresTestCase extends AbstractConfigur
 
   @Test
   public void unknownErrorFilteringNotAllowed() throws Exception {
-    expectedException.expect(ConfigurationException.class);
-    expectedException.expectMessage(containsString(notFound(UNKNOWN_ERROR_IDENTIFIER)));
+    expectedException.expect(InitialisationException.class);
+    expectedException.expectMessage(containsString(notFoundErrorType(UNKNOWN_ERROR_IDENTIFIER)));
     loadConfiguration("org/mule/test/integration/exceptions/unknown-error-filtering-config.xml");
   }
 
   @Test
   public void sourceErrorResponseFilteringNotAllowed() throws Exception {
-    expectedException.expect(ConfigurationException.class);
-    expectedException.expectMessage(containsString(notFound(SOURCE_ERROR_IDENTIFIER)));
+    expectedException.expect(InitialisationException.class);
+    expectedException.expectMessage(containsString(notFoundErrorType(SOURCE_ERROR_IDENTIFIER)));
     loadConfiguration("org/mule/test/integration/exceptions/source-error-response-filtering-config.xml");
   }
 
@@ -92,35 +94,35 @@ public class ErrorHandlingConfigurationFailuresTestCase extends AbstractConfigur
 
   @Test
   public void sourceErrorResponseSendFilteringNotAllowed() throws Exception {
-    expectedException.expect(ConfigurationException.class);
-    expectedException.expectMessage(containsString(notFound(SOURCE_ERROR_RESPONSE_SEND_ERROR_IDENTIFIER)));
+    expectedException.expect(InitialisationException.class);
+    expectedException.expectMessage(containsString(notFoundErrorType(SOURCE_ERROR_RESPONSE_SEND_ERROR_IDENTIFIER)));
     loadConfiguration("org/mule/test/integration/exceptions/source-error-response-send-filtering-config.xml");
   }
 
   @Test
   public void sourceErrorResponseGenerateFilteringNotAllowed() throws Exception {
-    expectedException.expect(ConfigurationException.class);
-    expectedException.expectMessage(containsString(notFound(SOURCE_ERROR_RESPONSE_GENERATE_ERROR_IDENTIFIER)));
+    expectedException.expect(InitialisationException.class);
+    expectedException.expectMessage(containsString(notFoundErrorType(SOURCE_ERROR_RESPONSE_GENERATE_ERROR_IDENTIFIER)));
     loadConfiguration("org/mule/test/integration/exceptions/source-error-response-generate-filtering-config.xml");
   }
 
   @Test
   public void criticalErrorFilteringNotAllowed() throws Exception {
-    expectedException.expect(ConfigurationException.class);
-    expectedException.expectMessage(containsString(notFound(CRITICAL_IDENTIFIER)));
+    expectedException.expect(InitialisationException.class);
+    expectedException.expectMessage(containsString(notFoundErrorType(CRITICAL_IDENTIFIER)));
     loadConfiguration("org/mule/test/integration/exceptions/critical-error-filtering-config.xml");
   }
 
   @Test
   public void nonExistingSourceMappingNotAllowed() throws Exception {
-    expectedException.expect(ConfigurationException.class);
+    expectedException.expect(InitialisationException.class);
     expectedException.expectMessage(containsString("Could not find error 'NON_EXISTING'"));
     loadConfiguration("org/mule/test/integration/exceptions/non-existing-source-mapping-config.xml");
   }
 
   @Test
   public void nonExistingCoreMappingsNotAllowed() throws Exception {
-    expectedException.expect(ConfigurationException.class);
+    expectedException.expect(InitialisationException.class);
     expectedException.expectMessage(containsString("There's no MULE error named 'NON_EXISTING'"));
     loadConfiguration("org/mule/test/integration/exceptions/non-existent-core-mapping-config.xml");
   }
@@ -134,8 +136,8 @@ public class ErrorHandlingConfigurationFailuresTestCase extends AbstractConfigur
 
   @Test
   public void nonExistingCoreErrorCannotBeRaised() throws Exception {
-    expectedException.expect(ConfigurationException.class);
-    expectedException.expectMessage(containsString("There's no MULE error named 'NONEXISTENT'"));
+    expectedException.expect(InitialisationException.class);
+    expectedException.expectMessage(containsString(notFound("NONEXISTENT")));
     loadConfiguration("org/mule/test/integration/exceptions/non-existent-core-raise-error-config.xml");
   }
 
@@ -172,6 +174,10 @@ public class ErrorHandlingConfigurationFailuresTestCase extends AbstractConfigur
     expectedException.expect(InitialisationException.class);
     expectedException.expectMessage(equalTo(notAllowed(SOURCE_RESPONSE_ERROR_IDENTIFIER)));
     loadConfiguration("org/mule/test/integration/exceptions/on-error-continue-source-error-list.xml");
+  }
+
+  private String notFoundErrorType(String type) {
+    return format("Could not find ErrorType for the given identifier: '%s'", type);
   }
 
   private String notFound(String type) {

@@ -6,6 +6,8 @@
  */
 package org.mule.test.config.spring.parsers.specific;
 
+import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
+
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.instanceOf;
@@ -14,21 +16,20 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
-import static org.hamcrest.core.IsCollectionContaining.hasItem;
+import static org.hamcrest.core.IsIterableContaining.hasItem;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 
-import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.api.notification.AbstractServerNotification;
-import org.mule.runtime.core.api.context.notification.ListenerSubscriptionPair;
 import org.mule.runtime.api.notification.Notification;
 import org.mule.runtime.api.notification.NotificationListener;
 import org.mule.runtime.api.notification.SecurityNotification;
 import org.mule.runtime.api.notification.SecurityNotificationListener;
-import org.mule.runtime.core.api.context.notification.ServerNotificationManager;
 import org.mule.runtime.api.security.UnauthorisedException;
+import org.mule.runtime.core.api.MuleContext;
+import org.mule.runtime.core.api.context.notification.ListenerSubscriptionPair;
+import org.mule.runtime.core.api.context.notification.ServerNotificationManager;
 import org.mule.tck.probe.JUnitLambdaProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -38,10 +39,11 @@ import java.util.Collection;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.junit.Test;
+
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
-import org.junit.Test;
 
 public class ServerNotificationManagerTestCase extends AbstractIntegrationTestCase {
 
@@ -250,8 +252,8 @@ public class ServerNotificationManagerTestCase extends AbstractIntegrationTestCa
   private static class ListenerSubscriptionPairMatcher<N extends Notification>
       extends TypeSafeMatcher<ListenerSubscriptionPair<N>> {
 
-    private Matcher<NotificationListener<N>> listenerMatcher;
-    private Object subscription;
+    private final Matcher<NotificationListener<N>> listenerMatcher;
+    private final Object subscription;
 
     public ListenerSubscriptionPairMatcher(Matcher<NotificationListener<N>> listenerMatcher,
                                            Object subscription) {

@@ -6,19 +6,21 @@
  */
 package org.mule.test.integration.locator;
 
-import static java.util.Arrays.stream;
-import static java.util.Optional.empty;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.hamcrest.core.IsNot.not;
-import static org.junit.Assert.assertThat;
-import static org.junit.rules.ExpectedException.none;
 import static org.mule.runtime.api.component.location.Location.builder;
 import static org.mule.runtime.config.api.LazyComponentInitializer.LAZY_COMPONENT_INITIALIZER_SERVICE_KEY;
 import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentLocatorStory.SEARCH_CONFIGURATION;
 import static org.mule.test.allure.AllureConstants.LazyInitializationFeature.LAZY_INITIALIZATION;
+
+import static java.util.Arrays.stream;
+import static java.util.Optional.empty;
+
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.hamcrest.core.IsNot.not;
+import static org.junit.Assert.assertThat;
+import static org.junit.rules.ExpectedException.none;
 
 import org.mule.runtime.api.artifact.Registry;
 import org.mule.runtime.api.component.ComponentIdentifier;
@@ -118,7 +120,7 @@ public class ErrorHandlerLazyInitTestCase extends AbstractIntegrationTestCase {
   @Test
   public void invalidErrorTypeOnRaiseError() {
     expectedException.expect(MuleRuntimeException.class);
-    expectedException.expectMessage(containsString("There's no MULE error named 'ERROR_NON_EXISTING"));
+    expectedException.expectMessage(containsString("Could not find error 'ERROR_NON_EXISTING'."));
     doCustomErrorTypesShouldDiscoveredTest(builder().globalName("invalidErrorTypeOnRaiseError").build());
   }
 
