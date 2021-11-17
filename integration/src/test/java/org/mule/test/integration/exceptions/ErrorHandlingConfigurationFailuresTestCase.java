@@ -6,11 +6,6 @@
  */
 package org.mule.test.integration.exceptions;
 
-import static java.lang.String.format;
-import static java.util.Collections.emptySet;
-import static java.util.Collections.singleton;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
 import static org.mule.runtime.core.api.error.Errors.Identifiers.CRITICAL_IDENTIFIER;
 import static org.mule.runtime.core.api.error.Errors.Identifiers.SOURCE_ERROR_IDENTIFIER;
 import static org.mule.runtime.core.api.error.Errors.Identifiers.SOURCE_ERROR_RESPONSE_GENERATE_ERROR_IDENTIFIER;
@@ -22,12 +17,21 @@ import static org.mule.runtime.core.api.error.Errors.Identifiers.UNKNOWN_ERROR_I
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
 import static org.mule.test.allure.AllureConstants.MuleDsl.DslValidationStory.DSL_VALIDATION_STORY;
 
+import static java.lang.String.format;
+import static java.util.Collections.emptySet;
+import static java.util.Collections.singleton;
+
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+
 import org.mule.extension.http.internal.temporary.HttpConnector;
 import org.mule.extension.socket.api.SocketsExtension;
 import org.mule.functional.junit4.AbstractConfigurationFailuresTestCase;
 import org.mule.runtime.api.lifecycle.InitialisationException;
+import org.mule.runtime.api.meta.MuleVersion;
 import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.core.api.config.ConfigurationException;
+import org.mule.runtime.core.api.config.DefaultMuleConfiguration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -193,6 +197,13 @@ public class ErrorHandlingConfigurationFailuresTestCase extends AbstractConfigur
     extensions.add(sockets);
 
     return extensions;
+  }
+
+  @Override
+  protected void applyConfiguration(DefaultMuleConfiguration muleConfiguration) {
+    super.applyConfiguration(muleConfiguration);
+
+    muleConfiguration.setMinMuleVersion(new MuleVersion("4.4.0"));
   }
 
 }
