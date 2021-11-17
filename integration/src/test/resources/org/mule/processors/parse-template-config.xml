@@ -154,4 +154,9 @@
         <parse-template location="org/mule/processors/no-expression.ptem" target="someVar" targetValue="#[payload]"/>
     </flow>
 
+    <flow name="nestedBackslash" initialState="stopped">
+        <parse-template>
+            <content>#["get:\\test\\" ++ vars.method]</content>
+        </parse-template>
+    </flow>
 </mule>

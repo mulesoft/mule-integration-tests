@@ -16,6 +16,8 @@ import static org.junit.Assert.assertEquals;
 import static org.mule.functional.junit4.matchers.MessageMatchers.hasMediaType;
 import static org.mule.runtime.api.metadata.MediaType.APPLICATION_JSON;
 import static org.mule.runtime.api.metadata.MediaType.JSON;
+
+import io.qameta.allure.Issue;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
@@ -241,4 +243,10 @@ public class ParseTemplateTestCase extends AbstractIntegrationTestCase {
     assertEquals(PARSED_NO_EXPRESSION, msg);
   }
 
+  @Test
+  @Issue("MULE-19900")
+  public void nestedBackslash() throws Exception {
+    CoreEvent event = flowRunner("nestedBackslash").withVariable("method", "GET").run();
+    assertThat(event.getMessage().getPayload().getValue(), equalTo("get:\\test\\GET"));
+  }
 }
