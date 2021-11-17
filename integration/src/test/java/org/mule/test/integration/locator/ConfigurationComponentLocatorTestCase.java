@@ -168,6 +168,10 @@ public class ConfigurationComponentLocatorTestCase extends AbstractIntegrationTe
                                                      "redeliveryPolicyFlow/source",
                                                      "redeliveryPolicyFlow/source/0",
                                                      "redeliveryPolicyFlow/processors/0",
+                                                     "redeliveryPolicyWithObjectStoreFlow",
+                                                     "redeliveryPolicyWithObjectStoreFlow/source",
+                                                     "redeliveryPolicyWithObjectStoreFlow/source/0",
+                                                     "redeliveryPolicyWithObjectStoreFlow/processors/0",
                                                      "redeliveryPolicyFlowRef1",
                                                      "redeliveryPolicyFlowRef1/processors/0",
                                                      "redeliveryPolicyFlowRef2",
@@ -186,6 +190,7 @@ public class ConfigurationComponentLocatorTestCase extends AbstractIntegrationTe
                                                      "async-flow",
                                                      "invokeBeanFlow",
                                                      "invokeBeanFlow/processors/0",
-                                                     "childBean"));
+                                                     "childBean",
+                                                     "myObjectStore"));
   }
 }

@@ -5,16 +5,20 @@
       xmlns:http="http://www.mulesoft.org/schema/mule/http"
       xmlns:file="http://www.mulesoft.org/schema/mule/file"
       xmlns:java="http://www.mulesoft.org/schema/mule/java"
+      xmlns:os="http://www.mulesoft.org/schema/mule/os"
       xsi:schemaLocation="
        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
        http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
        http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd
        http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
-       http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+       http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
+       http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd">
 
     <global-property name="some.property" value="/origin/topic"/>
 
     <object name="childBean" class="org.mule.test.integration.locator.beans.ChildBean"/>
+
+    <os:object-store name="myObjectStore" />
 
     <flow name="invokeBeanFlow">
         <java:invoke method="getFoo()" instance="childBean" class="org.mule.test.integration.locator.beans.ChildBean"/>
@@ -76,6 +80,13 @@
     <flow name="redeliveryPolicyFlow">
         <http:listener path="/service/helloWorld" config-ref="listenerConfigRedeliveryPolicy">
             <redelivery-policy maxRedeliveryCount="6" useSecureHash="true"/>
+        </http:listener>
+        <set-payload value="anotherValue"/>
+    </flow>
+
+    <flow name="redeliveryPolicyWithObjectStoreFlow">
+        <http:listener path="/service/helloWorldWithOS" config-ref="listenerConfigRedeliveryPolicy">
+            <redelivery-policy maxRedeliveryCount="6" useSecureHash="true" objectStore="myObjectStore"/>
         </http:listener>
         <set-payload value="anotherValue"/>
     </flow>
