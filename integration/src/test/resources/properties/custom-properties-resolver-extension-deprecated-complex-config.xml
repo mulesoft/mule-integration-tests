@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:config-properties-deprecated="http://www.mulesoft.org/schema/mule/config-properties-deprecated"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+               http://www.mulesoft.org/schema/mule/config-properties-deprecated http://www.mulesoft.org/schema/mule/config-properties-deprecated/current/mule-config-properties-deprecated.xsd">
+
+    <config-properties-deprecated:config name="complexPropertiesProvider">
+        <config-properties-deprecated:provider-connection>
+            <config-properties-deprecated:nested-pojo textValue="complex"/>
+            <config-properties-deprecated:listed-texts>
+                <config-properties-deprecated:listed-text value="listedText1"/>
+                <config-properties-deprecated:listed-text value="listedText2"/>
+            </config-properties-deprecated:listed-texts>
+            <config-properties-deprecated:listed-pojos>
+                <config-properties-deprecated:some-pojo textValue="listed1"/>
+                <config-properties-deprecated:some-pojo textValue="listed2"/>
+            </config-properties-deprecated:listed-pojos>
+            <config-properties-deprecated:mapped-pojos>
+                <config-properties-deprecated:mapped-pojo key="a">
+                    <config-properties-deprecated:some-pojo textValue="mappedA"/>
+                </config-properties-deprecated:mapped-pojo>
+                <config-properties-deprecated:mapped-pojo key="b">
+                    <config-properties-deprecated:some-pojo textValue="mappedB"/>
+                </config-properties-deprecated:mapped-pojo>
+            </config-properties-deprecated:mapped-pojos>
+        </config-properties-deprecated:provider-connection>
+    </config-properties-deprecated:config>
+
+    <flow name="readProperty">
+        <set-payload value="${textsFromComplexParams}"/>
+    </flow>
+
+</mule>
