@@ -241,6 +241,12 @@
         </dependency>
         <dependency>
             <groupId>org.mule.tests</groupId>
+            <artifactId>test-config-properties-extension-deprecated-complex</artifactId>
+            <version>${project.version}</version>
+            <classifier>mule-plugin</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.tests</groupId>
             <artifactId>test-localisation-properties-extension</artifactId>
             <version>${project.version}</version>
             <classifier>mule-plugin</classifier>
