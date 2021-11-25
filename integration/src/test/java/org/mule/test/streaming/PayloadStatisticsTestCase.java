@@ -349,7 +349,7 @@ public class PayloadStatisticsTestCase extends AbstractIntegrationTestCase {
     final PayloadStatistics fileListStatistics =
         muleContext.getStatistics().getPayloadStatistics("iteratorOperation/processors/0");
 
-    assertThat(fileListStatistics.getComponentIdentifier(), is("marvel:wolverine-blacklist"));
+    assertThat(fileListStatistics.getComponentIdentifier(), is("marvel:wolverine-blocklist"));
 
     assertThat(fileListStatistics.getInvocationCount(), is(1L));
 
