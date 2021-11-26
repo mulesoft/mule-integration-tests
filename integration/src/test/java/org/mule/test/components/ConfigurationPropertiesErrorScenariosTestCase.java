@@ -6,24 +6,26 @@
  */
 package org.mule.test.components;
 
-import static org.junit.rules.ExpectedException.none;
-import static org.mockito.Matchers.contains;
 import static org.mule.tck.MuleTestUtils.testWithSystemProperty;
 import static org.mule.test.allure.AllureConstants.ConfigurationProperties.CONFIGURATION_PROPERTIES;
 import static org.mule.test.allure.AllureConstants.ConfigurationProperties.ComponentConfigurationAttributesStory.COMPONENT_CONFIGURATION_ERROR_SCEANRIOS;
-import org.mule.functional.junit4.ApplicationContextBuilder;
-import org.mule.tck.junit4.AbstractMuleTestCase;
 
-import io.qameta.allure.Description;
-import io.qameta.allure.Feature;
-import io.qameta.allure.Story;
+import static org.junit.rules.ExpectedException.none;
+import static org.mockito.ArgumentMatchers.contains;
+
+import org.mule.functional.junit4.AbstractConfigurationFailuresTestCase;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import io.qameta.allure.Description;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
+
 @Feature(CONFIGURATION_PROPERTIES)
 @Story(COMPONENT_CONFIGURATION_ERROR_SCEANRIOS)
-public class ConfigurationPropertiesErrorScenariosTestCase extends AbstractMuleTestCase {
+public class ConfigurationPropertiesErrorScenariosTestCase extends AbstractConfigurationFailuresTestCase {
 
   @Rule
   public ExpectedException expectedException = none();
@@ -33,9 +35,7 @@ public class ConfigurationPropertiesErrorScenariosTestCase extends AbstractMuleT
   public void nonExistentFile() throws Exception {
     expectedException
         .expectMessage(contains("Couldn't find configuration properties file non-existent.properties neither on classpath or in file system"));
-    new ApplicationContextBuilder()
-        .setApplicationResources(new String[] {"org/mule/test/components/non-existent-configuration-properties-file.xml"})
-        .build();
+    loadConfiguration("org/mule/test/components/non-existent-configuration-properties-file.xml");
   }
 
   @Description("Validates the exception message when the configuration-properties element is pointing to a non existent file defined with a system property")
@@ -44,9 +44,7 @@ public class ConfigurationPropertiesErrorScenariosTestCase extends AbstractMuleT
     testWithSystemProperty("env", "no-env", () -> {
       expectedException
           .expectMessage("Couldn't find resource: no-env.properties");
-      new ApplicationContextBuilder()
-          .setApplicationResources(new String[] {"org/mule/test/components/customizable-configuration-properties-file.xml"})
-          .build();
+      loadConfiguration("org/mule/test/components/customizable-configuration-properties-file.xml");
     });
 
   }
@@ -56,9 +54,7 @@ public class ConfigurationPropertiesErrorScenariosTestCase extends AbstractMuleT
   public void fileReferenceWithNoValuePlaceholder() throws Exception {
     expectedException
         .expectMessage(contains("Couldn't find configuration property value for key ${env} from properties provider system properties provider"));
-    new ApplicationContextBuilder()
-        .setApplicationResources(new String[] {"org/mule/test/components/customizable-configuration-properties-file.xml"})
-        .build();
+    loadConfiguration("org/mule/test/components/customizable-configuration-properties-file.xml");
   }
 
 }
