@@ -8,7 +8,7 @@
     <flow name="mutated">
         <flow-ref name="#[vars.targetFlow]"/>
         <choice>
-            <when expression="#[vars.targetFlow == 'mutatedAfter' || vars.targetFlow == 'mutatedBeforeAfter']">
+            <when expression="#[vars.targetFlow == 'mutatedAfter' or vars.targetFlow == 'mutatedBeforeAfter']">
                 <choice>
                     <when expression="#[vars.mutatedAfter == null]">
                         <raise-error type="TEST:ASSERTION"/>

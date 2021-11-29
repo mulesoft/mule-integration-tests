@@ -6,20 +6,22 @@
  */
 package org.mule.test.el;
 
+import static org.mule.test.allure.AllureConstants.ExpressionLanguageFeature.EXPRESSION_LANGUAGE;
+
 import static org.junit.Assert.assertEquals;
-import static org.mule.runtime.api.message.Message.of;
-import static org.mule.tck.MuleTestUtils.getTestFlow;
 
 import org.mule.runtime.core.api.el.ExpressionManager;
-import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.test.AbstractIntegrationTestCase;
-
-import org.junit.Before;
-import org.junit.Test;
 
 import java.text.DateFormat;
 import java.util.Locale;
 
+import org.junit.Before;
+import org.junit.Test;
+
+import io.qameta.allure.Feature;
+
+@Feature(EXPRESSION_LANGUAGE)
 public class ExpressionLanguageConfigTestCase extends AbstractIntegrationTestCase {
 
   ExpressionManager el;
