@@ -120,9 +120,9 @@
     </flow>
 
     <flow name="iteratorOperation">
-        <marvel:wolverine-blacklist>
+        <marvel:wolverine-blocklist>
             <!-- Returned value is already non-repeatable -->
-        </marvel:wolverine-blacklist>
+        </marvel:wolverine-blocklist>
     
         <flow-ref name="consumeStreamsOnce"/>
     </flow>
