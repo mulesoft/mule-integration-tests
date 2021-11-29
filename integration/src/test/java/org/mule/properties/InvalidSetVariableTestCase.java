@@ -6,6 +6,8 @@
  */
 package org.mule.properties;
 
+import static org.mule.test.allure.AllureConstants.MuleDsl.DslValidationStory.DSL_VALIDATION_STORY;
+
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
 
@@ -16,6 +18,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import io.qameta.allure.Story;
+
+@Story(DSL_VALIDATION_STORY)
 public class InvalidSetVariableTestCase extends AbstractConfigurationFailuresTestCase {
 
   @Rule
