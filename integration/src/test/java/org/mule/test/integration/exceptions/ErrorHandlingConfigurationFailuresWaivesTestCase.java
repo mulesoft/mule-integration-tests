@@ -49,8 +49,8 @@ public class ErrorHandlingConfigurationFailuresWaivesTestCase extends AbstractCo
     expected.expectMessage(containsString(notFound("APP:NONEXISTENT")));
 
     return asList(new Object[][] {
-        {"4.4.0", expected},
-        {"4.3.0", none()}
+        {"4.5.0", expected},
+        {"4.4.0", none()}
     });
   }
 
