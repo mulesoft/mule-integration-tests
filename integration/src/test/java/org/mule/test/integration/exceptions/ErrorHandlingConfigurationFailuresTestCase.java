@@ -203,7 +203,7 @@ public class ErrorHandlingConfigurationFailuresTestCase extends AbstractConfigur
   protected void applyConfiguration(DefaultMuleConfiguration muleConfiguration) {
     super.applyConfiguration(muleConfiguration);
 
-    muleConfiguration.setMinMuleVersion(new MuleVersion("4.4.0"));
+    muleConfiguration.setMinMuleVersion(new MuleVersion("4.5.0"));
   }
 
 }
