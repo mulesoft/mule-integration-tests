@@ -13,13 +13,13 @@ import static org.mule.runtime.http.api.client.HttpRequestOptions.builder;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-import org.mule.runtime.api.config.custom.ServiceConfigurator;
 import org.mule.runtime.api.serialization.ObjectSerializer;
 import org.mule.runtime.api.store.ObjectStoreException;
 import org.mule.runtime.api.store.SimpleMemoryObjectStore;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.runtime.core.api.config.ConfigurationException;
+import org.mule.runtime.core.api.config.builders.AbstractConfigurationBuilder;
 import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.runtime.http.api.HttpService;
 import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;
@@ -52,16 +52,15 @@ public class SerializationOnResponseAggregatorTestCase extends AbstractIntegrati
 
   @Override
   protected void addBuilders(List<ConfigurationBuilder> builders) {
-    builders.add(new ConfigurationBuilder() {
+    builders.add(new AbstractConfigurationBuilder() {
 
       @Override
-      public void configure(MuleContext muleContext) throws ConfigurationException {
+      public void doConfigure(MuleContext muleContext) throws ConfigurationException {
         muleContext.getCustomizationService().overrideDefaultServiceImpl(BASE_IN_MEMORY_OBJECT_STORE_KEY, new TestObjectStore());
       }
-
-      @Override
-      public void addServiceConfigurator(ServiceConfigurator serviceConfigurator) {}
     });
+
+    super.addBuilders(builders);
   }
 
   @Test
