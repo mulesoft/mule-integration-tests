@@ -31,9 +31,7 @@ public class ParseTemplateFailuresTestCase extends AbstractConfigurationFailures
 
   @Test
   public void withWrongTargetValue() throws Exception {
-    expectedException.expect(ConfigurationException.class);
-    expectedException
-        .expectMessage(containsString("A static value ('not_an_expression') was given for parameter 'targetValue' but it requires an expression"));
+    // verify this doesn't fail on initialize
     loadConfiguration("org/mule/processors/parse-template-wrong-target-value-config.xml");
   }
 

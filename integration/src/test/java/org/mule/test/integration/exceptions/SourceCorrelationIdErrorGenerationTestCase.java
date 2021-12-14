@@ -32,6 +32,7 @@ public class SourceCorrelationIdErrorGenerationTestCase extends AbstractConfigur
 
   @Test
   public void errorStaticValue() throws Exception {
+    // verify this doesn't fail on initialize
     expectedException.expect(ConfigurationException.class);
     expectedException
         .expectMessage(containsString("A static value (''doge'') was given for parameter 'correlationIdGeneratorExpression' but it requires an expression"));
