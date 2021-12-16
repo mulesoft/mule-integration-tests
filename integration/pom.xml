@@ -16,7 +16,7 @@
         <skipExportTests>false</skipExportTests>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
 
-        <activemqVersion>5.15.3</activemqVersion>
+        <activemqVersion>5.15.6</activemqVersion>
         <hawtbufVersion>1.1</hawtbufVersion>
         <activemqProtobuf>1.1</activemqProtobuf>
         <groovy.version>2.4.16</groovy.version>
