@@ -14,7 +14,7 @@
     <packaging>jar</packaging>
 
     <properties>
-        <cxfVersion>3.3.1</cxfVersion>
+        <cxfVersion>3.4.4</cxfVersion>
         <muleSdkApiVersion>1.0.0-SNAPSHOT</muleSdkApiVersion>
         <javax.jws-api.version>1.1</javax.jws-api.version>
         <formatterConfigPath>../../formatter.xml</formatterConfigPath>
