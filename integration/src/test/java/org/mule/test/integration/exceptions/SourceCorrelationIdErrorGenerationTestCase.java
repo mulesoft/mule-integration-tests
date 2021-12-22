@@ -12,6 +12,7 @@ import static org.mule.test.allure.AllureConstants.MuleDsl.DslValidationStory.DS
 
 import org.mule.functional.junit4.AbstractConfigurationFailuresTestCase;
 import org.mule.runtime.api.lifecycle.InitialisationException;
+import org.mule.runtime.core.api.config.ConfigurationException;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -28,6 +29,14 @@ public class SourceCorrelationIdErrorGenerationTestCase extends AbstractConfigur
 
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
+
+  @Test
+  public void errorStaticValue() throws Exception {
+    expectedException.expect(ConfigurationException.class);
+    expectedException
+        .expectMessage(containsString("A static value (''doge'') was given for parameter 'correlationIdGeneratorExpression' but it requires an expression"));
+    loadConfiguration("org/mule/test/config/correlation-id/static-generation.xml");
+  }
 
   @Test
   public void invalidExpression() throws Exception {
