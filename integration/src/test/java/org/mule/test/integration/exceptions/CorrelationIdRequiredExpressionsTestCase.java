@@ -9,6 +9,9 @@ package org.mule.test.integration.exceptions;
 import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.rules.ExpectedException.none;
+import static org.mule.test.allure.AllureConstants.ComponentsFeature.CORE_COMPONENTS;
+import static org.mule.test.allure.AllureConstants.ComponentsFeature.ParseTemplateStory.PARSE_TEMPLATE;
+import static org.mule.test.allure.AllureConstants.MuleDsl.DslValidationStory.DSL_VALIDATION_STORY;
 
 import org.mule.functional.junit4.AbstractConfigurationFailuresTestCase;
 import org.mule.runtime.api.config.MuleRuntimeFeature;
@@ -25,6 +28,13 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
+import io.qameta.allure.Feature;
+import io.qameta.allure.Stories;
+import io.qameta.allure.Story;
+import io.qameta.allure.Issue;
+
+@Feature(CORE_COMPONENTS)
+@Stories({@Story(PARSE_TEMPLATE), @Story(DSL_VALIDATION_STORY)})
 @RunWith(Parameterized.class)
 public class CorrelationIdRequiredExpressionsTestCase extends AbstractConfigurationFailuresTestCase {
 
@@ -59,6 +69,7 @@ public class CorrelationIdRequiredExpressionsTestCase extends AbstractConfigurat
   }
 
   @Test
+  @Issue("MULE-19987")
   public void errorStaticValue() throws Exception {
     loadConfiguration("org/mule/test/config/correlation-id/static-generation.xml");
   }
