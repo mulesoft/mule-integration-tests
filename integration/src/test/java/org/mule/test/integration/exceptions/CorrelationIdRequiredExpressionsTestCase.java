@@ -33,18 +33,18 @@ public class CorrelationIdRequiredExpressionsTestCase extends AbstractConfigurat
    */
   @Parameterized.Parameters(name = "version: {0}")
   public static Collection<Object[]> featureFlags() {
-    ExpectedException expected = none();
-    expected.expect(ConfigurationException.class);
-    expected
+    ExpectedException newExpected = none();
+    newExpected.expect(ConfigurationException.class);
+    newExpected
         .expectMessage(containsString("A static value (''doge'') was given for parameter 'correlationIdGeneratorExpression' but it requires an expression"));
-    ExpectedException expectedBefore = none();
-    expectedBefore.expect(InitialisationException.class);
-    expectedBefore
+    ExpectedException oldExpected = none();
+    oldExpected.expect(InitialisationException.class);
+    oldExpected
         .expectMessage(containsString("Invalid Correlation ID Generation expression: 'doge'"));
 
     return asList(new Object[][] {
-        {"4.5.0", expected},
-        {"4.4.0", expectedBefore}
+        {"4.5.0", newExpected},
+        {"4.4.0", oldExpected}
     });
   }
 
