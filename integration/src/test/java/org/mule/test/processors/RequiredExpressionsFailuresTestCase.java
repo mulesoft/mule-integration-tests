@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) MuleSoft, Inc.  All rights reserved.  http://www.mulesoft.com
+ * The software in this package is published under the terms of the CPAL v1.0
+ * license, a copy of which has been included with this distribution in the
+ * LICENSE.txt file.
+ */
 package org.mule.test.processors;
 
 import static java.util.Arrays.asList;
@@ -32,7 +38,7 @@ import org.mule.runtime.core.api.config.DefaultMuleConfiguration;
 public class RequiredExpressionsFailuresTestCase extends AbstractConfigurationFailuresTestCase {
 
   /**
-   * Configures the switch for {@link MuleRuntimeFeature#ENFORCE_ERROR_TYPES_VALIDATION}.
+   * Configures the switch for {@link MuleRuntimeFeature#ENFORCE_REQUIRED_EXPRESSION_VALIDATION}.
    */
   @Parameterized.Parameters(name = "version: {0}")
   public static Collection<Object[]> featureFlags() {
