@@ -31,14 +31,6 @@ public class ParseTemplateFailuresTestCase extends AbstractConfigurationFailures
   public ExpectedException expectedException = ExpectedException.none();
 
   @Test
-  public void withWrongTargetValue() throws Exception {
-    expectedException.expect(ConfigurationException.class);
-    expectedException
-        .expectMessage(containsString("A static value ('not_an_expression') was given for parameter 'targetValue' but it requires an expression"));
-    loadConfiguration("org/mule/processors/parse-template-wrong-target-value-config.xml");
-  }
-
-  @Test
   public void locationNotExists() throws Exception {
     expectedException.expect(ConfigurationException.class);
     expectedException
