@@ -18,6 +18,7 @@ import org.mule.tck.junit4.rule.DynamicPort;
 import java.io.IOException;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.w3c.dom.Element;
@@ -59,6 +60,7 @@ public class ConfigurationBasedDslElementModelSerializerTestCase extends Abstrac
   }
 
   @Test
+  @Ignore("MULE-20013")
   public void serialize() throws Exception {
     XmlDslElementModelConverter converter = XmlDslElementModelConverter.getDefault(this.doc);
 
