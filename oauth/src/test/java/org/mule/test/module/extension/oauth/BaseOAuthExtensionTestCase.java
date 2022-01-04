@@ -158,15 +158,7 @@ public abstract class BaseOAuthExtensionTestCase extends AbstractExtensionFuncti
     simulateCallback(callbackPort.getNumber());
   }
 
-  protected void simulateCallback(String ownerId, String accessToken) {
-    simulateCallback(callbackPort.getNumber(), ownerId, accessTokenContent(accessToken));
-  }
-
   protected void simulateCallback(int port) {
-    simulateCallback(port, ownerId, accessTokenContent());
-  }
-
-  protected void simulateCallback(int port, String ownerId, String accessTokenContent) {
     final String authCode = "chu chu ua, chu chu ua";
 
     ImmutableMap.Builder<String, String> queryParamsBuilder = ImmutableMap.builder();
@@ -178,7 +170,7 @@ public abstract class BaseOAuthExtensionTestCase extends AbstractExtensionFuncti
         .put(CODE_PARAMETER, authCode)
         .build();
 
-    stubTokenUrl(accessTokenContent);
+    stubTokenUrl(accessTokenContent());
 
     check(REQUEST_TIMEOUT, 500, () -> {
       Response response = Get(toUrl(CALLBACK_PATH, port) + "?" + encodeQueryString(queryParams)).addHeader("Connection", "close")
@@ -318,10 +310,6 @@ public abstract class BaseOAuthExtensionTestCase extends AbstractExtensionFuncti
 
   protected void stubRefreshToken() {
     stubTokenUrl(accessTokenContent(ACCESS_TOKEN + "-refreshed"));
-  }
-
-  protected void stubRefreshToken(String refreshedToken) {
-    stubTokenUrl(accessTokenContent(refreshedToken));
   }
 
   protected String getCustomOwnerId() {
