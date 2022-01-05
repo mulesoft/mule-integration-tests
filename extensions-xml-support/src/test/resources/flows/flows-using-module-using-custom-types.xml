@@ -9,4 +9,11 @@
     <flow name="testSetStreetNameAsPayload">
         <module-using-custom-types:set-street-name-as-payload/>
     </flow>
+
+    <flow name="testUnionTypeWithNull">
+        <module-using-custom-types:receives-union-with-null>
+            <module-using-custom-types:values><![CDATA[#[['a', 'b', 'c']]]]></module-using-custom-types:values>
+        </module-using-custom-types:receives-union-with-null>
+    </flow>
+
 </mule>
