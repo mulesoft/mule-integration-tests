@@ -44,9 +44,9 @@ public class SecurityNamespaceHandlerTestCase extends MuleArtifactFunctionalTest
     SecurityProvider dummySecurityProvider = securityManager.getProvider("dummySecurityProvider");
     assertNotNull(dummySecurityProvider);
     assertThat(dummySecurityProvider.getClass().getName(),
-               is("org.mule.runtime.config.internal.CustomSecurityProviderDelegate"));
+               is("org.mule.runtime.config.internal.bean.CustomSecurityProviderDelegate"));
     verifyEncryptionStrategy(securityManager, "dummyEncryptionStrategy",
-                             "org.mule.runtime.config.internal.CustomEncryptionStrategyDelegate");
+                             "org.mule.runtime.config.internal.bean.CustomEncryptionStrategyDelegate");
     verifyEncryptionStrategy(securityManager, "passwordEncryptionStrategy",
                              "org.mule.runtime.core.internal.security.PasswordBasedEncryptionStrategy");
     verifyEncryptionStrategy(securityManager, "secretKeyEncryptionStrategy",
