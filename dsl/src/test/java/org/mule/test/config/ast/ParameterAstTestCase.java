@@ -6,22 +6,6 @@
  */
 package org.mule.test.config.ast;
 
-import static java.lang.Boolean.TRUE;
-import static java.lang.System.lineSeparator;
-import static java.util.Optional.empty;
-import static java.util.Optional.of;
-import static java.util.stream.Collectors.toList;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.collection.ArrayMatching.arrayContaining;
-import static org.hamcrest.collection.ArrayMatching.hasItemInArray;
-import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
-import static org.hamcrest.core.IsInstanceOf.instanceOf;
-import static org.junit.Assert.assertThat;
 import static org.mule.metadata.api.utils.MetadataTypeUtils.getTypeId;
 import static org.mule.runtime.api.component.ComponentIdentifier.builder;
 import static org.mule.runtime.api.meta.model.parameter.ParameterGroupModel.DEFAULT_GROUP_NAME;
@@ -33,6 +17,24 @@ import static org.mule.runtime.extension.api.util.ExtensionMetadataTypeUtils.isM
 import static org.mule.test.allure.AllureConstants.ArtifactAst.ARTIFACT_AST;
 import static org.mule.test.allure.AllureConstants.ArtifactAst.ParameterAst.PARAMETER_AST;
 import static org.mule.test.allure.AllureConstants.SourcesFeature.SOURCES;
+
+import static java.lang.Boolean.TRUE;
+import static java.lang.System.lineSeparator;
+import static java.util.Optional.empty;
+import static java.util.Optional.of;
+import static java.util.stream.Collectors.toList;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.collection.ArrayMatching.arrayContaining;
+import static org.hamcrest.collection.ArrayMatching.hasItemInArray;
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
+import static org.hamcrest.core.IsInstanceOf.instanceOf;
+import static org.junit.Assert.assertThat;
 
 import org.mule.extension.aggregator.internal.AggregatorsExtension;
 import org.mule.extension.db.internal.DbConnector;
@@ -339,6 +341,22 @@ public class ParameterAstTestCase extends BaseParameterAstTestCase {
     final ComponentParameterAst pojoTls = cagePojo.getParameter("PetCage", "tls");
     assertThat(pojoTls, not(nullValue()));
     assertThat(pojoTls.getValue().getRight(), not(nullValue()));
+  }
+
+  @Test
+  @Issue("MULE-19976")
+  public void tlsContextWithRevocationCheckParameter() {
+    ArtifactAst artifactAst =
+        buildArtifactAst("parameters-test-tls-global-with-revocation-check-config.xml", PetStoreConnector.class);
+
+    final ComponentAst pojoTls = artifactAst.topLevelComponentsStream()
+        .filter(componentAst -> componentAst.getComponentId().map(id -> id.equals("globalTlsContext")).orElse(false))
+        .findFirst()
+        .get();
+
+    ComponentParameterAst revocationCheck = pojoTls.getParameter("Tls", "revocation-check");
+    assertThat(revocationCheck, not(nullValue()));
+    assertThat(revocationCheck.getValue().getRight(), not(nullValue()));
   }
 
   @Test
