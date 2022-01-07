@@ -6,10 +6,11 @@
  */
 package org.mule.test.functional;
 
+import static org.mule.test.allure.AllureConstants.XmlSdk.XML_SDK;
+
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
-import static org.mule.test.allure.AllureConstants.XmlSdk.XML_SDK;
 
 import org.junit.Test;
 
@@ -29,6 +30,13 @@ public class ModuleWithCustomTypesOperationTestCase extends AbstractModuleWithHt
   public void testSetStreetNameAsPayloadWithEmptyParam() throws Exception {
     assertThat(flowRunner("testSetStreetNameAsPayload").run().getMessage().getPayload().getValue(),
                is(nullValue()));
+  }
+
+  @Test
+  @Issue("MULE-19976")
+  public void testUnionTypeWithNull() throws Exception {
+    assertThat(flowRunner("testUnionTypeWithNull").run().getMessage().getPayload().getValue(),
+               is("a,b,c"));
   }
 
   // TODO MULE-17934 remove this
