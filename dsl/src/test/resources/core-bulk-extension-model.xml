@@ -1,21 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
     <flow name="flowFor-scheduler">
         <scheduler disallowConcurrentExecution="false">
+            <redelivery-policy MessageIdentifier="Attribute" maxRedeliveryCount="5" messageDigestAlgorithm="Attribute"/>
             <scheduling-strategy/>
         </scheduler>
     </flow>
     <flow name="flowFor-idempotentMessageValidator">
-        <idempotent-message-validator idExpression="#[correlationId]" objectStore="OS:OBJECT_STORE"
-                                      storePrefix="Attribute" valueExpression="#[correlationId]"/>
+        <idempotent-message-validator idExpression="#[correlationId]" objectStore="OS:OBJECT_STORE" storePrefix="Attribute" valueExpression="#[correlationId]"/>
     </flow>
     <flow name="flowFor-logger">
         <logger category="Attribute" level="INFO" message="Attribute"/>
     </flow>
     <flow name="flowFor-parseTemplate">
-        <parse-template location="Attribute" target="Attribute" targetValue="#[payload]" outputMimeType="Attribute"
-                        outputEncoding="Attribute">
+        <parse-template location="Attribute" outputEncoding="Attribute" outputMimeType="Attribute" target="Attribute" targetValue="#[payload]">
             <content>#['ExpressionAttribute']</content>
         </parse-template>
     </flow>
@@ -32,7 +30,7 @@
         <set-variable encoding="Attribute" mimeType="Attribute" value="Attribute" variableName="Attribute"/>
     </flow>
     <flow name="flowFor-async">
-        <async name="Attribute" maxConcurrency="10000">
+        <async maxConcurrency="10000" name="Attribute">
             <logger/>
         </async>
     </flow>
@@ -46,10 +44,7 @@
             </otherwise>
         </choice>
     </flow>
-    <configuration defaultErrorHandler-ref="MULE:ERROR_HANDLER" defaultObjectSerializer-ref="MULE:SERIALIZER"
-                   defaultResponseTimeout="10000" defaultTransactionTimeout="30000" inheritIterableRepeatability="false"
-                   maxQueueTransactionFilesSize="500" shutdownTimeout="5000"
-                   correlationIdGeneratorExpression="#['ExpressionAttribute']">
+    <configuration correlationIdGeneratorExpression="#['ExpressionAttribute']" defaultErrorHandler-ref="MULE:ERROR_HANDLER" defaultObjectSerializer-ref="MULE:SERIALIZER" defaultResponseTimeout="10000" defaultTransactionTimeout="30000" inheritIterableRepeatability="false" maxQueueTransactionFilesSize="500" shutdownTimeout="5000">
         <dynamic-config-expiration frequency="5" timeUnit="MINUTES">
             <expiration-policy maxIdleTime="5" timeUnit="MINUTES"/>
         </dynamic-config-expiration>
@@ -81,8 +76,7 @@
         <logger/>
     </flow>
     <flow name="flowFor-foreach">
-        <foreach batchSize="10000" collection="#[payload]" counterVariableName="counter"
-                 rootMessageVariableName="rootMessage">
+        <foreach batchSize="10000" collection="#[payload]" counterVariableName="counter" rootMessageVariableName="rootMessage">
             <logger/>
         </foreach>
     </flow>
@@ -96,17 +90,14 @@
     <flow name="flowFor-onError">
         <on-error ref="MULE:ON_ERROR"/>
     </flow>
-    <on-error-continue name="global-onErrorContinue" enableNotifications="true" logException="true" type="Attribute"
-                       when="Attribute">
+    <on-error-continue enableNotifications="true" logException="true" name="global-onErrorContinue" type="Attribute" when="Attribute">
         <logger/>
     </on-error-continue>
-    <on-error-propagate name="global-onErrorPropagate" enableNotifications="true" logException="true" type="Attribute"
-                        when="Attribute">
+    <on-error-propagate enableNotifications="true" logException="true" name="global-onErrorPropagate" type="Attribute" when="Attribute">
         <logger/>
     </on-error-propagate>
     <flow name="flowFor-parallelForeach">
-        <parallel-foreach collection="#[payload]" maxConcurrency="2147483647" target="Attribute"
-                          targetValue="#[payload]" timeout="9223372036854775807">
+        <parallel-foreach collection="#[payload]" maxConcurrency="2147483647" target="Attribute" targetValue="#[payload]" timeout="9223372036854775807">
             <logger/>
         </parallel-foreach>
     </flow>
@@ -118,22 +109,19 @@
         </round-robin>
     </flow>
     <flow name="flowFor-scatterGather">
-        <scatter-gather maxConcurrency="2147483647" target="Attribute" targetValue="#[payload]"
-                        timeout="9223372036854775807">
+        <scatter-gather maxConcurrency="2147483647" target="Attribute" targetValue="#[payload]" timeout="9223372036854775807">
             <collect-list/>
             <route>
                 <logger/>
             </route>
         </scatter-gather>
     </flow>
-
     <security-manager>
         <logger/>
         <logger/>
         <logger/>
         <logger/>
     </security-manager>
-
     <sub-flow name="global-subFlow">
         <logger/>
     </sub-flow>
