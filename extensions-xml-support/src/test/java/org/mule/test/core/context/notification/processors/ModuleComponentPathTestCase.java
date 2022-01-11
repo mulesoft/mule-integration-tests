@@ -867,7 +867,7 @@ public class ModuleComponentPathTestCase extends MuleArtifactFunctionalTestCase 
       private void registerXmlExtensions(ExtensionManager extensionManager) {
         final Set<ExtensionModel> extensions = new HashSet<>();
         extensions.addAll(extensionManager.getExtensions());
-          final ClassLoader classLoader = getClass().getClassLoader();
+        final ClassLoader classLoader = getClass().getClassLoader();
         final ExtensionModelLoader loader = getLoaderById(classLoader, XML_SDK_LOADER_ID);
 
         for (String modulePath : getModulePaths()) {
@@ -877,7 +877,7 @@ public class ModuleComponentPathTestCase extends MuleArtifactFunctionalTestCase 
           final ExtensionModel extensionModel = loader.loadExtensionModel(classLoader, dslResolvingContext, params);
           extensions.add(extensionModel);
         }
-        
+
         for (ExtensionModel extension : extensions) {
           extensionManager.registerExtension(extension);
         }
