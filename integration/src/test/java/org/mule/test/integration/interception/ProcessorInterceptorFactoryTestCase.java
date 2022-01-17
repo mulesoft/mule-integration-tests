@@ -800,7 +800,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     }
 
     @Override
-    public synchronized void before(ComponentLocation location, Map<String, ProcessorParameterValue> parameters,
+    public void before(ComponentLocation location, Map<String, ProcessorParameterValue> parameters,
                                     InterceptionEvent event) {
       parameters.values().forEach(v -> {
         try {
