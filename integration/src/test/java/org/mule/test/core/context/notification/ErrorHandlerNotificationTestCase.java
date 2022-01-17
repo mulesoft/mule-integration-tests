@@ -12,7 +12,6 @@ import static org.junit.rules.ExpectedException.none;
 import static org.mule.runtime.api.notification.ErrorHandlerNotification.PROCESS_END;
 import static org.mule.runtime.api.notification.ErrorHandlerNotification.PROCESS_START;
 
-import org.junit.Ignore;
 import org.mule.functional.api.exception.FunctionalTestException;
 import org.mule.runtime.api.notification.ErrorHandlerNotification;
 import org.mule.runtime.api.notification.IntegerAction;
@@ -61,7 +60,6 @@ public class ErrorHandlerNotificationTestCase extends AbstractNotificationTestCa
   }
 
   @Test
-  @Ignore("MULE-18903")
   public void doTest() throws Exception {
     expected.accept(expectedException);
 
