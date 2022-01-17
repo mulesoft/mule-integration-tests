@@ -801,7 +801,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
 
     @Override
     public void before(ComponentLocation location, Map<String, ProcessorParameterValue> parameters,
-                                    InterceptionEvent event) {
+                       InterceptionEvent event) {
       parameters.values().forEach(v -> {
         try {
           v.resolveValue();
