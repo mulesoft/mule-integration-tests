@@ -12,7 +12,6 @@ import static org.junit.rules.ExpectedException.none;
 import static org.mule.runtime.api.notification.ErrorHandlerNotification.PROCESS_END;
 import static org.mule.runtime.api.notification.ErrorHandlerNotification.PROCESS_START;
 
-import org.junit.Ignore;
 import org.mule.functional.api.exception.FunctionalTestException;
 import org.mule.runtime.api.notification.ErrorHandlerNotification;
 import org.mule.runtime.api.notification.IntegerAction;
@@ -61,7 +60,6 @@ public class ErrorHandlerNotificationTestCase extends AbstractNotificationTestCa
   }
 
   @Test
-  @Ignore("MULE-18903")
   public void doTest() throws Exception {
     expected.accept(expectedException);
 
@@ -74,9 +72,7 @@ public class ErrorHandlerNotificationTestCase extends AbstractNotificationTestCa
 
   @Override
   public RestrictedNode getSpecification() {
-    return new Node()
-        .serial(node(new IntegerAction(PROCESS_START))
-            .serial(node(new IntegerAction(PROCESS_END))));
+    return new Node().parallel(node(new IntegerAction(PROCESS_START))).parallel(node(new IntegerAction(PROCESS_END)));
   }
 
   private RestrictedNode node(Action action) {
