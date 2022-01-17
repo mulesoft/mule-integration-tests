@@ -6,13 +6,18 @@
  */
 package org.mule.test.extension.dsl;
 
-import static java.lang.Thread.currentThread;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
+import static org.mule.functional.junit4.ArtifactAstXmlParserConfigurationBuilder.SERIALIZE_DESERIALIZE_AST_PROPERTY;
 import static org.mule.runtime.api.util.MuleSystemProperties.SYSTEM_PROPERTY_PREFIX;
 import static org.mule.runtime.app.declaration.api.fluent.ElementDeclarer.newParameterGroup;
 import static org.mule.runtime.ast.api.DependencyResolutionMode.MINIMAL;
 import static org.mule.runtime.core.api.util.IOUtils.getResourceAsString;
+
+import static java.lang.Boolean.getBoolean;
+import static java.lang.Thread.currentThread;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assume.assumeThat;
 
 import org.mule.runtime.api.dsl.DslResolvingContext;
 import org.mule.runtime.api.meta.model.ExtensionModel;
@@ -31,11 +36,11 @@ import org.mule.tck.junit4.rule.SystemProperty;
 import java.util.Optional;
 import java.util.Set;
 
+import com.google.common.collect.ImmutableSet;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-
-import com.google.common.collect.ImmutableSet;
 
 public class ArtifactDeclarationLocationPathTestCase extends AbstractElementModelTestCase {
 
@@ -53,6 +58,11 @@ public class ArtifactDeclarationLocationPathTestCase extends AbstractElementMode
     return ORIGINAL_CONFIG;
   }
 
+  @Override
+  protected void doSetUpBeforeMuleContextCreation() throws Exception {
+    assumeThat(getBoolean(SERIALIZE_DESERIALIZE_AST_PROPERTY), is(false));
+    super.doSetUpBeforeMuleContextCreation();
+  }
 
   @Override
   @Before
