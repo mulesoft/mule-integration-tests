@@ -28,7 +28,6 @@ import static org.mule.test.allure.AllureConstants.InterceptonApi.INTERCEPTION_A
 import static org.mule.test.heisenberg.extension.HeisenbergConnectionProvider.getActiveConnections;
 import static org.mule.test.heisenberg.extension.HeisenbergOperations.CALL_GUS_MESSAGE;
 
-import org.junit.Ignore;
 import org.mule.extension.http.api.request.validator.ResponseValidatorException;
 import org.mule.functional.api.exception.ExpectedError;
 import org.mule.functional.api.exception.FunctionalTestException;
@@ -392,7 +391,6 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
   @Description("Smart Connector inside a scatter-gather declares a simple operation without parameters")
   @Issue("MULE-16285")
   @Test
-  @Ignore("MULE-17570")
   public void flowWithScatterGather() throws Exception {
     flowRunner("flowWithScatterGather").run();
 
@@ -410,13 +408,14 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     ComponentIdentifier fourthInterceptorParameter =
         interceptionParameters.get(3).getLocation().getComponentIdentifier().getIdentifier();
 
-    assertThat(asList(thirdInterceptorParameter.getName(), fourthInterceptorParameter.getName()),
-               hasItems("logger", "set-payload"));
+    assertThat(asList(thirdInterceptorParameter.getName(), fourthInterceptorParameter.getName(), firstRoute.getName()),
+               hasItems("logger", "set-payload", "set-payload-hardcoded"));
+
+    assertThat(asList(thirdInterceptorParameter.getNamespace(), fourthInterceptorParameter.getNamespace(),
+                      firstRoute.getNamespace()),
+               hasItems("mule", "module-using-core"));
 
     assertThat(scatterGatherIdentifier.getName(), equalTo("scatter-gather"));
-
-    assertThat(firstRoute.getNamespace(), equalTo("module-using-core"));
-    assertThat(firstRoute.getName(), equalTo("set-payload-hardcoded"));
   }
 
   @Description("Smart Connector simple operation with parameters")
@@ -801,7 +800,8 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     }
 
     @Override
-    public void before(ComponentLocation location, Map<String, ProcessorParameterValue> parameters, InterceptionEvent event) {
+    public synchronized void before(ComponentLocation location, Map<String, ProcessorParameterValue> parameters,
+                                    InterceptionEvent event) {
       parameters.values().forEach(v -> {
         try {
           v.resolveValue();
