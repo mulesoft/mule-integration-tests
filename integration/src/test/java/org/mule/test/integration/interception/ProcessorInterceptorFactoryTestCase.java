@@ -21,11 +21,18 @@ import static org.junit.Assert.assertThat;
 import static org.mule.functional.api.exception.ExpectedError.none;
 import static org.mule.runtime.api.interception.ProcessorInterceptorFactory.INTERCEPTORS_ORDER_REGISTRY_KEY;
 import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
-import static org.mule.test.allure.AllureConstants.InterceptonApi.INTERCEPTION_API;
 import static org.mule.test.allure.AllureConstants.InterceptonApi.ComponentInterceptionStory.COMPONENT_INTERCEPTION_STORY;
+import static org.mule.test.allure.AllureConstants.InterceptonApi.INTERCEPTION_API;
 import static org.mule.test.heisenberg.extension.HeisenbergConnectionProvider.getActiveConnections;
 import static org.mule.test.heisenberg.extension.HeisenbergOperations.CALL_GUS_MESSAGE;
 
+import io.qameta.allure.Description;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
+import io.qameta.allure.Story;
+import org.junit.After;
+import org.junit.Rule;
+import org.junit.Test;
 import org.mule.extension.http.api.request.validator.ResponseValidatorException;
 import org.mule.extension.test.extension.reconnection.ReconnectableConnectionProvider;
 import org.mule.functional.api.exception.ExpectedError;
@@ -50,26 +57,17 @@ import org.mule.test.heisenberg.extension.HeisenbergExtension;
 import org.mule.test.heisenberg.extension.exception.HeisenbergException;
 import org.mule.test.heisenberg.extension.model.KillParameters;
 
+import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
-
-import javax.inject.Inject;
-
-import org.junit.After;
-import org.junit.Rule;
-import org.junit.Test;
-
-import io.qameta.allure.Description;
-import io.qameta.allure.Feature;
-import io.qameta.allure.Issue;
-import io.qameta.allure.Story;
 
 @Feature(INTERCEPTION_API)
 @Story(COMPONENT_INTERCEPTION_STORY)
@@ -444,18 +442,21 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
   @Description("Processors in global error handlers are intercepted correctly when error is in referenced flow")
   public void globalErrorHandlerWithFlowRef() throws Exception {
     expectedError.expectErrorType("TEST", "EXPECTED");
-
+    CountDownLatch allAftersWereCalled = new CountDownLatch(4);
 
     AtomicInteger afters = new AtomicInteger(0);
 
     AfterWithCallbackInterceptor.callback = (event, thrown) -> {
       afters.incrementAndGet();
+      allAftersWereCalled.countDown();
     };
 
     try {
       flowRunner("flowWithFailingFlowRef").run();
     } finally {
       // The MP in the global error handler is ran twice, once for the called flow and another for the caller flow.
+      // If the afters don't reach 4, this latch will timeout.
+      allAftersWereCalled.await();
 
       List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
       assertThat(interceptionParameters.stream().map(ip -> ip.getLocation().getLocation()).collect(toList()).toString(),
