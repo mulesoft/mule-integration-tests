@@ -126,4 +126,26 @@
         <heisenberg:kill-with-ricins/>
     </flow>
 
+    <flow name="killWithRevolver">
+        <subtypes:kill>
+            <subtypes:deadly>
+                <subtypes:weapon>
+                    <subtypes:revolver bullets="6"/>
+                </subtypes:weapon>
+            </subtypes:deadly>
+        </subtypes:kill>
+    </flow>
+
+    <flow name="killWithRicin">
+        <subtypes:kill>
+            <subtypes:deadly>
+                <subtypes:weapon>
+                    <heisenberg:ricin microgramsPerKilo="20">
+                        <heisenberg:destination victim="Lidia" address="Stevia coffe shop"/>
+                    </heisenberg:ricin>
+                </subtypes:weapon>
+            </subtypes:deadly>
+        </subtypes:kill>
+    </flow>
+
 </mule>
