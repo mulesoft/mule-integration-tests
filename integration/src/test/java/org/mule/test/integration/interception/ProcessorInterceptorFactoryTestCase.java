@@ -455,7 +455,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
       flowRunner("flowWithFailingFlowRef").run();
     } finally {
       // The MP in the global error handler is ran twice, once for the called flow and another for the caller flow.
-      // If the afters don't reach 4, this latch will timeout.
+      // If the afters don't reach 4, this latch will make the test timeout.
       allAftersWereCalled.await();
 
       List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
