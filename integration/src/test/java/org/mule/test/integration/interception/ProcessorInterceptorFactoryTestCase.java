@@ -55,6 +55,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
@@ -444,18 +445,21 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
   @Description("Processors in global error handlers are intercepted correctly when error is in referenced flow")
   public void globalErrorHandlerWithFlowRef() throws Exception {
     expectedError.expectErrorType("TEST", "EXPECTED");
-
+    CountDownLatch allAftersWereCalled = new CountDownLatch(4);
 
     AtomicInteger afters = new AtomicInteger(0);
 
     AfterWithCallbackInterceptor.callback = (event, thrown) -> {
       afters.incrementAndGet();
+      allAftersWereCalled.countDown();
     };
 
     try {
       flowRunner("flowWithFailingFlowRef").run();
     } finally {
       // The MP in the global error handler is ran twice, once for the called flow and another for the caller flow.
+      // If the afters don't reach 4, this latch will make the test timeout.
+      allAftersWereCalled.await();
 
       List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
       assertThat(interceptionParameters.stream().map(ip -> ip.getLocation().getLocation()).collect(toList()).toString(),
