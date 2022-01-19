@@ -1053,6 +1053,13 @@ public class ParameterAstTestCase extends BaseParameterAstTestCase {
 
     assertThat(deadlyWeapon.getIdentifier().getNamespace(), is("heisenberg"));
     assertThat(deadlyWeapon.getIdentifier().getName(), is("ricin"));
+
+    ComponentAst destination = (ComponentAst) deadlyWeapon.getParameter("Ricin", "destination")
+        .getValue()
+        .getRight();
+
+    assertThat(destination.getParameter("door", "victim").getValue().getRight(), is("Lidia"));
+    assertThat(destination.directChildren(), hasSize(0));
   }
 
   private void assertParameters(ComponentAst container, String containerParameterGroupName, String containerParameterName,
