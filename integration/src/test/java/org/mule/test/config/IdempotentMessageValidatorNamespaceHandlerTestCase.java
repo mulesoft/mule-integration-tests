@@ -7,15 +7,11 @@
 package org.mule.test.config;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mule.runtime.api.store.ObjectStoreSettings.unmanagedTransient;
 
 import org.mule.runtime.api.store.ObjectStore;
-import org.mule.runtime.api.store.ObjectStoreSettings;
-import org.mule.runtime.api.store.SimpleMemoryObjectStore;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.construct.FlowConstruct;
 import org.mule.runtime.core.api.processor.Processor;
@@ -23,12 +19,12 @@ import org.mule.runtime.core.internal.routing.IdempotentMessageValidator;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import org.junit.Rule;
-import org.junit.Test;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
+
+import org.junit.Rule;
+import org.junit.Test;
 
 /**
  * Tests for all object stores that can be configured on an {@link IdempotentMessageValidator}.
@@ -80,5 +76,11 @@ public class IdempotentMessageValidatorNamespaceHandlerTestCase extends Abstract
       throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
     Method method = router.getClass().getMethod("getObjectStore");
     return (ObjectStore) method.invoke(router);
+  }
+
+  // This is needed to recreate the parsers that have been created previously without the system property set by this test.
+  @Override
+  protected boolean mustRegenerateExtensionModels() {
+    return true;
   }
 }

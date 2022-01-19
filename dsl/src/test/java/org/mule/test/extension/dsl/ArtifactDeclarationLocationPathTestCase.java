@@ -60,6 +60,7 @@ public class ArtifactDeclarationLocationPathTestCase extends AbstractElementMode
 
   @Override
   protected void doSetUpBeforeMuleContextCreation() throws Exception {
+    // this case tests a configuration of the ast generator that is not compatible with the serialization.
     assumeThat(getBoolean(SERIALIZE_DESERIALIZE_AST_PROPERTY), is(false));
     super.doSetUpBeforeMuleContextCreation();
   }
