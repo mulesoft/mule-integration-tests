@@ -9,21 +9,17 @@ package org.mule.test.integration.routing;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import org.apache.commons.lang3.SerializationUtils;
+import org.junit.Test;
 import org.mule.functional.api.notification.FunctionalTestNotification;
 import org.mule.functional.listener.FlowExecutionListener;
 import org.mule.runtime.api.notification.AbstractServerNotification;
 import org.mule.runtime.api.notification.NotificationListenerRegistry;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import javax.inject.Inject;
-
-import org.apache.commons.lang3.SerializationUtils;
-import org.junit.Ignore;
-import org.junit.Test;
-
-import io.qameta.allure.Flaky;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class MessageChunkingTestCase extends AbstractIntegrationTestCase {
 
@@ -46,7 +42,6 @@ public class MessageChunkingTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  @Ignore("MULE-18767")
   public void testMessageChunkingWith100Splits() throws Exception {
     doMessageChunking("0123456789012345678901234567890123456789012345678901234567890123456789"
         + "01234567890123456789012345678901234567890123456789012345678901234567890123456789"
@@ -59,8 +54,6 @@ public class MessageChunkingTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  @Flaky
-  @Ignore("MULE-18914")
   public void testMessageChunkingObject() throws Exception {
     final AtomicInteger messagePartsCount = new AtomicInteger(0);
     final SimpleSerializableObject simpleSerializableObject = new SimpleSerializableObject("Test String", true, 99);
@@ -95,6 +88,7 @@ public class MessageChunkingTestCase extends AbstractIntegrationTestCase {
 
   protected void doMessageChunking(final String data, int partsCount) throws Exception {
     final AtomicInteger messagePartsCount = new AtomicInteger(0);
+    final CountDownLatch allPartsCounted = new CountDownLatch(partsCount);
 
     // Listen to events fired by the ChunkingReceiver service
     notificationListenerRegistry.registerListener(notification -> {
@@ -105,12 +99,16 @@ public class MessageChunkingTestCase extends AbstractIntegrationTestCase {
       assertEquals(data + " Received", reply);
     }, m -> "ChunkingReceiver".equals(((AbstractServerNotification) m).getResourceIdentifier()));
 
-    // Listen to Message Notifications on the Chunking receiver so we can
+    // Listen to Message Notifications on the Chunking receiver, so we can
     // determine how many message parts have been received
     FlowExecutionListener flowExecutionListener = new FlowExecutionListener("ChunkingReceiver", notificationListenerRegistry);
-    flowExecutionListener.addListener(notificationInfo -> messagePartsCount.getAndIncrement());
+    flowExecutionListener.addListener(notificationInfo -> {
+      messagePartsCount.getAndIncrement();
+      allPartsCounted.countDown();
+    });
     flowRunner("Receiver").withPayload(data).run();
     // Ensure we processed expected number of message parts
+    allPartsCounted.await();
     assertEquals(partsCount, messagePartsCount.get());
   }
 }
