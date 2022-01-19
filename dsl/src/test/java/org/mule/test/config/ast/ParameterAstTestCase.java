@@ -1008,6 +1008,60 @@ public class ParameterAstTestCase extends BaseParameterAstTestCase {
     assertThat(wildCardsSyntax.get().getElementName(), is("wild-cards"));
   }
 
+  @Test
+  @Issue("MULE-20047")
+  public void pojoParamIsSubtypeFromAnotherExtension() {
+    ArtifactAst artifactAst = buildArtifactAst("parameters-test-pojo-config.xml",
+                                               HeisenbergExtension.class, SubTypesMappingConnector.class, VeganExtension.class);
+
+    ComponentAst killWithRevolver = artifactAst.topLevelComponentsStream()
+        .filter(componentAst -> componentAst.getComponentId().map(id -> id.equals("killWithRevolver")).orElse(false))
+        .findFirst()
+        .get();
+
+    ComponentAst killOperation = killWithRevolver.directChildren().get(0);
+    ComponentAst deadlyValue = (ComponentAst) killOperation.getParameter(DEFAULT_GROUP_NAME, "deadly")
+        .getValue()
+        .getRight();
+    ComponentAst deadlyWeapon = (ComponentAst) deadlyValue.getParameter("Deadly", "weapon")
+        .getValue()
+        .getRight();
+
+    assertThat(killOperation.directChildren(), hasSize(0));
+    assertThat(deadlyValue.directChildren(), hasSize(0));
+    assertThat(deadlyWeapon.directChildren(), hasSize(0));
+
+    assertThat(deadlyWeapon.getIdentifier().getNamespace(), is("subtypes"));
+    assertThat(deadlyWeapon.getIdentifier().getName(), is("revolver"));
+
+    ComponentAst killWithRicin = artifactAst.topLevelComponentsStream()
+        .filter(componentAst -> componentAst.getComponentId().map(id -> id.equals("killWithRicin")).orElse(false))
+        .findFirst()
+        .get();
+
+    killOperation = killWithRicin.directChildren().get(0);
+    deadlyValue = (ComponentAst) killOperation.getParameter(DEFAULT_GROUP_NAME, "deadly")
+        .getValue()
+        .getRight();
+    deadlyWeapon = (ComponentAst) deadlyValue.getParameter("Deadly", "weapon")
+        .getValue()
+        .getRight();
+
+    assertThat(killOperation.directChildren(), hasSize(0));
+    assertThat(deadlyValue.directChildren(), hasSize(0));
+    assertThat(deadlyWeapon.directChildren(), hasSize(0));
+
+    assertThat(deadlyWeapon.getIdentifier().getNamespace(), is("heisenberg"));
+    assertThat(deadlyWeapon.getIdentifier().getName(), is("ricin"));
+
+    ComponentAst destination = (ComponentAst) deadlyWeapon.getParameter("Ricin", "destination")
+        .getValue()
+        .getRight();
+
+    assertThat(destination.getParameter("door", "victim").getValue().getRight(), is("Lidia"));
+    assertThat(destination.directChildren(), hasSize(0));
+  }
+
   private void assertParameters(ComponentAst container, String containerParameterGroupName, String containerParameterName,
                                 String elementParameterGroupName, String elementParameterName, String... rightValues) {
     ComponentParameterAst containerParameter = container.getParameter(containerParameterGroupName, containerParameterName);
