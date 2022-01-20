@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+
+    <flow name="usePlaceholder">
+        <set-payload value="${secure::test.key1}"/>
+    </flow>
+
+    <flow name="usePFunction">
+        <set-payload value="#[p('secure::test.key1')]"/>
+    </flow>
+
+</mule>
