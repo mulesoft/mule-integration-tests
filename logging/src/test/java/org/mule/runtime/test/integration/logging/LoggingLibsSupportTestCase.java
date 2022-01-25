@@ -6,27 +6,30 @@
  */
 package org.mule.runtime.test.integration.logging;
 
+import static org.mule.test.allure.AllureConstants.IntegrationTestsFeature.INTEGRATIONS_TESTS;
+import static org.mule.test.allure.AllureConstants.ComponentsFeature.LoggerStory.LOGGER;
+
 import static java.lang.String.format;
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.mule.runtime.api.util.MuleSystemProperties.MULE_SIMPLE_LOG;
 import static org.mule.tck.probe.PollingProber.probe;
 import static org.mule.test.infrastructure.FileContainsInLine.hasLine;
 
 import org.mule.runtime.module.deployment.impl.internal.builder.ApplicationFileBuilder;
 import org.mule.runtime.module.deployment.impl.internal.builder.JarFileBuilder;
-import org.mule.tck.junit4.FlakinessDetectorTestRunner;
-import org.mule.tck.junit4.FlakyTest;
 import org.mule.tck.util.CompilerUtils;
 import org.mule.test.infrastructure.deployment.AbstractFakeMuleServerTestCase;
-import org.mule.test.runner.RunnerDelegateTo;
 
 import java.io.File;
 
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
+
+@Feature(INTEGRATIONS_TESTS)
+@Story(LOGGER)
 public class LoggingLibsSupportTestCase extends AbstractFakeMuleServerTestCase {
 
   @Rule
