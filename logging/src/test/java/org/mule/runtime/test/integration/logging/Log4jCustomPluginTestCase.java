@@ -59,8 +59,8 @@ public class Log4jCustomPluginTestCase extends AbstractFakeMuleServerTestCase {
     String expectedMessage = "I have intercepted your message :)";
     String unexpectedMessage = "This log message should be intercepted...";
     probe(() -> hasLine(containsString(expectedMessage)).matches(file),
-        () -> format("Text '%s' not present in the logs", expectedMessage));
+          () -> format("Text '%s' not present in the logs", expectedMessage));
     probe(() -> !hasLine(containsString(unexpectedMessage)).matches(file),
-        () -> format("Text '%s' is present in the logs", unexpectedMessage));
+          () -> format("Text '%s' is present in the logs", unexpectedMessage));
   }
 }
