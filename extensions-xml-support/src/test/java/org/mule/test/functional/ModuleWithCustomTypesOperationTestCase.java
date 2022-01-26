@@ -39,6 +39,13 @@ public class ModuleWithCustomTypesOperationTestCase extends AbstractModuleWithHt
                is("a,b,c"));
   }
 
+  @Test
+  @Issue("MULE-X")
+  public void testSetCdataAsPayload() throws Exception {
+    assertThat(flowRunner("testSetCdataAsPayload").run().getMessage().getPayload().getValue(),
+               is(nullValue()));
+  }
+
   // TODO MULE-17934 remove this
   @Override
   protected boolean isGracefulShutdown() {

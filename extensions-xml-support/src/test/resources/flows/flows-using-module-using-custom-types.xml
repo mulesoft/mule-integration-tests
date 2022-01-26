@@ -16,4 +16,9 @@
         </module-using-custom-types:receives-union-with-null>
     </flow>
 
+    <flow name="testSetCdataAsPayload">
+        <module-using-custom-types:receives-cdata-and-sets-payload>
+            <module-using-custom-types:data><![CDATA[Test]]></module-using-custom-types:data>
+        </module-using-custom-types:receives-cdata-and-sets-payload>
+    </flow>
 </mule>
