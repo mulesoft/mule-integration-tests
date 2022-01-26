@@ -34,11 +34,6 @@ public class Log4jCustomPluginTestCase extends AbstractFakeMuleServerTestCase {
   @Rule
   public UseMuleLog4jContextFactory muleLogging = new UseMuleLog4jContextFactory();
 
-  @Override
-  public void setUp() throws Exception {
-    super.setUp();
-  }
-
   @Test
   public void useLog4jConfigFilePluginSuccessfully() throws Exception {
     File customLogInterceptor =
