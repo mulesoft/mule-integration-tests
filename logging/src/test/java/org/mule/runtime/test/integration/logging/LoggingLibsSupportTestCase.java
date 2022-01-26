@@ -42,6 +42,12 @@ public class LoggingLibsSupportTestCase extends AbstractFakeMuleServerTestCase {
     SLF4JBridgeHandler.install();
   }
 
+  @Override
+  public void tearDown() throws Exception {
+    super.tearDown();
+    SLF4JBridgeHandler.uninstall();
+  }
+
   @Test
   public void eachLoggingLibraryShouldLogSuccessfully() throws Exception {
     final ApplicationFileBuilder loggingAppFileBuilder =
