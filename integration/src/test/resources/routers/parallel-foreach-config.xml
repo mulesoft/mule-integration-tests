@@ -2,11 +2,13 @@
 <mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:http="http://www.mulesoft.org/schema/mule/http"
       xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xmlns:heisenberg="http://www.mulesoft.org/schema/mule/heisenberg"
       xmlns="http://www.mulesoft.org/schema/mule/core"
       xsi:schemaLocation="
                http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
                http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
-               http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+               http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
+               http://www.mulesoft.org/schema/mule/heisenberg http://www.mulesoft.org/schema/mule/heisenberg/current/mule-heisenberg.xsd">
 
     <object name="threadCaptor" class="org.mule.test.routing.ThreadCaptor"/>
 
@@ -270,5 +272,28 @@
     </flow>
 
 	<object name="throwNpe" class="org.mule.test.routing.ParallelForEachTestCase$ThrowNpeProcessor"/>
+
+    <heisenberg:config name="heisenberg"
+                       money="100000"
+                       finalHealth="CANCER">
+        <heisenberg:enemies/>
+        <heisenberg:monthly-incomes/>
+        <heisenberg:known-addresses/>
+    </heisenberg:config>
+
+    <flow name="pagedResults">
+        <heisenberg:get-paged-blocklist config-ref="heisenberg" outputMimeType="application/java; header=false"
+                                        outputEncoding="UTF-16"/>
+        <parallel-foreach>
+            <set-payload value="#[payload ++ '-result']"/>
+        </parallel-foreach>
+
+        <test:assert expression="#[payload[0].payload == 'Fring-result']"/>
+        <test:assert expression="#[payload[1].payload == 'Salamanca-result']"/>
+        <test:assert expression="#[payload[2].payload == 'Ehrmantraut-result']"/>
+        <test:assert expression="#[payload[3].payload == 'Alquist-result']"/>
+        <test:assert expression="#[payload[4].payload == 'Schrader-result']"/>
+        <test:assert expression="#[payload[5].payload == 'Gomez-result']"/>
+    </flow>
 
 </mule>

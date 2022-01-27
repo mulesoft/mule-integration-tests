@@ -7,8 +7,19 @@
 
 package org.mule.test.routing;
 
+import static org.mule.runtime.api.component.ComponentIdentifier.builder;
+import static org.mule.runtime.api.util.MuleSystemProperties.PARALLEL_FOREACH_FLATTEN_MESSAGE_PROPERTY;
+import static org.mule.runtime.core.api.error.Errors.ComponentIdentifiers.Handleable.EXPRESSION;
+import static org.mule.runtime.core.api.error.Errors.ComponentIdentifiers.Handleable.UNKNOWN;
+import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
+import static org.mule.tck.junit4.matcher.HasClassInHierarchy.withClassName;
+import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
+import static org.mule.test.allure.AllureConstants.ScopeFeature.ParallelForEachStory.PARALLEL_FOR_EACH;
+import static org.mule.test.routing.ThreadCaptor.getCapturedThreads;
+
 import static java.lang.System.lineSeparator;
 import static java.util.Arrays.asList;
+
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.startsWith;
@@ -18,14 +29,6 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.junit.rules.ExpectedException.none;
-import static org.mule.runtime.api.component.ComponentIdentifier.builder;
-import static org.mule.runtime.core.api.error.Errors.ComponentIdentifiers.Handleable.EXPRESSION;
-import static org.mule.runtime.core.api.error.Errors.ComponentIdentifiers.Handleable.UNKNOWN;
-import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
-import static org.mule.tck.junit4.matcher.HasClassInHierarchy.withClassName;
-import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
-import static org.mule.test.allure.AllureConstants.RoutersFeature.ParallelForEachStory.PARALLEL_FOR_EACH;
-import static org.mule.test.routing.ThreadCaptor.getCapturedThreads;
 
 import org.mule.functional.junit4.rules.HttpServerRule;
 import org.mule.runtime.api.component.AbstractComponent;
@@ -38,6 +41,7 @@ import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.tck.junit4.rule.DynamicPort;
+import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.util.List;
@@ -70,6 +74,9 @@ public class ParallelForEachTestCase extends AbstractIntegrationTestCase {
 
   @Rule
   public HttpServerRule httpServerRules = new HttpServerRule("port");
+
+  @Rule
+  public SystemProperty parallelForeachFlattenMessage = new SystemProperty(PARALLEL_FOREACH_FLATTEN_MESSAGE_PROPERTY, "true");
 
   @Override
   protected String getConfigFile() {
@@ -232,6 +239,12 @@ public class ParallelForEachTestCase extends AbstractIntegrationTestCase {
   @Description("Check that parallel execution routes do not cause race conditions when handling SdkInternalContext")
   public void parallelForEachWithSdkOperation() throws Exception {
     flowRunner("parallelForEachWithSdkOperation").run();
+  }
+
+  @Test
+  @Issue("MULE-20067")
+  public void pagedResults() throws Exception {
+    flowRunner("pagedResults").run();
   }
 
   public static final class ThrowNpeProcessor extends AbstractComponent implements Processor {
