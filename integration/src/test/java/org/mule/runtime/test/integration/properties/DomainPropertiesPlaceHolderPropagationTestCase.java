@@ -75,13 +75,13 @@ public class DomainPropertiesPlaceHolderPropagationTestCase extends AbstractMule
 
   private void configureContexts(String domainConfig, String appConfig) throws Exception {
     final ArtifactContext domainArtifactContext = new DomainContextBuilder()
-        .setContextId(DomainPropertiesPlaceHolderPropagationTestCase.class.getSimpleName())
+        .setContextId(DomainPropertiesPlaceHolderPropagationTestCase.class.getSimpleName().concat("_domain"))
         .setDomainConfig(domainConfig)
         .build();
     domainContext = domainArtifactContext
         .getMuleContext();
     applicationContext = new ApplicationContextBuilder()
-        .setContextId(DomainPropertiesPlaceHolderPropagationTestCase.class.getSimpleName())
+        .setContextId(DomainPropertiesPlaceHolderPropagationTestCase.class.getSimpleName().concat("_application"))
         .setApplicationResources(appConfig)
         .setDomainArtifactContext(domainArtifactContext)
         .build();
