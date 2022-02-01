@@ -27,12 +27,12 @@ import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.mult
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.requiresConfigurationOutputTypeKeyResolverOP;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.sourceDeclaration;
 import static org.mule.tck.junit4.matcher.MetadataKeyMatcher.metadataKeyWithId;
+
 import org.mule.runtime.api.metadata.MetadataKey;
 import org.mule.runtime.api.metadata.MetadataKeysContainer;
 import org.mule.runtime.api.metadata.resolving.FailureCode;
 import org.mule.runtime.api.metadata.resolving.MetadataFailure;
 import org.mule.runtime.api.metadata.resolving.MetadataResult;
-import org.mule.runtime.api.value.ValueResult;
 import org.mule.runtime.app.declaration.api.ComponentElementDeclaration;
 
 import java.util.Set;
@@ -184,7 +184,7 @@ public class MetadataKeysTestCase extends DeclarationSessionTestCase {
     assertThat(metadataKeys.getFailures().get(0).getFailureCode(), is(COMPONENT_NOT_FOUND));
     assertThat(metadataKeys.getFailures().get(0).getFailingComponent(), is(KEYS));
     assertThat(metadataKeys.getFailures().get(0).getMessage(),
-               is(format("ElementDeclaration is defined for extension: '%s' which is not part of the context: '[mule, ToolingSupportTest, module]'",
+               is(format("ElementDeclaration is defined for extension: '%s' which is not part of the context: '[mule, ToolingSupportTest, Mule Operations DSL, module]'",
                          invalidExtensionModel)));
   }
 

@@ -60,13 +60,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import com.google.common.collect.ImmutableMap;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-import org.hamcrest.CoreMatchers;
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.core.Is;
-import org.junit.Ignore;
+
+import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 
 public class ComponentValueProviderTestCase extends DeclarationSessionTestCase {
@@ -301,7 +298,7 @@ public class ComponentValueProviderTestCase extends DeclarationSessionTestCase {
                 .getDeclaration())
             .getDeclaration();
     validateValuesFailure(session, operationElementDeclaration, "anyParameter",
-                          "ElementDeclaration is defined for extension: 'WrongExtension' which is not part of the context: '[mule, ToolingSupportTest, module]'",
+                          "ElementDeclaration is defined for extension: 'WrongExtension' which is not part of the context: '[mule, ToolingSupportTest, Mule Operations DSL, module]'",
                           COMPONENT_NOT_FOUND.getName());
   }
 
