@@ -13,6 +13,7 @@ import static org.mule.service.soap.SoapTestUtils.assertSimilarXml;
 import org.mule.runtime.api.message.Message;
 
 import extension.org.mule.soap.it.TestServiceProviderWithCustomHeaders;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class SoapExtensionWithCustomHeadersTestCase extends AbstractSimpleServiceFunctionalTestCase {
@@ -23,6 +24,7 @@ public class SoapExtensionWithCustomHeadersTestCase extends AbstractSimpleServic
   }
 
   @Test
+  @Ignore("W-10730164")
   public void useServiceProviderWithCustomHeaders() throws Exception {
     Message m = flowRunner("customHeaders").keepStreamsOpen().run().getMessage();
     assertSimilarXml("<ns2:noParamsWithHeaderResponse xmlns:ns2=\"http://service.soap.service.mule.org/\">"
