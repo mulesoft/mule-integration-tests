@@ -9,6 +9,7 @@ package org.mule.shutdown;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mule.runtime.api.exception.MuleRuntimeException;
@@ -59,6 +60,7 @@ public class ValidShutdownTimeoutRequestResponseTestCase extends AbstractShutdow
   }
 
   @Test
+  @Ignore("W-10730113")
   public void testScriptComponent() throws Throwable {
     doShutDownTest("scriptComponentResponse", "http://localhost:" + httpPort.getNumber() + "/scriptComponent");
   }
