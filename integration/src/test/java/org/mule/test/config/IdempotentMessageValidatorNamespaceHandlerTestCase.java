@@ -12,6 +12,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import org.mule.runtime.api.store.ObjectStore;
+import org.mule.runtime.api.store.ObjectStoreManager;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.construct.FlowConstruct;
 import org.mule.runtime.core.api.processor.Processor;
@@ -22,6 +23,8 @@ import org.mule.test.AbstractIntegrationTestCase;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -36,6 +39,9 @@ public class IdempotentMessageValidatorNamespaceHandlerTestCase extends Abstract
 
   private ObjectStore objectStore;
 
+  @Inject
+  private ObjectStoreManager osManager;
+
   @Rule
   public SystemProperty customObjectStore = new SystemProperty("customObjectStore", "customObjectStore");
 
@@ -46,7 +52,7 @@ public class IdempotentMessageValidatorNamespaceHandlerTestCase extends Abstract
 
   @Test
   public void testCustomObjectStore() throws Exception {
-    objectStore = muleContext.getObjectStoreManager().getObjectStore(customObjectStore.getValue());
+    objectStore = osManager.getObjectStore(customObjectStore.getValue());
     objectStore.store(KEY, VALUE);
     testPojoObjectStore("customObjectStoreFlow");
   }
