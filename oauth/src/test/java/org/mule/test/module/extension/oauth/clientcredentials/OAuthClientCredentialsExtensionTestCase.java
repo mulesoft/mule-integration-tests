@@ -72,6 +72,16 @@ public class OAuthClientCredentialsExtensionTestCase extends BaseOAuthExtensionT
     assertRefreshToken(refreshedToken);
   }
 
+  @Test
+  public void refreshTokenAsync() throws Exception {
+    authenticate();
+    WireMock.reset();
+
+    String refreshedToken = configureRefreshResponse();
+    flowRunner("refreshTokenAsync").run();
+    assertRefreshToken(refreshedToken);
+  }
+
   private void assertRefreshToken(String refreshedToken) throws Exception {
     wireMock.verify(postRequestedFor(urlPathEqualTo("/" + TOKEN_PATH)));
 
