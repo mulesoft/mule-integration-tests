@@ -86,6 +86,9 @@ public class LazyInitConfigurationComponentLocatorTestCase extends BaseOAuthExte
                                   "refreshToken",
                                   "refreshToken/processors/0",
 
+                                  "refreshTokenAsync",
+                                  "refreshTokenAsync/processors/0",
+
                                   "unauthorize",
                                   "unauthorize/processors/0",
 
