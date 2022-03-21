@@ -24,6 +24,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.mule.runtime.api.component.ConfigurationProperties;
 import org.mule.runtime.api.meta.MuleVersion;
+import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.config.DefaultMuleConfiguration;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -90,12 +91,12 @@ public class ReservedPropertyNamesTestCase extends AbstractIntegrationTestCase {
   }
 
   @Override
-  protected DefaultMuleConfiguration createMuleConfiguration() {
-    DefaultMuleConfiguration muleConfiguration = super.createMuleConfiguration();
+  protected MuleContext createMuleContext() throws Exception {
+    MuleVersion muleVersion = null;
     if (minMuleVersion != null) {
-      muleConfiguration.setMinMuleVersion(new MuleVersion(minMuleVersion));
+      muleVersion = new MuleVersion(minMuleVersion);
     }
-    return muleConfiguration;
+    return createMuleContext(this.getClass().getSimpleName() + "#" + name.getMethodName(), muleVersion);
   }
 
   @Override
