@@ -91,12 +91,14 @@ public class ReservedPropertyNamesTestCase extends AbstractIntegrationTestCase {
   }
 
   @Override
-  protected MuleContext createMuleContext() throws Exception {
-    MuleVersion muleVersion = null;
+  protected DefaultMuleConfiguration createMuleConfiguration() {
+    DefaultMuleConfiguration muleConfiguration = super.createMuleConfiguration();
     if (minMuleVersion != null) {
-      muleVersion = new MuleVersion(minMuleVersion);
+      muleConfiguration.setMinMuleVersion(new MuleVersion(minMuleVersion));
+    } else {
+      muleConfiguration.setMinMuleVersion(null);
     }
-    return createMuleContext(muleVersion);
+    return muleConfiguration;
   }
 
   @Override
