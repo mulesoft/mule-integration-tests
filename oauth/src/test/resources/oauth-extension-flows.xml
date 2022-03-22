@@ -22,6 +22,10 @@
     <flow name="refreshToken">
         <test-oauth:token-expired config-ref="oauth" />
     </flow>
+
+    <flow name="refreshTokenAsync">
+        <test-oauth:token-expired-async config-ref="oauth" />
+    </flow>
     
     <flow name="unauthorize">
         <test-oauth:unauthorize config-ref="oauth" resourceOwnerId="#[vars.ownerId]"/>

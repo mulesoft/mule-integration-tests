@@ -83,6 +83,15 @@ public class OAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
   }
 
   @Test
+  public void refreshTokenAsync() throws Exception {
+    receiveAccessTokenAndUserConnection();
+    WireMock.reset();
+    stubRefreshToken();
+    flowRunner("refreshTokenAsync").withVariable(OWNER_ID_VARIABLE_NAME, getCustomOwnerId()).run();
+    wireMock.verify(postRequestedFor(urlPathEqualTo("/" + TOKEN_PATH)));
+  }
+
+  @Test
   public void refreshedTokenWasAlreadyExpired() throws Exception {
     receiveAccessTokenAndUserConnection();
     stubRefreshedTokenAlreadyExpired();
