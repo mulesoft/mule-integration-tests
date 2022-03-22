@@ -102,21 +102,21 @@
                 <db:parameter-type key="description" type="CLOB"/>
             </db:parameter-types>
             <db:input-parameters>
-                #[{'description' : payload}]
+                #[{{'description' : payload}}]
             </db:input-parameters>
         </db:insert>
 
         <sockets:send-and-receive config-ref="sockets-config" target="myVar" targetValue="#[message]">
-         <repeatable-in-memory-stream bufferSizeIncrement="8"
-                                      bufferUnit="KB"
-                                      initialBufferSize="51"
-                                      maxBufferSize="1000"/>
+            <repeatable-in-memory-stream bufferSizeIncrement="8"
+                                         bufferUnit="KB"
+                                         initialBufferSize="51"
+                                         maxBufferSize="1000"/>
         </sockets:send-and-receive>
 
         <wsc:consume config-ref="wsc-config" operation="GetCitiesByCountry">
             <wsc:message>
                 <wsc:body>#['modified' ++ payload]</wsc:body>
-                <wsc:headers>#[{"headers": {con#headerIn: "Header In Value",con#headerInOut: "Header In Out Value"}}]</wsc:headers>
+                <wsc:headers>#[{"headers": {con#headerIn: "Header In Value",con#headerInOut: "Header In Out Value"}]</wsc:headers>
                 <wsc:attachments>#[{}]</wsc:attachments>
             </wsc:message>
         </wsc:consume>

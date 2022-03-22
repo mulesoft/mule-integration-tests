@@ -94,6 +94,8 @@ public class ReservedPropertyNamesTestCase extends AbstractIntegrationTestCase {
     DefaultMuleConfiguration muleConfiguration = super.createMuleConfiguration();
     if (minMuleVersion != null) {
       muleConfiguration.setMinMuleVersion(new MuleVersion(minMuleVersion));
+    } else {
+      muleConfiguration.setMinMuleVersion(null);
     }
     return muleConfiguration;
   }
