@@ -130,7 +130,7 @@ public class FeatureFlaggedApplicationTestCase extends AbstractIntegrationTestCa
     if (minMuleVersion != null) {
       muleVersion = new MuleVersion(minMuleVersion);
     }
-    return createMuleContext(this.getClass().getSimpleName() + "#" + name.getMethodName(), muleVersion);
+    return createMuleContext(muleVersion);
   }
 
   private static Consumer<CoreEvent> assertEcho(boolean isLegacy) {

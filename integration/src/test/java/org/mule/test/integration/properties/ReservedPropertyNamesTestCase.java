@@ -96,7 +96,7 @@ public class ReservedPropertyNamesTestCase extends AbstractIntegrationTestCase {
     if (minMuleVersion != null) {
       muleVersion = new MuleVersion(minMuleVersion);
     }
-    return createMuleContext(this.getClass().getSimpleName() + "#" + name.getMethodName(), muleVersion);
+    return createMuleContext(muleVersion);
   }
 
   @Override
