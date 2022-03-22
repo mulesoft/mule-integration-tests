@@ -505,7 +505,11 @@ public class ConfigurationBasedElementModelFactoryTestCase extends AbstractEleme
     assertValue(elementOne.findElement("key").get(), "description");
     assertValue(elementOne.findElement("type").get(), "CLOB");
 
-    assertValue(dbElement.findElement(newIdentifier("input-parameters", DB_NS)).get(), "#[{'description' : payload}]");
+    assertValue(dbElement.findElement(newIdentifier("input-parameters", DB_NS)).get(), getInputParameter());
+  }
+
+  protected String getInputParameter() {
+    return "#[{'description' : payload}]";
   }
 
   protected void assertRequestOperationWithFlatParameters(ComponentAst requester) {
