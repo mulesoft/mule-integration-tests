@@ -32,6 +32,7 @@ import org.mule.runtime.core.api.streaming.StreamingManager;
 import org.mule.runtime.core.api.util.queue.QueueManager;
 import org.mule.runtime.core.internal.context.MuleContextWithRegistry;
 import org.mule.runtime.core.internal.el.mvel.ExpressionLanguageExtension;
+import org.mule.runtime.core.internal.lifecycle.phases.LifecycleObjectSorter;
 import org.mule.runtime.core.internal.registry.MuleRegistry;
 import org.mule.runtime.extension.api.runtime.config.ConfigurationProvider;
 
@@ -56,11 +57,11 @@ public class SorterLargeAppBenchmark extends FunctionalTestCase {
 
   @Inject
   private MuleContext muleContext;
+  private SpringRegistry springRegistry;
   private ConfigurationDependencyResolver configurationDependencyResolver;
   private DeclaredDependencyResolver declaredDependencyResolver;
   private AutoDiscoveredDependencyResolver autoDiscoveredDependencyResolver;
   private Map<String, Object> lookupObjects;
-  private List<String> lookupObjectNames;
   private DependencyGraphBeanDependencyResolver resolver;
   private DependencyGraphLifecycleObjectSorter graphSorter;
   private SpringLifecycleObjectSorter springSorter;
@@ -98,11 +99,7 @@ public class SorterLargeAppBenchmark extends FunctionalTestCase {
   public void setUp() throws Throwable {
     setUpMuleContext();
 
-    // Use Java Reflection API in order to get the SpringRegistry
-    MuleRegistry muleRegistry = ((MuleContextWithRegistry) muleContext).getRegistry();
-    Field registryField = muleRegistry.getClass().getDeclaredField("registry");
-    registryField.setAccessible(true);
-    SpringRegistry springRegistry = (SpringRegistry) registryField.get(muleRegistry);
+    springRegistry = getSpringRegistry(muleContext);
 
     declaredDependencyResolver = new DeclaredDependencyResolver(springRegistry);
     autoDiscoveredDependencyResolver = new AutoDiscoveredDependencyResolver(springRegistry);
@@ -110,24 +107,35 @@ public class SorterLargeAppBenchmark extends FunctionalTestCase {
 
     resolver = new DependencyGraphBeanDependencyResolver(configurationDependencyResolver, declaredDependencyResolver,
                                                          autoDiscoveredDependencyResolver, springRegistry);
-    graphSorter = new DependencyGraphLifecycleObjectSorter(resolver, allowedTypes);
-    springSorter = new SpringLifecycleObjectSorter(allowedTypes, springRegistry);
 
     lookupObjects = springRegistry.lookupByType(Object.class);
-    lookupObjectNames = new ArrayList<>();
 
+    graphSorter = getGraphSorter();
+    addObjectsToSorter(graphSorter);
+    springSorter = getSpringSorter();
+    addObjectsToSorter(springSorter);
   }
 
   @Benchmark
   @BenchmarkMode(AverageTime)
   public List<Object> largeAppGraphSorter() {
-    // add objects with a dependency graph sorter
-    lookupObjects.forEach((key, value) -> {
-      graphSorter.addObject(key, value);
-      lookupObjectNames.add(key);
-    });
-    graphSorter.setLifeCycleObjectNameOrder(lookupObjectNames);
+    LifecycleObjectSorter graphSorter = getGraphSorter();
+    addObjectsToSorter(graphSorter);
 
+    // sort vertices
+    return graphSorter.getSortedObjects();
+  }
+
+  @Benchmark
+  @BenchmarkMode(AverageTime)
+  public void largeAppGraphSorterAddObjectsOnly() {
+    LifecycleObjectSorter graphSorter = getGraphSorter();
+    addObjectsToSorter(graphSorter);
+  }
+
+  @Benchmark
+  @BenchmarkMode(AverageTime)
+  public List<Object> largeAppGraphSorterGetSortedObjectsOnly() {
     // sort vertices
     return graphSorter.getSortedObjects();
   }
@@ -135,12 +143,8 @@ public class SorterLargeAppBenchmark extends FunctionalTestCase {
   @Benchmark
   @BenchmarkMode(AverageTime)
   public List<Object> largeAppSpringSorter() {
-    // add objects with a spring sorter (deprecated)
-    lookupObjects.forEach((key, value) -> {
-      springSorter.addObject(key, value);
-      lookupObjectNames.add(key);
-    });
-    springSorter.setLifeCycleObjectNameOrder(lookupObjectNames);
+    LifecycleObjectSorter springSorter = getSpringSorter();
+    addObjectsToSorter(springSorter);
 
     // sort vertices
     return springSorter.getSortedObjects();
@@ -148,15 +152,43 @@ public class SorterLargeAppBenchmark extends FunctionalTestCase {
 
   @Benchmark
   @BenchmarkMode(AverageTime)
-  public List<Object> largeAppGraphSorterGetSortedObjectsOnly() {
-    return graphSorter.getSortedObjects();
+  public void largeAppSpringSorterAddObjectsOnly() {
+    LifecycleObjectSorter springSorter = getSpringSorter();
+    addObjectsToSorter(springSorter);
   }
 
   @Benchmark
   @BenchmarkMode(AverageTime)
   public List<Object> largeAppSpringSorterGetSortedObjectsOnly() {
+    // sort vertices
     return springSorter.getSortedObjects();
   }
 
+
+  private SpringRegistry getSpringRegistry(MuleContext muleContext) throws NoSuchFieldException, IllegalAccessException {
+    // Use Java Reflection API in order to get the SpringRegistry
+    MuleRegistry muleRegistry = ((MuleContextWithRegistry) muleContext).getRegistry();
+    Field registryField = muleRegistry.getClass().getDeclaredField("registry");
+    registryField.setAccessible(true);
+    return (SpringRegistry) registryField.get(muleRegistry);
+  }
+
+  private DependencyGraphLifecycleObjectSorter getGraphSorter() {
+    return new DependencyGraphLifecycleObjectSorter(resolver, allowedTypes);
+  }
+
+  private SpringLifecycleObjectSorter getSpringSorter() {
+    return new SpringLifecycleObjectSorter(allowedTypes, springRegistry);
+  }
+
+  private void addObjectsToSorter(LifecycleObjectSorter sorter) {
+    List<String> lookupObjectNames = new ArrayList<>();
+    // add objects with a dependency graph sorter
+    lookupObjects.forEach((key, value) -> {
+      sorter.addObject(key, value);
+      lookupObjectNames.add(key);
+    });
+    sorter.setLifeCycleObjectNameOrder(lookupObjectNames);
+  }
 
 }
