@@ -36,7 +36,7 @@ import org.mule.runtime.core.api.context.MuleContextFactory;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.processor.strategy.ProcessingStrategyFactory;
-import org.mule.runtime.core.internal.config.builders.DefaultsConfigurationBuilder;
+import org.mule.runtime.core.internal.config.builders.MinimalConfigurationBuilder;
 import org.mule.runtime.core.internal.processor.strategy.AbstractStreamProcessingStrategyFactory;
 import org.mule.service.scheduler.internal.DefaultSchedulerService;
 import org.mule.tck.TriggerableMessageSource;
@@ -242,7 +242,7 @@ public abstract class AbstractFlowBenchmark extends AbstractBenchmark {
         registerObject(muleContext, weaveExpressionExecutor.getName(), weaveExpressionExecutor);
       }
     });
-    builderList.add(new DefaultsConfigurationBuilder());
+    builderList.add(new MinimalConfigurationBuilder());
     return muleContextFactory.createMuleContext(builderList.toArray(new ConfigurationBuilder[] {}));
   }
 
