@@ -8,12 +8,19 @@
                http://www.mulesoft.org/schema/mule/test-oauth http://www.mulesoft.org/schema/mule/test-oauth/current/mule-test-oauth.xsd">
 
     <http:listener-config name="listenerConfig">
-        <http:listener-connection host="localhost" port="${callbackPort}" />
+        <http:listener-connection host="localhost" port="${callbackPort}"/>
     </http:listener-config>
 
 
     <test-oauth:auth-code-config name="oauth">
-        <test-oauth:connection display="PAGE" immediate="true" prompt="false">
+        <test-oauth:connection display="PAGE" immediate="true" prompt="false" detailsPriority="10"
+                               connectionProperties="#[{'connectionDescription' : 'description 1', 'connectionType' : 'DUO'}]">
+            <!--            <test-oauth:connection-properties connectionDescription="description 1" connectionType="DUO"/>-->
+            <test-oauth:another-connection-properties connectionDescription="description2" connectionType="HYPER"/>
+            <test-oauth:connection-profile profileLevel="25">
+                <test-oauth:profile-connection-properties connectionDescription="description3"
+                                                          connectionType="DEFAULT"/>
+            </test-oauth:connection-profile>
             <test-oauth:oauth-authorization-code consumerKey="${consumerKey}"
                                                  consumerSecret="${consumerSecret}"
                                                  authorizationUrl="${authorizationUrl}"
@@ -21,10 +28,10 @@
                                                  scopes="${scopes}"
                                                  resourceOwnerId="#[vars.ownerId]"
                                                  before="beforeFlow"
-                                                 after="afterFlow" />
+                                                 after="afterFlow"/>
             <test-oauth:oauth-callback-config listenerConfig="listenerConfig"
                                               callbackPath="${callbackPath}"
-                                              authorizePath="${localAuthPath}" />
+                                              authorizePath="${localAuthPath}"/>
         </test-oauth:connection>
     </test-oauth:auth-code-config>
 
