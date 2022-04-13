@@ -24,8 +24,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.qameta.allure.Description;
+import io.qameta.allure.Issue;
 import org.junit.Test;
 
+@Issue("W-10867511")
 public class PlatformManagedOAuthConfigurationParametersTestCase extends PlatformManagedOAuthConfigurationTestCase {
 
   private static final String SECURITY_LEVEL_PARAMETER_NAME = "securityLevel";
@@ -85,6 +88,7 @@ public class PlatformManagedOAuthConfigurationParametersTestCase extends Platfor
   }
 
   @Test
+  @Description("Validates that the PlatformManagedConnectionDescriptor can describe parameters of complex types.")
   public void complexParameter() throws Exception {
     TestOAuthConnection connection = (TestOAuthConnection) flowRunner("getConnection").run().getMessage().getPayload().getValue();
     TestOAuthConnectionState connectionState = connection.getState();
@@ -92,6 +96,8 @@ public class PlatformManagedOAuthConfigurationParametersTestCase extends Platfor
   }
 
   @Test
+
+  @Description("Validates that the PlatformManagedConnectionDescriptor can describe parameters of complex types that belong to a parameter group that is shownInDsl.")
   public void complexParameterInShowInDslParameterGroup() throws Exception {
     TestOAuthConnection connection = (TestOAuthConnection) flowRunner("getConnection").run().getMessage().getPayload().getValue();
     TestOAuthConnectionState connectionState = connection.getState();
@@ -99,6 +105,7 @@ public class PlatformManagedOAuthConfigurationParametersTestCase extends Platfor
   }
 
   @Test
+  @Description("Validates that the PlatformManagedConnectionDescriptor can describe parameters of simple types that belong to a parameter group that is shownInDsl")
   public void simpleParameterInShowInDslParameterGroup() throws Exception {
     TestOAuthConnection connection = (TestOAuthConnection) flowRunner("getConnection").run().getMessage().getPayload().getValue();
     TestOAuthConnectionState connectionState = connection.getState();
@@ -106,14 +113,16 @@ public class PlatformManagedOAuthConfigurationParametersTestCase extends Platfor
   }
 
   @Test
-  public void complexParameterInShowInNonDefaultParameterGroup() throws Exception {
+  @Description("Validates that the PlatformManagedConnectionDescriptor can describe parameters of complex types that belong to the default parameter group.")
+  public void complexParameterInNonShowDslInNonDefaultParameterGroup() throws Exception {
     TestOAuthConnection connection = (TestOAuthConnection) flowRunner("getConnection").run().getMessage().getPayload().getValue();
     TestOAuthConnectionState connectionState = connection.getState();
     assertThat(connectionState.getConnectionDetails().getAnotherConnectionProperties(), equalTo(CONNECTION_PROPERTIES));
   }
 
   @Test
-  public void simpleParameterInShowInNonDefaultParameterGroup() throws Exception {
+  @Description("Validates that the PlatformManagedConnectionDescriptor can describe simple parameters that belong to a non-default parameter group that is not shownInDsl.")
+  public void simpleParameterInNonShowInDslNonDefaultParameterGroup() throws Exception {
     TestOAuthConnection connection = (TestOAuthConnection) flowRunner("getConnection").run().getMessage().getPayload().getValue();
     TestOAuthConnectionState connectionState = connection.getState();
     assertThat(connectionState.getConnectionDetails().getDetailsPriority(),
@@ -121,6 +130,7 @@ public class PlatformManagedOAuthConfigurationParametersTestCase extends Platfor
   }
 
   @Test
+  @Description("Validates that the PlatformManagedConnectionDescriptor can describe enum parameters.")
   public void enumParameter() throws Exception {
     TestOAuthConnection connection = (TestOAuthConnection) flowRunner("getConnection").run().getMessage().getPayload().getValue();
     TestOAuthConnectionState connectionState = connection.getState();
@@ -129,6 +139,7 @@ public class PlatformManagedOAuthConfigurationParametersTestCase extends Platfor
   }
 
   @Test
+  @Description("Validates that the PlatformManagedConnectionDescriptor can describe integer parameters that needs to be transformed from String.")
   public void integerParameterAsString() throws Exception {
     TestOAuthConnection connection = (TestOAuthConnection) flowRunner("getConnection").run().getMessage().getPayload().getValue();
     TestOAuthConnectionState connectionState = connection.getState();
@@ -137,6 +148,7 @@ public class PlatformManagedOAuthConfigurationParametersTestCase extends Platfor
   }
 
   @Test
+  @Description("Validates that the PlatformManagedConnectionDescriptor can describe a parameter whose time is List<Integer>.")
   public void arrayOfIntegerParameter() throws Exception {
     TestOAuthConnection connection = (TestOAuthConnection) flowRunner("getConnection").run().getMessage().getPayload().getValue();
     TestOAuthConnectionState connectionState = connection.getState();
@@ -147,6 +159,7 @@ public class PlatformManagedOAuthConfigurationParametersTestCase extends Platfor
   }
 
   @Test
+  @Description("Validates that the PlatformManagedConnectionDescriptor can describe a parameter whose type is a list of a complex type.")
   public void arrayOfComplexTypeParameter() throws Exception {
     TestOAuthConnection connection = (TestOAuthConnection) flowRunner("getConnection").run().getMessage().getPayload().getValue();
     TestOAuthConnectionState connectionState = connection.getState();
@@ -157,6 +170,7 @@ public class PlatformManagedOAuthConfigurationParametersTestCase extends Platfor
   }
 
   @Test
+  @Description("Validates that the PlatformManagedConnectionDescriptor can describe a parameter whose type is a map with a complex value.")
   public void mapOfComplexValueTypeParameter() throws Exception {
     TestOAuthConnection connection = (TestOAuthConnection) flowRunner("getConnection").run().getMessage().getPayload().getValue();
     TestOAuthConnectionState connectionState = connection.getState();
