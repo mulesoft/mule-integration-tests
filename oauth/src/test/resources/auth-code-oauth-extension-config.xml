@@ -14,8 +14,22 @@
 
     <test-oauth:auth-code-config name="oauth">
         <test-oauth:connection display="PAGE" immediate="true" prompt="false" detailsPriority="10"
-                               connectionProperties="#[{'connectionDescription' : 'description 1', 'connectionType' : 'DUO'}]">
-            <!--            <test-oauth:connection-properties connectionDescription="description 1" connectionType="DUO"/>-->
+                               connectionProperties="#[{'connectionDescription' : 'description 1', 'connectionType' : 'DUO'}]"
+                               someMapOfConnectionProperties="#[
+                               {'firstEntry' : {'connectionDescription' : 'description 8', 'connectionType' : 'DUO'},
+                               'secondEntry' : {'connectionDescription' : 'description 9', 'connectionType' : 'HYPER'}}
+                               ]">
+            <test-oauth:some-oauth-connection-properties>
+                <test-oauth:connection-properties connectionDescription="description4"
+                                                  connectionType="DEFAULT"/>
+                <test-oauth:connection-properties connectionDescription="description5"
+                                                  connectionType="DUO"/>
+            </test-oauth:some-oauth-connection-properties>
+            <test-oauth:some-connection-numbers>
+                <test-oauth:some-connection-number value="1"/>
+                <test-oauth:some-connection-number value="2"/>
+                <test-oauth:some-connection-number value="3"/>
+            </test-oauth:some-connection-numbers>
             <test-oauth:another-connection-properties connectionDescription="description2" connectionType="HYPER"/>
             <test-oauth:connection-profile profileLevel="25">
                 <test-oauth:profile-connection-properties connectionDescription="description3"
