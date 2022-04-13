@@ -59,10 +59,6 @@ import java.util.stream.Stream;
 public class DomainClassloaderCreationBenchmark extends AbstractMuleTestCase {
 
   public static final String MULE_DOMAIN_FOLDER = "domains";
-  private static final Logger LOGGER = LoggerFactory.getLogger(DefaultArtifactClassLoaderResolver.class);
-
-  public TemporaryFolder temporaryFolder;
-  public TemporaryFolder artifactLocation;
 
   private static final String GROUP_ID = "org.mule.test";
   private static final String PLUGIN_ID1 = "plugin1";
@@ -88,14 +84,14 @@ public class DomainClassloaderCreationBenchmark extends AbstractMuleTestCase {
   private final String onlyDomainPackageName = "domain-package";
   private final String repeatedPackageName = "module&domain-package";
   private DomainDescriptor customDomainDescriptor;
-  private Set<String> domainExportedPackage;
   private Set<ArtifactPluginDescriptor> artifactPluginDescriptors;
   private ClassLoaderModel classLoaderModel;
   private List<MuleModule> muleModuleSingletonList;
+  private TemporaryFolder artifactLocation;
 
   @Setup
   public void setup() throws IOException {
-    temporaryFolder = new TemporaryFolder();
+    TemporaryFolder temporaryFolder = new TemporaryFolder();
     artifactLocation = new TemporaryFolder();
     temporaryFolder.create();
     artifactLocation.create();
@@ -111,7 +107,7 @@ public class DomainClassloaderCreationBenchmark extends AbstractMuleTestCase {
     MuleModule muleModule = mock(MuleModule.class);
     when(muleModule.getExportedPackages()).thenReturn(singleton(repeatedPackageName));
     muleModuleSingletonList = singletonList(muleModule);
-    domainExportedPackage = Stream.of(onlyDomainPackageName, repeatedPackageName).collect(toSet());
+    Set<String> domainExportedPackage = Stream.of(onlyDomainPackageName, repeatedPackageName).collect(toSet());
     artifactPluginDescriptors = Stream.of(plugin1Descriptor, plugin2Descriptor).collect(toSet());
     classLoaderModel = new ClassLoaderModel.ClassLoaderModelBuilder().exportingPackages(domainExportedPackage).build();
   }
@@ -120,6 +116,7 @@ public class DomainClassloaderCreationBenchmark extends AbstractMuleTestCase {
   public void tearDown() {
     deleteIfNeeded(getDomainsFolder());
     deleteIfNeeded(new File(getMuleLibFolder(), "shared"));
+    System.clearProperty(MULE_HOME_DIRECTORY_PROPERTY);
   }
 
   private void deleteIfNeeded(File file) {
