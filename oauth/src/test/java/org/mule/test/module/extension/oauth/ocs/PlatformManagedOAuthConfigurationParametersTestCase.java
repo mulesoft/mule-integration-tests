@@ -96,7 +96,6 @@ public class PlatformManagedOAuthConfigurationParametersTestCase extends Platfor
   }
 
   @Test
-
   @Description("Validates that the PlatformManagedConnectionDescriptor can describe parameters of complex types that belong to a parameter group that is shownInDsl.")
   public void complexParameterInShowInDslParameterGroup() throws Exception {
     TestOAuthConnection connection = (TestOAuthConnection) flowRunner("getConnection").run().getMessage().getPayload().getValue();
