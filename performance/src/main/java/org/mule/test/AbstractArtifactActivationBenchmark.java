@@ -6,6 +6,14 @@
  */
 package org.mule.test;
 
+import static java.io.File.separator;
+import static org.apache.commons.io.FileUtils.deleteQuietly;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.mule.runtime.container.api.MuleFoldersUtil.getDomainsFolder;
+import static org.mule.runtime.container.api.MuleFoldersUtil.getMuleLibFolder;
+import static org.mule.runtime.core.api.config.MuleProperties.MULE_HOME_DIRECTORY_PROPERTY;
+
 import org.junit.rules.TemporaryFolder;
 import org.mule.runtime.module.artifact.activation.internal.classloader.DefaultArtifactClassLoaderResolver;
 import org.mule.runtime.module.artifact.api.classloader.MuleDeployableArtifactClassLoader;
@@ -17,14 +25,6 @@ import org.openjdk.jmh.annotations.TearDown;
 import java.io.File;
 import java.util.HashSet;
 import java.util.List;
-
-import static java.io.File.separator;
-import static org.apache.commons.io.FileUtils.deleteQuietly;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
-import static org.mule.runtime.container.api.MuleFoldersUtil.getDomainsFolder;
-import static org.mule.runtime.container.api.MuleFoldersUtil.getMuleLibFolder;
-import static org.mule.runtime.core.api.config.MuleProperties.MULE_HOME_DIRECTORY_PROPERTY;
 
 public abstract class AbstractArtifactActivationBenchmark extends AbstractMuleTestCase {
 
