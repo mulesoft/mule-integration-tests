@@ -13,14 +13,9 @@ import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.stream.Collectors.toSet;
-import static org.apache.commons.io.FileUtils.deleteQuietly;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
-import static org.mule.runtime.container.api.MuleFoldersUtil.getDomainsFolder;
-import static org.mule.runtime.container.api.MuleFoldersUtil.getMuleLibFolder;
 import static org.mule.runtime.core.api.config.MuleProperties.MULE_HOME_DIRECTORY_PROPERTY;
 import static org.openjdk.jmh.annotations.Mode.AverageTime;
 
@@ -35,8 +30,6 @@ import org.mule.runtime.module.artifact.api.descriptor.ApplicationDescriptor;
 import org.mule.runtime.module.artifact.api.descriptor.ArtifactPluginDescriptor;
 import org.mule.runtime.module.artifact.api.descriptor.BundleDescriptor;
 import org.mule.runtime.module.artifact.api.descriptor.ClassLoaderModel;
-import org.mule.runtime.module.artifact.api.descriptor.DomainDescriptor;
-import org.mule.tck.junit4.AbstractMuleTestCase;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
@@ -44,11 +37,9 @@ import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
-import org.openjdk.jmh.annotations.TearDown;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -56,7 +47,7 @@ import java.util.stream.Stream;
 @Fork(1)
 @OutputTimeUnit(MILLISECONDS)
 @State(Scope.Benchmark)
-public class ApplicationClassloaderCreationBenchmark extends AbstractMuleTestCase {
+public class ApplicationClassloaderCreationBenchmark extends AbstractArtifactActivationBenchmark {
 
   public static final String MULE_DOMAIN_FOLDER = "domains";
 
@@ -74,23 +65,22 @@ public class ApplicationClassloaderCreationBenchmark extends AbstractMuleTestCas
 
   private final ArtifactPluginDescriptor plugin1Descriptor = new ArtifactPluginDescriptor(PLUGIN_ID1);
   private final ArtifactPluginDescriptor plugin2Descriptor = new ArtifactPluginDescriptor(PLUGIN_ID2);
-  private File muleHomeFolder;
 
-  private DefaultArtifactClassLoaderResolver artifactClassLoaderResolver;
   private final ModuleRepository moduleRepository = mock(ModuleRepository.class);
   private final DefaultNativeLibraryFinderFactory nativeLibraryFinderFactory = new DefaultNativeLibraryFinderFactory();
   private final String customDomainName = "custom-domain";
   private final String repeatedPackageName = "module&app-package";
   private final String onlyAppPackageName = "app-package";
   private final String applicationName = "app";
-  private DomainDescriptor customDomainDescriptor;
   private Set<ArtifactPluginDescriptor> artifactPluginDescriptors;
   private ApplicationDescriptor applicationDescriptor;
   private MuleDeployableArtifactClassLoader customDomainClassLoader;
   private List<MuleModule> muleModuleSingletonList;
-  private TemporaryFolder artifactLocation;
   private MuleDeployableArtifactClassLoader domainClassLoader;
   private ClassLoaderModel classLoaderModel;
+  private MuleDeployableArtifactClassLoader applicationClassLoaderForCache;
+  private ApplicationDescriptor newApplicationDescriptorForCache;
+  private MuleArtifactClassLoader plugin2ClassLoaderForCache;
 
   @Setup
   public void setup() throws IOException {
@@ -118,19 +108,13 @@ public class ApplicationClassloaderCreationBenchmark extends AbstractMuleTestCas
     domainClassLoader = getTestDomainClassLoader(emptyList());
     Set<String> applicationExportedPackage = Stream.of(onlyAppPackageName, repeatedPackageName).collect(toSet());
     classLoaderModel = new ClassLoaderModel.ClassLoaderModelBuilder().exportingPackages(applicationExportedPackage).build();
-  }
 
-  @TearDown
-  public void tearDown() {
-    deleteIfNeeded(getDomainsFolder());
-    deleteIfNeeded(new File(getMuleLibFolder(), "shared"));
-    System.clearProperty(MULE_HOME_DIRECTORY_PROPERTY);
-  }
-
-  private void deleteIfNeeded(File file) {
-    if (file.exists()) {
-      deleteQuietly(file);
-    }
+    applicationClassLoaderForCache =
+        artifactClassLoaderResolver.createApplicationClassLoader(applicationDescriptor, () -> domainClassLoader);
+    newApplicationDescriptorForCache = applicationClassLoaderForCache.getArtifactDescriptor();
+    newApplicationDescriptorForCache.setPlugins(artifactPluginDescriptors);
+    plugin2ClassLoaderForCache = artifactClassLoaderResolver
+        .createMulePluginClassLoader(applicationClassLoaderForCache, plugin2Descriptor, d -> empty());
   }
 
   @Benchmark
@@ -157,50 +141,21 @@ public class ApplicationClassloaderCreationBenchmark extends AbstractMuleTestCas
   @Benchmark
   @BenchmarkMode(AverageTime)
   public MuleDeployableArtifactClassLoader createApplicationClassLoaderWithCachedPlugin() {
-    MuleDeployableArtifactClassLoader applicationClassLoader =
-        artifactClassLoaderResolver.createApplicationClassLoader(applicationDescriptor, () -> domainClassLoader);
-
-    final ApplicationDescriptor newApplicationDescriptor = applicationClassLoader.getArtifactDescriptor();
-    newApplicationDescriptor.setPlugins(artifactPluginDescriptors);
-
-    final MuleArtifactClassLoader domainClassLoader = (MuleArtifactClassLoader) applicationClassLoader.getParent().getParent();
-
-    final MuleArtifactClassLoader plugin2ClassLoader = artifactClassLoaderResolver
-        .createMulePluginClassLoader(applicationClassLoader, plugin2Descriptor,
-                                     d -> empty());
-
-    return artifactClassLoaderResolver.createApplicationClassLoader(newApplicationDescriptor,
-                                                                    () -> domainClassLoader,
-                                                                    (ownerClassLoader, pluginDescriptor) -> {
-                                                                      if (pluginDescriptor
-                                                                          .getBundleDescriptor()
-                                                                          .getArtifactId()
-                                                                          .equals(plugin2Descriptor
-                                                                              .getBundleDescriptor()
-                                                                              .getArtifactId())) {
-                                                                        return of(() -> plugin2ClassLoader);
-                                                                      } else {
-                                                                        return empty();
-                                                                      }
-                                                                    });
-
+    return artifactClassLoaderResolver
+        .createApplicationClassLoader(newApplicationDescriptorForCache,
+                                      () -> (MuleArtifactClassLoader) applicationClassLoaderForCache.getParent().getParent(),
+                                      (ownerClassLoader, pluginDescriptor) -> {
+                                        if (pluginDescriptor
+                                            .getBundleDescriptor()
+                                            .getArtifactId()
+                                            .equals(plugin2Descriptor
+                                                .getBundleDescriptor()
+                                                .getArtifactId())) {
+                                          return of(() -> plugin2ClassLoaderForCache);
+                                        } else {
+                                          return empty();
+                                        }
+                                      });
   }
 
-  private MuleDeployableArtifactClassLoader getTestDomainClassLoader(List<ArtifactPluginDescriptor> plugins) {
-    customDomainDescriptor.setPlugins(new HashSet<>(plugins));
-    return artifactClassLoaderResolver.createDomainClassLoader(customDomainDescriptor);
-  }
-
-  private DomainDescriptor getTestDomainDescriptor(String name) {
-    DomainDescriptor descriptor = new DomainDescriptor(name);
-    descriptor.setRedeploymentEnabled(false);
-    descriptor.setArtifactLocation(artifactLocation.getRoot());
-    return descriptor;
-  }
-
-  protected File createDomainDir(String domainFolder, String domain) {
-    final File file = new File(muleHomeFolder, domainFolder + File.separator + domain);
-    assertThat(file.mkdirs(), is(true));
-    return file;
-  }
 }

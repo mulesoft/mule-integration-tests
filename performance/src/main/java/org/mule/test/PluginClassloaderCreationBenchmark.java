@@ -14,14 +14,9 @@ import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.stream.Collectors.toSet;
-import static org.apache.commons.io.FileUtils.deleteQuietly;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
-import static org.mule.runtime.container.api.MuleFoldersUtil.getDomainsFolder;
-import static org.mule.runtime.container.api.MuleFoldersUtil.getMuleLibFolder;
 import static org.mule.runtime.core.api.config.MuleProperties.MULE_HOME_DIRECTORY_PROPERTY;
 import static org.mule.runtime.module.artifact.api.descriptor.BundleScope.COMPILE;
 import static org.openjdk.jmh.annotations.Mode.AverageTime;
@@ -38,8 +33,6 @@ import org.mule.runtime.module.artifact.api.descriptor.ArtifactPluginDescriptor;
 import org.mule.runtime.module.artifact.api.descriptor.BundleDependency;
 import org.mule.runtime.module.artifact.api.descriptor.BundleDescriptor;
 import org.mule.runtime.module.artifact.api.descriptor.ClassLoaderModel;
-import org.mule.runtime.module.artifact.api.descriptor.DomainDescriptor;
-import org.mule.tck.junit4.AbstractMuleTestCase;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
@@ -47,7 +40,6 @@ import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
-import org.openjdk.jmh.annotations.TearDown;
 
 import java.io.File;
 import java.io.IOException;
@@ -59,7 +51,7 @@ import java.util.stream.Stream;
 @Fork(1)
 @OutputTimeUnit(MILLISECONDS)
 @State(Scope.Benchmark)
-public class PluginClassloaderCreationBenchmark extends AbstractMuleTestCase {
+public class PluginClassloaderCreationBenchmark extends AbstractArtifactActivationBenchmark {
 
   public static final String MULE_DOMAIN_FOLDER = "domains";
 
@@ -81,9 +73,6 @@ public class PluginClassloaderCreationBenchmark extends AbstractMuleTestCase {
   private final ArtifactPluginDescriptor plugin2Descriptor = new ArtifactPluginDescriptor(PLUGIN_ID2);
   private final ArtifactPluginDescriptor plugin2DescriptorWithPrivilege = new ArtifactPluginDescriptor(PLUGIN_ID2);
 
-  private File muleHomeFolder;
-
-  private DefaultArtifactClassLoaderResolver artifactClassLoaderResolver;
   private final ModuleRepository moduleRepository = mock(ModuleRepository.class);
   private final DefaultNativeLibraryFinderFactory nativeLibraryFinderFactory = new DefaultNativeLibraryFinderFactory();
   private final String customDomainName = "custom-domain";
@@ -92,8 +81,6 @@ public class PluginClassloaderCreationBenchmark extends AbstractMuleTestCase {
   private final String plugin2ExportedPackage = "plugin2-package";
   private final String package1Name = "module&plugin-package";
   private final String package2Name = "org.mule.sdk.api.package";
-  private DomainDescriptor customDomainDescriptor;
-  private TemporaryFolder artifactLocation;
   private MuleDeployableArtifactClassLoader applicationClassLoader;
   private ClassLoaderModel pluginDependantClassLoaderModel;
   private ClassLoaderModel pluginExportingPackageClassLoaderModel;
@@ -154,19 +141,6 @@ public class PluginClassloaderCreationBenchmark extends AbstractMuleTestCase {
         .withLocalPackages(Stream.of(package1Name, package2Name).collect(toSet())).build();
   }
 
-  @TearDown
-  public void tearDown() {
-    deleteIfNeeded(getDomainsFolder());
-    deleteIfNeeded(new File(getMuleLibFolder(), "shared"));
-    System.clearProperty(MULE_HOME_DIRECTORY_PROPERTY);
-  }
-
-  private void deleteIfNeeded(File file) {
-    if (file.exists()) {
-      deleteQuietly(file);
-    }
-  }
-
   @Benchmark
   @BenchmarkMode(AverageTime)
   public MuleArtifactClassLoader createDependantPluginClassLoader() {
@@ -208,11 +182,6 @@ public class PluginClassloaderCreationBenchmark extends AbstractMuleTestCase {
     return artifactClassLoaderResolver.createMulePluginClassLoader(applicationClassLoader, plugin1Descriptor, d -> empty());
   }
 
-  private MuleDeployableArtifactClassLoader getTestDomainClassLoader(List<ArtifactPluginDescriptor> plugins) {
-    customDomainDescriptor.setPlugins(new HashSet<>(plugins));
-    return artifactClassLoaderResolver.createDomainClassLoader(customDomainDescriptor);
-  }
-
   private MuleDeployableArtifactClassLoader getTestApplicationClassLoader(List<ArtifactPluginDescriptor> plugins) {
     return getTestApplicationClassLoader(plugins, emptySet());
   }
@@ -227,18 +196,5 @@ public class PluginClassloaderCreationBenchmark extends AbstractMuleTestCase {
     descriptor.setClassLoaderModel(new ClassLoaderModel.ClassLoaderModelBuilder().exportingPackages(exportedPackages).build());
 
     return artifactClassLoaderResolver.createApplicationClassLoader(descriptor, () -> domainClassLoader);
-  }
-
-  private DomainDescriptor getTestDomainDescriptor(String name) {
-    DomainDescriptor descriptor = new DomainDescriptor(name);
-    descriptor.setRedeploymentEnabled(false);
-    descriptor.setArtifactLocation(artifactLocation.getRoot());
-    return descriptor;
-  }
-
-  protected File createDomainDir(String domainFolder, String domain) {
-    final File file = new File(muleHomeFolder, domainFolder + File.separator + domain);
-    assertThat(file.mkdirs(), is(true));
-    return file;
   }
 }
