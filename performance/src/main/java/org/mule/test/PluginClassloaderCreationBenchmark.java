@@ -6,6 +6,13 @@
  */
 package org.mule.test;
 
+import static org.mule.runtime.module.artifact.api.descriptor.BundleScope.COMPILE;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
+import static org.openjdk.jmh.annotations.Mode.AverageTime;
+import static org.openjdk.jmh.annotations.Scope.Benchmark;
+
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptySet;
 import static java.util.Collections.singleton;
@@ -14,14 +21,7 @@ import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.stream.Collectors.toSet;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
-import static org.mule.runtime.core.api.config.MuleProperties.MULE_HOME_DIRECTORY_PROPERTY;
-import static org.mule.runtime.module.artifact.api.descriptor.BundleScope.COMPILE;
-import static org.openjdk.jmh.annotations.Mode.AverageTime;
 
-import org.junit.rules.TemporaryFolder;
 import org.mule.runtime.container.api.ModuleRepository;
 import org.mule.runtime.container.api.MuleModule;
 import org.mule.runtime.module.artifact.activation.internal.classloader.DefaultArtifactClassLoaderResolver;
@@ -31,13 +31,11 @@ import org.mule.runtime.module.artifact.api.classloader.MuleDeployableArtifactCl
 import org.mule.runtime.module.artifact.api.descriptor.ApplicationDescriptor;
 import org.mule.runtime.module.artifact.api.descriptor.ArtifactPluginDescriptor;
 import org.mule.runtime.module.artifact.api.descriptor.BundleDependency;
-import org.mule.runtime.module.artifact.api.descriptor.BundleDescriptor;
 import org.mule.runtime.module.artifact.api.descriptor.ClassLoaderModel;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
-import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 
@@ -50,27 +48,12 @@ import java.util.stream.Stream;
 
 @Fork(1)
 @OutputTimeUnit(MILLISECONDS)
-@State(Scope.Benchmark)
+@State(Benchmark)
 public class PluginClassloaderCreationBenchmark extends AbstractArtifactActivationBenchmark {
 
   public static final String MULE_DOMAIN_FOLDER = "domains";
-
   private static final String PRIVILEGED_PACKAGE = "org.foo.privileged";
-  private static final String GROUP_ID = "org.mule.test";
-  private static final String PLUGIN_ID1 = "plugin1";
   private static final String PLUGIN_ARTIFACT_ID1 = GROUP_ID + ":" + PLUGIN_ID1;
-  private static final String PLUGIN_ID2 = "plugin2";
-  private static final BundleDescriptor PLUGIN1_BUNDLE_DESCRIPTOR =
-      new BundleDescriptor.Builder()
-          .setGroupId(GROUP_ID).setArtifactId(PLUGIN_ID1)
-          .setVersion("1.0").setClassifier("mule-plugin").build();
-  private static final BundleDescriptor PLUGIN2_BUNDLE_DESCRIPTOR =
-      new BundleDescriptor.Builder()
-          .setGroupId(GROUP_ID).setArtifactId(PLUGIN_ID2)
-          .setVersion("1.0").setClassifier("mule-plugin").build();
-
-  private final ArtifactPluginDescriptor plugin1Descriptor = new ArtifactPluginDescriptor(PLUGIN_ID1);
-  private final ArtifactPluginDescriptor plugin2Descriptor = new ArtifactPluginDescriptor(PLUGIN_ID2);
   private final ArtifactPluginDescriptor plugin2DescriptorWithPrivilege = new ArtifactPluginDescriptor(PLUGIN_ID2);
 
   private final ModuleRepository moduleRepository = mock(ModuleRepository.class);
@@ -87,23 +70,14 @@ public class PluginClassloaderCreationBenchmark extends AbstractArtifactActivati
   private ClassLoaderModel plugin2ExportingPackageClassLoaderModel;
   private List<MuleModule> privilegeMuleModuleSingletonList;
   private ClassLoaderModel pluginDependantWithLocalPackageClassLoaderModel;
-  private List<MuleModule> muleModuleSingletonList;
   private ClassLoaderModel pluginWithLocalPackageClassLoaderModel;
+
+  private DefaultArtifactClassLoaderResolver artifactClassLoaderResolverForPrivilegedContainerAccess;
+  private final ModuleRepository moduleRepositoryForPrivilegedContainerAccess = mock(ModuleRepository.class);
 
   @Setup
   public void setup() throws IOException {
-    TemporaryFolder temporaryFolder = new TemporaryFolder();
-    artifactLocation = new TemporaryFolder();
-    temporaryFolder.create();
-    artifactLocation.create();
-    muleHomeFolder = temporaryFolder.getRoot();
-    System.setProperty(MULE_HOME_DIRECTORY_PROPERTY, temporaryFolder.getRoot().getAbsolutePath());
-
-    artifactClassLoaderResolver = spy(new DefaultArtifactClassLoaderResolver(moduleRepository, nativeLibraryFinderFactory));
-
-    plugin1Descriptor.setBundleDescriptor(PLUGIN1_BUNDLE_DESCRIPTOR);
-    plugin2Descriptor.setBundleDescriptor(PLUGIN2_BUNDLE_DESCRIPTOR);
-
+    super.setup();
     customDomainDescriptor = getTestDomainDescriptor(customDomainName);
     customDomainDescriptor.setRootFolder(createDomainDir(MULE_DOMAIN_FOLDER, customDomainName));
 
@@ -134,11 +108,13 @@ public class PluginClassloaderCreationBenchmark extends AbstractArtifactActivati
         new ClassLoaderModel.ClassLoaderModelBuilder().withLocalPackages(singleton(pluginPackage))
             .dependingOn(singleton(pluginDependency)).build();
 
-    MuleModule muleModule = mock(MuleModule.class);
     when(muleModule.getExportedPackages()).thenReturn(Stream.of(package1Name, package2Name).collect(toSet()));
-    muleModuleSingletonList = singletonList(muleModule);
     pluginWithLocalPackageClassLoaderModel = new ClassLoaderModel.ClassLoaderModelBuilder()
         .withLocalPackages(Stream.of(package1Name, package2Name).collect(toSet())).build();
+
+    artifactClassLoaderResolverForPrivilegedContainerAccess =
+        spy(new DefaultArtifactClassLoaderResolver(moduleRepositoryForPrivilegedContainerAccess, nativeLibraryFinderFactory));
+    when(moduleRepositoryForPrivilegedContainerAccess.getModules()).thenReturn(privilegeMuleModuleSingletonList);
   }
 
   @Benchmark
@@ -153,8 +129,8 @@ public class PluginClassloaderCreationBenchmark extends AbstractArtifactActivati
   @Benchmark
   @BenchmarkMode(AverageTime)
   public MuleArtifactClassLoader createPluginClassLoaderWithPrivilegedContainerAccess() {
-    when(moduleRepository.getModules()).thenReturn(privilegeMuleModuleSingletonList);
-    return artifactClassLoaderResolver.createMulePluginClassLoader(applicationClassLoader, plugin1Descriptor, d -> empty());
+    return artifactClassLoaderResolverForPrivilegedContainerAccess
+        .createMulePluginClassLoader(applicationClassLoader, plugin1Descriptor, d -> empty());
   }
 
   @Benchmark
@@ -177,9 +153,9 @@ public class PluginClassloaderCreationBenchmark extends AbstractArtifactActivati
   @Benchmark
   @BenchmarkMode(AverageTime)
   public MuleArtifactClassLoader createPluginClassLoaderWithIgnoredLocalPackages() {
-    when(moduleRepository.getModules()).thenReturn(muleModuleSingletonList);
     plugin1Descriptor.setClassLoaderModel(pluginWithLocalPackageClassLoaderModel);
-    return artifactClassLoaderResolver.createMulePluginClassLoader(applicationClassLoader, plugin1Descriptor, d -> empty());
+    return artifactClassLoaderResolverWithModules
+        .createMulePluginClassLoader(applicationClassLoader, plugin1Descriptor, d -> empty());
   }
 
   private MuleDeployableArtifactClassLoader getTestApplicationClassLoader(List<ArtifactPluginDescriptor> plugins) {
