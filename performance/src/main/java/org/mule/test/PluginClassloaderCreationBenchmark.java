@@ -17,9 +17,6 @@ import static java.util.Optional.of;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.stream.Collectors.toSet;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
 import static org.openjdk.jmh.annotations.Mode.AverageTime;
 import static org.openjdk.jmh.annotations.Scope.Benchmark;
 
@@ -58,7 +55,6 @@ public class PluginClassloaderCreationBenchmark extends AbstractArtifactActivati
   private static final String PLUGIN_ARTIFACT_ID1 = GROUP_ID + ":" + PLUGIN_ID1;
   private final ArtifactPluginDescriptor plugin2DescriptorWithPrivilege = new ArtifactPluginDescriptor(PLUGIN_ID2);
 
-  private final ModuleRepository moduleRepository = mock(ModuleRepository.class);
   private final DefaultNativeLibraryFinderFactory nativeLibraryFinderFactory = new DefaultNativeLibraryFinderFactory();
   private final String customDomainName = "custom-domain";
   private final String applicationName = "app";
@@ -74,8 +70,11 @@ public class PluginClassloaderCreationBenchmark extends AbstractArtifactActivati
   private ClassLoaderModel pluginDependantWithLocalPackageClassLoaderModel;
   private ClassLoaderModel pluginWithLocalPackageClassLoaderModel;
 
+  private MuleModule muleModule;
+  private List<MuleModule> muleModuleSingletonList;
+
   private DefaultArtifactClassLoaderResolver artifactClassLoaderResolverForPrivilegedContainerAccess;
-  private final ModuleRepository moduleRepositoryForPrivilegedContainerAccess = mock(ModuleRepository.class);
+  private ModuleRepository moduleRepositoryForPrivilegedContainerAccess;
 
   @Setup
   public void setup() throws IOException {
@@ -83,9 +82,9 @@ public class PluginClassloaderCreationBenchmark extends AbstractArtifactActivati
     customDomainDescriptor = getTestDomainDescriptor(customDomainName);
     customDomainDescriptor.setRootFolder(createDomainDir(MULE_DOMAIN_FOLDER, customDomainName));
 
-    MuleModule privilegedModule = mock(MuleModule.class);
-    when(privilegedModule.getPrivilegedArtifacts()).thenReturn(singleton(PLUGIN_ARTIFACT_ID1));
-    when(privilegedModule.getPrivilegedExportedPackages()).thenReturn(singleton(PRIVILEGED_PACKAGE));
+    MuleModule privilegedModule =
+        new MuleModule("TEST", emptySet(), emptySet(), singleton(PRIVILEGED_PACKAGE), singleton(PLUGIN_ARTIFACT_ID1),
+                       emptyList());
     privilegeMuleModuleSingletonList = singletonList(privilegedModule);
 
     ApplicationDescriptor applicationDescriptor = new ApplicationDescriptor(applicationName);
@@ -110,13 +109,20 @@ public class PluginClassloaderCreationBenchmark extends AbstractArtifactActivati
         new ClassLoaderModel.ClassLoaderModelBuilder().withLocalPackages(singleton(pluginPackage))
             .dependingOn(singleton(pluginDependency)).build();
 
-    when(muleModule.getExportedPackages()).thenReturn(Stream.of(package1Name, package2Name).collect(toSet()));
+    muleModule = new MuleModule("TEST", Stream.of(package1Name, package2Name).collect(toSet()), emptySet(), emptySet(),
+                                emptySet(), emptyList());
+    muleModuleSingletonList = singletonList(muleModule);
+    ModuleRepository moduleRepositoryWithModules = new DummyModuleRepository(muleModuleSingletonList);
+    artifactClassLoaderResolverWithModules =
+        new DefaultArtifactClassLoaderResolver(moduleRepositoryWithModules, nativeLibraryFinderFactory);
+
     pluginWithLocalPackageClassLoaderModel = new ClassLoaderModel.ClassLoaderModelBuilder()
         .withLocalPackages(Stream.of(package1Name, package2Name).collect(toSet())).build();
 
+    moduleRepositoryForPrivilegedContainerAccess = new DummyModuleRepository(privilegeMuleModuleSingletonList);
     artifactClassLoaderResolverForPrivilegedContainerAccess =
-        spy(new DefaultArtifactClassLoaderResolver(moduleRepositoryForPrivilegedContainerAccess, nativeLibraryFinderFactory));
-    when(moduleRepositoryForPrivilegedContainerAccess.getModules()).thenReturn(privilegeMuleModuleSingletonList);
+        new DefaultArtifactClassLoaderResolver(moduleRepositoryForPrivilegedContainerAccess, nativeLibraryFinderFactory);
+
   }
 
   @Benchmark

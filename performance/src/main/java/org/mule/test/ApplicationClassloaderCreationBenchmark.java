@@ -7,17 +7,20 @@
 package org.mule.test;
 
 import static java.util.Collections.emptyList;
+import static java.util.Collections.emptySet;
 import static java.util.Collections.singleton;
+import static java.util.Collections.singletonList;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.stream.Collectors.toSet;
 
-import static org.mockito.Mockito.when;
 import static org.openjdk.jmh.annotations.Mode.AverageTime;
 import static org.openjdk.jmh.annotations.Scope.Benchmark;
 
+import org.mule.runtime.container.api.ModuleRepository;
 import org.mule.runtime.container.api.MuleModule;
+import org.mule.runtime.module.artifact.activation.internal.classloader.DefaultArtifactClassLoaderResolver;
 import org.mule.runtime.module.artifact.api.classloader.MuleArtifactClassLoader;
 import org.mule.runtime.module.artifact.api.classloader.MuleDeployableArtifactClassLoader;
 import org.mule.runtime.module.artifact.api.descriptor.ApplicationDescriptor;
@@ -49,12 +52,13 @@ public class ApplicationClassloaderCreationBenchmark extends AbstractArtifactAct
   private Set<ArtifactPluginDescriptor> artifactPluginDescriptors;
   private ApplicationDescriptor applicationDescriptor;
   private MuleDeployableArtifactClassLoader customDomainClassLoader;
-  private List<MuleModule> muleModuleSingletonList;
   private MuleDeployableArtifactClassLoader domainClassLoader;
   private ClassLoaderModel classLoaderModel;
   private MuleDeployableArtifactClassLoader applicationClassLoaderForCache;
   private ApplicationDescriptor newApplicationDescriptorForCache;
   private MuleArtifactClassLoader plugin2ClassLoaderForCache;
+  private MuleModule muleModule;
+  private List<MuleModule> muleModuleSingletonList;
 
   @Setup
   public void setup() throws IOException {
@@ -62,7 +66,11 @@ public class ApplicationClassloaderCreationBenchmark extends AbstractArtifactAct
     customDomainDescriptor = getTestDomainDescriptor(customDomainName);
     customDomainDescriptor.setRootFolder(createDomainDir(MULE_DOMAIN_FOLDER, customDomainName));
 
-    when(muleModule.getExportedPackages()).thenReturn(singleton(repeatedPackageName));
+    muleModule = new MuleModule("TEST", singleton(repeatedPackageName), emptySet(), emptySet(), emptySet(), emptyList());
+    muleModuleSingletonList = singletonList(muleModule);
+    ModuleRepository moduleRepositoryWithModules = new DummyModuleRepository(muleModuleSingletonList);
+    artifactClassLoaderResolverWithModules =
+        new DefaultArtifactClassLoaderResolver(moduleRepositoryWithModules, nativeLibraryFinderFactory);
 
     artifactPluginDescriptors = Stream.of(plugin1Descriptor, plugin2Descriptor).collect(toSet());
     applicationDescriptor = new ApplicationDescriptor(applicationName);

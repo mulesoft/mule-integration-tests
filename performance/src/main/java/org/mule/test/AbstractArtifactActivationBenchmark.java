@@ -11,14 +11,11 @@ import static org.mule.runtime.container.api.MuleFoldersUtil.getMuleLibFolder;
 import static org.mule.runtime.core.api.config.MuleProperties.MULE_HOME_DIRECTORY_PROPERTY;
 
 import static java.io.File.separator;
-import static java.util.Collections.singletonList;
+import static java.util.Collections.emptyList;
 
 import static org.apache.commons.io.FileUtils.deleteQuietly;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
 
 import org.mule.runtime.container.api.ModuleRepository;
 import org.mule.runtime.container.api.MuleModule;
@@ -57,15 +54,12 @@ public abstract class AbstractArtifactActivationBenchmark extends AbstractMuleTe
   protected File muleHomeFolder;
   protected TemporaryFolder artifactLocation;
   protected DefaultArtifactClassLoaderResolver artifactClassLoaderResolver;
-  protected MuleModule muleModule;
-  protected List<MuleModule> muleModuleSingletonList;
 
-  protected final ModuleRepository moduleRepository = mock(ModuleRepository.class);
+  protected final ModuleRepository moduleRepository = new DummyModuleRepository(emptyList());
   protected final DefaultNativeLibraryFinderFactory nativeLibraryFinderFactory = new DefaultNativeLibraryFinderFactory();
   protected final ArtifactPluginDescriptor plugin1Descriptor = new ArtifactPluginDescriptor(PLUGIN_ID1);
   protected final ArtifactPluginDescriptor plugin2Descriptor = new ArtifactPluginDescriptor(PLUGIN_ID2);
   protected DefaultArtifactClassLoaderResolver artifactClassLoaderResolverWithModules;
-  protected final ModuleRepository moduleRepositoryWithModules = mock(ModuleRepository.class);
 
   public void setup() throws IOException {
     TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -74,17 +68,10 @@ public abstract class AbstractArtifactActivationBenchmark extends AbstractMuleTe
     artifactLocation.create();
     muleHomeFolder = temporaryFolder.getRoot();
     System.setProperty(MULE_HOME_DIRECTORY_PROPERTY, temporaryFolder.getRoot().getAbsolutePath());
-    artifactClassLoaderResolver = spy(new DefaultArtifactClassLoaderResolver(moduleRepository, nativeLibraryFinderFactory));
+    artifactClassLoaderResolver = new DefaultArtifactClassLoaderResolver(moduleRepository, nativeLibraryFinderFactory);
 
     plugin1Descriptor.setBundleDescriptor(PLUGIN1_BUNDLE_DESCRIPTOR);
     plugin2Descriptor.setBundleDescriptor(PLUGIN2_BUNDLE_DESCRIPTOR);
-
-    muleModule = mock(MuleModule.class);
-    muleModuleSingletonList = singletonList(muleModule);
-
-    artifactClassLoaderResolverWithModules =
-        spy(new DefaultArtifactClassLoaderResolver(moduleRepositoryWithModules, nativeLibraryFinderFactory));
-    when(moduleRepositoryWithModules.getModules()).thenReturn(muleModuleSingletonList);
   }
 
   @TearDown
@@ -116,6 +103,20 @@ public abstract class AbstractArtifactActivationBenchmark extends AbstractMuleTe
   protected MuleDeployableArtifactClassLoader getTestDomainClassLoader(List<ArtifactPluginDescriptor> plugins) {
     customDomainDescriptor.setPlugins(new HashSet<>(plugins));
     return artifactClassLoaderResolver.createDomainClassLoader(customDomainDescriptor);
+  }
+
+  public static class DummyModuleRepository implements ModuleRepository {
+
+    private final List<MuleModule> muleModules;
+
+    public DummyModuleRepository(List<MuleModule> muleModules) {
+      this.muleModules = muleModules;
+    }
+
+    @Override
+    public List<MuleModule> getModules() {
+      return muleModules;
+    }
   }
 
 }
