@@ -9,12 +9,11 @@ package org.mule.test.module.extension.oauth.clientcredentials;
 import static org.junit.Assert.fail;
 import static org.junit.rules.ExpectedException.none;
 
-import org.junit.Rule;
-import org.junit.Test;
-
 import org.mule.runtime.api.lifecycle.LifecycleException;
 import org.mule.test.module.extension.oauth.BaseOAuthExtensionTestCase;
 
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 public class OAuthClientCredentialsInvalidConfigExtensionTestCase extends BaseOAuthExtensionTestCase {
