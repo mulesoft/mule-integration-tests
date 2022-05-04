@@ -29,7 +29,7 @@ public class OAuthClientCredentialsInvalidConfigExtensionTestCase extends BaseOA
   @Override
   protected void doSetUpBeforeMuleContextCreation() throws Exception {
     expectedException.expect(LifecycleException.class);
-    expectedException.expectMessage("The uri provided must contain a host : no.scheme.url.com");
+    expectedException.expectMessage("The uri provided 'no.scheme.url.com' must contain a scheme.");
     super.doSetUpBeforeMuleContextCreation();
   }
 
