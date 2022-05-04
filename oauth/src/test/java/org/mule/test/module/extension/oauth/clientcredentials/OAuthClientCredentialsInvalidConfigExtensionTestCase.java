@@ -35,7 +35,7 @@ public class OAuthClientCredentialsInvalidConfigExtensionTestCase extends BaseOA
 
   @Test
   public void tokenUrlWithNoScheme() throws Exception {
-    fail();
+    fail("This test must throw an error initializing the app, so it should not get to this line.");
   }
 
 }
