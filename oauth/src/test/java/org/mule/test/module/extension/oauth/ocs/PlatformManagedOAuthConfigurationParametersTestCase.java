@@ -14,6 +14,11 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.mule.test.oauth.ConnectionType.DUO;
 import static org.mule.test.oauth.ConnectionType.HYPER;
 
+import org.mule.runtime.api.metadata.TypedValue;
+import org.mule.runtime.extension.api.annotation.param.Optional;
+import org.mule.runtime.extension.api.annotation.param.Parameter;
+import org.mule.runtime.extension.api.runtime.parameter.Literal;
+import org.mule.runtime.extension.api.runtime.parameter.ParameterResolver;
 import org.mule.test.oauth.ConnectionProperties;
 import org.mule.test.oauth.ConnectionType;
 import org.mule.test.oauth.TestOAuthConnection;
@@ -61,6 +66,12 @@ public class PlatformManagedOAuthConfigurationParametersTestCase extends Platfor
   private static final ConnectionType CONNECTION_TYPE_FIELD_ENUM_VALUE = DUO;
   private static final ConnectionProperties CONNECTION_PROPERTIES =
       new ConnectionProperties(CONNECTION_DESCRIPTION_FIELD_VALUE, CONNECTION_TYPE_FIELD_ENUM_VALUE);
+  private static final String LITERAL_STRING_PARAMETER_VALUE = "literal1";
+  private static final String PARAMETER_RESOLVER_STRING_PARAMETER_VALUE = "paramResolver1";
+  private static final String TYPED_VALUE_INTEGER_PARAMETER_VALUE = "33";
+  private static final String LITERAL_STRING_PARAMETER_NAME = "literalSecurityDescription";
+  private static final String PARAMETER_RESOLVER_STRING_PARAMETER_NAME = "resolverConnectionDisplayName";
+  private static final String TYPED_VALUE_INTEGER_PARAMETER_NAME = "typedSecurityLevel";
 
   @Override
   protected Map<String, Object> getDescriptorParameters() {
@@ -84,6 +95,7 @@ public class PlatformManagedOAuthConfigurationParametersTestCase extends Platfor
     descriptorParameters.put(SECURITY_LEVEL_PARAMETER_NAME, SECURITY_LEVEL_PARAMETER_VALUE);
     descriptorParameters.put(OAUTH_CONNECTION_TYPE_PARAMETER_NAME, OAUTH_CONNECTION_TYPE_PARAMETER_VALUE);
     descriptorParameters.put(SOME_NUMBERS_PARAMETER_NAME, SOME_NUMBERS_PARAMETER_VALUE);
+    descriptorParameters.put(LITERAL_STRING_PARAMETER_NAME, LITERAL_STRING_PARAMETER_VALUE);
     return descriptorParameters;
   }
 
@@ -177,6 +189,36 @@ public class PlatformManagedOAuthConfigurationParametersTestCase extends Platfor
     assertThat(someOauthMapConnectionProperties.entrySet(), hasSize(2));
     assertThat(someOauthMapConnectionProperties.get(CONNECTION_PROPERTIES_MAP_FIRST_KEY), equalTo(CONNECTION_PROPERTIES));
     assertThat(someOauthMapConnectionProperties.get(CONNECTION_PROPERTIES_MAP_SECOND_KEY), equalTo(CONNECTION_PROPERTIES));
+  }
+
+  @Test
+  @Description("")
+  public void literalTypeParameter() throws Exception {
+
+  }
+
+  @Test
+  @Description("")
+  public void typedValueTypeParameter() throws Exception {
+
+  }
+
+  @Test
+  @Description("")
+  public void parameterResolverTypeParameter() throws Exception {
+
+  }
+
+  @Test
+  @Description("")
+  public void literalTypeParameterInParameterGroupShowInDsl() throws Exception {
+
+  }
+
+  @Test
+  @Description("")
+  public void literalTypeParameterInPojo() throws Exception {
+
   }
 
 }
