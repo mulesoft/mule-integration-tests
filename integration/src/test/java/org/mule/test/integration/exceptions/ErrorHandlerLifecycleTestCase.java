@@ -80,7 +80,7 @@ public class ErrorHandlerLifecycleTestCase extends AbstractIntegrationTestCase {
     assertThat(lifecycleCheckerMessageProcessorFlowC.isInitialized(), is(true));
     assertThat(lifecycleCheckerMessageProcessorFlowD.isInitialized(), is(true));
     ((Lifecycle) flowC).stop();
-    assertThat(lifecycleCheckerMessageProcessorFlowC.isStopped(), is(false));
+    assertThat(lifecycleCheckerMessageProcessorFlowC.isStopped(), is(true));
     assertThat(lifecycleCheckerMessageProcessorFlowD.isStopped(), is(false));
   }
 
