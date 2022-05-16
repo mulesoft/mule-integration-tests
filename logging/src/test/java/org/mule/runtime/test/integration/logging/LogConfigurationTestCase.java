@@ -8,6 +8,8 @@ package org.mule.runtime.test.integration.logging;
 
 import static org.mule.runtime.api.util.MuleSystemProperties.MULE_SIMPLE_LOG;
 import static org.mule.tck.probe.PollingProber.probe;
+import static org.mule.test.allure.AllureConstants.ComponentsFeature.LoggerStory.LOGGER;
+import static org.mule.test.allure.AllureConstants.IntegrationTestsFeature.INTEGRATIONS_TESTS;
 import static org.mule.test.infrastructure.FileContainsInLine.hasLine;
 import static org.mule.test.infrastructure.HasRegex.hasRegex;
 
@@ -27,6 +29,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
+import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
+import io.qameta.allure.Story;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -114,7 +119,10 @@ public class LogConfigurationTestCase extends AbstractFakeMuleServerTestCase {
   }
 
   @Test
-  public void honorLog4jConfigFileForTwoDifferentApps() throws Exception {
+  @Feature(INTEGRATIONS_TESTS)
+  @Story(LOGGER)
+  @Issue("W-11090843")
+  public void honorLog4jConfigFileForTwoAppsWithDifferentConfiguration() throws Exception {
     String customLogAppName = "custom-log-app";
     String notCustomLogAppName = "not-custom-log-app";
 
@@ -134,7 +142,7 @@ public class LogConfigurationTestCase extends AbstractFakeMuleServerTestCase {
 
     File customAppLogFile =
         new File(muleServer.getLogsDir().toString() + "/mule-app-" + customLogAppName + "-1.0.0-mule-application.log");
-    probe(() -> hasLine(containsString(customAppLog)).matches(customAppLogFile),
+    probe(5000, 100, () -> hasLine(containsString(customAppLog)).matches(customAppLogFile),
           () -> format("Text '%s' not present in the logs", customAppLog));
     probe(() -> !hasLine(hasRegex(notCustomAppLog)).matches(customAppLogFile),
           () -> format("Text '%s' present in the logs", notCustomAppLog));
