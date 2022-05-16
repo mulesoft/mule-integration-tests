@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration shutdownHook="disable">
+    <Loggers>
+        <AsyncLogger name="org.mule.runtime.core.internal.processor.LoggerMessageProcessor" level="DEBUG" />
+        <AsyncLogger name="org.mule.service.http.impl.service.server.grizzly" level="WARN" />
+        <AsyncLogger name="org.mule.runtime.core.internal.event.AbstractEventContext" level="DEBUG"/>
+    </Loggers>
+</Configuration>

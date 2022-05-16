@@ -7,6 +7,9 @@
 package org.mule.runtime.test.integration.logging;
 
 import static org.mule.runtime.api.util.MuleSystemProperties.MULE_SIMPLE_LOG;
+import static org.mule.tck.probe.PollingProber.probe;
+import static org.mule.test.infrastructure.FileContainsInLine.hasLine;
+import static org.mule.test.infrastructure.HasRegex.hasRegex;
 
 import static java.lang.String.format;
 
@@ -19,6 +22,7 @@ import org.mule.runtime.module.deployment.impl.internal.builder.ApplicationFileB
 import org.mule.runtime.module.deployment.impl.internal.builder.DomainFileBuilder;
 import org.mule.test.infrastructure.deployment.AbstractFakeMuleServerTestCase;
 
+import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -107,6 +111,40 @@ public class LogConfigurationTestCase extends AbstractFakeMuleServerTestCase {
         .definedBy("log/empty-config.xml").dependingOn(domainFileBuilder);
     muleServer.deploy(applicationFileBuilder.getArtifactFile().toURI().toURL(), APP_NAME);
     ensureArtifactAppender("ConsoleForDomain", ConsoleAppender.class);
+  }
+
+  @Test
+  public void honorLog4jConfigFileForTwoDifferentApps() throws Exception {
+    String customLogAppName = "custom-log-app";
+    String notCustomLogAppName = "not-custom-log-app";
+
+    String customAppLog = "Custom Log App log";
+    String notCustomAppLog = "Not Custom Log App log";
+
+    ApplicationFileBuilder customLogAppBuilder = new ApplicationFileBuilder(customLogAppName)
+        .definedBy("log/custom-config/mule-config.xml")
+        .containingResource("log/custom-config/log4j2.xml", "log4j2.xml");
+    ApplicationFileBuilder notCustomLogAppFileBuilder = new ApplicationFileBuilder(notCustomLogAppName)
+        .definedBy("log/not-custom-config/mule-config.xml");
+
+    muleServer.addAppArchive(customLogAppBuilder.getArtifactFile().toURI().toURL());
+    muleServer.addAppArchive(notCustomLogAppFileBuilder.getArtifactFile().toURI().toURL());
+
+    muleServer.start();
+
+    File customAppLogFile =
+        new File(muleServer.getLogsDir().toString() + "/mule-app-" + customLogAppName + "-1.0.0-mule-application.log");
+    probe(() -> hasLine(containsString(customAppLog)).matches(customAppLogFile),
+          () -> format("Text '%s' not present in the logs", customAppLog));
+    probe(() -> !hasLine(hasRegex(notCustomAppLog)).matches(customAppLogFile),
+          () -> format("Text '%s' present in the logs", notCustomAppLog));
+
+    File notCustomAppLogFile =
+        new File(muleServer.getLogsDir().toString() + "/mule-app-" + notCustomLogAppName + "-1.0.0-mule-application.log");
+    probe(() -> !hasLine(hasRegex(customAppLog)).matches(notCustomAppLogFile),
+          () -> format("Text '%s' not present in the logs", customAppLog));
+    probe(() -> !hasLine(hasRegex(notCustomAppLog)).matches(notCustomAppLogFile),
+          () -> format("Text '%s' not present in the logs", notCustomAppLog));
   }
 
   private void ensureOnlyDefaultAppender() throws Exception {
