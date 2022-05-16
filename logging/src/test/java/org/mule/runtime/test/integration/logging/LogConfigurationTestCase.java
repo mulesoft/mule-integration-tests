@@ -142,16 +142,16 @@ public class LogConfigurationTestCase extends AbstractFakeMuleServerTestCase {
 
     File customAppLogFile =
         new File(muleServer.getLogsDir().toString() + "/mule-app-" + customLogAppName + "-1.0.0-mule-application.log");
-    probe(5000, 100, () -> hasLine(containsString(customAppLog)).matches(customAppLogFile),
+    probe(() -> hasLine(containsString(customAppLog)).matches(customAppLogFile),
           () -> format("Text '%s' not present in the logs", customAppLog));
-    probe(() -> !hasLine(hasRegex(notCustomAppLog)).matches(customAppLogFile),
+    probe(() -> !hasLine(containsString(notCustomAppLog)).matches(customAppLogFile),
           () -> format("Text '%s' present in the logs", notCustomAppLog));
 
     File notCustomAppLogFile =
         new File(muleServer.getLogsDir().toString() + "/mule-app-" + notCustomLogAppName + "-1.0.0-mule-application.log");
-    probe(() -> !hasLine(hasRegex(customAppLog)).matches(notCustomAppLogFile),
+    probe(() -> !hasLine(containsString(customAppLog)).matches(notCustomAppLogFile),
           () -> format("Text '%s' not present in the logs", customAppLog));
-    probe(() -> !hasLine(hasRegex(notCustomAppLog)).matches(notCustomAppLogFile),
+    probe(() -> !hasLine(containsString(notCustomAppLog)).matches(notCustomAppLogFile),
           () -> format("Text '%s' not present in the logs", notCustomAppLog));
   }
 
