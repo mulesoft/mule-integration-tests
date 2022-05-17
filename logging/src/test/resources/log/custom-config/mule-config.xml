@@ -10,7 +10,7 @@
             </scheduling-strategy>
         </scheduler>
 
-        <logger message="Custom Log App log" level="DEBUG"/>
+        <logger message="${customAppDebugLogPropertyValue}" level="DEBUG"/>
     </flow>
 
 </mule>
