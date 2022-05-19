@@ -57,7 +57,7 @@ public class LogConfigurationTestCase extends AbstractFakeMuleServerTestCase {
 
   @ClassRule
   public static SystemProperty customAppDebugLogSystemProperty =
-      new SystemProperty("customAppDebugLogPropertyValue", "Custom Log App logholis");
+      new SystemProperty("customAppDebugLogPropertyValue", "Custom Log App log");
 
   @ClassRule
   public static SystemProperty notCustomAppDebugLogSystemProperty =
