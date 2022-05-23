@@ -15,7 +15,7 @@
 
     <properties>
         <cxfVersion>3.5.1</cxfVersion>
-        <muleSdkApiVersion>1.0.0-SNAPSHOT</muleSdkApiVersion>
+        <muleSdkApiVersion>1.0.0-20220523</muleSdkApiVersion>
         <javax.jws-api.version>1.1</javax.jws-api.version>
         <formatterConfigPath>../../formatter.xml</formatterConfigPath>
     </properties>
