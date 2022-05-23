@@ -47,4 +47,15 @@
         <raise-error type="CUSTOM:ERROR" />
     </flow>
 
+    <flow name="flowE">
+        <raise-error type="CUSTOM:ERROR" />
+        <error-handler ref="defaultEh"/>
+    </flow>
+
+    <flow name="flowF">
+        <try>
+            <raise-error type="CUSTOM:ERROR" />
+        </try>
+    </flow>
+
 </mule>

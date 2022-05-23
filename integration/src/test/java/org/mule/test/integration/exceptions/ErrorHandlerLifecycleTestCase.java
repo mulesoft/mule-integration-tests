@@ -9,8 +9,10 @@ package org.mule.test.integration.exceptions;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
+import org.mule.runtime.api.lifecycle.Disposable;
 import org.mule.runtime.api.lifecycle.Initialisable;
 import org.mule.runtime.api.lifecycle.Lifecycle;
+import org.mule.runtime.api.lifecycle.Startable;
 import org.mule.runtime.api.lifecycle.Stoppable;
 import org.mule.runtime.core.api.construct.FlowConstruct;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -49,6 +51,14 @@ public class ErrorHandlerLifecycleTestCase extends AbstractIntegrationTestCase {
   @Named("flowD")
   private FlowConstruct flowD;
 
+  @Inject
+  @Named("flowE")
+  private FlowConstruct flowE;
+
+  @Inject
+  @Named("flowF")
+  private FlowConstruct flowF;
+
   @Test
   public void testLifecycleErrorHandlerInFlow() throws Exception {
     // Trigger the flows so the lifecycle-trackers are added to the registry
@@ -74,10 +84,13 @@ public class ErrorHandlerLifecycleTestCase extends AbstractIntegrationTestCase {
     Collection<String> defaultEhErrorHandlerPhases = trackersRegistry.get("esAErrorHandlerTracker").getCalledPhases();
 
     assertThat(defaultEhErrorHandlerPhases.contains(Initialisable.PHASE_NAME), is(true));
+    assertThat(defaultEhErrorHandlerPhases.contains(Startable.PHASE_NAME), is(true));
 
     ((Lifecycle) flowC).stop();
+    ((Lifecycle) flowC).dispose();
 
     assertThat(defaultEhErrorHandlerPhases.contains(Stoppable.PHASE_NAME), is(true));
+    assertThat(defaultEhErrorHandlerPhases.contains(Disposable.PHASE_NAME), is(true));
   }
 
   @Test
@@ -87,10 +100,21 @@ public class ErrorHandlerLifecycleTestCase extends AbstractIntegrationTestCase {
     Collection<String> defaultEhErrorHandlerPhases = trackersRegistry.get("defaultEhErrorHandlerTracker").getCalledPhases();
 
     assertThat(defaultEhErrorHandlerPhases.contains(Initialisable.PHASE_NAME), is(true));
+    assertThat(defaultEhErrorHandlerPhases.contains(Startable.PHASE_NAME), is(true));
 
     ((Lifecycle) flowD).stop();
+    ((Lifecycle) flowE).stop();
+    ((Lifecycle) flowD).dispose();
+    ((Lifecycle) flowE).dispose();
+
+    assertThat(defaultEhErrorHandlerPhases.contains(Stoppable.PHASE_NAME), is(false));
+    assertThat(defaultEhErrorHandlerPhases.contains(Disposable.PHASE_NAME), is(false));
+
+    ((Lifecycle) flowF).stop();
+    ((Lifecycle) flowF).dispose();
 
     assertThat(defaultEhErrorHandlerPhases.contains(Stoppable.PHASE_NAME), is(true));
+    assertThat(defaultEhErrorHandlerPhases.contains(Disposable.PHASE_NAME), is(true));
   }
 
 }
