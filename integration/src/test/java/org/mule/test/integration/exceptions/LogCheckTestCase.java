@@ -129,6 +129,18 @@ public class LogCheckTestCase extends AbstractIntegrationTestCase {
     runSuccesses(true, "suppressedMuleExceptions");
   }
 
+  @Test
+  @Issue("W-10965130")
+  public void compositeRoutingExceptionForParallelForEach() throws Exception {
+    runSuccesses(false, "parallelForEachFlow");
+  }
+
+  @Test
+  @Issue("W-10965130")
+  public void compositeRoutingExceptionForScatterGather() throws Exception {
+    runSuccesses(false, "scatterGatherFlow");
+  }
+
   private void runSuccesses(boolean verboseExceptions, String flowName) throws Exception {
     setVerboseExceptions(verboseExceptions);
     flowRunner(flowName).run();
