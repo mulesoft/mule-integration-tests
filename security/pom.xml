@@ -16,7 +16,7 @@
 
     <properties>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
-        <springSecurityVersion>5.1.0.RELEASE</springSecurityVersion>
+        <springSecurityVersion>5.5.7</springSecurityVersion>
     </properties>
 
     <build>
