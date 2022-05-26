@@ -6,6 +6,8 @@
  */
 package org.mule.test.integration.exceptions;
 
+import static org.mule.runtime.api.util.MuleSystemProperties.REUSE_GLOBAL_ERROR_HANDLER_PROPERTY;
+
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
@@ -15,6 +17,7 @@ import org.mule.runtime.api.lifecycle.Lifecycle;
 import org.mule.runtime.api.lifecycle.Startable;
 import org.mule.runtime.api.lifecycle.Stoppable;
 import org.mule.runtime.core.api.construct.FlowConstruct;
+import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.tests.api.LifecycleTrackerRegistry;
 
@@ -24,8 +27,9 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.junit.Test;
+import org.junit.Rule;
 
-public class ErrorHandlerLifecycleTestCase extends AbstractIntegrationTestCase {
+public class DefaultErrorHandlerLifecycleTestCase extends AbstractIntegrationTestCase {
 
   @Override
   protected String getConfigFile() {
@@ -36,54 +40,19 @@ public class ErrorHandlerLifecycleTestCase extends AbstractIntegrationTestCase {
   private LifecycleTrackerRegistry trackersRegistry;
 
   @Inject
-  @Named("flowA")
-  private FlowConstruct flowA;
-
-  @Inject
-  @Named("flowB")
-  private FlowConstruct flowB;
-
-  @Inject
-  @Named("flowC")
-  private FlowConstruct flowC;
-
-  @Inject
   @Named("flowD")
   private FlowConstruct flowD;
 
-  @Test
-  public void testLifecycleErrorHandlerInFlow() throws Exception {
-    // Trigger the flows so the lifecycle-trackers are added to the registry
-    flowRunner(flowA.getName()).run();
-    flowRunner(flowB.getName()).run();
+  @Inject
+  @Named("flowE")
+  private FlowConstruct flowE;
 
-    Collection<String> flowAErrorHandlerPhases = trackersRegistry.get("flowAErrorHandlerTracker").getCalledPhases();
-    Collection<String> flowBErrorHandlerPhases = trackersRegistry.get("flowBErrorHandlerTracker").getCalledPhases();
+  @Inject
+  @Named("flowF")
+  private FlowConstruct flowF;
 
-    assertThat(flowAErrorHandlerPhases.contains(Initialisable.PHASE_NAME), is(true));
-    assertThat(flowBErrorHandlerPhases.contains(Initialisable.PHASE_NAME), is(true));
-
-    ((Lifecycle) flowA).stop();
-
-    assertThat(flowAErrorHandlerPhases.contains(Stoppable.PHASE_NAME), is(true));
-    assertThat(flowBErrorHandlerPhases.contains(Stoppable.PHASE_NAME), is(false));
-  }
-
-  @Test
-  public void testLifecycleReferencedErrorHandler() throws Exception {
-    flowRunner(flowC.getName()).run();
-
-    Collection<String> defaultEhErrorHandlerPhases = trackersRegistry.get("esAErrorHandlerTracker").getCalledPhases();
-
-    assertThat(defaultEhErrorHandlerPhases.contains(Initialisable.PHASE_NAME), is(true));
-    assertThat(defaultEhErrorHandlerPhases.contains(Startable.PHASE_NAME), is(true));
-
-    ((Lifecycle) flowC).stop();
-    ((Lifecycle) flowC).dispose();
-
-    assertThat(defaultEhErrorHandlerPhases.contains(Stoppable.PHASE_NAME), is(true));
-    assertThat(defaultEhErrorHandlerPhases.contains(Disposable.PHASE_NAME), is(true));
-  }
+  @Rule
+  public SystemProperty expectedStatus = new SystemProperty(REUSE_GLOBAL_ERROR_HANDLER_PROPERTY, "true");
 
   @Test
   public void testLifecycleDefaultErrorHandler() throws Exception {
@@ -95,7 +64,15 @@ public class ErrorHandlerLifecycleTestCase extends AbstractIntegrationTestCase {
     assertThat(defaultEhErrorHandlerPhases.contains(Startable.PHASE_NAME), is(true));
 
     ((Lifecycle) flowD).stop();
+    ((Lifecycle) flowE).stop();
     ((Lifecycle) flowD).dispose();
+    ((Lifecycle) flowE).dispose();
+
+    assertThat(defaultEhErrorHandlerPhases.contains(Stoppable.PHASE_NAME), is(false));
+    assertThat(defaultEhErrorHandlerPhases.contains(Disposable.PHASE_NAME), is(false));
+
+    ((Lifecycle) flowF).stop();
+    ((Lifecycle) flowF).dispose();
 
     assertThat(defaultEhErrorHandlerPhases.contains(Stoppable.PHASE_NAME), is(true));
     assertThat(defaultEhErrorHandlerPhases.contains(Disposable.PHASE_NAME), is(true));

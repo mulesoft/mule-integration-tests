@@ -10,13 +10,13 @@
 
     <error-handler name="esA">
         <on-error-continue>
-            <test-components:lifecycle-tracker name="esAErrorHandlerTracker"/>
+            <test-components:lifecycle-tracker-check name="esAErrorHandlerTracker"/>
         </on-error-continue>
     </error-handler>
 
     <error-handler name="defaultEh">
         <on-error-continue>
-            <test-components:lifecycle-tracker name="defaultEhErrorHandlerTracker"/>
+            <test-components:lifecycle-tracker-check name="defaultEhErrorHandlerTracker"/>
         </on-error-continue>
     </error-handler>
 
@@ -24,7 +24,7 @@
         <raise-error type="CUSTOM:ERROR" />
         <error-handler>
             <on-error-continue>
-                <test-components:lifecycle-tracker name="flowAErrorHandlerTracker"/>
+                <test-components:lifecycle-tracker-check name="flowAErrorHandlerTracker"/>
             </on-error-continue>
         </error-handler>
     </flow>
@@ -33,7 +33,7 @@
         <raise-error type="CUSTOM:ERROR" />
         <error-handler>
             <on-error-continue>
-                <test-components:lifecycle-tracker name="flowBErrorHandlerTracker"/>
+                <test-components:lifecycle-tracker-check name="flowBErrorHandlerTracker"/>
             </on-error-continue>
         </error-handler>
     </flow>
