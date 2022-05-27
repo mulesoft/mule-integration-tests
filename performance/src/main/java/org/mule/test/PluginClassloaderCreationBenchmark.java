@@ -131,14 +131,14 @@ public class PluginClassloaderCreationBenchmark extends AbstractArtifactActivati
     plugin1Descriptor.setClassLoaderModel(pluginDependantClassLoaderModel);
     plugin2Descriptor.setClassLoaderModel(pluginExportingPackageClassLoaderModel);
     return artifactClassLoaderResolver.createMulePluginClassLoader(applicationClassLoader, plugin1Descriptor,
-                                                                   d -> of(plugin2Descriptor));
+                                                                   (apds, d) -> of(plugin2Descriptor));
   }
 
   @Benchmark
   @BenchmarkMode(AverageTime)
   public MuleArtifactClassLoader createPluginClassLoaderWithPrivilegedContainerAccess() {
     return artifactClassLoaderResolverForPrivilegedContainerAccess
-        .createMulePluginClassLoader(applicationClassLoader, plugin1Descriptor, d -> empty());
+        .createMulePluginClassLoader(applicationClassLoader, plugin1Descriptor, (apds, d) -> empty());
   }
 
   @Benchmark
@@ -146,7 +146,7 @@ public class PluginClassloaderCreationBenchmark extends AbstractArtifactActivati
   public MuleArtifactClassLoader createsPluginClassLoaderWithPrivilegedPluginAccess() {
     plugin1Descriptor.setClassLoaderModel(pluginDependantClassLoaderModel);
     return artifactClassLoaderResolver.createMulePluginClassLoader(applicationClassLoader, plugin1Descriptor,
-                                                                   d -> of(plugin2Descriptor));
+                                                                   (apds, d) -> of(plugin2Descriptor));
   }
 
   @Benchmark
@@ -155,7 +155,7 @@ public class PluginClassloaderCreationBenchmark extends AbstractArtifactActivati
     plugin2Descriptor.setClassLoaderModel(plugin2ExportingPackageClassLoaderModel);
     plugin1Descriptor.setClassLoaderModel(pluginDependantWithLocalPackageClassLoaderModel);
     return artifactClassLoaderResolver.createMulePluginClassLoader(applicationClassLoader, plugin1Descriptor,
-                                                                   d -> of(plugin2Descriptor));
+                                                                   (apds, d) -> of(plugin2Descriptor));
   }
 
   @Benchmark
@@ -163,7 +163,7 @@ public class PluginClassloaderCreationBenchmark extends AbstractArtifactActivati
   public MuleArtifactClassLoader createPluginClassLoaderWithIgnoredLocalPackages() {
     plugin1Descriptor.setClassLoaderModel(pluginWithLocalPackageClassLoaderModel);
     return artifactClassLoaderResolverWithModules
-        .createMulePluginClassLoader(applicationClassLoader, plugin1Descriptor, d -> empty());
+        .createMulePluginClassLoader(applicationClassLoader, plugin1Descriptor, (apds, d) -> empty());
   }
 
   private MuleDeployableArtifactClassLoader getTestApplicationClassLoader(List<ArtifactPluginDescriptor> plugins) {

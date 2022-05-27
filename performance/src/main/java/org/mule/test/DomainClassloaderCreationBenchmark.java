@@ -79,7 +79,8 @@ public class DomainClassloaderCreationBenchmark extends AbstractArtifactActivati
     newDomainDescriptorForCache = domainClassLoaderForCache.getArtifactDescriptor();
     newDomainDescriptorForCache.setPlugins(artifactPluginDescriptors);
     plugin2ClassLoaderForCache =
-        artifactClassLoaderResolver.createMulePluginClassLoader(domainClassLoaderForCache, plugin2Descriptor, d -> empty());
+        artifactClassLoaderResolver.createMulePluginClassLoader(domainClassLoaderForCache, plugin2Descriptor,
+                                                                (apds, d) -> empty());
   }
 
   @Benchmark
