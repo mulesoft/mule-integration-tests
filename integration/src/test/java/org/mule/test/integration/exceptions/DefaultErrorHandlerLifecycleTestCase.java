@@ -18,7 +18,6 @@ import org.mule.runtime.api.lifecycle.Startable;
 import org.mule.runtime.api.lifecycle.Stoppable;
 import org.mule.runtime.core.api.construct.FlowConstruct;
 import org.mule.tck.junit4.rule.SystemProperty;
-import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.tests.api.LifecycleTrackerRegistry;
 
 import java.util.Collection;
@@ -29,7 +28,7 @@ import javax.inject.Named;
 import org.junit.Test;
 import org.junit.Rule;
 
-public class DefaultErrorHandlerLifecycleTestCase extends AbstractIntegrationTestCase {
+public class DefaultErrorHandlerLifecycleTestCase extends ErrorHandlerLifecycleTestCase {
 
   @Override
   protected String getConfigFile() {
@@ -52,7 +51,7 @@ public class DefaultErrorHandlerLifecycleTestCase extends AbstractIntegrationTes
   private FlowConstruct flowF;
 
   @Rule
-  public SystemProperty expectedStatus = new SystemProperty(REUSE_GLOBAL_ERROR_HANDLER_PROPERTY, "true");
+  public SystemProperty reuseGlobalErrorHandler = new SystemProperty(REUSE_GLOBAL_ERROR_HANDLER_PROPERTY, "true");
 
   @Test
   public void testLifecycleDefaultErrorHandler() throws Exception {

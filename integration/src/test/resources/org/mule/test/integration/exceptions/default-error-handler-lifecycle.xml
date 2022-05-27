@@ -20,6 +20,12 @@
         </on-error-continue>
     </error-handler>
 
+    <error-handler name="global">
+        <on-error-continue>
+            <test-components:lifecycle-tracker name="globalErrorHandlerTracker"/>
+        </on-error-continue>
+    </error-handler>
+
     <flow name="flowA">
         <raise-error type="CUSTOM:ERROR" />
         <error-handler>
@@ -56,6 +62,11 @@
         <try>
             <raise-error type="CUSTOM:ERROR" />
         </try>
+    </flow>
+
+    <flow name="flowG">
+        <raise-error type="CUSTOM:ERROR" />
+        <error-handler ref="global"/>
     </flow>
 
 </mule>
