@@ -85,7 +85,7 @@ public class ApplicationClassloaderCreationBenchmark extends AbstractArtifactAct
     newApplicationDescriptorForCache = applicationClassLoaderForCache.getArtifactDescriptor();
     newApplicationDescriptorForCache.setPlugins(artifactPluginDescriptors);
     plugin2ClassLoaderForCache = artifactClassLoaderResolver
-        .createMulePluginClassLoader(applicationClassLoaderForCache, plugin2Descriptor, d -> empty());
+        .createMulePluginClassLoader(applicationClassLoaderForCache, plugin2Descriptor, (apds, d) -> empty());
   }
 
   @Benchmark
