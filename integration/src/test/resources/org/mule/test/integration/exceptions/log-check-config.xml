@@ -312,12 +312,8 @@
                       (set debug level logging or '-Dmule.verbose.exceptions=true' for everything)
 
                     Detailed Exception/Error(s) for route(s):
-                    Route 0:
-                    Message               : An error occurred.
-                    Element               : parallelForEachFlow/processors/0/processors/0 @ LogCheckTestCase#compositeRoutingExceptionForParallelForEach:org/mule/test/integration/exceptions/log-check-config.xml:298
-                    Element DSL           : <raise-error type="APP:EXPECTED"></raise-error>
-                    Error type            : APP:EXPECTED
-                    FlowStack             : at parallelForEachFlow(parallelForEachFlow/processors/0/processors/0 @ LogCheckTestCase#compositeRoutingExceptionForParallelForEach:org/mule/test/integration/exceptions/log-check-config.xml:298)
+                    Route 0: An error occurred.
+
                     ]]>
                 </test:check-equals>
             </test:on-error-check-log>
@@ -356,13 +352,8 @@
                       (set debug level logging or '-Dmule.verbose.exceptions=true' for everything)
 
                     Detailed Exception/Error(s) for route(s):
-                    Route 0:
-                    Message               : Scatter gather error
-                    Element               : scatterGatherFlow/processors/0/route/0/processors/0 @ LogCheckTestCase#compositeRoutingExceptionForScatterGather:org/mule/test/integration/exceptions/log-check-config.xml:331
-                    Element DSL           : <raise-error type="SCATTER:ERROR" description="Scatter gather error"></raise-error>
-                    Error type            : SCATTER:ERROR
-                    FlowStack             : at scatterGatherFlow(scatterGatherFlow/processors/0/route/0/processors/0 @ LogCheckTestCase#compositeRoutingExceptionForScatterGather:org/mule/test/integration/exceptions/log-check-config.xml:331)
-                   ]]>
+                    Route 0: Scatter gather error
+                     ]]>
                 </test:check-equals>
             </test:on-error-check-log>
         </error-handler>
