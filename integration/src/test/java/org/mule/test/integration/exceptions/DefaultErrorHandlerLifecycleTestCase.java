@@ -11,6 +11,7 @@ import static org.mule.runtime.api.util.MuleSystemProperties.REUSE_GLOBAL_ERROR_
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
+import org.mule.functional.junit4.TestComponentBuildingDefinitionRegistryFactory;
 import org.mule.runtime.api.lifecycle.Disposable;
 import org.mule.runtime.api.lifecycle.Initialisable;
 import org.mule.runtime.api.lifecycle.Lifecycle;
@@ -25,10 +26,15 @@ import java.util.Collection;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.Rule;
 
 public class DefaultErrorHandlerLifecycleTestCase extends ErrorHandlerLifecycleTestCase {
+
+  @Rule
+  public SystemProperty reuseGlobalErrorHandler = new SystemProperty(REUSE_GLOBAL_ERROR_HANDLER_PROPERTY, "true");
 
   @Override
   protected String getConfigFile() {
@@ -50,8 +56,19 @@ public class DefaultErrorHandlerLifecycleTestCase extends ErrorHandlerLifecycleT
   @Named("flowF")
   private FlowConstruct flowF;
 
-  @Rule
-  public SystemProperty reuseGlobalErrorHandler = new SystemProperty(REUSE_GLOBAL_ERROR_HANDLER_PROPERTY, "true");
+  private static TestComponentBuildingDefinitionRegistryFactory previous;
+
+  @BeforeClass
+  public static void beforeClass() {
+    previous = componentBuildingDefinitionRegistryFactory;
+    componentBuildingDefinitionRegistryFactory = new TestComponentBuildingDefinitionRegistryFactory();
+    componentBuildingDefinitionRegistryFactory.setRefreshRuntimeComponentBuildingDefinitions(true);
+  }
+
+  @AfterClass
+  public static void afterClass() {
+    componentBuildingDefinitionRegistryFactory = previous;
+  }
 
   @Test
   public void testLifecycleDefaultErrorHandler() throws Exception {

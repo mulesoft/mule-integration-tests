@@ -14,6 +14,12 @@
         </on-error-continue>
     </error-handler>
 
+    <error-handler name="esB">
+        <on-error-continue>
+            <test-components:lifecycle-tracker-check name="esAErrorHandlerTracker"/>
+        </on-error-continue>
+    </error-handler>
+
     <error-handler name="defaultEh">
         <on-error-continue>
             <test-components:lifecycle-tracker-check name="defaultEhErrorHandlerTracker"/>
