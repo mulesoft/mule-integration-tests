@@ -337,7 +337,7 @@
                     <![CDATA[
                     Message               : Exception/Error(s) were found for route(s):
                         0: org.mule.runtime.api.exception.DefaultMuleException: Scatter gather error
-                    Element               : scatterGatherFlow/processors/0 @ LogCheckTestCase#compositeRoutingExceptionForScatterGather:org/mule/test/integration/exceptions/log-check-config.xml:329
+                    Element               : scatterGatherFlow/processors/0 @ LogCheckTestCase#compositeRoutingExceptionForScatterGather:org/mule/test/integration/exceptions/log-check-config.xml:325
                     Element DSL           : <scatter-gather>
                     <route>
                     <raise-error type="SCATTER:ERROR" description="Scatter gather error"></raise-error>
@@ -348,7 +348,7 @@
                     </route>
                     </scatter-gather>
                     Error type            : MULE:COMPOSITE_ROUTING
-                    FlowStack             : at scatterGatherFlow(scatterGatherFlow/processors/0 @ LogCheckTestCase#compositeRoutingExceptionForScatterGather:org/mule/test/integration/exceptions/log-check-config.xml:329)
+                    FlowStack             : at scatterGatherFlow(scatterGatherFlow/processors/0 @ LogCheckTestCase#compositeRoutingExceptionForScatterGather:org/mule/test/integration/exceptions/log-check-config.xml:325)
                       (set debug level logging or '-Dmule.verbose.exceptions=true' for everything)
 
                     Detailed Exception/Error(s) for route(s):
