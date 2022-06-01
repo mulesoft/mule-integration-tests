@@ -77,7 +77,7 @@ public class ErrorHandlerLifecycleTestCase extends AbstractIntegrationTestCase {
 
     ((Lifecycle) flowC).stop();
 
-    assertThat(defaultEhErrorHandlerPhases.contains(Stoppable.PHASE_NAME), is(false));
+    assertThat(defaultEhErrorHandlerPhases.contains(Stoppable.PHASE_NAME), is(true));
   }
 
   @Test
@@ -90,7 +90,7 @@ public class ErrorHandlerLifecycleTestCase extends AbstractIntegrationTestCase {
 
     ((Lifecycle) flowD).stop();
 
-    assertThat(defaultEhErrorHandlerPhases.contains(Stoppable.PHASE_NAME), is(false));
+    assertThat(defaultEhErrorHandlerPhases.contains(Stoppable.PHASE_NAME), is(true));
   }
 
 }
