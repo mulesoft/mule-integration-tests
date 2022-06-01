@@ -6,6 +6,8 @@
  */
 package org.mule.test.integration.exceptions;
 
+import static org.mule.runtime.api.util.MuleSystemProperties.MULE_PRINT_LEGACY_COMPOSITE_EXCEPTION_LOG;
+import static org.mule.runtime.core.privileged.routing.CompositeRoutingException.setLegacyCompositeExceptionLog;
 import static org.mule.tck.junit4.rule.VerboseExceptions.setVerboseExceptions;
 import static org.mule.test.allure.AllureConstants.Logging.LOGGING;
 import static org.mule.test.allure.AllureConstants.Logging.LoggingStory.ERROR_REPORTING;
@@ -132,14 +134,40 @@ public class LogCheckTestCase extends AbstractIntegrationTestCase {
   @Test
   @Issue("W-10965130")
   public void compositeRoutingExceptionForParallelForEach() throws Exception {
+    boolean originalProperty = Boolean.parseBoolean(System.getProperty(MULE_PRINT_LEGACY_COMPOSITE_EXCEPTION_LOG));
+    setLegacyCompositeExceptionLog(false);
     runSuccesses(false, "parallelForEachFlow");
+    setLegacyCompositeExceptionLog(originalProperty);
   }
 
   @Test
   @Issue("W-10965130")
   public void compositeRoutingExceptionForScatterGather() throws Exception {
+    boolean originalProperty = Boolean.parseBoolean(System.getProperty(MULE_PRINT_LEGACY_COMPOSITE_EXCEPTION_LOG));
+    setLegacyCompositeExceptionLog(false);
     runSuccesses(false, "scatterGatherFlow");
+    setLegacyCompositeExceptionLog(originalProperty);
+
   }
+
+  @Test
+  @Issue("W-10965130")
+  public void compositeRoutingExceptionForParallelForEachPreviousVersionLog() throws Exception {
+    boolean originalProperty = Boolean.parseBoolean(System.getProperty(MULE_PRINT_LEGACY_COMPOSITE_EXCEPTION_LOG));
+    setLegacyCompositeExceptionLog(true);
+    runSuccesses(false, "previousParallelForEachFlow");
+    setLegacyCompositeExceptionLog(originalProperty);
+  }
+
+  @Test
+  @Issue("W-10965130")
+  public void compositeRoutingExceptionForScatterGatherPreviousVersionLog() throws Exception {
+    boolean originalProperty = Boolean.parseBoolean(System.getProperty(MULE_PRINT_LEGACY_COMPOSITE_EXCEPTION_LOG));
+    setLegacyCompositeExceptionLog(true);
+    runSuccesses(false, "previousScatterGatherFlow");
+    setLegacyCompositeExceptionLog(originalProperty);
+  }
+
 
   private void runSuccesses(boolean verboseExceptions, String flowName) throws Exception {
     setVerboseExceptions(verboseExceptions);

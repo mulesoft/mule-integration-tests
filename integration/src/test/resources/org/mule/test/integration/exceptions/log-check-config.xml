@@ -359,6 +359,57 @@
         </error-handler>
     </flow>
 
+
+    <flow name="previousParallelForEachFlow">
+        <parallel-foreach collection="#[[42]]">
+            <raise-error type="APP:EXPECTED"/>
+        </parallel-foreach>
+        <error-handler>
+            <test:on-error-check-log>
+                <test:check-equals>
+                    <![CDATA[
+                    Exception(s) were found for route(s):
+	                Route 0:
+	                Message               : An error occurred.
+                    Element               : (None)
+                    Element DSL           : (None)
+                    Error type            : (None)
+                    FlowStack             : (None)
+                      (set debug level logging or '-Dmule.verbose.exceptions=true' for everything)
+                    ]]>
+                </test:check-equals>
+            </test:on-error-check-log>
+        </error-handler>
+    </flow>
+
+    <flow name="previousScatterGatherFlow">
+        <scatter-gather>
+            <route>
+                <raise-error type="SCATTER:ERROR" description="Scatter gather error"/>
+            </route>
+            <route>
+                <set-variable value="#[null]" variableName="variableA"/>
+                <logger message='#[vars.variableA as String ++ "text"]' level="INFO"/>
+            </route>
+        </scatter-gather>
+        <error-handler>
+            <test:on-error-check-log>
+                <test:check-equals>
+                    <![CDATA[
+                    Exception(s) were found for route(s):
+                    Route 0:
+                    Message               : Scatter gather error
+                    Element               : (None)
+                    Element DSL           : (None)
+                    Error type            : (None)
+                    FlowStack             : (None)
+                      (set debug level logging or '-Dmule.verbose.exceptions=true' for everything)
+                     ]]>
+                </test:check-equals>
+            </test:on-error-check-log>
+        </error-handler>
+    </flow>
+
     <object name="throwNpe" class="org.mule.test.integration.exceptions.LogCheckTestCase$ThrowNpeProcessor"/>
 
 </mule>
