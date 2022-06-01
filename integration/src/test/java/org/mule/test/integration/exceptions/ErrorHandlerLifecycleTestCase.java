@@ -6,6 +6,8 @@
  */
 package org.mule.test.integration.exceptions;
 
+import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
+import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ErrorHandlingStory.ERROR_HANDLER;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
@@ -23,8 +25,12 @@ import java.util.Collection;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 import org.junit.Test;
 
+@Feature(ERROR_HANDLING)
+@Story(ERROR_HANDLER)
 public class ErrorHandlerLifecycleTestCase extends AbstractIntegrationTestCase {
 
   @Override
@@ -50,10 +56,6 @@ public class ErrorHandlerLifecycleTestCase extends AbstractIntegrationTestCase {
   @Inject
   @Named("flowD")
   private FlowConstruct flowD;
-
-  @Inject
-  @Named("flowG")
-  private FlowConstruct flowG;
 
   @Test
   public void testLifecycleErrorHandlerInFlow() throws Exception {
@@ -104,26 +106,4 @@ public class ErrorHandlerLifecycleTestCase extends AbstractIntegrationTestCase {
     assertThat(defaultEhErrorHandlerPhases.contains(Stoppable.PHASE_NAME), is(true));
     assertThat(defaultEhErrorHandlerPhases.contains(Disposable.PHASE_NAME), is(true));
   }
-
-  @Test
-  public void testStopAndStartDefaultErrorHandler() throws Exception {
-    flowRunner(flowG.getName()).run();
-
-    Collection<String> globalErrorHandlerTracker = trackersRegistry.get("globalErrorHandlerTracker").getCalledPhases();
-
-    assertThat(globalErrorHandlerTracker.contains(Initialisable.PHASE_NAME), is(true));
-    assertThat(globalErrorHandlerTracker.contains(Startable.PHASE_NAME), is(true));
-
-    ((Lifecycle) flowG).stop();
-    ((Lifecycle) flowG).start();
-
-    flowRunner(flowG.getName()).run();
-
-    ((Lifecycle) flowG).stop();
-    ((Lifecycle) flowG).dispose();
-
-    assertThat(globalErrorHandlerTracker.contains(Stoppable.PHASE_NAME), is(true));
-    assertThat(globalErrorHandlerTracker.contains(Disposable.PHASE_NAME), is(true));
-  }
-
 }
