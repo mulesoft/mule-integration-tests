@@ -448,6 +448,13 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
+  public void defaultErrorHandler() throws Exception {
+    Location defaultErrorHandlerLoggerLocation = Location.builder().globalName("defaultErrorHandler").build();
+    Optional<Component> component = configurationComponentLocator.find(defaultErrorHandlerLoggerLocation);
+    assertThat(component.isPresent(), is(false));
+  }
+
+  @Test
   public void aggregatorWithOneRoute() throws Exception {
     flowRunner("aggregatorWithOneRoute").run();
     waitUntilNotificationsArrived(2);
