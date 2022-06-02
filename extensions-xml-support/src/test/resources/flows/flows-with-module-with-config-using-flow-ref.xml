@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:module-with-config-using-flow-ref="http://www.mulesoft.org/schema/mule/module-with-config-using-flow-ref"
+      xsi:schemaLocation="
+       http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+       http://www.mulesoft.org/schema/mule/module-with-config-using-flow-ref http://www.mulesoft.org/schema/mule/module-with-config-using-flow-ref/current/mule-module-with-config-using-flow-ref.xsd">
+
+    <module-with-config-using-flow-ref:config name="myConfig" app="myApp" />
+
+    <flow name="invoke-call-flow">
+        <module-with-config-using-flow-ref:call-flow config-ref="myConfig" />
+        <flow-ref name="app-flow"/>
+    </flow>
+
+    <flow name="app-flow">
+        <set-payload value="Bye World!"/>
+    </flow>
+
+</mule>
