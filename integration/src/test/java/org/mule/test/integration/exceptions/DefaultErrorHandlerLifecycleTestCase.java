@@ -6,11 +6,12 @@
  */
 package org.mule.test.integration.exceptions;
 
+import static org.hamcrest.CoreMatchers.not;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ErrorHandlingStory.DEFAULT_ERROR_HANDLER;
 import static org.mule.runtime.api.util.MuleSystemProperties.REUSE_GLOBAL_ERROR_HANDLER_PROPERTY;
 
-import static org.hamcrest.core.Is.is;
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.junit.Assert.assertThat;
 
 import org.mule.functional.junit4.TestComponentBuildingDefinitionRegistryFactory;
@@ -83,21 +84,21 @@ public class DefaultErrorHandlerLifecycleTestCase extends AbstractIntegrationTes
 
     Collection<String> defaultEhErrorHandlerPhases = trackersRegistry.get("defaultEhErrorHandlerTracker").getCalledPhases();
 
-    assertThat(defaultEhErrorHandlerPhases.contains(Initialisable.PHASE_NAME), is(true));
-    assertThat(defaultEhErrorHandlerPhases.contains(Startable.PHASE_NAME), is(true));
+    assertThat(defaultEhErrorHandlerPhases, hasItem(Initialisable.PHASE_NAME));
+    assertThat(defaultEhErrorHandlerPhases, hasItem(Startable.PHASE_NAME));
 
     ((Lifecycle) flowD).stop();
     ((Lifecycle) flowE).stop();
     ((Lifecycle) flowD).dispose();
     ((Lifecycle) flowE).dispose();
 
-    assertThat(defaultEhErrorHandlerPhases.contains(Stoppable.PHASE_NAME), is(false));
-    assertThat(defaultEhErrorHandlerPhases.contains(Disposable.PHASE_NAME), is(false));
+    assertThat(defaultEhErrorHandlerPhases, not(hasItem(Stoppable.PHASE_NAME)));
+    assertThat(defaultEhErrorHandlerPhases, not(hasItem(Disposable.PHASE_NAME)));
 
     ((Lifecycle) flowF).stop();
     ((Lifecycle) flowF).dispose();
 
-    assertThat(defaultEhErrorHandlerPhases.contains(Stoppable.PHASE_NAME), is(true));
-    assertThat(defaultEhErrorHandlerPhases.contains(Disposable.PHASE_NAME), is(true));
+    assertThat(defaultEhErrorHandlerPhases, hasItem(Stoppable.PHASE_NAME));
+    assertThat(defaultEhErrorHandlerPhases, hasItem(Disposable.PHASE_NAME));
   }
 }

@@ -6,11 +6,12 @@
  */
 package org.mule.test.integration.exceptions;
 
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.not;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ErrorHandlingStory.GLOBAL_ERROR_HANDLER;
 import static org.mule.runtime.api.util.MuleSystemProperties.REUSE_GLOBAL_ERROR_HANDLER_PROPERTY;
 
-import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
 import org.mule.functional.junit4.TestComponentBuildingDefinitionRegistryFactory;
@@ -81,22 +82,22 @@ public class GlobalErrorHandlerLifecycleTestCase extends AbstractIntegrationTest
   public void testLifecycleGlobalErrorHandler() throws Exception {
     flowRunner(flow1.getName()).run();
 
-    Collection<String> defaultEhErrorHandlerPhases = trackersRegistry.get("anotherGlobalErrorHandlerTracker").getCalledPhases();
+    Collection<String> globalErrorHandlerTracker = trackersRegistry.get("anotherGlobalErrorHandlerTracker").getCalledPhases();
 
-    assertThat(defaultEhErrorHandlerPhases.contains(Initialisable.PHASE_NAME), is(true));
-    assertThat(defaultEhErrorHandlerPhases.contains(Startable.PHASE_NAME), is(true));
+    assertThat(globalErrorHandlerTracker, hasItem(Initialisable.PHASE_NAME));
+    assertThat(globalErrorHandlerTracker, hasItem(Startable.PHASE_NAME));
 
     ((Lifecycle) flow1).stop();
     ((Lifecycle) flow1).dispose();
 
-    assertThat(defaultEhErrorHandlerPhases.contains(Stoppable.PHASE_NAME), is(false));
-    assertThat(defaultEhErrorHandlerPhases.contains(Disposable.PHASE_NAME), is(false));
+    assertThat(globalErrorHandlerTracker, not(hasItem(Stoppable.PHASE_NAME)));
+    assertThat(globalErrorHandlerTracker, not(hasItem(Disposable.PHASE_NAME)));
 
     ((Lifecycle) flow2).stop();
     ((Lifecycle) flow2).dispose();
 
-    assertThat(defaultEhErrorHandlerPhases.contains(Stoppable.PHASE_NAME), is(true));
-    assertThat(defaultEhErrorHandlerPhases.contains(Disposable.PHASE_NAME), is(true));
+    assertThat(globalErrorHandlerTracker, hasItem(Stoppable.PHASE_NAME));
+    assertThat(globalErrorHandlerTracker, hasItem(Disposable.PHASE_NAME));
   }
 
   @Test
@@ -105,12 +106,12 @@ public class GlobalErrorHandlerLifecycleTestCase extends AbstractIntegrationTest
 
     Collection<String> globalErrorHandlerTracker = trackersRegistry.get("globalErrorHandlerTracker").getCalledPhases();
 
-    assertThat(globalErrorHandlerTracker.contains(Initialisable.PHASE_NAME), is(true));
-    assertThat(globalErrorHandlerTracker.contains(Startable.PHASE_NAME), is(true));
+    assertThat(globalErrorHandlerTracker, hasItem(Initialisable.PHASE_NAME));
+    assertThat(globalErrorHandlerTracker, hasItem(Startable.PHASE_NAME));
 
     ((Lifecycle) globalReference).stop();
 
-    assertThat(globalErrorHandlerTracker.contains(Stoppable.PHASE_NAME), is(true));
+    assertThat(globalErrorHandlerTracker, hasItem(Stoppable.PHASE_NAME));
 
     ((Lifecycle) globalReference).start();
 
@@ -119,7 +120,7 @@ public class GlobalErrorHandlerLifecycleTestCase extends AbstractIntegrationTest
     ((Lifecycle) globalReference).stop();
     ((Lifecycle) globalReference).dispose();
 
-    assertThat(globalErrorHandlerTracker.contains(Disposable.PHASE_NAME), is(true));
+    assertThat(globalErrorHandlerTracker, hasItem(Disposable.PHASE_NAME));
   }
 
 }
