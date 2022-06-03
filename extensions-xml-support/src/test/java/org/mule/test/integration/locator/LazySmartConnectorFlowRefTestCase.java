@@ -40,13 +40,15 @@ public class LazySmartConnectorFlowRefTestCase extends AbstractXmlExtensionMuleA
   public String configFile;
 
   @Parameterized.Parameter(1)
-  public String moduleFile;
+  public String[] moduleFiles;
 
   @Parameterized.Parameters(name = "{index}: Running tests for {0} ")
   public static Collection<Object[]> data() {
-    return asList(new Object[] {"flows/flows-with-module-using-flow-ref.xml", "modules/module-using-flow-ref.xml"},
+    return asList(new Object[] {"flows/flows-with-module-using-flow-ref.xml", new String[] {"modules/module-using-flow-ref.xml"}},
                   new Object[] {"flows/flows-with-module-with-config-using-flow-ref.xml",
-                      "modules/module-with-config-using-flow-ref.xml"});
+                      new String[] {"modules/module-with-config-using-flow-ref.xml"}},
+                  new Object[] {"flows/flows-with-modules-using-same-flow-name.xml",
+                      new String[] {"modules/module-using-flow-ref.xml", "modules/module-with-config-using-flow-ref.xml"}});
   }
 
   @Override
@@ -55,8 +57,8 @@ public class LazySmartConnectorFlowRefTestCase extends AbstractXmlExtensionMuleA
   }
 
   @Override
-  protected String getModulePath() {
-    return moduleFile;
+  protected String[] getModulePaths() {
+    return moduleFiles;
   }
 
   @Override
@@ -71,15 +73,15 @@ public class LazySmartConnectorFlowRefTestCase extends AbstractXmlExtensionMuleA
 
   @Test
   @Issue("W-11177824")
-  @Description("Verify that flows defined in the XML SDK connector definition are found when doing lazy init")
-  public void findInternalFlows() {
+  @Description("Verify that a flow defined in an XML-SDK-connector operation is found when doing lazy init")
+  public void findInternalFlow() {
     lazyComponentInitializer.initializeComponent(builderFromStringRepresentation("invoke-call-flow").build());
   }
 
-  public static class Util {
-
-    public void util() {
-
-    }
+  @Test
+  @Issue("W-11177824")
+  @Description("Verify that a flow defined in multiple XML-SDK-connector operations is found when doing lazy init")
+  public void findInternalFlowUsedByMultipleOperations() {
+    lazyComponentInitializer.initializeComponent(builderFromStringRepresentation("invoke-both-call-flow").build());
   }
 }
