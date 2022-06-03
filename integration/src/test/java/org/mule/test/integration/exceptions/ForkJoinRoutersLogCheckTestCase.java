@@ -6,7 +6,6 @@ import static org.mule.test.allure.AllureConstants.Logging.LOGGING;
 import static org.mule.test.allure.AllureConstants.Logging.LoggingStory.ERROR_REPORTING;
 
 import static java.lang.System.setProperty;
-import static java.util.Arrays.asList;
 
 import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.exception.MuleException;
@@ -16,9 +15,6 @@ import org.mule.runtime.core.api.processor.Processor;
 import org.mule.tck.junit4.rule.VerboseExceptions;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import java.util.List;
-
-import com.beust.jcommander.Parameters;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
@@ -26,10 +22,7 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 
-//@RunWith(Parameterized.class)
 @Feature(LOGGING)
 @Story(ERROR_REPORTING)
 public class ForkJoinRoutersLogCheckTestCase extends AbstractIntegrationTestCase {
@@ -45,13 +38,6 @@ public class ForkJoinRoutersLogCheckTestCase extends AbstractIntegrationTestCase
     protected String getConfigFile() {
         return "org/mule/test/integration/exceptions/fork-join-routers-log-config.xml";
     }
-
-//    @Parameterized.Parameters(name = "Legacy log: {0}")
-//    public static List<Object[]> parameters() {
-//        return asList(
-//                new Object[] {true},
-//                new Object[] {false});
-//    }
 
     @Test
     @Issue("W-10965130")
