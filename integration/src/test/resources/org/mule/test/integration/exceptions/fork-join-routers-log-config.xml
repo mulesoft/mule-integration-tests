@@ -17,12 +17,12 @@
                 <![CDATA[
                     Message               : Exception/Error(s) were found for route(s):
 	                                        0: org.mule.runtime.api.exception.DefaultMuleException: An error occurred.
-                    Element               : parallelForEachFlow/processors/0 @ ForkJoinRoutersLogCheckTestCase#compositeRoutingExceptionForParallelForEach:org/mule/test/integration/exceptions/fork-join-routers-log-config.xml:11
+                    Element               : parallelForEachFlow/processors/0 @ ForkJoinRoutersLogCheckTestCase#compositeRoutingExceptionForParallelForEach[Legacy log: false]:org/mule/test/integration/exceptions/fork-join-routers-log-config.xml:11
                     Element DSL           : <parallel-foreach collection="#[[42]]">
                     <raise-error type="APP:EXPECTED"></raise-error>
                     </parallel-foreach>
                     Error type            : MULE:COMPOSITE_ROUTING
-                    FlowStack             : at parallelForEachFlow(parallelForEachFlow/processors/0 @ ForkJoinRoutersLogCheckTestCase#compositeRoutingExceptionForParallelForEach:org/mule/test/integration/exceptions/fork-join-routers-log-config.xml:11)
+                    FlowStack             : at parallelForEachFlow(parallelForEachFlow/processors/0 @ ForkJoinRoutersLogCheckTestCase#compositeRoutingExceptionForParallelForEach[Legacy log: false]:org/mule/test/integration/exceptions/fork-join-routers-log-config.xml:11)
                       (set debug level logging or '-Dmule.verbose.exceptions=true' for everything)
 
                     Detailed Exception/Error(s) for route(s):
@@ -51,7 +51,7 @@
             <![CDATA[
                     Message               : Exception/Error(s) were found for route(s):
                         0: org.mule.runtime.api.exception.DefaultMuleException: Scatter gather error
-                    Element               : scatterGatherFlow/processors/0 @ ForkJoinRoutersLogCheckTestCase#compositeRoutingExceptionForScatterGather:org/mule/test/integration/exceptions/fork-join-routers-log-config.xml:39
+                    Element               : scatterGatherFlow/processors/0 @ ForkJoinRoutersLogCheckTestCase#compositeRoutingExceptionForScatterGather[Legacy log: false]:org/mule/test/integration/exceptions/fork-join-routers-log-config.xml:39
                     Element DSL           : <scatter-gather>
                     <route>
                     <raise-error type="SCATTER:ERROR" description="Scatter gather error"></raise-error>
@@ -62,7 +62,7 @@
                     </route>
                     </scatter-gather>
                     Error type            : MULE:COMPOSITE_ROUTING
-                    FlowStack             : at scatterGatherFlow(scatterGatherFlow/processors/0 @ ForkJoinRoutersLogCheckTestCase#compositeRoutingExceptionForScatterGather:org/mule/test/integration/exceptions/fork-join-routers-log-config.xml:39)
+                    FlowStack             : at scatterGatherFlow(scatterGatherFlow/processors/0 @ ForkJoinRoutersLogCheckTestCase#compositeRoutingExceptionForScatterGather[Legacy log: false]:org/mule/test/integration/exceptions/fork-join-routers-log-config.xml:39)
                       (set debug level logging or '-Dmule.verbose.exceptions=true' for everything)
 
                     Detailed Exception/Error(s) for route(s):
