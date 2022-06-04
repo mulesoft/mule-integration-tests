@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) MuleSoft, Inc.  All rights reserved.  http://www.mulesoft.com
+ * The software in this package is published under the terms of the CPAL v1.0
+ * license, a copy of which has been included with this distribution in the
+ * LICENSE.txt file.
+ */
+
 package org.mule.test.integration.exceptions;
 
 import static org.mule.runtime.api.util.MuleSystemProperties.MULE_PRINT_LEGACY_COMPOSITE_EXCEPTION_LOG;
@@ -28,48 +35,49 @@ import org.junit.runners.Parameterized;
 @Story(ERROR_REPORTING)
 public class ForkJoinRoutersLogCheckTestCase extends AbstractIntegrationTestCase {
 
-    @Rule
-    public SystemProperty legacyCompositeRoutingExceptionLog;
+  @Rule
+  public SystemProperty legacyCompositeRoutingExceptionLog;
 
-    @Override
-    protected String getConfigFile() {
-        return "org/mule/test/integration/exceptions/fork-join-routers-log-config.xml";
+  @Override
+  protected String getConfigFile() {
+    return "org/mule/test/integration/exceptions/fork-join-routers-log-config.xml";
+  }
+
+  @Parameters(name = "Legacy log: {0}")
+  public static List<Object[]> parameters() {
+    return asList(
+                  new Object[] {true},
+                  new Object[] {false});
+  }
+
+  public ForkJoinRoutersLogCheckTestCase(boolean legacyCompositeRoutingExceptionLog) {
+    this.legacyCompositeRoutingExceptionLog =
+        new SystemProperty(MULE_PRINT_LEGACY_COMPOSITE_EXCEPTION_LOG, Boolean.toString(legacyCompositeRoutingExceptionLog));
+  }
+
+  @Test
+  @Issue("W-10965130")
+  public void compositeRoutingExceptionForParallelForEach() throws Exception {
+    if (parseBoolean(getProperty(MULE_PRINT_LEGACY_COMPOSITE_EXCEPTION_LOG))) {
+      runSuccesses("previousParallelForEachFlow");
+    } else {
+      runSuccesses("parallelForEachFlow");
     }
+  }
 
-    @Parameters(name = "Legacy log: {0}")
-    public static List<Object[]> parameters() {
-        return asList(
-                new Object[] {true},
-                new Object[] {false});
+  @Test
+  @Issue("W-10965130")
+  public void compositeRoutingExceptionForScatterGather() throws Exception {
+    if (parseBoolean(getProperty(MULE_PRINT_LEGACY_COMPOSITE_EXCEPTION_LOG))) {
+      runSuccesses("previousScatterGatherFlow");
+    } else {
+      runSuccesses("scatterGatherFlow");
     }
-
-    public ForkJoinRoutersLogCheckTestCase(boolean legacyCompositeRoutingExceptionLog) {
-        this.legacyCompositeRoutingExceptionLog = new SystemProperty(MULE_PRINT_LEGACY_COMPOSITE_EXCEPTION_LOG, Boolean.toString(legacyCompositeRoutingExceptionLog));
-    }
-
-    @Test
-    @Issue("W-10965130")
-    public void compositeRoutingExceptionForParallelForEach() throws Exception {
-        if(parseBoolean(getProperty(MULE_PRINT_LEGACY_COMPOSITE_EXCEPTION_LOG))){
-            runSuccesses("previousParallelForEachFlow");
-        } else {
-            runSuccesses("parallelForEachFlow");
-        }
-    }
-
-    @Test
-    @Issue("W-10965130")
-    public void compositeRoutingExceptionForScatterGather() throws Exception {
-        if(parseBoolean(getProperty(MULE_PRINT_LEGACY_COMPOSITE_EXCEPTION_LOG))){
-            runSuccesses("previousScatterGatherFlow");
-        } else {
-            runSuccesses("scatterGatherFlow");
-        }
-    }
+  }
 
 
-    private void runSuccesses(String flowName) throws Exception {
-        flowRunner(flowName).run();
-    }
+  private void runSuccesses(String flowName) throws Exception {
+    flowRunner(flowName).run();
+  }
 
 }
