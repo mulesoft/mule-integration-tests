@@ -12,7 +12,6 @@ import static org.mule.test.allure.AllureConstants.Logging.LOGGING;
 import static org.mule.test.allure.AllureConstants.Logging.LoggingStory.ERROR_REPORTING;
 
 import static java.lang.Boolean.parseBoolean;
-import static java.lang.System.getProperty;
 import static java.util.Arrays.asList;
 
 import static org.junit.runners.Parameterized.Parameters;
