@@ -63,7 +63,7 @@ public class ParallelForEachTestCase extends AbstractIntegrationTestCase {
   private static final ComponentIdentifier EXPECTED =
       builder().namespace("TEST").name("EXPECTED").build();
 
-  private static final String EXCEPTION_MESSAGE_TITLE_PREFIX = "Exception(s) were found for route(s): " + lineSeparator();
+  private static final String EXCEPTION_MESSAGE_TITLE_PREFIX = "Exception/Error(s) were found for route(s):" + lineSeparator();
   private final String[] fruitList = new String[] {"apple", "banana", "orange"};
 
   @Rule
