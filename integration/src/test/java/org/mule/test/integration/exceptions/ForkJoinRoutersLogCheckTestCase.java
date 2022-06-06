@@ -7,7 +7,7 @@
 
 package org.mule.test.integration.exceptions;
 
-import static org.mule.runtime.api.util.MuleSystemProperties.MULE_PRINT_LEGACY_COMPOSITE_EXCEPTION_LOG;
+import static org.mule.runtime.api.util.MuleSystemProperties.MULE_PRINT_LEGACY_COMPOSITE_EXCEPTION_LOG_PROPERTY;
 import static org.mule.test.allure.AllureConstants.Logging.LOGGING;
 import static org.mule.test.allure.AllureConstants.Logging.LoggingStory.ERROR_REPORTING;
 
@@ -51,7 +51,8 @@ public class ForkJoinRoutersLogCheckTestCase extends AbstractIntegrationTestCase
 
   public ForkJoinRoutersLogCheckTestCase(boolean legacyCompositeRoutingExceptionLog) {
     this.legacyCompositeRoutingExceptionLog =
-        new SystemProperty(MULE_PRINT_LEGACY_COMPOSITE_EXCEPTION_LOG, Boolean.toString(legacyCompositeRoutingExceptionLog));
+        new SystemProperty(MULE_PRINT_LEGACY_COMPOSITE_EXCEPTION_LOG_PROPERTY,
+                           Boolean.toString(legacyCompositeRoutingExceptionLog));
   }
 
   @Test
