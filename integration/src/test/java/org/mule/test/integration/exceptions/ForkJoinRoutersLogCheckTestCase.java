@@ -58,7 +58,7 @@ public class ForkJoinRoutersLogCheckTestCase extends AbstractIntegrationTestCase
   @Test
   @Issue("W-10965130")
   public void compositeRoutingExceptionForParallelForEach() throws Exception {
-    if (parseBoolean(getProperty(MULE_PRINT_LEGACY_COMPOSITE_EXCEPTION_LOG))) {
+    if (parseBoolean(legacyCompositeRoutingExceptionLog.getValue())) {
       runSuccesses("previousParallelForEachFlow");
     } else {
       runSuccesses("parallelForEachFlow");
@@ -68,7 +68,7 @@ public class ForkJoinRoutersLogCheckTestCase extends AbstractIntegrationTestCase
   @Test
   @Issue("W-10965130")
   public void compositeRoutingExceptionForScatterGather() throws Exception {
-    if (parseBoolean(getProperty(MULE_PRINT_LEGACY_COMPOSITE_EXCEPTION_LOG))) {
+    if (parseBoolean(legacyCompositeRoutingExceptionLog.getValue())) {
       runSuccesses("previousScatterGatherFlow");
     } else {
       runSuccesses("scatterGatherFlow");
