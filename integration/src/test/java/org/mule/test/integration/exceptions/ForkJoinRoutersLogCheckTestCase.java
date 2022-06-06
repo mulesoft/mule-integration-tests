@@ -7,7 +7,7 @@
 
 package org.mule.test.integration.exceptions;
 
-import static org.mule.runtime.api.util.MuleSystemProperties.MULE_PRINT_LEGACY_COMPOSITE_EXCEPTION_LOG_PROPERTY;
+import static org.mule.runtime.api.util.MuleSystemProperties.MULE_PRINT_DETAILED_COMPOSITE_EXCEPTION_LOG_PROPERTY;
 import static org.mule.test.allure.AllureConstants.Logging.LOGGING;
 import static org.mule.test.allure.AllureConstants.Logging.LoggingStory.ERROR_REPORTING;
 
@@ -35,43 +35,43 @@ import org.junit.runners.Parameterized;
 public class ForkJoinRoutersLogCheckTestCase extends AbstractIntegrationTestCase {
 
   @Rule
-  public SystemProperty legacyCompositeRoutingExceptionLog;
+  public SystemProperty detailedCompositeRoutingExceptionLog;
 
   @Override
   protected String getConfigFile() {
     return "org/mule/test/integration/exceptions/fork-join-routers-log-config.xml";
   }
 
-  @Parameters(name = "Legacy log: {0}")
+  @Parameters(name = "Detailed log: {0}")
   public static List<Object[]> parameters() {
     return asList(
                   new Object[] {true},
                   new Object[] {false});
   }
 
-  public ForkJoinRoutersLogCheckTestCase(boolean legacyCompositeRoutingExceptionLog) {
-    this.legacyCompositeRoutingExceptionLog =
-        new SystemProperty(MULE_PRINT_LEGACY_COMPOSITE_EXCEPTION_LOG_PROPERTY,
-                           Boolean.toString(legacyCompositeRoutingExceptionLog));
+  public ForkJoinRoutersLogCheckTestCase(boolean detailedCompositeRoutingExceptionLog) {
+    this.detailedCompositeRoutingExceptionLog =
+        new SystemProperty(MULE_PRINT_DETAILED_COMPOSITE_EXCEPTION_LOG_PROPERTY,
+                           Boolean.toString(detailedCompositeRoutingExceptionLog));
   }
 
   @Test
   @Issue("W-10965130")
   public void compositeRoutingExceptionForParallelForEach() throws Exception {
-    if (parseBoolean(legacyCompositeRoutingExceptionLog.getValue())) {
-      runSuccesses("previousParallelForEachFlow");
-    } else {
+    if (parseBoolean(detailedCompositeRoutingExceptionLog.getValue())) {
       runSuccesses("parallelForEachFlow");
+    } else {
+      runSuccesses("previousParallelForEachFlow");
     }
   }
 
   @Test
   @Issue("W-10965130")
   public void compositeRoutingExceptionForScatterGather() throws Exception {
-    if (parseBoolean(legacyCompositeRoutingExceptionLog.getValue())) {
-      runSuccesses("previousScatterGatherFlow");
-    } else {
+    if (parseBoolean(detailedCompositeRoutingExceptionLog.getValue())) {
       runSuccesses("scatterGatherFlow");
+    } else {
+      runSuccesses("previousScatterGatherFlow");
     }
   }
 
