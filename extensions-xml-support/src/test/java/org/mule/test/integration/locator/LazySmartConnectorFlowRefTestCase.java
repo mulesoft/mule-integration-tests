@@ -8,6 +8,7 @@ package org.mule.test.integration.locator;
 
 import static java.util.Arrays.asList;
 import static org.mule.runtime.api.component.location.Location.builderFromStringRepresentation;
+import static org.mule.test.allure.AllureConstants.ComponentsFeature.FlowReferenceStory.FLOW_REFERENCE;
 import static org.mule.test.allure.AllureConstants.LazyInitializationFeature.LAZY_INITIALIZATION;
 import static org.mule.test.allure.AllureConstants.XmlSdk.XML_SDK;
 
@@ -20,6 +21,7 @@ import java.util.Collection;
 
 import javax.inject.Inject;
 
+import io.qameta.allure.Story;
 import org.junit.Test;
 
 import io.qameta.allure.Description;
@@ -28,6 +30,7 @@ import io.qameta.allure.Features;
 import io.qameta.allure.Issue;
 import org.junit.runners.Parameterized;
 
+@Story(FLOW_REFERENCE)
 @Features({@Feature(XML_SDK), @Feature(LAZY_INITIALIZATION)})
 @RunnerDelegateTo(Parameterized.class)
 public class LazySmartConnectorFlowRefTestCase extends AbstractXmlExtensionMuleArtifactFunctionalTestCase
