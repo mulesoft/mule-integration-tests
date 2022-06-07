@@ -59,7 +59,7 @@ import io.qameta.allure.Story;
 @Story(SCATTER_GATHER)
 public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
 
-  private static final String EXCEPTION_MESSAGE_TITLE_PREFIX = "Exception/Error(s) were found for route(s):" + lineSeparator();
+  private static final String EXCEPTION_MESSAGE_TITLE_PREFIX = "Exception(s) were found for route(s): " + lineSeparator();
 
   @Rule
   public ExpectedException expectedException = none();
