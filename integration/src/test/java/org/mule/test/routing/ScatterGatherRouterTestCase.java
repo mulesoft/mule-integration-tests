@@ -9,6 +9,8 @@ package org.mule.test.routing;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.io.IOUtils.LINE_SEPARATOR;
+
+import static org.apache.commons.io.IOUtils.LINE_SEPARATOR;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.startsWith;
@@ -56,7 +58,7 @@ import io.qameta.allure.Story;
 @Story(SCATTER_GATHER)
 public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
 
-  private static final String EXCEPTION_MESSAGE_TITLE_PREFIX = "Exception(s) were found for route(s): " + LINE_SEPARATOR;
+  private static final String EXCEPTION_MESSAGE_TITLE_PREFIX = "Error(s) were found for route(s):" + LINE_SEPARATOR;
 
   @Rule
   public ExpectedException expectedException = none();

@@ -56,7 +56,7 @@ import io.qameta.allure.Story;
 @Story(PARALLEL_FOR_EACH)
 public class ParallelForEachTestCase extends AbstractIntegrationTestCase {
 
-  private static final String EXCEPTION_MESSAGE_TITLE_PREFIX = "Exception(s) were found for route(s): " + LINE_SEPARATOR;
+  private static final String EXCEPTION_MESSAGE_TITLE_PREFIX = "Error(s) were found for route(s):" + LINE_SEPARATOR;
   private final String[] fruitList = new String[] {"apple", "banana", "orange"};
 
   @Rule
