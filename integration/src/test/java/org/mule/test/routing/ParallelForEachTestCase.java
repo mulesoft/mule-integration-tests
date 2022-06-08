@@ -63,7 +63,7 @@ public class ParallelForEachTestCase extends AbstractIntegrationTestCase {
   private static final ComponentIdentifier EXPECTED =
       builder().namespace("TEST").name("EXPECTED").build();
 
-  private static final String EXCEPTION_MESSAGE_TITLE_PREFIX = "Exception/Error(s) were found for route(s):" + lineSeparator();
+  private static final String EXCEPTION_MESSAGE_TITLE_PREFIX = "Error(s) were found for route(s):" + lineSeparator();
   private final String[] fruitList = new String[] {"apple", "banana", "orange"};
 
   @Rule
@@ -127,7 +127,7 @@ public class ParallelForEachTestCase extends AbstractIntegrationTestCase {
   @Description("An error in a route results in a CompositeRoutingException containing details of exceptions.")
   public void routeWithException() {
     assertRouteException("routeWithException", EXCEPTION_MESSAGE_TITLE_PREFIX
-        + "\t1: org.mule.runtime.api.exception.DefaultMuleException: An error occurred.",
+        + "\tRoute 1: org.mule.runtime.api.exception.DefaultMuleException: An error occurred.",
                          DefaultMuleException.class, EXPECTED);
   }
 
@@ -136,7 +136,7 @@ public class ParallelForEachTestCase extends AbstractIntegrationTestCase {
   public void routeWithExceptionWithMessage() {
     assertRouteException("routeWithExceptionWithMessage",
                          EXCEPTION_MESSAGE_TITLE_PREFIX
-                             + "\t1: org.mule.runtime.api.exception.DefaultMuleException: I'm a message",
+                             + "\tRoute 1: org.mule.runtime.api.exception.DefaultMuleException: I'm a message",
                          DefaultMuleException.class, EXPECTED);
   }
 
@@ -144,7 +144,7 @@ public class ParallelForEachTestCase extends AbstractIntegrationTestCase {
   @Description("An error in a route results in a CompositeRoutingException containing details of exceptions.")
   public void routeWithNonMuleException() {
     assertRouteException("routeWithNonMuleException",
-                         EXCEPTION_MESSAGE_TITLE_PREFIX + "\t1: java.lang.NullPointerException: nonMule",
+                         EXCEPTION_MESSAGE_TITLE_PREFIX + "\tRoute 1: java.lang.NullPointerException: nonMule",
                          NullPointerException.class, UNKNOWN);
   }
 
@@ -163,7 +163,7 @@ public class ParallelForEachTestCase extends AbstractIntegrationTestCase {
   public void routeWithExceptionInSequentialProcessing() {
     assertRouteException("routeWithExceptionInSequentialProcessing",
                          EXCEPTION_MESSAGE_TITLE_PREFIX
-                             + "\t1: org.mule.runtime.api.exception.DefaultMuleException: An error occurred.",
+                             + "\tRoute 1: org.mule.runtime.api.exception.DefaultMuleException: An error occurred.",
                          DefaultMuleException.class, EXPECTED);
   }
 

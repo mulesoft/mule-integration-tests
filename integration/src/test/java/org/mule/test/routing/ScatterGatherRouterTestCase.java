@@ -59,7 +59,7 @@ import io.qameta.allure.Story;
 @Story(SCATTER_GATHER)
 public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
 
-  private static final String EXCEPTION_MESSAGE_TITLE_PREFIX = "Exception/Error(s) were found for route(s):" + lineSeparator();
+  private static final String EXCEPTION_MESSAGE_TITLE_PREFIX = "Error(s) were found for route(s):" + lineSeparator();
 
   @Rule
   public ExpectedException expectedException = none();
@@ -115,7 +115,7 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
   @Description("An error in a route results in a CompositeRoutingException containing details of exceptions.")
   public void routeWithException() throws Exception {
     assertRouteException("routeWithException", EXCEPTION_MESSAGE_TITLE_PREFIX
-        + "\t1: org.mule.runtime.api.exception.DefaultMuleException: An error occurred.",
+        + "\tRoute 1: org.mule.runtime.api.exception.DefaultMuleException: An error occurred.",
                          DefaultMuleException.class);
   }
 
@@ -124,7 +124,7 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
   public void routeWithExceptionWithMessage() throws Exception {
     assertRouteException("routeWithExceptionWithMessage",
                          EXCEPTION_MESSAGE_TITLE_PREFIX
-                             + "\t1: org.mule.runtime.api.exception.DefaultMuleException: I'm a message",
+                             + "\tRoute 1: org.mule.runtime.api.exception.DefaultMuleException: I'm a message",
                          DefaultMuleException.class);
   }
 
@@ -132,7 +132,7 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
   @Description("An error in a route results in a CompositeRoutingException containing details of exceptions.")
   public void routeWithNonMuleException() throws Exception {
     assertRouteException("routeWithNonMuleException",
-                         EXCEPTION_MESSAGE_TITLE_PREFIX + "\t1: java.lang.NullPointerException: nonMule",
+                         EXCEPTION_MESSAGE_TITLE_PREFIX + "\tRoute 1: java.lang.NullPointerException: nonMule",
                          NullPointerException.class);
   }
 
@@ -150,7 +150,7 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
   public void routeWithExceptionInSequentialProcessing() throws Exception {
     assertRouteException("routeWithExceptionInSequentialProcessing",
                          EXCEPTION_MESSAGE_TITLE_PREFIX
-                             + "\t1: org.mule.runtime.api.exception.DefaultMuleException: An error occurred.",
+                             + "\tRoute 1: org.mule.runtime.api.exception.DefaultMuleException: An error occurred.",
                          DefaultMuleException.class);
   }
 
