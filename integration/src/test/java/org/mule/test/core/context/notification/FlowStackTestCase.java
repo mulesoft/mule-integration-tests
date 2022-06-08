@@ -14,7 +14,7 @@ import static org.mule.runtime.api.component.ComponentIdentifier.buildFromString
 import static org.mule.tck.util.FlowTraceUtils.assertStackElements;
 import static org.mule.tck.util.FlowTraceUtils.isFlowStackElement;
 import static org.mule.tck.util.FlowTraceUtils.FlowStackAsserter.stackToAssert;
-import static org.mule.tck.util.FlowTraceUtils.withIdentifier;
+import static org.mule.tck.util.FlowTraceUtils.withChainIdentifier;
 import static org.mule.test.allure.AllureConstants.Logging.LOGGING;
 import static org.mule.test.allure.AllureConstants.Logging.LoggingStory.FLOW_STACK;
 
@@ -58,8 +58,8 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
     assertStackElements(stackToAssert, isFlowStackElement("flow", "flow/processors/0"),
                         isFlowStackElement("flowStatic", "flowStatic/processors/0"));
 
-    assertStackElements(stackToAssert, withIdentifier(buildFromStringRepresentation("flow")),
-                        withIdentifier(buildFromStringRepresentation("flow")));
+    assertStackElements(stackToAssert, withChainIdentifier(buildFromStringRepresentation("flow")),
+                        withChainIdentifier(buildFromStringRepresentation("flow")));
   }
 
   @Test
@@ -72,8 +72,8 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
                         isFlowStackElement("subFlow", "subFlow/processors/0"),
                         isFlowStackElement("subFlowStatic", "subFlowStatic/processors/0"));
 
-    assertStackElements(stackToAssert, withIdentifier(buildFromStringRepresentation("subflow")),
-                        withIdentifier(buildFromStringRepresentation("flow")));
+    assertStackElements(stackToAssert, withChainIdentifier(buildFromStringRepresentation("subflow")),
+                        withChainIdentifier(buildFromStringRepresentation("flow")));
   }
 
   @Test
@@ -163,8 +163,8 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
                                            "subFlowInAsync/processors/0"),
                         isFlowStackElement("subFlowStaticWithAsync", "subFlowStaticWithAsync/processors/0/processors/0"));
 
-    assertStackElements(stackToAssert, withIdentifier(buildFromStringRepresentation("subflow")),
-                        withIdentifier(buildFromStringRepresentation("flow")));
+    assertStackElements(stackToAssert, withChainIdentifier(buildFromStringRepresentation("subflow")),
+                        withChainIdentifier(buildFromStringRepresentation("flow")));
   }
 
   @Test
