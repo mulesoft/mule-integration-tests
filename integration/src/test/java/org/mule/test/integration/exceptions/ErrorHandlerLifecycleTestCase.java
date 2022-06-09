@@ -8,6 +8,7 @@ package org.mule.test.integration.exceptions;
 
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ErrorHandlingStory.ERROR_HANDLER;
+
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
