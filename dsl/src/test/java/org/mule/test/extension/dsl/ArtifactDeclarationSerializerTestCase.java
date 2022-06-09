@@ -200,7 +200,7 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
   }
 
   @Test
-  public void serializesToJson() throws URISyntaxException, IOException {
+  public void serializesToJson() throws Exception {
     InputStream configIs = currentThread().getContextClassLoader().getResourceAsStream(configFile);
     ArtifactDeclarationXmlSerializer serializer = ArtifactDeclarationXmlSerializer.getDefault(dslContext);
     ArtifactDeclaration expectedDeclaration = serializer.deserialize(configIs);
