@@ -15,8 +15,8 @@
             <test:on-error-check-log>
                 <test:check-equals>
                     <![CDATA[
-                    Message               : Exception/Error(s) were found for route(s):
-	                                        0: org.mule.runtime.api.exception.DefaultMuleException: An error occurred.
+                    Message               : Error(s) were found for route(s):
+	                   Route 0: org.mule.runtime.api.exception.DefaultMuleException: An error occurred.
                     Element               : parallelForEachFlow/processors/0 @ ForkJoinRoutersLogCheckTestCase#compositeRoutingExceptionForParallelForEach[Detailed log: true]:org/mule/test/integration/exceptions/fork-join-routers-log-config.xml:11
                     Element DSL           : <parallel-foreach collection="#[[42]]">
                     <raise-error type="APP:EXPECTED"></raise-error>
@@ -25,8 +25,16 @@
                     FlowStack             : at parallelForEachFlow(parallelForEachFlow/processors/0 @ ForkJoinRoutersLogCheckTestCase#compositeRoutingExceptionForParallelForEach[Detailed log: true]:org/mule/test/integration/exceptions/fork-join-routers-log-config.xml:11)
                       (set debug level logging or '-Dmule.verbose.exceptions=true' for everything)
 
-                    Detailed Exception/Error(s) for route(s):
-                    Route 0: An error occurred.
+                    Detailed Error(s) for route(s):
+                        Route 0:
+                            Message               : An error occurred.
+                            Element               : parallelForEachFlow/processors/0/processors/0 @ ForkJoinRoutersLogCheckTestCase#compositeRoutingExceptionForParallelForEach[Detailed log: true]:org/mule/test/integration/exceptions/fork-join-routers-log-config.xml:12
+                            Element DSL           : <raise-error type="APP:EXPECTED"></raise-error>
+                            Error type            : APP:EXPECTED
+                            FlowStack             : at parallelForEachFlow(parallelForEachFlow/processors/0/processors/0 @ ForkJoinRoutersLogCheckTestCase#compositeRoutingExceptionForParallelForEach[Detailed log: true]:org/mule/test/integration/exceptions/fork-join-routers-log-config.xml:12)
+                              (set debug level logging or '-Dmule.verbose.exceptions=true' for everything)
+
+
 
                     ]]>
                 </test:check-equals>
@@ -38,7 +46,7 @@
     <flow name="scatterGatherFlow">
         <scatter-gather>
             <route>
-                <raise-error type="SCATTER:ERROR" description="Scatter gather error"/>
+                <raise-error type="APP:EXPECTED" description="Scatter gather error"/>
             </route>
             <route>
                 <set-variable value="#[null]" variableName="variableA"/>
@@ -49,12 +57,12 @@
             <test:on-error-check-log>
                 <test:check-equals>
                     <![CDATA[
-                    Message               : Exception/Error(s) were found for route(s):
-                        0: org.mule.runtime.api.exception.DefaultMuleException: Scatter gather error
-                    Element               : scatterGatherFlow/processors/0 @ ForkJoinRoutersLogCheckTestCase#compositeRoutingExceptionForScatterGather[Detailed log: true]:org/mule/test/integration/exceptions/fork-join-routers-log-config.xml:39
+                    Message               : Error(s) were found for route(s):
+                        Route 0: org.mule.runtime.api.exception.DefaultMuleException: Scatter gather error
+                    Element               : scatterGatherFlow/processors/0 @ ForkJoinRoutersLogCheckTestCase#compositeRoutingExceptionForScatterGather[Detailed log: true]:org/mule/test/integration/exceptions/fork-join-routers-log-config.xml:47
                     Element DSL           : <scatter-gather>
                     <route>
-                    <raise-error type="SCATTER:ERROR" description="Scatter gather error"></raise-error>
+                    <raise-error type="APP:EXPECTED" description="Scatter gather error"></raise-error>
                     </route>
                     <route>
                     <set-variable value="#[null]" variableName="variableA"></set-variable>
@@ -62,11 +70,17 @@
                     </route>
                     </scatter-gather>
                     Error type            : MULE:COMPOSITE_ROUTING
-                    FlowStack             : at scatterGatherFlow(scatterGatherFlow/processors/0 @ ForkJoinRoutersLogCheckTestCase#compositeRoutingExceptionForScatterGather[Detailed log: true]:org/mule/test/integration/exceptions/fork-join-routers-log-config.xml:39)
+                    FlowStack             : at scatterGatherFlow(scatterGatherFlow/processors/0 @ ForkJoinRoutersLogCheckTestCase#compositeRoutingExceptionForScatterGather[Detailed log: true]:org/mule/test/integration/exceptions/fork-join-routers-log-config.xml:47)
                       (set debug level logging or '-Dmule.verbose.exceptions=true' for everything)
 
-                    Detailed Exception/Error(s) for route(s):
-                    Route 0: Scatter gather error
+                    Detailed Error(s) for route(s):
+                        Route 0:
+                            Message               : Scatter gather error
+                            Element               : scatterGatherFlow/processors/0/route/0/processors/0 @ ForkJoinRoutersLogCheckTestCase#compositeRoutingExceptionForScatterGather[Detailed log: true]:org/mule/test/integration/exceptions/fork-join-routers-log-config.xml:49
+                            Element DSL           : <raise-error type="APP:EXPECTED" description="Scatter gather error"></raise-error>
+                            Error type            : APP:EXPECTED
+                            FlowStack             : at scatterGatherFlow(scatterGatherFlow/processors/0/route/0/processors/0 @ ForkJoinRoutersLogCheckTestCase#compositeRoutingExceptionForScatterGather[Detailed log: true]:org/mule/test/integration/exceptions/fork-join-routers-log-config.xml:49)
+                              (set debug level logging or '-Dmule.verbose.exceptions=true' for everything)
                      ]]>
                 </test:check-equals>
             </test:on-error-check-log>
