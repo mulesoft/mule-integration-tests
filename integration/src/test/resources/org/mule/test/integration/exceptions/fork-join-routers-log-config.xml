@@ -138,6 +138,5 @@
         </error-handler>
     </flow>
 
-    <object name="throwNpe" class="org.mule.test.integration.exceptions.LogCheckTestCase$ThrowNpeProcessor"/>
 
 </mule>
