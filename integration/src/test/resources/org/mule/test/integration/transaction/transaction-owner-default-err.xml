@@ -6,7 +6,7 @@
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
                           http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
-    <configuration doc:name="Configuration" defaultErrorHandler-ref="globalPropagate" />
+    <configuration defaultErrorHandler-ref="globalPropagate" />
 
     <error-handler name="globalPropagate">
         <on-error-propagate>
