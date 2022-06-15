@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+                          http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+
+    <configuration doc:name="Configuration" defaultErrorHandler-ref="globalPropagate" />
+
+    <error-handler name="globalPropagate">
+        <on-error-propagate>
+            <test:processor/>
+        </on-error-propagate>
+    </error-handler>
+
+    <flow name="rollback">
+        <try transactionalAction="BEGIN_OR_JOIN">
+            <raise-error type="TEST:EXPECTED"/>
+        </try>
+    </flow>
+
+    <flow name="no-rollback-outside-try">
+        <try transactionalAction="BEGIN_OR_JOIN">
+            <test:processor />
+        </try>
+        <raise-error type="TEST:EXPECTED"/>
+    </flow>
+
+    <flow name="rollback-error-in-flow-ref-with-try">
+        <try transactionalAction="BEGIN_OR_JOIN">
+            <flow-ref name="error-flowref"/>
+        </try>
+    </flow>
+
+    <flow name="rollback-error-in-flow-ref-with-nested-try">
+        <try>
+            <try transactionalAction="BEGIN_OR_JOIN">
+                <flow-ref name="error-flowref"/>
+            </try>
+            <error-handler>
+                <on-error-continue/>
+            </error-handler>
+        </try>
+    </flow>
+
+    <flow name="no-rollback-error-in-flow-ref-with-nested-try">
+        <try transactionalAction="BEGIN_OR_JOIN">
+            <try>
+                <flow-ref name="error-flowref"/>
+            </try>
+            <error-handler>
+                <on-error-continue/>
+            </error-handler>
+        </try>
+    </flow>
+
+    <flow name="error-flowref">
+        <try transactionalAction="ALWAYS_BEGIN">
+            <test:processor/>
+            <error-handler>
+                <on-error-continue/>
+            </error-handler>
+        </try>
+        <raise-error type="TEST:EXPECTED"/>
+    </flow>
+
+</mule>

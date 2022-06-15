@@ -59,9 +59,29 @@
         </try>
     </flow>
 
+    <flow name="rollback-error-in-flow-ref-with-nested-try">
+        <try>
+            <try transactionalAction="BEGIN_OR_JOIN">
+                <flow-ref name="error-flowref"/>
+                <error-handler ref="globalPropagate"/>
+            </try>
+            <error-handler ref="globalContinue"/>
+        </try>
+    </flow>
+
     <flow name="no-rollback-error-in-flow-ref-with-try">
         <try transactionalAction="BEGIN_OR_JOIN">
             <flow-ref name="error-flowref"/>
+            <error-handler ref="globalContinue"/>
+        </try>
+    </flow>
+
+    <flow name="no-rollback-error-in-flow-ref-with-nested-try">
+        <try transactionalAction="BEGIN_OR_JOIN">
+            <try>
+                <flow-ref name="error-flowref"/>
+                <error-handler ref="globalPropagate"/>
+            </try>
             <error-handler ref="globalContinue"/>
         </try>
     </flow>
