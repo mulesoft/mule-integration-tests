@@ -66,6 +66,10 @@ public class TransactionRollbackedByOwnerTestCase extends AbstractIntegrationTes
             "with-implicit-default-EH-executed-commits", false, "commit"},
         new Object[] {"Local Error Handler", "org/mule/test/integration/transaction/transaction-owner.xml",
             "with-implicit-default-EH-executed-rollback", true, "rollback"},
+        new Object[] {"Local Error Handler", "org/mule/test/integration/transaction/transaction-owner.xml",
+            "with-default-EH-executed-commits", false, "commit"},
+        new Object[] {"Local Error Handler", "org/mule/test/integration/transaction/transaction-owner.xml",
+            "with-default-EH-executed-rollback", false, "rollback"},
 
         new Object[] {"Local Error Handler", "org/mule/test/integration/transaction/transaction-owner-subflow.xml",
             "rollback-on-error-prop", false, "rollback"},
@@ -99,7 +103,22 @@ public class TransactionRollbackedByOwnerTestCase extends AbstractIntegrationTes
         new Object[] {"Global Error Handler", "org/mule/test/integration/transaction/transaction-owner-global-err.xml",
             "no-rollback-error-in-flow-ref-with-try", false, "commit"},
         new Object[] {"Global Error Handler", "org/mule/test/integration/transaction/transaction-owner-global-err.xml",
-            "no-rollback-error-in-flow-ref-with-try-join-tx", false, "commit"}
+            "rollback-error-in-flow-ref-with-nested-try", false, "rollback"},
+        new Object[] {"Global Error Handler", "org/mule/test/integration/transaction/transaction-owner-global-err.xml",
+            "no-rollback-error-in-flow-ref-with-nested-try", false, "commit"},
+        new Object[] {"Global Error Handler", "org/mule/test/integration/transaction/transaction-owner-global-err.xml",
+            "no-rollback-error-in-flow-ref-with-try-join-tx", false, "commit"},
+
+        new Object[] {"Default Error Handler", "org/mule/test/integration/transaction/transaction-owner-default-err.xml",
+            "rollback", true, "rollback"},
+        new Object[] {"Default Error Handler", "org/mule/test/integration/transaction/transaction-owner-default-err.xml",
+            "no-rollback-outside-try", true, "commit"},
+        new Object[] {"Default Error Handler", "org/mule/test/integration/transaction/transaction-owner-default-err.xml",
+            "rollback-error-in-flow-ref-with-try", true, "rollback"},
+        new Object[] {"Default Error Handler", "org/mule/test/integration/transaction/transaction-owner-default-err.xml",
+            "rollback-error-in-flow-ref-with-nested-try", false, "rollback"},
+        new Object[] {"Default Error Handler", "org/mule/test/integration/transaction/transaction-owner-default-err.xml",
+            "no-rollback-error-in-flow-ref-with-nested-try", false, "commit"}
     };
   }
 
