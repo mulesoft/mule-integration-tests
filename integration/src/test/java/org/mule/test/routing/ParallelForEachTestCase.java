@@ -120,7 +120,7 @@ public class ParallelForEachTestCase extends AbstractIntegrationTestCase {
   @Description("An error in a route results in a CompositeRoutingException containing details of exceptions.")
   public void routeWithException() {
     assertRouteException("routeWithException", EXCEPTION_MESSAGE_TITLE_PREFIX
-        + "\t1: org.mule.functional.api.exception.FunctionalTestException: Functional Test Service Exception",
+        + "\tRoute 1: org.mule.functional.api.exception.FunctionalTestException: Functional Test Service Exception",
                          FunctionalTestException.class, UNKNOWN);
   }
 
@@ -129,7 +129,7 @@ public class ParallelForEachTestCase extends AbstractIntegrationTestCase {
   public void routeWithExceptionWithMessage() {
     assertRouteException("routeWithExceptionWithMessage",
                          EXCEPTION_MESSAGE_TITLE_PREFIX
-                             + "\t1: org.mule.functional.api.exception.FunctionalTestException: I'm a message",
+                             + "\tRoute 1: org.mule.functional.api.exception.FunctionalTestException: I'm a message",
                          FunctionalTestException.class, UNKNOWN);
   }
 
@@ -137,7 +137,7 @@ public class ParallelForEachTestCase extends AbstractIntegrationTestCase {
   @Description("An error in a route results in a CompositeRoutingException containing details of exceptions.")
   public void routeWithNonMuleException() {
     assertRouteException("routeWithNonMuleException",
-                         EXCEPTION_MESSAGE_TITLE_PREFIX + "\t1: java.lang.NullPointerException: nonMule",
+                         EXCEPTION_MESSAGE_TITLE_PREFIX + "\tRoute 1: java.lang.NullPointerException: nonMule",
                          NullPointerException.class, UNKNOWN);
   }
 
@@ -156,7 +156,7 @@ public class ParallelForEachTestCase extends AbstractIntegrationTestCase {
   public void routeWithExceptionInSequentialProcessing() {
     assertRouteException("routeWithExceptionInSequentialProcessing",
                          EXCEPTION_MESSAGE_TITLE_PREFIX
-                             + "\t1: org.mule.functional.api.exception.FunctionalTestException: Functional Test Service Exception",
+                             + "\tRoute 1: org.mule.functional.api.exception.FunctionalTestException: Functional Test Service Exception",
                          FunctionalTestException.class, UNKNOWN);
   }
 

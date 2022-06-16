@@ -9,6 +9,8 @@ package org.mule.test.routing;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.io.IOUtils.LINE_SEPARATOR;
+
+import static org.apache.commons.io.IOUtils.LINE_SEPARATOR;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.startsWith;
@@ -112,7 +114,7 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
   @Description("An error in a route results in a CompositeRoutingException containing details of exceptions.")
   public void routeWithException() throws Exception {
     assertRouteException("routeWithException", EXCEPTION_MESSAGE_TITLE_PREFIX
-        + "\t1: org.mule.functional.api.exception.FunctionalTestException: Functional Test Service Exception",
+        + "\tRoute 1: org.mule.functional.api.exception.FunctionalTestException: Functional Test Service Exception",
                          FunctionalTestException.class);
   }
 
@@ -121,7 +123,7 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
   public void routeWithExceptionWithMessage() throws Exception {
     assertRouteException("routeWithExceptionWithMessage",
                          EXCEPTION_MESSAGE_TITLE_PREFIX
-                             + "\t1: org.mule.functional.api.exception.FunctionalTestException: I'm a message",
+                             + "\tRoute 1: org.mule.functional.api.exception.FunctionalTestException: I'm a message",
                          FunctionalTestException.class);
   }
 
@@ -129,7 +131,7 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
   @Description("An error in a route results in a CompositeRoutingException containing details of exceptions.")
   public void routeWithNonMuleException() throws Exception {
     assertRouteException("routeWithNonMuleException",
-                         EXCEPTION_MESSAGE_TITLE_PREFIX + "\t1: java.lang.NullPointerException: nonMule",
+                         EXCEPTION_MESSAGE_TITLE_PREFIX + "\tRoute 1: java.lang.NullPointerException: nonMule",
                          NullPointerException.class);
   }
 
@@ -138,7 +140,7 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
   public void routeWithExpressionException() throws Exception {
     assertRouteException("routeWithExpressionException",
                          message -> assertThat(message, both(containsString(EXCEPTION_MESSAGE_TITLE_PREFIX)).and(
-                                                                                                                 containsString("1: org.mule.runtime.core.api.expression.ExpressionRuntimeException: \"Script 'invalidExpr ' has errors:"))),
+                                                                                                                 containsString("Route 1: org.mule.runtime.core.api.expression.ExpressionRuntimeException: \"Script 'invalidExpr ' has errors:"))),
                          ExpressionRuntimeException.class);
   }
 
@@ -147,7 +149,7 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
   public void routeWithExceptionInSequentialProcessing() throws Exception {
     assertRouteException("routeWithExceptionInSequentialProcessing",
                          EXCEPTION_MESSAGE_TITLE_PREFIX
-                             + "\t1: org.mule.functional.api.exception.FunctionalTestException: Functional Test Service Exception",
+                             + "\tRoute 1: org.mule.functional.api.exception.FunctionalTestException: Functional Test Service Exception",
                          FunctionalTestException.class);
   }
 
