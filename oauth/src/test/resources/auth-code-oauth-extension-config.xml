@@ -2,9 +2,11 @@
 <mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:http="http://www.mulesoft.org/schema/mule/http"
       xmlns:test-oauth="http://www.mulesoft.org/schema/mule/test-oauth"
+      xmlns:values="http://www.mulesoft.org/schema/mule/values"
       xmlns="http://www.mulesoft.org/schema/mule/core"
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
                http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+               http://www.mulesoft.org/schema/mule/values http://www.mulesoft.org/schema/mule/values/current/mule-values.xsd
                http://www.mulesoft.org/schema/mule/test-oauth http://www.mulesoft.org/schema/mule/test-oauth/current/mule-test-oauth.xsd">
 
     <http:listener-config name="listenerConfig">
@@ -13,15 +15,18 @@
 
 
     <test-oauth:auth-code-config name="oauth">
-        <test-oauth:connection display="PAGE" immediate="true" prompt="false" detailsPriority="10"
+        <test-oauth:connection display="PAGE" immediate="true" prompt="false" detailsPriority="177"
                                connectionProperties="#[{'connectionDescription' : 'description 1', 'connectionType' : 'DUO'}]"
                                someMapOfConnectionProperties="#[
                                {'firstEntry' : {'connectionDescription' : 'description 8', 'connectionType' : 'DUO'},
                                'secondEntry' : {'connectionDescription' : 'description 9', 'connectionType' : 'HYPER'}}
-                               ]">
+                               ]" typedSecurityLevel="123" literalSecurityDescription="literalDesc"
+                               resolverConnectionDisplayName="thisIsAParameterResolver"
+                               connectionTime="2021-04-27T12:00:00-03:00">
             <test-oauth:some-oauth-connection-properties>
                 <test-oauth:connection-properties connectionDescription="description4"
-                                                  connectionType="DEFAULT"/>
+                                                  connectionType="DEFAULT"
+                                                  connectionPropertyGrade="someLiteralValue"/>
                 <test-oauth:connection-properties connectionDescription="description5"
                                                   connectionType="DUO"/>
             </test-oauth:some-oauth-connection-properties>
@@ -30,7 +35,9 @@
                 <test-oauth:some-connection-number value="2"/>
                 <test-oauth:some-connection-number value="3"/>
             </test-oauth:some-connection-numbers>
-            <test-oauth:another-connection-properties connectionDescription="description2" connectionType="HYPER"/>
+            <test-oauth:external-pojo pojoName="pepe" pojoId="pepeId" pojoNumber="1234" pojoBoolean="true"/>
+            <test-oauth:another-connection-properties connectionDescription="description2" connectionType="HYPER"
+                                                      connectionPropertyGrade="thisIsALiteralValue"/>
             <test-oauth:connection-profile profileLevel="25">
                 <test-oauth:profile-connection-properties connectionDescription="description3"
                                                           connectionType="DEFAULT"/>
