@@ -6,6 +6,7 @@
  */
 package org.mule.test;
 
+import static org.mule.runtime.container.api.ContainerClassLoaderProvider.createContainerClassLoader;
 import static org.mule.runtime.module.artifact.api.descriptor.BundleScope.COMPILE;
 
 import static java.util.Collections.emptyList;
@@ -76,6 +77,7 @@ public class PluginClassloaderCreationBenchmark extends AbstractArtifactActivati
   private DefaultArtifactClassLoaderResolver artifactClassLoaderResolverForPrivilegedContainerAccess;
   private ModuleRepository moduleRepositoryForPrivilegedContainerAccess;
 
+  @Override
   @Setup
   public void setup() throws IOException {
     super.setup();
@@ -114,14 +116,16 @@ public class PluginClassloaderCreationBenchmark extends AbstractArtifactActivati
     muleModuleSingletonList = singletonList(muleModule);
     ModuleRepository moduleRepositoryWithModules = new DummyModuleRepository(muleModuleSingletonList);
     artifactClassLoaderResolverWithModules =
-        new DefaultArtifactClassLoaderResolver(moduleRepositoryWithModules, nativeLibraryFinderFactory);
+        new DefaultArtifactClassLoaderResolver(createContainerClassLoader(moduleRepositoryWithModules),
+                                               moduleRepositoryWithModules, nativeLibraryFinderFactory);
 
     pluginWithLocalPackageClassLoaderModel = new ClassLoaderModel.ClassLoaderModelBuilder()
         .withLocalPackages(Stream.of(package1Name, package2Name).collect(toSet())).build();
 
     moduleRepositoryForPrivilegedContainerAccess = new DummyModuleRepository(privilegeMuleModuleSingletonList);
     artifactClassLoaderResolverForPrivilegedContainerAccess =
-        new DefaultArtifactClassLoaderResolver(moduleRepositoryForPrivilegedContainerAccess, nativeLibraryFinderFactory);
+        new DefaultArtifactClassLoaderResolver(createContainerClassLoader(moduleRepositoryForPrivilegedContainerAccess),
+                                               moduleRepositoryForPrivilegedContainerAccess, nativeLibraryFinderFactory);
 
   }
 

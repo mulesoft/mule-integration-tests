@@ -6,6 +6,7 @@
  */
 package org.mule.test;
 
+import static org.mule.runtime.container.api.ContainerClassLoaderProvider.createContainerClassLoader;
 import static org.mule.runtime.container.api.MuleFoldersUtil.getDomainsFolder;
 import static org.mule.runtime.container.api.MuleFoldersUtil.getMuleLibFolder;
 import static org.mule.runtime.core.api.config.MuleProperties.MULE_HOME_DIRECTORY_PROPERTY;
@@ -32,8 +33,9 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 
-import org.junit.rules.TemporaryFolder;
 import org.openjdk.jmh.annotations.TearDown;
+
+import org.junit.rules.TemporaryFolder;
 
 public abstract class AbstractArtifactActivationBenchmark extends AbstractMuleTestCase {
 
@@ -68,7 +70,8 @@ public abstract class AbstractArtifactActivationBenchmark extends AbstractMuleTe
     artifactLocation.create();
     muleHomeFolder = temporaryFolder.getRoot();
     System.setProperty(MULE_HOME_DIRECTORY_PROPERTY, temporaryFolder.getRoot().getAbsolutePath());
-    artifactClassLoaderResolver = new DefaultArtifactClassLoaderResolver(moduleRepository, nativeLibraryFinderFactory);
+    artifactClassLoaderResolver = new DefaultArtifactClassLoaderResolver(createContainerClassLoader(moduleRepository),
+                                                                         moduleRepository, nativeLibraryFinderFactory);
 
     plugin1Descriptor.setBundleDescriptor(PLUGIN1_BUNDLE_DESCRIPTOR);
     plugin2Descriptor.setBundleDescriptor(PLUGIN2_BUNDLE_DESCRIPTOR);

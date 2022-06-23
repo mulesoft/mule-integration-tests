@@ -6,6 +6,8 @@
  */
 package org.mule.test;
 
+import static org.mule.runtime.container.api.ContainerClassLoaderProvider.createContainerClassLoader;
+
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptySet;
 import static java.util.Collections.singleton;
@@ -60,6 +62,7 @@ public class ApplicationClassloaderCreationBenchmark extends AbstractArtifactAct
   private MuleModule muleModule;
   private List<MuleModule> muleModuleSingletonList;
 
+  @Override
   @Setup
   public void setup() throws IOException {
     super.setup();
@@ -70,7 +73,8 @@ public class ApplicationClassloaderCreationBenchmark extends AbstractArtifactAct
     muleModuleSingletonList = singletonList(muleModule);
     ModuleRepository moduleRepositoryWithModules = new DummyModuleRepository(muleModuleSingletonList);
     artifactClassLoaderResolverWithModules =
-        new DefaultArtifactClassLoaderResolver(moduleRepositoryWithModules, nativeLibraryFinderFactory);
+        new DefaultArtifactClassLoaderResolver(createContainerClassLoader(moduleRepositoryWithModules),
+                                               moduleRepositoryWithModules, nativeLibraryFinderFactory);
 
     artifactPluginDescriptors = Stream.of(plugin1Descriptor, plugin2Descriptor).collect(toSet());
     applicationDescriptor = new ApplicationDescriptor(applicationName);
