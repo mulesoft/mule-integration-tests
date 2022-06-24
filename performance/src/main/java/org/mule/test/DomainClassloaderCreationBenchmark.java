@@ -6,6 +6,7 @@
  */
 package org.mule.test;
 
+import static org.mule.runtime.container.api.ContainerClassLoaderProvider.createContainerClassLoader;
 import static org.mule.runtime.module.artifact.api.descriptor.DomainDescriptor.DEFAULT_DOMAIN_NAME;
 
 import static java.util.Collections.emptyList;
@@ -59,6 +60,7 @@ public class DomainClassloaderCreationBenchmark extends AbstractArtifactActivati
   private MuleModule muleModule;
   private List<MuleModule> muleModuleSingletonList;
 
+  @Override
   @Setup
   public void setup() throws IOException {
     super.setup();
@@ -69,7 +71,8 @@ public class DomainClassloaderCreationBenchmark extends AbstractArtifactActivati
     muleModuleSingletonList = singletonList(muleModule);
     ModuleRepository moduleRepositoryWithModules = new DummyModuleRepository(muleModuleSingletonList);
     artifactClassLoaderResolverWithModules =
-        new DefaultArtifactClassLoaderResolver(moduleRepositoryWithModules, nativeLibraryFinderFactory);
+        new DefaultArtifactClassLoaderResolver(createContainerClassLoader(moduleRepositoryWithModules),
+                                               moduleRepositoryWithModules, nativeLibraryFinderFactory);
 
     Set<String> domainExportedPackage = Stream.of(onlyDomainPackageName, repeatedPackageName).collect(toSet());
     artifactPluginDescriptors = Stream.of(plugin1Descriptor, plugin2Descriptor).collect(toSet());
