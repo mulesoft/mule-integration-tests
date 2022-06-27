@@ -73,8 +73,8 @@ public class PlatformManagedOAuthConfigurationParametersTestCase extends Platfor
   private static final String THIRD_SOME_NUMBER = "3";
   private static final String SOME_NUMBERS_PARAMETER_NAME = "someConnectionNumbers";
   private static final String CONNECTION_PROPERTIES_MAP_PARAMETER_NAME = "someMapOfConnectionProperties";
-  private static final String CONNECTION_PROPERTIES_MAP_FIRST_KEY = "first";
-  private static final String CONNECTION_PROPERTIES_MAP_SECOND_KEY = "second";
+  private static final String MAP_FIRST_KEY = "first";
+  private static final String MAP_SECOND_KEY = "second";
   private static final List<String> SOME_NUMBERS_PARAMETER_VALUE =
       asList(new String[] {FIRST_SOME_NUMBER, SECOND_SOME_NUMBER, THIRD_SOME_NUMBER});
   private static final String SOME_CONNECTION_PROPERTIES_PARAMETER_NAME = "someOauthConnectionProperties";
@@ -107,6 +107,9 @@ public class PlatformManagedOAuthConfigurationParametersTestCase extends Platfor
   private static final String PARAMETER_RESOLVER_STRING_PARAMETER_NAME = "resolverConnectionDisplayName";
   private static final String TYPED_VALUE_INTEGER_PARAMETER_NAME = "typedSecurityLevel";
   private static final String LITERAL_FIELD_IN_POJO_NAME = "connectionPropertyGrade";
+  private static final String STACKED_POJO_PARAMETER = "stackedTypePojoParameter";
+  private static final String STACKED_ARRAY_PARAMETER = "stackedTypeArrayParameters";
+  private static final String STACKED_MAP_PARAMETER = "stackedTypeMapParameter";
 
   @Override
   protected Map<String, Object> getDescriptorParameters() {
@@ -115,6 +118,9 @@ public class PlatformManagedOAuthConfigurationParametersTestCase extends Platfor
     List<Map<String, Object>> someConnectionPropertiesValue = new ArrayList<>();
     Map<String, Map<String, Object>> someMapOfConnectionPropertiesValue = new HashMap<>();
     Map<String, String> externalPojo = new HashMap<>();
+    Map<String, String> mapOfIntegers = new HashMap<>();
+    mapOfIntegers.put(MAP_FIRST_KEY, FIRST_SOME_NUMBER);
+    mapOfIntegers.put(MAP_SECOND_KEY, SECOND_SOME_NUMBER);
     externalPojo.put(EXTERNAL_POJO_BOOLEAN_FIELD_NAME, EXTERNAL_POJO_BOOLEAN_FIELD_VALUE);
     externalPojo.put(EXTERNAL_POJO_NUMBER_FIELD_NAME, EXTERNAL_POJO_NUMBER_FIELD_VALUE);
     externalPojo.put(EXTERNAL_POJO_ID_FIELD_NAME, EXTERNAL_POJO_ID_FIELD_VALUE);
@@ -126,8 +132,8 @@ public class PlatformManagedOAuthConfigurationParametersTestCase extends Platfor
     complexParameterMap.put(EXTERNAL_POJO_PARAMETER_NAME_IN_POJO, externalPojo);
     someConnectionPropertiesValue.add(complexParameterMap);
     someConnectionPropertiesValue.add(complexParameterMap);
-    someMapOfConnectionPropertiesValue.put(CONNECTION_PROPERTIES_MAP_FIRST_KEY, complexParameterMap);
-    someMapOfConnectionPropertiesValue.put(CONNECTION_PROPERTIES_MAP_SECOND_KEY, complexParameterMap);
+    someMapOfConnectionPropertiesValue.put(MAP_FIRST_KEY, complexParameterMap);
+    someMapOfConnectionPropertiesValue.put(MAP_SECOND_KEY, complexParameterMap);
     descriptorParameters.put(CONNECTION_PROPERTIES_MAP_PARAMETER_NAME, someMapOfConnectionPropertiesValue);
     descriptorParameters.put(SOME_CONNECTION_PROPERTIES_PARAMETER_NAME, someConnectionPropertiesValue);
     descriptorParameters.put(COMPLEX_PARAMETER_NAME, complexParameterMap);
@@ -144,6 +150,9 @@ public class PlatformManagedOAuthConfigurationParametersTestCase extends Platfor
     descriptorParameters.put(TYPED_VALUE_INTEGER_PARAMETER_NAME, TYPED_VALUE_INTEGER_PARAMETER_VALUE);
     descriptorParameters.put(ZONED_DATE_TIME_FIELD_NAME, ZONED_DATE_TIME_FIELD_VALUE);
     descriptorParameters.put(EXTERNAL_POJO_PARAMETER_NAME, externalPojo);
+    descriptorParameters.put(STACKED_POJO_PARAMETER, externalPojo);
+    descriptorParameters.put(STACKED_ARRAY_PARAMETER, SOME_NUMBERS_PARAMETER_VALUE);
+    descriptorParameters.put(STACKED_MAP_PARAMETER, mapOfIntegers);
     return descriptorParameters;
   }
 
@@ -239,8 +248,8 @@ public class PlatformManagedOAuthConfigurationParametersTestCase extends Platfor
     TestOAuthConnectionState connectionState = connection.getState();
     Map<String, ConnectionProperties> someOauthMapConnectionProperties = connectionState.getSomeMapOfConnectionProperties();
     assertThat(someOauthMapConnectionProperties.entrySet(), hasSize(2));
-    assertThat(someOauthMapConnectionProperties.get(CONNECTION_PROPERTIES_MAP_FIRST_KEY), is(CONNECTION_PROPERTIES));
-    assertThat(someOauthMapConnectionProperties.get(CONNECTION_PROPERTIES_MAP_SECOND_KEY), is(CONNECTION_PROPERTIES));
+    assertThat(someOauthMapConnectionProperties.get(MAP_FIRST_KEY), is(CONNECTION_PROPERTIES));
+    assertThat(someOauthMapConnectionProperties.get(MAP_SECOND_KEY), is(CONNECTION_PROPERTIES));
   }
 
   @Test
@@ -301,7 +310,7 @@ public class PlatformManagedOAuthConfigurationParametersTestCase extends Platfor
   public void complexParameterInMapValueHasInjectedDependency() throws Exception {
     TestOAuthConnection connection = (TestOAuthConnection) flowRunner("getConnection").run().getMessage().getPayload().getValue();
     TestOAuthConnectionState connectionState = connection.getState();
-    assertThat(connectionState.getSomeMapOfConnectionProperties().get(CONNECTION_PROPERTIES_MAP_FIRST_KEY).getExtensionManager(),
+    assertThat(connectionState.getSomeMapOfConnectionProperties().get(MAP_FIRST_KEY).getExtensionManager(),
                is(notNullValue()));
   }
 
@@ -365,6 +374,39 @@ public class PlatformManagedOAuthConfigurationParametersTestCase extends Platfor
     TestOAuthConnectionState connectionState = connection.getState();
     assertThat(connectionState.getConnectionProperties().getImportedPojo(),
                is(EXTERNAL_POJO_VALUE));
+  }
+
+  @Test
+  @Description("Validates that the PlatformManagedConnectionDescriptor can describe a parameter whose type is a custom pojo wrapped in a TypedValue wrapped in a ParameterResolver.")
+  public void complexTypeInATypedValueInAParameterResolver() throws Exception {
+    TestOAuthConnection connection = (TestOAuthConnection) flowRunner("getConnection").run().getMessage().getPayload().getValue();
+    TestOAuthConnectionState connectionState = connection.getState();
+    assertThat(connectionState.getStackedTypePojoParameter().resolve().getValue(),
+               is(EXTERNAL_POJO_VALUE));
+  }
+
+  @Test
+  @Description("Validates that the PlatformManagedConnectionDescriptor can describe a parameter whose type is an arrylist wrapped in a TypedValue wrapped in a ParameterResolver.")
+  public void listInATypedValueInAParameterResolver() throws Exception {
+    TestOAuthConnection connection = (TestOAuthConnection) flowRunner("getConnection").run().getMessage().getPayload().getValue();
+    TestOAuthConnectionState connectionState = connection.getState();
+    assertThat(connectionState.getStackedTypeArrayParameters().resolve().getValue(),
+               hasSize(SOME_NUMBERS_PARAMETER_VALUE.size()));
+    assertThat(connectionState.getStackedTypeArrayParameters().resolve().getValue(),
+               containsInAnyOrder(Integer.valueOf(FIRST_SOME_NUMBER), Integer.valueOf(SECOND_SOME_NUMBER),
+                                  Integer.valueOf(THIRD_SOME_NUMBER)));
+  }
+
+  @Test
+  @Description("Validates that the PlatformManagedConnectionDescriptor can describe a parameter whose type is a map wrapped in a TypedValue wrapped in a ParameterResolver.")
+  public void mapInATypedValueInAParameterResolver() throws Exception {
+    TestOAuthConnection connection = (TestOAuthConnection) flowRunner("getConnection").run().getMessage().getPayload().getValue();
+    TestOAuthConnectionState connectionState = connection.getState();
+    Map<String, Integer> mapParameter = connectionState.getStackedTypeMapParameter().resolve().getValue();
+    assertThat(mapParameter.values(),
+               hasSize(2));
+    assertThat(mapParameter.get(MAP_FIRST_KEY), is(Integer.valueOf(FIRST_SOME_NUMBER)));
+    assertThat(mapParameter.get(MAP_SECOND_KEY), is(Integer.valueOf(SECOND_SOME_NUMBER)));
   }
 
 }
