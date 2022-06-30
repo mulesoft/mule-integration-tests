@@ -12,6 +12,7 @@ import static org.mule.runtime.api.util.MuleSystemProperties.REUSE_GLOBAL_ERROR_
 
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.collection.IsIterableContainingInRelativeOrder.containsInRelativeOrder;
 import static org.junit.Assert.assertThat;
 
 import org.mule.functional.junit4.TestComponentBuildingDefinitionRegistryFactory;
@@ -84,8 +85,7 @@ public class GlobalErrorHandlerLifecycleTestCase extends AbstractIntegrationTest
 
     Collection<String> globalErrorHandlerTracker = trackersRegistry.get("anotherGlobalErrorHandlerTracker").getCalledPhases();
 
-    assertThat(globalErrorHandlerTracker, hasItem(Initialisable.PHASE_NAME));
-    assertThat(globalErrorHandlerTracker, hasItem(Startable.PHASE_NAME));
+    assertThat(globalErrorHandlerTracker, containsInRelativeOrder(Initialisable.PHASE_NAME, Startable.PHASE_NAME));
 
     ((Lifecycle) flow1).stop();
     ((Lifecycle) flow1).dispose();
@@ -96,8 +96,7 @@ public class GlobalErrorHandlerLifecycleTestCase extends AbstractIntegrationTest
     ((Lifecycle) flow2).stop();
     ((Lifecycle) flow2).dispose();
 
-    assertThat(globalErrorHandlerTracker, hasItem(Stoppable.PHASE_NAME));
-    assertThat(globalErrorHandlerTracker, hasItem(Disposable.PHASE_NAME));
+    assertThat(globalErrorHandlerTracker, containsInRelativeOrder(Stoppable.PHASE_NAME, Disposable.PHASE_NAME));
   }
 
   @Test
@@ -106,8 +105,7 @@ public class GlobalErrorHandlerLifecycleTestCase extends AbstractIntegrationTest
 
     Collection<String> globalErrorHandlerTracker = trackersRegistry.get("globalErrorHandlerTracker").getCalledPhases();
 
-    assertThat(globalErrorHandlerTracker, hasItem(Initialisable.PHASE_NAME));
-    assertThat(globalErrorHandlerTracker, hasItem(Startable.PHASE_NAME));
+    assertThat(globalErrorHandlerTracker, containsInRelativeOrder(Initialisable.PHASE_NAME, Startable.PHASE_NAME));
 
     ((Lifecycle) globalReference).stop();
 

@@ -12,6 +12,7 @@ import static org.mule.runtime.api.util.MuleSystemProperties.REUSE_GLOBAL_ERROR_
 
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.collection.IsIterableContainingInRelativeOrder.containsInRelativeOrder;
 import static org.junit.Assert.assertThat;
 
 import org.mule.functional.junit4.TestComponentBuildingDefinitionRegistryFactory;
@@ -84,8 +85,7 @@ public class DefaultErrorHandlerLifecycleTestCase extends AbstractIntegrationTes
 
     Collection<String> defaultEhErrorHandlerPhases = trackersRegistry.get("defaultEhErrorHandlerTracker").getCalledPhases();
 
-    assertThat(defaultEhErrorHandlerPhases, hasItem(Initialisable.PHASE_NAME));
-    assertThat(defaultEhErrorHandlerPhases, hasItem(Startable.PHASE_NAME));
+    assertThat(defaultEhErrorHandlerPhases, containsInRelativeOrder(Initialisable.PHASE_NAME, Startable.PHASE_NAME));
 
     ((Lifecycle) flowD).stop();
     ((Lifecycle) flowE).stop();
@@ -98,7 +98,6 @@ public class DefaultErrorHandlerLifecycleTestCase extends AbstractIntegrationTes
     ((Lifecycle) flowF).stop();
     ((Lifecycle) flowF).dispose();
 
-    assertThat(defaultEhErrorHandlerPhases, hasItem(Stoppable.PHASE_NAME));
-    assertThat(defaultEhErrorHandlerPhases, hasItem(Disposable.PHASE_NAME));
+    assertThat(defaultEhErrorHandlerPhases, containsInRelativeOrder(Stoppable.PHASE_NAME, Disposable.PHASE_NAME));
   }
 }

@@ -9,6 +9,7 @@ package org.mule.test.integration.exceptions;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ErrorHandlingStory.ERROR_HANDLER;
 
+import static org.hamcrest.collection.IsIterableContainingInRelativeOrder.containsInRelativeOrder;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
@@ -82,14 +83,12 @@ public class ErrorHandlerLifecycleTestCase extends AbstractIntegrationTestCase {
 
     Collection<String> defaultEhErrorHandlerPhases = trackersRegistry.get("esAErrorHandlerTracker").getCalledPhases();
 
-    assertThat(defaultEhErrorHandlerPhases.contains(Initialisable.PHASE_NAME), is(true));
-    assertThat(defaultEhErrorHandlerPhases.contains(Startable.PHASE_NAME), is(true));
+    assertThat(defaultEhErrorHandlerPhases, containsInRelativeOrder(Initialisable.PHASE_NAME, Startable.PHASE_NAME));
 
     ((Lifecycle) flowC).stop();
     ((Lifecycle) flowC).dispose();
 
-    assertThat(defaultEhErrorHandlerPhases.contains(Stoppable.PHASE_NAME), is(true));
-    assertThat(defaultEhErrorHandlerPhases.contains(Disposable.PHASE_NAME), is(true));
+    assertThat(defaultEhErrorHandlerPhases, containsInRelativeOrder(Stoppable.PHASE_NAME, Disposable.PHASE_NAME));
   }
 
   @Test
@@ -98,13 +97,11 @@ public class ErrorHandlerLifecycleTestCase extends AbstractIntegrationTestCase {
 
     Collection<String> defaultEhErrorHandlerPhases = trackersRegistry.get("defaultEhErrorHandlerTracker").getCalledPhases();
 
-    assertThat(defaultEhErrorHandlerPhases.contains(Initialisable.PHASE_NAME), is(true));
-    assertThat(defaultEhErrorHandlerPhases.contains(Startable.PHASE_NAME), is(true));
+    assertThat(defaultEhErrorHandlerPhases, containsInRelativeOrder(Initialisable.PHASE_NAME, Startable.PHASE_NAME));
 
     ((Lifecycle) flowD).stop();
     ((Lifecycle) flowD).dispose();
 
-    assertThat(defaultEhErrorHandlerPhases.contains(Stoppable.PHASE_NAME), is(true));
-    assertThat(defaultEhErrorHandlerPhases.contains(Disposable.PHASE_NAME), is(true));
+    assertThat(defaultEhErrorHandlerPhases, containsInRelativeOrder(Stoppable.PHASE_NAME, Disposable.PHASE_NAME));
   }
 }
