@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:test-components="http://www.mulesoft.org/schema/mule/test-components"
+      xsi:schemaLocation="
+       http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+       http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
+
+    <error-handler name="global">
+        <on-error-continue>
+            <test-components:lifecycle-tracker name="globalErrorHandlerTracker"/>
+        </on-error-continue>
+    </error-handler>
+
+    <error-handler name="anotherGlobal">
+        <on-error-continue>
+            <test-components:lifecycle-tracker-check name="anotherGlobalErrorHandlerTracker"/>
+        </on-error-continue>
+    </error-handler>
+
+    <flow name="globalReference">
+        <raise-error type="CUSTOM:ERROR" />
+        <error-handler ref="global"/>
+    </flow>
+
+    <flow name="flow1">
+        <raise-error type="CUSTOM:ERROR" />
+        <error-handler ref="anotherGlobal"/>
+    </flow>
+
+    <flow name="flow2">
+        <try>
+            <raise-error type="CUSTOM:ERROR" />
+            <error-handler ref="anotherGlobal"/>
+        </try>
+        <error-handler ref="anotherGlobal"/>
+    </flow>
+
+</mule>
