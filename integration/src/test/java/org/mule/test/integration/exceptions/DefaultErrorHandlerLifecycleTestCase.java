@@ -6,9 +6,9 @@
  */
 package org.mule.test.integration.exceptions;
 
+import static org.mule.runtime.core.privileged.exception.TemplateOnErrorHandler.reuseGlobalErrorHandler;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ErrorHandlingStory.DEFAULT_ERROR_HANDLER;
-import static org.mule.runtime.api.util.MuleSystemProperties.REUSE_GLOBAL_ERROR_HANDLER_PROPERTY;
 
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.not;
@@ -22,7 +22,6 @@ import org.mule.runtime.api.lifecycle.Lifecycle;
 import org.mule.runtime.api.lifecycle.Startable;
 import org.mule.runtime.api.lifecycle.Stoppable;
 import org.mule.runtime.core.api.construct.FlowConstruct;
-import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.tests.api.LifecycleTrackerRegistry;
 
@@ -36,14 +35,10 @@ import io.qameta.allure.Story;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.Rule;
 
 @Feature(ERROR_HANDLING)
 @Story(DEFAULT_ERROR_HANDLER)
 public class DefaultErrorHandlerLifecycleTestCase extends AbstractIntegrationTestCase {
-
-  @Rule
-  public SystemProperty reuseGlobalErrorHandler = new SystemProperty(REUSE_GLOBAL_ERROR_HANDLER_PROPERTY, "true");
 
   @Override
   protected String getConfigFile() {
@@ -69,6 +64,7 @@ public class DefaultErrorHandlerLifecycleTestCase extends AbstractIntegrationTes
 
   @BeforeClass
   public static void beforeClass() {
+    reuseGlobalErrorHandler = true;
     previous = componentBuildingDefinitionRegistryFactory;
     componentBuildingDefinitionRegistryFactory = new TestComponentBuildingDefinitionRegistryFactory();
     componentBuildingDefinitionRegistryFactory.setRefreshRuntimeComponentBuildingDefinitions(true);
@@ -76,6 +72,7 @@ public class DefaultErrorHandlerLifecycleTestCase extends AbstractIntegrationTes
 
   @AfterClass
   public static void afterClass() {
+    reuseGlobalErrorHandler = null;
     componentBuildingDefinitionRegistryFactory = previous;
   }
 
