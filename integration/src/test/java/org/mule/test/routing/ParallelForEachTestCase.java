@@ -153,7 +153,7 @@ public class ParallelForEachTestCase extends AbstractIntegrationTestCase {
   public void routeWithExpressionException() {
     assertRouteException("routeWithExpressionException",
                          message -> assertThat(message, both(containsString(EXCEPTION_MESSAGE_TITLE_PREFIX)).and(
-                                                                                                                 containsString("1: org.mule.runtime.core.api.expression.ExpressionRuntimeException: \"Script 'invalidExpr ' has errors:"))),
+                                                                                                                 containsString("1: org.mule.runtime.core.api.expression.ExpressionRuntimeException: \"Script 'invalidExpr' has errors:"))),
                          ExpressionRuntimeException.class,
                          EXPRESSION);
   }
