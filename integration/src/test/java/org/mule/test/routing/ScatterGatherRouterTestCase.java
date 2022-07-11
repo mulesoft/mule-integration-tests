@@ -140,7 +140,7 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
   public void routeWithExpressionException() throws Exception {
     assertRouteException("routeWithExpressionException",
                          message -> assertThat(message, both(containsString(EXCEPTION_MESSAGE_TITLE_PREFIX)).and(
-                                                                                                                 containsString("Route 1: org.mule.runtime.core.api.expression.ExpressionRuntimeException: \"Script 'invalidExpr ' has errors:"))),
+                                                                                                                 containsString("Route 1: org.mule.runtime.core.api.expression.ExpressionRuntimeException: \"Script 'invalidExpr' has errors:"))),
                          ExpressionRuntimeException.class);
   }
 
