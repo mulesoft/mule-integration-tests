@@ -54,7 +54,7 @@ public class LazyInitConfigurationXmlSdk1ComponentLocatorTestCase extends MuleAr
   public SystemProperty path = new SystemProperty("path", "path");
 
 
-  private static final int TOTAL_NUMBER_OF_LOCATIONS = 33;
+  private static final int TOTAL_NUMBER_OF_LOCATIONS = 34;
 
   @Inject
   private LazyComponentInitializer lazyComponentInitializer;
@@ -123,7 +123,9 @@ public class LazyInitConfigurationXmlSdk1ComponentLocatorTestCase extends MuleAr
                                   "requestConfigOac",
                                   "requestConfigOac/connection",
                                   "request",
-                                  "request/processors/0"));
+                                  "request/processors/0",
+
+                                  "module-using-http-noconfig-xml-sdk-implicit-config"));
     assertThat(locator.find(builder().globalName("myFlow").build()), is(empty()));
     assertThat(locator.find(builder().globalName("anotherFlow").build()), is(empty()));
   }
