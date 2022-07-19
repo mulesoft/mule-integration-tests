@@ -132,8 +132,15 @@ public class ErrorHandlingConfigurationFailuresTestCase extends AbstractConfigur
   @Test
   public void usedNamespaceMappingsNotAllowed() throws Exception {
     expectedException.expect(ConfigurationException.class);
-    expectedException.expectMessage(containsString("An error type with identifier 'HTTP:NOT_FOUND' already exists"));
+    expectedException.expectMessage(containsString("Cannot use error type 'HTTP:NOT_FOUND': namespace already exists"));
     loadConfiguration("org/mule/test/integration/exceptions/used-namespace-mappings-config.xml");
+  }
+
+  @Test
+  public void usedNamespaceNonExistentTypeMappingsNotAllowed() throws Exception {
+    expectedException.expect(ConfigurationException.class);
+    expectedException.expectMessage(containsString("Cannot use error type 'HTTP:NONEXISTENT': namespace already exists"));
+    loadConfiguration("org/mule/test/integration/exceptions/used-namespace-nonexistent-type-mappings-config.xml");
   }
 
   @Test
@@ -146,8 +153,15 @@ public class ErrorHandlingConfigurationFailuresTestCase extends AbstractConfigur
   @Test
   public void usedNamespaceErrorCannotBeRaised() throws Exception {
     expectedException.expect(ConfigurationException.class);
-    expectedException.expectMessage(containsString("An error type with identifier 'HTTP:TIMEOUT' already exists"));
+    expectedException.expectMessage(containsString("Cannot use error type 'HTTP:TIMEOUT': namespace already exists"));
     loadConfiguration("org/mule/test/integration/exceptions/used-namespace-raise-error-config.xml");
+  }
+
+  @Test
+  public void usedNamespaceNonExistentTypeErrorCannotBeRaised() throws Exception {
+    expectedException.expect(ConfigurationException.class);
+    expectedException.expectMessage(containsString("Cannot use error type 'HTTP:NOT_FOUND': namespace already exists."));
+    loadConfiguration("org/mule/test/integration/exceptions/used-namespace-nonexistent-type-raise-error-config.xml");
   }
 
   @Test
