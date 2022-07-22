@@ -14,6 +14,7 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.functional.api.exception.ExpectedError.none;
+import static org.mule.runtime.api.util.MuleSystemProperties.COMMIT_REDELIVERY_EXHAUSTED;
 import static org.mule.runtime.core.api.error.Errors.Identifiers.REDELIVERY_EXHAUSTED_ERROR_IDENTIFIER;
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.SERVICE_UNAVAILABLE;
@@ -63,6 +64,9 @@ public class RedeliveryExhaustedTestCase extends AbstractIntegrationTestCase {
 
   @Rule
   public SystemProperty maxRedeliveryCount = new SystemProperty("maxRedeliveryCount", "" + MAX_REDELIVERY_COUNT);
+
+  @Rule
+  public SystemProperty commit_redelivery = new SystemProperty(COMMIT_REDELIVERY_EXHAUSTED, "true");
 
   @Rule
   public TestHttpClient httpClient = new TestHttpClient.Builder(getService(HttpService.class)).build();
