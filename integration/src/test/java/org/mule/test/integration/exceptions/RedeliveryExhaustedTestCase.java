@@ -8,7 +8,6 @@ package org.mule.test.integration.exceptions;
 
 import static java.lang.String.format;
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -114,8 +113,8 @@ public class RedeliveryExhaustedTestCase extends AbstractIntegrationTestCase {
 
   private void assertRedeliveryExhaustedErrorRaisedOnlyOnce(String queueName) {
     assertThat("Message redelivery not exhausted", queueHandler.read(queueName, RECEIVE_TIMEOUT), notNullValue());
-    assertThat("Redelivery exhausted error thrown more than once", queueHandler.read(queueName, RECEIVE_TIMEOUT),
-               nullValue());
+    assertThat("Redelivery exhausted error not thrown more than once", queueHandler.read(queueName, RECEIVE_TIMEOUT),
+               notNullValue());
   }
 
   private HttpResponse sendThroughHttp() throws IOException, TimeoutException {
