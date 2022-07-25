@@ -66,7 +66,7 @@ public class RedeliveryExhaustedTestCase extends AbstractIntegrationTestCase {
   public SystemProperty maxRedeliveryCount = new SystemProperty("maxRedeliveryCount", "" + MAX_REDELIVERY_COUNT);
 
   @Rule
-  public SystemProperty commit_redelivery = new SystemProperty(COMMIT_REDELIVERY_EXHAUSTED, "true");
+  public SystemProperty commitRedelivery = new SystemProperty(COMMIT_REDELIVERY_EXHAUSTED, "true");
 
   @Rule
   public TestHttpClient httpClient = new TestHttpClient.Builder(getService(HttpService.class)).build();
