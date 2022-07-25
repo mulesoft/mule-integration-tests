@@ -62,7 +62,7 @@ public class RedeliveryExhaustedTestCase extends AbstractIntegrationTestCase {
 
   @Rule
   public SystemProperty maxRedeliveryCount = new SystemProperty("maxRedeliveryCount", "" + MAX_REDELIVERY_COUNT);
-  
+
   @Rule
   public TestHttpClient httpClient = new TestHttpClient.Builder(getService(HttpService.class)).build();
 
@@ -112,7 +112,8 @@ public class RedeliveryExhaustedTestCase extends AbstractIntegrationTestCase {
 
   private void assertRedeliveryExhaustedErrorRaisedOnlyOnce(String queueName) {
     assertThat("Message redelivery not exhausted", queueManager.read(queueName, RECEIVE_TIMEOUT, MILLISECONDS), notNullValue());
-    assertThat("Redelivery exhausted error not thrown more than once", queueManager.read(queueName, RECEIVE_TIMEOUT, MILLISECONDS), notNullValue());
+    assertThat("Redelivery exhausted error not thrown more than once",
+               queueManager.read(queueName, RECEIVE_TIMEOUT, MILLISECONDS), notNullValue());
   }
 
   private HttpResponse sendThroughHttp() throws IOException, TimeoutException {
