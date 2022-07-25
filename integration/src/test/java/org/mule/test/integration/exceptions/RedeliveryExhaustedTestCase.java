@@ -9,12 +9,10 @@ package org.mule.test.integration.exceptions;
 import static java.lang.String.format;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.functional.api.exception.ExpectedError.none;
-import static org.mule.runtime.api.util.MuleSystemProperties.COMMIT_REDELIVERY_EXHAUSTED;
 import static org.mule.runtime.core.api.error.Errors.Identifiers.REDELIVERY_EXHAUSTED_ERROR_IDENTIFIER;
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.SERVICE_UNAVAILABLE;
@@ -64,10 +62,7 @@ public class RedeliveryExhaustedTestCase extends AbstractIntegrationTestCase {
 
   @Rule
   public SystemProperty maxRedeliveryCount = new SystemProperty("maxRedeliveryCount", "" + MAX_REDELIVERY_COUNT);
-
-  @Rule
-  public SystemProperty commitRedelivery = new SystemProperty(COMMIT_REDELIVERY_EXHAUSTED, "true");
-
+  
   @Rule
   public TestHttpClient httpClient = new TestHttpClient.Builder(getService(HttpService.class)).build();
 
@@ -117,8 +112,7 @@ public class RedeliveryExhaustedTestCase extends AbstractIntegrationTestCase {
 
   private void assertRedeliveryExhaustedErrorRaisedOnlyOnce(String queueName) {
     assertThat("Message redelivery not exhausted", queueManager.read(queueName, RECEIVE_TIMEOUT, MILLISECONDS), notNullValue());
-    assertThat("Redelivery exhausted error thrown more than once", queueManager.read(queueName, RECEIVE_TIMEOUT, MILLISECONDS),
-               nullValue());
+    assertThat("Redelivery exhausted error not thrown more than once", queueManager.read(queueName, RECEIVE_TIMEOUT, MILLISECONDS), notNullValue());
   }
 
   private HttpResponse sendThroughHttp() throws IOException, TimeoutException {
