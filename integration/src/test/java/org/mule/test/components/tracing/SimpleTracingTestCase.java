@@ -46,7 +46,7 @@ public class SimpleTracingTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void testSimpleFlowWithOneProcessor() throws Exception {
-    ExportedSpanCapturer spanCapturer = profilingService.getExportedSpanCapturer();
+    ExportedSpanCapturer spanCapturer = profilingService.getSpanExportManager().getExportedSpanCapturer();
 
     try {
       flowRunner(SIMPLE_FLOW).withPayload(TEST_PAYLOAD).run().getMessage();
