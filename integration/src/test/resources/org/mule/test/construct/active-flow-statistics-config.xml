@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+
+    <flow name="stoppedPrivateFlow" initialState="stopped">
+        <logger />
+    </flow>
+
+    <flow name="activePrivateFlow">
+        <logger />
+    </flow>
+
+    <flow name="activeTriggerFlow">
+        <scheduler>
+            <scheduling-strategy>
+                <fixed-frequency frequency="10000"/>
+            </scheduling-strategy>
+        </scheduler>
+        <logger />
+    </flow>
+
+    <flow name="stoppedTriggerFlow" initialState="stopped">
+        <scheduler>
+            <scheduling-strategy>
+                <fixed-frequency frequency="10000"/>
+            </scheduling-strategy>
+        </scheduler>
+        <logger />
+    </flow>
+
+</mule>
