@@ -8,15 +8,9 @@
 
 <mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns="http://www.mulesoft.org/schema/mule/core"
-      xmlns:tracing="http://www.mulesoft.org/schema/mule/tracing"
-      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-            http://www.mulesoft.org/schema/mule/tracing http://www.mulesoft.org/schema/mule/tracing/current/mule-tracing.xsd">
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 
     <flow name="simple-flow">
-        <tracing:with-correlation-id correlationId="#['Fua']">
-            <set-variable variableName="cid" value="#[correlationId]"/>
-        </tracing:with-correlation-id>
-        <tracing:set-logging-variable variableName="testVar" value="Hello World!" />
         <set-payload value="result"/>
     </flow>
 
