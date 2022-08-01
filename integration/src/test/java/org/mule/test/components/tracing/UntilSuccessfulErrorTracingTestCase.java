@@ -36,7 +36,6 @@ public class UntilSuccessfulErrorTracingTestCase extends AbstractIntegrationTest
   public static final String EXPECTED_ROUTE_SPAN_NAME = "mule:until-successful:route";
   public static final String EXPECTED_UNTIL_SUCCESSFUL_SPAN_NAME = "mule:until-successful";
   public static final String EXPECTED_LOGGER_SPAN_NAME = "mule:logger";
-  public static final String EXPECTED_SET_PAYLOAD_SPAN_NAME = "mule:set-payload";
   public static final String UNTIL_SUCCESSFUL_FLOW = "until-successful-flow";
   public static final String EXPECTED_FLOW_SPAN_NAME = "mule:flow";
   public static final String EXPECTED_HTTP_REQUEST_SPAN_NAME = "http:request";
