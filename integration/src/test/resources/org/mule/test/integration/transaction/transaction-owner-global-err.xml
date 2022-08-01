@@ -32,6 +32,9 @@
                             exceptionToThrow="java.lang.RuntimeException" />
             <error-handler ref="globalPropagate"/>
         </try>
+        <error-handler>
+            <on-error-continue/>
+        </error-handler>
     </flow>
 
     <flow name="no-rollback-outside-try">
