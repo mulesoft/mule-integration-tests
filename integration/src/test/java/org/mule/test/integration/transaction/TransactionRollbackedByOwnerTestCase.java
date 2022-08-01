@@ -96,7 +96,7 @@ public class TransactionRollbackedByOwnerTestCase extends AbstractIntegrationTes
         new Object[] {"Global Error Handler", "org/mule/test/integration/transaction/transaction-owner-global-err.xml",
             "no-rollback", false, "commit"},
         new Object[] {"Global Error Handler", "org/mule/test/integration/transaction/transaction-owner-global-err.xml",
-            "rollback", true, "rollback"},
+            "rollback", false, "rollback"},
         new Object[] {"Global Error Handler", "org/mule/test/integration/transaction/transaction-owner-global-err.xml",
             "no-rollback-outside-try", true, "commit"},
         new Object[] {"Global Error Handler", "org/mule/test/integration/transaction/transaction-owner-global-err.xml",
