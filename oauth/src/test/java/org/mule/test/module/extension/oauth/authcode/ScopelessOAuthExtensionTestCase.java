@@ -13,7 +13,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-import org.mule.runtime.extension.api.connectivity.oauth.AuthCodeRequest;
+import org.mule.sdk.api.connectivity.oauth.AuthCodeRequest;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.oauth.TestWithOAuthParamsConnectionProvider;
 

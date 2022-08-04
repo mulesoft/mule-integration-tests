@@ -16,7 +16,7 @@
 
     <flow name="afterFlow">
         <set-variable variableName="ownerId" value="#[payload.resourceOwnerId]" />
-        <test-oauth:capture-callback-payloads request="#[vars.authCodeRequest]" state="#[payload]" config-ref="oauth"/>
+        <test-oauth:capture-sdk-callback-payloads request="#[vars.authCodeRequest]" state="#[payload]" config-ref="oauth"/>
     </flow>
 
     <flow name="refreshToken">
