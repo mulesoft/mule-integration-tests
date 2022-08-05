@@ -19,8 +19,9 @@
         <activemqVersion>5.15.3</activemqVersion>
         <hawtbufVersion>1.1</hawtbufVersion>
         <activemqProtobuf>1.1</activemqProtobuf>
-        <groovy.version>2.4.16</groovy.version>
+        <groovy.version>2.4.21</groovy.version>
         <muleTracingModuleVersion>1.0.0</muleTracingModuleVersion>
+        <muleScriptingModuleVersion>2.0.1</muleScriptingModuleVersion>
     </properties>
 
     <build>
@@ -139,6 +140,7 @@
             <groupId>org.mule.modules</groupId>
             <artifactId>mule-scripting-module</artifactId>
             <classifier>mule-plugin</classifier>
+            <version>${muleScriptingModuleVersion}</version>
         </dependency>
         
         <!-- Plugins for testing sources -->
