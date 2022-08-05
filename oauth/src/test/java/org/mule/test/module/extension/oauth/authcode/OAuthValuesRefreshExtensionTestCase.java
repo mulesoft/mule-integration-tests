@@ -37,7 +37,6 @@ public class OAuthValuesRefreshExtensionTestCase extends BaseOAuthExtensionTestC
   @Before
   public void setOwnerId() throws Exception {
     ownerId = getCustomOwnerId();
-    storedOwnerId = getCustomOwnerId() + "-oauth";
   }
 
   @Test

@@ -38,29 +38,6 @@ public class OAuthMetadataRefreshExtensionTestCase extends BaseOAuthExtensionTes
   @Before
   public void setOwnerId() throws Exception {
     ownerId = getCustomOwnerId();
-    storedOwnerId = getCustomOwnerId() + "-oauth";
-  }
-
-  @Test
-  public void refreshTokenOnOutputMetadataResolution() throws Exception {
-    assertThatMetadataResolutionIsSuccessfulWithRefresh(() -> metadataService
-        .getOutputMetadata(Location.builder().globalName("metadata").addProcessorsPart().addIndexPart(0).build(),
-                           newKey("anyKey").build()));
-  }
-
-
-  @Test
-  public void tokenRefreshOnInputMetadataResolution() throws Exception {
-    assertThatMetadataResolutionIsSuccessfulWithRefresh(() -> metadataService
-        .getInputMetadata(Location.builder().globalName("metadata").addProcessorsPart().addIndexPart(0).build(),
-                          newKey("anyKey").build()));
-  }
-
-  @Test
-  public void tokenRefreshOnAttributeMetadataResolution() throws Exception {
-    assertThatMetadataResolutionIsSuccessfulWithRefresh(() -> metadataService
-        .getOutputMetadata(Location.builder().globalName("anotherMetadata").addProcessorsPart().addIndexPart(0).build(),
-                           newKey("anyKey").build()));
   }
 
   @Test
