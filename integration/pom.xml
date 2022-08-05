@@ -19,8 +19,9 @@
         <activemqVersion>5.15.3</activemqVersion>
         <hawtbufVersion>1.1</hawtbufVersion>
         <activemqProtobuf>1.1</activemqProtobuf>
-        <groovy.version>2.4.16</groovy.version>
+        <groovy.version>2.4.21</groovy.version>
         <muleTracingModuleVersion>1.0.0</muleTracingModuleVersion>
+        <muleScriptingModuleVersion>2.0.1</muleScriptingModuleVersion>
     </properties>
 
     <build>
@@ -29,6 +30,12 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
+                    <sharedLibraries>
+                        <sharedLibrary>
+                            <groupId>org.codehaus.groovy</groupId>
+                            <artifactId>groovy-all</artifactId>
+                        </sharedLibrary>
+                    </sharedLibraries>
                     <argLine>-Dfile.encoding=UTF-8 -Xmx1024m -Xms256m -XX:+HeapDumpOnOutOfMemoryError
                         -javaagent:${settings.localRepository}/org/aspectj/aspectjweaver/${aspectjVersion}/aspectjweaver-${aspectjVersion}.jar
                         -javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco.version}/org.jacoco.agent-${jacoco.version}-runtime.jar=destfile='${session.executionRootDirectory}/target/jacoco.exec'
@@ -139,6 +146,7 @@
             <groupId>org.mule.modules</groupId>
             <artifactId>mule-scripting-module</artifactId>
             <classifier>mule-plugin</classifier>
+            <version>${muleScriptingModuleVersion}</version>
         </dependency>
         
         <!-- Plugins for testing sources -->
