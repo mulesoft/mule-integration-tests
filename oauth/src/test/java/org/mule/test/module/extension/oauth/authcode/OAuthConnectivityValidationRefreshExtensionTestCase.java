@@ -39,7 +39,6 @@ public class OAuthConnectivityValidationRefreshExtensionTestCase extends BaseOAu
   @Before
   public void setOwnerId() throws Exception {
     ownerId = getCustomOwnerId();
-    storedOwnerId = getCustomOwnerId() + "-oauth";
   }
 
   @Test
