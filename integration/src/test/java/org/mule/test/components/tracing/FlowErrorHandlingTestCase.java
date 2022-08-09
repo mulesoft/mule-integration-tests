@@ -7,18 +7,14 @@
 
 package org.mule.test.components.tracing;
 
-import static java.lang.String.format;
-import static org.hamcrest.Matchers.hasItem;
 import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.DEFAULT_CORE_EVENT_TRACER;
+import static java.lang.String.format;
 import static java.util.Arrays.stream;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.assertThat;
 
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
-import org.jetbrains.annotations.NotNull;
 import org.mule.runtime.api.util.Pair;
 import org.mule.runtime.core.privileged.profiling.CapturedExportedSpan;
 import org.mule.runtime.core.privileged.profiling.ExportedSpanCapturer;
@@ -27,11 +23,16 @@ import org.mule.test.AbstractIntegrationTestCase;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
+
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.jetbrains.annotations.NotNull;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,7 +41,7 @@ import org.junit.Test;
 @Story(DEFAULT_CORE_EVENT_TRACER)
 public class FlowErrorHandlingTestCase extends AbstractIntegrationTestCase {
 
-  private static final Pair<String, String> EXPECTED_RAISE_ERROR_SPAN = new Pair<>("mule:raise-errorr", "mule:flow");
+  private static final Pair<String, String> EXPECTED_RAISE_ERROR_SPAN = new Pair<>("mule:raise-error", "mule:flow");
   private static final Pair<String, String> EXPECTED_FLOW_SPAN = new Pair<>("mule:flow", "");
   private static final String FLOW_WITH_ON_ERROR_CONTINUE = "flow-with-on-error-continue";
   private static final String FLOW_WITH_ON_ERROR_PROPAGATE = "flow-with-on-error-propagate";
@@ -76,6 +77,8 @@ public class FlowErrorHandlingTestCase extends AbstractIntegrationTestCase {
     try {
       flowRunner(FLOW_WITH_ON_ERROR_PROPAGATE).withPayload(TEST_PAYLOAD).run().getMessage();
     } catch (Throwable e) {
+      // Nothing to do (the flow under test is propagating an error).
+    } finally {
       assertExpectedSpans(EXPECTED_FLOW_SPAN, EXPECTED_RAISE_ERROR_SPAN);
     }
   }
@@ -85,13 +88,13 @@ public class FlowErrorHandlingTestCase extends AbstractIntegrationTestCase {
     Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
     Collection<Matcher<CapturedExportedSpan>> expectedSpanMatchers = stream(expectedSpans).map(this::getSpanMatcher).collect(Collectors.toList());
     expectedSpanMatchers.forEach(spanMatcher -> assertThat(exportedSpans, hasItem(spanMatcher)));
-    //TODO : Show the unexpected span names as has part of the error
-    assertThat("Unexpected spans have been exported", exportedSpans.size(), equalTo(expectedSpanMatchers.size()));
+    //TODO : Show the unexpected spans as has part of the error
+    assertThat("Unexpected spans have been exported.", exportedSpans.size(), equalTo(expectedSpanMatchers.size()));
   }
 
   @NotNull
   private SpanMatcher getSpanMatcher(Pair<String, String> expectedSpan) {
-    return new SpanMatcher(expectedSpan.getFirst(), expectedSpan.getSecond().isEmpty() ? "" : findExportedSpan(expectedSpan.getSecond()).getParentSpanId());
+    return new SpanMatcher(expectedSpan.getFirst(), expectedSpan.getSecond().isEmpty() ? "" : findExportedSpan(expectedSpan.getSecond()).getSpanId());
   }
 
   @Nonnull
@@ -99,15 +102,18 @@ public class FlowErrorHandlingTestCase extends AbstractIntegrationTestCase {
     return spanCapturer.getExportedSpans().stream().filter(exportedSpan -> exportedSpan.getName().equals(spanName)).findFirst().orElseThrow(() -> new RuntimeException(format("Expected Span with name [%s] not found.", spanName)));
   }
 
-  private static class SpanMatcher extends BaseMatcher<CapturedExportedSpan> {
+  /**
+   * A CapturedExportedSpan Hamcrest matcher that can be reused for other tests if necessary.
+   */
+  public static class SpanMatcher extends BaseMatcher<CapturedExportedSpan> {
 
+    private static final String ROOT_PARENT_SPAN_ID = "0000000000000000";
     private final String spanName;
-
     private final String parentSpanId;
 
     public SpanMatcher(String spanName, String parentSpanId) {
       this.spanName = spanName;
-      this.parentSpanId = parentSpanId;
+      this.parentSpanId = parentSpanId.equals("") ? ROOT_PARENT_SPAN_ID : parentSpanId;
     }
 
     @Override
@@ -121,7 +127,7 @@ public class FlowErrorHandlingTestCase extends AbstractIntegrationTestCase {
 
     @Override
     public void describeTo(Description description) {
-      description.appendText(format("A Span with name [%s] and parent Span ID [%s]", spanName, parentSpanId));
+      description.appendText(format("a Span with name: [%s] and parent Span ID: [%s].", spanName, parentSpanId));
     }
   }
 }
