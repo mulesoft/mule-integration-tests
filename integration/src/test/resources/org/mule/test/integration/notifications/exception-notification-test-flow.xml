@@ -10,7 +10,7 @@
     </notifications>
 
     <flow name="the-service">
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
     </flow>
 
 </mule>

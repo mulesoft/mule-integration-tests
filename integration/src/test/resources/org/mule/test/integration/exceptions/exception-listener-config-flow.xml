@@ -15,7 +15,7 @@
     </test-components:queue-config>
 
     <flow name="mycomponent">
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
         <test-components:queue-push config-ref="component.out"/>
         <error-handler>
             <on-error-propagate>

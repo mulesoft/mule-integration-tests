@@ -4,7 +4,7 @@
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 
     <flow name="defaultErrorHandlerFlow">
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
     </flow>
 
     <error-handler name="sharedErrorHandler">
@@ -14,12 +14,12 @@
     </error-handler>
 
     <flow name="referencedErrorHandlerFlow">
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler ref="sharedErrorHandler"/>
     </flow>
 
     <flow name="innerErrorHandlerFlow">
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <on-error-propagate type="ANY">
                 <logger/>

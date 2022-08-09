@@ -173,7 +173,7 @@
             <until-successful millisBetweenRetries="100">
                 <choice>
                     <when expression="#[vars.counter.count &lt;= 0]">
-                        <raise-error type="TEST:SOME"/>
+                        <raise-error type="APP:SOME"/>
                     </when>
                 </choice>
                 <set-payload value="#[java!org::mule::test::core::NonBlockingFunctionalTestCase::countdownLatch(payload, vars.counter)]"/>
@@ -190,7 +190,7 @@
                 <test-components:non-blocking delayMillis="100"/>
                 <choice>
                     <when expression="#[vars.counter.count &lt;= 0]">
-                        <raise-error type="TEST:SOME"/>
+                        <raise-error type="APP:SOME"/>
                     </when>
                 </choice>
                 <set-payload value="#[java!org::mule::test::core::NonBlockingFunctionalTestCase::countdownLatch(payload, vars.counter)]"/>
@@ -205,7 +205,7 @@
             <until-successful millisBetweenRetries="100">
                 <choice>
                     <when expression="#[vars.counter.count &lt;= 0]">
-                        <raise-error type="TEST:SOME"/>
+                        <raise-error type="APP:SOME"/>
                     </when>
                 </choice>
                 <set-payload value="#[java!org::mule::test::core::NonBlockingFunctionalTestCase::countdownLatch(payload, vars.counter)]"/>
@@ -220,7 +220,7 @@
             <until-successful millisBetweenRetries="100">
                 <choice>
                     <when expression="#[vars.counter.count &lt;= 0]">
-                        <raise-error type="TEST:SOME"/>
+                        <raise-error type="APP:SOME"/>
                     </when>
                 </choice>
                 <set-payload value="#[java!org::mule::test::core::NonBlockingFunctionalTestCase::countdownLatch(payload, vars.counter)]"/>

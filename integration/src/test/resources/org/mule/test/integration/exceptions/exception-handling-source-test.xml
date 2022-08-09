@@ -51,7 +51,7 @@
         <error-handler>
             <on-error-continue>
                 <flow-ref name="onErrorCounter"/>
-                <raise-error type="TEST:EXPECTED"/>
+                <raise-error type="APP:EXPECTED"/>
             </on-error-continue>
         </error-handler>
     </flow>

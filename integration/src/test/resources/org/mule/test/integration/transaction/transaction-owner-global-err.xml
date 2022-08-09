@@ -20,14 +20,14 @@
 
     <flow name="no-rollback">
         <try transactionalAction="BEGIN_OR_JOIN">
-            <raise-error type="TEST:EXPECTED"/>
+            <raise-error type="APP:EXPECTED"/>
             <error-handler ref="globalContinue"/>
         </try>
     </flow>
 
     <flow name="rollback">
         <try transactionalAction="BEGIN_OR_JOIN">
-            <raise-error type="TEST:EXPECTED"/>
+            <raise-error type="APP:EXPECTED"/>
             <error-handler ref="globalPropagate"/>
         </try>
         <error-handler>
@@ -39,7 +39,7 @@
         <try transactionalAction="BEGIN_OR_JOIN">
             <test:processor />
         </try>
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler ref="globalPropagate"/>
     </flow>
 
@@ -98,7 +98,7 @@
 
 
     <flow name="rollback-flowref">
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
     </flow>
 
     <flow name="error-flowref-JOIN">
@@ -106,7 +106,7 @@
             <test:processor/>
             <error-handler ref="globalContinue"/>
         </try>
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler ref="globalPropagate"/>
     </flow>
 
@@ -115,7 +115,7 @@
             <test:processor/>
             <error-handler ref="globalContinue"/>
         </try>
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler ref="globalPropagate"/>
     </flow>
 

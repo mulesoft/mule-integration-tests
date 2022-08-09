@@ -11,7 +11,7 @@
                http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
 
     <flow name="catchExceptionStrategyChild">
-        <raise-error type="TEST:SOME"/>
+        <raise-error type="APP:SOME"/>
         <error-handler>
             <on-error-continue>
                 <test-components:assert-intercepting responseSameTask="false">
@@ -24,13 +24,13 @@
 
     <flow name="rollbackExceptionStrategyChild">
         <flow-ref name="rollbackExceptionStrategyGrandChild"/>
-        <raise-error type="TEST:FAIL"/>
+        <raise-error type="APP:FAIL"/>
         <error-handler>
             <on-error-continue type="TEST:SOME"/>
         </error-handler>
     </flow>
     <flow name="rollbackExceptionStrategyGrandChild">
-        <raise-error type="TEST:SOME"/>
+        <raise-error type="APP:SOME"/>
         <error-handler>
             <on-error-propagate>
                 <test-components:non-blocking/>
@@ -40,7 +40,7 @@
 
     <flow name="nonTransactionalTryErrorHandler" initialState="stopped">
         <try>
-            <raise-error type="TEST:SOME"/>
+            <raise-error type="APP:SOME"/>
             <error-handler>
                 <on-error-continue>
                     <test-components:assert-intercepting responseSameTask="false">
@@ -54,7 +54,7 @@
 
     <flow name="transactionalTryErrorHandler" initialState="stopped">
         <try transactionalAction="ALWAYS_BEGIN">
-            <raise-error type="TEST:SOME"/>
+            <raise-error type="APP:SOME"/>
             <error-handler>
                 <on-error-continue>
                     <test-components:assert-intercepting responseSameTask="true">

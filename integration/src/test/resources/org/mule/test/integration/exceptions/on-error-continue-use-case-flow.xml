@@ -43,7 +43,7 @@
     <flow name="httpContinueProcessingActualMessage">
         <http:listener path="service" config-ref="listenerConfig"/>
         <flow-ref name="load-news"/>
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <on-error-continue>
                 <flow-ref name="news"/>
@@ -54,7 +54,7 @@
     <flow name="httpsContinueProcessingActualMessage">
         <http:listener config-ref="listenerConfigHttps" path="httpsservice"/>
         <flow-ref name="load-news"/>
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <on-error-continue>
                 <flow-ref name="news"/>
@@ -64,7 +64,7 @@
 
     <flow name="continueProcessingActualMessage">
         <flow-ref name="load-news"/>
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <on-error-continue>
                 <flow-ref name="news"/>
@@ -73,7 +73,7 @@
     </flow>
 
     <flow name="catchWithComponent">
-      <raise-error type="TEST:EXPECTED"/>
+      <raise-error type="APP:EXPECTED"/>
       <error-handler>
         <on-error-continue>
             <script:execute engine="groovy">
@@ -87,7 +87,7 @@
 
     <flow name="fullyDefinedCatchExceptionStrategyWithComponent">
         <set-payload value="#[payload ++ ' apt1']"/>
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <on-error-continue>
                 <set-payload value="#[payload ++ ' apt2']"/>
@@ -118,7 +118,7 @@
 
     <flow name="onErrorTypeMatchAny">
         <set-payload value="#[payload ++ ' apt1']"/>
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <on-error-continue type="EXPRESSION">
                 <set-payload value="#[payload ++ ' nope']"/>
@@ -193,7 +193,7 @@
     </flow>
 
     <flow name="failingHandler">
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <on-error-continue>
                 <flow-ref name="error"/>
@@ -215,13 +215,13 @@
 
     <flow name="withTry">
         <set-payload value="flow"/>
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <on-error-continue>
                 <test-components:queue-push config-ref="out1"/>
                 <try>
                     <set-payload value="try"/>
-                    <raise-error type="TEST:EXPECTED"/>
+                    <raise-error type="APP:EXPECTED"/>
                     <error-handler>
                         <on-error-continue>
                             <test-components:queue-push config-ref="out2"/>

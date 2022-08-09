@@ -18,7 +18,7 @@
         <async>
             <try>
                 <until-successful maxRetries="1" millisBetweenRetries="1000">
-                    <raise-error type="TEST:EXPECTED"/>
+                    <raise-error type="APP:EXPECTED"/>
                 </until-successful>
                 <error-handler>
                     <on-error-continue/>
@@ -52,7 +52,7 @@
 
     <flow name="retryExhaustedCausedByNonConnectivityErrorLogCheck">
         <until-successful maxRetries="1" millisBetweenRetries="10">
-            <raise-error type="TEST:EXPECTED" description="Expected error"/>
+            <raise-error type="APP:EXPECTED" description="Expected error"/>
         </until-successful>
         <error-handler>
             <test:on-error-check-log>

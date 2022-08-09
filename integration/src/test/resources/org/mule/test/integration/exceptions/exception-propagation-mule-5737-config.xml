@@ -7,7 +7,7 @@
 
 
     <flow name="flow">
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
     </flow>
 
     <flow name="flowWithChildFlow">
@@ -38,7 +38,7 @@
     </flow>
 
     <flow name="childFlow">
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <on-error-continue>
                 <set-payload value="#[java!org::mule::test::integration::exceptions::ExceptionPropagationMule5737TestCase::senseChild(payload)]"/>
@@ -47,11 +47,11 @@
     </flow>
 
     <sub-flow name="subFlow">
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
     </sub-flow>
 
     <flow name="childService">
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <on-error-continue>
                 <set-payload value="#[java!org::mule::test::integration::exceptions::ExceptionPropagationMule5737TestCase::senseChild(payload)]"/>

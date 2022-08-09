@@ -56,7 +56,7 @@
     </flow>
 
     <flow name="failingFlow">
-        <raise-error type="TEST:EXPECTED" description="expected error"/>
+        <raise-error type="APP:EXPECTED" description="expected error"/>
     </flow>
 
     <flow name="timeoutFlow">
@@ -64,7 +64,7 @@
     </flow>
 
     <flow name="failureHandledFlow">
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <on-error-continue>
                 <set-payload value="Flow failed but lets move on"/>

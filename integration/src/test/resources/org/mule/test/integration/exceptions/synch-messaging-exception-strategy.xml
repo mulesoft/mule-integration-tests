@@ -23,13 +23,13 @@
     </flow>
 
     <flow name="ProcessorInboundRouter">
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
         <logger/>
     </flow>
 
     <flow name="ProcessorOutboundRouter">
         <logger/>
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
     </flow>
 
 </mule>

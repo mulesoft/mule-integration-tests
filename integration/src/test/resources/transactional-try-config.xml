@@ -6,7 +6,7 @@ http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/cor
 
     <flow name="standardTry">
         <try transactionalAction="BEGIN_OR_JOIN" transactionType="LOCAL">
-            <raise-error type="TEST:EXPECTED"/>
+            <raise-error type="APP:EXPECTED"/>
             <error-handler>
                 <on-error-continue>
                     <set-payload value="#[payload ++ ' hi']"/>

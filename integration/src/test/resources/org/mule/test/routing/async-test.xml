@@ -170,7 +170,7 @@
     </flow>
 
     <flow name="asyncFlowWithSdkOperationInErrorHandler" initialState="stopped">
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
         
         <error-handler>
             <on-error-propagate>
@@ -180,7 +180,7 @@
     </flow>
 
     <flow name="asyncFlowWithSdkOperationInRefErrorHandler" initialState="stopped">
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
         
         <error-handler ref="errorHandlerWithAsyncAndNonBlocking"/>
     </flow>

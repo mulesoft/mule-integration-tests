@@ -24,7 +24,7 @@
 
     <flow name="CustomProcessorException">
         <logger/>
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
     </flow>
 
 </mule>

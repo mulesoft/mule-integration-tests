@@ -30,7 +30,7 @@
     
     <flow name="xmlSdkOperationFailAfter">
         <sc:set-payload-hardcoded />
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <on-error-continue>
                 <flow-ref name="subFlow"/>
