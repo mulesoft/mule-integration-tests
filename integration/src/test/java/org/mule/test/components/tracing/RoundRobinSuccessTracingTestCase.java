@@ -59,30 +59,30 @@ public class RoundRobinSuccessTracingTestCase extends AbstractIntegrationTestCas
   }
 
   private void assertRoundRobinSpan(ExportedSpanCapturer spanCapturer, int numberOfExpectedSpans, boolean verifySetPayloadInRoute)
-    throws Exception {
+      throws Exception {
     try {
       flowRunner(ROUND_ROBIN_FLOW).withPayload(TEST_PAYLOAD).run().getMessage();
       Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
 
       CapturedExportedSpan muleFlowSpan =
-        exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_FLOW_SPAN_NAME)).findFirst().orElse(null);
+          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_FLOW_SPAN_NAME)).findFirst().orElse(null);
 
       CapturedExportedSpan roundRobinSuccessfulSpan =
-        exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_ROUND_ROBIN_SPAN_NAME)).findFirst()
-          .orElse(null);
+          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_ROUND_ROBIN_SPAN_NAME)).findFirst()
+              .orElse(null);
 
       List<CapturedExportedSpan> muleRouteSpanList =
-        exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_ROUTE_SPAN_NAME)).collect(Collectors.toList());
+          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_ROUTE_SPAN_NAME)).collect(Collectors.toList());
 
       List<CapturedExportedSpan> setPayloadSpanList =
-        exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_SET_PAYLOAD_SPAN_NAME))
-          .collect(Collectors.toList());
+          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_SET_PAYLOAD_SPAN_NAME))
+              .collect(Collectors.toList());
       CapturedExportedSpan setPayloadSpan =
-        exportedSpans.stream().filter(span -> span.getParentSpanId().equals(muleRouteSpanList.get(0).getSpanId())).findFirst()
-          .orElse(null);
+          exportedSpans.stream().filter(span -> span.getParentSpanId().equals(muleRouteSpanList.get(0).getSpanId())).findFirst()
+              .orElse(null);
 
       CapturedExportedSpan loggerSpan =
-        exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_LOGGER_SPAN_NAME)).findFirst().orElse(null);
+          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_LOGGER_SPAN_NAME)).findFirst().orElse(null);
 
       assertThat(exportedSpans, hasSize(numberOfExpectedSpans));
       assertThat(muleFlowSpan.getParentSpanId(), equalTo(NO_PARENT_SPAN));
@@ -91,7 +91,7 @@ public class RoundRobinSuccessTracingTestCase extends AbstractIntegrationTestCas
       assertThat(muleRouteSpanList, hasSize(1));
 
       muleRouteSpanList
-        .forEach(muleRouteSpan -> assertThat(muleRouteSpan.getParentSpanId(), equalTo(roundRobinSuccessfulSpan.getSpanId())));
+          .forEach(muleRouteSpan -> assertThat(muleRouteSpan.getParentSpanId(), equalTo(roundRobinSuccessfulSpan.getSpanId())));
       if (verifySetPayloadInRoute) {
         assertThat(setPayloadSpanList, hasSize(1));
         assertThat(setPayloadSpan, notNullValue());
