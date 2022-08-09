@@ -53,7 +53,7 @@ public class ParallelForEachSuccessTracingTestCase extends AbstractIntegrationTe
   }
 
   @Test
-  public void testUntilSuccessfulFlowWithError() throws Exception {
+  public void testFlow() throws Exception {
     ExportedSpanCapturer spanCapturer = profilingService.getSpanExportManager().getExportedSpanCapturer();
 
     try {

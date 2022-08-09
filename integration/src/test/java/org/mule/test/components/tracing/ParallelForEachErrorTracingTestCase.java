@@ -53,7 +53,7 @@ public class ParallelForEachErrorTracingTestCase extends AbstractIntegrationTest
   }
 
   @Test
-  public void testUntilSuccessfulFlowWithError() throws Exception {
+  public void testFlowWithError() throws Exception {
     ExportedSpanCapturer spanCapturer = profilingService.getSpanExportManager().getExportedSpanCapturer();
 
     try {
