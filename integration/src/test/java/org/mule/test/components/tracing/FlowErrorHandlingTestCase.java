@@ -58,7 +58,7 @@ public class FlowErrorHandlingTestCase extends AbstractIntegrationTestCase {
 
   @Before
   public void initialize() {
-     spanCapturer = profilingService.getSpanExportManager().getExportedSpanCapturer();
+    spanCapturer = profilingService.getSpanExportManager().getExportedSpanCapturer();
   }
 
   @After
@@ -86,20 +86,23 @@ public class FlowErrorHandlingTestCase extends AbstractIntegrationTestCase {
   @SafeVarargs
   private final void assertExpectedSpans(Pair<String, String>... expectedSpans) {
     Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
-    Collection<Matcher<CapturedExportedSpan>> expectedSpanMatchers = stream(expectedSpans).map(this::getSpanMatcher).collect(Collectors.toList());
+    Collection<Matcher<CapturedExportedSpan>> expectedSpanMatchers =
+        stream(expectedSpans).map(this::getSpanMatcher).collect(Collectors.toList());
     expectedSpanMatchers.forEach(spanMatcher -> assertThat(exportedSpans, hasItem(spanMatcher)));
-    //TODO : Show the unexpected spans as has part of the error
+    // TODO : Show the unexpected spans as has part of the error
     assertThat("Unexpected spans have been exported.", exportedSpans.size(), equalTo(expectedSpanMatchers.size()));
   }
 
   @NotNull
   private SpanMatcher getSpanMatcher(Pair<String, String> expectedSpan) {
-    return new SpanMatcher(expectedSpan.getFirst(), expectedSpan.getSecond().isEmpty() ? "" : findExportedSpan(expectedSpan.getSecond()).getSpanId());
+    return new SpanMatcher(expectedSpan.getFirst(),
+                           expectedSpan.getSecond().isEmpty() ? "" : findExportedSpan(expectedSpan.getSecond()).getSpanId());
   }
 
   @Nonnull
   private CapturedExportedSpan findExportedSpan(String spanName) {
-    return spanCapturer.getExportedSpans().stream().filter(exportedSpan -> exportedSpan.getName().equals(spanName)).findFirst().orElseThrow(() -> new RuntimeException(format("Expected Span with name [%s] not found.", spanName)));
+    return spanCapturer.getExportedSpans().stream().filter(exportedSpan -> exportedSpan.getName().equals(spanName)).findFirst()
+        .orElseThrow(() -> new RuntimeException(format("Expected Span with name [%s] not found.", spanName)));
   }
 
   /**
