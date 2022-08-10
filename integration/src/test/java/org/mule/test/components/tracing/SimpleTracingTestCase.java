@@ -80,8 +80,9 @@ public class SimpleTracingTestCase extends AbstractIntegrationTestCase {
           exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_TRACING_CORRELATION_ID_SPAN_NAME)).findFirst()
               .orElse(null);
       CapturedExportedSpan tracingCorrelationIdRoute =
-        exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_TRACING_CORRELATION_ID_ROUTE_SPAN_NAME)).findFirst()
-          .orElse(null);
+          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_TRACING_CORRELATION_ID_ROUTE_SPAN_NAME))
+              .findFirst()
+              .orElse(null);
       CapturedExportedSpan setVariableSpan =
           exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_SET_VARIABLE_SPAN_NAME)).findFirst().orElse(null);
       CapturedExportedSpan setLoggingVariable =
