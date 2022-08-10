@@ -12,7 +12,7 @@
     <flow name="flow">
         <choice>
             <when expression="#[payload == 'A']">
-                <raise-error type="TEST:UNEXPECTED_ROUTE" description="Unexpected route execution"/>
+                <raise-error type="APP:UNEXPECTED_ROUTE" description="Unexpected route execution"/>
             </when>
         </choice>
         <set-payload value="#[payload ++ 'afterRouteMpCounter']"/>
@@ -21,7 +21,7 @@
     <flow name="otherwise">
         <choice>
             <when expression="#[payload == 'A']">
-                <raise-error type="TEST:UNEXPECTED_ROUTE" description="Unexpected route execution"/>
+                <raise-error type="APP:UNEXPECTED_ROUTE" description="Unexpected route execution"/>
             </when>
             <otherwise>
                 <set-payload value="#[payload ++ 'otherwiseCounter']"/>
@@ -36,10 +36,10 @@
                 <set-payload value="#[payload ++ 'first']"/>
             </when>
             <when expression="#[payload == 'test']">
-                <raise-error type="TEST:UNEXPECTED_ROUTE" description="Unexpected route execution"/>
+                <raise-error type="APP:UNEXPECTED_ROUTE" description="Unexpected route execution"/>
             </when>
             <otherwise>
-                <raise-error type="TEST:UNEXPECTED_ROUTE" description="Unexpected route execution"/>
+                <raise-error type="APP:UNEXPECTED_ROUTE" description="Unexpected route execution"/>
             </otherwise>
         </choice>
         <set-payload value="#[payload ++ 'after']"/>

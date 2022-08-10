@@ -12,7 +12,7 @@
                 <fixed-frequency frequency="1000" timeUnit="MILLISECONDS" />
             </scheduling-strategy>
         </scheduler>
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <on-error-continue>
                 <set-payload value="#[java!org::mule::test::integration::SchedulerErrorHandlingTestCase::verifyExecution(payload)]"/>

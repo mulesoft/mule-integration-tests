@@ -257,7 +257,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
   @Test
   @Description("Errors in sub-flows are handled correctly")
   public void failingSubFlow() throws Exception {
-    expectedError.expectErrorType("TEST", "EXPECTED");
+    expectedError.expectErrorType("APP", "EXPECTED");
 
     try {
       flowRunner("flowWithFailingSubFlowRef").run();
@@ -273,7 +273,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
       InterceptionParameters failParameter = interceptionParameters.get(1);
 
       assertThat(failParameter.getParameters().keySet(), containsInAnyOrder("type"));
-      assertThat(failParameter.getParameters().get("type").resolveValue(), is("TEST:EXPECTED"));
+      assertThat(failParameter.getParameters().get("type").resolveValue(), is("APP:EXPECTED"));
 
       // the 3rd one is for the global error handler, it is tested separately
     }
@@ -282,7 +282,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
   @Test
   @Description("Processors in error handlers are intercepted correctly")
   public void errorHandler() throws Exception {
-    expectedError.expectErrorType("TEST", "EXPECTED");
+    expectedError.expectErrorType("APP", "EXPECTED");
 
     AtomicBoolean afterCallbackCalledForFailingMP = new AtomicBoolean(false);
     AtomicBoolean afterCallbackCalledForErrorHandlingMp = new AtomicBoolean(false);
@@ -313,7 +313,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
   @Test
   @Description("Processors in global error handlers are intercepted correctly")
   public void globalErrorHandler() throws Exception {
-    expectedError.expectErrorType("TEST", "EXPECTED");
+    expectedError.expectErrorType("APP", "EXPECTED");
 
     AtomicBoolean afterCallbackCalledForFailingMP = new AtomicBoolean(false);
     AtomicBoolean afterCallbackCalledForErrorHandlingMp = new AtomicBoolean(false);
@@ -444,7 +444,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
   @Test
   @Description("Processors in global error handlers are intercepted correctly when error is in referenced flow")
   public void globalErrorHandlerWithFlowRef() throws Exception {
-    expectedError.expectErrorType("TEST", "EXPECTED");
+    expectedError.expectErrorType("APP", "EXPECTED");
     CountDownLatch allAftersWereCalled = new CountDownLatch(4);
 
     AtomicInteger afters = new AtomicInteger(0);

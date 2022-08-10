@@ -16,7 +16,7 @@
 
     <flow name="rollback">
         <try transactionalAction="BEGIN_OR_JOIN">
-            <raise-error type="TEST:EXPECTED"/>
+            <raise-error type="APP:EXPECTED"/>
         </try>
     </flow>
 
@@ -24,7 +24,7 @@
         <try transactionalAction="BEGIN_OR_JOIN">
             <test:processor />
         </try>
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
     </flow>
 
     <flow name="rollback-error-in-flow-ref-with-try">
@@ -62,7 +62,7 @@
                 <on-error-continue/>
             </error-handler>
         </try>
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
     </flow>
 
 </mule>

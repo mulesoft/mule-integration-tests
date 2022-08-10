@@ -26,7 +26,7 @@ public class SynchronousResponseExceptionTestCase extends AbstractIntegrationTes
 
   @Test
   public void testComponentException() throws Exception {
-    flowRunner("ComponentException").withPayload("request").runExpectingException(errorType("TEST", "EXPECTED"));
+    flowRunner("ComponentException").withPayload("request").runExpectingException(errorType("APP", "EXPECTED"));
   }
 
   @Test

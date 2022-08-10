@@ -96,7 +96,7 @@
     </sub-flow>
 
     <sub-flow name="commit-nested-subflows-2">
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
     </sub-flow>
 
 
@@ -111,7 +111,7 @@
     </sub-flow>
 
     <flow name="rollback-nested-flows-2">
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
     </flow>
 
 
@@ -131,7 +131,7 @@
     </sub-flow>
 
     <flow name="commit-nested-flows-2">
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
     </flow>
 
 </mule>

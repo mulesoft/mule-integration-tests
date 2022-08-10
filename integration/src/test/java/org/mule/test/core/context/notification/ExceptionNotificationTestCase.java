@@ -29,7 +29,7 @@ public class ExceptionNotificationTestCase extends AbstractNotificationTestCase 
   @Test
   public void doTest() throws Exception {
     ExceptionListener exceptionListener = new ExceptionListener(notificationListenerRegistry);
-    expectedError.expectErrorType("TEST", "EXPECTED");
+    expectedError.expectErrorType("APP", "EXPECTED");
     try {
       flowRunner("the-service").withPayload(TEST_PAYLOAD).run().getMessage();
     } finally {

@@ -47,7 +47,7 @@ public class ExceptionPropagationMule5737TestCase extends AbstractIntegrationTes
 
   @Test
   public void testRequestResponseEndpointExceptionPropagation() throws Exception {
-    expectedError.expectErrorType("TEST", "EXPECTED");
+    expectedError.expectErrorType("APP", "EXPECTED");
     runFlow("flow");
   }
 

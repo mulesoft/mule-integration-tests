@@ -26,7 +26,7 @@
         <flow-ref name="rollbackExceptionStrategyGrandChild"/>
         <raise-error type="APP:FAIL"/>
         <error-handler>
-            <on-error-continue type="TEST:SOME"/>
+            <on-error-continue type="APP:SOME"/>
         </error-handler>
     </flow>
     <flow name="rollbackExceptionStrategyGrandChild">

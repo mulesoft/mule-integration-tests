@@ -9,7 +9,7 @@
                http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
 
     <error-handler name="globalEmptyHandler">
-        <on-error-continue type="TEST:SOME"/>
+        <on-error-continue type="APP:SOME"/>
     </error-handler>
     <error-handler name="globalCatchExceptionStrategyChild">
         <on-error-continue>

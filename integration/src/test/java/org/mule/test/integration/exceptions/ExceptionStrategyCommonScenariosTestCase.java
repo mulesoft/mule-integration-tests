@@ -37,7 +37,7 @@ public class ExceptionStrategyCommonScenariosTestCase extends AbstractIntegratio
   @Test
   public void testPreservePayloadPropagate() throws Exception {
     flowRunner("PreservePayloadPropagate").withPayload(MESSAGE_TO_SEND)
-        .runExpectingException(errorType("TEST", "EXPECTED"), hasMessage(hasPayload(is(MESSAGE_MODIFIED))));
+        .runExpectingException(errorType("APP", "EXPECTED"), hasMessage(hasPayload(is(MESSAGE_MODIFIED))));
   }
 
   @Test

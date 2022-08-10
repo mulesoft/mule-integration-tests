@@ -37,7 +37,7 @@ public class ExceptionStrategyReturnMessageTestCase extends AbstractIntegrationT
   @Test
   public void testReturnPayloadDefaultStrategy() throws Exception {
     flowRunner("InputService2").withPayload("Test Message")
-        .runExpectingException(errorType("TEST", "EXPECTED"), hasMessage(hasPayload(not(nullValue(String.class)))));
+        .runExpectingException(errorType("APP", "EXPECTED"), hasMessage(hasPayload(not(nullValue(String.class)))));
   }
 
   @Test

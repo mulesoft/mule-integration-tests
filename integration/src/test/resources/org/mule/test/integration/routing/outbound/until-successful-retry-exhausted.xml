@@ -59,7 +59,7 @@
                 <test:check-summary>
                     <test:summary-info key="Error type" value="MULE:RETRY_EXHAUSTED"/>
                     <test:summary-info key="Message" value="'until-successful' retries exhausted"/>
-                    <test:summary-info key="Caused by" value="TEST:EXPECTED: Expected error"/>
+                    <test:summary-info key="Caused by" value="APP:EXPECTED: Expected error"/>
                 </test:check-summary>
             </test:on-error-check-log>
         </error-handler>

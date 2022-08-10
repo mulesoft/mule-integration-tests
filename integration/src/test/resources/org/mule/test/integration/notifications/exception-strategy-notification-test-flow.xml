@@ -10,7 +10,7 @@
     </notifications>
 
     <flow name="catch-es">
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <on-error-continue>
                 <logger/>
@@ -19,7 +19,7 @@
     </flow>
 
     <flow name="rollback-es">
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <on-error-continue type="REDELIVERY_EXHAUSTED">
                 <logger/>
@@ -31,7 +31,7 @@
     </flow>
 
     <flow name="choice-es">
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <on-error-continue type="REDELIVERY_EXHAUSTED">
                 <logger/>
@@ -46,6 +46,6 @@
     </flow>
 
     <flow name="default-es">
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
     </flow>
 </mule>

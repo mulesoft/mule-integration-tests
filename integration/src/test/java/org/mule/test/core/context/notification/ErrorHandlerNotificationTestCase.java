@@ -41,9 +41,9 @@ public class ErrorHandlerNotificationTestCase extends AbstractNotificationTestCa
         new Object[] {"choice-es", (Consumer<ExpectedError>) (expected -> {
         })},
         new Object[] {"rollback-es",
-            (Consumer<ExpectedError>) (expected -> expected.expectErrorType("TEST", "EXPECTED"))},
+            (Consumer<ExpectedError>) (expected -> expected.expectErrorType("APP", "EXPECTED"))},
         new Object[] {"default-es",
-            (Consumer<ExpectedError>) (expected -> expected.expectErrorType("TEST", "EXPECTED"))}
+            (Consumer<ExpectedError>) (expected -> expected.expectErrorType("APP", "EXPECTED"))}
     };
   }
 

@@ -128,7 +128,7 @@ public class ExpressionLanguageFunctionsTestCase extends AbstractIntegrationTest
   public void lookupFailsWhenCalledFlowThrowsError() throws Exception {
     expectedError.expectErrorType("MULE", "EXPRESSION");
     expectedError.expectCause(isA(ExpressionRuntimeException.class));
-    expectedError.expectMessage(containsString("Flow 'failingFlow' has failed with error 'TEST:EXPECTED' (expected error)"));
+    expectedError.expectMessage(containsString("Flow 'failingFlow' has failed with error 'APP:EXPECTED' (expected error)"));
     flowRunner("expressionParams")
         .withVariable("flow", "failingFlow")
         .withPayload(TEST_PAYLOAD)
