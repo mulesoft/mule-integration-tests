@@ -76,7 +76,7 @@ public class AsyncErrorTracingTestCase extends AbstractIntegrationTestCase {
           exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_ASYNC_SPAN_NAME)).findFirst()
               .orElse(null);
 
-      CapturedExportedSpan asyncSpanRpute =
+      CapturedExportedSpan asyncSpanRoute =
           exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_ASYNC_ROUTE_SPAN_NAME)).findFirst()
               .orElse(null);
 
@@ -102,9 +102,9 @@ public class AsyncErrorTracingTestCase extends AbstractIntegrationTestCase {
           .forEach(setVariableSpan -> assertThat(setVariableSpan.getParentSpanId(), equalTo(muleFlowSpan.getSpanId())));
       assertThat(setPayloadSpan, nullValue());
       assertThat(loggerSpan, notNullValue());
-      assertThat(loggerSpan.getParentSpanId(), equalTo(asyncSpanRpute.getSpanId()));
+      assertThat(loggerSpan.getParentSpanId(), equalTo(asyncSpanRoute.getSpanId()));
       assertThat(httpRequestSpan, notNullValue());
-      assertThat(httpRequestSpan.getParentSpanId(), equalTo(asyncSpanRpute.getSpanId()));
+      assertThat(httpRequestSpan.getParentSpanId(), equalTo(asyncSpanRoute.getSpanId()));
     } finally {
       spanCapturer.dispose();
     }
