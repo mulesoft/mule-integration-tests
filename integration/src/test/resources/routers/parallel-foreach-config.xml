@@ -77,7 +77,7 @@
             <test:assert count="3"/>
             <choice>
                 <when expression="#[payload == 'banana']">
-                    <raise-error type="TEST:EXPECTED"/>
+                    <raise-error type="APP:EXPECTED"/>
                 </when>
                 <otherwise>
                     <set-payload value="#[payload ++ '-result']"/>
@@ -91,7 +91,7 @@
             <test:assert count="3"/>
             <choice>
                 <when expression="#[payload == 'banana']">
-                    <raise-error type="TEST:EXPECTED" description="I'm a message"/>
+                    <raise-error type="APP:EXPECTED" description="I'm a message"/>
                 </when>
                 <otherwise>
                     <set-payload value="#[payload ++ '-result']"/>
@@ -133,7 +133,7 @@
             <test:assert count="3"/>
             <choice>
                 <when expression="#[payload == 'banana']">
-                    <raise-error type="TEST:EXPECTED"/>
+                    <raise-error type="APP:EXPECTED"/>
                 </when>
                 <otherwise>
                     <set-payload value="#[payload ++ '-result']"/>
@@ -156,10 +156,10 @@
             <test:assert count="3"/>
             <choice>
                 <when expression="#[payload == 'banana']">
-                    <raise-error type="TEST:EXPECTED"/>
+                    <raise-error type="APP:EXPECTED"/>
                 </when>
                 <when expression="#[payload == 'orange']">
-                    <raise-error type="TEST:EXPECTED"/>
+                    <raise-error type="APP:EXPECTED"/>
                 </when>
                 <otherwise>
                     <set-payload value="#[payload ++ '-result']"/>

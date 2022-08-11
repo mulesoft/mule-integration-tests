@@ -12,7 +12,7 @@ http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/cor
 
     <flow name="in-flow">
         <try transactionalAction="BEGIN_OR_JOIN" transactionType="XA">
-            <raise-error type="TEST:EXPECTED"/>
+            <raise-error type="APP:EXPECTED"/>
             <error-handler ref="global"/>
         </try>
     </flow>

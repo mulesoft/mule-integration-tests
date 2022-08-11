@@ -61,7 +61,7 @@ import io.qameta.allure.Story;
 public class ParallelForEachTestCase extends AbstractIntegrationTestCase {
 
   private static final ComponentIdentifier EXPECTED =
-      builder().namespace("TEST").name("EXPECTED").build();
+      builder().namespace("APP").name("EXPECTED").build();
 
   private static final String EXCEPTION_MESSAGE_TITLE_PREFIX = "Error(s) were found for route(s):" + lineSeparator();
   private final String[] fruitList = new String[] {"apple", "banana", "orange"};

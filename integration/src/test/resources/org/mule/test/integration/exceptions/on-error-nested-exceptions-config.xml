@@ -7,7 +7,7 @@
     <flow name="propagatesToOuterWithoutExceptionAndSucceeds" initialState="stopped">
         <try>
             <try>
-                <raise-error type="TEST:EXPECTED"/>
+                <raise-error type="APP:EXPECTED"/>
                 <error-handler>
                     <on-error-propagate>
                         <set-payload value="propagated"/>
@@ -30,7 +30,7 @@
     <flow name="propagatesToOuterWithoutExceptionAndFails" initialState="stopped">
         <try>
             <try>
-                <raise-error type="TEST:EXPECTED"/>
+                <raise-error type="APP:EXPECTED"/>
                 <error-handler>
                     <on-error-propagate>
                         <set-payload value="propagated"/>
@@ -47,7 +47,7 @@
 
     <flow name="propagatesToFlowWithoutExceptionAndSucceeds" initialState="stopped">
         <try>
-            <raise-error type="TEST:EXPECTED"/>
+            <raise-error type="APP:EXPECTED"/>
             <error-handler>
                 <on-error-propagate>
                     <set-payload value="propagated"/>
@@ -63,7 +63,7 @@
 
     <flow name="propagatesToFlowWithoutExceptionAndFails" initialState="stopped">
         <try>
-            <raise-error type="TEST:EXPECTED"/>
+            <raise-error type="APP:EXPECTED"/>
             <error-handler>
                 <on-error-propagate>
                     <set-payload value="propagated"/>
@@ -80,12 +80,12 @@
     <flow name="propagatesToOuterWithExceptionAndSucceeds" initialState="stopped">
         <try>
             <try>
-                <raise-error type="TEST:EXPECTED"/>
+                <raise-error type="APP:EXPECTED"/>
                 <error-handler>
                     <!-- Here propagate/continue shouldn't matter as there is an exception inside the handler -->
                     <on-error-propagate>
                         <set-payload value="propagated"/>
-                        <raise-error type="TEST:EXPECTED"/>
+                        <raise-error type="APP:EXPECTED"/>
                     </on-error-propagate>
                 </error-handler>
             </try>
@@ -105,12 +105,12 @@
     <flow name="propagatesToOuterWithExceptionAndFails" initialState="stopped">
         <try>
             <try>
-                <raise-error type="TEST:EXPECTED"/>
+                <raise-error type="APP:EXPECTED"/>
                 <error-handler>
                     <!-- Here propagate/continue shouldn't matter as there is an exception inside the handler -->
                     <on-error-continue>
                         <set-payload value="propagated"/>
-                        <raise-error type="TEST:EXPECTED"/>
+                        <raise-error type="APP:EXPECTED"/>
                     </on-error-continue>
                 </error-handler>
             </try>
@@ -124,11 +124,11 @@
 
     <flow name="propagatesToFlowWithExceptionAndSucceeds" initialState="stopped">
         <try>
-            <raise-error type="TEST:EXPECTED"/>
+            <raise-error type="APP:EXPECTED"/>
             <error-handler>
                 <on-error-propagate>
                     <set-payload value="propagated"/>
-                    <raise-error type="TEST:EXPECTED"/>
+                    <raise-error type="APP:EXPECTED"/>
                 </on-error-propagate>
             </error-handler>
         </try>
@@ -141,11 +141,11 @@
 
     <flow name="propagatesToFlowWithExceptionAndFails" initialState="stopped">
         <try>
-            <raise-error type="TEST:EXPECTED"/>
+            <raise-error type="APP:EXPECTED"/>
             <error-handler>
                 <on-error-continue>
                     <set-payload value="propagated"/>
-                    <raise-error type="TEST:EXPECTED"/>
+                    <raise-error type="APP:EXPECTED"/>
                 </on-error-continue>
             </error-handler>
         </try>
@@ -157,22 +157,22 @@
     </flow>
 
     <flow name="exceptionInErrorHandlerFlow" initialState="stopped">
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <on-error-continue>
                 <set-payload value="propagated"/>
-                <raise-error type="TEST:EXPECTED"/>
+                <raise-error type="APP:EXPECTED"/>
             </on-error-continue>
         </error-handler>
     </flow>
 
     <flow name="exceptionInErrorHandlerTry" initialState="stopped">
         <try>
-            <raise-error type="TEST:EXPECTED"/>
+            <raise-error type="APP:EXPECTED"/>
             <error-handler>
                 <on-error-continue>
                     <set-payload value="propagated"/>
-                    <raise-error type="TEST:EXPECTED"/>
+                    <raise-error type="APP:EXPECTED"/>
                 </on-error-continue>
             </error-handler>
         </try>
@@ -181,11 +181,11 @@
     <flow name="exceptionInErrorHandlerNestedTry" initialState="stopped">
         <try>
             <try>
-                <raise-error type="TEST:EXPECTED"/>
+                <raise-error type="APP:EXPECTED"/>
                 <error-handler>
                     <on-error-continue>
                         <set-payload value="propagated"/>
-                        <raise-error type="TEST:EXPECTED"/>
+                        <raise-error type="APP:EXPECTED"/>
                     </on-error-continue>
                 </error-handler>
             </try>

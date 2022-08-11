@@ -118,7 +118,7 @@
                 <flow-ref name="#['flow']"/>
             </when>
             <otherwise>
-                <raise-error type="TEST:EXPECTED"/>
+                <raise-error type="APP:EXPECTED"/>
             </otherwise>
         </choice>
     </flow>
@@ -129,7 +129,7 @@
                 <flow-ref name="#['subFlow']"/>
             </when>
             <otherwise>
-                <raise-error type="TEST:EXPECTED"/>
+                <raise-error type="APP:EXPECTED"/>
             </otherwise>
         </choice>
     </flow>

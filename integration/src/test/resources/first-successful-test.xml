@@ -31,7 +31,7 @@
     <flow name="withOneWayEndpoints">
         <first-successful>
             <route>
-                <raise-error type="TEST:EXPECTED"/>
+                <raise-error type="APP:EXPECTED"/>
             </route>
             <route>
                 <flow-ref name="withOneWayEndpoints-handler"/>
@@ -46,29 +46,29 @@
     <flow name="nestedFirstSuccessful">
         <first-successful>
             <route>
-                <raise-error type="TEST:EXPECTED"/>
+                <raise-error type="APP:EXPECTED"/>
             </route>
             <route>
                 <first-successful>
                     <route>
-                        <raise-error type="TEST:EXPECTED"/>
+                        <raise-error type="APP:EXPECTED"/>
                     </route>
                     <route>
                         <set-payload value="Error"/>
-                        <raise-error type="TEST:EXPECTED"/>
+                        <raise-error type="APP:EXPECTED"/>
                     </route>
                 </first-successful>
             </route>
             <route>
                 <first-successful>
                     <route>
-                        <raise-error type="TEST:EXPECTED"/>
+                        <raise-error type="APP:EXPECTED"/>
                     </route>
                     <route>
                         <set-payload value="#[payload ++ ' hello']"/>
                     </route>
                     <route>
-                        <raise-error type="TEST:EXPECTED"/>
+                        <raise-error type="APP:EXPECTED"/>
                     </route>
                 </first-successful>
             </route>
@@ -93,13 +93,13 @@
     </flow>
 
     <flow name="firstSuccessfulInErrorHandlerWithError">
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <on-error-continue>
                 <first-successful>
                     <route>
                         <set-payload value="La pelota no se mancha"/>
-                        <raise-error type="TEST:EXPECTED"/>
+                        <raise-error type="APP:EXPECTED"/>
                     </route>
                     <route>
                         <set-payload value="Yo me equivoque y pague"/>
@@ -110,13 +110,13 @@
     </flow>
 
     <flow name="firstSuccessfulInErrorHandlerWithFailing">
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <on-error-continue>
                 <first-successful>
                     <route>
                         <set-payload value="La pelota no se mancha"/>
-                        <raise-error type="TEST:EXPECTED"/>
+                        <raise-error type="APP:EXPECTED"/>
                     </route>
                     <route>
                         <set-payload value="Yo me equivoque y pague"/>

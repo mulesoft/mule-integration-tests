@@ -7,7 +7,7 @@
 
     <flow name="onErrorPropagateTypeMatch">
         <set-payload value="#[payload ++ ' apt1']"/>
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <on-error-propagate type="UNKNOWN">
                 <set-payload value="#[payload ++ ' nope']"/>

@@ -12,7 +12,7 @@
     </error-handler>
 
     <flow name="defaultConfigErrorHandlerFlow">
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
     </flow>
 
 </mule>

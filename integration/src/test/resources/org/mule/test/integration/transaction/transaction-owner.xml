@@ -8,7 +8,7 @@
 
     <flow name="no-rollback">
         <try transactionalAction="BEGIN_OR_JOIN">
-            <raise-error type="TEST:EXPECTED"/>
+            <raise-error type="APP:EXPECTED"/>
             <error-handler>
                 <on-error-continue>
                     <test:processor/>
@@ -19,7 +19,7 @@
 
     <flow name="rollback">
         <try transactionalAction="BEGIN_OR_JOIN">
-            <raise-error type="TEST:EXPECTED"/>
+            <raise-error type="APP:EXPECTED"/>
         </try>
     </flow>
 
@@ -27,7 +27,7 @@
         <try transactionalAction="BEGIN_OR_JOIN">
             <test:processor />
         </try>
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
     </flow>
 
 
@@ -76,7 +76,7 @@
 
 
     <flow name="rollback-flowref">
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
     </flow>
 
     <flow name="error-flowref-JOIN">
@@ -88,7 +88,7 @@
                 </on-error-continue>
             </error-handler>
         </try>
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
     </flow>
 
     <flow name="error-flowref">
@@ -100,14 +100,14 @@
                 </on-error-continue>
             </error-handler>
         </try>
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
     </flow>
 
     <flow name="with-implicit-default-EH-executed-commits">
         <try transactionalAction="ALWAYS_BEGIN">
             <test:processor/>
             <try>
-                <raise-error type="TEST:EXPECTED"/>
+                <raise-error type="APP:EXPECTED"/>
                 <error-handler>
                     <on-error-continue type="EXPRESSION"/>
                 </error-handler>
@@ -122,7 +122,7 @@
         <try transactionalAction="ALWAYS_BEGIN">
             <test:processor/>
             <try>
-                <raise-error type="TEST:EXPECTED"/>
+                <raise-error type="APP:EXPECTED"/>
                 <error-handler>
                     <on-error-continue type="EXPRESSION"/>
                 </error-handler>
@@ -137,7 +137,7 @@
         <try transactionalAction="ALWAYS_BEGIN">
             <test:processor/>
             <try>
-                <raise-error type="TEST:EXPECTED"/>
+                <raise-error type="APP:EXPECTED"/>
             </try>
             <error-handler>
                 <on-error-continue/>
@@ -149,7 +149,7 @@
         <try>
             <test:processor/>
             <try transactionalAction="ALWAYS_BEGIN">
-                <raise-error type="TEST:EXPECTED"/>
+                <raise-error type="APP:EXPECTED"/>
             </try>
             <error-handler>
                 <on-error-continue/>

@@ -191,7 +191,7 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
     List<MessageProcessorNotification> notificationList = synchronizedList(new ArrayList<>());
     setupMessageProcessorNotificationListener(notificationList);
 
-    flowRunner("flowRefFlowErrorNotifications").runExpectingException(errorType("TEST", "EXPECTED"));
+    flowRunner("flowRefFlowErrorNotifications").runExpectingException(errorType("APP", "EXPECTED"));
 
     assertNotifications(notificationList, "flowRefFlowErrorNotifications/processors/0");
   }
@@ -202,7 +202,7 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
     List<MessageProcessorNotification> notificationList = synchronizedList(new ArrayList<>());
     setupMessageProcessorNotificationListener(notificationList);
 
-    flowRunner("flowRefSubFlowErrorNotifications").runExpectingException(errorType("TEST", "EXPECTED"));
+    flowRunner("flowRefSubFlowErrorNotifications").runExpectingException(errorType("APP", "EXPECTED"));
 
     assertNotifications(notificationList, "flowRefSubFlowErrorNotifications/processors/0");
   }

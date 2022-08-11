@@ -6,6 +6,6 @@
     <object name="exceptionListener" class="org.mule.test.core.context.notification.FailingNotificationListenerTestCase$ExceptionFailingListener"/>
 
     <flow name="testFlow">
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
     </flow>
 </mule>

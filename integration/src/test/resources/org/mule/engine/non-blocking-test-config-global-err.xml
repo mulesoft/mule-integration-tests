@@ -9,7 +9,7 @@
                http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
 
     <error-handler name="globalEmptyHandler">
-        <on-error-continue type="TEST:SOME"/>
+        <on-error-continue type="APP:SOME"/>
     </error-handler>
     <error-handler name="globalCatchExceptionStrategyChild">
         <on-error-continue>
@@ -34,24 +34,24 @@
     </error-handler>
 
     <flow name="catchExceptionStrategyChild">
-        <raise-error type="TEST:SOME"/>
+        <raise-error type="APP:SOME"/>
         <error-handler ref="globalCatchExceptionStrategyChild"/>
     </flow>
 
     <flow name="rollbackExceptionStrategyChild">
         <flow-ref name="rollbackExceptionStrategyGrandChild"/>
-        <raise-error type="TEST:FAIL"/>
+        <raise-error type="APP:FAIL"/>
         <error-handler ref="globalEmptyHandler"/>
     </flow>
 
     <flow name="rollbackExceptionStrategyGrandChild">
-        <raise-error type="TEST:SOME"/>
+        <raise-error type="APP:SOME"/>
         <error-handler ref="globalNonBlocking"/>
     </flow>
 
     <flow name="nonTransactionalTryErrorHandler" initialState="stopped">
         <try>
-            <raise-error type="TEST:SOME"/>
+            <raise-error type="APP:SOME"/>
             <error-handler ref="globalAssert"/>
         </try>
     </flow>
@@ -67,7 +67,7 @@
 
     <flow name="transactionalTryErrorHandler" initialState="stopped">
         <try transactionalAction="ALWAYS_BEGIN">
-            <raise-error type="TEST:SOME"/>
+            <raise-error type="APP:SOME"/>
             <error-handler ref="globalAssertResponse"/>
         </try>
     </flow>

@@ -14,7 +14,7 @@
 
 
     <flow name="ExceptionService">
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <on-error-continue>
                 <set-payload value="Ka-boom!"/>
@@ -23,7 +23,7 @@
     </flow>
 
     <flow name="ExceptionService2">
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
     </flow>
 
 </mule>

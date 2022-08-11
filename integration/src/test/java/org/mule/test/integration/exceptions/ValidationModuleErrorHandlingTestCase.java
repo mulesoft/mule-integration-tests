@@ -29,13 +29,13 @@ public class ValidationModuleErrorHandlingTestCase extends AbstractIntegrationTe
   @Test
   @Issue("MULE-19139")
   public void validationAllWithErrorMapping() throws Exception {
-    flowRunner("validationAllWithErrorMapping").runExpectingException(errorType("TEST", "NULL"));
+    flowRunner("validationAllWithErrorMapping").runExpectingException(errorType("APP", "NULL"));
   }
 
   @Test
   @Issue("MULE-19139")
   public void validationWithErrorMapping() throws Exception {
-    flowRunner("validationWithErrorMapping").runExpectingException(errorType("TEST", "NULL"));
+    flowRunner("validationWithErrorMapping").runExpectingException(errorType("APP", "NULL"));
   }
 
 }

@@ -6,7 +6,7 @@
 
     <flow name="ComponentException">
         <!-- Component throws an exception -->
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
     </flow>
 
     <flow name="FlowRefInvalidException">

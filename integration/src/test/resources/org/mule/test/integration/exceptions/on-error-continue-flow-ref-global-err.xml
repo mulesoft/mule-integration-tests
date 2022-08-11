@@ -19,7 +19,7 @@
 
     <flow name="blockWithOwnExceptionStrategy">
         <flow-ref name="loadNews"/>
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler ref="global"/>
     </flow>
 

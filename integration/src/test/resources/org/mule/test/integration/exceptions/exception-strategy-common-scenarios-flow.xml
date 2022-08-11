@@ -6,7 +6,7 @@
 
     <flow name="PreservePayloadPropagate">
         <set-payload value="#[payload ++ ' with some text added']"/>
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <on-error-propagate/>
         </error-handler>
@@ -14,7 +14,7 @@
 
     <flow name="PreservePayloadContinue">
         <set-payload value="#[payload ++ ' with some text added']"/>
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <on-error-continue/>
         </error-handler>

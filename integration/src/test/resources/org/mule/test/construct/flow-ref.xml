@@ -105,7 +105,7 @@
     </flow>
 
     <flow name="errorFlow">
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
     </flow>
 
     <flow name="flowRefSubFlowErrorNotifications" initialState="stopped">
@@ -113,7 +113,7 @@
     </flow>
 
     <sub-flow name="errorSubFlow">
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
     </sub-flow>
 
     <!-- Infinite recursion handling -->

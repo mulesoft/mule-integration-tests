@@ -99,7 +99,7 @@
     </flow>
 
     <flow name="flowFailing">
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
     </flow>
 
     <flow name="flowRaise">
@@ -107,7 +107,7 @@
     </flow>
 
     <flow name="flowFailingWithErrorHandler">
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <on-error-propagate>
                 <logger message="error handled for flow"/>
@@ -124,7 +124,7 @@
     </flow>
 
     <sub-flow name="failing-sub-flow">
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
     </sub-flow>
 
     <flow name="implicitConfigInNestedScope">
@@ -142,7 +142,7 @@
 
     <flow name="operationWithChainFailing">
         <heisenberg:tap-phones>
-            <raise-error type="TEST:EXPECTED"/>
+            <raise-error type="APP:EXPECTED"/>
         </heisenberg:tap-phones>
         <error-handler>
             <test:on-error-check-log>
@@ -150,8 +150,8 @@
                     <![CDATA[
                         Message               : An error occurred.
                         Element               : operationWithChainFailing/processors/0/processors/0 @ ProcessorInterceptorFactoryChainTestCase#operationWithChainFailingLogsCorrectly:org/mule/test/integration/interception/processor-interceptor-factory.xml:145
-                        Element DSL           : <raise-error type="TEST:EXPECTED"></raise-error>
-                        Error type            : TEST:EXPECTED
+                        Element DSL           : <raise-error type="APP:EXPECTED"></raise-error>
+                        Error type            : APP:EXPECTED
                         FlowStack             : at operationWithChainFailing(operationWithChainFailing/processors/0/processors/0 @ ProcessorInterceptorFactoryChainTestCase#operationWithChainFailingLogsCorrectly:org/mule/test/integration/interception/processor-interceptor-factory.xml:145)
                         (set debug level logging or '-Dmule.verbose.exceptions=true' for everything)
                     ]]>

@@ -61,7 +61,7 @@
 
     <flow name="onErrorPropagateTypeMatchAny">
         <set-payload value="#[payload ++ ' apt1']"/>
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <on-error-propagate type="REDELIVERY_EXHAUSTED">
                 <test-components:queue-push config-ref="custom2"/>
@@ -147,7 +147,7 @@
     </flow>
 
     <flow name="failingHandler">
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <on-error-propagate>
                 <flow-ref name="error"/>
@@ -173,13 +173,13 @@
 
     <flow name="withTry">
         <set-payload value="flow"/>
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <on-error-propagate>
                 <test-components:queue-push config-ref="out1"/>
                 <try>
                     <set-payload value="try"/>
-                    <raise-error type="TEST:EXPECTED"/>
+                    <raise-error type="APP:EXPECTED"/>
                     <error-handler>
                         <on-error-continue>
                             <test-components:queue-push config-ref="out2"/>

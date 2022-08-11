@@ -8,14 +8,14 @@
     <flow name="validationAllWithErrorMapping">
         <validation:all>
             <validation:is-not-null value="#[null]">
-                <error-mapping sourceType="VALIDATION:NULL" targetType="TEST:NULL" />
+                <error-mapping sourceType="VALIDATION:NULL" targetType="APP:NULL" />
             </validation:is-not-null>
         </validation:all>
     </flow>
 
     <flow name="validationWithErrorMapping">
         <validation:is-not-null value="#[null]">
-            <error-mapping sourceType="VALIDATION:NULL" targetType="TEST:NULL" />
+            <error-mapping sourceType="VALIDATION:NULL" targetType="APP:NULL" />
         </validation:is-not-null>
     </flow>
 
