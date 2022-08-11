@@ -33,7 +33,7 @@ import org.junit.Test;
 @Story(DEFAULT_CORE_EVENT_TRACER)
 public class UntilSuccessfulErrorTracingTestCase extends AbstractIntegrationTestCase {
 
-  public static final String EXPECTED_ROUTE_SPAN_NAME = "mule:until-successful:route";
+  public static final String EXPECTED_ATTEMPT_SPAN_NAME = "mule:until-successful:attempt";
   public static final String EXPECTED_UNTIL_SUCCESSFUL_SPAN_NAME = "mule:until-successful";
   public static final String EXPECTED_LOGGER_SPAN_NAME = "mule:logger";
   public static final String UNTIL_SUCCESSFUL_FLOW = "until-successful-flow";
@@ -67,7 +67,7 @@ public class UntilSuccessfulErrorTracingTestCase extends AbstractIntegrationTest
               .orElse(null);
 
       List<CapturedExportedSpan> muleRouteSpanList =
-          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_ROUTE_SPAN_NAME)).collect(Collectors.toList());
+          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_ATTEMPT_SPAN_NAME)).collect(Collectors.toList());
 
       List<CapturedExportedSpan> loggerSpanList =
           exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_LOGGER_SPAN_NAME)).collect(Collectors.toList());

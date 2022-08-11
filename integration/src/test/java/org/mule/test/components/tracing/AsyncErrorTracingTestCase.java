@@ -38,6 +38,7 @@ import org.junit.Test;
 public class AsyncErrorTracingTestCase extends AbstractIntegrationTestCase {
 
   public static final String EXPECTED_ASYNC_SPAN_NAME = "mule:async";
+  public static final String EXPECTED_ASYNC_ROUTE_SPAN_NAME = "mule:async:route";
   public static final String EXPECTED_LOGGER_SPAN_NAME = "mule:logger";
   public static final String EXPECTED_SET_PAYLOAD_SPAN_NAME = "mule:set-payload";
   public static final String EXPECTED_HTTP_REQUEST_SPAN_NAME = "http:request";
@@ -75,6 +76,10 @@ public class AsyncErrorTracingTestCase extends AbstractIntegrationTestCase {
           exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_ASYNC_SPAN_NAME)).findFirst()
               .orElse(null);
 
+      CapturedExportedSpan asyncSpanRoute =
+          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_ASYNC_ROUTE_SPAN_NAME)).findFirst()
+              .orElse(null);
+
       CapturedExportedSpan setPayloadSpan =
           exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_SET_PAYLOAD_SPAN_NAME)).findFirst().orElse(null);
 
@@ -88,7 +93,7 @@ public class AsyncErrorTracingTestCase extends AbstractIntegrationTestCase {
           exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_SET_VARIABLE_SPAN_NAME))
               .collect(Collectors.toList());
 
-      assertThat(exportedSpans, hasSize(6));
+      assertThat(exportedSpans, hasSize(7));
       assertThat(muleFlowSpan.getParentSpanId(), equalTo(NO_PARENT_SPAN));
       assertThat(asyncSpan, notNullValue());
       assertThat(asyncSpan.getParentSpanId(), equalTo(muleFlowSpan.getSpanId()));
@@ -97,9 +102,9 @@ public class AsyncErrorTracingTestCase extends AbstractIntegrationTestCase {
           .forEach(setVariableSpan -> assertThat(setVariableSpan.getParentSpanId(), equalTo(muleFlowSpan.getSpanId())));
       assertThat(setPayloadSpan, nullValue());
       assertThat(loggerSpan, notNullValue());
-      assertThat(loggerSpan.getParentSpanId(), equalTo(asyncSpan.getSpanId()));
+      assertThat(loggerSpan.getParentSpanId(), equalTo(asyncSpanRoute.getSpanId()));
       assertThat(httpRequestSpan, notNullValue());
-      assertThat(httpRequestSpan.getParentSpanId(), equalTo(asyncSpan.getSpanId()));
+      assertThat(httpRequestSpan.getParentSpanId(), equalTo(asyncSpanRoute.getSpanId()));
     } finally {
       spanCapturer.dispose();
     }

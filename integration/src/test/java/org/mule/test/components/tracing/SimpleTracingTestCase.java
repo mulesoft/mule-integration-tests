@@ -35,6 +35,7 @@ public class SimpleTracingTestCase extends AbstractIntegrationTestCase {
   private static final String EXPECTED_FLOW_SPAN_NAME = "mule:flow";
   private static final String EXPECTED_SET_PAYLOAD_SPAN_NAME = "mule:set-payload";
   private static final String EXPECTED_TRACING_CORRELATION_ID_SPAN_NAME = "tracing:with-correlation-id";
+  private static final String EXPECTED_TRACING_CORRELATION_ID_ROUTE_SPAN_NAME = "tracing:with-correlation-id:route";
   private static final String EXPECTED_SET_VARIABLE_SPAN_NAME = "mule:set-variable";
   private static final String EXPECTED_SET_LOGGING_VARIABLE_SPAN_NAME = "tracing:set-logging-variable";
   private static final String NO_PARENT_SPAN = "0000000000000000";
@@ -70,13 +71,17 @@ public class SimpleTracingTestCase extends AbstractIntegrationTestCase {
     try {
       flowRunner(SIMPLE_FLOW).withPayload(TEST_PAYLOAD).run().getMessage();
       Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
-      assertThat(exportedSpans, hasSize(5));
+      assertThat(exportedSpans, hasSize(6));
       CapturedExportedSpan muleFlowSpan =
           exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_FLOW_SPAN_NAME)).findFirst().orElse(null);
       CapturedExportedSpan setPayloadSpan =
           exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_SET_PAYLOAD_SPAN_NAME)).findFirst().orElse(null);
       CapturedExportedSpan tracingCorrelationidSpan =
           exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_TRACING_CORRELATION_ID_SPAN_NAME)).findFirst()
+              .orElse(null);
+      CapturedExportedSpan tracingCorrelationIdRoute =
+          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_TRACING_CORRELATION_ID_ROUTE_SPAN_NAME))
+              .findFirst()
               .orElse(null);
       CapturedExportedSpan setVariableSpan =
           exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_SET_VARIABLE_SPAN_NAME)).findFirst().orElse(null);
@@ -85,9 +90,10 @@ public class SimpleTracingTestCase extends AbstractIntegrationTestCase {
               .orElse(null);
       assertThat(setPayloadSpan, notNullValue());
       assertThat(muleFlowSpan, notNullValue());
-      assertSpan(setVariableSpan, tracingCorrelationidSpan, SET_VARIABLE_LOCATION);
+      assertSpan(setVariableSpan, tracingCorrelationIdRoute, SET_VARIABLE_LOCATION);
       assertSpan(tracingCorrelationidSpan, muleFlowSpan, TRACING_SET_CORRELATION_ID_LOCATION);
       assertSpan(setLoggingVariable, muleFlowSpan, SET_LOGGGING_VARIABLE_LOCATION);
+      assertSpan(tracingCorrelationIdRoute, tracingCorrelationidSpan, TRACING_SET_CORRELATION_ID_LOCATION);
       assertSpan(setPayloadSpan, muleFlowSpan, SET_PAYLOAD_LOCATION);
       assertSpan(muleFlowSpan, null, FLOW_LOCATION);
       assertThat(setPayloadSpan.getAttributes().get(TEST_VAR_NAME), equalTo(TRACE_VAR_VALUE));
