@@ -34,6 +34,7 @@ public class TracingTestUtils {
     assertThat(span.getAttributes().get(ARTIFACT_ID_KEY), equalTo(artifactId));
     assertThat(span.getAttributes().get(THREAD_START_ID_KEY), notNullValue());
     assertThat(span.getAttributes().get(LOCATION_KEY), equalTo(location));
+    assertThat(span.getServiceName(), equalTo(artifactId));
   }
 
 }
