@@ -57,10 +57,7 @@ public class ScatterGatherDoubleErrorTracingTestCase extends AbstractIntegration
     ExportedSpanCapturer spanCapturer = profilingService.getSpanExportManager().getExportedSpanCapturer();
 
     try {
-      try {
-        flowRunner(SCATTER_GATHER_FLOW).withPayload(TEST_PAYLOAD).run();
-      } catch (Exception ignored) {
-      }
+      flowRunner(SCATTER_GATHER_FLOW).withPayload(TEST_PAYLOAD).dispatch();
       Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
 
       CapturedExportedSpan muleFlowSpan =
