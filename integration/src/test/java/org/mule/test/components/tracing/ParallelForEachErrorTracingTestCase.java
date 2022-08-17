@@ -41,6 +41,7 @@ public class ParallelForEachErrorTracingTestCase extends AbstractIntegrationTest
   public static final String EXPECTED_FLOW_SPAN_NAME = "mule:flow";
   public static final String EXPECTED_HTTP_REQUEST_SPAN_NAME = "http:request";
   public static final String EXPECTED_SET_PAYLOAD_SPAN_NAME = "mule:set-payload";
+  public static final String EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME = "mule:on-error-propagate";
   public static final String NO_PARENT_SPAN = "0000000000000000";
   public static final int NUMBER_OF_ROUTES = 3;
 
@@ -81,8 +82,14 @@ public class ParallelForEachErrorTracingTestCase extends AbstractIntegrationTest
           exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_HTTP_REQUEST_SPAN_NAME))
               .collect(Collectors.toList());
 
-      assertThat(exportedSpans, hasSize(NUMBER_OF_ROUTES * 3 + 3));
+      CapturedExportedSpan onErrorPropagateSpan =
+          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME)).findFirst()
+              .orElse(null);
+
+      assertThat(exportedSpans, hasSize(NUMBER_OF_ROUTES * 3 + 4));
       assertThat(muleFlowSpan.getParentSpanId(), equalTo(NO_PARENT_SPAN));
+      assertThat(onErrorPropagateSpan, notNullValue());
+      assertThat(onErrorPropagateSpan.getParentSpanId(), equalTo(muleFlowSpan.getSpanId()));
       assertThat(setPayloadSpan, notNullValue());
       assertThat(setPayloadSpan.getParentSpanId(), equalTo(muleFlowSpan.getSpanId()));
       assertThat(parallelForEachSpan, notNullValue());

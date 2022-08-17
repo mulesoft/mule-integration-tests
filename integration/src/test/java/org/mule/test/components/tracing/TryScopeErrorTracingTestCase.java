@@ -7,6 +7,9 @@
 
 package org.mule.test.components.tracing;
 
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.is;
 import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.DEFAULT_CORE_EVENT_TRACER;
 import static org.mule.test.components.tracing.TracingTestUtils.assertSpanAttributes;
@@ -23,6 +26,8 @@ import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import io.qameta.allure.Feature;
@@ -40,8 +45,10 @@ public class TryScopeErrorTracingTestCase extends AbstractIntegrationTestCase {
   public static final String EXPECTED_TRY_SCOPE_ROUTE_SPAN_NAME = "mule:try:route";
   public static final String EXPECTED_RAISE_ERROR_SPAN_NAME = "mule:raise-error";
   public static final String EXPECTED_SET_PAYLOAD_SPAN_NAME = "mule:set-payload";
+  public static final String EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME = "mule:on-error-propagate";
   public static final String NO_PARENT_SPAN = "0000000000000000";
   public static final String TEST_ARTEFACT_ID = "TryScopeErrorTracingTestCase#testTryScope";
+  public static final String PARENT_SPAN_ID_PROPERTY_NAME = "parentSpanId";
 
   @Inject
   PrivilegedProfilingService profilingService;
@@ -82,11 +89,17 @@ public class TryScopeErrorTracingTestCase extends AbstractIntegrationTestCase {
           exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_SET_PAYLOAD_SPAN_NAME)).findFirst()
               .orElse(null);
 
-      assertThat(exportedSpans, hasSize(5));
+      List<CapturedExportedSpan> onErrorPropagateSpans =
+          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME))
+              .collect(Collectors.toList());
 
+      assertThat(exportedSpans, hasSize(7));
+
+      assertThat(muleFlowSpan, notNullValue());
       assertThat(muleFlowSpan.getParentSpanId(), equalTo(NO_PARENT_SPAN));
 
       assertThat(tryScope, notNullValue());
+
       assertThat(tryScope.getParentSpanId(), equalTo(muleFlowSpan.getSpanId()));
 
       assertThat(tryScopeRoute, notNullValue());
@@ -99,6 +112,11 @@ public class TryScopeErrorTracingTestCase extends AbstractIntegrationTestCase {
       assertThat(raiseErrorSpan.getParentSpanId(), equalTo(tryScopeRoute.getSpanId()));
 
       assertThat(setPayloadSpan, nullValue());
+
+      assertThat(onErrorPropagateSpans.size(), equalTo(2));
+      assertThat(onErrorPropagateSpans,
+                 containsInAnyOrder(hasProperty(PARENT_SPAN_ID_PROPERTY_NAME, equalTo(tryScope.getSpanId())),
+                                    hasProperty("parentSpanId", equalTo(muleFlowSpan.getSpanId()))));
 
       assertSpanAttributes(muleFlowSpan, "try-scope-flow", TEST_ARTEFACT_ID);
       assertSpanAttributes(tryScope, "try-scope-flow/processors/0", TEST_ARTEFACT_ID);

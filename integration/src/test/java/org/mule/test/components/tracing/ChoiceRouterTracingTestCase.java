@@ -40,6 +40,8 @@ public class ChoiceRouterTracingTestCase extends AbstractIntegrationTestCase {
   public static final String CHOICE_FLOW = "choice-flow";
   public static final String EXPECTED_FLOW_SPAN_NAME = "mule:flow";
   public static final String NO_PARENT_SPAN = "0000000000000000";
+  public static final String EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME = "mule:on-error-propagate";
+
 
   public static final String TEST_ARTIFACT_ID = "ChoiceRouterTracingTestCase#testChoiceFlow";
 
@@ -84,7 +86,17 @@ public class ChoiceRouterTracingTestCase extends AbstractIntegrationTestCase {
           exportedSpans.stream().filter(span -> span.getName().equals(childExpectedSpan)).findFirst()
               .orElse(null);
 
-      assertThat(exportedSpans, hasSize(4));
+      if (isError) {
+        assertThat(exportedSpans, hasSize(5));
+        CapturedExportedSpan onErrorPropagateSpan =
+            exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME)).findFirst()
+                .orElse(null);
+        assertThat(choiceSpan, notNullValue());
+        assertThat(onErrorPropagateSpan.getParentSpanId(), equalTo(muleFlowSpan.getSpanId()));
+        assertSpanAttributes(onErrorPropagateSpan, "unknown", TEST_ARTIFACT_ID);
+      } else {
+        assertThat(exportedSpans, hasSize(4));
+      }
 
       assertThat(muleFlowSpan.getParentSpanId(), equalTo(NO_PARENT_SPAN));
 

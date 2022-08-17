@@ -39,6 +39,7 @@ public class UntilSuccessfulErrorTracingTestCase extends AbstractIntegrationTest
   public static final String UNTIL_SUCCESSFUL_FLOW = "until-successful-flow";
   public static final String EXPECTED_FLOW_SPAN_NAME = "mule:flow";
   public static final String EXPECTED_HTTP_REQUEST_SPAN_NAME = "http:request";
+  public static final String ON_ERROR_PROPAGATE_SPAN_NAME = "mule:on-error-propagate";
   public static final String NO_PARENT_SPAN = "0000000000000000";
   public static final int NUMBER_OF_RETRIES = 2;
 
@@ -66,6 +67,10 @@ public class UntilSuccessfulErrorTracingTestCase extends AbstractIntegrationTest
           exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_UNTIL_SUCCESSFUL_SPAN_NAME)).findFirst()
               .orElse(null);
 
+      CapturedExportedSpan onErrorPropagateSpan =
+          exportedSpans.stream().filter(span -> span.getName().equals(ON_ERROR_PROPAGATE_SPAN_NAME)).findFirst()
+              .orElse(null);
+
       List<CapturedExportedSpan> muleRouteSpanList =
           exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_ATTEMPT_SPAN_NAME)).collect(Collectors.toList());
 
@@ -76,8 +81,10 @@ public class UntilSuccessfulErrorTracingTestCase extends AbstractIntegrationTest
           exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_HTTP_REQUEST_SPAN_NAME))
               .collect(Collectors.toList());
 
-      assertThat(exportedSpans, hasSize((NUMBER_OF_RETRIES + 1) * 3 + 2));
+      assertThat(exportedSpans, hasSize((NUMBER_OF_RETRIES + 1) * 3 + 3));
       assertThat(muleFlowSpan.getParentSpanId(), equalTo(NO_PARENT_SPAN));
+      assertThat(onErrorPropagateSpan, notNullValue());
+      assertThat(onErrorPropagateSpan.getParentSpanId(), equalTo(muleFlowSpan.getSpanId()));
       assertThat(untilSuccessfulSpan, notNullValue());
       assertThat(untilSuccessfulSpan.getParentSpanId(), equalTo(muleFlowSpan.getSpanId()));
       assertThat(muleRouteSpanList, hasSize(NUMBER_OF_RETRIES + 1));
