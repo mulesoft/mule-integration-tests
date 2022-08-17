@@ -5,22 +5,59 @@
   ~ license, a copy of which has been included with this distribution in the
   ~ LICENSE.txt file.
   -->
-
 <mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns="http://www.mulesoft.org/schema/mule/core"
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 
+    <flow name="flow-with-no-error-handling">
+        <raise-error type="CUSTOM:ERROR"/>
+    </flow>
+
     <flow name="flow-with-on-error-continue">
         <raise-error type="CUSTOM:ERROR"/>
         <error-handler >
-            <on-error-continue enableNotifications="true" logException="true" />
+            <on-error-continue logException="true" />
         </error-handler>
     </flow>
 
     <flow name="flow-with-on-error-propagate">
         <raise-error type="CUSTOM:ERROR"/>
         <error-handler >
-            <on-error-propagate enableNotifications="true" logException="true" />
+            <on-error-propagate logException="true" />
+        </error-handler>
+    </flow>
+
+    <flow name="flow-with-flow-ref-and-no-error-handling">
+        <flow-ref name="flow-with-no-error-handling" />
+    </flow>
+
+    <flow name="flow-with-flow-ref-and-on-error-continue">
+        <flow-ref name="flow-with-on-error-continue" />
+    </flow>
+
+    <flow name="flow-with-flow-ref-and-on-error-propagate">
+        <flow-ref name="flow-with-on-error-propagate" />
+    </flow>
+
+    <flow name="flow-with-flow-ref-and-on-error-propagate-and-on-error-continue">
+        <flow-ref name="flow-with-on-error-propagate" />
+        <error-handler >
+            <on-error-continue logException="true" />
+        </error-handler>
+    </flow>
+
+    <sub-flow name="sub-flow-with-no-error-handling">
+        <raise-error type="CUSTOM:ERROR"/>
+    </sub-flow>
+
+    <flow name="flow-with-sub-flow-ref-and-no-error-handling">
+        <flow-ref name="sub-flow-with-no-error-handling" />
+    </flow>
+
+    <flow name="flow-with-sub-flow-ref-and-on-error-continue">
+        <flow-ref name="sub-flow-with-no-error-handling" />
+        <error-handler >
+            <on-error-continue logException="true" />
         </error-handler>
     </flow>
 

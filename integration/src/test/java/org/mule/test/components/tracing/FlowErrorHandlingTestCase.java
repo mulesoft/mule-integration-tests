@@ -9,30 +9,21 @@ package org.mule.test.components.tracing;
 
 import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.DEFAULT_CORE_EVENT_TRACER;
-import static java.lang.String.format;
-import static java.util.Arrays.stream;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasItem;
-import static org.junit.Assert.assertThat;
 
-import org.mule.runtime.api.util.Pair;
+import junit.framework.AssertionFailedError;
 import org.mule.runtime.core.privileged.profiling.CapturedExportedSpan;
 import org.mule.runtime.core.privileged.profiling.ExportedSpanCapturer;
 import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import java.util.Collection;
-import java.util.stream.Collectors;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
-import javax.annotation.Nonnull;
 import javax.inject.Inject;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
-import org.jetbrains.annotations.NotNull;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,10 +32,59 @@ import org.junit.Test;
 @Story(DEFAULT_CORE_EVENT_TRACER)
 public class FlowErrorHandlingTestCase extends AbstractIntegrationTestCase {
 
-  private static final Pair<String, String> EXPECTED_RAISE_ERROR_SPAN = new Pair<>("mule:raise-error", "mule:flow");
-  private static final Pair<String, String> EXPECTED_FLOW_SPAN = new Pair<>("mule:flow", "");
+  public static final String ROOT_PARENT_SPAN_ID = "0000000000000000";
+
+  private static final String FLOW_WITH_NO_ERROR_HANDLING = "flow-with-no-error-handling";
   private static final String FLOW_WITH_ON_ERROR_CONTINUE = "flow-with-on-error-continue";
   private static final String FLOW_WITH_ON_ERROR_PROPAGATE = "flow-with-on-error-propagate";
+  private static final String FLOW_WITH_FLOW_REF_AND_NO_ERROR_HANDLING = "flow-with-flow-ref-and-no-error-handling";
+  private static final String FLOW_WITH_FLOW_REF_AND_ON_ERROR_CONTINUE_ERROR_HANDLING = "flow-with-flow-ref-and-on-error-continue";
+  private static final String FLOW_WITH_FLOW_REF_AND_ON_ERROR_PROPAGATE_ERROR_HANDLING = "flow-with-flow-ref-and-on-error-propagate";
+  private static final String FLOW_WITH_FLOW_REF_AND_ON_ERROR_PROPAGATE_AND_ON_ERROR_CONTINUE_ERROR_HANDLING = "flow-with-flow-ref-and-on-error-propagate-and-on-error-continue";
+  private static final String FLOW_WITH_SUB_FLOW_REF_AND_ON_ERROR_CONTINUE_ERROR_HANDLING = "flow-with-sub-flow-ref-and-on-error-continue";
+
+  private static final String FLOW_WITH_SUB_FLOW_REF_AND_NO_ERROR_HANDLING = "flow-with-sub-flow-ref-and-no-error-handling";
+
+
+  private static final Set<String> FLOW_WITH_FLOW_REF_AND_ON_ERROR_PROPAGATE_EXPECTED_SPAN_BRANCHES = new HashSet<>(Arrays.asList(
+          "mule:flow/mule:flow-ref/mule:flow/mule:raise-error",
+          "mule:flow/mule:flow-ref/mule:flow/mule:on-error-propagate",
+          "mule:flow/mule:on-error-propagate"
+  ));
+
+  private static final Set<String> FLOW_WITH_ON_ERROR_PROPAGATE_EXPECTED_SPAN_BRANCHES = new HashSet<>(Arrays.asList(
+          "mule:flow/mule:raise-error",
+          "mule:flow/mule:on-error-propagate"
+  ));
+
+  private static final Set<String> FLOW_WITH_ON_ERROR_CONTINUE_EXPECTED_SPAN_BRANCHES = new HashSet<>(Arrays.asList(
+          "mule:flow/mule:raise-error",
+          "mule:flow/mule:on-error-continue"
+  ));
+
+  private static final Set<String> FLOW_WITH_FLOW_REF_AND_ON_ERROR_CONTINUE_EXPECTED_SPAN_BRANCHES = new HashSet<>(Arrays.asList(
+          "mule:flow/mule:flow-ref/mule:flow/mule:raise-error",
+          "mule:flow/mule:flow-ref/mule:flow/mule:on-error-continue"
+  ));
+
+  private static final Set<String> FLOW_WITH_FLOW_REF_AND_ON_ERROR_PROPAGATE_AND_ON_ERROR_CONTINUE_EXPECTED_SPAN_BRANCHES = new HashSet<>(Arrays.asList(
+          "mule:flow/mule:flow-ref/mule:flow/mule:raise-error",
+          "mule:flow/mule:flow-ref/mule:flow/mule:on-error-propagate",
+          "mule:flow/mule:on-error-continue"
+  ));
+
+  private static final Set<String> FLOW_WITH_SUB_FLOW_REF_AND_NO_ERROR_HANDLING_EXPECTED_SPAN_BRANCHES = new HashSet<>(Arrays.asList(
+          "mule:flow/mule:flow-ref/mule:flow-ref:route/mule:raise-error",
+          "mule:flow/mule:on-error-propagate"
+  ));
+
+  private static final Set<String> FLOW_WITH_SUB_FLOW_REF_AND_ON_ERROR_CONTINUE_EXPECTED_SPAN_BRANCHES = new HashSet<>(Arrays.asList(
+          "mule:flow/mule:flow-ref/mule:flow-ref:route/mule:raise-error",
+          "mule:flow/mule:on-error-continue"
+  ));
+
+  public static final String SPAN_BRANCH_DELIMITATOR = "/";
+
 
   private ExportedSpanCapturer spanCapturer;
 
@@ -67,9 +107,20 @@ public class FlowErrorHandlingTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
+  public void testFlowWithNoErrorHandling() {
+    try {
+      flowRunner(FLOW_WITH_NO_ERROR_HANDLING).withPayload(TEST_PAYLOAD).run().getMessage();
+    } catch (Throwable e) {
+      // Nothing to do (the flow under test is propagating an error).
+    } finally {
+      assertExpectedSpanBranches(FLOW_WITH_ON_ERROR_PROPAGATE_EXPECTED_SPAN_BRANCHES);
+    }
+  }
+
+  @Test
   public void testFlowWithOnErrorContinue() throws Exception {
     flowRunner(FLOW_WITH_ON_ERROR_CONTINUE).withPayload(TEST_PAYLOAD).run().getMessage();
-    assertExpectedSpans(EXPECTED_FLOW_SPAN, EXPECTED_RAISE_ERROR_SPAN);
+    assertExpectedSpanBranches(FLOW_WITH_ON_ERROR_CONTINUE_EXPECTED_SPAN_BRANCHES);
   }
 
   @Test
@@ -79,58 +130,84 @@ public class FlowErrorHandlingTestCase extends AbstractIntegrationTestCase {
     } catch (Throwable e) {
       // Nothing to do (the flow under test is propagating an error).
     } finally {
-      assertExpectedSpans(EXPECTED_FLOW_SPAN, EXPECTED_RAISE_ERROR_SPAN);
+      assertExpectedSpanBranches(FLOW_WITH_ON_ERROR_PROPAGATE_EXPECTED_SPAN_BRANCHES);
     }
   }
 
-  @SafeVarargs
-  private final void assertExpectedSpans(Pair<String, String>... expectedSpans) {
-    Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
-    Collection<Matcher<CapturedExportedSpan>> expectedSpanMatchers =
-        stream(expectedSpans).map(this::getSpanMatcher).collect(Collectors.toList());
-    expectedSpanMatchers.forEach(spanMatcher -> assertThat(exportedSpans, hasItem(spanMatcher)));
-    // TODO : Show the unexpected spans as has part of the error
-    assertThat("Unexpected spans have been exported.", exportedSpans.size(), equalTo(expectedSpanMatchers.size()));
-  }
-
-  @NotNull
-  private SpanMatcher getSpanMatcher(Pair<String, String> expectedSpan) {
-    return new SpanMatcher(expectedSpan.getFirst(),
-                           expectedSpan.getSecond().isEmpty() ? "" : findExportedSpan(expectedSpan.getSecond()).getSpanId());
-  }
-
-  @Nonnull
-  private CapturedExportedSpan findExportedSpan(String spanName) {
-    return spanCapturer.getExportedSpans().stream().filter(exportedSpan -> exportedSpan.getName().equals(spanName)).findFirst()
-        .orElseThrow(() -> new RuntimeException(format("Expected Span with name [%s] not found.", spanName)));
-  }
-
-  /**
-   * A CapturedExportedSpan Hamcrest matcher that can be reused for other tests if necessary.
-   */
-  public static class SpanMatcher extends BaseMatcher<CapturedExportedSpan> {
-
-    private static final String ROOT_PARENT_SPAN_ID = "0000000000000000";
-    private final String spanName;
-    private final String parentSpanId;
-
-    public SpanMatcher(String spanName, String parentSpanId) {
-      this.spanName = spanName;
-      this.parentSpanId = parentSpanId.equals("") ? ROOT_PARENT_SPAN_ID : parentSpanId;
+  @Test
+  public void testFlowWithFlowRefAndNoErrorHandling() {
+    try {
+      flowRunner(FLOW_WITH_FLOW_REF_AND_NO_ERROR_HANDLING).withPayload(TEST_PAYLOAD).run().getMessage();
+    } catch (Throwable e) {
+      // Nothing to do (the flow under test is propagating an error).
+    } finally {
+      assertExpectedSpanBranches(FLOW_WITH_FLOW_REF_AND_ON_ERROR_PROPAGATE_EXPECTED_SPAN_BRANCHES);
     }
+  }
 
-    @Override
-    public boolean matches(Object actual) {
-      if (!(actual instanceof CapturedExportedSpan)) {
-        return false;
+  @Test
+  public void testFlowWithFlowRefAndOnErrorContinue() throws Exception {
+      flowRunner(FLOW_WITH_FLOW_REF_AND_ON_ERROR_CONTINUE_ERROR_HANDLING).withPayload(TEST_PAYLOAD).run().getMessage();
+      assertExpectedSpanBranches(FLOW_WITH_FLOW_REF_AND_ON_ERROR_CONTINUE_EXPECTED_SPAN_BRANCHES);
+  }
+
+  @Test
+  public void testFlowWithFlowRefAndOnErrorPropagate() {
+    try {
+      flowRunner(FLOW_WITH_FLOW_REF_AND_ON_ERROR_PROPAGATE_ERROR_HANDLING).withPayload(TEST_PAYLOAD).run().getMessage();
+    } catch (Throwable e) {
+      // Nothing to do (the flow under test is propagating an error).
+    } finally {
+      assertExpectedSpanBranches(FLOW_WITH_FLOW_REF_AND_ON_ERROR_PROPAGATE_EXPECTED_SPAN_BRANCHES);
+    }
+  }
+
+  @Test
+  public void testFlowWithFlowRefAndOnErrorPropagateAndOnErrorContinue() throws Exception {
+    flowRunner(FLOW_WITH_FLOW_REF_AND_ON_ERROR_PROPAGATE_AND_ON_ERROR_CONTINUE_ERROR_HANDLING).withPayload(TEST_PAYLOAD).run().getMessage();
+    assertExpectedSpanBranches(FLOW_WITH_FLOW_REF_AND_ON_ERROR_PROPAGATE_AND_ON_ERROR_CONTINUE_EXPECTED_SPAN_BRANCHES);
+  }
+
+  @Test
+  public void testFlowWithSubFlowRefAndNoErrorHandling() {
+    try {
+      flowRunner(FLOW_WITH_SUB_FLOW_REF_AND_NO_ERROR_HANDLING).withPayload(TEST_PAYLOAD).run().getMessage();
+    } catch (Throwable e) {
+      // Nothing to do (the flow under test is propagating an error).
+    } finally {
+      assertExpectedSpanBranches(FLOW_WITH_SUB_FLOW_REF_AND_NO_ERROR_HANDLING_EXPECTED_SPAN_BRANCHES);
+    }
+  }
+
+  @Test
+  public void testFlowWithSubFlowRefAndOnErrorContinue() throws Exception {
+    flowRunner(FLOW_WITH_SUB_FLOW_REF_AND_ON_ERROR_CONTINUE_ERROR_HANDLING).withPayload(TEST_PAYLOAD).run().getMessage();
+    assertExpectedSpanBranches(FLOW_WITH_SUB_FLOW_REF_AND_ON_ERROR_CONTINUE_EXPECTED_SPAN_BRANCHES);
+  }
+
+  private void assertExpectedSpanBranches(Set<String> expectedSpanBranches) {
+    expectedSpanBranches.forEach(this::assertExpectedSpanBranch);
+  }
+
+  private void assertExpectedSpanBranch(String expectedSpanBranch) {
+    String[] branchSpanNames = expectedSpanBranch.split(SPAN_BRANCH_DELIMITATOR);
+    CapturedExportedSpan currentSpan = findRootSpan(branchSpanNames[0]);
+    for (int i = 1; i < branchSpanNames.length; i ++) {
+      try {
+        currentSpan = assertExpectedSpan(branchSpanNames[i], currentSpan.getSpanId());
+      } catch (Throwable t) {
+        throw new AssertionError(String.format("Expected Span branch not found: [%s]", expectedSpanBranch), t);
       }
-      CapturedExportedSpan potentialMatch = (CapturedExportedSpan) actual;
-      return potentialMatch.getName().equals(spanName) && potentialMatch.getParentSpanId().equals(parentSpanId);
     }
+  }
 
-    @Override
-    public void describeTo(Description description) {
-      description.appendText(format("a Span with name: [%s] and parent Span ID: [%s].", spanName, parentSpanId));
-    }
+  private CapturedExportedSpan assertExpectedSpan(String branchSpanName, String parentSpanId) {
+    return spanCapturer.getExportedSpans().stream().filter(exportedSpan -> exportedSpan.getName().equals(branchSpanName) && exportedSpan.getParentSpanId().equals(parentSpanId))
+            .findFirst().orElseThrow(() -> new AssertionFailedError(String.format("Expected Span with name: [%s] and parent ID [%s] not found", branchSpanName, parentSpanId)));
+  }
+
+  private CapturedExportedSpan findRootSpan(String rootSpanName) {
+    return spanCapturer.getExportedSpans().stream().filter(exportedSpan -> exportedSpan.getName().equals(rootSpanName) && exportedSpan.getParentSpanId().equals(ROOT_PARENT_SPAN_ID)).findFirst()
+            .orElseThrow(() -> new AssertionFailedError(String.format("Root Span with name: [%s] not found.", rootSpanName)));
   }
 }
