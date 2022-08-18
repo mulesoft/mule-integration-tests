@@ -115,7 +115,7 @@ public class TryScopeErrorTracingTestCase extends AbstractIntegrationTestCase {
 
       assertThat(onErrorPropagateSpans.size(), equalTo(2));
       assertThat(onErrorPropagateSpans,
-                 containsInAnyOrder(hasProperty(PARENT_SPAN_ID_PROPERTY_NAME, equalTo(tryScope.getSpanId())),
+                 containsInAnyOrder(hasProperty(PARENT_SPAN_ID_PROPERTY_NAME, equalTo(tryScopeRoute.getSpanId())),
                                     hasProperty("parentSpanId", equalTo(muleFlowSpan.getSpanId()))));
 
       assertSpanAttributes(muleFlowSpan, "try-scope-flow", TEST_ARTEFACT_ID);

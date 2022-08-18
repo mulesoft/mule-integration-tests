@@ -43,6 +43,7 @@ public class FirstSuccessfulDoubleErrorTracingTestCase extends AbstractIntegrati
   public static final String EXPECTED_FLOW_SPAN_NAME = "mule:flow";
   public static final String EXPECTED_SET_VARIABLE_SPAN_NAME = "mule:set-variable";
   public static final String EXPECTED_SET_PAYLOAD_SPAN_NAME = "mule:set-payload";
+  public static final String EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME = "mule:on-error-propagate";
   public static final String NO_PARENT_SPAN = "0000000000000000";
   public static final int NUMBER_OF_ROUTES = 2;
 
@@ -74,6 +75,10 @@ public class FirstSuccessfulDoubleErrorTracingTestCase extends AbstractIntegrati
           exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_FIRST_SUCCESSFUL_SPAN_NAME)).findFirst()
               .orElse(null);
 
+      CapturedExportedSpan onErrorPropagateSpan =
+          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME)).findFirst()
+              .orElse(null);
+
       List<CapturedExportedSpan> muleRouteSpanList =
           exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_ROUTE_SPAN_NAME)).collect(Collectors.toList());
 
@@ -88,13 +93,15 @@ public class FirstSuccessfulDoubleErrorTracingTestCase extends AbstractIntegrati
           exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_HTTP_REQUEST_SPAN_NAME))
               .collect(Collectors.toList());
 
-      assertThat(exportedSpans, hasSize(3 * NUMBER_OF_ROUTES + 4));
+      assertThat(exportedSpans, hasSize(3 * NUMBER_OF_ROUTES + 5));
       assertThat(muleFlowSpan.getParentSpanId(), equalTo(NO_PARENT_SPAN));
       assertThat(setVariableSpanList, hasSize(1));
       setVariableSpanList
           .forEach(setVariableSpan -> assertThat(setVariableSpan.getParentSpanId(), equalTo(muleFlowSpan.getSpanId())));
       assertThat(firstSuccessfulSpan, notNullValue());
       assertThat(firstSuccessfulSpan.getParentSpanId(), equalTo(muleFlowSpan.getSpanId()));
+      assertThat(onErrorPropagateSpan, notNullValue());
+      assertThat(onErrorPropagateSpan.getParentSpanId(), equalTo(muleFlowSpan.getSpanId()));
       assertThat(muleRouteSpanList, hasSize(NUMBER_OF_ROUTES));
       muleRouteSpanList
           .forEach(muleRouteSpan -> assertThat(muleRouteSpan.getParentSpanId(), equalTo(firstSuccessfulSpan.getSpanId())));
