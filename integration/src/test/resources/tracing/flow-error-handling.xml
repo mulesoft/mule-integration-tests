@@ -15,14 +15,32 @@
 
     <flow name="flow-with-on-error-continue">
         <raise-error type="CUSTOM:ERROR"/>
-        <error-handler >
+        <error-handler>
             <on-error-continue logException="true" />
+        </error-handler>
+    </flow>
+
+    <flow name="flow-with-failing-on-error-continue">
+        <raise-error type="CUSTOM:ERROR"/>
+        <error-handler>
+            <on-error-continue logException="true">
+                <raise-error type="CUSTOM:ERROR"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="flow-with-failing-on-error-propagate">
+        <raise-error type="CUSTOM:ERROR"/>
+        <error-handler>
+            <on-error-propagate logException="true">
+                <raise-error type="CUSTOM:ERROR"/>
+            </on-error-propagate>
         </error-handler>
     </flow>
 
     <flow name="flow-with-on-error-propagate">
         <raise-error type="CUSTOM:ERROR"/>
-        <error-handler >
+        <error-handler>
             <on-error-propagate logException="true" />
         </error-handler>
     </flow>
@@ -41,7 +59,7 @@
 
     <flow name="flow-with-flow-ref-and-on-error-propagate-and-on-error-continue">
         <flow-ref name="flow-with-on-error-propagate" />
-        <error-handler >
+        <error-handler>
             <on-error-continue logException="true" />
         </error-handler>
     </flow>
@@ -56,7 +74,7 @@
 
     <flow name="flow-with-sub-flow-ref-and-on-error-continue">
         <flow-ref name="sub-flow-with-no-error-handling" />
-        <error-handler >
+        <error-handler>
             <on-error-continue logException="true" />
         </error-handler>
     </flow>

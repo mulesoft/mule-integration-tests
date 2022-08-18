@@ -7,10 +7,12 @@
 
 package org.mule.test.components.tracing;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertThat;
+import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
 import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.DEFAULT_CORE_EVENT_TRACER;
 
-import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.core.privileged.profiling.CapturedExportedSpan;
 import org.mule.runtime.core.privileged.profiling.ExportedSpanCapturer;
 import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
@@ -48,6 +50,8 @@ public class FlowErrorHandlingTestCase extends AbstractIntegrationTestCase {
   private static final String FLOW_WITH_SUB_FLOW_REF_AND_ON_ERROR_CONTINUE =
       "flow-with-sub-flow-ref-and-on-error-continue";
   private static final String FLOW_WITH_SUB_FLOW_REF_AND_NO_ERROR_HANDLING = "flow-with-sub-flow-ref-and-no-error-handling";
+  private static final String FLOW_WITH_FAILING_ON_ERROR_CONTINUE = "flow-with-failing-on-error-continue";
+  private static final String FLOW_WITH_FAILING_ON_ERROR_PROPAGATE = "flow-with-failing-on-error-propagate";
 
   private static final Set<String> FLOW_WITH_FLOW_REF_AND_ON_ERROR_PROPAGATE_EXPECTED_SPAN_BRANCHES = new HashSet<>(Arrays.asList(
                                                                                                                                   "mule:flow/mule:flow-ref/mule:flow/mule:raise-error",
@@ -61,6 +65,14 @@ public class FlowErrorHandlingTestCase extends AbstractIntegrationTestCase {
   private static final Set<String> FLOW_WITH_ON_ERROR_CONTINUE_EXPECTED_SPAN_BRANCHES = new HashSet<>(Arrays.asList(
                                                                                                                     "mule:flow/mule:raise-error",
                                                                                                                     "mule:flow/mule:on-error-continue"));
+
+  private static final Set<String> FLOW_WITH_FAILING_ON_ERROR_CONTINUE_EXPECTED_SPAN_BRANCHES = new HashSet<>(Arrays.asList(
+                                                                                                                            "mule:flow/mule:raise-error",
+                                                                                                                            "mule:flow/mule:on-error-continue/mule:raise-error"));
+
+  private static final Set<String> FLOW_WITH_FAILING_ON_ERROR_PROPAGATE_EXPECTED_SPAN_BRANCHES = new HashSet<>(Arrays.asList(
+                                                                                                                             "mule:flow/mule:raise-error",
+                                                                                                                             "mule:flow/mule:on-error-propagate/mule:raise-error"));
 
   private static final Set<String> FLOW_WITH_FLOW_REF_AND_ON_ERROR_CONTINUE_EXPECTED_SPAN_BRANCHES = new HashSet<>(Arrays.asList(
                                                                                                                                  "mule:flow/mule:flow-ref/mule:flow/mule:raise-error",
@@ -105,78 +117,80 @@ public class FlowErrorHandlingTestCase extends AbstractIntegrationTestCase {
     spanCapturer.dispose();
   }
 
-  @Test(expected = MuleException.class)
+  @Test
   public void testFlowWithNoErrorHandling() throws Exception {
-    try {
-      flowRunner(FLOW_WITH_NO_ERROR_HANDLING).withPayload(TEST_PAYLOAD).run().getMessage();
-    } finally {
-      assertExpectedSpanBranches(FLOW_WITH_ON_ERROR_PROPAGATE_EXPECTED_SPAN_BRANCHES);
-    }
+    flowRunner(FLOW_WITH_NO_ERROR_HANDLING).withPayload(TEST_PAYLOAD).runExpectingException(errorType("CUSTOM", "ERROR"));
+    assertExpectedSpanBranches(FLOW_WITH_ON_ERROR_PROPAGATE_EXPECTED_SPAN_BRANCHES, 3);
   }
 
   @Test
   public void testFlowWithOnErrorContinue() throws Exception {
     flowRunner(FLOW_WITH_ON_ERROR_CONTINUE).withPayload(TEST_PAYLOAD).run().getMessage();
-    assertExpectedSpanBranches(FLOW_WITH_ON_ERROR_CONTINUE_EXPECTED_SPAN_BRANCHES);
+    assertExpectedSpanBranches(FLOW_WITH_ON_ERROR_CONTINUE_EXPECTED_SPAN_BRANCHES, 3);
   }
 
-  @Test(expected = MuleException.class)
+  @Test
+  public void testFlowWithFailingOnErrorContinue() throws Exception {
+    flowRunner(FLOW_WITH_FAILING_ON_ERROR_CONTINUE).withPayload(TEST_PAYLOAD).runExpectingException(errorType("CUSTOM", "ERROR"));
+    assertExpectedSpanBranches(FLOW_WITH_FAILING_ON_ERROR_CONTINUE_EXPECTED_SPAN_BRANCHES, 4);
+  }
+
+  @Test
+  public void testFlowWithFailingOnErrorPropagate() throws Exception {
+    flowRunner(FLOW_WITH_FAILING_ON_ERROR_PROPAGATE).withPayload(TEST_PAYLOAD)
+        .runExpectingException(errorType("CUSTOM", "ERROR"));
+    assertExpectedSpanBranches(FLOW_WITH_FAILING_ON_ERROR_PROPAGATE_EXPECTED_SPAN_BRANCHES, 4);
+  }
+
+  @Test
   public void testFlowWithOnErrorPropagate() throws Exception {
-    try {
-      flowRunner(FLOW_WITH_ON_ERROR_PROPAGATE).withPayload(TEST_PAYLOAD).run().getMessage();
-    } finally {
-      assertExpectedSpanBranches(FLOW_WITH_ON_ERROR_PROPAGATE_EXPECTED_SPAN_BRANCHES);
-    }
+    flowRunner(FLOW_WITH_ON_ERROR_PROPAGATE).withPayload(TEST_PAYLOAD).runExpectingException(errorType("CUSTOM", "ERROR"));
+    assertExpectedSpanBranches(FLOW_WITH_ON_ERROR_PROPAGATE_EXPECTED_SPAN_BRANCHES, 3);
   }
 
-  @Test(expected = MuleException.class)
+  @Test
   public void testFlowWithFlowRefAndNoErrorHandling() throws Exception {
-    try {
-      flowRunner(FLOW_WITH_FLOW_REF_AND_NO_ERROR_HANDLING).withPayload(TEST_PAYLOAD).run().getMessage();
-    } finally {
-      assertExpectedSpanBranches(FLOW_WITH_FLOW_REF_AND_ON_ERROR_PROPAGATE_EXPECTED_SPAN_BRANCHES);
-    }
+    flowRunner(FLOW_WITH_FLOW_REF_AND_NO_ERROR_HANDLING).withPayload(TEST_PAYLOAD)
+        .runExpectingException(errorType("CUSTOM", "ERROR"));
+    assertExpectedSpanBranches(FLOW_WITH_FLOW_REF_AND_ON_ERROR_PROPAGATE_EXPECTED_SPAN_BRANCHES, 6);
   }
 
   @Test
   public void testFlowWithFlowRefAndOnErrorContinue() throws Exception {
     flowRunner(FLOW_WITH_FLOW_REF_AND_ON_ERROR_CONTINUE).withPayload(TEST_PAYLOAD).run().getMessage();
-    assertExpectedSpanBranches(FLOW_WITH_FLOW_REF_AND_ON_ERROR_CONTINUE_EXPECTED_SPAN_BRANCHES);
+    assertExpectedSpanBranches(FLOW_WITH_FLOW_REF_AND_ON_ERROR_CONTINUE_EXPECTED_SPAN_BRANCHES, 5);
   }
 
-  @Test(expected = MuleException.class)
+  @Test
   public void testFlowWithFlowRefAndOnErrorPropagate() throws Exception {
-    try {
-      flowRunner(FLOW_WITH_FLOW_REF_AND_ON_ERROR_PROPAGATE).withPayload(TEST_PAYLOAD).run().getMessage();
-    } finally {
-      assertExpectedSpanBranches(FLOW_WITH_FLOW_REF_AND_ON_ERROR_PROPAGATE_EXPECTED_SPAN_BRANCHES);
-    }
+    flowRunner(FLOW_WITH_FLOW_REF_AND_ON_ERROR_PROPAGATE).withPayload(TEST_PAYLOAD)
+        .runExpectingException(errorType("CUSTOM", "ERROR"));
+    assertExpectedSpanBranches(FLOW_WITH_FLOW_REF_AND_ON_ERROR_PROPAGATE_EXPECTED_SPAN_BRANCHES, 6);
   }
 
   @Test
   public void testFlowWithFlowRefAndOnErrorPropagateAndOnErrorContinue() throws Exception {
     flowRunner(FLOW_WITH_FLOW_REF_AND_ON_ERROR_PROPAGATE_AND_ON_ERROR_CONTINUE).withPayload(TEST_PAYLOAD).run()
         .getMessage();
-    assertExpectedSpanBranches(FLOW_WITH_FLOW_REF_AND_ON_ERROR_PROPAGATE_AND_ON_ERROR_CONTINUE_EXPECTED_SPAN_BRANCHES);
+    assertExpectedSpanBranches(FLOW_WITH_FLOW_REF_AND_ON_ERROR_PROPAGATE_AND_ON_ERROR_CONTINUE_EXPECTED_SPAN_BRANCHES, 6);
   }
 
-  @Test(expected = MuleException.class)
+  @Test
   public void testFlowWithSubFlowRefAndNoErrorHandling() throws Exception {
-    try {
-      flowRunner(FLOW_WITH_SUB_FLOW_REF_AND_NO_ERROR_HANDLING).withPayload(TEST_PAYLOAD).run().getMessage();
-    } finally {
-      assertExpectedSpanBranches(FLOW_WITH_SUB_FLOW_REF_AND_NO_ERROR_HANDLING_EXPECTED_SPAN_BRANCHES);
-    }
+    flowRunner(FLOW_WITH_SUB_FLOW_REF_AND_NO_ERROR_HANDLING).withPayload(TEST_PAYLOAD)
+        .runExpectingException(errorType("CUSTOM", "ERROR"));
+    assertExpectedSpanBranches(FLOW_WITH_SUB_FLOW_REF_AND_NO_ERROR_HANDLING_EXPECTED_SPAN_BRANCHES, 5);
   }
 
   @Test
   public void testFlowWithSubFlowRefAndOnErrorContinue() throws Exception {
     flowRunner(FLOW_WITH_SUB_FLOW_REF_AND_ON_ERROR_CONTINUE).withPayload(TEST_PAYLOAD).run().getMessage();
-    assertExpectedSpanBranches(FLOW_WITH_SUB_FLOW_REF_AND_ON_ERROR_CONTINUE_EXPECTED_SPAN_BRANCHES);
+    assertExpectedSpanBranches(FLOW_WITH_SUB_FLOW_REF_AND_ON_ERROR_CONTINUE_EXPECTED_SPAN_BRANCHES, 5);
   }
 
-  private void assertExpectedSpanBranches(Set<String> expectedSpanBranches) {
+  private void assertExpectedSpanBranches(Set<String> expectedSpanBranches, int totalSpans) {
     expectedSpanBranches.forEach(this::assertExpectedSpanBranch);
+    assertThat("Additional tracing Spans has been found.", spanCapturer.getExportedSpans().size(), equalTo(totalSpans));
   }
 
   private void assertExpectedSpanBranch(String expectedSpanBranch) {
@@ -186,7 +200,7 @@ public class FlowErrorHandlingTestCase extends AbstractIntegrationTestCase {
       try {
         currentSpan = assertExpectedSpan(branchSpanNames[i], currentSpan.getSpanId());
       } catch (Throwable t) {
-        throw new AssertionError(String.format("Expected Span branch not found: [%s]", expectedSpanBranch), t);
+        throw new AssertionError(String.format("Expected tracing Span branch not found: [%s]", expectedSpanBranch), t);
       }
     }
   }
@@ -196,7 +210,7 @@ public class FlowErrorHandlingTestCase extends AbstractIntegrationTestCase {
         .filter(exportedSpan -> exportedSpan.getName().equals(branchSpanName)
             && exportedSpan.getParentSpanId().equals(parentSpanId))
         .findFirst().orElseThrow(() -> new AssertionFailedError(String
-            .format("Expected Span with name: [%s] and parent ID [%s] not found", branchSpanName, parentSpanId)));
+            .format("Expected tracing Span with name: [%s] and parent ID [%s] not found", branchSpanName, parentSpanId)));
   }
 
   private CapturedExportedSpan findRootSpan(String rootSpanName) {
@@ -204,6 +218,6 @@ public class FlowErrorHandlingTestCase extends AbstractIntegrationTestCase {
         .filter(exportedSpan -> exportedSpan.getName().equals(rootSpanName)
             && exportedSpan.getParentSpanId().equals(ROOT_PARENT_SPAN_ID))
         .findFirst()
-        .orElseThrow(() -> new AssertionFailedError(String.format("Root Span with name: [%s] not found.", rootSpanName)));
+        .orElseThrow(() -> new AssertionFailedError(String.format("Root tracing Span with name: [%s] not found.", rootSpanName)));
   }
 }
