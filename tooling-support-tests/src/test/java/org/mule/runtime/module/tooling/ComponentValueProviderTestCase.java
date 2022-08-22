@@ -205,9 +205,10 @@ public class ComponentValueProviderTestCase extends DeclarationSessionTestCase {
     final java.sql.Date sqlDate = new java.sql.Date(dateParameter.toInstant().toEpochMilli());
     final TimeUnit enumParameter = MILLISECONDS;
     final GregorianCalendar gregorianCalendar = new GregorianCalendar();
+    gregorianCalendar.setTime(dateParameter);
     final XMLGregorianCalendar xmlGregorianCalendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(gregorianCalendar);
     final LocalDate localDate = LocalDate.parse(sqlDate.toString());
-    final LocalDateTime localDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+    final LocalDateTime localDateTime = LocalDateTime.ofInstant(dateParameter.toInstant(), ZoneId.systemDefault());
 
     ComponentElementDeclaration elementDeclaration =
         simpleActingParametersOPDeclaration(CONFIG_NAME,
@@ -240,7 +241,7 @@ public class ComponentValueProviderTestCase extends DeclarationSessionTestCase {
     gregorianCalendar.setTime(dateParameter);
     final XMLGregorianCalendar xmlGregorianCalendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(gregorianCalendar);
     final LocalDate localDate = LocalDate.parse(sqlDate.toString());
-    final LocalDateTime localDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+    final LocalDateTime localDateTime = LocalDateTime.ofInstant(dateParameter.toInstant(), ZoneId.systemDefault());
 
     ComponentElementDeclaration elementDeclaration =
         simpleActingParametersInContainerOPDeclaration(CONFIG_NAME,
