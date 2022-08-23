@@ -42,6 +42,7 @@ public class ScatterGatherDoubleErrorTracingTestCase extends AbstractIntegration
   public static final String EXPECTED_SET_PAYLOAD_SPAN_NAME = "mule:set-payload";
   public static final String SCATTER_GATHER_FLOW = "scatter-gather-flow";
   public static final String EXPECTED_FLOW_SPAN_NAME = "mule:flow";
+  public static final String EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME = "mule:on-error-propagate";
   public static final String NO_PARENT_SPAN = "0000000000000000";
 
   @Inject
@@ -87,10 +88,16 @@ public class ScatterGatherDoubleErrorTracingTestCase extends AbstractIntegration
       CapturedExportedSpan loggerSpan =
           exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_LOGGER_SPAN_NAME)).findFirst().orElse(null);
 
-      assertThat(exportedSpans, hasSize(7));
+      CapturedExportedSpan onErrorPropagateSpan =
+          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME)).findFirst()
+              .orElse(null);
+
+      assertThat(exportedSpans, hasSize(8));
       assertThat(muleFlowSpan.getParentSpanId(), equalTo(NO_PARENT_SPAN));
       assertThat(scatterGatherSpan, notNullValue());
       assertThat(scatterGatherSpan.getParentSpanId(), equalTo(muleFlowSpan.getSpanId()));
+      assertThat(onErrorPropagateSpan, notNullValue());
+      assertThat(onErrorPropagateSpan.getParentSpanId(), equalTo(muleFlowSpan.getSpanId()));
       assertThat(muleRouteSpanList, hasSize(2));
       muleRouteSpanList
           .forEach(muleRouteSpan -> assertThat(muleRouteSpan.getParentSpanId(), equalTo(scatterGatherSpan.getSpanId())));

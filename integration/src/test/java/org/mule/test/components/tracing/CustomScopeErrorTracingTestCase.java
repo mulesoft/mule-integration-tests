@@ -42,6 +42,8 @@ public class CustomScopeErrorTracingTestCase extends AbstractIntegrationTestCase
   public static final String NO_PARENT_SPAN = "0000000000000000";
   private static final String EXPECTED_RAISE_ERROR_SPAN_NAME = "mule:raise-error";
   private static final String EXPECTED_SET_PAYLOAD_SPAN_NAME = "mule:set-payload";
+  private static final String EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME = "mule:on-error-propagate";
+
 
   public static final String TEST_ARTIFACT_ID = "CustomScopeErrorTracingTestCase#testCustomScopeFlow";
 
@@ -85,7 +87,11 @@ public class CustomScopeErrorTracingTestCase extends AbstractIntegrationTestCase
           exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_SET_PAYLOAD_SPAN_NAME)).findFirst()
               .orElse(null);
 
-      assertThat(exportedSpans, hasSize(5));
+      CapturedExportedSpan onErrorPropagateSpan =
+          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME)).findFirst()
+              .orElse(null);
+
+      assertThat(exportedSpans, hasSize(6));
 
       assertThat(muleFlowSpan.getParentSpanId(), equalTo(NO_PARENT_SPAN));
 
@@ -100,6 +106,9 @@ public class CustomScopeErrorTracingTestCase extends AbstractIntegrationTestCase
 
       assertThat(raiseErrorSpan, notNullValue());
       assertThat(raiseErrorSpan.getParentSpanId(), equalTo(customScopeRoute.getSpanId()));
+
+      assertThat(onErrorPropagateSpan, notNullValue());
+      assertThat(onErrorPropagateSpan.getParentSpanId(), equalTo(muleFlowSpan.getSpanId()));
 
       assertThat(setPayloadSpan, nullValue());
 

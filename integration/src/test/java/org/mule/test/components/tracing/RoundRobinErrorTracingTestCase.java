@@ -40,6 +40,7 @@ public class RoundRobinErrorTracingTestCase extends AbstractIntegrationTestCase 
   public static final String ROUND_ROBIN_FLOW = "round-robin-flow";
   public static final String EXPECTED_FLOW_SPAN_NAME = "mule:flow";
   public static final String EXPECTED_RAISE_ERROR_SPAN = "mule:raise-error";
+  public static final String EXPECTED_ON_ERROR_PROPAGATE_SPAN = "mule:on-error-propagate";
   public static final String NO_PARENT_SPAN = "0000000000000000";
 
   public static final String TEST_ARTIFACT_ID = "RoundRobinErrorTracingTestCase#testRoundRobinFlowWithError";
@@ -80,8 +81,13 @@ public class RoundRobinErrorTracingTestCase extends AbstractIntegrationTestCase 
       CapturedExportedSpan loggerSpan =
           exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_LOGGER_SPAN_NAME)).findFirst().orElse(null);
 
-      assertThat(exportedSpans, hasSize(5));
+      CapturedExportedSpan onErrorPropagateSpan =
+          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_ON_ERROR_PROPAGATE_SPAN)).findFirst().orElse(null);
+
+      assertThat(exportedSpans, hasSize(6));
       assertThat(muleFlowSpan.getParentSpanId(), equalTo(NO_PARENT_SPAN));
+      assertThat(onErrorPropagateSpan, notNullValue());
+      assertThat(onErrorPropagateSpan.getParentSpanId(), equalTo(muleFlowSpan.getSpanId()));
       assertThat(roundRobinSpan, notNullValue());
       assertThat(roundRobinSpan.getParentSpanId(), equalTo(muleFlowSpan.getSpanId()));
       assertThat(muleRouteSpanList, hasSize(1));
@@ -95,6 +101,7 @@ public class RoundRobinErrorTracingTestCase extends AbstractIntegrationTestCase 
       assertThat(loggerSpan.getParentSpanId(), equalTo(muleRouteSpanList.get(0).getSpanId()));
 
       assertSpanAttributes(muleFlowSpan, "round-robin-flow", TEST_ARTIFACT_ID);
+      assertSpanAttributes(onErrorPropagateSpan, "unknown", TEST_ARTIFACT_ID);
       assertSpanAttributes(roundRobinSpan, "round-robin-flow/processors/0", TEST_ARTIFACT_ID);
       assertSpanAttributes(muleRouteSpanList.get(0), "round-robin-flow/processors/0", TEST_ARTIFACT_ID);
       assertSpanAttributes(loggerSpan, "round-robin-flow/processors/0/route/0/processors/0", TEST_ARTIFACT_ID);
