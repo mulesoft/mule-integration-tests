@@ -10,22 +10,31 @@ import static org.mule.runtime.core.privileged.exception.TemplateOnErrorHandler.
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ErrorHandlingStory.GLOBAL_ERROR_HANDLER;
 
+import static java.util.Optional.empty;
+
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.collection.IsIterableContainingInRelativeOrder.containsInRelativeOrder;
 import static org.junit.Assert.assertThat;
 
 import org.mule.functional.junit4.TestComponentBuildingDefinitionRegistryFactory;
+import org.mule.runtime.api.component.Component;
+import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.lifecycle.Disposable;
 import org.mule.runtime.api.lifecycle.Initialisable;
 import org.mule.runtime.api.lifecycle.Lifecycle;
 import org.mule.runtime.api.lifecycle.Startable;
 import org.mule.runtime.api.lifecycle.Stoppable;
 import org.mule.runtime.core.api.construct.FlowConstruct;
+import org.mule.runtime.core.api.exception.FlowExceptionHandler;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.tests.api.LifecycleTrackerRegistry;
 
 import java.util.Collection;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Consumer;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -49,16 +58,20 @@ public class GlobalErrorHandlerLifecycleTestCase extends AbstractIntegrationTest
   private LifecycleTrackerRegistry trackersRegistry;
 
   @Inject
-  @Named("globalReference")
-  private FlowConstruct globalReference;
+  @Named("globalFlow1")
+  private FlowConstruct globalFlow1;
 
   @Inject
-  @Named("flow1")
-  private FlowConstruct flow1;
+  @Named("globalFlow2")
+  private FlowConstruct globalFlow2;
 
   @Inject
-  @Named("flow2")
-  private FlowConstruct flow2;
+  @Named("anotherGlobalFlow1")
+  private FlowConstruct anotherGlobalFlow1;
+
+  @Inject
+  @Named("anotherGlobalFlow2")
+  private FlowConstruct anotherGlobalFlow2;
 
   private static TestComponentBuildingDefinitionRegistryFactory previous;
 
@@ -78,44 +91,64 @@ public class GlobalErrorHandlerLifecycleTestCase extends AbstractIntegrationTest
 
   @Test
   public void testLifecycleGlobalErrorHandler() throws Exception {
-    flowRunner(flow1.getName()).run();
+    flowRunner(anotherGlobalFlow1.getName()).run();
 
     Collection<String> globalErrorHandlerTracker = trackersRegistry.get("anotherGlobalErrorHandlerTracker").getCalledPhases();
 
     assertThat(globalErrorHandlerTracker, containsInRelativeOrder(Initialisable.PHASE_NAME, Startable.PHASE_NAME));
 
-    ((Lifecycle) flow1).stop();
-    ((Lifecycle) flow1).dispose();
+    ((Lifecycle) anotherGlobalFlow1).stop();
+    ((Lifecycle) anotherGlobalFlow1).dispose();
 
     assertThat(globalErrorHandlerTracker, not(hasItem(Stoppable.PHASE_NAME)));
     assertThat(globalErrorHandlerTracker, not(hasItem(Disposable.PHASE_NAME)));
 
-    ((Lifecycle) flow2).stop();
-    ((Lifecycle) flow2).dispose();
+    ((Lifecycle) anotherGlobalFlow2).stop();
+    ((Lifecycle) anotherGlobalFlow2).dispose();
 
     assertThat(globalErrorHandlerTracker, containsInRelativeOrder(Stoppable.PHASE_NAME, Disposable.PHASE_NAME));
   }
 
   @Test
   public void testStopAndStartGlobalErrorHandler() throws Exception {
-    flowRunner(globalReference.getName()).run();
+    flowRunner(globalFlow1.getName()).run();
+    flowRunner(globalFlow2.getName()).run();
 
     Collection<String> globalErrorHandlerTracker = trackersRegistry.get("globalErrorHandlerTracker").getCalledPhases();
 
     assertThat(globalErrorHandlerTracker, containsInRelativeOrder(Initialisable.PHASE_NAME, Startable.PHASE_NAME));
 
-    ((Lifecycle) globalReference).stop();
+    ((Lifecycle) globalFlow1).stop();
 
-    assertThat(globalErrorHandlerTracker, hasItem(Stoppable.PHASE_NAME));
+    flowRunner(globalFlow2.getName()).run();
 
-    ((Lifecycle) globalReference).start();
+    ((Lifecycle) globalFlow1).start();
 
-    flowRunner(globalReference.getName()).run();
+    flowRunner(globalFlow1.getName()).run();
 
-    ((Lifecycle) globalReference).stop();
-    ((Lifecycle) globalReference).dispose();
+    ((Lifecycle) globalFlow1).stop();
+    ((Lifecycle) globalFlow2).stop();
+    ((Lifecycle) globalFlow1).dispose();
+    ((Lifecycle) globalFlow2).dispose();
 
     assertThat(globalErrorHandlerTracker, hasItem(Disposable.PHASE_NAME));
+  }
+
+  @Test
+  public void clearChainInStop() throws MuleException {
+    FlowExceptionHandler globalErrorHandler = globalFlow1.getMuleContext().getDefaultErrorHandler(empty());
+    Map<Component, Consumer<Exception>> routers = globalErrorHandler.getRouters();
+    int size = routers.size();
+
+    Optional<Component> forGlobalReference =
+        routers.keySet().stream().filter(component -> component.toString().contains(globalFlow1.getName())).findFirst();
+    assertThat(forGlobalReference.isPresent(), is(true));
+    ((Lifecycle) globalFlow1).stop();
+
+    forGlobalReference =
+        routers.keySet().stream().filter(component -> component.toString().contains(globalFlow1.getName())).findFirst();
+    assertThat(forGlobalReference.isPresent(), is(false));
+    assertThat(routers.size(), is(size - 1));
   }
 
 }

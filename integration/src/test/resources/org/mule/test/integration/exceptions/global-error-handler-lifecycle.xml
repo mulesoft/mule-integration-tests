@@ -6,10 +6,12 @@
        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
        http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
 
+    <configuration defaultErrorHandler-ref="global" />
+
     <error-handler name="global">
-        <on-error-continue>
+        <on-error-propagate>
             <test-components:lifecycle-tracker name="globalErrorHandlerTracker"/>
-        </on-error-continue>
+        </on-error-propagate>
     </error-handler>
 
     <error-handler name="anotherGlobal">
@@ -18,17 +20,32 @@
         </on-error-continue>
     </error-handler>
 
-    <flow name="globalReference">
-        <raise-error type="CUSTOM:ERROR" />
-        <error-handler ref="global"/>
+    <flow name="globalFlow1">
+        <try>
+            <raise-error type="CUSTOM:ERROR" />
+            <error-handler ref="global"/>
+        </try>
+        <error-handler>
+            <on-error-continue />
+        </error-handler>
     </flow>
 
-    <flow name="flow1">
+    <flow name="globalFlow2">
+        <try>
+            <raise-error type="CUSTOM:ERROR" />
+            <error-handler ref="global"/>
+        </try>
+        <error-handler>
+            <on-error-continue />
+        </error-handler>
+    </flow>
+
+    <flow name="anotherGlobalFlow1">
         <raise-error type="CUSTOM:ERROR" />
         <error-handler ref="anotherGlobal"/>
     </flow>
 
-    <flow name="flow2">
+    <flow name="anotherGlobalFlow2">
         <try>
             <raise-error type="CUSTOM:ERROR" />
             <error-handler ref="anotherGlobal"/>
