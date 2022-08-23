@@ -24,7 +24,7 @@
         <raise-error type="CUSTOM:ERROR"/>
         <error-handler>
             <on-error-continue logException="true">
-                <raise-error type="CUSTOM:ERROR"/>
+                <raise-error type="CUSTOM:ERROR_2"/>
             </on-error-continue>
         </error-handler>
     </flow>
@@ -33,7 +33,7 @@
         <raise-error type="CUSTOM:ERROR"/>
         <error-handler>
             <on-error-propagate logException="true">
-                <raise-error type="CUSTOM:ERROR"/>
+                <raise-error type="CUSTOM:ERROR_2"/>
             </on-error-propagate>
         </error-handler>
     </flow>
