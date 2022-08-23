@@ -144,7 +144,8 @@ public class FlowErrorHandlingTracingTestCase extends AbstractIntegrationTestCas
 
   @Test
   public void testFlowWithFailingOnErrorContinue() throws Exception {
-    flowRunner(FLOW_WITH_FAILING_ON_ERROR_CONTINUE).withPayload(TEST_PAYLOAD).runExpectingException(errorType("CUSTOM", "ERROR_2"));
+    flowRunner(FLOW_WITH_FAILING_ON_ERROR_CONTINUE).withPayload(TEST_PAYLOAD)
+        .runExpectingException(errorType("CUSTOM", "ERROR_2"));
     assertExpectedSpanBranches(FLOW_WITH_FAILING_ON_ERROR_CONTINUE_EXPECTED_SPAN_BRANCHES, 4);
   }
 
@@ -240,7 +241,9 @@ public class FlowErrorHandlingTracingTestCase extends AbstractIntegrationTestCas
 
   private void assertExpectedException(CapturedExportedSpan capturedExportedSpan, String branchSpanName) {
     if (branchSpanName.contains(EXCEPTION_ATTRIBUTE)) {
-      List<CapturedEventData> exceptions = capturedExportedSpan.getEvents().stream().filter(capturedEventData -> capturedEventData.getName().equals(OTEL_EXCEPTION_EVENT_NAME)).collect(Collectors.toList());
+      List<CapturedEventData> exceptions = capturedExportedSpan.getEvents().stream()
+          .filter(capturedEventData -> capturedEventData.getName().equals(OTEL_EXCEPTION_EVENT_NAME))
+          .collect(Collectors.toList());
       assertThat(String.format("Expected exceptions for Span: [%s] differ", capturedExportedSpan), exceptions.size(), equalTo(1));
       assertExceptionData(exceptions.iterator().next(), getErrorType(branchSpanName));
     } else {
