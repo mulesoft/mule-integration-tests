@@ -22,5 +22,9 @@
     <flow name="test">
         <flow-ref name="throw"/> 
     </flow>
+    
+    <flow name=":\weird-name">
+        <logger/>
+    </flow>
 
 </mule>
