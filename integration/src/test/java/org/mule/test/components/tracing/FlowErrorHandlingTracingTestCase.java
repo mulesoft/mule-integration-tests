@@ -11,9 +11,12 @@ import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
 import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.DEFAULT_CORE_EVENT_TRACER;
 
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.Matchers.emptyOrNullString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 
+import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.core.privileged.profiling.CapturedEventData;
 import org.mule.runtime.core.privileged.profiling.CapturedExportedSpan;
 import org.mule.runtime.core.privileged.profiling.ExportedSpanCapturer;
@@ -57,6 +60,8 @@ public class FlowErrorHandlingTracingTestCase extends AbstractIntegrationTestCas
   private static final String FLOW_WITH_SUB_FLOW_REF_AND_NO_ERROR_HANDLING = "flow-with-sub-flow-ref-and-no-error-handling";
   private static final String FLOW_WITH_FAILING_ON_ERROR_CONTINUE = "flow-with-failing-on-error-continue";
   private static final String FLOW_WITH_FAILING_ON_ERROR_PROPAGATE = "flow-with-failing-on-error-propagate";
+  private static final String FLOW_WITH_ON_ERROR_PROPAGATE_AND_ON_ERROR_CONTINUE_COMPOSITION =
+      "flow-with-on-error-propagate-and-on-error-continue-composition";
 
   private static final Set<String> FLOW_WITH_FLOW_REF_AND_ON_ERROR_PROPAGATE_EXPECTED_SPAN_BRANCHES = new HashSet<>(Arrays.asList(
                                                                                                                                   "mule:flow[exception: CUSTOM:ERROR]/mule:flow-ref[exception: CUSTOM:ERROR]/mule:flow[exception: CUSTOM:ERROR]/mule:raise-error[exception: CUSTOM:ERROR]",
@@ -99,15 +104,20 @@ public class FlowErrorHandlingTracingTestCase extends AbstractIntegrationTestCas
                                   "mule:flow/mule:flow-ref[exception: CUSTOM:ERROR]/mule:flow-ref:route[exception: CUSTOM:ERROR]/mule:raise-error[exception: CUSTOM:ERROR]",
                                   "mule:flow/mule:on-error-continue"));
 
+  private static final Set<String> FLOW_WITH_ON_ERROR_PROPAGATE_AND_ON_ERROR_CONTINUE_COMPOSITION_EXPECTED_SPAN_BRANCHES =
+      new HashSet<>(Arrays.asList(
+                                  "mule:flow[exception: CUSTOM:ERROR]/mule:raise-error[exception: CUSTOM:ERROR]",
+                                  "mule:flow[exception: CUSTOM:ERROR]/mule:on-error-propagate/mule:flow-ref/mule:flow/mule:raise-error[exception: CUSTOM:ERROR]"));
+
   private static final String SPAN_BRANCH_DELIMITATOR = "/";
   public static final String SPAN_ATTRIBUTES_BEGIN = "[";
   public static final String SPAN_ATTRIBUTES_END = "]";
   public static final String EXCEPTION_ATTRIBUTE = "exception:";
 
-  public static final String EXCEPTION_TYPE_KEY = "exception.type";
-  public static final String EXCEPTION_MESSAGE_KEY = "exception.message";
-  public static final String EXCEPTION_STACK_TRACE_KEY = "exception.stacktrace";
-  public static final String EXCEPTION_ESCAPED_KEY = "exception.escaped";
+  public static final String OTEL_EXCEPTION_TYPE_KEY = "exception.type";
+  public static final String OTEL_EXCEPTION_MESSAGE_KEY = "exception.message";
+  public static final String OTEL_EXCEPTION_STACK_TRACE_KEY = "exception.stacktrace";
+  public static final String OTEL_EXCEPTION_ESCAPED_KEY = "exception.escaped";
   public static final String OTEL_EXCEPTION_EVENT_NAME = "exception";
 
   private ExportedSpanCapturer spanCapturer;
@@ -202,6 +212,19 @@ public class FlowErrorHandlingTracingTestCase extends AbstractIntegrationTestCas
     assertExpectedSpanBranches(FLOW_WITH_SUB_FLOW_REF_AND_ON_ERROR_CONTINUE_EXPECTED_SPAN_BRANCHES, 5);
   }
 
+  @Test
+  public void flowWIthOnErrorPropagateAndOnErrorContinueComposition() throws Exception {
+    // TODO: W-11646448: Compound error handlers are not propagating correct error.
+    // Replace current execution code code by commented one.
+    // flowRunner(FLOW_WITH_ON_ERROR_PROPAGATE_AND_ON_ERROR_CONTINUE_COMPOSITION).withPayload(TEST_PAYLOAD)
+    // .runExpectingException(errorType("CUSTOM", "ERROR"));
+    try {
+      flowRunner(FLOW_WITH_ON_ERROR_PROPAGATE_AND_ON_ERROR_CONTINUE_COMPOSITION).withPayload(TEST_PAYLOAD).run().getMessage();
+    } catch (MuleException exception) {
+      assertExpectedSpanBranches(FLOW_WITH_ON_ERROR_PROPAGATE_AND_ON_ERROR_CONTINUE_COMPOSITION_EXPECTED_SPAN_BRANCHES, 7);
+    }
+  }
+
   private void assertExpectedSpanBranches(Set<String> expectedSpanBranches, int totalSpans) {
     expectedSpanBranches.forEach(this::assertExpectedSpanBranch);
     assertThat("Additional tracing Spans has been found.", spanCapturer.getExportedSpans().size(), equalTo(totalSpans));
@@ -210,9 +233,9 @@ public class FlowErrorHandlingTracingTestCase extends AbstractIntegrationTestCas
   private void assertExpectedSpanBranch(String expectedSpanBranch) {
     String[] branchSpanNames = expectedSpanBranch.split(SPAN_BRANCH_DELIMITATOR);
     CapturedExportedSpan currentSpan = null;
-    for (int i = 0; i < branchSpanNames.length; i++) {
+    for (String branchSpanName : branchSpanNames) {
       try {
-        currentSpan = assertExpectedSpan(branchSpanNames[i], currentSpan != null ? currentSpan.getSpanId() : ROOT_PARENT_SPAN_ID);
+        currentSpan = assertExpectedSpan(branchSpanName, currentSpan != null ? currentSpan.getSpanId() : ROOT_PARENT_SPAN_ID);
       } catch (Throwable t) {
         throw new AssertionError(String.format("Expected tracing Span branch not found: [%s]", expectedSpanBranch), t);
       }
@@ -261,6 +284,9 @@ public class FlowErrorHandlingTracingTestCase extends AbstractIntegrationTestCas
   }
 
   private void assertExceptionData(CapturedEventData exceptionData, String errorType) {
-    assertThat(exceptionData.getAttributes().get(EXCEPTION_TYPE_KEY), equalTo(errorType));
+    assertThat(exceptionData.getAttributes().get(OTEL_EXCEPTION_TYPE_KEY), equalTo(errorType));
+    assertThat(exceptionData.getAttributes().get(OTEL_EXCEPTION_MESSAGE_KEY), equalTo("An error occurred."));
+    assertThat(exceptionData.getAttributes().get(OTEL_EXCEPTION_ESCAPED_KEY), equalTo("true"));
+    assertThat(exceptionData.getAttributes().get(OTEL_EXCEPTION_STACK_TRACE_KEY).toString(), not(emptyOrNullString()));
   }
 }

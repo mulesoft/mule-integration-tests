@@ -173,13 +173,13 @@
 
     <flow name="withTry">
         <set-payload value="flow"/>
-        <raise-error type="APP:EXPECTED"/>
+        <raise-error type="APP:EXPECTED_1"/>
         <error-handler>
             <on-error-propagate>
                 <test-components:queue-push config-ref="out1"/>
                 <try>
                     <set-payload value="try"/>
-                    <raise-error type="APP:EXPECTED"/>
+                    <raise-error type="APP:EXPECTED_2"/>
                     <error-handler>
                         <on-error-continue>
                             <test-components:queue-push config-ref="out2"/>

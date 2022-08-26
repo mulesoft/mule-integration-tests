@@ -64,6 +64,15 @@
         </error-handler>
     </flow>
 
+    <flow name="flow-with-on-error-propagate-and-on-error-continue-composition">
+        <raise-error type="CUSTOM:ERROR"/>
+        <error-handler>
+            <on-error-propagate logException="true">
+                <flow-ref name="flow-with-on-error-continue" />
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+
     <sub-flow name="sub-flow-with-no-error-handling">
         <raise-error type="CUSTOM:ERROR"/>
     </sub-flow>
