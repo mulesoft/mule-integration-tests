@@ -34,7 +34,6 @@ import javax.inject.Inject;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
 import junit.framework.AssertionFailedError;
-import org.jetbrains.annotations.NotNull;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -253,7 +252,6 @@ public class FlowErrorHandlingTracingTestCase extends AbstractIntegrationTestCas
     return capturedExportedSpan;
   }
 
-  @NotNull
   private String getSpanName(String branchSpanName) {
     if (branchSpanName.contains(SPAN_ATTRIBUTES_BEGIN)) {
       return branchSpanName.substring(0, branchSpanName.indexOf(SPAN_ATTRIBUTES_BEGIN));
