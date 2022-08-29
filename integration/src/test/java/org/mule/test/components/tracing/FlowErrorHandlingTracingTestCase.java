@@ -13,6 +13,7 @@ import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceSto
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 
+import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.core.privileged.profiling.CapturedExportedSpan;
 import org.mule.runtime.core.privileged.profiling.ExportedSpanCapturer;
 import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
@@ -52,6 +53,8 @@ public class FlowErrorHandlingTracingTestCase extends AbstractIntegrationTestCas
   private static final String FLOW_WITH_SUB_FLOW_REF_AND_NO_ERROR_HANDLING = "flow-with-sub-flow-ref-and-no-error-handling";
   private static final String FLOW_WITH_FAILING_ON_ERROR_CONTINUE = "flow-with-failing-on-error-continue";
   private static final String FLOW_WITH_FAILING_ON_ERROR_PROPAGATE = "flow-with-failing-on-error-propagate";
+  private static final String FLOW_WITH_ON_ERROR_PROPAGATE_AND_ON_ERROR_CONTINUE_COMPOSITION =
+      "flow-with-on-error-propagate-and-on-error-continue-composition";
 
   private static final Set<String> FLOW_WITH_FLOW_REF_AND_ON_ERROR_PROPAGATE_EXPECTED_SPAN_BRANCHES = new HashSet<>(Arrays.asList(
                                                                                                                                   "mule:flow/mule:flow-ref/mule:flow/mule:raise-error",
@@ -93,6 +96,11 @@ public class FlowErrorHandlingTracingTestCase extends AbstractIntegrationTestCas
       new HashSet<>(Arrays.asList(
                                   "mule:flow/mule:flow-ref/mule:flow-ref:route/mule:raise-error",
                                   "mule:flow/mule:on-error-continue"));
+
+  private static final Set<String> FLOW_WITH_ON_ERROR_PROPAGATE_AND_ON_ERROR_CONTINUE_COMPOSITION_EXPECTED_SPAN_BRANCHES =
+      new HashSet<>(Arrays.asList(
+                                  "mule:flow/mule:raise-error",
+                                  "mule:flow/mule:on-error-propagate/mule:flow-ref/mule:flow/mule:raise-error"));
 
   private static final String SPAN_BRANCH_DELIMITATOR = "/";
 
@@ -186,6 +194,19 @@ public class FlowErrorHandlingTracingTestCase extends AbstractIntegrationTestCas
   public void testFlowWithSubFlowRefAndOnErrorContinue() throws Exception {
     flowRunner(FLOW_WITH_SUB_FLOW_REF_AND_ON_ERROR_CONTINUE).withPayload(TEST_PAYLOAD).run().getMessage();
     assertExpectedSpanBranches(FLOW_WITH_SUB_FLOW_REF_AND_ON_ERROR_CONTINUE_EXPECTED_SPAN_BRANCHES, 5);
+  }
+
+  @Test
+  public void flowWIthOnErrorPropagateAndOnErrorContinueComposition() throws Exception {
+    // TODO: W-11646448: Compound error handlers are not propagating correct error.
+    // Replace current execution code code by commented one.
+    // flowRunner(FLOW_WITH_ON_ERROR_PROPAGATE_AND_ON_ERROR_CONTINUE_COMPOSITION).withPayload(TEST_PAYLOAD)
+    // .runExpectingException(errorType("CUSTOM", "ERROR"));
+    try {
+      flowRunner(FLOW_WITH_ON_ERROR_PROPAGATE_AND_ON_ERROR_CONTINUE_COMPOSITION).withPayload(TEST_PAYLOAD).run().getMessage();
+    } catch (MuleException exception) {
+      assertExpectedSpanBranches(FLOW_WITH_ON_ERROR_PROPAGATE_AND_ON_ERROR_CONTINUE_COMPOSITION_EXPECTED_SPAN_BRANCHES, 7);
+    }
   }
 
   private void assertExpectedSpanBranches(Set<String> expectedSpanBranches, int totalSpans) {
