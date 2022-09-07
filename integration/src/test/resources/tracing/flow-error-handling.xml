@@ -14,7 +14,7 @@
     </flow>
 
     <flow name="flow-with-on-error-continue">
-        <raise-error type="CUSTOM:ERROR"/>
+        <raise-error type="CUSTOM:ERROR_2"/>
         <error-handler>
             <on-error-continue logException="true" />
         </error-handler>

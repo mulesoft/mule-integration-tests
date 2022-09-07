@@ -16,7 +16,6 @@ import static org.hamcrest.Matchers.emptyOrNullString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 
-import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.core.privileged.profiling.CapturedEventData;
 import org.mule.runtime.core.privileged.profiling.CapturedExportedSpan;
 import org.mule.runtime.core.privileged.profiling.ExportedSpanCapturer;
@@ -72,7 +71,7 @@ public class FlowErrorHandlingTracingTestCase extends AbstractIntegrationTestCas
                                                                                                                      "mule:flow[exception: CUSTOM:ERROR]/mule:on-error-propagate"));
 
   private static final Set<String> FLOW_WITH_ON_ERROR_CONTINUE_EXPECTED_SPAN_BRANCHES = new HashSet<>(Arrays.asList(
-                                                                                                                    "mule:flow/mule:raise-error[exception: CUSTOM:ERROR]",
+                                                                                                                    "mule:flow/mule:raise-error[exception: CUSTOM:ERROR_2]",
                                                                                                                     "mule:flow/mule:on-error-continue"));
 
   private static final Set<String> FLOW_WITH_FAILING_ON_ERROR_CONTINUE_EXPECTED_SPAN_BRANCHES = new HashSet<>(Arrays.asList(
@@ -84,7 +83,7 @@ public class FlowErrorHandlingTracingTestCase extends AbstractIntegrationTestCas
                                                                                                                              "mule:flow[exception: CUSTOM:ERROR_2]/mule:on-error-propagate[exception: CUSTOM:ERROR_2]/mule:raise-error[exception: CUSTOM:ERROR_2]"));
 
   private static final Set<String> FLOW_WITH_FLOW_REF_AND_ON_ERROR_CONTINUE_EXPECTED_SPAN_BRANCHES = new HashSet<>(Arrays.asList(
-                                                                                                                                 "mule:flow/mule:flow-ref/mule:flow/mule:raise-error[exception: CUSTOM:ERROR]",
+                                                                                                                                 "mule:flow/mule:flow-ref/mule:flow/mule:raise-error[exception: CUSTOM:ERROR_2]",
                                                                                                                                  "mule:flow/mule:flow-ref/mule:flow/mule:on-error-continue"));
 
   private static final Set<String> FLOW_WITH_FLOW_REF_AND_ON_ERROR_PROPAGATE_AND_ON_ERROR_CONTINUE_EXPECTED_SPAN_BRANCHES =
@@ -106,7 +105,8 @@ public class FlowErrorHandlingTracingTestCase extends AbstractIntegrationTestCas
   private static final Set<String> FLOW_WITH_ON_ERROR_PROPAGATE_AND_ON_ERROR_CONTINUE_COMPOSITION_EXPECTED_SPAN_BRANCHES =
       new HashSet<>(Arrays.asList(
                                   "mule:flow[exception: CUSTOM:ERROR]/mule:raise-error[exception: CUSTOM:ERROR]",
-                                  "mule:flow[exception: CUSTOM:ERROR]/mule:on-error-propagate/mule:flow-ref/mule:flow/mule:raise-error[exception: CUSTOM:ERROR]"));
+                                  "mule:flow[exception: CUSTOM:ERROR]/mule:on-error-propagate/mule:flow-ref/mule:flow/mule:raise-error[exception: CUSTOM:ERROR_2]",
+                                  "mule:flow[exception: CUSTOM:ERROR]/mule:on-error-propagate/mule:flow-ref/mule:flow/mule:on-error-continue"));
 
   private static final String SPAN_BRANCH_DELIMITATOR = "/";
   public static final String SPAN_ATTRIBUTES_BEGIN = "[";
@@ -213,15 +213,9 @@ public class FlowErrorHandlingTracingTestCase extends AbstractIntegrationTestCas
 
   @Test
   public void flowWIthOnErrorPropagateAndOnErrorContinueComposition() throws Exception {
-    // TODO: W-11646448: Compound error handlers are not propagating correct error.
-    // Replace current execution code code by commented one.
-    // flowRunner(FLOW_WITH_ON_ERROR_PROPAGATE_AND_ON_ERROR_CONTINUE_COMPOSITION).withPayload(TEST_PAYLOAD)
-    // .runExpectingException(errorType("CUSTOM", "ERROR"));
-    try {
-      flowRunner(FLOW_WITH_ON_ERROR_PROPAGATE_AND_ON_ERROR_CONTINUE_COMPOSITION).withPayload(TEST_PAYLOAD).run().getMessage();
-    } catch (MuleException exception) {
-      assertExpectedSpanBranches(FLOW_WITH_ON_ERROR_PROPAGATE_AND_ON_ERROR_CONTINUE_COMPOSITION_EXPECTED_SPAN_BRANCHES, 7);
-    }
+    flowRunner(FLOW_WITH_ON_ERROR_PROPAGATE_AND_ON_ERROR_CONTINUE_COMPOSITION).withPayload(TEST_PAYLOAD)
+        .runExpectingException(errorType("CUSTOM", "ERROR"));
+    assertExpectedSpanBranches(FLOW_WITH_ON_ERROR_PROPAGATE_AND_ON_ERROR_CONTINUE_COMPOSITION_EXPECTED_SPAN_BRANCHES, 7);
   }
 
   private void assertExpectedSpanBranches(Set<String> expectedSpanBranches, int totalSpans) {
