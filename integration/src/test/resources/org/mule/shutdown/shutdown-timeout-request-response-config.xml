@@ -33,7 +33,7 @@
 
     <flow name="setPayloadChoiceFlow">
         <http:listener path="setPayloadChoice" config-ref="listenerConfig"/>
-        
+
         <flow-ref name="block"/>
         <choice>
             <when expression="#[true]">

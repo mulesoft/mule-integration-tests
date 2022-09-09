@@ -113,8 +113,10 @@ public class ProcessorChainRouterTestCase extends AbstractIntegrationTestCase im
   @Before
   public void before() {
     // This is done because the tests invokes chains directly using a testing component (injected in the test) and
-    // there is no simple way to test this and create a correct mule event with the corresponding span parent without changing API.
-    // It does not make sense to make the verification of the current span more flexible for this programmatic invocation of an executable
+    // there is no simple way to test this and create a correct mule event with the corresponding span parent without changing
+    // API.
+    // It does not make sense to make the verification of the current span more flexible for this programmatic invocation of an
+    // executable
     // component.
     // TODO: Verify if ignoring tracing condition verification can be done in ProcessorChainRouterTestCase (W-11731027)
     previousPropagationEnabledInTracing = parseBoolean(ENABLE_PROPAGATION_OF_EXCEPTIONS_IN_TRACING);
