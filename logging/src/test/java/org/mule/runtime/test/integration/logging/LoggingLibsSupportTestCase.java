@@ -6,31 +6,42 @@
  */
 package org.mule.runtime.test.integration.logging;
 
-import static org.mule.test.allure.AllureConstants.IntegrationTestsFeature.INTEGRATIONS_TESTS;
-import static org.mule.test.allure.AllureConstants.ComponentsFeature.LoggerStory.LOGGER;
-
-import static java.lang.String.format;
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.mule.tck.probe.PollingProber.probe;
+import static org.mule.test.allure.AllureConstants.ComponentsFeature.LoggerStory.LOGGER;
+import static org.mule.test.allure.AllureConstants.IntegrationTestsFeature.INTEGRATIONS_TESTS;
 import static org.mule.test.infrastructure.FileContainsInLine.hasLine;
 
+import static java.lang.String.format;
+
+import static org.hamcrest.CoreMatchers.containsString;
+
+import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.module.deployment.impl.internal.builder.ApplicationFileBuilder;
 import org.mule.runtime.module.deployment.impl.internal.builder.JarFileBuilder;
+import org.mule.tck.junit4.FlakinessDetectorTestRunner;
+import org.mule.tck.junit4.FlakyTest;
 import org.mule.tck.util.CompilerUtils;
 import org.mule.test.infrastructure.deployment.AbstractFakeMuleServerTestCase;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+
+import org.slf4j.bridge.SLF4JBridgeHandler;
+
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
-import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.Test;
-import org.slf4j.bridge.SLF4JBridgeHandler;
 
 
 @Feature(INTEGRATIONS_TESTS)
 @Story(LOGGER)
+@RunWith(FlakinessDetectorTestRunner.class)
+@FlakyTest
 public class LoggingLibsSupportTestCase extends AbstractFakeMuleServerTestCase {
 
   @Rule
@@ -50,8 +61,37 @@ public class LoggingLibsSupportTestCase extends AbstractFakeMuleServerTestCase {
   }
 
   @Test
-  @Ignore("W-11730386")
-  public void eachLoggingLibraryShouldLogSuccessfully() throws Exception {
+  public void slf4jLibraryLogsSuccessfully() throws Exception {
+    startRuntimeWithApp();
+    probeLogFileForMessage("My logger is SLF4J");
+  }
+
+  @Test
+  public void log4jLibraryLogsSuccessfully() throws Exception {
+    startRuntimeWithApp();
+    probeLogFileForMessage("My logger is LOG4J");
+  }
+
+  @Test
+  public void jclLibraryLogsSuccessfully() throws Exception {
+    startRuntimeWithApp();
+    probeLogFileForMessage("My logger is JCL");
+  }
+
+  @Test
+  public void julLibraryLogsSuccessfully() throws Exception {
+    startRuntimeWithApp();
+    probeLogFileForMessage("My logger is JUL");
+  }
+
+  private void probeLogFileForMessage(String expectedMessage) {
+    File logFile = new File(muleServer.getLogsDir().toString() + "/mule-app-logging-app.log");
+
+    probe(() -> hasLine(containsString(expectedMessage)).matches(logFile),
+          () -> format("Text '%s' not present in the logs", "My logger is JUL"));
+  }
+
+  private void startRuntimeWithApp() throws URISyntaxException, IOException, MuleException, MalformedURLException {
     final ApplicationFileBuilder loggingAppFileBuilder =
         new ApplicationFileBuilder("logging-app").definedBy("log/logging-libs/logging-libs-app.xml")
             .dependingOn(new JarFileBuilder("loggerLibsClient",
@@ -62,16 +102,5 @@ public class LoggingLibsSupportTestCase extends AbstractFakeMuleServerTestCase {
 
     muleServer.start();
     muleServer.deploy(loggingAppFileBuilder.getArtifactFile().toURI().toURL(), "logging-app");
-
-    File file = new File(muleServer.getLogsDir().toString() + "/mule-app-logging-app.log");
-
-    probe(() -> hasLine(containsString("My logger is SLF4J")).matches(file),
-          () -> format("Text '%s' not present in the logs", "My logger is SLF4J"));
-    probe(() -> hasLine(containsString("My logger is LOG4J")).matches(file),
-          () -> format("Text '%s' not present in the logs", "My logger is LOG4J"));
-    probe(() -> hasLine(containsString("My logger is JCL")).matches(file),
-          () -> format("Text '%s' not present in the logs", "My logger is JCL"));
-    probe(() -> hasLine(containsString("My logger is JUL")).matches(file),
-          () -> format("Text '%s' not present in the logs", "My logger is JUL"));
   }
 }
