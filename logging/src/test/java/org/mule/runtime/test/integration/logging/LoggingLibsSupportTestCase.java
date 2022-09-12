@@ -18,8 +18,6 @@ import static org.hamcrest.CoreMatchers.containsString;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.module.deployment.impl.internal.builder.ApplicationFileBuilder;
 import org.mule.runtime.module.deployment.impl.internal.builder.JarFileBuilder;
-import org.mule.tck.junit4.FlakinessDetectorTestRunner;
-import org.mule.tck.junit4.FlakyTest;
 import org.mule.tck.util.CompilerUtils;
 import org.mule.test.infrastructure.deployment.AbstractFakeMuleServerTestCase;
 
@@ -32,7 +30,6 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
@@ -40,8 +37,6 @@ import io.qameta.allure.Story;
 
 @Feature(INTEGRATIONS_TESTS)
 @Story(LOGGER)
-@RunWith(FlakinessDetectorTestRunner.class)
-@FlakyTest
 public class LoggingLibsSupportTestCase extends AbstractFakeMuleServerTestCase {
 
   @Rule
