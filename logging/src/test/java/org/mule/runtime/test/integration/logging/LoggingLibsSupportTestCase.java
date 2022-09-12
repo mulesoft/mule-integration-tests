@@ -23,6 +23,7 @@ import java.io.File;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.slf4j.bridge.SLF4JBridgeHandler;
@@ -49,6 +50,7 @@ public class LoggingLibsSupportTestCase extends AbstractFakeMuleServerTestCase {
   }
 
   @Test
+  @Ignore("W-11730386")
   public void eachLoggingLibraryShouldLogSuccessfully() throws Exception {
     final ApplicationFileBuilder loggingAppFileBuilder =
         new ApplicationFileBuilder("logging-app").definedBy("log/logging-libs/logging-libs-app.xml")
