@@ -18,6 +18,8 @@ import static org.hamcrest.CoreMatchers.containsString;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.module.deployment.impl.internal.builder.ApplicationFileBuilder;
 import org.mule.runtime.module.deployment.impl.internal.builder.JarFileBuilder;
+import org.mule.tck.junit4.FlakinessDetectorTestRunner;
+import org.mule.tck.junit4.FlakyTest;
 import org.mule.tck.util.CompilerUtils;
 import org.mule.test.infrastructure.deployment.AbstractFakeMuleServerTestCase;
 
@@ -28,15 +30,18 @@ import java.net.URISyntaxException;
 
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
 
-
 @Feature(INTEGRATIONS_TESTS)
 @Story(LOGGER)
+@RunWith(FlakinessDetectorTestRunner.class)
+@FlakyTest
 public class LoggingLibsSupportTestCase extends AbstractFakeMuleServerTestCase {
 
   @Rule
@@ -68,6 +73,7 @@ public class LoggingLibsSupportTestCase extends AbstractFakeMuleServerTestCase {
   }
 
   @Test
+  @Ignore("W-11730386")
   public void jclLibraryLogsSuccessfully() throws Exception {
     startRuntimeWithApp();
     probeLogFileForMessage("My logger is JCL");
@@ -83,7 +89,7 @@ public class LoggingLibsSupportTestCase extends AbstractFakeMuleServerTestCase {
     File logFile = new File(muleServer.getLogsDir().toString() + "/mule-app-logging-app.log");
 
     probe(() -> hasLine(containsString(expectedMessage)).matches(logFile),
-          () -> format("Text '%s' not present in the logs", "My logger is JUL"));
+          () -> format("Text '%s' not present in the logs", expectedMessage));
   }
 
   private void startRuntimeWithApp() throws URISyntaxException, IOException, MuleException, MalformedURLException {
