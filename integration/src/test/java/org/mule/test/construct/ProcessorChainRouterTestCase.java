@@ -6,7 +6,11 @@
  */
 package org.mule.test.construct;
 
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static org.mule.functional.junit4.matchers.ThrowableCauseMatcher.hasCause;
+import static org.mule.runtime.api.util.MuleSystemProperties.ENABLE_PROPAGATION_OF_EXCEPTIONS_IN_TRACING;
+import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
+import static org.mule.test.allure.AllureConstants.RoutersFeature.ProcessorChainRouterStory.PROCESSOR_CHAIN_ROUTER;
+
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
@@ -15,9 +19,10 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.junit.rules.ExpectedException.none;
-import static org.mule.functional.junit4.matchers.ThrowableCauseMatcher.hasCause;
-import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
-import static org.mule.test.allure.AllureConstants.RoutersFeature.ProcessorChainRouterStory.PROCESSOR_CHAIN_ROUTER;
+
+import static java.lang.Boolean.parseBoolean;
+import static java.lang.System.setProperty;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import org.mule.functional.junit4.rules.HttpServerRule;
 import org.mule.runtime.api.component.execution.ComponentExecutionException;
@@ -37,15 +42,15 @@ import java.util.concurrent.ExecutionException;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.junit.After;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 @Feature(ROUTERS)
 @Story(PROCESSOR_CHAIN_ROUTER)
@@ -96,6 +101,8 @@ public class ProcessorChainRouterTestCase extends AbstractIntegrationTestCase im
   @Rule
   public ExpectedException expected = none();
 
+  private boolean previousPropagationEnabledInTracing;
+
   @Override
   protected String getConfigFile() {
     return "org/mule/construct/processor-chain-router-config.xml";
@@ -103,12 +110,28 @@ public class ProcessorChainRouterTestCase extends AbstractIntegrationTestCase im
 
   private ExecutionResult executionResult;
 
+  @Before
+  public void before() {
+    // This is done because the tests invokes chains directly using a testing component (injected in the test) and
+    // there is no simple way to test this and create a correct mule event with the corresponding span parent without changing
+    // API.
+    // It does not make sense to make the verification of the current span more flexible for this programmatic invocation of an
+    // executable
+    // component.
+    // TODO: Verify if ignoring tracing condition verification can be done in ProcessorChainRouterTestCase (W-11731027)
+    previousPropagationEnabledInTracing = parseBoolean(ENABLE_PROPAGATION_OF_EXCEPTIONS_IN_TRACING);
+    setProperty(ENABLE_PROPAGATION_OF_EXCEPTIONS_IN_TRACING, "false");
+  }
+
   @After
   public void after() {
     if (executionResult != null) {
       executionResult.complete();
     }
+
+    setProperty(ENABLE_PROPAGATION_OF_EXCEPTIONS_IN_TRACING, Boolean.toString(previousPropagationEnabledInTracing));
   }
+
 
   @Test
   public void executeCompositeRouterUsingInputEvent() throws Exception {
