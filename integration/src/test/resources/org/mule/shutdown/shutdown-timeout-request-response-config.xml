@@ -1,69 +1,1 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<mule
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns="http://www.mulesoft.org/schema/mule/core"
-        xmlns:http="http://www.mulesoft.org/schema/mule/http"
-        xmlns:script="http://www.mulesoft.org/schema/mule/scripting"
-        xsi:schemaLocation="
-        http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd
-		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-		http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
-
-    <object name="block" class="org.mule.shutdown.AbstractShutdownTimeoutRequestResponseTestCase$BlockMessageProcessor"/>
-
-    <configuration shutdownTimeout="${contextShutdownTimeout}"/>
-
-    <http:listener-config name="listenerConfig">
-    	<http:listener-connection host="localhost" port="${httpPort}"/>
-    </http:listener-config>
-
-    <flow name="scriptComponentFlow">
-        <http:listener path="scriptComponent" config-ref="listenerConfig"/>
-        <flow-ref name="block"/>
-        <script:execute engine="groovy">
-            <script:code>return &quot;scriptComponentResponse&quot;;</script:code>
-        </script:execute>
-    </flow>
-
-    <flow name="setPayloadFlow">
-        <http:listener path="setPayload" config-ref="listenerConfig"/>
-        <flow-ref name="block"/>
-        <set-payload value="#['setPayloadResponse']" />
-    </flow>
-
-    <flow name="setPayloadChoiceFlow">
-        <http:listener path="setPayloadChoice" config-ref="listenerConfig"/>
-
-        <flow-ref name="block"/>
-        <choice>
-            <when expression="#[true]">
-                <set-payload value="#['setPayloadResponse']" />
-            </when>
-        </choice>
-    </flow>
-
-    <flow name="setPayloadTxFlow">
-        <http:listener path="setPayloadTx" config-ref="listenerConfig"/>
-        <try transactionalAction="ALWAYS_BEGIN">
-            <flow-ref name="block"/>
-            <set-payload value="#['setPayloadResponse']" />
-        </try>
-    </flow>
-
-    <flow name="setPayloadThroughScatterGatherFlowRef">
-        <http:listener path="setPayloadSgFr" config-ref="listenerConfig"/>
-        <scatter-gather>
-            <route>
-                <flow-ref name="flowWithBlockedProcessor" />
-            </route>
-            <route>
-                <flow-ref name="flowWithBlockedProcessor" />
-            </route>
-        </scatter-gather>
-    </flow>
-
-    <flow name="flowWithBlockedProcessor">
-        <flow-ref name="block" />
-    </flow>
-
-</mule>
+<?xml version="1.0" encoding="UTF-8"?><mule        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"        xmlns="http://www.mulesoft.org/schema/mule/core"        xmlns:http="http://www.mulesoft.org/schema/mule/http"        xmlns:script="http://www.mulesoft.org/schema/mule/scripting"        xsi:schemaLocation="        http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd		http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">    <object name="block" class="org.mule.shutdown.AbstractShutdownTimeoutRequestResponseTestCase$BlockMessageProcessor"/>    <configuration shutdownTimeout="${contextShutdownTimeout}"/>    <http:listener-config name="listenerConfig">    	<http:listener-connection host="localhost" port="${httpPort}"/>    </http:listener-config>    <flow name="scriptComponentFlow">        <http:listener path="scriptComponent" config-ref="listenerConfig"/>        <flow-ref name="block"/>        <script:execute engine="groovy">            <script:code>return &quot;scriptComponentResponse&quot;;</script:code>        </script:execute>    </flow>    <flow name="setPayloadFlow">        <http:listener path="setPayload" config-ref="listenerConfig"/>        <flow-ref name="block"/>        <set-payload value="#['setPayloadResponse']" />    </flow>    <flow name="setPayloadChoiceFlow">        <http:listener path="setPayloadChoice" config-ref="listenerConfig"/>        <flow-ref name="block"/>        <choice>            <when expression="#[true]">                <set-payload value="#['setPayloadResponse']" />            </when>        </choice>    </flow>    <flow name="setPayloadTxFlow">        <http:listener path="setPayloadTx" config-ref="listenerConfig"/>        <try transactionalAction="ALWAYS_BEGIN">            <flow-ref name="block"/>            <set-payload value="#['setPayloadResponse']" />        </try>    </flow>    <flow name="setPayloadThroughScatterGatherFlowRef">        <http:listener path="setPayloadSgFr" config-ref="listenerConfig"/>        <scatter-gather>            <route>                <flow-ref name="flowWithBlockedProcessor" />            </route>            <route>                <flow-ref name="flowWithBlockedProcessor" />            </route>        </scatter-gather>    </flow>    <flow name="flowWithBlockedProcessor">        <flow-ref name="block" />    </flow></mule>
