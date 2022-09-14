@@ -94,12 +94,12 @@ public class FlowErrorHandlingTracingTestCase extends AbstractIntegrationTestCas
 
   private static final Set<String> FLOW_WITH_SUB_FLOW_REF_AND_NO_ERROR_HANDLING_EXPECTED_SPAN_BRANCHES =
       new HashSet<>(Arrays.asList(
-                                  "mule:flow[exception: CUSTOM:ERROR]/mule:flow-ref[exception: CUSTOM:ERROR]/mule:flow-ref:route[exception: CUSTOM:ERROR]/mule:raise-error[exception: CUSTOM:ERROR]",
+                                  "mule:flow[exception: CUSTOM:ERROR]/mule:flow-ref[exception: CUSTOM:ERROR]/mule:subflow[exception: CUSTOM:ERROR]/mule:raise-error[exception: CUSTOM:ERROR]",
                                   "mule:flow[exception: CUSTOM:ERROR]/mule:on-error-propagate"));
 
   private static final Set<String> FLOW_WITH_SUB_FLOW_REF_AND_ON_ERROR_CONTINUE_EXPECTED_SPAN_BRANCHES =
       new HashSet<>(Arrays.asList(
-                                  "mule:flow/mule:flow-ref[exception: CUSTOM:ERROR]/mule:flow-ref:route[exception: CUSTOM:ERROR]/mule:raise-error[exception: CUSTOM:ERROR]",
+                                  "mule:flow/mule:flow-ref[exception: CUSTOM:ERROR]/mule:subflow[exception: CUSTOM:ERROR]/mule:raise-error[exception: CUSTOM:ERROR]",
                                   "mule:flow/mule:on-error-continue"));
 
   private static final Set<String> FLOW_WITH_ON_ERROR_PROPAGATE_AND_ON_ERROR_CONTINUE_COMPOSITION_EXPECTED_SPAN_BRANCHES =
