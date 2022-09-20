@@ -6,15 +6,23 @@
  */
 package org.mule.test.config.ast;
 
-import static java.lang.Thread.currentThread;
+import static org.mule.runtime.ast.internal.serialization.ArtifactAstSerializerFactory.JSON;
 import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.initialiseIfNeeded;
 import static org.mule.test.allure.AllureConstants.ArtifactAst.ARTIFACT_AST;
 import static org.mule.test.allure.AllureConstants.ArtifactAst.ParameterAst.PARAMETER_AST;
+
+import static java.lang.Thread.currentThread;
+import static java.util.Arrays.asList;
+
+import static org.junit.Assert.fail;
 
 import org.mule.runtime.api.component.ComponentIdentifier;
 import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.ast.api.ArtifactAst;
 import org.mule.runtime.ast.api.ComponentAst;
+import org.mule.runtime.ast.api.serialization.ArtifactAstDeserializer;
+import org.mule.runtime.ast.api.serialization.ArtifactAstSerializer;
+import org.mule.runtime.ast.api.serialization.ArtifactAstSerializerProvider;
 import org.mule.runtime.ast.api.xml.AstXmlParser;
 import org.mule.runtime.core.api.extension.RuntimeExtensionModelProvider;
 import org.mule.runtime.core.api.registry.SpiServiceRegistry;
@@ -23,6 +31,8 @@ import org.mule.runtime.module.extension.internal.manager.DefaultExtensionManage
 import org.mule.tck.junit4.AbstractMuleContextTestCase;
 import org.mule.test.runner.infrastructure.ExtensionsTestInfrastructureDiscoverer;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -31,16 +41,19 @@ import java.util.stream.Stream;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
 
 @Feature(ARTIFACT_AST)
 @Story(PARAMETER_AST)
+@RunWith(Parameterized.class)
 public abstract class BaseParameterAstTestCase extends AbstractMuleContextTestCase {
 
   private static List<ExtensionModel> runtimeExtensionModels;
-  private DefaultExtensionManager extensionManager;
 
   @BeforeClass
   public static void beforeClass() throws Exception {
@@ -50,6 +63,24 @@ public abstract class BaseParameterAstTestCase extends AbstractMuleContextTestCa
     for (RuntimeExtensionModelProvider runtimeExtensionModelProvider : runtimeExtensionModelProviders) {
       runtimeExtensionModels.add(runtimeExtensionModelProvider.createExtensionModel());
     }
+  }
+
+  @Parameters(name = "serialize: {0}; populateGenerationInformation: {1}")
+  public static List<Object[]> params() {
+    return asList(new Object[][] {
+        {false, true},
+        {true, false},
+        {true, true}});
+  }
+
+  private final boolean serialize;
+  private final boolean populateGenerationInformation;
+
+  private DefaultExtensionManager extensionManager;
+
+  public BaseParameterAstTestCase(boolean serialize, boolean populateGenerationInformation) {
+    this.serialize = serialize;
+    this.populateGenerationInformation = populateGenerationInformation;
   }
 
   @Before
@@ -67,12 +98,23 @@ public abstract class BaseParameterAstTestCase extends AbstractMuleContextTestCa
       discoverer.discoverExtension(annotatedClass, extensionModelLoader);
     }
 
-    return AstXmlParser.builder()
+    ArtifactAst parsedAst = AstXmlParser.builder()
         .withExtensionModels(muleContext.getExtensionManager().getExtensions())
         .withExtensionModels(runtimeExtensionModels)
         .withSchemaValidationsDisabled()
         .build()
         .parse(this.getClass().getClassLoader().getResource("ast/" + configFile));
+
+    if (isSerialize()) {
+      try {
+        return serializeAndDeserialize(parsedAst);
+      } catch (IOException e) {
+        fail(e.getMessage());
+        return null;
+      }
+    } else {
+      return parsedAst;
+    }
   }
 
   protected Optional<ComponentAst> findComponent(Stream<ComponentAst> stream, String componentIdentifier, String componentId) {
@@ -101,4 +143,26 @@ public abstract class BaseParameterAstTestCase extends AbstractMuleContextTestCa
     return stream.filter(c -> componentId.equals(c.getComponentId().orElse(null))).findFirst();
   }
 
+  private ArtifactAst serializeAndDeserialize(ArtifactAst artifactAst) throws IOException {
+    ArtifactAstSerializer jsonArtifactAstSerializer = new ArtifactAstSerializerProvider().getSerializer(JSON, "1.0");
+    InputStream inputStream = jsonArtifactAstSerializer.serialize(artifactAst);
+
+    ArtifactAstDeserializer defaultArtifactAstDeserializer =
+        new ArtifactAstSerializerProvider().getDeserializer(isPopulateGenerationInformation());
+    ArtifactAst deserializedArtifactAst = defaultArtifactAstDeserializer
+        .deserialize(inputStream, name -> artifactAst.dependencies().stream()
+            .filter(x -> x.getName().equals(name))
+            .findFirst()
+            .orElse(null));
+
+    return deserializedArtifactAst;
+  }
+
+  public boolean isSerialize() {
+    return serialize;
+  }
+
+  public boolean isPopulateGenerationInformation() {
+    return populateGenerationInformation;
+  }
 }

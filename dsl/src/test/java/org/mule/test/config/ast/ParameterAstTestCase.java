@@ -35,6 +35,7 @@ import static org.hamcrest.collection.ArrayMatching.hasItemInArray;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assume.assumeThat;
 
 import org.mule.extension.aggregator.internal.AggregatorsExtension;
 import org.mule.extension.db.internal.DbConnector;
@@ -84,6 +85,10 @@ import io.qameta.allure.Story;
 public class ParameterAstTestCase extends BaseParameterAstTestCase {
 
   private static final String NAME = "name";
+
+  public ParameterAstTestCase(boolean serialize, boolean populateGenerationInformation) {
+    super(serialize, populateGenerationInformation);
+  }
 
   @Issue("MULE-18564")
   @Test
@@ -478,7 +483,11 @@ public class ParameterAstTestCase extends BaseParameterAstTestCase {
     ParameterModel valueParameterModel =
         recursivePojoMappedChildModel.getAllParameterModels().stream().filter(paramModel -> paramModel.getName().equals("value"))
             .findFirst().orElseThrow(() -> new AssertionError("mapped-childs model is missing key parameter"));
-    assertThat(getTypeId(valueParameterModel.getType()), equalTo(of(RecursivePojo.class.getName())));
+
+    // TODO W-11780221 do this assertion in all cases
+    if (!isSerialize()) {
+      assertThat(getTypeId(valueParameterModel.getType()), equalTo(of(RecursivePojo.class.getName())));
+    }
   }
 
   @Test
@@ -679,11 +688,19 @@ public class ParameterAstTestCase extends BaseParameterAstTestCase {
     ParameterModel keyParameterModel =
         connectionPropertyModel.getAllParameterModels().stream().filter(paramModel -> paramModel.getName().equals("key"))
             .findFirst().orElseThrow(() -> new AssertionError("connection-properties model is missing key parameter"));
-    assertThat(getTypeId(keyParameterModel.getType()), equalTo(of(String.class.getName())));
+
+    // TODO W-11780221 do this assertion in all cases
+    if (!isSerialize()) {
+      assertThat(getTypeId(keyParameterModel.getType()), equalTo(of(String.class.getName())));
+    }
+
     ParameterModel valueParameterModel =
         connectionPropertyModel.getAllParameterModels().stream().filter(paramModel -> paramModel.getName().equals("value"))
             .findFirst().orElseThrow(() -> new AssertionError("connection-properties model is missing key parameter"));
-    assertThat(getTypeId(valueParameterModel.getType()), equalTo(of(String.class.getName())));
+    // TODO W-11780221 do this assertion in all cases
+    if (!isSerialize()) {
+      assertThat(getTypeId(valueParameterModel.getType()), equalTo(of(String.class.getName())));
+    }
 
     assertThat(connectionProperty.getParameter(DEFAULT_GROUP_NAME, "key").getValue().getRight(), equalTo("first"));
     assertThat(connectionProperty.getParameter(DEFAULT_GROUP_NAME, "value").getValue().getRight(), equalTo("propertyOne"));
@@ -698,7 +715,10 @@ public class ParameterAstTestCase extends BaseParameterAstTestCase {
     valueParameterModel =
         connectionPropertyModel.getAllParameterModels().stream().filter(paramModel -> paramModel.getName().equals("value"))
             .findFirst().orElseThrow(() -> new AssertionError("connection-properties model is missing key parameter"));
-    assertThat(getTypeId(valueParameterModel.getType()), equalTo(of(String.class.getName())));
+    // TODO W-11780221 do this assertion in all cases
+    if (!isSerialize()) {
+      assertThat(getTypeId(valueParameterModel.getType()), equalTo(of(String.class.getName())));
+    }
     assertThat(connectionProperty.getParameter(DEFAULT_GROUP_NAME, "key").getValue().getRight(), equalTo("second"));
     assertThat(connectionProperty.getParameter(DEFAULT_GROUP_NAME, "value").getValue().getRight(), equalTo("propertyTwo"));
   }
@@ -994,6 +1014,9 @@ public class ParameterAstTestCase extends BaseParameterAstTestCase {
   @Test
   @Issue("MULE-19809")
   public void generationInformationSyntaxForNotAllowInlineDefinitionNestedParam() {
+    // Do not run this test that verifies generationInformation if populateGenerationInformation is disabled
+    assumeThat(isPopulateGenerationInformation(), is(true));
+
     ArtifactAst artifactAst = buildArtifactAst("parameters-test-pojo-config.xml",
                                                HeisenbergExtension.class, SubTypesMappingConnector.class, VeganExtension.class);
 
