@@ -484,10 +484,7 @@ public class ParameterAstTestCase extends BaseParameterAstTestCase {
         recursivePojoMappedChildModel.getAllParameterModels().stream().filter(paramModel -> paramModel.getName().equals("value"))
             .findFirst().orElseThrow(() -> new AssertionError("mapped-childs model is missing key parameter"));
 
-    // TODO W-11780221 do this assertion in all cases
-    if (!isSerialize()) {
-      assertThat(getTypeId(valueParameterModel.getType()), equalTo(of(RecursivePojo.class.getName())));
-    }
+    assertThat(getTypeId(valueParameterModel.getType()), equalTo(of(RecursivePojo.class.getName())));
   }
 
   @Test
@@ -689,18 +686,12 @@ public class ParameterAstTestCase extends BaseParameterAstTestCase {
         connectionPropertyModel.getAllParameterModels().stream().filter(paramModel -> paramModel.getName().equals("key"))
             .findFirst().orElseThrow(() -> new AssertionError("connection-properties model is missing key parameter"));
 
-    // TODO W-11780221 do this assertion in all cases
-    if (!isSerialize()) {
-      assertThat(getTypeId(keyParameterModel.getType()), equalTo(of(String.class.getName())));
-    }
+    assertThat(getTypeId(keyParameterModel.getType()), equalTo(of(String.class.getName())));
 
     ParameterModel valueParameterModel =
         connectionPropertyModel.getAllParameterModels().stream().filter(paramModel -> paramModel.getName().equals("value"))
-            .findFirst().orElseThrow(() -> new AssertionError("connection-properties model is missing key parameter"));
-    // TODO W-11780221 do this assertion in all cases
-    if (!isSerialize()) {
-      assertThat(getTypeId(valueParameterModel.getType()), equalTo(of(String.class.getName())));
-    }
+            .findFirst().orElseThrow(() -> new AssertionError("connection-properties model is missing value parameter"));
+    assertThat(getTypeId(valueParameterModel.getType()), equalTo(of(String.class.getName())));
 
     assertThat(connectionProperty.getParameter(DEFAULT_GROUP_NAME, "key").getValue().getRight(), equalTo("first"));
     assertThat(connectionProperty.getParameter(DEFAULT_GROUP_NAME, "value").getValue().getRight(), equalTo("propertyOne"));
@@ -714,11 +705,8 @@ public class ParameterAstTestCase extends BaseParameterAstTestCase {
     assertThat(getTypeId(keyParameterModel.getType()), equalTo(of(String.class.getName())));
     valueParameterModel =
         connectionPropertyModel.getAllParameterModels().stream().filter(paramModel -> paramModel.getName().equals("value"))
-            .findFirst().orElseThrow(() -> new AssertionError("connection-properties model is missing key parameter"));
-    // TODO W-11780221 do this assertion in all cases
-    if (!isSerialize()) {
-      assertThat(getTypeId(valueParameterModel.getType()), equalTo(of(String.class.getName())));
-    }
+            .findFirst().orElseThrow(() -> new AssertionError("connection-properties model is missing value parameter"));
+    assertThat(getTypeId(valueParameterModel.getType()), equalTo(of(String.class.getName())));
     assertThat(connectionProperty.getParameter(DEFAULT_GROUP_NAME, "key").getValue().getRight(), equalTo("second"));
     assertThat(connectionProperty.getParameter(DEFAULT_GROUP_NAME, "value").getValue().getRight(), equalTo("propertyTwo"));
   }
