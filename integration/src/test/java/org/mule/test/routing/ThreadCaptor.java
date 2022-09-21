@@ -17,16 +17,20 @@ import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.api.util.concurrent.Latch;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
+import org.mule.runtime.core.api.transaction.TransactionCoordination;
 
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ThreadCaptor extends AbstractComponent implements Processor, Initialisable, Disposable {
 
   private static Set<Thread> capturedThreads;
+  private static AtomicInteger timeout;
 
   @Override
   public void initialise() throws InitialisationException {
     setCapturedThreads(newKeySet());
+    timeout = new AtomicInteger(0);
   }
 
   @Override
@@ -37,6 +41,9 @@ public class ThreadCaptor extends AbstractComponent implements Processor, Initia
   @Override
   public CoreEvent process(CoreEvent event) throws MuleException {
     capturedThreads.add(currentThread());
+    if (TransactionCoordination.isTransactionActive()) {
+      timeout.set(TransactionCoordination.getInstance().getTransaction().getTimeout());
+    }
     if (capturedThreads.size() > 2) {
       Latch latch = (Latch) event.getVariables().get("latch").getValue();
       if (latch != null) {
@@ -53,5 +60,9 @@ public class ThreadCaptor extends AbstractComponent implements Processor, Initia
 
   public static Set<Thread> getCapturedThreads() {
     return capturedThreads;
+  }
+
+  public static int getLastTransactionTimeout() {
+    return timeout.get();
   }
 }
