@@ -3,13 +3,11 @@
       xmlns="http://www.mulesoft.org/schema/mule/core"
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 
-    <object name="threadCaptor" class="org.mule.test.routing.ThreadCaptor" />
-
     <flow name="withinTransaction">
         <try transactionalAction="ALWAYS_BEGIN">
             <custom-processor class="org.mule.test.routing.TransactionTimeoutTestCase$ThreadCaptor" />
         </try>
-        <flow-ref name="threadCaptor"/>
+        <custom-processor class="org.mule.test.routing.TransactionTimeoutTestCase$ThreadCaptor" />
     </flow>
 
 </mule>
