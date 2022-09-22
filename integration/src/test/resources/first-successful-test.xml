@@ -141,4 +141,21 @@
         <set-variable variableName="wasExecuted" value="#[payload[0].payload]"/>
         <set-payload value="Se te escapo la tortuga"/>
     </flow>
+
+    <flow name="firstSuccessfulAndRaiseErrorInsideScatterGather">
+        <scatter-gather>
+            <route>
+                <first-successful>
+                    <route>
+                        <logger/>
+                    </route>
+                </first-successful>
+                <raise-error type="MULE:ANY" description="raise-error after first-successful inside a scatter-gather route should error."/>
+            </route>
+            <route >
+                <logger/>
+            </route>
+        </scatter-gather>
+    </flow>
+
 </mule>
