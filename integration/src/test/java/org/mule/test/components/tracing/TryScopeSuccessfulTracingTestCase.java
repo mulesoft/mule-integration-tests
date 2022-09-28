@@ -11,18 +11,18 @@ import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.DEFAULT_CORE_EVENT_TRACER;
 import static org.mule.test.components.tracing.TracingTestUtils.assertSpanAttributes;
 
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.notNullValue;
-
 import static org.junit.Assert.assertThat;
 
 import org.mule.runtime.core.privileged.profiling.CapturedExportedSpan;
-import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.runtime.core.privileged.profiling.ExportedSpanCapturer;
+import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.test.infrastructure.profiling.SpanTestHierarchy;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -56,7 +56,9 @@ public class TryScopeSuccessfulTracingTestCase extends AbstractIntegrationTestCa
 
     try {
       flowRunner(TRY_SCOPE_FLOW).withPayload(TEST_PAYLOAD).run().getMessage();
+      
       Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
+      assertThat(exportedSpans, hasSize(4));
 
       CapturedExportedSpan muleFlowSpan =
           exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_FLOW_SPAN_NAME)).findFirst().orElse(null);
@@ -73,18 +75,22 @@ public class TryScopeSuccessfulTracingTestCase extends AbstractIntegrationTestCa
           exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_LOGGER_SPAN_NAME)).findFirst()
               .orElse(null);
 
-      assertThat(exportedSpans, hasSize(4));
+      Map<String, String> tryScopeAttributes = new HashMap<>();
+      
+      SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
+      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_TRY_SCOPE_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_TRY_SCOPE_ROUTE_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_LOGGER_SPAN_NAME)
+          .endChildren()
+          .endChildren()
+          .endChildren();
 
-      assertThat(muleFlowSpan.getParentSpanId(), equalTo(NO_PARENT_SPAN));
-
-      assertThat(tryScope, notNullValue());
-      assertThat(tryScope.getParentSpanId(), equalTo(muleFlowSpan.getSpanId()));
-
-      assertThat(tryScopeRoute, notNullValue());
-      assertThat(tryScopeRoute.getParentSpanId(), equalTo(tryScope.getSpanId()));
-
-      assertThat(loggerSpan, notNullValue());
-      assertThat(loggerSpan.getParentSpanId(), equalTo(tryScopeRoute.getSpanId()));
+      expectedSpanHierarchy.assertRoot(expectedSpanHierarchy.getRoot(), muleFlowSpan);
+      expectedSpanHierarchy.assertPreOrder(expectedSpanHierarchy.getRoot(), muleFlowSpan);
 
       assertSpanAttributes(muleFlowSpan, "try-scope-flow", TEST_ARTEFACT_ID);
       assertSpanAttributes(tryScope, "try-scope-flow/processors/0", TEST_ARTEFACT_ID);

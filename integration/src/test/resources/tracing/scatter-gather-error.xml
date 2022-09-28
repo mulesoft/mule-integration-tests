@@ -15,7 +15,7 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
                 <http:request method="GET" config-ref="HTTP_Request_configuration" path="/error"/>
             </route>
             <route >
-                <set-payload value="PAYLOAD 2"/>
+                <logger level="INFO" />
             </route>
         </scatter-gather>
         <logger level="INFO" message="#[payload]"/>
