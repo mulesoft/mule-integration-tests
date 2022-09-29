@@ -64,9 +64,6 @@ public class AsyncSuccessSpanHierarchyTestCase extends AbstractIntegrationTestCa
 
 
       Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
-      CapturedExportedSpan muleFlowSpan =
-          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_FLOW_SPAN_NAME)).findFirst().orElse(null);
-
       assertThat(exportedSpans, hasSize(6));
       
       SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
@@ -80,8 +77,7 @@ public class AsyncSuccessSpanHierarchyTestCase extends AbstractIntegrationTestCa
           .child(EXPECTED_SET_PAYLOAD_SPAN_NAME)
           .endChildren();
 
-      expectedSpanHierarchy.assertRoot(expectedSpanHierarchy.getRoot(), muleFlowSpan);
-      expectedSpanHierarchy.assertPreOrder(expectedSpanHierarchy.getRoot(), muleFlowSpan);
+      expectedSpanHierarchy.assertSpanTree(expectedSpanHierarchy.getRoot(), null);
     } finally {
       spanCapturer.dispose();
     }

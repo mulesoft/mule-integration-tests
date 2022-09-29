@@ -9,10 +9,7 @@ package org.mule.test.components.tracing;
 import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.DEFAULT_CORE_EVENT_TRACER;
 
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 import org.mule.functional.api.flow.FlowRunner;
@@ -21,11 +18,10 @@ import org.mule.runtime.core.privileged.profiling.CapturedExportedSpan;
 import org.mule.runtime.core.privileged.profiling.ExportedSpanCapturer;
 import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.test.infrastructure.profiling.SpanTestHierarchy;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.concurrent.CountDownLatch;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -40,11 +36,11 @@ public class AsyncErrorTracingTestCase extends AbstractIntegrationTestCase {
   public static final String EXPECTED_ASYNC_SPAN_NAME = "mule:async";
   public static final String EXPECTED_LOGGER_SPAN_NAME = "mule:logger";
   public static final String EXPECTED_SET_PAYLOAD_SPAN_NAME = "mule:set-payload";
-  public static final String EXPECTED_HTTP_REQUEST_SPAN_NAME = "http:request";
   public static final String EXPECTED_SET_VARIABLE_SPAN_NAME = "mule:set-variable";
   public static final String ASYNC_FLOW = "async-flow";
   public static final String EXPECTED_FLOW_SPAN_NAME = "mule:flow";
   public static final String NO_PARENT_SPAN = "0000000000000000";
+  private static final String EXPECTED_RAISE_ERROR_SPAN_NAME = "mule:raise-error";
 
   @Inject
   PrivilegedProfilingService profilingService;
@@ -67,39 +63,21 @@ public class AsyncErrorTracingTestCase extends AbstractIntegrationTestCase {
       asyncTerminationLatch.await();
 
       Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
-
-      CapturedExportedSpan muleFlowSpan =
-          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_FLOW_SPAN_NAME)).findFirst().orElse(null);
-
-      CapturedExportedSpan asyncSpan =
-          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_ASYNC_SPAN_NAME)).findFirst()
-              .orElse(null);
-
-      CapturedExportedSpan setPayloadSpan =
-          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_SET_PAYLOAD_SPAN_NAME)).findFirst().orElse(null);
-
-      CapturedExportedSpan loggerSpan =
-          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_LOGGER_SPAN_NAME)).findFirst().orElse(null);
-
-      CapturedExportedSpan httpRequestSpan =
-          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_HTTP_REQUEST_SPAN_NAME)).findFirst().orElse(null);
-
-      List<CapturedExportedSpan> setVariableSpanList =
-          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_SET_VARIABLE_SPAN_NAME))
-              .collect(Collectors.toList());
-
       assertThat(exportedSpans, hasSize(6));
-      assertThat(muleFlowSpan.getParentSpanId(), equalTo(NO_PARENT_SPAN));
-      assertThat(asyncSpan, notNullValue());
-      assertThat(asyncSpan.getParentSpanId(), equalTo(muleFlowSpan.getSpanId()));
-      assertThat(setVariableSpanList, hasSize(2));
-      setVariableSpanList
-          .forEach(setVariableSpan -> assertThat(setVariableSpan.getParentSpanId(), equalTo(muleFlowSpan.getSpanId())));
-      assertThat(setPayloadSpan, nullValue());
-      assertThat(loggerSpan, notNullValue());
-      assertThat(loggerSpan.getParentSpanId(), equalTo(asyncSpan.getSpanId()));
-      assertThat(httpRequestSpan, notNullValue());
-      assertThat(httpRequestSpan.getParentSpanId(), equalTo(asyncSpan.getSpanId()));
+
+      SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
+      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_SET_VARIABLE_SPAN_NAME)
+          .child(EXPECTED_ASYNC_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_LOGGER_SPAN_NAME)
+          .child(EXPECTED_RAISE_ERROR_SPAN_NAME)
+          .endChildren()
+          .child(EXPECTED_SET_VARIABLE_SPAN_NAME)
+          .endChildren();
+
+      expectedSpanHierarchy.assertSpanTree(expectedSpanHierarchy.getRoot(), null);
     } finally {
       spanCapturer.dispose();
     }

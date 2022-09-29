@@ -80,11 +80,7 @@ public class ScatterGatherErrorSpanHierarchyTracingTestCase extends AbstractInte
           .endChildren()
           .child(EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME);
 
-      CapturedExportedSpan muleFlowSpan =
-          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_FLOW_SPAN_NAME)).findFirst().orElse(null);
-
-      expectedSpanHierarchy.assertRoot(expectedSpanHierarchy.getRoot(), muleFlowSpan);
-      expectedSpanHierarchy.assertPreOrder(expectedSpanHierarchy.getRoot(), muleFlowSpan);
+      expectedSpanHierarchy.assertSpanTree(expectedSpanHierarchy.getRoot(), null);
     } finally {
       spanCapturer.dispose();
     }

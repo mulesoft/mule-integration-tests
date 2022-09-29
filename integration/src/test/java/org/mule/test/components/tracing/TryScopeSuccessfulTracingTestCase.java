@@ -21,8 +21,6 @@ import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.infrastructure.profiling.SpanTestHierarchy;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -56,7 +54,7 @@ public class TryScopeSuccessfulTracingTestCase extends AbstractIntegrationTestCa
 
     try {
       flowRunner(TRY_SCOPE_FLOW).withPayload(TEST_PAYLOAD).run().getMessage();
-      
+
       Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
       assertThat(exportedSpans, hasSize(4));
 
@@ -75,8 +73,6 @@ public class TryScopeSuccessfulTracingTestCase extends AbstractIntegrationTestCa
           exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_LOGGER_SPAN_NAME)).findFirst()
               .orElse(null);
 
-      Map<String, String> tryScopeAttributes = new HashMap<>();
-      
       SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
       expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
           .beginChildren()
@@ -89,8 +85,7 @@ public class TryScopeSuccessfulTracingTestCase extends AbstractIntegrationTestCa
           .endChildren()
           .endChildren();
 
-      expectedSpanHierarchy.assertRoot(expectedSpanHierarchy.getRoot(), muleFlowSpan);
-      expectedSpanHierarchy.assertPreOrder(expectedSpanHierarchy.getRoot(), muleFlowSpan);
+      expectedSpanHierarchy.assertSpanTree(expectedSpanHierarchy.getRoot(), null);
 
       assertSpanAttributes(muleFlowSpan, "try-scope-flow", TEST_ARTEFACT_ID);
       assertSpanAttributes(tryScope, "try-scope-flow/processors/0", TEST_ARTEFACT_ID);
