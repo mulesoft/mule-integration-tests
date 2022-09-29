@@ -9,21 +9,16 @@ package org.mule.test.components.tracing;
 import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.DEFAULT_CORE_EVENT_TRACER;
 
-import static org.hamcrest.Matchers.either;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 import org.mule.runtime.core.privileged.profiling.CapturedExportedSpan;
 import org.mule.runtime.core.privileged.profiling.ExportedSpanCapturer;
 import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.test.infrastructure.profiling.SpanTestHierarchy;
 
 import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -38,12 +33,12 @@ public class ScatterGatherErrorTracingTestCase extends AbstractIntegrationTestCa
   public static final String EXPECTED_ROUTE_SPAN_NAME = "mule:scatter-gather:route";
   public static final String EXPECTED_SCATTER_GATHER_SPAN_NAME = "mule:scatter-gather";
   public static final String EXPECTED_LOGGER_SPAN_NAME = "mule:logger";
-  public static final String EXPECTED_HTTP_REQUEST_SPAN_NAME = "http:request";
   public static final String EXPECTED_SET_PAYLOAD_SPAN_NAME = "mule:set-payload";
   public static final String SCATTER_GATHER_FLOW = "scatter-gather-flow";
   public static final String EXPECTED_FLOW_SPAN_NAME = "mule:flow";
   public static final String EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME = "mule:on-error-propagate";
   public static final String NO_PARENT_SPAN = "0000000000000000";
+  public static final String EXPECTED_RAISE_ERROR_SPAN = "mule:raise-error";
 
   @Inject
   PrivilegedProfilingService profilingService;
@@ -59,56 +54,28 @@ public class ScatterGatherErrorTracingTestCase extends AbstractIntegrationTestCa
 
     try {
       flowRunner(SCATTER_GATHER_FLOW).withPayload(TEST_PAYLOAD).dispatch();
+
       Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
-
-      CapturedExportedSpan muleFlowSpan =
-          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_FLOW_SPAN_NAME)).findFirst().orElse(null);
-
-      CapturedExportedSpan scatterGatherSpan =
-          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_SCATTER_GATHER_SPAN_NAME)).findFirst()
-              .orElse(null);
-
-      List<CapturedExportedSpan> muleRouteSpanList =
-          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_ROUTE_SPAN_NAME)).collect(Collectors.toList());
-
-      List<CapturedExportedSpan> setPayloadSpanList =
-          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_SET_PAYLOAD_SPAN_NAME))
-              .collect(Collectors.toList());
-      CapturedExportedSpan setPayloadFirstCapturedRouteSpan =
-          setPayloadSpanList.stream().filter(span -> span.getParentSpanId().equals(muleRouteSpanList.get(0).getSpanId()))
-              .findFirst().orElse(null);
-      CapturedExportedSpan setPayloadSecondCapturedRouteSpan =
-          setPayloadSpanList.stream().filter(span -> span.getParentSpanId().equals(muleRouteSpanList.get(1).getSpanId()))
-              .findFirst().orElse(null);
-
-      CapturedExportedSpan loggerSpan =
-          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_LOGGER_SPAN_NAME)).findFirst().orElse(null);
-
-      CapturedExportedSpan httpRequestSpan =
-          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_HTTP_REQUEST_SPAN_NAME)).findFirst().orElse(null);
-
-      CapturedExportedSpan onErrorPropagateSpan =
-          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME)).findFirst()
-              .orElse(null);
-
       assertThat(exportedSpans, hasSize(8));
 
-      assertThat(muleFlowSpan, notNullValue());
-      assertThat(muleFlowSpan.getParentSpanId(), equalTo(NO_PARENT_SPAN));
-      assertThat(onErrorPropagateSpan, notNullValue());
-      assertThat(onErrorPropagateSpan.getParentSpanId(), equalTo(muleFlowSpan.getSpanId()));
-      assertThat(scatterGatherSpan, notNullValue());
-      assertThat(scatterGatherSpan.getParentSpanId(), equalTo(muleFlowSpan.getSpanId()));
-      assertThat(muleRouteSpanList, hasSize(2));
-      muleRouteSpanList
-          .forEach(muleRouteSpan -> assertThat(muleRouteSpan.getParentSpanId(), equalTo(scatterGatherSpan.getSpanId())));
-      assertThat(setPayloadSpanList, hasSize(2));
-      assertThat(setPayloadFirstCapturedRouteSpan, notNullValue());
-      assertThat(setPayloadSecondCapturedRouteSpan, notNullValue());
-      assertThat(loggerSpan, nullValue());
-      assertThat(httpRequestSpan, notNullValue());
-      assertThat(httpRequestSpan.getParentSpanId(),
-                 either(equalTo(muleRouteSpanList.get(0).getSpanId())).or(equalTo(muleRouteSpanList.get(1).getSpanId())));
+      SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
+      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_SCATTER_GATHER_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_ROUTE_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_SET_PAYLOAD_SPAN_NAME)
+          .child(EXPECTED_RAISE_ERROR_SPAN)
+          .endChildren()
+          .child(EXPECTED_ROUTE_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_LOGGER_SPAN_NAME)
+          .endChildren()
+          .endChildren()
+          .child(EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME);
+
+      expectedSpanHierarchy.assertSpanTree(expectedSpanHierarchy.getRoot(), null);
     } finally {
       spanCapturer.dispose();
     }

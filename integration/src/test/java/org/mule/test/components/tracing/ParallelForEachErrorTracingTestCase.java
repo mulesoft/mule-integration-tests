@@ -10,19 +10,16 @@ package org.mule.test.components.tracing;
 import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.DEFAULT_CORE_EVENT_TRACER;
 
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 import org.mule.runtime.core.privileged.profiling.CapturedExportedSpan;
 import org.mule.runtime.core.privileged.profiling.ExportedSpanCapturer;
 import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.test.infrastructure.profiling.SpanTestHierarchy;
 
 import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -39,11 +36,11 @@ public class ParallelForEachErrorTracingTestCase extends AbstractIntegrationTest
   public static final String EXPECTED_LOGGER_SPAN_NAME = "mule:logger";
   public static final String PARALLEL_FOR_EACH_FLOW = "parallel-for-eachFlow";
   public static final String EXPECTED_FLOW_SPAN_NAME = "mule:flow";
-  public static final String EXPECTED_HTTP_REQUEST_SPAN_NAME = "http:request";
   public static final String EXPECTED_SET_PAYLOAD_SPAN_NAME = "mule:set-payload";
   public static final String EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME = "mule:on-error-propagate";
   public static final String NO_PARENT_SPAN = "0000000000000000";
   public static final int NUMBER_OF_ROUTES = 3;
+  public static final String EXPECTED_RAISE_ERROR_SPAN = "mule:raise-error";
 
   @Inject
   PrivilegedProfilingService profilingService;
@@ -61,55 +58,34 @@ public class ParallelForEachErrorTracingTestCase extends AbstractIntegrationTest
       flowRunner(PARALLEL_FOR_EACH_FLOW).withPayload(TEST_PAYLOAD).dispatch();
 
       Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
-
-      CapturedExportedSpan muleFlowSpan =
-          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_FLOW_SPAN_NAME)).findFirst().orElse(null);
-
-      CapturedExportedSpan setPayloadSpan =
-          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_SET_PAYLOAD_SPAN_NAME)).findFirst().orElse(null);
-
-      CapturedExportedSpan parallelForEachSpan =
-          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_PARALLEL_FOREACH_SPAN_NAME)).findFirst()
-              .orElse(null);
-
-      List<CapturedExportedSpan> muleRouteSpanList =
-          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_ROUTE_SPAN_NAME)).collect(Collectors.toList());
-
-      List<CapturedExportedSpan> loggerSpanList =
-          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_LOGGER_SPAN_NAME)).collect(Collectors.toList());
-
-      List<CapturedExportedSpan> httpRequestSpanList =
-          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_HTTP_REQUEST_SPAN_NAME))
-              .collect(Collectors.toList());
-
-      CapturedExportedSpan onErrorPropagateSpan =
-          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME)).findFirst()
-              .orElse(null);
-
       assertThat(exportedSpans, hasSize(NUMBER_OF_ROUTES * 3 + 4));
-      assertThat(muleFlowSpan.getParentSpanId(), equalTo(NO_PARENT_SPAN));
-      assertThat(onErrorPropagateSpan, notNullValue());
-      assertThat(onErrorPropagateSpan.getParentSpanId(), equalTo(muleFlowSpan.getSpanId()));
-      assertThat(setPayloadSpan, notNullValue());
-      assertThat(setPayloadSpan.getParentSpanId(), equalTo(muleFlowSpan.getSpanId()));
-      assertThat(parallelForEachSpan, notNullValue());
-      assertThat(parallelForEachSpan.getParentSpanId(), equalTo(muleFlowSpan.getSpanId()));
-      assertThat(muleRouteSpanList, hasSize(NUMBER_OF_ROUTES));
-      muleRouteSpanList
-          .forEach(muleRouteSpan -> assertThat(muleRouteSpan.getParentSpanId(), equalTo(parallelForEachSpan.getSpanId())));
-      assertThat(loggerSpanList, hasSize(NUMBER_OF_ROUTES));
-      assertThat(httpRequestSpanList, hasSize(NUMBER_OF_ROUTES));
-      for (int i = 0; i < NUMBER_OF_ROUTES; i++) {
-        int finalI = i;
-        CapturedExportedSpan loggerSpan =
-            loggerSpanList.stream().filter(span -> span.getParentSpanId().equals(muleRouteSpanList.get(finalI).getSpanId()))
-                .findFirst().orElse(null);
-        assertThat(loggerSpan, notNullValue());
-        CapturedExportedSpan httpRequestSpan =
-            httpRequestSpanList.stream().filter(span -> span.getParentSpanId().equals(muleRouteSpanList.get(finalI).getSpanId()))
-                .findFirst().orElse(null);
-        assertThat(httpRequestSpan, notNullValue());
-      }
+
+      SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
+      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_SET_PAYLOAD_SPAN_NAME)
+          .child(EXPECTED_PARALLEL_FOREACH_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_ROUTE_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_LOGGER_SPAN_NAME)
+          .child(EXPECTED_RAISE_ERROR_SPAN)
+          .endChildren()
+          .child(EXPECTED_ROUTE_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_LOGGER_SPAN_NAME)
+          .child(EXPECTED_RAISE_ERROR_SPAN)
+          .endChildren()
+          .child(EXPECTED_ROUTE_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_LOGGER_SPAN_NAME)
+          .child(EXPECTED_RAISE_ERROR_SPAN)
+          .endChildren()
+          .endChildren()
+          .child(EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME)
+          .endChildren();
+
+      expectedSpanHierarchy.assertSpanTree(expectedSpanHierarchy.getRoot(), null);
     } finally {
       spanCapturer.dispose();
     }

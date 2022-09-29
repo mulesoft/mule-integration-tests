@@ -90,7 +90,7 @@ public class ChoiceRouterTracingTestCase extends AbstractIntegrationTestCase {
       } else {
         assertThat(exportedSpans, hasSize(4));
       }
-      
+
       SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
       expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
           .beginChildren()

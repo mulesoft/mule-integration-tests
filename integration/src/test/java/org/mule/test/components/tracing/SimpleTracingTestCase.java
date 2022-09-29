@@ -10,6 +10,8 @@ package org.mule.test.components.tracing;
 import static org.mule.runtime.core.api.config.bootstrap.ArtifactType.APP;
 import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.DEFAULT_CORE_EVENT_TRACER;
+import static org.mule.test.components.tracing.TracingTestUtils.assertSpanAttributes;
+
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
@@ -19,6 +21,7 @@ import org.mule.runtime.core.privileged.profiling.CapturedExportedSpan;
 import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.runtime.core.privileged.profiling.ExportedSpanCapturer;
 import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.test.infrastructure.profiling.SpanTestHierarchy;
 
 import java.util.Collection;
 
@@ -72,6 +75,7 @@ public class SimpleTracingTestCase extends AbstractIntegrationTestCase {
       flowRunner(SIMPLE_FLOW).withPayload(TEST_PAYLOAD).run().getMessage();
       Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
       assertThat(exportedSpans, hasSize(6));
+
       CapturedExportedSpan muleFlowSpan =
           exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_FLOW_SPAN_NAME)).findFirst().orElse(null);
       CapturedExportedSpan setPayloadSpan =
@@ -88,27 +92,33 @@ public class SimpleTracingTestCase extends AbstractIntegrationTestCase {
       CapturedExportedSpan setLoggingVariable =
           exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_SET_LOGGING_VARIABLE_SPAN_NAME)).findFirst()
               .orElse(null);
-      assertThat(setPayloadSpan, notNullValue());
-      assertThat(muleFlowSpan, notNullValue());
-      assertSpan(setVariableSpan, tracingCorrelationIdRoute, SET_VARIABLE_LOCATION);
-      assertSpan(tracingCorrelationidSpan, muleFlowSpan, TRACING_SET_CORRELATION_ID_LOCATION);
-      assertSpan(setLoggingVariable, muleFlowSpan, SET_LOGGGING_VARIABLE_LOCATION);
-      assertSpan(tracingCorrelationIdRoute, tracingCorrelationidSpan, TRACING_SET_CORRELATION_ID_LOCATION);
-      assertSpan(setPayloadSpan, muleFlowSpan, SET_PAYLOAD_LOCATION);
-      assertSpan(muleFlowSpan, null, FLOW_LOCATION);
+
+      SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
+      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_TRACING_CORRELATION_ID_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_TRACING_CORRELATION_ID_ROUTE_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_SET_VARIABLE_SPAN_NAME)
+          .endChildren()
+          .endChildren()
+          .child(EXPECTED_SET_LOGGING_VARIABLE_SPAN_NAME)
+          .child(EXPECTED_SET_PAYLOAD_SPAN_NAME)
+          .endChildren();
+
+      expectedSpanHierarchy.assertSpanTree(expectedSpanHierarchy.getRoot(), null);
+
+      assertSpanAttributes(setVariableSpan, SET_VARIABLE_LOCATION, ARTIFACT_ID);
+      assertSpanAttributes(tracingCorrelationidSpan, TRACING_SET_CORRELATION_ID_LOCATION, ARTIFACT_ID);
+      assertSpanAttributes(setLoggingVariable, SET_LOGGGING_VARIABLE_LOCATION, ARTIFACT_ID);
+      assertSpanAttributes(tracingCorrelationIdRoute, TRACING_SET_CORRELATION_ID_LOCATION, ARTIFACT_ID);
+      assertSpanAttributes(setPayloadSpan, SET_PAYLOAD_LOCATION, ARTIFACT_ID);
+      assertSpanAttributes(muleFlowSpan, FLOW_LOCATION, ARTIFACT_ID);
       assertThat(setPayloadSpan.getAttributes().get(TEST_VAR_NAME), equalTo(TRACE_VAR_VALUE));
       assertThat(setVariableSpan.getAttributes().get(CORRELATION_ID_KEY), equalTo(CORRELATION_ID_CUSTOM_VALUE));
     } finally {
       spanCapturer.dispose();
     }
-  }
-
-  private void assertSpan(CapturedExportedSpan span, CapturedExportedSpan parentSpan, String location) {
-    assertThat(span.getParentSpanId(), equalTo(parentSpan == null ? NO_PARENT_SPAN : parentSpan.getSpanId()));
-    assertThat(span.getAttributes().get(LOCATION_KEY), equalTo(location));
-    assertThat(span.getAttributes().get(CORRELATION_ID_KEY), notNullValue());
-    assertThat(span.getAttributes().get(ARTIFACT_TYPE_KEY), equalTo(APP.getAsString()));
-    assertThat(span.getAttributes().get(ARTIFACT_ID_KEY), equalTo(ARTIFACT_ID));
-    assertThat(span.getAttributes().get(THREAD_START_ID_KEY), notNullValue());
   }
 }
