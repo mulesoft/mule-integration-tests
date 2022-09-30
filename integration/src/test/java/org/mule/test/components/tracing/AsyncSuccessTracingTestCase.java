@@ -4,12 +4,12 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
+
 package org.mule.test.components.tracing;
 
 import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.DEFAULT_CORE_EVENT_TRACER;
 
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -20,11 +20,10 @@ import org.mule.runtime.core.privileged.profiling.CapturedExportedSpan;
 import org.mule.runtime.core.privileged.profiling.ExportedSpanCapturer;
 import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.test.infrastructure.profiling.SpanTestHierarchy;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.concurrent.CountDownLatch;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -42,7 +41,6 @@ public class AsyncSuccessTracingTestCase extends AbstractIntegrationTestCase {
   public static final String EXPECTED_SET_VARIABLE_SPAN_NAME = "mule:set-variable";
   public static final String ASYNC_FLOW = "async-flow";
   public static final String EXPECTED_FLOW_SPAN_NAME = "mule:flow";
-  public static final String NO_PARENT_SPAN = "0000000000000000";
 
   @Inject
   PrivilegedProfilingService profilingService;
@@ -64,37 +62,22 @@ public class AsyncSuccessTracingTestCase extends AbstractIntegrationTestCase {
 
       asyncTerminationLatch.await();
 
+
       Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
-
-      CapturedExportedSpan muleFlowSpan =
-          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_FLOW_SPAN_NAME)).findFirst().orElse(null);
-
-      CapturedExportedSpan asyncSpan =
-          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_ASYNC_SPAN_NAME)).findFirst()
-              .orElse(null);
-
-
-      CapturedExportedSpan setPayloadSpan =
-          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_SET_PAYLOAD_SPAN_NAME)).findFirst().orElse(null);
-
-      CapturedExportedSpan loggerSpan =
-          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_LOGGER_SPAN_NAME)).findFirst().orElse(null);
-
-      List<CapturedExportedSpan> setVariableSpanList =
-          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_SET_VARIABLE_SPAN_NAME))
-              .collect(Collectors.toList());
-
       assertThat(exportedSpans, hasSize(6));
-      assertThat(muleFlowSpan.getParentSpanId(), equalTo(NO_PARENT_SPAN));
-      assertThat(asyncSpan, notNullValue());
-      assertThat(asyncSpan.getParentSpanId(), equalTo(muleFlowSpan.getSpanId()));
-      assertThat(setVariableSpanList, hasSize(2));
-      setVariableSpanList
-          .forEach(setVariableSpan -> assertThat(setVariableSpan.getParentSpanId(), equalTo(muleFlowSpan.getSpanId())));
-      assertThat(setPayloadSpan, notNullValue());
-      assertThat(setPayloadSpan.getParentSpanId(), equalTo(asyncSpan.getSpanId()));
-      assertThat(loggerSpan, notNullValue());
-      assertThat(loggerSpan.getParentSpanId(), equalTo(asyncSpan.getSpanId()));
+
+      SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
+      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_SET_VARIABLE_SPAN_NAME)
+          .child(EXPECTED_SET_VARIABLE_SPAN_NAME)
+          .child(EXPECTED_ASYNC_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_LOGGER_SPAN_NAME)
+          .child(EXPECTED_SET_PAYLOAD_SPAN_NAME)
+          .endChildren();
+
+      expectedSpanHierarchy.assertSpanTree(expectedSpanHierarchy.getRoot(), null);
     } finally {
       spanCapturer.dispose();
     }
