@@ -17,7 +17,7 @@ import org.mule.runtime.core.privileged.profiling.CapturedExportedSpan;
 import org.mule.runtime.core.privileged.profiling.ExportedSpanCapturer;
 import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.test.AbstractIntegrationTestCase;
-import org.mule.test.infrastructure.profiling.SpanTestHierarchy;
+import org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy;
 
 import java.util.Collection;
 
@@ -71,7 +71,7 @@ public class CustomSpanNameAndAttributesTestCase extends AbstractIntegrationTest
         .child(EXPECTED_CUSTOM_SPAN_NAME)
         .endChildren();
 
-    expectedSpanHierarchy.assertSpanTree(expectedSpanHierarchy.getRoot(), null);
+    expectedSpanHierarchy.assertSpanTree(expectedSpanHierarchy.getRoot());
 
     CapturedExportedSpan capturedExportedSpan =
         spanCapturer.getExportedSpans().stream().filter(exportedSpan -> exportedSpan.getName().equals(EXPECTED_CUSTOM_SPAN_NAME))

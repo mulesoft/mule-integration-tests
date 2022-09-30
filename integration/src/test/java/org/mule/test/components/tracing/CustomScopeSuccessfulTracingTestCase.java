@@ -18,7 +18,7 @@ import org.mule.runtime.core.privileged.profiling.CapturedExportedSpan;
 import org.mule.runtime.core.privileged.profiling.ExportedSpanCapturer;
 import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.test.AbstractIntegrationTestCase;
-import org.mule.test.infrastructure.profiling.SpanTestHierarchy;
+import org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy;
 
 import java.util.Collection;
 
@@ -85,7 +85,7 @@ public class CustomScopeSuccessfulTracingTestCase extends AbstractIntegrationTes
           .endChildren()
           .endChildren();
 
-      expectedSpanHierarchy.assertSpanTree(expectedSpanHierarchy.getRoot(), null);
+      expectedSpanHierarchy.assertSpanTree(expectedSpanHierarchy.getRoot());
 
       assertSpanAttributes(muleFlowSpan, "custom-scope-flow", TEST_ARTIFACT_ID);
       assertSpanAttributes(customScopeSpan, "custom-scope-flow/processors/0", TEST_ARTIFACT_ID);

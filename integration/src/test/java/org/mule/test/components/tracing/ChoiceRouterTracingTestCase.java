@@ -17,7 +17,7 @@ import org.mule.runtime.core.privileged.profiling.CapturedExportedSpan;
 import org.mule.runtime.core.privileged.profiling.ExportedSpanCapturer;
 import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.test.AbstractIntegrationTestCase;
-import org.mule.test.infrastructure.profiling.SpanTestHierarchy;
+import org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy;
 
 import java.util.Collection;
 
@@ -106,7 +106,7 @@ public class ChoiceRouterTracingTestCase extends AbstractIntegrationTestCase {
       }
       expectedSpanHierarchy.endChildren();
 
-      expectedSpanHierarchy.assertSpanTree(expectedSpanHierarchy.getRoot(), null);
+      expectedSpanHierarchy.assertSpanTree(expectedSpanHierarchy.getRoot());
 
       assertSpanAttributes(muleFlowSpan, "choice-flow", TEST_ARTIFACT_ID);
       assertSpanAttributes(choiceSpan, "choice-flow/processors/0", TEST_ARTIFACT_ID);

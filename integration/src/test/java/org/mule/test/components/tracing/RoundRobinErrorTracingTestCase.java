@@ -17,7 +17,7 @@ import org.mule.runtime.core.privileged.profiling.CapturedExportedSpan;
 import org.mule.runtime.core.privileged.profiling.ExportedSpanCapturer;
 import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.test.AbstractIntegrationTestCase;
-import org.mule.test.infrastructure.profiling.SpanTestHierarchy;
+import org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy;
 
 import java.util.Collection;
 import java.util.List;
@@ -96,7 +96,7 @@ public class RoundRobinErrorTracingTestCase extends AbstractIntegrationTestCase 
           .child(EXPECTED_ON_ERROR_PROPAGATE_SPAN)
           .endChildren();
 
-      expectedSpanHierarchy.assertSpanTree(expectedSpanHierarchy.getRoot(), null);
+      expectedSpanHierarchy.assertSpanTree(expectedSpanHierarchy.getRoot());
 
       assertSpanAttributes(muleFlowSpan, "round-robin-flow", TEST_ARTIFACT_ID);
       assertSpanAttributes(onErrorPropagateSpan, "unknown", TEST_ARTIFACT_ID);

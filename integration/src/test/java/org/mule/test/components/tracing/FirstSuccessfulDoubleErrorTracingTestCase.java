@@ -17,7 +17,7 @@ import org.mule.runtime.core.privileged.profiling.CapturedExportedSpan;
 import org.mule.runtime.core.privileged.profiling.ExportedSpanCapturer;
 import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.test.AbstractIntegrationTestCase;
-import org.mule.test.infrastructure.profiling.SpanTestHierarchy;
+import org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy;
 
 import java.util.Collection;
 
@@ -83,7 +83,7 @@ public class FirstSuccessfulDoubleErrorTracingTestCase extends AbstractIntegrati
           .child(EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME)
           .endChildren();
 
-      expectedSpanHierarchy.assertSpanTree(expectedSpanHierarchy.getRoot(), null);
+      expectedSpanHierarchy.assertSpanTree(expectedSpanHierarchy.getRoot());
     } finally {
       spanCapturer.dispose();
     }

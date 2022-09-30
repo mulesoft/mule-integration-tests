@@ -7,7 +7,6 @@
 
 package org.mule.test.components.tracing;
 
-import static org.mule.runtime.core.api.config.bootstrap.ArtifactType.APP;
 import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.DEFAULT_CORE_EVENT_TRACER;
 import static org.mule.test.components.tracing.TracingTestUtils.assertSpanAttributes;
@@ -21,7 +20,7 @@ import org.mule.runtime.core.privileged.profiling.CapturedExportedSpan;
 import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.runtime.core.privileged.profiling.ExportedSpanCapturer;
 import org.mule.test.AbstractIntegrationTestCase;
-import org.mule.test.infrastructure.profiling.SpanTestHierarchy;
+import org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy;
 
 import java.util.Collection;
 
@@ -107,7 +106,7 @@ public class SimpleTracingTestCase extends AbstractIntegrationTestCase {
           .child(EXPECTED_SET_PAYLOAD_SPAN_NAME)
           .endChildren();
 
-      expectedSpanHierarchy.assertSpanTree(expectedSpanHierarchy.getRoot(), null);
+      expectedSpanHierarchy.assertSpanTree(expectedSpanHierarchy.getRoot());
 
       assertSpanAttributes(setVariableSpan, SET_VARIABLE_LOCATION, ARTIFACT_ID);
       assertSpanAttributes(tracingCorrelationidSpan, TRACING_SET_CORRELATION_ID_LOCATION, ARTIFACT_ID);

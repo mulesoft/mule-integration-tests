@@ -18,7 +18,7 @@ import org.mule.runtime.core.privileged.profiling.CapturedExportedSpan;
 import org.mule.runtime.core.privileged.profiling.ExportedSpanCapturer;
 import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.test.AbstractIntegrationTestCase;
-import org.mule.test.infrastructure.profiling.SpanTestHierarchy;
+import org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy;
 
 import java.util.Collection;
 
@@ -95,7 +95,7 @@ public class TryScopeErrorTracingTestCase extends AbstractIntegrationTestCase {
           .child(EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME)
           .endChildren();
 
-      expectedSpanHierarchy.assertSpanTree(expectedSpanHierarchy.getRoot(), null);
+      expectedSpanHierarchy.assertSpanTree(expectedSpanHierarchy.getRoot());
 
       assertSpanAttributes(muleFlowSpan, "try-scope-flow", TEST_ARTEFACT_ID);
       assertSpanAttributes(tryScope, "try-scope-flow/processors/0", TEST_ARTEFACT_ID);
