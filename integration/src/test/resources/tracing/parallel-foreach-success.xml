@@ -11,7 +11,7 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
         <set-payload value="#[[1, 2, 3]]" />
         <parallel-foreach >
             <logger level="INFO"/>
-            <set-variable value="" variableName="var"/>
+            <set-payload value="#[payload]" />
         </parallel-foreach>
         <set-payload value="#[payload]" />
     </flow>

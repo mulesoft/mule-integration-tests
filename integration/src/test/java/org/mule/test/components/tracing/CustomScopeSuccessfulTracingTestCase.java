@@ -11,15 +11,14 @@ import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.DEFAULT_CORE_EVENT_TRACER;
 import static org.mule.test.components.tracing.TracingTestUtils.assertSpanAttributes;
 
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 import org.mule.runtime.core.privileged.profiling.CapturedExportedSpan;
-import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.runtime.core.privileged.profiling.ExportedSpanCapturer;
+import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy;
 
 import java.util.Collection;
 
@@ -74,16 +73,19 @@ public class CustomScopeSuccessfulTracingTestCase extends AbstractIntegrationTes
 
       assertThat(exportedSpans, hasSize(4));
 
-      assertThat(muleFlowSpan.getParentSpanId(), equalTo(NO_PARENT_SPAN));
+      SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
+      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_CUSTOM_SCOPE_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_CUSTOM_SCOPE_ROUTE_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_LOGGER_SPAN_NAME)
+          .endChildren()
+          .endChildren()
+          .endChildren();
 
-      assertThat(customScopeSpan, notNullValue());
-      assertThat(customScopeSpan.getParentSpanId(), equalTo(muleFlowSpan.getSpanId()));
-
-      assertThat(customScopeRoute, notNullValue());
-      assertThat(customScopeRoute.getParentSpanId(), equalTo(customScopeSpan.getSpanId()));
-
-      assertThat(loggerSpan, notNullValue());
-      assertThat(loggerSpan.getParentSpanId(), equalTo(customScopeRoute.getSpanId()));
+      expectedSpanHierarchy.assertSpanTree();
 
       assertSpanAttributes(muleFlowSpan, "custom-scope-flow", TEST_ARTIFACT_ID);
       assertSpanAttributes(customScopeSpan, "custom-scope-flow/processors/0", TEST_ARTIFACT_ID);

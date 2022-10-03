@@ -9,19 +9,16 @@ package org.mule.test.components.tracing;
 import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.DEFAULT_CORE_EVENT_TRACER;
 
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 import org.mule.runtime.core.privileged.profiling.CapturedExportedSpan;
 import org.mule.runtime.core.privileged.profiling.ExportedSpanCapturer;
 import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy;
 
 import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -59,50 +56,33 @@ public class UntilSuccessfulErrorTracingTestCase extends AbstractIntegrationTest
       flowRunner(UNTIL_SUCCESSFUL_FLOW).withPayload(TEST_PAYLOAD).dispatch();
 
       Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
-
-      CapturedExportedSpan muleFlowSpan =
-          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_FLOW_SPAN_NAME)).findFirst().orElse(null);
-
-      CapturedExportedSpan untilSuccessfulSpan =
-          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_UNTIL_SUCCESSFUL_SPAN_NAME)).findFirst()
-              .orElse(null);
-
-      CapturedExportedSpan onErrorPropagateSpan =
-          exportedSpans.stream().filter(span -> span.getName().equals(ON_ERROR_PROPAGATE_SPAN_NAME)).findFirst()
-              .orElse(null);
-
-      List<CapturedExportedSpan> muleRouteSpanList =
-          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_ATTEMPT_SPAN_NAME)).collect(Collectors.toList());
-
-      List<CapturedExportedSpan> loggerSpanList =
-          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_LOGGER_SPAN_NAME)).collect(Collectors.toList());
-
-      List<CapturedExportedSpan> httpRequestSpanList =
-          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_HTTP_REQUEST_SPAN_NAME))
-              .collect(Collectors.toList());
-
       assertThat(exportedSpans, hasSize((NUMBER_OF_RETRIES + 1) * 3 + 3));
-      assertThat(muleFlowSpan.getParentSpanId(), equalTo(NO_PARENT_SPAN));
-      assertThat(onErrorPropagateSpan, notNullValue());
-      assertThat(onErrorPropagateSpan.getParentSpanId(), equalTo(muleFlowSpan.getSpanId()));
-      assertThat(untilSuccessfulSpan, notNullValue());
-      assertThat(untilSuccessfulSpan.getParentSpanId(), equalTo(muleFlowSpan.getSpanId()));
-      assertThat(muleRouteSpanList, hasSize(NUMBER_OF_RETRIES + 1));
-      muleRouteSpanList
-          .forEach(muleRouteSpan -> assertThat(muleRouteSpan.getParentSpanId(), equalTo(untilSuccessfulSpan.getSpanId())));
-      assertThat(loggerSpanList, hasSize(NUMBER_OF_RETRIES + 1));
-      assertThat(httpRequestSpanList, hasSize(NUMBER_OF_RETRIES + 1));
-      for (int i = 0; i < NUMBER_OF_RETRIES; i++) {
-        int finalI = i;
-        CapturedExportedSpan loggerSpan =
-            loggerSpanList.stream().filter(span -> span.getParentSpanId().equals(muleRouteSpanList.get(finalI).getSpanId()))
-                .findFirst().orElse(null);
-        assertThat(loggerSpan, notNullValue());
-        CapturedExportedSpan httpRequestSpan =
-            httpRequestSpanList.stream().filter(span -> span.getParentSpanId().equals(muleRouteSpanList.get(finalI).getSpanId()))
-                .findFirst().orElse(null);
-        assertThat(httpRequestSpan, notNullValue());
-      }
+
+      SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
+      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_UNTIL_SUCCESSFUL_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_ATTEMPT_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_LOGGER_SPAN_NAME)
+          .child(EXPECTED_HTTP_REQUEST_SPAN_NAME)
+          .endChildren()
+          .child(EXPECTED_ATTEMPT_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_LOGGER_SPAN_NAME)
+          .child(EXPECTED_HTTP_REQUEST_SPAN_NAME)
+          .endChildren()
+          .child(EXPECTED_ATTEMPT_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_LOGGER_SPAN_NAME)
+          .child(EXPECTED_HTTP_REQUEST_SPAN_NAME)
+          .endChildren()
+          .endChildren()
+          .child(ON_ERROR_PROPAGATE_SPAN_NAME)
+          .endChildren();
+
+      expectedSpanHierarchy.assertSpanTree();
     } finally {
       spanCapturer.dispose();
     }

@@ -11,15 +11,14 @@ import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.DEFAULT_CORE_EVENT_TRACER;
 import static org.mule.test.components.tracing.TracingTestUtils.assertSpanAttributes;
 
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 import org.mule.runtime.core.privileged.profiling.CapturedExportedSpan;
-import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.runtime.core.privileged.profiling.ExportedSpanCapturer;
+import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy;
 
 import java.util.Collection;
 import java.util.List;
@@ -81,29 +80,30 @@ public class RoundRobinSuccessfulTracingTestCase extends AbstractIntegrationTest
       List<CapturedExportedSpan> setPayloadSpanList =
           exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_SET_PAYLOAD_SPAN_NAME))
               .collect(Collectors.toList());
-      CapturedExportedSpan setPayloadSpan =
-          exportedSpans.stream().filter(span -> span.getParentSpanId().equals(muleRouteSpanList.get(0).getSpanId())).findFirst()
-              .orElse(null);
 
       CapturedExportedSpan loggerSpan =
           exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_LOGGER_SPAN_NAME)).findFirst().orElse(null);
 
       assertThat(exportedSpans, hasSize(numberOfExpectedSpans));
-      assertThat(muleFlowSpan.getParentSpanId(), equalTo(NO_PARENT_SPAN));
-      assertThat(roundRobinSpan, notNullValue());
-      assertThat(roundRobinSpan.getParentSpanId(), equalTo(muleFlowSpan.getSpanId()));
-      assertThat(muleRouteSpanList, hasSize(1));
 
-      muleRouteSpanList
-          .forEach(muleRouteSpan -> assertThat(muleRouteSpan.getParentSpanId(), equalTo(roundRobinSpan.getSpanId())));
+      SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
+      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_ROUND_ROBIN_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_ROUTE_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_LOGGER_SPAN_NAME);
       if (verifySetPayloadInRoute) {
-        assertThat(setPayloadSpanList, hasSize(1));
-        assertThat(setPayloadSpan, notNullValue());
-      } else {
-        assertThat(setPayloadSpanList, hasSize(0));
+        expectedSpanHierarchy
+            .child(EXPECTED_SET_PAYLOAD_SPAN_NAME);
       }
-      assertThat(loggerSpan, notNullValue());
-      assertThat(loggerSpan.getParentSpanId(), equalTo(muleRouteSpanList.get(0).getSpanId()));
+      expectedSpanHierarchy
+          .endChildren()
+          .endChildren()
+          .endChildren();
+
+      expectedSpanHierarchy.assertSpanTree();
 
       assertSpanAttributes(muleFlowSpan, "round-robin-flow", TEST_ARTIFACT_ID);
       assertSpanAttributes(roundRobinSpan, "round-robin-flow/processors/0", TEST_ARTIFACT_ID);

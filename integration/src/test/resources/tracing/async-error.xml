@@ -6,13 +6,12 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
     <http:listener-config name="HTTP_Listener_config" >
         <http:listener-connection host="0.0.0.0" port="8081" />
     </http:listener-config>
-    <http:request-config name="HTTP_Request_configuration" basePath="/error" />
     <flow name="async-flow">
         <http:listener config-ref="HTTP_Listener_config" path="test"/>
         <set-variable value="1" variableName="testVar"/>
         <async>
             <logger level="INFO" />
-            <http:request method="GET" config-ref="HTTP_Request_configuration" path="error"/>
+            <raise-error type="ANY:EXPECTED"/>
             <set-payload value="#[payload]"/>
         </async>
         <set-variable value="2" variableName="testVar"/>
