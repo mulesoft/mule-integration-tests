@@ -71,7 +71,7 @@ public class CustomSpanNameAndAttributesTestCase extends AbstractIntegrationTest
         .child(EXPECTED_CUSTOM_SPAN_NAME)
         .endChildren();
 
-    expectedSpanHierarchy.assertSpanTree(expectedSpanHierarchy.getRoot());
+    expectedSpanHierarchy.assertSpanTree();
 
     CapturedExportedSpan capturedExportedSpan =
         spanCapturer.getExportedSpans().stream().filter(exportedSpan -> exportedSpan.getName().equals(EXPECTED_CUSTOM_SPAN_NAME))

@@ -70,7 +70,7 @@ public class UntilSuccessfulSuccessTracingTestCase extends AbstractIntegrationTe
           .endChildren()
           .endChildren();
 
-      expectedSpanHierarchy.assertSpanTree(expectedSpanHierarchy.getRoot());
+      expectedSpanHierarchy.assertSpanTree();
     } finally {
       spanCapturer.dispose();
     }

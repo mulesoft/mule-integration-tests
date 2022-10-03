@@ -82,7 +82,7 @@ public class UntilSuccessfulErrorTracingTestCase extends AbstractIntegrationTest
           .child(ON_ERROR_PROPAGATE_SPAN_NAME)
           .endChildren();
 
-      expectedSpanHierarchy.assertSpanTree(expectedSpanHierarchy.getRoot());
+      expectedSpanHierarchy.assertSpanTree();
     } finally {
       spanCapturer.dispose();
     }

@@ -85,7 +85,7 @@ public class ParallelForEachErrorTracingTestCase extends AbstractIntegrationTest
           .child(EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME)
           .endChildren();
 
-      expectedSpanHierarchy.assertSpanTree(expectedSpanHierarchy.getRoot());
+      expectedSpanHierarchy.assertSpanTree();
     } finally {
       spanCapturer.dispose();
     }

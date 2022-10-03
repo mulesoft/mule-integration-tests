@@ -106,7 +106,7 @@ public class ChoiceRouterTracingTestCase extends AbstractIntegrationTestCase {
       }
       expectedSpanHierarchy.endChildren();
 
-      expectedSpanHierarchy.assertSpanTree(expectedSpanHierarchy.getRoot());
+      expectedSpanHierarchy.assertSpanTree();
 
       assertSpanAttributes(muleFlowSpan, "choice-flow", TEST_ARTIFACT_ID);
       assertSpanAttributes(choiceSpan, "choice-flow/processors/0", TEST_ARTIFACT_ID);

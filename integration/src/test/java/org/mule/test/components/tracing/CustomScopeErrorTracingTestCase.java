@@ -105,7 +105,7 @@ public class CustomScopeErrorTracingTestCase extends AbstractIntegrationTestCase
           .child(EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME)
           .endChildren();
 
-      expectedSpanHierarchy.assertSpanTree(expectedSpanHierarchy.getRoot());
+      expectedSpanHierarchy.assertSpanTree();
 
       assertSpanAttributes(muleFlowSpan, "custom-scope-flow", TEST_ARTIFACT_ID);
       assertSpanAttributes(customScopeSpan, "custom-scope-flow/processors/0", TEST_ARTIFACT_ID);

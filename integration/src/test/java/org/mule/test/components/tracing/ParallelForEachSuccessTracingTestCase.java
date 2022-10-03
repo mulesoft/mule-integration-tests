@@ -81,7 +81,7 @@ public class ParallelForEachSuccessTracingTestCase extends AbstractIntegrationTe
           .child(EXPECTED_SET_PAYLOAD_SPAN_NAME)
           .endChildren();
 
-      expectedSpanHierarchy.assertSpanTree(expectedSpanHierarchy.getRoot());
+      expectedSpanHierarchy.assertSpanTree();
     } finally {
       spanCapturer.dispose();
     }

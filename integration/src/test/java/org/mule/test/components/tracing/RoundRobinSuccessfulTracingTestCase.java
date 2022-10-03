@@ -103,7 +103,7 @@ public class RoundRobinSuccessfulTracingTestCase extends AbstractIntegrationTest
           .endChildren()
           .endChildren();
 
-      expectedSpanHierarchy.assertSpanTree(expectedSpanHierarchy.getRoot());
+      expectedSpanHierarchy.assertSpanTree();
 
       assertSpanAttributes(muleFlowSpan, "round-robin-flow", TEST_ARTIFACT_ID);
       assertSpanAttributes(roundRobinSpan, "round-robin-flow/processors/0", TEST_ARTIFACT_ID);

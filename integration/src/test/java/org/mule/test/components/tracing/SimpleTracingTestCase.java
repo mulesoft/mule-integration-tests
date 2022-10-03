@@ -106,7 +106,7 @@ public class SimpleTracingTestCase extends AbstractIntegrationTestCase {
           .child(EXPECTED_SET_PAYLOAD_SPAN_NAME)
           .endChildren();
 
-      expectedSpanHierarchy.assertSpanTree(expectedSpanHierarchy.getRoot());
+      expectedSpanHierarchy.assertSpanTree();
 
       assertSpanAttributes(setVariableSpan, SET_VARIABLE_LOCATION, ARTIFACT_ID);
       assertSpanAttributes(tracingCorrelationidSpan, TRACING_SET_CORRELATION_ID_LOCATION, ARTIFACT_ID);

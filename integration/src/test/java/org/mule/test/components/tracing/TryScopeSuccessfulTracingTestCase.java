@@ -85,7 +85,7 @@ public class TryScopeSuccessfulTracingTestCase extends AbstractIntegrationTestCa
           .endChildren()
           .endChildren();
 
-      expectedSpanHierarchy.assertSpanTree(expectedSpanHierarchy.getRoot());
+      expectedSpanHierarchy.assertSpanTree();
 
       assertSpanAttributes(muleFlowSpan, "try-scope-flow", TEST_ARTEFACT_ID);
       assertSpanAttributes(tryScope, "try-scope-flow/processors/0", TEST_ARTEFACT_ID);

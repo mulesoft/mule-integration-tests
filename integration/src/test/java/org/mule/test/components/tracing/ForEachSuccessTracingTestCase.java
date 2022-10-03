@@ -85,7 +85,7 @@ public class ForEachSuccessTracingTestCase extends AbstractIntegrationTestCase {
           .child(EXPECTED_SET_PAYLOAD_SPAN_NAME)
           .endChildren();
 
-      expectedSpanHierarchy.assertSpanTree(expectedSpanHierarchy.getRoot());
+      expectedSpanHierarchy.assertSpanTree();
     } finally {
       spanCapturer.dispose();
     }

@@ -96,7 +96,7 @@ public class RoundRobinErrorTracingTestCase extends AbstractIntegrationTestCase 
           .child(EXPECTED_ON_ERROR_PROPAGATE_SPAN)
           .endChildren();
 
-      expectedSpanHierarchy.assertSpanTree(expectedSpanHierarchy.getRoot());
+      expectedSpanHierarchy.assertSpanTree();
 
       assertSpanAttributes(muleFlowSpan, "round-robin-flow", TEST_ARTIFACT_ID);
       assertSpanAttributes(onErrorPropagateSpan, "unknown", TEST_ARTIFACT_ID);

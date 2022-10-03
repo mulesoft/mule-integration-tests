@@ -75,7 +75,7 @@ public class ScatterGatherErrorTracingTestCase extends AbstractIntegrationTestCa
           .endChildren()
           .child(EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME);
 
-      expectedSpanHierarchy.assertSpanTree(expectedSpanHierarchy.getRoot());
+      expectedSpanHierarchy.assertSpanTree();
     } finally {
       spanCapturer.dispose();
     }
