@@ -36,7 +36,6 @@ public class TryScopeErrorTracingTestCase extends AbstractIntegrationTestCase {
   public static final String TRY_SCOPE_FLOW = "try-scope-flow";
   public static final String EXPECTED_FLOW_SPAN_NAME = "mule:flow";
   public static final String EXPECTED_TRY_SCOPE_SPAN_NAME = "mule:try";
-  public static final String EXPECTED_TRY_SCOPE_ROUTE_SPAN_NAME = "mule:try:route";
   public static final String EXPECTED_RAISE_ERROR_SPAN_NAME = "mule:raise-error";
   public static final String EXPECTED_SET_PAYLOAD_SPAN_NAME = "mule:set-payload";
   public static final String EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME = "mule:on-error-propagate";
@@ -66,10 +65,6 @@ public class TryScopeErrorTracingTestCase extends AbstractIntegrationTestCase {
           exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_TRY_SCOPE_SPAN_NAME)).findFirst()
               .orElse(null);
 
-      CapturedExportedSpan tryScopeRoute =
-          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_TRY_SCOPE_ROUTE_SPAN_NAME)).findFirst()
-              .orElse(null);
-
       CapturedExportedSpan loggerSpan =
           exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_LOGGER_SPAN_NAME)).findFirst()
               .orElse(null);
@@ -78,19 +73,16 @@ public class TryScopeErrorTracingTestCase extends AbstractIntegrationTestCase {
           exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_RAISE_ERROR_SPAN_NAME)).findFirst()
               .orElse(null);
 
-      assertThat(exportedSpans, hasSize(7));
+      assertThat(exportedSpans, hasSize(6));
 
       SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
       expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
           .beginChildren()
           .child(EXPECTED_TRY_SCOPE_SPAN_NAME)
           .beginChildren()
-          .child(EXPECTED_TRY_SCOPE_ROUTE_SPAN_NAME)
-          .beginChildren()
           .child(EXPECTED_LOGGER_SPAN_NAME)
           .child(EXPECTED_RAISE_ERROR_SPAN_NAME)
           .child(EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME)
-          .endChildren()
           .endChildren()
           .child(EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME)
           .endChildren();
@@ -99,7 +91,6 @@ public class TryScopeErrorTracingTestCase extends AbstractIntegrationTestCase {
 
       assertSpanAttributes(muleFlowSpan, "try-scope-flow", TEST_ARTEFACT_ID);
       assertSpanAttributes(tryScope, "try-scope-flow/processors/0", TEST_ARTEFACT_ID);
-      assertSpanAttributes(tryScopeRoute, "try-scope-flow/processors/0", TEST_ARTEFACT_ID);
       assertSpanAttributes(loggerSpan, "try-scope-flow/processors/0/processors/0", TEST_ARTEFACT_ID);
       assertSpanAttributes(raiseErrorSpan, "try-scope-flow/processors/0/processors/1", TEST_ARTEFACT_ID);
     } finally {

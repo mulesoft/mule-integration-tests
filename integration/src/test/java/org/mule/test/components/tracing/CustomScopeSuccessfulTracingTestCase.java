@@ -34,7 +34,6 @@ public class CustomScopeSuccessfulTracingTestCase extends AbstractIntegrationTes
 
   public static final String EXPECTED_CUSTOM_SCOPE_SPAN_NAME = "heisenberg:execute-anything";
   public static final String EXPECTED_LOGGER_SPAN_NAME = "mule:logger";
-  public static final String EXPECTED_CUSTOM_SCOPE_ROUTE_SPAN_NAME = "heisenberg:execute-anything:route";
   public static final String CUSTOM_SCOPE_FLOW = "custom-scope-flow";
   public static final String EXPECTED_FLOW_SPAN_NAME = "mule:flow";
   public static final String NO_PARENT_SPAN = "0000000000000000";
@@ -63,25 +62,18 @@ public class CustomScopeSuccessfulTracingTestCase extends AbstractIntegrationTes
           exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_CUSTOM_SCOPE_SPAN_NAME)).findFirst()
               .orElse(null);
 
-      CapturedExportedSpan customScopeRoute =
-          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_CUSTOM_SCOPE_ROUTE_SPAN_NAME)).findFirst()
-              .orElse(null);
-
       CapturedExportedSpan loggerSpan =
           exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_LOGGER_SPAN_NAME)).findFirst()
               .orElse(null);
 
-      assertThat(exportedSpans, hasSize(4));
+      assertThat(exportedSpans, hasSize(3));
 
       SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
       expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
           .beginChildren()
           .child(EXPECTED_CUSTOM_SCOPE_SPAN_NAME)
           .beginChildren()
-          .child(EXPECTED_CUSTOM_SCOPE_ROUTE_SPAN_NAME)
-          .beginChildren()
           .child(EXPECTED_LOGGER_SPAN_NAME)
-          .endChildren()
           .endChildren()
           .endChildren();
 
@@ -89,7 +81,6 @@ public class CustomScopeSuccessfulTracingTestCase extends AbstractIntegrationTes
 
       assertSpanAttributes(muleFlowSpan, "custom-scope-flow", TEST_ARTIFACT_ID);
       assertSpanAttributes(customScopeSpan, "custom-scope-flow/processors/0", TEST_ARTIFACT_ID);
-      assertSpanAttributes(customScopeRoute, "custom-scope-flow/processors/0", TEST_ARTIFACT_ID);
       assertSpanAttributes(loggerSpan, "custom-scope-flow/processors/0/processors/0", TEST_ARTIFACT_ID);
     } finally {
       spanCapturer.dispose();
