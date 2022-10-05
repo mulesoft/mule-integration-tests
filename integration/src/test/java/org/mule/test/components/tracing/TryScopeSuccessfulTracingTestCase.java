@@ -36,7 +36,6 @@ public class TryScopeSuccessfulTracingTestCase extends AbstractIntegrationTestCa
   public static final String TRY_SCOPE_FLOW = "try-scope-flow";
   public static final String EXPECTED_FLOW_SPAN_NAME = "mule:flow";
   public static final String EXPECTED_TRY_SCOPE_SPAN_NAME = "mule:try";
-  public static final String EXPECTED_TRY_SCOPE_ROUTE_SPAN_NAME = "mule:try:route";
   public static final String NO_PARENT_SPAN = "0000000000000000";
   public static final String TEST_ARTEFACT_ID = "TryScopeSuccessfulTracingTestCase#testTryScope";
 
@@ -56,17 +55,13 @@ public class TryScopeSuccessfulTracingTestCase extends AbstractIntegrationTestCa
       flowRunner(TRY_SCOPE_FLOW).withPayload(TEST_PAYLOAD).run().getMessage();
 
       Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
-      assertThat(exportedSpans, hasSize(4));
+      assertThat(exportedSpans, hasSize(3));
 
       CapturedExportedSpan muleFlowSpan =
           exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_FLOW_SPAN_NAME)).findFirst().orElse(null);
 
       CapturedExportedSpan tryScope =
           exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_TRY_SCOPE_SPAN_NAME)).findFirst()
-              .orElse(null);
-
-      CapturedExportedSpan tryScopeRoute =
-          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_TRY_SCOPE_ROUTE_SPAN_NAME)).findFirst()
               .orElse(null);
 
       CapturedExportedSpan loggerSpan =
@@ -78,10 +73,7 @@ public class TryScopeSuccessfulTracingTestCase extends AbstractIntegrationTestCa
           .beginChildren()
           .child(EXPECTED_TRY_SCOPE_SPAN_NAME)
           .beginChildren()
-          .child(EXPECTED_TRY_SCOPE_ROUTE_SPAN_NAME)
-          .beginChildren()
           .child(EXPECTED_LOGGER_SPAN_NAME)
-          .endChildren()
           .endChildren()
           .endChildren();
 
@@ -89,7 +81,6 @@ public class TryScopeSuccessfulTracingTestCase extends AbstractIntegrationTestCa
 
       assertSpanAttributes(muleFlowSpan, "try-scope-flow", TEST_ARTEFACT_ID);
       assertSpanAttributes(tryScope, "try-scope-flow/processors/0", TEST_ARTEFACT_ID);
-      assertSpanAttributes(tryScopeRoute, "try-scope-flow/processors/0", TEST_ARTEFACT_ID);
       assertSpanAttributes(loggerSpan, "try-scope-flow/processors/0/processors/0", TEST_ARTEFACT_ID);
     } finally {
       spanCapturer.dispose();

@@ -34,12 +34,10 @@ public class CustomScopeErrorTracingTestCase extends AbstractIntegrationTestCase
 
   public static final String EXPECTED_CUSTOM_SCOPE_SPAN_NAME = "heisenberg:execute-anything";
   public static final String EXPECTED_LOGGER_SPAN_NAME = "mule:logger";
-  public static final String EXPECTED_CUSTOM_SCOPE_ROUTE_SPAN_NAME = "heisenberg:execute-anything:route";
   public static final String CUSTOM_SCOPE_FLOW = "custom-scope-flow";
   public static final String EXPECTED_FLOW_SPAN_NAME = "mule:flow";
   public static final String NO_PARENT_SPAN = "0000000000000000";
   private static final String EXPECTED_RAISE_ERROR_SPAN_NAME = "mule:raise-error";
-  private static final String EXPECTED_SET_PAYLOAD_SPAN_NAME = "mule:set-payload";
   private static final String EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME = "mule:on-error-propagate";
 
 
@@ -68,10 +66,6 @@ public class CustomScopeErrorTracingTestCase extends AbstractIntegrationTestCase
           exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_CUSTOM_SCOPE_SPAN_NAME)).findFirst()
               .orElse(null);
 
-      CapturedExportedSpan customScopeRoute =
-          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_CUSTOM_SCOPE_ROUTE_SPAN_NAME)).findFirst()
-              .orElse(null);
-
       CapturedExportedSpan loggerSpan =
           exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_LOGGER_SPAN_NAME)).findFirst()
               .orElse(null);
@@ -80,27 +74,15 @@ public class CustomScopeErrorTracingTestCase extends AbstractIntegrationTestCase
           exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_RAISE_ERROR_SPAN_NAME)).findFirst()
               .orElse(null);
 
-
-      CapturedExportedSpan setPayloadSpan =
-          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_SET_PAYLOAD_SPAN_NAME)).findFirst()
-              .orElse(null);
-
-      CapturedExportedSpan onErrorPropagateSpan =
-          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME)).findFirst()
-              .orElse(null);
-
-      assertThat(exportedSpans, hasSize(6));
+      assertThat(exportedSpans, hasSize(5));
 
       SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
       expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
           .beginChildren()
           .child(EXPECTED_CUSTOM_SCOPE_SPAN_NAME)
           .beginChildren()
-          .child(EXPECTED_CUSTOM_SCOPE_ROUTE_SPAN_NAME)
-          .beginChildren()
           .child(EXPECTED_LOGGER_SPAN_NAME)
           .child(EXPECTED_RAISE_ERROR_SPAN_NAME)
-          .endChildren()
           .endChildren()
           .child(EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME)
           .endChildren();
@@ -109,7 +91,6 @@ public class CustomScopeErrorTracingTestCase extends AbstractIntegrationTestCase
 
       assertSpanAttributes(muleFlowSpan, "custom-scope-flow", TEST_ARTIFACT_ID);
       assertSpanAttributes(customScopeSpan, "custom-scope-flow/processors/0", TEST_ARTIFACT_ID);
-      assertSpanAttributes(customScopeRoute, "custom-scope-flow/processors/0", TEST_ARTIFACT_ID);
       assertSpanAttributes(loggerSpan, "custom-scope-flow/processors/0/processors/0", TEST_ARTIFACT_ID);
       assertSpanAttributes(raiseErrorSpan, "custom-scope-flow/processors/0/processors/1", TEST_ARTIFACT_ID);
     } finally {
