@@ -31,7 +31,7 @@ import org.junit.Test;
 @Story(DEFAULT_CORE_EVENT_TRACER)
 public class FirstSuccessfulSuccessTracingTestCase extends AbstractIntegrationTestCase {
 
-  public static final String EXPECTED_ROUTE_SPAN_NAME = "mule:first-successful:route";
+  public static final String EXPECTED_ROUTE_SPAN_NAME_ATTEMPT_1 = "mule:first-successful:attempt:1";
   public static final String EXPECTED_FIRST_SUCCESSFUL_SPAN_NAME = "mule:first-successful";
   public static final String EXPECTED_LOGGER_SPAN_NAME = "mule:logger";
   public static final String FLOW = "first-successful-telemetryFlow";
@@ -64,7 +64,7 @@ public class FirstSuccessfulSuccessTracingTestCase extends AbstractIntegrationTe
           .child(EXPECTED_SET_VARIABLE_SPAN_NAME)
           .child(EXPECTED_FIRST_SUCCESSFUL_SPAN_NAME)
           .beginChildren()
-          .child(EXPECTED_ROUTE_SPAN_NAME)
+          .child(EXPECTED_ROUTE_SPAN_NAME_ATTEMPT_1)
           .beginChildren()
           .child(EXPECTED_SET_PAYLOAD_SPAN_NAME)
           .child(EXPECTED_LOGGER_SPAN_NAME)
