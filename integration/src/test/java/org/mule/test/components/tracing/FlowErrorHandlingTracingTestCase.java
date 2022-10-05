@@ -11,9 +11,10 @@ import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
 import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.DEFAULT_CORE_EVENT_TRACER;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.emptyOrNullString;
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 
 import org.mule.runtime.core.privileged.profiling.CapturedEventData;
@@ -261,6 +262,7 @@ public class FlowErrorHandlingTracingTestCase extends AbstractIntegrationTestCas
           .collect(Collectors.toList());
       assertThat(String.format("Expected exceptions for Span: [%s] differ", capturedExportedSpan), exceptions.size(), equalTo(1));
       assertExceptionData(exceptions.iterator().next(), getErrorType(branchSpanName));
+      assertThat(capturedExportedSpan.hasErrorStatus(), is(true));
     } else {
       assertThat(String.format("Unexpected Span exceptions found for Span: [%s]", capturedExportedSpan),
                  capturedExportedSpan.getEvents().size(), equalTo(0));
