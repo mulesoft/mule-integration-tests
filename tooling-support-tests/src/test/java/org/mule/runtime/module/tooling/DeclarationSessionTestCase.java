@@ -99,6 +99,11 @@ public abstract class DeclarationSessionTestCase extends AbstractFakeMuleServerT
   }
 
   @Override
+  protected boolean addExpressionLanguageMetadataService() {
+    return false;
+  }
+
+  @Override
   protected File getExpressionLanguageService() throws IOException {
     return WEAVE_SERVICE_LOCATION;
   }
