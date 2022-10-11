@@ -31,7 +31,7 @@ import org.junit.Test;
 @Story(DEFAULT_CORE_EVENT_TRACER)
 public class ParallelForEachErrorTracingTestCase extends AbstractIntegrationTestCase {
 
-  public static final String EXPECTED_ROUTE_SPAN_NAME = "mule:parallel-foreach:route";
+  public static final String EXPECTED_ROUTE_SPAN_NAME = "mule:parallel-foreach:iteration";
   public static final String EXPECTED_PARALLEL_FOREACH_SPAN_NAME = "mule:parallel-foreach";
   public static final String EXPECTED_LOGGER_SPAN_NAME = "mule:logger";
   public static final String PARALLEL_FOR_EACH_FLOW = "parallel-for-eachFlow";

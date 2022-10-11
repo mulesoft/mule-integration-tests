@@ -31,7 +31,7 @@ import org.junit.Test;
 @Story(DEFAULT_CORE_EVENT_TRACER)
 public class ForEachSuccessTracingTestCase extends AbstractIntegrationTestCase {
 
-  public static final String EXPECTED_ROUTE_SPAN_NAME = "mule:foreach:route";
+  public static final String EXPECTED_ROUTE_SPAN_NAME = "mule:foreach:iteration";
   public static final String EXPECTED_FOREACH_SPAN_NAME = "mule:foreach";
   public static final String EXPECTED_LOGGER_SPAN_NAME = "mule:logger";
   public static final String FOR_EACH_TELEMETRY_FLOW = "for-each-telemetryFlow";
