@@ -15,6 +15,7 @@ import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ErrorHan
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
 import org.junit.Before;
 import org.junit.Test;
@@ -59,6 +60,12 @@ public class TryAndErrorHandlingTestCase extends AbstractIntegrationTestCase {
     flowRunner("tryWithRecursiveOnErrorContinueInsideFlow").run();
     Message response = queueHandler.read("dlq", RECEIVE_TIMEOUT).getMessage();
     assertThat(response, notNullValue());
+  }
+
+  @Test
+  @Issue("W-11861131")
+  public void tryWithOnErrorHandlersComposition() throws Exception {
+    flowRunner("tryWithOnErrorHandlersComposition").run();
   }
 
 }
