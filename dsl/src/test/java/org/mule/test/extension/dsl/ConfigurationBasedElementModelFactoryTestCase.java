@@ -26,9 +26,9 @@ import org.mule.runtime.api.meta.model.parameter.ParameterModel;
 import org.mule.runtime.api.meta.model.parameter.ParameterizedModel;
 import org.mule.runtime.api.meta.model.source.SourceModel;
 import org.mule.runtime.ast.api.ComponentAst;
-import org.mule.runtime.config.api.dsl.model.DslElementModel;
 import org.mule.runtime.dsl.api.component.config.ComponentConfiguration;
 import org.mule.runtime.extension.api.dsl.syntax.resolver.DslSyntaxResolver;
+import org.mule.runtime.metadata.api.dsl.DslElementModel;
 import org.mule.tck.junit4.rule.DynamicPort;
 
 import java.util.List;
