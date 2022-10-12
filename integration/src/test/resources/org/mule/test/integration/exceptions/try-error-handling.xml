@@ -79,4 +79,37 @@
         </try>
     </flow>
 
+    <flow name="tryWithOnErrorHandlersComposition">
+        <set-variable variableName="test" value="#[0]"/>
+        <try>
+            <try>
+                <raise-error type="APP:TO_PROPAGATE_GLOBAL_ERROR_HANDLER"/>
+                <error-handler ref="failing-on-error-propagate-global-error-handler"/>
+            </try>
+            <set-variable variableName="test" value="#[vars.test + 1]"/>
+            <error-handler>
+                <on-error-continue>
+                    <set-variable variableName="test" value="#[vars.test + 1]"/>
+                </on-error-continue>
+            </error-handler>
+        </try>
+        <test:assert expression="#[vars.test == 3]" />
+    </flow>
+
+    <error-handler name="failing-on-error-propagate-global-error-handler">
+        <on-error-propagate>
+            <try>
+                <raise-error type="APP:TO_CONTINUE_GLOBAL_ERROR_HANDLER"/>
+                <error-handler ref="on-error-continue-global-error-handler"/>
+            </try>
+            <set-variable variableName="test" value="#[vars.test + 1]"/>
+        </on-error-propagate>
+    </error-handler>
+
+    <error-handler name="on-error-continue-global-error-handler">
+        <on-error-continue>
+            <set-variable variableName="test" value="#[vars.test + 1]"/>
+        </on-error-continue>
+    </error-handler>
+
 </mule>
