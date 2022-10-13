@@ -24,6 +24,7 @@
     <module>oauth</module>
     <module>schedulers-tests</module>
     <module>munit-tests</module>
+    <module>extensions-mule-support</module>
     <module>extensions-xml-support</module>
     <module>logging</module>
     <module>tooling-support-tests</module>
