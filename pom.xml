@@ -7,7 +7,7 @@
     <version>4.4.1-SNAPSHOT</version>
     <relativePath></relativePath>
   </parent>
-
+  
   <groupId>org.mule.tests</groupId>
   <artifactId>mule-extensions-integration-tests</artifactId>
   <version>4.4.1-SNAPSHOT</version>
@@ -41,8 +41,6 @@
 
     <muleDependenciesVersion>1.x-SNAPSHOT</muleDependenciesVersion>
     <muleTestComponentsVersion>4.4.1-SNAPSHOT</muleTestComponentsVersion>
-    <muleSdkCompatibilityApiVersion>1.0.0-SNAPSHOT</muleSdkCompatibilityApiVersion>
-    <muleSdkApiVersion>1.0.0-SNAPSHOT</muleSdkApiVersion>
   </properties>
 
   <build>
@@ -89,8 +87,8 @@
     </dependency>
      <dependency>
         <groupId>org.mule.runtime</groupId>
-        <artifactId>mule-dwb-api</artifactId>
-        <scope>provided</scope>
+        <artifactId>mule-dwb-api</artifactId> 
+        <scope>provided</scope>         
     </dependency>
     <dependency>
       <groupId>org.mule.tests</groupId>
@@ -98,19 +96,6 @@
       <version>${muleTestComponentsVersion}</version>
       <classifier>mule-plugin</classifier>
     </dependency>
-    <dependency>
-      <groupId>org.mule.sdk</groupId>
-      <artifactId>mule-sdk-compatibility-api</artifactId>
-      <version>${muleSdkCompatibilityApiVersion}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.mule.sdk</groupId>
-      <artifactId>mule-sdk-api</artifactId>
-      <version>${muleSdkApiVersion}</version>
-      <scope>test</scope>
-    </dependency>
-
   </dependencies>
 
   <repositories>
