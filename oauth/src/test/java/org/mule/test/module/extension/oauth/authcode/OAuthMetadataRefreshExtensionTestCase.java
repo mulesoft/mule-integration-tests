@@ -6,10 +6,14 @@
  */
 package org.mule.test.module.extension.oauth.authcode;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mule.runtime.api.metadata.MetadataKeyBuilder.newKey;
 import static org.mule.runtime.api.metadata.MetadataService.METADATA_SERVICE_KEY;
+import static org.mule.test.allure.AllureConstants.OauthFeature.SDK_OAUTH_SUPPORT;
+import static org.mule.test.allure.AllureConstants.SdkToolingSupport.SDK_TOOLING_SUPPORT;
+import static org.mule.test.allure.AllureConstants.SdkToolingSupport.MetadataTypeResolutionStory.METADATA_SERVICE;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.mule.runtime.api.component.location.Location;
 import org.mule.runtime.api.metadata.MetadataKeysContainer;
@@ -28,6 +32,12 @@ import javax.inject.Named;
 import org.junit.Before;
 import org.junit.Test;
 
+import io.qameta.allure.Feature;
+import io.qameta.allure.Features;
+import io.qameta.allure.Story;
+
+@Features({@Feature(SDK_OAUTH_SUPPORT), @Feature(SDK_TOOLING_SUPPORT)})
+@Story(METADATA_SERVICE)
 public class OAuthMetadataRefreshExtensionTestCase extends BaseOAuthExtensionTestCase {
 
   @Override
@@ -38,6 +48,11 @@ public class OAuthMetadataRefreshExtensionTestCase extends BaseOAuthExtensionTes
   @Inject
   @Named(METADATA_SERVICE_KEY)
   protected MetadataService metadataService;
+
+  @Override
+  public boolean addToolingObjectsToRegistry() {
+    return true;
+  }
 
   @Before
   public void setOwnerId() throws Exception {

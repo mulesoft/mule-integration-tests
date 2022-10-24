@@ -6,10 +6,13 @@
  */
 package org.mule.test.integration.lifecycle;
 
+import static org.mule.runtime.api.connectivity.ConnectivityTestingService.CONNECTIVITY_TESTING_SERVICE_KEY;
+import static org.mule.test.allure.AllureConstants.SdkToolingSupport.SDK_TOOLING_SUPPORT;
+import static org.mule.test.allure.AllureConstants.SdkToolingSupport.ConnectivityTestingStory.CONNECTIVITY_TESTING_SERVICE;
+import static org.mule.test.allure.AllureConstants.XmlSdk.XML_SDK;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.mule.runtime.api.connectivity.ConnectivityTestingService.CONNECTIVITY_TESTING_SERVICE_KEY;
-import static org.mule.test.allure.AllureConstants.XmlSdk.XML_SDK;
 
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.api.component.location.Location;
@@ -23,14 +26,22 @@ import javax.inject.Named;
 import org.junit.Test;
 
 import io.qameta.allure.Feature;
+import io.qameta.allure.Features;
+import io.qameta.allure.Story;
 
-@Feature(XML_SDK)
+@Features({@Feature(XML_SDK), @Feature(SDK_TOOLING_SUPPORT)})
+@Story(CONNECTIVITY_TESTING_SERVICE)
 public class LazySmartConnectorUsesAppConfigTestCase extends MuleArtifactFunctionalTestCase
     implements IntegrationTestCaseRunnerConfig {
 
   @Inject
   @Named(CONNECTIVITY_TESTING_SERVICE_KEY)
   private ConnectivityTestingService connectivityTestingService;
+
+  @Override
+  public boolean addToolingObjectsToRegistry() {
+    return true;
+  }
 
   @Override
   protected String getConfigFile() {

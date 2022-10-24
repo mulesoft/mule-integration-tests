@@ -6,16 +6,21 @@
  */
 package org.mule.test.module.extension.oauth.authcode;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
-import static java.util.Collections.emptyMap;
-import static java.util.Optional.of;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mule.runtime.core.api.data.sample.SampleDataService.SAMPLE_DATA_SERVICE_KEY;
+import static org.mule.test.allure.AllureConstants.OauthFeature.SDK_OAUTH_SUPPORT;
+import static org.mule.test.allure.AllureConstants.SdkToolingSupport.SDK_TOOLING_SUPPORT;
+import static org.mule.test.allure.AllureConstants.SdkToolingSupport.SampleDataStory.SAMPLE_DATA_SERVICE;
 import static org.mule.test.oauth.RefreshedOAuthSampleDataProvider.SAMPLE_ATTRIBUTES_VALUE;
 import static org.mule.test.oauth.RefreshedOAuthSampleDataProvider.SAMPLE_PAYLOAD_VALUE;
 import static org.mule.test.oauth.TestOAuthExtension.TEST_OAUTH_EXTENSION_NAME;
+
+import static java.util.Collections.emptyMap;
+import static java.util.Optional.of;
+
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.mule.runtime.api.component.location.Location;
 import org.mule.runtime.api.message.Message;
@@ -33,9 +38,16 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
+
 import org.junit.Before;
 import org.junit.Test;
 
+import io.qameta.allure.Feature;
+import io.qameta.allure.Features;
+import io.qameta.allure.Story;
+
+@Features({@Feature(SDK_OAUTH_SUPPORT), @Feature(SDK_TOOLING_SUPPORT)})
+@Story(SAMPLE_DATA_SERVICE)
 public class OAuthSampleDataRefreshExtensionTestCase extends BaseOAuthExtensionTestCase {
 
   @Override
@@ -49,6 +61,11 @@ public class OAuthSampleDataRefreshExtensionTestCase extends BaseOAuthExtensionT
 
   @Inject
   private ExtensionManager extensionManager;
+
+  @Override
+  public boolean addToolingObjectsToRegistry() {
+    return true;
+  }
 
   @Before
   public void setOwnerId() throws Exception {

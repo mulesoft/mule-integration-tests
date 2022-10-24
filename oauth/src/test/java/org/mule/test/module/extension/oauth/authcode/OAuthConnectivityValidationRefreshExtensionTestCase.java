@@ -6,11 +6,15 @@
  */
 package org.mule.test.module.extension.oauth.authcode;
 
+import static org.mule.runtime.api.connectivity.ConnectivityTestingService.CONNECTIVITY_TESTING_SERVICE_KEY;
+import static org.mule.test.allure.AllureConstants.OauthFeature.SDK_OAUTH_SUPPORT;
+import static org.mule.test.allure.AllureConstants.SdkToolingSupport.SDK_TOOLING_SUPPORT;
+import static org.mule.test.allure.AllureConstants.SdkToolingSupport.ConnectivityTestingStory.CONNECTIVITY_TESTING_SERVICE;
+
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mule.runtime.api.connectivity.ConnectivityTestingService.CONNECTIVITY_TESTING_SERVICE_KEY;
 
 import org.mule.runtime.api.component.location.Location;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
@@ -21,9 +25,16 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
+
 import org.junit.Before;
 import org.junit.Test;
 
+import io.qameta.allure.Feature;
+import io.qameta.allure.Features;
+import io.qameta.allure.Story;
+
+@Features({@Feature(SDK_OAUTH_SUPPORT), @Feature(SDK_TOOLING_SUPPORT)})
+@Story(CONNECTIVITY_TESTING_SERVICE)
 public class OAuthConnectivityValidationRefreshExtensionTestCase extends BaseOAuthExtensionTestCase {
 
   @Override
@@ -34,6 +45,11 @@ public class OAuthConnectivityValidationRefreshExtensionTestCase extends BaseOAu
   @Inject
   @Named(CONNECTIVITY_TESTING_SERVICE_KEY)
   protected ConnectivityTestingService connectivityTestingService;
+
+  @Override
+  public boolean addToolingObjectsToRegistry() {
+    return true;
+  }
 
   @Before
   public void setOwnerId() throws Exception {

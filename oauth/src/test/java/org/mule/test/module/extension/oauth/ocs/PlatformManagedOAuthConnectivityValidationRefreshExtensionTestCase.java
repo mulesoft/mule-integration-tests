@@ -6,13 +6,19 @@
  */
 package org.mule.test.module.extension.oauth.ocs;
 
+import static org.mule.runtime.api.connectivity.ConnectivityTestingService.CONNECTIVITY_TESTING_SERVICE_KEY;
+import static org.mule.test.allure.AllureConstants.OauthFeature.OCS_SUPPORT;
+import static org.mule.test.allure.AllureConstants.OauthFeature.OcsStory.OCS_CONNECTION_VALIDATION;
+import static org.mule.test.allure.AllureConstants.SdkToolingSupport.SDK_TOOLING_SUPPORT;
+import static org.mule.test.allure.AllureConstants.SdkToolingSupport.ConnectivityTestingStory.CONNECTIVITY_TESTING_SERVICE;
+import static org.mule.test.oauth.TestOAuthRefreshValidationProvider.TIMES_REFRESH_IS_NEEDED;
+
 import static java.util.Arrays.asList;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mule.test.oauth.TestOAuthRefreshValidationProvider.TIMES_REFRESH_IS_NEEDED;
-import static org.mule.runtime.api.connectivity.ConnectivityTestingService.CONNECTIVITY_TESTING_SERVICE_KEY;
 
 import org.mule.runtime.api.component.location.Location;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
@@ -22,10 +28,18 @@ import java.util.Collection;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
 
+import io.qameta.allure.Feature;
+import io.qameta.allure.Features;
+import io.qameta.allure.Stories;
+import io.qameta.allure.Story;
+
+@Features({@Feature(SDK_TOOLING_SUPPORT), @Feature(OCS_SUPPORT)})
+@Stories({@Story(CONNECTIVITY_TESTING_SERVICE), @Story(OCS_CONNECTION_VALIDATION)})
 public class PlatformManagedOAuthConnectivityValidationRefreshExtensionTestCase
     extends PlatformManagedOAuthConfigurationTestCase {
 
@@ -34,6 +48,11 @@ public class PlatformManagedOAuthConnectivityValidationRefreshExtensionTestCase
   @Inject
   @Named(CONNECTIVITY_TESTING_SERVICE_KEY)
   protected ConnectivityTestingService connectivityTestingService;
+
+  @Override
+  public boolean addToolingObjectsToRegistry() {
+    return true;
+  }
 
   @Parameterized.Parameters(name = "{0}")
   public static Collection<Object[]> data() {
