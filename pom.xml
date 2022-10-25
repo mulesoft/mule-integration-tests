@@ -38,6 +38,8 @@
     <apacheHttpClientVersion>4.5.13</apacheHttpClientVersion>
     <springVersion>5.1.6.RELEASE</springVersion>
     <muleDependenciesVersion>1.x-SNAPSHOT</muleDependenciesVersion>
+    <muleSdkCompatibilityApiVersion>1.0.0-SNAPSHOT</muleSdkCompatibilityApiVersion>
+    <muleSdkApiVersion>1.0.0-SNAPSHOT</muleSdkApiVersion>
   </properties>
 
   <build>
@@ -84,8 +86,20 @@
     </dependency>
      <dependency>
         <groupId>org.mule.runtime</groupId>
-        <artifactId>mule-dwb-api</artifactId> 
-        <scope>provided</scope>         
+        <artifactId>mule-dwb-api</artifactId>
+        <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mule.sdk</groupId>
+      <artifactId>mule-sdk-compatibility-api</artifactId>
+      <version>${muleSdkCompatibilityApiVersion}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mule.sdk</groupId>
+      <artifactId>mule-sdk-api</artifactId>
+      <version>${muleSdkApiVersion}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
