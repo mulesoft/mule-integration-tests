@@ -67,7 +67,7 @@ public class FlowMessageStatisticsTestCase extends AbstractIntegrationTestCase {
 
     httpClient.send(request, HttpRequestOptions.builder().responseTimeout(RECEIVE_TIMEOUT).build());
 
-    long totalMessagesDispatched = applicationStatistics.getTotalMessagesDispatched();
+    long totalMessagesDispatched = applicationStatistics.getTotalDispatchedMessages();
     long totalEventsReceived = applicationStatistics.getTotalEventsReceived();
 
     assertThat(totalMessagesDispatched, is(1L));
@@ -84,7 +84,7 @@ public class FlowMessageStatisticsTestCase extends AbstractIntegrationTestCase {
 
     httpClient.send(request, HttpRequestOptions.builder().responseTimeout(RECEIVE_TIMEOUT).build());
 
-    long totalMessagesDispatched = applicationStatistics.getTotalMessagesDispatched();
+    long totalMessagesDispatched = applicationStatistics.getTotalDispatchedMessages();
     long totalEventsReceived = applicationStatistics.getTotalEventsReceived();
 
     assertThat(totalMessagesDispatched, is(1L));
