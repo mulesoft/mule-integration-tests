@@ -38,8 +38,6 @@
     <apacheHttpClientVersion>4.5.13</apacheHttpClientVersion>
     <springVersion>5.1.6.RELEASE</springVersion>
     <muleDependenciesVersion>1.0.11</muleDependenciesVersion>
-    <muleSdkCompatibilityApiVersion>1.0.0-SNAPSHOT</muleSdkCompatibilityApiVersion>
-    <muleSdkApiVersion>1.0.0-SNAPSHOT</muleSdkApiVersion>
   </properties>
 
   <build>
@@ -84,22 +82,10 @@
       <classifier>mule-service</classifier>
       <scope>provided</scope>
     </dependency>
-     <dependency>
-        <groupId>org.mule.runtime</groupId>
-        <artifactId>mule-dwb-api</artifactId>
-        <scope>provided</scope>
-    </dependency>
     <dependency>
-      <groupId>org.mule.sdk</groupId>
-      <artifactId>mule-sdk-compatibility-api</artifactId>
-      <version>${muleSdkCompatibilityApiVersion}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.mule.sdk</groupId>
-      <artifactId>mule-sdk-api</artifactId>
-      <version>${muleSdkApiVersion}</version>
-      <scope>test</scope>
+      <groupId>org.mule.runtime</groupId>
+      <artifactId>mule-dwb-api</artifactId>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 
@@ -143,10 +129,10 @@
                       <message>No Snapshots Allowed in Deps!</message>
                       <excludes>
                         <exclude>com.mulesoft.munit:*</exclude>
-                          <exclude>org.mule.weave:*</exclude>
-                          <exclude>org.mule.services:*</exclude>
-                          <exclude>org.mule.tools.maven:mule-classloader-model</exclude>
-                          <exclude>org.mule.modules:mule-module-cors-kernel</exclude>
+                        <exclude>org.mule.weave:*</exclude>
+                        <exclude>org.mule.services:*</exclude>
+                        <exclude>org.mule.tools.maven:mule-classloader-model</exclude>
+                        <exclude>org.mule.modules:mule-module-cors-kernel</exclude>
                       </excludes>
                     </requireReleaseDeps>
                     <requireReleaseVersion>
