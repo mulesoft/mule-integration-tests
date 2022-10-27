@@ -13,9 +13,12 @@ import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceSto
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 
+import org.mule.runtime.api.lifecycle.Startable;
 import org.mule.runtime.core.privileged.profiling.CapturedExportedSpan;
 import org.mule.runtime.core.privileged.profiling.ExportedSpanCapturer;
 import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
+import org.mule.tck.probe.JUnitProbe;
+import org.mule.tck.probe.PollingProber;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy;
 
@@ -35,9 +38,12 @@ import org.junit.Test;
 @Story(DEFAULT_CORE_EVENT_TRACER)
 public class CustomSpanNameAndAttributesTestCase extends AbstractIntegrationTestCase {
 
-  public static final String FLOW_CUSTOM_SPAN_NAME_AND_ATTRIBUTES = "flow-custom-span-name-and-attributes";
-  public static final String EXPECTED_FLOW_SPAN_NAME = "mule:flow";
+  public static final String EXPECTED_FLOW_SPAN_NAME = "pet-store-list-modified";
   public static final String EXPECTED_CUSTOM_SPAN_NAME = "customSpanName";
+  public static final String FLOW_CUSTOM_SPAN_NAME_AND_ATTRIBUTES = "flow-custom-span-name-and-attributes";
+
+  private static final int TIMEOUT_MILLIS = 5000;
+  private static final int POLL_DELAY_MILLIS = 100;
 
   private ExportedSpanCapturer spanCapturer;
 
@@ -61,10 +67,26 @@ public class CustomSpanNameAndAttributesTestCase extends AbstractIntegrationTest
 
   @Test
   public void testCustomSpanNameAndAttributes() throws Exception {
-    flowRunner(FLOW_CUSTOM_SPAN_NAME_AND_ATTRIBUTES).run().getContext();
-    Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
-    assertThat(exportedSpans, hasSize(2));
+    startFlow(FLOW_CUSTOM_SPAN_NAME_AND_ATTRIBUTES);
 
+    PollingProber prober = new PollingProber(TIMEOUT_MILLIS, POLL_DELAY_MILLIS);
+
+    prober.check(new JUnitProbe() {
+
+      @Override
+      protected boolean test() {
+        Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
+        assertThat(exportedSpans, hasSize(2));
+        return true;
+      }
+
+      @Override
+      public String describeFailure() {
+        return "No spans were captured";
+      }
+    });
+
+    Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
     SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
     expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
         .beginChildren()
@@ -74,10 +96,22 @@ public class CustomSpanNameAndAttributesTestCase extends AbstractIntegrationTest
     expectedSpanHierarchy.assertSpanTree();
 
     CapturedExportedSpan capturedExportedSpan =
-        spanCapturer.getExportedSpans().stream().filter(exportedSpan -> exportedSpan.getName().equals(EXPECTED_CUSTOM_SPAN_NAME))
+        exportedSpans.stream().filter(exportedSpan -> exportedSpan.getName().equals(EXPECTED_CUSTOM_SPAN_NAME))
             .findFirst()
             .orElseThrow(() -> new AssertionFailedError("No span with customSpanName found!"));
+
     assertThat(capturedExportedSpan.getAttributes(), Matchers.hasEntry("attributeAddedByAddCurrentSpanAttribute", "ok"));
     assertThat(capturedExportedSpan.getAttributes(), Matchers.hasEntry("attributeAddedByAddCurrentSpanAttributes", "ok"));
+
+    CapturedExportedSpan flowExportedSpan =
+        exportedSpans.stream().filter(exportedSpan -> exportedSpan.getName().equals(EXPECTED_FLOW_SPAN_NAME))
+            .findFirst()
+            .orElseThrow(() -> new AssertionFailedError("No flow exported span found!"));
+
+    assertThat(flowExportedSpan.getAttributes(), Matchers.hasEntry("dog", "Jack, the legendary fake border collie"));
+  }
+
+  private void startFlow(String flowName) throws Exception {
+    ((Startable) getFlowConstruct(flowName)).start();
   }
 }
