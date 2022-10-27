@@ -6,13 +6,16 @@
  */
 package org.mule.test.routing;
 
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mule.runtime.api.component.location.Location.builderFromStringRepresentation;
 import static org.mule.runtime.api.metadata.MetadataService.METADATA_SERVICE_KEY;
 import static org.mule.tck.junit4.matcher.metadata.MetadataKeyResultSuccessMatcher.isSuccess;
 import static org.mule.test.allure.AllureConstants.LazyInitializationFeature.LAZY_INITIALIZATION;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ScatterGatherStory.SCATTER_GATHER;
+import static org.mule.test.allure.AllureConstants.SdkToolingSupport.SDK_TOOLING_SUPPORT;
+import static org.mule.test.allure.AllureConstants.SdkToolingSupport.MetadataTypeResolutionStory.METADATA_SERVICE;
+
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.mule.runtime.api.meta.model.operation.OperationModel;
 import org.mule.runtime.api.metadata.MetadataService;
@@ -29,10 +32,11 @@ import org.junit.Test;
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Features;
+import io.qameta.allure.Stories;
 import io.qameta.allure.Story;
 
-@Features({@Feature(LAZY_INITIALIZATION), @Feature(ROUTERS)})
-@Story(SCATTER_GATHER)
+@Features({@Feature(LAZY_INITIALIZATION), @Feature(SDK_TOOLING_SUPPORT), @Feature(ROUTERS)})
+@Stories({@Story(METADATA_SERVICE), @Story(SCATTER_GATHER)})
 public class RoutesLazyInitTestCase extends AbstractIntegrationTestCase {
 
   @Override
@@ -48,6 +52,11 @@ public class RoutesLazyInitTestCase extends AbstractIntegrationTestCase {
   @Override
   protected String getConfigFile() {
     return "lazy-routes.xml";
+  }
+
+  @Override
+  public boolean addToolingObjectsToRegistry() {
+    return true;
   }
 
   @Inject
