@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.mule.tests</groupId>
         <artifactId>mule-extensions-integration-tests</artifactId>
-        <version>4.2.2-20221024</version>
+        <version>4.2.2-20221027</version>
     </parent>
     <artifactId>mule-tests-logging</artifactId>
     <name>Logging Integration Tests</name>
