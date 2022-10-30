@@ -72,9 +72,7 @@ public class ErrorHandlerNotificationTestCase extends AbstractNotificationTestCa
 
   @Override
   public RestrictedNode getSpecification() {
-    return new Node()
-        .serial(node(new IntegerAction(PROCESS_START))
-            .serial(node(new IntegerAction(PROCESS_END))));
+    return new Node().parallel(node(new IntegerAction(PROCESS_START))).parallel(node(new IntegerAction(PROCESS_END)));
   }
 
   private RestrictedNode node(Action action) {
