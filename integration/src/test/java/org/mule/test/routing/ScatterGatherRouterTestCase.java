@@ -265,7 +265,7 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
   @Test
   @Issue("W-10619784")
   @Description("With On Error continue, even when forEach has failed with an error within any route, " +
-          "each route should be processed accordingly.")
+      "each route should be processed accordingly.")
   public void foreachErrorInScatterGather() throws Exception {
     CoreEvent event = flowRunner("ForeachErrorInScatterGather").run();
     assertThat(event.getVariables().get("variable0").getValue(), equalTo(1));
