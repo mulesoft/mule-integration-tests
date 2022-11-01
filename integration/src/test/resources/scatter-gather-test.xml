@@ -449,4 +449,42 @@
         </scatter-gather>
     </flow>
 
+    <flow name="ForeachErrorInScatterGather">
+        <set-variable variableName="test" value="#[0]"/>
+        <scatter-gather>
+            <route>
+                <set-variable variableName="test" value="0"/>
+                <try >
+                    <foreach collection="#[[1, 2, 3, 4, 5]]">
+                        <raise-error type="APP:SOME"/>
+                        <set-variable variableName="test" value="#[vars.test + 1]"/>
+                    </foreach>
+                    <set-variable variableName="test" value="#[vars.test + 1]"/>
+                    <error-handler>
+                        <on-error-continue/>
+                    </error-handler>
+                </try>
+                <set-variable variableName="test" value="#[vars.test + 1]"/>
+                <set-payload value="#[vars.test]"/>
+            </route>
+            <route>
+                <set-variable variableName="test" value="0"/>
+                <try>
+                    <foreach collection="#[[1, 2, 3, 4, 5]]">
+                        <raise-error type="APP:SOME"/>
+                        <set-variable variableName="test" value="#[vars.test + 1]"/>
+                    </foreach>
+                    <set-variable variableName="test" value="#[vars.test + 1]"/>
+                    <error-handler>
+                        <on-error-continue/>
+                    </error-handler>
+                </try>
+                <set-variable variableName="test" value="#[vars.test + 1]"/>
+                <set-payload value="#[vars.test]"/>
+            </route>
+        </scatter-gather>
+        <set-variable variableName="variable0" value="#[payload[0].payload]"/>
+        <set-variable variableName="variable1" value="#[payload[1].payload]"/>
+    </flow>
+
 </mule>
