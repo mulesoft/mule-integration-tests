@@ -30,7 +30,8 @@ import org.mule.runtime.module.artifact.api.classloader.MuleDeployableArtifactCl
 import org.mule.runtime.module.artifact.api.descriptor.ApplicationDescriptor;
 import org.mule.runtime.module.artifact.api.descriptor.ArtifactPluginDescriptor;
 import org.mule.runtime.module.artifact.api.descriptor.BundleDependency;
-import org.mule.runtime.module.artifact.api.descriptor.ClassLoaderModel;
+import org.mule.runtime.module.artifact.api.descriptor.ClassLoaderConfiguration;
+import org.mule.runtime.module.artifact.api.descriptor.ClassLoaderConfiguration.ClassLoaderConfigurationBuilder;
 
 import java.io.File;
 import java.io.IOException;
@@ -64,12 +65,12 @@ public class PluginClassloaderCreationBenchmark extends AbstractArtifactActivati
   private final String package1Name = "module&plugin-package";
   private final String package2Name = "org.mule.sdk.api.package";
   private MuleDeployableArtifactClassLoader applicationClassLoader;
-  private ClassLoaderModel pluginDependantClassLoaderModel;
-  private ClassLoaderModel pluginExportingPackageClassLoaderModel;
-  private ClassLoaderModel plugin2ExportingPackageClassLoaderModel;
+  private ClassLoaderConfiguration pluginDependantClassLoaderConfiguration;
+  private ClassLoaderConfiguration pluginExportingPackageClassLoaderConfiguration;
+  private ClassLoaderConfiguration plugin2ExportingPackageClassLoaderConfiguration;
   private List<MuleModule> privilegeMuleModuleSingletonList;
-  private ClassLoaderModel pluginDependantWithLocalPackageClassLoaderModel;
-  private ClassLoaderModel pluginWithLocalPackageClassLoaderModel;
+  private ClassLoaderConfiguration pluginDependantWithLocalPackageClassLoaderConfiguration;
+  private ClassLoaderConfiguration pluginWithLocalPackageClassLoaderConfiguration;
 
   private MuleModule muleModule;
   private List<MuleModule> muleModuleSingletonList;
@@ -95,20 +96,20 @@ public class PluginClassloaderCreationBenchmark extends AbstractArtifactActivati
     applicationClassLoader = getTestApplicationClassLoader(emptyList());
     BundleDependency pluginDependency = new BundleDependency.Builder().setScope(COMPILE).setDescriptor(PLUGIN2_BUNDLE_DESCRIPTOR)
         .setBundleUri(new File("test").toURI()).build();
-    pluginDependantClassLoaderModel =
-        new ClassLoaderModel.ClassLoaderModelBuilder().dependingOn(singleton(pluginDependency)).build();
-    pluginExportingPackageClassLoaderModel =
-        new ClassLoaderModel.ClassLoaderModelBuilder().exportingPackages(singleton(plugin2ExportedPackage))
+    pluginDependantClassLoaderConfiguration =
+        new ClassLoaderConfigurationBuilder().dependingOn(singleton(pluginDependency)).build();
+    pluginExportingPackageClassLoaderConfiguration =
+        new ClassLoaderConfigurationBuilder().exportingPackages(singleton(plugin2ExportedPackage))
             .build();
 
-    ClassLoaderModel plugin2ClassLoaderModel = new ClassLoaderModel.ClassLoaderModelBuilder()
+    ClassLoaderConfiguration plugin2ClassLoaderConfiguration = new ClassLoaderConfigurationBuilder()
         .exportingPrivilegedPackages(singleton(PRIVILEGED_PACKAGE), singleton(PLUGIN_ARTIFACT_ID1)).build();
-    plugin2DescriptorWithPrivilege.setClassLoaderModel(plugin2ClassLoaderModel);
+    plugin2DescriptorWithPrivilege.setClassLoaderConfiguration(plugin2ClassLoaderConfiguration);
 
-    plugin2ExportingPackageClassLoaderModel =
-        new ClassLoaderModel.ClassLoaderModelBuilder().exportingPackages(singleton(pluginPackage)).build();
-    pluginDependantWithLocalPackageClassLoaderModel =
-        new ClassLoaderModel.ClassLoaderModelBuilder().withLocalPackages(singleton(pluginPackage))
+    plugin2ExportingPackageClassLoaderConfiguration =
+        new ClassLoaderConfigurationBuilder().exportingPackages(singleton(pluginPackage)).build();
+    pluginDependantWithLocalPackageClassLoaderConfiguration =
+        new ClassLoaderConfigurationBuilder().withLocalPackages(singleton(pluginPackage))
             .dependingOn(singleton(pluginDependency)).build();
 
     muleModule = new MuleModule("TEST", Stream.of(package1Name, package2Name).collect(toSet()), emptySet(), emptySet(),
@@ -119,7 +120,7 @@ public class PluginClassloaderCreationBenchmark extends AbstractArtifactActivati
         new DefaultArtifactClassLoaderResolver(createContainerClassLoader(moduleRepositoryWithModules),
                                                moduleRepositoryWithModules, nativeLibraryFinderFactory);
 
-    pluginWithLocalPackageClassLoaderModel = new ClassLoaderModel.ClassLoaderModelBuilder()
+    pluginWithLocalPackageClassLoaderConfiguration = new ClassLoaderConfigurationBuilder()
         .withLocalPackages(Stream.of(package1Name, package2Name).collect(toSet())).build();
 
     moduleRepositoryForPrivilegedContainerAccess = new DummyModuleRepository(privilegeMuleModuleSingletonList);
@@ -132,8 +133,8 @@ public class PluginClassloaderCreationBenchmark extends AbstractArtifactActivati
   @Benchmark
   @BenchmarkMode(AverageTime)
   public MuleArtifactClassLoader createDependantPluginClassLoader() {
-    plugin1Descriptor.setClassLoaderModel(pluginDependantClassLoaderModel);
-    plugin2Descriptor.setClassLoaderModel(pluginExportingPackageClassLoaderModel);
+    plugin1Descriptor.setClassLoaderConfiguration(pluginDependantClassLoaderConfiguration);
+    plugin2Descriptor.setClassLoaderConfiguration(pluginExportingPackageClassLoaderConfiguration);
     return artifactClassLoaderResolver.createMulePluginClassLoader(applicationClassLoader, plugin1Descriptor,
                                                                    (apds, d) -> of(plugin2Descriptor));
   }
@@ -148,7 +149,7 @@ public class PluginClassloaderCreationBenchmark extends AbstractArtifactActivati
   @Benchmark
   @BenchmarkMode(AverageTime)
   public MuleArtifactClassLoader createsPluginClassLoaderWithPrivilegedPluginAccess() {
-    plugin1Descriptor.setClassLoaderModel(pluginDependantClassLoaderModel);
+    plugin1Descriptor.setClassLoaderConfiguration(pluginDependantClassLoaderConfiguration);
     return artifactClassLoaderResolver.createMulePluginClassLoader(applicationClassLoader, plugin1Descriptor,
                                                                    (apds, d) -> of(plugin2Descriptor));
   }
@@ -156,8 +157,8 @@ public class PluginClassloaderCreationBenchmark extends AbstractArtifactActivati
   @Benchmark
   @BenchmarkMode(AverageTime)
   public MuleArtifactClassLoader createPluginClassLoaderWithExportedLocalPackage() {
-    plugin2Descriptor.setClassLoaderModel(plugin2ExportingPackageClassLoaderModel);
-    plugin1Descriptor.setClassLoaderModel(pluginDependantWithLocalPackageClassLoaderModel);
+    plugin2Descriptor.setClassLoaderConfiguration(plugin2ExportingPackageClassLoaderConfiguration);
+    plugin1Descriptor.setClassLoaderConfiguration(pluginDependantWithLocalPackageClassLoaderConfiguration);
     return artifactClassLoaderResolver.createMulePluginClassLoader(applicationClassLoader, plugin1Descriptor,
                                                                    (apds, d) -> of(plugin2Descriptor));
   }
@@ -165,7 +166,7 @@ public class PluginClassloaderCreationBenchmark extends AbstractArtifactActivati
   @Benchmark
   @BenchmarkMode(AverageTime)
   public MuleArtifactClassLoader createPluginClassLoaderWithIgnoredLocalPackages() {
-    plugin1Descriptor.setClassLoaderModel(pluginWithLocalPackageClassLoaderModel);
+    plugin1Descriptor.setClassLoaderConfiguration(pluginWithLocalPackageClassLoaderConfiguration);
     return artifactClassLoaderResolverWithModules
         .createMulePluginClassLoader(applicationClassLoader, plugin1Descriptor, (apds, d) -> empty());
   }
@@ -181,7 +182,7 @@ public class PluginClassloaderCreationBenchmark extends AbstractArtifactActivati
     ApplicationDescriptor descriptor = new ApplicationDescriptor(applicationName);
     descriptor.setArtifactLocation(new File(muleHomeFolder, applicationName));
     descriptor.setPlugins(new HashSet<>(plugins));
-    descriptor.setClassLoaderModel(new ClassLoaderModel.ClassLoaderModelBuilder().exportingPackages(exportedPackages).build());
+    descriptor.setClassLoaderConfiguration(new ClassLoaderConfigurationBuilder().exportingPackages(exportedPackages).build());
 
     return artifactClassLoaderResolver.createApplicationClassLoader(descriptor, () -> domainClassLoader);
   }
