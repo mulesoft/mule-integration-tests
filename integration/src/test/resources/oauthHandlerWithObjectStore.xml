@@ -7,20 +7,25 @@ http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/cu
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/oauth2-provider http://www.mulesoft.org/schema/mule/oauth2-provider/current/mule-oauth2-provider.xsd
 http://www.mulesoft.org/schema/mule/sftp http://www.mulesoft.org/schema/mule/sftp/current/mule-sftp.xsd">
-    <os:object-store name="client_os" doc:name="Object store"/>
-    <os:object-store name="token_os" doc:name="Object store" />
-    <http:listener-config name="HTTP_Listener_config1" dqoc:name="HTTP Listener config" doc:id="d32fd3c2-d8dd-4b56-bee1-12055b53e61d" >
+    <os:object-store name="client_os" persistent="false" />
+    <os:object-store name="token_os" persistent="false" />
+    <http:listener-config name="HTTP_Listener_config1"  >
         <http:listener-connection host="0.0.0.0" port="8081" />
     </http:listener-config>
-    <oauth2-provider:config name="OAuth2_Provider_Config" doc:name="OAuth2 Provider Config" listenerConfig="HTTP_Listener_config1" clientStore="client_os" supportedGrantTypes="CLIENT_CREDENTIALS" >
+    <oauth2-provider:config name="OAuth2_Provider_Config"  listenerConfig="HTTP_Listener_config1" clientStore="client_os" supportedGrantTypes="CLIENT_CREDENTIALS" >
         <oauth2-provider:token-config tokenStore="token_os" />
     </oauth2-provider:config>
     <flow name="mule-oauth-providerFlow" >
         <http:listener doc:name="Listener" config-ref="HTTP_Listener_config1" path="/createClient"/>
-        <oauth2-provider:create-client doc:name="Create client" doc:id="5d2dafd1-a826-473c-847b-4e40ec66b7a4" config-ref="OAuth2_Provider_Config" clientId="#[attributes.headers.client_id]" type="CONFIDENTIAL" secret="#[attributes.headers.client_secret]" clientName="#[attributes.headers.client_name]" description='#[""]' principal='#[""]' redirectUris='#[["abc.com"]]' authorizedGrantTypes='#[["CLIENT_CREDENTIALS"]]' failIfPresent="true"/>
+        <oauth2-provider:create-client doc:name="Create client" config-ref="OAuth2_Provider_Config" clientId="#[attributes.headers.client_id]" type="CONFIDENTIAL" secret="#[attributes.headers.client_secret]" clientName="#[attributes.headers.client_name]" description='#[""]' principal='#[""]' redirectUris='#[["abc.com"]]' authorizedGrantTypes='#[["CLIENT_CREDENTIALS"]]' failIfPresent="true"/>
         <set-payload value='#["Client Created"]' doc:name="Set Payload" />
     </flow>
-    <flow name="mule-oauth-providerFlow1" >
+<!--    <flow name="mule-oauth-providerFlow1" >
+        <http:listener doc:name="Listener" config-ref="HTTP_Listener_config1" path="/token"/>
+        <oauth2-provider:token  config-ref="OAuth2_Provider_Config" clientId="#[attributes.headers.client_id]" type="CONFIDENTIAL" secret="#[attributes.headers.client_secret]" description='#[""]' principal='#[""]' redirectUris='#[["abc.com"]]' authorizedGrantTypes='#[["CLIENT_CREDENTIALS"]]' failIfPresent="true"/>
+        <set-payload value='#[access_token]'/>
+    </flow>-->
+    <flow name="mule-oauth-providerFlow2" >
         <http:listener doc:name="Listener" config-ref="HTTP_Listener_config1" path="/validate"/>
         <oauth2-provider:validate-token doc:name="Validate token" config-ref="OAuth2_Provider_Config"/>
         <set-payload value="#[payload]" />

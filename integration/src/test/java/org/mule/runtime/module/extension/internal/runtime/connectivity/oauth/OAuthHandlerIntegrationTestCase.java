@@ -34,6 +34,7 @@ import java.util.List;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Issue;
+import org.json.JSONObject;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -88,16 +89,39 @@ public class OAuthHandlerIntegrationTestCase extends MuleArtifactFunctionalTestC
   public void execute() throws Exception {
 
     // HttpRequest request = HttpRequest.builder().uri("http://localhost:" + port.getNumber() + "/createClientz").method(GET)
-    HttpRequest request = HttpRequest.builder().uri("http://localhost:" + port + "/createClient").method(GET)
-        .addHeader("client_id", "abc")
+    // Create client
+    HttpRequest request = HttpRequest.builder().uri("http://localhost:" + port + "/createClient").method(POST)
+        .addHeader("client_id", "abc8")
         .addHeader("client_secret", "abcdefg")
-        .addHeader("client_name", "highkl")
+        .addHeader("client_name", "ryz")
         .build();
+
     HttpResponse response = httpClient.send(request, HttpRequestOptions.builder().responseTimeout(RESPONSE_TIMEOUT).build());
     assertThat(response.getStatusCode(), is(HTTP_STATUS_OK));
     String content = IOUtils.toString(response.getEntity().getContent());
-    System.out.println("Content" + content);
-    // awaitJobTermination();
+    System.out.println("Content:" + content);
+
+
+    HttpRequest requestToken = HttpRequest.builder().uri("http://localhost:" + port + "/token").method(POST)
+        .addHeader("client_id", "abc8")
+        .addHeader("client_secret", "abcdefg")
+        .addHeader("grant_type", "CLIENT_CREDENTIALS")
+        .build();
+    HttpResponse responseToken =
+        httpClient.send(requestToken, HttpRequestOptions.builder().responseTimeout(RESPONSE_TIMEOUT).build());
+    assertThat(responseToken.getStatusCode(), is(HTTP_STATUS_OK));
+    content = IOUtils.toString(responseToken.getEntity().getContent());
+    JSONObject jsonResponse = new JSONObject(content);
+    String token = (String) jsonResponse.get("access_token");
+    System.out.println("Token Content" + token);
+
+    HttpRequest requestValidate = HttpRequest.builder().uri("http://localhost:" + port + "/validate").method(POST)
+        .addHeader("Authorization", "Bearer " + token)
+        .build();
+    HttpResponse responseValidate =
+        httpClient.send(requestValidate, HttpRequestOptions.builder().responseTimeout(RESPONSE_TIMEOUT).build());
+    assertThat(responseToken.getStatusCode(), is(HTTP_STATUS_OK));
+
   }
 
   private static final String getBasicAuthenticationHeader(String username, String password) {
