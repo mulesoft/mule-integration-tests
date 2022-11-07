@@ -27,7 +27,8 @@ import org.mule.runtime.module.artifact.api.classloader.MuleArtifactClassLoader;
 import org.mule.runtime.module.artifact.api.classloader.MuleDeployableArtifactClassLoader;
 import org.mule.runtime.module.artifact.api.descriptor.ApplicationDescriptor;
 import org.mule.runtime.module.artifact.api.descriptor.ArtifactPluginDescriptor;
-import org.mule.runtime.module.artifact.api.descriptor.ClassLoaderModel;
+import org.mule.runtime.module.artifact.api.descriptor.ClassLoaderConfiguration;
+import org.mule.runtime.module.artifact.api.descriptor.ClassLoaderConfiguration.ClassLoaderConfigurationBuilder;
 
 import java.io.File;
 import java.io.IOException;
@@ -55,7 +56,7 @@ public class ApplicationClassloaderCreationBenchmark extends AbstractArtifactAct
   private ApplicationDescriptor applicationDescriptor;
   private MuleDeployableArtifactClassLoader customDomainClassLoader;
   private MuleDeployableArtifactClassLoader domainClassLoader;
-  private ClassLoaderModel classLoaderModel;
+  private ClassLoaderConfiguration classLoaderConfiguration;
   private MuleDeployableArtifactClassLoader applicationClassLoaderForCache;
   private ApplicationDescriptor newApplicationDescriptorForCache;
   private MuleArtifactClassLoader plugin2ClassLoaderForCache;
@@ -82,7 +83,7 @@ public class ApplicationClassloaderCreationBenchmark extends AbstractArtifactAct
     customDomainClassLoader = artifactClassLoaderResolver.createDomainClassLoader(customDomainDescriptor);
     domainClassLoader = getTestDomainClassLoader(emptyList());
     Set<String> applicationExportedPackage = Stream.of(onlyAppPackageName, repeatedPackageName).collect(toSet());
-    classLoaderModel = new ClassLoaderModel.ClassLoaderModelBuilder().exportingPackages(applicationExportedPackage).build();
+    classLoaderConfiguration = new ClassLoaderConfigurationBuilder().exportingPackages(applicationExportedPackage).build();
 
     applicationClassLoaderForCache =
         artifactClassLoaderResolver.createApplicationClassLoader(applicationDescriptor, () -> domainClassLoader);
@@ -101,7 +102,7 @@ public class ApplicationClassloaderCreationBenchmark extends AbstractArtifactAct
   @Benchmark
   @BenchmarkMode(AverageTime)
   public MuleDeployableArtifactClassLoader createApplicationClassLoaderWithExportedPackages() {
-    applicationDescriptor.setClassLoaderModel(classLoaderModel);
+    applicationDescriptor.setClassLoaderConfiguration(classLoaderConfiguration);
     return artifactClassLoaderResolverWithModules.createApplicationClassLoader(applicationDescriptor,
                                                                                () -> domainClassLoader);
   }
