@@ -10,6 +10,7 @@ package org.mule.test.components.tracing;
 import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.DEFAULT_CORE_EVENT_TRACER;
 
+import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 
@@ -29,7 +30,6 @@ import javax.inject.Inject;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
 import junit.framework.AssertionFailedError;
-import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,7 +38,7 @@ import org.junit.Test;
 @Story(DEFAULT_CORE_EVENT_TRACER)
 public class CustomSpanNameAndAttributesTestCase extends AbstractIntegrationTestCase {
 
-  public static final String EXPECTED_FLOW_SPAN_NAME = "pet-store-list-modified";
+  public static final String EXPECTED_SOURCE_SPAN_NAME = "pet-store-list-modified";
   public static final String EXPECTED_CUSTOM_SPAN_NAME = "customSpanName";
   public static final String FLOW_CUSTOM_SPAN_NAME_AND_ATTRIBUTES = "flow-custom-span-name-and-attributes";
 
@@ -88,7 +88,7 @@ public class CustomSpanNameAndAttributesTestCase extends AbstractIntegrationTest
 
     Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
     SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
-    expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
+    expectedSpanHierarchy.withRoot(EXPECTED_SOURCE_SPAN_NAME)
         .beginChildren()
         .child(EXPECTED_CUSTOM_SPAN_NAME)
         .endChildren();
@@ -100,15 +100,15 @@ public class CustomSpanNameAndAttributesTestCase extends AbstractIntegrationTest
             .findFirst()
             .orElseThrow(() -> new AssertionFailedError("No span with customSpanName found!"));
 
-    assertThat(capturedExportedSpan.getAttributes(), Matchers.hasEntry("attributeAddedByAddCurrentSpanAttribute", "ok"));
-    assertThat(capturedExportedSpan.getAttributes(), Matchers.hasEntry("attributeAddedByAddCurrentSpanAttributes", "ok"));
+    assertThat(capturedExportedSpan.getAttributes(), hasEntry("attributeAddedByAddCurrentSpanAttribute", "ok"));
+    assertThat(capturedExportedSpan.getAttributes(), hasEntry("attributeAddedByAddCurrentSpanAttributes", "ok"));
 
-    CapturedExportedSpan flowExportedSpan =
-        exportedSpans.stream().filter(exportedSpan -> exportedSpan.getName().equals(EXPECTED_FLOW_SPAN_NAME))
+    CapturedExportedSpan sourceExportedSpan =
+        exportedSpans.stream().filter(exportedSpan -> exportedSpan.getName().equals(EXPECTED_SOURCE_SPAN_NAME))
             .findFirst()
-            .orElseThrow(() -> new AssertionFailedError("No flow exported span found!"));
+            .orElseThrow(() -> new AssertionFailedError("No source exported span found!"));
 
-    assertThat(flowExportedSpan.getAttributes(), Matchers.hasEntry("dog", "Jack, the legendary fake border collie"));
+    assertThat(sourceExportedSpan.getAttributes(), hasEntry("dog", "Jack, the legendary fake border collie"));
   }
 
   private void startFlow(String flowName) throws Exception {
