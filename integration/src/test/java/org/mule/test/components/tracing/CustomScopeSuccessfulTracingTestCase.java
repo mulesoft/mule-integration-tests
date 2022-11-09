@@ -9,7 +9,7 @@ package org.mule.test.components.tracing;
 
 import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.DEFAULT_CORE_EVENT_TRACER;
-import static org.mule.test.components.tracing.TracingTestUtils.assertSpanAttributes;
+import static org.mule.test.infrastructure.profiling.tracing.TracingTestUtils.createAttributeMap;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
@@ -55,33 +55,18 @@ public class CustomScopeSuccessfulTracingTestCase extends AbstractIntegrationTes
       flowRunner(CUSTOM_SCOPE_FLOW).withPayload(TEST_PAYLOAD).run().getMessage();
       Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
 
-      CapturedExportedSpan muleFlowSpan =
-          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_FLOW_SPAN_NAME)).findFirst().orElse(null);
-
-      CapturedExportedSpan customScopeSpan =
-          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_CUSTOM_SCOPE_SPAN_NAME)).findFirst()
-              .orElse(null);
-
-      CapturedExportedSpan loggerSpan =
-          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_LOGGER_SPAN_NAME)).findFirst()
-              .orElse(null);
-
       assertThat(exportedSpans, hasSize(3));
 
       SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
-      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
+      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME, createAttributeMap("custom-scope-flow", TEST_ARTIFACT_ID))
           .beginChildren()
-          .child(EXPECTED_CUSTOM_SCOPE_SPAN_NAME)
+          .child(EXPECTED_CUSTOM_SCOPE_SPAN_NAME, createAttributeMap("custom-scope-flow/processors/0", TEST_ARTIFACT_ID))
           .beginChildren()
-          .child(EXPECTED_LOGGER_SPAN_NAME)
+          .child(EXPECTED_LOGGER_SPAN_NAME, createAttributeMap("custom-scope-flow/processors/0/processors/0", TEST_ARTIFACT_ID))
           .endChildren()
           .endChildren();
 
       expectedSpanHierarchy.assertSpanTree();
-
-      assertSpanAttributes(muleFlowSpan, "custom-scope-flow", TEST_ARTIFACT_ID);
-      assertSpanAttributes(customScopeSpan, "custom-scope-flow/processors/0", TEST_ARTIFACT_ID);
-      assertSpanAttributes(loggerSpan, "custom-scope-flow/processors/0/processors/0", TEST_ARTIFACT_ID);
     } finally {
       spanCapturer.dispose();
     }

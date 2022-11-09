@@ -8,7 +8,7 @@ package org.mule.test.components.tracing;
 
 import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.DEFAULT_CORE_EVENT_TRACER;
-import static org.mule.test.components.tracing.TracingTestUtils.assertSpanAttributes;
+import static org.mule.test.infrastructure.profiling.tracing.TracingTestUtils.createAttributeMap;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
@@ -70,47 +70,28 @@ public class ChoiceRouterTracingTestCase extends AbstractIntegrationTestCase {
       }
       Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
 
-      CapturedExportedSpan muleFlowSpan =
-          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_FLOW_SPAN_NAME)).findFirst().orElse(null);
-
-      CapturedExportedSpan choiceSpan =
-          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_CHOICE_SPAN_NAME)).findFirst()
-              .orElse(null);
-
-      CapturedExportedSpan choiceSpanRoute =
-          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_ROUTE_SPAN_NAME)).findFirst()
-              .orElse(null);
-
       if (isError) {
         assertThat(exportedSpans, hasSize(5));
-        CapturedExportedSpan onErrorPropagateSpan =
-            exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME)).findFirst()
-                .orElse(null);
-        assertSpanAttributes(onErrorPropagateSpan, "unknown", TEST_ARTIFACT_ID);
       } else {
         assertThat(exportedSpans, hasSize(4));
       }
 
       SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
-      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
+      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME, createAttributeMap("choice-flow", TEST_ARTIFACT_ID))
           .beginChildren()
-          .child(EXPECTED_CHOICE_SPAN_NAME)
+          .child(EXPECTED_CHOICE_SPAN_NAME, createAttributeMap("choice-flow/processors/0", TEST_ARTIFACT_ID))
           .beginChildren()
-          .child(EXPECTED_ROUTE_SPAN_NAME)
+          .child(EXPECTED_ROUTE_SPAN_NAME, createAttributeMap("choice-flow/processors/0", TEST_ARTIFACT_ID))
           .beginChildren()
           .child(childExpectedSpan)
           .endChildren()
           .endChildren();
       if (isError) {
-        expectedSpanHierarchy.child(EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME);
+        expectedSpanHierarchy.child(EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME, createAttributeMap("unknown", TEST_ARTIFACT_ID));
       }
       expectedSpanHierarchy.endChildren();
 
       expectedSpanHierarchy.assertSpanTree();
-
-      assertSpanAttributes(muleFlowSpan, "choice-flow", TEST_ARTIFACT_ID);
-      assertSpanAttributes(choiceSpan, "choice-flow/processors/0", TEST_ARTIFACT_ID);
-      assertSpanAttributes(choiceSpanRoute, "choice-flow/processors/0", TEST_ARTIFACT_ID);
     } finally {
       spanCapturer.dispose();
     }
