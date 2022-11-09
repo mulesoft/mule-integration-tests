@@ -88,7 +88,7 @@ public class HttpSemanticConventionAttributesAndNameTestCase extends AbstractInt
               .findFirst()
               .orElseThrow(() -> new AssertionFailedError("No span for http listener flow found!"));
 
-      assertThat(listenerExportedSpan.getAttributes(), aMapWithSize(12));
+      assertThat(listenerExportedSpan.getAttributes(), aMapWithSize(13));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(NET_HOST_NAME, "0.0.0.0"));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_TARGET, "/test"));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_SCHEME, "http"));
