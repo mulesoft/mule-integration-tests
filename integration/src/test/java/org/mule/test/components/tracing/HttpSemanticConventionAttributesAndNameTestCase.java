@@ -49,6 +49,7 @@ public class HttpSemanticConventionAttributesAndNameTestCase extends AbstractInt
   public static final String HTTP_TARGET = "http.target";
   public static final String HTTP_USER_AGENT = "http.user_agent";
   public static final String NET_HOST_PORT = "net.host.port";
+  public static final String HTTP_SCHEME = "http.scheme";
 
   @Inject
   PrivilegedProfilingService profilingService;
@@ -90,6 +91,7 @@ public class HttpSemanticConventionAttributesAndNameTestCase extends AbstractInt
       assertThat(listenerExportedSpan.getAttributes(), aMapWithSize(12));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(NET_HOST_NAME, "0.0.0.0"));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_TARGET, "/test"));
+      assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_SCHEME, "http"));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_FLAVOR, "1.1"));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_USER_AGENT, "AHC/1.0"));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(NET_HOST_PORT, httpPort.getValue()));
