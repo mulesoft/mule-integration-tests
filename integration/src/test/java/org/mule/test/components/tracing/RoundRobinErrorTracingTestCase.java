@@ -8,8 +8,10 @@ package org.mule.test.components.tracing;
 
 import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.DEFAULT_CORE_EVENT_TRACER;
-import static org.mule.test.components.tracing.TracingTestUtils.assertSpanAttributes;
+import static org.mule.test.infrastructure.profiling.tracing.TracingTestUtils.ARTIFACT_ID_KEY;
+import static org.mule.test.infrastructure.profiling.tracing.TracingTestUtils.createAttributeMap;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 
@@ -19,9 +21,9 @@ import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -42,6 +44,9 @@ public class RoundRobinErrorTracingTestCase extends AbstractIntegrationTestCase 
   public static final String EXPECTED_ON_ERROR_PROPAGATE_SPAN = "mule:on-error-propagate";
   public static final String NO_PARENT_SPAN = "0000000000000000";
 
+  public static final String CORRELATION_ID_KEY = "correlationId";
+  public static final String THREAD_START_ID_KEY = "threadStartId";
+
   public static final String TEST_ARTIFACT_ID = "RoundRobinErrorTracingTestCase#testRoundRobinFlowWithError";
 
   @Inject
@@ -60,50 +65,38 @@ public class RoundRobinErrorTracingTestCase extends AbstractIntegrationTestCase 
       flowRunner(ROUND_ROBIN_FLOW).withPayload(TEST_PAYLOAD).runExpectingException();
       Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
 
-      CapturedExportedSpan muleFlowSpan =
-          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_FLOW_SPAN_NAME)).findFirst().orElse(null);
-
-      CapturedExportedSpan roundRobinSpan =
-          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_ROUND_ROBIN_SPAN_NAME)).findFirst()
-              .orElse(null);
-
-      List<CapturedExportedSpan> muleRouteSpanList =
-          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_ROUTE_SPAN_NAME)).collect(Collectors.toList());
-
-      List<CapturedExportedSpan> raiseErrorSpanList =
-          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_RAISE_ERROR_SPAN))
-              .collect(Collectors.toList());
-
-      CapturedExportedSpan loggerSpan =
-          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_LOGGER_SPAN_NAME)).findFirst().orElse(null);
-
-      CapturedExportedSpan onErrorPropagateSpan =
-          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_ON_ERROR_PROPAGATE_SPAN)).findFirst().orElse(null);
-
       assertThat(exportedSpans, hasSize(6));
+
+      List<String> attributesToAssertExistence = Arrays.asList(CORRELATION_ID_KEY, THREAD_START_ID_KEY);
 
       SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
       expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
+          .addAttributesToAssertValue(createAttributeMap("round-robin-flow", TEST_ARTIFACT_ID))
+          .addAttributesToAssertExistence(attributesToAssertExistence)
           .beginChildren()
           .child(EXPECTED_ROUND_ROBIN_SPAN_NAME)
+          .addAttributesToAssertValue(createAttributeMap("round-robin-flow/processors/0", TEST_ARTIFACT_ID))
+          .addAttributesToAssertExistence(attributesToAssertExistence)
           .beginChildren()
           .child(EXPECTED_ROUTE_SPAN_NAME)
+          .addAttributesToAssertValue(createAttributeMap("round-robin-flow/processors/0", TEST_ARTIFACT_ID))
+          .addAttributesToAssertExistence(attributesToAssertExistence)
           .beginChildren()
           .child(EXPECTED_LOGGER_SPAN_NAME)
+          .addAttributesToAssertValue(createAttributeMap("round-robin-flow/processors/0/route/0/processors/0", TEST_ARTIFACT_ID))
+          .addAttributesToAssertExistence(attributesToAssertExistence)
           .child(EXPECTED_RAISE_ERROR_SPAN)
+          .addAttributesToAssertValue(createAttributeMap("round-robin-flow/processors/0/route/0/processors/1", TEST_ARTIFACT_ID))
+          .addAttributesToAssertExistence(attributesToAssertExistence)
           .endChildren()
           .endChildren()
           .child(EXPECTED_ON_ERROR_PROPAGATE_SPAN)
+          .addAttributesToAssertValue(createAttributeMap("unknown", TEST_ARTIFACT_ID))
+          .addAttributesToAssertExistence(attributesToAssertExistence)
           .endChildren();
 
       expectedSpanHierarchy.assertSpanTree();
-
-      assertSpanAttributes(muleFlowSpan, "round-robin-flow", TEST_ARTIFACT_ID);
-      assertSpanAttributes(onErrorPropagateSpan, "unknown", TEST_ARTIFACT_ID);
-      assertSpanAttributes(roundRobinSpan, "round-robin-flow/processors/0", TEST_ARTIFACT_ID);
-      assertSpanAttributes(muleRouteSpanList.get(0), "round-robin-flow/processors/0", TEST_ARTIFACT_ID);
-      assertSpanAttributes(loggerSpan, "round-robin-flow/processors/0/route/0/processors/0", TEST_ARTIFACT_ID);
-      assertSpanAttributes(raiseErrorSpanList.get(0), "round-robin-flow/processors/0/route/0/processors/1", TEST_ARTIFACT_ID);
+      exportedSpans.forEach(span -> assertThat(span.getServiceName(), equalTo(span.getAttributes().get(ARTIFACT_ID_KEY))));
     } finally {
       spanCapturer.dispose();
     }

@@ -9,7 +9,8 @@ package org.mule.test.components.tracing;
 
 import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.DEFAULT_CORE_EVENT_TRACER;
-import static org.mule.test.components.tracing.TracingTestUtils.assertSpanAttributes;
+import static org.mule.test.infrastructure.profiling.tracing.TracingTestUtils.ARTIFACT_ID_KEY;
+import static org.mule.test.infrastructure.profiling.tracing.TracingTestUtils.createAttributeMap;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
@@ -21,7 +22,10 @@ import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -40,7 +44,7 @@ public class SimpleTracingTestCase extends AbstractIntegrationTestCase {
   private static final String EXPECTED_SET_LOGGING_VARIABLE_SPAN_NAME = "tracing:set-logging-variable";
   private static final String SIMPLE_FLOW = "simple-flow";
   private static final String CORRELATION_ID_KEY = "correlationId";
-  private static final String ARTIFACT_ID = "SimpleTracingTestCase#testSimpleFlow";
+  private static final String TEST_ARTIFACT_ID = "SimpleTracingTestCase#testSimpleFlow";
   private static final String FLOW_LOCATION = "simple-flow";
   private static final String SET_PAYLOAD_LOCATION = "simple-flow/processors/2";
   private static final String SET_VARIABLE_LOCATION = "simple-flow/processors/0/processors/0";
@@ -50,6 +54,7 @@ public class SimpleTracingTestCase extends AbstractIntegrationTestCase {
   public static final String TRACE_VAR_VALUE = "Hello World!";
   public static final String CORRELATION_ID_CUSTOM_VALUE = "Fua";
 
+  public static final String THREAD_START_ID_KEY = "threadStartId";
 
   @Inject
   PrivilegedProfilingService profilingService;
@@ -68,39 +73,36 @@ public class SimpleTracingTestCase extends AbstractIntegrationTestCase {
       Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
       assertThat(exportedSpans, hasSize(5));
 
-      CapturedExportedSpan muleFlowSpan =
-          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_FLOW_SPAN_NAME)).findFirst().orElse(null);
-      CapturedExportedSpan setPayloadSpan =
-          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_SET_PAYLOAD_SPAN_NAME)).findFirst().orElse(null);
-      CapturedExportedSpan tracingCorrelationidSpan =
-          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_TRACING_CORRELATION_ID_SPAN_NAME)).findFirst()
-              .orElse(null);
-      CapturedExportedSpan setVariableSpan =
-          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_SET_VARIABLE_SPAN_NAME)).findFirst().orElse(null);
-      CapturedExportedSpan setLoggingVariable =
-          exportedSpans.stream().filter(span -> span.getName().equals(EXPECTED_SET_LOGGING_VARIABLE_SPAN_NAME)).findFirst()
-              .orElse(null);
+      List<String> attributesToAssertExistence = Arrays.asList(CORRELATION_ID_KEY, THREAD_START_ID_KEY);
+
+      Map<String, String> setPayloadAttributeMap = createAttributeMap(SET_PAYLOAD_LOCATION, TEST_ARTIFACT_ID);
+      setPayloadAttributeMap.put(TEST_VAR_NAME, TRACE_VAR_VALUE);
+      Map<String, String> setVariableAttributeMap = createAttributeMap(SET_VARIABLE_LOCATION, TEST_ARTIFACT_ID);
+      setVariableAttributeMap.put(CORRELATION_ID_KEY, CORRELATION_ID_CUSTOM_VALUE);
 
       SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
       expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
+          .addAttributesToAssertValue(createAttributeMap(FLOW_LOCATION, TEST_ARTIFACT_ID))
+          .addAttributesToAssertExistence(attributesToAssertExistence)
           .beginChildren()
           .child(EXPECTED_TRACING_CORRELATION_ID_SPAN_NAME)
+          .addAttributesToAssertValue(createAttributeMap(TRACING_SET_CORRELATION_ID_LOCATION, TEST_ARTIFACT_ID))
+          .addAttributesToAssertExistence(attributesToAssertExistence)
           .beginChildren()
           .child(EXPECTED_SET_VARIABLE_SPAN_NAME)
+          .addAttributesToAssertValue(setVariableAttributeMap)
+          .addAttributesToAssertExistence(attributesToAssertExistence)
           .endChildren()
           .child(EXPECTED_SET_LOGGING_VARIABLE_SPAN_NAME)
+          .addAttributesToAssertValue(createAttributeMap(SET_LOGGGING_VARIABLE_LOCATION, TEST_ARTIFACT_ID))
+          .addAttributesToAssertExistence(attributesToAssertExistence)
           .child(EXPECTED_SET_PAYLOAD_SPAN_NAME)
+          .addAttributesToAssertValue(setPayloadAttributeMap)
+          .addAttributesToAssertExistence(attributesToAssertExistence)
           .endChildren();
 
       expectedSpanHierarchy.assertSpanTree();
-
-      assertSpanAttributes(setVariableSpan, SET_VARIABLE_LOCATION, ARTIFACT_ID);
-      assertSpanAttributes(tracingCorrelationidSpan, TRACING_SET_CORRELATION_ID_LOCATION, ARTIFACT_ID);
-      assertSpanAttributes(setLoggingVariable, SET_LOGGGING_VARIABLE_LOCATION, ARTIFACT_ID);
-      assertSpanAttributes(setPayloadSpan, SET_PAYLOAD_LOCATION, ARTIFACT_ID);
-      assertSpanAttributes(muleFlowSpan, FLOW_LOCATION, ARTIFACT_ID);
-      assertThat(setPayloadSpan.getAttributes().get(TEST_VAR_NAME), equalTo(TRACE_VAR_VALUE));
-      assertThat(setVariableSpan.getAttributes().get(CORRELATION_ID_KEY), equalTo(CORRELATION_ID_CUSTOM_VALUE));
+      exportedSpans.forEach(span -> assertThat(span.getServiceName(), equalTo(span.getAttributes().get(ARTIFACT_ID_KEY))));
     } finally {
       spanCapturer.dispose();
     }
