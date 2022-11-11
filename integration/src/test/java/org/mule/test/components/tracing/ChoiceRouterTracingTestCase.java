@@ -8,8 +8,10 @@ package org.mule.test.components.tracing;
 
 import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.DEFAULT_CORE_EVENT_TRACER;
+import static org.mule.test.infrastructure.profiling.tracing.TracingTestUtils.ARTIFACT_ID_KEY;
 import static org.mule.test.infrastructure.profiling.tracing.TracingTestUtils.createAttributeMap;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 
@@ -19,7 +21,9 @@ import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -41,6 +45,8 @@ public class ChoiceRouterTracingTestCase extends AbstractIntegrationTestCase {
   public static final String NO_PARENT_SPAN = "0000000000000000";
   public static final String EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME = "mule:on-error-propagate";
 
+  public static final String CORRELATION_ID_KEY = "correlationId";
+  public static final String THREAD_START_ID_KEY = "threadStartId";
 
   public static final String TEST_ARTIFACT_ID = "ChoiceRouterTracingTestCase#testChoiceFlow";
 
@@ -61,6 +67,7 @@ public class ChoiceRouterTracingTestCase extends AbstractIntegrationTestCase {
 
   private void testForRoute(String childExpectedSpan, boolean isError) throws Exception {
     ExportedSpanCapturer spanCapturer = profilingService.getSpanExportManager().getExportedSpanCapturer();
+    List<String> attributesToAssertExistence = Arrays.asList(CORRELATION_ID_KEY, THREAD_START_ID_KEY);
 
     try {
       if (isError) {
@@ -77,21 +84,30 @@ public class ChoiceRouterTracingTestCase extends AbstractIntegrationTestCase {
       }
 
       SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
-      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME, createAttributeMap("choice-flow", TEST_ARTIFACT_ID))
+      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
+          .addAttributesToAssertValue(createAttributeMap("choice-flow", TEST_ARTIFACT_ID))
+          .addAttributesToAssertExistence(attributesToAssertExistence)
           .beginChildren()
-          .child(EXPECTED_CHOICE_SPAN_NAME, createAttributeMap("choice-flow/processors/0", TEST_ARTIFACT_ID))
+          .child(EXPECTED_CHOICE_SPAN_NAME)
+          .addAttributesToAssertValue(createAttributeMap("choice-flow/processors/0", TEST_ARTIFACT_ID))
+          .addAttributesToAssertExistence(attributesToAssertExistence)
           .beginChildren()
-          .child(EXPECTED_ROUTE_SPAN_NAME, createAttributeMap("choice-flow/processors/0", TEST_ARTIFACT_ID))
+          .child(EXPECTED_ROUTE_SPAN_NAME)
+          .addAttributesToAssertValue(createAttributeMap("choice-flow/processors/0", TEST_ARTIFACT_ID))
+          .addAttributesToAssertExistence(attributesToAssertExistence)
           .beginChildren()
           .child(childExpectedSpan)
           .endChildren()
           .endChildren();
       if (isError) {
-        expectedSpanHierarchy.child(EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME, createAttributeMap("unknown", TEST_ARTIFACT_ID));
+        expectedSpanHierarchy.child(EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME)
+            .addAttributesToAssertValue(createAttributeMap("unknown", TEST_ARTIFACT_ID))
+            .addAttributesToAssertExistence(attributesToAssertExistence);
       }
       expectedSpanHierarchy.endChildren();
 
       expectedSpanHierarchy.assertSpanTree();
+      exportedSpans.forEach(span -> assertThat(span.getServiceName(), equalTo(span.getAttributes().get(ARTIFACT_ID_KEY))));
     } finally {
       spanCapturer.dispose();
     }

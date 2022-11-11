@@ -331,9 +331,9 @@ public class FlowErrorHandlingTracingTestCase extends AbstractIntegrationTestCas
     SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(capturedExportedSpans);
     expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME).addExceptionData(ERROR_TYPE_1)
         .beginChildren()
-        .child(EXPECTED_RAISE_ERROR_SPAN,
-               createAttributeMap("flow-with-on-error-propagate-and-on-error-continue-composition/processors/0",
-                                  TEST_ARTIFACT_ID))
+        .child(EXPECTED_RAISE_ERROR_SPAN)
+        .addAttributesToAssertValue(createAttributeMap("flow-with-on-error-propagate-and-on-error-continue-composition/processors/0",
+                                                       TEST_ARTIFACT_ID))
         .addExceptionData(ERROR_TYPE_1)
         .child(EXPECTED_ON_ERROR_PROPAGATE_SPAN).noExceptionExpected()
         .beginChildren()
@@ -341,7 +341,8 @@ public class FlowErrorHandlingTracingTestCase extends AbstractIntegrationTestCas
         .beginChildren()
         .child(EXPECTED_FLOW_SPAN_NAME).noExceptionExpected()
         .beginChildren()
-        .child(EXPECTED_RAISE_ERROR_SPAN, createAttributeMap("flow-with-on-error-continue/processors/0", TEST_ARTIFACT_ID))
+        .child(EXPECTED_RAISE_ERROR_SPAN)
+        .addAttributesToAssertValue(createAttributeMap("flow-with-on-error-continue/processors/0", TEST_ARTIFACT_ID))
         .addExceptionData(ERROR_TYPE_2)
         .child(EXPECTED_ON_ERROR_CONTINUE_SPAN).noExceptionExpected()
         .endChildren()
