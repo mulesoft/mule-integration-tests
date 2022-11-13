@@ -4,7 +4,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.runtime.module.extension.internal.runtime.connectivity.oauth;
+package org.mule.test.module.extension.oauth;
 
 import static org.mule.runtime.http.api.HttpConstants.Method.GET;
 import static org.mule.runtime.http.api.HttpConstants.Method.POST;
@@ -30,6 +30,7 @@ import org.mule.runtime.http.api.domain.message.response.HttpResponse;
 import org.mule.service.http.TestHttpClient;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
+import org.mule.test.module.extension.AbstractExtensionFunctionalTestCase;
 import org.mule.test.oauth.TestOAuthConnection;
 import org.mule.test.oauth.TestOAuthConnectionState;
 
@@ -47,75 +48,32 @@ import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
 //public class OAuthHandlerIntegrationHandler extends MuleArtifactFunctionalTestCase {
-public class OAuthHandlerIntegrationTestCase extends MuleArtifactFunctionalTestCase {
+public class OAuthHandlerObjectStoreTestCase extends BaseOAuthExtensionTestCase {
 
   private static List<Object> payloads;
   private static final int HTTP_STATUS_OK = 200;
   public static final int RESPONSE_TIMEOUT = 5000;
 
-  protected static final String LOCAL_AUTH_PATH = "dance";
-  protected static final String CALLBACK_PATH = "callback";
-  protected static final String OWNER_ID_VARIABLE_NAME = "ownerId";
-  protected static final String DEFAULT_OWNER_ID = "default";
-  protected static final String TOKEN_PATH = "token";
-  protected static final String STATE = "myState";
-  protected static final String AUTHORIZE_PATH = "authorize";
-  protected static final String USER_ID = "35";
-  protected static final String INSTANCE_ID = "staging";
-  protected static final String SCOPES = "this, that, those";
-  protected static final String CONSUMER_KEY = "ndli93xdws2qoe6ms1d389vl6bxquv3e";
-  protected static final String CONSUMER_SECRET = "yL692Az1cNhfk1VhTzyx4jOjjMKBrO9T";
-  protected static final String ACCESS_TOKEN = "rbBQLgJXBEYo83K4Fqs4gu6vpCobc2ya";
-  protected static final String REFRESH_TOKEN = "cry825cyCs2O0j7tRXXVS4AXNu7hsO5wbWjcBoFFcJePy5zZwuQEevIp6hsUaywp";
-  protected static final String EXPIRES_IN = "3897";
-  protected static final String STATE_PARAMETER = "state";
-  protected static final String CODE_PARAMETER = "code";
-  protected static final String CUSTOM_STORE_NAME = "customStore";
-  protected static final String REDIRECT_URI = "redirect_uri";
 
-  @Rule
-  public SystemProperty consumerKey = new SystemProperty("consumerKey", CONSUMER_KEY);
+  /*
+   * @Rule public ExpectedException expectedException = ExpectedException.none(); protected String authUrl = toUrl(AUTHORIZE_PATH,
+   * oauthServerPort.getNumber());
+   * 
+   * @Rule public SystemProperty authorizationUrl = new SystemProperty("authorizationUrl", authUrl);
+   * 
+   * protected String tokenUrl = toUrl(TOKEN_PATH, oauthServerPort.getNumber());
+   * 
+   * @Rule public SystemProperty accessTokenUrl = new SystemProperty("accessTokenUrl", tokenUrl);
+   * 
+   * protected String ownerId;
+   */
 
-  @Rule
-  public SystemProperty consumerSecret = new SystemProperty("consumerSecret", CONSUMER_SECRET);
-
-  @Rule
-  public SystemProperty localAuthPath = new SystemProperty("localAuthPath", LOCAL_AUTH_PATH);
-
-  @Rule
-  public SystemProperty scope = new SystemProperty("scopes", SCOPES);
-
-  @Rule
-  public DynamicPort callbackPort = new DynamicPort("callbackPort");
-
-  @Rule
-  public SystemProperty callbackPath = new SystemProperty("callbackPath", CALLBACK_PATH);
-
-  @Rule
-  public DynamicPort oauthServerPort = new DynamicPort("oauthServerPort");
-
-  @Rule
-  public SystemProperty oauthProvider = new SystemProperty("callbackPath", CALLBACK_PATH);
-
-
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
-  protected String authUrl = toUrl(AUTHORIZE_PATH, oauthServerPort.getNumber());
-
-  @Rule
-  public SystemProperty authorizationUrl = new SystemProperty("authorizationUrl", authUrl);
-
-  protected String tokenUrl = toUrl(TOKEN_PATH, oauthServerPort.getNumber());
-
-  @Rule
-  public SystemProperty accessTokenUrl = new SystemProperty("accessTokenUrl", tokenUrl);
-
-  protected String ownerId;
-
+  @Override
   protected String toUrl(String path, int port) {
-    return format("http://127.0.0.1:%d/%s", port, path);
+    String url = format("http://127.0.0.1:%d/%s", port, path);
+    System.out.println("url:" + url);
+    return url;
   }
-
 
   @ClassRule
   public static final TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -152,8 +110,12 @@ public class OAuthHandlerIntegrationTestCase extends MuleArtifactFunctionalTestC
   /*
    * protected String getConfigFile() { return "oauthHandlerWithObjectStore.xml"; }
    */
+  /*
+   * protected String[] getConfigFiles() { return new String[] {"oauthHandlerWithObjectStore.xml",
+   * "oauthHandlerWithObjectStoreFlows.xml"}; }
+   */
   protected String[] getConfigFiles() {
-    return new String[] {"oauthHandlerWithObjectStore.xml", "oauthHandlerWithObjectStoreFlows.xml"};
+    return new String[] {"oauthHandlerWithObjectStoreFlows.xml"};
   }
 
   @Test
@@ -161,23 +123,19 @@ public class OAuthHandlerIntegrationTestCase extends MuleArtifactFunctionalTestC
   @Description("verifiy object store is created if not found")
   public void execute() throws Exception {
 
-    // HttpRequest request = HttpRequest.builder().uri("http://localhost:" + port.getNumber() + "/createClientz").method(GET)
-    // Create client
-    HttpRequest request = HttpRequest.builder().uri("http://localhost:" + port + "/createClient").method(POST)
-        .addHeader("client_id", CONSUMER_KEY)
-        .addHeader("client_secret", CONSUMER_SECRET)
-        .addHeader("client_name", "River products")
-        .build();
-
-    HttpResponse response = httpClient.send(request, HttpRequestOptions.builder().responseTimeout(RESPONSE_TIMEOUT).build());
-    assertThat(response.getStatusCode(), is(HTTP_STATUS_OK));
-    String content = IOUtils.toString(response.getEntity().getContent());
-    System.out.println("Content:" + content);
-
-    System.setProperty("tokenUrl", "http://localhost:" + port + "/token");
-    System.setProperty("clientId", "abc8");
-    System.setProperty("clientSecret", "abcdefg");
-
+    /*
+     * // HttpRequest request = HttpRequest.builder().uri("http://localhost:" + port.getNumber() + "/createClientz").method(GET)
+     * // Create client HttpRequest request = HttpRequest.builder().uri("http://localhost:" + port + "/createClient").method(POST)
+     * .addHeader("client_id", CONSUMER_KEY) .addHeader("client_secret", CONSUMER_SECRET) .addHeader("client_name",
+     * "River products") .build();
+     * 
+     * HttpResponse response = httpClient.send(request, HttpRequestOptions.builder().responseTimeout(RESPONSE_TIMEOUT).build());
+     * assertThat(response.getStatusCode(), is(HTTP_STATUS_OK)); String content =
+     * IOUtils.toString(response.getEntity().getContent()); System.out.println("Content:" + content);
+     * 
+     * System.setProperty("tokenUrl", "http://localhost:" + port + "/token"); System.setProperty("clientId", "abc8");
+     * System.setProperty("clientSecret", "abcdefg");
+     */
     TestOAuthConnectionState connection = ((TestOAuthConnection) flowRunner("getConnection")
         .run().getMessage().getPayload().getValue()).getState();
 
