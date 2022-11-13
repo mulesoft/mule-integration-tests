@@ -19,12 +19,14 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.security.Authentication;
+import org.mule.runtime.api.store.ObjectStore;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.util.IOUtils;
@@ -51,6 +53,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
+import org.mockito.Mockito;
 
 //public class OAuthHandlerIntegrationHandler extends MuleArtifactFunctionalTestCase {
 public class OAuthHandlerObjectStoreTestCase extends BaseOAuthExtensionTestCase {
@@ -90,20 +93,6 @@ public class OAuthHandlerObjectStoreTestCase extends BaseOAuthExtensionTestCase 
 
   @Rule
   public TestHttpClient httpClient = new TestHttpClient.Builder(getService(HttpService.class)).build();
-
-  public static class Captor extends AbstractComponent implements Processor {
-
-    @Override
-    public CoreEvent process(CoreEvent event) throws MuleException {
-      Authentication token =
-          (Authentication) (event.getSecurityContext()
-              .getAuthentication());
-      assertThat(token, is(notNullValue()));
-      assertThat(token.getPrincipal(), is(notNullValue()));
-      payloads.add(event.getMessage().getPayload().getValue());
-      return event;
-    }
-  }
 
   @Override
   protected void doSetUp() throws Exception {
@@ -151,9 +140,14 @@ public class OAuthHandlerObjectStoreTestCase extends BaseOAuthExtensionTestCase 
      * System.setProperty("tokenUrl", "http://localhost:" + port + "/token"); System.setProperty("clientId", "abc8");
      * System.setProperty("clientSecret", "abcdefg");
      */
+    // AnotherClass anotherObjSpy = Mockito.spy(new AnotherClass());
+
+
     TestOAuthConnectionState connection = ((TestOAuthConnection) flowRunner("getConnection")
         .run().getMessage().getPayload().getValue()).getState();
-
+    System.out.println(connection.getConnectionDetails().toString());
+    ObjectStore os = getObjectStore(CUSTOM_STORE_NAME);
+    assertThat(os, notNullValue());
     /*
      * HttpRequest requestToken = HttpRequest.builder().uri("http://localhost:" + port + "/token").method(POST)
      * .addHeader("client_id", "abc8") .addHeader("client_secret", "abcdefg") .addHeader("grant_type", "CLIENT_CREDENTIALS")
