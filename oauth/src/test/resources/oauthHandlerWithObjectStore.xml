@@ -10,7 +10,7 @@ http://www.mulesoft.org/schema/mule/sftp http://www.mulesoft.org/schema/mule/sft
     <os:object-store name="client_os" persistent="false" />
     <os:object-store name="token_os" persistent="false" />
     <http:listener-config name="HTTP_Listener_config1"  >
-        <http:listener-connection host="0.0.0.0" port="8081" />
+        <http:listener-connection host="127.0.0.1" port="${oauthServerPort}" />
     </http:listener-config>
     <oauth2-provider:config name="OAuth2_Provider_Config"  listenerConfig="HTTP_Listener_config1" clientStore="client_os" supportedGrantTypes="CLIENT_CREDENTIALS" >
         <oauth2-provider:token-config tokenStore="token_os" />

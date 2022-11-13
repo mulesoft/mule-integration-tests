@@ -6,12 +6,17 @@
  */
 package org.mule.test.module.extension.oauth;
 
+import static org.mule.extension.http.api.HttpHeaders.Names.CONTENT_TYPE;
+import static org.mule.runtime.http.api.HttpConstants.HttpStatus.OK;
 import static org.mule.runtime.http.api.HttpConstants.Method.GET;
 import static org.mule.runtime.http.api.HttpConstants.Method.POST;
 
 import static java.lang.String.format;
 import static java.util.Collections.synchronizedList;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -103,8 +108,17 @@ public class OAuthHandlerObjectStoreTestCase extends BaseOAuthExtensionTestCase 
   @Override
   protected void doSetUp() throws Exception {
     super.doSetUp();
+    // objectStore.get().clear();
     payloads = synchronizedList(new ArrayList<>());
+    wireMock.stubFor(post(urlPathMatching("/" + TOKEN_PATH)).willReturn(aResponse()
+        .withStatus(OK.getStatusCode())
+        .withBody(accessTokenContent())
+        .withHeader(CONTENT_TYPE, "application/json")));
   }
+
+  /*
+   * @Override protected void doSetUp() throws Exception { super.doSetUp(); payloads = synchronizedList(new ArrayList<>()); }
+   */
 
   @Override
   /*
@@ -115,6 +129,7 @@ public class OAuthHandlerObjectStoreTestCase extends BaseOAuthExtensionTestCase 
    * "oauthHandlerWithObjectStoreFlows.xml"}; }
    */
   protected String[] getConfigFiles() {
+    // return new String[] {"oauthHandlerWithObjectStoreFlows.xml", "oauthHandlerWithObjectStore.xml"};
     return new String[] {"oauthHandlerWithObjectStoreFlows.xml"};
   }
 
@@ -128,11 +143,11 @@ public class OAuthHandlerObjectStoreTestCase extends BaseOAuthExtensionTestCase 
      * // Create client HttpRequest request = HttpRequest.builder().uri("http://localhost:" + port + "/createClient").method(POST)
      * .addHeader("client_id", CONSUMER_KEY) .addHeader("client_secret", CONSUMER_SECRET) .addHeader("client_name",
      * "River products") .build();
-     * 
+     *
      * HttpResponse response = httpClient.send(request, HttpRequestOptions.builder().responseTimeout(RESPONSE_TIMEOUT).build());
      * assertThat(response.getStatusCode(), is(HTTP_STATUS_OK)); String content =
      * IOUtils.toString(response.getEntity().getContent()); System.out.println("Content:" + content);
-     * 
+     *
      * System.setProperty("tokenUrl", "http://localhost:" + port + "/token"); System.setProperty("clientId", "abc8");
      * System.setProperty("clientSecret", "abcdefg");
      */
