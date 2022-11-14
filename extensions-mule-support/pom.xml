@@ -86,7 +86,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <systemPropertyVariables>
-                        <mule.enableMuleSdk>true</mule.enableMuleSdk>
+                        <mule.experimental.enableMuleSdk>true</mule.experimental.enableMuleSdk>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
