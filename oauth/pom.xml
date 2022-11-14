@@ -11,6 +11,8 @@
     <properties>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
         <muleHttpServiceVersion>1.7.0-SNAPSHOT</muleHttpServiceVersion>
+        <
+                a>1.1.0-SNAPSHOT</muleOauth2ProviderVersion>
     </properties>
 
     <dependencies>
@@ -62,7 +64,7 @@
         <dependency>
             <groupId>com.mulesoft.modules</groupId>
             <artifactId>mule-oauth2-provider-module</artifactId>
-            <version>1.1.0-SNAPSHOT</version>
+            <version>${muleOauth2ProviderVersion}</version>
             <classifier>mule-plugin</classifier>
             <scope>test</scope>
         </dependency>
