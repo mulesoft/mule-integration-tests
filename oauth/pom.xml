@@ -11,8 +11,7 @@
     <properties>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
         <muleHttpServiceVersion>1.7.0-SNAPSHOT</muleHttpServiceVersion>
-        <
-                a>1.1.0-SNAPSHOT</muleOauth2ProviderVersion>
+        <muleOauth2ProviderVersion>1.1.0-SNAPSHOT</muleOauth2ProviderVersion>
     </properties>
 
     <dependencies>
