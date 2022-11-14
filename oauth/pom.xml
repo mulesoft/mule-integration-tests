@@ -10,6 +10,7 @@
     
     <properties>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
+        <muleHttpServiceVersion>1.7.0-SNAPSHOT</muleHttpServiceVersion>
     </properties>
 
     <dependencies>
@@ -68,7 +69,7 @@
         <dependency>
             <groupId>org.mule.services</groupId>
             <artifactId>mule-service-http</artifactId>
-            <version>1.7.0-SNAPSHOT</version>
+            <version>${muleHttpServiceVersion}</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
