@@ -43,8 +43,8 @@ public class CustomScopeSuccessfulTracingTestCase extends AbstractIntegrationTes
   public static final String NO_PARENT_SPAN = "0000000000000000";
   public static final String TEST_ARTIFACT_ID = "CustomScopeSuccessfulTracingTestCase#testCustomScopeFlow";
 
-  public static final String CORRELATION_ID_KEY = "correlationId";
-  public static final String THREAD_START_ID_KEY = "threadStartId";
+  public static final String CORRELATION_ID_KEY = "correlation.id";
+  public static final String THREAD_START_ID_KEY = "thread.start.id";
 
   @Inject
   PrivilegedProfilingService profilingService;

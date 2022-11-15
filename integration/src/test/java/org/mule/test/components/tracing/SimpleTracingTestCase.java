@@ -43,7 +43,8 @@ public class SimpleTracingTestCase extends AbstractIntegrationTestCase {
   private static final String EXPECTED_SET_VARIABLE_SPAN_NAME = "mule:set-variable";
   private static final String EXPECTED_SET_LOGGING_VARIABLE_SPAN_NAME = "tracing:set-logging-variable";
   private static final String SIMPLE_FLOW = "simple-flow";
-  private static final String CORRELATION_ID_KEY = "correlationId";
+  public static final String CORRELATION_ID_KEY = "correlation.id";
+  public static final String THREAD_START_ID_KEY = "thread.start.id";
   private static final String TEST_ARTIFACT_ID = "SimpleTracingTestCase#testSimpleFlow";
   private static final String FLOW_LOCATION = "simple-flow";
   private static final String SET_PAYLOAD_LOCATION = "simple-flow/processors/2";
@@ -53,8 +54,6 @@ public class SimpleTracingTestCase extends AbstractIntegrationTestCase {
   public static final String TEST_VAR_NAME = "testVar";
   public static final String TRACE_VAR_VALUE = "Hello World!";
   public static final String CORRELATION_ID_CUSTOM_VALUE = "Fua";
-
-  public static final String THREAD_START_ID_KEY = "threadStartId";
 
   @Inject
   PrivilegedProfilingService profilingService;
