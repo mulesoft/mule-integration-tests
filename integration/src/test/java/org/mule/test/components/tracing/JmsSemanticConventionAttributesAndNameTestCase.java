@@ -47,7 +47,6 @@ public class JmsSemanticConventionAttributesAndNameTestCase extends AbstractInte
   public static final String MESSAGING_SYSTEM = "messaging.system";
   public static final String MESSAGING_DESTINATION = "messaging.destination";
   public static final String MESSAGING_DESTINATION_KIND = "messaging.destination_kind";
-  public static final String MESSAGING_MESSAGE_PAYLOAD_SIZE_BYTES = "messaging.message_payload_size_bytes";
 
   @Inject
   PrivilegedProfilingService profilingService;
@@ -73,25 +72,19 @@ public class JmsSemanticConventionAttributesAndNameTestCase extends AbstractInte
       Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
       assertThat(exportedSpans, hasSize(4));
 
-      Map<String, String> jmsPublishExpectedAttributes = new HashMap<>();
-      jmsPublishExpectedAttributes.put(MESSAGING_SYSTEM, "activemq");
-      jmsPublishExpectedAttributes.put(MESSAGING_DESTINATION, "test_queue");
-      jmsPublishExpectedAttributes.put(MESSAGING_DESTINATION_KIND, "queue");
-      jmsPublishExpectedAttributes.put(MESSAGING_MESSAGE_PAYLOAD_SIZE_BYTES, "7");
-
-      Map<String, String> jmsConsumeExpectedAttributes = new HashMap<>();
-      jmsConsumeExpectedAttributes.put(MESSAGING_SYSTEM, "activemq");
-      jmsConsumeExpectedAttributes.put(MESSAGING_DESTINATION, "test_queue");
-      jmsConsumeExpectedAttributes.put(MESSAGING_DESTINATION_KIND, "queue");
+      Map<String, String> jmsExpectedAttributes = new HashMap<>();
+      jmsExpectedAttributes.put(MESSAGING_SYSTEM, "activemq");
+      jmsExpectedAttributes.put(MESSAGING_DESTINATION, "test_queue");
+      jmsExpectedAttributes.put(MESSAGING_DESTINATION_KIND, "queue");
 
       SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
       expectedSpanHierarchy.withRoot(EXPECTED_HTTP_FLOW_SPAN_NAME)
           .beginChildren()
           .child(EXPECTED_SET_PAYLOAD_SPAN_NAME)
           .child(EXPECTED_JMS_PUBLISH_NAME)
-          .addAttributesToAssertValue(jmsPublishExpectedAttributes)
+          .addAttributesToAssertValue(jmsExpectedAttributes)
           .child(EXPECTED_JMS_CONSUME_NAME)
-          .addAttributesToAssertValue(jmsConsumeExpectedAttributes)
+          .addAttributesToAssertValue(jmsExpectedAttributes)
           .endChildren();
 
       expectedSpanHierarchy.assertSpanTree();
@@ -99,5 +92,4 @@ public class JmsSemanticConventionAttributesAndNameTestCase extends AbstractInte
       spanCapturer.dispose();
     }
   }
-
 }
