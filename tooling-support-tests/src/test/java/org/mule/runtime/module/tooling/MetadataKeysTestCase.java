@@ -184,7 +184,7 @@ public class MetadataKeysTestCase extends DeclarationSessionTestCase {
     assertThat(metadataKeys.getFailures().get(0).getFailureCode(), is(COMPONENT_NOT_FOUND));
     assertThat(metadataKeys.getFailures().get(0).getFailingComponent(), is(KEYS));
     assertThat(metadataKeys.getFailures().get(0).getMessage(),
-               is(format("ElementDeclaration is defined for extension: '%s' which is not part of the context: '[mule, ToolingSupportTest, Mule Operations DSL, module]'",
+               is(format("ElementDeclaration is defined for extension: '%s' which is not part of the context: '[mule, ToolingSupportTest, module]'",
                          invalidExtensionModel)));
   }
 

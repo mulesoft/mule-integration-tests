@@ -8,12 +8,11 @@ package org.mule.test.config.ast;
 
 import static org.mule.runtime.ast.internal.serialization.ArtifactAstSerializerFactory.JSON;
 import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.initialiseIfNeeded;
+import static org.mule.runtime.module.artifact.activation.api.extension.discovery.ExtensionModelDiscoverer.discoverRuntimeExtensionModels;
 import static org.mule.test.allure.AllureConstants.ArtifactAst.ARTIFACT_AST;
 import static org.mule.test.allure.AllureConstants.ArtifactAst.ParameterAst.PARAMETER_AST;
 
-import static java.lang.Thread.currentThread;
 import static java.util.Arrays.asList;
-
 import static org.junit.Assert.fail;
 
 import org.mule.runtime.api.component.ComponentIdentifier;
@@ -24,8 +23,6 @@ import org.mule.runtime.ast.api.serialization.ArtifactAstDeserializer;
 import org.mule.runtime.ast.api.serialization.ArtifactAstSerializer;
 import org.mule.runtime.ast.api.serialization.ArtifactAstSerializerProvider;
 import org.mule.runtime.ast.api.xml.AstXmlParser;
-import org.mule.runtime.core.api.extension.RuntimeExtensionModelProvider;
-import org.mule.runtime.core.api.registry.SpiServiceRegistry;
 import org.mule.runtime.module.extension.internal.loader.java.DefaultJavaExtensionModelLoader;
 import org.mule.runtime.module.extension.internal.manager.DefaultExtensionManager;
 import org.mule.tck.junit4.AbstractMuleContextTestCase;
@@ -34,19 +31,17 @@ import org.mule.test.runner.infrastructure.ExtensionsTestInfrastructureDiscovere
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-
-import io.qameta.allure.Feature;
-import io.qameta.allure.Story;
 
 @Feature(ARTIFACT_AST)
 @Story(PARAMETER_AST)
@@ -57,12 +52,7 @@ public abstract class BaseParameterAstTestCase extends AbstractMuleContextTestCa
 
   @BeforeClass
   public static void beforeClass() throws Exception {
-    runtimeExtensionModels = new ArrayList<>();
-    Collection<RuntimeExtensionModelProvider> runtimeExtensionModelProviders = new SpiServiceRegistry()
-        .lookupProviders(RuntimeExtensionModelProvider.class, currentThread().getContextClassLoader());
-    for (RuntimeExtensionModelProvider runtimeExtensionModelProvider : runtimeExtensionModelProviders) {
-      runtimeExtensionModels.add(runtimeExtensionModelProvider.createExtensionModel());
-    }
+    runtimeExtensionModels = new ArrayList<>(discoverRuntimeExtensionModels());
   }
 
   @Parameters(name = "serialize: {0}; populateGenerationInformation: {1}")

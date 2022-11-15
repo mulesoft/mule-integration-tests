@@ -9,13 +9,12 @@ package org.mule.test.config.ast;
 import static org.mule.runtime.ast.api.util.MuleAstUtils.validatorBuilder;
 import static org.mule.runtime.ast.api.validation.Validation.Level.ERROR;
 import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.initialiseIfNeeded;
+import static org.mule.runtime.module.artifact.activation.api.extension.discovery.ExtensionModelDiscoverer.discoverRuntimeExtensionModels;
 import static org.mule.test.allure.AllureConstants.ArtifactAst.ARTIFACT_AST;
 import static org.mule.test.allure.AllureConstants.ExpressionLanguageFeature.EXPRESSION_LANGUAGE;
 import static org.mule.test.allure.AllureConstants.MuleDsl.DslValidationStory.DSL_VALIDATION_STORY;
 
-import static java.lang.Thread.currentThread;
 import static java.util.stream.Collectors.toList;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
@@ -28,28 +27,23 @@ import org.mule.runtime.ast.api.validation.ValidationResult;
 import org.mule.runtime.ast.api.validation.ValidationResultItem;
 import org.mule.runtime.ast.api.xml.AstXmlParser;
 import org.mule.runtime.core.api.config.ConfigurationException;
-import org.mule.runtime.core.api.extension.RuntimeExtensionModelProvider;
-import org.mule.runtime.core.api.registry.SpiServiceRegistry;
 import org.mule.runtime.module.extension.internal.manager.DefaultExtensionManager;
 import org.mule.tck.junit4.AbstractMuleContextTestCase;
 import org.mule.weave.v2.el.WeaveDefaultExpressionLanguageFactoryService;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Singleton;
-
-import org.codejargon.feather.Feather;
-import org.codejargon.feather.Provides;
-
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Features;
 import io.qameta.allure.Story;
+import org.codejargon.feather.Feather;
+import org.codejargon.feather.Provides;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  * Provides an example of how code running outside of the Mule Runtime may invoke the AST validations that require a base
@@ -59,17 +53,12 @@ import io.qameta.allure.Story;
 @Story(DSL_VALIDATION_STORY)
 public class ArtifactAstValidationsTestCase extends AbstractMuleContextTestCase {
 
-  private static List<ExtensionModel> runtimeExtensionModels;
+  private static Set<ExtensionModel> runtimeExtensionModels;
   private DefaultExtensionManager extensionManager;
 
   @BeforeClass
   public static void beforeClass() throws Exception {
-    runtimeExtensionModels = new ArrayList<>();
-    Collection<RuntimeExtensionModelProvider> runtimeExtensionModelProviders = new SpiServiceRegistry()
-        .lookupProviders(RuntimeExtensionModelProvider.class, currentThread().getContextClassLoader());
-    for (RuntimeExtensionModelProvider runtimeExtensionModelProvider : runtimeExtensionModelProviders) {
-      runtimeExtensionModels.add(runtimeExtensionModelProvider.createExtensionModel());
-    }
+    runtimeExtensionModels = discoverRuntimeExtensionModels();
   }
 
   @Before

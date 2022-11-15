@@ -299,7 +299,7 @@ public class ComponentValueProviderTestCase extends DeclarationSessionTestCase {
                 .getDeclaration())
             .getDeclaration();
     validateValuesFailure(session, operationElementDeclaration, "anyParameter",
-                          "ElementDeclaration is defined for extension: 'WrongExtension' which is not part of the context: '[mule, ToolingSupportTest, Mule Operations DSL, module]'",
+                          "ElementDeclaration is defined for extension: 'WrongExtension' which is not part of the context: '[mule, ToolingSupportTest, module]'",
                           COMPONENT_NOT_FOUND.getName());
   }
 
