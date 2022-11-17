@@ -44,8 +44,8 @@ public class CustomScopeErrorTracingTestCase extends AbstractIntegrationTestCase
   private static final String EXPECTED_RAISE_ERROR_SPAN_NAME = "mule:raise-error";
   private static final String EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME = "mule:on-error-propagate";
 
-  public static final String CORRELATION_ID_KEY = "correlationId";
-  public static final String THREAD_START_ID_KEY = "threadStartId";
+  public static final String CORRELATION_ID_KEY = "correlation.id";
+  public static final String THREAD_START_ID_KEY = "thread.start.id";
 
   public static final String TEST_ARTIFACT_ID = "CustomScopeErrorTracingTestCase#testCustomScopeFlow";
 
