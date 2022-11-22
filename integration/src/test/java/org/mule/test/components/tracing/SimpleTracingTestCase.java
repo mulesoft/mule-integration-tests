@@ -11,6 +11,7 @@ import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.DEFAULT_CORE_EVENT_TRACER;
 import static org.mule.test.infrastructure.profiling.tracing.TracingTestUtils.ARTIFACT_ID_KEY;
 import static org.mule.test.infrastructure.profiling.tracing.TracingTestUtils.createAttributeMap;
+import static org.mule.test.infrastructure.profiling.tracing.TracingTestUtils.getDefaultAttributesToAssertExistence;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
@@ -22,7 +23,6 @@ import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -44,16 +44,16 @@ public class SimpleTracingTestCase extends AbstractIntegrationTestCase {
   private static final String EXPECTED_SET_LOGGING_VARIABLE_SPAN_NAME = "tracing:set-logging-variable";
   private static final String SIMPLE_FLOW = "simple-flow";
   public static final String CORRELATION_ID_KEY = "correlation.id";
-  public static final String THREAD_START_ID_KEY = "thread.start.id";
   private static final String TEST_ARTIFACT_ID = "SimpleTracingTestCase#testSimpleFlow";
   private static final String FLOW_LOCATION = "simple-flow";
   private static final String SET_PAYLOAD_LOCATION = "simple-flow/processors/2";
   private static final String SET_VARIABLE_LOCATION = "simple-flow/processors/0/processors/0";
-  private static final String SET_LOGGGING_VARIABLE_LOCATION = "simple-flow/processors/1";
+  private static final String SET_LOGGING_VARIABLE_LOCATION = "simple-flow/processors/1";
   private static final String TRACING_SET_CORRELATION_ID_LOCATION = "simple-flow/processors/0";
   public static final String TEST_VAR_NAME = "testVar";
   public static final String TRACE_VAR_VALUE = "Hello World!";
   public static final String CORRELATION_ID_CUSTOM_VALUE = "Fua";
+
 
   @Inject
   PrivilegedProfilingService profilingService;
@@ -72,7 +72,7 @@ public class SimpleTracingTestCase extends AbstractIntegrationTestCase {
       Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
       assertThat(exportedSpans, hasSize(5));
 
-      List<String> attributesToAssertExistence = Arrays.asList(CORRELATION_ID_KEY, THREAD_START_ID_KEY);
+      List<String> attributesToAssertExistence = getDefaultAttributesToAssertExistence();
 
       Map<String, String> setPayloadAttributeMap = createAttributeMap(SET_PAYLOAD_LOCATION, TEST_ARTIFACT_ID);
       setPayloadAttributeMap.put(TEST_VAR_NAME, TRACE_VAR_VALUE);
@@ -93,7 +93,7 @@ public class SimpleTracingTestCase extends AbstractIntegrationTestCase {
           .addAttributesToAssertExistence(attributesToAssertExistence)
           .endChildren()
           .child(EXPECTED_SET_LOGGING_VARIABLE_SPAN_NAME)
-          .addAttributesToAssertValue(createAttributeMap(SET_LOGGGING_VARIABLE_LOCATION, TEST_ARTIFACT_ID))
+          .addAttributesToAssertValue(createAttributeMap(SET_LOGGING_VARIABLE_LOCATION, TEST_ARTIFACT_ID))
           .addAttributesToAssertExistence(attributesToAssertExistence)
           .child(EXPECTED_SET_PAYLOAD_SPAN_NAME)
           .addAttributesToAssertValue(setPayloadAttributeMap)

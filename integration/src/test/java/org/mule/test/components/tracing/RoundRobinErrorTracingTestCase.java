@@ -10,6 +10,7 @@ import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.DEFAULT_CORE_EVENT_TRACER;
 import static org.mule.test.infrastructure.profiling.tracing.TracingTestUtils.ARTIFACT_ID_KEY;
 import static org.mule.test.infrastructure.profiling.tracing.TracingTestUtils.createAttributeMap;
+import static org.mule.test.infrastructure.profiling.tracing.TracingTestUtils.getDefaultAttributesToAssertExistence;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
@@ -21,7 +22,6 @@ import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -44,9 +44,6 @@ public class RoundRobinErrorTracingTestCase extends AbstractIntegrationTestCase 
   public static final String EXPECTED_ON_ERROR_PROPAGATE_SPAN = "mule:on-error-propagate";
   public static final String NO_PARENT_SPAN = "0000000000000000";
 
-  public static final String CORRELATION_ID_KEY = "correlation.id";
-  public static final String THREAD_START_ID_KEY = "thread.start.id";
-
   public static final String TEST_ARTIFACT_ID = "RoundRobinErrorTracingTestCase#testRoundRobinFlowWithError";
 
   @Inject
@@ -67,7 +64,7 @@ public class RoundRobinErrorTracingTestCase extends AbstractIntegrationTestCase 
 
       assertThat(exportedSpans, hasSize(6));
 
-      List<String> attributesToAssertExistence = Arrays.asList(CORRELATION_ID_KEY, THREAD_START_ID_KEY);
+      List<String> attributesToAssertExistence = getDefaultAttributesToAssertExistence();
 
       SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
       expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
