@@ -13,7 +13,7 @@
 
     <operation:def name="returningDoor">
         <operation:output>
-            <operation:payload-type type="mule!subtypes::Door"/>
+            <operation:payload-type type="subtypes:Door"/>
         </operation:output>
         <operation:body>
             <subtypes:door-retriever door="global-car-door" />
@@ -22,7 +22,7 @@
 
     <operation:def name="getDoorColor">
         <operation:parameters>
-            <operation:parameter name="door" type="mule!subtypes::Door" />
+            <operation:parameter name="door" type="subtypes:Door" />
         </operation:parameters>
         <operation:output>
             <operation:payload-type type="string" />
