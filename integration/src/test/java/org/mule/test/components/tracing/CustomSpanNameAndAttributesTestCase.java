@@ -15,8 +15,8 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 
 import org.mule.runtime.api.lifecycle.Startable;
-import org.mule.runtime.core.privileged.profiling.CapturedExportedSpan;
-import org.mule.runtime.core.privileged.profiling.ExportedSpanCapturer;
+import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
+import org.mule.runtime.tracer.api.sniffer.ExportedSpanSniffer;
 import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.tck.probe.JUnitProbe;
 import org.mule.tck.probe.PollingProber;
@@ -45,14 +45,14 @@ public class CustomSpanNameAndAttributesTestCase extends AbstractIntegrationTest
   private static final int TIMEOUT_MILLIS = 5000;
   private static final int POLL_DELAY_MILLIS = 100;
 
-  private ExportedSpanCapturer spanCapturer;
+  private ExportedSpanSniffer spanCapturer;
 
   @Inject
   PrivilegedProfilingService profilingService;
 
   @Before
   public void initialize() {
-    spanCapturer = profilingService.getSpanExportManager().getExportedSpanCapturer();
+    spanCapturer = profilingService.getSpanExportManager().getExportedSpanSniffer();
   }
 
   @After

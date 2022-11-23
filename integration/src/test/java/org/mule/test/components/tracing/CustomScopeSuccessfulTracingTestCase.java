@@ -17,8 +17,8 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 
-import org.mule.runtime.core.privileged.profiling.CapturedExportedSpan;
-import org.mule.runtime.core.privileged.profiling.ExportedSpanCapturer;
+import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
+import org.mule.runtime.tracer.api.sniffer.ExportedSpanSniffer;
 import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy;
@@ -54,10 +54,10 @@ public class CustomScopeSuccessfulTracingTestCase extends AbstractIntegrationTes
 
   @Test
   public void testCustomScopeFlow() throws Exception {
-    ExportedSpanCapturer spanCapturer = profilingService.getSpanExportManager().getExportedSpanCapturer();
+    ExportedSpanSniffer spanCapturer = profilingService.getSpanExportManager().getExportedSpanSniffer();
 
     try {
-      flowRunner(CUSTOM_SCOPE_FLOW).withPayload(TEST_PAYLOAD).run().getMessage();
+      flowRunner(CUSTOM_SCOPE_FLOW).withPayload(TEST_PAYLOAD).withProfilingService(profilingService).run().getMessage();
       Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
 
       assertThat(exportedSpans, hasSize(3));
