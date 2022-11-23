@@ -40,6 +40,8 @@ public class ReservedPropertyNamesTestCase extends AbstractIntegrationTestCase {
   public static final String APP_NAME_PROPERTY = "app.name";
   public static final String APP_NAME = "my-app";
   public static final String TEST_PROPERTY_NAME = "key";
+  public static final String OTHER_DEPLOYMENT_PROPERTY = "depprop";
+  public static final String PROPERTY_VALUE = "depvalue";
 
   @Inject
   private ConfigurationProperties configurationProperties;
@@ -82,6 +84,11 @@ public class ReservedPropertyNamesTestCase extends AbstractIntegrationTestCase {
 
     assertThat(key.isPresent(), is(true));
     assertThat(key.get(), is(expectedPropertyValue));
+
+    key = configurationProperties.resolveStringProperty(OTHER_DEPLOYMENT_PROPERTY);
+
+    assertThat(key.isPresent(), is(true));
+    assertThat(key.get(), is(PROPERTY_VALUE));
   }
 
   @Override
@@ -104,6 +111,7 @@ public class ReservedPropertyNamesTestCase extends AbstractIntegrationTestCase {
   protected Map<String, String> artifactProperties() {
     return ImmutableMap.<String, String>builder()
         .put(APP_NAME_PROPERTY, APP_NAME)
+        .put(OTHER_DEPLOYMENT_PROPERTY, PROPERTY_VALUE)
         .build();
   }
 
