@@ -38,6 +38,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -190,6 +191,7 @@ public class ExpressionLanguageFunctionsTestCase extends AbstractIntegrationTest
   }
 
   @Test
+  @Ignore("W-12117759")
   public void checkCompatibleDataTypes() throws Exception {
     DataType compatible1 = DataType.builder().type(Parent.class).mediaType(MediaType.ANY).build();
     DataType compatible2 = DataType.builder().type(Child.class).mediaType(MediaType.APPLICATION_JAVA).build();
