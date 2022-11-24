@@ -12,11 +12,11 @@ import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceSto
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 
-import org.mule.runtime.core.privileged.profiling.CapturedExportedSpan;
-import org.mule.runtime.core.privileged.profiling.ExportedSpanCapturer;
 import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.runtime.http.api.HttpService;
 import org.mule.runtime.http.api.domain.message.request.HttpRequest;
+import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
+import org.mule.runtime.tracer.api.sniffer.ExportedSpanSniffer;
 import org.mule.service.http.TestHttpClient;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -64,7 +64,7 @@ public class JmsSemanticConventionAttributesAndNameTestCase extends AbstractInte
 
   @Test
   public void testFlow() throws IOException, TimeoutException {
-    ExportedSpanCapturer spanCapturer = profilingService.getSpanExportManager().getExportedSpanCapturer();
+    ExportedSpanSniffer spanCapturer = profilingService.getSpanExportManager().getExportedSpanSniffer();
 
     try {
       httpClient.send(HttpRequest.builder().uri(String.format("http://localhost:%s/", httpPort.getNumber())).build());
