@@ -41,7 +41,9 @@ public class ReservedPropertyNamesTestCase extends AbstractIntegrationTestCase {
   public static final String APP_NAME = "my-app";
   public static final String TEST_PROPERTY_NAME = "key";
   public static final String OTHER_DEPLOYMENT_PROPERTY = "depprop";
-  public static final String PROPERTY_VALUE = "depvalue";
+  public static final String PROPERTY_VALUE = "custom-properties";
+  public static final String CUSTOM_RESOLVER_PROPERTY = "secure::test.key1";
+  public static final String CUSTOM_RESOLVER_PROPERTY_VALUE = "test.key1:value1:AES:CBC";
 
   @Inject
   private ConfigurationProperties configurationProperties;
@@ -79,16 +81,24 @@ public class ReservedPropertyNamesTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  public void propertiesAreResolvedCorrectly() {
+  public void propertiesAreResolvedCorrectlyDependingOnVersionAndFeatureFlag() {
     Optional<String> key = configurationProperties.resolveStringProperty(TEST_PROPERTY_NAME);
-
     assertThat(key.isPresent(), is(true));
     assertThat(key.get(), is(expectedPropertyValue));
+  }
 
-    key = configurationProperties.resolveStringProperty(OTHER_DEPLOYMENT_PROPERTY);
-
+  @Test
+  public void deploymentPropertiesArePartOfPropertiesResolution() {
+    Optional<String> key = configurationProperties.resolveStringProperty(OTHER_DEPLOYMENT_PROPERTY);
     assertThat(key.isPresent(), is(true));
     assertThat(key.get(), is(PROPERTY_VALUE));
+  }
+
+  @Test
+  public void customPropertiesResolversCanDependOnDeploymentProperties() {
+    Optional<String> key = configurationProperties.resolveStringProperty(CUSTOM_RESOLVER_PROPERTY);
+    assertThat(key.isPresent(), is(true));
+    assertThat(key.get(), is(CUSTOM_RESOLVER_PROPERTY_VALUE));
   }
 
   @Override
