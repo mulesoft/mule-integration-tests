@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:jms="http://www.mulesoft.org/schema/mule/jms" xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+    <http:listener-config name="HTTP_Listener_config">
+        <http:listener-connection host="localhost" port="${httpPort}" />
+    </http:listener-config>
+    <jms:config name="JMS_Config">
+        <jms:active-mq-connection >
+            <jms:caching-strategy >
+                <jms:default-caching />
+            </jms:caching-strategy>
+        </jms:active-mq-connection>
+        <jms:consumer-config >
+            <jms:consumer-type >
+                <jms:queue-consumer />
+            </jms:consumer-type>
+        </jms:consumer-config>
+    </jms:config>
+    <flow name="jms-tracingFlow">
+        <http:listener config-ref="HTTP_Listener_config" path="/"/>
+        <set-payload value="message"></set-payload>
+        <jms:publish config-ref="JMS_Config" destination="test_queue"/>
+        <jms:consume config-ref="JMS_Config" destination="test_queue"/>
+    </flow>
+</mule>
