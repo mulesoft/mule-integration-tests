@@ -46,8 +46,4 @@ public class MuleOperationUsingTypesFromDependenciesTestCase extends MuleArtifac
     assertThat(resultEvent.getMessage().getPayload().getValue(), is("white"));
   }
 
-  @Override
-  protected ExpressionLanguageMetadataService getExpressionLanguageMetadataService() {
-    return new WeaveExpressionLanguageMetadataServiceImpl();
-  }
 }
