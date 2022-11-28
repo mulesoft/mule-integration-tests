@@ -16,8 +16,8 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 
-import org.mule.runtime.core.privileged.profiling.CapturedExportedSpan;
-import org.mule.runtime.core.privileged.profiling.ExportedSpanCapturer;
+import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
+import org.mule.runtime.tracer.api.sniffer.ExportedSpanSniffer;
 import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy;
@@ -56,10 +56,10 @@ public class RoundRobinErrorTracingTestCase extends AbstractIntegrationTestCase 
 
   @Test
   public void testRoundRobinFlowWithError() throws Exception {
-    ExportedSpanCapturer spanCapturer = profilingService.getSpanExportManager().getExportedSpanCapturer();
+    ExportedSpanSniffer spanCapturer = profilingService.getSpanExportManager().getExportedSpanSniffer();
 
     try {
-      flowRunner(ROUND_ROBIN_FLOW).withPayload(TEST_PAYLOAD).runExpectingException();
+      flowRunner(ROUND_ROBIN_FLOW).withPayload(TEST_PAYLOAD).withProfilingService(profilingService).runExpectingException();
       Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
 
       assertThat(exportedSpans, hasSize(6));

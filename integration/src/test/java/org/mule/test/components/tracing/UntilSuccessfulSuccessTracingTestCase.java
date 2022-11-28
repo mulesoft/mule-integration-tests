@@ -12,8 +12,8 @@ import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceSto
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 
-import org.mule.runtime.core.privileged.profiling.CapturedExportedSpan;
-import org.mule.runtime.core.privileged.profiling.ExportedSpanCapturer;
+import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
+import org.mule.runtime.tracer.api.sniffer.ExportedSpanSniffer;
 import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy;
@@ -48,10 +48,10 @@ public class UntilSuccessfulSuccessTracingTestCase extends AbstractIntegrationTe
 
   @Test
   public void testUntilSuccessfulFlow() throws Exception {
-    ExportedSpanCapturer spanCapturer = profilingService.getSpanExportManager().getExportedSpanCapturer();
+    ExportedSpanSniffer spanCapturer = profilingService.getSpanExportManager().getExportedSpanSniffer();
 
     try {
-      flowRunner(UNTIL_SUCCESSFUL_FLOW).withPayload(TEST_PAYLOAD).run().getMessage();
+      flowRunner(UNTIL_SUCCESSFUL_FLOW).withProfilingService(profilingService).withPayload(TEST_PAYLOAD).run().getMessage();
 
       Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
       assertThat(exportedSpans, hasSize(5));

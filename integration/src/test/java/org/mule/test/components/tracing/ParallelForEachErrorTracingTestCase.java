@@ -13,8 +13,8 @@ import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceSto
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 
-import org.mule.runtime.core.privileged.profiling.CapturedExportedSpan;
-import org.mule.runtime.core.privileged.profiling.ExportedSpanCapturer;
+import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
+import org.mule.runtime.tracer.api.sniffer.ExportedSpanSniffer;
 import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy;
@@ -52,10 +52,10 @@ public class ParallelForEachErrorTracingTestCase extends AbstractIntegrationTest
 
   @Test
   public void testFlowWithError() throws Exception {
-    ExportedSpanCapturer spanCapturer = profilingService.getSpanExportManager().getExportedSpanCapturer();
+    ExportedSpanSniffer spanCapturer = profilingService.getSpanExportManager().getExportedSpanSniffer();
 
     try {
-      flowRunner(PARALLEL_FOR_EACH_FLOW).withPayload(TEST_PAYLOAD).dispatch();
+      flowRunner(PARALLEL_FOR_EACH_FLOW).withPayload(TEST_PAYLOAD).withProfilingService(profilingService).dispatch();
 
       Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
       assertThat(exportedSpans, hasSize(NUMBER_OF_ROUTES * 3 + 4));

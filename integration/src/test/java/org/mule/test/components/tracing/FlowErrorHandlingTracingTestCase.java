@@ -15,8 +15,8 @@ import static org.mule.test.infrastructure.profiling.tracing.TracingTestUtils.cr
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 
-import org.mule.runtime.core.privileged.profiling.CapturedExportedSpan;
-import org.mule.runtime.core.privileged.profiling.ExportedSpanCapturer;
+import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
+import org.mule.runtime.tracer.api.sniffer.ExportedSpanSniffer;
 import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy;
@@ -68,7 +68,7 @@ public class FlowErrorHandlingTracingTestCase extends AbstractIntegrationTestCas
   private static final String FLOW_WITH_ON_ERROR_PROPAGATE_AND_ON_ERROR_CONTINUE_COMPOSITION =
       "flow-with-on-error-propagate-and-on-error-continue-composition";
 
-  private ExportedSpanCapturer spanCapturer;
+  private ExportedSpanSniffer spanCapturer;
 
   @Inject
   PrivilegedProfilingService profilingService;
@@ -80,7 +80,7 @@ public class FlowErrorHandlingTracingTestCase extends AbstractIntegrationTestCas
 
   @Before
   public void initialize() {
-    spanCapturer = profilingService.getSpanExportManager().getExportedSpanCapturer();
+    spanCapturer = profilingService.getSpanExportManager().getExportedSpanSniffer();
   }
 
   @After
@@ -90,7 +90,8 @@ public class FlowErrorHandlingTracingTestCase extends AbstractIntegrationTestCas
 
   @Test
   public void testFlowWithNoErrorHandling() throws Exception {
-    flowRunner(FLOW_WITH_NO_ERROR_HANDLING).withPayload(TEST_PAYLOAD).runExpectingException(errorType("CUSTOM", "ERROR"));
+    flowRunner(FLOW_WITH_NO_ERROR_HANDLING).withPayload(TEST_PAYLOAD).withProfilingService(profilingService)
+        .runExpectingException(errorType("CUSTOM", "ERROR"));
 
     Collection<CapturedExportedSpan> capturedExportedSpans = spanCapturer.getExportedSpans();
     assertThat(capturedExportedSpans, hasSize(3));
@@ -107,7 +108,7 @@ public class FlowErrorHandlingTracingTestCase extends AbstractIntegrationTestCas
 
   @Test
   public void testFlowWithOnErrorContinue() throws Exception {
-    flowRunner(FLOW_WITH_ON_ERROR_CONTINUE).withPayload(TEST_PAYLOAD).run().getMessage();
+    flowRunner(FLOW_WITH_ON_ERROR_CONTINUE).withPayload(TEST_PAYLOAD).withProfilingService(profilingService).run().getMessage();
 
     Collection<CapturedExportedSpan> capturedExportedSpans = spanCapturer.getExportedSpans();
     assertThat(capturedExportedSpans, hasSize(3));
@@ -124,7 +125,7 @@ public class FlowErrorHandlingTracingTestCase extends AbstractIntegrationTestCas
 
   @Test
   public void testFlowWithFailingOnErrorContinue() throws Exception {
-    flowRunner(FLOW_WITH_FAILING_ON_ERROR_CONTINUE).withPayload(TEST_PAYLOAD)
+    flowRunner(FLOW_WITH_FAILING_ON_ERROR_CONTINUE).withProfilingService(profilingService).withPayload(TEST_PAYLOAD)
         .runExpectingException(errorType("CUSTOM", "ERROR_2"));
     Collection<CapturedExportedSpan> capturedExportedSpans = spanCapturer.getExportedSpans();
     assertThat(capturedExportedSpans, hasSize(4));
@@ -144,7 +145,7 @@ public class FlowErrorHandlingTracingTestCase extends AbstractIntegrationTestCas
 
   @Test
   public void testFlowWithFailingOnErrorPropagate() throws Exception {
-    flowRunner(FLOW_WITH_FAILING_ON_ERROR_PROPAGATE).withPayload(TEST_PAYLOAD)
+    flowRunner(FLOW_WITH_FAILING_ON_ERROR_PROPAGATE).withProfilingService(profilingService).withPayload(TEST_PAYLOAD)
         .runExpectingException(errorType("CUSTOM", "ERROR_2"));
     Collection<CapturedExportedSpan> capturedExportedSpans = spanCapturer.getExportedSpans();
     assertThat(capturedExportedSpans, hasSize(4));
@@ -164,7 +165,8 @@ public class FlowErrorHandlingTracingTestCase extends AbstractIntegrationTestCas
 
   @Test
   public void testFlowWithOnErrorPropagate() throws Exception {
-    flowRunner(FLOW_WITH_ON_ERROR_PROPAGATE).withPayload(TEST_PAYLOAD).runExpectingException(errorType("CUSTOM", "ERROR"));
+    flowRunner(FLOW_WITH_ON_ERROR_PROPAGATE).withProfilingService(profilingService).withPayload(TEST_PAYLOAD)
+        .runExpectingException(errorType("CUSTOM", "ERROR"));
     Collection<CapturedExportedSpan> capturedExportedSpans = spanCapturer.getExportedSpans();
     assertThat(capturedExportedSpans, hasSize(3));
 
@@ -180,7 +182,7 @@ public class FlowErrorHandlingTracingTestCase extends AbstractIntegrationTestCas
 
   @Test
   public void testFlowWithFlowRefAndNoErrorHandling() throws Exception {
-    flowRunner(FLOW_WITH_FLOW_REF_AND_NO_ERROR_HANDLING).withPayload(TEST_PAYLOAD)
+    flowRunner(FLOW_WITH_FLOW_REF_AND_NO_ERROR_HANDLING).withProfilingService(profilingService).withPayload(TEST_PAYLOAD)
         .runExpectingException(errorType("CUSTOM", "ERROR"));
     Collection<CapturedExportedSpan> capturedExportedSpans = spanCapturer.getExportedSpans();
     assertThat(capturedExportedSpans, hasSize(6));
@@ -204,7 +206,8 @@ public class FlowErrorHandlingTracingTestCase extends AbstractIntegrationTestCas
 
   @Test
   public void testFlowWithFlowRefAndOnErrorContinue() throws Exception {
-    flowRunner(FLOW_WITH_FLOW_REF_AND_ON_ERROR_CONTINUE).withPayload(TEST_PAYLOAD).run().getMessage();
+    flowRunner(FLOW_WITH_FLOW_REF_AND_ON_ERROR_CONTINUE).withProfilingService(profilingService).withPayload(TEST_PAYLOAD).run()
+        .getMessage();
     Collection<CapturedExportedSpan> capturedExportedSpans = spanCapturer.getExportedSpans();
     assertThat(capturedExportedSpans, hasSize(5));
 
@@ -226,7 +229,7 @@ public class FlowErrorHandlingTracingTestCase extends AbstractIntegrationTestCas
 
   @Test
   public void testFlowWithFlowRefAndOnErrorPropagate() throws Exception {
-    flowRunner(FLOW_WITH_FLOW_REF_AND_ON_ERROR_PROPAGATE).withPayload(TEST_PAYLOAD)
+    flowRunner(FLOW_WITH_FLOW_REF_AND_ON_ERROR_PROPAGATE).withProfilingService(profilingService).withPayload(TEST_PAYLOAD)
         .runExpectingException(errorType("CUSTOM", "ERROR"));
     Collection<CapturedExportedSpan> capturedExportedSpans = spanCapturer.getExportedSpans();
     assertThat(capturedExportedSpans, hasSize(6));
@@ -250,7 +253,8 @@ public class FlowErrorHandlingTracingTestCase extends AbstractIntegrationTestCas
 
   @Test
   public void testFlowWithFlowRefAndOnErrorPropagateAndOnErrorContinue() throws Exception {
-    flowRunner(FLOW_WITH_FLOW_REF_AND_ON_ERROR_PROPAGATE_AND_ON_ERROR_CONTINUE).withPayload(TEST_PAYLOAD).run()
+    flowRunner(FLOW_WITH_FLOW_REF_AND_ON_ERROR_PROPAGATE_AND_ON_ERROR_CONTINUE).withProfilingService(profilingService)
+        .withPayload(TEST_PAYLOAD).run()
         .getMessage();
 
     Collection<CapturedExportedSpan> capturedExportedSpans = spanCapturer.getExportedSpans();
@@ -275,7 +279,7 @@ public class FlowErrorHandlingTracingTestCase extends AbstractIntegrationTestCas
 
   @Test
   public void testFlowWithSubFlowRefAndNoErrorHandling() throws Exception {
-    flowRunner(FLOW_WITH_SUB_FLOW_REF_AND_NO_ERROR_HANDLING).withPayload(TEST_PAYLOAD)
+    flowRunner(FLOW_WITH_SUB_FLOW_REF_AND_NO_ERROR_HANDLING).withProfilingService(profilingService).withPayload(TEST_PAYLOAD)
         .runExpectingException(errorType("CUSTOM", "ERROR"));
 
     Collection<CapturedExportedSpan> capturedExportedSpans = spanCapturer.getExportedSpans();
@@ -299,7 +303,8 @@ public class FlowErrorHandlingTracingTestCase extends AbstractIntegrationTestCas
 
   @Test
   public void testFlowWithSubFlowRefAndOnErrorContinue() throws Exception {
-    flowRunner(FLOW_WITH_SUB_FLOW_REF_AND_ON_ERROR_CONTINUE).withPayload(TEST_PAYLOAD).run().getMessage();
+    flowRunner(FLOW_WITH_SUB_FLOW_REF_AND_ON_ERROR_CONTINUE).withProfilingService(profilingService).withPayload(TEST_PAYLOAD)
+        .run().getMessage();
 
     Collection<CapturedExportedSpan> capturedExportedSpans = spanCapturer.getExportedSpans();
     assertThat(capturedExportedSpans, hasSize(5));
@@ -322,7 +327,8 @@ public class FlowErrorHandlingTracingTestCase extends AbstractIntegrationTestCas
 
   @Test
   public void flowWIthOnErrorPropagateAndOnErrorContinueComposition() throws Exception {
-    flowRunner(FLOW_WITH_ON_ERROR_PROPAGATE_AND_ON_ERROR_CONTINUE_COMPOSITION).withPayload(TEST_PAYLOAD)
+    flowRunner(FLOW_WITH_ON_ERROR_PROPAGATE_AND_ON_ERROR_CONTINUE_COMPOSITION).withProfilingService(profilingService)
+        .withPayload(TEST_PAYLOAD)
         .runExpectingException(errorType("CUSTOM", "ERROR"));
 
     Collection<CapturedExportedSpan> capturedExportedSpans = spanCapturer.getExportedSpans();

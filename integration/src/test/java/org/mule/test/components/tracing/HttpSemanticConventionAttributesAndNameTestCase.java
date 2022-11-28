@@ -14,8 +14,8 @@ import static org.hamcrest.Matchers.aMapWithSize;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.junit.Assert.assertThat;
 
-import org.mule.runtime.core.privileged.profiling.CapturedExportedSpan;
-import org.mule.runtime.core.privileged.profiling.ExportedSpanCapturer;
+import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
+import org.mule.runtime.tracer.api.sniffer.ExportedSpanSniffer;
 import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -64,10 +64,10 @@ public class HttpSemanticConventionAttributesAndNameTestCase extends AbstractInt
 
   @Test
   public void testFlow() throws Exception {
-    ExportedSpanCapturer spanCapturer = profilingService.getSpanExportManager().getExportedSpanCapturer();
+    ExportedSpanSniffer spanCapturer = profilingService.getSpanExportManager().getExportedSpanSniffer();
 
     try {
-      flowRunner(STARTING_FLOW).run();
+      flowRunner(STARTING_FLOW).withProfilingService(profilingService).run();
       Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
 
       SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);

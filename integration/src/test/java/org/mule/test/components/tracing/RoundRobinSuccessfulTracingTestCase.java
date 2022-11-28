@@ -17,8 +17,8 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 
-import org.mule.runtime.core.privileged.profiling.CapturedExportedSpan;
-import org.mule.runtime.core.privileged.profiling.ExportedSpanCapturer;
+import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
+import org.mule.runtime.tracer.api.sniffer.ExportedSpanSniffer;
 import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy;
@@ -59,15 +59,15 @@ public class RoundRobinSuccessfulTracingTestCase extends AbstractIntegrationTest
   public void testRoundRobinFlow() throws Exception {
     // We send three requests to verify that the tracing to verify the round robin functioning
     // and that the traces corresponds to that.
-    assertRoundRobinSpan(profilingService.getSpanExportManager().getExportedSpanCapturer(), 5, true);
-    assertRoundRobinSpan(profilingService.getSpanExportManager().getExportedSpanCapturer(), 4, false);
-    assertRoundRobinSpan(profilingService.getSpanExportManager().getExportedSpanCapturer(), 5, true);
+    assertRoundRobinSpan(profilingService.getSpanExportManager().getExportedSpanSniffer(), 5, true);
+    assertRoundRobinSpan(profilingService.getSpanExportManager().getExportedSpanSniffer(), 4, false);
+    assertRoundRobinSpan(profilingService.getSpanExportManager().getExportedSpanSniffer(), 5, true);
   }
 
-  private void assertRoundRobinSpan(ExportedSpanCapturer spanCapturer, int numberOfExpectedSpans, boolean verifySetPayloadInRoute)
+  private void assertRoundRobinSpan(ExportedSpanSniffer spanCapturer, int numberOfExpectedSpans, boolean verifySetPayloadInRoute)
       throws Exception {
     try {
-      flowRunner(ROUND_ROBIN_FLOW).withPayload(TEST_PAYLOAD).run().getMessage();
+      flowRunner(ROUND_ROBIN_FLOW).withPayload(TEST_PAYLOAD).withProfilingService(profilingService).run().getMessage();
       Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
 
       assertThat(exportedSpans, hasSize(numberOfExpectedSpans));

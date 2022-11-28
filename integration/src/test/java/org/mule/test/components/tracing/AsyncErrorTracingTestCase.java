@@ -14,8 +14,8 @@ import static org.junit.Assert.assertThat;
 
 import org.mule.functional.api.flow.FlowRunner;
 import org.mule.runtime.core.privileged.event.BaseEventContext;
-import org.mule.runtime.core.privileged.profiling.CapturedExportedSpan;
-import org.mule.runtime.core.privileged.profiling.ExportedSpanCapturer;
+import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
+import org.mule.runtime.tracer.api.sniffer.ExportedSpanSniffer;
 import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy;
@@ -52,11 +52,11 @@ public class AsyncErrorTracingTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void testAsyncFlow() throws Exception {
-    ExportedSpanCapturer spanCapturer = profilingService.getSpanExportManager().getExportedSpanCapturer();
+    ExportedSpanSniffer spanCapturer = profilingService.getSpanExportManager().getExportedSpanSniffer();
 
     try {
       CountDownLatch asyncTerminationLatch = new CountDownLatch(1);
-      FlowRunner runner = flowRunner(ASYNC_FLOW).withPayload(TEST_PAYLOAD);
+      FlowRunner runner = flowRunner(ASYNC_FLOW).withPayload(TEST_PAYLOAD).withProfilingService(profilingService);
       ((BaseEventContext) (runner.buildEvent().getContext())).onTerminated((e, t) -> asyncTerminationLatch.countDown());
       runner.run();
 
