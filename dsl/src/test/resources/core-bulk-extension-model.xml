@@ -48,6 +48,7 @@
             <expiration-policy maxIdleTime="5" timeUnit="MINUTES"/>
         </dynamic-config-expiration>
         <logger/>
+        <logger/>
     </configuration>
     <configuration-properties file="Attribute"/>
     <flow name="flowFor-encryptionSecurityFilter">
