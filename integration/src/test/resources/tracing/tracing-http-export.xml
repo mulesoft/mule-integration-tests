@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) MuleSoft, Inc.  All rights reserved.  http://www.mulesoft.com
+  ~ The software in this package is published under the terms of the CPAL v1.0
+  ~ license, a copy of which has been included with this distribution in the
+  ~ LICENSE.txt file.
+  -->
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:test-components="http://www.mulesoft.org/schema/mule/test-components"
+      xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+      http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+      http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd
+       http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+
+    <http:listener-config name="HTTP_Listener_config" basePath="/">
+        <http:listener-connection host="localhost" port="8080"/>
+    </http:listener-config>
+
+    <test-components:queue-config name="exportedSpans">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <flow name="simpleFlow">
+        <logger/>
+    </flow>
+
+    <flow name="collectorMock">
+        <http:listener config-ref="HTTP_Listener_config" path="v1/traces"/>
+        <test:processor class="org.mule.test.components.tracing.HTTPExportTestCase.ProtobufSpansParser"/>
+        <test-components:queue-push config-ref="exportedSpans"/>
+    </flow>
+
+</mule>
