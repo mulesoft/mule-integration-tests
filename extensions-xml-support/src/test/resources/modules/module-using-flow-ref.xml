@@ -19,8 +19,18 @@
         </body>
     </operation>
 
+    <operation name="call-sub-flow">
+        <body>
+            <mule:flow-ref name="sub-flow"/>
+        </body>
+    </operation>
+
     <mule:flow name="main-flow">
         <mule:set-payload value="Hello World!"/>
     </mule:flow>
+
+    <mule:sub-flow name="sub-flow">
+        <mule:set-payload value="Hello World!"/>
+    </mule:sub-flow>
 
 </module>
