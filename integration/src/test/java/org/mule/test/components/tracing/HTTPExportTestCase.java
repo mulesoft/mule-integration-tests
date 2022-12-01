@@ -9,7 +9,7 @@ package org.mule.test.components.tracing;
 
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
-import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.DEFAULT_TRACING_EXPORT;
+import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.OPEN_TELEMETRY_TRACING_EXPORT;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
@@ -41,7 +41,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 @Feature(PROFILING)
-@Story(DEFAULT_TRACING_EXPORT)
+@Story(OPEN_TELEMETRY_TRACING_EXPORT)
 public class HTTPExportTestCase extends AbstractIntegrationTestCase {
 
   private static final String SIMPLE_FLOW = "simpleFlow";
