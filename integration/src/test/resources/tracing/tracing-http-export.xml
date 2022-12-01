@@ -29,7 +29,6 @@
 
     <flow name="collectorMock">
         <http:listener config-ref="HTTP_Listener_config" path="v1/traces"/>
-        <test:processor class="org.mule.test.components.tracing.HTTPExportTestCase.ProtobufSpansParser"/>
         <test-components:queue-push config-ref="exportedSpans"/>
     </flow>
 

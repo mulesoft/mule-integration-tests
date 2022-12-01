@@ -7,7 +7,6 @@
 
 package org.mule.test.components.tracing;
 
-import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.OPEN_TELEMETRY_TRACING_EXPORT;
 
@@ -16,22 +15,9 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
-import io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceRequest;
-import io.opentelemetry.proto.trace.v1.Span;
-import org.mule.runtime.api.exception.MuleException;
-import org.mule.runtime.api.exception.MuleRuntimeException;
-import org.mule.runtime.api.message.Message;
-import org.mule.runtime.api.streaming.CursorProvider;
-import org.mule.runtime.core.api.event.CoreEvent;
-import org.mule.runtime.core.api.processor.Processor;
 import org.mule.tests.api.TestQueueManager;
-
-import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
-
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
+import org.mule.tck.junit4.rule.SystemProperty;
 
 import javax.inject.Inject;
 
@@ -69,23 +55,7 @@ public class HTTPExportTestCase extends AbstractIntegrationTestCase {
   @Test
   public void testSimpleFlow() throws Exception {
     flowRunner(SIMPLE_FLOW).run();
-    CoreEvent firstEvent = queueManager.read("exportedSpans", RECEIVE_TIMEOUT, MILLISECONDS);
     assertThat(queueManager.read("exportedSpans", RECEIVE_TIMEOUT, MILLISECONDS), notNullValue());
   }
 
-  public static class OpenTelemetryProtobufSpansParser implements Processor {
-    @Override
-    public CoreEvent process(CoreEvent event) throws MuleException {
-      try {
-        List<Span> spans = new ArrayList<>();
-        ExportTraceServiceRequest traceServiceRequest = ExportTraceServiceRequest.parseFrom((InputStream) ((CursorProvider) event.getMessage().getPayload().getValue()).openCursor());
-        traceServiceRequest.getResourceSpansList().forEach(resourceSpans -> resourceSpans.getInstrumentationLibrarySpansList().forEach(
-                instrumentationLibrarySpans -> spans.addAll(instrumentationLibrarySpans.getSpansList())
-        ));
-        return CoreEvent.builder(event).message(Message.of(spans)).build();
-      } catch (Throwable t) {
-        throw new MuleRuntimeException(createStaticMessage("Error trying to get the exported Spans"), t);
-      }
-    }
-  }
 }
