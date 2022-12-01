@@ -65,11 +65,11 @@ public class SimpleTracingTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void testSimpleFlow() throws Exception {
-    ExportedSpanSniffer spanCapturer = profilingService.getSpanExportManager().getExportedSpanSniffer();
+    ExportedSpanSniffer spanSniffer = profilingService.getSpanExportManager().getExportedSpanSniffer();
 
     try {
-      flowRunner(SIMPLE_FLOW).withProfilingService(profilingService).withPayload(TEST_PAYLOAD).run().getMessage();
-      Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
+      flowRunner(SIMPLE_FLOW).withPayload(TEST_PAYLOAD).run().getMessage();
+      Collection<CapturedExportedSpan> exportedSpans = spanSniffer.getExportedSpans();
       assertThat(exportedSpans, hasSize(5));
 
       List<String> attributesToAssertExistence = getDefaultAttributesToAssertExistence();
@@ -103,7 +103,7 @@ public class SimpleTracingTestCase extends AbstractIntegrationTestCase {
       expectedSpanHierarchy.assertSpanTree();
       exportedSpans.forEach(span -> assertThat(span.getServiceName(), equalTo(span.getAttributes().get(ARTIFACT_ID_KEY))));
     } finally {
-      spanCapturer.dispose();
+      spanSniffer.dispose();
     }
   }
 }

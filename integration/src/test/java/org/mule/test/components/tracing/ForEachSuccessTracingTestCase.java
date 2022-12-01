@@ -54,7 +54,7 @@ public class ForEachSuccessTracingTestCase extends AbstractIntegrationTestCase {
     ExportedSpanSniffer spanCapturer = profilingService.getSpanExportManager().getExportedSpanSniffer();
 
     try {
-      flowRunner(FOR_EACH_TELEMETRY_FLOW).withPayload(TEST_PAYLOAD).withProfilingService(profilingService).dispatch();
+      flowRunner(FOR_EACH_TELEMETRY_FLOW).withPayload(TEST_PAYLOAD).dispatch();
 
       Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
       assertThat(exportedSpans, hasSize(NUMBER_OF_ROUTES * 3 + 4));

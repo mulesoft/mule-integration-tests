@@ -53,7 +53,7 @@ public class UntilSuccessfulErrorTracingTestCase extends AbstractIntegrationTest
     ExportedSpanSniffer spanCapturer = profilingService.getSpanExportManager().getExportedSpanSniffer();
 
     try {
-      flowRunner(UNTIL_SUCCESSFUL_FLOW).withProfilingService(profilingService).withPayload(TEST_PAYLOAD).dispatch();
+      flowRunner(UNTIL_SUCCESSFUL_FLOW).withPayload(TEST_PAYLOAD).dispatch();
 
       Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
       assertThat(exportedSpans, hasSize((NUMBER_OF_RETRIES + 1) * 3 + 3));

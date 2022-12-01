@@ -52,7 +52,7 @@ public class ParallelForEachSuccessTracingTestCase extends AbstractIntegrationTe
     ExportedSpanSniffer spanCapturer = profilingService.getSpanExportManager().getExportedSpanSniffer();
 
     try {
-      flowRunner(PARALLEL_FOR_EACH_FLOW).withPayload(TEST_PAYLOAD).withProfilingService(profilingService).dispatch();
+      flowRunner(PARALLEL_FOR_EACH_FLOW).withPayload(TEST_PAYLOAD).dispatch();
       Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
       assertThat(exportedSpans, hasSize(NUMBER_OF_ROUTES * 3 + 4));
 

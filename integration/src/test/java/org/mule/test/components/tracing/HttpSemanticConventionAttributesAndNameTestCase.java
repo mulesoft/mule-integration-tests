@@ -67,7 +67,7 @@ public class HttpSemanticConventionAttributesAndNameTestCase extends AbstractInt
     ExportedSpanSniffer spanCapturer = profilingService.getSpanExportManager().getExportedSpanSniffer();
 
     try {
-      flowRunner(STARTING_FLOW).withProfilingService(profilingService).run();
+      flowRunner(STARTING_FLOW).run();
       Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
 
       SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);

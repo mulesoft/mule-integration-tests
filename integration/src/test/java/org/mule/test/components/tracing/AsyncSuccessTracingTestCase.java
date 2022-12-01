@@ -55,7 +55,7 @@ public class AsyncSuccessTracingTestCase extends AbstractIntegrationTestCase {
 
     try {
       CountDownLatch asyncTerminationLatch = new CountDownLatch(1);
-      FlowRunner runner = flowRunner(ASYNC_FLOW).withPayload(TEST_PAYLOAD).withProfilingService(profilingService);
+      FlowRunner runner = flowRunner(ASYNC_FLOW).withPayload(TEST_PAYLOAD);
       ((BaseEventContext) (runner.buildEvent().getContext())).onTerminated((e, t) -> asyncTerminationLatch.countDown());
       runner.run();
 

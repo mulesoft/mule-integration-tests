@@ -67,7 +67,7 @@ public class RoundRobinSuccessfulTracingTestCase extends AbstractIntegrationTest
   private void assertRoundRobinSpan(ExportedSpanSniffer spanCapturer, int numberOfExpectedSpans, boolean verifySetPayloadInRoute)
       throws Exception {
     try {
-      flowRunner(ROUND_ROBIN_FLOW).withPayload(TEST_PAYLOAD).withProfilingService(profilingService).run().getMessage();
+      flowRunner(ROUND_ROBIN_FLOW).withPayload(TEST_PAYLOAD).run().getMessage();
       Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
 
       assertThat(exportedSpans, hasSize(numberOfExpectedSpans));
