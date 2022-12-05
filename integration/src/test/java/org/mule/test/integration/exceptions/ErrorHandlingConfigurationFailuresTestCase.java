@@ -95,7 +95,6 @@ public class ErrorHandlingConfigurationFailuresTestCase extends AbstractConfigur
     loadConfiguration("org/mule/test/integration/exceptions/raise-error-empty-type-config.xml");
   }
 
-  // TODO
   @Test
   @Issue("W-11802232")
   public void raisesErrorPropertyErrorTypeNotAllowed() throws Exception {
@@ -139,7 +138,6 @@ public class ErrorHandlingConfigurationFailuresTestCase extends AbstractConfigur
     loadConfiguration("org/mule/test/integration/exceptions/non-existent-core-mapping-config.xml");
   }
 
-  // TODO
   @Test
   @Issue("W-11802232")
   public void propertyErrorMappingsSourceNotAllowed() throws Exception {
@@ -148,7 +146,6 @@ public class ErrorHandlingConfigurationFailuresTestCase extends AbstractConfigur
     loadConfiguration("org/mule/test/integration/exceptions/property-error-mapping-source-config.xml");
   }
 
-  // TODO
   @Test
   @Issue("W-11802232")
   public void propertyErrorMappingsTargetNotAllowed() throws Exception {
