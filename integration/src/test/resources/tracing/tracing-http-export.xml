@@ -9,13 +9,16 @@
       xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:http="http://www.mulesoft.org/schema/mule/http"
       xmlns:test-components="http://www.mulesoft.org/schema/mule/test-components"
+      xmlns:heisenberg="http://www.mulesoft.org/schema/mule/heisenberg"
       xmlns:test="http://www.mulesoft.org/schema/mule/test"
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
       http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
       http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd
-       http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+      http://www.mulesoft.org/schema/mule/heisenberg http://www.mulesoft.org/schema/mule/heisenberg/current/mule-heisenberg.xsd
+      http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
-    <http:listener-config name="HTTP_Listener_config" basePath="/">
+
+<http:listener-config name="HTTP_Listener_config" basePath="/">
         <http:listener-connection host="localhost" port="8080"/>
     </http:listener-config>
 
@@ -24,11 +27,15 @@
     </test-components:queue-config>
 
     <flow name="simpleFlow">
-        <logger/>
+        <heisenberg:call-gus-fring/>
+        <error-handler>
+            <on-error-continue/>
+        </error-handler>
     </flow>
 
     <flow name="collectorMock">
         <http:listener config-ref="HTTP_Listener_config" path="v1/traces"/>
+        <test:processor class="org.mule.test.components.tracing.HTTPExportTestCase$OpenTelemetryProtobufSpansFilter"/>
         <test-components:queue-push config-ref="exportedSpans"/>
     </flow>
 
