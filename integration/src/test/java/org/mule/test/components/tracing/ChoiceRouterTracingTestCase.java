@@ -68,9 +68,9 @@ public class ChoiceRouterTracingTestCase extends AbstractIntegrationTestCase {
 
     try {
       if (isError) {
-        flowRunner(CHOICE_FLOW).withPayload(childExpectedSpan).withProfilingService(profilingService).runExpectingException();
+        flowRunner(CHOICE_FLOW).withPayload(childExpectedSpan).runExpectingException();
       } else {
-        flowRunner(CHOICE_FLOW).withPayload(childExpectedSpan).withProfilingService(profilingService).run().getMessage();
+        flowRunner(CHOICE_FLOW).withPayload(childExpectedSpan).run().getMessage();
       }
       Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
 

@@ -51,7 +51,7 @@ public class ScatterGatherSuccessTracingTestCase extends AbstractIntegrationTest
     ExportedSpanSniffer spanCapturer = profilingService.getSpanExportManager().getExportedSpanSniffer();
 
     try {
-      flowRunner(SCATTER_GATHER_FLOW).withProfilingService(profilingService).withPayload(TEST_PAYLOAD).run().getMessage();
+      flowRunner(SCATTER_GATHER_FLOW).withPayload(TEST_PAYLOAD).run().getMessage();
 
       Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
       assertThat(exportedSpans, hasSize(7));

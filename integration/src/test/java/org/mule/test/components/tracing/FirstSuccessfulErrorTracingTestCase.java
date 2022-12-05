@@ -56,7 +56,7 @@ public class FirstSuccessfulErrorTracingTestCase extends AbstractIntegrationTest
     ExportedSpanSniffer spanCapturer = profilingService.getSpanExportManager().getExportedSpanSniffer();
 
     try {
-      flowRunner(FLOW).withPayload(TEST_PAYLOAD).withProfilingService(profilingService).dispatch();
+      flowRunner(FLOW).withPayload(TEST_PAYLOAD).dispatch();
 
       Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
       assertThat(exportedSpans, hasSize(3 * NUMBER_OF_ROUTES + 4));

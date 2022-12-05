@@ -59,7 +59,7 @@ public class RoundRobinErrorTracingTestCase extends AbstractIntegrationTestCase 
     ExportedSpanSniffer spanCapturer = profilingService.getSpanExportManager().getExportedSpanSniffer();
 
     try {
-      flowRunner(ROUND_ROBIN_FLOW).withPayload(TEST_PAYLOAD).withProfilingService(profilingService).runExpectingException();
+      flowRunner(ROUND_ROBIN_FLOW).withPayload(TEST_PAYLOAD).runExpectingException();
       Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
 
       assertThat(exportedSpans, hasSize(6));

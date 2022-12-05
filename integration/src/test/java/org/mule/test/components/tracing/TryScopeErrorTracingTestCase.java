@@ -59,7 +59,7 @@ public class TryScopeErrorTracingTestCase extends AbstractIntegrationTestCase {
     ExportedSpanSniffer spanCapturer = profilingService.getSpanExportManager().getExportedSpanSniffer();
 
     try {
-      flowRunner(TRY_SCOPE_FLOW).withProfilingService(profilingService).withPayload(TEST_PAYLOAD).runExpectingException();
+      flowRunner(TRY_SCOPE_FLOW).withPayload(TEST_PAYLOAD).runExpectingException();
       Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
 
       assertThat(exportedSpans, hasSize(6));
