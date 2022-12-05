@@ -41,6 +41,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
 
 @Feature(ERROR_HANDLING)
@@ -94,6 +95,15 @@ public class ErrorHandlingConfigurationFailuresTestCase extends AbstractConfigur
     loadConfiguration("org/mule/test/integration/exceptions/raise-error-empty-type-config.xml");
   }
 
+  // TODO
+  @Test
+  @Issue("W-11802232")
+  public void raisesErrorPropertyErrorTypeNotAllowed() throws Exception {
+    expectedException.expect(ConfigurationException.class);
+    expectedException.expectMessage(containsString("Couldn't find configuration property value for key ${error.type}"));
+    loadConfiguration("org/mule/test/integration/exceptions/raise-error-property-type-config.xml");
+  }
+
   @Test
   public void sourceErrorResponseSendFilteringNotAllowed() throws Exception {
     expectedException.expect(ConfigurationException.class);
@@ -127,6 +137,24 @@ public class ErrorHandlingConfigurationFailuresTestCase extends AbstractConfigur
     expectedException.expect(ConfigurationException.class);
     expectedException.expectMessage(containsString("There's no MULE error named 'NON_EXISTING'"));
     loadConfiguration("org/mule/test/integration/exceptions/non-existent-core-mapping-config.xml");
+  }
+
+  // TODO
+  @Test
+  @Issue("W-11802232")
+  public void propertyErrorMappingsSourceNotAllowed() throws Exception {
+    expectedException.expect(ConfigurationException.class);
+    expectedException.expectMessage(containsString("Couldn't find configuration property value for key ${error.type}"));
+    loadConfiguration("org/mule/test/integration/exceptions/property-error-mapping-source-config.xml");
+  }
+
+  // TODO
+  @Test
+  @Issue("W-11802232")
+  public void propertyErrorMappingsTargetNotAllowed() throws Exception {
+    expectedException.expect(ConfigurationException.class);
+    expectedException.expectMessage(containsString("Couldn't find configuration property value for key ${error.type}"));
+    loadConfiguration("org/mule/test/integration/exceptions/property-error-mapping-target-config.xml");
   }
 
   @Test
