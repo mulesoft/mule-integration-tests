@@ -77,7 +77,7 @@ public class StereotypeConfigurationWarningsBeforeDeploymentTestCase extends Abs
     }
 
     ValidationResult validationResult = validatorBuilder()
-        .waiveUnresolvedPropertiesOnParams(true)
+        .ignoreParamsWithProperties(true)
         .build()
         .validate(ast);
 

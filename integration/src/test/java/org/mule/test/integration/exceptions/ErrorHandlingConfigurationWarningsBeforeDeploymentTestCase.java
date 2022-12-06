@@ -107,7 +107,7 @@ public class ErrorHandlingConfigurationWarningsBeforeDeploymentTestCase extends 
     }
 
     ValidationResult validationResult = validatorBuilder()
-        .waiveUnresolvedPropertiesOnParams(true)
+        .ignoreParamsWithProperties(true)
         .build()
         .validate(ast);
 
