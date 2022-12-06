@@ -7,6 +7,7 @@
 
 package org.mule.test.components.tracing;
 
+import static org.mule.runtime.core.api.util.ClassUtils.withContextClassLoader;
 import static org.mule.runtime.tracer.exporter.api.config.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_CA_FILE_LOCATION;
 import static org.mule.runtime.tracer.exporter.api.config.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_CERT_FILE_LOCATION;
 import static org.mule.runtime.tracer.exporter.api.config.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_ENABLED;
@@ -103,46 +104,49 @@ public abstract class AbstractTracingTestCase extends
 
   @Before
   public void before() {
-    exposeHostPorts(server.httpPort());
-    // Configuring the collector test-container
-    collector =
-        new GenericContainer<>(COLLECTOR_IMAGE)
-            .withImagePullPolicy(PullPolicy.alwaysPull())
-            .withEnv("LOGGING_EXPORTER_LOG_LEVEL", "INFO")
-            .withCopyFileToContainer(
-                                     forHostPath(serverTls.certificateFile().toPath(), 365),
-                                     "/server.cert")
-            .withCopyFileToContainer(
-                                     forHostPath(serverTls.privateKeyFile().toPath(), 365), "/server.key")
-            .withCopyFileToContainer(
-                                     forHostPath(clientTls.certificateFile().toPath(), 365),
-                                     "/client.cert")
-            .withEnv("MTLS_CLIENT_CERTIFICATE", "/client.cert")
-            .withEnv("MTLS_SERVER_CERTIFICATE", "/server.cert")
-            .withEnv("MTLS_SERVER_KEY", "/server.key")
-            .withEnv(
-                     "OTLP_EXPORTER_ENDPOINT", "host.testcontainers.internal:" + server.httpPort())
-            .withClasspathResourceMapping(
-                                          "otel.yaml", "/otel.yaml", READ_ONLY)
-            .withCommand("--config", "/otel.yaml")
-            .withExposedPorts(
-                              COLLECTOR_OTLP_GRPC_PORT,
-                              COLLECTOR_OTLP_HTTP_PORT,
-                              COLLECTOR_OTLP_GRPC_MTLS_PORT,
-                              COLLECTOR_OTLP_HTTP_MTLS_PORT,
-                              COLLECTOR_HEALTH_CHECK_PORT)
-            .waitingFor(Wait.forHttp("/").forPort(COLLECTOR_HEALTH_CHECK_PORT));
+    withContextClassLoader(GenericContainer.class.getClassLoader(), () -> {
+      exposeHostPorts(server.httpPort());
+      // Configuring the collector test-container
+      collector =
+          new GenericContainer<>(COLLECTOR_IMAGE)
+              .withImagePullPolicy(PullPolicy.alwaysPull())
+              .withEnv("LOGGING_EXPORTER_LOG_LEVEL", "INFO")
+              .withCopyFileToContainer(
+                                       forHostPath(serverTls.certificateFile().toPath(), 365),
+                                       "/server.cert")
+              .withCopyFileToContainer(
+                                       forHostPath(serverTls.privateKeyFile().toPath(), 365), "/server.key")
+              .withCopyFileToContainer(
+                                       forHostPath(clientTls.certificateFile().toPath(), 365),
+                                       "/client.cert")
+              .withEnv("MTLS_CLIENT_CERTIFICATE", "/client.cert")
+              .withEnv("MTLS_SERVER_CERTIFICATE", "/server.cert")
+              .withEnv("MTLS_SERVER_KEY", "/server.key")
+              .withEnv(
+                       "OTLP_EXPORTER_ENDPOINT", "host.testcontainers.internal:" + server.httpPort())
+              .withClasspathResourceMapping(
+                                            "otel.yaml", "/otel.yaml", READ_ONLY)
+              .withCommand("--config", "/otel.yaml")
+              .withExposedPorts(
+                                COLLECTOR_OTLP_GRPC_PORT,
+                                COLLECTOR_OTLP_HTTP_PORT,
+                                COLLECTOR_OTLP_GRPC_MTLS_PORT,
+                                COLLECTOR_OTLP_HTTP_MTLS_PORT,
+                                COLLECTOR_HEALTH_CHECK_PORT)
+              .waitingFor(Wait.forHttp("/").forPort(COLLECTOR_HEALTH_CHECK_PORT));
 
-    collector.start();
-    setProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENABLED, TRUE.toString());
-    setProperty(MULE_OPEN_TELEMETRY_EXPORTER_TYPE, exporterType);
-    setProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENDPOINT, schema + collector.getHost() + ":" + collector.getMappedPort(port) + path);
-    setProperty(MULE_OPEN_TELEMETRY_EXPORTER_TLS_ENABLED, Boolean.toString(secure));
-    if (secure) {
-      setProperty(MULE_OPEN_TELEMETRY_EXPORTER_KEY_FILE_LOCATION, clientTls.privateKeyFile().toPath().toString());
-      setProperty(MULE_OPEN_TELEMETRY_EXPORTER_CERT_FILE_LOCATION, clientTls.certificateFile().toPath().toString());
-      setProperty(MULE_OPEN_TELEMETRY_EXPORTER_CA_FILE_LOCATION, serverTls.certificateFile().toPath().toString());
-    }
+      collector.start();
+      setProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENABLED, TRUE.toString());
+      setProperty(MULE_OPEN_TELEMETRY_EXPORTER_TYPE, exporterType);
+      setProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENDPOINT,
+                  schema + collector.getHost() + ":" + collector.getMappedPort(port) + path);
+      setProperty(MULE_OPEN_TELEMETRY_EXPORTER_TLS_ENABLED, Boolean.toString(secure));
+      if (secure) {
+        setProperty(MULE_OPEN_TELEMETRY_EXPORTER_KEY_FILE_LOCATION, clientTls.privateKeyFile().toPath().toString());
+        setProperty(MULE_OPEN_TELEMETRY_EXPORTER_CERT_FILE_LOCATION, clientTls.certificateFile().toPath().toString());
+        setProperty(MULE_OPEN_TELEMETRY_EXPORTER_CA_FILE_LOCATION, serverTls.certificateFile().toPath().toString());
+      }
+    });
   }
 
   @After
