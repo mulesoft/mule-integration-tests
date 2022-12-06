@@ -7,6 +7,15 @@
 
 package org.mule.test.components.tracing;
 
+
+import static org.mule.runtime.tracer.exporter.api.config.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_CA_FILE_LOCATION;
+import static org.mule.runtime.tracer.exporter.api.config.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_CERT_FILE_LOCATION;
+import static org.mule.runtime.tracer.exporter.api.config.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_ENABLED;
+import static org.mule.runtime.tracer.exporter.api.config.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_ENDPOINT;
+import static org.mule.runtime.tracer.exporter.api.config.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_KEY_FILE_LOCATION;
+import static org.mule.runtime.tracer.exporter.api.config.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_TLS_ENABLED;
+import static org.mule.runtime.tracer.exporter.api.config.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_TYPE;
+
 import static java.lang.Boolean.TRUE;
 import static java.lang.System.clearProperty;
 import static java.lang.System.setProperty;
@@ -56,13 +65,6 @@ public abstract class AbstractTracingIntegrationTestCase extends AbstractIntegra
   private static final Integer COLLECTOR_OTLP_GRPC_MTLS_PORT = 5317;
   private static final Integer COLLECTOR_OTLP_HTTP_MTLS_PORT = 5318;
   private static final Integer COLLECTOR_HEALTH_CHECK_PORT = 13133;
-  public static final String MULE_OPEN_TELEMETRY_EXPORTER_ENABLED = "mule.open.telemetry.exporter.enabled";
-  public static final String MULE_OPEN_TELEMETRY_EXPORTER_TYPE = "mule.open.telemetry.exporter.type";
-  public static final String MULE_OPEN_TELEMETRY_EXPORTER_ENDPOINT = "mule.open.telemetry.exporter.endpoint";
-  public static final String MULE_OPEN_TELEMETRY_EXPORTER_TLS_ENABLED = "mule.open.telemetry.exporter.tls.enabled";
-  public static final String MULE_OPEN_TELEMETRY_EXPORTER_CERT_FILE_LOCATION = "mule.open.telemetry.exporter.cert.file.location";
-  public static final String MULE_OPEN_TELEMETRY_EXPORTER_KEY_FILE_LOCATION = "mule.open.telemetry.exporter.key.file.location";
-  public static final String MULE_OPEN_TELEMETRY_EXPORTER_CA_FILE_LOCATION = "mule.open.telemetry.exporter.ca.file.location";
 
   protected final String exporterType;
   private final String schema;
