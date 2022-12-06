@@ -20,7 +20,6 @@
         <hawtbufVersion>1.1</hawtbufVersion>
         <activemqProtobuf>1.1</activemqProtobuf>
         <groovy.version>2.4.21</groovy.version>
-        <muleTracingModuleVersion>1.0.0</muleTracingModuleVersion>
         <muleScriptingModuleVersion>2.0.1</muleScriptingModuleVersion>
     </properties>
 
@@ -129,12 +128,6 @@
             <groupId>org.mule.connectors</groupId>
             <artifactId>mule-http-connector</artifactId>
             <classifier>mule-plugin</classifier>
-        </dependency>
-        <dependency>
-            <groupId>org.mule.modules</groupId>
-            <artifactId>mule-tracing-module</artifactId>
-            <classifier>mule-plugin</classifier>
-            <version>${muleTracingModuleVersion}</version>
         </dependency>
         <dependency>
             <groupId>org.mule.modules</groupId>
