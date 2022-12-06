@@ -22,8 +22,7 @@ import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
         "org.codehaus.groovy:groovy-all"
     },
     extraPrivilegedArtifacts = {"org.mule.tests:mule-tests-parsers-plugin"},
-    testRunnerExportedRuntimeLibs = {"org.mule.tests:mule-tests-functional",
-        "org.testcontainers:testcontainers"})
+    testRunnerExportedRuntimeLibs = {"org.mule.tests:mule-tests-functional"})
 public interface IntegrationTestCaseRunnerConfig {
 
 }
