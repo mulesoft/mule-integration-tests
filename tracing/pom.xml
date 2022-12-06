@@ -7,21 +7,23 @@
         <artifactId>mule-extensions-integration-tests</artifactId>
         <version>4.5.0-SNAPSHOT</version>
     </parent>
-    <artifactId>mule-tests-integration</artifactId>
+    <artifactId>mule-tests-tracing</artifactId>
     <name>Integration Tests</name>
-    <description>Tests which ensure that Mule sub projects work well together.</description>
+    <description>Tests which ensure that Mule Tracing.</description>
     <packaging>jar</packaging>
 
     <properties>
         <skipExportTests>false</skipExportTests>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
-
+        <muleTracingModuleVersion>1.0.0</muleTracingModuleVersion>
+        <protobufVersion>3.21.9</protobufVersion>
+        <openTelemetryProtoVersion>0.3.0</openTelemetryProtoVersion>
+        <opentelemetryVersion>1.20.1</opentelemetryVersion>
+        <muleTracingModuleVersion>1.0.0</muleTracingModuleVersion>
         <activemqVersion>5.15.3</activemqVersion>
         <hawtbufVersion>1.1</hawtbufVersion>
         <activemqProtobuf>1.1</activemqProtobuf>
         <groovy.version>2.4.21</groovy.version>
-        <muleTracingModuleVersion>1.0.0</muleTracingModuleVersion>
-        <muleScriptingModuleVersion>2.0.1</muleScriptingModuleVersion>
     </properties>
 
     <build>
@@ -38,6 +40,25 @@
             </plugin>
         </plugins>
     </build>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>io.opentelemetry</groupId>
+                <artifactId>opentelemetry-bom</artifactId>
+                <version>${opentelemetryVersion}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-bom</artifactId>
+                <version>1.17.6</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <dependency>
@@ -75,6 +96,68 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- Plugins for testing sources -->
+        <dependency>
+            <groupId>org.mule.connectors</groupId>
+            <artifactId>mule-jms-connector</artifactId>
+            <classifier>mule-plugin</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.tests</groupId>
+            <artifactId>mule-petstore-extension</artifactId>
+            <version>${project.version}</version>
+            <classifier>mule-plugin</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.tests</groupId>
+            <artifactId>mule-heisenberg-extension</artifactId>
+            <version>${project.version}</version>
+            <classifier>mule-plugin</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-broker</artifactId>
+            <version>${activemqVersion}</version>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-databind</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-client</artifactId>
+            <version>${activemqVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.fusesource.hawtbuf</groupId>
+            <artifactId>hawtbuf</artifactId>
+            <version>${hawtbufVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.activemq.protobuf</groupId>
+            <artifactId>activemq-protobuf</artifactId>
+            <version>${activemqProtobuf}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-jaas</artifactId>
+            <version>${activemqVersion}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- Used by ActiveMQ if persistent=true -->
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-kahadb-store</artifactId>
+            <version>${activemqVersion}</version>
+            <scope>test</scope>
+        </dependency>
+
         <!-- Mule Services -->
 
         <dependency>
@@ -85,9 +168,9 @@
         </dependency>
         <dependency>
             <groupId>org.mule.runtime</groupId>
-            <artifactId>mule-dwb-api</artifactId> 
-            <scope>provided</scope>         
-        </dependency> 
+            <artifactId>mule-dwb-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>org.mule.services</groupId>
             <artifactId>mule-service-http</artifactId>
@@ -136,13 +219,7 @@
             <classifier>mule-plugin</classifier>
             <version>${muleTracingModuleVersion}</version>
         </dependency>
-        <dependency>
-            <groupId>org.mule.modules</groupId>
-            <artifactId>mule-scripting-module</artifactId>
-            <classifier>mule-plugin</classifier>
-            <version>${muleScriptingModuleVersion}</version>
-        </dependency>
-        
+
         <!-- Plugins for testing sources -->
         <dependency>
             <groupId>org.mule.connectors</groupId>
@@ -167,159 +244,13 @@
             <version>${activemqVersion}</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>org.fusesource.hawtbuf</groupId>
-            <artifactId>hawtbuf</artifactId>
-            <version>${hawtbufVersion}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.activemq.protobuf</groupId>
-            <artifactId>activemq-protobuf</artifactId>
-            <version>${activemqProtobuf}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-jaas</artifactId>
-            <version>${activemqVersion}</version>
-            <scope>test</scope>
-        </dependency>
-        <!-- Used by ActiveMQ if persistent=true -->
-        <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-kahadb-store</artifactId>
-            <version>${activemqVersion}</version>
-            <scope>test</scope>
-        </dependency>
 
-        <!-- Plugins for testing redelivery policy -->
-        <dependency>
-            <groupId>org.mule.connectors</groupId>
-            <artifactId>mule-vm-connector</artifactId>
-            <classifier>mule-plugin</classifier>
-        </dependency>
-
-        <!-- Plugins for testing lazyInit -->
-        
-        <dependency>
-            <groupId>org.mule.connectors</groupId>
-            <artifactId>mule-file-connector</artifactId>
-            <classifier>mule-plugin</classifier>
-        </dependency>
-        <dependency>
-            <groupId>org.mule.connectors</groupId>
-            <artifactId>mule-objectstore-connector</artifactId>
-            <classifier>mule-plugin</classifier>
-        </dependency>
-        <dependency>
-            <groupId>org.mule.modules</groupId>
-            <artifactId>mule-aggregators-module</artifactId>
-            <classifier>mule-plugin</classifier>
-        </dependency>
-        <dependency>
-            <groupId>org.mule.connectors</groupId>
-            <artifactId>mule-db-connector</artifactId>
-            <classifier>mule-plugin</classifier>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.derby</groupId>
-            <artifactId>derby</artifactId>
-            <scope>test</scope>
-        </dependency>
 
         <dependency>
             <groupId>org.mule.tests.plugin</groupId>
             <artifactId>mule-tests-component-plugin</artifactId>
             <version>${project.version}</version>
             <classifier>mule-plugin</classifier>
-        </dependency>
-
-        <dependency>
-            <groupId>org.mule.tests</groupId>
-            <artifactId>test-config-properties-extension-deprecated</artifactId>
-            <version>${project.version}</version>
-            <classifier>mule-plugin</classifier>
-        </dependency>
-        <dependency>
-            <groupId>org.mule.tests</groupId>
-            <artifactId>test-config-properties-extension</artifactId>
-            <version>${project.version}</version>
-            <classifier>mule-plugin</classifier>
-        </dependency>
-        <dependency>
-            <groupId>org.mule.tests</groupId>
-            <artifactId>test-config-properties-extension-deprecated-complex</artifactId>
-            <version>${project.version}</version>
-            <classifier>mule-plugin</classifier>
-        </dependency>
-        <dependency>
-            <groupId>org.mule.tests</groupId>
-            <artifactId>test-localisation-properties-extension</artifactId>
-            <version>${project.version}</version>
-            <classifier>mule-plugin</classifier>
-        </dependency>
-
-        <dependency>
-            <groupId>org.mule.tests</groupId>
-            <artifactId>mule-marvel-extension</artifactId>
-            <version>${project.version}</version>
-            <classifier>mule-plugin</classifier>
-        </dependency>
-        <dependency>
-            <groupId>org.mule.tests</groupId>
-            <artifactId>mule-heisenberg-extension</artifactId>
-            <version>${project.version}</version>
-            <classifier>mule-plugin</classifier>
-        </dependency>
-        <dependency>
-            <groupId>org.mule.tests</groupId>
-            <artifactId>classloading-extension</artifactId>
-            <version>${project.version}</version>
-            <classifier>mule-plugin</classifier>
-        </dependency>
-        <dependency>
-            <groupId>org.mule.tests</groupId>
-            <artifactId>mule-reconnection-test-extension</artifactId>
-            <version>${project.version}</version>
-            <classifier>mule-plugin</classifier>
-        </dependency>
-        <dependency>
-            <groupId>org.mule.tests</groupId>
-            <artifactId>mule-tx-extension</artifactId>
-            <version>${project.version}</version>
-            <classifier>mule-plugin</classifier>
-        </dependency>
-        <dependency>
-            <groupId>org.mule.tests</groupId>
-            <artifactId>mule-petstore-extension</artifactId>
-            <version>${project.version}</version>
-            <classifier>mule-plugin</classifier>
-        </dependency>
-
-        <dependency>
-            <groupId>org.mule.runtime</groupId>
-            <artifactId>mule-module-extensions-support</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mule.runtime</groupId>
-            <artifactId>mule-module-extensions-spring-support</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-core-asl</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-mapper-asl</artifactId>
-            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -352,7 +283,11 @@
             <artifactId>commons-text</artifactId>
             <scope>test</scope>
         </dependency>
-
+        <dependency>
+            <groupId>org.mule.runtime</groupId>
+            <artifactId>mule-tracer-exporter-configuration-api</artifactId>
+            <version>4.5.0-SNAPSHOT</version>
+        </dependency>
         <dependency>
             <groupId>org.mule.tests</groupId>
             <artifactId>mule-tests-infrastructure</artifactId>
@@ -372,13 +307,53 @@
             <classifier>mule-plugin</classifier>
             <scope>test</scope>
         </dependency>
-        <!--Groovy-->
         <dependency>
-            <groupId>org.codehaus.groovy</groupId>
-            <artifactId>groovy-all</artifactId>
-            <version>${groovy.version}</version>
-            <classifier>indy</classifier>
+            <groupId>com.linecorp.armeria</groupId>
+            <artifactId>armeria-junit4</artifactId>
+            <version>1.20.3</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.linecorp.armeria</groupId>
+            <artifactId>armeria-grpc</artifactId>
+            <version>1.20.3</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-proto</artifactId>
+            <version>0.17.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <version>1.17.6</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java</artifactId>
+            <version>${protobufVersion}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.modules</groupId>
+            <artifactId>mule-tracing-module</artifactId>
+            <classifier>mule-plugin</classifier>
+            <version>${muleTracingModuleVersion}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-proto</artifactId>
+            <version>${openTelemetryProtoVersion}</version>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.protobuf</groupId>
+                    <artifactId>protobuf-java</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 </project>
