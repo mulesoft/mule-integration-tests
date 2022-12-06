@@ -9,7 +9,7 @@
     </parent>
     <artifactId>mule-tests-tracing</artifactId>
     <name>Integration Tests</name>
-    <description>Tests which ensure that Mule Tracing.</description>
+    <description>Tests for Optel Tracing</description>
     <packaging>jar</packaging>
 
     <properties>
