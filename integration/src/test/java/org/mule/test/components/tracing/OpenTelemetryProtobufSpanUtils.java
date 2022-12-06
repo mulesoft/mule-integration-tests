@@ -43,6 +43,7 @@ public class OpenTelemetryProtobufSpanUtils {
 
   private static List<SpanDataWrapper> processResourceSpans(ResourceSpans resourceSpans) {
     List<Span> spans = new ArrayList<>();
+    // TODO: verify a better way to parse the attributes.
     String serviceName =
         resourceSpans.getResource().getAttributes(0).getUnknownFields().toByteString().toStringUtf8().substring(4);
 
@@ -85,6 +86,7 @@ public class OpenTelemetryProtobufSpanUtils {
 
     @Override
     public Map<String, String> getAttributes() {
+      // TODO: verify a better way to parse the attributes in optel protobuf.
       return openTelemetryProtobufSpan.getAttributesList().stream()
           .collect(toMap(AttributeKeyValue::getKey,
                          attributeKeyValue -> attributeKeyValue.getUnknownFields().toByteString().toStringUtf8().substring(4)));
