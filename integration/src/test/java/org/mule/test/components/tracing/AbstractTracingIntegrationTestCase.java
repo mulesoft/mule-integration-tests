@@ -20,6 +20,7 @@ import static org.testcontainers.utility.MountableFile.forHostPath;
 import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
+import org.mule.test.runner.RunnerDelegateTo;
 
 import java.io.UncheckedIOException;
 import java.util.ArrayList;
@@ -40,7 +41,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.runners.Parameterized;
-import org.mule.test.runner.RunnerDelegateTo;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.images.PullPolicy;
