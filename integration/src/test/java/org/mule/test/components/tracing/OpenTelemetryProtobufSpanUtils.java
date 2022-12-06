@@ -27,7 +27,7 @@ import io.opentelemetry.proto.trace.v1.Span;
 import io.opentelemetry.proto.trace.v1.Status;
 
 /**
- * Utils for the Opentelemetry protobuf.
+ * Utils for the open telemetry protobuf.
  *
  * @since 4.5.0
  */
