@@ -12,7 +12,6 @@ import static org.mule.runtime.core.api.util.StringUtils.toHexString;
 
 import static java.util.stream.Collectors.toMap;
 
-import io.opentelemetry.proto.trace.v1.ResourceSpans;
 import org.mule.runtime.tracer.api.sniffer.CapturedEventData;
 import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
 
@@ -23,9 +22,15 @@ import java.util.stream.Collectors;
 
 import io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceRequest;
 import io.opentelemetry.proto.common.v1.AttributeKeyValue;
+import io.opentelemetry.proto.trace.v1.ResourceSpans;
 import io.opentelemetry.proto.trace.v1.Span;
 import io.opentelemetry.proto.trace.v1.Status;
 
+/**
+ * Utils for the Opentelemetry protobuf.
+ *
+ * @since 4.5.0
+ */
 public class OpenTelemetryProtobufSpanUtils {
 
   private static final String NO_PARENT_SPAN = "0000000000000000";
