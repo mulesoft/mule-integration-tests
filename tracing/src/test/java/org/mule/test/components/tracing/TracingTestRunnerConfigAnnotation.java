@@ -17,7 +17,8 @@ import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
         "org.apache.activemq:activemq-kahadb-store",
         "org.fusesource.hawtbuf:hawtbuf",
         "org.apache.activemq.protobuf:activemq-protobuf",
-        "org.mule.tests:mule-tests-model"
+        "org.mule.tests:mule-tests-model",
+        "org.testcontainers:testcontainers"
     },
     extraPrivilegedArtifacts = {"org.mule.tests:mule-tests-parsers-plugin"},
     testRunnerExportedRuntimeLibs = {"org.mule.tests:mule-tests-functional",

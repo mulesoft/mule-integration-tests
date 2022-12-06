@@ -7,7 +7,6 @@
 
 package org.mule.test.components.tracing;
 
-
 import static org.mule.runtime.tracer.exporter.api.config.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_CA_FILE_LOCATION;
 import static org.mule.runtime.tracer.exporter.api.config.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_CERT_FILE_LOCATION;
 import static org.mule.runtime.tracer.exporter.api.config.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_ENABLED;
@@ -28,7 +27,6 @@ import static org.testcontainers.utility.MountableFile.forHostPath;
 
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
-import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
 import org.mule.test.runner.RunnerDelegateTo;
 
 import java.io.UncheckedIOException;
