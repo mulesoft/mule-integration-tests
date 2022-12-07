@@ -5,7 +5,6 @@
  * LICENSE.txt file.
  */
 
-import static java.lang.System.clearProperty;
 import static org.mule.runtime.tracer.exporter.api.config.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_BACKOFF_MAX_ATTEMPTS;
 import static org.mule.runtime.tracer.exporter.api.config.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_ENABLED;
 import static org.mule.runtime.tracer.exporter.api.config.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_ENDPOINT;
@@ -16,6 +15,7 @@ import static org.mule.test.infrastructure.profiling.tracing.TracingTestUtils.ge
 
 import static java.lang.Boolean.TRUE;
 import static java.lang.String.valueOf;
+import static java.lang.System.clearProperty;
 import static java.lang.System.setProperty;
 import static java.util.Arrays.asList;
 
