@@ -22,18 +22,18 @@ import org.junit.rules.ExpectedException;
 
 @Feature(MULE_DSL)
 @Story(DSL_VALIDATION_STORY)
-public class OperationsFailuresTestCase extends AbstractConfigurationFailuresTestCase {
+public class MuleSDKOperationsFailuresTestCase extends AbstractConfigurationFailuresTestCase {
 
-    @Rule
-    public ExpectedException expectedException = none();
+  @Rule
+  public ExpectedException expectedException = none();
 
-    @Test
-    @Ignore("W-12074712")
-    @Description("An operation cannot use lookup function (even without explicit binding)")
-    public void returningTypeFromDependency() throws Exception {
-        expectedException.expect(ConfigurationException.class);
-        expectedException.expectMessage("Using an invalid function within an operation");
-        loadConfiguration("mule-operations-using-lookup.xml");
-    }
+  @Test
+  @Ignore("W-12074712")
+  @Description("An operation cannot use lookup function (even without explicit binding)")
+  public void returningTypeFromDependency() throws Exception {
+    expectedException.expect(ConfigurationException.class);
+    expectedException.expectMessage("Using an invalid function within an Mule SDK operation");
+    loadConfiguration("mule-operations-using-lookup.xml");
+  }
 
 }
