@@ -5,6 +5,7 @@
  * LICENSE.txt file.
  */
 
+import static java.lang.System.clearProperty;
 import static org.mule.runtime.tracer.exporter.api.config.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_BACKOFF_MAX_ATTEMPTS;
 import static org.mule.runtime.tracer.exporter.api.config.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_ENABLED;
 import static org.mule.runtime.tracer.exporter.api.config.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_ENDPOINT;
@@ -22,6 +23,7 @@ import static com.linecorp.armeria.common.HttpResponse.from;
 import static com.linecorp.armeria.common.HttpStatus.OK;
 import static com.linecorp.armeria.common.HttpStatus.REQUEST_TIMEOUT;
 
+import org.junit.After;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
 import org.mule.tck.probe.JUnitProbe;
@@ -99,6 +101,14 @@ public class RetryTracingTestCase extends
     setProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENDPOINT,
                 "http://localhost:" + httpServer.httpPort() + "/" + path);
     setProperty(MULE_OPEN_TELEMETRY_EXPORTER_BACKOFF_MAX_ATTEMPTS, valueOf(MAX_BACKOFF_ATTEMPTS));
+  }
+
+  @After
+  public void after() {
+    clearProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENABLED);
+    clearProperty(MULE_OPEN_TELEMETRY_EXPORTER_TYPE);
+    clearProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENDPOINT);
+    clearProperty(MULE_OPEN_TELEMETRY_EXPORTER_BACKOFF_MAX_ATTEMPTS);
   }
 
   @Test
