@@ -10,6 +10,7 @@ import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.DEFAULT_CORE_EVENT_TRACER;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
@@ -89,6 +90,12 @@ public class JmsSemanticConventionAttributesAndNameTestCase extends MuleArtifact
           .endChildren();
 
       expectedSpanHierarchy.assertSpanTree();
+      CapturedExportedSpan jmsPublishSpan = exportedSpans.stream()
+          .filter(exportedSpan -> exportedSpan.getName().equals(EXPECTED_JMS_PUBLISH_NAME)).findFirst().get();
+      assertThat(jmsPublishSpan.getSpanKindName(), equalTo("PRODUCER"));
+      CapturedExportedSpan jmsConsumeSpan = exportedSpans.stream()
+          .filter(exportedSpan -> exportedSpan.getName().equals(EXPECTED_JMS_CONSUME_NAME)).findFirst().get();
+      assertThat(jmsConsumeSpan.getSpanKindName(), equalTo("CONSUMER"));
     } finally {
       spanCapturer.dispose();
     }
