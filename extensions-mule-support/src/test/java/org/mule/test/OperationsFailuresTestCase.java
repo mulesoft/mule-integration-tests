@@ -10,14 +10,15 @@ import static org.junit.rules.ExpectedException.none;
 import static org.mule.test.allure.AllureConstants.MuleDsl.DslValidationStory.DSL_VALIDATION_STORY;
 import static org.mule.test.allure.AllureConstants.MuleDsl.MULE_DSL;
 
+import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
+import org.mule.runtime.core.api.config.ConfigurationException;
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
-import org.mule.runtime.core.api.config.ConfigurationException;
 
 @Feature(MULE_DSL)
 @Story(DSL_VALIDATION_STORY)
@@ -35,6 +36,7 @@ public class OperationsFailuresTestCase extends MuleArtifactFunctionalTestCase {
     }
 
     @Test
+    @Ignore("W-12074712")
     @Description("An operation cannot use lookup function (even without explicit binding)")
     public void returningTypeFromDependency() throws Exception {
         // We are actually expecting for the expectedException
