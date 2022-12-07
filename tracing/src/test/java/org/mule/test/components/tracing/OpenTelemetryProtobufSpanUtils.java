@@ -103,6 +103,11 @@ public class OpenTelemetryProtobufSpanUtils {
     }
 
     @Override
+    public String getSpanKindName() {
+      return openTelemetryProtobufSpan.getKind().name();
+    }
+
+    @Override
     public boolean hasErrorStatus() {
       return !openTelemetryProtobufSpan.getStatus().getCode().equals(Status.StatusCode.Ok);
     }
