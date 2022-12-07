@@ -20,6 +20,6 @@ import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
         "org.mule.tests:mule-tests-model"
     },
     extraPrivilegedArtifacts = {"org.mule.tests:mule-tests-parsers-plugin"},
-    testRunnerExportedRuntimeLibs = {"org.mule.tests:mule-tests-functional"})
+    testRunnerExportedRuntimeLibs = {"org.mule.tests:mule-tests-functional", "org.testcontainers:testcontainers"})
 public interface TracingTestRunnerConfigAnnotation {
 }

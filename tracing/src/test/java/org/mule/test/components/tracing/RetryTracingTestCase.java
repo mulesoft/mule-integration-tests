@@ -5,6 +5,8 @@
  * LICENSE.txt file.
  */
 
+package org.mule.test.components.tracing;
+
 import static org.mule.runtime.tracer.exporter.api.config.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_BACKOFF_MAX_ATTEMPTS;
 import static org.mule.runtime.tracer.exporter.api.config.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_ENABLED;
 import static org.mule.runtime.tracer.exporter.api.config.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_ENDPOINT;
@@ -28,7 +30,6 @@ import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
 import org.mule.tck.probe.JUnitProbe;
 import org.mule.tck.probe.PollingProber;
-import org.mule.test.components.tracing.TracingTestRunnerConfigAnnotation;
 import org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy;
 import org.mule.test.runner.RunnerDelegateTo;
 
@@ -169,7 +170,7 @@ public class RetryTracingTestCase extends
                      return HttpResponse.from(req.aggregate().handle((aReq, cause) -> {
                        CompletableFuture<HttpResponse> responseFuture = new CompletableFuture<>();
                        HttpResponse res = from(responseFuture);
-                       if (exportAttempts.getAndIncrement() < MAX_BACKOFF_ATTEMPTS) {
+                       if (exportAttempts.incrementAndGet() < MAX_BACKOFF_ATTEMPTS) {
                          responseFuture.complete(HttpResponse.of(REQUEST_TIMEOUT));
                          return res;
                        }
