@@ -28,6 +28,7 @@
     <module>extensions-xml-support</module>
     <module>logging</module>
     <module>tooling-support-tests</module>
+    <module>tracing</module>
   </modules>
 
   <properties>
