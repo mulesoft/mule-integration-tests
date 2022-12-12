@@ -155,6 +155,10 @@ public abstract class AbstractTracingTestCase extends
     clearProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENABLED);
     clearProperty(MULE_OPEN_TELEMETRY_EXPORTER_TYPE);
     clearProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENDPOINT);
+    clearProperty(MULE_OPEN_TELEMETRY_EXPORTER_TLS_ENABLED);
+    clearProperty(MULE_OPEN_TELEMETRY_EXPORTER_KEY_FILE_LOCATION);
+    clearProperty(MULE_OPEN_TELEMETRY_EXPORTER_CERT_FILE_LOCATION);
+    clearProperty(MULE_OPEN_TELEMETRY_EXPORTER_CA_FILE_LOCATION);
   }
 
   protected List<CapturedExportedSpan> getSpans() {
