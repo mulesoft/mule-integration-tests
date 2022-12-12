@@ -8,8 +8,10 @@ package org.mule.runtime.test.integration.logging;
 
 import static org.mule.runtime.api.util.MuleSystemProperties.MULE_SIMPLE_LOG;
 import static org.mule.tck.probe.PollingProber.probe;
-import static org.mule.test.allure.AllureConstants.ComponentsFeature.LoggerStory.LOGGER;
 import static org.mule.test.allure.AllureConstants.IntegrationTestsFeature.INTEGRATIONS_TESTS;
+import static org.mule.test.allure.AllureConstants.Logging.LOGGING;
+import static org.mule.test.allure.AllureConstants.Logging.LoggingStory.CONTEXT_FACTORY;
+import static org.mule.test.allure.AllureConstants.Logging.LoggingStory.LOGGING_LIBS_SUPPORT;
 import static org.mule.test.infrastructure.FileContainsInLine.hasLine;
 
 import static java.lang.String.format;
@@ -29,9 +31,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import io.qameta.allure.Feature;
-import io.qameta.allure.Issue;
-import io.qameta.allure.Story;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -44,9 +43,17 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
+import io.qameta.allure.Feature;
+import io.qameta.allure.Features;
+import io.qameta.allure.Issue;
+import io.qameta.allure.Stories;
+import io.qameta.allure.Story;
+
 /**
  * Checks log4j configuration for application and domains
  */
+@Features({@Feature(INTEGRATIONS_TESTS), @Feature(LOGGING)})
+@Stories({@Story(LOGGING_LIBS_SUPPORT), @Story(CONTEXT_FACTORY)})
 public class LogConfigurationTestCase extends AbstractFakeMuleServerTestCase {
 
   public static final String APP_NAME = "app1";
@@ -128,8 +135,6 @@ public class LogConfigurationTestCase extends AbstractFakeMuleServerTestCase {
   }
 
   @Test
-  @Feature(INTEGRATIONS_TESTS)
-  @Story(LOGGER)
   @Issue("W-11090843")
   public void honorLog4jConfigFileForTwoAppsWithDifferentConfiguration() throws Exception {
     String customLogAppName = "custom-log-app";
