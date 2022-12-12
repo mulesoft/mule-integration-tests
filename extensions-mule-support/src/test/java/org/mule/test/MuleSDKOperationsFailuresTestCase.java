@@ -32,7 +32,7 @@ public class MuleSDKOperationsFailuresTestCase extends AbstractConfigurationFail
   @Description("An operation cannot use lookup function (even without explicit binding)")
   public void returningTypeFromDependency() throws Exception {
     expectedException.expect(ConfigurationException.class);
-    expectedException.expectMessage("Using an invalid function within an Mule SDK operation");
+    expectedException.expectMessage("Using an invalid function within a Mule SDK operation");
     loadConfiguration("mule-operations-using-lookup.xml");
   }
 
