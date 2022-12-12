@@ -7,8 +7,9 @@
 package org.mule.runtime.test.integration.logging;
 
 import static org.mule.tck.probe.PollingProber.probe;
-import static org.mule.test.allure.AllureConstants.ComponentsFeature.LoggerStory.LOGGER;
 import static org.mule.test.allure.AllureConstants.IntegrationTestsFeature.INTEGRATIONS_TESTS;
+import static org.mule.test.allure.AllureConstants.Logging.LOGGING;
+import static org.mule.test.allure.AllureConstants.Logging.LoggingStory.LOGGING_LIBS_SUPPORT;
 import static org.mule.test.infrastructure.FileContainsInLine.hasLine;
 
 import static java.lang.String.format;
@@ -33,10 +34,11 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import io.qameta.allure.Feature;
+import io.qameta.allure.Features;
 import io.qameta.allure.Story;
 
-@Feature(INTEGRATIONS_TESTS)
-@Story(LOGGER)
+@Features({@Feature(INTEGRATIONS_TESTS), @Feature(LOGGING)})
+@Story(LOGGING_LIBS_SUPPORT)
 public class LoggingLibsSupportTestCase extends AbstractFakeMuleServerTestCase {
 
   @Rule

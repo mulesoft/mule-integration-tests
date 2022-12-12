@@ -6,13 +6,16 @@
  */
 package org.mule.runtime.test.integration.logging;
 
+import static org.mule.tck.probe.PollingProber.probe;
+import static org.mule.test.allure.AllureConstants.IntegrationTestsFeature.INTEGRATIONS_TESTS;
+import static org.mule.test.allure.AllureConstants.Logging.LOGGING;
+import static org.mule.test.allure.AllureConstants.Logging.LoggingStory.LOGGING_LIBS_SUPPORT;
+import static org.mule.test.infrastructure.FileContainsInLine.hasLine;
+
 import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
+
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.mule.tck.probe.PollingProber.probe;
-import static org.mule.test.allure.AllureConstants.ComponentsFeature.LoggerStory.LOGGER;
-import static org.mule.test.allure.AllureConstants.IntegrationTestsFeature.INTEGRATIONS_TESTS;
-import static org.mule.test.infrastructure.FileContainsInLine.hasLine;
 
 import org.mule.runtime.module.deployment.impl.internal.builder.ApplicationFileBuilder;
 import org.mule.tck.util.CompilerUtils;
@@ -20,13 +23,15 @@ import org.mule.test.infrastructure.deployment.AbstractFakeMuleServerTestCase;
 
 import java.io.File;
 
-import io.qameta.allure.Feature;
-import io.qameta.allure.Story;
 import org.junit.Rule;
 import org.junit.Test;
 
-@Feature(INTEGRATIONS_TESTS)
-@Story(LOGGER)
+import io.qameta.allure.Feature;
+import io.qameta.allure.Features;
+import io.qameta.allure.Story;
+
+@Features({@Feature(INTEGRATIONS_TESTS), @Feature(LOGGING)})
+@Story(LOGGING_LIBS_SUPPORT)
 public class Log4jCustomPluginTestCase extends AbstractFakeMuleServerTestCase {
 
   public static final String APP_NAME = "app1";
