@@ -15,4 +15,8 @@
         <module-using-flow-ref:call-flow-2 />
     </flow>
 
+    <flow name="invoke-call-sub-flow">
+        <module-using-flow-ref:call-sub-flow />
+    </flow>
+
 </mule>
