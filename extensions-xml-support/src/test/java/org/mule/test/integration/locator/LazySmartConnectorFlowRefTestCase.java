@@ -87,4 +87,11 @@ public class LazySmartConnectorFlowRefTestCase extends AbstractXmlExtensionMuleA
   public void findInternalFlowUsedByMultipleOperations() {
     lazyComponentInitializer.initializeComponent(builderFromStringRepresentation("invoke-both-call-flow").build());
   }
+
+  @Test
+  @Issue("W-11681056")
+  @Description("Verify that a sub flow defined in an XML-SDK-connector operation is found when doing lazy init")
+  public void findInternalSubFlow() {
+    lazyComponentInitializer.initializeComponent(builderFromStringRepresentation("invoke-call-sub-flow").build());
+  }
 }
