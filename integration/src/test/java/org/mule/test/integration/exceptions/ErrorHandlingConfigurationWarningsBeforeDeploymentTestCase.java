@@ -6,39 +6,22 @@
  */
 package org.mule.test.integration.exceptions;
 
-import static org.mule.runtime.ast.api.ArtifactType.APPLICATION;
-import static org.mule.runtime.ast.api.util.MuleAstUtils.emptyArtifact;
-import static org.mule.runtime.ast.api.util.MuleAstUtils.validatorBuilder;
-import static org.mule.runtime.ast.api.validation.Validation.Level.ERROR;
-import static org.mule.runtime.ast.api.validation.Validation.Level.WARN;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
 import static org.mule.test.allure.AllureConstants.MuleDsl.DslValidationStory.DSL_VALIDATION_STORY;
 
 import static java.util.Collections.emptySet;
 import static java.util.Collections.singleton;
-import static java.util.stream.Collectors.toList;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsIterableContaining.hasItem;
-import static org.junit.Assert.fail;
 
 import org.mule.extension.http.internal.temporary.HttpConnector;
 import org.mule.extension.socket.api.SocketsExtension;
-import org.mule.functional.junit4.AbstractConfigurationFailuresTestCase;
-import org.mule.runtime.api.exception.MuleException;
-import org.mule.runtime.api.exception.MuleRuntimeException;
+import org.mule.functional.junit4.AbstractConfigurationWarningsBeforeDeploymentTestCase;
 import org.mule.runtime.api.meta.model.ExtensionModel;
-import org.mule.runtime.ast.api.ArtifactAst;
-import org.mule.runtime.ast.api.validation.ValidationResult;
-import org.mule.runtime.ast.api.xml.AstXmlParser;
-import org.mule.runtime.ast.api.xml.AstXmlParser.Builder;
-import org.mule.runtime.dsl.api.ConfigResource;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.junit.Test;
 
@@ -48,16 +31,15 @@ import io.qameta.allure.Story;
 
 @Feature(ERROR_HANDLING)
 @Story(DSL_VALIDATION_STORY)
-public class ErrorHandlingConfigurationWarningsBeforeDeploymentTestCase extends AbstractConfigurationFailuresTestCase {
-
-  private List<String> warningMessages;
+public class ErrorHandlingConfigurationWarningsBeforeDeploymentTestCase
+    extends AbstractConfigurationWarningsBeforeDeploymentTestCase {
 
   @Test
   @Issue("W-11802232")
   public void raisesErrorPropertyErrorTypeNotAllowed() throws Exception {
     loadConfiguration("org/mule/test/integration/exceptions/raise-error-property-type-config.xml");
 
-    assertThat(warningMessages,
+    assertThat(getWarningMessages(),
                hasItem("'raise-error' has 'type' '${error.type}' which is resolved with a property and may cause the artifact to have different behavior on different environments."));
   }
 
@@ -66,7 +48,7 @@ public class ErrorHandlingConfigurationWarningsBeforeDeploymentTestCase extends 
   public void propertyTargetErrorMappingsNotAllowed() throws Exception {
     loadConfiguration("org/mule/test/integration/exceptions/property-error-mapping-target-config.xml");
 
-    assertThat(warningMessages,
+    assertThat(getWarningMessages(),
                hasItem("'request' has 'type' '${error.type}' which is resolved with a property and may cause the artifact to have different behavior on different environments."));
   }
 
@@ -75,7 +57,7 @@ public class ErrorHandlingConfigurationWarningsBeforeDeploymentTestCase extends 
   public void propertySourceErrorMappingsNotAllowed() throws Exception {
     loadConfiguration("org/mule/test/integration/exceptions/property-error-mapping-source-config.xml");
 
-    assertThat(warningMessages,
+    assertThat(getWarningMessages(),
                hasItem("'request' has 'type' '${error.type}' which is resolved with a property and may cause the artifact to have different behavior on different environments."));
   }
 
@@ -84,43 +66,8 @@ public class ErrorHandlingConfigurationWarningsBeforeDeploymentTestCase extends 
   public void propertyOnErrorNotAllowed() throws Exception {
     loadConfiguration("org/mule/test/integration/exceptions/property-on-error-config.xml");
 
-    assertThat(warningMessages,
+    assertThat(getWarningMessages(),
                hasItem("'on-error-propagate' has 'type' '${error.type}' which is resolved with a property and may cause the artifact to have different behavior on different environments."));
-  }
-
-  private AstXmlParser getParser(Set<ExtensionModel> extensions) {
-    Builder builder = AstXmlParser.builder()
-        .withExtensionModels(extensions)
-        .withArtifactType(APPLICATION)
-        .withParentArtifact(emptyArtifact());
-
-    return builder.build();
-  }
-
-  @Override
-  protected void loadConfiguration(String configuration) throws MuleException, InterruptedException {
-    ArtifactAst ast;
-    try {
-      ast = getParser(new HashSet<>(getRequiredExtensions())).parse(new ConfigResource(configuration));
-    } catch (IOException e) {
-      throw new MuleRuntimeException(e);
-    }
-
-    ValidationResult validationResult = validatorBuilder()
-        .ignoreParamsWithProperties(true)
-        .build()
-        .validate(ast);
-
-    validationResult.getItems()
-        .stream()
-        .filter(vri -> vri.getValidation().getLevel().equals(ERROR))
-        .forEach(vri -> fail(vri.getMessage()));
-
-    this.warningMessages = validationResult.getItems()
-        .stream()
-        .filter(vri -> vri.getValidation().getLevel().equals(WARN))
-        .map(v -> v.getMessage())
-        .collect(toList());
   }
 
   @Override
