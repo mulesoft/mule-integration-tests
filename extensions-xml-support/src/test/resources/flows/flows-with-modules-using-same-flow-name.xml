@@ -22,4 +22,9 @@
         <module-with-config-using-flow-ref:call-flow-2 config-ref="myConfig" />
     </flow>
 
+    <flow name="invoke-call-sub-flow">
+        <module-using-flow-ref:call-sub-flow />
+        <module-with-config-using-flow-ref:call-sub-flow config-ref="myConfig" />
+    </flow>
+
 </mule>
