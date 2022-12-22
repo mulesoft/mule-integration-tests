@@ -22,6 +22,8 @@ import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
 import org.mule.runtime.tracer.api.sniffer.ExportedSpanSniffer;
 import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.tck.junit4.AbstractMuleTestCase;
+import org.mule.tck.probe.JUnitProbe;
+import org.mule.tck.probe.PollingProber;
 import org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy;
 
 import java.util.Collection;
@@ -36,6 +38,9 @@ import org.junit.Test;
 @Feature(PROFILING)
 @Story(DEFAULT_CORE_EVENT_TRACER)
 public class CustomScopeErrorTracingTestCase extends MuleArtifactFunctionalTestCase implements TracingTestRunnerConfigAnnotation {
+
+  private static final int TIMEOUT_MILLIS = 30000;
+  private static final int POLL_DELAY_MILLIS = 100;
 
   public static final String EXPECTED_CUSTOM_SCOPE_SPAN_NAME = "heisenberg:execute-anything";
   public static final String EXPECTED_LOGGER_SPAN_NAME = "mule:logger";
@@ -61,9 +66,24 @@ public class CustomScopeErrorTracingTestCase extends MuleArtifactFunctionalTestC
 
     try {
       flowRunner(CUSTOM_SCOPE_FLOW).withPayload(AbstractMuleTestCase.TEST_PAYLOAD).runExpectingException();
-      Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
 
-      assertThat(exportedSpans, hasSize(5));
+      PollingProber prober = new PollingProber(TIMEOUT_MILLIS, POLL_DELAY_MILLIS);
+
+      prober.check(new JUnitProbe() {
+
+        @Override
+        protected boolean test() {
+          Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();;
+          return exportedSpans.size() == 5;
+        }
+
+        @Override
+        public String describeFailure() {
+          return "The exact amount of spans was not captured";
+        }
+      });
+
+      Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
 
       List<String> attributesToAssertExistence = getDefaultAttributesToAssertExistence();
 
