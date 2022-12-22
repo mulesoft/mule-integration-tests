@@ -11,6 +11,7 @@ import static org.junit.Assert.assertThat;
 
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.tck.junit4.rule.DynamicPort;
+import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import io.qameta.allure.Issue;
@@ -23,6 +24,10 @@ public class TlsInsecureTrustStoreTestCase extends AbstractIntegrationTestCase {
 
   @Rule
   public DynamicPort portSsl = new DynamicPort("portSsl");
+
+  @Rule
+  public SystemProperty honourInsecureTlsConfiguration =
+      new SystemProperty("mule.honour.insecure.tls.configuration", "true");
 
   @Override
   protected String getConfigFile() {
