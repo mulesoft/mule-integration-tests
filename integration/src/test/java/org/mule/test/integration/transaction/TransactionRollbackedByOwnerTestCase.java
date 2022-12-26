@@ -11,7 +11,6 @@ import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mule.runtime.api.util.MuleSystemProperties.DEFAULT_ERROR_HANDLER_NOT_ROLLBACK_IF_NOT_CORRESPONDING_PROPERTY;
-import static org.mule.runtime.api.util.MuleSystemProperties.REUSE_GLOBAL_ERROR_HANDLER_PROPERTY;
 
 import org.junit.Rule;
 import org.mule.runtime.api.notification.TransactionNotification;
@@ -43,10 +42,6 @@ public class TransactionRollbackedByOwnerTestCase extends AbstractIntegrationTes
   @Rule
   public SystemProperty defaultErrorHandler =
       new SystemProperty(DEFAULT_ERROR_HANDLER_NOT_ROLLBACK_IF_NOT_CORRESPONDING_PROPERTY, "true");
-
-  @Rule
-  public SystemProperty reuseGlobal =
-      new SystemProperty(REUSE_GLOBAL_ERROR_HANDLER_PROPERTY, "true");
 
   @Parameters(name = "{0} - {2}")
   public static Object[][] params() {
