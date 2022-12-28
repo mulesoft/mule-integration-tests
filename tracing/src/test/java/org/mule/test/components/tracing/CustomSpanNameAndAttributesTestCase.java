@@ -77,8 +77,7 @@ public class CustomSpanNameAndAttributesTestCase extends MuleArtifactFunctionalT
       @Override
       protected boolean test() {
         Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
-        assertThat(exportedSpans, hasSize(2));
-        return true;
+        return exportedSpans.size() == 2;
       }
 
       @Override
