@@ -20,6 +20,8 @@ import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
 import org.mule.runtime.tracer.api.sniffer.ExportedSpanSniffer;
 import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.tck.junit4.AbstractMuleTestCase;
+import org.mule.tck.probe.JUnitProbe;
+import org.mule.tck.probe.PollingProber;
 import org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy;
 
 import java.util.Collection;
@@ -36,6 +38,9 @@ import org.junit.Test;
 @Story(DEFAULT_CORE_EVENT_TRACER)
 public class FlowErrorHandlingTracingTestCase extends MuleArtifactFunctionalTestCase
     implements TracingTestRunnerConfigAnnotation {
+
+  private static final int TIMEOUT_MILLIS = 30000;
+  private static final int POLL_DELAY_MILLIS = 100;
 
   public static final String ERROR_TYPE_1 = "CUSTOM:ERROR";
   public static final String ERROR_TYPE_2 = "CUSTOM:ERROR_2";
@@ -92,11 +97,29 @@ public class FlowErrorHandlingTracingTestCase extends MuleArtifactFunctionalTest
 
   @Test
   public void testFlowWithNoErrorHandling() throws Exception {
+
     flowRunner(FLOW_WITH_NO_ERROR_HANDLING).withPayload(AbstractMuleTestCase.TEST_PAYLOAD)
         .runExpectingException(errorType("CUSTOM", "ERROR"));
 
+    PollingProber prober = new PollingProber(TIMEOUT_MILLIS, POLL_DELAY_MILLIS);
+
+    prober.check(new JUnitProbe() {
+
+      @Override
+      protected boolean test() {
+        Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();;
+        return exportedSpans.size() == 3;
+      }
+
+      @Override
+      public String describeFailure() {
+        return "The exact amount of spans was not captured";
+      }
+    });
+
+
     Collection<CapturedExportedSpan> capturedExportedSpans = spanCapturer.getExportedSpans();
-    assertThat(capturedExportedSpans, hasSize(3));
+
 
     SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(capturedExportedSpans);
     expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME).addExceptionData(ERROR_TYPE_1)
@@ -112,8 +135,23 @@ public class FlowErrorHandlingTracingTestCase extends MuleArtifactFunctionalTest
   public void testFlowWithOnErrorContinue() throws Exception {
     flowRunner(FLOW_WITH_ON_ERROR_CONTINUE).withPayload(AbstractMuleTestCase.TEST_PAYLOAD).run().getMessage();
 
+    PollingProber prober = new PollingProber(TIMEOUT_MILLIS, POLL_DELAY_MILLIS);
+
+    prober.check(new JUnitProbe() {
+
+      @Override
+      protected boolean test() {
+        Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();;
+        return exportedSpans.size() == 3;
+      }
+
+      @Override
+      public String describeFailure() {
+        return "The exact amount of spans was not captured";
+      }
+    });
+
     Collection<CapturedExportedSpan> capturedExportedSpans = spanCapturer.getExportedSpans();
-    assertThat(capturedExportedSpans, hasSize(3));
 
     SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(capturedExportedSpans);
     expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
@@ -129,8 +167,24 @@ public class FlowErrorHandlingTracingTestCase extends MuleArtifactFunctionalTest
   public void testFlowWithFailingOnErrorContinue() throws Exception {
     flowRunner(FLOW_WITH_FAILING_ON_ERROR_CONTINUE).withPayload(AbstractMuleTestCase.TEST_PAYLOAD)
         .runExpectingException(errorType("CUSTOM", "ERROR_2"));
+
+    PollingProber prober = new PollingProber(TIMEOUT_MILLIS, POLL_DELAY_MILLIS);
+
+    prober.check(new JUnitProbe() {
+
+      @Override
+      protected boolean test() {
+        Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();;
+        return exportedSpans.size() == 4;
+      }
+
+      @Override
+      public String describeFailure() {
+        return "The exact amount of spans was not captured";
+      }
+    });
+
     Collection<CapturedExportedSpan> capturedExportedSpans = spanCapturer.getExportedSpans();
-    assertThat(capturedExportedSpans, hasSize(4));
 
     SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(capturedExportedSpans);
     expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME).addExceptionData(ERROR_TYPE_2)
@@ -149,8 +203,24 @@ public class FlowErrorHandlingTracingTestCase extends MuleArtifactFunctionalTest
   public void testFlowWithFailingOnErrorPropagate() throws Exception {
     flowRunner(FLOW_WITH_FAILING_ON_ERROR_PROPAGATE).withPayload(AbstractMuleTestCase.TEST_PAYLOAD)
         .runExpectingException(errorType("CUSTOM", "ERROR_2"));
+
+    PollingProber prober = new PollingProber(TIMEOUT_MILLIS, POLL_DELAY_MILLIS);
+
+    prober.check(new JUnitProbe() {
+
+      @Override
+      protected boolean test() {
+        Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();;
+        return exportedSpans.size() == 4;
+      }
+
+      @Override
+      public String describeFailure() {
+        return "The exact amount of spans was not captured";
+      }
+    });
+
     Collection<CapturedExportedSpan> capturedExportedSpans = spanCapturer.getExportedSpans();
-    assertThat(capturedExportedSpans, hasSize(4));
 
     SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(capturedExportedSpans);
     expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME).addExceptionData(ERROR_TYPE_2)
@@ -169,8 +239,23 @@ public class FlowErrorHandlingTracingTestCase extends MuleArtifactFunctionalTest
   public void testFlowWithOnErrorPropagate() throws Exception {
     flowRunner(FLOW_WITH_ON_ERROR_PROPAGATE).withPayload(AbstractMuleTestCase.TEST_PAYLOAD)
         .runExpectingException(errorType("CUSTOM", "ERROR"));
+    PollingProber prober = new PollingProber(TIMEOUT_MILLIS, POLL_DELAY_MILLIS);
+
+    prober.check(new JUnitProbe() {
+
+      @Override
+      protected boolean test() {
+        Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();;
+        return exportedSpans.size() == 3;
+      }
+
+      @Override
+      public String describeFailure() {
+        return "The exact amount of spans was not captured";
+      }
+    });
+
     Collection<CapturedExportedSpan> capturedExportedSpans = spanCapturer.getExportedSpans();
-    assertThat(capturedExportedSpans, hasSize(3));
 
     SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(capturedExportedSpans);
     expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME).addExceptionData(ERROR_TYPE_1)
@@ -186,8 +271,23 @@ public class FlowErrorHandlingTracingTestCase extends MuleArtifactFunctionalTest
   public void testFlowWithFlowRefAndNoErrorHandling() throws Exception {
     flowRunner(FLOW_WITH_FLOW_REF_AND_NO_ERROR_HANDLING).withPayload(AbstractMuleTestCase.TEST_PAYLOAD)
         .runExpectingException(errorType("CUSTOM", "ERROR"));
+    PollingProber prober = new PollingProber(TIMEOUT_MILLIS, POLL_DELAY_MILLIS);
+
+    prober.check(new JUnitProbe() {
+
+      @Override
+      protected boolean test() {
+        Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();;
+        return exportedSpans.size() == 6;
+      }
+
+      @Override
+      public String describeFailure() {
+        return "The exact amount of spans was not captured";
+      }
+    });
+
     Collection<CapturedExportedSpan> capturedExportedSpans = spanCapturer.getExportedSpans();
-    assertThat(capturedExportedSpans, hasSize(6));
 
     SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(capturedExportedSpans);
     expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME).addExceptionData(ERROR_TYPE_1)
@@ -210,8 +310,24 @@ public class FlowErrorHandlingTracingTestCase extends MuleArtifactFunctionalTest
   public void testFlowWithFlowRefAndOnErrorContinue() throws Exception {
     flowRunner(FLOW_WITH_FLOW_REF_AND_ON_ERROR_CONTINUE).withPayload(AbstractMuleTestCase.TEST_PAYLOAD).run()
         .getMessage();
+
+    PollingProber prober = new PollingProber(TIMEOUT_MILLIS, POLL_DELAY_MILLIS);
+
+    prober.check(new JUnitProbe() {
+
+      @Override
+      protected boolean test() {
+        Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();;
+        return exportedSpans.size() == 5;
+      }
+
+      @Override
+      public String describeFailure() {
+        return "The exact amount of spans was not captured";
+      }
+    });
+
     Collection<CapturedExportedSpan> capturedExportedSpans = spanCapturer.getExportedSpans();
-    assertThat(capturedExportedSpans, hasSize(5));
 
     SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(capturedExportedSpans);
     expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME).noExceptionExpected()
@@ -233,8 +349,23 @@ public class FlowErrorHandlingTracingTestCase extends MuleArtifactFunctionalTest
   public void testFlowWithFlowRefAndOnErrorPropagate() throws Exception {
     flowRunner(FLOW_WITH_FLOW_REF_AND_ON_ERROR_PROPAGATE).withPayload(AbstractMuleTestCase.TEST_PAYLOAD)
         .runExpectingException(errorType("CUSTOM", "ERROR"));
+    PollingProber prober = new PollingProber(TIMEOUT_MILLIS, POLL_DELAY_MILLIS);
+
+    prober.check(new JUnitProbe() {
+
+      @Override
+      protected boolean test() {
+        Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();;
+        return exportedSpans.size() == 6;
+      }
+
+      @Override
+      public String describeFailure() {
+        return "The exact amount of spans was not captured";
+      }
+    });
+
     Collection<CapturedExportedSpan> capturedExportedSpans = spanCapturer.getExportedSpans();
-    assertThat(capturedExportedSpans, hasSize(6));
 
     SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(capturedExportedSpans);
     expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME).addExceptionData(ERROR_TYPE_1)
@@ -259,8 +390,23 @@ public class FlowErrorHandlingTracingTestCase extends MuleArtifactFunctionalTest
         .withPayload(AbstractMuleTestCase.TEST_PAYLOAD).run()
         .getMessage();
 
+    PollingProber prober = new PollingProber(TIMEOUT_MILLIS, POLL_DELAY_MILLIS);
+
+    prober.check(new JUnitProbe() {
+
+      @Override
+      protected boolean test() {
+        Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();;
+        return exportedSpans.size() == 6;
+      }
+
+      @Override
+      public String describeFailure() {
+        return "The exact amount of spans was not captured";
+      }
+    });
+
     Collection<CapturedExportedSpan> capturedExportedSpans = spanCapturer.getExportedSpans();
-    assertThat(capturedExportedSpans, hasSize(6));
 
     SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(capturedExportedSpans);
     expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME).noExceptionExpected()
@@ -284,8 +430,23 @@ public class FlowErrorHandlingTracingTestCase extends MuleArtifactFunctionalTest
     flowRunner(FLOW_WITH_SUB_FLOW_REF_AND_NO_ERROR_HANDLING).withPayload(AbstractMuleTestCase.TEST_PAYLOAD)
         .runExpectingException(errorType("CUSTOM", "ERROR"));
 
+    PollingProber prober = new PollingProber(TIMEOUT_MILLIS, POLL_DELAY_MILLIS);
+
+    prober.check(new JUnitProbe() {
+
+      @Override
+      protected boolean test() {
+        Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();;
+        return exportedSpans.size() == 5;
+      }
+
+      @Override
+      public String describeFailure() {
+        return "The exact amount of spans was not captured";
+      }
+    });
+
     Collection<CapturedExportedSpan> capturedExportedSpans = spanCapturer.getExportedSpans();
-    assertThat(capturedExportedSpans, hasSize(5));
 
     SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(capturedExportedSpans);
     expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME).addExceptionData(ERROR_TYPE_1)
@@ -308,8 +469,23 @@ public class FlowErrorHandlingTracingTestCase extends MuleArtifactFunctionalTest
     flowRunner(FLOW_WITH_SUB_FLOW_REF_AND_ON_ERROR_CONTINUE).withPayload(AbstractMuleTestCase.TEST_PAYLOAD)
         .run().getMessage();
 
+    PollingProber prober = new PollingProber(TIMEOUT_MILLIS, POLL_DELAY_MILLIS);
+
+    prober.check(new JUnitProbe() {
+
+      @Override
+      protected boolean test() {
+        Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();;
+        return exportedSpans.size() == 5;
+      }
+
+      @Override
+      public String describeFailure() {
+        return "The exact amount of spans was not captured";
+      }
+    });
+
     Collection<CapturedExportedSpan> capturedExportedSpans = spanCapturer.getExportedSpans();
-    assertThat(capturedExportedSpans, hasSize(5));
 
     SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(capturedExportedSpans);
     expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME).noExceptionExpected()
@@ -333,9 +509,23 @@ public class FlowErrorHandlingTracingTestCase extends MuleArtifactFunctionalTest
         .withPayload(AbstractMuleTestCase.TEST_PAYLOAD)
         .runExpectingException(errorType("CUSTOM", "ERROR"));
 
-    Collection<CapturedExportedSpan> capturedExportedSpans = spanCapturer.getExportedSpans();
-    assertThat(capturedExportedSpans, hasSize(7));
+    PollingProber prober = new PollingProber(TIMEOUT_MILLIS, POLL_DELAY_MILLIS);
 
+    prober.check(new JUnitProbe() {
+
+      @Override
+      protected boolean test() {
+        Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();;
+        return exportedSpans.size() == 7;
+      }
+
+      @Override
+      public String describeFailure() {
+        return "The exact amount of spans was not captured";
+      }
+    });
+
+    Collection<CapturedExportedSpan> capturedExportedSpans = spanCapturer.getExportedSpans();
     SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(capturedExportedSpans);
     expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME).addExceptionData(ERROR_TYPE_1)
         .beginChildren()
