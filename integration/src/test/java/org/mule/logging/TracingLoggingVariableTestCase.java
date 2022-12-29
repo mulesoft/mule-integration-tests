@@ -15,12 +15,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import io.qameta.allure.Issue;
 import org.junit.Test;
 
 /**
  * When setting logging variables with tracing module, race conditions can occur. This test will ensure that there are no race
  * conditions when setting logging variables, with the fix for (W-12206167).
  */
+@Issue("W-12206167")
 public class TracingLoggingVariableTestCase extends MuleArtifactFunctionalTestCase {
 
   private static final int NUMBER_OF_THREADS = 100;
