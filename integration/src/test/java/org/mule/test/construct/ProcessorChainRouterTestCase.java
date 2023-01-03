@@ -46,8 +46,9 @@ import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
+import org.junit.AfterClass;
 import org.junit.After;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -101,7 +102,7 @@ public class ProcessorChainRouterTestCase extends AbstractIntegrationTestCase im
   @Rule
   public ExpectedException expected = none();
 
-  private boolean previousPropagationEnabledInTracing;
+  private static boolean previousPropagationEnabledInTracing;
 
   @Override
   protected String getConfigFile() {
@@ -110,8 +111,8 @@ public class ProcessorChainRouterTestCase extends AbstractIntegrationTestCase im
 
   private ExecutionResult executionResult;
 
-  @Before
-  public void before() {
+  @BeforeClass
+  public static void before() {
     // This is done because the tests invokes chains directly using a testing component (injected in the test) and
     // there is no simple way to test this and create a correct mule event with the corresponding span parent without changing
     // API.
@@ -128,7 +129,10 @@ public class ProcessorChainRouterTestCase extends AbstractIntegrationTestCase im
     if (executionResult != null) {
       executionResult.complete();
     }
+  }
 
+  @AfterClass
+  public static void afterClass() {
     setProperty(ENABLE_PROPAGATION_OF_EXCEPTIONS_IN_TRACING, Boolean.toString(previousPropagationEnabledInTracing));
   }
 
