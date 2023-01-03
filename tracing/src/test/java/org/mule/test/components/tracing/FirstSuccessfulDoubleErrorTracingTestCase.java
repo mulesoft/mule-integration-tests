@@ -18,6 +18,8 @@ import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
 import org.mule.runtime.tracer.api.sniffer.ExportedSpanSniffer;
 import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.tck.junit4.AbstractMuleTestCase;
+import org.mule.tck.probe.JUnitProbe;
+import org.mule.tck.probe.PollingProber;
 import org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy;
 
 import java.util.Collection;
@@ -32,6 +34,9 @@ import org.junit.Test;
 @Story(DEFAULT_CORE_EVENT_TRACER)
 public class FirstSuccessfulDoubleErrorTracingTestCase extends MuleArtifactFunctionalTestCase
     implements TracingTestRunnerConfigAnnotation {
+
+  private static final int TIMEOUT_MILLIS = 30000;
+  private static final int POLL_DELAY_MILLIS = 100;
 
   public static final String EXPECTED_ROUTE_SPAN_NAME_ATTEMPT_1 = "mule:first-successful:attempt:1";
   public static final String EXPECTED_ROUTE_SPAN_NAME_ATTEMPT_2 = "mule:first-successful:attempt:2";
@@ -61,8 +66,23 @@ public class FirstSuccessfulDoubleErrorTracingTestCase extends MuleArtifactFunct
     try {
       flowRunner(FLOW).withPayload(AbstractMuleTestCase.TEST_PAYLOAD).dispatch();
 
+      PollingProber prober = new PollingProber(TIMEOUT_MILLIS, POLL_DELAY_MILLIS);
+
+      prober.check(new JUnitProbe() {
+
+        @Override
+        protected boolean test() {
+          Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();;
+          return exportedSpans.size() == 3 * NUMBER_OF_ROUTES + 5;
+        }
+
+        @Override
+        public String describeFailure() {
+          return "The exact amount of spans was not captured";
+        }
+      });
+
       Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
-      assertThat(exportedSpans, hasSize(3 * NUMBER_OF_ROUTES + 5));
 
       SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
       expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)

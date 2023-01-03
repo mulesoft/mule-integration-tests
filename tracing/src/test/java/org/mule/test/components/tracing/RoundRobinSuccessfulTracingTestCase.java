@@ -22,6 +22,8 @@ import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
 import org.mule.runtime.tracer.api.sniffer.ExportedSpanSniffer;
 import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.tck.junit4.AbstractMuleTestCase;
+import org.mule.tck.probe.JUnitProbe;
+import org.mule.tck.probe.PollingProber;
 import org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy;
 
 import java.util.Collection;
@@ -38,6 +40,9 @@ import org.junit.Test;
 @Story(DEFAULT_CORE_EVENT_TRACER)
 public class RoundRobinSuccessfulTracingTestCase extends MuleArtifactFunctionalTestCase
     implements TracingTestRunnerConfigAnnotation {
+
+  private static final int TIMEOUT_MILLIS = 30000;
+  private static final int POLL_DELAY_MILLIS = 100;
 
   public static final String EXPECTED_ROUTE_SPAN_NAME = "mule:round-robin:route";
   public static final String EXPECTED_ROUND_ROBIN_SPAN_NAME = "mule:round-robin";
@@ -70,9 +75,24 @@ public class RoundRobinSuccessfulTracingTestCase extends MuleArtifactFunctionalT
       throws Exception {
     try {
       flowRunner(ROUND_ROBIN_FLOW).withPayload(AbstractMuleTestCase.TEST_PAYLOAD).run().getMessage();
-      Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
 
-      assertThat(exportedSpans, hasSize(numberOfExpectedSpans));
+      PollingProber prober = new PollingProber(TIMEOUT_MILLIS, POLL_DELAY_MILLIS);
+
+      prober.check(new JUnitProbe() {
+
+        @Override
+        protected boolean test() {
+          Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();;
+          return exportedSpans.size() == numberOfExpectedSpans;
+        }
+
+        @Override
+        public String describeFailure() {
+          return "The exact amount of spans was not captured";
+        }
+      });
+
+      Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
 
       List<String> attributesToAssertExistence = getDefaultAttributesToAssertExistence();
 

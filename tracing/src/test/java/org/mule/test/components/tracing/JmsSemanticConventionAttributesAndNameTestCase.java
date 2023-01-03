@@ -22,6 +22,8 @@ import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
 import org.mule.runtime.tracer.api.sniffer.ExportedSpanSniffer;
 import org.mule.service.http.TestHttpClient;
 import org.mule.tck.junit4.rule.DynamicPort;
+import org.mule.tck.probe.JUnitProbe;
+import org.mule.tck.probe.PollingProber;
 import org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy;
 
 import java.io.IOException;
@@ -41,6 +43,9 @@ import org.junit.Test;
 @Story(DEFAULT_CORE_EVENT_TRACER)
 public class JmsSemanticConventionAttributesAndNameTestCase extends MuleArtifactFunctionalTestCase
     implements TracingTestRunnerConfigAnnotation {
+
+  private static final int TIMEOUT_MILLIS = 30000;
+  private static final int POLL_DELAY_MILLIS = 100;
 
   public static final String EXPECTED_HTTP_FLOW_SPAN_NAME = "/";
   public static final String EXPECTED_JMS_PUBLISH_NAME = "test_queue send";
@@ -73,8 +78,23 @@ public class JmsSemanticConventionAttributesAndNameTestCase extends MuleArtifact
     try {
       httpClient.send(HttpRequest.builder().uri(String.format("http://localhost:%s/", httpPort.getNumber())).build());
 
+      PollingProber prober = new PollingProber(TIMEOUT_MILLIS, POLL_DELAY_MILLIS);
+
+      prober.check(new JUnitProbe() {
+
+        @Override
+        protected boolean test() {
+          Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();;
+          return exportedSpans.size() == 4;
+        }
+
+        @Override
+        public String describeFailure() {
+          return "The exact amount of spans was not captured";
+        }
+      });
+
       Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
-      assertThat(exportedSpans, hasSize(4));
 
       Map<String, String> jmsExpectedAttributes = new HashMap<>();
       jmsExpectedAttributes.put(MESSAGING_SYSTEM, "activemq");
