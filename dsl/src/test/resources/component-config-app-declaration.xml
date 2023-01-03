@@ -10,8 +10,7 @@
   http://www.mulesoft.org/schema/mule/sockets http://www.mulesoft.org/schema/mule/sockets/current/mule-sockets.xsd http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd">
 
     <db:config name="dbConfig">
-        <db:derby-connection cacheQueryTemplateSize="50"
-                             create="true"
+        <db:derby-connection create="true"
                              database="target/muleEmbeddedDB"
                              subsubProtocol="directory"
                              transactionIsolation="NOT_CONFIGURED"
