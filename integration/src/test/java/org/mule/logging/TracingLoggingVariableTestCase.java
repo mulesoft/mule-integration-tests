@@ -9,7 +9,7 @@ package org.mule.logging;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
+import org.mule.test.AbstractIntegrationTestCase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +23,7 @@ import org.junit.Test;
  * conditions when setting logging variables, with the fix for (W-12206167).
  */
 @Issue("W-12206167")
-public class TracingLoggingVariableTestCase extends MuleArtifactFunctionalTestCase {
+public class TracingLoggingVariableTestCase extends AbstractIntegrationTestCase {
 
   private static final int NUMBER_OF_THREADS = 100;
 
