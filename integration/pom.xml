@@ -39,6 +39,12 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.mule.modules</groupId>
+            <artifactId>mule-tracing-module</artifactId>
+            <version>1.0.0</version>
+            <classifier>mule-plugin</classifier>
+        </dependency>
+        <dependency>
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-core</artifactId>
             <version>${project.version}</version>
