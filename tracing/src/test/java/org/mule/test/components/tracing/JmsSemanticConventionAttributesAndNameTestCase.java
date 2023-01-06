@@ -121,8 +121,8 @@ public class JmsSemanticConventionAttributesAndNameTestCase extends MuleArtifact
       assertThat(jmsPublishSpan.getAttributes().size(), equalTo(10));
       assertThat(jmsPublishSpan.getAttributes().get(SPAN_KIND_ATTRIBUTE), nullValue());
       assertThat(jmsConsumeSpan.getSpanKindName(), equalTo("CONSUMER"));
-      assertThat(jmsPublishSpan.getAttributes().size(), equalTo(10));
-      assertThat(jmsPublishSpan.getAttributes().get(SPAN_KIND_ATTRIBUTE), nullValue());
+      assertThat(jmsConsumeSpan.getAttributes().size(), equalTo(10));
+      assertThat(jmsConsumeSpan.getAttributes().get(SPAN_KIND_ATTRIBUTE), nullValue());
     } finally {
       spanCapturer.dispose();
     }
