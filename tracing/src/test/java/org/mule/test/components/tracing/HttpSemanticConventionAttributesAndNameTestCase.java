@@ -32,12 +32,17 @@ import junit.framework.AssertionFailedError;
 import org.hamcrest.MatcherAssert;
 import org.junit.Rule;
 import org.junit.Test;
+import org.mule.tck.probe.JUnitProbe;
+import org.mule.tck.probe.PollingProber;
 import org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy;
 
 @Feature(PROFILING)
 @Story(DEFAULT_CORE_EVENT_TRACER)
 public class HttpSemanticConventionAttributesAndNameTestCase extends MuleArtifactFunctionalTestCase
     implements TracingTestRunnerConfigAnnotation {
+
+  private static final int TIMEOUT_MILLIS = 30000;
+  private static final int POLL_DELAY_MILLIS = 100;
 
   private static final String STARTING_FLOW = "startingFlow";
   public static final String EXPECTED_FLOW_SPAN_NAME = "mule:flow";
@@ -74,6 +79,23 @@ public class HttpSemanticConventionAttributesAndNameTestCase extends MuleArtifac
 
     try {
       flowRunner(STARTING_FLOW).run();
+
+      PollingProber prober = new PollingProber(TIMEOUT_MILLIS, POLL_DELAY_MILLIS);
+
+      prober.check(new JUnitProbe() {
+
+        @Override
+        protected boolean test() {
+          Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();;
+          return exportedSpans.size() == 4;
+        }
+
+        @Override
+        public String describeFailure() {
+          return "The exact amount of spans was not captured";
+        }
+      });
+
       Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
 
       SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
