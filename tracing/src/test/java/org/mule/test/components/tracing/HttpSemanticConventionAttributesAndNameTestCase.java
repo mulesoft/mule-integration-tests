@@ -11,7 +11,9 @@ import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.DEFAULT_CORE_EVENT_TRACER;
 
 import static org.hamcrest.Matchers.aMapWithSize;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasEntry;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
@@ -27,14 +29,20 @@ import javax.inject.Inject;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
 import junit.framework.AssertionFailedError;
+import org.hamcrest.MatcherAssert;
 import org.junit.Rule;
 import org.junit.Test;
+import org.mule.tck.probe.JUnitProbe;
+import org.mule.tck.probe.PollingProber;
 import org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy;
 
 @Feature(PROFILING)
 @Story(DEFAULT_CORE_EVENT_TRACER)
 public class HttpSemanticConventionAttributesAndNameTestCase extends MuleArtifactFunctionalTestCase
     implements TracingTestRunnerConfigAnnotation {
+
+  private static final int TIMEOUT_MILLIS = 30000;
+  private static final int POLL_DELAY_MILLIS = 100;
 
   private static final String STARTING_FLOW = "startingFlow";
   public static final String EXPECTED_FLOW_SPAN_NAME = "mule:flow";
@@ -51,6 +59,8 @@ public class HttpSemanticConventionAttributesAndNameTestCase extends MuleArtifac
   public static final String HTTP_USER_AGENT = "http.user_agent";
   public static final String NET_HOST_PORT = "net.host.port";
   public static final String HTTP_SCHEME = "http.scheme";
+  public static final String HTTP_STATUS_CODE = "http.status_code";
+  public static final String SPAN_KIND_ATTRIBUTE = "span.kind.override";
 
   @Inject
   PrivilegedProfilingService profilingService;
@@ -69,6 +79,23 @@ public class HttpSemanticConventionAttributesAndNameTestCase extends MuleArtifac
 
     try {
       flowRunner(STARTING_FLOW).run();
+
+      PollingProber prober = new PollingProber(TIMEOUT_MILLIS, POLL_DELAY_MILLIS);
+
+      prober.check(new JUnitProbe() {
+
+        @Override
+        protected boolean test() {
+          Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();;
+          return exportedSpans.size() == 4;
+        }
+
+        @Override
+        public String describeFailure() {
+          return "The exact amount of spans was not captured";
+        }
+      });
+
       Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
 
       SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
@@ -97,6 +124,8 @@ public class HttpSemanticConventionAttributesAndNameTestCase extends MuleArtifac
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_USER_AGENT, "AHC/1.0"));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(NET_HOST_PORT, httpPort.getValue()));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_METHOD, "GET"));
+      assertThat(listenerExportedSpan.getAttributes().get(SPAN_KIND_ATTRIBUTE), nullValue());
+      assertThat(listenerExportedSpan.getSpanKindName(), equalTo("SERVER"));
 
       CapturedExportedSpan requestExportedSpan =
           exportedSpans.stream().filter(exportedSpan -> exportedSpan.getName().equals(EXPECTED_HTTP_REQUEST_SPAN_NAME))
@@ -109,7 +138,9 @@ public class HttpSemanticConventionAttributesAndNameTestCase extends MuleArtifac
       assertThat(requestExportedSpan.getAttributes(), hasEntry(HTTP_URL, "http://localhost:" + httpPort.getValue() + "/test"));
       assertThat(requestExportedSpan.getAttributes(), hasEntry(HTTP_METHOD, "GET"));
       assertThat(requestExportedSpan.getAttributes(), hasEntry(HTTP_FLAVOR, "1.1"));
-
+      assertThat(requestExportedSpan.getAttributes(), hasEntry(HTTP_STATUS_CODE, "200"));
+      assertThat(requestExportedSpan.getAttributes().get(SPAN_KIND_ATTRIBUTE), nullValue());
+      assertThat(requestExportedSpan.getSpanKindName(), equalTo("CLIENT"));
     } finally {
       spanCapturer.dispose();
     }

@@ -20,6 +20,8 @@ import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
 import org.mule.runtime.tracer.api.sniffer.ExportedSpanSniffer;
 import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
+import org.mule.tck.probe.JUnitProbe;
+import org.mule.tck.probe.PollingProber;
 import org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy;
 
 import java.util.Collection;
@@ -34,6 +36,9 @@ import org.junit.Test;
 @Feature(PROFILING)
 @Story(DEFAULT_CORE_EVENT_TRACER)
 public class ChoiceRouterTracingTestCase extends MuleArtifactFunctionalTestCase implements TracingTestRunnerConfigAnnotation {
+
+  private static final int TIMEOUT_MILLIS = 30000;
+  private static final int POLL_DELAY_MILLIS = 100;
 
   public static final String EXPECTED_ROUTE_SPAN_NAME = "mule:choice:route";
   public static final String EXPECTED_CHOICE_SPAN_NAME = "mule:choice";
@@ -72,13 +77,28 @@ public class ChoiceRouterTracingTestCase extends MuleArtifactFunctionalTestCase 
       } else {
         flowRunner(CHOICE_FLOW).withPayload(childExpectedSpan).run().getMessage();
       }
-      Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
 
-      if (isError) {
-        assertThat(exportedSpans, hasSize(5));
-      } else {
-        assertThat(exportedSpans, hasSize(4));
-      }
+      PollingProber prober = new PollingProber(TIMEOUT_MILLIS, POLL_DELAY_MILLIS);
+
+      prober.check(new JUnitProbe() {
+
+        @Override
+        protected boolean test() {
+          Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
+          if (isError) {
+            return exportedSpans.size() == 5;
+          } else {
+            return exportedSpans.size() == 4;
+          }
+        }
+
+        @Override
+        public String describeFailure() {
+          return "The exact amount of spans was not captured";
+        }
+      });
+
+      Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
 
       SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
       expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
