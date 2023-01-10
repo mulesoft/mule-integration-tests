@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:java="http://www.mulesoft.org/schema/mule/java"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+                          http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd
+                          http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+
+    <http:listener-config name="listenerConfig">
+        <http:listener-connection host="localhost" port="${port}"/>
+    </http:listener-config>
+
+    <flow name="jsonSchemaValidatorFlow">
+        <http:listener config-ref="listenerConfig" path="/app"/>
+        <java:new class="org.mule.test.integration.json.JsonSchemaValidatorTestCase.JsonSchemaValidatorTest"
+                  constructor="JsonSchemaValidatorTest()"
+                  target="jsonSchemaValidator"/>
+        <java:invoke class="org.mule.test.integration.json.JsonSchemaValidatorTestCase.JsonSchemaValidatorTest"
+                     method="validateJsonSchema(String)"
+                     instance="#[vars.jsonSchemaValidator]">
+            <java:args>
+                #[{'number': payload}]
+            </java:args>
+        </java:invoke>
+    </flow>
+
+</mule>

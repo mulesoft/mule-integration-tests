@@ -20,6 +20,7 @@
         <hawtbufVersion>1.1</hawtbufVersion>
         <activemqProtobuf>1.1</activemqProtobuf>
         <groovy.version>2.4.21</groovy.version>
+        <jsonSchemaValidatorVersion>2.2.14</jsonSchemaValidatorVersion>
         <muleScriptingModuleVersion>2.0.1</muleScriptingModuleVersion>
     </properties>
 
@@ -184,6 +185,13 @@
             <version>${activemqVersion}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.github.java-json-tools</groupId>
+            <artifactId>json-schema-validator</artifactId>
+            <version>${jsonSchemaValidatorVersion}</version>
+            <scope>test</scope>
+        </dependency>
+
         <!-- Used by ActiveMQ if persistent=true -->
         <dependency>
             <groupId>org.apache.activemq</groupId>
