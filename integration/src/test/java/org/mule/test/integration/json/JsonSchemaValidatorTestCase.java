@@ -28,7 +28,7 @@ public class JsonSchemaValidatorTestCase extends AbstractIntegrationTestCase {
 
   public static final String FLOW_CONFIG_FILE = "org/mule/test/integration/json/json-schema-validator-flow.xml";
   public static final String RESOURCE_FILE = "org/mule/test/integration/json/json-schema-validator";
-  public static final String JSON_MESSAGE = "1234";
+  public static final String JSON_MESSAGE = "{\"number\": 1234}";
   public static final String EXPECTED_PAYLOAD = "SUCCESS";
 
   @Rule
@@ -47,13 +47,14 @@ public class JsonSchemaValidatorTestCase extends AbstractIntegrationTestCase {
     assertEquals(response.getPayload().getValue(), EXPECTED_PAYLOAD);
   }
 
-  public static class JsonSchemaValidatorTest {
+  public static class JsonSchemaValidator {
 
-    public String validateJsonSchema(String number) throws Exception {
+    public static String validateJsonSchema() throws Exception {
+      String json = JSON_MESSAGE;
       JsonSchemaFactory factory = JsonSchemaFactory.byDefault();
-      String schemaFilePath = IOUtils.getResourceAsUrl(RESOURCE_FILE, this.getClass()).toURI().toString();
+      String schemaFilePath = IOUtils.getResourceAsUrl(RESOURCE_FILE, JsonSchemaValidatorTestCase.class).toURI().toString();
       JsonSchema jsonSchema = factory.getJsonSchema(schemaFilePath);
-      ByteArrayInputStream inputStream = new ByteArrayInputStream(number.getBytes());
+      ByteArrayInputStream inputStream = new ByteArrayInputStream(json.getBytes());
       JsonNode data = new ObjectMapper().readTree(inputStream);
       jsonSchema.validate(data, true);
       return EXPECTED_PAYLOAD;

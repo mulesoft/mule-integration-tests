@@ -13,16 +13,7 @@
 
     <flow name="jsonSchemaValidatorFlow">
         <http:listener config-ref="listenerConfig" path="/app"/>
-        <java:new class="org.mule.test.integration.json.JsonSchemaValidatorTestCase.JsonSchemaValidatorTest"
-                  constructor="JsonSchemaValidatorTest()"
-                  target="jsonSchemaValidator"/>
-        <java:invoke class="org.mule.test.integration.json.JsonSchemaValidatorTestCase.JsonSchemaValidatorTest"
-                     method="validateJsonSchema(String)"
-                     instance="#[vars.jsonSchemaValidator]">
-            <java:args>
-                #[{'number': payload}]
-            </java:args>
-        </java:invoke>
+        <java:invoke-static class="org.mule.test.integration.json.JsonSchemaValidatorTestCase.JsonSchemaValidator" method="validateJsonSchema()"/>
     </flow>
 
 </mule>
