@@ -40,7 +40,7 @@
     <springVersion>5.1.6.RELEASE</springVersion>
 
     <muleDependenciesVersion>1.0.18</muleDependenciesVersion>
-    <muleTestComponentsVersion>4.4.0-20230102</muleTestComponentsVersion>
+    <muleTestComponentsVersion>4.4.0-20230111</muleTestComponentsVersion>
     <muleSdkCompatibilityApiVersion>0.5.0</muleSdkCompatibilityApiVersion>
     <muleSdkApiVersion>0.5.0</muleSdkApiVersion>
   </properties>
