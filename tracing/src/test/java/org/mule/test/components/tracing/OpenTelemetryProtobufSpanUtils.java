@@ -126,6 +126,17 @@ public class OpenTelemetryProtobufSpanUtils {
       return String.format("a span with name: [%s], ID: [%s] and parent Span ID: [%s]", getName(), getSpanId(),
                            getParentSpanId());
     }
+
+    @Override
+    public long getStartEpochSpanNanos() {
+      return openTelemetryProtobufSpan.getStartTimeUnixNano();
+    }
+
+    @Override
+    public long getEndSpanEpochNanos() {
+      return openTelemetryProtobufSpan.getEndTimeUnixNano();
+    }
+
   }
 
 }
