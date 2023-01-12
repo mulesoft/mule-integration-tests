@@ -22,8 +22,6 @@ import static java.util.Arrays.asList;
 import static com.linecorp.armeria.common.HttpResponse.from;
 import static com.linecorp.armeria.common.HttpStatus.OK;
 
-import org.junit.After;
-import org.junit.Rule;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
 import org.mule.tck.junit4.rule.DynamicPort;
@@ -48,8 +46,10 @@ import com.linecorp.armeria.server.ServiceRequestContext;
 import com.linecorp.armeria.testing.junit4.server.ServerRule;
 import io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceRequest;
 import org.jetbrains.annotations.NotNull;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
 
@@ -66,8 +66,6 @@ public class DistributedTracingTestCase extends
   private static final String EXPECTED_HTTP_FLOW_SPAN_NAME = "/test";
   private static final String EXPECTED_LOGGER_SPAN_NAME = "mule:logger";
   public static final String EXPECTED_FLOW_SPAN_NAME = "mule:flow";
-
-  private static final String TEST_ARTIFACT_ID = "MuleArtifactFunctionalTestCase#testDistributedTracing";
 
   public static final int TIMEOUT_MILLIS = 30000;
 
@@ -156,8 +154,6 @@ public class DistributedTracingTestCase extends
     public static final String PATH_PATTERN = "/";
 
     private final List<CapturedExportedSpan> capturedExportedSpans = new ArrayList<>();
-
-    private final AtomicInteger exportAttempts = new AtomicInteger(0);
 
     @Override
     protected void configure(ServerBuilder sb) {
