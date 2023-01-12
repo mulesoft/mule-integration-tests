@@ -85,6 +85,11 @@ public class OpenTelemetryProtobufSpanUtils {
     }
 
     @Override
+    public String getTraceId() {
+      return toHexString(openTelemetryProtobufSpan.getTraceId().toByteArray());
+    }
+
+    @Override
     public Map<String, String> getAttributes() {
       // TODO: verify a better way to parse the attributes in optel protobuf.
       return openTelemetryProtobufSpan.getAttributesList().stream()
