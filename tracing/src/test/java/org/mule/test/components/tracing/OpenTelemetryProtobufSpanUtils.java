@@ -124,12 +124,12 @@ public class OpenTelemetryProtobufSpanUtils {
 
     @Override
     public long getStartEpochSpanNanos() {
-      openTelemetryProtobufSpan.getStartTimeUnixNano();
+      return openTelemetryProtobufSpan.getStartTimeUnixNano();
     }
 
     @Override
     public long getEndSpanEpochNanos() {
-      openTelemetryProtobufSpan.getEndTimeUnixNano();
+      return openTelemetryProtobufSpan.getEndTimeUnixNano();
     }
 
   }
