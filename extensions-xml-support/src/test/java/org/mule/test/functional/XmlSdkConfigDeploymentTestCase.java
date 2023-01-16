@@ -45,7 +45,7 @@ public class XmlSdkConfigDeploymentTestCase extends AbstractCeXmlExtensionMuleAr
   }
 
   @Test
-  public void testConnection() throws Exception {
+  public void testDeployment() throws Exception {
     assertConfigPresent("theConfigurationNameFromTheAppThatWontBeMacroExpanded");
     assertConfigPresent("anotherConfigurationToShowThereIsNoClashOnMacroExpansion");
   }
