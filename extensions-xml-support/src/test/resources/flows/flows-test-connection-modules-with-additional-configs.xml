@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:module-test-connection="http://www.mulesoft.org/schema/mule/module-test-connection"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xsi:schemaLocation="
+       http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+       http://www.mulesoft.org/schema/mule/module-test-connection http://www.mulesoft.org/schema/mule/module-test-connection/current/mule-module-test-connection.xsd
+       http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+
+    <module-test-connection:config name="theConfigurationNameFromTheAppThatWontBeMacroExpanded" someUserConfig="userLP" somePassConfig="passLP" />
+    <module-test-connection:config name="anotherConfigurationToShowThereIsNoClashOnMacroExpansion" someUserConfig="userLP" somePassConfig="passLP" />
+
+    <http:request-config name="Requester_Config_1t" responseTimeout="60000">
+        <http:request-connection protocol="HTTPS" host="#[vars.test]" />
+    </http:request-config>
+    <http:request-config name="Requester_Config_1" responseTimeout="60000">
+        <http:request-connection protocol="HTTPS" host="#[vars.test]" />
+    </http:request-config>
+    <http:request-config name="Requester_Config_2" responseTimeout="60000">
+        <http:request-connection protocol="HTTPS" host="#[vars.test]" />
+    </http:request-config>
+    <http:request-config name="Requester_Config_3" responseTimeout="60000">
+        <http:request-connection protocol="HTTPS" host="#[vars.test]" />
+    </http:request-config>
+    <http:request-config name="Requester_Config_4" responseTimeout="60000">
+        <http:request-connection protocol="HTTPS" host="#[vars.test]" />
+    </http:request-config>
+    <http:request-config name="Requester_Config_5" responseTimeout="60000">
+        <http:request-connection protocol="HTTPS" host="#[vars.test]" />
+    </http:request-config>
+    <http:request-config name="Requester_Config_6" responseTimeout="60000">
+        <http:request-connection protocol="HTTPS" host="#[vars.test]" />
+    </http:request-config>
+    <http:request-config name="Requester_Config_7" responseTimeout="60000">
+        <http:request-connection protocol="HTTPS" host="#[vars.test]" />
+    </http:request-config>
+    <http:request-config name="Requester_Config_8" responseTimeout="60000">
+        <http:request-connection protocol="HTTPS" host="#[vars.test]" />
+    </http:request-config>
+    <http:request-config name="Requester_Config_9" responseTimeout="60000">
+        <http:request-connection protocol="HTTPS" host="#[vars.test]" />
+    </http:request-config>
+    <http:request-config name="Requester_Config_10" responseTimeout="60000">
+        <http:request-connection protocol="HTTPS" host="#[vars.test]" />
+    </http:request-config>
+    <http:request-config name="Requester_Config_11" responseTimeout="60000">
+        <http:request-connection protocol="HTTPS" host="#[vars.test]" />
+    </http:request-config>
+    <http:request-config name="Requester_Config_12" responseTimeout="60000">
+        <http:request-connection protocol="HTTPS" host="#[vars.test]" />
+    </http:request-config>
+
+</mule>
