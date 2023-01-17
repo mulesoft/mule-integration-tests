@@ -47,14 +47,14 @@ public class XmlSdkConfigDeploymentTestCase extends AbstractCeXmlExtensionMuleAr
 
   @Test
   @Description("This test is testing that an app with an xml-sdk config and a lot of request configs deploys in a timely manner."
-      + "If this test timeout, it's possibly because it's getting stuck initializing the beans."
-      + "During the initialization of the spring registry, Spring tries to get the object type of the beans definition list to"
+      + "If this test timeouts, it may be because it got stuck initializing the beans."
+      + "During the initialization of the spring context, Spring checks the object type of the beans definition list to"
       + "see if that factory class returns an object that could be injected in one of their fields. "
-      + "If in that factory the ObjectTypeClass field is not static, "
-      + "like in [getObjectTypeWithoutInitializingTheFields#getObjectTypeWithoutInitializingTheFields] or in"
-      + "[getObjectTypeWithoutInitializingTheFields#testGetObjectTypeReturnsSuperIfImplementsObjectTypeProvider,"
-      + "Spring will have to fully initialize the bean generating a performance issue where the"
-      + "apps probably never finish deploying")
+      + "If in that factory the ObjectTypeClass field is not available right after instantiation, "
+      + "like in [ObjectFactoryClassRepositoryTestCase#getObjectTypeWithoutInitializingTheFields] or in"
+      + "[ObjectFactoryClassRepositoryTestCase#testGetObjectTypeReturnsSuperIfImplementsObjectTypeProvider,"
+      + "Spring will have to fully initialize the bean, resulting in a performance issue where the"
+      + "apps may never finish deploying")
   public void testDeployment() throws Exception {
     assertConfigPresent("theConfigurationNameFromTheAppThatWontBeMacroExpanded");
     assertConfigPresent("anotherConfigurationToShowThereIsNoClashOnMacroExpansion");
