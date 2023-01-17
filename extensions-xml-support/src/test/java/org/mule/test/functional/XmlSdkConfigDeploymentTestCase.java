@@ -52,7 +52,7 @@ public class XmlSdkConfigDeploymentTestCase extends AbstractCeXmlExtensionMuleAr
       + "see if that factory class returns an object that could be injected in one of their fields. "
       + "If in that factory the ObjectTypeClass field is not available right after instantiation, "
       + "like in [ObjectFactoryClassRepositoryTestCase#getObjectTypeWithoutInitializingTheFields] or in"
-      + "[ObjectFactoryClassRepositoryTestCase#testGetObjectTypeReturnsSuperIfImplementsObjectTypeProvider,"
+      + "[ObjectFactoryClassRepositoryTestCase#testGetObjectTypeReturnsSuperIfImplementsObjectTypeProvider],"
       + "Spring will have to fully initialize the bean, resulting in a performance issue where the"
       + "apps may never finish deploying")
   public void testDeployment() throws Exception {
