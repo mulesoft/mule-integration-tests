@@ -30,6 +30,6 @@ public class ExpressionLanguageTypesFromModuleTestCase extends AbstractIntegrati
 
   @Test
   public void usingTypeFromModule() throws Exception {
-    assertThat(flowRunner("usingTypeFromModule").run().getMessage(), hasPayload(equalTo("false")));
+    assertThat(flowRunner("usingTypeFromModule").keepStreamsOpen().run().getMessage(), hasPayload(equalTo("false")));
   }
 }
