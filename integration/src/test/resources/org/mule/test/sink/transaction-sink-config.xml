@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:bti="http://www.mulesoft.org/schema/mule/ee/bti" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/ee/bti http://www.mulesoft.org/schema/mule/ee/bti/current/mule-bti-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+    <http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="e4f055f4-1eb6-4e55-a2d1-e85eee536207" >
+        <http:listener-connection host="0.0.0.0" port="8081" />
+    </http:listener-config>
+    <flow name="BeginFlow" doc:id="0cb41c95-02b8-462a-a3ad-a09780afad52" >
+
+        <http:listener doc:name="Listener" doc:id="46e94253-8aa0-4778-9187-196317db531e" config-ref="HTTP_Listener_config" path="test"/>
+        <try doc:name="Try" doc:id="6e88a903-bf30-4389-8a57-0b3ce1995492" transactionalAction="ALWAYS_BEGIN" >
+            <flow-ref doc:name="Flow Reference" doc:id="7c6d9b3d-740c-4f63-9718-9118a68b9f0f" name="flow1" />
+        </try>
+        <logger level="INFO" doc:name="Logger" doc:id="f6434e40-2aa8-4627-839f-2f8fcf748834" message="After flow reference in beginFlow" />
+    </flow>
+
+    <flow name="flow1" doc:id="16666df8-e11b-4052-870f-5aeca10c15dd" >
+        <logger level="INFO" doc:name="Logger" doc:id="17dee20e-d5fa-409e-8bd9-0e13f76fb2e4" message="flow ref 1" />
+        <flow-ref doc:name="Flow Reference" doc:id="e1869896-ca36-450b-8156-640ca7f0593f" name="flowReferencedMultipleTimes"/>
+        <try doc:name="Try" doc:id="cbf86874-8b16-42df-a30f-dc59db60e62e" transactionalAction="BEGIN_OR_JOIN">
+            <flow-ref doc:name="Flow Reference" doc:id="e578a030-7620-4020-80ba-f2926065b4d8" name="flow2" />
+        </try>
+    </flow>
+
+    <flow name="flow2" doc:id="3dd4c8fa-61b3-4107-ba84-d9af667cc1bf" >
+        <logger level="INFO" doc:name="Logger" doc:id="491fac78-ebf8-4874-8825-331217c01475" message="flow ref 3" />
+        <flow-ref doc:name="Flow Reference" doc:id="55f4a6f8-ada6-4cef-abc1-46f5ccaa6308" name="flowReferencedMultipleTimes"/>
+    </flow>
+
+    <flow name="flowReferencedMultipleTimes" doc:id="e82f20fb-eaaa-40d8-9809-bfc8edd52d60" >
+        <logger level="INFO" doc:name="Logger" doc:id="9e677c21-bf5e-4d7d-bc79-5c9bf2fa4705" message="Flow referenced multiple times!"/>
+    </flow>
+</mule>
