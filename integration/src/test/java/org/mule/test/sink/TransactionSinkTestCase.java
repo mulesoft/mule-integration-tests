@@ -6,6 +6,9 @@
  */
 package org.mule.test.sink;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Test;
@@ -19,6 +22,7 @@ public class TransactionSinkTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void testGetTransactionSinks() throws Exception {
-    flowRunner("BeginFlow").run();
+    String payload = flowRunner("BeginFlow").run().getMessage().getPayload().getValue().toString();
+    assertThat(payload, is("flow begins"));
   }
 }
