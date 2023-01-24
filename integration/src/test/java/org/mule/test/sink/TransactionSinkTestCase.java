@@ -12,13 +12,13 @@ import org.junit.Test;
 
 public class TransactionSinkTestCase extends AbstractIntegrationTestCase {
 
-    @Override
-    protected String getConfigFile() {
-        return "org/mule/test/sink/transaction-sink-config.xml";
-    }
+  @Override
+  protected String getConfigFile() {
+    return "org/mule/test/sink/transaction-sink-config.xml";
+  }
 
-    @Test
-    public void testGetTransactionSinks() throws Exception {
-        flowRunner("BeginFlow").run();
-    }
+  @Test
+  public void testGetTransactionSinks() throws Exception {
+    flowRunner("BeginFlow").run();
+  }
 }
