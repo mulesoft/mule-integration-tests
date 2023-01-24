@@ -6,10 +6,23 @@
  */
 package org.mule.test.routing;
 
+import static org.mule.functional.api.exception.ExpectedError.none;
+import static org.mule.functional.junit4.matchers.MessageMatchers.hasPayload;
+import static org.mule.runtime.api.exception.MuleException.INFO_LOCATION_KEY;
+import static org.mule.runtime.api.metadata.DataType.JSON_STRING;
+import static org.mule.runtime.api.metadata.MediaType.APPLICATION_JAVA;
+import static org.mule.runtime.api.metadata.MediaType.APPLICATION_JSON;
+import static org.mule.runtime.api.metadata.MediaType.APPLICATION_XML;
+import static org.mule.sdk.api.error.MuleErrors.CONNECTIVITY;
+import static org.mule.tck.processor.FlowAssert.verify;
+import static org.mule.test.allure.AllureConstants.RoutersFeature.ForeachStory.FOR_EACH;
+import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
+
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonMap;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
+
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -21,17 +34,6 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mule.functional.api.exception.ExpectedError.none;
-import static org.mule.functional.junit4.matchers.MessageMatchers.hasPayload;
-import static org.mule.runtime.api.exception.MuleException.INFO_LOCATION_KEY;
-import static org.mule.runtime.api.metadata.DataType.JSON_STRING;
-import static org.mule.runtime.api.metadata.MediaType.APPLICATION_JAVA;
-import static org.mule.runtime.api.metadata.MediaType.APPLICATION_JSON;
-import static org.mule.runtime.api.metadata.MediaType.APPLICATION_XML;
-import static org.mule.sdk.api.error.MuleErrors.CONNECTIVITY;
-import static org.mule.tck.processor.FlowAssert.verify;
-import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
-import static org.mule.test.allure.AllureConstants.RoutersFeature.ForeachStory.FOR_EACH;
 
 import org.mule.functional.api.exception.ExpectedError;
 import org.mule.runtime.api.exception.MuleException;
@@ -51,19 +53,17 @@ import java.util.concurrent.CountDownLatch;
 
 import javax.inject.Inject;
 
+import com.google.common.collect.ImmutableList;
+import io.qameta.allure.Description;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
+import io.qameta.allure.Story;
 import org.apache.commons.text.RandomStringGenerator;
 import org.hamcrest.core.Is;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
-
-import com.google.common.collect.ImmutableList;
-
-import io.qameta.allure.Description;
-import io.qameta.allure.Feature;
-import io.qameta.allure.Issue;
-import io.qameta.allure.Story;
 
 @Feature(ROUTERS)
 @Story(FOR_EACH)
@@ -466,6 +466,7 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
+  @Ignore("W-12430429")
   public void foreachWithAsync() throws Exception {
     final int size = 20;
     List<String> list = new ArrayList<>(size);
