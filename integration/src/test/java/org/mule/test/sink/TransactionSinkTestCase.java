@@ -11,8 +11,10 @@ import static org.hamcrest.Matchers.is;
 
 import org.mule.test.AbstractIntegrationTestCase;
 
+import io.qameta.allure.Issue;
 import org.junit.Test;
 
+@Issue("W-12128703")
 public class TransactionSinkTestCase extends AbstractIntegrationTestCase {
 
   @Override
