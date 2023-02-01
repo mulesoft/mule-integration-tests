@@ -171,9 +171,32 @@ public class ErrorHandlerLazyInitTestCase extends AbstractIntegrationTestCase {
                                            "APP:ERROR_TYPE_4");
   }
 
-  private void doCustomErrorTypesShouldDiscoveredTest(Location location, boolean includeErrorTypes, String... errorTypes) {
-    lazyComponentInitializer.initializeComponent(location);
+  @Test
+  public void whenLazyInitializeAdditionalComponentThenErrorsAreRegistered() {
+    lazyComponentInitializer.initializeComponent(builder().globalName("errorMappingFlow").build());
 
+    // Control test to ensure the error type was not already registered
+    checkErrorTypesAreRegistered(false, "APP:ERROR_TYPE_3");
+
+    registry.lookupByName("notEnabledFlow");
+    checkErrorTypesAreRegistered("APP:ERROR_TYPE_1", "APP:ERROR_TYPE_2", "APP:ERROR_TYPE_MAPPING_1", "APP:ERROR_TYPE_3");
+  }
+
+  @Test
+  public void whenLazyInitializeAdditionalComponentThenComponentsAreAnnotated() throws Exception {
+    lazyComponentInitializer.initializeComponent(builder().globalName("errorMappingFlow").build());
+
+    flowRunner("errorMappingFlow").runExpectingException(errorType("APP", "ERROR_TYPE_MAPPING_1"));
+
+    // Note that this flow is lazily initialized now
+    flowRunner("notEnabledFlow").runExpectingException(errorType("APP", "ERROR_TYPE_3"));
+
+    // Reinitialize
+    lazyComponentInitializer.initializeComponent(builder().globalName("errorMappingFlow2").build());
+    flowRunner("errorMappingFlow2").runExpectingException(errorType("APP", "ERROR_TYPE_MAPPING_2"));
+  }
+
+  private void checkErrorTypesAreRegistered(boolean includeErrorTypes, String... errorTypes) {
     ErrorTypeRepository errorTypeRepository = registry.lookupByType(ErrorTypeRepository.class)
         .orElseThrow(() -> new AssertionError("Cannot access errorTypeRepository"));
 
@@ -188,6 +211,15 @@ public class ErrorHandlerLazyInitTestCase extends AbstractIntegrationTestCase {
         assertThat(errorType, appMyErrorType, equalTo(empty()));
       }
     });
+  }
+
+  private void checkErrorTypesAreRegistered(String... errorTypes) {
+    checkErrorTypesAreRegistered(true, errorTypes);
+  }
+
+  private void doCustomErrorTypesShouldDiscoveredTest(Location location, boolean includeErrorTypes, String... errorTypes) {
+    lazyComponentInitializer.initializeComponent(location);
+    checkErrorTypesAreRegistered(includeErrorTypes, errorTypes);
   }
 
   private void doCustomErrorTypesShouldDiscoveredTest(Location location, String... errorTypes) {

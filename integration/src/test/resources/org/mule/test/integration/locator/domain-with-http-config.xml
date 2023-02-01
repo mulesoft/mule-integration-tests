@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<domain:mule-domain xmlns="http://www.mulesoft.org/schema/mule/core"
+                    xmlns:domain="http://www.mulesoft.org/schema/mule/domain"
+                    xmlns:petstore="http://www.mulesoft.org/schema/mule/petstore"
+                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+                                        http://www.mulesoft.org/schema/mule/domain http://www.mulesoft.org/schema/mule/domain/current/mule-domain.xsd
+                                        http://www.mulesoft.org/schema/mule/petstore http://www.mulesoft.org/schema/mule/petstore/current/mule-petstore.xsd">
+
+    <petstore:config name="configInDomain" cashierName="jim">
+        <petstore:connection username="john" password="doe"/>
+        <petstore:pets>
+            <petstore:pet value="Lassie"/>
+            <petstore:pet value="Sapo Pepe"/>
+            <petstore:pet value="My mother's parrot"/>
+        </petstore:pets>
+    </petstore:config>
+
+    <petstore:config name="anotherConfigInDomain" cashierName="jim">
+        <petstore:connection username="pepe" password="racing"/>
+        <petstore:pets>
+            <petstore:pet value="Fatiga"/>
+        </petstore:pets>
+    </petstore:config>
+
+    <petstore:config name="anotherConfigThatShouldNotBeInitialized" cashierName="rocky">
+        <petstore:connection username="john" password="doe"/>
+        <petstore:pets>
+            <petstore:pet value="Marshall"/>
+            <petstore:pet value="Chase"/>
+            <petstore:pet value="Skye"/>
+        </petstore:pets>
+    </petstore:config>
+
+</domain:mule-domain>
+

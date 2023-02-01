@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:petstore="http://www.mulesoft.org/schema/mule/petstore"
+      xsi:schemaLocation="
+       http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+       http://www.mulesoft.org/schema/mule/petstore http://www.mulesoft.org/schema/mule/petstore/current/mule-petstore.xsd">
+
+    <flow name="flowDependingOnConfigFromDomain">
+        <petstore:connected-pet-adoption-source config-ref="configInDomain" watermark="true" idempotent="true">
+            <scheduling-strategy>
+                <fixed-frequency frequency="500"/>
+            </scheduling-strategy>
+        </petstore:connected-pet-adoption-source>
+        <set-payload value="anotherValue"/>
+    </flow>
+
+    <flow name="anotherFlowDependingOnSameConfigFromDomain">
+        <petstore:connected-pet-adoption-source config-ref="configInDomain" watermark="true" idempotent="true">
+            <scheduling-strategy>
+                <fixed-frequency frequency="500"/>
+            </scheduling-strategy>
+        </petstore:connected-pet-adoption-source>
+        <set-payload value="anotherValue"/>
+    </flow>
+
+    <flow name="anotherFlowDependingOnAnotherConfigFromDomain">
+        <petstore:connected-pet-adoption-source config-ref="anotherConfigInDomain" watermark="true" idempotent="true">
+            <scheduling-strategy>
+                <fixed-frequency frequency="500"/>
+            </scheduling-strategy>
+        </petstore:connected-pet-adoption-source>
+        <set-payload value="anotherValue"/>
+    </flow>
+
+    <flow name="anotherFlowThatShouldNotBeInitialized">
+        <logger/>
+    </flow>
+
+</mule>
+
