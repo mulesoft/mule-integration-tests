@@ -46,4 +46,15 @@ public class MuleOperationUsingTypesFromDependenciesTestCase extends MuleArtifac
     assertThat(resultEvent.getMessage().getPayload().getValue(), is("white"));
   }
 
+  @Test
+  @Description("An operation declaring a parameter type belonging to another extension and specifying namespace")
+  public void operationReceivesByParameterWithATypeFromADependencyDelegatingToDW() throws Exception {
+    CoreEvent resultEvent = flowRunner("getDoorColorDelegatingFlow").run();
+    assertThat(resultEvent.getMessage().getPayload().getValue(), is("white"));
+  }
+
+  @Override
+  protected ExpressionLanguageMetadataService getExpressionLanguageMetadataService() {
+    return new WeaveExpressionLanguageMetadataServiceImpl();
+  }
 }

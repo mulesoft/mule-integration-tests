@@ -32,11 +32,27 @@
         </operation:body>
     </operation:def>
 
+    <operation:def name="getDoorColorDelegating">
+        <operation:parameters>
+            <operation:parameter name="door" type="mule!subtypes::Door" />
+        </operation:parameters>
+        <operation:output>
+            <operation:payload-type type="string" />
+        </operation:output>
+        <operation:body>
+            <set-payload value="#[params.door.color]" />
+        </operation:body>
+    </operation:def>
+
     <flow name="returningDoorFlow">
         <this:returning-door />
     </flow>
 
     <flow name="getDoorColorFlow">
         <this:get-door-color door="global-car-door" />
+    </flow>
+
+    <flow name="getDoorColorDelegatingFlow">
+        <this:get-door-color-delegating door="global-car-door" />
     </flow>
 </mule>
