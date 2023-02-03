@@ -289,6 +289,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.mule.runtime</groupId>
+            <artifactId>mule-tracer-exporter-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.mule.tests</groupId>
             <artifactId>mule-tests-infrastructure</artifactId>
             <version>${project.version}</version>
@@ -336,12 +341,6 @@
             <artifactId>protobuf-java</artifactId>
             <version>${protobufVersion}</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mule.modules</groupId>
-            <artifactId>mule-tracing-module</artifactId>
-            <classifier>mule-plugin</classifier>
-            <version>${muleTracingModuleVersion}</version>
         </dependency>
         <dependency>
             <groupId>io.opentelemetry</groupId>
