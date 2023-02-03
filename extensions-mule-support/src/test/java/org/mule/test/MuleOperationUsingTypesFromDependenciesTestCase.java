@@ -49,7 +49,7 @@ public class MuleOperationUsingTypesFromDependenciesTestCase extends MuleArtifac
   @Test
   @Description("An operation declaring a parameter type belonging to another extension and specifying namespace")
   public void operationReceivesByParameterWithATypeFromADependencyDelegatingToDW() throws Exception {
-    CoreEvent resultEvent = flowRunner("getDoorColorDelegatingFlow").run();
+    CoreEvent resultEvent = flowRunner("getDoorColorDelegatingToDwFlow").run();
     assertThat(resultEvent.getMessage().getPayload().getValue(), is("white"));
   }
 
