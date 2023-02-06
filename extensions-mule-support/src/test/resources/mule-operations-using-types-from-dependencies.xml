@@ -32,11 +32,31 @@
         </operation:body>
     </operation:def>
 
+    <operation:def name="getDoorColorDelegatingToDw">
+        <operation:parameters>
+            <!-- NOTE: it's a type expression, and then the resolution will be delegated to the
+                 ExpressionLanguageMetadataService. This will result in a type resolved by DW logic, which is
+                 structurally equivalent to "subtypes:Door", but without some annotations (similar, but not the same)
+             -->
+            <operation:parameter name="door" type="mule!subtypes::Door" />
+        </operation:parameters>
+        <operation:output>
+            <operation:payload-type type="string" />
+        </operation:output>
+        <operation:body>
+            <set-payload value="#[params.door.color]" />
+        </operation:body>
+    </operation:def>
+
     <flow name="returningDoorFlow">
         <this:returning-door />
     </flow>
 
     <flow name="getDoorColorFlow">
         <this:get-door-color door="global-car-door" />
+    </flow>
+
+    <flow name="getDoorColorDelegatingToDwFlow">
+        <this:get-door-color-delegating-to-dw door="global-car-door" />
     </flow>
 </mule>
