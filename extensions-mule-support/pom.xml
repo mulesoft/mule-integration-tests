@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.mule.tests</groupId>
         <artifactId>mule-extensions-integration-tests</artifactId>
-        <version>4.5.0-rc5</version>
+        <version>4.5.0-rc6</version>
     </parent>
     <artifactId>mule-module-extensions-mule-support-integrations-tests</artifactId>
     <name>Mule SDK Extensions Support Integration Tests</name>
