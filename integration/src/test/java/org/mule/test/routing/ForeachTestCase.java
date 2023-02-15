@@ -466,7 +466,6 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  @Ignore("W-12430429")
   public void foreachWithAsync() throws Exception {
     final int size = 20;
     List<String> list = new ArrayList<>(size);
