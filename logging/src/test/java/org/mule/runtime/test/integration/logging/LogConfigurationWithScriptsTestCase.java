@@ -28,6 +28,7 @@ import java.io.File;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Features;
+import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LoggerContext;
@@ -44,7 +45,7 @@ public class LogConfigurationWithScriptsTestCase extends AbstractFakeMuleServerT
 
   @ClassRule
   public static SystemProperty allowedScriptLanguagesSystemProperty =
-    new SystemProperty(SCRIPT_LANGUAGES, "nashorn,js,javascript,ecmascript");
+      new SystemProperty(SCRIPT_LANGUAGES, "nashorn,js,javascript,ecmascript");
 
   private static final String APP_NAME = "app1";
 
@@ -52,10 +53,12 @@ public class LogConfigurationWithScriptsTestCase extends AbstractFakeMuleServerT
   public UseMuleLog4jContextFactory muleLogging = new UseMuleLog4jContextFactory();
 
   @Test
+  @Issue("W-12549148")
   public void scriptingSupport() throws Exception {
     muleServer.start();
-    ApplicationFileBuilder applicationFileBuilder = new ApplicationFileBuilder(APP_NAME).definedBy("log/script-config/mule-config.xml")
-        .usingResource("log/script-config/log4j-config-scripting.xml", "log4j2-test.xml");
+    ApplicationFileBuilder applicationFileBuilder =
+        new ApplicationFileBuilder(APP_NAME).definedBy("log/script-config/mule-config.xml")
+            .usingResource("log/script-config/log4j-config-scripting.xml", "log4j2-test.xml");
     muleServer.deploy(applicationFileBuilder.getArtifactFile().toURI().toURL(), APP_NAME);
     Application app = muleServer.findApplication(APP_NAME);
     assertThat(appHasAppender(app, "scripting"), is(true));
