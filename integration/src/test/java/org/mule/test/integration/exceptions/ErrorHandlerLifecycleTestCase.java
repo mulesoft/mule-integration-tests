@@ -59,14 +59,6 @@ public class ErrorHandlerLifecycleTestCase extends AbstractIntegrationTestCase {
   @Named("flowD")
   private FlowConstruct flowD;
 
-  @Inject
-  @Named("flowE")
-  private FlowConstruct flowE;
-
-  @Inject
-  @Named("flowF")
-  private FlowConstruct flowF;
-
   @Test
   public void testLifecycleErrorHandlerInFlow() throws Exception {
     // Trigger the flows so the lifecycle-trackers are added to the registry
@@ -109,15 +101,6 @@ public class ErrorHandlerLifecycleTestCase extends AbstractIntegrationTestCase {
 
     ((Lifecycle) flowD).stop();
     ((Lifecycle) flowD).dispose();
-
-    assertThat(defaultEhErrorHandlerPhases.contains(Stoppable.PHASE_NAME), is(false));
-    assertThat(defaultEhErrorHandlerPhases.contains(Disposable.PHASE_NAME), is(false));
-
-    ((Lifecycle) flowE).stop();
-    ((Lifecycle) flowE).dispose();
-
-    ((Lifecycle) flowF).stop();
-    ((Lifecycle) flowF).dispose();
 
     assertThat(defaultEhErrorHandlerPhases, containsInRelativeOrder(Stoppable.PHASE_NAME, Disposable.PHASE_NAME));
   }

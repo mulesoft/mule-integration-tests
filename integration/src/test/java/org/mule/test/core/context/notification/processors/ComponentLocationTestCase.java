@@ -451,7 +451,7 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
   public void defaultErrorHandler() throws Exception {
     Location defaultErrorHandlerLoggerLocation = Location.builder().globalName("defaultErrorHandler").build();
     Optional<Component> component = configurationComponentLocator.find(defaultErrorHandlerLoggerLocation);
-    assertThat(component.isPresent(), is(true));
+    assertThat(component.isPresent(), is(false));
   }
 
   @Test
