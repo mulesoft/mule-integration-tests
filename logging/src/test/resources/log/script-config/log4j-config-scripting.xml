@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <Appenders>
+        <ScriptAppenderSelector name="scripting">
+            <Script language="nashorn"><![CDATA['file' + 2]]></Script>
+
+            <AppenderSet>
+                <File name="file1" fileName="${sys:mule.home}${sys:file.separator}logs${sys:file.separator}unwanted.log">
+                    <PatternLayout pattern="unwanted appender" />
+                </File>
+                <File name="file2" fileName="${sys:mule.home}${sys:file.separator}logs${sys:file.separator}success.log">
+                    <PatternLayout pattern="[%d{MM-dd HH:mm:ss}] %-5p [%t] [event: %X{correlationId}] %c{1}: %m%n" />
+                </File>
+            </AppenderSet>
+        </ScriptAppenderSelector>
+    </Appenders>
+
+    <Loggers>
+
+        <AsyncRoot level="DEBUG">
+            <AppenderRef ref="scripting"/>
+        </AsyncRoot>
+    </Loggers>
+
+</Configuration>
