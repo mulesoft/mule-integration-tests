@@ -6,6 +6,7 @@
  */
 package org.mule.test.integration.exceptions;
 
+import static org.mule.runtime.core.privileged.exception.TemplateOnErrorHandler.reuseGlobalErrorHandler;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ErrorHandlingStory.GLOBAL_ERROR_HANDLER;
 
@@ -76,6 +77,7 @@ public class GlobalErrorHandlerLifecycleTestCase extends AbstractIntegrationTest
 
   @BeforeClass
   public static void beforeClass() {
+    reuseGlobalErrorHandler = true;
     previous = componentBuildingDefinitionRegistryFactory;
     componentBuildingDefinitionRegistryFactory = new TestComponentBuildingDefinitionRegistryFactory();
     componentBuildingDefinitionRegistryFactory.setRefreshRuntimeComponentBuildingDefinitions(true);
@@ -83,6 +85,7 @@ public class GlobalErrorHandlerLifecycleTestCase extends AbstractIntegrationTest
 
   @AfterClass
   public static void afterClass() {
+    reuseGlobalErrorHandler = null;
     componentBuildingDefinitionRegistryFactory = previous;
   }
 
