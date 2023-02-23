@@ -121,4 +121,12 @@ public class FirstSuccessfulTestCase extends AbstractIntegrationTestCase {
     flowRunner("firstSuccessfulAndRaiseErrorInsideScatterGather").run();
   }
 
+  @Test
+  @Issue("W-12552091")
+  @Description("When a First Successful invokes a flow that has a raise error, then it should still proceed to next route.")
+  public void FirstSuccessfulToFlowWithError() throws Exception {
+    CoreEvent result = flowRunner("FirstSuccessfulToFlowWithError").run();
+    assertThat(getPayloadAsString(result.getMessage()), is("A Di Maria me lo resistian"));
+  }
+
 }

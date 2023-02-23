@@ -11,7 +11,7 @@
         http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
 
     <test-components:queue-config name="WithOneWayEndpoints.out">
-        <test-components:connection />
+        <test-components:connection/>
     </test-components:queue-config>
 
 
@@ -150,12 +150,28 @@
                         <logger/>
                     </route>
                 </first-successful>
-                <raise-error type="MULE:ANY" description="raise-error after first-successful inside a scatter-gather route should error."/>
+                <raise-error type="MULE:ANY"
+                             description="raise-error after first-successful inside a scatter-gather route should error."/>
             </route>
-            <route >
+            <route>
                 <logger/>
             </route>
         </scatter-gather>
+    </flow>
+
+    <flow name="FirstSuccessfulToFlowWithError">
+        <first-successful>
+            <route>
+                <flow-ref name="flowWithError"/>
+            </route>
+            <route>
+                <set-payload value="A Di Maria me lo resistian"/>
+            </route>
+        </first-successful>
+    </flow>
+
+    <flow name="flowWithError">
+        <raise-error type="APP:SOME"/>
     </flow>
 
 </mule>
