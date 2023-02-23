@@ -117,6 +117,11 @@ public class OpenTelemetryProtobufSpanUtils {
       return !openTelemetryProtobufSpan.getStatus().getCode().equals(Status.StatusCode.Ok);
     }
 
+    @Override
+    public String getStatusAsString() {
+      return openTelemetryProtobufSpan.getStatus().toString();
+    }
+
     public String getLocation() {
       return getAttributes().get("location");
     }
