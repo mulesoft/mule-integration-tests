@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xsi:schemaLocation="
+               http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+
+    <error-handler name="geh">
+        <on-error-propagate>
+            <logger level="INFO" message="On error propagate"/>
+        </on-error-propagate>
+    </error-handler>
+
+    <flow name="parallelForEachWithGlobalErrorHandling">
+        <parallel-foreach collection="#[[1, 2, 3, 4, 5]]">
+            <try>
+                <raise-error type="APP:TOGLOBALERRHANDLER"/>
+                <error-handler ref="geh"/>
+            </try>
+        </parallel-foreach>
+    </flow>
+
+</mule>
