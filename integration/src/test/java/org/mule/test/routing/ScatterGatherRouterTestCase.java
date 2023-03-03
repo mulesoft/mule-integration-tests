@@ -10,7 +10,7 @@ import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.io.IOUtils.LINE_SEPARATOR;
 
-import static org.apache.commons.io.IOUtils.LINE_SEPARATOR;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.startsWith;
@@ -257,6 +257,16 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
   @Description("Check that parallel execution routes do not cause race conditions when handling SdkInternalContext")
   public void foreachWithinScatterGatherWithSdkOperation() throws Exception {
     flowRunner("foreachWithinScatterGatherWithSdkOperation").run();
+  }
+
+  @Test
+  @Issue("W-10619784")
+  @Description("With On Error continue, even when forEach has failed with an error within any route, " +
+      "each route should be processed accordingly.")
+  public void foreachErrorInScatterGather() throws Exception {
+    CoreEvent event = flowRunner("ForeachErrorInScatterGather").run();
+    assertThat(event.getVariables().get("variable0").getValue(), equalTo(1));
+    assertThat(event.getVariables().get("variable1").getValue(), equalTo(1));
   }
 
 }
