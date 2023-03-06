@@ -10,7 +10,7 @@
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 
     <flow name="drops-one-span">
-        <raise-error type="CUSTOM:ERROR"/>
+        <set-payload value=""/>
     </flow>
 
 </mule>
