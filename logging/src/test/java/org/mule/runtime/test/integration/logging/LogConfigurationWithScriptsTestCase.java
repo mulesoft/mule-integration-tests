@@ -26,19 +26,23 @@ import org.mule.test.infrastructure.deployment.AbstractFakeMuleServerTestCase;
 
 import java.io.File;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.LoggerContext;
+
+import org.junit.ClassRule;
+import org.junit.Ignore;
+import org.junit.Rule;
+import org.junit.Test;
+
 import io.qameta.allure.Feature;
 import io.qameta.allure.Features;
 import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.core.LoggerContext;
-import org.junit.ClassRule;
-import org.junit.Rule;
-import org.junit.Test;
 
 /**
  * Checks log4j configurations with scripts
  */
+@Ignore("java 17 - no nashorn in java 11+")
 @Features({@Feature(INTEGRATIONS_TESTS), @Feature(LOGGING)})
 @Story(CONTEXT_FACTORY)
 public class LogConfigurationWithScriptsTestCase extends AbstractFakeMuleServerTestCase {

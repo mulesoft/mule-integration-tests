@@ -15,10 +15,12 @@ import static org.mule.test.allure.AllureConstants.ExpressionLanguageFeature.EXP
 import static org.mule.test.allure.AllureConstants.MuleDsl.DslValidationStory.DSL_VALIDATION_STORY;
 
 import static java.util.stream.Collectors.toList;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 
+import org.mule.runtime.api.config.FeatureFlaggingService;
 import org.mule.runtime.api.el.ExpressionLanguage;
 import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.ast.api.ArtifactAst;
@@ -34,21 +36,24 @@ import org.mule.weave.v2.el.WeaveDefaultExpressionLanguageFactoryService;
 import java.util.List;
 import java.util.Set;
 
-import javax.inject.Singleton;
+import com.google.inject.AbstractModule;
+import com.google.inject.Guice;
+import com.google.inject.multibindings.OptionalBinder;
+
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
+import org.junit.Test;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Features;
 import io.qameta.allure.Story;
-import org.codejargon.feather.Feather;
-import org.codejargon.feather.Provides;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 /**
  * Provides an example of how code running outside of the Mule Runtime may invoke the AST validations that require a base
  * registry.
  */
+@Ignore("java 17 - feather")
 @Features({@Feature(ARTIFACT_AST), @Feature(EXPRESSION_LANGUAGE)})
 @Story(DSL_VALIDATION_STORY)
 public class ArtifactAstValidationsTestCase extends AbstractMuleContextTestCase {
@@ -81,10 +86,13 @@ public class ArtifactAstValidationsTestCase extends AbstractMuleContextTestCase 
   }
 
   protected List<ValidationResultItem> doValidate(ArtifactAst ast) throws ConfigurationException {
-    Feather feather = Feather.with(new BaseRegistryForValidationsModule());
+    com.google.inject.Injector injector = Guice.createInjector(new BaseGuiceRegistryForValidationsModule());
+
+    // Feather feather = Feather.with(new BaseRegistryForValidationsModule());
 
     ArtifactAstValidator astValidator = validatorBuilder()
-        .withValidationEnricher(feather::injectFields)
+        // .withValidationEnricher(feather::injectFields)
+        .withValidationEnricher(injector::injectMembers)
         .build();
 
     ValidationResult result = astValidator.validate(ast);
@@ -96,15 +104,28 @@ public class ArtifactAstValidationsTestCase extends AbstractMuleContextTestCase 
     return errors;
   }
 
-  public class BaseRegistryForValidationsModule {
+  public class BaseGuiceRegistryForValidationsModule extends AbstractModule {
 
-    @Provides
-    @Singleton
-    public ExpressionLanguage expressionLanguage() {
-      return new WeaveDefaultExpressionLanguageFactoryService(null).create();
+    @Override
+    protected void configure() {
+      OptionalBinder.newOptionalBinder(binder(), FeatureFlaggingService.class);
+      OptionalBinder.newOptionalBinder(binder(), Object.class);
+
+      bind(ExpressionLanguage.class).toInstance(new WeaveDefaultExpressionLanguageFactoryService(null).create());
+      // bindConstant().annotatedWith(Names.named("_compatibilityPluginInstalled")).to("");
     }
 
   }
+
+  // public class BaseRegistryForValidationsModule {
+  //
+  // @Provides
+  // @Singleton
+  // public ExpressionLanguage expressionLanguage() {
+  // return new WeaveDefaultExpressionLanguageFactoryService(null).create();
+  // }
+  //
+  // }
 
   protected ArtifactAst buildArtifactAst(final String configFile) {
     return AstXmlParser.builder()

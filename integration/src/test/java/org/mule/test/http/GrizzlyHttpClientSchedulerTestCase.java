@@ -6,17 +6,18 @@
  */
 package org.mule.test.http;
 
+import static org.mule.runtime.api.scheduler.SchedulerConfig.config;
+import static org.mule.tck.junit4.matcher.Eventually.eventually;
+
 import static java.util.concurrent.TimeUnit.SECONDS;
+
+import static org.apache.commons.lang3.JavaVersion.JAVA_17;
+import static org.apache.commons.lang3.SystemUtils.isJavaVersionAtLeast;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.empty;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
-import static org.mule.runtime.api.scheduler.SchedulerConfig.config;
-import static org.mule.tck.junit4.matcher.Eventually.eventually;
-import io.qameta.allure.Description;
-import io.qameta.allure.Issue;
-import org.junit.Before;
-import org.junit.Test;
+
 import org.mule.runtime.api.scheduler.Scheduler;
 import org.mule.runtime.api.scheduler.SchedulerConfig;
 import org.mule.runtime.api.scheduler.SchedulerPoolsConfigFactory;
@@ -28,13 +29,20 @@ import org.mule.runtime.http.api.client.HttpClient;
 import org.mule.runtime.http.api.client.HttpClientConfiguration;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import javax.inject.Inject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicReference;
+
+import javax.inject.Inject;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import io.qameta.allure.Description;
+import io.qameta.allure.Issue;
 
 @Issue("MULE-19774")
 public class GrizzlyHttpClientSchedulerTestCase extends AbstractIntegrationTestCase {
@@ -188,9 +196,11 @@ public class GrizzlyHttpClientSchedulerTestCase extends AbstractIntegrationTestC
   private void setFinalField(Object object, Field field, Object newValue) throws Exception {
     field.setAccessible(true);
 
-    Field modifiersField = Field.class.getDeclaredField("modifiers");
-    modifiersField.setAccessible(true);
-    modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
+    if (!isJavaVersionAtLeast(JAVA_17)) {
+      Field modifiersField = Field.class.getDeclaredField("modifiers");
+      modifiersField.setAccessible(true);
+      modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
+    }
 
     field.set(object, newValue);
   }
