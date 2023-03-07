@@ -38,7 +38,8 @@ import static org.mule.runtime.tracer.exporter.api.config.OpenTelemetrySpanExpor
 import static org.mule.runtime.tracer.exporter.api.config.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_METRICS_LOG_FREQUENCY;
 import static org.mule.runtime.tracer.exporter.api.config.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_TIMEOUT;
 
-public class OpenTelemetrySpanDropTestCase extends MuleArtifactFunctionalTestCase implements OpenTelemetryTracingTestRunnerConfigAnnotation {
+public class OpenTelemetrySpanDropTestCase extends MuleArtifactFunctionalTestCase
+    implements OpenTelemetryTracingTestRunnerConfigAnnotation {
 
   private static final BlockingSpanExporter BLOCKING_SPAN_EXPORTER = new BlockingSpanExporter();
 
@@ -81,11 +82,12 @@ public class OpenTelemetrySpanDropTestCase extends MuleArtifactFunctionalTestCas
     BLOCKING_SPAN_EXPORTER.waitUntilIsBlocked();
     // This two spans should fill the exporter queue
     flowRunner("drops-one-span").withPayload(AbstractMuleTestCase.TEST_PAYLOAD)
-            .run();
+        .run();
     // This two spans should drop
     flowRunner("drops-one-span").withPayload(AbstractMuleTestCase.TEST_PAYLOAD)
-            .run();
+        .run();
     new PollingProber(5000, 100).check(new Probe() {
+
       @Override
       public boolean isSatisfied() {
         try {
@@ -93,7 +95,7 @@ public class OpenTelemetrySpanDropTestCase extends MuleArtifactFunctionalTestCas
           // TODO: Improve test assertion after implementing the tracing levels feature
           // We cannot make the test fully deterministic because we don't have a way to generate one span per execution (yet)
           return recordedLogs.contains("Total spans dropped since exporter start: 2")
-                 || recordedLogs.contains("Total spans dropped since exporter start: 3");
+              || recordedLogs.contains("Total spans dropped since exporter start: 3");
         } catch (UnsupportedEncodingException e) {
           throw new RuntimeException(e);
         }
@@ -201,7 +203,7 @@ public class OpenTelemetrySpanDropTestCase extends MuleArtifactFunctionalTestCas
 
     private SystemOutRecorder() {
       super(new ByteArrayOutputStream());
-      if (System.out instanceof  SystemOutRecorder) {
+      if (System.out instanceof SystemOutRecorder) {
         throw new IllegalStateException("Multiple recorder instances are not supported");
       }
       this.systemOut = System.out;
