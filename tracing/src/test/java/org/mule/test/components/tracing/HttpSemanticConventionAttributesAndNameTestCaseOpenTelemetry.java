@@ -74,7 +74,7 @@ public class HttpSemanticConventionAttributesAndNameTestCaseOpenTelemetry extend
 
   @Test
   public void testFlow() throws Exception {
-    ExportedSpanSniffer spanCapturer = profilingService.getSpanExportManager().getExportedSpanSniffer();
+    ExportedSpanSniffer spanCapturer = profilingService.getSpanSnifferManager().getExportedSpanSniffer();
 
     try {
       flowRunner(STARTING_FLOW).run();

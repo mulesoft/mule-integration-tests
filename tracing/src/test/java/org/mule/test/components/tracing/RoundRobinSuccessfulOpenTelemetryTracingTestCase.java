@@ -66,9 +66,9 @@ public class RoundRobinSuccessfulOpenTelemetryTracingTestCase extends MuleArtifa
   public void testRoundRobinFlow() throws Exception {
     // We send three requests to verify that the tracing to verify the round robin functioning
     // and that the traces corresponds to that.
-    assertRoundRobinSpan(profilingService.getSpanExportManager().getExportedSpanSniffer(), 5, true);
-    assertRoundRobinSpan(profilingService.getSpanExportManager().getExportedSpanSniffer(), 4, false);
-    assertRoundRobinSpan(profilingService.getSpanExportManager().getExportedSpanSniffer(), 5, true);
+    assertRoundRobinSpan(profilingService.getSpanSnifferManager().getExportedSpanSniffer(), 5, true);
+    assertRoundRobinSpan(profilingService.getSpanSnifferManager().getExportedSpanSniffer(), 4, false);
+    assertRoundRobinSpan(profilingService.getSpanSnifferManager().getExportedSpanSniffer(), 5, true);
   }
 
   private void assertRoundRobinSpan(ExportedSpanSniffer spanCapturer, int numberOfExpectedSpans, boolean verifySetPayloadInRoute)

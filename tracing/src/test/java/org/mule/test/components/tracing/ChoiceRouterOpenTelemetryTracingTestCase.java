@@ -68,7 +68,7 @@ public class ChoiceRouterOpenTelemetryTracingTestCase extends MuleArtifactFuncti
   }
 
   private void testForRoute(String childExpectedSpan, boolean isError) throws Exception {
-    ExportedSpanSniffer spanCapturer = profilingService.getSpanExportManager().getExportedSpanSniffer();
+    ExportedSpanSniffer spanCapturer = profilingService.getSpanSnifferManager().getExportedSpanSniffer();
     List<String> attributesToAssertExistence = getDefaultAttributesToAssertExistence();
 
     try {

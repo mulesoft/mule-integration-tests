@@ -55,7 +55,7 @@ public class ScatterGatherSuccessOpenTelemetryTracingTestCase extends MuleArtifa
 
   @Test
   public void testScatterGatherFlow() throws Exception {
-    ExportedSpanSniffer spanCapturer = profilingService.getSpanExportManager().getExportedSpanSniffer();
+    ExportedSpanSniffer spanCapturer = profilingService.getSpanSnifferManager().getExportedSpanSniffer();
 
     try {
       flowRunner(SCATTER_GATHER_FLOW).withPayload(AbstractMuleTestCase.TEST_PAYLOAD).run().getMessage();

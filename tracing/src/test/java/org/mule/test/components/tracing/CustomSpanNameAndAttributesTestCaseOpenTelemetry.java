@@ -53,7 +53,7 @@ public class CustomSpanNameAndAttributesTestCaseOpenTelemetry extends MuleArtifa
 
   @Before
   public void initialize() {
-    spanCapturer = profilingService.getSpanExportManager().getExportedSpanSniffer();
+    spanCapturer = profilingService.getSpanSnifferManager().getExportedSpanSniffer();
   }
 
   @After

@@ -60,7 +60,7 @@ public class TryScopeSuccessfulOpenTelemetryTracingTestCase extends MuleArtifact
 
   @Test
   public void testTryScope() throws Exception {
-    ExportedSpanSniffer spanCapturer = profilingService.getSpanExportManager().getExportedSpanSniffer();
+    ExportedSpanSniffer spanCapturer = profilingService.getSpanSnifferManager().getExportedSpanSniffer();
 
     try {
       flowRunner(TRY_SCOPE_FLOW).withPayload(AbstractMuleTestCase.TEST_PAYLOAD).run().getMessage();

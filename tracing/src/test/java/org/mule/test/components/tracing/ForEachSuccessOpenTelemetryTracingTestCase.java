@@ -58,7 +58,7 @@ public class ForEachSuccessOpenTelemetryTracingTestCase extends MuleArtifactFunc
 
   @Test
   public void testFlow() throws Exception {
-    ExportedSpanSniffer spanCapturer = profilingService.getSpanExportManager().getExportedSpanSniffer();
+    ExportedSpanSniffer spanCapturer = profilingService.getSpanSnifferManager().getExportedSpanSniffer();
 
     try {
       flowRunner(FOR_EACH_TELEMETRY_FLOW).withPayload(AbstractMuleTestCase.TEST_PAYLOAD).dispatch();

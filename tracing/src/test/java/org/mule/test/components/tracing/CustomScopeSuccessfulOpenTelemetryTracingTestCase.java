@@ -60,7 +60,7 @@ public class CustomScopeSuccessfulOpenTelemetryTracingTestCase extends MuleArtif
 
   @Test
   public void testCustomScopeFlow() throws Exception {
-    ExportedSpanSniffer spanCapturer = profilingService.getSpanExportManager().getExportedSpanSniffer();
+    ExportedSpanSniffer spanCapturer = profilingService.getSpanSnifferManager().getExportedSpanSniffer();
 
     try {
       flowRunner(CUSTOM_SCOPE_FLOW).withPayload(AbstractMuleTestCase.TEST_PAYLOAD).run().getMessage();
