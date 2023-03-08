@@ -60,7 +60,7 @@ public class AsyncErrorOpenTelemetryTracingTestCase extends MuleArtifactFunction
 
   @Test
   public void testAsyncFlow() throws Exception {
-    ExportedSpanSniffer spanCapturer = profilingService.getSpanSnifferManager().getExportedSpanSniffer();
+    ExportedSpanSniffer spanCapturer = profilingService.getSpanExportManager().getExportedSpanSniffer();
 
     try {
       CountDownLatch asyncTerminationLatch = new CountDownLatch(1);

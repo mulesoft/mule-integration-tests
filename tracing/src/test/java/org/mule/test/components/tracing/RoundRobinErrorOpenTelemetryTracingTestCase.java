@@ -63,7 +63,7 @@ public class RoundRobinErrorOpenTelemetryTracingTestCase extends MuleArtifactFun
 
   @Test
   public void testRoundRobinFlowWithError() throws Exception {
-    ExportedSpanSniffer spanCapturer = profilingService.getSpanSnifferManager().getExportedSpanSniffer();
+    ExportedSpanSniffer spanCapturer = profilingService.getSpanExportManager().getExportedSpanSniffer();
 
     try {
       flowRunner(ROUND_ROBIN_FLOW).withPayload(AbstractMuleTestCase.TEST_PAYLOAD).runExpectingException();

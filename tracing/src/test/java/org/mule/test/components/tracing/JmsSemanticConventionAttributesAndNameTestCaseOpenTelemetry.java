@@ -73,7 +73,7 @@ public class JmsSemanticConventionAttributesAndNameTestCaseOpenTelemetry extends
 
   @Test
   public void testFlow() throws IOException, TimeoutException {
-    ExportedSpanSniffer spanCapturer = profilingService.getSpanSnifferManager().getExportedSpanSniffer();
+    ExportedSpanSniffer spanCapturer = profilingService.getSpanExportManager().getExportedSpanSniffer();
 
     try {
       httpClient.send(HttpRequest.builder().uri(String.format("http://localhost:%s/", httpPort.getNumber())).build());

@@ -84,7 +84,7 @@ public class FlowErrorHandlingOpenTelemetryTracingTestCase extends MuleArtifactF
 
   @Before
   public void initialize() {
-    spanCapturer = profilingService.getSpanSnifferManager().getExportedSpanSniffer();
+    spanCapturer = profilingService.getSpanExportManager().getExportedSpanSniffer();
   }
 
   @After

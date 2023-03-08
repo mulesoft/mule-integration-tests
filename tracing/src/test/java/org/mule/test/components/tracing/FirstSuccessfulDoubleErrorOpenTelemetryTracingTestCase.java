@@ -61,7 +61,7 @@ public class FirstSuccessfulDoubleErrorOpenTelemetryTracingTestCase extends Mule
 
   @Test
   public void testFlow() throws Exception {
-    ExportedSpanSniffer spanCapturer = profilingService.getSpanSnifferManager().getExportedSpanSniffer();
+    ExportedSpanSniffer spanCapturer = profilingService.getSpanExportManager().getExportedSpanSniffer();
 
     try {
       flowRunner(FLOW).withPayload(AbstractMuleTestCase.TEST_PAYLOAD).dispatch();

@@ -56,7 +56,7 @@ public class ParallelForEachSuccessOpenTelemetryTracingTestCase extends MuleArti
 
   @Test
   public void testFlow() throws Exception {
-    ExportedSpanSniffer spanCapturer = profilingService.getSpanSnifferManager().getExportedSpanSniffer();
+    ExportedSpanSniffer spanCapturer = profilingService.getSpanExportManager().getExportedSpanSniffer();
 
     try {
       flowRunner(PARALLEL_FOR_EACH_FLOW).withPayload(AbstractMuleTestCase.TEST_PAYLOAD).dispatch();

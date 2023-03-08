@@ -54,7 +54,7 @@ public class UntilSuccessfulErrorOpenTelemetryTracingTestCase extends MuleArtifa
 
   @Test
   public void testUntilSuccessfulFlowWithError() throws Exception {
-    ExportedSpanSniffer spanCapturer = profilingService.getSpanSnifferManager().getExportedSpanSniffer();
+    ExportedSpanSniffer spanCapturer = profilingService.getSpanExportManager().getExportedSpanSniffer();
 
     try {
       flowRunner(UNTIL_SUCCESSFUL_FLOW).withPayload(AbstractMuleTestCase.TEST_PAYLOAD).dispatch();
