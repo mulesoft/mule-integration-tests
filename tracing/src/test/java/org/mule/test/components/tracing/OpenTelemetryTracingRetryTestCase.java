@@ -56,14 +56,14 @@ import org.junit.Test;
 import org.junit.runners.Parameterized;
 
 @RunnerDelegateTo(Parameterized.class)
-public class RetryOpenTelemetryTracingTestCase extends
+public class OpenTelemetryTracingRetryTestCase extends
     MuleArtifactFunctionalTestCase implements OpenTelemetryTracingTestRunnerConfigAnnotation {
 
   private static final String EXPECTED_FLOW_SPAN_NAME = "mule:flow";
   private static final String EXPECTED_SET_PAYLOAD_SPAN_NAME = "mule:set-payload";
   private static final String FLOW_LOCATION = "retry-flow";
 
-  private static final String TEST_ARTIFACT_ID = "RetryTracingTestCase#testRetryBackoffTest";
+  private static final String TEST_ARTIFACT_ID = "OpenTelemetryTracingRetryTestCase#testRetryBackoffTest";
 
   public static final int TIMEOUT_MILLIS = 30000;
 
@@ -90,7 +90,7 @@ public class RetryOpenTelemetryTracingTestCase extends
     });
   }
 
-  public RetryOpenTelemetryTracingTestCase(String type, String path) {
+  public OpenTelemetryTracingRetryTestCase(String type, String path) {
     this.type = type;
     this.path = path;
   }

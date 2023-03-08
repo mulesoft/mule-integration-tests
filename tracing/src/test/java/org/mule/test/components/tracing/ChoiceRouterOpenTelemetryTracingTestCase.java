@@ -50,7 +50,7 @@ public class ChoiceRouterOpenTelemetryTracingTestCase extends MuleArtifactFuncti
   public static final String NO_PARENT_SPAN = "0000000000000000";
   public static final String EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME = "mule:on-error-propagate";
 
-  public static final String TEST_ARTIFACT_ID = "ChoiceRouterTracingTestCase#testChoiceFlow";
+  public static final String TEST_ARTIFACT_ID = "ChoiceRouterOpenTelemetryTracingTestCase#testChoiceFlow";
 
   @Inject
   PrivilegedProfilingService profilingService;

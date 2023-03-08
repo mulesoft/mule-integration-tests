@@ -14,7 +14,6 @@ import static org.mule.test.infrastructure.profiling.tracing.TracingTestUtils.cr
 import static org.mule.test.infrastructure.profiling.tracing.TracingTestUtils.getDefaultAttributesToAssertExistence;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
@@ -48,7 +47,7 @@ public class TryScopeSuccessfulOpenTelemetryTracingTestCase extends MuleArtifact
   public static final String EXPECTED_FLOW_SPAN_NAME = "mule:flow";
   public static final String EXPECTED_TRY_SCOPE_SPAN_NAME = "mule:try";
   public static final String NO_PARENT_SPAN = "0000000000000000";
-  public static final String TEST_ARTIFACT_ID = "TryScopeSuccessfulTracingTestCase#testTryScope";
+  public static final String TEST_ARTIFACT_ID = "TryScopeSuccessfulOpenTelemetryTracingTestCase#testTryScope";
 
   @Inject
   PrivilegedProfilingService profilingService;

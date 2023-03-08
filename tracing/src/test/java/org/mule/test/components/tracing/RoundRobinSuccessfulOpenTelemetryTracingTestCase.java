@@ -52,7 +52,7 @@ public class RoundRobinSuccessfulOpenTelemetryTracingTestCase extends MuleArtifa
   public static final String EXPECTED_FLOW_SPAN_NAME = "mule:flow";
   public static final String NO_PARENT_SPAN = "0000000000000000";
 
-  public static final String TEST_ARTIFACT_ID = "RoundRobinSuccessfulTracingTestCase#testRoundRobinFlow";
+  public static final String TEST_ARTIFACT_ID = "RoundRobinSuccessfulOpenTelemetryTracingTestCase#testRoundRobinFlow";
 
   @Inject
   PrivilegedProfilingService profilingService;

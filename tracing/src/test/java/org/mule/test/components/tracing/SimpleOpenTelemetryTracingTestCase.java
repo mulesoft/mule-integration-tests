@@ -39,7 +39,7 @@ public class SimpleOpenTelemetryTracingTestCase extends AbstractOpenTelemetryTra
   private static final String EXPECTED_SET_LOGGING_VARIABLE_SPAN_NAME = "tracing:set-logging-variable";
   private static final String SIMPLE_FLOW = "simple-flow";
   public static final String CORRELATION_ID_KEY = "correlation.id";
-  private static final String TEST_ARTIFACT_ID = "SimpleTracingTestCase#testSimpleFlow";
+  private static final String TEST_ARTIFACT_ID = "SimpleOpenTelemetryTracingTestCase#testSimpleFlow";
   private static final String FLOW_LOCATION = "simple-flow";
   private static final String SET_PAYLOAD_LOCATION = "simple-flow/processors/2";
   private static final String SET_VARIABLE_LOCATION = "simple-flow/processors/0/processors/0";

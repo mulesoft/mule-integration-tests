@@ -52,7 +52,7 @@ public class FlowErrorHandlingOpenTelemetryTracingTestCase extends MuleArtifactF
   public static final String EXPECTED_SUBFLOW_SPAN = "mule:subflow";
   public static final String NO_PARENT_SPAN = "0000000000000000";
   public static final String TEST_ARTIFACT_ID =
-      "FlowErrorHandlingTracingTestCase#flowWIthOnErrorPropagateAndOnErrorContinueComposition";
+      "FlowErrorHandlingOpenTelemetryTracingTestCase#flowWIthOnErrorPropagateAndOnErrorContinueComposition";
 
   private static final String FLOW_WITH_NO_ERROR_HANDLING = "flow-with-no-error-handling";
   private static final String FLOW_WITH_ON_ERROR_CONTINUE = "flow-with-on-error-continue";

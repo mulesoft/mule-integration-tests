@@ -14,7 +14,6 @@ import static org.mule.test.infrastructure.profiling.tracing.TracingTestUtils.cr
 import static org.mule.test.infrastructure.profiling.tracing.TracingTestUtils.getDefaultAttributesToAssertExistence;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
@@ -51,7 +50,7 @@ public class CustomScopeErrorOpenTelemetryTracingTestCase extends MuleArtifactFu
   private static final String EXPECTED_RAISE_ERROR_SPAN_NAME = "mule:raise-error";
   private static final String EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME = "mule:on-error-propagate";
 
-  public static final String TEST_ARTIFACT_ID = "CustomScopeErrorTracingTestCase#testCustomScopeFlow";
+  public static final String TEST_ARTIFACT_ID = "CustomScopeErrorOpenTelemetryTracingTestCase#testCustomScopeFlow";
 
   @Inject
   PrivilegedProfilingService profilingService;

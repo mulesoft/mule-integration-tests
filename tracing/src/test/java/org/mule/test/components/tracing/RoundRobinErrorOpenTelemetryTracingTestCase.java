@@ -51,7 +51,7 @@ public class RoundRobinErrorOpenTelemetryTracingTestCase extends MuleArtifactFun
   public static final String EXPECTED_ON_ERROR_PROPAGATE_SPAN = "mule:on-error-propagate";
   public static final String NO_PARENT_SPAN = "0000000000000000";
 
-  public static final String TEST_ARTIFACT_ID = "RoundRobinErrorTracingTestCase#testRoundRobinFlowWithError";
+  public static final String TEST_ARTIFACT_ID = "RoundRobinErrorOpenTelemetryTracingTestCase#testRoundRobinFlowWithError";
 
   @Inject
   PrivilegedProfilingService profilingService;

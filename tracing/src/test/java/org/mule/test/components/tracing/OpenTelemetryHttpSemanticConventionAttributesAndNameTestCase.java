@@ -37,7 +37,7 @@ import org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy;
 
 @Feature(PROFILING)
 @Story(DEFAULT_CORE_EVENT_TRACER)
-public class HttpSemanticConventionAttributesAndNameTestCaseOpenTelemetry extends MuleArtifactFunctionalTestCase
+public class OpenTelemetryHttpSemanticConventionAttributesAndNameTestCase extends MuleArtifactFunctionalTestCase
     implements OpenTelemetryTracingTestRunnerConfigAnnotation {
 
   private static final int TIMEOUT_MILLIS = 30000;
