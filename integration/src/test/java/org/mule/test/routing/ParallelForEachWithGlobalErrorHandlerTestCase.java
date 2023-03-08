@@ -9,7 +9,6 @@ package org.mule.test.routing;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ParallelForEachStory.PARALLEL_FOR_EACH;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 
-import org.mule.runtime.core.internal.exception.MessagingException;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import io.qameta.allure.Feature;
