@@ -38,8 +38,8 @@ import org.junit.Test;
 
 @Feature(PROFILING)
 @Story(DEFAULT_CORE_EVENT_TRACER)
-public class RoundRobinSuccessfulTracingTestCase extends MuleArtifactFunctionalTestCase
-    implements TracingTestRunnerConfigAnnotation {
+public class RoundRobinSuccessfulOpenTelemetryTracingTestCase extends MuleArtifactFunctionalTestCase
+    implements OpenTelemetryTracingTestRunnerConfigAnnotation {
 
   private static final int TIMEOUT_MILLIS = 30000;
   private static final int POLL_DELAY_MILLIS = 100;
@@ -52,7 +52,7 @@ public class RoundRobinSuccessfulTracingTestCase extends MuleArtifactFunctionalT
   public static final String EXPECTED_FLOW_SPAN_NAME = "mule:flow";
   public static final String NO_PARENT_SPAN = "0000000000000000";
 
-  public static final String TEST_ARTIFACT_ID = "RoundRobinSuccessfulTracingTestCase#testRoundRobinFlow";
+  public static final String TEST_ARTIFACT_ID = "RoundRobinSuccessfulOpenTelemetryTracingTestCase#testRoundRobinFlow";
 
   @Inject
   PrivilegedProfilingService profilingService;

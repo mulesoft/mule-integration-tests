@@ -36,8 +36,8 @@ import org.junit.Test;
 
 @Feature(PROFILING)
 @Story(DEFAULT_CORE_EVENT_TRACER)
-public class CustomSpanNameAndAttributesTestCase extends MuleArtifactFunctionalTestCase
-    implements TracingTestRunnerConfigAnnotation {
+public class CustomSpanNameAndAttributesTestCaseOpenTelemetry extends MuleArtifactFunctionalTestCase
+    implements OpenTelemetryTracingTestRunnerConfigAnnotation {
 
   public static final String EXPECTED_SOURCE_SPAN_NAME = "pet-store-list-modified";
   public static final String EXPECTED_CUSTOM_SPAN_NAME = "customSpanName";

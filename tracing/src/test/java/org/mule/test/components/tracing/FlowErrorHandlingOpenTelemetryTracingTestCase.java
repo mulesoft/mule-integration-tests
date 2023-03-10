@@ -12,9 +12,6 @@ import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.DEFAULT_CORE_EVENT_TRACER;
 import static org.mule.test.infrastructure.profiling.tracing.TracingTestUtils.createAttributeMap;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertThat;
-
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
 import org.mule.runtime.tracer.api.sniffer.ExportedSpanSniffer;
@@ -36,8 +33,8 @@ import org.junit.Test;
 
 @Feature(PROFILING)
 @Story(DEFAULT_CORE_EVENT_TRACER)
-public class FlowErrorHandlingTracingTestCase extends MuleArtifactFunctionalTestCase
-    implements TracingTestRunnerConfigAnnotation {
+public class FlowErrorHandlingOpenTelemetryTracingTestCase extends MuleArtifactFunctionalTestCase
+    implements OpenTelemetryTracingTestRunnerConfigAnnotation {
 
   private static final int TIMEOUT_MILLIS = 30000;
   private static final int POLL_DELAY_MILLIS = 100;
@@ -55,7 +52,7 @@ public class FlowErrorHandlingTracingTestCase extends MuleArtifactFunctionalTest
   public static final String EXPECTED_SUBFLOW_SPAN = "mule:subflow";
   public static final String NO_PARENT_SPAN = "0000000000000000";
   public static final String TEST_ARTIFACT_ID =
-      "FlowErrorHandlingTracingTestCase#flowWIthOnErrorPropagateAndOnErrorContinueComposition";
+      "FlowErrorHandlingOpenTelemetryTracingTestCase#flowWIthOnErrorPropagateAndOnErrorContinueComposition";
 
   private static final String FLOW_WITH_NO_ERROR_HANDLING = "flow-with-no-error-handling";
   private static final String FLOW_WITH_ON_ERROR_CONTINUE = "flow-with-on-error-continue";

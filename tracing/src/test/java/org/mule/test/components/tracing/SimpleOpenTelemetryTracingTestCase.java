@@ -30,7 +30,7 @@ import org.junit.Test;
 
 @Feature(PROFILING)
 @Story(DEFAULT_CORE_EVENT_TRACER)
-public class SimpleTracingTestCase extends AbstractTracingTestCase {
+public class SimpleOpenTelemetryTracingTestCase extends AbstractOpenTelemetryTracingTestCase {
 
   private static final String EXPECTED_FLOW_SPAN_NAME = "mule:flow";
   private static final String EXPECTED_SET_PAYLOAD_SPAN_NAME = "mule:set-payload";
@@ -39,7 +39,7 @@ public class SimpleTracingTestCase extends AbstractTracingTestCase {
   private static final String EXPECTED_SET_LOGGING_VARIABLE_SPAN_NAME = "tracing:set-logging-variable";
   private static final String SIMPLE_FLOW = "simple-flow";
   public static final String CORRELATION_ID_KEY = "correlation.id";
-  private static final String TEST_ARTIFACT_ID = "SimpleTracingTestCase#testSimpleFlow";
+  private static final String TEST_ARTIFACT_ID = "SimpleOpenTelemetryTracingTestCase#testSimpleFlow";
   private static final String FLOW_LOCATION = "simple-flow";
   private static final String SET_PAYLOAD_LOCATION = "simple-flow/processors/2";
   private static final String SET_VARIABLE_LOCATION = "simple-flow/processors/0/processors/0";
@@ -52,7 +52,7 @@ public class SimpleTracingTestCase extends AbstractTracingTestCase {
   private static final int TIMEOUT_MILLIS = 30000;
   private static final int POLL_DELAY_MILLIS = 100;
 
-  public SimpleTracingTestCase(String exporterType, String schema, int port, String path, boolean secure) {
+  public SimpleOpenTelemetryTracingTestCase(String exporterType, String schema, int port, String path, boolean secure) {
     super(exporterType, schema, port, path, secure);
   }
 

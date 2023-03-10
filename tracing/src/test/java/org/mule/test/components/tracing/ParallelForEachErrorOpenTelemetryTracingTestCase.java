@@ -4,10 +4,14 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
+
 package org.mule.test.components.tracing;
 
 import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.DEFAULT_CORE_EVENT_TRACER;
+
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.Assert.assertThat;
 
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
@@ -28,36 +32,37 @@ import org.junit.Test;
 
 @Feature(PROFILING)
 @Story(DEFAULT_CORE_EVENT_TRACER)
-public class UntilSuccessfulErrorTracingTestCase extends MuleArtifactFunctionalTestCase
-    implements TracingTestRunnerConfigAnnotation {
+public class ParallelForEachErrorOpenTelemetryTracingTestCase extends MuleArtifactFunctionalTestCase
+    implements OpenTelemetryTracingTestRunnerConfigAnnotation {
 
   private static final int TIMEOUT_MILLIS = 30000;
   private static final int POLL_DELAY_MILLIS = 100;
 
-  public static final String EXPECTED_ATTEMPT_SPAN_NAME = "mule:until-successful:attempt";
-  public static final String EXPECTED_UNTIL_SUCCESSFUL_SPAN_NAME = "mule:until-successful";
+  public static final String EXPECTED_ROUTE_SPAN_NAME = "mule:parallel-foreach:iteration";
+  public static final String EXPECTED_PARALLEL_FOREACH_SPAN_NAME = "mule:parallel-foreach";
   public static final String EXPECTED_LOGGER_SPAN_NAME = "mule:logger";
-  public static final String UNTIL_SUCCESSFUL_FLOW = "until-successful-flow";
+  public static final String PARALLEL_FOR_EACH_FLOW = "parallel-for-eachFlow";
   public static final String EXPECTED_FLOW_SPAN_NAME = "mule:flow";
-  public static final String EXPECTED_HTTP_REQUEST_SPAN_NAME = "http:request";
-  public static final String ON_ERROR_PROPAGATE_SPAN_NAME = "mule:on-error-propagate";
+  public static final String EXPECTED_SET_PAYLOAD_SPAN_NAME = "mule:set-payload";
+  public static final String EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME = "mule:on-error-propagate";
   public static final String NO_PARENT_SPAN = "0000000000000000";
-  public static final int NUMBER_OF_RETRIES = 2;
+  public static final int NUMBER_OF_ROUTES = 3;
+  public static final String EXPECTED_RAISE_ERROR_SPAN = "mule:raise-error";
 
   @Inject
   PrivilegedProfilingService profilingService;
 
   @Override
   protected String getConfigFile() {
-    return "tracing/until-successful-error.xml";
+    return "tracing/parallel-foreach-error.xml";
   }
 
   @Test
-  public void testUntilSuccessfulFlowWithError() throws Exception {
+  public void testFlowWithError() throws Exception {
     ExportedSpanSniffer spanCapturer = profilingService.getSpanExportManager().getExportedSpanSniffer();
 
     try {
-      flowRunner(UNTIL_SUCCESSFUL_FLOW).withPayload(AbstractMuleTestCase.TEST_PAYLOAD).dispatch();
+      flowRunner(PARALLEL_FOR_EACH_FLOW).withPayload(AbstractMuleTestCase.TEST_PAYLOAD).dispatch();
 
       PollingProber prober = new PollingProber(TIMEOUT_MILLIS, POLL_DELAY_MILLIS);
 
@@ -66,7 +71,7 @@ public class UntilSuccessfulErrorTracingTestCase extends MuleArtifactFunctionalT
         @Override
         protected boolean test() {
           Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();;
-          return exportedSpans.size() == (NUMBER_OF_RETRIES + 1) * 3 + 3;
+          return exportedSpans.size() == NUMBER_OF_ROUTES * 3 + 4;
         }
 
         @Override
@@ -75,31 +80,31 @@ public class UntilSuccessfulErrorTracingTestCase extends MuleArtifactFunctionalT
         }
       });
 
-
       Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
 
       SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
       expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
           .beginChildren()
-          .child(EXPECTED_UNTIL_SUCCESSFUL_SPAN_NAME)
+          .child(EXPECTED_SET_PAYLOAD_SPAN_NAME)
+          .child(EXPECTED_PARALLEL_FOREACH_SPAN_NAME)
           .beginChildren()
-          .child(EXPECTED_ATTEMPT_SPAN_NAME)
-          .beginChildren()
-          .child(EXPECTED_LOGGER_SPAN_NAME)
-          .child(EXPECTED_HTTP_REQUEST_SPAN_NAME)
-          .endChildren()
-          .child(EXPECTED_ATTEMPT_SPAN_NAME)
+          .child(EXPECTED_ROUTE_SPAN_NAME)
           .beginChildren()
           .child(EXPECTED_LOGGER_SPAN_NAME)
-          .child(EXPECTED_HTTP_REQUEST_SPAN_NAME)
+          .child(EXPECTED_RAISE_ERROR_SPAN)
           .endChildren()
-          .child(EXPECTED_ATTEMPT_SPAN_NAME)
+          .child(EXPECTED_ROUTE_SPAN_NAME)
           .beginChildren()
           .child(EXPECTED_LOGGER_SPAN_NAME)
-          .child(EXPECTED_HTTP_REQUEST_SPAN_NAME)
+          .child(EXPECTED_RAISE_ERROR_SPAN)
+          .endChildren()
+          .child(EXPECTED_ROUTE_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_LOGGER_SPAN_NAME)
+          .child(EXPECTED_RAISE_ERROR_SPAN)
           .endChildren()
           .endChildren()
-          .child(ON_ERROR_PROPAGATE_SPAN_NAME)
+          .child(EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME)
           .endChildren();
 
       expectedSpanHierarchy.assertSpanTree();

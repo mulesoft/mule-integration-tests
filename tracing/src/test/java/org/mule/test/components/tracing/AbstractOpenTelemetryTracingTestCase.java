@@ -55,8 +55,8 @@ import org.testcontainers.images.PullPolicy;
 import org.testcontainers.utility.DockerImageName;
 
 @RunnerDelegateTo(Parameterized.class)
-public abstract class AbstractTracingTestCase extends
-    MuleArtifactFunctionalTestCase implements TracingTestRunnerConfigAnnotation {
+public abstract class AbstractOpenTelemetryTracingTestCase extends
+    MuleArtifactFunctionalTestCase implements OpenTelemetryTracingTestRunnerConfigAnnotation {
 
   private static final DockerImageName COLLECTOR_IMAGE =
       DockerImageName.parse("ghcr.io/open-telemetry/opentelemetry-java/otel-collector");
@@ -94,7 +94,7 @@ public abstract class AbstractTracingTestCase extends
     });
   }
 
-  public AbstractTracingTestCase(String exporterType, String schema, int port, String path, boolean secure) {
+  public AbstractOpenTelemetryTracingTestCase(String exporterType, String schema, int port, String path, boolean secure) {
     this.exporterType = exporterType;
     this.schema = schema;
     this.port = port;

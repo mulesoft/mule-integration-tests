@@ -4,7 +4,6 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-
 package org.mule.test.components.tracing;
 
 import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
@@ -32,35 +31,34 @@ import org.junit.Test;
 
 @Feature(PROFILING)
 @Story(DEFAULT_CORE_EVENT_TRACER)
-public class ForEachSuccessTracingTestCase extends MuleArtifactFunctionalTestCase implements TracingTestRunnerConfigAnnotation {
+public class ScatterGatherSuccessOpenTelemetryTracingTestCase extends MuleArtifactFunctionalTestCase
+    implements OpenTelemetryTracingTestRunnerConfigAnnotation {
 
   private static final int TIMEOUT_MILLIS = 30000;
   private static final int POLL_DELAY_MILLIS = 100;
 
-  public static final String EXPECTED_ROUTE_SPAN_NAME = "mule:foreach:iteration";
-  public static final String EXPECTED_FOREACH_SPAN_NAME = "mule:foreach";
+  public static final String EXPECTED_ROUTE_SPAN_NAME = "mule:scatter-gather:route";
+  public static final String EXPECTED_SCATTER_GATHER_SPAN_NAME = "mule:scatter-gather";
   public static final String EXPECTED_LOGGER_SPAN_NAME = "mule:logger";
-  public static final String FOR_EACH_TELEMETRY_FLOW = "for-each-telemetryFlow";
-  public static final String EXPECTED_FLOW_SPAN_NAME = "mule:flow";
-  public static final String EXPECTED_SET_VARIABLE_SPAN_NAME = "mule:set-variable";
   public static final String EXPECTED_SET_PAYLOAD_SPAN_NAME = "mule:set-payload";
+  public static final String SCATTER_GATHER_FLOW = "scatter-gather-flow";
+  public static final String EXPECTED_FLOW_SPAN_NAME = "mule:flow";
   public static final String NO_PARENT_SPAN = "0000000000000000";
-  public static final int NUMBER_OF_ROUTES = 3;
 
   @Inject
   PrivilegedProfilingService profilingService;
 
   @Override
   protected String getConfigFile() {
-    return "tracing/foreach-success.xml";
+    return "tracing/scatter-gather-success.xml";
   }
 
   @Test
-  public void testFlow() throws Exception {
+  public void testScatterGatherFlow() throws Exception {
     ExportedSpanSniffer spanCapturer = profilingService.getSpanExportManager().getExportedSpanSniffer();
 
     try {
-      flowRunner(FOR_EACH_TELEMETRY_FLOW).withPayload(AbstractMuleTestCase.TEST_PAYLOAD).dispatch();
+      flowRunner(SCATTER_GATHER_FLOW).withPayload(AbstractMuleTestCase.TEST_PAYLOAD).run().getMessage();
 
       PollingProber prober = new PollingProber(TIMEOUT_MILLIS, POLL_DELAY_MILLIS);
 
@@ -69,7 +67,7 @@ public class ForEachSuccessTracingTestCase extends MuleArtifactFunctionalTestCas
         @Override
         protected boolean test() {
           Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();;
-          return exportedSpans.size() == NUMBER_OF_ROUTES * 3 + 4;
+          return exportedSpans.size() == 7;
         }
 
         @Override
@@ -80,30 +78,21 @@ public class ForEachSuccessTracingTestCase extends MuleArtifactFunctionalTestCas
 
       Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
 
-
       SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
       expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
           .beginChildren()
+          .child(EXPECTED_SCATTER_GATHER_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_ROUTE_SPAN_NAME)
+          .beginChildren()
           .child(EXPECTED_SET_PAYLOAD_SPAN_NAME)
-          .child(EXPECTED_FOREACH_SPAN_NAME)
-          .beginChildren()
-          .child(EXPECTED_ROUTE_SPAN_NAME)
-          .beginChildren()
-          .child(EXPECTED_LOGGER_SPAN_NAME)
-          .child(EXPECTED_SET_VARIABLE_SPAN_NAME)
           .endChildren()
           .child(EXPECTED_ROUTE_SPAN_NAME)
           .beginChildren()
-          .child(EXPECTED_LOGGER_SPAN_NAME)
-          .child(EXPECTED_SET_VARIABLE_SPAN_NAME)
-          .endChildren()
-          .child(EXPECTED_ROUTE_SPAN_NAME)
-          .beginChildren()
-          .child(EXPECTED_LOGGER_SPAN_NAME)
-          .child(EXPECTED_SET_VARIABLE_SPAN_NAME)
-          .endChildren()
-          .endChildren()
           .child(EXPECTED_SET_PAYLOAD_SPAN_NAME)
+          .endChildren()
+          .endChildren()
+          .child(EXPECTED_LOGGER_SPAN_NAME)
           .endChildren();
 
       expectedSpanHierarchy.assertSpanTree();
