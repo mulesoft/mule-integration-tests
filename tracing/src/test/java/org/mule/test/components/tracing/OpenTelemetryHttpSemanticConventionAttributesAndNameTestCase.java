@@ -85,7 +85,7 @@ public class OpenTelemetryHttpSemanticConventionAttributesAndNameTestCase extend
 
         @Override
         protected boolean test() {
-          Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();;
+          Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
           return exportedSpans.size() == 4;
         }
 
