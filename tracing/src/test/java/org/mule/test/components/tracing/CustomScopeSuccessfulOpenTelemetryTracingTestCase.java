@@ -48,7 +48,7 @@ public class CustomScopeSuccessfulOpenTelemetryTracingTestCase extends MuleArtif
   public static final String CUSTOM_SCOPE_FLOW = "custom-scope-flow";
   public static final String EXPECTED_FLOW_SPAN_NAME = "mule:flow";
   public static final String NO_PARENT_SPAN = "0000000000000000";
-  public static final String TEST_ARTIFACT_ID = "CustomScopeSuccessfulTracingTestCase#testCustomScopeFlow";
+  public static final String TEST_ARTIFACT_ID = "CustomScopeSuccessfulOpenTelemetryTracingTestCase#testCustomScopeFlow";
 
   @Inject
   PrivilegedProfilingService profilingService;
