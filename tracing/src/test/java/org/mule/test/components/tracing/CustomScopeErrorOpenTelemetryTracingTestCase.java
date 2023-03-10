@@ -9,8 +9,11 @@ package org.mule.test.components.tracing;
 
 import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.DEFAULT_CORE_EVENT_TRACER;
+import static org.mule.test.infrastructure.profiling.tracing.TracingTestUtils.ARTIFACT_ID_KEY;
+import static org.mule.test.infrastructure.profiling.tracing.TracingTestUtils.createAttributeMap;
+import static org.mule.test.infrastructure.profiling.tracing.TracingTestUtils.getDefaultAttributesToAssertExistence;
 
-import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
@@ -23,6 +26,7 @@ import org.mule.tck.probe.PollingProber;
 import org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy;
 
 import java.util.Collection;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -32,39 +36,36 @@ import org.junit.Test;
 
 @Feature(PROFILING)
 @Story(DEFAULT_CORE_EVENT_TRACER)
-public class FirstSuccessfulDoubleErrorTracingTestCase extends MuleArtifactFunctionalTestCase
-    implements TracingTestRunnerConfigAnnotation {
+public class CustomScopeErrorOpenTelemetryTracingTestCase extends MuleArtifactFunctionalTestCase
+    implements OpenTelemetryTracingTestRunnerConfigAnnotation {
 
   private static final int TIMEOUT_MILLIS = 30000;
   private static final int POLL_DELAY_MILLIS = 100;
 
-  public static final String EXPECTED_ROUTE_SPAN_NAME_ATTEMPT_1 = "mule:first-successful:attempt:1";
-  public static final String EXPECTED_ROUTE_SPAN_NAME_ATTEMPT_2 = "mule:first-successful:attempt:2";
-  public static final String EXPECTED_FIRST_SUCCESSFUL_SPAN_NAME = "mule:first-successful";
+  public static final String EXPECTED_CUSTOM_SCOPE_SPAN_NAME = "heisenberg:execute-anything";
   public static final String EXPECTED_LOGGER_SPAN_NAME = "mule:logger";
-  public static final String FLOW = "first-successful-telemetryFlow";
+  public static final String CUSTOM_SCOPE_FLOW = "custom-scope-flow";
   public static final String EXPECTED_FLOW_SPAN_NAME = "mule:flow";
-  public static final String EXPECTED_SET_VARIABLE_SPAN_NAME = "mule:set-variable";
-  public static final String EXPECTED_SET_PAYLOAD_SPAN_NAME = "mule:set-payload";
-  public static final String EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME = "mule:on-error-propagate";
   public static final String NO_PARENT_SPAN = "0000000000000000";
-  public static final int NUMBER_OF_ROUTES = 2;
-  public static final String EXPECTED_RAISE_ERROR_SPAN = "mule:raise-error";
+  private static final String EXPECTED_RAISE_ERROR_SPAN_NAME = "mule:raise-error";
+  private static final String EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME = "mule:on-error-propagate";
+
+  public static final String TEST_ARTIFACT_ID = "CustomScopeErrorOpenTelemetryTracingTestCase#testCustomScopeFlow";
 
   @Inject
   PrivilegedProfilingService profilingService;
 
   @Override
   protected String getConfigFile() {
-    return "tracing/first-successful-double-error.xml";
+    return "tracing/custom-scope-error.xml";
   }
 
   @Test
-  public void testFlow() throws Exception {
+  public void testCustomScopeFlow() throws Exception {
     ExportedSpanSniffer spanCapturer = profilingService.getSpanExportManager().getExportedSpanSniffer();
 
     try {
-      flowRunner(FLOW).withPayload(AbstractMuleTestCase.TEST_PAYLOAD).dispatch();
+      flowRunner(CUSTOM_SCOPE_FLOW).withPayload(AbstractMuleTestCase.TEST_PAYLOAD).runExpectingException();
 
       PollingProber prober = new PollingProber(TIMEOUT_MILLIS, POLL_DELAY_MILLIS);
 
@@ -73,7 +74,7 @@ public class FirstSuccessfulDoubleErrorTracingTestCase extends MuleArtifactFunct
         @Override
         protected boolean test() {
           Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();;
-          return exportedSpans.size() == 3 * NUMBER_OF_ROUTES + 5;
+          return exportedSpans.size() == 5;
         }
 
         @Override
@@ -84,30 +85,32 @@ public class FirstSuccessfulDoubleErrorTracingTestCase extends MuleArtifactFunct
 
       Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
 
+      List<String> attributesToAssertExistence = getDefaultAttributesToAssertExistence();
+
       SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
       expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
+          .addAttributesToAssertValue(createAttributeMap("custom-scope-flow", TEST_ARTIFACT_ID))
+          .addAttributesToAssertExistence(attributesToAssertExistence)
           .beginChildren()
-          .child(EXPECTED_SET_VARIABLE_SPAN_NAME)
-          .child(EXPECTED_FIRST_SUCCESSFUL_SPAN_NAME)
+          .child(EXPECTED_CUSTOM_SCOPE_SPAN_NAME)
+          .addAttributesToAssertValue(createAttributeMap("custom-scope-flow/processors/0", TEST_ARTIFACT_ID))
+          .addAttributesToAssertExistence(attributesToAssertExistence)
           .beginChildren()
-          .child(EXPECTED_ROUTE_SPAN_NAME_ATTEMPT_1)
-          .beginChildren()
-          .child(EXPECTED_SET_PAYLOAD_SPAN_NAME)
-          .child(EXPECTED_RAISE_ERROR_SPAN)
-          .endChildren()
-          .child(EXPECTED_ROUTE_SPAN_NAME_ATTEMPT_2)
-          .beginChildren()
-          .child(EXPECTED_SET_PAYLOAD_SPAN_NAME)
           .child(EXPECTED_LOGGER_SPAN_NAME)
-          .child(EXPECTED_RAISE_ERROR_SPAN)
-          .endChildren()
+          .addAttributesToAssertValue(createAttributeMap("custom-scope-flow/processors/0/processors/0", TEST_ARTIFACT_ID))
+          .addAttributesToAssertExistence(attributesToAssertExistence)
+          .child(EXPECTED_RAISE_ERROR_SPAN_NAME)
+          .addAttributesToAssertValue(createAttributeMap("custom-scope-flow/processors/0/processors/1", TEST_ARTIFACT_ID))
+          .addAttributesToAssertExistence(attributesToAssertExistence)
           .endChildren()
           .child(EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME)
           .endChildren();
 
       expectedSpanHierarchy.assertSpanTree();
+      exportedSpans.forEach(span -> assertThat(span.getServiceName(), equalTo(span.getAttributes().get(ARTIFACT_ID_KEY))));
     } finally {
       spanCapturer.dispose();
     }
   }
 }
+

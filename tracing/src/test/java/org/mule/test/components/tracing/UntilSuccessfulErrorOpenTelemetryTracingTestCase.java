@@ -4,18 +4,12 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-
 package org.mule.test.components.tracing;
 
 import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.DEFAULT_CORE_EVENT_TRACER;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertThat;
-
-import org.mule.functional.api.flow.FlowRunner;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
-import org.mule.runtime.core.privileged.event.BaseEventContext;
 import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
 import org.mule.runtime.tracer.api.sniffer.ExportedSpanSniffer;
 import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
@@ -25,7 +19,6 @@ import org.mule.tck.probe.PollingProber;
 import org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy;
 
 import java.util.Collection;
-import java.util.concurrent.CountDownLatch;
 
 import javax.inject.Inject;
 
@@ -35,37 +28,36 @@ import org.junit.Test;
 
 @Feature(PROFILING)
 @Story(DEFAULT_CORE_EVENT_TRACER)
-public class AsyncSuccessTracingTestCase extends MuleArtifactFunctionalTestCase implements TracingTestRunnerConfigAnnotation {
+public class UntilSuccessfulErrorOpenTelemetryTracingTestCase extends MuleArtifactFunctionalTestCase
+    implements OpenTelemetryTracingTestRunnerConfigAnnotation {
 
   private static final int TIMEOUT_MILLIS = 30000;
   private static final int POLL_DELAY_MILLIS = 100;
 
-  public static final String EXPECTED_ASYNC_SPAN_NAME = "mule:async";
+  public static final String EXPECTED_ATTEMPT_SPAN_NAME = "mule:until-successful:attempt";
+  public static final String EXPECTED_UNTIL_SUCCESSFUL_SPAN_NAME = "mule:until-successful";
   public static final String EXPECTED_LOGGER_SPAN_NAME = "mule:logger";
-  public static final String EXPECTED_SET_PAYLOAD_SPAN_NAME = "mule:set-payload";
-  public static final String EXPECTED_SET_VARIABLE_SPAN_NAME = "mule:set-variable";
-  public static final String ASYNC_FLOW = "async-flow";
+  public static final String UNTIL_SUCCESSFUL_FLOW = "until-successful-flow";
   public static final String EXPECTED_FLOW_SPAN_NAME = "mule:flow";
+  public static final String EXPECTED_HTTP_REQUEST_SPAN_NAME = "http:request";
+  public static final String ON_ERROR_PROPAGATE_SPAN_NAME = "mule:on-error-propagate";
+  public static final String NO_PARENT_SPAN = "0000000000000000";
+  public static final int NUMBER_OF_RETRIES = 2;
 
   @Inject
   PrivilegedProfilingService profilingService;
 
   @Override
   protected String getConfigFile() {
-    return "tracing/async-success.xml";
+    return "tracing/until-successful-error.xml";
   }
 
   @Test
-  public void testAsyncFlow() throws Exception {
+  public void testUntilSuccessfulFlowWithError() throws Exception {
     ExportedSpanSniffer spanCapturer = profilingService.getSpanExportManager().getExportedSpanSniffer();
 
     try {
-      CountDownLatch asyncTerminationLatch = new CountDownLatch(1);
-      FlowRunner runner = flowRunner(ASYNC_FLOW).withPayload(AbstractMuleTestCase.TEST_PAYLOAD);
-      ((BaseEventContext) (runner.buildEvent().getContext())).onTerminated((e, t) -> asyncTerminationLatch.countDown());
-      runner.run();
-
-      asyncTerminationLatch.await();
+      flowRunner(UNTIL_SUCCESSFUL_FLOW).withPayload(AbstractMuleTestCase.TEST_PAYLOAD).dispatch();
 
       PollingProber prober = new PollingProber(TIMEOUT_MILLIS, POLL_DELAY_MILLIS);
 
@@ -74,7 +66,7 @@ public class AsyncSuccessTracingTestCase extends MuleArtifactFunctionalTestCase 
         @Override
         protected boolean test() {
           Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();;
-          return exportedSpans.size() == 6;
+          return exportedSpans.size() == (NUMBER_OF_RETRIES + 1) * 3 + 3;
         }
 
         @Override
@@ -83,17 +75,31 @@ public class AsyncSuccessTracingTestCase extends MuleArtifactFunctionalTestCase 
         }
       });
 
+
       Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
 
       SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
       expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
           .beginChildren()
-          .child(EXPECTED_SET_VARIABLE_SPAN_NAME)
-          .child(EXPECTED_SET_VARIABLE_SPAN_NAME)
-          .child(EXPECTED_ASYNC_SPAN_NAME)
+          .child(EXPECTED_UNTIL_SUCCESSFUL_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_ATTEMPT_SPAN_NAME)
           .beginChildren()
           .child(EXPECTED_LOGGER_SPAN_NAME)
-          .child(EXPECTED_SET_PAYLOAD_SPAN_NAME)
+          .child(EXPECTED_HTTP_REQUEST_SPAN_NAME)
+          .endChildren()
+          .child(EXPECTED_ATTEMPT_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_LOGGER_SPAN_NAME)
+          .child(EXPECTED_HTTP_REQUEST_SPAN_NAME)
+          .endChildren()
+          .child(EXPECTED_ATTEMPT_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_LOGGER_SPAN_NAME)
+          .child(EXPECTED_HTTP_REQUEST_SPAN_NAME)
+          .endChildren()
+          .endChildren()
+          .child(ON_ERROR_PROPAGATE_SPAN_NAME)
           .endChildren();
 
       expectedSpanHierarchy.assertSpanTree();

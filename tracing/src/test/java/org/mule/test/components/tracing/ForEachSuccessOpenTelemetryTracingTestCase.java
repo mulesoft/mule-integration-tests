@@ -32,27 +32,28 @@ import org.junit.Test;
 
 @Feature(PROFILING)
 @Story(DEFAULT_CORE_EVENT_TRACER)
-public class FirstSuccessfulSuccessTracingTestCase extends MuleArtifactFunctionalTestCase
-    implements TracingTestRunnerConfigAnnotation {
+public class ForEachSuccessOpenTelemetryTracingTestCase extends MuleArtifactFunctionalTestCase
+    implements OpenTelemetryTracingTestRunnerConfigAnnotation {
 
   private static final int TIMEOUT_MILLIS = 30000;
   private static final int POLL_DELAY_MILLIS = 100;
 
-  public static final String EXPECTED_ROUTE_SPAN_NAME_ATTEMPT_1 = "mule:first-successful:attempt:1";
-  public static final String EXPECTED_FIRST_SUCCESSFUL_SPAN_NAME = "mule:first-successful";
+  public static final String EXPECTED_ROUTE_SPAN_NAME = "mule:foreach:iteration";
+  public static final String EXPECTED_FOREACH_SPAN_NAME = "mule:foreach";
   public static final String EXPECTED_LOGGER_SPAN_NAME = "mule:logger";
-  public static final String FLOW = "first-successful-telemetryFlow";
+  public static final String FOR_EACH_TELEMETRY_FLOW = "for-each-telemetryFlow";
   public static final String EXPECTED_FLOW_SPAN_NAME = "mule:flow";
   public static final String EXPECTED_SET_VARIABLE_SPAN_NAME = "mule:set-variable";
   public static final String EXPECTED_SET_PAYLOAD_SPAN_NAME = "mule:set-payload";
   public static final String NO_PARENT_SPAN = "0000000000000000";
+  public static final int NUMBER_OF_ROUTES = 3;
 
   @Inject
   PrivilegedProfilingService profilingService;
 
   @Override
   protected String getConfigFile() {
-    return "tracing/first-successful-success.xml";
+    return "tracing/foreach-success.xml";
   }
 
   @Test
@@ -60,7 +61,7 @@ public class FirstSuccessfulSuccessTracingTestCase extends MuleArtifactFunctiona
     ExportedSpanSniffer spanCapturer = profilingService.getSpanExportManager().getExportedSpanSniffer();
 
     try {
-      flowRunner(FLOW).withPayload(AbstractMuleTestCase.TEST_PAYLOAD).dispatch();
+      flowRunner(FOR_EACH_TELEMETRY_FLOW).withPayload(AbstractMuleTestCase.TEST_PAYLOAD).dispatch();
 
       PollingProber prober = new PollingProber(TIMEOUT_MILLIS, POLL_DELAY_MILLIS);
 
@@ -69,7 +70,7 @@ public class FirstSuccessfulSuccessTracingTestCase extends MuleArtifactFunctiona
         @Override
         protected boolean test() {
           Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();;
-          return exportedSpans.size() == 7;
+          return exportedSpans.size() == NUMBER_OF_ROUTES * 3 + 4;
         }
 
         @Override
@@ -80,19 +81,30 @@ public class FirstSuccessfulSuccessTracingTestCase extends MuleArtifactFunctiona
 
       Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
 
+
       SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
       expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
           .beginChildren()
-          .child(EXPECTED_SET_VARIABLE_SPAN_NAME)
-          .child(EXPECTED_FIRST_SUCCESSFUL_SPAN_NAME)
-          .beginChildren()
-          .child(EXPECTED_ROUTE_SPAN_NAME_ATTEMPT_1)
-          .beginChildren()
           .child(EXPECTED_SET_PAYLOAD_SPAN_NAME)
+          .child(EXPECTED_FOREACH_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_ROUTE_SPAN_NAME)
+          .beginChildren()
           .child(EXPECTED_LOGGER_SPAN_NAME)
-          .endChildren()
-          .endChildren()
           .child(EXPECTED_SET_VARIABLE_SPAN_NAME)
+          .endChildren()
+          .child(EXPECTED_ROUTE_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_LOGGER_SPAN_NAME)
+          .child(EXPECTED_SET_VARIABLE_SPAN_NAME)
+          .endChildren()
+          .child(EXPECTED_ROUTE_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_LOGGER_SPAN_NAME)
+          .child(EXPECTED_SET_VARIABLE_SPAN_NAME)
+          .endChildren()
+          .endChildren()
+          .child(EXPECTED_SET_PAYLOAD_SPAN_NAME)
           .endChildren();
 
       expectedSpanHierarchy.assertSpanTree();

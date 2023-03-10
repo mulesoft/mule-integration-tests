@@ -13,7 +13,6 @@ import static org.mule.test.infrastructure.profiling.tracing.TracingTestUtils.cr
 import static org.mule.test.infrastructure.profiling.tracing.TracingTestUtils.getDefaultAttributesToAssertExistence;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
@@ -35,7 +34,8 @@ import org.junit.Test;
 
 @Feature(PROFILING)
 @Story(DEFAULT_CORE_EVENT_TRACER)
-public class ChoiceRouterTracingTestCase extends MuleArtifactFunctionalTestCase implements TracingTestRunnerConfigAnnotation {
+public class ChoiceRouterOpenTelemetryTracingTestCase extends MuleArtifactFunctionalTestCase
+    implements OpenTelemetryTracingTestRunnerConfigAnnotation {
 
   private static final int TIMEOUT_MILLIS = 30000;
   private static final int POLL_DELAY_MILLIS = 100;
@@ -50,7 +50,7 @@ public class ChoiceRouterTracingTestCase extends MuleArtifactFunctionalTestCase 
   public static final String NO_PARENT_SPAN = "0000000000000000";
   public static final String EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME = "mule:on-error-propagate";
 
-  public static final String TEST_ARTIFACT_ID = "ChoiceRouterTracingTestCase#testChoiceFlow";
+  public static final String TEST_ARTIFACT_ID = "ChoiceRouterOpenTelemetryTracingTestCase#testChoiceFlow";
 
   @Inject
   PrivilegedProfilingService profilingService;
