@@ -11,7 +11,8 @@ import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
 
 @ArtifactClassLoaderRunnerConfig(
     applicationRuntimeLibs = {
-        "org.apache.commons:commons-lang3"
+        "org.apache.commons:commons-lang3",
+        "org.mule.runtime:mule-artifact-ast"
     },
     applicationSharedRuntimeLibs = {
         "org.apache.activemq:activemq-broker",
@@ -20,7 +21,7 @@ import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
         "org.fusesource.hawtbuf:hawtbuf",
         "org.apache.activemq.protobuf:activemq-protobuf",
         "org.mule.tests:mule-tests-model",
-        "org.mule.runtime:mule-tracer-exporter-impl"
+        "org.mule.runtime:mule-tracer-exporter-impl",
     },
     extraPrivilegedArtifacts = {
         "org.mule.tests:mule-tests-parsers-plugin"
