@@ -38,11 +38,13 @@ import org.junit.Test;
 public class OpenTelemetryGracefulShutdownTestCase extends MuleArtifactFunctionalTestCase
     implements OpenTelemetryTracingTestRunnerConfigAnnotation {
 
-  public static final String EXPORTER_SCHEDULED_DELAY = "60000";
   @Inject
   MuleContext muleContext;
 
   private static final CountingSpanExporter COUNTING_SPAN_EXPORTER = new CountingSpanExporter();
+
+  // A long export delay prevents export triggering
+  public static final String EXPORTER_SCHEDULED_DELAY = "60000";
 
   @Rule
   public SystemProperty enableTracingExport = new SystemProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENABLED, "true");
