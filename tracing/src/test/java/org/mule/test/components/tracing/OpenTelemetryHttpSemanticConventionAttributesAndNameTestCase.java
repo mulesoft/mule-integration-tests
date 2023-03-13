@@ -85,7 +85,7 @@ public class OpenTelemetryHttpSemanticConventionAttributesAndNameTestCase extend
 
         @Override
         protected boolean test() {
-          Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();;
+          Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
           return exportedSpans.size() == 4;
         }
 
@@ -115,7 +115,7 @@ public class OpenTelemetryHttpSemanticConventionAttributesAndNameTestCase extend
               .findFirst()
               .orElseThrow(() -> new AssertionFailedError("No span for http listener flow found!"));
 
-      assertThat(listenerExportedSpan.getAttributes(), aMapWithSize(14));
+      assertThat(listenerExportedSpan.getAttributes(), aMapWithSize(15));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(NET_HOST_NAME, "0.0.0.0"));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_TARGET, "/test"));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_SCHEME, "http"));
@@ -123,8 +123,10 @@ public class OpenTelemetryHttpSemanticConventionAttributesAndNameTestCase extend
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_USER_AGENT, "AHC/1.0"));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(NET_HOST_PORT, httpPort.getValue()));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_METHOD, "GET"));
+      assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_STATUS_CODE, "200"));
       assertThat(listenerExportedSpan.getAttributes().get(SPAN_KIND_ATTRIBUTE), nullValue());
       assertThat(listenerExportedSpan.getSpanKindName(), equalTo("SERVER"));
+      assertThat(listenerExportedSpan.getStatusAsString(), equalTo("UNSET"));
 
       CapturedExportedSpan requestExportedSpan =
           exportedSpans.stream().filter(exportedSpan -> exportedSpan.getName().equals(EXPECTED_HTTP_REQUEST_SPAN_NAME))
