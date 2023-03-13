@@ -38,6 +38,7 @@ import org.junit.Test;
 public class OpenTelemetryGracefulShutdownTestCase extends MuleArtifactFunctionalTestCase
     implements OpenTelemetryTracingTestRunnerConfigAnnotation {
 
+  public static final String EXPORTER_SCHEDULED_DELAY = "60000";
   @Inject
   MuleContext muleContext;
 
@@ -53,6 +54,15 @@ public class OpenTelemetryGracefulShutdownTestCase extends MuleArtifactFunctiona
   // A size higher than the generated spans prevents export triggering
   @Rule
   public SystemProperty batchQueueSize = new SystemProperty(MULE_OPEN_TELEMETRY_EXPORTER_BATCH_QUEUE_SIZE, "3");
+
+  private static final SpanExporterConfiguration privilegedConfiguration = key -> {
+    // A higher time than the test time prevents export triggering
+    if (key.equals(MULE_OPEN_TELEMETRY_EXPORTER_BATCH_SCHEDULED_DELAY)) {
+      return EXPORTER_SCHEDULED_DELAY;
+    } else {
+      return null;
+    }
+  };
 
   @Override
   protected boolean doTestClassInjection() {
@@ -111,15 +121,6 @@ public class OpenTelemetryGracefulShutdownTestCase extends MuleArtifactFunctiona
   }
 
   private static class CountingSpanExporterFactory extends OpenTelemetrySpanExporterFactory {
-
-    private static final SpanExporterConfiguration privilegedConfiguration = key -> {
-      // A higher time than the test time prevents export triggering
-      if (key.equals(MULE_OPEN_TELEMETRY_EXPORTER_BATCH_SCHEDULED_DELAY)) {
-        return "30000";
-      } else {
-        return null;
-      }
-    };
 
     public CountingSpanExporterFactory() {
       super(privilegedConfiguration);
