@@ -403,10 +403,5 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <dependency>
-            <groupId>org.mule.runtime</groupId>
-            <artifactId>mule-artifact-ast</artifactId>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 </project>
