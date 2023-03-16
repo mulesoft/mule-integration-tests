@@ -11,8 +11,7 @@ import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
 
 @ArtifactClassLoaderRunnerConfig(
     applicationRuntimeLibs = {
-        "org.apache.commons:commons-lang3",
-        "org.mule.runtime:mule-artifact-ast"
+        "org.apache.commons:commons-lang3"
     },
     applicationSharedRuntimeLibs = {
         "org.apache.activemq:activemq-broker",
@@ -33,7 +32,7 @@ import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
         "io.opentelemetry:opentelemetry-sdk-common",
         "io.opentelemetry:opentelemetry-sdk-trace",
         "io.opentelemetry:opentelemetry-sdk-metrics",
-        "io.opentelemetry:opentelemetry-context",
+        "io.opentelemetry:opentelemetry-context"
     })
 public interface OpenTelemetryTracingTestRunnerConfigAnnotation {
 
