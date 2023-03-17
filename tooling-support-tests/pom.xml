@@ -14,7 +14,7 @@
     <properties>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
         <settingsFile>${java.io.tmpdir}/settings.xml</settingsFile>
-        <testExtensionVersion>4.5.0-rc7</testExtensionVersion>
+        <testExtensionVersion>4.5.0-rc8</testExtensionVersion>
         <weave.service.location>services/weave</weave.service.location>
     </properties>
 
