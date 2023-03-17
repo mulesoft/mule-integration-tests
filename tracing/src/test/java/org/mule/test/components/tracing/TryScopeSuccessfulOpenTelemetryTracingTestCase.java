@@ -14,7 +14,6 @@ import static org.mule.test.infrastructure.profiling.tracing.TracingTestUtils.cr
 import static org.mule.test.infrastructure.profiling.tracing.TracingTestUtils.getDefaultAttributesToAssertExistence;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
@@ -26,7 +25,6 @@ import org.mule.tck.probe.JUnitProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -38,33 +36,33 @@ import org.junit.Test;
 
 @Feature(PROFILING)
 @Story(DEFAULT_CORE_EVENT_TRACER)
-public class CustomScopeSuccessfulTracingTestCase extends MuleArtifactFunctionalTestCase
-    implements TracingTestRunnerConfigAnnotation {
+public class TryScopeSuccessfulOpenTelemetryTracingTestCase extends MuleArtifactFunctionalTestCase
+    implements OpenTelemetryTracingTestRunnerConfigAnnotation {
 
   private static final int TIMEOUT_MILLIS = 30000;
   private static final int POLL_DELAY_MILLIS = 100;
 
-  public static final String EXPECTED_CUSTOM_SCOPE_SPAN_NAME = "heisenberg:execute-anything";
   public static final String EXPECTED_LOGGER_SPAN_NAME = "mule:logger";
-  public static final String CUSTOM_SCOPE_FLOW = "custom-scope-flow";
+  public static final String TRY_SCOPE_FLOW = "try-scope-flow";
   public static final String EXPECTED_FLOW_SPAN_NAME = "mule:flow";
+  public static final String EXPECTED_TRY_SCOPE_SPAN_NAME = "mule:try";
   public static final String NO_PARENT_SPAN = "0000000000000000";
-  public static final String TEST_ARTIFACT_ID = "CustomScopeSuccessfulTracingTestCase#testCustomScopeFlow";
+  public static final String TEST_ARTIFACT_ID = "TryScopeSuccessfulOpenTelemetryTracingTestCase#testTryScope";
 
   @Inject
   PrivilegedProfilingService profilingService;
 
   @Override
   protected String getConfigFile() {
-    return "tracing/custom-scope-success.xml";
+    return "tracing/try-scope-successful.xml";
   }
 
   @Test
-  public void testCustomScopeFlow() throws Exception {
+  public void testTryScope() throws Exception {
     ExportedSpanSniffer spanCapturer = profilingService.getSpanExportManager().getExportedSpanSniffer();
 
     try {
-      flowRunner(CUSTOM_SCOPE_FLOW).withPayload(AbstractMuleTestCase.TEST_PAYLOAD).run().getMessage();
+      flowRunner(TRY_SCOPE_FLOW).withPayload(AbstractMuleTestCase.TEST_PAYLOAD).run().getMessage();
 
       PollingProber prober = new PollingProber(TIMEOUT_MILLIS, POLL_DELAY_MILLIS);
 
@@ -88,15 +86,15 @@ public class CustomScopeSuccessfulTracingTestCase extends MuleArtifactFunctional
 
       SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
       expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
-          .addAttributesToAssertValue(createAttributeMap("custom-scope-flow", TEST_ARTIFACT_ID))
+          .addAttributesToAssertValue(createAttributeMap("try-scope-flow", TEST_ARTIFACT_ID))
           .addAttributesToAssertExistence(attributesToAssertExistence)
           .beginChildren()
-          .child(EXPECTED_CUSTOM_SCOPE_SPAN_NAME)
-          .addAttributesToAssertValue(createAttributeMap("custom-scope-flow/processors/0", TEST_ARTIFACT_ID))
+          .child(EXPECTED_TRY_SCOPE_SPAN_NAME)
+          .addAttributesToAssertValue(createAttributeMap("try-scope-flow/processors/0", TEST_ARTIFACT_ID))
           .addAttributesToAssertExistence(attributesToAssertExistence)
           .beginChildren()
           .child(EXPECTED_LOGGER_SPAN_NAME)
-          .addAttributesToAssertValue(createAttributeMap("custom-scope-flow/processors/0/processors/0", TEST_ARTIFACT_ID))
+          .addAttributesToAssertValue(createAttributeMap("try-scope-flow/processors/0/processors/0", TEST_ARTIFACT_ID))
           .addAttributesToAssertExistence(attributesToAssertExistence)
           .endChildren()
           .endChildren();
@@ -108,4 +106,3 @@ public class CustomScopeSuccessfulTracingTestCase extends MuleArtifactFunctional
     }
   }
 }
-

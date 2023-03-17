@@ -29,7 +29,6 @@ import javax.inject.Inject;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
 import junit.framework.AssertionFailedError;
-import org.hamcrest.MatcherAssert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mule.tck.probe.JUnitProbe;
@@ -38,8 +37,8 @@ import org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy;
 
 @Feature(PROFILING)
 @Story(DEFAULT_CORE_EVENT_TRACER)
-public class HttpSemanticConventionAttributesAndNameTestCase extends MuleArtifactFunctionalTestCase
-    implements TracingTestRunnerConfigAnnotation {
+public class OpenTelemetryHttpSemanticConventionAttributesAndNameTestCase extends MuleArtifactFunctionalTestCase
+    implements OpenTelemetryTracingTestRunnerConfigAnnotation {
 
   private static final int TIMEOUT_MILLIS = 30000;
   private static final int POLL_DELAY_MILLIS = 100;

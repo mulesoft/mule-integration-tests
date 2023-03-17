@@ -31,34 +31,36 @@ import org.junit.Test;
 
 @Feature(PROFILING)
 @Story(DEFAULT_CORE_EVENT_TRACER)
-public class UntilSuccessfulSuccessTracingTestCase extends MuleArtifactFunctionalTestCase
-    implements TracingTestRunnerConfigAnnotation {
+public class ScatterGatherErrorOpenTelemetryTracingTestCase extends MuleArtifactFunctionalTestCase
+    implements OpenTelemetryTracingTestRunnerConfigAnnotation {
 
   private static final int TIMEOUT_MILLIS = 30000;
   private static final int POLL_DELAY_MILLIS = 100;
 
-  public static final String EXPECTED_ATTEMPT_SPAN_NAME = "mule:until-successful:attempt";
-  public static final String EXPECTED_UNTIL_SUCCESSFUL_SPAN_NAME = "mule:until-successful";
+  public static final String EXPECTED_ROUTE_SPAN_NAME = "mule:scatter-gather:route";
+  public static final String EXPECTED_SCATTER_GATHER_SPAN_NAME = "mule:scatter-gather";
   public static final String EXPECTED_LOGGER_SPAN_NAME = "mule:logger";
   public static final String EXPECTED_SET_PAYLOAD_SPAN_NAME = "mule:set-payload";
-  public static final String UNTIL_SUCCESSFUL_FLOW = "until-successful-flow";
+  public static final String SCATTER_GATHER_FLOW = "scatter-gather-flow";
   public static final String EXPECTED_FLOW_SPAN_NAME = "mule:flow";
+  public static final String EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME = "mule:on-error-propagate";
   public static final String NO_PARENT_SPAN = "0000000000000000";
+  public static final String EXPECTED_RAISE_ERROR_SPAN = "mule:raise-error";
 
   @Inject
   PrivilegedProfilingService profilingService;
 
   @Override
   protected String getConfigFile() {
-    return "tracing/until-successful-success.xml";
+    return "tracing/scatter-gather-error.xml";
   }
 
   @Test
-  public void testUntilSuccessfulFlow() throws Exception {
+  public void testScatterGatherFlowWithError() throws Exception {
     ExportedSpanSniffer spanCapturer = profilingService.getSpanExportManager().getExportedSpanSniffer();
 
     try {
-      flowRunner(UNTIL_SUCCESSFUL_FLOW).withPayload(AbstractMuleTestCase.TEST_PAYLOAD).run().getMessage();
+      flowRunner(SCATTER_GATHER_FLOW).withPayload(AbstractMuleTestCase.TEST_PAYLOAD).dispatch();
 
       PollingProber prober = new PollingProber(TIMEOUT_MILLIS, POLL_DELAY_MILLIS);
 
@@ -67,7 +69,7 @@ public class UntilSuccessfulSuccessTracingTestCase extends MuleArtifactFunctiona
         @Override
         protected boolean test() {
           Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();;
-          return exportedSpans.size() == 5;
+          return exportedSpans.size() == 8;
         }
 
         @Override
@@ -81,15 +83,19 @@ public class UntilSuccessfulSuccessTracingTestCase extends MuleArtifactFunctiona
       SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
       expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
           .beginChildren()
-          .child(EXPECTED_UNTIL_SUCCESSFUL_SPAN_NAME)
+          .child(EXPECTED_SCATTER_GATHER_SPAN_NAME)
           .beginChildren()
-          .child(EXPECTED_ATTEMPT_SPAN_NAME)
+          .child(EXPECTED_ROUTE_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_SET_PAYLOAD_SPAN_NAME)
+          .child(EXPECTED_RAISE_ERROR_SPAN)
+          .endChildren()
+          .child(EXPECTED_ROUTE_SPAN_NAME)
           .beginChildren()
           .child(EXPECTED_LOGGER_SPAN_NAME)
-          .child(EXPECTED_SET_PAYLOAD_SPAN_NAME)
           .endChildren()
           .endChildren()
-          .endChildren();
+          .child(EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME);
 
       expectedSpanHierarchy.assertSpanTree();
     } finally {

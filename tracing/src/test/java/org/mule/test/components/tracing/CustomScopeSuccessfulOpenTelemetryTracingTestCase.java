@@ -37,35 +37,33 @@ import org.junit.Test;
 
 @Feature(PROFILING)
 @Story(DEFAULT_CORE_EVENT_TRACER)
-public class TryScopeErrorTracingTestCase extends MuleArtifactFunctionalTestCase implements TracingTestRunnerConfigAnnotation {
+public class CustomScopeSuccessfulOpenTelemetryTracingTestCase extends MuleArtifactFunctionalTestCase
+    implements OpenTelemetryTracingTestRunnerConfigAnnotation {
 
   private static final int TIMEOUT_MILLIS = 30000;
   private static final int POLL_DELAY_MILLIS = 100;
 
+  public static final String EXPECTED_CUSTOM_SCOPE_SPAN_NAME = "heisenberg:execute-anything";
   public static final String EXPECTED_LOGGER_SPAN_NAME = "mule:logger";
-  public static final String TRY_SCOPE_FLOW = "try-scope-flow";
+  public static final String CUSTOM_SCOPE_FLOW = "custom-scope-flow";
   public static final String EXPECTED_FLOW_SPAN_NAME = "mule:flow";
-  public static final String EXPECTED_TRY_SCOPE_SPAN_NAME = "mule:try";
-  public static final String EXPECTED_RAISE_ERROR_SPAN_NAME = "mule:raise-error";
-  public static final String EXPECTED_SET_PAYLOAD_SPAN_NAME = "mule:set-payload";
-  public static final String EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME = "mule:on-error-propagate";
   public static final String NO_PARENT_SPAN = "0000000000000000";
-  public static final String TEST_ARTIFACT_ID = "TryScopeErrorTracingTestCase#testTryScope";
+  public static final String TEST_ARTIFACT_ID = "CustomScopeSuccessfulOpenTelemetryTracingTestCase#testCustomScopeFlow";
 
   @Inject
   PrivilegedProfilingService profilingService;
 
   @Override
   protected String getConfigFile() {
-    return "tracing/try-scope-error.xml";
+    return "tracing/custom-scope-success.xml";
   }
 
   @Test
-  public void testTryScope() throws Exception {
+  public void testCustomScopeFlow() throws Exception {
     ExportedSpanSniffer spanCapturer = profilingService.getSpanExportManager().getExportedSpanSniffer();
 
     try {
-      flowRunner(TRY_SCOPE_FLOW).withPayload(AbstractMuleTestCase.TEST_PAYLOAD).runExpectingException();
+      flowRunner(CUSTOM_SCOPE_FLOW).withPayload(AbstractMuleTestCase.TEST_PAYLOAD).run().getMessage();
 
       PollingProber prober = new PollingProber(TIMEOUT_MILLIS, POLL_DELAY_MILLIS);
 
@@ -74,7 +72,7 @@ public class TryScopeErrorTracingTestCase extends MuleArtifactFunctionalTestCase
         @Override
         protected boolean test() {
           Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();;
-          return exportedSpans.size() == 6;
+          return exportedSpans.size() == 3;
         }
 
         @Override
@@ -89,22 +87,17 @@ public class TryScopeErrorTracingTestCase extends MuleArtifactFunctionalTestCase
 
       SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
       expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
-          .addAttributesToAssertValue(createAttributeMap("try-scope-flow", TEST_ARTIFACT_ID))
+          .addAttributesToAssertValue(createAttributeMap("custom-scope-flow", TEST_ARTIFACT_ID))
           .addAttributesToAssertExistence(attributesToAssertExistence)
           .beginChildren()
-          .child(EXPECTED_TRY_SCOPE_SPAN_NAME)
-          .addAttributesToAssertValue(createAttributeMap("try-scope-flow/processors/0", TEST_ARTIFACT_ID))
+          .child(EXPECTED_CUSTOM_SCOPE_SPAN_NAME)
+          .addAttributesToAssertValue(createAttributeMap("custom-scope-flow/processors/0", TEST_ARTIFACT_ID))
           .addAttributesToAssertExistence(attributesToAssertExistence)
           .beginChildren()
           .child(EXPECTED_LOGGER_SPAN_NAME)
-          .addAttributesToAssertValue(createAttributeMap("try-scope-flow/processors/0/processors/0", TEST_ARTIFACT_ID))
+          .addAttributesToAssertValue(createAttributeMap("custom-scope-flow/processors/0/processors/0", TEST_ARTIFACT_ID))
           .addAttributesToAssertExistence(attributesToAssertExistence)
-          .child(EXPECTED_RAISE_ERROR_SPAN_NAME)
-          .addAttributesToAssertValue(createAttributeMap("try-scope-flow/processors/0/processors/1", TEST_ARTIFACT_ID))
-          .addAttributesToAssertExistence(attributesToAssertExistence)
-          .child(EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME)
           .endChildren()
-          .child(EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME)
           .endChildren();
 
       expectedSpanHierarchy.assertSpanTree();
@@ -114,3 +107,4 @@ public class TryScopeErrorTracingTestCase extends MuleArtifactFunctionalTestCase
     }
   }
 }
+
