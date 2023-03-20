@@ -2,13 +2,11 @@
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:http="http://www.mulesoft.org/schema/mule/http"
-      xmlns:test="http://www.mulesoft.org/schema/mule/test"
       xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
       xmlns:script="http://www.mulesoft.org/schema/mule/scripting"
       xmlns:test-components="http://www.mulesoft.org/schema/mule/test-components"
       xsi:schemaLocation="
        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-       http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
        http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd
        http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
        http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd
@@ -45,7 +43,7 @@
     <flow name="httpContinueProcessingActualMessage">
         <http:listener path="service" config-ref="listenerConfig"/>
         <flow-ref name="load-news"/>
-        <test:processor throwException="true"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <on-error-continue>
                 <flow-ref name="news"/>
@@ -56,7 +54,7 @@
     <flow name="httpsContinueProcessingActualMessage">
         <http:listener config-ref="listenerConfigHttps" path="httpsservice"/>
         <flow-ref name="load-news"/>
-        <test:processor throwException="true"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <on-error-continue>
                 <flow-ref name="news"/>
@@ -66,7 +64,7 @@
 
     <flow name="continueProcessingActualMessage">
         <flow-ref name="load-news"/>
-        <test:processor throwException="true"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <on-error-continue>
                 <flow-ref name="news"/>
@@ -75,7 +73,7 @@
     </flow>
 
     <flow name="catchWithComponent">
-      <test:processor throwException="true"/>
+      <raise-error type="APP:EXPECTED"/>
       <error-handler>
         <on-error-continue>
             <script:execute engine="groovy">
@@ -89,7 +87,7 @@
 
     <flow name="fullyDefinedCatchExceptionStrategyWithComponent">
         <set-payload value="#[payload ++ ' apt1']"/>
-        <test:processor throwException="true"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <on-error-continue>
                 <set-payload value="#[payload ++ ' apt2']"/>
@@ -120,7 +118,7 @@
 
     <flow name="onErrorTypeMatchAny">
         <set-payload value="#[payload ++ ' apt1']"/>
-        <test:processor throwException="true"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <on-error-continue type="EXPRESSION">
                 <set-payload value="#[payload ++ ' nope']"/>
@@ -195,7 +193,7 @@
     </flow>
 
     <flow name="failingHandler">
-        <test:processor throwException="true"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <on-error-continue>
                 <flow-ref name="error"/>
@@ -217,13 +215,13 @@
 
     <flow name="withTry">
         <set-payload value="flow"/>
-        <test:processor throwException="true"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <on-error-continue>
                 <test-components:queue-push config-ref="out1"/>
                 <try>
                     <set-payload value="try"/>
-                    <test:processor throwException="true"/>
+                    <raise-error type="APP:EXPECTED"/>
                     <error-handler>
                         <on-error-continue>
                             <test-components:queue-push config-ref="out2"/>

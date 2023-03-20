@@ -9,11 +9,15 @@ package org.mule.runtime.module.tooling;
 import static java.time.Instant.now;
 import static java.util.Arrays.asList;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.metadata.resolving.FailureCode.COMPONENT_NOT_FOUND;
 import static org.mule.runtime.app.declaration.api.fluent.ElementDeclarer.newParameterGroup;
+import static org.mule.runtime.app.declaration.api.fluent.ParameterSimpleValue.plain;
 import static org.mule.runtime.extension.api.values.ValueResolvingException.INVALID_VALUE_RESOLVER_NAME;
 import static org.mule.runtime.extension.api.values.ValueResolvingException.MISSING_REQUIRED_PARAMETERS;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.ACTING_PARAMETER_NAME;
@@ -21,24 +25,30 @@ import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.CUST
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.actingParameterGroupOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.actingParameterGroupOPWithAliasDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.actingParameterOPDeclaration;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.actingParameterOptionalOPDeclaration;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.actingParameterOptionalWithDefaultContextDependentExpressionValueOP;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.complexActingParameterOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.complexParameterValue;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.configLessConnectionLessOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.configLessOPDeclaration;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.enumExportedWithDefaultValueOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.innerPojo;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.multipleNestedVPsOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.parameterValueProviderWithConfig;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.simpleActingParametersInContainerOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.simpleActingParametersOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.sourceWithMultiLevelValue;
-import static org.mule.runtime.module.tooling.internal.artifact.AbstractParameterResolverExecutor.INVALID_PARAMETER_VALUE;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.vpWithBindingToFieldOPDeclaration;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.vpWithBindingToFieldOPDeclarer;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.vpWithBindingToTopLevelOPDeclaration;
+import static org.mule.sdk.api.values.ValueResolvingException.UNKNOWN;
+
 import org.mule.runtime.api.value.Value;
 import org.mule.runtime.api.value.ValueResult;
 import org.mule.runtime.app.declaration.api.ComponentElementDeclaration;
 import org.mule.runtime.app.declaration.api.OperationElementDeclaration;
 import org.mule.runtime.app.declaration.api.ParameterValue;
 import org.mule.runtime.app.declaration.api.fluent.ElementDeclarer;
-
-import com.google.common.collect.ImmutableMap;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -53,6 +63,7 @@ import java.util.concurrent.TimeUnit;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 
 public class ComponentValueProviderTestCase extends DeclarationSessionTestCase {
@@ -93,10 +104,27 @@ public class ComponentValueProviderTestCase extends DeclarationSessionTestCase {
   }
 
   @Test
-  public void missingActingParameterFails() {
+  public void missingActingRequiredParameterFails() {
     final String actingParameter = "actingParameter";
     ComponentElementDeclaration elementDeclaration = actingParameterOPDeclaration(CONFIG_NAME, actingParameter);
     elementDeclaration.getParameterGroups().get(0).getParameters().remove(0);
+    validateValuesFailure(session, elementDeclaration, PROVIDED_PARAMETER_NAME,
+                          "Unable to retrieve values. There are missing required parameters for the resolution: [actingParameter]",
+                          MISSING_REQUIRED_PARAMETERS);
+  }
+
+  @Test
+  public void missingActingRequiredParameterFromDeclarationUsesDefaultValue() {
+    final String actingParameterDefaultValue = "actingDefault";
+    ComponentElementDeclaration elementDeclaration = actingParameterOptionalOPDeclaration(CONFIG_NAME);
+    validateValuesSuccess(session, elementDeclaration, PROVIDED_PARAMETER_NAME,
+                          WITH_ACTING_PARAMETER + actingParameterDefaultValue);
+  }
+
+  @Test
+  public void missingActingRequiredParameterFromDeclarationUsesDefaultContextDependentExpressionValueFails() {
+    ComponentElementDeclaration elementDeclaration =
+        actingParameterOptionalWithDefaultContextDependentExpressionValueOP(CONFIG_NAME);
     validateValuesFailure(session, elementDeclaration, PROVIDED_PARAMETER_NAME,
                           "Unable to retrieve values. There are missing required parameters for the resolution: [actingParameter]",
                           MISSING_REQUIRED_PARAMETERS);
@@ -111,12 +139,11 @@ public class ComponentValueProviderTestCase extends DeclarationSessionTestCase {
   }
 
   @Test
-  public void expressionRequiresContext() {
-    final String actingParameter = "#[vars.account]";
-    ComponentElementDeclaration elementDeclaration = actingParameterOPDeclaration(CONFIG_NAME, actingParameter);
-    validateValuesFailure(session, elementDeclaration, PROVIDED_PARAMETER_NAME,
-                          "Error resolving value for parameter: 'actingParameter' from declaration, it cannot be an EXPRESSION value",
-                          INVALID_PARAMETER_VALUE);
+  public void internalErrorFromProvider() {
+    ComponentElementDeclaration elementDeclaration = actingParameterOPDeclaration(CONFIG_NAME, "");
+    validateValuesFailure(session, elementDeclaration, INTERNAL_ERROR_PROVIDED_PARAMETER_NAME,
+                          "An error occurred trying to resolve the Values for parameter 'internalErrorProvidedParameter' of component 'actingParameterOP'. Cause: org.mule.tooling.extensions.metadata.internal.value.provider.extensions.InternalErrorVP has thrown unexpected exception",
+                          UNKNOWN);
   }
 
   @Test
@@ -181,7 +208,7 @@ public class ComponentValueProviderTestCase extends DeclarationSessionTestCase {
     gregorianCalendar.setTime(dateParameter);
     final XMLGregorianCalendar xmlGregorianCalendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(gregorianCalendar);
     final LocalDate localDate = LocalDate.parse(sqlDate.toString());
-    final LocalDateTime localDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+    final LocalDateTime localDateTime = LocalDateTime.ofInstant(dateParameter.toInstant(), ZoneId.systemDefault());
 
     ComponentElementDeclaration elementDeclaration =
         simpleActingParametersOPDeclaration(CONFIG_NAME,
@@ -196,7 +223,7 @@ public class ComponentValueProviderTestCase extends DeclarationSessionTestCase {
                               + sqlDate.toString()
                               + localDate.toString()
                               + localDateTime.toString()
-                              + gregorianCalendar.toString()
+                              + gregorianCalendar.toInstant().toString()
                               + xmlGregorianCalendar.toString()
                               + enumParameter.toString());
   }
@@ -214,7 +241,7 @@ public class ComponentValueProviderTestCase extends DeclarationSessionTestCase {
     gregorianCalendar.setTime(dateParameter);
     final XMLGregorianCalendar xmlGregorianCalendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(gregorianCalendar);
     final LocalDate localDate = LocalDate.parse(sqlDate.toString());
-    final LocalDateTime localDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+    final LocalDateTime localDateTime = LocalDateTime.ofInstant(dateParameter.toInstant(), ZoneId.systemDefault());
 
     ComponentElementDeclaration elementDeclaration =
         simpleActingParametersInContainerOPDeclaration(CONFIG_NAME,
@@ -229,7 +256,7 @@ public class ComponentValueProviderTestCase extends DeclarationSessionTestCase {
                               + sqlDate.toString()
                               + localDate.toString()
                               + localDateTime.toString()
-                              + gregorianCalendar.toString()
+                              + gregorianCalendar.toInstant().toString()
                               + xmlGregorianCalendar.toString()
                               + enumParameter.toString());
   }
@@ -249,16 +276,16 @@ public class ComponentValueProviderTestCase extends DeclarationSessionTestCase {
                                                                   complexListParam, complexMapParam));
     String innerPojoStringValue = intParam +
         stringParam +
-        "zeroonetwo" + //listParam
-        "0zero1one2two"; //mapParam
+        "zeroonetwo" + // listParam
+        "0zero1one2two"; // mapParam
 
     String expectedValue = intParam +
         stringParam +
-        "zeroonetwo" + //listParam
-        "0zero1one2two" + //mapParam
-        innerPojoStringValue + //all inner pojo parameters
-        innerPojoStringValue + //complex list with 1 inner pojo
-        "0" + innerPojoStringValue + "1" + innerPojoStringValue; //complexMap
+        "zeroonetwo" + // listParam
+        "0zero1one2two" + // mapParam
+        innerPojoStringValue + // all inner pojo parameters
+        innerPojoStringValue + // complex list with 1 inner pojo
+        "0" + innerPojoStringValue + "1" + innerPojoStringValue; // complexMap
     validateValuesSuccess(session, elementDeclaration, PROVIDED_PARAMETER_NAME, expectedValue);
   }
 
@@ -316,6 +343,26 @@ public class ComponentValueProviderTestCase extends DeclarationSessionTestCase {
   }
 
   @Test
+  public void preserverOrderValuesResolver() {
+    ComponentElementDeclaration elementDeclaration = multipleNestedVPsOPDeclaration(CONFIG_NAME);
+    ValueResult valueResult = getValueResult(session, elementDeclaration, "levelOne");
+    assertThat(valueResult.isSuccess(), is(true));
+    assertThat(valueResult.getValues(), contains(
+                                                 hasProperty("id", equalTo("ONE")),
+                                                 hasProperty("id", equalTo("TWO")),
+                                                 hasProperty("id", equalTo("THREE"))));
+  }
+
+  @Test
+  public void enumExportedParameterWithDefaultValue() {
+    OperationElementDeclaration elementDeclaration = enumExportedWithDefaultValueOPDeclaration();
+    ValueResult valueResult = getValueResult(session, elementDeclaration, "vpParam");
+    assertThat(valueResult.isSuccess(), is(true));
+    assertThat(valueResult.getValues(), contains(
+                                                 hasProperty("id", equalTo("ConfigLessConnectionLessNoActingParameter"))));
+  }
+
+  @Test
   public void connectionFailure() {
     ComponentElementDeclaration elementDeclaration = configLessOPDeclaration(CONFIG_FAILING_CONNECTION_PROVIDER);
     validateValuesFailure(session, elementDeclaration,
@@ -325,5 +372,37 @@ public class ComponentValueProviderTestCase extends DeclarationSessionTestCase {
                           "");
   }
 
+  @Test
+  public void vpWithBindingToTopLevel() {
+    final String actingParameter = "actingParameter";
+    ComponentElementDeclaration<?> operationDeclaration = vpWithBindingToTopLevelOPDeclaration(actingParameter);
+    validateValuesSuccess(session, operationDeclaration, PROVIDED_PARAMETER_NAME, actingParameter);
+  }
+
+  @Test
+  public void vpWithBindingToField() {
+    final String actingParameter = "actingParameter";
+    ComponentElementDeclaration<?> operationDeclaration = vpWithBindingToFieldOPDeclaration(actingParameter);
+    validateValuesSuccess(session, operationDeclaration, PROVIDED_PARAMETER_NAME, actingParameter);
+  }
+
+  @Test
+  public void vpWithBindingMissing() {
+    ComponentElementDeclaration<?> operationDeclaration = vpWithBindingToFieldOPDeclarer().getDeclaration();
+    validateValuesFailure(session, operationDeclaration, PROVIDED_PARAMETER_NAME,
+                          "Unable to retrieve values. There are missing required parameters for the resolution: [actingParameter(taken from: innerPojo.stringParam)]",
+                          MISSING_REQUIRED_PARAMETERS);
+  }
+
+  @Test
+  public void vpWithBindingOnPojoFromExpression() {
+    final String actingParameter = "actingParameter";
+    ComponentElementDeclaration<?> operationDeclaration = vpWithBindingToFieldOPDeclarer()
+        .withParameterGroup(newParameterGroup()
+            .withParameter("innerPojo", plain("#[{'stringParam': '" + actingParameter + "'}]"))
+            .getDeclaration())
+        .getDeclaration();
+    validateValuesSuccess(session, operationDeclaration, PROVIDED_PARAMETER_NAME, actingParameter);
+  }
 
 }

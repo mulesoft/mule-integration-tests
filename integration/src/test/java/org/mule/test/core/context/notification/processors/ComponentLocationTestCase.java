@@ -51,12 +51,12 @@ import java.util.concurrent.CountDownLatch;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.junit.After;
-import org.junit.Test;
-
 import io.qameta.allure.Feature;
 import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
+
+import org.junit.After;
+import org.junit.Test;
 
 @Feature(CONFIGURATION_COMPONENT_LOCATOR)
 @Story(COMPONENT_LOCATION)
@@ -221,7 +221,7 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
       Optional.of(builder().identifier(buildFromStringRepresentation("aggregators:aggregation-complete"))
           .type(ComponentType.ROUTE).build());
   private static final Optional<TypedComponentIdentifier> TAP_PHONES =
-      Optional.of(builder().identifier(buildFromStringRepresentation("heisenberg:tap-phones")).type(OPERATION).build());
+      Optional.of(builder().identifier(buildFromStringRepresentation("heisenberg:tap-phones")).type(SCOPE).build());
 
 
   @Inject
@@ -451,7 +451,7 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
   public void defaultErrorHandler() throws Exception {
     Location defaultErrorHandlerLoggerLocation = Location.builder().globalName("defaultErrorHandler").build();
     Optional<Component> component = configurationComponentLocator.find(defaultErrorHandlerLoggerLocation);
-    assertThat(component.isPresent(), is(false));
+    assertThat(component.isPresent(), is(true));
   }
 
   @Test
@@ -605,7 +605,7 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
   // Check in any order
   private void assertNextProcessorLocationsAre(List<DefaultComponentLocation> componentLocations) {
     StringBuilder errors = new StringBuilder();
-    for (int i = 0; i < componentLocations.size(); i++) {
+    for (DefaultComponentLocation loc : componentLocations) {
       for (DefaultComponentLocation componentLocation : componentLocations) {
         try {
           assertNextProcessorLocationIs(componentLocation);

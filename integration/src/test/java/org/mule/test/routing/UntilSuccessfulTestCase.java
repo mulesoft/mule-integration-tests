@@ -33,7 +33,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import org.mule.extension.validation.api.ValidationException;
 import org.mule.functional.api.component.FunctionalTestProcessor;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.exception.MuleRuntimeException;
@@ -155,7 +154,7 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
 
     Throwable errorCause = error.getCause();
     assertThat(errorCause, is(notNullValue()));
-    assertThat(errorCause, instanceOf(ValidationException.class));
+    assertThat(errorCause, instanceOf(RetryPolicyExhaustedException.class));
   }
 
   @Test

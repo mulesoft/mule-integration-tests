@@ -2,12 +2,10 @@
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:http="http://www.mulesoft.org/schema/mule/http"
-      xmlns:test="http://www.mulesoft.org/schema/mule/test"
       xmlns:test-components="http://www.mulesoft.org/schema/mule/test-components"
       xsi:schemaLocation="
        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
        http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
-       http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
        http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
 
     <http:listener-config name="listenerConfig">
@@ -63,7 +61,7 @@
 
     <flow name="onErrorPropagateTypeMatchAny">
         <set-payload value="#[payload ++ ' apt1']"/>
-        <test:processor throwException="true"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <on-error-propagate type="REDELIVERY_EXHAUSTED">
                 <test-components:queue-push config-ref="custom2"/>
@@ -149,7 +147,7 @@
     </flow>
 
     <flow name="failingHandler">
-        <test:processor throwException="true"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <on-error-propagate>
                 <flow-ref name="error"/>
@@ -175,13 +173,13 @@
 
     <flow name="withTry">
         <set-payload value="flow"/>
-        <test:processor throwException="true"/>
+        <raise-error type="APP:EXPECTED_1"/>
         <error-handler>
             <on-error-propagate>
                 <test-components:queue-push config-ref="out1"/>
                 <try>
                     <set-payload value="try"/>
-                    <test:processor throwException="true"/>
+                    <raise-error type="APP:EXPECTED_2"/>
                     <error-handler>
                         <on-error-continue>
                             <test-components:queue-push config-ref="out2"/>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:sockets="http://www.mulesoft.org/schema/mule/sockets"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+        http://www.mulesoft.org/schema/mule/sockets http://www.mulesoft.org/schema/mule/sockets/current/mule-sockets.xsd">
+
+
+    <sockets:request-config name="socketsHttpRequester">
+        <sockets:tcp-requester-connection host="localhost" port="${dynamic.port}">
+            <sockets:protocol >
+                <sockets:eof-protocol />
+            </sockets:protocol>
+        </sockets:tcp-requester-connection>
+    </sockets:request-config>
+
+    <flow name="httpRequestThroughSockets">
+        <sockets:send-and-receive
+            config-ref="socketsHttpRequester">
+            <sockets:content><![CDATA[POST /test HTTP/1.1
+Host: localhost:8081
+Transfer-Encoding: chunked, deflate
+2
+OK
+0
+
+]]></sockets:content>
+        </sockets:send-and-receive>
+    </flow>
+
+</mule>

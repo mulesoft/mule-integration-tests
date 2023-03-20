@@ -27,6 +27,7 @@ import static org.mule.test.heisenberg.extension.HeisenbergConnectionProvider.ge
 import static org.mule.test.heisenberg.extension.HeisenbergOperations.CALL_GUS_MESSAGE;
 
 import org.mule.extension.http.api.request.validator.ResponseValidatorException;
+import org.mule.extension.test.extension.reconnection.ReconnectableConnectionProvider;
 import org.mule.functional.api.exception.ExpectedError;
 import org.mule.runtime.api.artifact.Registry;
 import org.mule.runtime.api.component.location.ComponentLocation;
@@ -41,6 +42,7 @@ import org.mule.runtime.api.interception.ProcessorInterceptorFactory.ProcessorIn
 import org.mule.runtime.api.interception.ProcessorParameterValue;
 import org.mule.runtime.api.lock.LockFactory;
 import org.mule.runtime.api.scheduler.SchedulerService;
+import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.runtime.http.api.HttpService;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -53,9 +55,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 import javax.inject.Inject;
 
@@ -65,6 +69,7 @@ import org.junit.Test;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
 
 @Feature(INTERCEPTION_API)
@@ -86,17 +91,29 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     objects.put("_AfterWithCallbackInterceptorFactory", new AfterWithCallbackInterceptorFactory());
     objects.put("_HasInjectedAttributesInterceptorFactory", new HasInjectedAttributesInterceptorFactory(false));
     objects.put("_EvaluatesExpressionInterceptorFactory", new EvaluatesExpressionInterceptorFactory());
+    objects.put("_ErrorMappingRequiredInterceptorFactory", new ErrorMappingRequiredInterceptorFactory());
 
     objects.put(INTERCEPTORS_ORDER_REGISTRY_KEY,
                 (ProcessorInterceptorOrder) () -> asList(AfterWithCallbackInterceptorFactory.class.getName(),
                                                          HasInjectedAttributesInterceptorFactory.class.getName(),
-                                                         EvaluatesExpressionInterceptorFactory.class.getName()));
+                                                         EvaluatesExpressionInterceptorFactory.class.getName(),
+                                                         ErrorMappingRequiredInterceptorFactory.class.getName()));
 
     return objects;
   }
 
+  @Override
+  protected void doSetUpBeforeMuleContextCreation() throws Exception {
+    super.doSetUpBeforeMuleContextCreation();
+    ReconnectableConnectionProvider.fail = true;
+  }
+
+  @Override
+  protected void doSetUp() throws Exception {}
+
   @After
   public void after() {
+    ReconnectableConnectionProvider.fail = false;
     getActiveConnections().clear();
     HasInjectedAttributesInterceptor.interceptionParameters.clear();
     AfterWithCallbackInterceptor.callback = (event, thrown) -> {
@@ -113,7 +130,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     InterceptionParameters killInterceptionParameter = interceptionParameters.get(0);
 
     assertThat(killInterceptionParameter.getParameters().keySet(),
-               containsInAnyOrder("targetValue", "errorMappings", "victim", "goodbyeMessage"));
+               containsInAnyOrder("targetValue", "victim", "goodbyeMessage"));
     assertThat(killInterceptionParameter.getParameters().get("victim").resolveValue(), is("T-1000"));
     assertThat(killInterceptionParameter.getParameters().get("goodbyeMessage").resolveValue(), is("Hasta la vista, baby"));
   }
@@ -127,7 +144,8 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
 
     InterceptionParameters dieInterceptionParameter = interceptionParameters.get(0);
 
-    assertThat(dieInterceptionParameter.getParameters().keySet(), containsInAnyOrder("config-ref", "config", "errorMappings"));
+    assertThat(dieInterceptionParameter.getParameters().keySet(),
+               containsInAnyOrder("config-ref", "config"));
     final Object config = dieInterceptionParameter.getParameters().get("config").resolveValue();
     assertThat(config, instanceOf(HeisenbergExtension.class));
     assertThat(((HeisenbergExtension) config).getConfigName(), is("heisenberg"));
@@ -154,7 +172,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     InterceptionParameters killInterceptionParameter = interceptionParameters.get(0);
 
     assertThat(killInterceptionParameter.getParameters().keySet(),
-               containsInAnyOrder("targetValue", "errorMappings", "victim", "goodbyeMessage", "killParameters"));
+               containsInAnyOrder("targetValue", "victim", "goodbyeMessage", "killParameters"));
     assertThat(killInterceptionParameter.getParameters().get("victim").resolveValue(), is("T-1000"));
     assertThat(killInterceptionParameter.getParameters().get("goodbyeMessage").resolveValue(), is("Hasta la vista, baby"));
     assertThat(killInterceptionParameter.getParameters().get("killParameters").resolveValue(),
@@ -173,7 +191,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     InterceptionParameters killInterceptionParameter = interceptionParameters.get(0);
 
     assertThat(killInterceptionParameter.getParameters().keySet(),
-               containsInAnyOrder("targetValue", "errorMappings", "victim", "goodbyeMessage"));
+               containsInAnyOrder("targetValue", "victim", "goodbyeMessage"));
     assertThat(killInterceptionParameter.getParameters().get("victim").resolveValue(), is("T-1000"));
     assertThat(killInterceptionParameter.getParameters().containsKey("goodbyeMessage"), is(true));
   }
@@ -202,6 +220,36 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
   }
 
   @Test
+  @Issue("MULE-19236")
+  @Description("The errorType set by an operation and then mapped is preserved if an interceptor is applied")
+  public void failingOperationMappedErrorTypePreserved() throws Exception {
+    AtomicBoolean afterCallbackCalled = new AtomicBoolean(false);
+
+    AfterWithCallbackInterceptor.callback = (event, thrown) -> {
+      assertThat(event.getError().get().getErrorType(), errorType("APP", "MAPPED_CONNECTIVITY"));
+
+      afterCallbackCalled.set(true);
+    };
+
+    expectedError.expectErrorType("APP", "MAPPED_CONNECTIVITY");
+    try {
+      flowRunner("operationErrorWithMappings").run();
+    } finally {
+      assertThat(afterCallbackCalled.get(), is(true));
+    }
+  }
+
+  @Test
+  @Issue("MULE-19866")
+  @Description("The errorType set by an operation and then mapped, is mapped again if an interceptor that requires error mapping is applied")
+  public void failingOperationMappedErrorTypeRemapped() throws Exception {
+    ErrorMappingRequiredInterceptor.callback = (location) -> true;
+
+    expectedError.expectErrorType("APP", "ANYTHING_ELSE");
+    flowRunner("operationErrorWithMappings").run();
+  }
+
+  @Test
   public void expressionsInInterception() throws Exception {
     assertThat(flowRunner("expressionsInInterception").run().getVariables().get("addedVar").getValue(), is("value2"));
   }
@@ -209,7 +257,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
   @Test
   @Description("Errors in sub-flows are handled correctly")
   public void failingSubFlow() throws Exception {
-    expectedError.expectErrorType("TEST", "EXPECTED");
+    expectedError.expectErrorType("APP", "EXPECTED");
 
     try {
       flowRunner("flowWithFailingSubFlowRef").run();
@@ -225,7 +273,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
       InterceptionParameters failParameter = interceptionParameters.get(1);
 
       assertThat(failParameter.getParameters().keySet(), containsInAnyOrder("type"));
-      assertThat(failParameter.getParameters().get("type").resolveValue(), is("TEST:EXPECTED"));
+      assertThat(failParameter.getParameters().get("type").resolveValue(), is("APP:EXPECTED"));
 
       // the 3rd one is for the global error handler, it is tested separately
     }
@@ -234,7 +282,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
   @Test
   @Description("Processors in error handlers are intercepted correctly")
   public void errorHandler() throws Exception {
-    expectedError.expectErrorType("TEST", "EXPECTED");
+    expectedError.expectErrorType("APP", "EXPECTED");
 
     AtomicBoolean afterCallbackCalledForFailingMP = new AtomicBoolean(false);
     AtomicBoolean afterCallbackCalledForErrorHandlingMp = new AtomicBoolean(false);
@@ -265,7 +313,7 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
   @Test
   @Description("Processors in global error handlers are intercepted correctly")
   public void globalErrorHandler() throws Exception {
-    expectedError.expectErrorType("TEST", "EXPECTED");
+    expectedError.expectErrorType("APP", "EXPECTED");
 
     AtomicBoolean afterCallbackCalledForFailingMP = new AtomicBoolean(false);
     AtomicBoolean afterCallbackCalledForErrorHandlingMp = new AtomicBoolean(false);
@@ -396,19 +444,22 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
   @Test
   @Description("Processors in global error handlers are intercepted correctly when error is in referenced flow")
   public void globalErrorHandlerWithFlowRef() throws Exception {
-    expectedError.expectErrorType("TEST", "EXPECTED");
-
+    expectedError.expectErrorType("APP", "EXPECTED");
+    CountDownLatch allAftersWereCalled = new CountDownLatch(4);
 
     AtomicInteger afters = new AtomicInteger(0);
 
     AfterWithCallbackInterceptor.callback = (event, thrown) -> {
       afters.incrementAndGet();
+      allAftersWereCalled.countDown();
     };
 
     try {
       flowRunner("flowWithFailingFlowRef").run();
     } finally {
       // The MP in the global error handler is ran twice, once for the called flow and another for the caller flow.
+      // If the afters don't reach 4, this latch will make the test timeout.
+      allAftersWereCalled.await();
 
       List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
       assertThat(interceptionParameters.stream().map(ip -> ip.getLocation().getLocation()).collect(toList()).toString(),
@@ -434,10 +485,35 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     assertThat(interceptionParameters, hasSize(1));
 
     Map<String, ProcessorParameterValue> scriptingParameters = interceptionParameters.get(0).getParameters();
-    assertThat(scriptingParameters.keySet(), hasSize(6));
+    assertThat(scriptingParameters.keySet(), hasSize(5));
     assertThat(scriptingParameters.keySet(),
-               containsInAnyOrder("engine", "doc:name", "target", "code", "targetValue", "errorMappings"));
+               containsInAnyOrder("engine", "doc:name", "target", "code", "targetValue"));
     assertThat(scriptingParameters.get("doc:name").resolveValue(), is("Execute 5"));
+  }
+
+  @Test
+  @Issue("MULE-19245")
+  public void operationWithDeferredStreamParam() throws Exception {
+    final CoreEvent result = flowRunner("operationWithDeferredStreamParam").run();
+    assertThat(result.getMessage().getPayload().getValue(), is("Knocked on Jim Malone"));
+  }
+
+  @Test
+  @Issue("MULE-19315")
+  @Description("Reconnection configuration is honored when resolving params through interception API")
+  public void reconnectionWorksWithInterceptors() throws Exception {
+    ReconnectableConnectionProvider.fail = true;
+    flowRunner("reconnectionWorksWithInterceptors").run();
+    assertThat(ReconnectableConnectionProvider.fail, is(false));
+  }
+
+  @Test
+  @Issue("MULE-19315")
+  @Description("Connectivity errors are propagated consistenly when interception API is present.")
+  public void reconnectionFailureWorksWithInterceptors() throws Exception {
+    ReconnectableConnectionProvider.fail = true;
+    flowRunner("reconnectionFailureWorksWithInterceptors").runExpectingException(errorType("RECONNECTION", "CONNECTIVITY"));
+    assertThat(ReconnectableConnectionProvider.fail, is(true));
   }
 
   public static class HasInjectedAttributesInterceptorFactory implements ProcessorInterceptorFactory {
@@ -615,6 +691,31 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     public void after(ComponentLocation location, InterceptionEvent event, Optional<Throwable> thrown) {
       callback.accept(event, thrown);
     }
+  }
+
+  public static class ErrorMappingRequiredInterceptorFactory implements ProcessorInterceptorFactory {
+
+    @Override
+    public ProcessorInterceptor get() {
+      return new ErrorMappingRequiredInterceptor();
+    }
+  }
+
+  public static class ErrorMappingRequiredInterceptor implements ProcessorInterceptor {
+
+    static Function<ComponentLocation, Boolean> callback = (location) -> false;
+
+    @Override
+    public boolean isErrorMappingRequired(ComponentLocation location) {
+      return callback.apply(location);
+    }
+
+    /*
+     * Implementing this method is necessary because the requirement for an error mapping will only be checked for interceptors
+     * that implement the after or before methods
+     */
+    @Override
+    public void after(ComponentLocation location, InterceptionEvent event, Optional<Throwable> thrown) {}
   }
 
   // TODO MULE-17934 remove this

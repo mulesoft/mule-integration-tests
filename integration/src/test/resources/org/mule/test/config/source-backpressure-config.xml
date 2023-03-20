@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:heisenberg="http://www.mulesoft.org/schema/mule/heisenberg"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+                          http://www.mulesoft.org/schema/mule/heisenberg http://www.mulesoft.org/schema/mule/heisenberg/current/mule-heisenberg.xsd">
+
+    <heisenberg:config name="heisenberg"/>
+
+    <flow name="defaultToFail" initialState="stopped" maxConcurrency="1">
+        <heisenberg:listen-payments config-ref="heisenberg"/>
+
+        <set-payload value="#[java!org::mule::tck::junit4::AbstractMuleContextTestCase::sleepFor(payload, 15000)]"/>
+    </flow>
+
+    <flow name="configuredToDrop" initialState="stopped" maxConcurrency="1">
+        <heisenberg:listen-payments config-ref="heisenberg" onCapacityOverload="DROP"/>
+
+        <set-payload value="#[java!org::mule::tck::junit4::AbstractMuleContextTestCase::sleepFor(payload, 15000)]"/>
+    </flow>
+
+</mule>

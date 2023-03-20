@@ -10,9 +10,11 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
+import static org.mule.runtime.api.component.ComponentIdentifier.buildFromStringRepresentation;
 import static org.mule.tck.util.FlowTraceUtils.assertStackElements;
 import static org.mule.tck.util.FlowTraceUtils.isFlowStackElement;
 import static org.mule.tck.util.FlowTraceUtils.FlowStackAsserter.stackToAssert;
+import static org.mule.tck.util.FlowTraceUtils.withChainIdentifier;
 import static org.mule.test.allure.AllureConstants.Logging.LOGGING;
 import static org.mule.test.allure.AllureConstants.Logging.LoggingStory.FLOW_STACK;
 
@@ -55,6 +57,9 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
 
     assertStackElements(stackToAssert, isFlowStackElement("flow", "flow/processors/0"),
                         isFlowStackElement("flowStatic", "flowStatic/processors/0"));
+
+    assertStackElements(stackToAssert, withChainIdentifier(buildFromStringRepresentation("flow")),
+                        withChainIdentifier(buildFromStringRepresentation("flow")));
   }
 
   @Test
@@ -66,6 +71,9 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
     assertStackElements(stackToAssert,
                         isFlowStackElement("subFlow", "subFlow/processors/0"),
                         isFlowStackElement("subFlowStatic", "subFlowStatic/processors/0"));
+
+    assertStackElements(stackToAssert, withChainIdentifier(buildFromStringRepresentation("subflow")),
+                        withChainIdentifier(buildFromStringRepresentation("flow")));
   }
 
   @Test
@@ -154,6 +162,9 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
                         isFlowStackElement("subFlowInAsync",
                                            "subFlowInAsync/processors/0"),
                         isFlowStackElement("subFlowStaticWithAsync", "subFlowStaticWithAsync/processors/0/processors/0"));
+
+    assertStackElements(stackToAssert, withChainIdentifier(buildFromStringRepresentation("subflow")),
+                        withChainIdentifier(buildFromStringRepresentation("flow")));
   }
 
   @Test

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:oauth="http://www.mulesoft.org/schema/mule/oauth"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+        http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+        http://www.mulesoft.org/schema/mule/oauth http://www.mulesoft.org/schema/mule/oauth/current/mule-oauth.xsd">
+
+    <oauth:token-manager-config name="tokenManagerConfig"/>
+
+    <http:request-config name="httpRequestConfigWithOAuthProxyInline">
+        <http:request-connection host="localhost" port="8081">
+            <http:authentication>
+                <oauth:client-credentials-grant-type
+                        clientId="client-id"
+                        clientSecret="client-secret"
+                        tokenManager="tokenManagerConfig"
+                        scopes="scopes"
+                        tokenUrl="token-url"
+                        refreshTokenWhen="#[attributes.statusCode == 500]"
+                        responseAccessToken="#[payload['access_token']]"
+                        responseExpiresIn="#[payload['expires_in']]">
+                    <oauth:proxy-config>
+                        <http:proxy name="proxyConfig" host="localhost" port="8083" />
+                    </oauth:proxy-config>
+                </oauth:client-credentials-grant-type>
+            </http:authentication>
+        </http:request-connection>
+    </http:request-config>
+
+    <tls:context name="listenerTlsContext">
+        <tls:key-store path="serverKeystore" keyPassword="mulepassword" password="mulepassword" alias="muleserver"/>
+    </tls:context>
+
+    <http:listener-config name="HTTP_Listener_config" basePath="/api">
+        <http:listener-connection host="localhost" port="8080" tlsContext="listenerTlsContext"
+                                  protocol="HTTPS"/>
+        <http:listener-interceptors>
+            <http:cors-interceptor allowCredentials="true">
+                <http:origins>
+                    <http:origin url="http://www.the-origin-of-time.com" accessControlMaxAge="30">
+                        <http:allowed-methods>
+                            <http:method methodName="POST"/>
+                            <http:method methodName="PUT"/>
+                            <http:method methodName="GET"/>
+                        </http:allowed-methods>
+                        <http:allowed-headers>
+                            <http:header headerName="x-allow-origin"/>
+                            <http:header headerName="x-yet-another-valid-header"/>
+                        </http:allowed-headers>
+                        <http:expose-headers>
+                            <http:header headerName="x-forwarded-for"/>
+                        </http:expose-headers>
+                    </http:origin>
+                    <http:origin url="http://www.the-origin-of-life.com" accessControlMaxAge="60">
+                        <http:allowed-methods>
+                            <http:method methodName="POST"/>
+                            <http:method methodName="GET"/>
+                        </http:allowed-methods>
+                        <http:allowed-headers>
+                            <http:header headerName="x-allow-origin"/>
+                        </http:allowed-headers>
+                        <http:expose-headers>
+                            <http:header headerName="x-forwarded-for"/>
+                        </http:expose-headers>
+                    </http:origin>
+                </http:origins>
+            </http:cors-interceptor>
+        </http:listener-interceptors>
+    </http:listener-config>
+
+    <http:listener-config name="defaultHttpListenerConfig" basePath="/api">
+        <http:listener-connection host="localhost" port="8081" />
+    </http:listener-config>
+
+    <http:request-config name="clientGlobalConfig">
+        <http:request-connection protocol="HTTPS" host="localhost" port="8082">
+            <tls:context >
+                <tls:trust-store path="tls/ssltest-cacerts.jks" password="changeit"/>
+                <tls:key-store path="tls/ssltest-keystore.jks" keyPassword="changeit" password="changeit"/>
+            </tls:context>
+        </http:request-connection>
+    </http:request-config>
+
+    <flow name="flowParameters" initialState="stopped" maxConcurrency="2"/>
+
+    <flow name="defaultParametersFlow">
+        <http:listener name="listener" config-ref="defaultHttpListenerConfig" path="/run"/>
+        <http:request config-ref="clientGlobalConfig" path="/" method="GET"/>
+    </flow>
+
+    <flow name="withInfrastructureParametersFlow">
+        <http:listener config-ref="defaultHttpListenerConfig" path="/runInfra" primaryNodeOnly="true">
+            <redelivery-policy maxRedeliveryCount="4" idExpression="#[payload.id]"/>
+            <non-repeatable-stream />
+            <reconnect />
+        </http:listener>
+        <http:request config-ref="clientGlobalConfig" path="/" method="GET" target="response" targetValue="#[payload.body]">
+            <error-mapping sourceType="HTTP:SECURITY" targetType="APP:GET_OUT" />
+            <non-repeatable-stream />
+            <reconnect frequency="3000" count="3" />
+        </http:request>
+    </flow>
+
+</mule>

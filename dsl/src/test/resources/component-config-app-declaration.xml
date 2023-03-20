@@ -10,19 +10,21 @@
   http://www.mulesoft.org/schema/mule/sockets http://www.mulesoft.org/schema/mule/sockets/current/mule-sockets.xsd http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd">
 
     <db:config name="dbConfig">
-        <db:derby-connection create="true"
+        <db:derby-connection cacheQueryTemplateSize="50"
+                             create="true"
                              database="target/muleEmbeddedDB"
                              subsubProtocol="directory"
                              transactionIsolation="NOT_CONFIGURED"
                              useXaTransactions="false">
             <db:pooling-profile acquireIncrement="1"
                                 maxPoolSize="10"
+                                maxStatements="0"
                                 maxWait="0"
                                 maxWaitUnit="SECONDS"
                                 minPoolSize="0"
                                 preparedStatementCacheSize="5"
-                                maxIdleTime="0">
-                <db:additional-properties/>
+                                maxIdleTime="0"
+                                testConnectionOnCheckout="false">
             </db:pooling-profile>
             <db:connection-properties>
                 <db:connection-property key="first" value="propertyOne"/>
@@ -30,12 +32,13 @@
             </db:connection-properties>
         </db:derby-connection>
     </db:config>
-    <http:listener-config basePath="/" name="httpListener">
+    <http:listener-config basePath="/" name="httpListener" rejectInvalidTransferEncoding="false">
         <http:listener-connection connectionIdleTimeout="30000"
                                   host="localhost"
                                   port="${port}"
                                   protocol="HTTPS"
-                                  usePersistentConnections="true">
+                                  usePersistentConnections="true"
+                                  readTimeout="30000">
             <tls:context>
                 <tls:trust-store algorithm="PKIX" insecure="false"/>
                 <tls:key-store keyPassword="changeit"
@@ -128,7 +131,7 @@
                 <db:parameter-type key="description" type="CLOB"/>
             </db:parameter-types>
             <db:input-parameters>
-                #[{{'description' : payload}}]
+                #[{'description' : payload}]
             </db:input-parameters>
         </db:insert>
 
@@ -143,7 +146,7 @@
             <wsc:consume config-ref="wsc-config" operation="GetCitiesByCountry" targetValue="#[payload]">
                 <wsc:message>
                     <wsc:body>#[payload]</wsc:body>
-                    <wsc:headers>#[{"headers": {con#headerIn: "Header In Value",con#headerInOut: "Header In Out Value"}]
+                    <wsc:headers>#[{"headers": {con#headerIn: "Header In Value",con#headerInOut: "Header In Out Value"}}]
                     </wsc:headers>
                     <wsc:attachments>#[{}]</wsc:attachments>
                 </wsc:message>
@@ -159,7 +162,7 @@
         <wsc:consume config-ref="wsc-config" operation="GetCitiesByCountry" targetValue="#[payload]">
             <wsc:message>
                 <wsc:body>#[payload]</wsc:body>
-                <wsc:headers>#[{"headers": {con#headerIn: "Header In Value",con#headerInOut: "Header In Out Value"}]
+                <wsc:headers>#[{"headers": {con#headerIn: "Header In Value",con#headerInOut: "Header In Out Value"}}]
                 </wsc:headers>
                 <wsc:attachments>#[{}]</wsc:attachments>
             </wsc:message>

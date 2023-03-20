@@ -6,7 +6,10 @@
  */
 package org.mule.test.el;
 
+import static org.mule.test.allure.AllureConstants.ExpressionLanguageFeature.EXPRESSION_LANGUAGE;
+
 import static java.lang.Thread.currentThread;
+
 import static org.junit.Assert.fail;
 
 import org.mule.runtime.api.exception.MuleRuntimeException;
@@ -17,6 +20,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
+import io.qameta.allure.Feature;
+
+@Feature(EXPRESSION_LANGUAGE)
 public class ExpressionLanguageConcurrencyTestCase extends AbstractIntegrationTestCase {
 
   @Override

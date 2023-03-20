@@ -11,7 +11,7 @@
         http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
 
     <test-components:queue-config name="WithOneWayEndpoints.out">
-        <test-components:connection />
+        <test-components:connection/>
     </test-components:queue-config>
 
 
@@ -19,11 +19,11 @@
         <first-successful>
             <route>
                 <validation:is-true expression="#[payload is String]"/>
-                <test:processor appendString=" is a string"/>
+                <test:processor appendString="#[' is a string']"/>
             </route>
             <route>
                 <validation:is-true expression="#[payload is Number]"/>
-                <test:processor appendString=" is a number"/>
+                <test:processor appendString="#[' is a number']"/>
             </route>
         </first-successful>
     </flow>
@@ -31,7 +31,7 @@
     <flow name="withOneWayEndpoints">
         <first-successful>
             <route>
-                <test:processor throwException="true"/>
+                <raise-error type="APP:EXPECTED"/>
             </route>
             <route>
                 <flow-ref name="withOneWayEndpoints-handler"/>
@@ -46,33 +46,132 @@
     <flow name="nestedFirstSuccessful">
         <first-successful>
             <route>
-                <test:processor throwException="true"/>
+                <raise-error type="APP:EXPECTED"/>
             </route>
             <route>
                 <first-successful>
                     <route>
-                        <test:processor throwException="true"/>
+                        <raise-error type="APP:EXPECTED"/>
                     </route>
                     <route>
                         <set-payload value="Error"/>
-                        <test:processor throwException="true"/>
+                        <raise-error type="APP:EXPECTED"/>
                     </route>
                 </first-successful>
             </route>
             <route>
                 <first-successful>
                     <route>
-                        <test:processor throwException="true"/>
+                        <raise-error type="APP:EXPECTED"/>
                     </route>
                     <route>
                         <set-payload value="#[payload ++ ' hello']"/>
                     </route>
                     <route>
-                        <test:processor throwException="true"/>
+                        <raise-error type="APP:EXPECTED"/>
                     </route>
                 </first-successful>
             </route>
         </first-successful>
         <logger message="ZARAZA" category="ERROR"/>
     </flow>
+
+    <flow name="firstSuccessfulInErrorHandler">
+        <raise-error type="APP:SOME"/>
+        <error-handler>
+            <on-error-continue>
+                <first-successful>
+                    <route>
+                        <set-payload value="La pelota no se mancha"/>
+                    </route>
+                    <route>
+                        <set-payload value="Yo me equivoque y pague"/>
+                    </route>
+                </first-successful>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="firstSuccessfulInErrorHandlerWithError">
+        <raise-error type="APP:EXPECTED"/>
+        <error-handler>
+            <on-error-continue>
+                <first-successful>
+                    <route>
+                        <set-payload value="La pelota no se mancha"/>
+                        <raise-error type="APP:EXPECTED"/>
+                    </route>
+                    <route>
+                        <set-payload value="Yo me equivoque y pague"/>
+                    </route>
+                </first-successful>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="firstSuccessfulInErrorHandlerWithFailing">
+        <raise-error type="APP:EXPECTED"/>
+        <error-handler>
+            <on-error-continue>
+                <first-successful>
+                    <route>
+                        <set-payload value="La pelota no se mancha"/>
+                        <raise-error type="APP:EXPECTED"/>
+                    </route>
+                    <route>
+                        <set-payload value="Yo me equivoque y pague"/>
+                        <validation:is-true expression="#[false]"/>
+                    </route>
+                </first-successful>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="firstSuccessfulInParallelForEach">
+        <set-payload value="false"/>
+        <parallel-foreach collection="#[[1]]">
+            <first-successful>
+                <!-- TODO(MULE-19244): Add validation -->
+                <route>
+                    <test:processor processingType="CPU_INTENSIVE"/>
+                    <set-payload value="true"/>
+                </route>
+            </first-successful>
+        </parallel-foreach>
+        <set-variable variableName="wasExecuted" value="#[payload[0].payload]"/>
+        <set-payload value="Se te escapo la tortuga"/>
+    </flow>
+
+    <flow name="firstSuccessfulAndRaiseErrorInsideScatterGather">
+        <scatter-gather>
+            <route>
+                <first-successful>
+                    <route>
+                        <logger/>
+                    </route>
+                </first-successful>
+                <raise-error type="MULE:ANY"
+                             description="raise-error after first-successful inside a scatter-gather route should error."/>
+            </route>
+            <route>
+                <logger/>
+            </route>
+        </scatter-gather>
+    </flow>
+
+    <flow name="FirstSuccessfulToFlowWithError">
+        <first-successful>
+            <route>
+                <flow-ref name="flowWithError"/>
+            </route>
+            <route>
+                <set-payload value="A Di Maria me lo resistian"/>
+            </route>
+        </first-successful>
+    </flow>
+
+    <flow name="flowWithError">
+        <raise-error type="APP:SOME"/>
+    </flow>
+
 </mule>

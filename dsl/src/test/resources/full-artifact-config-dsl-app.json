@@ -28,7 +28,7 @@
   "name": "General",
   "customConfigurationParameters": [],
   "metadataProperties": {},
-  "parameters": [{"name":"name","metadataProperties":{},"value":{"text":"myString","isCData":false,"type":"STRING"}},{"name":"class","metadataProperties":{},"value":{"text":"java.lang.String","isCData":false,"type":"STRING"}}]
+  "parameters": [{"name":"name","metadataProperties":{},"value":{"text":"myString","isCData":false,"type":"STRING"}},{"name":"class","metadataProperties":{},"value":{"text":"java.lang.String","isCData":false,"type":"STRING"}},{"name":"property","metadataProperties":{},"value":{"fields":{}}}]
 }
       ],
       "components": []
@@ -166,7 +166,7 @@
   "name": "General",
   "customConfigurationParameters": [],
   "metadataProperties": {},
-  "parameters": [{"name":"poolingProfile","metadataProperties":{},"value":{"fields":{"maxPoolSize":{"text":"10","isCData":false,"type":"NUMBER"}},"typeId":"org.mule.extension.db.api.config.DbPoolingProfile"}}]
+  "parameters": [{"name":"poolingProfile","metadataProperties":{},"value":{"fields":{"maxPoolSize":{"text":"10","isCData":false,"type":"NUMBER"}},"typeId":"org.mule.db.commons.shaded.api.config.DbPoolingProfile"}}]
 }
         ]
       }
@@ -200,7 +200,7 @@
   "name": "General",
   "customConfigurationParameters": [],
   "metadataProperties": {},
-  "parameters": [{"name":"expirationPolicy","metadataProperties":{},"value":{"fields":{"maxIdleTime":{"text":"1","isCData":false,"type":"NUMBER"},"timeUnit":{"text":"MINUTES","isCData":false,"type":"STRING"}}}}]
+  "parameters": [{"name":"expirationPolicy","metadataProperties":{},"value":{"fields":{"maxIdleTime":{"text":"1","isCData":false,"type":"NUMBER"},"timeUnit":{"text":"MINUTES","isCData":false,"type":"STRING"}},"typeId":"org.mule.runtime.extension.api.runtime.ExpirationPolicy"}}]
 }
       ],
       "connection": {
@@ -244,13 +244,13 @@
   "name": "Connection",
   "customConfigurationParameters": [],
   "metadataProperties": {},
-  "parameters": [{"name":"database","metadataProperties":{},"value":{"text":"target/muleEmbeddedDB","isCData":false,"type":"STRING"}},{"name":"create","metadataProperties":{},"value":{"text":"true","isCData":false,"type":"BOOLEAN"}},{"name":"reconnection","metadataProperties":{},"value":{"fields":{"failsDeployment":{"text":"true","isCData":false,"type":"BOOLEAN"},"reconnectionStrategy":{"fields":{"count":{"text":"1","isCData":false,"type":"NUMBER"},"frequency":{"text":"0","isCData":false,"type":"NUMBER"}},"typeId":"reconnect"}},"typeId":"reconnection"}},{"name":"connectionProperties","metadataProperties":{},"value":{"fields":{"first":{"text":"propertyOne","isCData":false,"type":"STRING"},"second":{"text":"propertyTwo","isCData":false,"type":"STRING"}}}}]
+  "parameters": [{"name":"database","metadataProperties":{},"value":{"text":"target/muleEmbeddedDB","isCData":false,"type":"STRING"}},{"name":"create","metadataProperties":{},"value":{"text":"true","isCData":false,"type":"BOOLEAN"}},{"name":"connectionProperties","metadataProperties":{},"value":{"fields":{"first":{"text":"propertyOne","isCData":false,"type":"STRING"},"second":{"text":"propertyTwo","isCData":false,"type":"STRING"}}}},{"name":"reconnection","metadataProperties":{},"value":{"fields":{"failsDeployment":{"text":"true","isCData":false,"type":"BOOLEAN"},"reconnectionStrategy":{"fields":{"count":{"text":"1","isCData":false,"type":"NUMBER"},"frequency":{"text":"0","isCData":false,"type":"NUMBER"}},"typeId":"reconnect"}},"typeId":"Reconnection"}}]
 },
           {
   "name": "General",
   "customConfigurationParameters": [],
   "metadataProperties": {},
-  "parameters": [{"name":"poolingProfile","metadataProperties":{},"value":{"fields":{"maxPoolSize":{"text":"10","isCData":false,"type":"NUMBER"}},"typeId":"org.mule.extension.db.api.config.DbPoolingProfile"}}]
+  "parameters": [{"name":"poolingProfile","metadataProperties":{},"value":{"fields":{"maxPoolSize":{"text":"10","isCData":false,"type":"NUMBER"}},"typeId":"org.mule.db.commons.shaded.api.config.DbPoolingProfile"}}]
 }
         ]
       }
@@ -287,7 +287,7 @@
   "name": "General",
   "customConfigurationParameters": [],
   "metadataProperties": {},
-  "parameters": [{"name":"tlsContext","metadataProperties":{},"value":{"fields":{"key-store":{"fields":{"path":{"text":"ssltest-keystore.jks","isCData":false,"type":"STRING"},"password":{"text":"changeit","isCData":false,"type":"STRING"},"keyPassword":{"text":"changeit","isCData":false,"type":"STRING"}}},"trust-store":{"fields":{"insecure":{"text":"true","isCData":false,"type":"BOOLEAN"}}},"revocation-check":{"fields":{"onlyEndEntities":{"text":"true","isCData":false,"type":"BOOLEAN"}},"typeId":"standard-revocation-check"}}}}]
+  "parameters": [{"name":"tlsContext","metadataProperties":{},"value":{"fields":{"key-store":{"fields":{"path":{"text":"ssltest-keystore.jks","isCData":false,"type":"STRING"},"password":{"text":"changeit","isCData":false,"type":"STRING"},"keyPassword":{"text":"changeit","isCData":false,"type":"STRING"}},"typeId":"KeyStore"},"trust-store":{"fields":{"insecure":{"text":"true","isCData":false,"type":"BOOLEAN"}},"typeId":"TrustStore"},"revocation-check":{"fields":{"onlyEndEntities":{"text":"true","isCData":false,"type":"BOOLEAN"}},"typeId":"standard-revocation-check"}},"typeId":"org.mule.runtime.api.tls.TlsContextFactory"}}]
 }
         ]
       }
@@ -376,7 +376,7 @@
   "name": "General",
   "customConfigurationParameters": [],
   "metadataProperties": {},
-  "parameters": [{"name":"path","metadataProperties":{},"value":{"text":"testBuilder","isCData":false,"type":"STRING"}},{"name":"redeliveryPolicy","metadataProperties":{},"value":{"fields":{"useSecureHash":{"text":"true","isCData":false,"type":"BOOLEAN"},"maxRedeliveryCount":{"text":"2","isCData":false,"type":"NUMBER"}}}}]
+  "parameters": [{"name":"path","metadataProperties":{},"value":{"text":"testBuilder","isCData":false,"type":"STRING"}},{"name":"redeliveryPolicy","metadataProperties":{},"value":{"fields":{"useSecureHash":{"text":"true","isCData":false,"type":"BOOLEAN"},"maxRedeliveryCount":{"text":"2","isCData":false,"type":"NUMBER"}},"typeId":"RedeliveryPolicy"}}]
 },
       {
   "name": "Connection",
@@ -542,7 +542,7 @@
   "name": "Query",
   "customConfigurationParameters": [],
   "metadataProperties": {},
-  "parameters": [{"name":"sql","metadataProperties":{},"value":{"text":"INSERT INTO PLANET(POSITION, NAME, DESCRIPTION) VALUES (777, \u0027Pluto\u0027, :description)","isCData":false,"type":"STRING"}},{"name":"parameterTypes","metadataProperties":{},"value":[{"fields":{"type":{"text":"CLOB","isCData":false,"type":"STRING"},"key":{"text":"description","isCData":false,"type":"STRING"}},"typeId":"org.mule.extension.db.api.param.ParameterType"}]},{"name":"inputParameters","metadataProperties":{},"value":{"text":"\n                #[{{\u0027description\u0027 : payload}}]\n            ","isCData":false,"type":"STRING"}}]
+  "parameters": [{"name":"inputParameters","metadataProperties":{},"value":{"text":"#[{{\u0027description\u0027 : payload}}]","isCData":false,"type":"STRING"}},{"name":"sql","metadataProperties":{},"value":{"text":"INSERT INTO PLANET(POSITION, NAME, DESCRIPTION) VALUES (777, \u0027Pluto\u0027, :description)","isCData":false,"type":"STRING"}},{"name":"parameterTypes","metadataProperties":{},"value":[{"fields":{"type":{"text":"CLOB","isCData":false,"type":"STRING"},"key":{"text":"description","isCData":false,"type":"STRING"}},"typeId":"org.mule.extension.db.api.param.ParameterType"}]}]
 }
     ],
     "configRef": "dbConfig",
@@ -816,7 +816,7 @@
   "name": "General",
   "customConfigurationParameters": [],
   "metadataProperties": {},
-  "parameters": [{"name":"objectStore","metadataProperties":{},"value":{"text":"persistentStore","isCData":false,"type":"STRING"}},{"name":"failOnNullValue","metadataProperties":{},"value":{"text":"#[vars.failOnNullValue]","isCData":false,"type":"BOOLEAN"}},{"name":"key","metadataProperties":{},"value":{"text":"key","isCData":false,"type":"STRING"}},{"name":"value","metadataProperties":{},"value":{"text":"\n                #[payload]\n            ","isCData":false,"type":"STRING"}}]
+  "parameters": [{"name":"objectStore","metadataProperties":{},"value":{"text":"persistentStore","isCData":false,"type":"STRING"}},{"name":"failOnNullValue","metadataProperties":{},"value":{"text":"#[vars.failOnNullValue]","isCData":false,"type":"BOOLEAN"}},{"name":"key","metadataProperties":{},"value":{"text":"key","isCData":false,"type":"STRING"}},{"name":"value","metadataProperties":{},"value":{"text":"#[payload]","isCData":false,"type":"STRING"}}]
 }
     ],
     "components": []
@@ -867,7 +867,7 @@
   "name": "General",
   "customConfigurationParameters": [],
   "metadataProperties": {},
-  "parameters": [{"name":"objectStore","metadataProperties":{},"value":{"text":"persistentStore","isCData":false,"type":"STRING"}},{"name":"failOnNullValue","metadataProperties":{},"value":{"text":"#[vars.failOnNullValue]","isCData":false,"type":"BOOLEAN"}},{"name":"key","metadataProperties":{},"value":{"text":"key","isCData":false,"type":"STRING"}},{"name":"value","metadataProperties":{},"value":{"text":"\n                #[payload]\n            ","isCData":false,"type":"STRING"}}]
+  "parameters": [{"name":"objectStore","metadataProperties":{},"value":{"text":"persistentStore","isCData":false,"type":"STRING"}},{"name":"failOnNullValue","metadataProperties":{},"value":{"text":"#[vars.failOnNullValue]","isCData":false,"type":"BOOLEAN"}},{"name":"key","metadataProperties":{},"value":{"text":"key","isCData":false,"type":"STRING"}},{"name":"value","metadataProperties":{},"value":{"text":"#[payload]","isCData":false,"type":"STRING"}}]
 }
     ],
     "components": []
@@ -918,7 +918,7 @@
   "name": "General",
   "customConfigurationParameters": [],
   "metadataProperties": {},
-  "parameters": [{"name":"objectStore","metadataProperties":{},"value":{"text":"persistentStore","isCData":false,"type":"STRING"}},{"name":"failOnNullValue","metadataProperties":{},"value":{"text":"#[vars.failOnNullValue]","isCData":false,"type":"BOOLEAN"}},{"name":"key","metadataProperties":{},"value":{"text":"key","isCData":false,"type":"STRING"}},{"name":"value","metadataProperties":{},"value":{"text":"\n                #[payload]\n            ","isCData":false,"type":"STRING"}}]
+  "parameters": [{"name":"objectStore","metadataProperties":{},"value":{"text":"persistentStore","isCData":false,"type":"STRING"}},{"name":"failOnNullValue","metadataProperties":{},"value":{"text":"#[vars.failOnNullValue]","isCData":false,"type":"BOOLEAN"}},{"name":"key","metadataProperties":{},"value":{"text":"key","isCData":false,"type":"STRING"}},{"name":"value","metadataProperties":{},"value":{"text":"#[payload]","isCData":false,"type":"STRING"}}]
 }
     ],
     "components": []

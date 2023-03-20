@@ -91,7 +91,7 @@
     <flow name="concurrency-error-handling">
         <logger message="#['Running for ' ++ correlationId]"/>
         <until-successful maxRetries="1" millisBetweenRetries="100">
-            <test:processor throwException="true"/>
+            <raise-error type="APP:EXPECTED"/>
         </until-successful>
         <error-handler>
             <on-error-continue type="RETRY_EXHAUSTED">
@@ -111,7 +111,7 @@
     </flow>
 
     <flow name="target-mp">
-        <test:processor appendString="ERROR" />
+        <test:processor appendString="ERROR"/>
     </flow>
 
     <flow name="target-flow">
@@ -120,14 +120,14 @@
 
     <flow name="synchronous">
         <until-successful millisBetweenRetries="100">
-            <test:processor throwException="true"/>
+            <raise-error type="APP:EXPECTED"/>
         </until-successful>
     </flow>
 
     <flow name="synchronous-with-retry">
         <until-successful maxRetries="3" millisBetweenRetries="0">
             <test-components:queue-push config-ref="untilSuccessful"/>
-            <test:processor throwException="true"/>
+            <raise-error type="APP:EXPECTED"/>
         </until-successful>
         <error-handler>
             <on-error-propagate type="RETRY_EXHAUSTED">
@@ -140,7 +140,7 @@
         <set-payload value="3"/>
         <until-successful maxRetries="#[payload + 2]" millisBetweenRetries="0">
             <test-components:queue-push config-ref="untilSuccessfulExpression"/>
-            <test:processor throwException="true"/>
+            <raise-error type="APP:EXPECTED"/>
         </until-successful>
         <error-handler>
             <on-error-propagate type="RETRY_EXHAUSTED">
@@ -163,7 +163,7 @@
     <flow name="synchronous-without-retry">
         <until-successful maxRetries="0" millisBetweenRetries="0">
             <test-components:queue-push config-ref="untilSuccessfulNoRetry"/>
-            <test:processor throwException="true"/>
+            <raise-error type="APP:EXPECTED"/>
         </until-successful>
         <error-handler>
             <on-error-propagate type="RETRY_EXHAUSTED">
@@ -175,7 +175,7 @@
     <flow name="measureSynchronousWait">
         <until-successful maxRetries="1" millisBetweenRetries="1000">
             <flow-ref name="wait-measure"/>
-            <test:processor throwException="true"/>
+            <raise-error type="APP:EXPECTED"/>
         </until-successful>
     </flow>
 
@@ -196,7 +196,7 @@
             <test-components:queue-push config-ref="outerScope"/>
             <until-successful maxRetries="2" millisBetweenRetries="10">
                 <test-components:queue-push config-ref="innerScope"/>
-                <test:processor throwException="true"/>
+                <raise-error type="APP:EXPECTED"/>
             </until-successful>
         </until-successful>
         <error-handler>

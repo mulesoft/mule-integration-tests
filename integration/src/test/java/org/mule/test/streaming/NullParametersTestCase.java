@@ -10,7 +10,6 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.http.api.HttpConstants.Method.GET;
 import static org.mule.test.allure.AllureConstants.StreamingFeature.STREAMING;
-import static org.mule.test.allure.AllureConstants.StreamingFeature.StreamingStory.STATISTICS;
 
 import org.mule.runtime.http.api.HttpService;
 import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;
@@ -28,10 +27,8 @@ import org.junit.Test;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Issue;
-import io.qameta.allure.Story;
 
 @Feature(STREAMING)
-@Story(STATISTICS)
 public class NullParametersTestCase extends AbstractIntegrationTestCase {
 
   @Rule

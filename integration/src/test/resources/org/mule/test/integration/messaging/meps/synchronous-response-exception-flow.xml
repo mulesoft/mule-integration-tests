@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:mule="http://www.mulesoft.org/schema/mule/core"
-    xmlns:test="http://www.mulesoft.org/schema/mule/test"
     xsi:schemaLocation="
-       http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 
     <flow name="ComponentException">
         <!-- Component throws an exception -->
-        <test:processor throwException="true" />
+        <raise-error type="APP:EXPECTED"/>
     </flow>
 
     <flow name="FlowRefInvalidException">

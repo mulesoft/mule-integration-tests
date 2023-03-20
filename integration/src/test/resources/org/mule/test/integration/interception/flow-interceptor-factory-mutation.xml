@@ -8,17 +8,17 @@
     <flow name="mutated">
         <flow-ref name="#[vars.targetFlow]"/>
         <choice>
-            <when expression="#[vars.targetFlow == 'mutatedAfter' || vars.targetFlow == 'mutatedBeforeAfter']">
+            <when expression="#[vars.targetFlow == 'mutatedAfter' or vars.targetFlow == 'mutatedBeforeAfter']">
                 <choice>
                     <when expression="#[vars.mutatedAfter == null]">
-                        <raise-error type="TEST:ASSERTION"/>
+                        <raise-error type="APP:ASSERTION"/>
                     </when>
                 </choice>
             </when>
             <otherwise>
                 <choice>
                     <when expression="#[vars.mutatedAfter != null]">
-                        <raise-error type="TEST:ASSERTION"/>
+                        <raise-error type="APP:ASSERTION"/>
                     </when>
                 </choice>
             </otherwise>
@@ -29,7 +29,7 @@
     <flow name="mutatedNone">
         <choice>
             <when expression="#[vars.mutatedBefore != null]">
-                <raise-error type="TEST:ASSERTION"/>
+                <raise-error type="APP:ASSERTION"/>
             </when>
         </choice>
     </flow>
@@ -37,7 +37,7 @@
     <flow name="mutatedBefore">
         <choice>
             <when expression="#[vars.mutatedBefore == null]">
-                <raise-error type="TEST:ASSERTION"/>
+                <raise-error type="APP:ASSERTION"/>
             </when>
         </choice>
     </flow>
@@ -45,7 +45,7 @@
     <flow name="mutatedAfter">
         <choice>
             <when expression="#[vars.mutatedBefore != null]">
-                <raise-error type="TEST:ASSERTION"/>
+                <raise-error type="APP:ASSERTION"/>
             </when>
         </choice>
     </flow>
@@ -53,7 +53,7 @@
     <flow name="mutatedBeforeAfter">
         <choice>
             <when expression="#[vars.mutatedBefore == null]">
-                <raise-error type="TEST:ASSERTION"/>
+                <raise-error type="APP:ASSERTION"/>
             </when>
         </choice>
     </flow>

@@ -7,12 +7,12 @@
       http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd
                http://www.mulesoft.org/schema/mule/heisenberg http://www.mulesoft.org/schema/mule/heisenberg/current/mule-heisenberg.xsd">
 
-    <os:config name="osConfig" />
+    <os:config name="osConfig"/>
 
     <os:object-store name="bank" persistent="false" config-ref="osConfig"/>
 
     <flow name="storeMoneyOnGlobalStore">
-        <heisenberg:store-money money="1234" objectStore="bank" />
+        <heisenberg:store-money money="1234" objectStore="bank"/>
     </flow>
 
     <flow name="storeMoneyOnPrivateStore">
@@ -23,4 +23,11 @@
         </heisenberg:store-money>
     </flow>
 
+    <flow name="storeUsingMuleObjectStoreManager">
+        <heisenberg:store-money-using-mule-object-store-manager objectStoreName="extensionObjectStore" money="1500"/>
+    </flow>
+
+    <flow name="storeUsingSdkObjectStoreManager">
+        <heisenberg:store-money-using-sdk-object-store-manager objectStoreName="extensionObjectStore" money="2500"/>
+    </flow>
 </mule>

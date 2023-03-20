@@ -19,7 +19,7 @@ import org.mule.runtime.app.declaration.api.fluent.ElementDeclarer;
 import org.mule.runtime.app.declaration.api.fluent.ParameterListValue;
 import org.mule.runtime.app.declaration.api.fluent.ParameterObjectValue;
 import org.mule.runtime.ast.api.ComponentAst;
-import org.mule.runtime.config.api.dsl.model.DslElementModel;
+import org.mule.runtime.metadata.api.dsl.DslElementModel;
 
 import java.util.List;
 import java.util.function.Consumer;

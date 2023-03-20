@@ -6,11 +6,17 @@
  */
 package org.mule.test.integration.exceptions;
 
+import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
+import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ErrorHandlingStory.ERROR_HANDLER;
+
+import static org.hamcrest.collection.IsIterableContainingInRelativeOrder.containsInRelativeOrder;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
+import org.mule.runtime.api.lifecycle.Disposable;
 import org.mule.runtime.api.lifecycle.Initialisable;
 import org.mule.runtime.api.lifecycle.Lifecycle;
+import org.mule.runtime.api.lifecycle.Startable;
 import org.mule.runtime.api.lifecycle.Stoppable;
 import org.mule.runtime.core.api.construct.FlowConstruct;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -21,8 +27,12 @@ import java.util.Collection;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 import org.junit.Test;
 
+@Feature(ERROR_HANDLING)
+@Story(ERROR_HANDLER)
 public class ErrorHandlerLifecycleTestCase extends AbstractIntegrationTestCase {
 
   @Override
@@ -49,6 +59,14 @@ public class ErrorHandlerLifecycleTestCase extends AbstractIntegrationTestCase {
   @Named("flowD")
   private FlowConstruct flowD;
 
+  @Inject
+  @Named("flowE")
+  private FlowConstruct flowE;
+
+  @Inject
+  @Named("flowF")
+  private FlowConstruct flowF;
+
   @Test
   public void testLifecycleErrorHandlerInFlow() throws Exception {
     // Trigger the flows so the lifecycle-trackers are added to the registry
@@ -73,11 +91,12 @@ public class ErrorHandlerLifecycleTestCase extends AbstractIntegrationTestCase {
 
     Collection<String> defaultEhErrorHandlerPhases = trackersRegistry.get("esAErrorHandlerTracker").getCalledPhases();
 
-    assertThat(defaultEhErrorHandlerPhases.contains(Initialisable.PHASE_NAME), is(true));
+    assertThat(defaultEhErrorHandlerPhases, containsInRelativeOrder(Initialisable.PHASE_NAME, Startable.PHASE_NAME));
 
     ((Lifecycle) flowC).stop();
+    ((Lifecycle) flowC).dispose();
 
-    assertThat(defaultEhErrorHandlerPhases.contains(Stoppable.PHASE_NAME), is(true));
+    assertThat(defaultEhErrorHandlerPhases, containsInRelativeOrder(Stoppable.PHASE_NAME, Disposable.PHASE_NAME));
   }
 
   @Test
@@ -86,11 +105,20 @@ public class ErrorHandlerLifecycleTestCase extends AbstractIntegrationTestCase {
 
     Collection<String> defaultEhErrorHandlerPhases = trackersRegistry.get("defaultEhErrorHandlerTracker").getCalledPhases();
 
-    assertThat(defaultEhErrorHandlerPhases.contains(Initialisable.PHASE_NAME), is(true));
+    assertThat(defaultEhErrorHandlerPhases, containsInRelativeOrder(Initialisable.PHASE_NAME, Startable.PHASE_NAME));
 
     ((Lifecycle) flowD).stop();
+    ((Lifecycle) flowD).dispose();
 
-    assertThat(defaultEhErrorHandlerPhases.contains(Stoppable.PHASE_NAME), is(true));
+    assertThat(defaultEhErrorHandlerPhases.contains(Stoppable.PHASE_NAME), is(false));
+    assertThat(defaultEhErrorHandlerPhases.contains(Disposable.PHASE_NAME), is(false));
+
+    ((Lifecycle) flowE).stop();
+    ((Lifecycle) flowE).dispose();
+
+    ((Lifecycle) flowF).stop();
+    ((Lifecycle) flowF).dispose();
+
+    assertThat(defaultEhErrorHandlerPhases, containsInRelativeOrder(Stoppable.PHASE_NAME, Disposable.PHASE_NAME));
   }
-
 }

@@ -6,9 +6,11 @@
  */
 package org.mule.test.routing;
 
+import static java.lang.System.lineSeparator;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
-import static org.apache.commons.io.IOUtils.LINE_SEPARATOR;
+
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.startsWith;
@@ -27,13 +29,16 @@ import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ScatterGatherStory.SCATTER_GATHER;
 import static org.mule.test.routing.ThreadCaptor.getCapturedThreads;
 
-import org.mule.functional.api.exception.FunctionalTestException;
+import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.exception.ComposedErrorException;
+import org.mule.runtime.api.exception.DefaultMuleException;
+import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.util.concurrent.Latch;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
+import org.mule.runtime.core.api.processor.Processor;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -56,7 +61,7 @@ import io.qameta.allure.Story;
 @Story(SCATTER_GATHER)
 public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
 
-  private static final String EXCEPTION_MESSAGE_TITLE_PREFIX = "Exception(s) were found for route(s): " + LINE_SEPARATOR;
+  private static final String EXCEPTION_MESSAGE_TITLE_PREFIX = "Error(s) were found for route(s):" + lineSeparator();
 
   @Rule
   public ExpectedException expectedException = none();
@@ -112,8 +117,8 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
   @Description("An error in a route results in a CompositeRoutingException containing details of exceptions.")
   public void routeWithException() throws Exception {
     assertRouteException("routeWithException", EXCEPTION_MESSAGE_TITLE_PREFIX
-        + "\t1: org.mule.functional.api.exception.FunctionalTestException: Functional Test Service Exception",
-                         FunctionalTestException.class);
+        + "\tRoute 1: org.mule.runtime.api.exception.DefaultMuleException: An error occurred.",
+                         DefaultMuleException.class);
   }
 
   @Test
@@ -121,15 +126,15 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
   public void routeWithExceptionWithMessage() throws Exception {
     assertRouteException("routeWithExceptionWithMessage",
                          EXCEPTION_MESSAGE_TITLE_PREFIX
-                             + "\t1: org.mule.functional.api.exception.FunctionalTestException: I'm a message",
-                         FunctionalTestException.class);
+                             + "\tRoute 1: org.mule.runtime.api.exception.DefaultMuleException: I'm a message",
+                         DefaultMuleException.class);
   }
 
   @Test
   @Description("An error in a route results in a CompositeRoutingException containing details of exceptions.")
   public void routeWithNonMuleException() throws Exception {
     assertRouteException("routeWithNonMuleException",
-                         EXCEPTION_MESSAGE_TITLE_PREFIX + "\t1: java.lang.NullPointerException: nonMule",
+                         EXCEPTION_MESSAGE_TITLE_PREFIX + "\tRoute 1: java.lang.NullPointerException: nonMule",
                          NullPointerException.class);
   }
 
@@ -138,7 +143,7 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
   public void routeWithExpressionException() throws Exception {
     assertRouteException("routeWithExpressionException",
                          message -> assertThat(message, both(containsString(EXCEPTION_MESSAGE_TITLE_PREFIX)).and(
-                                                                                                                 containsString("1: org.mule.runtime.core.api.expression.ExpressionRuntimeException: \"Script 'invalidExpr ' has errors:"))),
+                                                                                                                 containsString("1: org.mule.runtime.core.api.expression.ExpressionRuntimeException: \"Script 'invalidExpr' has errors:"))),
                          ExpressionRuntimeException.class);
   }
 
@@ -147,8 +152,8 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
   public void routeWithExceptionInSequentialProcessing() throws Exception {
     assertRouteException("routeWithExceptionInSequentialProcessing",
                          EXCEPTION_MESSAGE_TITLE_PREFIX
-                             + "\t1: org.mule.functional.api.exception.FunctionalTestException: Functional Test Service Exception",
-                         FunctionalTestException.class);
+                             + "\tRoute 1: org.mule.runtime.api.exception.DefaultMuleException: An error occurred.",
+                         DefaultMuleException.class);
   }
 
   private void assertRouteException(String flow, String exceptionMessageStart, Class exceptionType) throws Exception {
@@ -257,4 +262,22 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
     flowRunner("foreachWithinScatterGatherWithSdkOperation").run();
   }
 
+  @Test
+  @Issue("W-10619784")
+  @Description("With On Error continue, even when forEach has failed with an error within any route, " +
+      "each route should be processed accordingly.")
+  public void foreachErrorInScatterGather() throws Exception {
+    CoreEvent event = flowRunner("ForeachErrorInScatterGather").run();
+    assertThat(event.getVariables().get("variable0").getValue(), equalTo(1));
+    assertThat(event.getVariables().get("variable1").getValue(), equalTo(1));
+  }
+
+
+  public static final class ThrowNpeProcessor extends AbstractComponent implements Processor {
+
+    @Override
+    public CoreEvent process(CoreEvent event) throws MuleException {
+      throw new NullPointerException("nonMule");
+    }
+  }
 }

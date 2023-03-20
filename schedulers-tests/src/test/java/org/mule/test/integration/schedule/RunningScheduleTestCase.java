@@ -10,6 +10,8 @@ package org.mule.test.integration.schedule;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mule.test.allure.AllureConstants.SchedulerFeature.SCHEDULER;
+import static org.mule.test.allure.AllureConstants.SchedulerFeature.SchedulerStories.SCHEDULED_FLOW_EXECUTION;
 
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.tck.probe.JUnitLambdaProbe;
@@ -18,12 +20,17 @@ import org.mule.test.AbstractSchedulerTestCase;
 
 import org.junit.Test;
 
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
+
 /**
  * This test checks that a Scheduler can be stopped, executed and started. Also shows how a customer can set his own scheduler in
  * mule config.
  *
  * It also shows the way users can add a new Scheduler as a spring bean.
  */
+@Feature(SCHEDULER)
+@Story(SCHEDULED_FLOW_EXECUTION)
 public class RunningScheduleTestCase extends AbstractSchedulerTestCase {
 
   public static final String SCHEDULER_NAME = "testScheduler";

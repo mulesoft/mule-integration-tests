@@ -52,7 +52,7 @@ import io.qameta.allure.Feature;
 public class HttpListenerAuthenticationTestCase extends MuleArtifactFunctionalTestCase
     implements IntegrationTestCaseRunnerConfig {
 
-  private static final String BASIC_REALM_MULE_REALM = "Basic realm=\"mule-realm\"";
+  private static final String BASIC_REALM_MULE_REALM = "Basic realm=\"mule-realm\", charset=\"UTF-8\"";
   private static final String VALID_USER = "user";
   private static final String VALID_PASSWORD = "password";
   private static final String INVALID_PASSWORD = "invalidPassword";

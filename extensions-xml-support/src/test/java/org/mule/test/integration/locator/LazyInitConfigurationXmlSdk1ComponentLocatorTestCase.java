@@ -15,14 +15,14 @@ import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.component.location.Location.builder;
 import static org.mule.runtime.api.component.location.Location.builderFromStringRepresentation;
-import static org.mule.runtime.config.api.SpringXmlConfigurationBuilderFactory.createConfigurationBuilder;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentLocatorStory.SEARCH_CONFIGURATION;
+import static org.mule.test.allure.AllureConstants.LazyInitializationFeature.LAZY_INITIALIZATION;
+import static org.mule.test.allure.AllureConstants.XmlSdk.XML_SDK;
 
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.config.api.LazyComponentInitializer;
-import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.IntegrationTestCaseRunnerConfig;
@@ -36,10 +36,11 @@ import org.junit.Test;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
+import io.qameta.allure.Features;
 import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
 
-@Feature(CONFIGURATION_COMPONENT_LOCATOR)
+@Features({@Feature(XML_SDK), @Feature(LAZY_INITIALIZATION), @Feature(CONFIGURATION_COMPONENT_LOCATOR)})
 @Story(SEARCH_CONFIGURATION)
 public class LazyInitConfigurationXmlSdk1ComponentLocatorTestCase extends MuleArtifactFunctionalTestCase
     implements IntegrationTestCaseRunnerConfig {
@@ -53,7 +54,7 @@ public class LazyInitConfigurationXmlSdk1ComponentLocatorTestCase extends MuleAr
   public SystemProperty path = new SystemProperty("path", "path");
 
 
-  private static final int TOTAL_NUMBER_OF_LOCATIONS = 38;
+  private static final int TOTAL_NUMBER_OF_LOCATIONS = 33;
 
   @Inject
   private LazyComponentInitializer lazyComponentInitializer;
@@ -72,10 +73,8 @@ public class LazyInitConfigurationXmlSdk1ComponentLocatorTestCase extends MuleAr
   }
 
   @Override
-  protected ConfigurationBuilder getBuilder() throws Exception {
-    final ConfigurationBuilder configurationBuilder = createConfigurationBuilder(getConfigFiles(), true);
-    configureSpringXmlConfigurationBuilder(configurationBuilder);
-    return configurationBuilder;
+  public boolean disableXmlValidations() {
+    return true;
   }
 
   @Description("Lazy init should not create components until an operation is done")
@@ -92,17 +91,13 @@ public class LazyInitConfigurationXmlSdk1ComponentLocatorTestCase extends MuleAr
                containsInAnyOrder("tokenManagerConfig-sample-config",
                                   "github-httpreq-config-sample-config",
                                   "github-httpreq-config-sample-config/connection",
-                                  "github-httpreq-config-sample-config/connection/0",
                                   "github-httpreq-config-sample-config/connection/0/0",
                                   "get-channels/processors/0",
-                                  "get-channels/processors/0/0",
-                                  "get-channels/processors/0/1",
                                   "get-channels/processors/1",
 
                                   "sample-config",
                                   "GetChannels",
                                   "GetChannels/source",
-                                  "GetChannels/source/0",
                                   "GetChannels/source/0/0",
                                   "GetChannels/processors/0",
 
@@ -116,7 +111,6 @@ public class LazyInitConfigurationXmlSdk1ComponentLocatorTestCase extends MuleAr
 
                                   "request-with-oauth-auth-code-config-scConfig",
                                   "request-with-oauth-auth-code-config-scConfig/connection",
-                                  "request-with-oauth-auth-code-config-scConfig/connection/0",
                                   "request-with-oauth-auth-code-config-scConfig/connection/0/0",
                                   "request-with-oauth-auth-code/processors/0",
                                   "tokenManagerConfig-scConfig",

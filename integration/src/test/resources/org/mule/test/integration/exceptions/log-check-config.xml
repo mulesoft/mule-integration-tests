@@ -84,7 +84,7 @@
 
     <flow name="unknownFiltered" initialState="stopped">
         <test-components:skeleton-source/>
-        <test:processor throwException="true" exceptionToThrow="java.lang.NullPointerException"/>
+        <flow-ref name="throwNpe"/>
         <error-handler>
             <test:on-error-check-log>
                 <test:check-summary>
@@ -100,7 +100,7 @@
 
     <flow name="unknownFull" initialState="stopped">
         <test-components:skeleton-source/>
-        <test:processor throwException="true" exceptionToThrow="java.lang.NullPointerException"/>
+        <flow-ref name="throwNpe"/>
         <error-handler>
             <test:on-error-check-log>
                 <test:check-summary>
@@ -254,7 +254,7 @@
                                                     <test:throw exception="org.mule.test.integration.exceptions.LogCheckTestCase.CustomException" error="ANY"></test:throw>
                                                 </until-successful>
                         Error type            : MULE:RETRY_EXHAUSTED
-                        Caused By             : MULE:ANY: Error
+                        Caused by             : MULE:ANY: Error
                         FlowStack : at suppressedMuleException(suppressedMuleException/processors/0 @ LogCheckTestCase#suppressedMuleExceptionGetsLoggedAsSuppressedCause:org/mule/test/integration/exceptions/log-check-config.xml:244)
 
                         (set debug level logging or '-Dmule.verbose.exceptions=true' for everything)
@@ -292,5 +292,7 @@
             </test:on-error-check-log>
         </error-handler>
     </flow>
+
+    <object name="throwNpe" class="org.mule.test.integration.exceptions.LogCheckTestCase$ThrowNpeProcessor"/>
 
 </mule>

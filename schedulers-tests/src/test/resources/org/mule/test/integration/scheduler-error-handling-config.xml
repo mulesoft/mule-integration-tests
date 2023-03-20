@@ -12,12 +12,10 @@
                 <fixed-frequency frequency="1000" timeUnit="MILLISECONDS" />
             </scheduling-strategy>
         </scheduler>
-        <test:processor throwException="true"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <on-error-continue>
-                <test:processor>
-                    <test:callback class="org.mule.test.integration.SchedulerErrorHandlingTestCase$VerifyExecutionCallback"/>
-                </test:processor>
+                <set-payload value="#[java!org::mule::test::integration::SchedulerErrorHandlingTestCase::verifyExecution(payload)]"/>
             </on-error-continue>
         </error-handler>
     </flow>

@@ -54,7 +54,7 @@ public class MuleConfigurationConfigTestCase extends AbstractMuleTestCase {
 
   private static class WithServicesApplicationContextBuilder extends ApplicationContextBuilder {
 
-    private TestServicesConfigurationBuilder testServicesConfigurationBuilder;
+    private final TestServicesConfigurationBuilder testServicesConfigurationBuilder;
 
     public WithServicesApplicationContextBuilder(TestServicesConfigurationBuilder testServicesConfigurationBuilder) {
       this.testServicesConfigurationBuilder = testServicesConfigurationBuilder;
@@ -64,6 +64,13 @@ public class MuleConfigurationConfigTestCase extends AbstractMuleTestCase {
     protected void addBuilders(List<ConfigurationBuilder> builders) {
       super.addBuilders(builders);
       builders.add(testServicesConfigurationBuilder);
+    }
+
+    @Override
+    protected ConfigurationBuilder getAppBuilder(String[] configResource) throws Exception {
+      ConfigurationBuilder appBuilder = super.getAppBuilder(configResource);
+      appBuilder.addServiceConfigurator(testServicesConfigurationBuilder);
+      return appBuilder;
     }
   }
 }

@@ -10,12 +10,14 @@ import static java.util.stream.Collectors.toList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.core.Is.is;
+import static org.mule.runtime.api.meta.model.parameter.ParameterGroupModel.DEFAULT_GROUP_NAME;
 import static org.mule.runtime.extension.api.ExtensionConstants.RECONNECTION_STRATEGY_PARAMETER_NAME;
 import static org.mule.runtime.extension.api.ExtensionConstants.TLS_PARAMETER_NAME;
 import static org.mule.runtime.internal.dsl.DslConstants.KEY_ATTRIBUTE_NAME;
 import static org.mule.runtime.internal.dsl.DslConstants.VALUE_ATTRIBUTE_NAME;
 
 import org.mule.metadata.api.model.ObjectType;
+import org.mule.runtime.api.component.ComponentIdentifier;
 import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.api.meta.model.config.ConfigurationModel;
 import org.mule.runtime.api.meta.model.connection.ConnectionProviderModel;
@@ -24,9 +26,9 @@ import org.mule.runtime.api.meta.model.parameter.ParameterModel;
 import org.mule.runtime.api.meta.model.parameter.ParameterizedModel;
 import org.mule.runtime.api.meta.model.source.SourceModel;
 import org.mule.runtime.ast.api.ComponentAst;
-import org.mule.runtime.config.api.dsl.model.DslElementModel;
 import org.mule.runtime.dsl.api.component.config.ComponentConfiguration;
 import org.mule.runtime.extension.api.dsl.syntax.resolver.DslSyntaxResolver;
+import org.mule.runtime.metadata.api.dsl.DslElementModel;
 import org.mule.tck.junit4.rule.DynamicPort;
 
 import java.util.List;
@@ -141,14 +143,16 @@ public class ConfigurationBasedElementModelFactoryTestCase extends AbstractEleme
     assertAttributeIsPresent(connectionElement, "create");
     assertThat(connectionElement.findElement(newIdentifier("connection-properties", DB_NS)).isPresent(), is(true));
 
-    ComponentAst pooling = connection.directChildrenStream().findFirst().get();
+    ComponentAst pooling = (ComponentAst) connection.getParameter(DEFAULT_GROUP_NAME, "poolingProfile").getValue().getRight();
     DslElementModel<ConnectionProviderModel> poolingElement = getChild(connectionElement, pooling);
 
     assertValue(poolingElement.findElement("maxPoolSize").get(), "10");
     assertValue(poolingElement.findElement("minPoolSize").get(), "0");
 
-    ComponentAst properties = connection.directChildrenStream().skip(1).findFirst().get();
-    DslElementModel<ConnectionProviderModel> propertiesElement = getChild(connectionElement, properties);
+    DslElementModel<ConnectionProviderModel> propertiesElement = getChild(connectionElement, ComponentIdentifier.builder()
+        .namespace(connection.getIdentifier().getNamespace())
+        .namespaceUri(connection.getIdentifier().getNamespaceUri())
+        .name("connection-properties").build());
 
     assertThat(propertiesElement.getContainedElements().size(), is(2));
     Optional<DslElementModel> firstKey = propertiesElement.getContainedElements().get(0).findElement(KEY_ATTRIBUTE_NAME);
@@ -172,7 +176,7 @@ public class ConfigurationBasedElementModelFactoryTestCase extends AbstractEleme
   }
 
   @Test
-  public void resolveConnectionNoExtreParametersDirectly() {
+  public void resolveConnectionNoExtraParametersDirectly() {
     ComponentAst config = getAppElement(applicationModel, DB_CONFIG);
     ComponentAst connection = config.directChildrenStream().findFirst().get();
     validateConnectionNoExtraParameters(resolve(connection));
@@ -267,11 +271,9 @@ public class ConfigurationBasedElementModelFactoryTestCase extends AbstractEleme
     assertHasParameter(connectionElement.getModel(), "port");
     assertAttributeIsPresent(connectionElement, "port");
 
-    ComponentAst authenticationWrapper = connection.directChildrenStream().findFirst().get();
-    DslElementModel<ParameterModel> authenticationWrapperElement = getChild(connectionElement, authenticationWrapper);
-    assertElementName(authenticationWrapperElement, "authentication");
-
-    DslElementModel<ObjectType> basicAuthElement = getChild(connectionElement, newIdentifier("basic-authentication", HTTP_NS));
+    final ComponentAst authentication =
+        (ComponentAst) connection.getParameter(DEFAULT_GROUP_NAME, "authentication").getValue().getRight();
+    DslElementModel<ParameterModel> basicAuthElement = getChild(connectionElement, authentication);
     assertElementName(basicAuthElement, "basic-authentication");
     assertThat(basicAuthElement.getDsl().isWrapped(), is(false));
     assertThat(basicAuthElement.getDsl().supportsAttributeDeclaration(), is(false));
@@ -310,12 +312,9 @@ public class ConfigurationBasedElementModelFactoryTestCase extends AbstractEleme
     assertHasParameter(connectionElement.getModel(), "port");
     assertAttributeIsPresent(connectionElement, "port");
 
-    ComponentAst propertiesWrapper = connection.directChildrenStream().skip(1).findFirst().get();
-    DslElementModel<ParameterModel> wrapperElement = getChild(connectionElement, propertiesWrapper);
-    assertElementName(wrapperElement, "client-socket-properties");
-
-    ComponentAst properties = propertiesWrapper.directChildrenStream().findFirst().get();
-    DslElementModel<ObjectType> propertiesElement = getChild(wrapperElement, properties);
+    ComponentAst properties =
+        (ComponentAst) connection.getParameter("Connection", "clientSocketProperties").getValue().getRight();
+    DslElementModel<ObjectType> propertiesElement = getChild(connectionElement, properties);
 
     assertElementName(propertiesElement, "tcp-client-socket-properties");
     assertThat(propertiesElement.getDsl().isWrapped(), is(true));
@@ -358,6 +357,23 @@ public class ConfigurationBasedElementModelFactoryTestCase extends AbstractEleme
     assertSendPayloadLoaded(publishModel, jmsDslResolver);
     assertBridgeLoaded(publishModel, consumeModel, jmsDslResolver);
     assertBridgeReceiverLoaded(consumeModel, jmsDslResolver);
+  }
+
+  @Test
+  public void schedulerSource() {
+    ComponentAst flow = getAppElement(applicationModel, "testFlowScheduler");
+
+    ComponentAst scheduler = flow.directChildrenStream().findFirst().get();
+
+    DslElementModel<SourceModel> schedulerElement = resolve(scheduler);
+
+    ComponentAst schedulingStrategy =
+        (ComponentAst) scheduler.getParameter(DEFAULT_GROUP_NAME, "schedulingStrategy").getValue().getRight();
+
+    DslElementModel<ParameterModel> fixedFrequency = getChild(schedulerElement, schedulingStrategy);
+    assertElementName(fixedFrequency, "fixed-frequency");
+
+    assertValue(fixedFrequency.findElement("frequency").get(), "5");
   }
 
   private void assertSendPayloadLoaded(OperationModel publishModel,
@@ -472,12 +488,16 @@ public class ConfigurationBasedElementModelFactoryTestCase extends AbstractEleme
 
     assertThat(dbElement.getContainedElements().size(), is(9));
 
-    ComponentAst sql = dbInsert.directChildrenStream().findFirst().get();
-    DslElementModel<ParameterModel> sqlElement = getChild(dbElement, sql);
+    DslElementModel<ParameterModel> sqlElement = getChild(dbElement, ComponentIdentifier.builder()
+        .namespace(dbInsert.getIdentifier().getNamespace())
+        .namespaceUri(dbInsert.getIdentifier().getNamespaceUri())
+        .name("sql").build());
     assertElementName(sqlElement, "sql");
 
-    ComponentAst parameterTypes = dbInsert.directChildrenStream().skip(1).findFirst().get();
-    DslElementModel<ParameterModel> parameterTypesElement = getChild(dbElement, parameterTypes);
+    DslElementModel<ParameterModel> parameterTypesElement = getChild(dbElement, ComponentIdentifier.builder()
+        .namespace(dbInsert.getIdentifier().getNamespace())
+        .namespaceUri(dbInsert.getIdentifier().getNamespaceUri())
+        .name("parameter-types").build());
     assertElementName(parameterTypesElement, "parameter-types");
 
     DslElementModel<ObjectType> elementOne = parameterTypesElement.getContainedElements().get(0);
@@ -485,7 +505,11 @@ public class ConfigurationBasedElementModelFactoryTestCase extends AbstractEleme
     assertValue(elementOne.findElement("key").get(), "description");
     assertValue(elementOne.findElement("type").get(), "CLOB");
 
-    assertValue(dbElement.findElement(newIdentifier("input-parameters", DB_NS)).get(), "#[{{'description' : payload}}]");
+    assertValue(dbElement.findElement(newIdentifier("input-parameters", DB_NS)).get(), getInputParameter());
+  }
+
+  protected String getInputParameter() {
+    return "#[{'description' : payload}]";
   }
 
   protected void assertRequestOperationWithFlatParameters(ComponentAst requester) {
@@ -503,24 +527,30 @@ public class ConfigurationBasedElementModelFactoryTestCase extends AbstractEleme
 
     assertValue(bulkInsertElement.findElement("bulkInputParameters").get(), "#[payload]");
 
-    ComponentAst sql = dbInsert.directChildrenStream().findFirst().get();
-    DslElementModel<ParameterModel> sqlElement = getChild(bulkInsertElement, sql);
+    DslElementModel<ParameterModel> sqlElement = getChild(bulkInsertElement, ComponentIdentifier.builder()
+        .namespace(dbInsert.getIdentifier().getNamespace())
+        .namespaceUri(dbInsert.getIdentifier().getNamespaceUri())
+        .name("sql").build());
     assertElementName(sqlElement, "sql");
     assertValue(sqlElement, "INSERT INTO PLANET(POSITION, NAME) VALUES (:position, :name)");
 
-    ComponentAst parameterTypes = dbInsert.directChildrenStream().skip(1).findFirst().get();
-    DslElementModel<ParameterModel> parameterTypesElement = getChild(bulkInsertElement, parameterTypes);
+    List<ComponentAst> parameterTypes =
+        (List<ComponentAst>) dbInsert.getParameter("Query", "parameterTypes").getValue().getRight();
+    DslElementModel<ParameterModel> parameterTypesElement = getChild(bulkInsertElement, ComponentIdentifier.builder()
+        .namespace(dbInsert.getIdentifier().getNamespace())
+        .namespaceUri(dbInsert.getIdentifier().getNamespaceUri())
+        .name("parameter-types").build());
     assertElementName(parameterTypesElement, "parameter-types");
 
-    ComponentAst parameterOne = parameterTypes.directChildrenStream().findFirst().get();
-    assertThat(parameterOne.getRawParameterValue("key").orElse(null), is("name"));
+    ComponentAst parameterOne = parameterTypes.get(0);
+    assertThat(parameterOne.getParameter("ParameterType", "key").getValue().getRight(), is("name"));
     DslElementModel<ObjectType> elementOne = parameterTypesElement.getContainedElements().get(0);
     assertElementName(elementOne, parameterOne.getIdentifier().getName());
     assertValue(elementOne.findElement("key").get(), "name");
     assertValue(elementOne.findElement("type").get(), "VARCHAR");
 
-    ComponentAst parameterTwo = parameterTypes.directChildrenStream().skip(1).findFirst().get();
-    assertThat(parameterTwo.getRawParameterValue("key").orElse(null), is("position"));
+    ComponentAst parameterTwo = parameterTypes.get(1);
+    assertThat(parameterTwo.getParameter("ParameterType", "key").getValue().getRight(), is("position"));
     DslElementModel<ObjectType> elementTwo = parameterTypesElement.getContainedElements().get(1);
     assertElementName(elementTwo, parameterTwo.getIdentifier().getName());
     assertValue(elementTwo.findElement("key").get(), "position");
@@ -531,9 +561,11 @@ public class ConfigurationBasedElementModelFactoryTestCase extends AbstractEleme
     DslElementModel<SourceModel> listenerElement = resolve(listener);
 
     assertHasParameter(listenerElement.getModel(), "path");
-    ComponentAst responseBuilder = listener.directChildrenStream().skip(2).findFirst().get();
 
-    DslElementModel<ParameterModel> responseBuilderElement = getChild(listenerElement, responseBuilder);
+    DslElementModel<ParameterModel> responseBuilderElement = getChild(listenerElement, ComponentIdentifier.builder()
+        .namespace(listener.getIdentifier().getNamespace())
+        .namespaceUri(listener.getIdentifier().getNamespaceUri())
+        .name("response").build());
     assertElementName(responseBuilderElement, "response");
 
     assertThat(responseBuilderElement.getDsl().getChild("headers").isPresent(), is(true));

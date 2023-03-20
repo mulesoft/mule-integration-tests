@@ -8,7 +8,6 @@ package org.mule.test.core.context.notification.processors;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
-import static java.util.Collections.emptyMap;
 import static java.util.Optional.empty;
 import static java.util.OptionalInt.of;
 import static org.hamcrest.Matchers.hasItems;
@@ -16,12 +15,12 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.component.ComponentIdentifier.buildFromStringRepresentation;
-import static org.mule.runtime.api.component.TypedComponentIdentifier.builder;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.CHAIN;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.FLOW;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.OPERATION;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.ROUTER;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.SCOPE;
+import static org.mule.runtime.api.component.TypedComponentIdentifier.builder;
 import static org.mule.runtime.api.dsl.DslResolvingContext.getDefault;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.ASYNC_IDENTIFIER;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.CHOICE_IDENTIFIER;
@@ -35,9 +34,13 @@ import static org.mule.runtime.config.api.dsl.CoreDslConstants.SCATTER_GATHER_ID
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.SUBFLOW_IDENTIFIER;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.TRY_IDENTIFIER;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.UNTIL_SUCCESSFUL_IDENTIFIER;
+import static org.mule.runtime.core.api.util.boot.ExtensionLoaderUtils.getLoaderById;
+import static org.mule.runtime.extension.api.ExtensionConstants.XML_SDK_LOADER_ID;
+import static org.mule.runtime.extension.api.ExtensionConstants.XML_SDK_RESOURCE_PROPERTY_NAME;
 import static org.mule.tck.probe.PollingProber.check;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentLocationStory.COMPONENT_LOCATION;
+import static org.mule.test.allure.AllureConstants.XmlSdk.XML_SDK;
 
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.api.component.TypedComponentIdentifier;
@@ -49,14 +52,13 @@ import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.api.notification.MessageProcessorNotification;
 import org.mule.runtime.ast.api.ArtifactAst;
 import org.mule.runtime.ast.api.xml.AstXmlParser;
-import org.mule.runtime.config.internal.model.ApplicationModel;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.runtime.core.api.config.builders.AbstractConfigurationBuilder;
 import org.mule.runtime.core.api.extension.ExtensionManager;
 import org.mule.runtime.dsl.api.component.config.DefaultComponentLocation;
 import org.mule.runtime.dsl.api.component.config.DefaultComponentLocation.DefaultLocationPart;
-import org.mule.runtime.extension.api.loader.xml.XmlExtensionModelLoader;
+import org.mule.runtime.extension.api.loader.ExtensionModelLoader;
 import org.mule.test.IntegrationTestCaseRunnerConfig;
 import org.mule.test.runner.api.IsolatedClassLoaderExtensionsManagerConfigurationBuilder;
 
@@ -71,19 +73,18 @@ import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.Set;
 
-import org.junit.After;
-import org.junit.Test;
-
 import com.google.common.collect.ImmutableList;
-
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
+import io.qameta.allure.Features;
 import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
 import io.qameta.allure.junit4.DisplayName;
+import org.junit.After;
+import org.junit.Test;
 
 @DisplayName("XML Connectors Path generation")
-@Feature(CONFIGURATION_COMPONENT_LOCATOR)
+@Features({@Feature(XML_SDK), @Feature(CONFIGURATION_COMPONENT_LOCATOR)})
 @Story(COMPONENT_LOCATION)
 public class ModuleComponentPathTestCase extends MuleArtifactFunctionalTestCase implements IntegrationTestCaseRunnerConfig {
 
@@ -301,11 +302,7 @@ public class ModuleComponentPathTestCase extends MuleArtifactFunctionalTestCase 
         .build();
 
     ArtifactAst toolingApplicationModel =
-        new ApplicationModel(xmlToAstParser.parse(getClass().getClassLoader().getResource(CONFIG_FILE_NAME.get()).toURI()),
-                             emptyMap(), empty(),
-                             uri -> {
-                               throw new UnsupportedOperationException();
-                             });
+        xmlToAstParser.parse(getClass().getClassLoader().getResource(CONFIG_FILE_NAME.get()).toURI());
 
     List<String> componentLocations = new ArrayList<>();
     toolingApplicationModel.recursiveStream().forEach(componentModel -> {
@@ -870,14 +867,17 @@ public class ModuleComponentPathTestCase extends MuleArtifactFunctionalTestCase 
       private void registerXmlExtensions(ExtensionManager extensionManager) {
         final Set<ExtensionModel> extensions = new HashSet<>();
         extensions.addAll(extensionManager.getExtensions());
+        final ClassLoader classLoader = getClass().getClassLoader();
+        final ExtensionModelLoader loader = getLoaderById(classLoader, XML_SDK_LOADER_ID);
+
         for (String modulePath : getModulePaths()) {
           Map<String, Object> params = new HashMap<>();
-          params.put(XmlExtensionModelLoader.RESOURCE_XML, modulePath);
+          params.put(XML_SDK_RESOURCE_PROPERTY_NAME, modulePath);
           final DslResolvingContext dslResolvingContext = getDefault(extensions);
-          final ExtensionModel extensionModel =
-              new XmlExtensionModelLoader().loadExtensionModel(getClass().getClassLoader(), dslResolvingContext, params);
+          final ExtensionModel extensionModel = loader.loadExtensionModel(classLoader, dslResolvingContext, params);
           extensions.add(extensionModel);
         }
+
         for (ExtensionModel extension : extensions) {
           extensionManager.registerExtension(extension);
         }

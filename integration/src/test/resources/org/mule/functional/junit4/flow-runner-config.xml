@@ -6,15 +6,20 @@
        http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
     <flow name="okFailFlow">
-        <test:processor throwException="true"/>
+        <raise-error type="APP:EXPECTED"/>
     </flow>
 
     <flow name="badFailFlow">
-        <test:processor throwException="true"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <on-error-propagate>
                 <test:assert expression="#[false]"/>
             </on-error-propagate>
         </error-handler>
     </flow>
+
+    <flow name="okFlow">
+        <test:processor class="org.mule.functional.junit4.FlowRunnerTestCase$TestProcessor"/>
+    </flow>
+
 </mule>

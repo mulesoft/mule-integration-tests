@@ -6,11 +6,16 @@
  */
 package org.mule.test.functional;
 
+import static org.mule.test.allure.AllureConstants.XmlSdk.XML_SDK;
+
 import org.junit.Test;
+
+import io.qameta.allure.Feature;
 
 /**
  * Guarantees that the macro expansion works for direct dependency on the module but also with the nested one
  */
+@Feature(XML_SDK)
 public class MultipleModuleWithGlobalElementTestCase extends AbstractModuleWithHttpTestCase {
 
   @Override

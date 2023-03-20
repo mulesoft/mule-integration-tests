@@ -8,6 +8,7 @@ package org.mule.test.extension.dsl;
 
 import static java.lang.Boolean.getBoolean;
 import static java.util.Collections.emptyList;
+import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
 import static org.mule.metadata.api.utils.MetadataTypeUtils.getDefaultValue;
 import static org.mule.runtime.api.meta.ExpressionSupport.REQUIRED;
@@ -41,6 +42,7 @@ import org.mule.runtime.api.meta.model.nested.NestedComponentModel;
 import org.mule.runtime.api.meta.model.nested.NestedRouteModel;
 import org.mule.runtime.api.meta.model.operation.HasOperationModels;
 import org.mule.runtime.api.meta.model.operation.OperationModel;
+import org.mule.runtime.api.meta.model.parameter.ParameterModel;
 import org.mule.runtime.api.meta.model.parameter.ParameterizedModel;
 import org.mule.runtime.api.meta.model.source.HasSourceModels;
 import org.mule.runtime.api.meta.model.source.SourceModel;
@@ -80,6 +82,7 @@ import com.google.common.collect.ImmutableSet;
 
 public class BulkArtifactDeclarationTestCase extends AbstractElementModelTestCase {
 
+  // TODO MULE-19700: Review the generated core-bulk-extension-model.xml.
   private static final String EXPECTED_XML = "core-bulk-extension-model.xml";
 
   private static final boolean UPDATE_EXPECTED_FILES_ON_ERROR =
@@ -247,13 +250,20 @@ public class BulkArtifactDeclarationTestCase extends AbstractElementModelTestCas
               .forEach(param -> addParameter(param.getType(),
                                              isContent(param) || param.getExpressionSupport().equals(REQUIRED),
                                              isText(param),
+                                             allowsReferences(param),
                                              ofNullable(param.getDefaultValue()),
                                              param.getAllowedStereotypes(),
                                              value -> groupDeclarer.withParameter(param.getName(), value)));
         }));
   }
 
-  private void addParameter(MetadataType type, boolean isContent, boolean isText, Optional<Object> defaultValue,
+  private boolean allowsReferences(ParameterModel param) {
+    return param.getDslConfiguration().allowsReferences();
+  }
+
+  private void addParameter(MetadataType type,
+                            boolean isContent, boolean isText, boolean allowsReferences,
+                            Optional<Object> defaultValue,
                             List<StereotypeModel> allowedStereotypes,
                             Consumer<ParameterValue> valueConsumer) {
     type.accept(new MetadataTypeVisitor() {
@@ -284,14 +294,14 @@ public class BulkArtifactDeclarationTestCase extends AbstractElementModelTestCas
         }
 
         ParameterListValue.Builder listValue = newListValue();
-        addParameter(arrayType.getType(), false, false, null, emptyList(), listValue::withValue);
-        addParameter(arrayType.getType(), false, false, null, emptyList(), listValue::withValue);
+        addParameter(arrayType.getType(), false, false, false, empty(), emptyList(), listValue::withValue);
+        addParameter(arrayType.getType(), false, false, false, empty(), emptyList(), listValue::withValue);
         valueConsumer.accept(listValue.build());
       }
 
       @Override
       public void visitObject(ObjectType objectType) {
-        if (isContent || !supportsInlineDeclaration(objectType)) {
+        if (isContent || allowsReferences || !(supportsInlineDeclaration(objectType) || isWrapped(objectType))) {
           defaultVisit(objectType);
           return;
         }
@@ -300,7 +310,7 @@ public class BulkArtifactDeclarationTestCase extends AbstractElementModelTestCas
         getId(objectType).ifPresent(objectValue::ofType);
 
         objectType.getFields()
-            .forEach(field -> addParameter(field.getValue(), false, false,
+            .forEach(field -> addParameter(field.getValue(), false, false, false,
                                            ofNullable(getDefaultValue(field.getValue()).orElse(null)),
                                            emptyList(),
                                            fieldValue -> objectValue.withParameter(getAlias(field), fieldValue)));
@@ -312,5 +322,9 @@ public class BulkArtifactDeclarationTestCase extends AbstractElementModelTestCas
 
   private Boolean supportsInlineDeclaration(ObjectType objectType) {
     return dslResolver.resolve(objectType).map(DslElementSyntax::supportsChildDeclaration).orElse(false);
+  }
+
+  private Boolean isWrapped(ObjectType objectType) {
+    return dslResolver.resolve(objectType).map(DslElementSyntax::isWrapped).orElse(false);
   }
 }

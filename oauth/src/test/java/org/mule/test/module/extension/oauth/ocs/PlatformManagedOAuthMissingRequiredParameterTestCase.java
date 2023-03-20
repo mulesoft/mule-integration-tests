@@ -6,20 +6,31 @@
  */
 package org.mule.test.module.extension.oauth.ocs;
 
+import static org.junit.Assert.fail;
 import static org.mule.functional.junit4.matchers.ThrowableMessageMatcher.hasMessage;
 import static org.mule.runtime.extension.internal.ocs.OCSConstants.OCS_CLIENT_ID;
 import static org.mule.runtime.extension.internal.ocs.OCSConstants.OCS_CLIENT_SECRET;
 import static org.mule.runtime.extension.internal.ocs.OCSConstants.OCS_ORG_ID;
 import static org.mule.runtime.extension.internal.ocs.OCSConstants.OCS_PLATFORM_AUTH_URL;
 import static org.mule.runtime.extension.internal.ocs.OCSConstants.OCS_SERVICE_URL;
+import static org.mule.test.allure.AllureConstants.OauthFeature.OCS_SUPPORT;
+import static org.mule.test.allure.AllureConstants.OauthFeature.OcsStory.OCS_CONNECTION_VALIDATION;
+
 import org.mule.tck.junit4.rule.SystemProperty;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.ClassRule;
+import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import io.qameta.allure.Description;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
+
+@Feature(OCS_SUPPORT)
+@Story(OCS_CONNECTION_VALIDATION)
 public class PlatformManagedOAuthMissingRequiredParameterTestCase extends PlatformManagedOAuthNegativeTestCase {
 
   @ClassRule
@@ -42,6 +53,14 @@ public class PlatformManagedOAuthMissingRequiredParameterTestCase extends Platfo
   protected void addExceptionAssertions(ExpectedException expectedException) {
     expectedException.expectCause(hasMessage("Parameter 'display' is required but was not found"));
   }
+
+  @Override
+  @Test
+  @Description("This test checks the validation done on the data fetched from OCS, not on data provided in the DSL.")
+  public void failedSetup() {
+    fail("Config should have failed to parse");
+  }
+
 
 }
 

@@ -47,16 +47,16 @@
     </flow>
 
     <flow name="propagation">
-        <test:assert expression="payload.key == 'value'"/>
-        <test:assert expression="vars.text.^mimeType == 'text/plain'"/>
-        <test:assert expression="vars.text == 'some text'"/>
-        <test:assert expression="attributes[0] == 'first' and attributes[1] == 'second'"/>
-        <test:assert expression="error.errorType.identifier == 'CONNECTIVITY'"/>
+        <test:assert expression="#[payload.key == 'value']"/>
+        <test:assert expression="#[vars.text.^mimeType == 'text/plain']"/>
+        <test:assert expression="#[vars.text == 'some text']"/>
+        <test:assert expression="#[attributes[0] == 'first' and attributes[1] == 'second']"/>
+        <test:assert expression="#[error.errorType.identifier == 'CONNECTIVITY']"/>
         <set-payload value="#[output text/plain --- 'Propagation was successful']"/>
     </flow>
 
     <flow name="failingFlow">
-        <test:processor throwException="true"/>
+        <raise-error type="APP:EXPECTED" description="expected error"/>
     </flow>
 
     <flow name="timeoutFlow">
@@ -64,7 +64,7 @@
     </flow>
 
     <flow name="failureHandledFlow">
-        <test:processor throwException="true"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <on-error-continue>
                 <set-payload value="Flow failed but lets move on"/>

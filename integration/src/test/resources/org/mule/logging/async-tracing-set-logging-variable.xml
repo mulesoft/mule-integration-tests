@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:tracing="http://www.mulesoft.org/schema/mule/tracing" xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/tracing http://www.mulesoft.org/schema/mule/tracing/current/mule-tracing.xsd">
+
+    <flow name="async-set-logging-variable-flow">
+        <tracing:set-logging-variable variableName="testVar0" value="testValue0" />
+        <async>
+            <tracing:set-logging-variable variableName="testVar1" value="testValue1" />
+        </async>
+        <tracing:set-logging-variable variableName="testVar2" value="testValue2" />
+    </flow>
+</mule>

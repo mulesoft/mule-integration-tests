@@ -85,6 +85,11 @@ public class ExpiredShutdownTimeoutOneWayTestCase extends AbstractShutdownTimeou
     doShutDownTest("setPayloadChoiceFlow");
   }
 
+  @Test
+  public void testSetPayloadThroughScatterGatherWithFlowRefs() throws Throwable {
+    doShutDownTest("setPayloadThroughScatterGatherWithFlowRefs");
+  }
+
   private void doShutDownTest(final String flowName) throws Throwable {
     final Future<?> requestTask = executor.submit(() -> {
       try {

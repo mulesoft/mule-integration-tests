@@ -82,43 +82,43 @@ public class DslConstantsRoutersFlowTestCase extends AbstractIntegrationTestCase
 
   @Test
   public void testMD2HashingShouldExist() throws Exception {
-    //If no exception, then the test should pass
+    // If no exception, then the test should pass
     flowRunner("md2HashFlow").withVariable("otherId", "123").run();
   }
 
   @Test
   public void testMD5HashingShouldExist() throws Exception {
-    //If no exception, then the test should pass
+    // If no exception, then the test should pass
     flowRunner("md5HashFlow").withVariable("otherId", "123").run();
   }
 
   @Test
   public void testSHA1HashingShouldExist() throws Exception {
-    //If no exception, then the test should pass
+    // If no exception, then the test should pass
     flowRunner("sha1HashFlow").withVariable("otherId", "123").run();
   }
 
   @Test
   public void testSHA224HashingShouldExist() throws Exception {
-    //If no exception, then the test should pass
+    // If no exception, then the test should pass
     flowRunner("sha224HashFlow").withVariable("otherId", "123").run();
   }
 
   @Test
   public void testSHA256HashingShouldExist() throws Exception {
-    //If no exception, then the test should pass
+    // If no exception, then the test should pass
     flowRunner("sha256HashFlow").withVariable("otherId", "123").run();
   }
 
   @Test
   public void testSHA384HashingShouldExist() throws Exception {
-    //If no exception, then the test should pass
+    // If no exception, then the test should pass
     flowRunner("sha384HashFlow").withVariable("otherId", "123").run();
   }
 
   @Test
   public void testSHA512HashingShouldExist() throws Exception {
-    //If no exception, then the test should pass
+    // If no exception, then the test should pass
     flowRunner("sha512HashFlow").withVariable("otherId", "123").run();
   }
 

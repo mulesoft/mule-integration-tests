@@ -10,6 +10,7 @@ import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.mule.test.allure.AllureConstants.XmlSdk.XML_SDK;
 
 import org.mule.runtime.api.connection.ConnectionProvider;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
@@ -22,6 +23,9 @@ import java.util.Collection;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
 
+import io.qameta.allure.Feature;
+
+@Feature(XML_SDK)
 @RunnerDelegateTo(Parameterized.class)
 public class ModuleTestConnectionSuccessfulTestCase extends AbstractCeXmlExtensionMuleArtifactFunctionalTestCase {
 

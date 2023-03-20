@@ -11,6 +11,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.core.privileged.registry.LegacyRegistryUtils.lookupObject;
 import static org.mule.runtime.http.api.HttpConstants.Method.GET;
+
 import org.mule.functional.listener.FlowExecutionListener;
 import org.mule.runtime.api.notification.NotificationListenerRegistry;
 import org.mule.runtime.core.api.MuleContext;
@@ -27,10 +28,11 @@ import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
-import io.qameta.allure.Issue;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
+
+import io.qameta.allure.Issue;
 
 @Ignore("MULE-10633, also, this uses FakeMuleServer which does not support loading extensions")
 @Issue("MULE-10633")
@@ -60,7 +62,7 @@ public class ConnectorLevelMessageDispatchingTestCase extends AbstractFakeMuleSe
 
   private void verifyAppProcessMessageWithAppClassLoader(FakeMuleServer fakeMuleServer, String appName, String requestUrl)
       throws IOException, TimeoutException, RegistrationException {
-    MuleContext applicationContext = fakeMuleServer.findApplication(appName).getRegistry().lookupByType(MuleContext.class).get();
+    MuleContext applicationContext = fakeMuleServer.findApplication(appName).getArtifactContext().getMuleContext();
 
     final AtomicReference<ClassLoader> executionClassLoader = new AtomicReference<>();
     FlowExecutionListener flowExecutionListener =

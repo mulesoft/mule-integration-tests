@@ -6,14 +6,24 @@
  */
 package org.mule.runtime.test.integration.logging;
 
+import static org.mule.runtime.api.util.MuleSystemProperties.MULE_SIMPLE_LOG;
+import static org.mule.tck.probe.PollingProber.probe;
+import static org.mule.test.allure.AllureConstants.IntegrationTestsFeature.INTEGRATIONS_TESTS;
+import static org.mule.test.allure.AllureConstants.Logging.LOGGING;
+import static org.mule.test.allure.AllureConstants.Logging.LoggingStory.CONTEXT_FACTORY;
+import static org.mule.test.allure.AllureConstants.Logging.LoggingStory.LOGGING_LIBS_SUPPORT;
+import static org.mule.test.infrastructure.FileContainsInLine.hasLine;
+
+import static java.lang.String.format;
+
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
-import static org.mule.runtime.core.api.config.MuleProperties.MULE_SIMPLE_LOG;
 
 import org.mule.runtime.deployment.model.api.application.Application;
 import org.mule.runtime.module.deployment.impl.internal.builder.ApplicationFileBuilder;
 import org.mule.runtime.module.deployment.impl.internal.builder.DomainFileBuilder;
+import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.infrastructure.deployment.AbstractFakeMuleServerTestCase;
 
 import java.io.File;
@@ -28,12 +38,22 @@ import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.appender.ConsoleAppender;
 import org.apache.logging.log4j.core.appender.RollingFileAppender;
+
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+
+import io.qameta.allure.Feature;
+import io.qameta.allure.Features;
+import io.qameta.allure.Issue;
+import io.qameta.allure.Stories;
+import io.qameta.allure.Story;
 
 /**
  * Checks log4j configuration for application and domains
  */
+@Features({@Feature(INTEGRATIONS_TESTS), @Feature(LOGGING)})
+@Stories({@Story(LOGGING_LIBS_SUPPORT), @Story(CONTEXT_FACTORY)})
 public class LogConfigurationTestCase extends AbstractFakeMuleServerTestCase {
 
   public static final String APP_NAME = "app1";
@@ -41,6 +61,14 @@ public class LogConfigurationTestCase extends AbstractFakeMuleServerTestCase {
 
   @Rule
   public UseMuleLog4jContextFactory muleLogging = new UseMuleLog4jContextFactory();
+
+  @ClassRule
+  public static SystemProperty customAppDebugLogSystemProperty =
+      new SystemProperty("customAppDebugLogPropertyValue", "Custom Log App log");
+
+  @ClassRule
+  public static SystemProperty notCustomAppDebugLogSystemProperty =
+      new SystemProperty("notCustomAppDebugLogPropertyValue", "Not Custom Log App log");
 
   @Override
   public void setUp() throws Exception {
@@ -106,13 +134,45 @@ public class LogConfigurationTestCase extends AbstractFakeMuleServerTestCase {
     ensureArtifactAppender("ConsoleForDomain", ConsoleAppender.class);
   }
 
+  @Test
+  @Issue("W-11090843")
+  public void honorLog4jConfigFileForTwoAppsWithDifferentConfiguration() throws Exception {
+    String customLogAppName = "custom-log-app";
+    String notCustomLogAppName = "not-custom-log-app";
+
+    ApplicationFileBuilder customLogAppBuilder = new ApplicationFileBuilder(customLogAppName)
+        .definedBy("log/custom-config/mule-config.xml")
+        .containingResource("log/custom-config/log4j2.xml", "log4j2.xml");
+    ApplicationFileBuilder notCustomLogAppFileBuilder = new ApplicationFileBuilder(notCustomLogAppName)
+        .definedBy("log/not-custom-config/mule-config.xml");
+
+    muleServer.addAppArchive(customLogAppBuilder.getArtifactFile().toURI().toURL());
+    muleServer.addAppArchive(notCustomLogAppFileBuilder.getArtifactFile().toURI().toURL());
+
+    muleServer.start();
+
+    File customAppLogFile =
+        new File(muleServer.getLogsDir().toString() + "/mule-app-" + customLogAppName + "-1.0.0-mule-application.log");
+    probe(() -> hasLine(containsString(customAppDebugLogSystemProperty.getValue())).matches(customAppLogFile),
+          () -> format("Text '%s' not present in the logs", customAppDebugLogSystemProperty.getValue()));
+    probe(() -> !hasLine(containsString(notCustomAppDebugLogSystemProperty.getValue())).matches(customAppLogFile),
+          () -> format("Text '%s' present in the logs", notCustomAppDebugLogSystemProperty.getValue()));
+
+    File notCustomAppLogFile =
+        new File(muleServer.getLogsDir().toString() + "/mule-app-" + notCustomLogAppName + "-1.0.0-mule-application.log");
+    probe(() -> !hasLine(containsString(customAppDebugLogSystemProperty.getValue())).matches(notCustomAppLogFile),
+          () -> format("Text '%s' not present in the logs", customAppDebugLogSystemProperty.getValue()));
+    probe(() -> !hasLine(containsString(notCustomAppDebugLogSystemProperty.getValue())).matches(notCustomAppLogFile),
+          () -> format("Text '%s' not present in the logs", notCustomAppDebugLogSystemProperty.getValue()));
+  }
+
   private void ensureOnlyDefaultAppender() throws Exception {
     assertThat(1, equalTo(appendersCount(APP_NAME)));
     assertThat(1, equalTo(selectByClass(APP_NAME, RollingFileAppender.class).size()));
 
     RollingFileAppender fileAppender = (RollingFileAppender) selectByClass(APP_NAME, RollingFileAppender.class).get(0);
     assertThat("defaultFileAppender", equalTo(fileAppender.getName()));
-    assertThat(fileAppender.getFileName(), containsString(String.format("mule-app-%s.log", APP_NAME)));
+    assertThat(fileAppender.getFileName(), containsString(format("mule-app-%s.log", APP_NAME)));
   }
 
   private void ensureArtifactAppender(final String appenderName, final Class<? extends Appender> appenderClass) throws Exception {

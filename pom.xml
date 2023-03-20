@@ -4,13 +4,13 @@
   <parent>
     <groupId>org.mule.runtime</groupId>
     <artifactId>mule</artifactId>
-    <version>4.4.0-SNAPSHOT</version>
+    <version>4.6.0-SNAPSHOT</version>
     <relativePath></relativePath>
   </parent>
   
   <groupId>org.mule.tests</groupId>
   <artifactId>mule-extensions-integration-tests</artifactId>
-  <version>4.4.0-SNAPSHOT</version>
+  <version>4.6.0-SNAPSHOT</version>
 
   <packaging>pom</packaging>
   <name>Mule Tests</name>
@@ -24,27 +24,25 @@
     <module>oauth</module>
     <module>schedulers-tests</module>
     <module>munit-tests</module>
+    <module>extensions-mule-support</module>
     <module>extensions-xml-support</module>
     <module>logging</module>
     <module>tooling-support-tests</module>
+    <module>tracing</module>
   </modules>
 
   <properties>
-    <munitVersion>2.2.6-SNAPSHOT</munitVersion>
-    <muleSchedulerServiceTestVersion>1.4.0-SNAPSHOT</muleSchedulerServiceTestVersion>
-    <muleHttpServiceTestVersion>1.6.0-SNAPSHOT</muleHttpServiceTestVersion>
-    <muleOAuthServiceTestVersion>2.1.0-SNAPSHOT</muleOAuthServiceTestVersion>
-    <muleSoapServiceTestVersion>1.4.0-SNAPSHOT</muleSoapServiceTestVersion>
-    <muleExtensionTestSoapTestVersion>1.4.0-SNAPSHOT</muleExtensionTestSoapTestVersion>
+    <munitVersion>2.4.0-SNAPSHOT</munitVersion>
+    <muleExtensionTestSoapTestVersion>1.6.0-SNAPSHOT</muleExtensionTestSoapTestVersion>
     <muleSpringModuleTestVersion>1.4.0-SNAPSHOT</muleSpringModuleTestVersion>
 
-    <munitExtensionsMavenPlugin>1.0.0</munitExtensionsMavenPlugin>
+    <munitExtensionsMavenPlugin>1.1.3</munitExtensionsMavenPlugin>
 
-    <apacheHttpCoreVersion>4.4.6</apacheHttpCoreVersion>
-    <apacheHttpClientVersion>4.5.3</apacheHttpClientVersion>
+    <apacheHttpClientVersion>4.5.13</apacheHttpClientVersion>
     <springVersion>5.1.6.RELEASE</springVersion>
 
     <muleDependenciesVersion>1.x-SNAPSHOT</muleDependenciesVersion>
+    <muleTestComponentsVersion>4.6.0-SNAPSHOT</muleTestComponentsVersion>
   </properties>
 
   <build>
@@ -97,7 +95,7 @@
     <dependency>
       <groupId>org.mule.tests</groupId>
       <artifactId>test-components</artifactId>
-      <version>${project.version}</version>
+      <version>${muleTestComponentsVersion}</version>
       <classifier>mule-plugin</classifier>
     </dependency>
   </dependencies>
@@ -144,7 +142,6 @@
                         <exclude>org.mule.modules:mule-spring-module</exclude>
                         <exclude>org.mule.modules:mule-spring-module-tests</exclude>
                         <exclude>org.mule.modules:mule-spring-test-plugin</exclude>
-                        <exclude>org.mule.tests:test-components</exclude>
                       </excludes>
                     </requireReleaseDeps>
                     <requireReleaseVersion>
@@ -193,7 +190,6 @@
                         <exclude>org.mule.services:*</exclude>
                         <exclude>org.mule.tools.maven:mule-classloader-model</exclude>
                         <exclude>org.mule.modules:mule-module-cors-kernel</exclude>
-                        <exclude>org.mule.tests:test-components</exclude>
 
                         <exclude>org.mule.modules:mule-spring-module</exclude>
                         <exclude>org.mule.modules:mule-spring-module-tests</exclude>

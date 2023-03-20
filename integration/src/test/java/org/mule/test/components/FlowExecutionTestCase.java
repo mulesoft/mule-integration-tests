@@ -8,6 +8,7 @@ package org.mule.test.components;
 
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
+
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
@@ -19,6 +20,7 @@ import org.mule.runtime.api.component.execution.InputEvent;
 import org.mule.runtime.api.event.Event;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.metadata.TypedValue;
+
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.util.Optional;
@@ -47,6 +49,10 @@ public class FlowExecutionTestCase extends AbstractIntegrationTestCase {
   @Inject
   @Named("flowWithCustomError")
   private ExecutableComponent flowWithCustomError;
+
+  @Inject
+  @Named("flow-with-on-error-propagate-and-on-error-continue-composition")
+  private ExecutableComponent flowWithOnErrorPropagateAndOnErrorContinueComposition;
 
   @Override
   protected String getConfigFile() {
@@ -80,6 +86,11 @@ public class FlowExecutionTestCase extends AbstractIntegrationTestCase {
   @Test
   public void executeFlowWithErrorPropagateWithCustomError() throws Exception {
     executeTest(flowWithCustomError, of("CUSTOM_ERROR_TYPE"));
+  }
+
+  @Test
+  public void executeFlowWithOnErrorPropagateAndOnErrorContinueComposition() throws Exception {
+    executeTest(flowWithOnErrorPropagateAndOnErrorContinueComposition, of("ERROR"));
   }
 
   private void executeTest(ExecutableComponent executableComponent, Optional<String> errorIdentifierExpected)
