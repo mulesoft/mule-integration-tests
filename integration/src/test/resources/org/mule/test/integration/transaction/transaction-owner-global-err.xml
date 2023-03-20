@@ -3,9 +3,8 @@
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:test="http://www.mulesoft.org/schema/mule/test"
-      xsi:schemaLocation="
-http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+                          http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
     <error-handler name="globalContinue">
         <on-error-continue>
@@ -21,26 +20,26 @@ http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/tes
 
     <flow name="no-rollback">
         <try transactionalAction="BEGIN_OR_JOIN">
-            <test:processor throwException="true"
-                            exceptionToThrow="java.lang.RuntimeException" />
+            <raise-error type="APP:EXPECTED"/>
             <error-handler ref="globalContinue"/>
         </try>
     </flow>
 
     <flow name="rollback">
         <try transactionalAction="BEGIN_OR_JOIN">
-            <test:processor throwException="true"
-                            exceptionToThrow="java.lang.RuntimeException" />
+            <raise-error type="APP:EXPECTED"/>
             <error-handler ref="globalPropagate"/>
         </try>
+        <error-handler>
+            <on-error-continue/>
+        </error-handler>
     </flow>
 
     <flow name="no-rollback-outside-try">
         <try transactionalAction="BEGIN_OR_JOIN">
             <test:processor />
         </try>
-        <test:processor throwException="true"
-                        exceptionToThrow="java.lang.RuntimeException" />
+        <raise-error type="APP:EXPECTED"/>
         <error-handler ref="globalPropagate"/>
     </flow>
 
@@ -63,9 +62,29 @@ http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/tes
         </try>
     </flow>
 
+    <flow name="rollback-error-in-flow-ref-with-nested-try">
+        <try>
+            <try transactionalAction="BEGIN_OR_JOIN">
+                <flow-ref name="error-flowref"/>
+                <error-handler ref="globalPropagate"/>
+            </try>
+            <error-handler ref="globalContinue"/>
+        </try>
+    </flow>
+
     <flow name="no-rollback-error-in-flow-ref-with-try">
         <try transactionalAction="BEGIN_OR_JOIN">
             <flow-ref name="error-flowref"/>
+            <error-handler ref="globalContinue"/>
+        </try>
+    </flow>
+
+    <flow name="no-rollback-error-in-flow-ref-with-nested-try">
+        <try transactionalAction="BEGIN_OR_JOIN">
+            <try>
+                <flow-ref name="error-flowref"/>
+                <error-handler ref="globalPropagate"/>
+            </try>
             <error-handler ref="globalContinue"/>
         </try>
     </flow>
@@ -79,8 +98,7 @@ http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/tes
 
 
     <flow name="rollback-flowref">
-        <test:processor throwException="true"
-                        exceptionToThrow="java.lang.RuntimeException" />
+        <raise-error type="APP:EXPECTED"/>
     </flow>
 
     <flow name="error-flowref-JOIN">
@@ -88,8 +106,7 @@ http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/tes
             <test:processor/>
             <error-handler ref="globalContinue"/>
         </try>
-        <test:processor throwException="true"
-                        exceptionToThrow="java.lang.RuntimeException" />
+        <raise-error type="APP:EXPECTED"/>
         <error-handler ref="globalPropagate"/>
     </flow>
 
@@ -98,8 +115,7 @@ http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/tes
             <test:processor/>
             <error-handler ref="globalContinue"/>
         </try>
-        <test:processor throwException="true"
-                        exceptionToThrow="java.lang.RuntimeException" />
+        <raise-error type="APP:EXPECTED"/>
         <error-handler ref="globalPropagate"/>
     </flow>
 

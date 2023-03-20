@@ -1,31 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:test-components="http://www.mulesoft.org/schema/mule/test-components"
       xmlns:test="http://www.mulesoft.org/schema/mule/test"
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-               http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+                http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd
+                http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
     <flow name="SubFlowViaProcessorRef">
-        <append-string-transformer message="1"/>
-        <processor ref="sub-flow"/>
-        <append-string-transformer message="2"/>
+        <set-payload value="#[payload ++ '1']"/>
+        <flow-ref name="sub-flow"/>
+        <set-payload value="#[payload ++ '2']"/>
     </flow>
 
     <flow name="SubFlowViaFlowRef">
-        <append-string-transformer message="1"/>
+        <set-payload value="#[payload ++ '1']"/>
         <flow-ref name="sub-flow"/>
-        <append-string-transformer message="2"/>
+        <set-payload value="#[payload ++ '2']"/>
     </flow>
 
     <flow name="FlowViaFlowRef">
-        <append-string-transformer message="1"/>
+        <set-payload value="#[payload ++ '1']"/>
         <flow-ref name="childFlow"/>
-        <append-string-transformer message="2"/>
+        <set-payload value="#[payload ++ '2']"/>
     </flow>
 
     <flow name="ServiceViaFlowRef">
-        <append-string-transformer message="1"/>
+        <set-payload value="#[payload ++ '1']"/>
         <flow-ref name="service"/>
-        <append-string-transformer message="2"/>
+        <set-payload value="#[payload ++ '2']"/>
     </flow>
 
     <flow name="flowWithsubFlowWithComponent">
@@ -59,43 +61,43 @@
     <!-- Child flows/sub-flows -->
 
     <sub-flow name="chain">
-        <test:lifecycle-tracker/>
-        <append-string-transformer message="x"/>
-        <append-string-transformer message="y"/>
-        <append-string-transformer message="z"/>
+        <test-components:lifecycle-tracker name="chainTracker"/>
+        <set-payload value="#[payload ++ 'x']"/>
+        <set-payload value="#[payload ++ 'y']"/>
+        <set-payload value="#[payload ++ 'z']"/>
         <logger/>
     </sub-flow>
 
     <sub-flow name="chain-singleton">
-        <test:lifecycle-tracker/>
-        <append-string-transformer message="x"/>
-        <append-string-transformer message="y"/>
-        <append-string-transformer message="z"/>
-        <test:lifecycle-tracker-check/>
+        <test-components:lifecycle-tracker name="chainSingletonTracker"/>
+        <set-payload value="#[payload ++ 'x']"/>
+        <set-payload value="#[payload ++ 'y']"/>
+        <set-payload value="#[payload ++ 'z']"/>
+        <test-components:lifecycle-tracker-check name="chainSingletonChecker"/>
     </sub-flow>
 
     <sub-flow name="sub-flow">
-        <test:lifecycle-tracker/>
-        <append-string-transformer message="x"/>
-        <append-string-transformer message="y"/>
-        <append-string-transformer message="z"/>
+        <test-components:lifecycle-tracker name="subFlowTracker"/>
+        <set-payload value="#[payload ++ 'x']"/>
+        <set-payload value="#[payload ++ 'y']"/>
+        <set-payload value="#[payload ++ 'z']"/>
         <logger/>
     </sub-flow>
 
     <flow name="childFlow">
-        <test:lifecycle-tracker/>
-        <append-string-transformer message="x"/>
-        <append-string-transformer message="y"/>
-        <append-string-transformer message="z"/>
+        <test-components:lifecycle-tracker name="childFlowTracker"/>
+        <set-payload value="#[payload ++ 'x']"/>
+        <set-payload value="#[payload ++ 'y']"/>
+        <set-payload value="#[payload ++ 'z']"/>
         <logger/>
     </flow>
 
     <sub-flow name="sub-flow-singleton">
-        <test:lifecycle-tracker/>
-        <append-string-transformer message="x"/>
-        <append-string-transformer message="y"/>
-        <append-string-transformer message="z"/>
-        <test:lifecycle-tracker-check/>
+        <test-components:lifecycle-tracker name="subFlowSingletonTracker"/>
+        <set-payload value="#[payload ++ 'x']"/>
+        <set-payload value="#[payload ++ 'y']"/>
+        <set-payload value="#[payload ++ 'z']"/>
+        <test-components:lifecycle-tracker-check name="subFlowSingletonChecker"/>
     </sub-flow>
 
     <flow name="service">

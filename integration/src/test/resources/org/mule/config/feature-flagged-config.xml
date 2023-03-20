@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:petstore="http://www.mulesoft.org/schema/mule/petstore"
+      xmlns:db="http://www.mulesoft.org/schema/mule/db"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+               http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+               http://www.mulesoft.org/schema/mule/petstore http://www.mulesoft.org/schema/mule/petstore/current/mule-petstore.xsd">
+
+    <flow name="echo-mule-context">
+        <petstore:feature-flagged-echo-mule-context message="#[payload]"/>
+    </flow>
+
+    <flow name="echo-feature-context">
+        <petstore:feature-flagged-echo-feature-context message="#[payload]"/>
+    </flow>
+
+    <flow name="splitter-exception">
+        <petstore:is-splitter-exception-handled />
+    </flow>
+
+</mule>

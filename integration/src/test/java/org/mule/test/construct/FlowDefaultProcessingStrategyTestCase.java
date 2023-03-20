@@ -7,18 +7,18 @@
 package org.mule.test.construct;
 
 import static java.lang.Thread.currentThread;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mule.functional.api.flow.TransactionConfigEnum.ACTION_ALWAYS_BEGIN;
-import static org.mule.functional.junit4.TestLegacyMessageUtils.getOutboundProperty;
+import static org.mule.runtime.api.metadata.DataType.STRING;
 
-import org.mule.functional.api.component.TestConnectorQueueHandler;
-import org.mule.functional.junit4.TestLegacyMessageBuilder;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
+import org.mule.runtime.api.metadata.TypedValue;
 import org.mule.runtime.api.tx.TransactionException;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
@@ -26,41 +26,38 @@ import org.mule.runtime.core.api.transaction.Transaction;
 import org.mule.runtime.core.api.transaction.TransactionCoordination;
 import org.mule.tck.testmodels.mule.TestTransactionFactory;
 import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.tests.api.TestQueueManager;
+
+import javax.inject.Inject;
 
 import org.junit.Test;
 
 public class FlowDefaultProcessingStrategyTestCase extends AbstractIntegrationTestCase {
 
-  private static final String PROCESSOR_THREAD = "processor-thread";
   private static final String FLOW_NAME = "Flow";
-  private TestConnectorQueueHandler queueHandler;
+
+  @Inject
+  private TestQueueManager queueManager;
 
   @Override
   protected String getConfigFile() {
     return "org/mule/test/construct/flow-default-processing-strategy-config.xml";
   }
 
-  @Override
-  protected void doSetUp() throws Exception {
-    super.doSetUp();
-    queueHandler = new TestConnectorQueueHandler(registry);
-  }
-
   @Test
   public void requestResponse() throws Exception {
-    Message response = flowRunner(FLOW_NAME).withPayload(TEST_PAYLOAD).run().getMessage();
-    assertThat(response.getPayload().getValue().toString(), is(TEST_PAYLOAD));
-    Message message = queueHandler.read("out", RECEIVE_TIMEOUT).getMessage();
+    flowRunner(FLOW_NAME).withPayload(TEST_PAYLOAD).run();
+    Message message = queueManager.read("out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
 
-    assertThat(getOutboundProperty(message, PROCESSOR_THREAD), is(not(currentThread().getName())));
+    assertThat(message.getPayload().getValue(), is(not(currentThread().getName())));
   }
 
   @Test
   public void oneWay() throws Exception {
     flowRunner(FLOW_NAME).withPayload(TEST_PAYLOAD).run();
-    Message message = queueHandler.read("out", RECEIVE_TIMEOUT).getMessage();
+    Message message = queueManager.read("out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
 
-    assertThat(getOutboundProperty(message, PROCESSOR_THREAD), is(not(currentThread().getName())));
+    assertThat(message.getPayload().getValue(), is(not(currentThread().getName())));
   }
 
   @Test
@@ -71,9 +68,9 @@ public class FlowDefaultProcessingStrategyTestCase extends AbstractIntegrationTe
       flowRunner("Flow").withPayload(TEST_PAYLOAD).transactionally(ACTION_ALWAYS_BEGIN, new TestTransactionFactory(transaction))
           .run();
 
-      Message message = queueHandler.read("out", RECEIVE_TIMEOUT).getMessage();
+      Message message = queueManager.read("out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
 
-      assertThat(getOutboundProperty(message, PROCESSOR_THREAD), is(currentThread().getName()));
+      assertThat(message.getPayload().getValue(), is(currentThread().getName()));
     } finally {
       TransactionCoordination.getInstance().unbindTransaction(transaction);
     }
@@ -88,9 +85,9 @@ public class FlowDefaultProcessingStrategyTestCase extends AbstractIntegrationTe
                                                                                                                    transaction))
           .run();
 
-      Message message = queueHandler.read("out", RECEIVE_TIMEOUT).getMessage();
+      Message message = queueManager.read("out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
 
-      assertThat(getOutboundProperty(message, PROCESSOR_THREAD), is(currentThread().getName()));
+      assertThat(message.getPayload().getValue(), is(currentThread().getName()));
     } finally {
       TransactionCoordination.getInstance().unbindTransaction(transaction);
     }
@@ -109,8 +106,9 @@ public class FlowDefaultProcessingStrategyTestCase extends AbstractIntegrationTe
 
     @Override
     public CoreEvent process(CoreEvent event) throws MuleException {
-      return CoreEvent.builder(event).message(new TestLegacyMessageBuilder(event.getMessage())
-          .addOutboundProperty(PROCESSOR_THREAD, currentThread().getName()).build()).build();
+      return CoreEvent.builder(event)
+          .message(Message.builder(event.getMessage()).payload(new TypedValue<>(currentThread().getName(), STRING)).build())
+          .build();
     }
   }
 

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:crafted-config-properties="http://www.mulesoft.org/schema/mule/crafted-config-properties"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+      http://www.mulesoft.org/schema/mule/crafted-config-properties http://www.mulesoft.org/schema/mule/crafted-config-properties/current/mule-crafted-config-properties.xsd">
+
+    <configuration-properties file="properties/${app.name}.properties"/>
+
+    <global-property name="app.name" value="overridden"/>
+
+    <crafted-config-properties:secure-configuration-properties-config name="config" file="properties/${depprop}.yaml">
+        <crafted-config-properties:encrypt algorithm="AES" mode="CBC"/>
+    </crafted-config-properties:secure-configuration-properties-config>
+
+</mule>

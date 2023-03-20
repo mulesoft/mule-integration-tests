@@ -6,69 +6,63 @@
  */
 package org.mule.runtime.test.integration.lifecycle;
 
+import static java.util.Collections.emptySet;
 import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
-import static org.mockito.Answers.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.mock;
 import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.LIFECYCLE_AND_DEPENDENCY_INJECTION;
 import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.LifecyclePhaseFailureStory.LIFECYCLE_PHASE_FAILURE_STORY;
-import org.mule.functional.api.component.LifecycleObject;
-import org.mule.functional.junit4.ApplicationContextBuilder;
-import org.mule.runtime.api.el.DefaultExpressionLanguageFactoryService;
-import org.mule.runtime.api.el.ExpressionLanguage;
-import org.mule.runtime.api.el.ExpressionLanguageConfiguration;
+
+import org.mule.functional.junit4.AbstractConfigurationFailuresTestCase;
 import org.mule.runtime.api.lifecycle.Disposable;
 import org.mule.runtime.api.lifecycle.Initialisable;
 import org.mule.runtime.api.lifecycle.LifecycleException;
-import org.mule.runtime.core.api.config.ConfigurationBuilder;
-import org.mule.runtime.core.api.config.builders.SimpleConfigurationBuilder;
-import org.mule.runtime.http.api.HttpService;
-import org.mule.tck.SimpleUnitTestSupportSchedulerService;
-import org.mule.tck.junit4.AbstractMuleTestCase;
+import org.mule.runtime.api.lifecycle.Startable;
+import org.mule.runtime.api.lifecycle.Stoppable;
+import org.mule.runtime.api.meta.model.ExtensionModel;
+import org.mule.tck.probe.JUnitLambdaProbe;
+import org.mule.tck.probe.PollingProber;
+import org.mule.tests.api.TestComponentsExtension;
+import org.mule.tests.api.pojos.LifecycleObject;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 
-import io.qameta.allure.Feature;
-import io.qameta.allure.Story;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
+
 @Feature(LIFECYCLE_AND_DEPENDENCY_INJECTION)
 @Story(LIFECYCLE_PHASE_FAILURE_STORY)
-public class MuleContextLifecycleTestCase extends AbstractMuleTestCase {
+public class MuleContextLifecycleTestCase extends AbstractConfigurationFailuresTestCase {
 
   private static final String EXPECTED_A_CONTEXT_START_EXCEPTION_EXCEPTION = "Expected a ContextStartException exception";
-  private SimpleUnitTestSupportSchedulerService schedulerService;
-
-  @Before
-  public void before() {
-    schedulerService = new SimpleUnitTestSupportSchedulerService();
-  }
-
-  @After
-  public void after() throws Exception {
-    if (schedulerService != null) {
-      schedulerService.stop();
-    }
-  }
 
   @Test
   @Ignore("MULE-15693")
   public void failOnStartInvokesStopInOtherComponentsButNotInTheFailedOne() {
     testOnContextLifecycleFailure("lifecycle/component-failing-during-startup-config.xml",
-                                  failOnStartLifecycleBean -> {
+                                  failOnStartLifecycleBean -> new PollingProber().check(new JUnitLambdaProbe(() -> {
                                     LifecycleObject lifecycleBean = failOnStartLifecycleBean.getOtherLifecycleObject();
-                                    assertThat(lifecycleBean.getLifecycleInvocations(), hasSize(2));
-                                    assertThat(failOnStartLifecycleBean.getLifecycleInvocations(), hasSize(2));
-                                  });
+                                    assertThat(failOnStartLifecycleBean.getCalledPhases(), hasSize(3));
+                                    assertThat(failOnStartLifecycleBean.getCalledPhases(),
+                                               containsInAnyOrder("setMuleContext",
+                                                                  Initialisable.PHASE_NAME,
+                                                                  Startable.PHASE_NAME));
+
+                                    assertThat(lifecycleBean.getCalledPhases(), hasSize(5));
+                                    assertThat(lifecycleBean.getCalledPhases(),
+                                               containsInAnyOrder("setMuleContext",
+                                                                  Initialisable.PHASE_NAME,
+                                                                  Startable.PHASE_NAME,
+                                                                  Stoppable.PHASE_NAME,
+                                                                  Disposable.PHASE_NAME));
+                                    return true;
+                                  })));
   }
 
   @Test
@@ -76,54 +70,37 @@ public class MuleContextLifecycleTestCase extends AbstractMuleTestCase {
     testOnContextLifecycleFailure("lifecycle/component-failing-during-initialise-config.xml",
                                   failOnStartLifecycleBean -> {
                                     LifecycleObject lifecycleBean = failOnStartLifecycleBean.getOtherLifecycleObject();
-                                    assertThat(lifecycleBean.getLifecycleInvocations(), hasSize(2));
-                                    assertThat(lifecycleBean.getLifecycleInvocations(),
-                                               containsInAnyOrder(Initialisable.PHASE_NAME,
+                                    assertThat(lifecycleBean.getCalledPhases(), hasSize(3));
+                                    assertThat(lifecycleBean.getCalledPhases(),
+                                               containsInAnyOrder("setMuleContext",
+                                                                  Initialisable.PHASE_NAME,
                                                                   Disposable.PHASE_NAME));
-                                    assertThat(failOnStartLifecycleBean.getLifecycleInvocations(), hasSize(1));
-                                    assertThat(failOnStartLifecycleBean.getLifecycleInvocations().get(0),
-                                               equalTo(Initialisable.PHASE_NAME));
+                                    assertThat(failOnStartLifecycleBean.getCalledPhases(), hasSize(2));
+                                    assertThat(failOnStartLifecycleBean.getCalledPhases(),
+                                               containsInAnyOrder("setMuleContext",
+                                                                  Initialisable.PHASE_NAME));
                                   });
   }
 
   private void testOnContextLifecycleFailure(String configFile, Consumer<LifecycleObject> failureLifecycleBeanConsumer) {
     try {
-      new ApplicationContextBuilder() {
-
-        @Override
-        protected final void addBuilders(List<ConfigurationBuilder> builders) {
-          Map<String, Object> baseRegistry = new HashMap<>();
-          baseRegistry.put("httpService", mock(HttpService.class, RETURNS_DEEP_STUBS.get()));
-          baseRegistry.put("schedulerService", schedulerService);
-          baseRegistry.put("elService", new DefaultExpressionLanguageFactoryService() {
-
-            @Override
-            public ExpressionLanguage create() {
-              return mock(ExpressionLanguage.class, RETURNS_DEEP_STUBS.get());
-            }
-
-            @Override
-            public ExpressionLanguage create(ExpressionLanguageConfiguration configuration) {
-              return create();
-            }
-
-            @Override
-            public String getName() {
-              return "test-el";
-            }
-          });
-          builders.add(new SimpleConfigurationBuilder(baseRegistry));
-        }
-      }.setApplicationResources(configFile)
-          .setContextId(MuleContextLifecycleTestCase.class.getSimpleName())
-          .build();
+      loadConfiguration(configFile);
       fail(EXPECTED_A_CONTEXT_START_EXCEPTION_EXCEPTION);
     } catch (LifecycleException e) {
       LifecycleObject lifecycleBean = (LifecycleObject) e.getComponent();
       failureLifecycleBeanConsumer.accept(lifecycleBean);
     } catch (Exception e) {
-      fail(String.format("Expected a %s exception", LifecycleException.class.getName()));
+      fail(String.format("Expected a %s exception but got:\n%s", LifecycleException.class.getName(), e));
     }
   }
 
+  @Override
+  protected List<ExtensionModel> getRequiredExtensions() {
+    ExtensionModel testComponents = loadExtension(TestComponentsExtension.class, emptySet());
+
+    final List<ExtensionModel> extensions = new ArrayList<>();
+    extensions.add(testComponents);
+
+    return extensions;
+  }
 }

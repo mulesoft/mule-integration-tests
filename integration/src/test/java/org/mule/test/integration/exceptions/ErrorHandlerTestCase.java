@@ -17,6 +17,7 @@ import static org.mule.functional.junit4.matchers.MessageMatchers.hasPayload;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
+
 import org.mule.runtime.api.component.Component;
 import org.mule.runtime.api.exception.DefaultMuleException;
 import org.mule.runtime.api.exception.MuleException;
@@ -35,12 +36,13 @@ import org.mule.test.AbstractIntegrationTestCase;
 
 import java.sql.SQLDataException;
 
-import io.qameta.allure.Feature;
-import io.qameta.allure.Story;
 import org.hamcrest.Matchers;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 
 @Feature(ERROR_HANDLING)
 @Story("Error Handler")
@@ -49,8 +51,7 @@ public class ErrorHandlerTestCase extends AbstractIntegrationTestCase {
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
 
-  private I18nMessage mockMessage = mock(I18nMessage.class);
-  private Processor mockMP = mock(Processor.class);
+  private final I18nMessage mockMessage = mock(I18nMessage.class);
 
   @Override
   protected String getConfigFile() {
@@ -160,12 +161,14 @@ public class ErrorHandlerTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void criticalNotHandled() throws Exception {
-    flowRunner("propagatesCriticalErrors").runExpectingException(errorType(Matchers.any(String.class), is("CRITICAL")));
+    flowRunner("propagatesCriticalErrors").withPayload(TEST_PAYLOAD)
+        .runExpectingException(errorType(Matchers.any(String.class), is("CRITICAL")));
   }
 
   @Test
   public void innerRoutingErrorPropagated() throws Exception {
-    flowRunner("onErrorFails").withPayload(TEST_PAYLOAD).runExpectingException(errorType("MULE", "EXPRESSION"));
+    flowRunner("onErrorFails").withPayload(TEST_PAYLOAD)
+        .runExpectingException(errorType("MULE", "EXPRESSION"));
   }
 
   @Test

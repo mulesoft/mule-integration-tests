@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+    xmlns:test="http://www.mulesoft.org/schema/mule/test"
+    xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+    xmlns:sc="http://www.mulesoft.org/schema/mule/module-using-core"
+    xmlns:sc-using-sc="http://www.mulesoft.org/schema/mule/module-using-sc"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+               http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
+               http://www.mulesoft.org/schema/mule/module-using-core http://www.mulesoft.org/schema/mule/module-using-core/current/mule-module-using-core.xsd
+               http://www.mulesoft.org/schema/mule/module-using-sc http://www.mulesoft.org/schema/mule/module-using-sc/current/mule-module-using-sc.xsd">
+
+    <configuration defaultErrorHandler-ref="globalErrorHandler" />
+
+    <error-handler name="globalErrorHandler">
+        <on-error-propagate>
+            <logger message="error handled globally"/>
+        </on-error-propagate>
+    </error-handler>
+
+    <flow name="scEchoOperationFlowRef">
+        <flow-ref name="scEchoOperation"/>
+    </flow>
+
+    <flow name="scOperation">
+        <sc:set-payload-hardcoded doc:name="mySCName"/>
+    </flow>
+
+    <flow name="scOperationInsideSubFlow">
+        <flow-ref name="scOperationSubFlow"/>
+    </flow>
+
+    <sub-flow name="scOperationSubFlow">
+        <sc:set-payload-hardcoded/>
+    </sub-flow>
+
+    <flow name="scEchoOperation">
+        <sc:echo-set-payload echoMessage="#[vars.variable]" />
+    </flow>
+
+    <flow name="scUsingScOperation">
+        <sc-using-sc:proxy-set-payload-hardcoded />
+    </flow>
+
+    <flow name="scFailingOperation">
+        <sc:raise-error-op/>
+    </flow>
+
+    <flow name="scFailingOperationFlowRef">
+        <flow-ref name="scFailingOperation"/>
+    </flow>
+
+    <flow name="flowWithChoiceRouter">
+        <choice>
+            <when expression="true">
+                <sc:set-payload-hardcoded/>
+            </when>
+        </choice>
+    </flow>
+
+    <flow name="flowWithUntilSuccessfulScope">
+        <until-successful maxRetries="0">
+            <sc:set-payload-hardcoded/>
+        </until-successful>
+    </flow>
+
+    <flow name="flowWithTryScope">
+        <try>
+            <sc:set-payload-hardcoded/>
+        </try>
+    </flow>
+
+    <flow name="flowWithForeachScope">
+        <foreach collection="[1]" batchSize="1" rootMessageVariableName="rootMessage" counterVariableName="counter">
+            <sc:set-payload-hardcoded/>
+        </foreach>
+    </flow>
+
+    <flow name="flowWithParallelForeachScope">
+        <parallel-foreach collection="[1]"  maxConcurrency="2" target="rootMessage" targetValue="#[payload]" timeout="9223372036854775807">
+            <sc:set-payload-hardcoded/>
+        </parallel-foreach>
+    </flow>
+
+    <flow name="flowWithScatterGather">
+        <scatter-gather>
+            <route>
+                <sc:set-payload-hardcoded/>
+            </route>
+            <route>
+                <logger/>
+            </route>
+        </scatter-gather>
+    </flow>
+
+    <flow name="flowWithAsyncScope">
+        <async>
+            <sc:set-payload-hardcoded/>
+        </async>
+    </flow>
+
+</mule>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:test-components="http://www.mulesoft.org/schema/mule/test-components"
+      xsi:schemaLocation="
+       http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+       http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
+
+    <configuration defaultErrorHandler-ref="global" />
+
+    <error-handler name="global">
+        <on-error-propagate>
+            <test-components:lifecycle-tracker name="globalErrorHandlerTracker"/>
+        </on-error-propagate>
+    </error-handler>
+
+    <error-handler name="anotherGlobal">
+        <on-error-continue>
+            <test-components:lifecycle-tracker-check name="anotherGlobalErrorHandlerTracker"/>
+        </on-error-continue>
+    </error-handler>
+
+    <flow name="globalFlow1">
+        <try>
+            <raise-error type="CUSTOM:ERROR" />
+            <error-handler ref="global"/>
+        </try>
+        <error-handler>
+            <on-error-continue />
+        </error-handler>
+    </flow>
+
+    <flow name="globalFlow2">
+        <try>
+            <raise-error type="CUSTOM:ERROR" />
+            <error-handler ref="global"/>
+        </try>
+        <error-handler>
+            <on-error-continue />
+        </error-handler>
+    </flow>
+
+    <flow name="anotherGlobalFlow1">
+        <raise-error type="CUSTOM:ERROR" />
+        <error-handler ref="anotherGlobal"/>
+    </flow>
+
+    <flow name="anotherGlobalFlow2">
+        <try>
+            <raise-error type="CUSTOM:ERROR" />
+            <error-handler ref="anotherGlobal"/>
+        </try>
+        <error-handler ref="anotherGlobal"/>
+    </flow>
+
+</mule>

@@ -6,14 +6,20 @@
  */
 package org.mule.test.usecases.routing.response;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.store.ObjectStoreManager.BASE_IN_MEMORY_OBJECT_STORE_KEY;
 import static org.mule.runtime.http.api.HttpConstants.Method.POST;
+import static org.mule.runtime.http.api.client.HttpRequestOptions.builder;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 import org.mule.runtime.api.serialization.ObjectSerializer;
 import org.mule.runtime.api.store.ObjectStoreException;
 import org.mule.runtime.api.store.SimpleMemoryObjectStore;
+import org.mule.runtime.core.api.MuleContext;
+import org.mule.runtime.core.api.config.ConfigurationBuilder;
+import org.mule.runtime.core.api.config.ConfigurationException;
+import org.mule.runtime.core.api.config.builders.AbstractConfigurationBuilder;
 import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.runtime.http.api.HttpService;
 import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;
@@ -24,8 +30,7 @@ import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -46,10 +51,16 @@ public class SerializationOnResponseAggregatorTestCase extends AbstractIntegrati
   }
 
   @Override
-  protected Map<String, Object> getStartUpRegistryObjects() {
-    Map<String, Object> registryObjects = new HashMap<>();
-    registryObjects.put(BASE_IN_MEMORY_OBJECT_STORE_KEY, new TestObjectStore());
-    return registryObjects;
+  protected void addBuilders(List<ConfigurationBuilder> builders) {
+    builders.add(new AbstractConfigurationBuilder() {
+
+      @Override
+      public void doConfigure(MuleContext muleContext) throws ConfigurationException {
+        muleContext.getCustomizationService().overrideDefaultServiceImpl(BASE_IN_MEMORY_OBJECT_STORE_KEY, new TestObjectStore());
+      }
+    });
+
+    super.addBuilders(builders);
   }
 
   @Test
@@ -57,7 +68,9 @@ public class SerializationOnResponseAggregatorTestCase extends AbstractIntegrati
     HttpRequest request = HttpRequest.builder().uri("http://localhost:" + dynamicPort.getNumber())
         .entity(new ByteArrayHttpEntity("request".getBytes())).method(POST).build();
 
-    HttpResponse response = httpClient.send(request, RECEIVE_TIMEOUT, false, null);
+    HttpResponse response = httpClient.send(request, builder().responseTimeout(RECEIVE_TIMEOUT)
+        .followsRedirect(false)
+        .build());
 
     String payload = IOUtils.toString(response.getEntity().getContent());
     assertThat(payload, is("request processed"));

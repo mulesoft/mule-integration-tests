@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xmlns:test="http://www.mulesoft.org/schema/mule/test"
       xsi:schemaLocation="
-       http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-       http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+       http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 
     <flow name="propagatesToOuterWithoutExceptionAndSucceeds" initialState="stopped">
         <try>
             <try>
-                <test:processor throwException="true"/>
+                <raise-error type="APP:EXPECTED"/>
                 <error-handler>
                     <on-error-propagate>
                         <set-payload value="propagated"/>
@@ -18,13 +16,13 @@
             </try>
             <error-handler>
                 <on-error-continue>
-                    <append-string-transformer message=" again"/>
+                    <set-payload value="#[payload ++ ' again']"/>
                 </on-error-continue>
             </error-handler>
         </try>
         <error-handler>
             <on-error-continue>
-                <append-string-transformer message=" and again"/>
+                <set-payload value="#[payload ++ ' and again']"/>
             </on-error-continue>
         </error-handler>
     </flow>
@@ -32,7 +30,7 @@
     <flow name="propagatesToOuterWithoutExceptionAndFails" initialState="stopped">
         <try>
             <try>
-                <test:processor throwException="true"/>
+                <raise-error type="APP:EXPECTED"/>
                 <error-handler>
                     <on-error-propagate>
                         <set-payload value="propagated"/>
@@ -41,7 +39,7 @@
             </try>
             <error-handler>
                 <on-error-propagate>
-                    <append-string-transformer message=" again"/>
+                    <set-payload value="#[payload ++ ' again']"/>
                 </on-error-propagate>
             </error-handler>
         </try>
@@ -49,7 +47,7 @@
 
     <flow name="propagatesToFlowWithoutExceptionAndSucceeds" initialState="stopped">
         <try>
-            <test:processor throwException="true"/>
+            <raise-error type="APP:EXPECTED"/>
             <error-handler>
                 <on-error-propagate>
                     <set-payload value="propagated"/>
@@ -58,14 +56,14 @@
         </try>
         <error-handler>
             <on-error-continue>
-                <append-string-transformer message=" again"/>
+                <set-payload value="#[payload ++ ' again']"/>
             </on-error-continue>
         </error-handler>
     </flow>
 
     <flow name="propagatesToFlowWithoutExceptionAndFails" initialState="stopped">
         <try>
-            <test:processor throwException="true"/>
+            <raise-error type="APP:EXPECTED"/>
             <error-handler>
                 <on-error-propagate>
                     <set-payload value="propagated"/>
@@ -74,7 +72,7 @@
         </try>
         <error-handler>
             <on-error-propagate>
-                <append-string-transformer message=" again"/>
+                <set-payload value="#[payload ++ ' again']"/>
             </on-error-propagate>
         </error-handler>
     </flow>
@@ -82,24 +80,24 @@
     <flow name="propagatesToOuterWithExceptionAndSucceeds" initialState="stopped">
         <try>
             <try>
-                <test:processor throwException="true"/>
+                <raise-error type="APP:EXPECTED"/>
                 <error-handler>
                     <!-- Here propagate/continue shouldn't matter as there is an exception inside the handler -->
                     <on-error-propagate>
                         <set-payload value="propagated"/>
-                        <test:processor throwException="true"/>
+                        <raise-error type="APP:EXPECTED"/>
                     </on-error-propagate>
                 </error-handler>
             </try>
             <error-handler>
                 <on-error-continue>
-                    <append-string-transformer message=" again"/>
+                    <set-payload value="#[payload ++ ' again']"/>
                 </on-error-continue>
             </error-handler>
         </try>
         <error-handler>
             <on-error-continue>
-                <append-string-transformer message=" and again"/>
+                <set-payload value="#[payload ++ ' and again']"/>
             </on-error-continue>
         </error-handler>
     </flow>
@@ -107,18 +105,18 @@
     <flow name="propagatesToOuterWithExceptionAndFails" initialState="stopped">
         <try>
             <try>
-                <test:processor throwException="true"/>
+                <raise-error type="APP:EXPECTED"/>
                 <error-handler>
                     <!-- Here propagate/continue shouldn't matter as there is an exception inside the handler -->
                     <on-error-continue>
                         <set-payload value="propagated"/>
-                        <test:processor throwException="true"/>
+                        <raise-error type="APP:EXPECTED"/>
                     </on-error-continue>
                 </error-handler>
             </try>
             <error-handler>
                 <on-error-propagate>
-                    <append-string-transformer message=" again"/>
+                    <set-payload value="#[payload ++ ' again']"/>
                 </on-error-propagate>
             </error-handler>
         </try>
@@ -126,55 +124,55 @@
 
     <flow name="propagatesToFlowWithExceptionAndSucceeds" initialState="stopped">
         <try>
-            <test:processor throwException="true"/>
+            <raise-error type="APP:EXPECTED"/>
             <error-handler>
                 <on-error-propagate>
                     <set-payload value="propagated"/>
-                    <test:processor throwException="true"/>
+                    <raise-error type="APP:EXPECTED"/>
                 </on-error-propagate>
             </error-handler>
         </try>
         <error-handler>
             <on-error-continue>
-                <append-string-transformer message=" again"/>
+                <set-payload value="#[payload ++ ' again']"/>
             </on-error-continue>
         </error-handler>
     </flow>
 
     <flow name="propagatesToFlowWithExceptionAndFails" initialState="stopped">
         <try>
-            <test:processor throwException="true"/>
+            <raise-error type="APP:EXPECTED"/>
             <error-handler>
                 <on-error-continue>
                     <set-payload value="propagated"/>
-                    <test:processor throwException="true"/>
+                    <raise-error type="APP:EXPECTED"/>
                 </on-error-continue>
             </error-handler>
         </try>
         <error-handler>
             <on-error-propagate>
-                <append-string-transformer message=" again"/>
+                <set-payload value="#[payload ++ ' again']"/>
             </on-error-propagate>
         </error-handler>
     </flow>
 
     <flow name="exceptionInErrorHandlerFlow" initialState="stopped">
-        <test:processor throwException="true"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <on-error-continue>
                 <set-payload value="propagated"/>
-                <test:processor throwException="true"/>
+                <raise-error type="APP:EXPECTED"/>
             </on-error-continue>
         </error-handler>
     </flow>
 
     <flow name="exceptionInErrorHandlerTry" initialState="stopped">
         <try>
-            <test:processor throwException="true"/>
+            <raise-error type="APP:EXPECTED"/>
             <error-handler>
                 <on-error-continue>
                     <set-payload value="propagated"/>
-                    <test:processor throwException="true"/>
+                    <raise-error type="APP:EXPECTED"/>
                 </on-error-continue>
             </error-handler>
         </try>
@@ -183,14 +181,33 @@
     <flow name="exceptionInErrorHandlerNestedTry" initialState="stopped">
         <try>
             <try>
-                <test:processor throwException="true"/>
+                <raise-error type="APP:EXPECTED"/>
                 <error-handler>
                     <on-error-continue>
                         <set-payload value="propagated"/>
-                        <test:processor throwException="true"/>
+                        <raise-error type="APP:EXPECTED"/>
                     </on-error-continue>
                 </error-handler>
             </try>
         </try>
+    </flow>
+    
+    <flow name="exceptionInErrorHandlerNestedTryCorrectType" initialState="stopped">
+        <try>
+            <raise-error type="MULE:CLIENT_SECURITY"/>
+            <error-handler>
+                <on-error-continue>
+                    <raise-error type="MULE:ROUTING"/>
+                </on-error-continue>
+            </error-handler>    
+        </try>
+        <error-handler>
+            <on-error-continue type="MULE:ROUTING">
+                <set-payload value="properly mapped"/>
+            </on-error-continue>
+            <on-error-continue type="MULE:CLIENT_SECURITY">
+                <set-payload value="wrongly mapped"/>
+            </on-error-continue>
+        </error-handler>    
     </flow>
 </mule>

@@ -3,10 +3,8 @@
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:http="http://www.mulesoft.org/schema/mule/http"
       xmlns:petstore="http://www.mulesoft.org/schema/mule/petstore"
-      xmlns:sc="http://www.mulesoft.org/schema/mule/module-using-core"
       xsi:schemaLocation="
        http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
-       http://www.mulesoft.org/schema/mule/module-using-core http://www.mulesoft.org/schema/mule/module-using-core/current/mule-module-using-core.xsd
        http://www.mulesoft.org/schema/mule/petstore http://www.mulesoft.org/schema/mule/petstore/current/mule-petstore.xsd
        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 
@@ -56,7 +54,6 @@
         <set-payload value="value"/>
         <set-variable variableName="variableName" value="variableValue"/>
         <http:request url="mulesoft.com"/>
-        <sc:set-payload-hardcoded/>
         <remove-variable variableName="varName"/>
         <parse-template>
             <content>#['lala']</content>

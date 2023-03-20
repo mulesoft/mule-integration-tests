@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:test-oauth="http://www.mulesoft.org/schema/mule/test-oauth"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+               http://www.mulesoft.org/schema/mule/test-oauth http://www.mulesoft.org/schema/mule/test-oauth/current/mule-test-oauth.xsd">
+
+    <flow name="getConnection">
+        <test-oauth:get-connection config-ref="oauth-platform" />
+    </flow>
+
+    <flow name="getFlackyConnection">
+        <test-oauth:get-flacky-connection config-ref="oauth-platform" />
+    </flow>
+
+    <flow name="getStringAfterRefresh">
+        <test-oauth:get-stream content="STREAM_CONTENT" />
+        <test-oauth:get-stream-content-with-flacky-connection config-ref="oauth-platform" content='#[payload]' />
+    </flow>
+
+    <flow name="unauthorizeConnection">
+        <test-oauth:unauthorize config-ref="oauth-platform" />
+    </flow>
+
+</mule>

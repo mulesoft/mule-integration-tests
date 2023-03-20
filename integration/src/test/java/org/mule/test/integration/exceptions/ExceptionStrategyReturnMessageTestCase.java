@@ -6,21 +6,27 @@
  */
 package org.mule.test.integration.exceptions;
 
-import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mule.functional.junit4.matchers.MessageMatchers.hasPayload;
+import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
 import static org.mule.tck.junit4.matcher.EventMatcher.hasMessage;
+import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
+import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ErrorHandlingStory.ON_ERROR_CONTINUE;
 
-import org.mule.functional.api.exception.FunctionalTestException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Test;
 
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
+
+@Feature(ERROR_HANDLING)
+@Story(ON_ERROR_CONTINUE)
 public class ExceptionStrategyReturnMessageTestCase extends AbstractIntegrationTestCase {
 
   @Override
@@ -31,7 +37,7 @@ public class ExceptionStrategyReturnMessageTestCase extends AbstractIntegrationT
   @Test
   public void testReturnPayloadDefaultStrategy() throws Exception {
     flowRunner("InputService2").withPayload("Test Message")
-        .runExpectingException(instanceOf(FunctionalTestException.class), hasMessage(hasPayload(not(nullValue(String.class)))));
+        .runExpectingException(errorType("APP", "EXPECTED"), hasMessage(hasPayload(not(nullValue(String.class)))));
   }
 
   @Test

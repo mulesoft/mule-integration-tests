@@ -6,32 +6,47 @@
  */
 package org.mule.test.extension.dsl;
 
+import static org.mule.functional.junit4.ArtifactAstXmlParserConfigurationBuilder.SERIALIZE_DESERIALIZE_AST_PROPERTY;
+import static org.mule.runtime.api.util.MuleSystemProperties.SYSTEM_PROPERTY_PREFIX;
+import static org.mule.runtime.app.declaration.api.fluent.ElementDeclarer.newParameterGroup;
+import static org.mule.runtime.ast.api.DependencyResolutionMode.MINIMAL;
+import static org.mule.runtime.core.api.util.IOUtils.getResourceAsString;
+
+import static java.lang.Boolean.getBoolean;
+import static java.lang.Thread.currentThread;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.mule.runtime.app.declaration.api.fluent.ElementDeclarer.newParameterGroup;
-import static org.mule.runtime.core.api.util.IOUtils.getResourceAsString;
-import static org.mule.test.module.extension.internal.util.ExtensionsTestUtils.compareXML;
+import static org.junit.Assume.assumeThat;
+
+import org.mule.runtime.api.dsl.DslResolvingContext;
+import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.app.declaration.api.ArtifactDeclaration;
 import org.mule.runtime.app.declaration.api.ConstructElementDeclaration;
 import org.mule.runtime.app.declaration.api.ParameterElementDeclaration;
+import org.mule.runtime.app.declaration.api.component.location.Location;
 import org.mule.runtime.app.declaration.api.fluent.ElementDeclarer;
 import org.mule.runtime.app.declaration.api.fluent.ParameterSimpleValue;
+import org.mule.runtime.ast.api.DependencyResolutionMode;
 import org.mule.runtime.config.api.dsl.ArtifactDeclarationXmlSerializer;
 import org.mule.runtime.config.api.dsl.model.DslElementModelFactory;
-import org.mule.runtime.app.declaration.api.component.location.Location;
-import org.mule.runtime.api.dsl.DslResolvingContext;
-import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.core.api.extension.MuleExtensionModelProvider;
-
-import com.google.common.collect.ImmutableSet;
+import org.mule.tck.junit4.rule.SystemProperty;
 
 import java.util.Optional;
 import java.util.Set;
 
+import com.google.common.collect.ImmutableSet;
+
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
 public class ArtifactDeclarationLocationPathTestCase extends AbstractElementModelTestCase {
+
+  @Rule
+  public SystemProperty minimalDependencies =
+      new SystemProperty(SYSTEM_PROPERTY_PREFIX + DependencyResolutionMode.class.getName(), MINIMAL.name());
 
   public static final String ORIGINAL_CONFIG = "multi-flow-dsl-app.xml";
   public static final String EXPECTED_UPDATED_CONFIG = "location-path-update-multi-flow-dsl-app.xml";
@@ -43,7 +58,14 @@ public class ArtifactDeclarationLocationPathTestCase extends AbstractElementMode
     return ORIGINAL_CONFIG;
   }
 
+  @Override
+  protected void doSetUpBeforeMuleContextCreation() throws Exception {
+    // this case tests a configuration of the ast generator that is not compatible with the serialization.
+    assumeThat(getBoolean(SERIALIZE_DESERIALIZE_AST_PROPERTY), is(false));
+    super.doSetUpBeforeMuleContextCreation();
+  }
 
+  @Override
   @Before
   public void setup() throws Exception {
     Set<ExtensionModel> extensions = muleContext.getExtensionManager().getExtensions();
@@ -53,7 +75,7 @@ public class ArtifactDeclarationLocationPathTestCase extends AbstractElementMode
     modelResolver = DslElementModelFactory.getDefault(dslContext);
     serializer = ArtifactDeclarationXmlSerializer.getDefault(dslContext);
     multiFlowDeclaration = serializer.deserialize(getConfigFile(),
-                                                  Thread.currentThread().getContextClassLoader()
+                                                  currentThread().getContextClassLoader()
                                                       .getResourceAsStream(getConfigFile()));
   }
 

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:sc="http://www.mulesoft.org/schema/mule/module-using-core"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+               http://www.mulesoft.org/schema/mule/module-using-core http://www.mulesoft.org/schema/mule/module-using-core/current/mule-module-using-core.xsd">
+
+    <object name="flowStackAsserter" class="org.mule.tck.util.FlowTraceUtils$FlowStackAsserter" />
+    <object name="flowStackAsserter2" class="org.mule.tck.util.FlowTraceUtils$FlowStackAsserter" />
+    <object name="flowStackAsyncAsserter" class="org.mule.tck.util.FlowTraceUtils$FlowStackAsyncAsserter" />
+    <object name="flowStackAsyncAsserter2" class="org.mule.tck.util.FlowTraceUtils$FlowStackAsyncAsserter" />
+
+    <sub-flow name="subFlow">
+        <flow-ref name="flowStackAsserter"/>
+    </sub-flow>
+    
+    <!-- XML SDK -->
+
+    <flow name="xmlSdkOperation">
+        <sc:flow-stack-store />
+    </flow>
+    
+    <flow name="xmlSdkOperationNested">
+        <sc:flow-stack-store-nested />
+    </flow>
+    
+    <flow name="xmlSdkOperationInSubflow" initialState="stopped">
+        <flow-ref name="xmlSdkOperation"/>
+    </flow>
+    
+    <flow name="xmlSdkOperationFailAfter">
+        <sc:set-payload-hardcoded />
+        <raise-error type="APP:EXPECTED"/>
+        <error-handler>
+            <on-error-continue>
+                <flow-ref name="subFlow"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+    
+    <flow name="xmlSdkOperationFailAfterSubFlow" initialState="stopped">
+        <flow-ref name="xmlSdkOperationFailAfter"/>
+    </flow>
+
+    <flow name="xmlSdkOperationAfter" initialState="stopped">
+        <sc:set-payload-hardcoded />
+        <flow-ref name="subFlow"/>
+    </flow>
+    
+    <flow name="xmlSdkOperationError">
+        <try>
+            <sc:raise-error-op />
+            <error-handler>
+                <on-error-continue/>
+            </error-handler>
+        </try>
+        <flow-ref name="subFlow"/>
+    </flow>
+    
+    <flow name="xmlSdkOperationErrorInSubflow" initialState="stopped">
+        <flow-ref name="xmlSdkOperationError"/>
+    </flow>
+    
+</mule>

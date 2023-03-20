@@ -1,42 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xmlns:test-components="http://www.mulesoft.org/schema/mule/test-components"
       xsi:schemaLocation="
                http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-               http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+               http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
 
+    <test-components:queue-config name="output0">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="output1">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="output2">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="output3">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="output4">
+        <test-components:connection />
+    </test-components:queue-config>
 
     <flow name="test-router">
         <round-robin>
             <route>
-                <test:queue name="output0"/>
+                <test-components:queue-push config-ref="output0"/>
             </route>
             <route>
-                <test:queue name="output1"/>
+                <test-components:queue-push config-ref="output1"/>
             </route>
             <route>
-                <test:queue name="output2"/>
+                <test-components:queue-push config-ref="output2"/>
             </route>
             <route>
-                <test:queue name="output3"/>
+                <test-components:queue-push config-ref="output3"/>
             </route>
             <route>
-                <test:queue name="output4"/>
+                <test-components:queue-push config-ref="output4"/>
             </route>
         </round-robin>
     </flow>
 
     <flow name="test-router-nb">
-        <test:assert-intercepting responseSameTask="false" />
-        <round-robin>
-            <route>
-                <test:non-blocking-processor />
-            </route>
-            <route>
-                <test:non-blocking-processor />
-            </route>
-        </round-robin>
+        <test-components:assert-intercepting responseSameTask="false">
+            <round-robin>
+                <route>
+                    <test-components:non-blocking/>
+                </route>
+                <route>
+                    <test-components:non-blocking/>
+                </route>
+            </round-robin>
+        </test-components:assert-intercepting>
     </flow>
 
 </mule>

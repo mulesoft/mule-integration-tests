@@ -16,12 +16,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mule.runtime.api.component.ComponentIdentifier.buildFromStringRepresentation;
+import static org.mule.test.allure.AllureConstants.SchedulerFeature.SCHEDULER;
+import static org.mule.test.allure.AllureConstants.SchedulerFeature.SchedulerStories.SCHEDULED_FLOW_EXECUTION;
 
-import org.mule.functional.api.component.EventCallback;
 import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.source.SchedulerMessageSource;
-import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.tck.probe.JUnitLambdaProbe;
@@ -31,8 +31,13 @@ import org.mule.test.AbstractSchedulerTestCase;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
+
 import org.junit.Test;
 
+@Feature(SCHEDULER)
+@Story(SCHEDULED_FLOW_EXECUTION)
 public class SchedulerTestCase extends AbstractSchedulerTestCase {
 
   private static List<String> foo;
@@ -102,29 +107,21 @@ public class SchedulerTestCase extends AbstractSchedulerTestCase {
     }
   }
 
-  public static class Foo extends AbstractComponent implements EventCallback {
-
-    @Override
-    public void eventReceived(CoreEvent event, Object component, MuleContext muleContext) throws Exception {
-      synchronized (foo) {
-
-        if (foo.size() < 10) {
-          foo.add((String) event.getMessage().getPayload().getValue());
-        }
+  public static Object addFoo(String payload) {
+    synchronized (foo) {
+      if (foo.size() < 10) {
+        foo.add(payload);
       }
     }
+    return payload;
   }
 
-  public static class Bar extends AbstractComponent implements EventCallback {
-
-    @Override
-    public void eventReceived(CoreEvent event, Object component, MuleContext muleContext) throws Exception {
-      synchronized (bar) {
-
-        if (bar.size() < 10) {
-          bar.add((String) event.getMessage().getPayload().getValue());
-        }
+  public static Object addBar(String payload) {
+    synchronized (bar) {
+      if (bar.size() < 10) {
+        bar.add(payload);
       }
     }
+    return payload;
   }
 }

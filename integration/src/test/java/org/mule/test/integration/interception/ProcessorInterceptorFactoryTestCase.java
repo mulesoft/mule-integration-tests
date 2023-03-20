@@ -9,8 +9,6 @@ package org.mule.test.integration.interception;
 import static java.lang.Math.random;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.endsWith;
@@ -20,7 +18,6 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
-import static org.mule.tck.probe.PollingProber.check;
 import static org.mule.functional.api.exception.ExpectedError.none;
 import static org.mule.runtime.api.interception.ProcessorInterceptorFactory.INTERCEPTORS_ORDER_REGISTRY_KEY;
 import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
@@ -30,10 +27,9 @@ import static org.mule.test.heisenberg.extension.HeisenbergConnectionProvider.ge
 import static org.mule.test.heisenberg.extension.HeisenbergOperations.CALL_GUS_MESSAGE;
 
 import org.mule.extension.http.api.request.validator.ResponseValidatorException;
+import org.mule.extension.test.extension.reconnection.ReconnectableConnectionProvider;
 import org.mule.functional.api.exception.ExpectedError;
-import org.mule.functional.api.exception.FunctionalTestException;
 import org.mule.runtime.api.artifact.Registry;
-import org.mule.runtime.api.component.ComponentIdentifier;
 import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.el.MuleExpressionLanguage;
@@ -46,6 +42,7 @@ import org.mule.runtime.api.interception.ProcessorInterceptorFactory.ProcessorIn
 import org.mule.runtime.api.interception.ProcessorParameterValue;
 import org.mule.runtime.api.lock.LockFactory;
 import org.mule.runtime.api.scheduler.SchedulerService;
+import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.runtime.http.api.HttpService;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -58,9 +55,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 import javax.inject.Inject;
 
@@ -72,16 +71,10 @@ import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Feature(INTERCEPTION_API)
 @Story(COMPONENT_INTERCEPTION_STORY)
 public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTestCase {
-
-  private static final int POLLING_TIMEOUT = 5000;
-  private static final int POLLING_DELAY = 500;
-  private static Logger LOGGER = LoggerFactory.getLogger(ProcessorInterceptorFactoryTestCase.class);
 
   @Rule
   public ExpectedError expectedError = none();
@@ -98,17 +91,29 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     objects.put("_AfterWithCallbackInterceptorFactory", new AfterWithCallbackInterceptorFactory());
     objects.put("_HasInjectedAttributesInterceptorFactory", new HasInjectedAttributesInterceptorFactory(false));
     objects.put("_EvaluatesExpressionInterceptorFactory", new EvaluatesExpressionInterceptorFactory());
+    objects.put("_ErrorMappingRequiredInterceptorFactory", new ErrorMappingRequiredInterceptorFactory());
 
     objects.put(INTERCEPTORS_ORDER_REGISTRY_KEY,
                 (ProcessorInterceptorOrder) () -> asList(AfterWithCallbackInterceptorFactory.class.getName(),
                                                          HasInjectedAttributesInterceptorFactory.class.getName(),
-                                                         EvaluatesExpressionInterceptorFactory.class.getName()));
+                                                         EvaluatesExpressionInterceptorFactory.class.getName(),
+                                                         ErrorMappingRequiredInterceptorFactory.class.getName()));
 
     return objects;
   }
 
+  @Override
+  protected void doSetUpBeforeMuleContextCreation() throws Exception {
+    super.doSetUpBeforeMuleContextCreation();
+    ReconnectableConnectionProvider.fail = true;
+  }
+
+  @Override
+  protected void doSetUp() throws Exception {}
+
   @After
   public void after() {
+    ReconnectableConnectionProvider.fail = false;
     getActiveConnections().clear();
     HasInjectedAttributesInterceptor.interceptionParameters.clear();
     AfterWithCallbackInterceptor.callback = (event, thrown) -> {
@@ -124,7 +129,8 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
 
     InterceptionParameters killInterceptionParameter = interceptionParameters.get(0);
 
-    assertThat(killInterceptionParameter.getParameters().keySet(), containsInAnyOrder("targetValue", "victim", "goodbyeMessage"));
+    assertThat(killInterceptionParameter.getParameters().keySet(),
+               containsInAnyOrder("targetValue", "victim", "goodbyeMessage"));
     assertThat(killInterceptionParameter.getParameters().get("victim").resolveValue(), is("T-1000"));
     assertThat(killInterceptionParameter.getParameters().get("goodbyeMessage").resolveValue(), is("Hasta la vista, baby"));
   }
@@ -138,7 +144,8 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
 
     InterceptionParameters dieInterceptionParameter = interceptionParameters.get(0);
 
-    assertThat(dieInterceptionParameter.getParameters().keySet(), containsInAnyOrder("config-ref", "config"));
+    assertThat(dieInterceptionParameter.getParameters().keySet(),
+               containsInAnyOrder("config-ref", "config"));
     final Object config = dieInterceptionParameter.getParameters().get("config").resolveValue();
     assertThat(config, instanceOf(HeisenbergExtension.class));
     assertThat(((HeisenbergExtension) config).getConfigName(), is("heisenberg"));
@@ -213,311 +220,44 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
   }
 
   @Test
-  public void expressionsInInterception() throws Exception {
-    assertThat(flowRunner("expressionsInInterception").run().getVariables().get("addedVar").getValue(), is("value2"));
-  }
+  @Issue("MULE-19236")
+  @Description("The errorType set by an operation and then mapped is preserved if an interceptor is applied")
+  public void failingOperationMappedErrorTypePreserved() throws Exception {
+    AtomicBoolean afterCallbackCalled = new AtomicBoolean(false);
 
-  @Description("Smart Connector simple operation without parameters")
-  @Test
-  public void scOperation() throws Exception {
-    flowRunner("scOperation").run();
+    AfterWithCallbackInterceptor.callback = (event, thrown) -> {
+      assertThat(event.getError().get().getErrorType(), errorType("APP", "MAPPED_CONNECTIVITY"));
 
-    List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
-    assertThat(interceptionParameters, hasSize(2));
+      afterCallbackCalled.set(true);
+    };
 
-    InterceptionParameters moduleOperationChain = interceptionParameters.get(0);
-    InterceptionParameters setPayloadOperation = interceptionParameters.get(1);
-
-    assertThat(moduleOperationChain.getParameters().keySet(), containsInAnyOrder("doc:name", "targetValue"));
-    assertThat(moduleOperationChain.getParameters().get("doc:name").resolveValue(), is("mySCName"));
-
-    assertThat(setPayloadOperation.getParameters().keySet(), containsInAnyOrder("value", "mimeType", "encoding"));
-    assertThat(setPayloadOperation.getParameters().get("value").resolveValue(), is("Wubba Lubba Dub Dub"));
-    assertThat(setPayloadOperation.getParameters().get("mimeType").resolveValue(), is("text/plain"));
-    assertThat(setPayloadOperation.getParameters().get("encoding").resolveValue(), is("UTF-8"));
-  }
-
-  @Description("Smart Connector inside a sub-flow declares a simple operation without parameters")
-  @Test
-  public void scOperationInsideSubFlow() throws Exception {
-    flowRunner("scOperationInsideSubFlow").run();
-
-    List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
-    assertThat(interceptionParameters, hasSize(3));
-
-    ComponentIdentifier flowRefIdentifier = interceptionParameters.get(0).getLocation().getComponentIdentifier().getIdentifier();
-    ComponentIdentifier moduleOperationChainIdentifier =
-        interceptionParameters.get(1).getLocation().getComponentIdentifier().getIdentifier();
-    ComponentIdentifier setPayloadOperationIdentifier =
-        interceptionParameters.get(2).getLocation().getComponentIdentifier().getIdentifier();
-
-    assertThat(flowRefIdentifier.getName(), equalTo("flow-ref"));
-
-    assertThat(moduleOperationChainIdentifier.getNamespace(), equalTo("module-using-core"));
-    assertThat(moduleOperationChainIdentifier.getName(), equalTo("set-payload-hardcoded"));
-
-    assertThat(setPayloadOperationIdentifier.getName(), equalTo("set-payload"));
-  }
-
-  @Description("Smart Connector inside a choice router declares a simple operation without parameters")
-  @Test
-  public void scOperationInsideChoiceRouter() throws Exception {
-    flowRunner("flowWithChoiceRouter").run();
-
-    List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
-    assertThat(interceptionParameters, hasSize(3));
-
-    ComponentIdentifier choiceIdentifier = interceptionParameters.get(0).getLocation().getComponentIdentifier().getIdentifier();
-    ComponentIdentifier moduleName =
-        interceptionParameters.get(1).getLocation().getComponentIdentifier().getIdentifier();
-    ComponentIdentifier setPayloadOperationIdentifier =
-        interceptionParameters.get(2).getLocation().getComponentIdentifier().getIdentifier();
-
-    assertThat(choiceIdentifier.getName(), equalTo("choice"));
-
-    assertThat(moduleName.getNamespace(), equalTo("module-using-core"));
-    assertThat(moduleName.getName(), equalTo("set-payload-hardcoded"));
-
-    assertThat(setPayloadOperationIdentifier.getName(), equalTo("set-payload"));
-  }
-
-  @Description("Smart Connector inside a until-successful scope declares a simple operation without parameters")
-  @Issue("MULE-16285")
-  @Test
-  public void scOperationInsideAnUntilSuccessScope() throws Exception {
-    flowRunner("flowWithUntilSuccessfulScope").run();
-
-    List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
-    assertThat(interceptionParameters, hasSize(3));
-
-    ComponentIdentifier untilSuccessfulIdentifier =
-        interceptionParameters.get(0).getLocation().getComponentIdentifier().getIdentifier();
-    ComponentIdentifier moduleName =
-        interceptionParameters.get(1).getLocation().getComponentIdentifier().getIdentifier();
-    ComponentIdentifier setPayloadOperationIdentifier =
-        interceptionParameters.get(2).getLocation().getComponentIdentifier().getIdentifier();
-
-    assertThat(untilSuccessfulIdentifier.getName(), equalTo("until-successful"));
-
-    assertThat(moduleName.getNamespace(), equalTo("module-using-core"));
-    assertThat(moduleName.getName(), equalTo("set-payload-hardcoded"));
-
-    assertThat(setPayloadOperationIdentifier.getName(), equalTo("set-payload"));
-  }
-
-  @Description("Smart Connector inside a try scope declares a simple operation without parameters")
-  @Issue("MULE-16285")
-  @Test
-  public void scOperationInsideTryScope() throws Exception {
-    flowRunner("flowWithTryScope").run();
-
-    List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
-    assertThat(interceptionParameters, hasSize(3));
-
-    ComponentIdentifier tryIdentifier =
-        interceptionParameters.get(0).getLocation().getComponentIdentifier().getIdentifier();
-    ComponentIdentifier moduleName =
-        interceptionParameters.get(1).getLocation().getComponentIdentifier().getIdentifier();
-    ComponentIdentifier setPayloadOperationIdentifier =
-        interceptionParameters.get(2).getLocation().getComponentIdentifier().getIdentifier();
-
-    assertThat(tryIdentifier.getName(), equalTo("try"));
-
-    assertThat(moduleName.getNamespace(), equalTo("module-using-core"));
-    assertThat(moduleName.getName(), equalTo("set-payload-hardcoded"));
-
-    assertThat(setPayloadOperationIdentifier.getName(), equalTo("set-payload"));
-  }
-
-  @Description("Smart Connector inside a foreach scope declares a simple operation without parameters")
-  @Issue("MULE-16285")
-  @Test
-  public void scOperationInsideForeachScope() throws Exception {
-    flowRunner("flowWithForeachScope").run();
-
-    List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
-    assertThat(interceptionParameters, hasSize(3));
-
-    ComponentIdentifier foreachIdentifier =
-        interceptionParameters.get(0).getLocation().getComponentIdentifier().getIdentifier();
-    ComponentIdentifier moduleName =
-        interceptionParameters.get(1).getLocation().getComponentIdentifier().getIdentifier();
-    ComponentIdentifier setPayloadOperationIdentifier =
-        interceptionParameters.get(2).getLocation().getComponentIdentifier().getIdentifier();
-
-    assertThat(foreachIdentifier.getName(), equalTo("foreach"));
-
-    assertThat(moduleName.getNamespace(), equalTo("module-using-core"));
-    assertThat(moduleName.getName(), equalTo("set-payload-hardcoded"));
-
-    assertThat(setPayloadOperationIdentifier.getName(), equalTo("set-payload"));
-  }
-
-  @Description("Smart Connector inside a parallel-foreach scope declares a simple operation without parameters")
-  @Issue("MULE-16285")
-  @Test
-  public void scOperationInsideParallelForeachScope() throws Exception {
-    flowRunner("flowWithParallelForeachScope").run();
-
-    List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
-    assertThat(interceptionParameters, hasSize(3));
-
-    ComponentIdentifier parallelForeachIdentifier =
-        interceptionParameters.get(0).getLocation().getComponentIdentifier().getIdentifier();
-    ComponentIdentifier moduleName =
-        interceptionParameters.get(1).getLocation().getComponentIdentifier().getIdentifier();
-    ComponentIdentifier setPayloadOperationIdentifier =
-        interceptionParameters.get(2).getLocation().getComponentIdentifier().getIdentifier();
-
-    assertThat(parallelForeachIdentifier.getName(), equalTo("parallel-foreach"));
-
-    assertThat(moduleName.getNamespace(), equalTo("module-using-core"));
-    assertThat(moduleName.getName(), equalTo("set-payload-hardcoded"));
-
-    assertThat(setPayloadOperationIdentifier.getName(), equalTo("set-payload"));
-  }
-
-  @Description("Smart Connector inside a scatter-gather declares a simple operation without parameters")
-  @Issue("MULE-16285")
-  @Test
-  public void flowWithScatterGather() throws Exception {
-    flowRunner("flowWithScatterGather").run();
-
-    List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
-    assertThat(interceptionParameters, hasSize(4));
-
-    ComponentIdentifier scatterGatherIdentifier =
-        interceptionParameters.get(0).getLocation().getComponentIdentifier().getIdentifier();
-
-    ComponentIdentifier firstRoute =
-        interceptionParameters.get(1).getLocation().getComponentIdentifier().getIdentifier();
-
-    ComponentIdentifier thirdInterceptorParameter =
-        interceptionParameters.get(2).getLocation().getComponentIdentifier().getIdentifier();
-
-    ComponentIdentifier fourthInterceptorParameter =
-        interceptionParameters.get(3).getLocation().getComponentIdentifier().getIdentifier();
-
-    assertThat(scatterGatherIdentifier.getName(), equalTo("scatter-gather"));
-
-    if (firstRoute.getName().equals("set-payload-hardcoded")) {
-      assertThat(asList(thirdInterceptorParameter.getName(), fourthInterceptorParameter.getName()),
-                 hasItems("logger", "set-payload"));
-      assertThat(firstRoute.getNamespace(), equalTo("module-using-core"));
-    } else {
-      assertThat(asList(thirdInterceptorParameter.getName(), fourthInterceptorParameter.getName()),
-                 hasItems("set-payload-hardcoded", "set-payload"));
-
-      assertThat(firstRoute.getNamespace(), equalTo("mule"));
-      assertThat(firstRoute.getName(), equalTo("logger"));
+    expectedError.expectErrorType("APP", "MAPPED_CONNECTIVITY");
+    try {
+      flowRunner("operationErrorWithMappings").run();
+    } finally {
+      assertThat(afterCallbackCalled.get(), is(true));
     }
   }
 
-  @Description("Smart connectors inside async are not skipped properly")
-  @Issue("MULE-17020")
   @Test
-  public void flowWithAsyncScope() throws Exception {
-    flowRunner("flowWithAsyncScope").run();
+  @Issue("MULE-19866")
+  @Description("The errorType set by an operation and then mapped, is mapped again if an interceptor that requires error mapping is applied")
+  public void failingOperationMappedErrorTypeRemapped() throws Exception {
+    ErrorMappingRequiredInterceptor.callback = (location) -> true;
 
-    check(POLLING_TIMEOUT, POLLING_DELAY, () -> {
-      List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
-      assertThat(interceptionParameters, hasSize(3));
-
-      ComponentIdentifier asyncIdentifier =
-          interceptionParameters.get(0).getLocation().getComponentIdentifier().getIdentifier();
-
-      ComponentIdentifier smartConnectorIdentifier =
-          interceptionParameters.get(1).getLocation().getComponentIdentifier().getIdentifier();
-
-      ComponentIdentifier setPayloadIdentifier =
-          interceptionParameters.get(2).getLocation().getComponentIdentifier().getIdentifier();
-
-      assertThat(asyncIdentifier.getName(), equalTo("async"));
-
-      assertThat(smartConnectorIdentifier.getNamespace(), equalTo("module-using-core"));
-      assertThat(smartConnectorIdentifier.getName(), equalTo("set-payload-hardcoded"));
-
-      assertThat(setPayloadIdentifier.getNamespace(), equalTo("mule"));
-      assertThat(setPayloadIdentifier.getName(), equalTo("set-payload"));
-
-      return true;
-    });
-
+    expectedError.expectErrorType("APP", "ANYTHING_ELSE");
+    flowRunner("operationErrorWithMappings").run();
   }
 
-  @Description("Smart Connector simple operation with parameters")
   @Test
-  public void scEchoOperation() throws Exception {
-    final String variableValue = "echo message for the win";
-    flowRunner("scEchoOperation").withVariable("variable", variableValue).run();
-
-    List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
-    assertThat(interceptionParameters, hasSize(2));
-
-    InterceptionParameters moduleOperationChain = interceptionParameters.get(0);
-    InterceptionParameters setPayloadOperation = interceptionParameters.get(1);
-
-    assertThat(moduleOperationChain.getParameters().keySet(), containsInAnyOrder("echoMessage", "targetValue"));
-    assertThat(moduleOperationChain.getParameters().get("echoMessage").resolveValue(), is("echo message for the win"));
-
-    assertThat(setPayloadOperation.getParameters().keySet(), containsInAnyOrder("value", "mimeType", "encoding"));
-    assertThat(setPayloadOperation.getParameters().get("value").providedValue(), is("#[vars.echoMessage]"));
-    assertThat(setPayloadOperation.getParameters().get("value").resolveValue(), is(variableValue));
-    assertThat(setPayloadOperation.getParameters().get("mimeType").resolveValue(), is("text/plain"));
-    assertThat(setPayloadOperation.getParameters().get("encoding").resolveValue(), is("UTF-8"));
-  }
-
-  @Description("Smart Connector simple operation with parameters through flow-ref")
-  @Test
-  public void scEchoOperationFlowRef() throws Exception {
-    final String variableValue = "echo message for the win";
-    flowRunner("scEchoOperationFlowRef").withVariable("variable", variableValue).run();
-
-    List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
-    assertThat(interceptionParameters, hasSize(3));
-
-    InterceptionParameters flowRef = interceptionParameters.get(0);
-    InterceptionParameters moduleOperationChain = interceptionParameters.get(1);
-    InterceptionParameters setPayloadOperation = interceptionParameters.get(2);
-
-    assertThat(flowRef.getParameters().keySet(), containsInAnyOrder("name", "targetValue"));
-    assertThat(flowRef.getParameters().get("name").resolveValue(), is("scEchoOperation"));
-
-    assertThat(moduleOperationChain.getParameters().keySet(), containsInAnyOrder("echoMessage", "targetValue"));
-    assertThat(moduleOperationChain.getParameters().get("echoMessage").resolveValue(), is("echo message for the win"));
-
-    assertThat(setPayloadOperation.getParameters().keySet(), containsInAnyOrder("value", "mimeType", "encoding"));
-    assertThat(setPayloadOperation.getParameters().get("value").providedValue(), is("#[vars.echoMessage]"));
-    assertThat(setPayloadOperation.getParameters().get("value").resolveValue(), is(variableValue));
-    assertThat(setPayloadOperation.getParameters().get("mimeType").resolveValue(), is("text/plain"));
-    assertThat(setPayloadOperation.getParameters().get("encoding").resolveValue(), is("UTF-8"));
-  }
-
-  @Description("Smart Connector that uses a Smart Connector operation without parameters")
-  @Test
-  public void scUsingScOperation() throws Exception {
-    flowRunner("scUsingScOperation").run();
-
-    List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
-    assertThat(interceptionParameters, hasSize(3));
-
-    InterceptionParameters proxyModuleOperationChain = interceptionParameters.get(0);
-    InterceptionParameters innerModuleOperationChain = interceptionParameters.get(1);
-    InterceptionParameters setPayloadOperation = interceptionParameters.get(2);
-
-    assertThat(proxyModuleOperationChain.getParameters().keySet(), containsInAnyOrder("targetValue"));
-    assertThat(innerModuleOperationChain.getParameters().keySet(), containsInAnyOrder("targetValue"));
-
-    assertThat(setPayloadOperation.getParameters().keySet(), containsInAnyOrder("value", "mimeType", "encoding"));
-    assertThat(setPayloadOperation.getParameters().get("value").resolveValue(), is("Wubba Lubba Dub Dub"));
-    assertThat(setPayloadOperation.getParameters().get("mimeType").resolveValue(), is("text/plain"));
-    assertThat(setPayloadOperation.getParameters().get("encoding").resolveValue(), is("UTF-8"));
+  public void expressionsInInterception() throws Exception {
+    assertThat(flowRunner("expressionsInInterception").run().getVariables().get("addedVar").getValue(), is("value2"));
   }
 
   @Test
   @Description("Errors in sub-flows are handled correctly")
   public void failingSubFlow() throws Exception {
-    expectedError.expectCause(instanceOf(FunctionalTestException.class));
+    expectedError.expectErrorType("APP", "EXPECTED");
 
     try {
       flowRunner("flowWithFailingSubFlowRef").run();
@@ -532,8 +272,8 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
 
       InterceptionParameters failParameter = interceptionParameters.get(1);
 
-      assertThat(failParameter.getParameters().keySet(), containsInAnyOrder("throwException"));
-      assertThat(failParameter.getParameters().get("throwException").resolveValue(), is("true"));
+      assertThat(failParameter.getParameters().keySet(), containsInAnyOrder("type"));
+      assertThat(failParameter.getParameters().get("type").resolveValue(), is("APP:EXPECTED"));
 
       // the 3rd one is for the global error handler, it is tested separately
     }
@@ -542,14 +282,14 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
   @Test
   @Description("Processors in error handlers are intercepted correctly")
   public void errorHandler() throws Exception {
-    expectedError.expectCause(instanceOf(FunctionalTestException.class));
+    expectedError.expectErrorType("APP", "EXPECTED");
 
     AtomicBoolean afterCallbackCalledForFailingMP = new AtomicBoolean(false);
     AtomicBoolean afterCallbackCalledForErrorHandlingMp = new AtomicBoolean(false);
 
     AfterWithCallbackInterceptor.callback = (event, thrown) -> {
       if (!afterCallbackCalledForFailingMP.getAndSet(true)) {
-        assertThat(thrown.get(), instanceOf(FunctionalTestException.class));
+        assertThat(thrown.get(), instanceOf(DefaultMuleException.class));
       } else {
         afterCallbackCalledForErrorHandlingMp.set(true);
       }
@@ -573,14 +313,14 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
   @Test
   @Description("Processors in global error handlers are intercepted correctly")
   public void globalErrorHandler() throws Exception {
-    expectedError.expectCause(instanceOf(FunctionalTestException.class));
+    expectedError.expectErrorType("APP", "EXPECTED");
 
     AtomicBoolean afterCallbackCalledForFailingMP = new AtomicBoolean(false);
     AtomicBoolean afterCallbackCalledForErrorHandlingMp = new AtomicBoolean(false);
 
     AfterWithCallbackInterceptor.callback = (event, thrown) -> {
       if (!afterCallbackCalledForFailingMP.getAndSet(true)) {
-        assertThat(thrown.get(), instanceOf(FunctionalTestException.class));
+        assertThat(thrown.get(), instanceOf(DefaultMuleException.class));
       } else {
         afterCallbackCalledForErrorHandlingMp.set(true);
       }
@@ -702,50 +442,24 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
   }
 
   @Test
-  @Description("Processors in global error handlers are intercepted correctly for errors in XML SDK operations")
-  public void globalErrorHandlerScOperation() throws Exception {
-    expectedError.expectErrorType("MODULE-USING-CORE", "RAISED");
-
-    AtomicBoolean afterCallbackCalledForFailingMP = new AtomicBoolean(false);
-    AtomicBoolean afterCallbackCalledForErrorHandlingMp = new AtomicBoolean(false);
-
-    AfterWithCallbackInterceptor.callback = (event, thrown) -> {
-      if (!afterCallbackCalledForFailingMP.getAndSet(true)) {
-        assertThat(thrown.get(), instanceOf(DefaultMuleException.class));
-      } else {
-        afterCallbackCalledForErrorHandlingMp.set(true);
-      }
-    };
-
-    try {
-      flowRunner("scFailingOperation").run();
-    } finally {
-      assertThat(afterCallbackCalledForFailingMP.get(), is(true));
-      assertThat(afterCallbackCalledForErrorHandlingMp.get(), is(true));
-
-      List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
-      assertThat(interceptionParameters, hasSize(3));
-
-      InterceptionParameters mpInGlobalErrorHandler = interceptionParameters.get(2);
-      assertThat(mpInGlobalErrorHandler.getLocation().getLocation(), is("globalErrorHandler/0/processors/0"));
-    }
-  }
-
-  @Test
   @Description("Processors in global error handlers are intercepted correctly when error is in referenced flow")
   public void globalErrorHandlerWithFlowRef() throws Exception {
-    expectedError.expectCause(instanceOf(FunctionalTestException.class));
+    expectedError.expectErrorType("APP", "EXPECTED");
+    CountDownLatch allAftersWereCalled = new CountDownLatch(4);
 
     AtomicInteger afters = new AtomicInteger(0);
 
     AfterWithCallbackInterceptor.callback = (event, thrown) -> {
       afters.incrementAndGet();
+      allAftersWereCalled.countDown();
     };
 
     try {
       flowRunner("flowWithFailingFlowRef").run();
     } finally {
       // The MP in the global error handler is ran twice, once for the called flow and another for the caller flow.
+      // If the afters don't reach 4, this latch will make the test timeout.
+      allAftersWereCalled.await();
 
       List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
       assertThat(interceptionParameters.stream().map(ip -> ip.getLocation().getLocation()).collect(toList()).toString(),
@@ -760,6 +474,46 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
   public void implicitConfigInNestedScope() throws Exception {
     // before MULE-16730, this execution hanged
     assertThat(flowRunner("implicitConfigInNestedScope").run(), not(nullValue()));
+  }
+
+  @Test
+  @Description("Test the parameter interception using Scripting, which uses the legacy operation executor")
+  public void interceptParametersUsingLegacyOperationExecutorFactory() throws Exception {
+    flowRunner("interceptingScriptingParameters").run();
+
+    List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
+    assertThat(interceptionParameters, hasSize(1));
+
+    Map<String, ProcessorParameterValue> scriptingParameters = interceptionParameters.get(0).getParameters();
+    assertThat(scriptingParameters.keySet(), hasSize(5));
+    assertThat(scriptingParameters.keySet(),
+               containsInAnyOrder("engine", "doc:name", "target", "code", "targetValue"));
+    assertThat(scriptingParameters.get("doc:name").resolveValue(), is("Execute 5"));
+  }
+
+  @Test
+  @Issue("MULE-19245")
+  public void operationWithDeferredStreamParam() throws Exception {
+    final CoreEvent result = flowRunner("operationWithDeferredStreamParam").run();
+    assertThat(result.getMessage().getPayload().getValue(), is("Knocked on Jim Malone"));
+  }
+
+  @Test
+  @Issue("MULE-19315")
+  @Description("Reconnection configuration is honored when resolving params through interception API")
+  public void reconnectionWorksWithInterceptors() throws Exception {
+    ReconnectableConnectionProvider.fail = true;
+    flowRunner("reconnectionWorksWithInterceptors").run();
+    assertThat(ReconnectableConnectionProvider.fail, is(false));
+  }
+
+  @Test
+  @Issue("MULE-19315")
+  @Description("Connectivity errors are propagated consistenly when interception API is present.")
+  public void reconnectionFailureWorksWithInterceptors() throws Exception {
+    ReconnectableConnectionProvider.fail = true;
+    flowRunner("reconnectionFailureWorksWithInterceptors").runExpectingException(errorType("RECONNECTION", "CONNECTIVITY"));
+    assertThat(ReconnectableConnectionProvider.fail, is(true));
   }
 
   public static class HasInjectedAttributesInterceptorFactory implements ProcessorInterceptorFactory {
@@ -939,4 +693,34 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     }
   }
 
+  public static class ErrorMappingRequiredInterceptorFactory implements ProcessorInterceptorFactory {
+
+    @Override
+    public ProcessorInterceptor get() {
+      return new ErrorMappingRequiredInterceptor();
+    }
+  }
+
+  public static class ErrorMappingRequiredInterceptor implements ProcessorInterceptor {
+
+    static Function<ComponentLocation, Boolean> callback = (location) -> false;
+
+    @Override
+    public boolean isErrorMappingRequired(ComponentLocation location) {
+      return callback.apply(location);
+    }
+
+    /*
+     * Implementing this method is necessary because the requirement for an error mapping will only be checked for interceptors
+     * that implement the after or before methods
+     */
+    @Override
+    public void after(ComponentLocation location, InterceptionEvent event, Optional<Throwable> thrown) {}
+  }
+
+  // TODO MULE-17934 remove this
+  @Override
+  protected boolean isGracefulShutdown() {
+    return true;
+  }
 }

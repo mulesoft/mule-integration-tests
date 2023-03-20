@@ -23,7 +23,7 @@
     </flow>
 
     <flow name="continueOverride" initialState="stopped">
-        <test:processor throwException="true"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <on-error-continue>
                 <raise-error type="APP:MY_TYPE"/>
@@ -32,7 +32,7 @@
     </flow>
 
     <flow name="propagateOverride" initialState="stopped">
-        <test:processor throwException="true"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <on-error-propagate>
                 <raise-error type="APP:MY_TYPE"/>

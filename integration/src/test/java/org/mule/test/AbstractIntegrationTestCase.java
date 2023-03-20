@@ -21,7 +21,6 @@ import org.mule.test.runner.ArtifactClassLoaderRunner;
  *
  * @since 4.0
  */
-
 public abstract class AbstractIntegrationTestCase extends MuleArtifactFunctionalTestCase
     implements IntegrationTestCaseRunnerConfig {
 

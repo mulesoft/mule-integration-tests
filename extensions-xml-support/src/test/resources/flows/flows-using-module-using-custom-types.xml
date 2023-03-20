@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:module-using-custom-types="http://www.mulesoft.org/schema/mule/module-using-custom-types"
+      xsi:schemaLocation="
+       http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+       http://www.mulesoft.org/schema/mule/module-using-custom-types http://www.mulesoft.org/schema/mule/module-using-custom-types/current/mule-module-using-custom-types.xsd">
+
+    <flow name="testSetStreetNameAsPayload">
+        <module-using-custom-types:set-street-name-as-payload/>
+    </flow>
+
+    <flow name="testUnionTypeWithNull">
+        <module-using-custom-types:receives-union-with-null>
+            <module-using-custom-types:values><![CDATA[#[['a', 'b', 'c']]]]></module-using-custom-types:values>
+        </module-using-custom-types:receives-union-with-null>
+    </flow>
+
+</mule>

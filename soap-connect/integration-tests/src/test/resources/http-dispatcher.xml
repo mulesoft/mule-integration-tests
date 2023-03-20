@@ -27,13 +27,11 @@
 
     <flow name="withDefaultHttp">
         <soap:invoke config-ref="default-http" service="1" operation="noParams"/>
-        <set-payload value="#[payload.body]"/>
-        <object-to-string-transformer/>
+        <set-payload value="#[%dw 2.0 output application/java --- payload.body.^raw as String]"/>
     </flow>
 
     <flow name="withConfigHttp">
         <soap:invoke config-ref="config-http" service="1" operation="noParams"/>
-        <set-payload value="#[payload.body]"/>
-        <object-to-string-transformer/>
+        <set-payload value="#[%dw 2.0 output application/java --- payload.body.^raw as String]"/>
     </flow>
 </mule>

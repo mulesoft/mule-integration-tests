@@ -3,12 +3,50 @@
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
       xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xmlns:test-components="http://www.mulesoft.org/schema/mule/test-components"
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
                http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
-               http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
+               http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
+               http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
 
     <object name="dlq-mp" class="org.mule.test.routing.UntilSuccessfulTestCase$CustomMP"/>
     <object name="wait-measure" class="org.mule.test.routing.UntilSuccessfulTestCase$WaitMeasure"/>
+
+    <test-components:queue-config name="insideScope">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="untilSuccessful">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="exceptionStrategy">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="untilSuccessfulExpression">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="exceptionStrategyExpression">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="untilSuccessfulNoRetry">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="exceptionStrategyNoRetry">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="outerScope">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="innerScope">
+        <test-components:connection />
+    </test-components:queue-config>
 
     <flow name="minimal-config">
         <!-- with this configuration, the response from target MP won't be considered an error -->
@@ -20,7 +58,7 @@
     <flow name="happy-path-scope">
         <set-payload value="pepa"></set-payload>
         <until-successful maxRetries="2" millisBetweenRetries="100">
-            <test:queue name="insideScope"></test:queue>
+            <test-components:queue-push config-ref="insideScope" />
             <set-payload value="pig"></set-payload>
         </until-successful>
     </flow>
@@ -42,7 +80,7 @@
                 </until-successful>
                 <error-handler>
                     <on-error-continue type="RETRY_EXHAUSTED">
-                        <processor ref="dlq-mp"/>
+                        <flow-ref name="dlq-mp"/>
                     </on-error-continue>
                 </error-handler>
             </try>
@@ -53,11 +91,11 @@
     <flow name="concurrency-error-handling">
         <logger message="#['Running for ' ++ correlationId]"/>
         <until-successful maxRetries="1" millisBetweenRetries="100">
-            <test:processor throwException="true"/>
+            <raise-error type="APP:EXPECTED"/>
         </until-successful>
         <error-handler>
             <on-error-continue type="RETRY_EXHAUSTED">
-                <processor ref="dlq-mp"/>
+                <flow-ref name="dlq-mp"/>
             </on-error-continue>
         </error-handler>
     </flow>
@@ -73,7 +111,7 @@
     </flow>
 
     <flow name="target-mp">
-        <test:processor appendString="ERROR" />
+        <test:processor appendString="ERROR"/>
     </flow>
 
     <flow name="target-flow">
@@ -82,18 +120,18 @@
 
     <flow name="synchronous">
         <until-successful millisBetweenRetries="100">
-            <test:processor throwException="true"/>
+            <raise-error type="APP:EXPECTED"/>
         </until-successful>
     </flow>
 
     <flow name="synchronous-with-retry">
         <until-successful maxRetries="3" millisBetweenRetries="0">
-            <test:queue name="untilSuccessful"/>
-            <test:processor throwException="true"/>
+            <test-components:queue-push config-ref="untilSuccessful"/>
+            <raise-error type="APP:EXPECTED"/>
         </until-successful>
         <error-handler>
             <on-error-propagate type="RETRY_EXHAUSTED">
-                <test:queue name="exceptionStrategy"/>
+                <test-components:queue-push config-ref="exceptionStrategy"/>
             </on-error-propagate>
         </error-handler>
     </flow>
@@ -101,12 +139,12 @@
     <flow name="synchronous-with-expression-retry">
         <set-payload value="3"/>
         <until-successful maxRetries="#[payload + 2]" millisBetweenRetries="0">
-            <test:queue name="untilSuccessfulExpression"/>
-            <test:processor throwException="true"/>
+            <test-components:queue-push config-ref="untilSuccessfulExpression"/>
+            <raise-error type="APP:EXPECTED"/>
         </until-successful>
         <error-handler>
             <on-error-propagate type="RETRY_EXHAUSTED">
-                <test:queue name="exceptionStrategyExpression"/>
+                <test-components:queue-push config-ref="exceptionStrategyExpression"/>
             </on-error-propagate>
         </error-handler>
     </flow>
@@ -124,20 +162,20 @@
 
     <flow name="synchronous-without-retry">
         <until-successful maxRetries="0" millisBetweenRetries="0">
-            <test:queue name="untilSuccessfulNoRetry"/>
-            <test:processor throwException="true"/>
+            <test-components:queue-push config-ref="untilSuccessfulNoRetry"/>
+            <raise-error type="APP:EXPECTED"/>
         </until-successful>
         <error-handler>
             <on-error-propagate type="RETRY_EXHAUSTED">
-                <test:queue name="exceptionStrategyNoRetry"/>
+                <test-components:queue-push config-ref="exceptionStrategyNoRetry"/>
             </on-error-propagate>
         </error-handler>
     </flow>
 
     <flow name="measureSynchronousWait">
         <until-successful maxRetries="1" millisBetweenRetries="1000">
-            <processor ref="wait-measure"/>
-            <test:processor throwException="true"/>
+            <flow-ref name="wait-measure"/>
+            <raise-error type="APP:EXPECTED"/>
         </until-successful>
     </flow>
 
@@ -146,7 +184,7 @@
         <error-handler>
             <on-error-continue>
                 <until-successful>
-                    <processor ref="dlq-mp"/>
+                    <flow-ref name="dlq-mp"/>
                 </until-successful>
                 <set-payload value="hello"/>
             </on-error-continue>
@@ -155,10 +193,10 @@
 
     <flow name="nestedUntilSuccessfulScopes">
         <until-successful maxRetries="1" millisBetweenRetries="10">
-            <test:queue name="outerScope"/>
+            <test-components:queue-push config-ref="outerScope"/>
             <until-successful maxRetries="2" millisBetweenRetries="10">
-                <test:queue name="innerScope"/>
-                <test:processor throwException="true"/>
+                <test-components:queue-push config-ref="innerScope"/>
+                <raise-error type="APP:EXPECTED"/>
             </until-successful>
         </until-successful>
         <error-handler>

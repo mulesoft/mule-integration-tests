@@ -1,36 +1,94 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:heisenberg="http://www.mulesoft.org/schema/mule/heisenberg"
       xsi:schemaLocation="
        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-       http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+       http://www.mulesoft.org/schema/mule/heisenberg http://www.mulesoft.org/schema/mule/heisenberg/current/mule-heisenberg.xsd">
 
-    <configuration defaultErrorHandler-ref="errorHandler" />
-
-    <error-handler name="errorHandler">
-        <on-error-continue type="APP:ERROR_TYPE_1">
-            <logger />
-        </on-error-continue>
-        <on-error-continue type="APP:ERROR_TYPE_2">
-            <logger />
+    <error-handler name="notEnabledErrorHandler">
+        <on-error-continue type="APP:ERROR_TYPE_4">
+            <logger/>
         </on-error-continue>
     </error-handler>
 
-    <flow name="mainFlow" >
+    <error-handler name="errorHandler">
+        <on-error-continue type="APP:ERROR_TYPE_1">
+            <logger/>
+        </on-error-continue>
+        <on-error-continue type="APP:ERROR_TYPE_2">
+            <logger/>
+        </on-error-continue>
+    </error-handler>
+
+    <configuration defaultErrorHandler-ref="errorHandler"/>
+
+    <flow name="mainFlow">
         <scheduler>
             <scheduling-strategy>
                 <fixed-frequency frequency="1000"/>
             </scheduling-strategy>
         </scheduler>
-        <http:request method="POST" url="http://localhost:8080/sample"/>
+        <heisenberg:call-gus-fring/>
         <logger/>
     </flow>
 
-    <flow name="errorMappingFlowDeclaration">
-        <http:request method="GET" config-ref="HTTP_Request_configuration">
-            <error-mapping targetType="APP:ERROR_TYPE_1"/>
-        </http:request>
+    <flow name="errorMappingFlow">
+        <heisenberg:call-gus-fring>
+            <error-mapping targetType="APP:ERROR_TYPE_MAPPING_1"/>
+        </heisenberg:call-gus-fring>
+    </flow>
+
+    <flow name="errorMappingFlow2">
+        <heisenberg:call-gus-fring>
+            <error-mapping targetType="APP:ERROR_TYPE_MAPPING_2"/>
+        </heisenberg:call-gus-fring>
+    </flow>
+
+    <sub-flow name="raiseErrorSubFlow">
+        <raise-error type="APP:ERROR_TYPE_1"/>
+    </sub-flow>
+
+    <flow name="notEnabledFlow">
+        <raise-error type="APP:ERROR_TYPE_3"/>
+    </flow>
+
+    <flow name="emptyRaiseErrorType">
+        <raise-error/>
+        <raise-error type=""/>
+    </flow>
+
+    <flow name="invalidErrorTypeOnRaiseError">
+        <raise-error type="ERROR_NON_EXISTING"/>
+    </flow>
+
+    <flow name="invalidErrorTypeOnErrorHandler">
+        <try>
+            <set-payload value="value"/>
+        </try>
+        <error-handler>
+            <on-error-continue type="ERROR_NON_EXISTING_1"/>
+        </error-handler>
+    </flow>
+
+    <on-error-continue name="sharedContinue">
+        <logger/>
+    </on-error-continue>
+
+    <error-handler name="withSharedContinueHandler">
+        <on-error ref="sharedContinue"/>
+    </error-handler>
+
+    <flow name="withSharedContinue">
+        <logger/>
+        <error-handler>
+            <on-error ref="sharedContinue"/>
+        </error-handler>
+    </flow>
+
+    <flow name="globalErrorHandlerWithOnError">
+        <logger/>
+        <error-handler ref="withSharedContinueHandler"/>
     </flow>
 
 </mule>

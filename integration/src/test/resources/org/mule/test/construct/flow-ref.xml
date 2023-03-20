@@ -6,6 +6,8 @@
                http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
                http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
+    <object name="awaitLatchCpuIntensive" class="org.mule.test.construct.FlowRefTestCase$LatchAwaitCpuIntensiveProcessor"/>
+
     <http:listener-config name="listenerConfig">
         <http:listener-connection host="localhost" port="${port}"/>
     </http:listener-config>
@@ -19,22 +21,22 @@
     </flow>
 
     <sub-flow name="sub-flow">
-        <append-string-transformer message="1" />
-        <append-string-transformer message="2" />
+        <set-payload value="#[payload ++ '1']" />
+        <set-payload value="#[payload ++ '2']" />
         <flow-ref name="composite1" />
 
-        <append-string-transformer message="a" />
-        <append-string-transformer message="b" />
-        <append-string-transformer message="c" />
-        <append-string-transformer message="3" />
+        <set-payload value="#[payload ++ 'a']" />
+        <set-payload value="#[payload ++ 'b']" />
+        <set-payload value="#[payload ++ 'c']" />
+        <set-payload value="#[payload ++ '3']" />
 
     </sub-flow>
 
     <sub-flow name="composite1">
 
-        <append-string-transformer message="x" />
-        <append-string-transformer message="y" />
-        <append-string-transformer message="z" />
+        <set-payload value="#[payload ++ 'x']" />
+        <set-payload value="#[payload ++ 'y']" />
+        <set-payload value="#[payload ++ 'z']" />
     </sub-flow>
 
     <!-- 'Target' tests -->
@@ -49,7 +51,7 @@
     <flow name="targetToSubFlow" initialState="stopped">
         <flow-ref name="nestedTargetSubFlow" target="flowRefResult" targetValue="#[payload[0]]"/>
     </flow>
-    
+
     <sub-flow name="nestedTargetSubFlow">
         <set-payload value="#[['result']]"/>
     </sub-flow>
@@ -59,21 +61,25 @@
         <flow-ref name="#['sub-flow-' ++ vars.letter]" />
     </flow>
 
+    <flow name="flow3" initialState="stopped">
+        <flow-ref name="#['sub-flow-' ++ vars.letter replace ' ' with '']" />
+    </flow>
+
     <sub-flow name="sub-flow-A">
-        <append-string-transformer message="A" />
+        <set-payload value="#[payload ++ 'A']" />
     </sub-flow>
 
     <sub-flow name="sub-flow-B">
-        <append-string-transformer message="B" />
+        <set-payload value="#[payload ++ 'B']" />
     </sub-flow>
 
     <sub-flow name="sub-flow-C">
         <choice>
             <when expression="#[true]">
-                <append-string-transformer message="A" />
+                <set-payload value="#[payload ++ 'A']" />
             </when>
             <otherwise>
-                <append-string-transformer message="B" />
+                <set-payload value="#[payload ++ 'B']" />
             </otherwise>
         </choice>
     </sub-flow>
@@ -81,15 +87,15 @@
     <sub-flow name="sub-flow-SG">
         <scatter-gather>
             <route>
-                <append-string-transformer message="A" />
+                <set-payload value="#[payload ++ 'A']" />
             </route>
             <route>
-                <append-string-transformer message="B" />
+                <set-payload value="#[payload ++ 'B']" />
             </route>
         </scatter-gather>
     </sub-flow>
 
-    <flow name="httpEcho" initialState="stopped">
+    <flow name="httpEcho">
         <http:listener config-ref="listenerConfig" path="echo"/>
         <logger/>
     </flow>
@@ -99,7 +105,7 @@
     </flow>
 
     <flow name="errorFlow">
-        <test:processor throwException="true" exceptionToThrow="java.lang.IllegalStateException"/>
+        <raise-error type="APP:EXPECTED"/>
     </flow>
 
     <flow name="flowRefSubFlowErrorNotifications" initialState="stopped">
@@ -107,7 +113,7 @@
     </flow>
 
     <sub-flow name="errorSubFlow">
-        <test:processor throwException="true" exceptionToThrow="java.lang.IllegalStateException" />
+        <raise-error type="APP:EXPECTED"/>
     </sub-flow>
 
     <!-- Infinite recursion handling -->
@@ -163,14 +169,10 @@
     </flow>
 
     <flow name="backpressureFlowRefInner">
-        <test:processor processingType="CPU_INTENSIVE">
-            <test:callback class="org.mule.test.construct.FlowRefTestCase$LatchAwaitCallback"/>
-        </test:processor>
+        <flow-ref name="awaitLatchCpuIntensive"/>
     </flow>
     <sub-flow name="backpressureFlowRefInnerSub">
-        <test:processor processingType="CPU_INTENSIVE">
-            <test:callback class="org.mule.test.construct.FlowRefTestCase$LatchAwaitCallback"/>
-        </test:processor>
+        <flow-ref name="awaitLatchCpuIntensive"/>
     </sub-flow>
 
     <!-- Multiple recursive subflows -->
@@ -217,6 +219,51 @@
 
     <flow name="stoppedTargetFlow2" initialState="stopped">
         <set-payload value="holis"></set-payload>
+    </flow>
+
+    <flow name="backpressureFlowRefOuterMaxConcurrencyStatic">
+        <flow-ref name="backpressureFlowRefInnerMaxConcurrency"/>
+    </flow>
+
+    <flow name="backpressureFlowRefInnerMaxConcurrency" maxConcurrency="1">
+        <choice>
+            <when expression="#[java!org::mule::test::construct::FlowRefTestCase::getCallbackInFlight() >= 1]">
+                <raise-error type="FR:CONCURRENT_EXECUTION"/>
+            </when>
+        </choice>
+
+        <flow-ref name="awaitLatchCpuIntensive"/>
+    </flow>
+
+    <flow name="dynamicFlowRefWithSdkOperation">
+        <!-- This first operation call is needed so that the SdkInternalContext for the event is initialized -->
+        <http:request config-ref="requestConfig" path="/echo"/>
+        <set-payload value="#[['apple', 'banana', 'orange']]"/>
+        <foreach>
+            <flow-ref name="#['dynamicFlowRefWithSdkOperationInner']"/>
+        </foreach>
+    </flow>
+
+    <sub-flow name="dynamicFlowRefWithSdkOperationInner">
+        <http:request config-ref="requestConfig" path="/echo"/>
+    </sub-flow>
+
+    <flow name="foreachWithFlowRefAndMaxConcurrency">
+        <foreach>
+            <flow-ref name="flowWithMaxConcurrency" />
+        </foreach>
+    </flow>
+
+    <flow name="flowWithMaxConcurrency" maxConcurrency="1">
+        <set-payload value="holis"></set-payload>
+    </flow>
+
+    <flow name="outerFlowWithMaxConcurrency">
+        <flow-ref name="referencedFlowWithMaxConcurrency"/>
+    </flow>
+
+    <flow name="referencedFlowWithMaxConcurrency" maxConcurrency="1">
+        <flow-ref name="backpressureFlowRefInner"/>
     </flow>
 
 </mule>

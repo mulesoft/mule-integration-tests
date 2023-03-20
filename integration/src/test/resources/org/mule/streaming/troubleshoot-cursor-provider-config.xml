@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:file="http://www.mulesoft.org/schema/mule/file"
+      xsi:schemaLocation="
+       http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+       http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+       http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+
+    <object name="closePayload" class="org.mule.test.streaming.TroubleshootClosedCursorProviderTestCase$ClosePayloadProcessor"/>
+
+    <http:listener-config name="simpleConf">
+        <http:listener-connection host="localhost" port="${port}"/>
+    </http:listener-config>
+
+    <file:config name="file">
+        <file:connection workingDir="${workingDir}"/>
+    </file:config>
+
+    <flow name="closeStreamOnSourceFlow">
+        <http:listener path="/api/echo" config-ref="simpleConf"/>
+        <flow-ref name="closePayload"/>
+        <set-payload value="#[payload]"/>
+    </flow>
+
+    <flow name="closeStreamOnOperationFlow">
+        <foreach collection="#[1 to 3]">
+            <file:read path="${fileName}" config-ref="file"/>
+            <flow-ref name="closePayload"/>
+            <set-variable variableName="toString" value="#[output application/java --- payload as String]"/>
+        </foreach>
+    </flow>
+
+</mule>

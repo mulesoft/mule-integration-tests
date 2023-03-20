@@ -18,14 +18,8 @@ import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
         "org.fusesource.hawtbuf:hawtbuf",
         "org.apache.activemq.protobuf:activemq-protobuf",
         "org.mule.tests:mule-tests-model",
-        "org.springframework:spring-core",
-        "org.springframework:spring-beans",
-        "org.springframework:spring-context",
-        "org.springframework:spring-aop",
-        "org.springframework:spring-expression",
-        "org.springframework.security:spring-security-core",
-        "org.springframework.security:spring-security-config",
-        "org.apache.derby:derby"
+        "org.apache.derby:derby",
+        "org.codehaus.groovy:groovy-all"
     },
     extraPrivilegedArtifacts = {"org.mule.tests:mule-tests-parsers-plugin"},
     testRunnerExportedRuntimeLibs = {"org.mule.tests:mule-tests-functional"})

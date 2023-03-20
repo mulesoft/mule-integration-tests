@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:vegan="http://www.mulesoft.org/schema/mule/vegan"
+      xmlns:subtypes="http://www.mulesoft.org/schema/mule/subtypes"
+      xmlns:heisenberg="http://www.mulesoft.org/schema/mule/heisenberg"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+        http://www.mulesoft.org/schema/mule/vegan http://www.mulesoft.org/schema/mule/vegan/current/mule-vegan.xsd
+        http://www.mulesoft.org/schema/mule/subtypes http://www.mulesoft.org/schema/mule/subtypes/current/mule-subtypes.xsd
+        http://www.mulesoft.org/schema/mule/heisenberg http://www.mulesoft.org/schema/mule/heisenberg/current/mule-heisenberg.xsd">
+
+    <object name="anObject" class="com.mycompany.myproject.MyClass">
+        <property key="someKey" value="someValue"/>
+    </object>
+
+    <vegan:apple-config name="apple">
+        <vegan:cook-book>
+            <vegan:vegan-cook-book/>
+        </vegan:cook-book>
+    </vegan:apple-config>
+
+    <heisenberg:config name="heisenberg"
+                       cancer="true"
+                       dateOfBirth="1959-09-07T00:00:00"
+                       dateOfDeath="2011-09-07T00:00:00-05:00"
+                       dateOfConception="1959-01-07T00:00:00"
+                       money="1000000"
+                       finalHealth="DEAD"
+                       labAddress="Pollos Hermanos">
+        <heisenberg:enemies>
+            <heisenberg:enemy value="Gustavo Fring"/>
+            <heisenberg:enemy value="Hank"/>
+        </heisenberg:enemies>
+        <heisenberg:recipes>
+            <heisenberg:recipe key="methylamine" value="75"/>
+            <heisenberg:recipe key="pseudoephedrine" value="0"/>
+            <heisenberg:recipe key="P2P" value="25"/>
+        </heisenberg:recipes>
+        <heisenberg:deaths-by-seasons>
+            <heisenberg:deaths-by-season key="s01">
+                <heisenberg:deaths-by-season-item value="emilio"/>
+                <heisenberg:deaths-by-season-item value="domingo"/>
+            </heisenberg:deaths-by-season>
+        </heisenberg:deaths-by-seasons>
+        <heisenberg:weapon-value-maps>
+            <heisenberg:weapon-value-map key="first">
+                <heisenberg:ricin microgramsPerKilo="22">
+                    <heisenberg:destination victim="Lidia" address="Stevia coffe shop"/>
+                </heisenberg:ricin>
+            </heisenberg:weapon-value-map>
+            <heisenberg:weapon-value-map key="second">
+                <subtypes:revolver name="sledgeHammer's" bullets="1"/>
+            </heisenberg:weapon-value-map>
+        </heisenberg:weapon-value-maps>
+        <heisenberg:labeled-ricins>
+            <heisenberg:labeled-ricin key="pojo">
+                <heisenberg:ricin microgramsPerKilo="22">
+                    <heisenberg:destination victim="Lidia" address="Stevia coffe shop"/>
+                </heisenberg:ricin>
+            </heisenberg:labeled-ricin>
+        </heisenberg:labeled-ricins>
+    </heisenberg:config>
+
+    <flow name="nestedPojo">
+        <heisenberg:approve>
+            <heisenberg:investment>
+                <heisenberg:car-wash commercialName="A1" carsPerMinute="5">
+                    <heisenberg:investment-spin-offs>
+                        <heisenberg:investment-spin-off key="other-car-wash">
+                            <heisenberg:car-wash commercialName="B1" valuation="10" carsPerMinute="1">
+                                <heisenberg:discarded-investments>
+                                    <heisenberg:car-dealer commercialName="Premium Cars" valuation="666" carStock="50">
+                                        <heisenberg:investment-plan-b>
+                                            <heisenberg:car-dealer commercialName="Not So Premium Cars" valuation="333"
+                                                                   carStock="5"/>
+                                        </heisenberg:investment-plan-b>
+                                    </heisenberg:car-dealer>
+                                </heisenberg:discarded-investments>
+                            </heisenberg:car-wash>
+                        </heisenberg:investment-spin-off>
+                    </heisenberg:investment-spin-offs>
+                </heisenberg:car-wash>
+            </heisenberg:investment>
+        </heisenberg:approve>
+    </flow>
+
+    <flow name="recursivePojo">
+        <heisenberg:approve>
+            <heisenberg:recursive-pojo>
+                <heisenberg:childs>
+                    <heisenberg:recursive-pojo>
+                        <heisenberg:next>
+                            <heisenberg:mapped-childs>
+                                <heisenberg:mapped-child key="someKey"
+                                                         value="#[{} as Object {class: 'new org.mule.test.heisenberg.extension.model.RecursivePojo'}]"/>
+                            </heisenberg:mapped-childs>
+                        </heisenberg:next>
+                    </heisenberg:recursive-pojo>
+                </heisenberg:childs>
+                <heisenberg:mapped-childs>
+                    <heisenberg:mapped-child key="otherKey"
+                                             value="#[{} as Object {class: 'new org.mule.test.heisenberg.extension.model.RecursivePojo'}]"/>
+                </heisenberg:mapped-childs>
+            </heisenberg:recursive-pojo>
+        </heisenberg:approve>
+    </flow>
+
+    <flow name="killWithRicinAsChildElement">
+        <heisenberg:kill-with-ricins>
+            <heisenberg:ricins>
+                <heisenberg:ricin microgramsPerKilo="20">
+                    <heisenberg:destination victim="Lidia" address="Stevia coffe shop"/>
+                </heisenberg:ricin>
+                <heisenberg:ricin microgramsPerKilo="22">
+                    <heisenberg:destination address="pollos hermanos" victim="Gustavo Fring"/>
+                </heisenberg:ricin>
+            </heisenberg:ricins>
+        </heisenberg:kill-with-ricins>
+    </flow>
+
+    <flow name="killWithRicinAsExpression">
+        <heisenberg:kill-with-ricins ricins="#[{}]"/>
+    </flow>
+
+    <flow name="killWithRicinDefault">
+        <heisenberg:kill-with-ricins/>
+    </flow>
+
+    <flow name="killWithRevolver">
+        <subtypes:kill>
+            <subtypes:deadly>
+                <subtypes:weapon>
+                    <subtypes:revolver bullets="6"/>
+                </subtypes:weapon>
+            </subtypes:deadly>
+        </subtypes:kill>
+    </flow>
+
+    <flow name="killWithRicin">
+        <subtypes:kill>
+            <subtypes:deadly>
+                <subtypes:weapon>
+                    <heisenberg:ricin microgramsPerKilo="20">
+                        <heisenberg:destination victim="Lidia" address="Stevia coffe shop"/>
+                    </heisenberg:ricin>
+                </subtypes:weapon>
+            </subtypes:deadly>
+        </subtypes:kill>
+    </flow>
+
+</mule>

@@ -8,20 +8,21 @@ package org.mule.test.integration.schedule;
 
 import static org.mule.runtime.api.notification.ConnectorMessageNotification.MESSAGE_RECEIVED;
 import static org.mule.tck.probe.PollingProber.check;
-import org.mule.functional.api.component.EventCallback;
-import org.mule.runtime.api.component.AbstractComponent;
+import static org.mule.test.allure.AllureConstants.SchedulerFeature.SCHEDULER;
+
 import org.mule.runtime.api.notification.ConnectorMessageNotification;
 import org.mule.runtime.api.notification.NotificationListener;
-import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.construct.Flow;
-import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.test.AbstractSchedulerTestCase;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.qameta.allure.Feature;
+
 import org.junit.Before;
 import org.junit.Test;
 
+@Feature(SCHEDULER)
 public class SchedulerNotificationsTestCase extends AbstractSchedulerTestCase {
 
   private static AtomicInteger eventsReceivedCount = new AtomicInteger(0);
@@ -58,13 +59,9 @@ public class SchedulerNotificationsTestCase extends AbstractSchedulerTestCase {
           () -> eventsReceivedCount.get() >= EXPECTED_EVENT_COUNT && receivedNotifications.get() >= EXPECTED_EVENT_COUNT);
   }
 
-
-  public static class EventReceptionsCounter extends AbstractComponent implements EventCallback {
-
-    @Override
-    public void eventReceived(CoreEvent event, Object component, MuleContext muleContext) throws Exception {
-      eventsReceivedCount.incrementAndGet();
-    }
+  public static Object countEventReception(String payload) {
+    eventsReceivedCount.incrementAndGet();
+    return payload;
   }
 
   public interface SchedulerNotificationListener extends NotificationListener<ConnectorMessageNotification> {

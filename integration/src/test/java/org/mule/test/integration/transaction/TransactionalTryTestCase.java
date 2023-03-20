@@ -63,6 +63,7 @@ public class TransactionalTryTestCase extends AbstractIntegrationTestCase {
     Method getTransactionConfigMethod = processor.getClass().getMethod("getTransactionConfig");
     MuleTransactionConfig transactionConfig = (MuleTransactionConfig) getTransactionConfigMethod.invoke(processor);
     assertThat(transactionConfig.getFactory(), is(instanceOf(DelegateTransactionFactory.class)));
+    assertThat(transactionConfig.getTimeout(), is(30000));
   }
 
 }

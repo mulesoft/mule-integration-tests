@@ -1,47 +1,60 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:test-components="http://www.mulesoft.org/schema/mule/test-components"
       xsi:schemaLocation="
-       http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+       http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+       http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
 
     <configuration defaultErrorHandler-ref="defaultEh"/>
 
     <error-handler name="esA">
         <on-error-continue>
-            <custom-processor class="org.mule.test.integration.exceptions.ErrorHandlerLifecycleTestCase$LifecycleCheckerMessageProcessor"/>
+            <test-components:lifecycle-tracker-check name="esAErrorHandlerTracker"/>
         </on-error-continue>
     </error-handler>
 
     <error-handler name="defaultEh">
         <on-error-continue>
-            <custom-processor class="org.mule.test.integration.exceptions.ErrorHandlerLifecycleTestCase$LifecycleCheckerMessageProcessor"/>
+            <test-components:lifecycle-tracker-check name="defaultEhErrorHandlerTracker"/>
         </on-error-continue>
     </error-handler>
 
     <flow name="flowA">
-        <logger/>
+        <raise-error type="CUSTOM:ERROR" />
         <error-handler>
             <on-error-continue>
-                <custom-processor class="org.mule.test.integration.exceptions.ErrorHandlerLifecycleTestCase$LifecycleCheckerMessageProcessor"/>
+                <test-components:lifecycle-tracker-check name="flowAErrorHandlerTracker"/>
             </on-error-continue>
         </error-handler>
     </flow>
 
     <flow name="flowB">
-        <logger/>
+        <raise-error type="CUSTOM:ERROR" />
         <error-handler>
             <on-error-continue>
-                <custom-processor class="org.mule.test.integration.exceptions.ErrorHandlerLifecycleTestCase$LifecycleCheckerMessageProcessor"/>
+                <test-components:lifecycle-tracker-check name="flowBErrorHandlerTracker"/>
             </on-error-continue>
         </error-handler>
     </flow>
 
     <flow name="flowC">
-        <logger/>
+        <raise-error type="CUSTOM:ERROR" />
+        <error-handler ref="esA"/>
     </flow>
 
     <flow name="flowD">
-        <logger/>
+        <raise-error type="CUSTOM:ERROR" />
     </flow>
 
+    <flow name="flowE">
+        <raise-error type="CUSTOM:ERROR" />
+        <error-handler ref="defaultEh"/>
+    </flow>
+
+    <flow name="flowF">
+        <try>
+            <raise-error type="CUSTOM:ERROR" />
+        </try>
+    </flow>
 </mule>

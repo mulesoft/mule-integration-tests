@@ -7,66 +7,66 @@
 
     <error-handler name="sharedErrorHandler">
         <on-error-continue type="TRANSFORMATION">
-            <append-string-transformer message=" transformation"/>
+            <set-payload value="#[payload ++ ' transformation']"/>
         </on-error-continue>
         <on-error ref="sharedExpressionErrorHandler"/>
         <on-error-continue type="CONNECTIVITY">
-            <append-string-transformer message=" connectivity"/>
+            <set-payload value="#[payload ++ ' connectivity']"/>
         </on-error-continue>
         <on-error-continue type="ROUTING">
-            <append-string-transformer message=" routing"/>
+            <set-payload value="#[payload ++ ' routing']"/>
         </on-error-continue>
         <on-error-continue type="SECURITY">
-            <append-string-transformer message=" security"/>
+            <set-payload value="#[payload ++ ' security']"/>
         </on-error-continue>
         <on-error ref="sharedDefaultHandler"/>
     </error-handler>
 
     <on-error-propagate name="sharedDefaultHandler">
-        <append-string-transformer message=" any shared"/>
+        <set-payload value="#[payload ++ ' any shared']"/>
     </on-error-propagate>
 
     <on-error-continue type="EXPRESSION" name="sharedExpressionErrorHandler">
-        <append-string-transformer message=" expression"/>
+        <set-payload value="#[payload ++ ' expression']"/>
     </on-error-continue>
 
     <flow name="withSharedHandler">
-        <processor ref="throw-exception"/>
+        <flow-ref name="throw-exception"/>
         <error-handler ref="sharedErrorHandler"/>
     </flow>
 
     <flow name="withSharedHandlersInline">
-        <processor ref="throw-exception"/>
+        <flow-ref name="throw-exception"/>
         <error-handler>
             <on-error ref="sharedExpressionErrorHandler"/>
             <on-error-continue type="ROUTING">
-                <append-string-transformer message=" routing"/>
+                <set-payload value="#[payload ++ ' routing']"/>
             </on-error-continue>
             <on-error-propagate>
-                <append-string-transformer message=" any"/>
+                <set-payload value="#[payload ++ ' any']"/>
             </on-error-propagate>
         </error-handler>
     </flow>
 
     <flow name="withTryAndSharedHandler">
-        <append-string-transformer message=" hey"/>
+        <set-payload value="#[payload ++ ' hey']"/>
         <try>
-            <processor ref="throw-exception"/>
+            <flow-ref name="throw-exception"/>
             <error-handler ref="sharedErrorHandler"/>
         </try>
     </flow>
 
     <flow name="withTryAndSharedHandlersInline">
-        <append-string-transformer message=" hey"/>
+        <set-payload value="#[payload ++ ' hey']"/>
         <try>
-            <processor ref="throw-exception"/>
+            <flow-ref name="throw-exception"/>
             <error-handler>
                 <on-error ref="sharedExpressionErrorHandler"/>
                 <on-error-continue type="ROUTING">
-                    <append-string-transformer message=" routing"/>
+                    <set-payload value="#[payload ++ ' routing']"/>
                 </on-error-continue>
                 <on-error-propagate>
-                    <append-string-transformer message=" any"/>
+                    <set-payload value="#[payload ++ ' any']"/>
                 </on-error-propagate>
             </error-handler>
         </try>

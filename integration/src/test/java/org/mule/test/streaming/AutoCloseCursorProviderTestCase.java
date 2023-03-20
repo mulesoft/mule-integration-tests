@@ -105,4 +105,10 @@ public class AutoCloseCursorProviderTestCase extends AbstractIntegrationTestCase
       return true;
     });
   }
+
+  // TODO MULE-17934 remove this
+  @Override
+  protected boolean isGracefulShutdown() {
+    return true;
+  }
 }

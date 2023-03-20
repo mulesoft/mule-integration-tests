@@ -6,6 +6,8 @@
  */
 package org.mule.runtime.test.integration.logging;
 
+import static org.apache.logging.log4j.LogManager.setFactory;
+import static org.apache.logging.log4j.LogManager.shutdown;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.module.launcher.log4j2.MuleLog4jContextFactory;
 
@@ -18,20 +20,21 @@ import org.junit.rules.ExternalResource;
  */
 public class UseMuleLog4jContextFactory extends ExternalResource {
 
-  private static MuleLog4jContextFactory muleLog4jContextFactory = new MuleLog4jContextFactory();
+  private static final MuleLog4jContextFactory muleLog4jContextFactory = new MuleLog4jContextFactory(true);
 
   private LoggerContextFactory originalLog4jContextFactory;
 
   @Override
-  protected void before() throws Throwable {
+  protected void before() {
     originalLog4jContextFactory = LogManager.getFactory();
-    LogManager.setFactory(muleLog4jContextFactory);
+    setFactory(muleLog4jContextFactory);
   }
 
   @Override
   protected void after() {
     // We can safely force a removal of the old logger contexts instead of waiting for the reaper thread to do it.
     ((MuleLog4jContextFactory) LogManager.getFactory()).dispose();
-    LogManager.setFactory(originalLog4jContextFactory);
+    setFactory(originalLog4jContextFactory);
+    shutdown();
   }
 }

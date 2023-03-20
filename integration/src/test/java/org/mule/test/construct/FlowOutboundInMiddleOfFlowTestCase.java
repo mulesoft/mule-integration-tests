@@ -6,14 +6,20 @@
  */
 package org.mule.test.construct;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.junit.Assert.assertEquals;
-import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.message.Message;
 import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.tests.api.TestQueueManager;
+
+import javax.inject.Inject;
 
 import org.junit.Test;
 
 public class FlowOutboundInMiddleOfFlowTestCase extends AbstractIntegrationTestCase {
+
+  @Inject
+  private TestQueueManager queueManager;
 
   @Override
   protected String getConfigFile() {
@@ -22,17 +28,15 @@ public class FlowOutboundInMiddleOfFlowTestCase extends AbstractIntegrationTestC
 
   @Test
   public void testOutboundInMiddleOfFlow() throws Exception {
-    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
-
     flowRunner("flowTest").withPayload("message").run();
 
-    Message msg = queueHandler.read("test.out.1", 1000).getMessage();
+    Message msg = queueManager.read("test.out.1", 1000, MILLISECONDS).getMessage();
     assertEquals("messagehello", getPayloadAsString(msg));
 
-    Message msg2 = queueHandler.read("test.out.2", RECEIVE_TIMEOUT).getMessage();
+    Message msg2 = queueManager.read("test.out.2", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
     assertEquals("messagebye", getPayloadAsString(msg2));
 
-    Message msg3 = queueHandler.read("test.out.3", RECEIVE_TIMEOUT).getMessage();
+    Message msg3 = queueManager.read("test.out.3", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
     assertEquals("egassem", getPayloadAsString(msg3));
   }
 }

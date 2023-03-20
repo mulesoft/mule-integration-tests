@@ -13,9 +13,7 @@
             </scheduling-strategy>
         </scheduler>
         <logger level="WARN" message="running..."/>
-        <test:processor>
-            <test:callback class="org.mule.test.integration.SchedulerBackpressureHandlingTestCase$HangThreadCallback"/>
-        </test:processor>
+        <set-payload value="#[java!org::mule::test::integration::SchedulerBackpressureHandlingTestCase::hangThread(payload)]"/>
     </flow>
 
 </mule>

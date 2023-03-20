@@ -12,9 +12,8 @@ import static java.util.Arrays.asList;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.mock;
+import static org.mule.metadata.api.model.MetadataFormat.JAVA;
 import static org.mule.runtime.api.component.Component.NS_MULE_DOCUMENTATION;
-import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 import static org.mule.runtime.api.meta.model.parameter.ParameterGroupModel.CONNECTION;
 import static org.mule.runtime.api.util.MuleSystemProperties.SYSTEM_PROPERTY_PREFIX;
 import static org.mule.runtime.app.declaration.api.fluent.ElementDeclarer.newArtifact;
@@ -26,6 +25,8 @@ import static org.mule.runtime.app.declaration.api.fluent.ParameterSimpleValue.p
 import static org.mule.runtime.app.declaration.api.fluent.SimpleValueType.BOOLEAN;
 import static org.mule.runtime.app.declaration.api.fluent.SimpleValueType.NUMBER;
 import static org.mule.runtime.app.declaration.api.fluent.SimpleValueType.STRING;
+import static org.mule.runtime.ast.api.DependencyResolutionMode.MINIMAL;
+import static org.mule.runtime.core.api.extension.MuleExtensionModelProvider.STRING_TYPE;
 import static org.mule.runtime.core.api.util.FileUtils.stringToFile;
 import static org.mule.runtime.core.api.util.IOUtils.getResourceAsString;
 import static org.mule.runtime.core.api.util.IOUtils.getResourceAsUrl;
@@ -48,23 +49,22 @@ import static org.mule.runtime.extension.api.declaration.type.ReconnectionStrate
 import static org.mule.runtime.extension.api.declaration.type.RedeliveryPolicyTypeBuilder.MAX_REDELIVERY_COUNT;
 import static org.mule.runtime.extension.api.declaration.type.RedeliveryPolicyTypeBuilder.USE_SECURE_HASH;
 import static org.mule.runtime.extension.api.declaration.type.StreamingStrategyTypeBuilder.REPEATABLE_IN_MEMORY_BYTES_STREAM_ALIAS;
-import static org.mule.test.module.extension.internal.util.ExtensionsTestUtils.compareXML;
 import static org.skyscreamer.jsonassert.JSONCompareMode.NON_EXTENSIBLE;
 
 import org.mule.extensions.jms.api.connection.caching.NoCachingConfiguration;
+import org.mule.metadata.api.builder.BaseTypeBuilder;
+import org.mule.metadata.java.api.annotation.ClassInformationAnnotation;
 import org.mule.runtime.api.app.declaration.serialization.ArtifactDeclarationJsonSerializer;
-import org.mule.runtime.api.exception.MuleException;
-import org.mule.runtime.api.lifecycle.Initialisable;
 import org.mule.runtime.app.declaration.api.ArtifactDeclaration;
 import org.mule.runtime.app.declaration.api.ParameterElementDeclaration;
 import org.mule.runtime.app.declaration.api.ParameterValue;
 import org.mule.runtime.app.declaration.api.fluent.ElementDeclarer;
 import org.mule.runtime.app.declaration.api.fluent.SimpleValueType;
+import org.mule.runtime.ast.api.DependencyResolutionMode;
 import org.mule.runtime.config.api.dsl.ArtifactDeclarationXmlSerializer;
-import org.mule.runtime.core.api.event.CoreEvent;
-import org.mule.runtime.core.api.processor.Processor;
-import org.mule.runtime.core.api.retry.policy.RetryPolicyExhaustedException;
 import org.mule.runtime.extension.api.runtime.ExpirationPolicy;
+import org.mule.tck.junit4.rule.DynamicPort;
+import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.runner.RunnerDelegateTo;
 
 import java.io.File;
@@ -74,8 +74,10 @@ import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -86,8 +88,18 @@ import com.google.gson.stream.JsonReader;
 @RunnerDelegateTo(Parameterized.class)
 public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelTestCase {
 
+  @Rule
+  public SystemProperty minimalDependencies =
+      new SystemProperty(SYSTEM_PROPERTY_PREFIX + DependencyResolutionMode.class.getName(), MINIMAL.name());
+
   private static final boolean UPDATE_EXPECTED_FILES_ON_ERROR =
       getBoolean(SYSTEM_PROPERTY_PREFIX + "appJson.updateExpectedFilesOnError");
+
+  @Rule
+  public DynamicPort port = new DynamicPort("port");
+
+  @Rule
+  public DynamicPort otherPort = new DynamicPort("otherPort");
 
   private String expectedAppXml;
   private String expectedAppJson;
@@ -101,12 +113,24 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
   @Parameterized.Parameter(2)
   public String declarationFile;
 
+  @Parameterized.Parameter(3)
+  public String declarationFileOld;
+
   @Parameterized.Parameters(name = "{0}")
   public static Collection<Object[]> data() {
     return asList(new Object[][] {
-        {"full-artifact-config-dsl-app.xml", createFullArtifactDeclaration(), "full-artifact-config-dsl-app.json"},
-        {"multi-flow-dsl-app.xml", createMultiFlowArtifactDeclaration(), "multi-flow-dsl-app.json"},
-        {"no-mule-components-dsl-app.xml", createNoMuleComponentsArtifactDeclaration(), "no-mule-components-dsl-app.json"}
+        {"full-artifact-config-dsl-app.xml",
+            createFullArtifactDeclaration(),
+            "full-artifact-config-dsl-app.json",
+            "full-artifact-config-dsl-app-old.json"},
+        {"multi-flow-dsl-app.xml",
+            createMultiFlowArtifactDeclaration(),
+            "multi-flow-dsl-app.json",
+            "multi-flow-dsl-app.json"},
+        {"no-mule-components-dsl-app.xml",
+            createNoMuleComponentsArtifactDeclaration(),
+            "no-mule-components-dsl-app.json",
+            "no-mule-components-dsl-app.json"}
     });
   }
 
@@ -129,6 +153,18 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
     JsonReader reader = new JsonReader(new InputStreamReader(currentThread().getContextClassLoader()
         .getResourceAsStream(declarationFile)));
     expectedAppJson = parser.parse(reader).toString();
+  }
+
+  @Test
+  public void deserialize() throws Exception {
+    JsonParser parser = new JsonParser();
+    JsonReader reader = new JsonReader(new InputStreamReader(currentThread().getContextClassLoader()
+        .getResourceAsStream(declarationFileOld)));
+
+    ArtifactDeclarationJsonSerializer jsonSerializer = ArtifactDeclarationJsonSerializer.getDefault(true);
+    final ArtifactDeclaration deserialized = jsonSerializer.deserialize(parser.parse(reader).toString());
+
+    compareXML(expectedAppXml, ArtifactDeclarationXmlSerializer.getDefault(dslContext).serialize(deserialized));
   }
 
   @Test
@@ -171,9 +207,6 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
 
     ArtifactDeclarationJsonSerializer jsonSerializer = ArtifactDeclarationJsonSerializer.getDefault(true);
     String actualAppJson = jsonSerializer.serialize(expectedDeclaration);
-
-    System.out.println(actualAppJson);
-    System.out.println(actualAppJson);
 
     try {
       JSONAssert.assertEquals(expectedAppJson, actualAppJson, NON_EXTENSIBLE);
@@ -312,10 +345,15 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
                                                              createStringParameter("referableHandler")))
             .getDeclaration())
         .withGlobalElement(core.newConstruct("object")
-            .withParameterGroup(group -> group
-                .withParameter("name", createStringParameter("failingProcessor"))
-                .withParameter("class",
-                               createStringParameter("org.mule.test.extension.dsl.ArtifactDeclarationSerializerTestCase$FailingProcessor")))
+            .withRefName("myString")
+            .withParameterGroup(group -> group.withParameter("class", createStringParameter("java.lang.String")))
+            .withParameterGroup(newParameterGroup()
+                .withParameter("property", newObjectValue()
+                    .ofType(BaseTypeBuilder.create(JAVA).objectType()
+                        .with(new ClassInformationAnnotation(Map.class, asList(String.class, String.class))).openWith(STRING_TYPE)
+                        .build().toString())
+                    .build())
+                .getDeclaration())
             .getDeclaration())
         .withGlobalElement(core.newConstruct("errorHandler")
             .withRefName("referableHandler")
@@ -442,7 +480,7 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
                     .getDeclaration())
                 .withParameterGroup(group -> group.withName(CONNECTION)
                     .withParameter("host", createStringParameter("localhost"))
-                    .withParameter("port", createNumberParameter("49019"))
+                    .withParameter("port", createNumberParameter("${port}"))
                     .withParameter("protocol", createStringParameter("HTTPS")))
                 .getDeclaration())
             .getDeclaration())
@@ -464,7 +502,7 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
                                                                      .build()))
                 .withParameterGroup(newParameterGroup(CONNECTION)
                     .withParameter("host", createStringParameter("localhost"))
-                    .withParameter("port", createNumberParameter("49020"))
+                    .withParameter("port", createNumberParameter("${otherPort}"))
                     .withParameter("clientSocketProperties",
                                    newObjectValue()
                                        .withParameter("connectionTimeout", createNumberParameter("1000"))
@@ -822,7 +860,7 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
     return createParameter(value, NUMBER);
   }
 
-  private static ParameterValue createStringParameter(String value) {
+  protected static ParameterValue createStringParameter(String value) {
     return createParameter(value, STRING);
   }
 
@@ -836,15 +874,6 @@ public class ArtifactDeclarationSerializerTestCase extends AbstractElementModelT
 
   private static ParameterValue createStringCDataParameter(String value) {
     return cdata(value, STRING);
-  }
-
-  public static class FailingProcessor implements Processor {
-
-    @Override
-    public CoreEvent process(CoreEvent event) throws MuleException {
-      throw new RetryPolicyExhaustedException(createStaticMessage("Error."), mock(Initialisable.class));
-    }
-
   }
 
 }

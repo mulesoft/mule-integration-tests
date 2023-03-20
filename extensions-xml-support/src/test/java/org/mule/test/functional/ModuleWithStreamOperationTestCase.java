@@ -26,10 +26,10 @@ import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
 
 /**
- * Test case to ensure {@link ModuleOperationProcessorChain#apply(org.reactivestreams.Publisher)}
- * does the correct handle of the chaining when working with events and context child. It also checks if in those cases when
- * an exception happens, {@link ModuleOperationProcessorChain#workOutInternalError(MessagingException, CoreEvent)} does handle
- * the {@link MessagingException} correctly (setting the right {@link CoreEvent} to it).
+ * Test case to ensure {@link ModuleOperationProcessorChain#apply(org.reactivestreams.Publisher)} does the correct handle of the
+ * chaining when working with events and context child. It also checks if in those cases when an exception happens,
+ * {@link ModuleOperationProcessorChain#workOutInternalError(MessagingException, CoreEvent)} does handle the
+ * {@link MessagingException} correctly (setting the right {@link CoreEvent} to it).
  * <p/>
  * The idea is ensure all the streams created within a Smart Connector operation are accessible from within a <flow/>, or another
  * Smart Connector.
@@ -86,6 +86,17 @@ public class ModuleWithStreamOperationTestCase extends AbstractModuleWithHttpTes
   }
 
   @Test
+  public void testHttpDoLoginAndPlainEntireStreamResponseUntilSuccessfulScope() throws Exception {
+    CoreEvent muleEvent = flowRunner("testHttpDoLoginAndPlainEntireStreamResponseUntilSuccessfulScope").run();
+    assertThat(muleEvent.getMessage().getPayload().getValue(), instanceOf(Map.class));
+    Map<String, String> resultMap = (Map<String, String>) muleEvent.getMessage().getPayload().getValue();
+    assertThat(resultMap.size(), is(3));
+    assertThat(resultMap.get("route 0"), is("User and pass validated"));
+    assertThat(resultMap.get("route 1"), is("User and pass validated"));
+    assertThat(resultMap.get("route 2"), is("User and pass validated"));
+  }
+
+  @Test
   public void testHttpDoLoginAndPlainEntireStreamResponseNestingScopesWithFailures() throws Exception {
     assertFlow("testHttpDoLoginAndPlainEntireStreamResponseNestingScopesWithFailures", SUCCESS_RESPONSE);
   }
@@ -132,5 +143,11 @@ public class ModuleWithStreamOperationTestCase extends AbstractModuleWithHttpTes
     final CursorStream cursorStream = provider.openCursor();
     final String realResult = IOUtils.toString(cursorStream);
     assertThat(realResult, is(response));
+  }
+
+  // TODO MULE-17934 remove this
+  @Override
+  protected boolean isGracefulShutdown() {
+    return true;
   }
 }

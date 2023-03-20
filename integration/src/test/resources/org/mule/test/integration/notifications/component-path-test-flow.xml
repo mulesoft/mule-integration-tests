@@ -4,11 +4,11 @@
       xmlns:http="http://www.mulesoft.org/schema/mule/http"
       xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
       xmlns:test="http://www.mulesoft.org/schema/mule/test"
-      xmlns:aggregators="http://www.mulesoft.org/schema/mule/aggregators"
+      xmlns:aggregators="http://www.mulesoft.org/schema/mule/aggregators" xmlns:heisenberg="http://www.mulesoft.org/schema/mule/heisenberg"
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
                http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
                http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
-               http://www.mulesoft.org/schema/mule/aggregators http://www.mulesoft.org/schema/mule/aggregators/current/mule-aggregators.xsd">
+               http://www.mulesoft.org/schema/mule/aggregators http://www.mulesoft.org/schema/mule/aggregators/current/mule-aggregators.xsd http://www.mulesoft.org/schema/mule/heisenberg http://www.mulesoft.org/schema/mule/heisenberg/current/mule-heisenberg.xsd">
 
     <configuration defaultErrorHandler-ref="defaultErrorHandler"/>
 
@@ -31,15 +31,15 @@
     <flow name="flowWithMultipleMps">
         <logger message="check"/>
         <set-payload value="whatever"/>
-        <object-to-byte-array-transformer/>
+        <set-variable variableName="foo" value="bar"/>
     </flow>
 
     <flow name="flowWithErrorHandler">
         <choice>
-            <when expression="#[mel:executeFailingComponent == true]">
-                <test:processor throwException="true" />
+            <when expression="#[vars.executeFailingComponent]">
+                <raise-error type="APP:EXPECTED"/>
             </when>
-            <when expression="#[mel:wrong expression]">
+            <when expression="#[!null.a]">
                 <logger/>
             </when>
         </choice>
@@ -57,7 +57,7 @@
 
     <flow name="flowWithTryWithErrorHandler">
         <try>
-            <test:processor throwException="true" />
+            <raise-error type="APP:EXPECTED"/>
             <error-handler>
                 <on-error-continue>
                     <validation:is-false expression="false"/>
@@ -143,6 +143,12 @@
                 <logger/>
             </aggregators:aggregation-complete>
         </aggregators:size-based-aggregator>
+    </flow>
+
+    <flow name="operationWithChain">
+        <heisenberg:tap-phones>
+            <logger/>
+        </heisenberg:tap-phones>
     </flow>
 
 </mule>

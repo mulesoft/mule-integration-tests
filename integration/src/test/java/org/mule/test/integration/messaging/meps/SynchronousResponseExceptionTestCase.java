@@ -6,15 +6,10 @@
  */
 package org.mule.test.integration.messaging.meps;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
-import static org.mule.runtime.api.exception.ExceptionHelper.getRootException;
-import static org.mule.runtime.core.api.exception.Errors.CORE_NAMESPACE_NAME;
-import static org.mule.runtime.core.api.exception.Errors.Identifiers.ROUTING_ERROR_IDENTIFIER;
-import static org.mule.runtime.core.api.exception.Errors.Identifiers.TRANSFORMATION_ERROR_IDENTIFIER;
+import static org.mule.runtime.core.api.error.Errors.CORE_NAMESPACE_NAME;
+import static org.mule.runtime.core.api.error.Errors.Identifiers.ROUTING_ERROR_IDENTIFIER;
 import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
 
-import org.mule.functional.api.exception.FunctionalTestException;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Test;
@@ -31,8 +26,7 @@ public class SynchronousResponseExceptionTestCase extends AbstractIntegrationTes
 
   @Test
   public void testComponentException() throws Exception {
-    Exception e = flowRunner("ComponentException").withPayload("request").runExpectingException();
-    assertThat(getRootException(e), instanceOf(FunctionalTestException.class));
+    flowRunner("ComponentException").withPayload("request").runExpectingException(errorType("APP", "EXPECTED"));
   }
 
   @Test
@@ -41,9 +35,4 @@ public class SynchronousResponseExceptionTestCase extends AbstractIntegrationTes
         .runExpectingException(errorType(CORE_NAMESPACE_NAME, ROUTING_ERROR_IDENTIFIER));
   }
 
-  @Test
-  public void testTransformerException() throws Exception {
-    flowRunner("TransformerException").withPayload("request")
-        .runExpectingException(errorType(CORE_NAMESPACE_NAME, TRANSFORMATION_ERROR_IDENTIFIER));
-  }
 }

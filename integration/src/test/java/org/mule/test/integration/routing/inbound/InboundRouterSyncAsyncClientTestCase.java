@@ -6,17 +6,23 @@
  */
 package org.mule.test.integration.routing.inbound;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
-import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.message.Message;
 import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.tests.api.TestQueueManager;
+
+import javax.inject.Inject;
 
 import org.junit.Test;
 
 public class InboundRouterSyncAsyncClientTestCase extends AbstractIntegrationTestCase {
+
+  @Inject
+  private TestQueueManager queueManager;
 
   @Override
   protected String getConfigFile() {
@@ -35,8 +41,7 @@ public class InboundRouterSyncAsyncClientTestCase extends AbstractIntegrationTes
   public void testAsync() throws Exception {
     flowRunner("SyncAsync").withPayload("testAsync").withVariable("messageType", "async").run();
 
-    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
-    Message result = queueHandler.read("asyncResponse", RECEIVE_TIMEOUT).getMessage();
+    Message result = queueManager.read("asyncResponse", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
     assertNotNull(result);
     assertThat(result.getPayload().getValue(), is("Response sent to asyncResponse"));
   }

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="module-with-config-using-flow-ref"
+        xmlns="http://www.mulesoft.org/schema/mule/module"
+        xmlns:mule="http://www.mulesoft.org/schema/mule/core"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+           http://www.mulesoft.org/schema/mule/module http://www.mulesoft.org/schema/mule/module/current/mule-module.xsd
+           http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+
+    <property name="app" type="string" displayName="Application name" summary="Application name"/>
+
+    <operation name="call-flow">
+        <body>
+            <mule:flow-ref name="main-flow"/>
+        </body>
+    </operation>
+
+    <operation name="call-flow-2">
+        <body>
+            <mule:flow-ref name="main-flow"/>
+        </body>
+    </operation>
+
+    <operation name="call-sub-flow">
+        <body>
+            <mule:flow-ref name="sub-flow"/>
+        </body>
+    </operation>
+
+    <mule:flow name="main-flow">
+        <mule:set-payload value="Hello World!"/>
+    </mule:flow>
+
+    <mule:sub-flow name="sub-flow">
+        <mule:set-payload value="Hello World!"/>
+    </mule:sub-flow>
+
+</module>

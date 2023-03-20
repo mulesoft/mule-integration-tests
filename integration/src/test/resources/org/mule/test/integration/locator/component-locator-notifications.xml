@@ -11,7 +11,6 @@
     </notifications>
 
     <notifications>
-        <notification-listener ref="notificationLoggerSpringBean"/>
         <notification-listener ref="notificationLoggerObject"/>
     </notifications>
 
