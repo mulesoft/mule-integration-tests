@@ -6,15 +6,21 @@
  */
 package org.mule.test.integration.exceptions;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.junit.Assert.assertNotNull;
-import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.tck.junit4.rule.DynamicPort;
+import org.mule.tests.api.TestQueueManager;
+
+import javax.inject.Inject;
 
 import org.junit.Rule;
 import org.junit.Test;
 
 public class AsyncExceptionHandlingTestCase extends AbstractIntegrationTestCase {
+
+  @Inject
+  private TestQueueManager queueManager;
 
   @Rule
   public DynamicPort dynamicPort1 = new DynamicPort("port1");
@@ -28,8 +34,7 @@ public class AsyncExceptionHandlingTestCase extends AbstractIntegrationTestCase 
 
   @Test
   public void testAsyncExceptionHandlingTestCase() throws Exception {
-    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
     flowRunner("SearchWebServiceBridge").runExpectingException();
-    assertNotNull(queueHandler.read("back-channel", RECEIVE_TIMEOUT));
+    assertNotNull(queueManager.read("back-channel", RECEIVE_TIMEOUT, MILLISECONDS));
   }
 }

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+
+    <object name="testingObject" class="org.mule.test.integration.locator.beans.ChildBean" >
+        <property key="name" value="root" />
+        <property key="string" value="studio" />
+        <property key="foo" value="42" />
+    </object>
+
+</mule>

@@ -17,15 +17,14 @@ import org.mule.runtime.core.api.processor.Processor;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import java.util.concurrent.ExecutorService;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 
-import java.util.concurrent.ExecutorService;
-
 public abstract class AbstractShutdownTimeoutRequestResponseTestCase extends AbstractIntegrationTestCase {
 
-  protected static int WAIT_TIME = 2000;
   protected static Latch waitLatch;
   protected static Latch contextStopLatch;
 

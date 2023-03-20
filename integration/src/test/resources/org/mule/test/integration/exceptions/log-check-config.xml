@@ -2,20 +2,22 @@
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xmlns:test-components="http://www.mulesoft.org/schema/mule/test-components"
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-               http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+               http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
+               http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
 
     <flow name="checkEquals" initialState="stopped">
-        <test:skeleton-source/>
-        <test:throw exception="java.lang.RuntimeException" error="ANY"/>
+        <test-components:skeleton-source/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <test:on-error-check-log>
                 <test:check-equals>
                     <![CDATA[
-                        Message               : null.
-                        Error type            : MULE:ANY
+                        Message               : An error occurred.
+                        Error type            : APP:EXPECTED
                         Element               : checkEquals/processors/0 @ LogCheckTestCase#runSuccessesNoVerboseExceptions:org/mule/test/integration/exceptions/log-check-config.xml:10
-                        Element XML           : <test:throw exception="java.lang.RuntimeException" error="ANY"></test:throw>
+                        Element DSL           : <raise-error type="APP:EXPECTED"></raise-error>
                         (set debug level logging or '-Dmule.verbose.exceptions=true' for everything)
                     ]]>
                 </test:check-equals>
@@ -24,17 +26,17 @@
     </flow>
 
     <flow name="checkEqualsVerbose" initialState="stopped">
-        <test:skeleton-source/>
-        <test:throw exception="java.lang.RuntimeException" error="ANY"/>
+        <test-components:skeleton-source/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <test:on-error-check-log>
                 <test:check-equals>
                     <![CDATA[
-                        Message               : null.
-                        Element               : checkEqualsVerbose/processors/0 @ LogCheckTestCase#runVerboseCheckEqualsVerbose:org/mule/test/integration/exceptions/log-check-config.xml:28
-                        Element XML           : <test:throw exception="java.lang.RuntimeException" error="ANY"></test:throw>
-                        Error type            : MULE:ANY
-                        FlowStack             : at checkEqualsVerbose
+                        Message               : An error occurred.
+                        Element               : checkEqualsVerbose/processors/0 @ LogCheckTestCase#runVerboseCheckEqualsVerbose:org/mule/test/integration/exceptions/log-check-config.xml:30
+                        Element DSL           : <raise-error type="APP:EXPECTED"></raise-error>
+                        Error type            : APP:EXPECTED
+                        FlowStack             : at checkEqualsVerbose(checkEqualsVerbose/processors/0 @ LogCheckTestCase#runVerboseCheckEqualsVerbose:org/mule/test/integration/exceptions/log-check-config.xml:30)
                         Payload               : null
                         Payload Type          : null
                     ]]>
@@ -44,33 +46,33 @@
     </flow>
 
     <flow name="checkStacktrace" initialState="stopped">
-        <test:skeleton-source/>
-        <test:throw exception="java.lang.RuntimeException" error="ANY"/>
+        <test-components:skeleton-source/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <test:on-error-check-log>
                 <test:check-stacktrace>
                     <test:method-call class="Thread" method="run"/>
-                    <test:cause exception="java.lang.RuntimeException"/>
+                    <test:cause exception="org.mule.runtime.api.exception.DefaultMuleException"/>
                 </test:check-stacktrace>
             </test:on-error-check-log>
         </error-handler>
     </flow>
 
     <flow name="checkSummary" initialState="stopped">
-        <test:skeleton-source/>
-        <test:throw exception="java.lang.RuntimeException" error="ANY"/>
+        <test-components:skeleton-source/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <test:on-error-check-log>
                 <test:check-summary>
-                    <test:summary-info key="Error type" value="MULE:ANY"/>
+                    <test:summary-info key="Error type" value="APP:EXPECTED"/>
                 </test:check-summary>
             </test:on-error-check-log>
         </error-handler>
     </flow>
 
     <flow name="checkFlowStack" initialState="stopped">
-        <test:skeleton-source/>
-        <test:throw exception="java.lang.RuntimeException" error="ANY"/>
+        <test-components:skeleton-source/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <test:on-error-check-log>
                 <test:check-summary>
@@ -81,8 +83,8 @@
     </flow>
 
     <flow name="unknownFiltered" initialState="stopped">
-        <test:skeleton-source/>
-        <test:processor throwException="true" exceptionToThrow="java.lang.NullPointerException"/>
+        <test-components:skeleton-source/>
+        <flow-ref name="throwNpe"/>
         <error-handler>
             <test:on-error-check-log>
                 <test:check-summary>
@@ -97,8 +99,8 @@
     </flow>
 
     <flow name="unknownFull" initialState="stopped">
-        <test:skeleton-source/>
-        <test:processor throwException="true" exceptionToThrow="java.lang.NullPointerException"/>
+        <test-components:skeleton-source/>
+        <flow-ref name="throwNpe"/>
         <error-handler>
             <test:on-error-check-log>
                 <test:check-summary>
@@ -113,27 +115,27 @@
     </flow>
 
     <flow name="allChecksTogetherNoneFailing" initialState="stopped">
-        <test:skeleton-source/>
-        <test:throw exception="java.lang.RuntimeException" error="ANY"/>
+        <test-components:skeleton-source/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <test:on-error-check-log>
                 <test:check-equals>
                     <![CDATA[
-                        Message               : null.
-                        Element               : allChecksTogetherNoneFailing/processors/0 @ LogCheckTestCase#runVerboseAllChecksTogetherNoneFailing:org/mule/test/integration/exceptions/log-check-config.xml:117
-                        Element XML           : <test:throw exception="java.lang.RuntimeException" error="ANY"></test:throw>
-                        Error type            : MULE:ANY
-                        FlowStack             : at allChecksTogetherNoneFailing
+                        Message               : An error occurred.
+                        Element               : allChecksTogetherNoneFailing/processors/0 @ LogCheckTestCase#runVerboseAllChecksTogetherNoneFailing:org/mule/test/integration/exceptions/log-check-config.xml:119
+                        Element DSL           : <raise-error type="APP:EXPECTED"></raise-error>
+                        Error type            : APP:EXPECTED
+                        FlowStack             : at allChecksTogetherNoneFailing(allChecksTogetherNoneFailing/processors/0 @ LogCheckTestCase#runVerboseAllChecksTogetherNoneFailing:org/mule/test/integration/exceptions/log-check-config.xml:119)
                         Payload               : null
                         Payload Type          : null
                     ]]>
                 </test:check-equals>
                 <test:check-summary>
-                    <test:summary-info key="Error type" value="MULE:ANY"/>
+                    <test:summary-info key="Error type" value="APP:EXPECTED"/>
                 </test:check-summary>
                 <test:check-stacktrace>
                     <test:method-call class="Thread" method="run"/>
-                    <test:cause exception="java.lang.RuntimeException"/>
+                    <test:cause exception="org.mule.runtime.api.exception.DefaultMuleException"/>
                 </test:check-stacktrace>
             </test:on-error-check-log>
         </error-handler>
@@ -217,7 +219,7 @@
             <test:on-error-check-log/>
         </error-handler>
     </flow>
-    
+
     <flow name="noLogFlowFlagSet" initialState="stopped">
         <try>
             <test:throw exception="java.lang.AssertionError" error="TRANSFORMATION"/>
@@ -237,5 +239,60 @@
             <test:on-error-check-log succeedIfNoLog="true"/>
         </error-handler>
     </flow>
+
+    <flow name="suppressedMuleException" initialState="stopped">
+        <until-successful maxRetries="1" millisBetweenRetries="10">
+            <test:throw exception="org.mule.test.integration.exceptions.LogCheckTestCase.CustomException" error="ANY"/>
+        </until-successful>
+        <error-handler>
+            <test:on-error-check-log>
+                <test:check-equals>
+                    <![CDATA[
+                        Message               : 'until-successful' retries exhausted
+                        Element               : suppressedMuleException/processors/0 @ LogCheckTestCase#suppressedMuleExceptionGetsLoggedAsSuppressedCause:org/mule/test/integration/exceptions/log-check-config.xml:244
+                        Element DSL           : <until-successful maxRetries="1" millisBetweenRetries="10">
+                                                    <test:throw exception="org.mule.test.integration.exceptions.LogCheckTestCase.CustomException" error="ANY"></test:throw>
+                                                </until-successful>
+                        Error type            : MULE:RETRY_EXHAUSTED
+                        Caused by             : MULE:ANY: Error
+                        FlowStack : at suppressedMuleException(suppressedMuleException/processors/0 @ LogCheckTestCase#suppressedMuleExceptionGetsLoggedAsSuppressedCause:org/mule/test/integration/exceptions/log-check-config.xml:244)
+
+                        (set debug level logging or '-Dmule.verbose.exceptions=true' for everything)
+                    ]]>
+                </test:check-equals>
+            </test:on-error-check-log>
+        </error-handler>
+    </flow>
+
+    <flow name="suppressedMuleExceptions" initialState="stopped">
+        <until-successful maxRetries="1" millisBetweenRetries="10">
+            <until-successful maxRetries="1" millisBetweenRetries="10">
+                <test:throw exception="org.mule.test.integration.exceptions.LogCheckTestCase.CustomException" error="ANY"/>
+            </until-successful>
+        </until-successful>
+        <error-handler>
+            <test:on-error-check-log>
+                <test:check-equals>
+                    <![CDATA[
+                        Message               : 'until-successful' retries exhausted
+                        Element               : suppressedMuleExceptions/processors/0 @ LogCheckTestCase#suppressedMuleExceptionsGetsLoggedAsSuppressedCauses:org/mule/test/integration/exceptions/log-check-config.xml:268
+                        Element DSL           : <until-successful maxRetries="1" millisBetweenRetries="10">
+                        <until-successful maxRetries="1" millisBetweenRetries="10">
+                        <test:throw exception="org.mule.test.integration.exceptions.LogCheckTestCase.CustomException" error="ANY"></test:throw>
+                        </until-successful>
+                        </until-successful>
+                        Error type            : MULE:RETRY_EXHAUSTED
+                        Caused by             : MULE:RETRY_EXHAUSTED: 'until-successful' retries exhausted
+                                                MULE:ANY: Error
+                        FlowStack             : at suppressedMuleExceptions(suppressedMuleExceptions/processors/0 @ LogCheckTestCase#suppressedMuleExceptionsGetsLoggedAsSuppressedCauses:org/mule/test/integration/exceptions/log-check-config.xml:268)
+                        Payload               : null
+                        Payload Type          : null
+                    ]]>
+                </test:check-equals>
+            </test:on-error-check-log>
+        </error-handler>
+    </flow>
+
+    <object name="throwNpe" class="org.mule.test.integration.exceptions.LogCheckTestCase$ThrowNpeProcessor"/>
 
 </mule>

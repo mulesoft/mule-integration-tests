@@ -22,12 +22,8 @@ import java.util.Map;
 public class PropertiesHierarchyTestCase extends AbstractIntegrationTestCase {
 
   /**
-   * Hierarchy should be:
-   * 1. Deployment Properties
-   * 2. System Properties
-   * 3. Environment Properties
-   * 4. Application Properties (Configuration Properties, Secure Conf Properties, or any other Custom Conf)
-   * 5. Global Properties
+   * Hierarchy should be: 1. Deployment Properties 2. System Properties 3. Environment Properties 4. Application Properties
+   * (Configuration Properties, Secure Conf Properties, or any other Custom Conf) 5. Global Properties
    *
    * Also, lower-hierarchy props can depend on higher-hierarchy props
    */

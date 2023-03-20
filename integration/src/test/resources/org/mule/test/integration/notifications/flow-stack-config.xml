@@ -2,10 +2,8 @@
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:test="http://www.mulesoft.org/schema/mule/test"
-      xmlns:sc="http://www.mulesoft.org/schema/mule/module-using-core"
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
-               http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-               http://www.mulesoft.org/schema/mule/module-using-core http://www.mulesoft.org/schema/mule/module-using-core/current/mule-module-using-core.xsd">
+               http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 
     <object name="flowStackAsserter" class="org.mule.tck.util.FlowTraceUtils$FlowStackAsserter" />
     <object name="flowStackAsserter2" class="org.mule.tck.util.FlowTraceUtils$FlowStackAsserter" />
@@ -13,11 +11,11 @@
     <object name="flowStackAsyncAsserter2" class="org.mule.tck.util.FlowTraceUtils$FlowStackAsyncAsserter" />
 
     <sub-flow name="subFlow">
-        <processor ref="flowStackAsserter"/>
+        <flow-ref name="flowStackAsserter"/>
     </sub-flow>
     
     <flow name="flow">
-        <processor ref="flowStackAsserter2"/>
+        <flow-ref name="flowStackAsserter2"/>
     </flow>
 
     <flow name="flowStatic" initialState="stopped">
@@ -59,11 +57,11 @@
     <!-- Async -->
     
     <sub-flow name="subFlowInAsync">
-        <processor ref="flowStackAsyncAsserter"/>
+        <flow-ref name="flowStackAsyncAsserter"/>
     </sub-flow>
     
     <flow name="flowInAsync">
-        <processor ref="flowStackAsyncAsserter2"/>
+        <flow-ref name="flowStackAsyncAsserter2"/>
     </flow>
     
     <flow name="flowStaticWithAsync" initialState="stopped">
@@ -98,7 +96,7 @@
                 <flow-ref name="flow"/>
             </when>
             <otherwise>
-                <test:processor throwException="true"/>
+                <raise-error type="APP:EXPECTED"/>
             </otherwise>
         </choice>
     </flow>
@@ -109,7 +107,7 @@
                 <flow-ref name="subFlow"/>
             </when>
             <otherwise>
-                <test:processor throwException="true"/>
+                <raise-error type="APP:EXPECTED"/>
             </otherwise>
         </choice>
     </flow>
@@ -120,7 +118,7 @@
                 <flow-ref name="#['flow']"/>
             </when>
             <otherwise>
-                <test:processor throwException="true"/>
+                <raise-error type="APP:EXPECTED"/>
             </otherwise>
         </choice>
     </flow>
@@ -131,7 +129,7 @@
                 <flow-ref name="#['subFlow']"/>
             </when>
             <otherwise>
-                <test:processor throwException="true"/>
+                <raise-error type="APP:EXPECTED"/>
             </otherwise>
         </choice>
     </flow>
@@ -232,63 +230,16 @@
 
     <flow name="flowForEach" initialState="stopped">
         <foreach collection="#[['foo', 'bar']]">
-            <test:processor/>
+            <logger/>
             <flow-ref name="flow"/>
         </foreach>
     </flow>
 
     <flow name="flowParallelForeach" initialState="stopped">
         <parallel-foreach collection="#[['foo', 'bar']]">
-            <test:processor/>
+            <logger/>
             <flow-ref name="flow"/>
         </parallel-foreach>
-    </flow>
-    
-    <!-- XML SDK -->
-
-    <flow name="xmlSdkOperation">
-        <sc:flow-stack-store />
-    </flow>
-    
-    <flow name="xmlSdkOperationNested">
-        <sc:flow-stack-store-nested />
-    </flow>
-    
-    <flow name="xmlSdkOperationInSubflow" initialState="stopped">
-        <flow-ref name="xmlSdkOperation"/>
-    </flow>
-    
-    <flow name="xmlSdkOperationFailAfter">
-        <sc:set-payload-hardcoded />
-        <test:processor throwException="true"/>
-        <error-handler>
-            <on-error-continue>
-                <flow-ref name="subFlow"/>
-            </on-error-continue>
-        </error-handler>
-    </flow>
-    
-    <flow name="xmlSdkOperationFailAfterSubFlow" initialState="stopped">
-        <flow-ref name="xmlSdkOperationFailAfter"/>
-    </flow>
-
-    <flow name="xmlSdkOperationAfter" initialState="stopped">
-        <sc:set-payload-hardcoded />
-        <flow-ref name="subFlow"/>
-    </flow>
-    
-    <flow name="xmlSdkOperationError">
-        <try>
-            <sc:raise-error-op />
-            <error-handler>
-                <on-error-continue/>
-            </error-handler>
-        </try>
-        <flow-ref name="subFlow"/>
-    </flow>
-    
-    <flow name="xmlSdkOperationErrorInSubflow" initialState="stopped">
-        <flow-ref name="xmlSdkOperationError"/>
     </flow>
     
 </mule>

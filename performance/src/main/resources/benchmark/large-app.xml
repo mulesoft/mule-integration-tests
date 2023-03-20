@@ -1,0 +1,1750 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"  xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http  http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+    <flow name="flow1">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="PUT" variableName="method" />
+        <flow-ref  name="test-flow" />
+    </flow>
+    <flow name="flow2">
+        <flow-ref  name="setVariableFlow" />
+        <set-variable value="PUT" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableB">attributes.uriParams.'variableB'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow3">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="PUT" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow4">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="PUT" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableC">attributes.uriParams.'variableC'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow5">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="PUT" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableC">attributes.uriParams.'variableC'</ee:set-variable>
+                <ee:set-variable variableName="variableD">attributes.uriParams.'variableD'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow6">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="PUT" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableC">attributes.uriParams.'variableC'</ee:set-variable>
+                <ee:set-variable variableName="variableE">attributes.uriParams.'variableE'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow7">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="PUT" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableC">attributes.uriParams.'variableC'</ee:set-variable>
+                <ee:set-variable variableName="variableF">attributes.uriParams.'variableF'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow8">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="PUT" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableC">attributes.uriParams.'variableC'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow9">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="PUT" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableC">attributes.uriParams.'variableC'</ee:set-variable>
+                <ee:set-variable variableName="variableG">attributes.uriParams.'variableG'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow10">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="PUT" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableC">attributes.uriParams.'variableC'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow11">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="PUT" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableC">attributes.uriParams.'variableC'</ee:set-variable>
+                <ee:set-variable variableName="variableH">attributes.uriParams.'variableH'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow12">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="PUT" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableC">attributes.uriParams.'variableC'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow13">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="PUT" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableC">attributes.uriParams.'variableC'</ee:set-variable>
+                <ee:set-variable variableName="variableI">attributes.uriParams.'variableI'</ee:set-variable>
+                <ee:set-variable variableName="variableJ">attributes.uriParams.'variableJ'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow14">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="PUT" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableC">attributes.uriParams.'variableC'</ee:set-variable>
+                <ee:set-variable variableName="variableI">attributes.uriParams.'variableI'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow15">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="PUT" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableC">attributes.uriParams.'variableC'</ee:set-variable>
+                <ee:set-variable variableName="variableI">attributes.uriParams.'variableI'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow16">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="PUT" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableC">attributes.uriParams.'variableC'</ee:set-variable>
+                <ee:set-variable variableName="variableE">attributes.uriParams.'variableE'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow17">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="PUT" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableC">attributes.uriParams.'variableC'</ee:set-variable>
+                <ee:set-variable variableName="variableE">attributes.uriParams.'variableE'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow18">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="PUT" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableC">attributes.uriParams.'variableC'</ee:set-variable>
+                <ee:set-variable variableName="variableE">attributes.uriParams.'variableE'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow19">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="PUT" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableC">attributes.uriParams.'variableC'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow20">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="PUT" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableC">attributes.uriParams.'variableC'</ee:set-variable>
+                <ee:set-variable variableName="variableW">attributes.uriParams.'variableW'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow21">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="PUT" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableC">attributes.uriParams.'variableC'</ee:set-variable>
+                <ee:set-variable variableName="variableW">attributes.uriParams.'variableW'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow22">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="PUT" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableC">attributes.uriParams.'variableC'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow23">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="PUT" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableK">attributes.uriParams.'variableK'</ee:set-variable>
+                <ee:set-variable variableName="variableJ">attributes.uriParams.'variableJ'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow24">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="PUT" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableK">attributes.uriParams.'variableK'</ee:set-variable>
+                <ee:set-variable variableName="variableL">attributes.uriParams.'variableL'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow25">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="PUT" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableK">attributes.uriParams.'variableK'</ee:set-variable>
+                <ee:set-variable variableName="variableM">attributes.uriParams.'variableM'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow26">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow27">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="PUT" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableI">attributes.uriParams.'variableI'</ee:set-variable>
+                <ee:set-variable variableName="variableJ">attributes.uriParams.'variableJ'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow28">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="PUT" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableI">attributes.uriParams.'variableI'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow29">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableN">attributes.uriParams.'variableN'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow30">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="PUT" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableO">attributes.uriParams.'variableO'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow31">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="PUT" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableO">attributes.uriParams.'variableO'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow32">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="PUT" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableO">attributes.uriParams.'variableO'</ee:set-variable>
+                <ee:set-variable variableName="variableP">attributes.uriParams.'variableP'</ee:set-variable>
+                <ee:set-variable variableName="variableQ">attributes.uriParams.'variableQ'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow33">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="PUT" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableO">attributes.uriParams.'variableO'</ee:set-variable>
+                <ee:set-variable variableName="variableP">attributes.uriParams.'variableP'</ee:set-variable>
+                <ee:set-variable variableName="variableR">attributes.uriParams.'variableR'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow34">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="PUT" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableO">attributes.uriParams.'variableO'</ee:set-variable>
+                <ee:set-variable variableName="variableP">attributes.uriParams.'variableP'</ee:set-variable>
+                <ee:set-variable variableName="variableS">attributes.uriParams.'variableS'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow35">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="PUT" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableO">attributes.uriParams.'variableO'</ee:set-variable>
+                <ee:set-variable variableName="variableP">attributes.uriParams.'variableP'</ee:set-variable>
+                <ee:set-variable variableName="variableT">attributes.uriParams.'variableT'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow36">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="PUT" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableO">attributes.uriParams.'variableO'</ee:set-variable>
+                <ee:set-variable variableName="variableP">attributes.uriParams.'variableP'</ee:set-variable>
+                <ee:set-variable variableName="variableU">attributes.uriParams.'variableU'</ee:set-variable>
+                <ee:set-variable variableName="variableJ">attributes.uriParams.'variableJ'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow37">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="PUT" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableO">attributes.uriParams.'variableO'</ee:set-variable>
+                <ee:set-variable variableName="variableP">attributes.uriParams.'variableP'</ee:set-variable>
+                <ee:set-variable variableName="variableU">attributes.uriParams.'variableU'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow38">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="PUT" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableO">attributes.uriParams.'variableO'</ee:set-variable>
+                <ee:set-variable variableName="variableP">attributes.uriParams.'variableP'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow39">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="PUT" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableO">attributes.uriParams.'variableO'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow40">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="PUT" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableK">attributes.uriParams.'variableK'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref  name="test-flow" />
+    </flow>
+    <flow name="flow41">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="PUT" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableK">attributes.uriParams.'variableK'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow42">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="PUT" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableV">attributes.uriParams.'variableV'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow43">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableB">attributes.uriParams.'variableB'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow44">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableB">attributes.uriParams.'variableB'</ee:set-variable>
+                <ee:set-variable variableName="variableM">attributes.uriParams.'variableM'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow45">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableC">attributes.uriParams.'variableC'</ee:set-variable>
+                <ee:set-variable variableName="variableD">attributes.uriParams.'variableD'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow46">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableC">attributes.uriParams.'variableC'</ee:set-variable>
+                <ee:set-variable variableName="variableF">attributes.uriParams.'variableF'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow47">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableC">attributes.uriParams.'variableC'</ee:set-variable>
+                <ee:set-variable variableName="variableG">attributes.uriParams.'variableG'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow48">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableC">attributes.uriParams.'variableC'</ee:set-variable>
+                <ee:set-variable variableName="variableH">attributes.uriParams.'variableH'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow49">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableC">attributes.uriParams.'variableC'</ee:set-variable>
+                <ee:set-variable variableName="variableI">attributes.uriParams.'variableI'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow50">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableC">attributes.uriParams.'variableC'</ee:set-variable>
+                <ee:set-variable variableName="variableE">attributes.uriParams.'variableE'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow51">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableC">attributes.uriParams.'variableC'</ee:set-variable>
+                <ee:set-variable variableName="variableW">attributes.uriParams.'variableW'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow52">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableN">attributes.uriParams.'variableN'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow53">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableK">attributes.uriParams.'variableK'</ee:set-variable>
+                <ee:set-variable variableName="variableJ">attributes.uriParams.'variableJ'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow54">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableK">attributes.uriParams.'variableK'</ee:set-variable>
+                <ee:set-variable variableName="variableL">attributes.uriParams.'variableL'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow55">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableK">attributes.uriParams.'variableK'</ee:set-variable>
+                <ee:set-variable variableName="variableM">attributes.uriParams.'variableM'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow56">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableI">attributes.uriParams.'variableI'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow57">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableI">attributes.uriParams.'variableI'</ee:set-variable>
+                <ee:set-variable variableName="variableJ">attributes.uriParams.'variableJ'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow58">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableO">attributes.uriParams.'variableO'</ee:set-variable>
+                <ee:set-variable variableName="variableX">attributes.uriParams.'variableX'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow59">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableO">attributes.uriParams.'variableO'</ee:set-variable>
+                <ee:set-variable variableName="variableP">attributes.uriParams.'variableP'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow60">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableO">attributes.uriParams.'variableO'</ee:set-variable>
+                <ee:set-variable variableName="variableP">attributes.uriParams.'variableP'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow61">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableO">attributes.uriParams.'variableO'</ee:set-variable>
+                <ee:set-variable variableName="variableP">attributes.uriParams.'variableP'</ee:set-variable>
+                <ee:set-variable variableName="variableQ">attributes.uriParams.'variableQ'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow62">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableO">attributes.uriParams.'variableO'</ee:set-variable>
+                <ee:set-variable variableName="variableP">attributes.uriParams.'variableP'</ee:set-variable>
+                <ee:set-variable variableName="variableR">attributes.uriParams.'variableR'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow63">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableO">attributes.uriParams.'variableO'</ee:set-variable>
+                <ee:set-variable variableName="variableP">attributes.uriParams.'variableP'</ee:set-variable>
+                <ee:set-variable variableName="variableS">attributes.uriParams.'variableS'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow64">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableO">attributes.uriParams.'variableO'</ee:set-variable>
+                <ee:set-variable variableName="variableP">attributes.uriParams.'variableP'</ee:set-variable>
+                <ee:set-variable variableName="variableT">attributes.uriParams.'variableT'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow65">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableO">attributes.uriParams.'variableO'</ee:set-variable>
+                <ee:set-variable variableName="variableP">attributes.uriParams.'variableP'</ee:set-variable>
+                <ee:set-variable variableName="variableU">attributes.uriParams.'variableU'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow66">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableO">attributes.uriParams.'variableO'</ee:set-variable>
+                <ee:set-variable variableName="variableP">attributes.uriParams.'variableP'</ee:set-variable>
+                <ee:set-variable variableName="variableU">attributes.uriParams.'variableU'</ee:set-variable>
+                <ee:set-variable variableName="variableJ">attributes.uriParams.'variableJ'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow67">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableK">attributes.uriParams.'variableK'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow68">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableV">attributes.uriParams.'variableV'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow69">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableY">attributes.uriParams.'variableY'</ee:set-variable>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+    </flow>
+    <flow name="flow70">
+        <set-variable value="QUOTE" variableName="txnEntityType" />
+        <set-variable value="#[attributes.uriParams.'companyCode']" variableName="txnCompanyCode" />
+        <set-variable value="#[attributes.uriParams.'productCode']" variableName="txnProductCode" />
+        <set-variable value="#[vars.quoteNumber]" variableName="quotenumber" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableO">attributes.uriParams.'variableO'</ee:set-variable>
+                <ee:set-variable variableName="variableP">attributes.uriParams.'variableP'</ee:set-variable>
+                <ee:set-variable variableName="variableU">attributes.uriParams.'variableU'</ee:set-variable>
+                <ee:set-variable variableName="variableJ">attributes.uriParams.'variableJ'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow71">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow72">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="#[attributes.headers['Transaction']]" variableName="transaction" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow73">
+        <flow-ref  name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow74">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableB">attributes.uriParams.'variableB'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow75">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableB">attributes.uriParams.'variableB'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow76">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow77">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableC">attributes.uriParams.'variableC'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow78">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableC">attributes.uriParams.'variableC'</ee:set-variable>
+                <ee:set-variable variableName="variableD">attributes.uriParams.'variableD'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow79">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableC">attributes.uriParams.'variableC'</ee:set-variable>
+                <ee:set-variable variableName="variableF">attributes.uriParams.'variableF'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow80">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableC">attributes.uriParams.'variableC'</ee:set-variable>
+                <ee:set-variable variableName="variableG">attributes.uriParams.'variableG'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow81">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableC">attributes.uriParams.'variableC'</ee:set-variable>
+                <ee:set-variable variableName="variableH">attributes.uriParams.'variableH'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow82">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableC">attributes.uriParams.'variableC'</ee:set-variable>
+                <ee:set-variable variableName="variableI">attributes.uriParams.'variableI'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow83">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableC">attributes.uriParams.'variableC'</ee:set-variable>
+                <ee:set-variable variableName="variableI">attributes.uriParams.'variableI'</ee:set-variable>
+                <ee:set-variable variableName="variableJ">attributes.uriParams.'variableJ'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow84">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableC">attributes.uriParams.'variableC'</ee:set-variable>
+                <ee:set-variable variableName="variableE">attributes.uriParams.'variableE'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow85">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableC">attributes.uriParams.'variableC'</ee:set-variable>
+                <ee:set-variable variableName="variableW">attributes.uriParams.'variableW'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <set-variable value="GET" variableName="method" />
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow86">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow87">
+        <set-variable value="#[attributes.headers['Transaction']]" variableName="transaction" />
+        <set-variable value="#[attributes.headers['EntityType']]" variableName="txnEntityType" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow88">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableK">attributes.uriParams.'variableK'</ee:set-variable>
+                <ee:set-variable variableName="variableJ">attributes.uriParams.'variableJ'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow89">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableK">attributes.uriParams.'variableK'</ee:set-variable>
+                <ee:set-variable variableName="variableL">attributes.uriParams.'variableL'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow90">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableK">attributes.uriParams.'variableK'</ee:set-variable>
+                <ee:set-variable variableName="variableM">attributes.uriParams.'variableM'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow91">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="#[attributes.headers['Transaction']]" variableName="transaction" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow92">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableI">attributes.uriParams.'variableI'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow93">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableI">attributes.uriParams.'variableI'</ee:set-variable>
+                <ee:set-variable variableName="variableJ">attributes.uriParams.'variableJ'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow94">
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow95">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow96">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableO">attributes.uriParams.'variableO'</ee:set-variable>
+                <ee:set-variable variableName="variableP">attributes.uriParams.'variableP'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow97">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableO">attributes.uriParams.'variableO'</ee:set-variable>
+                <ee:set-variable variableName="variableP">attributes.uriParams.'variableP'</ee:set-variable>
+                <ee:set-variable variableName="variableQ">attributes.uriParams.'variableQ'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow98">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableO">attributes.uriParams.'variableO'</ee:set-variable>
+                <ee:set-variable variableName="variableP">attributes.uriParams.'variableP'</ee:set-variable>
+                <ee:set-variable variableName="variableS">attributes.uriParams.'variableS'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow99">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+    </flow>
+    <flow name="flow100">
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="setVariableFlow" />
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow101">
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="setVariableFlow" />
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow102">
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="setVariableFlow" />
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow103">
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="setVariableFlow" />
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow104">
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="setVariableFlow" />
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow105">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow106">
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="setVariableFlow" />
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow107">
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="setVariableFlow" />
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow108">
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableK">attributes.uriParams.'variableK'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="setVariableFlow" />
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow109">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableV">attributes.uriParams.'variableV'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow110">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="productCode">attributes.uriParams.'productCode'</ee:set-variable>
+                <ee:set-variable variableName="variableY">attributes.uriParams.'variableY'</ee:set-variable>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+    </flow>
+    <flow name="flow111">
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow112">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableN">attributes.uriParams.'variableN'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow113">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="POST" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableB">attributes.uriParams.'variableB'</ee:set-variable>
+                <ee:set-variable variableName="variableM">attributes.uriParams.'variableM'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow114">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="POST" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableB">attributes.uriParams.'variableB'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow115">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="POST" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow116">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="POST" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableC">attributes.uriParams.'variableC'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow117">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="POST" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableC">attributes.uriParams.'variableC'</ee:set-variable>
+                <ee:set-variable variableName="variableD">attributes.uriParams.'variableD'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow118">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="POST" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableC">attributes.uriParams.'variableC'</ee:set-variable>
+                <ee:set-variable variableName="variableE">attributes.uriParams.'variableE'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow119">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="POST" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableC">attributes.uriParams.'variableC'</ee:set-variable>
+                <ee:set-variable variableName="variableF">attributes.uriParams.'variableF'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow120">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="POST" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableC">attributes.uriParams.'variableC'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow121">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="POST" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableC">attributes.uriParams.'variableC'</ee:set-variable>
+                <ee:set-variable variableName="variableG">attributes.uriParams.'variableG'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow122">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableC">attributes.uriParams.'variableC'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow123">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="POST" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableC">attributes.uriParams.'variableC'</ee:set-variable>
+                <ee:set-variable variableName="variableH">attributes.uriParams.'variableH'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow124">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="POST" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableC">attributes.uriParams.'variableC'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow125">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="POST" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableC">attributes.uriParams.'variableC'</ee:set-variable>
+                <ee:set-variable variableName="variableI">attributes.uriParams.'variableI'</ee:set-variable>
+                <ee:set-variable variableName="variableJ">attributes.uriParams.'variableJ'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow126">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="POST" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableC">attributes.uriParams.'variableC'</ee:set-variable>
+                <ee:set-variable variableName="variableI">attributes.uriParams.'variableI'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow127">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="POST" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableC">attributes.uriParams.'variableC'</ee:set-variable>
+                <ee:set-variable variableName="variableI">attributes.uriParams.'variableI'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow128">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="POST" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableC">attributes.uriParams.'variableC'</ee:set-variable>
+                <ee:set-variable variableName="variableE">attributes.uriParams.'variableE'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow129">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="POST" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableC">attributes.uriParams.'variableC'</ee:set-variable>
+                <ee:set-variable variableName="variableE">attributes.uriParams.'variableE'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow130">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="POST" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableC">attributes.uriParams.'variableC'</ee:set-variable>
+                <ee:set-variable variableName="variableE">attributes.uriParams.'variableE'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow140">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="POST" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableC">attributes.uriParams.'variableC'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow141">
+        <flow-ref  name="setVariableFlow" />
+        <set-variable value="POST"  variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableC">attributes.uriParams.'variableC'</ee:set-variable>
+                <ee:set-variable variableName="variableW">attributes.uriParams.'variableW'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow142">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="POST" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableC">attributes.uriParams.'variableC'</ee:set-variable>
+                <ee:set-variable variableName="variableW">attributes.uriParams.'variableW'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow143">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="POST"  variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableC">attributes.uriParams.'variableC'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref  name="test-flow" />
+    </flow>
+    <flow name="flow144">
+        <flow-ref  name="setVariableFlow" />
+        <set-variable value="POST"  variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableK">attributes.uriParams.'variableK'</ee:set-variable>
+                <ee:set-variable variableName="variableJ">attributes.uriParams.'variableJ'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref  name="test-flow" />
+    </flow>
+    <flow name="flow145">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="POST" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableK">attributes.uriParams.'variableK'</ee:set-variable>
+                <ee:set-variable variableName="variableL">attributes.uriParams.'variableL'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow146">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="POST" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableK">attributes.uriParams.'variableK'</ee:set-variable>
+                <ee:set-variable variableName="variableM">attributes.uriParams.'variableM'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow147">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow148">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="POST" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableI">attributes.uriParams.'variableI'</ee:set-variable>
+                <ee:set-variable variableName="variableJ">attributes.uriParams.'variableJ'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow149">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="POST" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableI">attributes.uriParams.'variableI'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow150">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="POST" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableO">attributes.uriParams.'variableO'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow151">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="POST" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableO">attributes.uriParams.'variableO'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow152">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="POST" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableO">attributes.uriParams.'variableO'</ee:set-variable>
+                <ee:set-variable variableName="variableP">attributes.uriParams.'variableP'</ee:set-variable>
+                <ee:set-variable variableName="variableQ">attributes.uriParams.'variableQ'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow153">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="POST" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableO">attributes.uriParams.'variableO'</ee:set-variable>
+                <ee:set-variable variableName="variableP">attributes.uriParams.'variableP'</ee:set-variable>
+                <ee:set-variable variableName="variableR">attributes.uriParams.'variableR'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow154">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="POST" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableO">attributes.uriParams.'variableO'</ee:set-variable>
+                <ee:set-variable variableName="variableP">attributes.uriParams.'variableP'</ee:set-variable>
+                <ee:set-variable variableName="variableS">attributes.uriParams.'variableS'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow155">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="POST" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableO">attributes.uriParams.'variableO'</ee:set-variable>
+                <ee:set-variable variableName="variableP">attributes.uriParams.'variableP'</ee:set-variable>
+                <ee:set-variable variableName="variableT">attributes.uriParams.'variableT'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow156">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="POST" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableO">attributes.uriParams.'variableO'</ee:set-variable>
+                <ee:set-variable variableName="variableP">attributes.uriParams.'variableP'</ee:set-variable>
+                <ee:set-variable variableName="variableU">attributes.uriParams.'variableU'</ee:set-variable>
+                <ee:set-variable variableName="variableJ">attributes.uriParams.'variableJ'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow157">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="POST" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableO">attributes.uriParams.'variableO'</ee:set-variable>
+                <ee:set-variable variableName="variableP">attributes.uriParams.'variableP'</ee:set-variable>
+                <ee:set-variable variableName="variableU">attributes.uriParams.'variableU'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref  name="test-flow" />
+    </flow>
+    <flow name="flow158">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="POST" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableO">attributes.uriParams.'variableO'</ee:set-variable>
+                <ee:set-variable variableName="variableP">attributes.uriParams.'variableP'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow159">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="POST" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableO">attributes.uriParams.'variableO'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow160">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="POST" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableO">attributes.uriParams.'variableO'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow161">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="POST" variableName="method" />
+    </flow>
+    <flow name="flow162">
+        <flow-ref name="setVariableFlow" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow163">
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow164">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="POST" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableK">attributes.uriParams.'variableK'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+    <flow name="flow165">
+        <flow-ref name="setVariableFlow" />
+        <set-variable value="POST" variableName="method" />
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableV">attributes.uriParams.'variableV'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref name="test-flow" />
+    </flow>
+
+    <flow name="setVariableFlow">
+
+        <logger message='#["Start flow $(flow.Name)"]' level="INFO" />
+        <choice>
+            <when expression="#[not isEmpty(payload)]">
+                <set-variable variableName="originalPayload" value="#[payload]" mimeType="application/json"/>
+            </when>
+            <otherwise>
+                <logger message='Payload empty in #[flow.Name]' level="INFO" />
+            </otherwise>
+        </choice>
+
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableO">attributes.uriParams.'variableO'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="variableA">attributes.uriParams.'variableA'</ee:set-variable>
+                <ee:set-variable variableName="variableO">attributes.uriParams.'variableO'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+
+        <logger message='#["End flow $(flow.Name)"]' level="INFO" />
+
+    </flow>
+
+    <flow name="test-flow">
+        <scheduler >
+            <scheduling-strategy >
+                <fixed-frequency />
+            </scheduling-strategy>
+        </scheduler>
+        <logger level="INFO"/>
+    </flow>
+</mule>

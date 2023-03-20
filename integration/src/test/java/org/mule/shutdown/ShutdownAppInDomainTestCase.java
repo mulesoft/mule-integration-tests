@@ -8,9 +8,10 @@ package org.mule.shutdown;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mule.runtime.api.message.Message.of;
 import static org.mule.runtime.core.privileged.event.PrivilegedEvent.getCurrentEvent;
 import static org.mule.runtime.http.api.HttpConstants.Method.GET;
+import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.LIFECYCLE_AND_DEPENDENCY_INJECTION;
+import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.GracefulShutdownStory.GRACEFUL_SHUTDOWN_STORY;
 
 import org.mule.functional.junit4.DomainFunctionalTestCase;
 import org.mule.runtime.api.exception.MuleException;
@@ -36,10 +37,15 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
+
 /**
  * Tests that threads in pools defined in a domain do not hold references to objects of the application in their thread locals.
  */
 @Ignore("MULE-10335")
+@Feature(LIFECYCLE_AND_DEPENDENCY_INJECTION)
+@Story(GRACEFUL_SHUTDOWN_STORY)
 public class ShutdownAppInDomainTestCase extends DomainFunctionalTestCase {
 
   private static final int PROBER_POLLING_INTERVAL = 100;
@@ -126,9 +132,9 @@ public class ShutdownAppInDomainTestCase extends DomainFunctionalTestCase {
   public void jms() throws MuleException {
     final MuleContext muleContextForApp = getMuleContextForApp("app-with-flows");
 
-    //TODO: Replace with JMS connector
-    //muleContextForApp.getClient().dispatch("jms://in?connector=sharedJmsConnector", of("payload"));
-    //muleContextForApp.getClient().request("jms://out?connector=sharedJmsConnector", MESSAGE_TIMEOUT);
+    // TODO: Replace with JMS connector
+    // muleContextForApp.getClient().dispatch("jms://in?connector=sharedJmsConnector", of("payload"));
+    // muleContextForApp.getClient().request("jms://out?connector=sharedJmsConnector", MESSAGE_TIMEOUT);
 
     muleContextForApp.dispose();
 

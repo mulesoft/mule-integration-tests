@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+                          http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+
+    <flow name="rollback-on-error-prop">
+        <flow-ref name="rollback-on-error-prop-subflow"/>
+        <error-handler>
+            <on-error-continue>
+                <test:processor/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <sub-flow name="rollback-on-error-prop-subflow">
+        <try transactionalAction="ALWAYS_BEGIN">
+            <raise-error type="APP:EXPECTED"/>
+            <error-handler>
+                <on-error-propagate>
+                    <test:processor/>
+                </on-error-propagate>
+            </error-handler>
+        </try>
+    </sub-flow>
+
+
+    <flow name="rollback-default-on-error-prop">
+        <flow-ref name="rollback-default-on-error-prop-subflow"/>
+    </flow>
+
+    <sub-flow name="rollback-default-on-error-prop-subflow">
+        <try transactionalAction="ALWAYS_BEGIN">
+            <raise-error type="APP:EXPECTED"/>
+        </try>
+    </sub-flow>
+
+
+    <flow name="rollback-in-flow">
+        <try transactionalAction="ALWAYS_BEGIN">
+            <flow-ref name="rollback-in-flow-subflow"/>
+        </try>
+    </flow>
+
+    <sub-flow name="rollback-in-flow-subflow">
+        <raise-error type="APP:EXPECTED"/>
+    </sub-flow>
+
+
+    <flow name="commit-flow-on-error-continue">
+        <try transactionalAction="ALWAYS_BEGIN">
+            <flow-ref name="commit-flow-on-error-continue-subflow"/>
+            <error-handler>
+                <on-error-continue>
+                    <test:processor/>
+                </on-error-continue>
+            </error-handler>
+        </try>
+    </flow>
+
+    <sub-flow name="commit-flow-on-error-continue-subflow">
+        <raise-error type="APP:EXPECTED"/>
+    </sub-flow>
+
+
+    <flow name="rollback-nested-subflows">
+        <flow-ref name="rollback-nested-subflows-1"/>
+    </flow>
+
+    <sub-flow name="rollback-nested-subflows-1">
+        <try transactionalAction="ALWAYS_BEGIN">
+            <flow-ref name="rollback-nested-subflows-2"/>
+        </try>
+    </sub-flow>
+
+    <sub-flow name="rollback-nested-subflows-2">
+        <raise-error type="APP:EXPECTED"/>
+    </sub-flow>
+
+
+    <flow name="commit-nested-subflows">
+        <flow-ref name="commit-nested-subflows-1"/>
+    </flow>
+
+    <sub-flow name="commit-nested-subflows-1">
+        <try transactionalAction="ALWAYS_BEGIN">
+            <flow-ref name="commit-nested-subflows-2"/>
+            <error-handler>
+                <on-error-continue>
+                    <test:processor/>
+                </on-error-continue>
+            </error-handler>
+        </try>
+    </sub-flow>
+
+    <sub-flow name="commit-nested-subflows-2">
+        <raise-error type="APP:EXPECTED"/>
+    </sub-flow>
+
+
+    <flow name="rollback-nested-flows">
+        <flow-ref name="rollback-nested-flows-1"/>
+    </flow>
+
+    <sub-flow name="rollback-nested-flows-1">
+        <try transactionalAction="ALWAYS_BEGIN">
+            <flow-ref name="rollback-nested-flows-2"/>
+        </try>
+    </sub-flow>
+
+    <flow name="rollback-nested-flows-2">
+        <raise-error type="APP:EXPECTED"/>
+    </flow>
+
+
+    <flow name="commit-nested-flows">
+        <flow-ref name="commit-nested-flows-1"/>
+    </flow>
+
+    <sub-flow name="commit-nested-flows-1">
+        <try transactionalAction="ALWAYS_BEGIN">
+            <flow-ref name="commit-nested-flows-2"/>
+            <error-handler>
+                <on-error-continue>
+                    <test:processor/>
+                </on-error-continue>
+            </error-handler>
+        </try>
+    </sub-flow>
+
+    <flow name="commit-nested-flows-2">
+        <raise-error type="APP:EXPECTED"/>
+    </flow>
+
+</mule>

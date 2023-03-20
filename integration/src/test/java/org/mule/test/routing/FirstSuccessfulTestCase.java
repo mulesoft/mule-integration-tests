@@ -6,21 +6,29 @@
  */
 package org.mule.test.routing;
 
+import static org.mule.test.allure.AllureConstants.RoutersFeature.FirstSuccessfulStory.FIRST_SUCCESSFUL;
+import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
+
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
-import static org.mule.test.allure.AllureConstants.RoutersFeature.FirstSuccessfulStory.FIRST_SUCCESSFUL;
-import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
-import static org.mule.functional.junit4.matchers.ThrowableCauseMatcher.hasCause;
+
 import org.mule.extension.validation.api.ValidationException;
-import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.functional.api.exception.ExpectedError;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.event.CoreEvent;
+import org.mule.runtime.core.privileged.routing.CompositeRoutingException;
 import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.tests.api.TestQueueManager;
 
+import javax.inject.Inject;
+
+import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
 import org.junit.Rule;
 import org.junit.Test;
@@ -29,8 +37,11 @@ import org.junit.Test;
 @Story(FIRST_SUCCESSFUL)
 public class FirstSuccessfulTestCase extends AbstractIntegrationTestCase {
 
+  @Inject
+  private TestQueueManager queueManager;
+
   @Rule
-  public ExpectedError expected = ExpectedError.none();
+  public ExpectedError expectedError = ExpectedError.none();
 
   @Override
   protected String getConfigFile() {
@@ -54,8 +65,8 @@ public class FirstSuccessfulTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void allRoutesFail() throws Exception {
-    expected.expectCause(instanceOf(ValidationException.class));
-    expected.expectErrorType("VALIDATION", "INVALID_BOOLEAN");
+    expectedError.expectCause(instanceOf(ValidationException.class));
+    expectedError.expectErrorType("VALIDATION", "INVALID_BOOLEAN");
     flowRunner("test-router").withPayload(Boolean.TRUE).run().getMessage();
   }
 
@@ -69,10 +80,53 @@ public class FirstSuccessfulTestCase extends AbstractIntegrationTestCase {
   public void oneWayEndpoints() throws Exception {
     flowRunner("withOneWayEndpoints").withPayload(TEST_MESSAGE).run();
 
-    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
-    Message response = queueHandler.read("WithOneWayEndpoints.out", RECEIVE_TIMEOUT).getMessage();
+    Message response = queueManager.read("WithOneWayEndpoints.out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
     assertThat(response, is(notNullValue()));
     assertThat(response.getPayload().getValue(), is(TEST_MESSAGE));
+  }
+
+  @Test
+  public void insideErrorHandler() throws Exception {
+    CoreEvent event = flowRunner("firstSuccessfulInErrorHandler").withPayload(TEST_PAYLOAD).run();
+    assertThat(event.getMessage().getPayload().getValue(), is("La pelota no se mancha"));
+  }
+
+  @Test
+  public void insideErrorHandlerWithError() throws Exception {
+    CoreEvent event = flowRunner("firstSuccessfulInErrorHandlerWithError").withPayload(TEST_PAYLOAD).run();
+    assertThat(event.getMessage().getPayload().getValue(), is("Yo me equivoque y pague"));
+  }
+
+  @Test
+  public void insideErrorHandlerFailing() throws Exception {
+    expectedError.expectCause(instanceOf(ValidationException.class));
+    expectedError.expectErrorType("VALIDATION", "INVALID_BOOLEAN");
+    flowRunner("firstSuccessfulInErrorHandlerWithFailing").withPayload(Boolean.TRUE).run().getMessage();
+  }
+
+  @Test
+  @Issue("MULE-19169")
+  public void firstSuccessfulInsideParalleLForEach() throws Exception {
+    CoreEvent event = flowRunner("firstSuccessfulInParallelForEach").run();
+    assertThat(getPayloadAsString(event.getMessage()), is("Se te escapo la tortuga"));
+    assertThat(event.getVariables().get("wasExecuted").getValue(), is("true"));
+  }
+
+  @Test
+  @Issue("W-10619792")
+  @Description("When a First Successful is followed by a Raise Error inside a Scatter Gather's route, should error.")
+  public void firstSuccessfulAndRaiseErrorInsideScatterGather() throws Exception {
+    expectedError.expectCause(instanceOf(CompositeRoutingException.class));
+    expectedError.expectErrorType("MULE", "COMPOSITE_ROUTING");
+    flowRunner("firstSuccessfulAndRaiseErrorInsideScatterGather").run();
+  }
+
+  @Test
+  @Issue("W-12552091")
+  @Description("When a First Successful invokes a flow that has a raise error, then it should still proceed to next route.")
+  public void FirstSuccessfulToFlowWithError() throws Exception {
+    CoreEvent result = flowRunner("FirstSuccessfulToFlowWithError").run();
+    assertThat(getPayloadAsString(result.getMessage()), is("A Di Maria me lo resistian"));
   }
 
 }

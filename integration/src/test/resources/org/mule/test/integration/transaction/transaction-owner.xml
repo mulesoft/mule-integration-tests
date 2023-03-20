@@ -3,14 +3,12 @@
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:test="http://www.mulesoft.org/schema/mule/test"
-      xsi:schemaLocation="
-http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+                          http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
     <flow name="no-rollback">
         <try transactionalAction="BEGIN_OR_JOIN">
-            <test:processor throwException="true"
-                            exceptionToThrow="java.lang.RuntimeException" />
+            <raise-error type="APP:EXPECTED"/>
             <error-handler>
                 <on-error-continue>
                     <test:processor/>
@@ -21,8 +19,7 @@ http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/tes
 
     <flow name="rollback">
         <try transactionalAction="BEGIN_OR_JOIN">
-            <test:processor throwException="true"
-                            exceptionToThrow="java.lang.RuntimeException" />
+            <raise-error type="APP:EXPECTED"/>
         </try>
     </flow>
 
@@ -30,8 +27,7 @@ http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/tes
         <try transactionalAction="BEGIN_OR_JOIN">
             <test:processor />
         </try>
-        <test:processor throwException="true"
-                        exceptionToThrow="java.lang.RuntimeException" />
+        <raise-error type="APP:EXPECTED"/>
     </flow>
 
 
@@ -80,8 +76,7 @@ http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/tes
 
 
     <flow name="rollback-flowref">
-        <test:processor throwException="true"
-                        exceptionToThrow="java.lang.RuntimeException" />
+        <raise-error type="APP:EXPECTED"/>
     </flow>
 
     <flow name="error-flowref-JOIN">
@@ -93,8 +88,7 @@ http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/tes
                 </on-error-continue>
             </error-handler>
         </try>
-        <test:processor throwException="true"
-                        exceptionToThrow="java.lang.RuntimeException" />
+        <raise-error type="APP:EXPECTED"/>
     </flow>
 
     <flow name="error-flowref">
@@ -106,8 +100,61 @@ http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/tes
                 </on-error-continue>
             </error-handler>
         </try>
-        <test:processor throwException="true"
-                        exceptionToThrow="java.lang.RuntimeException" />
+        <raise-error type="APP:EXPECTED"/>
+    </flow>
+
+    <flow name="with-implicit-default-EH-executed-commits">
+        <try transactionalAction="ALWAYS_BEGIN">
+            <test:processor/>
+            <try>
+                <raise-error type="APP:EXPECTED"/>
+                <error-handler>
+                    <on-error-continue type="EXPRESSION"/>
+                </error-handler>
+            </try>
+            <error-handler>
+                <on-error-continue/>
+            </error-handler>
+        </try>
+    </flow>
+
+    <flow name="with-implicit-default-EH-executed-rollback">
+        <try transactionalAction="ALWAYS_BEGIN">
+            <test:processor/>
+            <try>
+                <raise-error type="APP:EXPECTED"/>
+                <error-handler>
+                    <on-error-continue type="EXPRESSION"/>
+                </error-handler>
+            </try>
+            <error-handler>
+                <on-error-continue type="EXPRESSION"/>
+            </error-handler>
+        </try>
+    </flow>
+
+    <flow name="with-default-EH-executed-commits">
+        <try transactionalAction="ALWAYS_BEGIN">
+            <test:processor/>
+            <try>
+                <raise-error type="APP:EXPECTED"/>
+            </try>
+            <error-handler>
+                <on-error-continue/>
+            </error-handler>
+        </try>
+    </flow>
+
+    <flow name="with-default-EH-executed-rollback">
+        <try>
+            <test:processor/>
+            <try transactionalAction="ALWAYS_BEGIN">
+                <raise-error type="APP:EXPECTED"/>
+            </try>
+            <error-handler>
+                <on-error-continue/>
+            </error-handler>
+        </try>
     </flow>
 
 </mule>

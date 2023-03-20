@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+    xmlns:tx="http://www.mulesoft.org/schema/mule/tx"
+    xmlns:heisenberg="http://www.mulesoft.org/schema/mule/heisenberg"
+    xmlns:test-components="http://www.mulesoft.org/schema/mule/test-components"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+                        http://www.mulesoft.org/schema/mule/tx http://www.mulesoft.org/schema/mule/tx/current/mule-tx.xsd
+                        http://www.mulesoft.org/schema/mule/heisenberg http://www.mulesoft.org/schema/mule/heisenberg/current/mule-heisenberg.xsd
+                        http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
+
+    <tx:config name="localTx">
+        <tx:connection>
+            <pooling-profile maxActive="1" exhaustedAction="WHEN_EXHAUSTED_WAIT"/>
+        </tx:connection>
+    </tx:config>
+
+    <test-components:queue-config name="txFlowRan">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <flow name="flow">
+        <tx:transactional-source config-ref="localTx" transactionalAction="ALWAYS_BEGIN"/>
+        <heisenberg:kill-with-custom-message victim="T-1000" goodbyeMessage="Hasta la vista, baby" />
+        <test-components:queue-push config-ref="txFlowRan"/>
+    </flow>
+</mule>

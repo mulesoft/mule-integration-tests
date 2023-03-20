@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:module-using-flow-ref="http://www.mulesoft.org/schema/mule/module-using-flow-ref"
+      xsi:schemaLocation="
+       http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+       http://www.mulesoft.org/schema/mule/module-using-flow-ref http://www.mulesoft.org/schema/mule/module-using-flow-ref/current/mule-module-using-flow-ref.xsd">
+
+    <flow name="invoke-call-flow">
+        <module-using-flow-ref:call-flow />
+    </flow>
+
+    <flow name="invoke-both-call-flow">
+        <module-using-flow-ref:call-flow />
+        <module-using-flow-ref:call-flow-2 />
+    </flow>
+
+    <flow name="invoke-call-sub-flow">
+        <module-using-flow-ref:call-sub-flow />
+    </flow>
+
+</mule>

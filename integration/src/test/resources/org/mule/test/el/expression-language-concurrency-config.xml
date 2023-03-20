@@ -5,9 +5,7 @@
 
     <!-- TODO MULE-11351 Rework ring-buffer based processing strategy implementations for stream approach -->
     <flow name="slowRequestHandler">
-        <expression-component>mel:
-            Thread.sleep(2000);
-        </expression-component>
+        <set-payload value="#[java!org::mule::test::el::ExpressionLanguageConcurrencyTestCase::sleep(2000)]" />
         <set-payload value="Slow Response" />
     </flow>
 

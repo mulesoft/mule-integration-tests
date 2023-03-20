@@ -9,12 +9,13 @@ package org.mule.test.integration.tls;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
-import org.junit.Rule;
-import org.junit.Test;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
+
+import org.junit.Rule;
+import org.junit.Test;
 
 public class TlsCustomTruststoreTestCase extends AbstractIntegrationTestCase {
 
@@ -35,12 +36,12 @@ public class TlsCustomTruststoreTestCase extends AbstractIntegrationTestCase {
   @Test
   public void usingCustomTlsTrustManager() throws Exception {
     CoreEvent response = flowRunner("flow-custom").run();
-    assertThat(RESPONSE, equalTo(response.getMessage().getPayload().getValue()));
+    assertThat(response.getMessage().getPayload().getValue(), equalTo(RESPONSE));
   }
 
   @Test
   public void usingDefaultTlsTrustManager() throws Exception {
     CoreEvent response = flowRunner("flow-default").run();
-    assertThat(RESPONSE, equalTo(response.getMessage().getPayload().getValue()));
+    assertThat(response.getMessage().getPayload().getValue(), equalTo(RESPONSE));
   }
 }

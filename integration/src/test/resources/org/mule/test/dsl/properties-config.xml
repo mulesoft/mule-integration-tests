@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xmlns:parsers-test="http://www.mulesoft.org/schema/mule/parsers-test"
+      xmlns:test-components="http://www.mulesoft.org/schema/mule/test-components"
       xsi:schemaLocation="
        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-       http://www.mulesoft.org/schema/mule/parsers-test http://www.mulesoft.org/schema/mule/parsers-test/current/mule-parsers-test.xsd">
+       http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
 
 
     <configuration-properties file="org/mule/test/dsl/test-properties.properties"/>
 
-    <parsers-test:parameter-collection-parser name="testObject" firstname="${testProperty}" lastname="${systemProperty}" age="${testPropertyOverrided}"/>
+    <configuration defaultResponseTimeout="${testTimeoutProperty}"/>
+
+    <test-components:parameter-collection-parser name="testObject" firstname="${testProperty}" lastname="${systemProperty}" age="${testPropertyOverrided}"/>
 
 </mule>

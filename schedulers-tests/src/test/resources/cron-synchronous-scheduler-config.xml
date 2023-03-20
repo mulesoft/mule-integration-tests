@@ -14,9 +14,7 @@
             </scheduling-strategy>
         </scheduler>
         <set-payload value="testString"/>
-        <test:processor>
-            <test:callback class="org.mule.test.module.scheduler.cron.SynchronousSchedulerTestCase$FooNonSync"/>
-        </test:processor>
+        <set-payload value="#[java!org::mule::test::module::scheduler::cron::SynchronousSchedulerTestCase::addFooNonSync(payload)]"/>
     </flow>
 
     <flow name="synchronousPoll">
@@ -26,8 +24,6 @@
             </scheduling-strategy>
         </scheduler>
         <set-payload value="testString"/>
-        <test:processor>
-            <test:callback class="org.mule.test.module.scheduler.cron.SynchronousSchedulerTestCase$FooSync"/>
-        </test:processor>
+        <set-payload value="#[java!org::mule::test::module::scheduler::cron::SynchronousSchedulerTestCase::addFooSync(payload)]"/>
     </flow>
 </mule>

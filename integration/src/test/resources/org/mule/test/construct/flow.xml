@@ -3,53 +3,106 @@
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
       xmlns:script="http://www.mulesoft.org/schema/mule/scripting"
-      xmlns:spring="http://www.mulesoft.org/schema/mule/spring"
       xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xmlns:test-components="http://www.mulesoft.org/schema/mule/test-components"
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
                http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd
                http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
-               http://www.mulesoft.org/schema/mule/spring http://www.mulesoft.org/schema/mule/spring/current/mule-spring.xsd
-               http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+               http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
+               http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
 
-    <spring:config name="springConfig" files="org/mule/test/construct/flow-beans.xml"/>
+    <object name="threadSensing" class="org.mule.test.construct.FlowConfigurationFunctionalTestCase$ThreadSensingMessageProcessor"/>
 
-    <custom-processor class="org.mule.test.construct.FlowConfigurationFunctionalTestCase.CustomAppender" name="appender"/>
-    <custom-processor class="org.mule.test.construct.FlowConfigurationFunctionalTestCase.CustomAppender" name="test-array-appender"/>
+    <test-components:queue-config name="asynchronous-async-out">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="inout-out">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="inout-append-out">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="async-async-oneway-out">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="async-oneway-out">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="async-async-seda-oneway-out">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="async-seda-oneway-out">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="async-async-requestresponse-out">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="async-requestresponse-out">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="async-async-tx-out">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="async-tx-out">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="poll-out">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="poll2-out">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="messagefiltersubflow-out">
+        <test-components:connection />
+    </test-components:queue-config>
 
     <sub-flow name="composite1">
         <description>Composite thats appands 'ayz'</description>
-        <append-string-transformer message="x" />
-        <append-string-transformer message="y" />
-        <append-string-transformer message="z" />
+        <set-payload value="#[payload ++ 'x']" />
+        <set-payload value="#[payload ++ 'y']" />
+        <set-payload value="#[payload ++ 'z']" />
     </sub-flow>
 
     <flow name="flow">
-        <append-string-transformer message="1" />
-        <append-string-transformer message="2" />
-        <processor ref="composite1" />
-        <processor-chain>
-            <append-string-transformer message="a" />
-            <append-string-transformer message="b" />
-            <append-string-transformer message="c" />
-        </processor-chain>
-        <append-string-transformer message="3" />
+        <set-payload value="#[payload ++ '1']" />
+        <set-payload value="#[payload ++ '2']" />
+        <flow-ref name="composite1" />
+        <try>
+            <set-payload value="#[payload ++ 'a']" />
+            <set-payload value="#[payload ++ 'b']" />
+            <set-payload value="#[payload ++ 'c']" />
+        </try>
+        <set-payload value="#[payload ++ '3']" />
     </flow>
 
     <flow name="asynchronousAsync" initialState="stopped">
         <async>
-            <custom-processor class="org.mule.test.construct.FlowConfigurationFunctionalTestCase$ThreadSensingMessageProcessor"/>
-            <test:queue name="asynchronous-async-out"/>
+            <flow-ref name="threadSensing"/>
+            <test-components:queue-push config-ref="asynchronous-async-out"/>
         </async>
     </flow>    
 
     <flow name="inout" initialState="stopped">
         <logger/>
-        <test:queue name="inout-out"/>
+        <test-components:queue-push config-ref="inout-out"/>
     </flow>
 
     <flow name="inout-append" initialState="stopped">
-        <append-string-transformer message="inout" />
-        <test:queue name="inout-append-out"/>
+        <set-payload value="#[payload ++ 'inout']" />
+        <test-components:queue-push config-ref="inout-append-out"/>
     </flow>
     
     <flow name="components" initialState="stopped">
@@ -58,57 +111,57 @@
     </flow>
 
     <flow name="async-oneway" initialState="stopped">
-        <append-string-transformer message="a" />
+        <set-payload value="#[payload ++ 'a']" />
         <async>
-            <append-string-transformer message="b" />
-            <test:queue name="async-async-oneway-out"/>
+            <set-payload value="#[payload ++ 'b']" />
+            <test-components:queue-push config-ref="async-async-oneway-out"/>
         </async>    
-        <append-string-transformer message="c" />    
-        <test:queue name="async-oneway-out"/>
+        <set-payload value="#[payload ++ 'c']" />
+        <test-components:queue-push config-ref="async-oneway-out"/>
     </flow>
 
     <flow name="async-seda-oneway" initialState="stopped">
-        <append-string-transformer message="a" />
+        <set-payload value="#[payload ++ 'a']" />
         <async>
-            <append-string-transformer message="b" />
-            <test:queue name="async-async-seda-oneway-out"/>
+            <set-payload value="#[payload ++ 'b']" />
+            <test-components:queue-push config-ref="async-async-seda-oneway-out"/>
         </async>    
-        <append-string-transformer message="c" />    
-        <test:queue name="async-seda-oneway-out"/>
+        <set-payload value="#[payload ++ 'c']" />
+        <test-components:queue-push config-ref="async-seda-oneway-out"/>
     </flow>
 
     <flow name="async-requestresponse" initialState="stopped">
-        <append-string-transformer message="a" />
+        <set-payload value="#[payload ++ 'a']" />
         <async>
-            <append-string-transformer message="b" />
-            <test:queue name="async-async-requestresponse-out"/>
+            <set-payload value="#[payload ++ 'b']" />
+            <test-components:queue-push config-ref="async-async-requestresponse-out"/>
         </async>    
-        <append-string-transformer message="c" />    
-        <test:queue name="async-requestresponse-out"/>
+        <set-payload value="#[payload ++ 'c']" />
+        <test-components:queue-push config-ref="async-requestresponse-out"/>
     </flow>
 
     <flow name="async-tx" initialState="stopped">
-        <append-string-transformer message="a" />
+        <set-payload value="#[payload ++ 'a']" />
         <async>
-            <append-string-transformer message="b" />
-            <test:queue name="async-async-tx-out"/>
+            <set-payload value="#[payload ++ 'b']" />
+            <test-components:queue-push config-ref="async-async-tx-out"/>
         </async>    
-        <append-string-transformer message="c" />    
-        <test:queue name="async-tx-out"/>
+        <set-payload value="#[payload ++ 'c']" />
+        <test-components:queue-push config-ref="async-tx-out"/>
     </flow>
     
     <flow name="choice2" initialState="stopped">
         <choice>
             <when expression="payload=='foo'">
-                <append-string-transformer message=" Hello" />
-                <append-string-transformer message=" foo" />
+                <set-payload value="#[payload ++ ' Hello']" />
+                <set-payload value="#[payload ++ ' foo']" />
             </when>
             <when expression="#[payload=='bar']">
-                <append-string-transformer message=" Hello bar" />
+                <set-payload value="#[payload ++ ' Hello bar']" />
             </when>
             <otherwise>
-                <append-string-transformer message=" Hello" />
-                <append-string-transformer message=" ?" />
+                <set-payload value="#[payload ++ ' Hello']" />
+                <set-payload value="#[payload ++ ' ?']" />
             </otherwise>
         </choice>
     </flow>
@@ -118,40 +171,13 @@
         <flow-ref name="flow"/>
     </flow>
 
-    <flow name="invoke" initialState="stopped">
-        <invoke object-ref="appender" method="transform" methodArguments="#[mel:payload]"/>
-    </flow>
-
-    <flow name="invoke2" initialState="stopped">
-        <invoke object-ref="appender" method="transform" methodArguments="#[mel:message.inboundProperties.one]"/>
-    </flow>
-    
-    <flow name="invoke3" initialState="stopped">
-        <processor ref="invokeme"/>
-    </flow>
-
-    <flow name="invoke4" initialState="stopped">
-        <processor ref="invokeme-noargs"/>
-    </flow>
-    
-   	<flow name="invokeArrayInArgs" initialState="stopped">
-        <invoke object-ref="test-array-appender" method="transformArray" methodArguments="#[['test', 'test']]"/>
-    </flow>
-    
-
-    <invoke name="invokeme" object-ref="pojo" method="method" methodArguments="#[mel:'Account'] ,    #[mel:payload]"
-        methodArgumentTypes="java.lang.String, java.lang.String" />
-
-    <invoke name="invokeme-noargs" object-ref="pojo" method="method"/>
-
-
     <flow name="loggermessage" initialState="stopped">
-        <append-string-transformer message=" Hello foo" />
+        <set-payload value="#[payload ++ ' Hello foo']" />
         <logger level="ERROR" category="mycategory"/>
     </flow>
 
     <flow name="loggerheader" initialState="stopped">
-        <logger message="Ths is my header value: #[mel:message.inboundProperties.toLog]" level="ERROR" category="mycategory"/>
+        <logger message="Ths is my header value: #[vars.toLog]" level="ERROR" category="mycategory"/>
     </flow>
 
     <flow name="poll">
@@ -161,9 +187,9 @@
             </scheduling-strategy>
         </scheduler>
         <set-payload value="#['']"/>
-        <append-string-transformer message=" Hello foo" />
-        <append-string-transformer message="out" />
-        <test:queue name="poll-out"/>
+        <set-payload value="#[payload ++ ' Hello foo']" />
+        <set-payload value="#[payload ++ 'out']" />
+        <test-components:queue-push config-ref="poll-out"/>
     </flow>
 
     <flow name="poll2">
@@ -172,9 +198,10 @@
                 <fixed-frequency frequency="3000"/>
             </scheduling-strategy>
         </scheduler>
+        <set-payload value="null" />
         <flow-ref name="pollappend"/>
-        <append-string-transformer message="out" />
-        <test:queue name="poll2-out"/>
+        <set-payload value="#[payload ++ 'out']" />
+        <test-components:queue-push config-ref="poll2-out"/>
     </flow>
 
     <flow name="messagefiltersubflow" initialState="stopped">
@@ -189,15 +216,15 @@
     </flow>
      
     <sub-flow name="pollappend">
-        <append-string-transformer message="pollappend" />
+        <set-payload value="#[payload ++ 'pollappend']" />
     </sub-flow>
 
     <sub-flow name="invokedByMessageFilter">
-        <test:queue name="messagefiltersubflow-out"/>
+        <test-components:queue-push config-ref="messagefiltersubflow-out"/>
     </sub-flow>
 
     <flow name="customMaxConcurrency" maxConcurrency="1" initialState="stopped">
-        <append-string-transformer message="nop" />
+        <set-payload value="#[payload ++ 'nop']" />
     </flow>
 
 </mule>

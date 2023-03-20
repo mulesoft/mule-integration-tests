@@ -17,13 +17,13 @@
     <flow name="parallelProcessing">
         <scatter-gather>
             <route>
-                <expression-component><![CDATA[mel:Thread.sleep(5);]]></expression-component>
+                <set-payload value="#[java!org::mule::tck::junit4::AbstractMuleContextTestCase::sleepFor(payload, 5)]"/>
             </route>
             <route>
-                <expression-component><![CDATA[mel:Thread.sleep(5);]]></expression-component>
+                <set-payload value="#[java!org::mule::tck::junit4::AbstractMuleContextTestCase::sleepFor(payload, 5)]"/>
             </route>
             <route>
-                <expression-component><![CDATA[mel:Thread.sleep(5);]]></expression-component>
+                <set-payload value="#[java!org::mule::tck::junit4::AbstractMuleContextTestCase::sleepFor(payload, 5)]"/>
             </route>
         </scatter-gather>
     </flow>
@@ -44,7 +44,7 @@
 
     <flow name="Http">
         <http:listener config-ref="HTTP" path="do"/>
-        <expression-component><![CDATA[mel:Thread.sleep(1);]]></expression-component>
+        <set-payload value="#[java!org::mule::tck::junit4::AbstractMuleContextTestCase::sleepFor(payload, 1)]"/>
     </flow>
 
 </mule>

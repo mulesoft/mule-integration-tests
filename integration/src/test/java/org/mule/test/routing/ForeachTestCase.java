@@ -6,9 +6,23 @@
  */
 package org.mule.test.routing;
 
+import static org.mule.functional.api.exception.ExpectedError.none;
+import static org.mule.functional.junit4.matchers.MessageMatchers.hasPayload;
+import static org.mule.runtime.api.exception.MuleException.INFO_LOCATION_KEY;
+import static org.mule.runtime.api.metadata.DataType.JSON_STRING;
+import static org.mule.runtime.api.metadata.MediaType.APPLICATION_JAVA;
+import static org.mule.runtime.api.metadata.MediaType.APPLICATION_JSON;
+import static org.mule.runtime.api.metadata.MediaType.APPLICATION_XML;
+import static org.mule.sdk.api.error.MuleErrors.CONNECTIVITY;
+import static org.mule.tck.processor.FlowAssert.verify;
+import static org.mule.test.allure.AllureConstants.RoutersFeature.ForeachStory.FOR_EACH;
+import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
+
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonMap;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
+
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -18,28 +32,16 @@ import static org.hamcrest.collection.IsArrayWithSize.arrayWithSize;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.rules.ExpectedException.none;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mule.functional.junit4.matchers.MessageMatchers.hasPayload;
-import static org.mule.runtime.api.exception.MuleException.INFO_LOCATION_KEY;
-import static org.mule.runtime.api.message.Message.of;
-import static org.mule.runtime.api.metadata.DataType.JSON_STRING;
-import static org.mule.runtime.api.metadata.MediaType.APPLICATION_JAVA;
-import static org.mule.runtime.api.metadata.MediaType.APPLICATION_JSON;
-import static org.mule.runtime.api.metadata.MediaType.APPLICATION_XML;
-import static org.mule.tck.processor.FlowAssert.verify;
-import static org.mule.test.allure.AllureConstants.RoutersFeature.ForeachStory.FOR_EACH;
-import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 
-import org.mule.functional.api.component.TestConnectorQueueHandler;
-import org.mule.functional.junit4.TestLegacyMessageBuilder;
+import org.mule.functional.api.exception.ExpectedError;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.tests.api.TestQueueManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -48,6 +50,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
+
+import javax.inject.Inject;
 
 import com.google.common.collect.ImmutableList;
 import io.qameta.allure.Description;
@@ -60,30 +64,30 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 @Feature(ROUTERS)
 @Story(FOR_EACH)
 public class ForeachTestCase extends AbstractIntegrationTestCase {
 
+  @Inject
+  private TestQueueManager queueManager;
+
   @Rule
   public SystemProperty systemProperty = new SystemProperty("batch.size", "3");
 
   @Rule
-  public ExpectedException expectedException = none();
+  public ExpectedError expectedException = none();
 
   private RandomStringGenerator randomStringGenerator;
-  private TestConnectorQueueHandler queueHandler;
 
   @Before
-  public void setUp() throws Exception {
+  public void setUp() {
     randomStringGenerator = new RandomStringGenerator.Builder().withinRange('a', 'z').build();
-    queueHandler = new TestConnectorQueueHandler(registry);
   }
 
   @Override
   protected String getConfigFile() {
-    return "foreach-test.xml";
+    return "org/mule/test/routing/foreach-test.xml";
   }
 
   @Test
@@ -98,11 +102,11 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
     assertThat(resultPayload, hasSize(2));
     assertSame(payload, resultPayload);
 
-    Message out = queueHandler.read("out", getTestTimeoutSecs()).getMessage();
+    Message out = queueManager.read("out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
     assertThat(out.getPayload().getValue(), instanceOf(String.class));
     assertThat(out.getPayload().getValue(), is("julio"));
 
-    out = queueHandler.read("out", getTestTimeoutSecs()).getMessage();
+    out = queueManager.read("out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
     assertThat(out.getPayload().getValue(), instanceOf(String.class));
     assertThat(out.getPayload().getValue(), is("sosa"));
   }
@@ -119,11 +123,11 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
     assertThat(resultPayload, hasSize(3));
     assertSame(payload, resultPayload);
 
-    Message out = queueHandler.read("out", getTestTimeoutSecs()).getMessage();
+    Message out = queueManager.read("out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
     assertThat(out.getPayload().getValue(), instanceOf(String.class));
     assertThat(out.getPayload().getValue(), is("syd"));
 
-    out = queueHandler.read("out", getTestTimeoutSecs()).getMessage();
+    out = queueManager.read("out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
     assertThat(out.getPayload().getValue(), instanceOf(String.class));
     assertThat(out.getPayload().getValue(), is("barrett"));
   }
@@ -140,11 +144,11 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
     assertThat(result.getMessage().getPayload().getValue(), instanceOf(String.class));
     assertThat((List<String>) result.getVariables().get("names").getValue(), hasSize(names.size()));
 
-    Message out = queueHandler.read("out", getTestTimeoutSecs()).getMessage();
+    Message out = queueManager.read("out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
     assertThat(out.getPayload().getValue(), instanceOf(String.class));
     assertThat(out.getPayload().getValue(), is("residente"));
 
-    out = queueHandler.read("out", getTestTimeoutSecs()).getMessage();
+    out = queueManager.read("out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
     assertThat(out.getPayload().getValue(), instanceOf(String.class));
     assertThat(out.getPayload().getValue(), is("visitante"));
   }
@@ -164,12 +168,12 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
     assertThat(resultPayload, hasSize(5));
     assertSame(payload, resultPayload);
 
-    Message out = queueHandler.read("out", getTestTimeoutSecs()).getMessage();
+    Message out = queueManager.read("out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
     assertThat(out.getPayload().getValue(), instanceOf(Collection.class));
     Collection<?> outPayload = (Collection<?>) out.getPayload().getValue();
     assertThat(outPayload, hasSize(3));
 
-    out = queueHandler.read("out", getTestTimeoutSecs()).getMessage();
+    out = queueManager.read("out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
     assertThat(out.getPayload().getValue(), instanceOf(Collection.class));
     outPayload = (Collection<?>) out.getPayload().getValue();
     assertThat(outPayload, hasSize(2));
@@ -189,19 +193,6 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  public void messageCollectionConfiguration() throws Exception {
-    List<Message> list = new ArrayList<>();
-    for (int i = 0; i < 10; i++) {
-      list.add(new TestLegacyMessageBuilder().value("message-" + i).addOutboundProperty("out", "out" + (i + 1)).build());
-    }
-
-    Message msgCollection = of(list);
-    Message result = flowRunner("message-collection-config").withPayload(list).run().getMessage();
-
-    assertThat(result.getPayload().getValue(), equalTo(msgCollection.getPayload().getValue()));
-  }
-
-  @Test
   public void mapPayload() throws Exception {
     final Map<String, String> payload = new HashMap<>();
     payload.put("name", "david");
@@ -213,19 +204,6 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
     Map<?, ?> resultPayload = (Map<?, ?>) result.getPayload().getValue();
     assertThat(resultPayload.entrySet(), hasSize(payload.size()));
     assertSame(payload, resultPayload);
-  }
-
-  @Test
-  public void mapExpression() throws Exception {
-    final ArrayList<String> names = new ArrayList<>();
-    names.add("Sergei");
-    names.add("Vasilievich");
-    names.add("Rachmaninoff");
-
-    Message result = flowRunner("map-expression-config").withPayload("message payload").withInboundProperty("names", names)
-        .run().getMessage();
-
-    assertThat(result.getPayload().getValue(), instanceOf(String.class));
   }
 
   @Test
@@ -314,12 +292,12 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
     assertQueueValueIs("splitPayloadOutQueue", "Chuck");
   }
 
-  private void assertQueueValueIs(String queueName, Object queueValue) throws MuleException {
-    Message receivedMessage = queueHandler.read(queueName, 1000).getMessage();
+  private void assertQueueValueIs(String queueName, Object queueValue) {
+    Message receivedMessage = queueManager.read(queueName, 1000, MILLISECONDS).getMessage();
     assertThat(receivedMessage.getPayload().getValue(), Is.is(queueValue));
   }
 
-  private void assertSplitedString() throws MuleException {
+  private void assertSplitedString() {
     assertQueueValueIs("splitStringOutQueue", "a");
     assertQueueValueIs("splitStringOutQueue", "b");
     assertQueueValueIs("splitStringOutQueue", "c");
@@ -343,6 +321,7 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
+  @Ignore("MULE-19198")
   public void jsonUpdate() throws Exception {
     List<Object> items = new ArrayList<>();
     items.add(singletonMap("key1", "value1"));
@@ -404,7 +383,7 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
     Message out;
     for (int i = 0; i < payload.size(); i++) {
       for (int j = 0; j < payload.get(i).size(); j++) {
-        out = queueHandler.read("out", getTestTimeoutSecs()).getMessage();
+        out = queueManager.read("out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
         assertThat(out.getPayload().getValue(), instanceOf(String.class));
         assertThat(out.getPayload().getValue(), is(payload.get(i).get(j)));
       }
@@ -423,9 +402,9 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
 
     for (int i = 0; i < payload.size(); i++) {
       for (int j = 0; j < payload.get(i).size(); j++) {
-        queueHandler.read("out", getTestTimeoutSecs()).getMessage();
+        queueManager.read("out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
       }
-      queueHandler.read("out", getTestTimeoutSecs()).getMessage();
+      queueManager.read("out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
     }
   }
 
@@ -458,74 +437,14 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
     assertSame(payload, resultPayload);
   }
 
-  @Test
-  public void mvelList() throws Exception {
-    runFlow("mvel-list");
-
-    Message out = queueHandler.read("out", getTestTimeoutSecs()).getMessage();
-    assertThat(out.getPayload().getValue(), instanceOf(String.class));
-    String outPayload = (String) out.getPayload().getValue();
-    assertThat(outPayload, is("foo"));
-
-    out = queueHandler.read("out", getTestTimeoutSecs()).getMessage();
-    assertThat(out.getPayload().getValue(), instanceOf(String.class));
-    outPayload = (String) out.getPayload().getValue();
-    assertThat(outPayload, is("bar"));
-  }
-
-  @Test
-  public void mvelMap() throws Exception {
-    runFlow("mvel-map");
-
-    Map<String, String> m = new HashMap<>();
-    m.put("key1", "val1");
-    m.put("key2", "val2");
-
-    Message out = queueHandler.read("out", getTestTimeoutSecs()).getMessage();
-    assertThat(out.getPayload().getValue(), instanceOf(String.class));
-    String outPayload = (String) out.getPayload().getValue();
-    assertTrue(m.containsValue(outPayload));
-
-    out = queueHandler.read("out", getTestTimeoutSecs()).getMessage();
-    assertThat(out.getPayload().getValue(), instanceOf(String.class));
-    outPayload = (String) out.getPayload().getValue();
-    assertTrue(m.containsValue(outPayload));
-  }
-
-  @Test
-  public void mvelCollection() throws Exception {
-    runFlow("mvel-collection");
-
-    Map<String, String> m = new HashMap<>();
-    m.put("key1", "val1");
-    m.put("key2", "val2");
-
-    Message out = queueHandler.read("out", getTestTimeoutSecs()).getMessage();
-    assertThat(out.getPayload().getValue(), instanceOf(String.class));
-    String outPayload = (String) out.getPayload().getValue();
-    assertTrue(m.containsValue(outPayload));
-
-    out = queueHandler.read("out", getTestTimeoutSecs()).getMessage();
-    assertThat(out.getPayload().getValue(), instanceOf(String.class));
-    outPayload = (String) out.getPayload().getValue();
-    assertTrue(m.containsValue(outPayload));
-  }
-
-  @Test
-  public void mvelArray() throws Exception {
-    final String flowName = "mvel-array";
-    runFlow(flowName);
-    assertIterable(flowName);
-  }
-
-  private void assertIterable(String flowName) throws Exception {
-    Message out = queueHandler.read("out", getTestTimeoutSecs()).getMessage();
+  private void assertIterable() {
+    Message out = queueManager.read("out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
     assertThat(out.getPayload().getValue(), instanceOf(String.class));
     String outPayload = (String) out.getPayload().getValue();
 
     assertThat(outPayload, is("foo"));
 
-    out = queueHandler.read("out", getTestTimeoutSecs()).getMessage();
+    out = queueManager.read("out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
     assertThat(out.getPayload().getValue(), instanceOf(String.class));
     outPayload = (String) out.getPayload().getValue();
     assertThat(outPayload, is("bar"));
@@ -535,16 +454,15 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
   public void expressionIterable() throws Exception {
     Iterable<String> iterable = mock(Iterable.class);
     when(iterable.iterator()).thenReturn(asList("foo", "bar").iterator());
-    final String flowName = "expression-iterable";
-    flowRunner(flowName).withVariable("iterable", iterable).run();
+    flowRunner("expression-iterable").withVariable("iterable", iterable).run();
 
-    assertIterable(flowName);
+    assertIterable();
   }
 
   @Test
   public void mvelError() throws Exception {
-    MuleException me = (MuleException) flowRunner("mvel-error").runExpectingException();
-    assertThat((String) me.getInfo().get(INFO_LOCATION_KEY), startsWith("mvel-error/processors/0 @"));
+    MuleException me = (MuleException) flowRunner("errorExpression").runExpectingException();
+    assertThat((String) me.getInfo().get(INFO_LOCATION_KEY), startsWith("errorExpression/processors/0 @"));
   }
 
   @Test
@@ -582,7 +500,7 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void errorAfterThreadChange() throws Exception {
-    expectedException.expectCause(instanceOf(java.io.IOException.class));
+    expectedException.expectErrorType("MULE", CONNECTIVITY.name());
     flowRunner("errorAfterThreadChange").withPayload(asList("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")).run();
   }
 
@@ -591,5 +509,23 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
   public void foreachInErrorHandler() throws Exception {
     CoreEvent event = flowRunner("foreachInErrorHandler").run();
     assertThat(event.getMessage().getPayload().getValue(), is("apple"));
+  }
+
+  @Test
+  @Issue("MULE-18524")
+  public void forEachWithTry() throws Exception {
+    flowRunner("forEachWithTry").withPayload(ImmutableList.of("one", "two", "three")).run();
+  }
+
+  @Test
+  @Issue("MULE-18462")
+  public void forEachEmptyCollection() throws Exception {
+    flowRunner("emptyForEach").run();
+  }
+
+  // TODO MULE-17934 remove this
+  @Override
+  protected boolean isGracefulShutdown() {
+    return true;
   }
 }

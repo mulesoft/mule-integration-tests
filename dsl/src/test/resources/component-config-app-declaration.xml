@@ -10,34 +10,40 @@
   http://www.mulesoft.org/schema/mule/sockets http://www.mulesoft.org/schema/mule/sockets/current/mule-sockets.xsd http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd">
 
     <db:config name="dbConfig">
-      <db:derby-connection create="true"
-                           database="target/muleEmbeddedDB"
-                           subsubProtocol="directory"
-                           transactionIsolation="NOT_CONFIGURED"
-                           useXaTransactions="false">
-         <db:pooling-profile acquireIncrement="1"
-                             maxPoolSize="10"
-                             maxWait="0"
-                             maxWaitUnit="SECONDS"
-                             minPoolSize="0"
-                             preparedStatementCacheSize="5"/>
+        <db:derby-connection cacheQueryTemplateSize="50"
+                             create="true"
+                             database="target/muleEmbeddedDB"
+                             subsubProtocol="directory"
+                             transactionIsolation="NOT_CONFIGURED"
+                             useXaTransactions="false">
+            <db:pooling-profile acquireIncrement="1"
+                                maxPoolSize="10"
+                                maxStatements="0"
+                                maxWait="0"
+                                maxWaitUnit="SECONDS"
+                                minPoolSize="0"
+                                preparedStatementCacheSize="5"
+                                maxIdleTime="0"
+                                testConnectionOnCheckout="false">
+            </db:pooling-profile>
             <db:connection-properties>
                 <db:connection-property key="first" value="propertyOne"/>
                 <db:connection-property key="second" value="propertyTwo"/>
             </db:connection-properties>
         </db:derby-connection>
     </db:config>
-   <http:listener-config basePath="/" name="httpListener">
-      <http:listener-connection connectionIdleTimeout="30000"
-                                 host="localhost"
-                                 port="49019"
-                                 protocol="HTTPS"
-                                 usePersistentConnections="true">
+    <http:listener-config basePath="/" name="httpListener" rejectInvalidTransferEncoding="false">
+        <http:listener-connection connectionIdleTimeout="30000"
+                                  host="localhost"
+                                  port="${port}"
+                                  protocol="HTTPS"
+                                  usePersistentConnections="true"
+                                  readTimeout="30000">
             <tls:context>
                 <tls:trust-store algorithm="PKIX" insecure="false"/>
                 <tls:key-store keyPassword="changeit"
                                password="changeit"
-                                path="ssltest-keystore.jks"/>
+                               path="ssltest-keystore.jks"/>
                 <tls:revocation-check>
                     <tls:standard-revocation-check noFallback="true"/>
                 </tls:revocation-check>
@@ -53,27 +59,27 @@
                          sendCorrelationId="NEVER"
                          sendBodyMode="AUTO"
                          preserveHeadersCase="false">
-      <http:request-connection connectionIdleTimeout="30000"
-                                host="localhost"
-                                maxConnections="-1"
-                                port="49020"
-                                protocol="HTTP"
-                                responseBufferSize="10240"
-                                streamResponse="false"
-                                usePersistentConnections="true">
+        <http:request-connection connectionIdleTimeout="30000"
+                                 host="localhost"
+                                 maxConnections="-1"
+                                 port="${otherPort}"
+                                 protocol="HTTP"
+                                 responseBufferSize="10240"
+                                 streamResponse="false"
+                                 usePersistentConnections="true">
             <http:authentication>
-            <http:basic-authentication password="pass" preemptive="true" username="user"/>
+                <http:basic-authentication password="pass" preemptive="true" username="user"/>
             </http:authentication>
             <http:client-socket-properties>
-            <sockets:tcp-client-socket-properties clientTimeout="1000"
-                                                  connectionTimeout="1000"
-                                                  failOnUnresolvedHost="true"
-                                                  keepAlive="true"
-                                                  linger="1000"
-                                                  receiveBufferSize="1024"
-                                                  reuseAddress="true"
-                                                  sendBufferSize="1024"
-                                                  sendTcpNoDelay="true"/>
+                <sockets:tcp-client-socket-properties clientTimeout="1000"
+                                                      connectionTimeout="1000"
+                                                      failOnUnresolvedHost="true"
+                                                      keepAlive="true"
+                                                      linger="1000"
+                                                      receiveBufferSize="1024"
+                                                      reuseAddress="true"
+                                                      sendBufferSize="1024"
+                                                      sendTcpNoDelay="true"/>
             </http:client-socket-properties>
         </http:request-connection>
         <http:default-headers>
@@ -81,17 +87,18 @@
         </http:default-headers>
     </http:request-config>
     <sockets:request-config name="sockets-config">
-        <sockets:tcp-requester-connection connectionTimeout="30000" failOnUnresolvedHost="true" host="localhost" keepAlive="false"
+        <sockets:tcp-requester-connection connectionTimeout="30000" failOnUnresolvedHost="true" host="localhost"
+                                          keepAlive="false"
                                           port="11111" reuseAddress="true" sendTcpNoDelay="true"/>
     </sockets:request-config>
     <wsc:config name="wsc-config">
         <wsc:connection mtomEnabled="false" port="port" service="service" soapVersion="SOAP11" wsdlLocation="wsdl"/>
     </wsc:config>
-   <flow initialState="stopped" name="testFlow">
-      <http:listener config-ref="httpListener"
-                     primaryNodeOnly="true"
-                     path="testBuilder"
-                     responseStreamingMode="AUTO">
+    <flow initialState="stopped" name="testFlow">
+        <http:listener config-ref="httpListener"
+                       primaryNodeOnly="true"
+                       path="testBuilder"
+                       responseStreamingMode="AUTO">
             <redelivery-policy maxRedeliveryCount="2" useSecureHash="true"/>
             <reconnect blocking="true" count="1" frequency="0"/>
             <http:response>
@@ -101,29 +108,30 @@
                 </http:headers>
             </http:response>
         </http:listener>
-      <db:bulk-insert queryTimeout="0" queryTimeoutUnit="SECONDS" targetValue="#[payload]" transactionalAction="JOIN_IF_POSSIBLE">
+        <db:bulk-insert queryTimeout="0" queryTimeoutUnit="SECONDS" targetValue="#[payload]"
+                        transactionalAction="JOIN_IF_POSSIBLE">
             <db:sql>INSERT INTO PLANET(POSITION, NAME) VALUES (:position, :name)</db:sql>
             <db:parameter-types>
-                <db:parameter-type key="name" type="VARCHAR" />
-                <db:parameter-type key="position" type="INTEGER" />
+                <db:parameter-type key="name" type="VARCHAR"/>
+                <db:parameter-type key="position" type="INTEGER"/>
             </db:parameter-types>
         </db:bulk-insert>
-      <http:request config-ref="httpRequester"
-                     method="POST"
-                     path="/nested"
-                     targetValue="#[payload]"/>
-      <db:insert autoGenerateKeys="false"
-                 config-ref="dbConfig"
-                 queryTimeout="0"
-                 queryTimeoutUnit="SECONDS"
-                 transactionalAction="JOIN_IF_POSSIBLE"
-                 targetValue="#[payload]">
+        <http:request config-ref="httpRequester"
+                      method="POST"
+                      path="/nested"
+                      targetValue="#[payload]"/>
+        <db:insert autoGenerateKeys="false"
+                   config-ref="dbConfig"
+                   queryTimeout="0"
+                   queryTimeoutUnit="SECONDS"
+                   transactionalAction="JOIN_IF_POSSIBLE"
+                   targetValue="#[payload]">
             <db:sql>INSERT INTO PLANET(POSITION, NAME, DESCRIPTION) VALUES (777, 'Pluto', :description)</db:sql>
             <db:parameter-types>
                 <db:parameter-type key="description" type="CLOB"/>
             </db:parameter-types>
             <db:input-parameters>
-                #[{{'description' : payload}}]
+                #[{'description' : payload}]
             </db:input-parameters>
         </db:insert>
 
@@ -138,7 +146,7 @@
             <wsc:consume config-ref="wsc-config" operation="GetCitiesByCountry" targetValue="#[payload]">
                 <wsc:message>
                     <wsc:body>#[payload]</wsc:body>
-                    <wsc:headers>#[{"headers": {con#headerIn: "Header In Value",con#headerInOut: "Header In Out Value"}]
+                    <wsc:headers>#[{"headers": {con#headerIn: "Header In Value",con#headerInOut: "Header In Out Value"}}]
                     </wsc:headers>
                     <wsc:attachments>#[{}]</wsc:attachments>
                 </wsc:message>
@@ -154,7 +162,8 @@
         <wsc:consume config-ref="wsc-config" operation="GetCitiesByCountry" targetValue="#[payload]">
             <wsc:message>
                 <wsc:body>#[payload]</wsc:body>
-                <wsc:headers>#[{"headers": {con#headerIn: "Header In Value",con#headerInOut: "Header In Out Value"}]</wsc:headers>
+                <wsc:headers>#[{"headers": {con#headerIn: "Header In Value",con#headerInOut: "Header In Out Value"}}]
+                </wsc:headers>
                 <wsc:attachments>#[{}]</wsc:attachments>
             </wsc:message>
         </wsc:consume>

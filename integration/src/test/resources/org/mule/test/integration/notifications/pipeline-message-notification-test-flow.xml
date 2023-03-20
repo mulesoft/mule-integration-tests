@@ -1,44 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xmlns:test-components="http://www.mulesoft.org/schema/mule/test-components"
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-               http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+               http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
 
     <notifications>
-        <notification event="PIPELINE-MESSAGE" />
-        <notification event="ASYNC-MESSAGE" />
+        <notification event="PIPELINE-MESSAGE"/>
+        <notification event="ASYNC-MESSAGE"/>
     </notifications>
 
-    <object name="notificationLogger" class="org.mule.test.core.context.notification.PipelineMessageNotificationLogger" />
-    <object name="notificationLogger2" class="org.mule.test.core.context.notification.AsyncMessageNotificationLogger" />
+    <object name="notificationLogger"
+            class="org.mule.test.core.context.notification.PipelineMessageNotificationLogger"/>
+    <test-components:queue-config name="ow-out">
+        <test-components:connection/>
+    </test-components:queue-config>
+
+    <test-components:queue-config name="owException-out">
+        <test-components:connection/>
+    </test-components:queue-config>
 
     <notifications>
-        <notification-listener ref="notificationLogger" />
+        <notification-listener ref="notificationLogger"/>
     </notifications>
 
     <flow name="service-1">
-        <logger />
+        <logger/>
     </flow>
 
     <flow name="service-2">
-        <expression-component>mel:hola</expression-component>
+        <raise-error type="APP:ERROR" description="An error"/>
     </flow>
 
     <flow name="service-3">
-        <expression-component>mel:hola</expression-component>
+        <set-payload value="#[!null.a]"/>
     </flow>
 
     <flow name="service-4">
-        <test:queue name="ow-out" />
+        <test-components:queue-push config-ref="ow-out"/>
     </flow>
 
     <flow name="service-5">
-        <expression-component>mel:hola</expression-component>
+        <raise-error type="APP:ERROR" description="An error"/>
         <error-handler>
             <on-error-continue>
-                <test:queue name="owException-out" />
+                <test-components:queue-push config-ref="owException-out"/>
             </on-error-continue>
         </error-handler>
+    </flow>
+
+    <flow name="nestedFlowFailingRoot">
+        <flow-ref name="nestedFlowFailingOne"/>
+    </flow>
+
+    <flow name="nestedFlowFailingOne">
+        <flow-ref name="nestedFlowFailingTwo"/>
+    </flow>
+
+    <flow name="nestedFlowFailingTwo">
+        <flow-ref name="nestedFlowFailingThree"/>
+    </flow>
+
+    <flow name="nestedFlowFailingThree">
+        <raise-error type="APP:ERROR" description="An error"/>
     </flow>
 
 </mule>

@@ -6,11 +6,13 @@
  */
 package org.mule.test.integration.schedule;
 
-
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mule.test.allure.AllureConstants.NotificationsFeature.NOTIFICATIONS;
+import static org.mule.test.allure.AllureConstants.SchedulerFeature.SCHEDULER;
+import static org.mule.test.allure.AllureConstants.SchedulerFeature.SchedulerStories.SCHEDULED_FLOW_EXECUTION;
 
 import org.mule.runtime.api.config.custom.ServiceConfigurator;
 import org.mule.runtime.api.notification.ConnectorMessageNotification;
@@ -23,15 +25,21 @@ import org.mule.tck.probe.PollingProber;
 import org.mule.tck.probe.Prober;
 import org.mule.test.AbstractSchedulerTestCase;
 
-import org.junit.Test;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Test;
+
+import io.qameta.allure.Feature;
+import io.qameta.allure.Features;
+import io.qameta.allure.Story;
+
+@Features({@Feature(NOTIFICATIONS), @Feature(SCHEDULER)})
+@Story(SCHEDULED_FLOW_EXECUTION)
 public class PollScheduleNotificationTestCase extends AbstractSchedulerTestCase {
 
-  private Prober prober = new PollingProber(RECEIVE_TIMEOUT, 100l);
-  private MyListener listener = new MyListener();
+  private final Prober prober = new PollingProber(RECEIVE_TIMEOUT, 100l);
+  private final MyListener listener = new MyListener();
 
   @Override
   protected String getConfigFile() {
@@ -52,8 +60,8 @@ public class PollScheduleNotificationTestCase extends AbstractSchedulerTestCase 
         // Nothing to do
       }
     });
+    builders.add(extensionManagerWithMuleExtModelBuilder());
   }
-
 
   @Test
   public void validateNotificationsAreSent() throws Exception {

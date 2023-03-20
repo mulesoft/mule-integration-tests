@@ -12,6 +12,16 @@ import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+
+import org.mule.runtime.core.api.event.CoreEvent;
+import org.mule.tck.junit4.rule.DynamicPort;
+
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
@@ -19,15 +29,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 
-import org.mule.runtime.core.api.event.CoreEvent;
-import org.mule.tck.junit4.rule.DynamicPort;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-
-public abstract class AbstractModuleWithHttpTestCase extends AbstractXmlExtensionMuleArtifactFunctionalTestCase {
+public abstract class AbstractModuleWithHttpTestCase extends AbstractCeXmlExtensionMuleArtifactFunctionalTestCase {
 
   protected static final String MODULE_GLOBAL_ELEMENT_XML = "modules/module-global-element.xml";
   static final String MODULE_GLOBAL_ELEMENT_PROXY_XML = "modules/nested/module-global-element-proxy.xml";
@@ -56,8 +58,9 @@ public abstract class AbstractModuleWithHttpTestCase extends AbstractXmlExtensio
   }
 
   /**
-   * Asserts that a given flow can successfully be executed and it also checks that the authorization against the {@link SimpleBasicAuthentication}
-   * handler does return a success response for the parametrized username
+   * Asserts that a given flow can successfully be executed and it also checks that the authorization against the
+   * {@link SimpleBasicAuthentication} handler does return a success response for the parametrized username
+   * 
    * @param flowName to execute
    * @param username to validate after hitting the HTTP endpoint
    */
@@ -67,9 +70,9 @@ public abstract class AbstractModuleWithHttpTestCase extends AbstractXmlExtensio
   }
 
   /**
-   * Really simple handler for basic authentication where the user and pass, once decoded, must match the path of the request.
-   * For example: "/basic-auth/userLP/passLP" request must have an "Authorization" header with "userLP:passLP" encoded in Base64
-   * to return 200, otherwise it will be 401 (unauthorized)
+   * Really simple handler for basic authentication where the user and pass, once decoded, must match the path of the request. For
+   * example: "/basic-auth/userLP/passLP" request must have an "Authorization" header with "userLP:passLP" encoded in Base64 to
+   * return 200, otherwise it will be 401 (unauthorized)
    */
   private class SimpleBasicAuthentication extends AbstractHandler {
 

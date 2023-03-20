@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:http="http://www.mulesoft.org/schema/mule/http"
+       xmlns:test="http://www.mulesoft.org/schema/mule/test"
+       xmlns:test-processor-chains="http://www.mulesoft.org/schema/mule/test-processor-chains"
+       xmlns:test-components="http://www.mulesoft.org/schema/mule/test-components"
+       xsi:schemaLocation="
+       http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+       http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+       http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
+       http://www.mulesoft.org/schema/mule/test-processor-chains http://www.mulesoft.org/schema/mule/test-processor-chains/current/mule-test-processor-chains.xsd
+       http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
+
+    <test-components:queue-config name="asyncQueue">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="sgRoute1Queue">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="sgRoute2Queue">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-processor-chains:composite-processor-chain-router name="compositeChainRouter">
+        <test-processor-chains:chain>
+            <set-variable variableName="myVar" value="#['myVar' ++ vars.customVar]"/>
+        </test-processor-chains:chain>
+        <test-processor-chains:chain>
+            <set-variable variableName="mySecondVar" value="mySecondVarValue"/>
+        </test-processor-chains:chain>
+        <test-processor-chains:chain>
+            <logger/>
+            <set-payload value="#[payload ++ ' custom']"/>
+            <first-successful>
+                <route>
+                    <set-variable variableName="myThirdVar" value="myThirdVarValue"/>
+                </route>
+            </first-successful>
+        </test-processor-chains:chain>
+    </test-processor-chains:composite-processor-chain-router>
+
+    <test-processor-chains:composite-processor-chain-router name="compositeChainRouterError">
+        <test-processor-chains:chain>
+            <set-variable variableName="myVar" value="#['myVar' ++ vars.customVar]"/>
+        </test-processor-chains:chain>
+        <test-processor-chains:chain>
+            <set-variable variableName="mySecondVar" value="mySecondVarValue"/>
+        </test-processor-chains:chain>
+        <test-processor-chains:chain>
+            <test:throw exception="java.lang.IllegalStateException" error="CLIENT_SECURITY"/>
+        </test-processor-chains:chain>
+    </test-processor-chains:composite-processor-chain-router>
+
+    <test-processor-chains:processor-chain-router name="chainRouter">
+        <set-payload value="testPayload custom"/>
+    </test-processor-chains:processor-chain-router>
+
+    <test-processor-chains:processor-chain-router name="chainRouterError">
+        <set-payload value="testPayload custom"/>
+        <test:throw exception="java.lang.IllegalStateException" error="CLIENT_SECURITY"/>
+    </test-processor-chains:processor-chain-router>
+
+    <test-processor-chains:processor-chain-router name="chainRouterComponents">
+        <async>
+            <test-components:queue-push config-ref="asyncQueue"/>
+        </async>
+        <scatter-gather>
+            <route>
+                <test-components:queue-push config-ref="sgRoute1Queue"/>
+            </route>
+            <route>
+                <test-components:queue-push config-ref="sgRoute2Queue"/>
+            </route>
+        </scatter-gather>
+    </test-processor-chains:processor-chain-router>
+
+    <test-processor-chains:composite-processor-chain-router name="flowRefCompositeChainRouter">
+        <test-processor-chains:chain>
+            <set-variable variableName="myVar" value="#['myVar' ++ vars.customVar]"/>
+        </test-processor-chains:chain>
+        <test-processor-chains:chain>
+            <set-variable variableName="mySecondVar" value="mySecondVarValue"/>
+        </test-processor-chains:chain>
+        <test-processor-chains:chain>
+            <flow-ref name="otherFlow"/>
+        </test-processor-chains:chain>
+    </test-processor-chains:composite-processor-chain-router>
+
+    <http:request-config name="HTTP_Requester_config">
+        <http:request-connection host="localhost" port="${httpPort}"/>
+    </http:request-config>
+    <test-processor-chains:composite-processor-chain-router name="nonBlockingCompositeChainRouter">
+        <test-processor-chains:chain>
+            <http:request method="GET" config-ref="HTTP_Requester_config" path="/" />
+        </test-processor-chains:chain>
+    </test-processor-chains:composite-processor-chain-router>
+
+    <test-processor-chains:composite-processor-chain-router name="invalidExpressionParamCompositeChainRouter">
+        <test-processor-chains:chain>
+            <http:request method="GET" config-ref="HTTP_Requester_config" path="#['' ++ null.a!]" />
+        </test-processor-chains:chain>
+    </test-processor-chains:composite-processor-chain-router>
+
+    <flow name="byPassFlow">
+        <set-payload value="#[payload]"/>
+    </flow>
+
+    <flow name="otherFlow">
+        <flow-ref name="byPassFlow"/>
+        <set-payload value="#[payload ++ ' custom']"/>
+        <set-variable variableName="myThirdVar" value="myThirdVarValue"/>
+    </flow>
+
+</mule>

@@ -14,28 +14,28 @@
         <test:processor/>
         <error-handler>
             <on-error-continue when="#[mel:exception.causedBy(java.lang.IllegalArgumentException)]">
-                <append-string-transformer message=" catch-1"/>
+                <set-payload value="#[payload ++ ' catch-1']"/>
             </on-error-continue>
             <on-error-continue when="#[mel:exception.causedBy(java.lang.IllegalStateException)]">
-                <append-string-transformer message=" catch-2"/>
+                <set-payload value="#[payload ++ ' catch-2']"/>
             </on-error-continue>
             <on-error-continue when="#[mel:exception.causedExactlyBy(org.mule.test.integration.exceptions.ErrorHandlerTestCase$BaseException)]">
-                <append-string-transformer message=" catch-3"/>
+                <set-payload value="#[payload ++ ' catch-3']"/>
             </on-error-continue>
             <on-error-continue when="#[mel:exception.causedBy(org.mule.test.integration.exceptions.ErrorHandlerTestCase$SubtypeException)]">
-                <append-string-transformer message=" catch-4"/>
+                <set-payload value="#[payload ++ ' catch-4']"/>
             </on-error-continue>
             <on-error-continue when="#[mel:exception.causeMatches('(.*?)mule.test.integration.(.*?).ErrorHandlerTestCase(.*?)MyException')]">
-                <append-string-transformer message=" catch-5"/>
+                <set-payload value="#[payload ++ ' catch-5']"/>
             </on-error-continue>
             <on-error-continue when="#[mel:payload == 'groovy']">
-                <append-string-transformer message=" catch-6"/>
+                <set-payload value="#[payload ++ ' catch-6']"/>
             </on-error-continue>
             <on-error-continue when="#[mel:exception.causeMatches('org.mule.test.integration.exceptions.ErrorHandlerTestCase\\$StartsWith(.*)')]">
-                <append-string-transformer message=" catch-7"/>
+                <set-payload value="#[payload ++ ' catch-7']"/>
             </on-error-continue>
             <on-error-continue when="#[mel:exception.causeMatches('(.*?)FinishesWithException')]">
-                <append-string-transformer message=" catch-8"/>
+                <set-payload value="#[payload ++ ' catch-8']"/>
             </on-error-continue>
             <on-error-continue when="#[mel:exception.causeMatches('(.*?)FinishesWithSomethingElse')]">
 		        <script:execute engine="groovy">
@@ -45,41 +45,41 @@
 		        </script:execute>
             </on-error-continue>
             <on-error-continue when="#[mel:exception.causeMatches('.*') &amp;&amp; !exception.causedBy(java.lang.ArithmeticException) &amp;&amp; !exception.causedBy(org.mule.test.integration.exceptions.ErrorHandlerTestCase$GenericMuleException)]">
-                <append-string-transformer message=" catch-9"/>
+                <set-payload value="#[payload ++ ' catch-9']"/>
             </on-error-continue>
         </error-handler>
     </flow>
 
     <flow name="matchesHandlerUsingType" initialState="stopped">
-        <processor ref="throw-exception"/>
+        <flow-ref name="throw-exception"/>
         <error-handler>
             <on-error-continue type="TRANSFORMATION">
-                <append-string-transformer message=" transformation"/>
+                <set-payload value="#[payload ++ ' transformation']"/>
             </on-error-continue>
             <on-error-continue type="EXPRESSION">
-                <append-string-transformer message=" expression"/>
+                <set-payload value="#[payload ++ ' expression']"/>
             </on-error-continue>
             <on-error-continue type="CONNECTIVITY">
-                <append-string-transformer message=" connectivity"/>
+                <set-payload value="#[payload ++ ' connectivity']"/>
             </on-error-continue>
             <on-error-continue type="ROUTING">
-                <append-string-transformer message=" routing"/>
+                <set-payload value="#[payload ++ ' routing']"/>
             </on-error-continue>
             <on-error-continue type="SECURITY">
-                <append-string-transformer message=" security"/>
+                <set-payload value="#[payload ++ ' security']"/>
             </on-error-continue>
             <on-error-continue type="ANY">
-                <append-string-transformer message=" any"/>
+                <set-payload value="#[payload ++ ' any']"/>
             </on-error-continue>
         </error-handler>
     </flow>
 
     <flow name="propagatesCriticalErrors" initialState="stopped">
-        <append-string-transformer message=" critical"/>
-        <processor ref="throw-error"/>
+        <set-payload value="#[payload ++ ' critical']"/>
+        <flow-ref name="throw-error"/>
         <error-handler>
             <on-error-continue type="ANY">
-                <append-string-transformer message=" nope"/>
+                <set-payload value="#[payload ++ ' nope']"/>
             </on-error-continue>
         </error-handler>
     </flow>
@@ -88,10 +88,10 @@
         <flow-ref name="onErrorFails"/>
         <error-handler>
             <on-error-continue type="EXPRESSION">
-                <append-string-transformer message=" expression"/>
+                <set-payload value="#[payload ++ ' expression']"/>
             </on-error-continue>
             <on-error-continue type="ANY">
-                <append-string-transformer message=" any"/>
+                <set-payload value="#[payload ++ ' any']"/>
             </on-error-continue>
         </error-handler>
     </flow>
@@ -100,7 +100,7 @@
         <raise-error type="ROUTING"/>
         <error-handler>
             <on-error-propagate when="#[lookup('zaraza', payload)]">
-                <append-string-transformer message=" routing"/>
+                <set-payload value="#[payload ++ ' routing']"/>
             </on-error-propagate>
         </error-handler>
     </flow>

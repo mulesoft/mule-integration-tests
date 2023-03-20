@@ -24,22 +24,32 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mule.functional.api.exception.ExpectedError.none;
 import static org.mule.functional.junit4.matchers.ThrowableMessageMatcher.hasMessage;
+import static org.mule.runtime.api.metadata.DataType.TEXT_STRING;
 import static org.mule.runtime.api.notification.MessageProcessorNotification.MESSAGE_PROCESSOR_POST_INVOKE;
 import static org.mule.runtime.api.notification.MessageProcessorNotification.MESSAGE_PROCESSOR_PRE_INVOKE;
-import static org.mule.runtime.core.api.exception.Errors.CORE_NAMESPACE_NAME;
-import static org.mule.runtime.core.api.exception.Errors.Identifiers.ROUTING_ERROR_IDENTIFIER;
+import static org.mule.runtime.core.api.error.Errors.CORE_NAMESPACE_NAME;
+import static org.mule.runtime.core.api.error.Errors.Identifiers.ROUTING_ERROR_IDENTIFIER;
+import static org.mule.runtime.core.api.processor.ReactiveProcessor.ProcessingType.CPU_INTENSIVE;
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.SERVICE_UNAVAILABLE;
 import static org.mule.runtime.http.api.HttpConstants.Method.GET;
+import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
 import static org.mule.tck.probe.PollingProber.probe;
+import static org.mule.test.allure.AllureConstants.ComponentsFeature.CORE_COMPONENTS;
+import static org.mule.test.allure.AllureConstants.ComponentsFeature.FlowReferenceStory.FLOW_REFERENCE;
+import static org.mule.test.allure.AllureConstants.ExecutionEngineFeature.ExecutionEngineStory.BACKPRESSURE;
 
-import org.mule.functional.api.component.EventCallback;
 import org.mule.functional.api.exception.ExpectedError;
 import org.mule.runtime.api.component.AbstractComponent;
+import org.mule.runtime.api.exception.DefaultMuleException;
+import org.mule.runtime.api.exception.MuleException;
+import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.notification.MessageProcessorNotification;
 import org.mule.runtime.api.notification.MessageProcessorNotificationListener;
-import org.mule.runtime.core.api.MuleContext;
+import org.mule.runtime.api.scheduler.Scheduler;
+import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.event.CoreEvent;
+import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.http.api.HttpService;
 import org.mule.runtime.http.api.client.HttpRequestOptions;
 import org.mule.runtime.http.api.domain.message.request.HttpRequest;
@@ -56,14 +66,21 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.inject.Inject;
+
+import io.qameta.allure.Description;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
+import io.qameta.allure.Story;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
-import io.qameta.allure.Issue;
-
+@Feature(CORE_COMPONENTS)
+@Story(FLOW_REFERENCE)
 public class FlowRefTestCase extends AbstractIntegrationTestCase {
 
   private static final String CONTEXT_DEPTH_MESSAGE = "Too many nested child contexts.";
@@ -79,6 +96,11 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
   @Rule
   public TestHttpClient httpClient = new TestHttpClient.Builder(getService(HttpService.class)).build();
 
+  private Scheduler asyncFlowRunnerScheduler;
+
+  @Inject
+  private Flow referencedFlowWithMaxConcurrency;
+
   @Override
   protected String getConfigFile() {
     return "org/mule/test/construct/flow-ref.xml";
@@ -89,10 +111,15 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
     sendAsyncs = new ArrayList<>();
     latch = new CountDownLatch(1);
     awaiting.set(0);
+
+    asyncFlowRunnerScheduler = muleContext.getSchedulerService()
+        .ioScheduler(muleContext.getSchedulerBaseConfig().withShutdownTimeout(0, SECONDS));
+
   }
 
   @After
   public void after() throws Exception {
+    asyncFlowRunnerScheduler.shutdownNow();
     latch.countDown();
     for (Future<HttpResponse> sentAsync : sendAsyncs) {
       sentAsync.get(RECEIVE_TIMEOUT, SECONDS);
@@ -110,6 +137,16 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
     assertThat(flowRunner("flow2").withPayload("0").withVariable("letter", "A").run().getMessage().getPayload().getValue(),
                is("0A"));
     assertThat(flowRunner("flow2").withPayload("0").withVariable("letter", "B").run().getMessage().getPayload().getValue(),
+               is("0B"));
+  }
+
+  @Test
+  public void dynamicFlowRefTextPlain() throws Exception {
+    assertThat(flowRunner("flow3").withPayload("0").withVariable("letter", " A ", TEXT_STRING).run().getMessage().getPayload()
+        .getValue(),
+               is("0A"));
+    assertThat(flowRunner("flow3").withPayload("0").withVariable("letter", " B ", TEXT_STRING).run().getMessage().getPayload()
+        .getValue(),
                is("0B"));
   }
 
@@ -154,8 +191,7 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
     List<MessageProcessorNotification> notificationList = synchronizedList(new ArrayList<>());
     setupMessageProcessorNotificationListener(notificationList);
 
-    assertThat(flowRunner("flowRefFlowErrorNotifications").runExpectingException().getCause(),
-               instanceOf(IllegalStateException.class));
+    flowRunner("flowRefFlowErrorNotifications").runExpectingException(errorType("APP", "EXPECTED"));
 
     assertNotifications(notificationList, "flowRefFlowErrorNotifications/processors/0");
   }
@@ -166,8 +202,7 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
     List<MessageProcessorNotification> notificationList = synchronizedList(new ArrayList<>());
     setupMessageProcessorNotificationListener(notificationList);
 
-    assertThat(flowRunner("flowRefSubFlowErrorNotifications").runExpectingException().getCause(),
-               instanceOf(IllegalStateException.class));
+    flowRunner("flowRefSubFlowErrorNotifications").runExpectingException(errorType("APP", "EXPECTED"));
 
     assertNotifications(notificationList, "flowRefSubFlowErrorNotifications/processors/0");
   }
@@ -192,9 +227,9 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
       MessageProcessorNotification postNotification = notificationList.get(3);
       assertThat(postNotification.getAction().getActionId(), equalTo(MESSAGE_PROCESSOR_POST_INVOKE));
       assertThat(postNotification.getComponent().getLocation().getLocation(), equalTo(name));
-      assertThat(postNotification.getException().getCause(), instanceOf(IllegalStateException.class));
+      assertThat(postNotification.getException().getCause(), instanceOf(DefaultMuleException.class));
       assertThat(postNotification.getEvent().getError().isPresent(), is(true));
-      assertThat(postNotification.getEvent().getError().get().getCause(), instanceOf(IllegalStateException.class));
+      assertThat(postNotification.getEvent().getError().get().getCause(), instanceOf(DefaultMuleException.class));
 
       return true;
     });
@@ -231,6 +266,7 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
+  @Story(BACKPRESSURE)
   @Ignore("How to handle backpressure on flow-ref's is not defined yet, but this test will provide a starting point in the future...")
   public void backpressureFlowRef() throws Exception {
     HttpRequest request =
@@ -253,6 +289,7 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
+  @Story(BACKPRESSURE)
   @Ignore("How to handle backpressure on flow-ref's is not defined yet, but this test will provide a starting point in the future...")
   public void backpressureFlowRefSub() throws Exception {
     HttpRequest request =
@@ -275,6 +312,7 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
+  @Story(BACKPRESSURE)
   public void backpressureFlowRefMaxConcurrency() throws Exception {
     HttpRequest request =
         HttpRequest.builder()
@@ -293,6 +331,7 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
+  @Story(BACKPRESSURE)
   public void backpressureFlowRefMaxConcurrencySub() throws Exception {
     HttpRequest request =
         HttpRequest.builder()
@@ -309,6 +348,18 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
 
     probe(RECEIVE_TIMEOUT, 50, () -> awaiting.get() >= 1);
     assertThat(httpClient.send(request).getStatusCode(), is(SERVICE_UNAVAILABLE.getStatusCode()));
+  }
+
+  @Test
+  @Story(BACKPRESSURE)
+  @Issue("MULE-19328")
+  public void backpressureMustNotBeTriggeredAfterFlowRestart() throws Exception {
+    flowRunner("outerFlowWithMaxConcurrency").dispatchAsync(asyncFlowRunnerScheduler);
+    probe(RECEIVE_TIMEOUT, 50, () -> awaiting.get() == 1);
+    referencedFlowWithMaxConcurrency.stop();
+    referencedFlowWithMaxConcurrency.start();
+    latch.countDown();
+    flowRunner("outerFlowWithMaxConcurrency").run();
   }
 
   @Test
@@ -330,17 +381,69 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
     }
   }
 
+  @Test
+  @Issue("MULE-18178")
+  @Story(BACKPRESSURE)
+  @Description("The maxConcurrency of a target flow called via flow-ref is enforced")
+  public void backpressureFlowRefMaxConcurrencyStatic() throws Exception {
+    flowRunner("backpressureFlowRefOuterMaxConcurrencyStatic").dispatchAsync(asyncFlowRunnerScheduler);
+
+    probe(RECEIVE_TIMEOUT, 50, () -> awaiting.get() == 1);
+
+    flowRunner("backpressureFlowRefOuterMaxConcurrencyStatic").dispatchAsync(asyncFlowRunnerScheduler);
+    Thread.sleep(RECEIVE_TIMEOUT);
+    probe(RECEIVE_TIMEOUT, 50, () -> awaiting.get() == 1);
+    latch.countDown();
+
+    probe(RECEIVE_TIMEOUT, 50, () -> awaiting.get() == 2);
+  }
+
+  @Test
+  @Issue("MULE-18304")
+  @Description("Verify that operations inner fluxes are not terminated when within a dynamically invoked sub-flow.")
+  public void dynamicFlowRefWithSdkOperation() throws Exception {
+    flowRunner("dynamicFlowRefWithSdkOperation").run();
+    flowRunner("dynamicFlowRefWithSdkOperation").run();
+  }
+
+  @Test
+  @Issue("MULE-19319")
+  @Description("For each with a flow ref and max concurrency finish processing")
+  public void forEachWithFlowRefAndMaxConcurrency() throws Exception {
+    Integer[] payload = new Integer[] {1, 2, 3};
+    assertThat(flowRunner("foreachWithFlowRefAndMaxConcurrency").withPayload(payload).run().getMessage()
+        .getPayload()
+        .getValue(), is(payload));
+  }
 
   private static CountDownLatch latch;
+  private static AtomicInteger callbackInFlight = new AtomicInteger();
   private static AtomicInteger awaiting = new AtomicInteger();
 
-  public static class LatchAwaitCallback extends AbstractComponent implements EventCallback {
+  public static class LatchAwaitCpuIntensiveProcessor extends AbstractComponent implements Processor {
 
     @Override
-    public void eventReceived(CoreEvent event, Object component, MuleContext muleContext) throws Exception {
-      awaiting.incrementAndGet();
-      latch.await();
+    public ProcessingType getProcessingType() {
+      return CPU_INTENSIVE;
     }
 
+    @Override
+    public CoreEvent process(CoreEvent event) throws MuleException {
+      callbackInFlight.incrementAndGet();
+      awaiting.incrementAndGet();
+      try {
+        latch.await();
+      } catch (InterruptedException e) {
+        throw new MuleRuntimeException(e);
+      }
+      callbackInFlight.decrementAndGet();
+
+      return event;
+    }
+
+  }
+
+  public static int getCallbackInFlight() {
+    return callbackInFlight.get();
   }
 }

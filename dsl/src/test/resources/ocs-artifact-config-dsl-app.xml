@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:test-oauth="http://www.mulesoft.org/schema/mule/test-oauth"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/test-oauth http://www.mulesoft.org/schema/mule/test-oauth/current/mule-test-oauth.xsd">
+
+    <test-oauth:mixed-config name="oauth-platform">
+        <test-oauth:platform-managed-oauth-connection connectionId="ocs:348573-495273958273-924852945/salesforce/john-sfdc-1k87kmjt" />
+    </test-oauth:mixed-config>
+
+</mule>

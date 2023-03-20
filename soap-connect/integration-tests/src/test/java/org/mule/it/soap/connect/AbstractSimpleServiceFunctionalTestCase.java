@@ -12,18 +12,19 @@ import org.mule.tck.junit4.rule.ExternalProcess;
 import org.mule.tck.junit4.rule.SystemProperty;
 
 import org.custommonkey.xmlunit.XMLUnit;
+import org.junit.ClassRule;
 import org.junit.Rule;
 
 public abstract class AbstractSimpleServiceFunctionalTestCase extends MuleArtifactFunctionalTestCase {
 
-  @Rule
-  public DynamicPort port = new DynamicPort("testPort");
+  @ClassRule
+  public static DynamicPort port = new DynamicPort("testPort");
 
   // TODO MULE-16661 Use a Docker image instead of this
   // This needs to run with a plain classloader to avoid conflicting libs in different artifacts in the Mule classloader
   // hierarchy, in order to avoid a LinkageError when running in JDK 11 or higher.
-  @Rule
-  public ExternalProcess server =
+  @ClassRule
+  public static ExternalProcess server =
       new ExternalProcess(line -> line.contains("org.eclipse.jetty.server.ServerConnector: Started ServerConnector"),
                           "java", "-cp", System.getProperty("soapHttpServerClasspath"), "org.mule.service.soap.server.HttpServer",
                           "" + port.getNumber(), "org.mule.service.soap.service.Soap11Service");

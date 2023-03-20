@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	  xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	  xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
+	  xmlns="http://www.mulesoft.org/schema/mule/core"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd
+		http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	
+	<http:listener-config name="insecure-http-listener" >
+		<http:listener-connection protocol="HTTPS" host="localhost" port="${portSsl}">
+			<tls:context>
+				<!-- This server has client authentication enabled, because it provides a trust-store.
+				However, the store is empty, so it trusts no one.
+				Additionally, it is set with insecure="true" which means no actual certificate validation should be performed. -->
+				<tls:trust-store path="empty-store.p12" password="changeit" insecure="true"/>
+
+				<!-- The server's key store is mandatory to perform the TLS handshake. -->
+				<tls:key-store path="chain-cert-keystore.jks" keyPassword="changeit" password="changeit"/>
+			</tls:context>
+		</http:listener-connection>
+	</http:listener-config>
+
+	<http:request-config name="insecure-requester" >
+		<http:request-connection protocol="HTTPS" host="localhost" port="${portSsl}">
+			<tls:context>
+				<!-- This client has a custom trust store configuration. It trusts no one. But it is set with insecure, so no real
+				validation should be performed -->
+				<tls:trust-store path="empty-store.p12" password="changeit" type="jks" insecure="true"/>
+
+				<!-- This client does have a key store, so it will be sending its certificate to the server for verification. -->
+				<tls:key-store path="chain-cert-keystore.jks" keyPassword="changeit" password="changeit"/>
+			</tls:context>
+		</http:request-connection>
+	</http:request-config>
+
+	<http:request-config name="insecure-requester-no-client-cert" >
+		<http:request-connection protocol="HTTPS" host="localhost" port="${portSsl}">
+			<tls:context>
+				<!-- This client has a custom trust store configuration. It trusts no one. But it is set with insecure, so no real
+				validation should be performed -->
+				<tls:trust-store path="empty-store.p12" password="changeit" type="jks" insecure="true"/>
+
+				<!-- Additionally, this client does not have a key store, so it will not be sending any client certificate to the
+				server. -->
+			</tls:context>
+		</http:request-connection>
+	</http:request-config>
+
+	<flow name="flow-insecure-request">
+		<http:request config-ref="insecure-requester" path="/" method="GET" />
+    	<set-payload value="#[%dw 2.0 output application/java --- payload.^raw as String] "/>
+	</flow>
+
+	<flow name="flow-insecure-request-no-client-cert">
+		<http:request config-ref="insecure-requester-no-client-cert" path="/" method="GET" />
+		<set-payload value="#[%dw 2.0 output application/java --- payload.^raw as String] "/>
+	</flow>
+	
+	<flow name="flow-insecure-http-listener">
+		<http:listener config-ref="insecure-http-listener" path="/" />
+		<set-payload value="test" />
+	</flow>
+
+</mule>

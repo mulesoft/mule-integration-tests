@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xmlns:test-components="http://www.mulesoft.org/schema/mule/test-components"
+      xsi:schemaLocation="
+               http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
+               http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+               http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
+
+    <object name="threadCaptor" class="org.mule.test.routing.ThreadCaptor" />
+
+    <flow name="flow">
+        <choice>
+            <when expression="#[payload == 'A']">
+                <raise-error type="APP:UNEXPECTED_ROUTE" description="Unexpected route execution"/>
+            </when>
+        </choice>
+        <set-payload value="#[payload ++ 'afterRouteMpCounter']"/>
+    </flow>
+
+    <flow name="otherwise">
+        <choice>
+            <when expression="#[payload == 'A']">
+                <raise-error type="APP:UNEXPECTED_ROUTE" description="Unexpected route execution"/>
+            </when>
+            <otherwise>
+                <set-payload value="#[payload ++ 'otherwiseCounter']"/>
+            </otherwise>
+        </choice>
+        <set-payload value="#[payload ++ 'afterCounter']"/>
+    </flow>
+
+    <flow name="multiple">
+        <choice>
+            <when expression="#[payload == 'test']">
+                <set-payload value="#[payload ++ 'first']"/>
+            </when>
+            <when expression="#[payload == 'test']">
+                <raise-error type="APP:UNEXPECTED_ROUTE" description="Unexpected route execution"/>
+            </when>
+            <otherwise>
+                <raise-error type="APP:UNEXPECTED_ROUTE" description="Unexpected route execution"/>
+            </otherwise>
+        </choice>
+        <set-payload value="#[payload ++ 'after']"/>
+    </flow>
+
+    <flow name="error-handler">
+        <choice>
+            <when expression="#[true]">
+                <test:throw exception="java.io.IOException" error="CONNECTIVITY"/>
+            </when>
+        </choice>
+        <error-handler>
+            <on-error-continue type="CONNECTIVITY">
+                <set-payload value="handled"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="try-error-handler">
+        <try>
+            <choice>
+                <when expression="#[true]">
+                    <test:throw exception="java.io.IOException" error="CONNECTIVITY"/>
+                </when>
+            </choice>
+            <error-handler>
+                <on-error-continue type="CONNECTIVITY">
+                    <set-payload value="handled"/>
+                </on-error-continue>
+            </error-handler>
+        </try>
+        <set-payload value="#[payload ++ ' after try']"/>
+    </flow>
+
+    <flow name="expression">
+        <choice>
+            <when expression="#[wat]">
+                <set-payload value="You can't touch this!"/>
+            </when>
+        </choice>
+        <error-handler>
+            <on-error-continue type="EXPRESSION">
+                <set-payload value="handled"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="try-expression">
+        <try>
+            <choice>
+                <when expression="#[wat]">
+                    <set-payload value="You can't touch this!"/>
+                </when>
+            </choice>
+            <error-handler>
+                <on-error-continue type="EXPRESSION">
+                    <set-payload value="handled"/>
+                </on-error-continue>
+            </error-handler>
+        </try>
+        <set-payload value="#[payload ++ ' after try']"/>
+    </flow>
+
+    <flow name="txNonBlocking">
+        <try transactionalAction="ALWAYS_BEGIN">
+            <flow-ref name="threadCaptor"/>
+            <choice>
+                <when expression="#[payload == 'nonBlocking']">
+                    <test-components:non-blocking/>
+                    <test:assert expression="#[java!org::mule::runtime::core::api::transaction::TransactionCoordination::isTransactionActive()]"/>
+                    <flow-ref name="threadCaptor"/>
+                </when>
+            </choice>
+            <test:assert expression="#[java!org::mule::runtime::core::api::transaction::TransactionCoordination::isTransactionActive()]"/>
+            <flow-ref name="threadCaptor"/>
+        </try>
+        <flow-ref name="threadCaptor"/>
+    </flow>
+
+    <flow name="txCpuIntensive">
+        <try transactionalAction="ALWAYS_BEGIN">
+            <flow-ref name="threadCaptor"/>
+            <choice>
+                <when expression="#[payload == 'cpuIntensive']">
+                    <test:processor processingType="CPU_INTENSIVE"/>
+                    <test:assert expression="#[java!org::mule::runtime::core::api::transaction::TransactionCoordination::isTransactionActive()]"/>
+                    <flow-ref name="threadCaptor"/>
+                </when>
+            </choice>
+            <test:assert expression="#[java!org::mule::runtime::core::api::transaction::TransactionCoordination::isTransactionActive()]"/>
+            <flow-ref name="threadCaptor"/>
+        </try>
+        <flow-ref name="threadCaptor"/>
+    </flow>
+
+    <flow name="txBlocking">
+        <try transactionalAction="ALWAYS_BEGIN">
+            <flow-ref name="threadCaptor"/>
+            <choice>
+                <when expression="#[payload == 'blocking']">
+                    <test:processor processingType="BLOCKING"/>
+                    <test:assert expression="#[java!org::mule::runtime::core::api::transaction::TransactionCoordination::isTransactionActive()]"/>
+                    <flow-ref name="threadCaptor"/>
+                </when>
+            </choice>
+            <test:assert expression="#[java!org::mule::runtime::core::api::transaction::TransactionCoordination::isTransactionActive()]"/>
+            <flow-ref name="threadCaptor"/>
+        </try>
+        <flow-ref name="threadCaptor"/>
+    </flow>
+
+    <flow name="txOtherwise">
+        <try transactionalAction="ALWAYS_BEGIN">
+            <flow-ref name="threadCaptor"/>
+            <choice>
+                <when expression="#[payload == 'nonBlocking']">
+                    <test-components:non-blocking/>
+                </when>
+                <otherwise>
+                    <test:assert expression="#[java!org::mule::runtime::core::api::transaction::TransactionCoordination::isTransactionActive()]"/>
+                    <flow-ref name="threadCaptor"/>
+                </otherwise>
+            </choice>
+            <test:assert expression="#[java!org::mule::runtime::core::api::transaction::TransactionCoordination::isTransactionActive()]"/>
+            <flow-ref name="threadCaptor"/>
+        </try>
+        <flow-ref name="threadCaptor"/>
+    </flow>
+
+    <flow name="txNoOtherwise">
+        <try transactionalAction="ALWAYS_BEGIN">
+            <flow-ref name="threadCaptor"/>
+            <choice>
+                <when expression="#[payload == 'nonBlocking']">
+                    <test-components:non-blocking/>
+                </when>
+            </choice>
+            <test:assert expression="#[java!org::mule::runtime::core::api::transaction::TransactionCoordination::isTransactionActive()]"/>
+            <flow-ref name="threadCaptor"/>
+        </try>
+        <flow-ref name="threadCaptor"/>
+    </flow>
+
+    <flow name="nonBlockingProcessorInDefaultRoute" maxConcurrency="1">
+        <parallel-foreach collection="#[[payload]]">
+            <choice>
+                <when expression="#[1==2]">
+                    <logger/>
+                </when>
+                <otherwise>
+                    <test-components:non-blocking/>
+                </otherwise>
+            </choice>
+        </parallel-foreach>
+    </flow>
+
+</mule>

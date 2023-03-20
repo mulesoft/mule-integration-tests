@@ -7,34 +7,32 @@
 package org.mule.test.construct;
 
 import static java.lang.Thread.currentThread;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
-import static org.mule.functional.junit4.TestLegacyMessageUtils.getInboundProperty;
-import static org.mule.functional.junit4.TestLegacyMessageUtils.getOutboundProperty;
-import org.mule.functional.api.component.TestConnectorQueueHandler;
-import org.mule.functional.junit4.TestLegacyMessageBuilder;
+import static org.mule.runtime.api.metadata.DataType.STRING;
+
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
+import org.mule.runtime.api.metadata.TypedValue;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.tests.api.TestQueueManager;
 
-import com.eaio.uuid.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import javax.inject.Inject;
 
 import org.junit.Test;
 
 public class FlowAsyncBeforeAfterOutboundTestCase extends AbstractIntegrationTestCase {
 
-  private TestConnectorQueueHandler queueHandler;
-
-  @Override
-  protected void doSetUp() throws Exception {
-    super.doSetUp();
-    queueHandler = new TestConnectorQueueHandler(registry);
-  }
+  @Inject
+  private TestQueueManager queueManager;
 
   @Override
   protected String getConfigFile() {
@@ -44,8 +42,8 @@ public class FlowAsyncBeforeAfterOutboundTestCase extends AbstractIntegrationTes
   @Test
   public void testAsyncBefore() throws Exception {
     Message msgSync = flowRunner("test-async-block-before-outbound").withPayload("message").run().getMessage();
-    Message msgAsync = queueHandler.read("test.before.async.out", RECEIVE_TIMEOUT).getMessage();
-    Message msgOut = queueHandler.read("test.before.out", RECEIVE_TIMEOUT).getMessage();
+    Message msgAsync = queueManager.read("test.before.async.out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
+    Message msgOut = queueManager.read("test.before.out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
 
     assertCorrectThreads(msgSync, msgAsync, msgOut);
   }
@@ -53,8 +51,8 @@ public class FlowAsyncBeforeAfterOutboundTestCase extends AbstractIntegrationTes
   @Test
   public void testAsyncAfter() throws Exception {
     Message msgSync = flowRunner("test-async-block-after-outbound").withPayload("message").run().getMessage();
-    Message msgAsync = queueHandler.read("test.after.async.out", RECEIVE_TIMEOUT).getMessage();
-    Message msgOut = queueHandler.read("test.after.out", RECEIVE_TIMEOUT).getMessage();
+    Message msgAsync = queueManager.read("test.after.async.out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
+    Message msgOut = queueManager.read("test.after.out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
 
     assertCorrectThreads(msgSync, msgAsync, msgOut);
   }
@@ -64,18 +62,20 @@ public class FlowAsyncBeforeAfterOutboundTestCase extends AbstractIntegrationTes
     assertThat(msgAsync, not(nullValue()));
     assertThat(msgOut, not(nullValue()));
 
-    assertThat(getInboundProperty(msgOut, "request-response-thread"),
-               equalTo(getInboundProperty(msgSync, "request-response-thread")));
-    assertThat(getOutboundProperty(msgSync, "request-response-thread"),
-               not(equalTo(getOutboundProperty(msgAsync, "async-thread"))));
-    assertThat(getOutboundProperty(msgOut, "request-response-thread"),
-               not(equalTo(getOutboundProperty(msgAsync, "async-thread"))));
-    assertThat(getOutboundProperty(msgAsync, "async-thread"), not(containsString("ring-buffer")));
+    assertThat(msgOut.getPayload().getValue(),
+               equalTo(msgSync.getPayload().getValue()));
+    assertThat(msgSync.getPayload().getValue(),
+               not(equalTo(msgAsync.getPayload().getValue())));
+    assertThat(msgOut.getPayload().getValue(),
+               not(equalTo(msgAsync.getPayload().getValue())));
+    assertThat((String) msgAsync.getPayload().getValue(),
+               not(containsString("ring-buffer")));
   }
 
   public static class ThreadSensingMessageProcessor implements Processor {
 
     private static final ThreadLocal<String> taskTokenInThread = new ThreadLocal<>();
+    private static final AtomicInteger idgenerator = new AtomicInteger();
 
     @Override
     public CoreEvent process(CoreEvent event) throws MuleException {
@@ -87,12 +87,13 @@ public class FlowAsyncBeforeAfterOutboundTestCase extends AbstractIntegrationTes
         taskTokenInThread.set(requestTaskToken);
       }
 
-      return CoreEvent.builder(event).message(new TestLegacyMessageBuilder(event.getMessage())
-          .addOutboundProperty((String) event.getVariables().get("property-name").getValue(), requestTaskToken).build()).build();
+      return CoreEvent.builder(event)
+          .message(Message.builder(event.getMessage()).payload(new TypedValue<>(requestTaskToken, STRING)).build())
+          .build();
     }
 
     protected String generateTaskToken() {
-      return currentThread().getName() + " - " + new UUID().toString();
+      return currentThread().getName() + " - " + idgenerator.getAndIncrement();
     }
   }
 }

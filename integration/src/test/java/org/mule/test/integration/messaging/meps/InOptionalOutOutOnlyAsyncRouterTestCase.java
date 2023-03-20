@@ -30,7 +30,7 @@ public class InOptionalOutOutOnlyAsyncRouterTestCase extends AbstractIntegration
     assertNull(baseRunner.run().getMessage().getPayload().getValue());
 
     baseRunner.reset();
-    Message result = baseRunner.withInboundProperty("foo", "bar").run().getMessage();
+    Message result = baseRunner.withVariable("foo", "bar").run().getMessage();
 
     assertNotNull(result);
     assertEquals("got it!", getPayloadAsString(result));

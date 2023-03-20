@@ -35,7 +35,7 @@
                     #[{"aUser" : vars.someUser, "aPass" : vars.somePass}]
                 </http:uri-params>
             </http:request>
-            <mule:object-to-string-transformer />
+            <mule:set-payload value="#[%dw 2.0 output application/java --- payload.^raw as String]"/>
         </body>
         <output type="string"/>
     </operation>
@@ -66,8 +66,7 @@
                     #[{"aUser" : vars.someUser, "aPass" : vars.somePass}]
                 </http:uri-params>
             </http:request>
-            <mule:set-payload value="#[payload.response]" />
-            <mule:object-to-string-transformer />
+            <mule:set-payload value="#[%dw 2.0 output application/java --- write(payload.response, 'application/json')]"/>
         </body>
         <output type="string"/>
     </operation>
@@ -115,7 +114,7 @@
                             </mule:try>
                         </mule:when>
                     </mule:choice>
-                    <mule:object-to-string-transformer />
+<!--                     <mule:set-payload value="#[%dw 2.0 output application/java - payload.^raw as String]"/> -->
                 </mule:route>
                 <mule:route>
                     <mule:set-variable variableName="collected" value="" />
@@ -136,6 +135,41 @@
         <output type="string"/>
     </operation>
 
+    <operation name="do-login-and-plain-entire-stream-response-until-successful-scope">
+        <parameters>
+            <parameter name="someUser" type="string" defaultValue="usernameX"/>
+            <parameter name="somePass" type="string" defaultValue="passwordX"/>
+            <parameter name="amount" type="number" defaultValue="3"/>
+        </parameters>
+        <body>
+            <mule:scatter-gather>
+                <mule:route>
+                    <mule:choice>
+                        <mule:when expression="#[true]">
+                            <mule:try>
+                                <tns:do-login-and-leave-entire-stream-response someUser="#[vars.someUser]" somePass="#[vars.somePass]" />
+                            </mule:try>
+                        </mule:when>
+                    </mule:choice>
+<!--                     <mule:set-payload value="#[%dw 2.0 output application/java - payload.^raw as String]"/> -->
+                </mule:route>
+                <mule:route>
+                    <mule:until-successful maxRetries="2" millisBetweenRetries="100">
+                        <tns:do-login-and-leave-entire-stream-response someUser="#[vars.someUser]" somePass="#[vars.somePass]" />
+                    </mule:until-successful>
+<!--                     <mule:set-payload value="#[%dw 2.0 output application/java - payload.^raw as String]"/> -->
+                </mule:route>
+                <mule:route>
+                    <tns:do-login-and-leave-entire-stream-response someUser="#[vars.someUser]" somePass="#[vars.somePass]" />
+                </mule:route>
+            </mule:scatter-gather>
+
+            <!-- map assembly to check the response on the test -->
+            <mule:set-payload value="#[{'route 0' : payload['0'].payload.response , 'route 1' : payload['1'].payload.response , 'route 2' : payload['2'].payload.response}]" />
+        </body>
+        <output type="string"/>
+    </operation>
+
     <operation name="do-login-and-plain-entire-stream-response-nesting-scopes-with-failures">
         <parameters>
             <parameter name="someUserParent" type="string" defaultValue="usernameX"/>
@@ -149,7 +183,7 @@
                 <mule:error-handler>
                     <mule:on-error-continue >
                         <tns:do-login-and-leave-entire-stream-response someUser="#[vars.someUserParent]" somePass="#[vars.somePassParent]" />
-                        <mule:object-to-string-transformer />
+                        <mule:set-payload value="#[%dw 2.0 output application/java --- payload.^raw as String]"/>
                     </mule:on-error-continue>
                 </mule:error-handler>
             </mule:try>

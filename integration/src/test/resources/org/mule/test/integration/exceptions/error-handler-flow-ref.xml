@@ -3,12 +3,14 @@
     http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
     http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
 
+    <object name="count" class="org.mule.test.integration.exceptions.ErrorHandlingWithFlowRefTestCase$TestProcessorCounter"/>
+
     <flow name="error-handler-with-flow-ref-all-static">
         <flow-ref name="flow-with-error"/>
         <error-handler>
             <on-error-continue>
                 <logger level="ERROR" message="HELLOWORLD"/>
-                <custom-processor class="org.mule.test.integration.exceptions.ErrorHandlingWithFlowRefTestCase$TestProcessorCounter"/>
+                <flow-ref name="count"/>
                 <flow-ref name="flow-modif"/>
             </on-error-continue>
         </error-handler>
@@ -19,7 +21,7 @@
         <error-handler>
             <on-error-continue>
                 <logger level="ERROR" message="HELLOWORLD"/>
-                <custom-processor class="org.mule.test.integration.exceptions.ErrorHandlingWithFlowRefTestCase$TestProcessorCounter"/>
+                <flow-ref name="count"/>
                 <flow-ref name="#[vars.flowToExecute]"/>
             </on-error-continue>
         </error-handler>
@@ -30,7 +32,7 @@
         <error-handler>
             <on-error-continue>
                 <logger level="ERROR" message="HELLOWORLD"/>
-                <custom-processor class="org.mule.test.integration.exceptions.ErrorHandlingWithFlowRefTestCase$TestProcessorCounter"/>
+                <flow-ref name="count"/>
                 <flow-ref name="flow-modif"/>
             </on-error-continue>
         </error-handler>
@@ -41,7 +43,7 @@
         <error-handler>
             <on-error-continue>
                 <logger level="ERROR" message="HELLOWORLD"/>
-                <custom-processor class="org.mule.test.integration.exceptions.ErrorHandlingWithFlowRefTestCase$TestProcessorCounter"/>
+                <flow-ref name="count"/>
                 <flow-ref name="#[vars.flowToExecute]"/>
             </on-error-continue>
         </error-handler>
@@ -52,7 +54,7 @@
         <error-handler>
             <on-error-continue>
                 <logger level="ERROR" message="HELLOWORLD"/>
-                <custom-processor class="org.mule.test.integration.exceptions.ErrorHandlingWithFlowRefTestCase$TestProcessorCounter"/>
+                <flow-ref name="count"/>
                 <flow-ref name="sub-flow-modif"/>
             </on-error-continue>
         </error-handler>
@@ -63,7 +65,7 @@
         <error-handler>
             <on-error-continue>
                 <logger level="ERROR" message="HELLOWORLD"/>
-                <custom-processor class="org.mule.test.integration.exceptions.ErrorHandlingWithFlowRefTestCase$TestProcessorCounter"/>
+                <flow-ref name="count"/>
                 <flow-ref name="flow-modif"/>
             </on-error-continue>
         </error-handler>
@@ -74,7 +76,7 @@
         <error-handler>
             <on-error-continue>
                 <logger level="ERROR" message="HELLOWORLD"/>
-                <custom-processor class="org.mule.test.integration.exceptions.ErrorHandlingWithFlowRefTestCase$TestProcessorCounter"/>
+                <flow-ref name="count"/>
                 <flow-ref name="sub-flow-modif"/>
             </on-error-continue>
         </error-handler>

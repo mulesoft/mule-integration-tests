@@ -6,41 +6,57 @@
  */
 package org.mule.test.config.spring.parsers;
 
+import static java.util.Collections.emptySet;
 import static org.junit.rules.ExpectedException.none;
-import org.mule.functional.junit4.ApplicationContextBuilder;
-import org.mule.tck.junit4.AbstractMuleTestCase;
-import org.mule.test.IntegrationTestCaseRunnerConfig;
+import static org.mule.test.allure.AllureConstants.MuleDsl.DslValidationStory.DSL_VALIDATION_STORY;
+
+import org.mule.functional.junit4.AbstractConfigurationFailuresTestCase;
+import org.mule.runtime.api.meta.model.ExtensionModel;
+import org.mule.runtime.core.api.config.ConfigurationException;
+import org.mule.tests.api.TestComponentsExtension;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-public class XmlDslProcessingValidationTestCase extends AbstractMuleTestCase implements IntegrationTestCaseRunnerConfig {
+import io.qameta.allure.Story;
+
+// TODO MULE-18446 Migrate this test to a unit test where the implementation of the validation will be
+@Story(DSL_VALIDATION_STORY)
+public class XmlDslProcessingValidationTestCase extends AbstractConfigurationFailuresTestCase {
 
   @Rule
   public ExpectedException expectedException = none();
 
   @Test
   public void parameterAndChildAtOnce() throws Exception {
-    expectedException
-        .expectMessage("Component parsers-test:element-with-attribute-and-child has a child element parsers-test:my-pojo which is used for the same purpose of the configuration parameter myPojo. Only one must be used.");
-    new ApplicationContextBuilder().setApplicationResources(new String[] {
-        "org/mule/config/spring/parsers/dsl-validation-duplicate-pojo-or-list-parameter-config.xml"}).build();
-  }
-
-  @Test
-  public void namelessTopLevelElement() throws Exception {
-    expectedException.expectMessage("Global element parsers-test:parameter-collection-parser does not provide a name attribute.");
-    new ApplicationContextBuilder().setApplicationResources(new String[] {
-        "org/mule/config/spring/parsers/dsl-validation-nameless-top-level-element-config.xml"}).build();
+    String configFile = "org/mule/config/spring/parsers/dsl-validation-duplicate-pojo-or-list-parameter-config.xml";
+    expectedException.expectMessage("[" + configFile + ":9]: "
+        + "Component 'test-components:element-with-attribute-and-child' has a child element 'test-components:my-pojo'"
+        + " which is used for the same purpose of the configuration parameter 'myPojo'. Only one must be used.");
+    loadConfiguration(configFile);
   }
 
   @Test
   public void emptyChildSimpleParameter() throws Exception {
+    String configFile = "org/mule/config/spring/parsers/dsl-validation-empty-simple-child-parameter.xml";
+
+    expectedException.expect(ConfigurationException.class);
     expectedException
-        .expectMessage("Parameter at org/mule/config/spring/parsers/dsl-validation-empty-simple-child-parameter.xml:10 must provide a non-empty value");
-    new ApplicationContextBuilder().setApplicationResources(new String[] {
-        "org/mule/config/spring/parsers/dsl-validation-empty-simple-child-parameter.xml"}).build();
+        .expectMessage("[" + configFile + ":9]: Element <test-components:text-pojo> is missing required parameter 'text'.");
+    loadConfiguration(configFile);
   }
 
+  @Override
+  protected List<ExtensionModel> getRequiredExtensions() {
+    ExtensionModel testComponents = loadExtension(TestComponentsExtension.class, emptySet());
+
+    final List<ExtensionModel> extensions = new ArrayList<>();
+    extensions.add(testComponents);
+
+    return extensions;
+  }
 }

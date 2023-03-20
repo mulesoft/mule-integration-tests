@@ -7,8 +7,14 @@
 package org.mule.test.integration.exceptions;
 
 import static org.mule.tck.junit4.rule.VerboseExceptions.setVerboseExceptions;
+import static org.mule.test.allure.AllureConstants.Logging.LOGGING;
+import static org.mule.test.allure.AllureConstants.Logging.LoggingStory.ERROR_REPORTING;
 
+import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.exception.MuleException;
+import org.mule.runtime.api.i18n.I18nMessageFactory;
+import org.mule.runtime.core.api.event.CoreEvent;
+import org.mule.runtime.core.api.processor.Processor;
 import org.mule.tck.junit4.rule.VerboseExceptions;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -17,6 +23,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
+import io.qameta.allure.Story;
+
+@Feature(LOGGING)
+@Story(ERROR_REPORTING)
 public class LogCheckTestCase extends AbstractIntegrationTestCase {
 
   // Just to ensure the previous value is set after the test
@@ -105,6 +117,18 @@ public class LogCheckTestCase extends AbstractIntegrationTestCase {
     runSuccesses(false, "noExceptionFlow");
   }
 
+  @Test
+  @Issue("MULE-18041")
+  public void suppressedMuleExceptionGetsLoggedAsSuppressedCause() throws Exception {
+    runSuccesses(false, "suppressedMuleException");
+  }
+
+  @Test
+  @Issue("MULE-18041")
+  public void suppressedMuleExceptionsGetsLoggedAsSuppressedCauses() throws Exception {
+    runSuccesses(true, "suppressedMuleExceptions");
+  }
+
   private void runSuccesses(boolean verboseExceptions, String flowName) throws Exception {
     setVerboseExceptions(verboseExceptions);
     flowRunner(flowName).run();
@@ -112,7 +136,12 @@ public class LogCheckTestCase extends AbstractIntegrationTestCase {
 
   public static class CustomException extends MuleException {
 
+    private static final long serialVersionUID = -5911115770998812278L;
     private static final String MESSAGE = "Error";
+
+    public CustomException() {
+      super(I18nMessageFactory.createStaticMessage(MESSAGE));
+    }
 
     @Override
     public String getDetailedMessage() {
@@ -129,4 +158,13 @@ public class LogCheckTestCase extends AbstractIntegrationTestCase {
       return MESSAGE;
     }
   }
+
+  public static final class ThrowNpeProcessor extends AbstractComponent implements Processor {
+
+    @Override
+    public CoreEvent process(CoreEvent event) throws MuleException {
+      throw new NullPointerException("expected");
+    }
+  }
+
 }

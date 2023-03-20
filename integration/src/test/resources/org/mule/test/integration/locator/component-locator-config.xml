@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xmlns:test="http://www.mulesoft.org/schema/mule/test"
       xmlns:http="http://www.mulesoft.org/schema/mule/http"
       xmlns:file="http://www.mulesoft.org/schema/mule/file"
       xmlns:java="http://www.mulesoft.org/schema/mule/java"
+      xmlns:os="http://www.mulesoft.org/schema/mule/os"
       xsi:schemaLocation="
        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
        http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
        http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd
        http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
-       http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+       http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd">
 
     <global-property name="some.property" value="/origin/topic"/>
 
-    <configuration defaultErrorHandler-ref="globalErrorHandler" defaultResponseTimeout="2001"/>
-
     <object name="childBean" class="org.mule.test.integration.locator.beans.ChildBean"/>
+
+    <os:object-store name="myObjectStore" />
 
     <flow name="invokeBeanFlow">
         <java:invoke method="getFoo()" instance="childBean" class="org.mule.test.integration.locator.beans.ChildBean"/>
@@ -24,25 +24,24 @@
 
     <sub-flow name="untilSuccessfulFlow">
         <until-successful maxRetries="5" millisBetweenRetries="10000">
-            <test:processor class="org.mule.test.integration.locator.processor.CustomTestComponent"/>
+            <logger/>
         </until-successful>
     </sub-flow>
 
     <sub-flow name="untilSuccessfulFlowCopy">
         <until-successful maxRetries="5" millisBetweenRetries="10000">
-            <test:processor class="org.mule.test.integration.locator.processor.CustomTestComponent"/>
+            <logger/>
         </until-successful>
     </sub-flow>
 
     <sub-flow name="multipleInitialize">
-        <test:processor class="org.mule.test.integration.locator.processor.CustomTestComponent"/>
-        <test:processor class="org.mule.test.integration.locator.processor.CustomTestComponent"/>
+        <logger/>
+        <logger/>
     </sub-flow>
 
     <error-handler name="globalErrorHandler">
         <on-error-propagate>
-            <test:processor class="org.mule.test.integration.locator.processor.CustomTestComponent"/>
-            <test:queue name="globalErrorHandlerQueue"/>
+            <logger/>
         </on-error-propagate>
     </error-handler>
 
@@ -77,7 +76,14 @@
 
     <flow name="redeliveryPolicyFlow">
         <http:listener path="/service/helloWorld" config-ref="listenerConfigRedeliveryPolicy">
-            <redelivery-policy maxRedeliveryCount="6" />
+            <redelivery-policy maxRedeliveryCount="6" useSecureHash="true"/>
+        </http:listener>
+        <set-payload value="anotherValue"/>
+    </flow>
+
+    <flow name="redeliveryPolicyWithObjectStoreFlow">
+        <http:listener path="/service/helloWorldWithOS" config-ref="listenerConfigRedeliveryPolicy">
+            <redelivery-policy maxRedeliveryCount="6" useSecureHash="true" objectStore="myObjectStore"/>
         </http:listener>
         <set-payload value="anotherValue"/>
     </flow>
@@ -100,14 +106,25 @@
     </sub-flow>
 
     <flow name="flowFailing">
-        <test:processor throwException="true"/>
+        <raise-error type="APP:EXPECTED"/>
     </flow>
+
+    <!-- See MULE-18312: Default Error Handler is located after "flowFailing" to ensure wherever this component is located, it will be loaded at first. -->
+    <configuration defaultErrorHandler-ref="globalErrorHandler" defaultResponseTimeout="2001"/>
 
     <sub-flow name="async-flow">
         <async>
-            <test:processor class="org.mule.test.integration.locator.processor.CustomTestComponent"/>
+            <logger/>
         </async>
     </sub-flow>
+
+    <flow name="redeliveryPolicyFlowRef1">
+        <flow-ref name="redeliveryPolicyFlow"/>
+    </flow>
+
+    <flow name="redeliveryPolicyFlowRef2">
+        <flow-ref name="redeliveryPolicyFlow"/>
+    </flow>
 
 </mule>
 

@@ -7,6 +7,8 @@
 package org.mule.test.integration.exceptions;
 
 import static java.lang.String.format;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
@@ -22,7 +24,7 @@ import static org.mule.runtime.http.api.HttpConstants.Method.POST;
 import static org.mule.runtime.http.api.HttpConstants.Protocol.HTTP;
 import static org.mule.runtime.http.api.HttpConstants.Protocol.HTTPS;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
-import org.mule.functional.api.component.TestConnectorQueueHandler;
+
 import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.exception.DefaultMuleException;
 import org.mule.runtime.api.exception.MuleException;
@@ -47,33 +49,38 @@ import org.mule.runtime.http.api.domain.message.response.HttpResponse;
 import org.mule.service.http.TestHttpClient;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.tests.api.TestQueueManager;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 
+import javax.inject.Inject;
 import javax.jws.WebParam;
 import javax.jws.WebResult;
 import javax.jws.WebService;
 
-import io.qameta.allure.Feature;
-import io.qameta.allure.Story;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
+
 @Feature(ERROR_HANDLING)
 @Story("On Error Continue")
 public class OnErrorContinueTestCase extends AbstractIntegrationTestCase {
 
-  public static final int TIMEOUT = 5000;
   public static final String ERROR_PROCESSING_NEWS = "error processing news";
   public static final String JSON_RESPONSE =
       "{\"errorMessage\":\"error processing news\",\"userId\":15,\"title\":\"News title\"}";
   public static final String JSON_REQUEST = "{\"userId\":\"15\"}";
+
+  @Inject
+  private TestQueueManager queueManager;
 
   @Rule
   public DynamicPort dynamicPort1 = new DynamicPort("port1");
@@ -128,7 +135,7 @@ public class OnErrorContinueTestCase extends AbstractIntegrationTestCase {
         .entity(new ByteArrayHttpEntity(JSON_REQUEST.getBytes())).build();
 
     final HttpEntity response = httpClient
-        .send(request, HttpRequestOptions.builder().responseTimeout(TIMEOUT).followsRedirect(false).build()).getEntity();
+        .send(request, HttpRequestOptions.builder().responseTimeout(RECEIVE_TIMEOUT).followsRedirect(false).build()).getEntity();
 
     assertResponse(response);
   }
@@ -219,19 +226,17 @@ public class OnErrorContinueTestCase extends AbstractIntegrationTestCase {
     HttpRequest request = HttpRequest.builder().uri(getUrl(HTTP, dynamicPort1, "sourceError")).method(POST)
         .entity(new ByteArrayHttpEntity(TEST_MESSAGE.getBytes())).build();
     final HttpResponse response =
-        httpClient.send(request, HttpRequestOptions.builder().responseTimeout(TIMEOUT).followsRedirect(false).build());
+        httpClient.send(request, HttpRequestOptions.builder().responseTimeout(RECEIVE_TIMEOUT).followsRedirect(false).build());
 
     assertThat(response.getStatusCode(), is(INTERNAL_SERVER_ERROR.getStatusCode()));
-    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
-    assertThat(queueHandler.read("out", RECEIVE_TIMEOUT), is(nullValue()));
+    assertThat(queueManager.read("out", RECEIVE_TIMEOUT, MILLISECONDS), is(nullValue()));
   }
 
   @Test
   public void handlesTryScope() throws Exception {
     flowRunner("withTry").run();
-    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
-    assertThat(queueHandler.read("out1", RECEIVE_TIMEOUT).getMessage(), hasPayload(equalTo("flow")));
-    assertThat(queueHandler.read("out2", RECEIVE_TIMEOUT).getMessage(), hasPayload(equalTo("try")));
+    assertThat(queueManager.read("out1", RECEIVE_TIMEOUT, MILLISECONDS).getMessage(), hasPayload(equalTo("flow")));
+    assertThat(queueManager.read("out2", RECEIVE_TIMEOUT, MILLISECONDS).getMessage(), hasPayload(equalTo("try")));
   }
 
   private String getUrl(Protocol protocol, DynamicPort port, String path) {
@@ -285,9 +290,7 @@ public class OnErrorContinueTestCase extends AbstractIntegrationTestCase {
 
     private NewsRequest handleInputStream(InputStream payload) throws IOException {
       NewsRequest newsRequest;
-      InputStreamReader inputStreamReader =
-          new InputStreamReader(payload, "UTF-8");
-
+      InputStreamReader inputStreamReader = new InputStreamReader(payload, UTF_8);
       newsRequest = new ObjectMapper().readValue(inputStreamReader, NewsRequest.class);
       return newsRequest;
     }

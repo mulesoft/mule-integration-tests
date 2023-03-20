@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xsi:schemaLocation="
+               http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+
+    <object name="eventReferenceProc"
+            class="org.mule.test.routing.ParallelForEachWithContextScopesTestCase$EventReferenceProcessor" />
+
+    <flow name="parallelForEachWithErrorHandling">
+        <parallel-foreach>
+            <try>
+                <flow-ref name="eventReferenceProc"/>
+                <raise-error type="APP:SOME"/>
+                <error-handler>
+                    <on-error-continue/>
+                </error-handler>
+            </try>
+        </parallel-foreach>
+    </flow>
+
+</mule>

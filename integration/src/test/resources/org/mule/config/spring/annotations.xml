@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+      xmlns:custom="http://www.my-org.org/schema/custom"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 
@@ -22,6 +23,10 @@
                 <logger message="Exception! " level="ERROR" doc:name="Logger"/>
             </on-error-continue>
         </error-handler>
+    </flow>
+
+    <flow name="withCustomAnnotation" custom:anything="This is something custom">
+        <logger/>
     </flow>
 
 </mule>

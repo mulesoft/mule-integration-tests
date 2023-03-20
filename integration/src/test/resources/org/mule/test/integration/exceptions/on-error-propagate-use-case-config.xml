@@ -2,11 +2,11 @@
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:http="http://www.mulesoft.org/schema/mule/http"
-      xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xmlns:test-components="http://www.mulesoft.org/schema/mule/test-components"
       xsi:schemaLocation="
        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
        http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
-       http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+       http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
 
     <http:listener-config name="listenerConfig">
         <http:listener-connection host="localhost" port="${port}"/>
@@ -14,101 +14,129 @@
 
     <object name="call" class="org.mule.test.integration.exceptions.OnErrorPropagateTestCase$CallMessageProcessor"/>
     <object name="error" class="org.mule.test.integration.exceptions.OnErrorPropagateTestCase$ErrorProcessor"/>
-    
+
+    <test-components:queue-config name="custom1">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="any1">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="custom2">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="any">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="out">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="out1">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="out2">
+        <test-components:connection />
+    </test-components:queue-config>
+
     <flow name="onErrorPropagateTypeMatch">
-        <append-string-transformer message=" apt1"/>
+        <set-payload value="#[payload ++ ' apt1']"/>
         <flow-ref name="raiseRoutingErrorFlow"/>
         <error-handler>
             <on-error-propagate type="REDELIVERY_EXHAUSTED">
-                <test:queue name="custom1"/>
+                <test-components:queue-push config-ref="custom1"/>
             </on-error-propagate>
             <on-error-propagate type="ROUTING">
-                <processor ref="call"/>
+                <flow-ref name="call"/>
             </on-error-propagate>
             <on-error-propagate type="ANY">
-                <test:queue name="any1"/>
+                <test-components:queue-push config-ref="any1"/>
             </on-error-propagate>
         </error-handler>
     </flow>
 
     <flow name="onErrorPropagateTypeMatchAny">
-        <append-string-transformer message=" apt1"/>
-        <test:processor throwException="true"/>
+        <set-payload value="#[payload ++ ' apt1']"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <on-error-propagate type="REDELIVERY_EXHAUSTED">
-                <test:queue name="custom2"/>
+                <test-components:queue-push config-ref="custom2"/>
             </on-error-propagate>
             <on-error-propagate type="ANY">
-                <processor ref="call"/>
+                <flow-ref name="call"/>
             </on-error-propagate>
         </error-handler>
     </flow>
 
     <flow name="onErrorPropagateTypeMatchSeveral">
         <choice>
-            <when expression="#[mel:payload]">
-                <append-string-transformer message=" apt1"/>
+            <when expression="#[payload]">
+                <set-payload value="#[payload ++ ' apt1']"/>
                 <flow-ref name="raiseRoutingErrorFlow"/>
             </when>
             <otherwise>
-                <append-string-transformer message=" apt1"/>
-                <expression-transformer expression="#[mel:payload.nope]"/>
+                <set-payload value="#[payload ++ ' apt1']"/>
+                <raise-error type="TRANSFORMATION"/>
             </otherwise>
         </choice>
         <error-handler>
             <on-error-propagate type="ROUTING,TRANSFORMATION">
-                <processor ref="call"/>
+                <flow-ref name="call"/>
             </on-error-propagate>
             <on-error-propagate type="ANY">
-                <test:queue name="any"/>
+                <test-components:queue-push config-ref="any"/>
             </on-error-propagate>
         </error-handler>
     </flow>
 
     <flow name="onErrorPropagateTypeMatchNameWildcard">
         <choice>
-            <when expression="#[mel:payload]">
-                <append-string-transformer message=" apt1"/>
+            <when expression="#[payload]">
+                <set-payload value="#[payload ++ ' apt1']"/>
                 <flow-ref name="raiseRoutingErrorFlow"/>
             </when>
             <otherwise>
-                <append-string-transformer message=" apt1"/>
-                <expression-transformer expression="#[mel:payload.nope]"/>
+                <set-payload value="#[payload ++ ' apt1']"/>
+                <raise-error type="TRANSFORMATION"/>
             </otherwise>
         </choice>
         <error-handler>
             <on-error-propagate type="MULE:*">
-                <processor ref="call"/>
+                <flow-ref name="call"/>
             </on-error-propagate>
             <on-error-propagate type="ANY">
-                <test:queue name="any"/>
+                <test-components:queue-push config-ref="any"/>
             </on-error-propagate>
         </error-handler>
     </flow>
 
     <flow name="onErrorPropagateTypeMatchNamespaceWildcard">
         <choice>
-            <when expression="#[mel:payload]">
-                <append-string-transformer message=" apt1"/>
+            <when expression="#[payload]">
+                <set-payload value="#[payload ++ ' apt1']"/>
                 <flow-ref name="raiseRoutingErrorFlow"/>
             </when>
             <otherwise>
-                <append-string-transformer message=" apt1"/>
-                <expression-transformer expression="#[mel:payload.nope]"/>
+                <set-payload value="#[payload ++ ' apt1']"/>
+                <raise-error type="TRANSFORMATION"/>
             </otherwise>
         </choice>
         <error-handler>
             <on-error-propagate type="*:ROUTING, *:TRANSFORMATION">
-                <processor ref="call"/>
+                <flow-ref name="call"/>
             </on-error-propagate>
             <on-error-propagate type="ANY">
-                <test:queue name="any"/>
+                <test-components:queue-push config-ref="any"/>
             </on-error-propagate>
         </error-handler>
     </flow>
 
     <flow name="onErrorPropagateMessage">
-        <append-string-transformer message=" apt1"/>
+        <set-payload value="#[payload ++ ' apt1']"/>
         <flow-ref name="raiseRoutingErrorFlow"/>
         <error-handler>
             <on-error-propagate>
@@ -119,10 +147,10 @@
     </flow>
 
     <flow name="failingHandler">
-        <test:processor throwException="true"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <on-error-propagate>
-                <processor ref="error"/>
+                <flow-ref name="error"/>
             </on-error-propagate>
         </error-handler>
     </flow>
@@ -131,10 +159,10 @@
         <http:listener path="sourceError" config-ref="listenerConfig">
             <http:response statusCode="#['notANumber']"/>
         </http:listener>
-        <append-string-transformer message=" hey"/>
+        <set-payload value="#[payload ++ ' hey']"/>
         <error-handler>
             <on-error-propagate>
-                <test:queue name="out"/>
+                <test-components:queue-push config-ref="out"/>
             </on-error-propagate>
         </error-handler>
     </flow>
@@ -145,16 +173,16 @@
 
     <flow name="withTry">
         <set-payload value="flow"/>
-        <test:processor throwException="true"/>
+        <raise-error type="APP:EXPECTED_1"/>
         <error-handler>
             <on-error-propagate>
-                <test:queue name="out1"/>
+                <test-components:queue-push config-ref="out1"/>
                 <try>
                     <set-payload value="try"/>
-                    <test:processor throwException="true"/>
+                    <raise-error type="APP:EXPECTED_2"/>
                     <error-handler>
                         <on-error-continue>
-                            <test:queue name="out2"/>
+                            <test-components:queue-push config-ref="out2"/>
                         </on-error-continue>
                     </error-handler>
                 </try>

@@ -94,4 +94,10 @@ public class OnErrorNestedExceptionsTestCase extends AbstractIntegrationTestCase
     flowRunner("exceptionInErrorHandlerNestedTry")
         .runExpectingException(hasMessage(hasPayload(equalTo("propagated"))));
   }
+
+  @Test
+  public void exceptionInErrorHandlerNestedTryCorrectType() throws Exception {
+    final CoreEvent event = flowRunner("exceptionInErrorHandlerNestedTryCorrectType").run();
+    assertThat(event.getMessage(), hasPayload(equalTo("properly mapped")));
+  }
 }

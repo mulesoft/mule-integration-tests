@@ -7,20 +7,24 @@
 
     <error-handler name="catchAllErrorHandler">
         <on-error-continue type="RETRY_EXHAUSTED">
-            <append-string-transformer message="innerEH"/>
+            <set-payload value="#[payload ++ 'innerEH']"/>
         </on-error-continue>
         <on-error-continue type="EXPRESSION">
-            <append-string-transformer message="defaultEH-custom"/>
+            <set-payload value="#[payload ++ 'defaultEH-custom']"/>
         </on-error-continue>
         <on-error-continue>
-            <append-string-transformer message="defaultEH-all"/>
+            <set-payload value="#[payload ++ 'defaultEH-all']"/>
         </on-error-continue>
     </error-handler>
 
     <object name="throw" class="org.mule.test.integration.exceptions.DefaultErrorHandlerTestCase$ThrowExceptionProcessor"/>
 
     <flow name="test">
-        <processor ref="throw"/> 
+        <flow-ref name="throw"/> 
+    </flow>
+    
+    <flow name=":\weird-name">
+        <logger/>
     </flow>
 
 </mule>

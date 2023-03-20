@@ -22,7 +22,6 @@ import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentT
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.ROUTER;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.SCOPE;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.SOURCE;
-import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.UNKNOWN;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.FLOW_IDENTIFIER;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.SUBFLOW_IDENTIFIER;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
@@ -31,6 +30,7 @@ import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocator
 import org.mule.functional.api.flow.FlowRunner;
 import org.mule.runtime.api.component.Component;
 import org.mule.runtime.api.component.TypedComponentIdentifier;
+import org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType;
 import org.mule.runtime.api.component.location.ConfigurationComponentLocator;
 import org.mule.runtime.api.component.location.Location;
 import org.mule.runtime.api.notification.MessageProcessorNotification;
@@ -51,11 +51,12 @@ import java.util.concurrent.CountDownLatch;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
+import io.qameta.allure.Story;
+
 import org.junit.After;
 import org.junit.Test;
-
-import io.qameta.allure.Feature;
-import io.qameta.allure.Story;
 
 @Feature(CONFIGURATION_COMPONENT_LOCATOR)
 @Story(COMPONENT_LOCATION)
@@ -164,17 +165,27 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
                                                                   of(136),
                                                                   of(5))));
 
+  private static final DefaultComponentLocation FLOW_WITH_OPERATION_WITH_CHAIN =
+      new DefaultComponentLocation(Optional.of("operationWithChain"),
+                                   asList(new DefaultLocationPart("operationWithChain",
+                                                                  FLOW_TYPED_COMPONENT_IDENTIFIER,
+                                                                  CONFIG_FILE_NAME,
+                                                                  of(148),
+                                                                  of(5))));
+
   private static final Optional<TypedComponentIdentifier> LOGGER =
       Optional.of(builder().identifier(buildFromStringRepresentation("mule:logger"))
           .type(OPERATION).build());
   private static final Optional<TypedComponentIdentifier> SET_PAYLOAD =
       Optional.of(builder().identifier(buildFromStringRepresentation("mule:set-payload"))
           .type(OPERATION).build());
-  private static final Optional<TypedComponentIdentifier> OBJECT_TO_STRING_TRANSFORMER =
-      Optional.of(builder().identifier(buildFromStringRepresentation("mule:object-to-byte-array-transformer")).type(UNKNOWN)
-          .build());
+  private static final Optional<TypedComponentIdentifier> SET_VARIABLE =
+      Optional.of(builder().identifier(buildFromStringRepresentation("mule:set-variable"))
+          .type(OPERATION).build());
   private static final Optional<TypedComponentIdentifier> CHOICE =
       Optional.of(builder().identifier(buildFromStringRepresentation("mule:choice")).type(ROUTER).build());
+  private static final Optional<TypedComponentIdentifier> WHEN =
+      Optional.of(builder().identifier(buildFromStringRepresentation("mule:when")).type(ComponentType.ROUTE).build());
   private static final Optional<TypedComponentIdentifier> ERROR_HANDLER =
       Optional.of(builder().identifier(buildFromStringRepresentation("mule:error-handler"))
           .type(TypedComponentIdentifier.ComponentType.ERROR_HANDLER).build());
@@ -182,8 +193,8 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
       Optional.of(builder().identifier(buildFromStringRepresentation("mule:on-error-continue")).type(ON_ERROR).build());
   private static final Optional<TypedComponentIdentifier> VALIDATION_IS_FALSE =
       Optional.of(builder().identifier(buildFromStringRepresentation("validation:is-false")).type(OPERATION).build());
-  private static final Optional<TypedComponentIdentifier> TEST_PROCESSOR =
-      Optional.of(builder().identifier(buildFromStringRepresentation("test:processor")).type(UNKNOWN).build());
+  private static final Optional<TypedComponentIdentifier> RAISE_ERROR =
+      Optional.of(builder().identifier(buildFromStringRepresentation("mule:raise-error")).type(OPERATION).build());
   private static final Optional<TypedComponentIdentifier> ON_ERROR_PROPAGATE =
       Optional.of(builder().identifier(buildFromStringRepresentation("mule:on-error-propagate")).type(ON_ERROR).build());
   private static final Optional<TypedComponentIdentifier> TRY =
@@ -199,10 +210,18 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
   private static final Optional<TypedComponentIdentifier> ASYNC =
       Optional.of(builder().identifier(buildFromStringRepresentation("mule:async")).type(SCOPE).build());
   private static final Optional<TypedComponentIdentifier> ROUTE =
-      Optional.of(builder().identifier(buildFromStringRepresentation("mule:route")).type(SCOPE).build());
+      Optional.of(builder().identifier(buildFromStringRepresentation("mule:route")).type(ComponentType.ROUTE).build());
 
   private static final Optional<TypedComponentIdentifier> AGGREGATOR =
       Optional.of(builder().identifier(buildFromStringRepresentation("aggregators:size-based-aggregator")).type(ROUTER).build());
+  private static final Optional<TypedComponentIdentifier> AGGREGATION_INCREMENTAL =
+      Optional.of(builder().identifier(buildFromStringRepresentation("aggregators:incremental-aggregation"))
+          .type(ComponentType.ROUTE).build());
+  private static final Optional<TypedComponentIdentifier> AGGREGATION_COMPLETE =
+      Optional.of(builder().identifier(buildFromStringRepresentation("aggregators:aggregation-complete"))
+          .type(ComponentType.ROUTE).build());
+  private static final Optional<TypedComponentIdentifier> TAP_PHONES =
+      Optional.of(builder().identifier(buildFromStringRepresentation("heisenberg:tap-phones")).type(SCOPE).build());
 
 
   @Inject
@@ -245,7 +264,7 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
         .appendLocationPart("1", SET_PAYLOAD, CONFIG_FILE_NAME, of(33), of(9)));
     assertNextProcessorLocationIs(FLOW_WITH_MULTIPLE_MP_LOCATION
         .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
-        .appendLocationPart("2", OBJECT_TO_STRING_TRANSFORMER,
+        .appendLocationPart("2", SET_VARIABLE,
                             CONFIG_FILE_NAME, of(34), of(9)));
     assertNoNextProcessorNotification();
   }
@@ -277,10 +296,10 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
     assertNextProcessorLocationIs(choiceLocation);
     DefaultComponentLocation choiceRoute0 = choiceLocation
         .appendRoutePart()
-        .appendLocationPart("0", ROUTE, CONFIG_FILE_NAME, of(39), of(13));
+        .appendLocationPart("0", WHEN, CONFIG_FILE_NAME, of(39), of(13));
     assertNextProcessorLocationIs(choiceRoute0
         .appendProcessorsPart()
-        .appendLocationPart("0", TEST_PROCESSOR, CONFIG_FILE_NAME, of(40), of(17)));
+        .appendLocationPart("0", RAISE_ERROR, CONFIG_FILE_NAME, of(40), of(17)));
     assertNextProcessorLocationIs(FLOW_WITH_ERROR_HANDLER
         .appendLocationPart("errorHandler", ERROR_HANDLER, CONFIG_FILE_NAME, of(46), of(9))
         .appendLocationPart("1", ON_ERROR_PROPAGATE, CONFIG_FILE_NAME, of(50), of(13))
@@ -307,7 +326,7 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
     assertNextProcessorLocationIs(blockLocation);
     assertNextProcessorLocationIs(blockLocation
         .appendProcessorsPart()
-        .appendLocationPart("0", TEST_PROCESSOR, CONFIG_FILE_NAME, of(60), of(13)));
+        .appendLocationPart("0", RAISE_ERROR, CONFIG_FILE_NAME, of(60), of(13)));
     DefaultComponentLocation blockOnErrorContinueLocation = blockLocation
         .appendLocationPart("errorHandler", ERROR_HANDLER, CONFIG_FILE_NAME, of(61), of(13))
         .appendLocationPart("0", ON_ERROR_CONTINUE, CONFIG_FILE_NAME,
@@ -432,7 +451,7 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
   public void defaultErrorHandler() throws Exception {
     Location defaultErrorHandlerLoggerLocation = Location.builder().globalName("defaultErrorHandler").build();
     Optional<Component> component = configurationComponentLocator.find(defaultErrorHandlerLoggerLocation);
-    assertThat(component.isPresent(), is(false));
+    assertThat(component.isPresent(), is(true));
   }
 
   @Test
@@ -448,7 +467,7 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
 
     DefaultComponentLocation aggregatorRoute0 = aggregatorLocation
         .appendRoutePart()
-        .appendLocationPart("0", ROUTE, CONFIG_FILE_NAME, of(119), of(13))
+        .appendLocationPart("0", AGGREGATION_COMPLETE, CONFIG_FILE_NAME, of(119), of(13))
         .appendProcessorsPart()
         .appendLocationPart("0", LOGGER, CONFIG_FILE_NAME, of(120), of(17));
 
@@ -472,7 +491,7 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
 
     DefaultComponentLocation aggregatorRoute0 = aggregatorLocation
         .appendRoutePart()
-        .appendLocationPart("0", ROUTE, CONFIG_FILE_NAME, of(127), of(13))
+        .appendLocationPart("0", AGGREGATION_INCREMENTAL, CONFIG_FILE_NAME, of(127), of(13))
         .appendProcessorsPart()
         .appendLocationPart("0", LOGGER, CONFIG_FILE_NAME, of(128), of(17));
 
@@ -485,7 +504,7 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
 
     DefaultComponentLocation aggregatorRoute1 = aggregatorLocation
         .appendRoutePart()
-        .appendLocationPart("1", ROUTE, CONFIG_FILE_NAME, of(130), of(13))
+        .appendLocationPart("1", AGGREGATION_COMPLETE, CONFIG_FILE_NAME, of(130), of(13))
         .appendProcessorsPart()
         .appendLocationPart("0", LOGGER, CONFIG_FILE_NAME, of(131), of(17));
 
@@ -508,7 +527,7 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
 
     DefaultComponentLocation aggregatorRoute0 = aggregatorLocation
         .appendRoutePart()
-        .appendLocationPart("0", ROUTE, CONFIG_FILE_NAME, of(139), of(13))
+        .appendLocationPart("0", AGGREGATION_INCREMENTAL, CONFIG_FILE_NAME, of(139), of(13))
         .appendProcessorsPart()
         .appendLocationPart("0", LOGGER, CONFIG_FILE_NAME, of(140), of(17));
 
@@ -521,12 +540,33 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
 
     DefaultComponentLocation aggregatorRoute1 = aggregatorLocation
         .appendRoutePart()
-        .appendLocationPart("1", ROUTE, CONFIG_FILE_NAME, of(142), of(13))
+        .appendLocationPart("1", AGGREGATION_COMPLETE, CONFIG_FILE_NAME, of(142), of(13))
         .appendProcessorsPart()
         .appendLocationPart("0", LOGGER, CONFIG_FILE_NAME, of(143), of(17));
 
     assertNextProcessorLocationIs(aggregatorRoute1);
 
+    assertNoNextProcessorNotification();
+  }
+
+  @Test
+  @Issue("MULE-18504")
+  public void operationWithChain() throws Exception {
+    final String flowName = "operationWithChain";
+    flowRunner(flowName).run();
+    waitUntilNotificationsArrived(2);
+    DefaultComponentLocation operationWithChain =
+        FLOW_WITH_OPERATION_WITH_CHAIN.appendLocationPart("processors", empty(), empty(), OptionalInt.empty(),
+                                                          OptionalInt.empty());
+    DefaultComponentLocation operationWithChainLocation =
+        operationWithChain.appendLocationPart("0", TAP_PHONES, CONFIG_FILE_NAME, of(149), of(9));
+    assertNextProcessorLocationIs(operationWithChainLocation);
+
+    DefaultComponentLocation innerChainRoute = operationWithChainLocation
+        .appendProcessorsPart()
+        .appendLocationPart("0", LOGGER, CONFIG_FILE_NAME, of(150), of(13));
+
+    assertNextProcessorLocationIs(innerChainRoute);
     assertNoNextProcessorNotification();
   }
 
@@ -565,7 +605,7 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
   // Check in any order
   private void assertNextProcessorLocationsAre(List<DefaultComponentLocation> componentLocations) {
     StringBuilder errors = new StringBuilder();
-    for (int i = 0; i < componentLocations.size(); i++) {
+    for (DefaultComponentLocation loc : componentLocations) {
       for (DefaultComponentLocation componentLocation : componentLocations) {
         try {
           assertNextProcessorLocationIs(componentLocation);

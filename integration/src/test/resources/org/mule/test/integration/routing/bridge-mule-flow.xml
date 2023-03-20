@@ -3,12 +3,14 @@
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 
+    <object name="testReceiver" class="org.mule.tck.TestReceiver"/>
+
     <flow name="bridge">
         <flow-ref name="Receiver"/>
     </flow>
 
     <flow name="Receiver">
-        <custom-processor class="org.mule.tck.TestReceiver"/>
+        <flow-ref name="testReceiver"/>
     </flow>
 
 </mule>
