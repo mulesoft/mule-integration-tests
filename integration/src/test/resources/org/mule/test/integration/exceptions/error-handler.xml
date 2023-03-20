@@ -51,7 +51,7 @@
     </flow>
 
     <flow name="matchesHandlerUsingType" initialState="stopped">
-        <processor ref="throw-exception"/>
+        <flow-ref name="throw-exception"/>
         <error-handler>
             <on-error-continue type="TRANSFORMATION">
                 <set-payload value="#[payload ++ ' transformation']"/>
@@ -76,7 +76,7 @@
 
     <flow name="propagatesCriticalErrors" initialState="stopped">
         <set-payload value="#[payload ++ ' critical']"/>
-        <processor ref="throw-error"/>
+        <flow-ref name="throw-error"/>
         <error-handler>
             <on-error-continue type="ANY">
                 <set-payload value="#[payload ++ ' nope']"/>

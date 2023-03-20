@@ -14,41 +14,32 @@ import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.component.Component.NS_MULE_DOCUMENTATION;
 import static org.mule.runtime.api.component.Component.Annotations.NAME_ANNOTATION_KEY;
 import static org.mule.runtime.api.util.ComponentLocationProvider.getSourceCode;
+import static org.mule.test.allure.AllureConstants.MuleDsl.MULE_DSL;
+import static org.mule.test.allure.AllureConstants.MuleDsl.DslAnnotationsStory.DSL_ANNOTATIONS_STORY;
 
 import org.mule.runtime.api.component.Component;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.construct.FlowConstruct;
 import org.mule.runtime.core.api.processor.Processor;
-import org.mule.runtime.core.api.transformer.Transformer;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import javax.xml.namespace.QName;
 
 import org.junit.Test;
+import org.springframework.context.annotation.Description;
 
-/**
- * Test that configuration-based annotations are propagated to the appropriate runtime objects
- */
+import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
+import io.qameta.allure.Story;
+
+@Description("Test that configuration-based annotations are propagated to the appropriate runtime objects")
+@Feature(MULE_DSL)
+@Story(DSL_ANNOTATIONS_STORY)
 public class ConfigurationAnnotationsTestCase extends AbstractIntegrationTestCase {
 
   @Override
-  protected String[] getConfigFiles() {
-    return new String[] {"org/mule/config/spring/annotations.xml", "org/mule/config/spring/annotations-config.xml"};
-  }
-
-  @Test
-  public void testTransformerAnnotations() {
-    Transformer stb = registry.<Transformer>lookupByName("StringtoByteArray").get();
-    assertThat(stb, not(nullValue()));
-    assertThat(getDocName(stb), is("stb-transformer"));
-    assertThat(getDocDescription(stb), is("Convert a String to a Byte Array"));
-    assertThat(getSourceCode((Component) stb),
-               is("<string-to-byte-array-transformer name=\"StringtoByteArray\" doc:name=\"stb-transformer\">"
-                   + lineSeparator() + "<annotations>" + lineSeparator()
-                   + "<doc:description>"
-                   + "<![CDATA[" + lineSeparator() + "Convert a String to a Byte Array" + lineSeparator() + "]]>" +
-                   "</doc:description>" + lineSeparator()
-                   + "</annotations>" + lineSeparator() + "</string-to-byte-array-transformer>"));
+  protected String getConfigFile() {
+    return "org/mule/config/spring/annotations.xml";
   }
 
   @Test
@@ -98,6 +89,14 @@ public class ConfigurationAnnotationsTestCase extends AbstractIntegrationTestCas
     Flow flow = (Flow) registry.<FlowConstruct>lookupByName("Bridge").get();
     Processor logger = flow.getProcessors().get(0);
     assertThat(getSourceCode((Component) logger), is("<logger doc:name=\"echo\">" + "</logger>"));
+  }
+
+  @Test
+  @Issue("MULE-19631")
+  public void annotationAvailableInComponent() {
+    Flow flow = (Flow) registry.<FlowConstruct>lookupByName("withCustomAnnotation").get();
+
+    assertThat(flow.getAnnotation(new QName("http://www.my-org.org/schema/custom", "anything")), is("This is something custom"));
   }
 
   protected String getDocName(Object obj) {

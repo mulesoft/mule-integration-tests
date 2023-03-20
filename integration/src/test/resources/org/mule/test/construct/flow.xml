@@ -4,13 +4,70 @@
       xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
       xmlns:script="http://www.mulesoft.org/schema/mule/scripting"
       xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xmlns:test-components="http://www.mulesoft.org/schema/mule/test-components"
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
                http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd
                http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
-               http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+               http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
+               http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
 
-    <custom-processor class="org.mule.test.construct.FlowConfigurationFunctionalTestCase.CustomAppender" name="appender"/>
-    <custom-processor class="org.mule.test.construct.FlowConfigurationFunctionalTestCase.CustomAppender" name="test-array-appender"/>
+    <object name="threadSensing" class="org.mule.test.construct.FlowConfigurationFunctionalTestCase$ThreadSensingMessageProcessor"/>
+
+    <test-components:queue-config name="asynchronous-async-out">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="inout-out">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="inout-append-out">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="async-async-oneway-out">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="async-oneway-out">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="async-async-seda-oneway-out">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="async-seda-oneway-out">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="async-async-requestresponse-out">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="async-requestresponse-out">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="async-async-tx-out">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="async-tx-out">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="poll-out">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="poll2-out">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="messagefiltersubflow-out">
+        <test-components:connection />
+    </test-components:queue-config>
 
     <sub-flow name="composite1">
         <description>Composite thats appands 'ayz'</description>
@@ -22,30 +79,30 @@
     <flow name="flow">
         <set-payload value="#[payload ++ '1']" />
         <set-payload value="#[payload ++ '2']" />
-        <processor ref="composite1" />
-        <processor-chain>
+        <flow-ref name="composite1" />
+        <try>
             <set-payload value="#[payload ++ 'a']" />
             <set-payload value="#[payload ++ 'b']" />
             <set-payload value="#[payload ++ 'c']" />
-        </processor-chain>
+        </try>
         <set-payload value="#[payload ++ '3']" />
     </flow>
 
     <flow name="asynchronousAsync" initialState="stopped">
         <async>
-            <custom-processor class="org.mule.test.construct.FlowConfigurationFunctionalTestCase$ThreadSensingMessageProcessor"/>
-            <test:queue name="asynchronous-async-out"/>
+            <flow-ref name="threadSensing"/>
+            <test-components:queue-push config-ref="asynchronous-async-out"/>
         </async>
     </flow>    
 
     <flow name="inout" initialState="stopped">
         <logger/>
-        <test:queue name="inout-out"/>
+        <test-components:queue-push config-ref="inout-out"/>
     </flow>
 
     <flow name="inout-append" initialState="stopped">
         <set-payload value="#[payload ++ 'inout']" />
-        <test:queue name="inout-append-out"/>
+        <test-components:queue-push config-ref="inout-append-out"/>
     </flow>
     
     <flow name="components" initialState="stopped">
@@ -57,40 +114,40 @@
         <set-payload value="#[payload ++ 'a']" />
         <async>
             <set-payload value="#[payload ++ 'b']" />
-            <test:queue name="async-async-oneway-out"/>
+            <test-components:queue-push config-ref="async-async-oneway-out"/>
         </async>    
-        <set-payload value="#[payload ++ 'c']" />    
-        <test:queue name="async-oneway-out"/>
+        <set-payload value="#[payload ++ 'c']" />
+        <test-components:queue-push config-ref="async-oneway-out"/>
     </flow>
 
     <flow name="async-seda-oneway" initialState="stopped">
         <set-payload value="#[payload ++ 'a']" />
         <async>
             <set-payload value="#[payload ++ 'b']" />
-            <test:queue name="async-async-seda-oneway-out"/>
+            <test-components:queue-push config-ref="async-async-seda-oneway-out"/>
         </async>    
-        <set-payload value="#[payload ++ 'c']" />    
-        <test:queue name="async-seda-oneway-out"/>
+        <set-payload value="#[payload ++ 'c']" />
+        <test-components:queue-push config-ref="async-seda-oneway-out"/>
     </flow>
 
     <flow name="async-requestresponse" initialState="stopped">
         <set-payload value="#[payload ++ 'a']" />
         <async>
             <set-payload value="#[payload ++ 'b']" />
-            <test:queue name="async-async-requestresponse-out"/>
+            <test-components:queue-push config-ref="async-async-requestresponse-out"/>
         </async>    
-        <set-payload value="#[payload ++ 'c']" />    
-        <test:queue name="async-requestresponse-out"/>
+        <set-payload value="#[payload ++ 'c']" />
+        <test-components:queue-push config-ref="async-requestresponse-out"/>
     </flow>
 
     <flow name="async-tx" initialState="stopped">
         <set-payload value="#[payload ++ 'a']" />
         <async>
             <set-payload value="#[payload ++ 'b']" />
-            <test:queue name="async-async-tx-out"/>
+            <test-components:queue-push config-ref="async-async-tx-out"/>
         </async>    
-        <set-payload value="#[payload ++ 'c']" />    
-        <test:queue name="async-tx-out"/>
+        <set-payload value="#[payload ++ 'c']" />
+        <test-components:queue-push config-ref="async-tx-out"/>
     </flow>
     
     <flow name="choice2" initialState="stopped">
@@ -120,7 +177,7 @@
     </flow>
 
     <flow name="loggerheader" initialState="stopped">
-        <logger message="Ths is my header value: #[mel:message.inboundProperties.toLog]" level="ERROR" category="mycategory"/>
+        <logger message="Ths is my header value: #[vars.toLog]" level="ERROR" category="mycategory"/>
     </flow>
 
     <flow name="poll">
@@ -132,7 +189,7 @@
         <set-payload value="#['']"/>
         <set-payload value="#[payload ++ ' Hello foo']" />
         <set-payload value="#[payload ++ 'out']" />
-        <test:queue name="poll-out"/>
+        <test-components:queue-push config-ref="poll-out"/>
     </flow>
 
     <flow name="poll2">
@@ -144,7 +201,7 @@
         <set-payload value="null" />
         <flow-ref name="pollappend"/>
         <set-payload value="#[payload ++ 'out']" />
-        <test:queue name="poll2-out"/>
+        <test-components:queue-push config-ref="poll2-out"/>
     </flow>
 
     <flow name="messagefiltersubflow" initialState="stopped">
@@ -163,7 +220,7 @@
     </sub-flow>
 
     <sub-flow name="invokedByMessageFilter">
-        <test:queue name="messagefiltersubflow-out"/>
+        <test-components:queue-push config-ref="messagefiltersubflow-out"/>
     </sub-flow>
 
     <flow name="customMaxConcurrency" maxConcurrency="1" initialState="stopped">

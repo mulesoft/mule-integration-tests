@@ -15,7 +15,6 @@ import static org.junit.Assert.assertThat;
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.UNAUTHORIZED;
 
 import org.mule.extension.http.api.HttpResponseAttributes;
-import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.notification.SecurityNotification;
@@ -23,12 +22,18 @@ import org.mule.runtime.api.notification.SecurityNotificationListener;
 import org.mule.runtime.api.util.concurrent.Latch;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.IntegrationTestCaseRunnerConfig;
+import org.mule.tests.api.TestQueueManager;
+
+import javax.inject.Inject;
 
 import org.junit.Rule;
 import org.junit.Test;
 
 public class SecureHttpPollingFunctionalTestCase extends MuleArtifactFunctionalTestCase
     implements IntegrationTestCaseRunnerConfig {
+
+  @Inject
+  private TestQueueManager queueManager;
 
   @Rule
   public DynamicPort port1 = new DynamicPort("port1");
@@ -56,12 +61,11 @@ public class SecureHttpPollingFunctionalTestCase extends MuleArtifactFunctionalT
       }
     });
 
-    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
-    Message result = queueHandler.read("toclient", RECEIVE_TIMEOUT).getMessage();
+    Message result = queueManager.read("toclient", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
     assertThat(result, not(nullValue()));
     assertThat(result.getPayload().getValue(), is("foo"));
 
-    result = queueHandler.read("toclient2", RECEIVE_TIMEOUT).getMessage();
+    result = queueManager.read("toclient2", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
     // This seems a little odd that we forward the exception to the outbound endpoint, but I guess users
     // can just add a filter
     assertThat(result, not(nullValue()));

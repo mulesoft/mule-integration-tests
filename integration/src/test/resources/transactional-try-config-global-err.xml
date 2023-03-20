@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xmlns:test="http://www.mulesoft.org/schema/mule/test"
       xsi:schemaLocation="
-http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 
     <error-handler name="global">
         <on-error-continue>
@@ -15,7 +13,7 @@ http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/tes
 
     <flow name="standardTry">
         <try transactionalAction="BEGIN_OR_JOIN" transactionType="LOCAL">
-            <test:processor throwException="true" exceptionToThrow="java.lang.RuntimeException" />
+            <raise-error type="APP:EXPECTED"/>
             <error-handler ref="global"/>
         </try>
     </flow>

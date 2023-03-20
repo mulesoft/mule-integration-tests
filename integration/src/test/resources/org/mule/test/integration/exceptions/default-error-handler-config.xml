@@ -20,7 +20,11 @@
     <object name="throw" class="org.mule.test.integration.exceptions.DefaultErrorHandlerTestCase$ThrowExceptionProcessor"/>
 
     <flow name="test">
-        <processor ref="throw"/> 
+        <flow-ref name="throw"/> 
+    </flow>
+    
+    <flow name=":\weird-name">
+        <logger/>
     </flow>
 
 </mule>

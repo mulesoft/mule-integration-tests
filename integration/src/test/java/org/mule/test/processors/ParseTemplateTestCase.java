@@ -16,18 +16,23 @@ import static org.junit.Assert.assertEquals;
 import static org.mule.functional.junit4.matchers.MessageMatchers.hasMediaType;
 import static org.mule.runtime.api.metadata.MediaType.APPLICATION_JSON;
 import static org.mule.runtime.api.metadata.MediaType.JSON;
+import static org.mule.test.allure.AllureConstants.ComponentsFeature.CORE_COMPONENTS;
+import static org.mule.test.allure.AllureConstants.ComponentsFeature.ParseTemplateStory.PARSE_TEMPLATE;
 
+import io.qameta.allure.Issue;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.api.metadata.TypedValue;
 import org.mule.runtime.core.api.event.CoreEvent;
-import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 
+@Feature(CORE_COMPONENTS)
+@Story(PARSE_TEMPLATE)
 public class ParseTemplateTestCase extends AbstractIntegrationTestCase {
 
   private static final String PARSED_NO_EXPRESSION = "This template does not have any expressions to parse";
@@ -111,7 +116,7 @@ public class ParseTemplateTestCase extends AbstractIntegrationTestCase {
   public void withTargetDefaultTargetValueDefinedInline() throws Exception {
     String startingPayload = "Starting payload";
     CoreEvent event = flowRunner("with-target").withPayload(startingPayload).withVariable("flowName", "dw-expression").run();
-    String msg = (String) ((Message) event.getVariables().get("targetVar").getValue()).getPayload().getValue();
+    String msg = (String) event.getVariables().get("targetVar").getValue();
     String previousdPayload = (String) event.getMessage().getPayload().getValue();
     assertEquals(PARSED_DW_EXPRESSION, msg);
     assertEquals(previousdPayload, startingPayload);
@@ -132,13 +137,6 @@ public class ParseTemplateTestCase extends AbstractIntegrationTestCase {
     String previousPayload = (String) event.getMessage().getPayload().getValue();
     assertEquals(PARSED_DW_EXPRESSION, savedPayload);
     assertEquals(startingPayload, previousPayload);
-  }
-
-  @Test
-  public void withWrongTargetValue() throws Exception {
-    expectedException.expectCause(isA(ExpressionRuntimeException.class));
-    String startingPayload = "Starting payload";
-    flowRunner("with-wrong-target-value").withPayload(startingPayload).withVariable("flowName", "dw-expression").run();
   }
 
   @Test
@@ -180,7 +178,7 @@ public class ParseTemplateTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void nestedExpressionsWithNonexistingValues() throws Exception {
-    expectedException.expectMessage("Unable to resolve reference of pepito");
+    expectedException.expectMessage("Unable to resolve reference of: `pepito`.");
     flowRunner("nestedExpressionsFlowWithNonexistentValues").run();
   }
 
@@ -243,4 +241,10 @@ public class ParseTemplateTestCase extends AbstractIntegrationTestCase {
     assertEquals(PARSED_NO_EXPRESSION, msg);
   }
 
+  @Test
+  @Issue("MULE-19900")
+  public void nestedBackslash() throws Exception {
+    CoreEvent event = flowRunner("nestedBackslash").withVariable("method", "GET").run();
+    assertThat(event.getMessage().getPayload().getValue(), equalTo("get:\\test\\GET"));
+  }
 }

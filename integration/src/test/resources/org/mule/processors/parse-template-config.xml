@@ -62,19 +62,13 @@
     </flow>
 
     <flow name="with-target-value-no-target" initialState="stopped">
-        <parse-template targetValue="#[payload]">
+        <parse-template targetValue="#[payload ++ '!']">
             <content>#['This template has a DW expression to parse from ' ++ vars.flowName ++ ' flow. Remember, the name of the flow is $(vars.flowName)']</content>
         </parse-template>
     </flow>
 
     <flow name="with-custom-target-value" initialState="stopped">
         <parse-template target="targetVar" targetValue="#[payload]">
-            <content>#['This template has a DW expression to parse from ' ++ vars.flowName ++ ' flow. Remember, the name of the flow is $(vars.flowName)']</content>
-        </parse-template>
-    </flow>
-
-    <flow name="with-wrong-target-value" initialState="stopped">
-        <parse-template target="targetVar" targetValue="not_an_expression">
             <content>#['This template has a DW expression to parse from ' ++ vars.flowName ++ ' flow. Remember, the name of the flow is $(vars.flowName)']</content>
         </parse-template>
     </flow>
@@ -154,4 +148,9 @@
         <parse-template location="org/mule/processors/no-expression.ptem" target="someVar" targetValue="#[payload]"/>
     </flow>
 
+    <flow name="nestedBackslash" initialState="stopped">
+        <parse-template>
+            <content>#["get:\\test\\" ++ vars.method]</content>
+        </parse-template>
+    </flow>
 </mule>

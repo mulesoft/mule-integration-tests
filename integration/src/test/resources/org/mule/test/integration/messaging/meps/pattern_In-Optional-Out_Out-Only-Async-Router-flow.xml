@@ -30,7 +30,7 @@
     <flow name="In-Out_Out-Only-Async-Service">
         <script:execute engine="groovy">
             <script:code>
-                if (message.getInboundProperty("foo") != null)
+                if (vars.foo != null)
                     return message
                 else
                 {
@@ -48,9 +48,7 @@
     
 
     <flow name="ExternalApp">
-        <test:processor>
-            <test:return-data>got it!</test:return-data>
-        </test:processor>
+    	<set-payload value="got it!"/>
     </flow>
     
     <!--// END SNIPPET: full-config -->

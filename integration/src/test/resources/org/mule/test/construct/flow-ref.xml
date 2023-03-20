@@ -6,6 +6,8 @@
                http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
                http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
 
+    <object name="awaitLatchCpuIntensive" class="org.mule.test.construct.FlowRefTestCase$LatchAwaitCpuIntensiveProcessor"/>
+
     <http:listener-config name="listenerConfig">
         <http:listener-connection host="localhost" port="${port}"/>
     </http:listener-config>
@@ -49,7 +51,7 @@
     <flow name="targetToSubFlow" initialState="stopped">
         <flow-ref name="nestedTargetSubFlow" target="flowRefResult" targetValue="#[payload[0]]"/>
     </flow>
-    
+
     <sub-flow name="nestedTargetSubFlow">
         <set-payload value="#[['result']]"/>
     </sub-flow>
@@ -103,7 +105,7 @@
     </flow>
 
     <flow name="errorFlow">
-        <test:processor throwException="true" exceptionToThrow="java.lang.IllegalStateException"/>
+        <raise-error type="APP:EXPECTED"/>
     </flow>
 
     <flow name="flowRefSubFlowErrorNotifications" initialState="stopped">
@@ -111,7 +113,7 @@
     </flow>
 
     <sub-flow name="errorSubFlow">
-        <test:processor throwException="true" exceptionToThrow="java.lang.IllegalStateException" />
+        <raise-error type="APP:EXPECTED"/>
     </sub-flow>
 
     <!-- Infinite recursion handling -->
@@ -167,14 +169,10 @@
     </flow>
 
     <flow name="backpressureFlowRefInner">
-        <test:processor processingType="CPU_INTENSIVE">
-            <test:callback class="org.mule.test.construct.FlowRefTestCase$LatchAwaitCallback"/>
-        </test:processor>
+        <flow-ref name="awaitLatchCpuIntensive"/>
     </flow>
     <sub-flow name="backpressureFlowRefInnerSub">
-        <test:processor processingType="CPU_INTENSIVE">
-            <test:callback class="org.mule.test.construct.FlowRefTestCase$LatchAwaitCallback"/>
-        </test:processor>
+        <flow-ref name="awaitLatchCpuIntensive"/>
     </sub-flow>
 
     <!-- Multiple recursive subflows -->
@@ -233,10 +231,8 @@
                 <raise-error type="FR:CONCURRENT_EXECUTION"/>
             </when>
         </choice>
-        
-        <test:processor processingType="CPU_INTENSIVE">
-            <test:callback class="org.mule.test.construct.FlowRefTestCase$LatchAwaitCallback"/>
-        </test:processor>
+
+        <flow-ref name="awaitLatchCpuIntensive"/>
     </flow>
 
     <flow name="dynamicFlowRefWithSdkOperation">
@@ -247,9 +243,27 @@
             <flow-ref name="#['dynamicFlowRefWithSdkOperationInner']"/>
         </foreach>
     </flow>
-    
+
     <sub-flow name="dynamicFlowRefWithSdkOperationInner">
         <http:request config-ref="requestConfig" path="/echo"/>
     </sub-flow>
-    
+
+    <flow name="foreachWithFlowRefAndMaxConcurrency">
+        <foreach>
+            <flow-ref name="flowWithMaxConcurrency" />
+        </foreach>
+    </flow>
+
+    <flow name="flowWithMaxConcurrency" maxConcurrency="1">
+        <set-payload value="holis"></set-payload>
+    </flow>
+
+    <flow name="outerFlowWithMaxConcurrency">
+        <flow-ref name="referencedFlowWithMaxConcurrency"/>
+    </flow>
+
+    <flow name="referencedFlowWithMaxConcurrency" maxConcurrency="1">
+        <flow-ref name="backpressureFlowRefInner"/>
+    </flow>
+
 </mule>

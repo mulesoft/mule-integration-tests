@@ -6,19 +6,26 @@
  */
 package org.mule.shutdown;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.LIFECYCLE_AND_DEPENDENCY_INJECTION;
 import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.GracefulShutdownStory.GRACEFUL_SHUTDOWN_STORY;
 
-import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.message.Message;
+import org.mule.runtime.api.metadata.MapDataType;
 import org.mule.tck.junit4.rule.SystemProperty;
+import org.mule.tests.api.TestQueueManager;
 
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import javax.inject.Inject;
+
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -28,6 +35,9 @@ import io.qameta.allure.Story;
 @Feature(LIFECYCLE_AND_DEPENDENCY_INJECTION)
 @Story(GRACEFUL_SHUTDOWN_STORY)
 public class ValidShutdownTimeoutOneWayTestCase extends AbstractShutdownTimeoutRequestResponseTestCase {
+
+  @Inject
+  private TestQueueManager queueManager;
 
   @Rule
   public SystemProperty contextShutdownTimeout = new SystemProperty("contextShutdownTimeout", "" + RECEIVE_TIMEOUT);
@@ -53,6 +63,7 @@ public class ValidShutdownTimeoutOneWayTestCase extends AbstractShutdownTimeoutR
   }
 
   @Test
+  @Ignore("MULE-18879")
   public void testSetPayload() throws Throwable {
     doShutDownTest("setPayloadResponse", "setPayloadFlow");
   }
@@ -62,15 +73,15 @@ public class ValidShutdownTimeoutOneWayTestCase extends AbstractShutdownTimeoutR
     doShutDownTest("setPayloadResponse", "setPayloadChoiceFlow");
   }
 
-  private void doShutDownTest(final String payload, final String flowName) throws Throwable {
-    final TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
+  @Test
+  public void setPayloadThroughScatterGatherWithFlowRefs() throws Throwable {
+    doShutDownTest("setPayloadResponse", "setPayloadThroughScatterGatherWithFlowRefs");
+  }
 
+  private void doShutDownTest(final String payload, final String flowName) throws Throwable {
     final Future<?> requestTask = executor.submit(() -> {
       try {
         flowRunner(flowName).withPayload(payload).dispatch();
-
-        Message response = queueHandler.read("response", RECEIVE_TIMEOUT).getMessage();
-        assertThat("Was not able to process message ", getPayloadAsString(response), is(payload));
       } catch (Exception e) {
         throw new MuleRuntimeException(e);
       }
@@ -79,6 +90,22 @@ public class ValidShutdownTimeoutOneWayTestCase extends AbstractShutdownTimeoutR
     // Make sure to give the request enough time to get to the waiting portion of the feed.
     waitLatch.await();
     contextStopLatch.release();
+
+    Message response = queueManager.read("response", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
+    if (response.getPayload().getDataType() instanceof MapDataType) {
+      Map<String, Message> values = (Map) response.getPayload().getValue();
+      values.entrySet().forEach(
+                                value -> {
+                                  try {
+                                    assertThat("Was not able to process message", getPayloadAsString(value.getValue()),
+                                               is(payload));
+                                  } catch (Exception e) {
+                                    fail("Was not able to process message");
+                                  }
+                                });
+    } else {
+      assertThat("Was not able to process message", getPayloadAsString(response), is(payload));
+    }
 
     muleContext.stop();
 

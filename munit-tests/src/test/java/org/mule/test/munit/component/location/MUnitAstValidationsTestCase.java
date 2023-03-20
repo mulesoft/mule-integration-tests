@@ -29,13 +29,21 @@ public class MUnitAstValidationsTestCase extends MuleArtifactFunctionalTestCase 
   public static Collection<Object[]> data() {
     return asList(new Object[][] {
         {"munit-duplicate-before-suite.xml",
-            "The configuration element [munit:before-suite] can only appear once, but was present in both [org/mule/test/munit/component/validation/munit-duplicate-before-suite.xml:13] and [org/mule/test/munit/component/validation/munit-duplicate-before-suite.xml:16]"},
+            "[org/mule/test/munit/component/validation/munit-duplicate-before-suite.xml:13; "
+                + "org/mule/test/munit/component/validation/munit-duplicate-before-suite.xml:16]: "
+                + "The configuration element 'munit:before-suite' can only appear once."},
         {"munit-duplicate-after-suite.xml",
-            "The configuration element [munit:after-suite] can only appear once, but was present in both [org/mule/test/munit/component/validation/munit-duplicate-after-suite.xml:17] and [org/mule/test/munit/component/validation/munit-duplicate-after-suite.xml:20]"},
+            "[org/mule/test/munit/component/validation/munit-duplicate-after-suite.xml:17; "
+                + "org/mule/test/munit/component/validation/munit-duplicate-after-suite.xml:20]: "
+                + "The configuration element 'munit:after-suite' can only appear once."},
         {"munit-duplicate-before-test.xml",
-            "The configuration element [munit:before-test] can only appear once, but was present in both [org/mule/test/munit/component/validation/munit-duplicate-before-test.xml:21] and [org/mule/test/munit/component/validation/munit-duplicate-before-test.xml:24]"},
+            "[org/mule/test/munit/component/validation/munit-duplicate-before-test.xml:21; "
+                + "org/mule/test/munit/component/validation/munit-duplicate-before-test.xml:24]: "
+                + "The configuration element 'munit:before-test' can only appear once."},
         {"munit-duplicate-after-test.xml",
-            "The configuration element [munit:after-test] can only appear once, but was present in both [org/mule/test/munit/component/validation/munit-duplicate-after-test.xml:25] and [org/mule/test/munit/component/validation/munit-duplicate-after-test.xml:28]"},
+            "[org/mule/test/munit/component/validation/munit-duplicate-after-test.xml:25; "
+                + "org/mule/test/munit/component/validation/munit-duplicate-after-test.xml:28]: "
+                + "The configuration element 'munit:after-test' can only appear once."},
     });
   }
 

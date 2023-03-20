@@ -110,7 +110,7 @@ public class ProcessorInterceptorFactoryFailingInterceptorsTestCase extends Abst
   @Test
   @Description("The errorType set by an operation is preserved if an interceptor is applied")
   public void failingOperationErrorTypePreserved() throws Exception {
-    expectedError.expectErrorType("TEST", "EXPECTED").expectCause(sameInstance(THROWN));
+    expectedError.expectErrorType("APP", "EXPECTED").expectCause(sameInstance(THROWN));
     expectedError.expectErrorType("HEISENBERG", "CONNECTIVITY").expectCause(sameInstance(THROWN));
     flowRunner("callGusFring").run();
   }
@@ -118,21 +118,21 @@ public class ProcessorInterceptorFactoryFailingInterceptorsTestCase extends Abst
   @Test
   @Description("Errors in sub-flows are handled correctly")
   public void failingSubFlow() throws Exception {
-    expectedError.expectErrorType("TEST", "EXPECTED").expectCause(sameInstance(THROWN));
+    expectedError.expectErrorType("APP", "EXPECTED").expectCause(sameInstance(THROWN));
     flowRunner("flowWithFailingSubFlowRef").run();
   }
 
   @Test
   @Description("Processors in error handlers are intercepted correctly")
   public void errorHandler() throws Exception {
-    expectedError.expectErrorType("TEST", "EXPECTED").expectCause(sameInstance(THROWN));
+    expectedError.expectErrorType("APP", "EXPECTED").expectCause(sameInstance(THROWN));
     flowRunner("flowFailingWithErrorHandler").run();
   }
 
   @Test
   @Description("Processors in global error handlers are intercepted correctly")
   public void globalErrorHandler() throws Exception {
-    expectedError.expectErrorType("TEST", "EXPECTED").expectCause(sameInstance(THROWN));
+    expectedError.expectErrorType("APP", "EXPECTED").expectCause(sameInstance(THROWN));
     flowRunner("flowFailing").run();
   }
 
@@ -169,7 +169,7 @@ public class ProcessorInterceptorFactoryFailingInterceptorsTestCase extends Abst
   @Test
   @Description("Processors in global error handlers are intercepted correctly when error is in referenced flow")
   public void globalErrorHandlerWithFlowRef() throws Exception {
-    expectedError.expectErrorType("TEST", "EXPECTED").expectCause(sameInstance(THROWN));
+    expectedError.expectErrorType("APP", "EXPECTED").expectCause(sameInstance(THROWN));
     flowRunner("flowWithFailingFlowRef").run();
   }
 

@@ -3,21 +3,28 @@
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:test="http://www.mulesoft.org/schema/mule/test"
       xmlns:tx="http://www.mulesoft.org/schema/mule/tx"
-      xmlns:http="http://www.mulesoft.org/schema/mule/http"
       xmlns:script="http://www.mulesoft.org/schema/mule/scripting"
+      xmlns:test-components="http://www.mulesoft.org/schema/mule/test-components"
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
                http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
                http://www.mulesoft.org/schema/mule/tx http://www.mulesoft.org/schema/mule/tx/current/mule-tx.xsd
-               http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
-               http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
+               http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd
+               http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
 
-    <http:listener-config name="listenerConfig">
-        <http:listener-connection host="localhost" port="${http.port}"/>
-    </http:listener-config>
-    <http:request-config name="requestConfig">
-        <http:request-connection host="localhost" port="${http.port}"/>
-    </http:request-config>
-    
+    <test-components:non-blocking-config name="nb"/>
+
+    <test-components:queue-config name="asyncFinished">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="asyncRunning">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="asyncDispatched">
+        <test-components:connection />
+    </test-components:queue-config>
+
     <flow name="ps-threading-propagated" initialState="stopped">
         <logger message="Before async... (#[payload])" />
         <async>
@@ -27,53 +34,53 @@
                     return java.lang.Thread.currentThread().getName()
                 </script:code>
             </script:execute>
-            <test:queue name="asyncFinished"/>
+            <test-components:queue-push config-ref="asyncFinished"/>
         </async>
     </flow>
-    
+
     <flow name="with-max-concurrency" initialState="stopped">
         <logger message="Before async... (#[payload])" />
         <async maxConcurrency="${maxConcurrency}">
             <logger message="In async... (#[payload])" />
-            <test:queue name="asyncRunning"/>
+            <test-components:queue-push config-ref="asyncRunning"/>
             <script:execute engine="groovy">
                 <script:code>
                     vars['latch'].await()
                 </script:code>
             </script:execute>
         </async>
-        <test:queue name="asyncDispatched"/>
+        <test-components:queue-push config-ref="asyncDispatched"/>
     </flow>
-    
+
     <flow name="with-flow-max-concurrency" maxConcurrency="${maxConcurrency}" initialState="stopped">
         <logger message="Before async... (#[payload])" />
         <async>
             <logger message="In async... (#[payload])" />
-            <test:queue name="asyncRunning"/>
+            <test-components:queue-push config-ref="asyncRunning"/>
             <script:execute engine="groovy">
                 <script:code>
                     vars['latch'].await()
                 </script:code>
             </script:execute>
-            <test:queue name="asyncFinished"/>
+            <test-components:queue-push config-ref="asyncFinished"/>
         </async>
-        <test:queue name="asyncDispatched"/>
+        <test-components:queue-push config-ref="asyncDispatched"/>
     </flow>
-    
+
     <flow name="with-lower-flow-max-concurrency" maxConcurrency="1" initialState="stopped">
         <logger message="Before async... (#[payload])" />
         <async maxConcurrency="${maxConcurrency}">
             <logger message="In async... (#[payload])" />
-            <test:queue name="asyncRunning"/>
+            <test-components:queue-push config-ref="asyncRunning"/>
             <script:execute engine="groovy">
                 <script:code>
                     vars['latch'].await()
                 </script:code>
             </script:execute>
         </async>
-        <test:queue name="asyncDispatched"/>
+        <test-components:queue-push config-ref="asyncDispatched"/>
     </flow>
-    
+
     <tx:config name="localTx">
         <tx:connection>
             <pooling-profile maxActive="1" exhaustedAction="WHEN_EXHAUSTED_WAIT"/>
@@ -88,10 +95,10 @@
                 new java.util.concurrent.CountDownLatch(1)
             </script:code>
         </script:execute>
-    
+
         <async maxConcurrency="${maxConcurrency}">
             <test:assert expression="#[! java!org::mule::runtime::core::api::transaction::TransactionCoordination::isTransactionActive()]"/>
-            <test:queue name="asyncRunning"/>
+            <test-components:queue-push config-ref="asyncRunning"/>
             <script:execute engine="groovy">
                 <script:code>
                     vars['latch'].await()
@@ -103,14 +110,14 @@
                 vars['latch'].countDown()
             </script:code>
         </script:execute>
-        <test:queue name="asyncDispatched"/>
+        <test-components:queue-push config-ref="asyncDispatched"/>
     </flow>
-    
+
     <flow name="with-try-tx" initialState="stopped">
         <try transactionalAction="ALWAYS_BEGIN">
             <async maxConcurrency="${maxConcurrency}">
                 <test:assert expression="#[! java!org::mule::runtime::core::api::transaction::TransactionCoordination::isTransactionActive()]"/>
-                <test:queue name="asyncRunning"/>
+                <test-components:queue-push config-ref="asyncRunning"/>
                 <script:execute engine="groovy">
                     <script:code>
                         vars['latch'].await()
@@ -118,15 +125,15 @@
                 </script:execute>
             </async>
         </try>
-        <test:queue name="asyncDispatched"/>
+        <test-components:queue-push config-ref="asyncDispatched"/>
     </flow>
-    
+
     <flow name="tx-within-async" initialState="stopped">
         <async maxConcurrency="${maxConcurrency}">
             <test:assert expression="#[! java!org::mule::runtime::core::api::transaction::TransactionCoordination::isTransactionActive()]"/>
             <try transactionalAction="ALWAYS_BEGIN">
                 <test:assert expression="#[java!org::mule::runtime::core::api::transaction::TransactionCoordination::isTransactionActive()]"/>
-                <test:queue name="asyncRunning"/>
+                <test-components:queue-push config-ref="asyncRunning"/>
                 <script:execute engine="groovy">
                     <script:code>
                         vars['latch'].await()
@@ -134,9 +141,9 @@
                 </script:execute>
             </try>
         </async>
-        <test:queue name="asyncDispatched"/>
+        <test-components:queue-push config-ref="asyncDispatched"/>
     </flow>
-    
+
     <flow name="tryNoTx-within-async-subFlow" initialState="stopped">
         <try transactionalAction="ALWAYS_BEGIN">
             <flow-ref name="tryNoTx-within-async-subFlow_sub"/>
@@ -147,7 +154,7 @@
             <test:assert expression="#[! java!org::mule::runtime::core::api::transaction::TransactionCoordination::isTransactionActive()]"/>
             <try>
                 <test:assert expression="#[! java!org::mule::runtime::core::api::transaction::TransactionCoordination::isTransactionActive()]"/>
-                <test:queue name="asyncRunning"/>
+                <test-components:queue-push config-ref="asyncRunning"/>
                 <script:execute engine="groovy">
                     <script:code>
                         vars['latch'].await()
@@ -155,25 +162,44 @@
                 </script:execute>
             </try>
         </async>
-        <test:queue name="asyncDispatched"/>
+        <test-components:queue-push config-ref="asyncDispatched"/>
     </sub-flow>
 
     <flow name="asyncFlowWithSdkOperation" initialState="stopped">
         <flow-ref name="outerSubFlowWithSdkOperation"/>
     </flow>
+
+    <flow name="asyncFlowWithSdkOperationInErrorHandler" initialState="stopped">
+        <raise-error type="APP:EXPECTED"/>
+        
+        <error-handler>
+            <on-error-propagate>
+                <flow-ref name="outerSubFlowWithSdkOperation"/>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+
+    <flow name="asyncFlowWithSdkOperationInRefErrorHandler" initialState="stopped">
+        <raise-error type="APP:EXPECTED"/>
+        
+        <error-handler ref="errorHandlerWithAsyncAndNonBlocking"/>
+    </flow>
+
+    <error-handler name="errorHandlerWithAsyncAndNonBlocking">
+        <on-error-propagate>
+            <flow-ref name="outerSubFlowWithSdkOperation"/>
+        </on-error-propagate>
+    </error-handler>
+    
     <sub-flow name="outerSubFlowWithSdkOperation">
         <async>
             <flow-ref name="innerSubFlowWithSdkOperation"/>
-            <test:queue name="asyncFinished"/>
+            <test-components:queue-push config-ref="asyncFinished"/>
         </async>
     </sub-flow>
+
     <sub-flow name="innerSubFlowWithSdkOperation">
-        <http:request config-ref="requestConfig" path="/echo"/>
+        <test-components:non-blocking delayMillis="200"/>
     </sub-flow>
 
-    <flow name="httpEcho">
-        <http:listener config-ref="listenerConfig" path="echo"/>
-        <logger/>
-    </flow>
-    
 </mule>

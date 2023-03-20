@@ -17,18 +17,14 @@
                 <flow-ref name="Two"/>
             </route>
         </scatter-gather>
-        <custom-transformer class="org.mule.test.integration.transformer.response.ResponseTransformerOnMessageCollectionTestCase$ReturnFooTransformer"/>
+        <set-payload value="foo"/>
     </flow>
 
     <flow name="One">
-        <test:processor>
-            <test:return-data>Received in #[mel:mule:context.serviceName]</test:return-data>
-        </test:processor>
+        <set-payload value="Received in One"/>
     </flow>
 
     <flow name="Two">
-        <test:processor>
-            <test:return-data>Received in #[mel:mule:context.serviceName]</test:return-data>
-        </test:processor>
+        <set-payload value="Received in Two"/>
     </flow>
 </mule>

@@ -6,6 +6,7 @@
  */
 package org.mule.test.integration.interception;
 
+import static java.lang.Thread.currentThread;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
@@ -13,12 +14,15 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.collection.IsMapContaining.hasKey;
 import static org.junit.Assert.assertThat;
+import static org.mule.tck.probe.PollingProber.probe;
+import static org.mule.test.allure.AllureConstants.ExecutionEngineFeature.ExecutionEngineStory.BACKPRESSURE;
 import static org.mule.test.allure.AllureConstants.InterceptonApi.INTERCEPTION_API;
 import static org.mule.test.allure.AllureConstants.InterceptonApi.ComponentInterceptionStory.COMPONENT_INTERCEPTION_STORY;
 import static org.mule.test.heisenberg.extension.HeisenbergConnectionProvider.getActiveConnections;
 import static org.mule.test.heisenberg.extension.HeisenbergSource.resetHeisenbergSource;
 
 import org.mule.runtime.api.component.location.ComponentLocation;
+import org.mule.runtime.api.event.EventContext;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.interception.InterceptionEvent;
 import org.mule.runtime.api.interception.ProcessorParameterValue;
@@ -26,6 +30,7 @@ import org.mule.runtime.api.interception.SourceInterceptor;
 import org.mule.runtime.api.interception.SourceInterceptorFactory;
 import org.mule.runtime.api.message.ErrorType;
 import org.mule.runtime.core.api.construct.Flow;
+import org.mule.runtime.core.privileged.event.BaseEventContext;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.integration.interception.ProcessorInterceptorFactoryTestCase.InterceptionParameters;
 
@@ -35,9 +40,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import io.qameta.allure.Feature;
@@ -48,6 +60,11 @@ import io.qameta.allure.Story;
 public class SourceInterceptorFactoryTestCase extends AbstractIntegrationTestCase {
 
   private Flow flow;
+  private static CountDownLatch latch;
+
+  @Inject
+  @Named("withMaxConcurrency")
+  public Flow withMaxConcurrency;
 
   @Override
   protected String getConfigFile() {
@@ -61,6 +78,11 @@ public class SourceInterceptorFactoryTestCase extends AbstractIntegrationTestCas
     return objects;
   }
 
+  @Before
+  public void before() {
+    latch = new CountDownLatch(1);
+  }
+
   @After
   public void after() throws MuleException {
     if (flow != null) {
@@ -70,6 +92,8 @@ public class SourceInterceptorFactoryTestCase extends AbstractIntegrationTestCas
     getActiveConnections().clear();
     SourceCallbackInterceptor.interceptionParameters.clear();
     SourceCallbackInterceptor.afterCallback = (event, thrown) -> {
+    };
+    SourceCallbackInterceptor.afterTerminated = (componentLocation, eventContext) -> {
     };
 
     resetHeisenbergSource();
@@ -93,7 +117,13 @@ public class SourceInterceptorFactoryTestCase extends AbstractIntegrationTestCas
     assertThat(interceptionParameters, hasSize(greaterThanOrEqualTo(1)));
     InterceptionParameters heisenbergSourceInterceptionParameter = interceptionParameters.get(0);
     assertThat(heisenbergSourceInterceptionParameter.toString(),
-               heisenbergSourceInterceptionParameter.getParameters().entrySet(), hasSize(8));
+               heisenbergSourceInterceptionParameter.getParameters().entrySet(), hasSize(14));
+    assertThat(heisenbergSourceInterceptionParameter.toString(),
+               heisenbergSourceInterceptionParameter.getParameters(), hasKey("description"));
+    assertThat(heisenbergSourceInterceptionParameter.toString(),
+               heisenbergSourceInterceptionParameter.getParameters(), hasKey("primaryNodeOnly"));
+    assertThat(heisenbergSourceInterceptionParameter.toString(),
+               heisenbergSourceInterceptionParameter.getParameters(), hasKey("nextDoor"));
     assertThat(heisenbergSourceInterceptionParameter.toString(),
                heisenbergSourceInterceptionParameter.getParameters(), hasKey("fail"));
     assertThat(heisenbergSourceInterceptionParameter.toString(),
@@ -110,6 +140,9 @@ public class SourceInterceptorFactoryTestCase extends AbstractIntegrationTestCas
                heisenbergSourceInterceptionParameter.getParameters(), hasKey("corePoolSize"));
     assertThat(heisenbergSourceInterceptionParameter.toString(),
                heisenbergSourceInterceptionParameter.getParameters(), hasKey("onCapacityOverload"));
+    assertThat(heisenbergSourceInterceptionParameter.getParameters(), hasKey("myName"));
+    assertThat(heisenbergSourceInterceptionParameter.getParameters(), hasKey("age"));
+    assertThat(heisenbergSourceInterceptionParameter.getParameters(), hasKey("knownAddresses"));
   }
 
   @Test
@@ -118,9 +151,7 @@ public class SourceInterceptorFactoryTestCase extends AbstractIntegrationTestCas
 
     CountDownLatch afterCalledLatch = new CountDownLatch(1);
 
-    SourceCallbackInterceptor.afterCallback = (event, thrown) -> {
-      thrown.ifPresent(t -> afterCalledLatch.countDown());
-    };
+    SourceCallbackInterceptor.afterCallback = (event, thrown) -> thrown.ifPresent(t -> afterCalledLatch.countDown());
 
     assertThat(afterCalledLatch.await(RECEIVE_TIMEOUT, MILLISECONDS), is(true));
     List<InterceptionParameters> interceptionParameters = SourceCallbackInterceptor.interceptionParameters;
@@ -128,7 +159,7 @@ public class SourceInterceptorFactoryTestCase extends AbstractIntegrationTestCas
     assertThat(interceptionParameters, hasSize(greaterThanOrEqualTo(1)));
     InterceptionParameters heisenbergSourceInterceptionParameter = interceptionParameters.get(interceptionParameters.size() - 1);
     assertThat(heisenbergSourceInterceptionParameter.toString(),
-               heisenbergSourceInterceptionParameter.getParameters().entrySet(), hasSize(8));
+               heisenbergSourceInterceptionParameter.getParameters().entrySet(), hasSize(14));
   }
 
   @Test
@@ -151,7 +182,10 @@ public class SourceInterceptorFactoryTestCase extends AbstractIntegrationTestCas
 
     assertThat(interceptionParameters, hasSize(greaterThanOrEqualTo(1)));
     InterceptionParameters heisenbergSourceInterceptionParameter = interceptionParameters.get(0);
-    assertThat(heisenbergSourceInterceptionParameter.getParameters().entrySet(), hasSize(8));
+    assertThat(heisenbergSourceInterceptionParameter.getParameters().entrySet(), hasSize(14));
+    assertThat(heisenbergSourceInterceptionParameter.getParameters(), hasKey("description"));
+    assertThat(heisenbergSourceInterceptionParameter.getParameters(), hasKey("primaryNodeOnly"));
+    assertThat(heisenbergSourceInterceptionParameter.getParameters(), hasKey("nextDoor"));
     assertThat(heisenbergSourceInterceptionParameter.getParameters(), hasKey("fail"));
     assertThat(heisenbergSourceInterceptionParameter.getParameters(), hasKey("config-ref"));
     assertThat(heisenbergSourceInterceptionParameter.getParameters(), hasKey("initialBatchNumber"));
@@ -160,6 +194,114 @@ public class SourceInterceptorFactoryTestCase extends AbstractIntegrationTestCas
     assertThat(heisenbergSourceInterceptionParameter.getParameters(), hasKey("propagateError"));
     assertThat(heisenbergSourceInterceptionParameter.getParameters(), hasKey("corePoolSize"));
     assertThat(heisenbergSourceInterceptionParameter.getParameters(), hasKey("onCapacityOverload"));
+    assertThat(heisenbergSourceInterceptionParameter.getParameters(), hasKey("myName"));
+    assertThat(heisenbergSourceInterceptionParameter.getParameters(), hasKey("age"));
+    assertThat(heisenbergSourceInterceptionParameter.getParameters(), hasKey("knownAddresses"));
+  }
+
+  @Test
+  public void sourceInterceptedAfterTerminated() throws Exception {
+    startFlow("sourceInterceptedAfterTerminated");
+
+    CountDownLatch afterCalledLatch = new CountDownLatch(1);
+    AtomicReference<BaseEventContext> eventContextAtomicReference = new AtomicReference<>();
+
+    SourceCallbackInterceptor.afterTerminated = (componentLocation, eventContext) -> {
+      eventContextAtomicReference.set((BaseEventContext) eventContext);
+      afterCalledLatch.countDown();
+    };
+
+    assertThat(afterCalledLatch.await(RECEIVE_TIMEOUT, MILLISECONDS), is(true));
+    assertThat(eventContextAtomicReference.get().isTerminated(), is(true));
+  }
+
+  @Test
+  public void sourceErrorInterceptedAfterTerminated() throws Exception {
+    startFlow("sourceErrorInterceptedAfterTerminated");
+
+    CountDownLatch afterCalledLatch = new CountDownLatch(1);
+    AtomicReference<BaseEventContext> eventContextAtomicReference = new AtomicReference<>();
+
+    SourceCallbackInterceptor.afterTerminated = (componentLocation, eventContext) -> {
+      eventContextAtomicReference.set((BaseEventContext) eventContext);
+      afterCalledLatch.countDown();
+    };
+
+    assertThat(afterCalledLatch.await(RECEIVE_TIMEOUT, MILLISECONDS), is(true));
+    assertThat(eventContextAtomicReference.get().isTerminated(), is(true));
+    List<InterceptionParameters> interceptionParameters = SourceCallbackInterceptor.interceptionParameters;
+
+    assertThat(interceptionParameters, hasSize(greaterThanOrEqualTo(1)));
+    InterceptionParameters heisenbergSourceInterceptionParameter = interceptionParameters.get(interceptionParameters.size() - 1);
+    assertThat(heisenbergSourceInterceptionParameter.toString(),
+               heisenbergSourceInterceptionParameter.getParameters().entrySet(), hasSize(14));
+  }
+
+  @Test
+  public void sourceInterceptedAfterTerminatedWithFailingProcessor() throws Exception {
+    startFlow("sourceInterceptedAfterTerminatedWithFailingProcessor");
+
+    CountDownLatch afterCalledLatch = new CountDownLatch(1);
+    AtomicReference<BaseEventContext> eventContextAtomicReference = new AtomicReference<>();
+
+    SourceCallbackInterceptor.afterTerminated = (componentLocation, eventContext) -> {
+      eventContextAtomicReference.set((BaseEventContext) eventContext);
+      afterCalledLatch.countDown();
+    };
+
+    assertThat(afterCalledLatch.await(RECEIVE_TIMEOUT, MILLISECONDS), is(true));
+    assertThat(eventContextAtomicReference.get().isTerminated(), is(true));
+  }
+
+  @Test
+  public void sourceInterceptedAfterTerminatedWithFailingReferencedFlow() throws Exception {
+    startFlow("sourceInterceptedAfterTerminatedWithFailingReferencedFlow");
+
+    CountDownLatch afterCalledLatch = new CountDownLatch(1);
+    AtomicReference<BaseEventContext> eventContextAtomicReference = new AtomicReference<>();
+
+    SourceCallbackInterceptor.afterTerminated = (componentLocation, eventContext) -> {
+      eventContextAtomicReference.set((BaseEventContext) eventContext);
+      afterCalledLatch.countDown();
+    };
+
+    assertThat(afterCalledLatch.await(RECEIVE_TIMEOUT, MILLISECONDS), is(true));
+    assertThat(eventContextAtomicReference.get().isTerminated(), is(true));
+  }
+
+  @Test
+  public void sourceInterceptedWithFlowThatEndsAfterAsync() throws Exception {
+    final AtomicBoolean afterCallbackRun = new AtomicBoolean();
+    AtomicReference<BaseEventContext> eventContextAtomicReference = new AtomicReference<>();
+
+    SourceCallbackInterceptor.afterTerminated = (componentLocation, eventContext) -> {
+      eventContextAtomicReference.set((BaseEventContext) eventContext);
+      afterCallbackRun.set(true);
+    };
+
+    flowRunner("FlowThatEndsAfterAsync").run();
+
+    latch.countDown();
+    probe(afterCallbackRun::get);
+    assertThat(eventContextAtomicReference.get().isTerminated(), is(true));
+  }
+
+  @Test
+  @Story(BACKPRESSURE)
+  public void sourceInterceptedWithFlowThatEndsBeforeAsync() throws MuleException {
+    final AtomicInteger afterCounter = new AtomicInteger();
+    AtomicReference<BaseEventContext> eventContextAtomicReference = new AtomicReference<>();
+
+    SourceCallbackInterceptor.afterTerminated = (componentLocation, eventContext) -> {
+      eventContextAtomicReference.set((BaseEventContext) eventContext);
+      afterCounter.incrementAndGet();
+    };
+
+    withMaxConcurrency.start();
+
+    latch.countDown();
+    probe(() -> afterCounter.get() > 1);
+    assertThat(eventContextAtomicReference.get().isTerminated(), is(true));
   }
 
   public static class SourceCallbackInterceptorFactory implements SourceInterceptorFactory {
@@ -176,6 +318,9 @@ public class SourceInterceptorFactoryTestCase extends AbstractIntegrationTestCas
     static BiConsumer<InterceptionEvent, Optional<Throwable>> afterCallback = (event, thrown) -> {
     };
 
+    static BiConsumer<ComponentLocation, EventContext> afterTerminated = (componentLocation, eventContext) -> {
+    };
+
     static final List<InterceptionParameters> interceptionParameters = new LinkedList<>();
 
     @Override
@@ -188,11 +333,25 @@ public class SourceInterceptorFactoryTestCase extends AbstractIntegrationTestCas
     public void afterCallback(ComponentLocation location, InterceptionEvent event, Optional<Throwable> thrown) {
       afterCallback.accept(event, thrown);
     }
+
+    @Override
+    public void afterTerminated(ComponentLocation location, EventContext eventContext) {
+      afterTerminated.accept(location, eventContext);
+    }
   }
 
-  protected void startFlow(String flowName) throws Exception {
+  private void startFlow(String flowName) throws Exception {
     flow = (Flow) getFlowConstruct(flowName);
     flow.start();
+  }
+
+  public static Object await(Object payload) {
+    try {
+      latch.await();
+    } catch (InterruptedException e) {
+      currentThread().interrupt();
+    }
+    return payload;
   }
 
 }

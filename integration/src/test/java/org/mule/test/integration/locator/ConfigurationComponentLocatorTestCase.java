@@ -18,6 +18,7 @@ import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.component.ComponentIdentifier.buildFromStringRepresentation;
 import static org.mule.runtime.api.component.location.Location.builder;
 import static org.mule.runtime.api.source.SchedulerMessageSource.SCHEDULER_MESSAGE_SOURCE_IDENTIFIER;
+import static org.mule.runtime.core.api.config.MuleProperties.OBJECT_MULE_CONFIGURATION;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentLocatorStory.SEARCH_CONFIGURATION;
 
@@ -152,7 +153,7 @@ public class ConfigurationComponentLocatorTestCase extends AbstractIntegrationTe
                                                      "mySubFlow/processors/0",
                                                      "flowFailing",
                                                      "flowFailing/processors/0",
-                                                     "_muleConfiguration",
+                                                     OBJECT_MULE_CONFIGURATION,
                                                      "globalErrorHandler",
                                                      "globalErrorHandler/0",
                                                      "globalErrorHandler/0/processors/0",
@@ -167,6 +168,10 @@ public class ConfigurationComponentLocatorTestCase extends AbstractIntegrationTe
                                                      "redeliveryPolicyFlow/source",
                                                      "redeliveryPolicyFlow/source/0",
                                                      "redeliveryPolicyFlow/processors/0",
+                                                     "redeliveryPolicyWithObjectStoreFlow",
+                                                     "redeliveryPolicyWithObjectStoreFlow/source",
+                                                     "redeliveryPolicyWithObjectStoreFlow/source/0",
+                                                     "redeliveryPolicyWithObjectStoreFlow/processors/0",
                                                      "redeliveryPolicyFlowRef1",
                                                      "redeliveryPolicyFlowRef1/processors/0",
                                                      "redeliveryPolicyFlowRef2",
@@ -185,6 +190,7 @@ public class ConfigurationComponentLocatorTestCase extends AbstractIntegrationTe
                                                      "async-flow",
                                                      "invokeBeanFlow",
                                                      "invokeBeanFlow/processors/0",
-                                                     "childBean"));
+                                                     "childBean",
+                                                     "myObjectStore"));
   }
 }

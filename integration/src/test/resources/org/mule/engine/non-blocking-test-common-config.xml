@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xmlns:test-components="http://www.mulesoft.org/schema/mule/test-components"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xsi:schemaLocation="
+               http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+               http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+               http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
+               http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
+
+    <flow name="flow" initialState="stopped">
+        <test-components:assert-intercepting responseSameTask="false">
+            <test-components:non-blocking/>
+            <test:assert expression="#[payload == 'Test Message']"/>
+        </test-components:assert-intercepting>
+        <test:assert expression="#[payload == 'Test Message']"/>
+    </flow>
+
+    <flow name="subFlow" initialState="stopped">
+        <test-components:assert-intercepting responseSameTask="false">
+            <flow-ref name="subFlowChild"/>
+            <set-payload value="#[payload ++ ' continued']"/>
+        </test-components:assert-intercepting>
+        <test:assert expression="#[payload == 'Test Message continued']"/>
+    </flow>
+    <sub-flow name="subFlowChild">
+        <test-components:assert-intercepting responseSameTask="false">
+            <test-components:non-blocking/>
+            <test:assert expression="#[payload == 'Test Message']"/>
+        </test-components:assert-intercepting>
+        <test:assert expression="#[payload == 'Test Message']"/>
+    </sub-flow>
+
+    <flow name="childFlow" initialState="stopped">
+        <test-components:assert-intercepting responseSameTask="false">
+            <flow-ref name="childFlowChild"/>
+            <test:assert expression="#[payload == 'Test Message']"/>
+            <test:assert count="1" expression="#[flow.name == 'childFlow']"/>
+        </test-components:assert-intercepting>
+        <test:assert expression="#[payload == 'Test Message']"/>
+    </flow>
+    <flow name="childFlowChild">
+        <test-components:assert-intercepting responseSameTask="false">
+            <test-components:non-blocking/>
+            <test:assert expression="#[payload == 'Test Message']"/>
+        </test-components:assert-intercepting>
+        <test:assert expression="#[payload == 'Test Message']"/>
+    </flow>
+
+    <flow name="childAsyncFlow" initialState="stopped">
+        <flow-ref name="childAsyncFlowChild"/>
+    </flow>
+    <flow name="childAsyncFlowChild">
+        <test-components:non-blocking/>
+        <test:assert expression="#[payload == 'Test Message']"/>
+    </flow>
+
+    <flow name="processorChain" initialState="stopped">
+        <test-components:assert-intercepting responseSameTask="false">
+            <try>
+                <test-components:assert-intercepting responseSameTask="false">
+                    <test-components:non-blocking/>
+                </test-components:assert-intercepting>
+                <test:assert expression="#[payload == 'Test Message']"/>
+            </try>
+            <test-components:non-blocking/>
+            <test:assert expression="#[payload == 'Test Message']"/>
+        </test-components:assert-intercepting>
+        <test:assert expression="#[payload == 'Test Message']"/>
+    </flow>
+
+    <flow name="choice" initialState="stopped">
+        <test-components:assert-intercepting responseSameTask="false">
+            <choice>
+                <when expression="#[true]">
+                    <test-components:assert-intercepting responseSameTask="false">
+                        <test-components:non-blocking/>
+                    </test-components:assert-intercepting>
+                    <test:assert expression="#[payload == 'Test Message']"/>
+                </when>
+            </choice>
+            <test-components:assert-intercepting responseSameTask="false">
+                <test-components:non-blocking/>
+                <test:assert expression="#[payload == 'Test Message']"/>
+            </test-components:assert-intercepting>
+            <test:assert expression="#[payload == 'Test Message']"/>
+        </test-components:assert-intercepting>
+        <test:assert expression="#[payload == 'Test Message']"/>
+    </flow>
+
+    <flow name="async" initialState="stopped">
+        <test-components:assert-intercepting responseSameTask="false">
+            <async>
+                <test-components:assert-intercepting responseSameTask="false">
+                    <test-components:non-blocking/>
+                </test-components:assert-intercepting>
+                <test:assert expression="#[payload == 'Test Message']"/>
+            </async>
+            <test-components:non-blocking/>
+        </test-components:assert-intercepting>
+        <test:assert expression="#[payload == 'Test Message']"/>
+    </flow>
+
+    <flow name="catchExceptionStrategy" initialState="stopped">
+        <test-components:assert-intercepting responseSameTask="false">
+            <flow-ref name="catchExceptionStrategyChild"/>
+            <set-payload value="#[payload ++ ' continued']"/>
+        </test-components:assert-intercepting>
+        <test:assert expression="#[payload == 'Test Message continued']"/>
+    </flow>
+
+    <flow name="rollbackExceptionStrategy" initialState="stopped">
+        <test-components:assert-intercepting responseSameTask="false">
+            <flow-ref name="rollbackExceptionStrategyChild"/>
+            <test:assert expression="#[payload == 'Test Message']"/>
+        </test-components:assert-intercepting>
+        <test:assert expression="#[payload == 'Test Message']"/>
+    </flow>
+
+    <flow name="nonTransactionalTry" initialState="stopped">
+        <test-components:assert-intercepting responseSameTask="false">
+            <try>
+                <test-components:assert-intercepting responseSameTask="false">
+                    <test-components:non-blocking/>
+                </test-components:assert-intercepting>
+                <test:assert expression="#[payload == 'Test Message']"/>
+            </try>
+        </test-components:assert-intercepting>
+        <test:assert expression="#[payload == 'Test Message']"/>
+    </flow>
+
+    <flow name="childDefaultFlow" initialState="stopped">
+        <test-components:assert-intercepting responseSameTask="false">
+            <flow-ref name="childDefaultFlowChild"/>
+            <test:assert expression="#[payload == 'Test Message']"/>
+            <test-components:non-blocking/>
+        </test-components:assert-intercepting>
+        <test:assert expression="#[payload == 'Test Message']"/>
+    </flow>
+    
+    <flow name="childDefaultFlowChild">
+        <test-components:assert-intercepting responseSameTask="false">
+            <test-components:non-blocking/>
+            <test:assert expression="#[payload == 'Test Message']"/>
+        </test-components:assert-intercepting>
+        <test:assert expression="#[payload == 'Test Message']"/>
+    </flow>
+
+    <flow name="untilSuccessfulNoRetry" initialState="stopped">
+        <test-components:assert-intercepting responseSameTask="false">
+            <until-successful>
+                <test-components:non-blocking delayMillis="100"/>
+            </until-successful>
+            <test:assert expression="#[payload == 'Test Message']"/>
+        </test-components:assert-intercepting>
+        <test:assert expression="#[payload == 'Test Message']"/>
+    </flow>
+
+    <flow name="untilSuccessfulNoRetryNonBlockingAfterScope" initialState="stopped">
+        <test-components:assert-intercepting responseSameTask="false">
+            <until-successful>
+                <test:assert expression="#[payload == 'Test Message']"/>
+            </until-successful>
+            <test-components:non-blocking delayMillis="100"/>
+        </test-components:assert-intercepting>
+        <test:assert expression="#[payload == 'Test Message']"/>
+    </flow>
+
+    <flow name="untilSuccessfulWithRetryExceptionBefore" initialState="stopped">
+        <test-components:assert-intercepting responseSameTask="false">
+            <until-successful millisBetweenRetries="100">
+                <choice>
+                    <when expression="#[vars.counter.count &lt;= 0]">
+                        <raise-error type="APP:SOME"/>
+                    </when>
+                </choice>
+                <set-payload value="#[java!org::mule::test::core::NonBlockingFunctionalTestCase::countdownLatch(payload, vars.counter)]"/>
+                <test-components:non-blocking delayMillis="100"/>
+            </until-successful>
+            <test:assert expression="#[payload == 'Test Message']"/>
+        </test-components:assert-intercepting>
+        <test:assert expression="#[payload == 'Test Message']"/>
+    </flow>
+
+    <flow name="untilSuccessfulWithRetryExceptionAfter" initialState="stopped">
+        <test-components:assert-intercepting responseSameTask="false">
+            <until-successful millisBetweenRetries="100">
+                <test-components:non-blocking delayMillis="100"/>
+                <choice>
+                    <when expression="#[vars.counter.count &lt;= 0]">
+                        <raise-error type="APP:SOME"/>
+                    </when>
+                </choice>
+                <set-payload value="#[java!org::mule::test::core::NonBlockingFunctionalTestCase::countdownLatch(payload, vars.counter)]"/>
+            </until-successful>
+            <test:assert expression="#[payload == 'Test Message']"/>
+        </test-components:assert-intercepting>
+        <test:assert expression="#[payload == 'Test Message']"/>
+    </flow>
+
+    <flow name="untilSuccessfulWithRetryNonBlockingAfterScope" initialState="stopped">
+        <test-components:assert-intercepting responseSameTask="false">
+            <until-successful millisBetweenRetries="100">
+                <choice>
+                    <when expression="#[vars.counter.count &lt;= 0]">
+                        <raise-error type="APP:SOME"/>
+                    </when>
+                </choice>
+                <set-payload value="#[java!org::mule::test::core::NonBlockingFunctionalTestCase::countdownLatch(payload, vars.counter)]"/>
+            </until-successful>
+            <test-components:non-blocking delayMillis="100"/>
+        </test-components:assert-intercepting>
+        <test:assert expression="#[payload == 'Test Message']"/>
+    </flow>
+
+    <flow name="untilSuccessfulWithRetryTransactional" initialState="stopped">
+        <test-components:assert-intercepting responseSameTask="true">
+            <until-successful millisBetweenRetries="100">
+                <choice>
+                    <when expression="#[vars.counter.count &lt;= 0]">
+                        <raise-error type="APP:SOME"/>
+                    </when>
+                </choice>
+                <set-payload value="#[java!org::mule::test::core::NonBlockingFunctionalTestCase::countdownLatch(payload, vars.counter)]"/>
+            
+                <test-components:non-blocking delayMillis="100"/>
+            </until-successful>
+            <test:assert expression="#[payload == 'Test Message']"/>
+        </test-components:assert-intercepting>
+        <test:assert expression="#[payload == 'Test Message']"/>
+    </flow>
+
+    <flow name="untilSuccessful" initialState="stopped">
+        <test-components:assert-intercepting responseSameTask="false">
+            <until-successful>
+                <test-components:assert-intercepting responseSameTask="false">
+                    <test-components:non-blocking delayMillis="100"/>
+                    <until-successful>
+                        <test-components:assert-intercepting responseSameTask="false">
+                            <test-components:non-blocking delayMillis="100"/>
+                        </test-components:assert-intercepting>
+                    </until-successful>
+                </test-components:assert-intercepting>
+            </until-successful>
+            <test:assert expression="#[payload == 'Test Message']"/>
+        </test-components:assert-intercepting>
+    </flow>
+
+    <flow name="foreach_and_untilSuccessful" initialState="stopped">
+        <test-components:assert-intercepting responseSameTask="false">
+            <foreach>
+                <test-components:assert-intercepting responseSameTask="false">
+                    <test-components:non-blocking delayMillis="100"/>
+                    <until-successful>
+                        <test-components:assert-intercepting responseSameTask="false">
+                            <test-components:non-blocking delayMillis="100"/>
+                        </test-components:assert-intercepting>
+                    </until-successful>
+                </test-components:assert-intercepting>
+            </foreach>
+        </test-components:assert-intercepting>
+    </flow>
+
+    <flow name="untilSuccessful_and_foreach" initialState="stopped">
+        <test-components:assert-intercepting responseSameTask="false">
+            <set-payload value="#[['A', 'B']]" />
+            <until-successful maxRetries="1" >
+                <test-components:assert-intercepting responseSameTask="false">
+                    <test-components:non-blocking delayMillis="100"/>
+                    <foreach>
+                        <test-components:assert-intercepting responseSameTask="false">
+                            <test-components:non-blocking delayMillis="100"/>
+                        </test-components:assert-intercepting>
+                    </foreach>
+                </test-components:assert-intercepting>
+            </until-successful>
+        </test-components:assert-intercepting>
+    </flow>
+
+    <flow name="scatterGather" initialState="stopped">
+        <test-components:assert-intercepting responseSameTask="false">
+            <scatter-gather>
+                <route>
+                    <test-components:assert-intercepting responseSameTask="false">
+                        <test-components:non-blocking/>
+                    </test-components:assert-intercepting>
+                </route>
+                <route>
+                    <test-components:assert-intercepting responseSameTask="false">
+                        <test-components:non-blocking/>
+                    </test-components:assert-intercepting>
+                </route>
+            </scatter-gather>
+        </test-components:assert-intercepting>
+    </flow>
+
+    <flow name="parallelForeach" initialState="stopped">
+        <test-components:assert-intercepting responseSameTask="false">
+            <parallel-foreach>
+                <test-components:assert-intercepting responseSameTask="false">
+                    <test-components:non-blocking delayMillis="100"/>
+                    <parallel-foreach>
+                        <test-components:assert-intercepting responseSameTask="false">
+                            <test-components:non-blocking delayMillis="100"/>
+                        </test-components:assert-intercepting>
+                    </parallel-foreach>
+                </test-components:assert-intercepting>
+            </parallel-foreach>
+        </test-components:assert-intercepting>
+    </flow>
+
+    <flow name="foreach" initialState="stopped">
+        <test-components:assert-intercepting responseSameTask="false">
+            <test-components:non-blocking delayMillis="100"/>
+            <foreach>
+                <test-components:assert-intercepting responseSameTask="false">
+                    <test-components:non-blocking delayMillis="100"/>
+                    <foreach>
+                        <test-components:assert-intercepting responseSameTask="false">
+                          <test-components:non-blocking delayMillis="100"/>
+                        </test-components:assert-intercepting>
+                    </foreach>
+                </test-components:assert-intercepting>
+            </foreach>
+        </test-components:assert-intercepting>
+    </flow>
+
+    <flow name="transactionalTryEmitter" initialState="stopped">
+        <try transactionalAction="ALWAYS_BEGIN">
+            <test-components:assert-intercepting>
+                <test-components:non-blocking/>
+            </test-components:assert-intercepting>
+            <test:assert expression="#[payload == 'Test Message']"/>
+        </try>
+        <test:assert expression="#[payload == 'Test Message']"/>
+    </flow>
+
+    <flow name="transactionalTryProactor" initialState="stopped">
+        <try transactionalAction="ALWAYS_BEGIN">
+            <test-components:assert-intercepting>
+                <test-components:non-blocking/>
+            </test-components:assert-intercepting>
+            <test:assert expression="#[payload == 'Test Message']"/>
+        </try>
+        <test:assert expression="#[payload == 'Test Message']"/>
+    </flow>
+</mule>

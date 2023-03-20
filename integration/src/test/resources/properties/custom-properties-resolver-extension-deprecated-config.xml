@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:crafted-config-properties-deprecated="http://www.mulesoft.org/schema/mule/crafted-config-properties-deprecated"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+               http://www.mulesoft.org/schema/mule/crafted-config-properties-deprecated http://www.mulesoft.org/schema/mule/crafted-config-properties-deprecated/current/mule-crafted-config-properties-deprecated.xsd">
+
+    <crafted-config-properties-deprecated:secure-configuration-properties-config name="config" file="properties/custom-properties.yaml">
+        <crafted-config-properties-deprecated:encrypt algorithm="AES" mode="CBC"/>
+    </crafted-config-properties-deprecated:secure-configuration-properties-config>
+
+    <global-property name="key1" value="${secure::test.key1}"/>
+    <global-property name="key2" value="${secure::test.key2}"/>
+
+</mule>

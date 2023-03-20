@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xmlns:test-components="http://www.mulesoft.org/schema/mule/test-components"
+      xmlns:script="http://www.mulesoft.org/schema/mule/scripting"
+      xsi:schemaLocation="
+            http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+            http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
+            http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd
+            http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
+
+    <test-components:queue-config name="invocationQueue">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <!--Triggers-->
+    <flow name="trigger-sync" >
+        <flow-ref name="try-and-other-processor" />
+    </flow>
+    <flow name="trigger-async-direct">
+        <async>
+            <flow-ref name="try-and-other-processor" />
+        </async>
+    </flow>
+
+    <flow name="trigger-async-subflow">
+        <flow-ref name="async-subflow" />
+    </flow>
+    <flow name="trigger-async-flow">
+        <flow-ref name="async-flow" />
+    </flow>
+    <flow name="trigger-simplified">
+        <flow-ref name="simplified-subflow" />
+    </flow>
+
+    <!--end of triggers-->
+
+    <sub-flow name="simplified-subflow">
+        <async>
+            <try>
+                <raise-error type="APP:ERROR" description="An error" />
+                <error-handler>
+                    <on-error-continue enableNotifications="true" logException="true">
+                        <test:processor processingType="CPU_INTENSIVE" />
+                    </on-error-continue>
+                </error-handler>
+            </try>
+            <test-components:queue-push config-ref="invocationQueue"/>
+            <script:execute engine="groovy">
+                <script:code>
+                    vars['latch'].release()
+                </script:code>
+            </script:execute>
+        </async>
+    </sub-flow>
+
+    <sub-flow name="async-subflow" >
+        <async>
+            <flow-ref name="try-and-other-processor"/>
+        </async>
+    </sub-flow>
+
+    <flow name="async-flow">
+        <async>
+            <flow-ref name="try-and-other-processor" />
+        </async>
+    </flow>
+
+    <sub-flow name="try-and-other-processor">
+        <try>
+            <raise-error type="APP:ERROR" description="An error" />
+            <error-handler>
+                <on-error-continue enableNotifications="true" logException="true">
+                    <test:processor processingType="CPU_INTENSIVE" />
+                </on-error-continue>
+            </error-handler>
+        </try>
+        <test-components:queue-push config-ref="invocationQueue"/>
+        <script:execute engine="groovy">
+            <script:code>
+                vars['latch'].release()
+            </script:code>
+        </script:execute>
+    </sub-flow>
+
+</mule>

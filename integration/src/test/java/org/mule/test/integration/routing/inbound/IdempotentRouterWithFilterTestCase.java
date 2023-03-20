@@ -6,29 +6,27 @@
  */
 package org.mule.test.integration.routing.inbound;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.message.Message;
 import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.tests.api.TestQueueManager;
+
+import javax.inject.Inject;
 
 import org.junit.Test;
 
 public class IdempotentRouterWithFilterTestCase extends AbstractIntegrationTestCase {
 
-  private TestConnectorQueueHandler queueHandler;
+  @Inject
+  private TestQueueManager queueManager;
 
   @Override
   protected String getConfigFile() {
     return "org/mule/test/integration/routing/inbound/idempotent-router-with-filter-flow.xml";
-  }
-
-  @Override
-  protected void doSetUp() throws Exception {
-    super.doSetUp();
-    queueHandler = new TestConnectorQueueHandler(registry);
   }
 
   /**
@@ -40,7 +38,7 @@ public class IdempotentRouterWithFilterTestCase extends AbstractIntegrationTestC
   @SuppressWarnings("null")
   public void testWithValidData() throws Exception {
     flowRunner("IdempotentPlaceHolder").withPayload("Mule is the best!").run();
-    Message response = queueHandler.read("ToTestCase", RECEIVE_TIMEOUT).getMessage();
+    Message response = queueManager.read("ToTestCase", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
 
     assertNotNull(response);
     assertNotNull(response.getPayload().getValue());
@@ -55,6 +53,6 @@ public class IdempotentRouterWithFilterTestCase extends AbstractIntegrationTestC
   @Test
   public void testWithInvalidData() throws Exception {
     flowRunner("IdempotentPlaceHolder").withPayload(new Object()).run();
-    assertThat(queueHandler.read("ToTestCase", RECEIVE_TIMEOUT), is(nullValue()));
+    assertThat(queueManager.read("ToTestCase", RECEIVE_TIMEOUT, MILLISECONDS), is(nullValue()));
   }
 }

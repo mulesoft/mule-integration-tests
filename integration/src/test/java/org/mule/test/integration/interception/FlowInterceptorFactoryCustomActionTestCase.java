@@ -19,6 +19,7 @@ import org.mule.runtime.api.interception.FlowInterceptorFactory;
 import org.mule.runtime.api.interception.InterceptionAction;
 import org.mule.runtime.api.interception.InterceptionEvent;
 import org.mule.runtime.core.api.construct.Flow;
+import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.integration.interception.ProcessorInterceptorFactoryTestCase.HasInjectedAttributesInterceptor;
 
@@ -47,6 +48,9 @@ public class FlowInterceptorFactoryCustomActionTestCase extends AbstractIntegrat
 
   @Rule
   public ExpectedError expectedError = none();
+
+  @Rule
+  public DynamicPort port = new DynamicPort("port");
 
   @Inject
   @Named("counting")
@@ -133,6 +137,19 @@ public class FlowInterceptorFactoryCustomActionTestCase extends AbstractIntegrat
     };
 
     flowRunner("counting").runExpectingException(sameInstance(expected));
+  }
+
+  @Test
+  public void interceptorFailHandledBySource() throws Exception {
+    final IllegalStateException expected = new IllegalStateException();
+    CustomActionInterceptor.actioner = (flowName, action) -> {
+      if ("countingHttpServer".equals(flowName)) {
+        return action.fail(expected);
+      } else {
+        return action.proceed();
+      }
+    };
+    flowRunner("countingHttpClient").run();
   }
 
   public static class CustomActionInterceptorFactory implements FlowInterceptorFactory {

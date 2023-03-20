@@ -1,24 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xmlns:test-components="http://www.mulesoft.org/schema/mule/test-components"
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-               http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+               http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
+
+    <test-components:queue-config name="test.out.1">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="test.out.2">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="test.out.3">
+        <test-components:connection />
+    </test-components:queue-config>
 
     <flow name="flowTest">
-
         <set-payload value="#[payload ++ 'hello']"/>
-
-        <test:queue name="test.out.1" />
+        <test-components:queue-push config-ref="test.out.1" />
 
         <set-payload value="#[payload replace 'hello' with 'bye']"/>
-
-        <test:queue name="test.out.2" />
+        <test-components:queue-push config-ref="test.out.2" />
         
         <set-payload value="#[payload replace 'bye' with '']"/>
         <set-payload value="#[payload[-1 to 0]]"/>
-            
-        <test:queue name="test.out.3" />
-
+        <test-components:queue-push config-ref="test.out.3" />
     </flow>
 
 </mule>

@@ -8,10 +8,9 @@ package org.mule.test.core.context.notification;
 
 import org.mule.runtime.api.notification.PipelineMessageNotificationListener;
 import org.mule.runtime.api.notification.PipelineMessageNotification;
+import org.mule.tck.core.context.notification.AbstractNotificationLogger;
 
-import java.util.List;
-
-public class PipelineMessageNotificationLogger extends PipelineAndAsyncMessageNotificationLogger
+public class PipelineMessageNotificationLogger extends AbstractNotificationLogger<PipelineMessageNotification>
     implements PipelineMessageNotificationListener<PipelineMessageNotification> {
 
   @Override
@@ -19,13 +18,4 @@ public class PipelineMessageNotificationLogger extends PipelineAndAsyncMessageNo
     return false;
   }
 
-  @Override
-  public synchronized void onNotification(PipelineMessageNotification notification) {
-    notifications.addLast(notification);
-  }
-
-  @Override
-  public List getNotifications() {
-    return notifications;
-  }
 }

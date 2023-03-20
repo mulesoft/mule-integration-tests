@@ -4,11 +4,11 @@
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 
     <flow name="transformationErrorFlow">
-        <object-to-string-transformer/>
+        <set-payload value="#[%dw 2.0 output application/java --- payload.^raw as String]"/>
     </flow>
 
     <flow name="expressionErrorFlow">
-        <set-payload value="#[mel:invalid expression]"/>
+        <set-payload value="#[!null.a]"/>
     </flow>
 
 </mule>

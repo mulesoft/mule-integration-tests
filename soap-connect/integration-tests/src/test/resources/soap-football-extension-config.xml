@@ -21,15 +21,13 @@
                 <soap:body>#[payload]</soap:body>
             </soap:message>
         </soap:invoke>
-        <set-payload value="#[payload.body]"/>
-        <object-to-string-transformer/>
+        <set-payload value="#[%dw 2.0 output application/java --- payload.body.^raw as String]"/>
     </flow>
 
     <flow name="getBestLeague">
         <logger message="#[payload]" level="ERROR"/>
         <soap:invoke config-ref="leagues" service="leagues" operation="getBestLeague"/>
-        <set-payload value="#[payload.body]"/>
-        <object-to-string-transformer/>
+        <set-payload value="#[%dw 2.0 output application/java --- payload.body.^raw as String]"/>
     </flow>
 
     <flow name="getBestLeagueWithExplicitMessage">
@@ -37,8 +35,7 @@
         <soap:invoke config-ref="leagues" service="leagues" operation="getBestLeague">
             <soap:message/>
         </soap:invoke>
-        <set-payload value="#[payload.body]"/>
-        <object-to-string-transformer/>
+        <set-payload value="#[%dw 2.0 output application/java --- payload.body.^raw as String]"/>
     </flow>
 
     <flow name="getLeagueTeamsWithImplicitBody">
@@ -56,20 +53,17 @@
                 </soap:headers>
             </soap:message>
         </soap:invoke>
-        <set-payload value="#[payload.body]"/>
-        <object-to-string-transformer/>
+        <set-payload value="#[%dw 2.0 output application/java --- payload.body.^raw as String]"/>
     </flow>
 
     <flow name="getPresidentInfo">
         <soap:invoke config-ref="leagues" service="leagues" operation="getPresidentInfo"/>
-        <set-payload value="#[payload.body]"/>
-        <object-to-string-transformer/>
+        <set-payload value="#[%dw 2.0 output application/java --- payload.body.^raw as String]"/>
     </flow>
 
     <flow name="invalidKey">
         <soap:invoke config-ref="leagues" service="leagues" operation="invalidKey"/>
-        <set-payload value="#[payload.body]"/>
-        <object-to-string-transformer/>
+        <set-payload value="#[%dw 2.0 output application/java --- payload.body.^raw as String]"/>
     </flow>
 
     <flow name="getTeams">
@@ -78,8 +72,7 @@
                 <soap:body>#[payload]</soap:body>
             </soap:message>
         </soap:invoke>
-        <set-payload value="#[payload.body]"/>
-        <object-to-string-transformer/>
+        <set-payload value="#[%dw 2.0 output application/java --- payload.body.^raw as String]"/>
     </flow>
 
     <flow name="getLeagueTeams">
@@ -98,8 +91,7 @@
                 </soap:headers>
             </soap:message>
         </soap:invoke>
-        <set-payload value="#[payload.body]"/>
-        <object-to-string-transformer/>
+        <set-payload value="#[%dw 2.0 output application/java --- payload.body.^raw as String]"/>
     </flow>
 
     <flow name="uploadResult">
@@ -109,7 +101,6 @@
                 <soap:attachments>#[{result: vars.att}]</soap:attachments>
             </soap:message>
         </soap:invoke>
-        <set-payload value="#[payload.body]"/>
-        <object-to-string-transformer/>
+        <set-payload value="#[%dw 2.0 output application/java --- payload.body.^raw as String]"/>
     </flow>
 </mule>

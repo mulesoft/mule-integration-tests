@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:this="http://www.mulesoft.org/schema/mule/this"
+      xmlns:operation="http://www.mulesoft.org/schema/mule/operation"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+        http://www.mulesoft.org/schema/mule/operation http://www.mulesoft.org/schema/mule/operation/current/mule-operation.xsd
+        http://www.mulesoft.org/schema/mule/this http://www.mulesoft.org/schema/mule/this/current/mule-this.xsd">
+
+    <operation:def name="example">
+        <operation:output>
+            <operation:payload-type type="void"/>
+        </operation:output>
+        <operation:body>
+            <logger level="WARN" message="#[%dw 2.0 --- { 'v' : lookup('someFlow', 10, 100) }]"/>
+        </operation:body>
+    </operation:def>
+
+
+    <flow name="someFlow">
+        <set-payload value="hello world"/>
+    </flow>
+
+    <flow name="test">
+        <this:example/>
+    </flow>
+
+</mule>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+
+    <flow name="BeginFlow">
+        <try transactionalAction="ALWAYS_BEGIN" >
+            <flow-ref name="flow1" />
+        </try>
+        <set-payload value="flow begins"/>
+    </flow>
+
+    <flow name="flow1">
+        <flow-ref name="flowReferencedMultipleTimes"/>
+        <try transactionalAction="BEGIN_OR_JOIN">
+            <flow-ref name="flow2" />
+        </try>
+    </flow>
+
+    <flow name="flow2">
+        <flow-ref name="flowReferencedMultipleTimes"/>
+    </flow>
+
+    <flow name="flowReferencedMultipleTimes" >
+        <logger level="INFO" message="Flow referenced multiple times!"/>
+    </flow>
+</mule>

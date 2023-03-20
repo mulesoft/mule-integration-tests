@@ -5,11 +5,15 @@
     xmlns:http="http://www.mulesoft.org/schema/mule/http"
     xmlns:heisenberg="http://www.mulesoft.org/schema/mule/heisenberg"
     xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
+    xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting"
+    xmlns:reconnection="http://www.mulesoft.org/schema/mule/reconnection"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
                http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
                http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
                http://www.mulesoft.org/schema/mule/heisenberg http://www.mulesoft.org/schema/mule/heisenberg/current/mule-heisenberg.xsd
+               http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd
+               http://www.mulesoft.org/schema/mule/reconnection http://www.mulesoft.org/schema/mule/reconnection/current/mule-reconnection.xsd
                http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
 
     <configuration defaultErrorHandler-ref="globalErrorHandler" />
@@ -60,6 +64,14 @@
         <heisenberg:call-gus-fring />
     </flow>
 
+    <flow name="operationErrorWithMappings">
+        <!-- This test uses http because the original issue couldn't be reproduced with heisenberg:call-gus-fring -->
+        <http:request method="GET" config-ref="HTTP_Request_configuration" url="https://httpbin.org/status/404">
+            <error-mapping sourceType="HTTP:NOT_FOUND" targetType="APP:MAPPED_CONNECTIVITY"/>
+            <error-mapping targetType="APP:ANYTHING_ELSE" />
+        </http:request>
+    </flow>
+
     <flow name="executeKillWithClient">
         <heisenberg:execute-remote-kill extension="HTTP" configName="HTTP_Request_configuration" operation="request" >
             <heisenberg:parameters>#[{'url': 'https://httpbin.org/status/200'}]</heisenberg:parameters>
@@ -87,7 +99,7 @@
     </flow>
 
     <flow name="flowFailing">
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
     </flow>
 
     <flow name="flowRaise">
@@ -95,7 +107,7 @@
     </flow>
 
     <flow name="flowFailingWithErrorHandler">
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <on-error-propagate>
                 <logger message="error handled for flow"/>
@@ -112,7 +124,7 @@
     </flow>
 
     <sub-flow name="failing-sub-flow">
-        <raise-error type="TEST:EXPECTED"/>
+        <raise-error type="APP:EXPECTED"/>
     </sub-flow>
 
     <flow name="implicitConfigInNestedScope">
@@ -130,22 +142,64 @@
 
     <flow name="operationWithChainFailing">
         <heisenberg:tap-phones>
-            <raise-error type="TEST:EXPECTED"/>
+            <raise-error type="APP:EXPECTED"/>
         </heisenberg:tap-phones>
         <error-handler>
             <test:on-error-check-log>
                 <test:check-equals>
                     <![CDATA[
                         Message               : An error occurred.
-                        Element               : operationWithChainFailing/processors/0/processors/0 @ ProcessorInterceptorFactoryChainTestCase#operationWithChainFailingLogsCorrectly:org/mule/test/integration/interception/processor-interceptor-factory.xml:133
-                        Element DSL           : <raise-error type="TEST:EXPECTED"></raise-error>
-                        Error type            : TEST:EXPECTED
-                        FlowStack             : at operationWithChainFailing(operationWithChainFailing/processors/0/processors/0 @ ProcessorInterceptorFactoryChainTestCase#operationWithChainFailingLogsCorrectly:org/mule/test/integration/interception/processor-interceptor-factory.xml:133)
+                        Element               : operationWithChainFailing/processors/0/processors/0 @ ProcessorInterceptorFactoryChainTestCase#operationWithChainFailingLogsCorrectly:org/mule/test/integration/interception/processor-interceptor-factory.xml:145
+                        Element DSL           : <raise-error type="APP:EXPECTED"></raise-error>
+                        Error type            : APP:EXPECTED
+                        FlowStack             : at operationWithChainFailing(operationWithChainFailing/processors/0/processors/0 @ ProcessorInterceptorFactoryChainTestCase#operationWithChainFailingLogsCorrectly:org/mule/test/integration/interception/processor-interceptor-factory.xml:145)
                         (set debug level logging or '-Dmule.verbose.exceptions=true' for everything)
                     ]]>
                 </test:check-equals>
             </test:on-error-check-log>
         </error-handler>
+    </flow>
+
+    <flow name="interceptingScriptingParameters">
+        <scripting:execute engine="Groovy" doc:name="Execute 5" target="scriptResult">
+            <scripting:code ><![CDATA[return 5;]]></scripting:code>
+        </scripting:execute>
+    </flow>
+
+    <flow name="operationWithChainAndCallback">
+        <heisenberg:tap-phones>
+            <logger/>
+        </heisenberg:tap-phones>
+    </flow>
+
+    <flow name="operationWithDeferredStreamParam">
+        <!-- deferred=true means that the generated stream is not repeatable, to force the issue -->
+        <set-variable variableName="door" value="#[%dw 2.0 output application/json deferred=true --- {'victim': 'Jim Malone', 'address': '1634 Racine Ave'}]"/>
+        <heisenberg:knock knockedDoor="#[vars.door]"/>
+    </flow>
+
+    <reconnection:config name="reconnection_Config" configId="dsa" >
+        <reconnection:connection>
+            <reconnection >
+                <reconnect count="4" frequency="50"/>
+            </reconnection>
+        </reconnection:connection>
+    </reconnection:config>
+
+    <reconnection:config name="reconnection_Config_fail" configId="dsa2" >
+        <reconnection:connection>
+            <reconnection >
+                <reconnect count="1" frequency="50"/>
+            </reconnection>
+        </reconnection:connection>
+    </reconnection:config>
+
+    <flow name="reconnectionWorksWithInterceptors">
+        <reconnection:get-retry-policy-template config-ref="reconnection_Config"/>
+    </flow>
+
+    <flow name="reconnectionFailureWorksWithInterceptors">
+        <reconnection:get-retry-policy-template config-ref="reconnection_Config_fail"/>
     </flow>
 
 </mule>

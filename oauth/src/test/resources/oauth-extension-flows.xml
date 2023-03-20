@@ -16,11 +16,15 @@
 
     <flow name="afterFlow">
         <set-variable variableName="ownerId" value="#[payload.resourceOwnerId]" />
-        <test-oauth:capture-callback-payloads request="#[vars.authCodeRequest]" state="#[payload]" config-ref="oauth"/>
+        <test-oauth:capture-sdk-callback-payloads request="#[vars.authCodeRequest]" state="#[payload]" config-ref="oauth"/>
     </flow>
 
     <flow name="refreshToken">
         <test-oauth:token-expired config-ref="oauth" />
+    </flow>
+
+    <flow name="refreshTokenAsync">
+        <test-oauth:token-expired-async config-ref="oauth" />
     </flow>
     
     <flow name="unauthorize">
@@ -37,6 +41,28 @@
         <foreach>
             <set-variable variableName="accumulator" value="#[vars.accumulator + payload]" />
         </foreach>
+    </flow>
+
+    <flow name="metadata">
+        <test-oauth:metadata-operation metadataKey="key" inputParameter="parameter" config-ref="oauth"/>
+    </flow>
+
+    <flow name="anotherMetadata">
+        <test-oauth:another-metadata-operation metadataKey="key" inputParameter="parameter" config-ref="oauth"/>
+    </flow>
+
+    <flow name="entitiesMetadata">
+        <test-oauth:entities-metadata-operation config-ref="oauth">
+            <test-oauth:key>key</test-oauth:key>
+        </test-oauth:entities-metadata-operation>
+    </flow>
+
+    <flow name="values">
+        <test-oauth:values-operation parameter="values" config-ref="oauth"/>
+    </flow>
+
+    <flow name="sampleData">
+        <test-oauth:sample-data-operation config-ref="oauth"/>
     </flow>
 
 </mule>

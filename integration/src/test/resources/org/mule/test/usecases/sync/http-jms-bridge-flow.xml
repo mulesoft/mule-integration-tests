@@ -3,22 +3,28 @@
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:http="http://www.mulesoft.org/schema/mule/http"
       xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xmlns:test-components="http://www.mulesoft.org/schema/mule/test-components"
       xsi:schemaLocation="
        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
        http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
-       http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+       http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+       http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
 
     <http:listener-config name="listenerConfig">
     	<http:listener-connection host="localhost" port="${port}"/>
     </http:listener-config>
 
+    <test-components:queue-config name="out">
+        <test-components:connection />
+    </test-components:queue-config>
+
     <flow name="bridge">
         <http:listener path="in" config-ref="listenerConfig"/>
-        <object-to-string-transformer/>
+        <set-payload value="#[%dw 2.0 output application/java --- payload.^raw as String]"/>
         <test:processor logMessageDetails="true"/>
         <!-- TODO MULE-9857 Make message properties case sensitive -->
         <test:assert expression="#[attributes.headers['x-custom-header'] == 'value']"/>
-        <test:queue name="out"/>
+        <test-components:queue-push config-ref="out"/>
     </flow>
 
 </mule>

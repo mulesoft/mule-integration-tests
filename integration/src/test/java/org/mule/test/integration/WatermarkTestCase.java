@@ -8,6 +8,8 @@ package org.mule.test.integration;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mule.test.allure.AllureConstants.SourcesFeature.SOURCES;
+import static org.mule.test.allure.AllureConstants.SourcesFeature.SourcesStories.WATERMARK;
 
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
@@ -24,6 +26,11 @@ import java.util.List;
 
 import org.junit.Test;
 
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
+
+@Feature(SOURCES)
+@Story(WATERMARK)
 public class WatermarkTestCase extends AbstractIntegrationTestCase {
 
   private static final String LAST_WATERMARK_KEY = "lastWatermark";
@@ -55,7 +62,7 @@ public class WatermarkTestCase extends AbstractIntegrationTestCase {
 
   @Override
   protected String getConfigFile() {
-    return "watermark-config.xml";
+    return "org/mule/test/integration/watermark-config.xml";
   }
 
   @Override

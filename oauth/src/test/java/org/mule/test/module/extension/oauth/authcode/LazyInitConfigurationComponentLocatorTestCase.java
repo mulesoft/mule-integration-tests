@@ -13,13 +13,11 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.component.location.Location.builder;
-import static org.mule.runtime.config.api.SpringXmlConfigurationBuilderFactory.createConfigurationBuilder;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentLocatorStory.SEARCH_CONFIGURATION;
 
 import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.config.api.LazyComponentInitializer;
-import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.test.module.extension.oauth.BaseOAuthExtensionTestCase;
 
 import java.util.List;
@@ -55,10 +53,8 @@ public class LazyInitConfigurationComponentLocatorTestCase extends BaseOAuthExte
   }
 
   @Override
-  protected ConfigurationBuilder getBuilder() throws Exception {
-    final ConfigurationBuilder configurationBuilder = createConfigurationBuilder(getConfigFiles(), true);
-    configureSpringXmlConfigurationBuilder(configurationBuilder);
-    return configurationBuilder;
+  public boolean disableXmlValidations() {
+    return true;
   }
 
   @Description("Lazy init should not create components until an operation is done")
@@ -76,8 +72,14 @@ public class LazyInitConfigurationComponentLocatorTestCase extends BaseOAuthExte
 
                                   "oauth",
                                   "oauth/connection",
-                                  "oauth/connection/0",
-                                  "oauth/connection/1",
+                                  "oauth/connection/1/0",
+                                  "oauth/connection/1/2",
+                                  "oauth/connection/3",
+                                  "oauth/connection/1/1",
+                                  "oauth/connection/2",
+                                  "oauth/connection/0/0",
+                                  "oauth/connection/0/1",
+                                  "oauth/connection/4/0",
 
                                   "getConnection",
                                   "getConnection/processors/0",
@@ -92,6 +94,9 @@ public class LazyInitConfigurationComponentLocatorTestCase extends BaseOAuthExte
                                   "refreshToken",
                                   "refreshToken/processors/0",
 
+                                  "refreshTokenAsync",
+                                  "refreshTokenAsync/processors/0",
+
                                   "unauthorize",
                                   "unauthorize/processors/0",
 
@@ -102,7 +107,22 @@ public class LazyInitConfigurationComponentLocatorTestCase extends BaseOAuthExte
                                   "pagedOperationFailsAtThirdPage/processors/0",
                                   "pagedOperationFailsAtThirdPage/processors/1",
                                   "pagedOperationFailsAtThirdPage/processors/2",
-                                  "pagedOperationFailsAtThirdPage/processors/2/processors/0"));
+                                  "pagedOperationFailsAtThirdPage/processors/2/processors/0",
+
+                                  "metadata",
+                                  "metadata/processors/0",
+
+                                  "anotherMetadata",
+                                  "anotherMetadata/processors/0",
+
+                                  "entitiesMetadata",
+                                  "entitiesMetadata/processors/0",
+
+                                  "values",
+                                  "values/processors/0",
+
+                                  "sampleData",
+                                  "sampleData/processors/0"));
 
     assertThat(locator.find(builder().globalName("oauth").build()), is(empty()));
     assertThat(locator.find(builder().globalName("listenerConfig").build()), is(empty()));

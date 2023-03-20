@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:test="http://www.mulesoft.org/schema/mule/test"
-      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:test-components="http://www.mulesoft.org/schema/mule/test-components" xsi:schemaLocation="
     http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-    http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+    http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
+    http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
+
+    <test-components:queue-config name="dlq">
+        <test-components:connection />
+    </test-components:queue-config>
 
     <flow name="tryInErrorHandler">
         <raise-error type="APP:SOME"/>
@@ -20,5 +26,90 @@
             </on-error-continue>
         </error-handler>
     </flow>
+
+    <flow name="tryWithRecursiveOnErrorContinueInsideSubflow">
+        <flow-ref name="tryWithRecursiveOnErrorContinueSubflow"/>
+        <error-handler >
+            <on-error-continue type="CUSTOM:CUSTOM_ERROR">
+                <logger level="INFO" message="Main flow strategy reached." />
+                <test-components:queue-push config-ref="dlq"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="tryWithRecursiveOnErrorContinueInsideFlow">
+        <flow-ref name="tryWithRecursiveOnErrorContinueFlow"/>
+        <error-handler >
+            <on-error-continue type="CUSTOM:CUSTOM_ERROR">
+                <logger level="INFO" message="Main flow strategy reached." />
+                <test-components:queue-push config-ref="dlq"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <sub-flow name="tryWithRecursiveOnErrorContinueSubflow">
+        <try>
+            <raise-error type="CUSTOM:CUSTOM_ERROR" description="Custom Error is Raised" />
+            <error-handler >
+                <on-error-continue type="CUSTOM:CUSTOM_ERROR" when="(vars.errorCallCount default 0) &lt; 2">
+                    <set-variable value="#[(vars.errorCallCount default 0) + 1]" variableName="errorCallCount"/>
+                    <logger level="INFO" message="Retrying subflow processing." />
+                    <flow-ref name="tryWithRecursiveOnErrorContinueSubflow" />
+                </on-error-continue>
+                <on-error-propagate type="CUSTOM:CUSTOM_ERROR">
+                    <logger level="INFO" message="Retries exhausted. Propagating error." />
+                </on-error-propagate>
+            </error-handler>
+        </try>
+    </sub-flow>
+
+    <flow name="tryWithRecursiveOnErrorContinueFlow">
+        <try>
+            <raise-error type="CUSTOM:CUSTOM_ERROR" description="Custom Error is Raised" />
+            <error-handler >
+                <on-error-continue type="CUSTOM:CUSTOM_ERROR" when="(vars.errorCallCount default 0) &lt; 2">
+                    <set-variable value="#[(vars.errorCallCount default 0) + 1]" variableName="errorCallCount"/>
+                    <logger level="INFO" message="Retrying subflow processing." />
+                    <flow-ref name="tryWithRecursiveOnErrorContinueSubflow" />
+                </on-error-continue>
+                <on-error-propagate type="CUSTOM:CUSTOM_ERROR">
+                    <logger level="INFO" message="Retries exhausted. Propagating error." />
+                </on-error-propagate>
+            </error-handler>
+        </try>
+    </flow>
+
+    <flow name="tryWithOnErrorHandlersComposition">
+        <set-variable variableName="test" value="#[0]"/>
+        <try>
+            <try>
+                <raise-error type="APP:TO_PROPAGATE_GLOBAL_ERROR_HANDLER"/>
+                <error-handler ref="failing-on-error-propagate-global-error-handler"/>
+            </try>
+            <set-variable variableName="test" value="#[vars.test + 1]"/>
+            <error-handler>
+                <on-error-continue>
+                    <set-variable variableName="test" value="#[vars.test + 1]"/>
+                </on-error-continue>
+            </error-handler>
+        </try>
+        <test:assert expression="#[vars.test == 3]" />
+    </flow>
+
+    <error-handler name="failing-on-error-propagate-global-error-handler">
+        <on-error-propagate>
+            <try>
+                <raise-error type="APP:TO_CONTINUE_GLOBAL_ERROR_HANDLER"/>
+                <error-handler ref="on-error-continue-global-error-handler"/>
+            </try>
+            <set-variable variableName="test" value="#[vars.test + 1]"/>
+        </on-error-propagate>
+    </error-handler>
+
+    <error-handler name="on-error-continue-global-error-handler">
+        <on-error-continue>
+            <set-variable variableName="test" value="#[vars.test + 1]"/>
+        </on-error-continue>
+    </error-handler>
 
 </mule>

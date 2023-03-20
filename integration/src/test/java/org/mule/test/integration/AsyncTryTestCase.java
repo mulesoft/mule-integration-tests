@@ -8,26 +8,31 @@ package org.mule.test.integration;
 
 import static java.util.Arrays.asList;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mule.functional.api.component.InvocationCountMessageProcessor.getNumberOfInvocationsFor;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.AsyncStory.ASYNC;
 import static org.mule.test.allure.AllureConstants.ScopeFeature.SCOPE;
+
 import org.mule.runtime.api.util.concurrent.Latch;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.runner.RunnerDelegateTo;
+import org.mule.tests.api.TestQueueManager;
 
 import java.util.Collection;
+
+import javax.inject.Inject;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Issue;
 import io.qameta.allure.Stories;
 import io.qameta.allure.Story;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
 
 @Feature(SCOPE)
 @Stories({@Story(ASYNC), @Story(ERROR_HANDLING)})
@@ -35,7 +40,7 @@ import org.junit.runners.Parameterized.Parameters;
 @RunnerDelegateTo(Parameterized.class)
 public class AsyncTryTestCase extends AbstractIntegrationTestCase {
 
-  private String flowName;
+  private final String flowName;
   private Latch latch;
 
   @Parameters(name = "{0}")
@@ -50,13 +55,16 @@ public class AsyncTryTestCase extends AbstractIntegrationTestCase {
                   "trigger-simplified");
   }
 
+  @Inject
+  private TestQueueManager queueManager;
+
   public AsyncTryTestCase(String flowName) {
     this.flowName = flowName;
   }
 
   @Override
   protected String getConfigFile() {
-    return "async-try-config.xml";
+    return "org/mule/test/integration/async-try-config.xml";
   }
 
   @Before
@@ -68,6 +76,7 @@ public class AsyncTryTestCase extends AbstractIntegrationTestCase {
   public void executesTheProcessorAfterTry() throws Exception {
     flowRunner(flowName).withVariable("latch", latch).run();
     latch.await(RECEIVE_TIMEOUT, MILLISECONDS);
-    assertThat(getNumberOfInvocationsFor("invocation-counter"), is(1));
+
+    assertThat(queueManager.read("invocationQueue", RECEIVE_TIMEOUT, MILLISECONDS), not(nullValue()));;
   }
 }

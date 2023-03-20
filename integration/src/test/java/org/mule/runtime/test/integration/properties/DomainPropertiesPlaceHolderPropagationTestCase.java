@@ -9,17 +9,25 @@ package org.mule.runtime.test.integration.properties;
 import static java.lang.System.lineSeparator;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+import static org.mule.test.allure.AllureConstants.ConfigurationProperties.CONFIGURATION_PROPERTIES;
+import static org.mule.test.allure.AllureConstants.ConfigurationProperties.ComponentConfigurationAttributesStory.CONFIGURATION_PROPERTIES_RESOLVER_STORY;
 
 import org.mule.functional.junit4.ApplicationContextBuilder;
 import org.mule.functional.junit4.DomainContextBuilder;
 import org.mule.runtime.api.component.ConfigurationProperties;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.internal.registry.DefaultRegistry;
+import org.mule.runtime.deployment.model.api.artifact.ArtifactContext;
 import org.mule.tck.junit4.AbstractMuleTestCase;
 
 import org.junit.After;
 import org.junit.Test;
 
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
+
+@Feature(CONFIGURATION_PROPERTIES)
+@Story(CONFIGURATION_PROPERTIES_RESOLVER_STORY)
 public class DomainPropertiesPlaceHolderPropagationTestCase extends AbstractMuleTestCase {
 
   private MuleContext domainContext;
@@ -66,11 +74,17 @@ public class DomainPropertiesPlaceHolderPropagationTestCase extends AbstractMule
   }
 
   private void configureContexts(String domainConfig, String appConfig) throws Exception {
-    domainContext = new DomainContextBuilder().setContextId(DomainPropertiesPlaceHolderPropagationTestCase.class.getSimpleName())
-        .setDomainConfig(domainConfig).build();
-    applicationContext =
-        new ApplicationContextBuilder().setContextId(DomainPropertiesPlaceHolderPropagationTestCase.class.getSimpleName())
-            .setApplicationResources(new String[] {appConfig}).setDomainContext(domainContext).build();
+    final ArtifactContext domainArtifactContext = new DomainContextBuilder()
+        .setContextId(DomainPropertiesPlaceHolderPropagationTestCase.class.getSimpleName())
+        .setDomainConfig(domainConfig)
+        .build();
+    domainContext = domainArtifactContext
+        .getMuleContext();
+    applicationContext = new ApplicationContextBuilder()
+        .setContextId(DomainPropertiesPlaceHolderPropagationTestCase.class.getSimpleName())
+        .setApplicationResources(appConfig)
+        .setDomainArtifactContext(domainArtifactContext)
+        .build();
   }
 
   @After

@@ -6,20 +6,22 @@
  */
 package org.mule.test.el;
 
+import static org.mule.test.allure.AllureConstants.ExpressionLanguageFeature.EXPRESSION_LANGUAGE;
+
 import static org.junit.Assert.assertEquals;
-import static org.mule.runtime.api.message.Message.of;
-import static org.mule.tck.MuleTestUtils.getTestFlow;
 
 import org.mule.runtime.core.api.el.ExpressionManager;
-import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.test.AbstractIntegrationTestCase;
-
-import org.junit.Before;
-import org.junit.Test;
 
 import java.text.DateFormat;
 import java.util.Locale;
 
+import org.junit.Before;
+import org.junit.Test;
+
+import io.qameta.allure.Feature;
+
+@Feature(EXPRESSION_LANGUAGE)
 public class ExpressionLanguageConfigTestCase extends AbstractIntegrationTestCase {
 
   ExpressionManager el;
@@ -47,38 +49,6 @@ public class ExpressionLanguageConfigTestCase extends AbstractIntegrationTestCas
   @Test
   public void testExpressionLanguageAlias() {
     assertEquals(muleContext.getConfiguration().getId(), evaluate("appName"));
-  }
-
-  @Test
-  public void testExpressionLanguageGlobalFunction() {
-    // NOTE: This indirectly asserts that echo() function defined in config file rather than external
-    // function definition file is being used (otherwise hiOTHER' would be returned
-
-    assertEquals("hi", evaluate("echo('hi')"));
-  }
-
-  @Test
-  public void testExpressionLanguageGlobalFunctionFromFile() {
-    assertEquals("hi", evaluate("echo2('hi')"));
-  }
-
-  @Test
-  public void testExpressionLanguageGlobalFunctionUsingStaticContext() {
-    assertEquals("Hello " + muleContext.getConfiguration().getId() + "!", evaluate("hello()"));
-  }
-
-  @Test
-  public void testExpressionLanguageGlobalFunctionUsingMessageContext() throws Exception {
-    assertEquals("123appended", el.evaluate("mel:appendPayload()", CoreEvent.builder(testEvent()).message(of("123")).build(),
-                                            getTestFlow(muleContext).getLocation())
-        .getValue());
-  }
-
-  @Test
-  public void testExpressionLanguageGlobalFunctionUsingMessageContextAndImport() throws Exception {
-    assertEquals("321", el.evaluate("mel:reversePayload()", CoreEvent.builder(testEvent()).message(of("123")).build(),
-                                    getTestFlow(muleContext).getLocation())
-        .getValue());
   }
 
   @Test

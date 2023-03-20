@@ -23,7 +23,6 @@ import static org.mule.runtime.core.api.event.EventContextFactory.create;
 import static org.mule.runtime.dsl.api.component.config.DefaultComponentLocation.from;
 import static org.mule.test.allure.AllureConstants.SchedulerServiceFeature.SCHEDULER_SERVICE;
 
-import org.mule.functional.api.component.SkeletonSource;
 import org.mule.functional.api.exception.ExpectedError;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.exception.MuleRuntimeException;
@@ -40,8 +39,10 @@ import org.mule.runtime.core.api.config.DefaultMuleConfiguration;
 import org.mule.runtime.core.api.config.builders.AbstractConfigurationBuilder;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
+import org.mule.runtime.core.api.source.MessageSource;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.RejectedExecutionException;
@@ -151,18 +152,20 @@ public class SchedulerServiceTestCase extends AbstractIntegrationTestCase {
   @Description("Tests that an OVERLOAD error is handled only by the message source."
       + " This assumes org.mule.test.integration.exceptions.ErrorHandlerTestCase#criticalNotHandled")
   public void overloadErrorHandlingFromSource() throws Throwable {
-    SkeletonSource messageSource =
-        (SkeletonSource) locator.find(builderFromStringRepresentation("delaySchedule/source").build()).get();
+    MessageSource messageSource =
+        (MessageSource) locator.find(builderFromStringRepresentation("delaySchedule/source").build()).get();
 
     expectedError.expectErrorType("MULE", "OVERLOAD");
     expectedError.expectCause(instanceOf(RejectedExecutionException.class));
 
-    messageSource.getListener()
+    final Field messageProcessorField = messageSource.getClass().getDeclaredField("messageProcessor");
+    messageProcessorField.setAccessible(true);
+    final Processor listener = (Processor) messageProcessorField.get(messageSource);
+    listener
         .process(CoreEvent
             .builder(create("id", "serverd", from(SchedulerServiceTestCase.class.getSimpleName()), null, empty()))
             .message(of(null))
             .build());
-
   }
 
   @Test

@@ -31,6 +31,8 @@ import org.junit.Test;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
+import org.mule.tck.probe.JUnitLambdaProbe;
+import org.mule.tck.probe.PollingProber;
 
 @Feature(LIFECYCLE_AND_DEPENDENCY_INJECTION)
 @Story(GRACEFUL_SHUTDOWN_STORY)
@@ -67,16 +69,24 @@ public class ExpiredShutdownTimeoutRequestResponseTestCase extends AbstractShutd
     doShutDownTest("http://localhost:" + httpPort.getNumber() + "/setPayloadTx");
   }
 
+  @Test
+  public void testSetPayloadThroughScatterGatherWithFlowRefs() throws Throwable {
+    doShutDownTest("http://localhost:" + httpPort.getNumber() + "/setPayloadSgFr");
+  }
+
   private void doShutDownTest(final String url) throws Throwable {
     final Future<?> requestTask = executor.submit(() -> {
       try {
-        HttpRequest request = HttpRequest.builder().uri(url).entity(new ByteArrayHttpEntity(TEST_MESSAGE.getBytes()))
-            .method(POST).build();
+        new PollingProber().check(new JUnitLambdaProbe(() -> {
+          HttpRequest request = HttpRequest.builder().uri(url).entity(new ByteArrayHttpEntity(TEST_MESSAGE.getBytes()))
+              .method(POST).build();
 
-        HttpResponse response =
-            httpClient.send(request, HttpRequestOptions.builder().responseTimeout(RECEIVE_TIMEOUT * 5).build());
+          HttpResponse response =
+              httpClient.send(request, HttpRequestOptions.builder().responseTimeout(RECEIVE_TIMEOUT * 5).build());
 
-        assertThat("Was able to process message ", response.getStatusCode(), is(not(OK.getStatusCode())));
+          assertThat("Was able to process message ", response.getStatusCode(), is(not(OK.getStatusCode())));
+          return true;
+        }, "Was not able to process message "));
       } catch (Exception e) {
         throw new MuleRuntimeException(e);
       }

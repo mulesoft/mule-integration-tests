@@ -14,7 +14,7 @@
 
     <flow name="testHttpDoLoginAndPlainEntireStreamResponseWithinFlow">
         <module-using-streaming:do-login-and-leave-entire-stream-response config-ref="la-plata-config" someUser="userLP" somePass="passLP" />
-        <object-to-string-transformer/>
+        <set-payload value="#[%dw 2.0 output application/java --- payload.^raw as String]"/>
     </flow>
 
     <flow name="testHttpDoLoginAndPlainBodyStreamResponseWithinOperation">
@@ -23,7 +23,7 @@
 
     <flow name="testHttpDoLoginAndPlainBodyStreamResponseWithinFlow">
         <module-using-streaming:do-login-and-leave-stream-body-response config-ref="la-plata-config" someUser="userLP" somePass="passLP" />
-        <object-to-string-transformer/>
+        <set-payload value="#[%dw 2.0 output application/java --- payload.^raw as String]"/>
     </flow>
 
     <flow name="testHttpDoLoginAndPlainEntireStreamResponseWithinOperationTns">

@@ -34,9 +34,28 @@
             </on-error-propagate>
         </error-handler>
     </flow>
+
     <flow name="customErrorThrower">
         <logger level="INFO" message="inside of get:\resources"/>
         <raise-error type="APP:CUSTOM_ERROR_TYPE" description="Failing on purpose."/>
+    </flow>
+
+    <flow name="flow-with-on-error-continue">
+        <raise-error type="CUSTOM:ERROR_2"/>
+        <error-handler>
+            <on-error-continue logException="true">
+                <set-payload value="#[payload + vars.myVar]"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="flow-with-on-error-propagate-and-on-error-continue-composition">
+        <raise-error type="CUSTOM:ERROR"/>
+        <error-handler>
+            <on-error-propagate logException="true">
+                <flow-ref name="flow-with-on-error-continue" />
+            </on-error-propagate>
+        </error-handler>
     </flow>
 
 </mule>

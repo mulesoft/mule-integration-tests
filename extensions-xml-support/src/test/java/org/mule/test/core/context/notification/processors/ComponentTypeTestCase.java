@@ -12,6 +12,7 @@ import static org.mule.runtime.api.component.ComponentIdentifier.buildFromString
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.OPERATION;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentTypeStore.COMPONENT_CONFIGURATION_TYPE;
+import static org.mule.test.allure.AllureConstants.XmlSdk.XML_SDK;
 
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.api.component.ComponentIdentifier;
@@ -21,9 +22,10 @@ import org.mule.test.IntegrationTestCaseRunnerConfig;
 import org.junit.Test;
 
 import io.qameta.allure.Feature;
+import io.qameta.allure.Features;
 import io.qameta.allure.Story;
 
-@Feature(CONFIGURATION_COMPONENT_LOCATOR)
+@Features({@Feature(XML_SDK), @Feature(CONFIGURATION_COMPONENT_LOCATOR)})
 @Story(COMPONENT_CONFIGURATION_TYPE)
 public class ComponentTypeTestCase extends MuleArtifactFunctionalTestCase implements IntegrationTestCaseRunnerConfig {
 

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:vm="http://www.mulesoft.org/schema/mule/vm"
+      xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xmlns:test-components="http://www.mulesoft.org/schema/mule/test-components"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+                           http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
+                           http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd
+                           http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
+
+    <vm:config name="VM_Config">
+        <vm:queues >
+          <vm:queue queueName="Q1" queueType="PERSISTENT" />
+        </vm:queues>
+    </vm:config>
+
+    <test-components:queue-config name="processed">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <flow name="publishConsumeThroughVM">
+        <vm:publish-consume queueName="Q1" config-ref="VM_Config" timeout="10"/>
+    </flow>
+
+    <flow name="queueListener">
+        <vm:listener queueName="Q1" config-ref="VM_Config">
+            <redelivery-policy/>
+        </vm:listener>
+
+        <test-components:queue-push config-ref="processed"/>
+    </flow>
+</mule>

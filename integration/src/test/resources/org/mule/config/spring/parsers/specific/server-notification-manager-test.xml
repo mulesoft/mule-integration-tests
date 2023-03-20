@@ -19,7 +19,7 @@
         <!-- this receives the simple test event -->
         <notification-listener ref="listener"/>
 
-        <!-- the admin event should go to the test interface 2, but not to the disabled adming interface -->
+        <!-- the admin event should go to the test interface 2, but not to the disabled admin interface -->
         <notification-listener ref="listener2"/>
         <notification-listener ref="securityListener"/>
 

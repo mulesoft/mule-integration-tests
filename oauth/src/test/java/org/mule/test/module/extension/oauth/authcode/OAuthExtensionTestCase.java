@@ -22,9 +22,9 @@ import org.mule.functional.api.exception.ExpectedError;
 import org.mule.runtime.api.store.ObjectStore;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.privileged.event.BaseEventContext;
-import org.mule.runtime.extension.api.connectivity.oauth.AuthCodeRequest;
 import org.mule.runtime.extension.api.connectivity.oauth.AuthorizationCodeState;
 import org.mule.runtime.extension.api.error.MuleErrors;
+import org.mule.sdk.api.connectivity.oauth.AuthCodeRequest;
 import org.mule.test.module.extension.oauth.BaseOAuthExtensionTestCase;
 import org.mule.test.oauth.AuthCodeConfig;
 import org.mule.test.oauth.TestOAuthConnection;
@@ -51,7 +51,6 @@ public class OAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
   @Before
   public void setOwnerId() throws Exception {
     ownerId = getCustomOwnerId();
-    storedOwnerId = getCustomOwnerId() + "-oauth";
   }
 
   @Test
@@ -71,32 +70,86 @@ public class OAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
     assertConnectionState(connection);
     assertExternalCallbackUrl((AuthorizationCodeState) connection.getState());
 
-    assertOAuthStateStored(BASE_PERSISTENT_OBJECT_STORE_KEY, storedOwnerId, ownerId);
+    assertOAuthStateStored(BASE_PERSISTENT_OBJECT_STORE_KEY, ownerId);
   }
 
   @Test
   public void refreshToken() throws Exception {
     receiveAccessTokenAndUserConnection();
     WireMock.reset();
-    stubTokenUrl(accessTokenContent(ACCESS_TOKEN + "-refreshed"));
+    stubRefreshToken();
     flowRunner("refreshToken").withVariable(OWNER_ID_VARIABLE_NAME, getCustomOwnerId()).run();
     wireMock.verify(postRequestedFor(urlPathEqualTo("/" + TOKEN_PATH)));
+  }
+
+  @Test
+  public void refreshTokenAsync() throws Exception {
+    receiveAccessTokenAndUserConnection();
+    WireMock.reset();
+    stubRefreshToken();
+    flowRunner("refreshTokenAsync").withVariable(OWNER_ID_VARIABLE_NAME, getCustomOwnerId()).run();
+    wireMock.verify(postRequestedFor(urlPathEqualTo("/" + TOKEN_PATH)));
+  }
+
+  @Test
+  public void refreshedTokenWasAlreadyExpired() throws Exception {
+    receiveAccessTokenAndUserConnection();
+    stubRefreshedTokenAlreadyExpired();
+
+    flowRunner("refreshToken").withVariable(OWNER_ID_VARIABLE_NAME, getCustomOwnerId()).run();
+    verifyTokenRefreshedTwice();
+  }
+
+  @Test
+  public void refreshedTokenWasAlreadyExpiredTwice() throws Exception {
+    receiveAccessTokenAndUserConnection();
+    stubRefreshedTokenAlreadyExpiredTwice();
+
+    expectExpiredTokenException();
+
+    try {
+      flowRunner("refreshToken").withVariable(OWNER_ID_VARIABLE_NAME, getCustomOwnerId()).run();
+    } finally {
+      verifyTokenRefreshedTwice();
+    }
   }
 
   @Test
   public void refreshTokenForPagedOperationOnFirstPage() throws Exception {
     receiveAccessTokenAndUserConnection();
     WireMock.reset();
-    stubTokenUrl(accessTokenContent(ACCESS_TOKEN + "-refreshed"));
+    stubTokenUrl(getRefreshTokenResponse());
     flowRunner("pagedOperationFailsAtFirstPage").withVariable(OWNER_ID_VARIABLE_NAME, getCustomOwnerId()).run();
     wireMock.verify(postRequestedFor(urlPathEqualTo("/" + TOKEN_PATH)));
+  }
+
+  @Test
+  public void refreshedTokenAlreadyExpiredForPagedOperationOnFirstPage() throws Exception {
+    receiveAccessTokenAndUserConnection();
+    stubRefreshedTokenAlreadyExpired();
+    flowRunner("pagedOperationFailsAtFirstPage").withVariable(OWNER_ID_VARIABLE_NAME, getCustomOwnerId()).run();
+    verifyTokenRefreshedTwice();
+  }
+
+  @Test
+  public void refreshedTokenAlreadyExpiredTwiceForPagedOperationOnFirstPage() throws Exception {
+    receiveAccessTokenAndUserConnection();
+
+    stubRefreshedTokenAlreadyExpiredTwice();
+    expectExpiredTokenException();
+
+    try {
+      flowRunner("pagedOperationFailsAtFirstPage").withVariable(OWNER_ID_VARIABLE_NAME, getCustomOwnerId()).run();
+    } finally {
+      verifyTokenRefreshedTwice();
+    }
   }
 
   @Test
   public void refreshTokenForPagedOperationOnThirdPage() throws Exception {
     receiveAccessTokenAndUserConnection();
     WireMock.reset();
-    stubTokenUrl(accessTokenContent(ACCESS_TOKEN + "-refreshed"));
+    stubTokenUrl(getRefreshTokenResponse());
     CoreEvent event = flowRunner("pagedOperationFailsAtThirdPage")
         .withVariable(OWNER_ID_VARIABLE_NAME, getCustomOwnerId())
         .run();
@@ -105,6 +158,36 @@ public class OAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
     List<String> accumulator = (List<String>) event.getVariables().get("accumulator").getValue();
     assertThat(accumulator, hasSize(3));
     assertThat(accumulator, Matchers.contains("item 1", "item 2", "item 3"));
+  }
+
+  @Test
+  public void refreshedTokenAlreadyExpiredForPagedOperationOnThirdPage() throws Exception {
+    receiveAccessTokenAndUserConnection();
+    stubRefreshedTokenAlreadyExpired();
+    CoreEvent event = flowRunner("pagedOperationFailsAtThirdPage")
+        .withVariable(OWNER_ID_VARIABLE_NAME, getCustomOwnerId())
+        .run();
+
+    verifyTokenRefreshedTwice();
+    List<String> accumulator = (List<String>) event.getVariables().get("accumulator").getValue();
+    assertThat(accumulator, hasSize(3));
+    assertThat(accumulator, Matchers.contains("item 1", "item 2", "item 3"));
+  }
+
+  @Test
+  public void refreshedTokenAlreadyExpiredTwiceForPagedOperationOnThirdPage() throws Exception {
+    receiveAccessTokenAndUserConnection();
+
+    stubRefreshedTokenAlreadyExpiredTwice();
+    expectExpiredTokenException();
+
+    try {
+      flowRunner("pagedOperationFailsAtThirdPage")
+          .withVariable(OWNER_ID_VARIABLE_NAME, getCustomOwnerId())
+          .run();
+    } finally {
+      verifyTokenRefreshedTwice();
+    }
   }
 
   @Test
@@ -141,7 +224,7 @@ public class OAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
 
     flowRunner("unauthorize").withVariable(OWNER_ID_VARIABLE_NAME, ownerId).run();
     ObjectStore objectStore = getObjectStore(BASE_PERSISTENT_OBJECT_STORE_KEY);
-    assertThat(objectStore.contains(storedOwnerId), is(false));
+    assertThat(objectStore.retrieveAll().size(), is(0));
 
     if (expectedError != null) {
       expectedError.expectErrorType("TEST-OAUTH", MuleErrors.CONNECTIVITY.name());

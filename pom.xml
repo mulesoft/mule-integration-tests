@@ -4,13 +4,13 @@
   <parent>
     <groupId>org.mule.runtime</groupId>
     <artifactId>mule</artifactId>
-    <version>4.4.0-SNAPSHOT</version>
+    <version>4.6.0-SNAPSHOT</version>
     <relativePath></relativePath>
   </parent>
   
   <groupId>org.mule.tests</groupId>
   <artifactId>mule-extensions-integration-tests</artifactId>
-  <version>4.4.0-SNAPSHOT</version>
+  <version>4.6.0-SNAPSHOT</version>
 
   <packaging>pom</packaging>
   <name>Mule Tests</name>
@@ -23,42 +23,26 @@
     <module>security</module>
     <module>oauth</module>
     <module>schedulers-tests</module>
-    <module>mule-test-smart-connectors-parent</module>
     <module>munit-tests</module>
+    <module>extensions-mule-support</module>
     <module>extensions-xml-support</module>
     <module>logging</module>
+    <module>tooling-support-tests</module>
+    <module>tracing</module>
   </modules>
 
   <properties>
-    <muleSchedulerServiceTestVersion>1.4.0-SNAPSHOT</muleSchedulerServiceTestVersion>
-    <muleHttpServiceTestVersion>1.6.0-SNAPSHOT</muleHttpServiceTestVersion>
-    <muleOAuthServiceTestVersion>2.1.0-SNAPSHOT</muleOAuthServiceTestVersion>
-    <muleSoapServiceTestVersion>1.4.0-SNAPSHOT</muleSoapServiceTestVersion>
-    <muleExtensionTestSoapTestVersion>1.4.0-SNAPSHOT</muleExtensionTestSoapTestVersion>
-
+    <munitVersion>2.4.0-SNAPSHOT</munitVersion>
+    <muleExtensionTestSoapTestVersion>1.6.0-SNAPSHOT</muleExtensionTestSoapTestVersion>
     <muleSpringModuleTestVersion>1.4.0-SNAPSHOT</muleSpringModuleTestVersion>
-    <muleValidationModuleTestVersion>1.5.0-SNAPSHOT</muleValidationModuleTestVersion>
-    <muleScriptingModuleTestVersion>1.2.0-SNAPSHOT</muleScriptingModuleTestVersion>
-    <muleFileCommonsTestVersion>1.4.0-SNAPSHOT</muleFileCommonsTestVersion>
 
-    <muleHttpConnectorTestVersion>1.6.0-SNAPSHOT</muleHttpConnectorTestVersion>
-    <muleVmConnectorTestVersion>2.1.0-SNAPSHOT</muleVmConnectorTestVersion>
-    <muleFileConnectorTestVersion>2.0.0-SNAPSHOT</muleFileConnectorTestVersion>
-    <muleObjectStoreConnectorTestVersion>1.2.0-SNAPSHOT</muleObjectStoreConnectorTestVersion>
-    <muleJavaModuleTestVersion>1.3.0-SNAPSHOT</muleJavaModuleTestVersion>
-    <muleAggregatorsModuleTestVersion>1.1.0-SNAPSHOT</muleAggregatorsModuleTestVersion>
-    <muleDbConnectorTestVersion>1.9.0-SNAPSHOT</muleDbConnectorTestVersion>
-    <muleFtpConnectorTestVersion>2.0.0-SNAPSHOT</muleFtpConnectorTestVersion>
-    <muleJmsConnectorTestVersion>1.8.0-SNAPSHOT</muleJmsConnectorTestVersion>
-    <muleWscConnectorTestVersion>1.6.0-SNAPSHOT</muleWscConnectorTestVersion>
-    <muleOauthModuleTestVersion>1.2.0-SNAPSHOT</muleOauthModuleTestVersion>
-    <muleSocketsConnectorTestVersion>1.3.0-SNAPSHOT</muleSocketsConnectorTestVersion>
+    <munitExtensionsMavenPlugin>1.1.3</munitExtensionsMavenPlugin>
 
-    <munitExtensionsMavenPlugin>1.0.0</munitExtensionsMavenPlugin>
-
-    <apacheHttpCoreVersion>4.4.6</apacheHttpCoreVersion>
-    <apacheHttpClientVersion>4.5.3</apacheHttpClientVersion>
+    <apacheHttpClientVersion>4.5.13</apacheHttpClientVersion>
     <springVersion>5.1.6.RELEASE</springVersion>
+
+    <muleDependenciesVersion>1.x-SNAPSHOT</muleDependenciesVersion>
+    <muleTestComponentsVersion>4.6.0-SNAPSHOT</muleTestComponentsVersion>
   </properties>
 
   <build>
@@ -83,6 +67,19 @@
       </plugins>
     </pluginManagement>
   </build>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.mulesoft.mule.runtime.bom</groupId>
+        <artifactId>mule-test-dependencies-bom</artifactId>
+        <version>${muleDependenciesVersion}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
   <dependencies>
     <dependency>
       <groupId>org.mule.services</groupId>
@@ -94,7 +91,13 @@
         <groupId>org.mule.runtime</groupId>
         <artifactId>mule-dwb-api</artifactId> 
         <scope>provided</scope>         
-    </dependency> 
+    </dependency>
+    <dependency>
+      <groupId>org.mule.tests</groupId>
+      <artifactId>test-components</artifactId>
+      <version>${muleTestComponentsVersion}</version>
+      <classifier>mule-plugin</classifier>
+    </dependency>
   </dependencies>
 
   <repositories>
@@ -136,11 +139,61 @@
                     <requireReleaseDeps>
                       <message>No Snapshots Allowed in Deps!</message>
                       <excludes>
+                        <exclude>org.mule.modules:mule-spring-module</exclude>
+                        <exclude>org.mule.modules:mule-spring-module-tests</exclude>
+                        <exclude>org.mule.modules:mule-spring-test-plugin</exclude>
+                      </excludes>
+                    </requireReleaseDeps>
+                    <requireReleaseVersion>
+                      <message>No Snapshots Allowed in Project Version!</message>
+                    </requireReleaseVersion>
+                    <requirePluginVersions>
+                      <message>Best Practice is to always define plugin versions!</message>
+                      <unCheckedPluginList>
+                        org.apache.maven.plugins:maven-clean-plugin
+                      </unCheckedPluginList>
+                    </requirePluginVersions>
+                  </rules>
+                  <skip>${skipNoSnapshotsEnforcerPluginRule}</skip>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>release-dry-run</id>
+      <properties>
+        <skipNoSnapshotsEnforcerPluginRule>false</skipNoSnapshotsEnforcerPluginRule>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-enforcer-plugin</artifactId>
+            <version>${maven.enforcer.plugin.version}</version>
+            <executions>
+              <execution>
+                <id>enforce-no-snapshots-in-deps</id>
+                <goals>
+                  <goal>enforce</goal>
+                </goals>
+                <configuration>
+                  <rules>
+                    <requireReleaseDeps>
+                      <message>No Snapshots Allowed in Deps!</message>
+                      <excludes>
                         <exclude>com.mulesoft.munit:*</exclude>
-                          <exclude>org.mule.weave:*</exclude>
-                          <exclude>org.mule.services:*</exclude>
-                          <exclude>org.mule.tools.maven:mule-classloader-model</exclude>
-                          <exclude>org.mule.modules:mule-module-cors-kernel</exclude>
+                        <exclude>org.mule.weave:*</exclude>
+                        <exclude>org.mule.runtime:mule-dwb-api</exclude>
+                        <exclude>org.mule.services:*</exclude>
+                        <exclude>org.mule.tools.maven:mule-classloader-model</exclude>
+                        <exclude>org.mule.modules:mule-module-cors-kernel</exclude>
+
+                        <exclude>org.mule.modules:mule-spring-module</exclude>
+                        <exclude>org.mule.modules:mule-spring-module-tests</exclude>
+                        <exclude>org.mule.modules:mule-spring-test-plugin</exclude>
                       </excludes>
                     </requireReleaseDeps>
                     <requireReleaseVersion>

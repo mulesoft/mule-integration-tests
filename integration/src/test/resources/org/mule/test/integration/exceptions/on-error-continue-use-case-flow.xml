@@ -2,15 +2,15 @@
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:http="http://www.mulesoft.org/schema/mule/http"
-      xmlns:test="http://www.mulesoft.org/schema/mule/test"
       xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
       xmlns:script="http://www.mulesoft.org/schema/mule/scripting"
+      xmlns:test-components="http://www.mulesoft.org/schema/mule/test-components"
       xsi:schemaLocation="
        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-       http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
        http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd
        http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
-       http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
+       http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd
+       http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
 
     <http:listener-config name="listenerConfig">
         <http:listener-connection host="localhost" port="${port1}"/>
@@ -23,6 +23,18 @@
         </http:listener-connection>
     </http:listener-config>
 
+    <test-components:queue-config name="out">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="out1">
+        <test-components:connection />
+    </test-components:queue-config>
+
+    <test-components:queue-config name="out2">
+        <test-components:connection />
+    </test-components:queue-config>
+
     <object name="failing" class="org.mule.test.integration.exceptions.OnErrorContinueTestCase$FailingProcessor"/>
     <object name="error" class="org.mule.test.integration.exceptions.OnErrorContinueTestCase$ErrorProcessor"/>
     <object name="load-news" class="org.mule.test.integration.exceptions.OnErrorContinueTestCase$LoadNewsProcessor"/>
@@ -30,38 +42,38 @@
 
     <flow name="httpContinueProcessingActualMessage">
         <http:listener path="service" config-ref="listenerConfig"/>
-        <processor ref="load-news"/>
-        <test:processor throwException="true"/>
+        <flow-ref name="load-news"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <on-error-continue>
-                <processor ref="news"/>
+                <flow-ref name="news"/>
             </on-error-continue>
         </error-handler>
     </flow>
 
     <flow name="httpsContinueProcessingActualMessage">
         <http:listener config-ref="listenerConfigHttps" path="httpsservice"/>
-        <processor ref="load-news"/>
-        <test:processor throwException="true"/>
+        <flow-ref name="load-news"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <on-error-continue>
-                <processor ref="news"/>
+                <flow-ref name="news"/>
             </on-error-continue>
         </error-handler>
     </flow>
 
     <flow name="continueProcessingActualMessage">
-        <processor ref="load-news"/>
-        <test:processor throwException="true"/>
+        <flow-ref name="load-news"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <on-error-continue>
-                <processor ref="news"/>
+                <flow-ref name="news"/>
             </on-error-continue>
         </error-handler>
     </flow>
 
     <flow name="catchWithComponent">
-      <test:processor throwException="true"/>
+      <raise-error type="APP:EXPECTED"/>
       <error-handler>
         <on-error-continue>
             <script:execute engine="groovy">
@@ -75,7 +87,7 @@
 
     <flow name="fullyDefinedCatchExceptionStrategyWithComponent">
         <set-payload value="#[payload ++ ' apt1']"/>
-        <test:processor throwException="true"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <on-error-continue>
                 <set-payload value="#[payload ++ ' apt2']"/>
@@ -90,7 +102,7 @@
 
     <flow name="onErrorTypeMatch">
         <set-payload value="#[payload ++ ' apt1']"/>
-        <processor ref="failing"/>
+        <flow-ref name="failing"/>
         <error-handler>
             <on-error-continue type="EXPRESSION">
                 <set-payload value="#[payload ++ ' nope']"/>
@@ -106,7 +118,7 @@
 
     <flow name="onErrorTypeMatchAny">
         <set-payload value="#[payload ++ ' apt1']"/>
-        <test:processor throwException="true"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <on-error-continue type="EXPRESSION">
                 <set-payload value="#[payload ++ ' nope']"/>
@@ -121,7 +133,7 @@
         <choice>
             <when expression="#[payload]">
                 <set-payload value="#[payload ++ ' apt1']"/>
-                <processor ref="failing"/>
+                <flow-ref name="failing"/>
             </when>
             <otherwise>
                 <set-payload value="#[payload ++ ' apt1']"/>
@@ -142,7 +154,7 @@
         <choice>
             <when expression="#[payload]">
                 <set-payload value="#[payload ++ ' apt1']"/>
-                <processor ref="failing"/>
+                <flow-ref name="failing"/>
             </when>
             <otherwise>
                 <set-payload value="#[payload ++ ' apt1']"/>
@@ -163,7 +175,7 @@
         <choice>
             <when expression="#[payload]">
                 <set-payload value="#[payload ++ ' apt1']"/>
-                <processor ref="failing"/>
+                <flow-ref name="failing"/>
             </when>
             <otherwise>
                 <set-payload value="#[payload ++ ' apt1']"/>
@@ -181,10 +193,10 @@
     </flow>
 
     <flow name="failingHandler">
-        <test:processor throwException="true"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <on-error-continue>
-                <processor ref="error"/>
+                <flow-ref name="error"/>
             </on-error-continue>
         </error-handler>
     </flow>
@@ -196,23 +208,23 @@
         <set-payload value="#[payload ++ ' hey']"/>
         <error-handler>
             <on-error-continue>
-                <test:queue name="out"/>
+                <test-components:queue-push config-ref="out"/>
             </on-error-continue>
         </error-handler>
     </flow>
 
     <flow name="withTry">
         <set-payload value="flow"/>
-        <test:processor throwException="true"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <on-error-continue>
-                <test:queue name="out1"/>
+                <test-components:queue-push config-ref="out1"/>
                 <try>
                     <set-payload value="try"/>
-                    <test:processor throwException="true"/>
+                    <raise-error type="APP:EXPECTED"/>
                     <error-handler>
                         <on-error-continue>
-                            <test:queue name="out2"/>
+                            <test-components:queue-push config-ref="out2"/>
                         </on-error-continue>
                     </error-handler>
                 </try>

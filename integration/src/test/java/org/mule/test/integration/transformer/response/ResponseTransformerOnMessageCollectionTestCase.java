@@ -8,12 +8,10 @@ package org.mule.test.integration.transformer.response;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.core.api.transformer.AbstractTransformer;
-import org.mule.runtime.core.api.transformer.TransformerException;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import java.nio.charset.Charset;
 import java.util.List;
 
 import org.junit.Test;
@@ -31,13 +29,5 @@ public class ResponseTransformerOnMessageCollectionTestCase extends AbstractInte
 
     assertEquals("foo", response.getPayload().getValue());
     assertFalse(response.getPayload().getValue() instanceof List);
-  }
-
-  public static class ReturnFooTransformer extends AbstractTransformer {
-
-    @Override
-    protected Object doTransform(Object src, Charset enc) throws TransformerException {
-      return "foo";
-    }
   }
 }

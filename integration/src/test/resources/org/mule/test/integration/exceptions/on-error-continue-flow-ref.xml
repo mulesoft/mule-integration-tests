@@ -1,20 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xmlns:test="http://www.mulesoft.org/schema/mule/test"
-      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-       http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+
+    <object name="loadNews" class="org.mule.test.integration.exceptions.OnErrorContinueTestCase$LoadNewsProcessor"/>
+    <object name="newsError" class="org.mule.test.integration.exceptions.OnErrorContinueTestCase$NewsErrorProcessor"/>
+    <object name="verifyTxNotResolved" class="org.mule.test.integration.exceptions.OnErrorContinueFlowRefTestCase$VerifyTransactionNotResolvedProcessor"/>
 
     <flow name="exceptionHandlingBlock">
         <flow-ref name="blockWithOwnExceptionStrategy"/>
     </flow>
 
     <flow name="blockWithOwnExceptionStrategy">
-        <custom-processor class="org.mule.test.integration.exceptions.OnErrorContinueTestCase$LoadNewsProcessor"/>
-        <test:processor throwException="true"/>
+        <flow-ref name="loadNews"/>
+        <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <on-error-continue>
-                <custom-processor class="org.mule.test.integration.exceptions.OnErrorContinueTestCase$NewsErrorProcessor"/>
+                <flow-ref name="newsError"/>
             </on-error-continue>
         </error-handler>
     </flow>
@@ -22,8 +24,7 @@
     <flow name="transactionNotResolvedAfterException">
         <try transactionalAction="ALWAYS_BEGIN">
             <flow-ref name="blockWithOwnExceptionStrategy"/>
-            <custom-processor
-                    class="org.mule.test.integration.exceptions.OnErrorContinueFlowRefTestCase$VerifyTransactionNotResolvedProcessor"/>
+            <flow-ref name="verifyTxNotResolved"/>
         </try>
     </flow>
 

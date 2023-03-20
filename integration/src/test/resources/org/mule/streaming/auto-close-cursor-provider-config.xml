@@ -6,6 +6,7 @@
        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
        http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
 
+    <object name="assertStatistics" class="org.mule.test.streaming.AutoCloseCursorProviderTestCase$AssertStatisticsProcessor" />
 
     <file:config name="file">
         <file:connection workingDir="${workingDir}" />
@@ -21,7 +22,7 @@
         </foreach>
 
         <set-payload value="blank" />
-        <custom-processor class="org.mule.test.streaming.AutoCloseCursorProviderTestCase$AssertStatisticsProcessor" />
+        <flow-ref name="assertStatistics"/>
     </flow>
 
 </mule>

@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xmlns:test="http://www.mulesoft.org/schema/mule/test"
       xmlns:script="http://www.mulesoft.org/schema/mule/scripting"
       xsi:schemaLocation="
        http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd
-       http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 
     <configuration defaultErrorHandler-ref="testES"/>
@@ -13,11 +11,6 @@
     <error-handler name="testES">
         <on-error-propagate/>
     </error-handler>
-
-    <flow name="TransformerException">
-        <custom-transformer class="org.mule.test.integration.exceptions.AsynchronousMessagingExceptionStrategyTestCase$ThrowTransformer"/>
-        <logger/>
-    </flow>
 
     <flow name="ScriptComponentException">
         <script:execute engine="groovy">
@@ -31,7 +24,7 @@
 
     <flow name="CustomProcessorException">
         <logger/>
-        <test:processor throwException="true" exceptionText="dummyException" exceptionToThrow="org.mule.runtime.api.exception.DefaultMuleException"/>
+        <raise-error type="APP:EXPECTED"/>
     </flow>
 
 </mule>

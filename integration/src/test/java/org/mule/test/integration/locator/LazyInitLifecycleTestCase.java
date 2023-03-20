@@ -7,6 +7,7 @@
 package org.mule.test.integration.locator;
 
 import static java.util.Optional.empty;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -16,34 +17,32 @@ import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.component.location.Location.builder;
 import static org.mule.runtime.api.component.location.Location.builderFromStringRepresentation;
-import static org.mule.runtime.config.api.LazyComponentInitializer.LAZY_COMPONENT_INITIALIZER_SERVICE_KEY;
-import static org.mule.runtime.config.api.SpringXmlConfigurationBuilderFactory.createConfigurationBuilder;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentLocatorStory.SEARCH_CONFIGURATION;
+import static org.mule.test.allure.AllureConstants.LazyInitializationFeature.LAZY_INITIALIZATION;
 
-import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.artifact.Registry;
 import org.mule.runtime.api.component.location.Location;
 import org.mule.runtime.config.api.LazyComponentInitializer;
-import org.mule.runtime.config.internal.LazyComponentInitializerAdapter;
-import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.runtime.core.api.config.MuleConfiguration;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.integration.locator.processor.CustomTestComponent;
+import org.mule.tests.api.TestQueueManager;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
+import io.qameta.allure.Features;
 import io.qameta.allure.Story;
 
-@Feature(CONFIGURATION_COMPONENT_LOCATOR)
+@Features({@Feature(LAZY_INITIALIZATION), @Feature(CONFIGURATION_COMPONENT_LOCATOR)})
 @Story(SEARCH_CONFIGURATION)
 public class LazyInitLifecycleTestCase extends AbstractIntegrationTestCase {
 
@@ -61,15 +60,12 @@ public class LazyInitLifecycleTestCase extends AbstractIntegrationTestCase {
   @Inject
   private LazyComponentInitializer lazyComponentInitializer;
 
-  // TODO MULE-18316 (AST) remove this
   @Inject
-  @Named(value = LAZY_COMPONENT_INITIALIZER_SERVICE_KEY)
-  private LazyComponentInitializerAdapter lazyComponentInitializerAdapter;
+  private TestQueueManager queueManager;
 
   @Override
-  protected String[] getConfigFiles() {
-    return new String[] {
-        "org/mule/test/integration/locator/component-locator-lifecycle-config.xml"};
+  protected String getConfigFile() {
+    return "org/mule/test/integration/locator/component-locator-lifecycle-config.xml";
   }
 
   @Override
@@ -78,10 +74,8 @@ public class LazyInitLifecycleTestCase extends AbstractIntegrationTestCase {
   }
 
   @Override
-  protected ConfigurationBuilder getBuilder() throws Exception {
-    final ConfigurationBuilder configurationBuilder = createConfigurationBuilder(getConfigFiles(), true);
-    configureSpringXmlConfigurationBuilder(configurationBuilder);
-    return configurationBuilder;
+  public boolean disableXmlValidations() {
+    return true;
   }
 
   @Description("Search for sub-flows with asyncs")
@@ -117,6 +111,7 @@ public class LazyInitLifecycleTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
+  @Ignore("MULE-18566")
   public void lazyMuleContextInitializeMultipleTimesProcessor() {
     CustomTestComponent.statesByInstances.clear();
 
@@ -166,23 +161,6 @@ public class LazyInitLifecycleTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  public void shouldCreateBeansForSameLocationRequestIfDifferentPhaseApplied() {
-    CustomTestComponent.statesByInstances.clear();
-
-    Location location = builderFromStringRepresentation("untilSuccessfulFlow").build();
-    lazyComponentInitializerAdapter.initializeComponent(location, false);
-    lazyComponentInitializer.initializeComponent(location);
-
-    // force dispose to check that components from sub-flow are disposed
-    muleContext.dispose();
-    assertThat(CustomTestComponent.statesByInstances.toString(),
-               CustomTestComponent.statesByInstances.size(), is(2));
-    assertThat(CustomTestComponent.statesByInstances.toString(),
-               CustomTestComponent.statesByInstances.values(),
-               containsInAnyOrder("initialized_started_stopped_disposed", "initialized_started_stopped_disposed"));
-  }
-
-  @Test
   public void shouldNotCreateBeansForSameLocationFilterRequest() {
     CustomTestComponent.statesByInstances.clear();
 
@@ -196,22 +174,6 @@ public class LazyInitLifecycleTestCase extends AbstractIntegrationTestCase {
     assertThat(CustomTestComponent.statesByInstances.size(), is(1));
     assertThat(CustomTestComponent.statesByInstances.values(),
                containsInAnyOrder("initialized_started_stopped_disposed"));
-  }
-
-  @Test
-  public void shouldCreateBeansForSameLocationFilterRequestIfDifferentPhaseApplied() {
-    CustomTestComponent.statesByInstances.clear();
-
-    LazyComponentInitializer.ComponentLocationFilter componentLocationFilter =
-        componentLocation -> componentLocation.getLocation().equals("untilSuccessfulFlow");
-    lazyComponentInitializer.initializeComponents(componentLocationFilter);
-    lazyComponentInitializerAdapter.initializeComponents(componentLocationFilter, false);
-
-    // force dispose to check that components from sub-flow are disposed
-    muleContext.dispose();
-    assertThat(CustomTestComponent.statesByInstances.size(), is(2));
-    assertThat(CustomTestComponent.statesByInstances.values(),
-               containsInAnyOrder("initialized_started_stopped_disposed", "initialized_started_stopped_disposed"));
   }
 
   @Test
@@ -243,10 +205,7 @@ public class LazyInitLifecycleTestCase extends AbstractIntegrationTestCase {
   @Test
   public void globalErrorHandlerApplied() throws Exception {
     lazyComponentInitializer.initializeComponent(builder().globalName("flowFailing").build());
-
     flowRunner("flowFailing").runExpectingException();
-
-    TestConnectorQueueHandler queueHandler = new TestConnectorQueueHandler(registry);
-    assertThat(queueHandler.read("globalErrorHandlerQueue", RECEIVE_TIMEOUT), is(notNullValue()));
+    assertThat(queueManager.read("globalErrorHandlerQueue", RECEIVE_TIMEOUT, MILLISECONDS), is(notNullValue()));
   }
 }

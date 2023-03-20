@@ -1,0 +1,911 @@
+/*
+ * Copyright (c) MuleSoft, Inc.  All rights reserved.  http://www.mulesoft.com
+ * The software in this package is published under the terms of the CPAL v1.0
+ * license, a copy of which has been included with this distribution in the
+ * LICENSE.txt file.
+ */
+package org.mule.test.core.context.notification.processors;
+
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
+import static java.util.Optional.empty;
+import static java.util.OptionalInt.of;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.mule.runtime.api.component.ComponentIdentifier.buildFromStringRepresentation;
+import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.CHAIN;
+import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.FLOW;
+import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.OPERATION;
+import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.ROUTER;
+import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.SCOPE;
+import static org.mule.runtime.api.component.TypedComponentIdentifier.builder;
+import static org.mule.runtime.api.dsl.DslResolvingContext.getDefault;
+import static org.mule.runtime.config.api.dsl.CoreDslConstants.ASYNC_IDENTIFIER;
+import static org.mule.runtime.config.api.dsl.CoreDslConstants.CHOICE_IDENTIFIER;
+import static org.mule.runtime.config.api.dsl.CoreDslConstants.FLOW_IDENTIFIER;
+import static org.mule.runtime.config.api.dsl.CoreDslConstants.FLOW_REF_IDENTIFIER;
+import static org.mule.runtime.config.api.dsl.CoreDslConstants.FOREACH_IDENTIFIER;
+import static org.mule.runtime.config.api.dsl.CoreDslConstants.PARALLEL_FOREACH_IDENTIFIER;
+import static org.mule.runtime.config.api.dsl.CoreDslConstants.ROUTE_ELEMENT;
+import static org.mule.runtime.config.api.dsl.CoreDslConstants.ROUTE_IDENTIFIER;
+import static org.mule.runtime.config.api.dsl.CoreDslConstants.SCATTER_GATHER_IDENTIFIER;
+import static org.mule.runtime.config.api.dsl.CoreDslConstants.SUBFLOW_IDENTIFIER;
+import static org.mule.runtime.config.api.dsl.CoreDslConstants.TRY_IDENTIFIER;
+import static org.mule.runtime.config.api.dsl.CoreDslConstants.UNTIL_SUCCESSFUL_IDENTIFIER;
+import static org.mule.runtime.core.api.util.boot.ExtensionLoaderUtils.getLoaderById;
+import static org.mule.runtime.extension.api.ExtensionConstants.XML_SDK_LOADER_ID;
+import static org.mule.runtime.extension.api.ExtensionConstants.XML_SDK_RESOURCE_PROPERTY_NAME;
+import static org.mule.tck.probe.PollingProber.check;
+import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
+import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentLocationStory.COMPONENT_LOCATION;
+import static org.mule.test.allure.AllureConstants.XmlSdk.XML_SDK;
+
+import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
+import org.mule.runtime.api.component.TypedComponentIdentifier;
+import org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType;
+import org.mule.runtime.api.component.location.ComponentLocation;
+import org.mule.runtime.api.component.location.Location;
+import org.mule.runtime.api.dsl.DslResolvingContext;
+import org.mule.runtime.api.meta.model.ExtensionModel;
+import org.mule.runtime.api.notification.MessageProcessorNotification;
+import org.mule.runtime.ast.api.ArtifactAst;
+import org.mule.runtime.ast.api.xml.AstXmlParser;
+import org.mule.runtime.core.api.MuleContext;
+import org.mule.runtime.core.api.config.ConfigurationBuilder;
+import org.mule.runtime.core.api.config.builders.AbstractConfigurationBuilder;
+import org.mule.runtime.core.api.extension.ExtensionManager;
+import org.mule.runtime.dsl.api.component.config.DefaultComponentLocation;
+import org.mule.runtime.dsl.api.component.config.DefaultComponentLocation.DefaultLocationPart;
+import org.mule.runtime.extension.api.loader.ExtensionModelLoader;
+import org.mule.test.IntegrationTestCaseRunnerConfig;
+import org.mule.test.runner.api.IsolatedClassLoaderExtensionsManagerConfigurationBuilder;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.OptionalInt;
+import java.util.Set;
+
+import com.google.common.collect.ImmutableList;
+import io.qameta.allure.Description;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Features;
+import io.qameta.allure.Issue;
+import io.qameta.allure.Story;
+import io.qameta.allure.junit4.DisplayName;
+import org.junit.After;
+import org.junit.Test;
+
+@DisplayName("XML Connectors Path generation")
+@Features({@Feature(XML_SDK), @Feature(CONFIGURATION_COMPONENT_LOCATOR)})
+@Story(COMPONENT_LOCATION)
+public class ModuleComponentPathTestCase extends MuleArtifactFunctionalTestCase implements IntegrationTestCaseRunnerConfig {
+
+  private static final String COLON_SEPARATOR = ":";
+  private static final String MODULE_SIMPLE_XML = "module-simple.xml";
+  private static final String MODULE_SIMPLE_PROXY_XML = "module-simple-proxy.xml";
+  private static final String FLOWS_USING_MODULE_SIMPLE_XML = "flows-using-modules.xml";
+  private static final String BASE_PATH_XML_MODULES = "org/mule/test/integration/notifications/modules/";
+  private static final int POLLING_TIMEOUT = 5000;
+  private static final int POLLING_DELAY = 500;
+
+  @Override
+  protected String getConfigFile() {
+    return CONFIG_FILE_NAME.get();
+  }
+
+  private static final Optional<String> CONFIG_FILE_NAME = Optional.of(BASE_PATH_XML_MODULES + FLOWS_USING_MODULE_SIMPLE_XML);
+  private static final Optional<String> MODULE_SIMPLE_FILE_NAME = Optional.of(BASE_PATH_XML_MODULES + MODULE_SIMPLE_XML);
+  private static final Optional<String> MODULE_SIMPLE_PROXY_FILE_NAME =
+      Optional.of(BASE_PATH_XML_MODULES + MODULE_SIMPLE_PROXY_XML);
+  private static final Optional<TypedComponentIdentifier> FLOW_TYPED_COMPONENT_IDENTIFIER =
+      Optional.of(builder().identifier(FLOW_IDENTIFIER).type(FLOW).build());
+  private static final Optional<TypedComponentIdentifier> SUBFLOW_TYPED_COMPONENT_IDENTIFIER =
+      Optional.of(builder().identifier(SUBFLOW_IDENTIFIER).type(SCOPE).build());
+
+  private static final DefaultComponentLocation getFlowLocation(final String flowName, final int flowLineNumber) {
+    return new DefaultComponentLocation(Optional
+        .of(flowName), asList(new DefaultLocationPart(flowName, FLOW_TYPED_COMPONENT_IDENTIFIER,
+                                                      CONFIG_FILE_NAME, of(flowLineNumber),
+                                                      of(5))));
+  }
+
+  private static final DefaultComponentLocation getSubFlowLocation(final String subFlowName, final int subFlowLineNumber) {
+    return new DefaultComponentLocation(Optional.of(subFlowName),
+                                        asList(new DefaultLocationPart(subFlowName, SUBFLOW_TYPED_COMPONENT_IDENTIFIER,
+                                                                       CONFIG_FILE_NAME, of(subFlowLineNumber),
+                                                                       of(5))));
+  }
+
+  private static final String FLOW_WITH_SINGLE_MP_NAME = "flowWithSingleMp";
+  private static final String FLOW_WITH_SET_PAYLOAD_HARDCODED_NAME = "flowWithSetPayloadHardcoded";
+  private static final String FLOW_WITH_SET_PAYLOAD_HARDCODED_INSIDE_SUBFLOW_NAME = "flowWithSetPayloadHardcodedInsideSubFlow";
+  private static final String SUBFLOW_WITH_SET_PAYLOAD_HARDCODED_NAME = "subFlowWithSetPayloadHardcoded";
+  private static final String FLOW_WITH_SET_PAYLOAD_TWO_TIMES_NAME = "flowWithSetPayloadTwoTimes";
+  private static final String FLOW_WITH_SET_PAYLOAD_HARDCODED_TWICE_NAME = "flowWithSetPayloadHardcodedTwice";
+  private static final String FLOW_WITH_SET_PAYLOAD_PARAM_VALUE_NAME = "flowWithSetPayloadParamValue";
+  private static final String FLOW_WITH_SET_PAYLOAD_TWO_TIMES_TWICE_NAME = "flowWithSetPayloadTwoTimesTwice";
+  private static final String FLOW_WITH_PROXY_SET_PAYLOAD_HARDCODED_NAME = "flowWithProxySetPayloadHardcoded";
+  private static final String FLOW_WITH_PROXY_SET_PAYLOAD_HARDCODED_AND_LOGGER_NAME = "flowWithProxySetPayloadHardcodedAndLogger";
+  private static final String FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_NAME = "flowWithProxyAndSimpleModuleAndLogger";
+  private static final String FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_REVERSE_NAME =
+      "flowWithProxyAndSimpleModuleAndLoggerReverse";
+  private static final String FLOW_WITH_CHOICE_ROUTER_NAME = "flowWithChoiceRouter";
+  private static final String FLOW_WITH_UNTIL_SUCCESSFUL_SCOPE_NAME = "flowWithUntilSuccessfulScope";
+  private static final String FLOW_WITH_TRY_SCOPE_NAME = "flowWithTryScope";
+  private static final String FLOW_WITH_FOREACH_SCOPE_NAME = "flowWithForeachScope";
+  private static final String FLOW_WITH_PARALLEL_FOREACH_SCOPE_NAME = "flowWithParallelForeachScope";
+  private static final String FLOW_WITH_SCATTER_GATHER_NAME = "flowWithScatterGather";
+  private static final String FLOW_WITH_ASYNC_AND_SC_NAME = "flowWithAsyncAndSmartConnector";
+  /**
+   * "flows-using-modules.xml" flows defined below
+   */
+  private static final DefaultComponentLocation FLOW_WITH_SINGLE_MP_LOCATION =
+      getFlowLocation(FLOW_WITH_SINGLE_MP_NAME, 15);
+  private static final DefaultComponentLocation FLOW_WITH_SET_PAYLOAD_HARDCODED =
+      getFlowLocation(FLOW_WITH_SET_PAYLOAD_HARDCODED_NAME, 19);
+  private static final DefaultComponentLocation FLOW_WITH_SET_PAYLOAD_HARDCODED_INSIDE_SUBFLOW =
+      getFlowLocation(FLOW_WITH_SET_PAYLOAD_HARDCODED_INSIDE_SUBFLOW_NAME, 61);
+  private static final DefaultComponentLocation SUBFLOW_WITH_SET_PAYLOAD_HARDCODED =
+      getSubFlowLocation(SUBFLOW_WITH_SET_PAYLOAD_HARDCODED_NAME, 65);
+  private static final DefaultComponentLocation FLOW_WITH_SET_PAYLOAD_HARDCODED_TWICE =
+      getFlowLocation(FLOW_WITH_SET_PAYLOAD_HARDCODED_TWICE_NAME, 23);
+  private static final DefaultComponentLocation FLOW_WITH_SET_PAYLOAD_PARAM_VALUE =
+      getFlowLocation(FLOW_WITH_SET_PAYLOAD_PARAM_VALUE_NAME, 28);
+  private static final DefaultComponentLocation FLOW_WITH_SET_PAYLOAD_TWO_TIMES =
+      getFlowLocation(FLOW_WITH_SET_PAYLOAD_TWO_TIMES_NAME, 32);
+  private static final DefaultComponentLocation FLOW_WITH_SET_PAYLOAD_TWO_TIMES_TWICE =
+      getFlowLocation(FLOW_WITH_SET_PAYLOAD_TWO_TIMES_TWICE_NAME, 36);
+  private static final DefaultComponentLocation FLOW_WITH_PROXY_SET_PAYLOAD_HARDCODED =
+      getFlowLocation(FLOW_WITH_PROXY_SET_PAYLOAD_HARDCODED_NAME, 41);
+  private static final DefaultComponentLocation FLOW_WITH_PROXY_SET_PAYLOAD_HARDCODED_AND_LOGGER =
+      getFlowLocation(FLOW_WITH_PROXY_SET_PAYLOAD_HARDCODED_AND_LOGGER_NAME, 45);
+  private static final DefaultComponentLocation FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER =
+      getFlowLocation(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_NAME, 49);
+  private static final DefaultComponentLocation FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_REVERSE =
+      getFlowLocation(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_REVERSE_NAME, 55);
+  private static final DefaultComponentLocation FLOW_WITH_CHOICE_ROUTER =
+      getFlowLocation(FLOW_WITH_CHOICE_ROUTER_NAME, 69);
+  private static final DefaultComponentLocation FLOW_WITH_UNTIL_SUCCESSFUL_SCOPE =
+      getFlowLocation(FLOW_WITH_UNTIL_SUCCESSFUL_SCOPE_NAME, 77);
+  private static final DefaultComponentLocation FLOW_WITH_TRY_SCOPE =
+      getFlowLocation(FLOW_WITH_TRY_SCOPE_NAME, 83);
+  private static final DefaultComponentLocation FLOW_WITH_FOREACH_SCOPE =
+      getFlowLocation(FLOW_WITH_FOREACH_SCOPE_NAME, 89);
+  private static final DefaultComponentLocation FLOW_WITH_PARALLEL_FOREACH_SCOPE =
+      getFlowLocation(FLOW_WITH_PARALLEL_FOREACH_SCOPE_NAME, 95);
+  private static final DefaultComponentLocation FLOW_WITH_SCATTER_GATHER =
+      getFlowLocation(FLOW_WITH_SCATTER_GATHER_NAME, 101);
+  private static final DefaultComponentLocation FLOW_WITH_ASYNC_AND_SC =
+      getFlowLocation(FLOW_WITH_ASYNC_AND_SC_NAME, 112);
+
+  private static final Optional<TypedComponentIdentifier> WHEN =
+      Optional.of(builder().identifier(buildFromStringRepresentation("mule:when")).type(ComponentType.ROUTE).build());
+
+  private static Optional<TypedComponentIdentifier> getModuleBodyIdentifier() {
+    return Optional.of(builder()
+        .identifier(buildFromStringRepresentation(MODULE_BODY_NAMESPACE_PREFIX + COLON_SEPARATOR + "body"))
+        .type(CHAIN).build());
+  }
+
+  private static Optional<TypedComponentIdentifier> getModuleOperationIdentifier(final String namespace,
+                                                                                 final String identifier) {
+    return Optional.of(builder()
+        .identifier(buildFromStringRepresentation(namespace + COLON_SEPARATOR + identifier))
+        .type(OPERATION).build());
+  }
+
+  private static DefaultComponentLocation getModuleOperationLocation(final String operationName,
+                                                                     final Optional<TypedComponentIdentifier> operationIdentifier,
+                                                                     final Optional<String> moduleFilename,
+                                                                     final int operationLineNumber) {
+    return new DefaultComponentLocation(Optional.of(operationName),
+                                        asList(new DefaultLocationPart(operationName,
+                                                                       operationIdentifier,
+                                                                       moduleFilename,
+                                                                       of(operationLineNumber),
+                                                                       of(9))));
+  }
+
+  /**
+   * "module-simple" operations defined below
+   */
+
+  private static final String MODULE_BODY_NAMESPACE_PREFIX = "module";
+  private static final Optional<TypedComponentIdentifier> MODULE_BODY =
+      getModuleBodyIdentifier();
+
+  private static final String MODULE_SIMPLE_NAMESPACE_IN_APP = "simple-prefix";
+
+  private static final String SET_PAYLOAD_HARDCODED_VALUE_NAME = "set-payload-hardcoded-value";
+  private static final DefaultComponentLocation OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP =
+      getModuleOperationLocation(SET_PAYLOAD_HARDCODED_VALUE_NAME, MODULE_BODY, MODULE_SIMPLE_FILE_NAME,
+                                 12);
+
+  private static final Optional<TypedComponentIdentifier> MODULE_SET_PAYLOAD_HARDCODED_VALUE =
+      getModuleOperationIdentifier(MODULE_SIMPLE_NAMESPACE_IN_APP, SET_PAYLOAD_HARDCODED_VALUE_NAME);
+
+  private static final String SET_PAYLOAD_PARAM_VALUE_NAME = "set-payload-param-value";
+  private static final Optional<TypedComponentIdentifier> MODULE_SET_PAYLOAD_PARAM_VALUE =
+      getModuleOperationIdentifier(MODULE_SIMPLE_NAMESPACE_IN_APP, SET_PAYLOAD_PARAM_VALUE_NAME);
+  private static final DefaultComponentLocation OPERATION_SET_PAYLOAD_PARAM_VALUE_FIRST_MP =
+      getModuleOperationLocation(SET_PAYLOAD_PARAM_VALUE_NAME, MODULE_BODY, MODULE_SIMPLE_FILE_NAME, 22);
+
+  private static final String SET_PAYLOAD_TWO_TIMES_NAME = "set-payload-two-times";
+  private static final Optional<TypedComponentIdentifier> MODULE_SET_PAYLOAD_TWO_TIMES =
+      getModuleOperationIdentifier(MODULE_SIMPLE_NAMESPACE_IN_APP, SET_PAYLOAD_TWO_TIMES_NAME);
+  private static final DefaultComponentLocation OPERATION_SET_PAYLOAD_TWO_TIMES_FIRST_MP =
+      getModuleOperationLocation(SET_PAYLOAD_TWO_TIMES_NAME, MODULE_BODY, MODULE_SIMPLE_FILE_NAME, 29);
+  private static final DefaultComponentLocation OPERATION_SET_PAYLOAD_TWO_TIMES_SECOND_MP =
+      getModuleOperationLocation(SET_PAYLOAD_TWO_TIMES_NAME, MODULE_BODY, MODULE_SIMPLE_FILE_NAME, 29);
+
+  /**
+   * "module-simple-proxy" operations defined below
+   */
+  private static final String MODULE_SIMPLE_PROXY_NAMESPACE_IN_APP = "module-simple-proxy";
+  private static final String PROXY_SET_PAYLOAD_NAME = "proxy-set-payload-hardcoded-value";
+  private static final Optional<TypedComponentIdentifier> MODULE_PROXY_SET_PAYLOAD =
+      getModuleOperationIdentifier(MODULE_SIMPLE_PROXY_NAMESPACE_IN_APP, PROXY_SET_PAYLOAD_NAME);
+  private static final DefaultComponentLocation OPERATION_PROXY_SET_PAYLOAD_FIRST_MP =
+      getModuleOperationLocation(PROXY_SET_PAYLOAD_NAME, MODULE_BODY, MODULE_SIMPLE_PROXY_FILE_NAME, 12);
+
+  private static final String PROXY_SET_PAYLOAD_AND_LOGGER_NAME = "proxy-set-payload-hardcoded-value-and-logger";
+  private static final Optional<TypedComponentIdentifier> MODULE_PROXY_SET_PAYLOAD_AND_LOGGER =
+      getModuleOperationIdentifier(MODULE_SIMPLE_PROXY_NAMESPACE_IN_APP, PROXY_SET_PAYLOAD_AND_LOGGER_NAME);
+  private static final DefaultComponentLocation OPERATION_PROXY_SET_PAYLOAD_AND_LOGGER_FIRST_MP =
+      getModuleOperationLocation(PROXY_SET_PAYLOAD_AND_LOGGER_NAME, MODULE_BODY,
+                                 MODULE_SIMPLE_PROXY_FILE_NAME, 19);
+  private static final DefaultComponentLocation OPERATION_PROXY_SET_PAYLOAD_AND_LOGGER_SECOND_MP =
+      getModuleOperationLocation(PROXY_SET_PAYLOAD_AND_LOGGER_NAME, MODULE_BODY,
+                                 MODULE_SIMPLE_PROXY_FILE_NAME, 19);
+
+  /**
+   * runtime provided MPs
+   */
+  private static final Optional<TypedComponentIdentifier> LOGGER =
+      Optional.of(builder().identifier(buildFromStringRepresentation("mule:logger"))
+          .type(OPERATION).build());
+
+
+  private static final Optional<TypedComponentIdentifier> SET_PAYLOAD =
+      Optional.of(builder().identifier(buildFromStringRepresentation("mule:set-payload"))
+          .type(OPERATION).build());
+
+  final ProcessorNotificationStore listener = new ProcessorNotificationStore();
+
+  @Override
+  protected void doSetUp() throws Exception {
+    super.doSetUp();
+    listener.setLogSingleNotification(true);
+    muleContext.getNotificationManager().addListener(listener);
+  }
+
+  @After
+  public void clearNotifications() {
+    if (listener != null) {
+      listener.getNotifications().clear();
+    }
+  }
+
+  @Test
+  public void validateComponentLocationCreatedFromExtensionModelsWithoutUsingParsers() throws Exception {
+    AstXmlParser xmlToAstParser = AstXmlParser.builder()
+        .withExtensionModels(muleContext.getExtensionManager().getExtensions())
+        .withSchemaValidationsDisabled()
+        .build();
+
+    ArtifactAst toolingApplicationModel =
+        xmlToAstParser.parse(getClass().getClassLoader().getResource(CONFIG_FILE_NAME.get()).toURI());
+
+    List<String> componentLocations = new ArrayList<>();
+    toolingApplicationModel.recursiveStream().forEach(componentModel -> {
+      final String componentIdentifierName = componentModel.getIdentifier().getName();
+      if (componentIdentifierName.equals("notification") || componentIdentifierName.equals("notifications")) {
+        return;
+      }
+      final ComponentLocation componentLocation = componentModel.getLocation();
+      if (componentLocation != null) {
+        componentLocations.add(componentLocation.getLocation());
+      }
+    });
+
+    assertEquals(ImmutableList.builder()
+        .add(Location.builder().globalName(FLOW_WITH_SINGLE_MP_NAME).build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_SINGLE_MP_NAME).addProcessorsPart().addIndexPart(0).build().toString())
+
+        .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_HARDCODED_NAME).build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_HARDCODED_NAME).addProcessorsPart().addIndexPart(0).build()
+            .toString())
+
+        .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_HARDCODED_TWICE_NAME).build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_HARDCODED_TWICE_NAME).addProcessorsPart().addIndexPart(0).build()
+            .toString())
+        .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_HARDCODED_TWICE_NAME).addProcessorsPart().addIndexPart(1).build()
+            .toString())
+
+        .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_PARAM_VALUE_NAME).build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_PARAM_VALUE_NAME).addProcessorsPart().addIndexPart(0).build()
+            .toString())
+
+        .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_TWO_TIMES_NAME).build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_TWO_TIMES_NAME).addProcessorsPart().addIndexPart(0).build()
+            .toString())
+
+        .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_TWO_TIMES_TWICE_NAME).build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_TWO_TIMES_TWICE_NAME).addProcessorsPart().addIndexPart(0).build()
+            .toString())
+        .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_TWO_TIMES_TWICE_NAME).addProcessorsPart().addIndexPart(1).build()
+            .toString())
+
+        .add(Location.builder().globalName(FLOW_WITH_PROXY_SET_PAYLOAD_HARDCODED_NAME).build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_PROXY_SET_PAYLOAD_HARDCODED_NAME).addProcessorsPart().addIndexPart(0).build()
+            .toString())
+
+
+        .add(Location.builder().globalName(FLOW_WITH_PROXY_SET_PAYLOAD_HARDCODED_AND_LOGGER_NAME).build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_PROXY_SET_PAYLOAD_HARDCODED_AND_LOGGER_NAME).addProcessorsPart()
+            .addIndexPart(0).build().toString())
+
+        .add(Location.builder().globalName(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_NAME).build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_NAME).addProcessorsPart().addIndexPart(0)
+            .build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_NAME).addProcessorsPart().addIndexPart(1)
+            .build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_NAME).addProcessorsPart().addIndexPart(2)
+            .build().toString())
+
+        .add(Location.builder().globalName(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_REVERSE_NAME).build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_REVERSE_NAME).addProcessorsPart()
+            .addIndexPart(0).build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_REVERSE_NAME).addProcessorsPart()
+            .addIndexPart(1).build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_REVERSE_NAME).addProcessorsPart()
+            .addIndexPart(2).build().toString())
+
+        .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_HARDCODED_INSIDE_SUBFLOW_NAME).build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_SET_PAYLOAD_HARDCODED_INSIDE_SUBFLOW_NAME).addProcessorsPart()
+            .addIndexPart(0).build()
+            .toString())
+
+        .add(Location.builder().globalName(SUBFLOW_WITH_SET_PAYLOAD_HARDCODED_NAME).build().toString())
+        .add(Location.builder().globalName(SUBFLOW_WITH_SET_PAYLOAD_HARDCODED_NAME).addProcessorsPart().addIndexPart(0).build()
+            .toString())
+
+        .add(Location.builder().globalName(FLOW_WITH_CHOICE_ROUTER_NAME).build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_CHOICE_ROUTER_NAME).addProcessorsPart().addIndexPart(0).build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_CHOICE_ROUTER_NAME).addProcessorsPart().addIndexPart(0)
+            .addPart(ROUTE_ELEMENT)
+            .addIndexPart(0).build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_CHOICE_ROUTER_NAME).addProcessorsPart().addIndexPart(0)
+            .addPart(ROUTE_ELEMENT)
+            .addIndexPart(0).addProcessorsPart().addIndexPart(0).build().toString())
+
+        .add(Location.builder().globalName(FLOW_WITH_UNTIL_SUCCESSFUL_SCOPE_NAME).build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_UNTIL_SUCCESSFUL_SCOPE_NAME).addProcessorsPart().addIndexPart(0)
+            .build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_UNTIL_SUCCESSFUL_SCOPE_NAME).addProcessorsPart().addIndexPart(0)
+            .addProcessorsPart().addIndexPart(0).build().toString())
+
+        .add(Location.builder().globalName(FLOW_WITH_TRY_SCOPE_NAME).build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_TRY_SCOPE_NAME).addProcessorsPart().addIndexPart(0)
+            .build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_TRY_SCOPE_NAME).addProcessorsPart().addIndexPart(0)
+            .addProcessorsPart().addIndexPart(0).build().toString())
+
+        .add(Location.builder().globalName(FLOW_WITH_FOREACH_SCOPE_NAME).build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_FOREACH_SCOPE_NAME).addProcessorsPart().addIndexPart(0)
+            .build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_FOREACH_SCOPE_NAME).addProcessorsPart().addIndexPart(0)
+            .addProcessorsPart().addIndexPart(0).build().toString())
+
+        .add(Location.builder().globalName(FLOW_WITH_PARALLEL_FOREACH_SCOPE_NAME).build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_PARALLEL_FOREACH_SCOPE_NAME).addProcessorsPart().addIndexPart(0)
+            .build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_PARALLEL_FOREACH_SCOPE_NAME).addProcessorsPart().addIndexPart(0)
+            .addProcessorsPart().addIndexPart(0).build().toString())
+
+        .add(Location.builder().globalName(FLOW_WITH_SCATTER_GATHER_NAME).build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_SCATTER_GATHER_NAME).addProcessorsPart().addIndexPart(0).build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_SCATTER_GATHER_NAME).addProcessorsPart().addIndexPart(0)
+            .addPart(ROUTE_ELEMENT)
+            .addIndexPart(0).build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_SCATTER_GATHER_NAME).addProcessorsPart().addIndexPart(0)
+            .addPart(ROUTE_ELEMENT)
+            .addIndexPart(0).addProcessorsPart().addIndexPart(0).build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_SCATTER_GATHER_NAME).addProcessorsPart().addIndexPart(0)
+            .addPart(ROUTE_ELEMENT)
+            .addIndexPart(1).build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_SCATTER_GATHER_NAME).addProcessorsPart().addIndexPart(0)
+            .addPart(ROUTE_ELEMENT)
+            .addIndexPart(1).addProcessorsPart().addIndexPart(0).build().toString())
+
+        .add(Location.builder().globalName(FLOW_WITH_ASYNC_AND_SC_NAME).build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_ASYNC_AND_SC_NAME).addProcessorsPart().addIndexPart(0).build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_ASYNC_AND_SC_NAME).addProcessorsPart().addIndexPart(0)
+            .addProcessorsPart()
+            .addIndexPart(0).build().toString())
+        .add(Location.builder().globalName(FLOW_WITH_ASYNC_AND_SC_NAME).addProcessorsPart().addIndexPart(0)
+            .addProcessorsPart()
+            .addIndexPart(1).build().toString())
+        .build(), componentLocations);
+  }
+
+  @Test
+  public void flowWithSingleMp() throws Exception {
+    // simple test to be sure the macro expansion doesn't mess up the a flow that has no modifications
+    flowRunner("flowWithSingleMp").run();
+    assertNextProcessorLocationIs(FLOW_WITH_SINGLE_MP_LOCATION
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", LOGGER, CONFIG_FILE_NAME, of(16), of(9)));
+    assertNoNextProcessorNotification();
+  }
+
+  @Test
+  public void subFlowWithSetPayloadHardcoded() throws Exception {
+    flowRunner("flowWithSetPayloadHardcodedInsideSubFlow").run();
+    assertNextProcessorLocationIs(FLOW_WITH_SET_PAYLOAD_HARDCODED_INSIDE_SUBFLOW
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", Optional.of(TypedComponentIdentifier.builder()
+            .identifier(FLOW_REF_IDENTIFIER)
+            .type(OPERATION).build()), CONFIG_FILE_NAME, of(62), of(9)));
+    assertNextProcessorLocationIs(SUBFLOW_WITH_SET_PAYLOAD_HARDCODED
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(66), of(9)));
+    assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13)));
+    assertNoNextProcessorNotification();
+  }
+
+  @Description("Smart Connector inside a choice router")
+  @Issue("MULE-16984")
+  @Test
+  public void flowWithChoiceRouter() throws Exception {
+    flowRunner("flowWithChoiceRouter").run();
+
+    DefaultComponentLocation firstComponentLocation = FLOW_WITH_CHOICE_ROUTER
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", Optional.of(builder()
+            .identifier(CHOICE_IDENTIFIER)
+            .type(ROUTER).build()), CONFIG_FILE_NAME, of(70), of(9));
+
+    assertNextProcessorLocationIs(firstComponentLocation);
+    assertNextProcessorLocationIs(firstComponentLocation
+        .appendLocationPart(ROUTE_ELEMENT, empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", WHEN, CONFIG_FILE_NAME, of(71), of(13))
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(72), of(17)));
+
+    assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13)));
+    assertNoNextProcessorNotification();
+  }
+
+  @Description("Smart Connector inside a until-successful scope")
+  @Issue("MULE-16285")
+  @Test
+  public void flowWithUntilSuccessfulScope() throws Exception {
+    flowRunner("flowWithUntilSuccessfulScope").run();
+
+    DefaultComponentLocation firstComponentLocation = FLOW_WITH_UNTIL_SUCCESSFUL_SCOPE
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", Optional.of(builder()
+            .identifier(UNTIL_SUCCESSFUL_IDENTIFIER)
+            .type(SCOPE).build()), CONFIG_FILE_NAME, of(78), of(9));
+
+    assertNextProcessorLocationIs(firstComponentLocation);
+    assertNextProcessorLocationIs(firstComponentLocation
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(79), of(13)));
+    assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13)));
+    assertNoNextProcessorNotification();
+  }
+
+  @Description("Smart Connector inside a try scope")
+  @Issue("MULE-16285")
+  @Test
+  public void flowWithTryScope() throws Exception {
+    flowRunner("flowWithTryScope").run();
+
+    DefaultComponentLocation firstComponentLocation = FLOW_WITH_TRY_SCOPE
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", Optional.of(builder()
+            .identifier(TRY_IDENTIFIER)
+            .type(SCOPE).build()), CONFIG_FILE_NAME, of(84), of(9));
+
+    assertNextProcessorLocationIs(firstComponentLocation);
+    assertNextProcessorLocationIs(firstComponentLocation
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(85), of(13)));
+    assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13)));
+    assertNoNextProcessorNotification();
+  }
+
+  @Description("Smart Connector inside a foreach scope")
+  @Issue("MULE-16285")
+  @Test
+  public void flowWithForeachScope() throws Exception {
+    flowRunner("flowWithForeachScope").run();
+
+    DefaultComponentLocation firstComponentLocation = FLOW_WITH_FOREACH_SCOPE
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", Optional.of(builder()
+            .identifier(FOREACH_IDENTIFIER)
+            .type(SCOPE).build()), CONFIG_FILE_NAME, of(90), of(9));
+
+    assertNextProcessorLocationIs(firstComponentLocation);
+    assertNextProcessorLocationIs(firstComponentLocation
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(91), of(13)));
+    assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13)));
+    assertNoNextProcessorNotification();
+  }
+
+  @Description("Smart Connector inside a parallel-foreach scope")
+  @Issue("MULE-16285")
+  @Test
+  public void flowWithParallelForeachScope() throws Exception {
+    flowRunner("flowWithParallelForeachScope").run();
+
+    DefaultComponentLocation firstComponentLocation = FLOW_WITH_PARALLEL_FOREACH_SCOPE
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", Optional.of(builder()
+            .identifier(PARALLEL_FOREACH_IDENTIFIER)
+            .type(SCOPE).build()), CONFIG_FILE_NAME, of(96), of(9));
+
+    assertNextProcessorLocationIs(firstComponentLocation);
+    assertNextProcessorLocationIs(firstComponentLocation
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(97), of(13)));
+    assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13)));
+    assertNoNextProcessorNotification();
+  }
+
+  @Description("Smart Connector inside a scatter-gather")
+  @Issue("MULE-16285")
+  public void flowWithScatterGather() throws Exception {
+    flowRunner("flowWithScatterGather").run();
+
+    DefaultComponentLocation firstComponentLocation = FLOW_WITH_SCATTER_GATHER
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", Optional.of(builder()
+            .identifier(SCATTER_GATHER_IDENTIFIER)
+            .type(ROUTER).build()), CONFIG_FILE_NAME, of(102), of(9));
+
+    assertNextProcessorLocationIs(firstComponentLocation);
+
+    assertNextProcessorLocationIs(firstComponentLocation
+        .appendLocationPart(ROUTE_ELEMENT, empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", Optional.of(builder()
+            .identifier(ROUTE_IDENTIFIER)
+            .type(SCOPE).build()), CONFIG_FILE_NAME, of(103), of(13))
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(104), of(17)));
+
+    DefaultComponentLocation thirdComponentLocation = firstComponentLocation
+        .appendLocationPart(ROUTE_ELEMENT, empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("1", Optional.of(builder()
+            .identifier(ROUTE_IDENTIFIER)
+            .type(SCOPE).build()), CONFIG_FILE_NAME, of(106), of(13))
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", LOGGER, CONFIG_FILE_NAME, of(107), of(17));
+
+    DefaultComponentLocation fourthComponentLocation = OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13));
+
+    ComponentLocation thirdProcessorNotification = getMessageProcessorNotification().getComponent().getLocation();
+    ComponentLocation fourthProcessorNotification = getMessageProcessorNotification().getComponent().getLocation();
+
+    List<String> locations = asList(thirdProcessorNotification.getLocation(), fourthProcessorNotification.getLocation());
+    List<ComponentLocation> componentLocations = asList(thirdProcessorNotification, fourthProcessorNotification);
+
+    assertThat(locations, hasItems(thirdComponentLocation.getLocation(), fourthComponentLocation.getLocation()));
+    assertThat(componentLocations, hasItems(thirdComponentLocation, fourthComponentLocation));
+
+    assertNoNextProcessorNotification();
+  }
+
+
+  @Description("Smart Connector inside a async scope")
+  @Issue("MULE-17020")
+  @Test
+  public void flowWithAsync() throws Exception {
+    flowRunner("flowWithAsyncAndSmartConnector").run();
+
+    DefaultComponentLocation flowComponentLocation = FLOW_WITH_ASYNC_AND_SC
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", Optional.of(builder()
+            .identifier(ASYNC_IDENTIFIER)
+            .type(SCOPE).build()), CONFIG_FILE_NAME, of(113), of(9));
+
+
+    assertNextProcessorLocationIs(flowComponentLocation);
+
+    DefaultComponentLocation nestedSetHardcodedPayloadLocation = flowComponentLocation
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(114), of(13));
+
+    DefaultComponentLocation setPayloadLocation = OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13));
+
+    DefaultComponentLocation loggerComponentLocation = flowComponentLocation
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("1", LOGGER, CONFIG_FILE_NAME, of(117), of(13));
+
+    List<String> locations = new LinkedList<>(asList(nestedSetHardcodedPayloadLocation.getLocation(),
+                                                     setPayloadLocation.getLocation(), loggerComponentLocation.getLocation()));
+
+    check(POLLING_TIMEOUT, POLLING_DELAY, () -> {
+      ComponentLocation componentLocation = getMessageProcessorNotification().getComponent().getLocation();
+      if (locations.contains(componentLocation.getLocation())) {
+        locations.remove(locations.indexOf(componentLocation.getLocation()));
+      }
+      return locations.isEmpty();
+    });
+
+    assertNoNextProcessorNotification();
+  }
+
+
+
+  @Test
+  public void flowWithSetPayloadHardcoded() throws Exception {
+    flowRunner("flowWithSetPayloadHardcoded").run();
+    assertNextProcessorLocationIs(FLOW_WITH_SET_PAYLOAD_HARDCODED
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(20), of(9)));
+    assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13)));
+    assertNoNextProcessorNotification();
+  }
+
+  @Test
+  public void flowWithSetPayloadHardcodedTwice() throws Exception {
+    flowRunner("flowWithSetPayloadHardcodedTwice").run();
+    assertNextProcessorLocationIs(FLOW_WITH_SET_PAYLOAD_HARDCODED_TWICE
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(24), of(9)));
+    assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13)));
+
+    assertNextProcessorLocationIs(FLOW_WITH_SET_PAYLOAD_HARDCODED_TWICE
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("1", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(25), of(9)));
+    assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13)));
+    assertNoNextProcessorNotification();
+  }
+
+  @Test
+  public void flowWithSetPayloadParamValue() throws Exception {
+    flowRunner("flowWithSetPayloadParamValue").run();
+    assertNextProcessorLocationIs(FLOW_WITH_SET_PAYLOAD_PARAM_VALUE
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", MODULE_SET_PAYLOAD_PARAM_VALUE, CONFIG_FILE_NAME, of(29), of(9)));
+    assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_PARAM_VALUE_FIRST_MP
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(23), of(13)));
+    assertNoNextProcessorNotification();
+  }
+
+  @Test
+  public void flowWithSetPayloadTwoTimes() throws Exception {
+    flowRunner("flowWithSetPayloadTwoTimes").run();
+    assertNextProcessorLocationIs(FLOW_WITH_SET_PAYLOAD_TWO_TIMES
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", MODULE_SET_PAYLOAD_TWO_TIMES, CONFIG_FILE_NAME, of(33), of(9)));
+    assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_TWO_TIMES_FIRST_MP
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(30), of(13)));
+    assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_TWO_TIMES_SECOND_MP
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("1", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(31), of(13)));
+    assertNoNextProcessorNotification();
+  }
+
+  @Test
+  public void flowWithSetPayloadTwoTimesTwice() throws Exception {
+    flowRunner("flowWithSetPayloadTwoTimesTwice").run();
+    assertNextProcessorLocationIs(FLOW_WITH_SET_PAYLOAD_TWO_TIMES_TWICE
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", MODULE_SET_PAYLOAD_TWO_TIMES, CONFIG_FILE_NAME, of(37), of(9)));
+    assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_TWO_TIMES_FIRST_MP
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(30), of(13)));
+    assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_TWO_TIMES_SECOND_MP
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("1", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(31), of(13)));
+    // assertion on the second call of the OP
+    assertNextProcessorLocationIs(FLOW_WITH_SET_PAYLOAD_TWO_TIMES_TWICE
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("1", MODULE_SET_PAYLOAD_TWO_TIMES, CONFIG_FILE_NAME, of(38), of(9)));
+    assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_TWO_TIMES_FIRST_MP
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(30), of(13)));
+    assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_TWO_TIMES_SECOND_MP
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("1", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(31), of(13)));
+    assertNoNextProcessorNotification();
+  }
+
+  @Test
+  public void flowWithProxySetPayloadHardcoded() throws Exception {
+    flowRunner("flowWithProxySetPayloadHardcoded").run();
+    // flow assertion
+    assertNextProcessorLocationIs(FLOW_WITH_PROXY_SET_PAYLOAD_HARDCODED
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", MODULE_PROXY_SET_PAYLOAD, CONFIG_FILE_NAME, of(42), of(9)));
+    assertNextProcessorLocationIs(OPERATION_PROXY_SET_PAYLOAD_FIRST_MP
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, MODULE_SIMPLE_PROXY_FILE_NAME, of(13), of(13)));
+    assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13)));
+    assertNoNextProcessorNotification();
+  }
+
+  @Test
+  public void flowWithProxySetPayloadHardcodedAndLogger() throws Exception {
+    flowRunner("flowWithProxySetPayloadHardcodedAndLogger").run();
+    assertNextProcessorLocationIs(FLOW_WITH_PROXY_SET_PAYLOAD_HARDCODED_AND_LOGGER
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", MODULE_PROXY_SET_PAYLOAD_AND_LOGGER, CONFIG_FILE_NAME, of(46), of(9)));
+    assertNextProcessorLocationIs(OPERATION_PROXY_SET_PAYLOAD_AND_LOGGER_FIRST_MP
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, MODULE_SIMPLE_PROXY_FILE_NAME, of(20), of(13)));
+    assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13)));
+    assertNextProcessorLocationIs(OPERATION_PROXY_SET_PAYLOAD_AND_LOGGER_SECOND_MP
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("1", LOGGER, MODULE_SIMPLE_PROXY_FILE_NAME, of(21), of(13)));
+    assertNoNextProcessorNotification();
+  }
+
+  @Test
+  public void flowWithProxyAndSimpleModuleAndLogger() throws Exception {
+    flowRunner("flowWithProxyAndSimpleModuleAndLogger").run();
+
+    // first MP from within the flow
+    assertNextProcessorLocationIs(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", MODULE_PROXY_SET_PAYLOAD_AND_LOGGER, CONFIG_FILE_NAME, of(50), of(9)));
+    assertNextProcessorLocationIs(OPERATION_PROXY_SET_PAYLOAD_AND_LOGGER_FIRST_MP
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, MODULE_SIMPLE_PROXY_FILE_NAME, of(20), of(13)));
+    assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13)));
+    assertNextProcessorLocationIs(OPERATION_PROXY_SET_PAYLOAD_AND_LOGGER_SECOND_MP
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("1", LOGGER, MODULE_SIMPLE_PROXY_FILE_NAME, of(21), of(13)));
+
+    // second MP from within the flow
+    assertNextProcessorLocationIs(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("1", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(51), of(9)));
+    assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13)));
+    // third MP from within the flow
+    assertNextProcessorLocationIs(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("2", LOGGER, CONFIG_FILE_NAME, of(52), of(9)));
+    assertNoNextProcessorNotification();
+  }
+
+  @Test
+  public void flowWithProxyAndSimpleModuleAndLoggerReverse() throws Exception {
+    flowRunner("flowWithProxyAndSimpleModuleAndLoggerReverse").run();
+    // first MP from within the flow
+    assertNextProcessorLocationIs(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_REVERSE
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", LOGGER, CONFIG_FILE_NAME, of(56), of(9)));
+
+    // second MP from within the flow
+    assertNextProcessorLocationIs(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_REVERSE
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("1", MODULE_SET_PAYLOAD_HARDCODED_VALUE, CONFIG_FILE_NAME, of(57), of(9)));
+    assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13)));
+
+    // third MP from within the flow
+    assertNextProcessorLocationIs(FLOW_WITH_PROXY_AND_SIMPLE_MODULE_AND_LOGGER_REVERSE
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("2", MODULE_PROXY_SET_PAYLOAD_AND_LOGGER, CONFIG_FILE_NAME, of(58), of(9)));
+    assertNextProcessorLocationIs(OPERATION_PROXY_SET_PAYLOAD_AND_LOGGER_FIRST_MP
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", MODULE_SET_PAYLOAD_HARDCODED_VALUE, MODULE_SIMPLE_PROXY_FILE_NAME, of(20), of(13)));
+    assertNextProcessorLocationIs(OPERATION_SET_PAYLOAD_HARDCODED_VALUE_FIRST_MP
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("0", SET_PAYLOAD, MODULE_SIMPLE_FILE_NAME, of(13), of(13)));
+    assertNextProcessorLocationIs(OPERATION_PROXY_SET_PAYLOAD_AND_LOGGER_SECOND_MP
+        .appendLocationPart("processors", empty(), empty(), OptionalInt.empty(), OptionalInt.empty())
+        .appendLocationPart("1", LOGGER, MODULE_SIMPLE_PROXY_FILE_NAME, of(21), of(13)));
+    assertNoNextProcessorNotification();
+  }
+
+  private String[] getModulePaths() {
+    return new String[] {BASE_PATH_XML_MODULES + MODULE_SIMPLE_XML,
+        BASE_PATH_XML_MODULES + MODULE_SIMPLE_PROXY_XML};
+  }
+
+  // TODO(fernandezlautaro): MULE-10982 implement a testing framework for XML based connectors
+  @Override
+  protected void addBuilders(List<ConfigurationBuilder> builders) {
+    super.addBuilders(builders);
+    builders.add(0, new AbstractConfigurationBuilder() {
+
+      @Override
+      protected void doConfigure(MuleContext muleContext) throws Exception {
+        ExtensionManager extensionManager = muleContext.getExtensionManager();
+        registerXmlExtensions(extensionManager);
+      }
+
+      private void registerXmlExtensions(ExtensionManager extensionManager) {
+        final Set<ExtensionModel> extensions = new HashSet<>();
+        extensions.addAll(extensionManager.getExtensions());
+        final ClassLoader classLoader = getClass().getClassLoader();
+        final ExtensionModelLoader loader = getLoaderById(classLoader, XML_SDK_LOADER_ID);
+
+        for (String modulePath : getModulePaths()) {
+          Map<String, Object> params = new HashMap<>();
+          params.put(XML_SDK_RESOURCE_PROPERTY_NAME, modulePath);
+          final DslResolvingContext dslResolvingContext = getDefault(extensions);
+          final ExtensionModel extensionModel = loader.loadExtensionModel(classLoader, dslResolvingContext, params);
+          extensions.add(extensionModel);
+        }
+
+        for (ExtensionModel extension : extensions) {
+          extensionManager.registerExtension(extension);
+        }
+      }
+    });
+    final IsolatedClassLoaderExtensionsManagerConfigurationBuilder element =
+        new IsolatedClassLoaderExtensionsManagerConfigurationBuilder(emptyList());
+    element.loadExtensionModels();
+    builders.add(0, element);
+
+  }
+
+  private void assertNoNextProcessorNotification() {
+    Iterator iterator = listener.getNotifications().iterator();
+    assertThat(iterator.hasNext(), is(false));
+  }
+
+  private void assertNextProcessorLocationIs(DefaultComponentLocation componentLocation) {
+    MessageProcessorNotification processorNotification = getMessageProcessorNotification();
+    assertThat(processorNotification.getComponent().getLocation().getLocation(), is(componentLocation.getLocation()));
+    assertThat(processorNotification.getComponent().getLocation(), is(componentLocation));
+  }
+
+  private MessageProcessorNotification getMessageProcessorNotification() {
+    assertThat(listener.getNotifications().isEmpty(), is(false));
+    MessageProcessorNotification processorNotification =
+        listener.getNotifications().remove(0);
+    return processorNotification;
+  }
+
+}

@@ -14,8 +14,6 @@
             </scheduling-strategy>
         </scheduler>
         <set-payload value="testString"/>
-        <test:processor>
-            <test:callback class="org.mule.test.module.scheduler.cron.StoppedCronSchedulerTestCase$Foo"/>
-        </test:processor>
+        <set-payload value="#[java!org::mule::test::module::scheduler::cron::StoppedCronSchedulerTestCase::addFoo(payload)]"/>
     </flow>
 </mule>

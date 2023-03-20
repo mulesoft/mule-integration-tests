@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.mule.tests</groupId>
         <artifactId>mule-extensions-integration-tests</artifactId>
-        <version>4.4.0-SNAPSHOT</version>
+        <version>4.6.0-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -14,8 +14,40 @@
 
     <properties>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
-        <munitVersion>2.2.6-SNAPSHOT</munitVersion>
     </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <inherited>true</inherited>
+                <configuration>
+                    <systemPropertyVariables>
+                        <mule.flowReference.matchesAny>false</mule.flowReference.matchesAny>
+                    </systemPropertyVariables>
+                </configuration>
+                <executions>
+                    <execution>
+                        <!-- This second execution is needed to properly run the tests that rely on the set system property -->
+                        <!-- Since the system property is read during extension model generation, which runs before the test rules, -->
+                        <!-- it has to be set at JVM start time. -->
+                        <id>flowReferenceMatchesAny</id>
+                        <inherited>true</inherited>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                        <phase>test</phase>
+                        <configuration>
+                            <systemPropertyVariables>
+                                <mule.flowReference.matchesAny>true</mule.flowReference.matchesAny>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
     <dependencies>
         <dependency>
@@ -40,7 +72,6 @@
         <dependency>
             <groupId>org.mule.services</groupId>
             <artifactId>mule-service-scheduler</artifactId>
-            <version>${muleSchedulerServiceTestVersion}</version>
             <classifier>mule-service</classifier>
             <scope>provided</scope>
         </dependency>
@@ -58,7 +89,6 @@
         <dependency>
             <groupId>org.mule.services</groupId>
             <artifactId>mule-service-http</artifactId>
-            <version>${muleHttpServiceTestVersion}</version>
             <classifier>mule-service</classifier>
             <scope>provided</scope>
         </dependency>

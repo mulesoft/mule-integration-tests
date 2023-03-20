@@ -6,6 +6,7 @@
  */
 package org.mule.test.routing;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.startsWith;
@@ -19,7 +20,6 @@ import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.AsyncStory.ASYNC;
 import static org.mule.test.allure.AllureConstants.TransactionFeature.LocalStory.LOCAL_TRANSACTION;
 
-import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.functional.api.flow.FlowRunner;
 import org.mule.runtime.api.component.location.Location;
 import org.mule.runtime.api.lifecycle.Startable;
@@ -29,6 +29,7 @@ import org.mule.runtime.core.privileged.event.BaseEventContext;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.tests.api.TestQueueManager;
 
 import java.util.concurrent.CountDownLatch;
 
@@ -36,7 +37,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -51,6 +51,9 @@ public class AsyncTestCase extends AbstractIntegrationTestCase {
 
   private static final int MAX_CONCURRENCY = 2;
 
+  @Inject
+  private TestQueueManager queueManager;
+
   @Rule
   public DynamicPort port = new DynamicPort("http.port");
 
@@ -61,18 +64,12 @@ public class AsyncTestCase extends AbstractIntegrationTestCase {
   // TODO MULE-17752: Remove this to re-enable flowTrace for this test case
   public SystemProperty disableFlowStack = new SystemProperty(MULE_FLOW_TRACE, "false");
 
-  private TestConnectorQueueHandler queueHandler;
 
   private CountDownLatch terminationLatch;
 
   @Override
   protected String getConfigFile() {
     return "org/mule/test/routing/async-test.xml";
-  }
-
-  @Before
-  public void before() {
-    queueHandler = new TestConnectorQueueHandler(registry);
   }
 
   @After
@@ -91,7 +88,7 @@ public class AsyncTestCase extends AbstractIntegrationTestCase {
     ((BaseEventContext) (runner.buildEvent().getContext())).onTerminated((e, t) -> terminationLatch.countDown());
     runner.run();
 
-    CoreEvent afterAsyncMessage = queueHandler.read("asyncFinished", 1000);
+    CoreEvent afterAsyncMessage = queueManager.read("asyncFinished", 1000, MILLISECONDS);
     assertThat(afterAsyncMessage, not(nullValue()));
 
     assertThat(afterAsyncMessage.getMessage().getPayload().getValue().toString(), startsWith("[MuleRuntime].uber."));
@@ -112,7 +109,7 @@ public class AsyncTestCase extends AbstractIntegrationTestCase {
     runFlows("with-max-concurrency", latch);
 
     for (int i = 0; i < MAX_CONCURRENCY + 1; ++i) {
-      assertThat("" + i, queueHandler.read("asyncDispatched", 1000), not(nullValue()));
+      assertThat("" + i, queueManager.read("asyncDispatched", 1000, MILLISECONDS), not(nullValue()));
     }
     latch.countDown();
   }
@@ -141,8 +138,8 @@ public class AsyncTestCase extends AbstractIntegrationTestCase {
         (Startable) (locator.find(Location.builderFromStringRepresentation("with-source-tx").build())).get();
     withSourceTx.start();
 
-    assertThat(queueHandler.read("asyncDispatched", RECEIVE_TIMEOUT), not(nullValue()));
-    assertThat(queueHandler.read("asyncRunning", 1000), not(nullValue()));
+    assertThat(queueManager.read("asyncDispatched", RECEIVE_TIMEOUT, MILLISECONDS), not(nullValue()));
+    assertThat(queueManager.read("asyncRunning", 1000, MILLISECONDS), not(nullValue()));
   }
 
   @Test
@@ -152,8 +149,8 @@ public class AsyncTestCase extends AbstractIntegrationTestCase {
     CountDownLatch latch = new CountDownLatch(1);
     runFlows("with-try-tx", latch);
 
-    assertThat(queueHandler.read("asyncDispatched", 1000), not(nullValue()));
-    assertThat(queueHandler.read("asyncRunning", 1000), not(nullValue()));
+    assertThat(queueManager.read("asyncDispatched", 1000, MILLISECONDS), not(nullValue()));
+    assertThat(queueManager.read("asyncRunning", 1000, MILLISECONDS), not(nullValue()));
     latch.countDown();
   }
 
@@ -164,8 +161,8 @@ public class AsyncTestCase extends AbstractIntegrationTestCase {
     CountDownLatch latch = new CountDownLatch(1);
     runFlows("tx-within-async", latch);
 
-    assertThat(queueHandler.read("asyncDispatched", 1000), not(nullValue()));
-    assertThat(queueHandler.read("asyncRunning", 1000), not(nullValue()));
+    assertThat(queueManager.read("asyncDispatched", 1000, MILLISECONDS), not(nullValue()));
+    assertThat(queueManager.read("asyncRunning", 1000, MILLISECONDS), not(nullValue()));
     latch.countDown();
   }
 
@@ -175,8 +172,8 @@ public class AsyncTestCase extends AbstractIntegrationTestCase {
     CountDownLatch latch = new CountDownLatch(1);
     runFlows("tryNoTx-within-async-subFlow", latch);
 
-    assertThat(queueHandler.read("asyncDispatched", 1000), not(nullValue()));
-    assertThat(queueHandler.read("asyncRunning", 1000), not(nullValue()));
+    assertThat(queueManager.read("asyncDispatched", 1000, MILLISECONDS), not(nullValue()));
+    assertThat(queueManager.read("asyncRunning", 1000, MILLISECONDS), not(nullValue()));
     latch.countDown();
   }
 
@@ -191,10 +188,10 @@ public class AsyncTestCase extends AbstractIntegrationTestCase {
     CountDownLatch latch = new CountDownLatch(1);
     flowRunner("with-max-concurrency").withPayload("").withVariable("latch", latch).run();
 
-    assertThat(queueHandler.read("asyncRunning", 1000), not(nullValue()));
+    assertThat(queueManager.read("asyncRunning", 1000, MILLISECONDS), not(nullValue()));
     stopIfNeeded(withMaxConcurrency);
 
-    assertThat(queueHandler.read("asyncFinished", 1000), nullValue());
+    assertThat(queueManager.read("asyncFinished", 1000, MILLISECONDS), nullValue());
 
     // Restart so it can be stopped again when the test ends
     startIfNeeded(withMaxConcurrency);
@@ -205,10 +202,32 @@ public class AsyncTestCase extends AbstractIntegrationTestCase {
   @Description("Verify that operations inner fluxes are not terminated when within async/sub-flow combination.")
   public void asyncFlowWithSdkOperation() throws Exception {
     flowRunner("asyncFlowWithSdkOperation").run();
-    assertThat(queueHandler.read("asyncFinished", 1000), not(nullValue()));
+    assertThat(queueManager.read("asyncFinished", 1000, MILLISECONDS), not(nullValue()));
 
     flowRunner("asyncFlowWithSdkOperation").run();
-    assertThat(queueHandler.read("asyncFinished", 1000), not(nullValue()));
+    assertThat(queueManager.read("asyncFinished", 1000, MILLISECONDS), not(nullValue()));
+  }
+
+  @Test
+  @Issue("MULE-18304")
+  @Description("Verify that operations inner fluxes are not terminated when within error-handler/async/sub-flow combination.")
+  public void asyncFlowWithSdkOperationInErrorHandler() throws Exception {
+    flowRunner("asyncFlowWithSdkOperationInErrorHandler").runExpectingException();
+    assertThat(queueManager.read("asyncFinished", 1000, MILLISECONDS), not(nullValue()));
+
+    flowRunner("asyncFlowWithSdkOperationInErrorHandler").runExpectingException();
+    assertThat(queueManager.read("asyncFinished", 1000, MILLISECONDS), not(nullValue()));
+  }
+
+  @Test
+  @Issue("MULE-19091")
+  @Description("Verify that operations inner fluxes are not terminated when within error-handler/async/sub-flow combination.")
+  public void asyncFlowWithSdkOperationInRefErrorHandler() throws Exception {
+    flowRunner("asyncFlowWithSdkOperationInRefErrorHandler").runExpectingException();
+    assertThat(queueManager.read("asyncFinished", 1000, MILLISECONDS), not(nullValue()));
+
+    flowRunner("asyncFlowWithSdkOperationInRefErrorHandler").runExpectingException();
+    assertThat(queueManager.read("asyncFinished", 1000, MILLISECONDS), not(nullValue()));
   }
 
   private void testAsyncMaxConcurrency(String flowName) throws Exception {
@@ -216,12 +235,12 @@ public class AsyncTestCase extends AbstractIntegrationTestCase {
     runFlows(flowName, latch);
 
     for (int i = 0; i < MAX_CONCURRENCY; ++i) {
-      assertThat("" + i, queueHandler.read("asyncRunning", 1000), not(nullValue()));
+      assertThat("" + i, queueManager.read("asyncRunning", 1000, MILLISECONDS), not(nullValue()));
     }
-    assertThat(queueHandler.read("asyncRunning", 1000), nullValue());
+    assertThat(queueManager.read("asyncRunning", 1000, MILLISECONDS), nullValue());
 
     latch.countDown();
-    assertThat(queueHandler.read("asyncRunning", 1000), not(nullValue()));
+    assertThat(queueManager.read("asyncRunning", 1000, MILLISECONDS), not(nullValue()));
   }
 
   private void runFlows(String flowName, CountDownLatch latch) throws Exception {

@@ -1,0 +1,4 @@
+language:
+# This pattern is used by DecimalFormat to modify a given number according to a specified locale
+# It is added on this test to imitate the issue that brought this test case as much as possible
+  pattern: "#,##0.00"

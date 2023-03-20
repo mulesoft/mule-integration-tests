@@ -12,8 +12,8 @@
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd http://www.mulesoft.org/schema/mule/sockets http://www.mulesoft.org/schema/mule/sockets/current/mule-sockets.xsd">
     <configuration defaultErrorHandler-ref="referableHandler"/>
 
-    <object name="failingProcessor"
-            class="org.mule.test.extension.dsl.ArtifactDeclarationSerializerTestCase$FailingProcessor"/>
+    <object name="myString"
+            class="java.lang.String"/>
 
     <error-handler name="referableHandler">
         <on-error-continue enableNotifications="false" logException="false" type="MULE:SOURCE_RESPONSE">
@@ -72,8 +72,8 @@
     <http:listener-config basePath="/" name="httpListener">
         <http:listener-connection host="localhost" port="${port}" protocol="HTTPS">
             <tls:context>
-                <tls:key-store keyPassword="changeit" password="changeit" path="ssltest-keystore.jks"/>
                 <tls:trust-store insecure="true"/>
+                <tls:key-store keyPassword="changeit" password="changeit" path="ssltest-keystore.jks"/>
                 <tls:revocation-check>
                     <tls:standard-revocation-check onlyEndEntities="true"/>
                 </tls:revocation-check>
@@ -180,7 +180,8 @@
             <wsc:consume operation="GetCitiesByCountry">
                 <wsc:message>
                     <wsc:body>#[payload]</wsc:body>
-                    <wsc:headers>#[{"headers": {con#headerIn: "Header In Value",con#headerInOut: "Header In Out Value"}]</wsc:headers>
+                    <wsc:headers>#[{"headers": {con#headerIn: "Header In Value",con#headerInOut: "Header In Out Value"}]
+                    </wsc:headers>
                     <wsc:attachments>#[{}]</wsc:attachments>
                 </wsc:message>
             </wsc:consume>

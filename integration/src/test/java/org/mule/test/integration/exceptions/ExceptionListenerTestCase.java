@@ -6,6 +6,7 @@
  */
 package org.mule.test.integration.exceptions;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -14,7 +15,6 @@ import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.notification.ErrorHandlerNotification.PROCESS_END;
 import static org.mule.runtime.api.notification.ErrorHandlerNotification.PROCESS_START;
 
-import org.mule.functional.api.component.TestConnectorQueueHandler;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.notification.ErrorHandlerNotification;
@@ -23,6 +23,9 @@ import org.mule.runtime.api.notification.IntegerAction;
 import org.mule.tck.probe.JUnitProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.tests.api.TestQueueManager;
+
+import javax.inject.Inject;
 
 import org.junit.Test;
 
@@ -31,7 +34,9 @@ public class ExceptionListenerTestCase extends AbstractIntegrationTestCase {
   private static final int TIMEOUT_MILLIS = 5000;
   private static final int POLL_DELAY_MILLIS = 100;
 
-  private TestConnectorQueueHandler queueHandler;
+  @Inject
+  private TestQueueManager queueManager;
+
   private ErrorHandlerNotification exceptionStrategyStartNotification;
   private ErrorHandlerNotification exceptionStrategyEndNotification;
 
@@ -43,7 +48,6 @@ public class ExceptionListenerTestCase extends AbstractIntegrationTestCase {
   @Override
   protected void doSetUp() throws Exception {
     super.doSetUp();
-    queueHandler = new TestConnectorQueueHandler(registry);
 
     exceptionStrategyStartNotification = null;
     exceptionStrategyEndNotification = null;
@@ -73,7 +77,7 @@ public class ExceptionListenerTestCase extends AbstractIntegrationTestCase {
 
     assertQueueIsEmpty("component.out");
 
-    Message message = queueHandler.read("error.queue", 2000).getMessage();
+    Message message = queueManager.read("error.queue", 2000, MILLISECONDS).getMessage();
     assertNotNull(message);
     Object payload = message.getPayload().getValue();
     assertThat(payload, is("test"));
@@ -108,6 +112,6 @@ public class ExceptionListenerTestCase extends AbstractIntegrationTestCase {
   }
 
   private void assertQueueIsEmpty(String queueName) throws MuleException {
-    assertThat(queueHandler.read(queueName, 2000), is(nullValue()));
+    assertThat(queueManager.read(queueName, 2000, MILLISECONDS), is(nullValue()));
   }
 }

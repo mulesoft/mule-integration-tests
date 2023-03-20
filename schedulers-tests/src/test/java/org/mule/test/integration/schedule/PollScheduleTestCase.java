@@ -11,15 +11,13 @@ import static java.lang.Thread.sleep;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.component.location.Location.builderFromStringRepresentation;
+import static org.mule.test.allure.AllureConstants.SchedulerFeature.SCHEDULER;
+import static org.mule.test.allure.AllureConstants.SchedulerFeature.SchedulerStories.SCHEDULED_FLOW_EXECUTION;
 
-import org.mule.functional.api.component.EventCallback;
-import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.lifecycle.Startable;
 import org.mule.runtime.api.lifecycle.Stoppable;
 import org.mule.runtime.api.source.SchedulerMessageSource;
-import org.mule.runtime.core.api.MuleContext;
-import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.tck.probe.JUnitLambdaProbe;
 import org.mule.tck.probe.PollingProber;
@@ -29,12 +27,17 @@ import org.mule.test.AbstractSchedulerTestCase;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
+
 import org.junit.ClassRule;
 import org.junit.Test;
 
 /**
  * This is a test for poll with schedulers. It validates that the polls can be executed, stopped, run.
  */
+@Feature(SCHEDULER)
+@Story(SCHEDULED_FLOW_EXECUTION)
 public class PollScheduleTestCase extends AbstractSchedulerTestCase {
 
   private static List<String> foo = new ArrayList<>();
@@ -114,29 +117,21 @@ public class PollScheduleTestCase extends AbstractSchedulerTestCase {
     registry.<Startable>lookupByName("pollfoo").get().start();
   }
 
-  public static class Foo extends AbstractComponent implements EventCallback {
-
-    @Override
-    public void eventReceived(CoreEvent event, Object component, MuleContext muleContext) throws Exception {
-      synchronized (foo) {
-
-        if (foo.size() < 10) {
-          foo.add((String) event.getMessage().getPayload().getValue());
-        }
+  public static Object addFoo(String payload) {
+    synchronized (foo) {
+      if (foo.size() < 10) {
+        foo.add(payload);
       }
     }
+    return payload;
   }
 
-  public static class Bar extends AbstractComponent implements EventCallback {
-
-    @Override
-    public void eventReceived(CoreEvent event, Object component, MuleContext muleContext) throws Exception {
-      synchronized (bar) {
-
-        if (bar.size() < 10) {
-          bar.add((String) event.getMessage().getPayload().getValue());
-        }
+  public static Object addBar(String payload) {
+    synchronized (bar) {
+      if (bar.size() < 10) {
+        bar.add(payload);
       }
     }
+    return payload;
   }
 }
