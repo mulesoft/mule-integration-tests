@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+    <http:listener-config name="HTTP_Listener_config">
+        <http:listener-connection host="0.0.0.0" port="${port}" />
+    </http:listener-config>
+
+    <http:request-config name="requestConfig">
+        <http:request-connection host="localhost" port="${port}"/>
+    </http:request-config>
+
+    <flow name="requestTo400">
+        <http:request config-ref="requestConfig" method="GET" url="https://httpbin.org/status/400" />
+    </flow>
+
+    <flow name="requestTo500">
+        <http:request config-ref="requestConfig" method="GET" url="https://httpbin.org/status/500" />
+    </flow>
+    
+    <flow name="httpListenerError">
+        <http:request method="GET" config-ref="requestConfig" path="/test"/>
+    </flow>
+
+    <flow name="httpListenerFlow">
+        <http:listener config-ref="HTTP_Listener_config" path="/test" />
+        <raise-error type="ANY"/>
+        <logger />
+    </flow>
+
+    <flow name="httpListenerError400">
+        <http:request method="GET" config-ref="requestConfig" path="/test400"/>
+    </flow>
+
+    <flow name="httpListenerFlow400">
+        <http:listener config-ref="HTTP_Listener_config" path="/test400" >
+            <http:error-response statusCode="400"/>
+        </http:listener>
+        <raise-error type="ANY"/>
+        <logger />
+    </flow>
+
+    <flow name="httpListenerError500">
+        <http:request method="GET" config-ref="requestConfig" path="/test500"/>
+    </flow>
+
+    <flow name="httpListenerFlow500">
+        <http:listener config-ref="HTTP_Listener_config" path="/test500" >
+            <http:response statusCode="500"/>
+        </http:listener>
+        <logger />
+    </flow>
+</mule>
