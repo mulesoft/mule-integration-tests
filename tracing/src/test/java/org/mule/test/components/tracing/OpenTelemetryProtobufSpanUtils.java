@@ -12,6 +12,9 @@ import static org.mule.runtime.core.api.util.StringUtils.toHexString;
 
 import static java.util.stream.Collectors.toMap;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
+
 import org.mule.runtime.tracer.api.sniffer.CapturedEventData;
 import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
 
@@ -51,6 +54,11 @@ public class OpenTelemetryProtobufSpanUtils {
         .forEach(instrumentationLibrarySpans -> spans.addAll(instrumentationLibrarySpans.getSpansList()));
 
     return spans.stream().map(span -> new SpanDataWrapper(serviceName, span)).collect(Collectors.toList());
+  }
+
+  public static void verifyResourceAndScopeGrouping(ExportTraceServiceRequest request) {
+    assertThat(request.getResourceSpansCount(), equalTo(1));
+    assertThat(request.getResourceSpans(0).getInstrumentationLibrarySpansCount(), equalTo(1));
   }
 
   private static final class SpanDataWrapper implements CapturedExportedSpan {
