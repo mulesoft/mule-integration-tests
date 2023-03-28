@@ -20,7 +20,7 @@
         <openTelemetryProtoVersion>0.3.0</openTelemetryProtoVersion>
         <opentelemetryVersion>1.20.1</opentelemetryVersion>
         <muleTracingModuleVersion>1.0.0</muleTracingModuleVersion>
-        <activemqVersion>5.15.3</activemqVersion>
+        <activemqVersion>5.15.9</activemqVersion>
         <hawtbufVersion>1.1</hawtbufVersion>
         <activemqProtobuf>1.1</activemqProtobuf>
         <groovy.version>2.4.21</groovy.version>
