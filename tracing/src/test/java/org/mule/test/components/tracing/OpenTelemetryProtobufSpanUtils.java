@@ -56,9 +56,24 @@ public class OpenTelemetryProtobufSpanUtils {
     return spans.stream().map(span -> new SpanDataWrapper(serviceName, span)).collect(Collectors.toList());
   }
 
+  /**
+   * Verify that there is only one resource / instrumentation scope
+   *
+   * @link <a href="https://opentelemetry.io/docs/reference/specification/resource/sdk/">Resource Definition</a>
+   * @link <a href="https://opentelemetry.io/docs/reference/specification/glossary/#instrumentation-scope">Instrumentation Scope
+   *       Definition</a>
+   * @link <a href=
+   *       "https://github.com/open-telemetry/opentelemetry-proto/blob/main/opentelemetry/proto/collector/trace/v1/trace_service.proto">Export
+   *       Request Protobuf</a>
+   *
+   * @param request the export request for traces.
+   */
   public static void verifyResourceAndScopeGrouping(ExportTraceServiceRequest request) {
-    assertThat(request.getResourceSpansCount(), equalTo(1));
-    assertThat(request.getResourceSpans(0).getInstrumentationLibrarySpansCount(), equalTo(1));
+
+    assertThat("The number of expected resources for the export request is not 1. In the mule runtime there is only one resource per app",
+               request.getResourceSpansCount(), equalTo(1));
+    assertThat("The number of expected instrumentation scopes for the export request is not 1. In the mule runtime there is only one scope, which corresponds to the instrumentation code/library for open telemetry export module.",
+               request.getResourceSpans(0).getInstrumentationLibrarySpansCount(), equalTo(1));
   }
 
   private static final class SpanDataWrapper implements CapturedExportedSpan {
