@@ -22,6 +22,9 @@ import static java.lang.System.setProperty;
 import static java.util.Arrays.asList;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 
+import static io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceRequest.parseFrom;
+
+import static org.mule.test.components.tracing.OpenTelemetryProtobufSpanUtils.verifyResourceAndScopeGrouping;
 import static org.testcontainers.Testcontainers.exposeHostPorts;
 import static org.testcontainers.containers.BindMode.READ_ONLY;
 import static org.testcontainers.utility.MountableFile.forHostPath;
@@ -42,7 +45,6 @@ import com.linecorp.armeria.server.ServiceRequestContext;
 import com.linecorp.armeria.server.grpc.protocol.AbstractUnaryGrpcService;
 import com.linecorp.armeria.testing.junit4.server.SelfSignedCertificateRule;
 import com.linecorp.armeria.testing.junit4.server.ServerRule;
-import io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceRequest;
 import io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceResponse;
 import org.jetbrains.annotations.NotNull;
 import org.junit.After;
@@ -180,8 +182,9 @@ public abstract class AbstractOpenTelemetryTracingTestCase extends
                                                                             @NotNull ServiceRequestContext ctx,
                                                                             byte @NotNull [] message) {
                      try {
+                       verifyResourceAndScopeGrouping(parseFrom(message));
                        capturedExportedSpans
-                           .addAll(OpenTelemetryProtobufSpanUtils.getSpans(ExportTraceServiceRequest.parseFrom(message)));
+                           .addAll(OpenTelemetryProtobufSpanUtils.getSpans(parseFrom(message)));
                      } catch (InvalidProtocolBufferException e) {
                        throw new UncheckedIOException(e);
                      }
