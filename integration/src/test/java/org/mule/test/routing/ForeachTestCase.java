@@ -313,8 +313,8 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
     assertThat(total, is(greaterThan(0)));
   }
 
-  @Ignore("MULE-9285")
-  @Issue("MULE-9285")
+  @Ignore("W-12947181: Refactor ExpressionLanage and AbstractMessageTransformer to operate on MuleEvent")
+  @Issue("W-12947181")
   @Test
   public void xmlUpdateByteArray() throws Exception {
     xml(sampleXml.getBytes());
