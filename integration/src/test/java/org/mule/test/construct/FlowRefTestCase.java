@@ -267,7 +267,7 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
 
   @Test
   @Story(BACKPRESSURE)
-  @Ignore("How to handle backpressure on flow-ref's is not defined yet, but this test will provide a starting point in the future...")
+  @Ignore("W-12947068: How to handle backpressure on flow-ref's is not defined yet, but this test will provide a starting point in the future...")
   public void backpressureFlowRef() throws Exception {
     HttpRequest request =
         HttpRequest.builder()
@@ -290,7 +290,7 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
 
   @Test
   @Story(BACKPRESSURE)
-  @Ignore("How to handle backpressure on flow-ref's is not defined yet, but this test will provide a starting point in the future...")
+  @Ignore("W-12947068: How to handle backpressure on flow-ref's is not defined yet, but this test will provide a starting point in the future...")
   public void backpressureFlowRefSub() throws Exception {
     HttpRequest request =
         HttpRequest.builder()
