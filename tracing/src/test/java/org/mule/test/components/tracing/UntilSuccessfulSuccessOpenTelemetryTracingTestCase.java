@@ -6,11 +6,16 @@
  */
 package org.mule.test.components.tracing;
 
+import static org.mule.runtime.api.util.MuleSystemProperties.TRACING_LEVEL_CONFIGURATION_PATH;
+import static org.mule.runtime.tracing.level.api.config.TracingLevel.DEBUG;
+import static org.mule.runtime.tracing.level.api.config.TracingLevel.MONITORING;
+import static org.mule.runtime.tracing.level.api.config.TracingLevel.OVERVIEW;
 import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.DEFAULT_CORE_EVENT_TRACER;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertThat;
+import static java.lang.System.clearProperty;
+import static java.lang.System.setProperty;
+import static java.util.Arrays.asList;
 
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
@@ -20,17 +25,22 @@ import org.mule.tck.junit4.AbstractMuleTestCase;
 import org.mule.tck.probe.JUnitProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy;
+import org.mule.test.runner.RunnerDelegateTo;
 
+import java.nio.file.FileSystems;
 import java.util.Collection;
+import java.util.function.Function;
 
 import javax.inject.Inject;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
 import org.junit.Test;
+import org.junit.runners.Parameterized;
 
 @Feature(PROFILING)
 @Story(DEFAULT_CORE_EVENT_TRACER)
+@RunnerDelegateTo(Parameterized.class)
 public class UntilSuccessfulSuccessOpenTelemetryTracingTestCase extends MuleArtifactFunctionalTestCase
     implements OpenTelemetryTracingTestRunnerConfigAnnotation {
 
@@ -44,9 +54,71 @@ public class UntilSuccessfulSuccessOpenTelemetryTracingTestCase extends MuleArti
   public static final String UNTIL_SUCCESSFUL_FLOW = "until-successful-flow";
   public static final String EXPECTED_FLOW_SPAN_NAME = "mule:flow";
   public static final String NO_PARENT_SPAN = "0000000000000000";
+  private final String traceLevel;
+  private final int expectedSpans;
+  private final Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> spanHierarchyRetriever;
 
   @Inject
   PrivilegedProfilingService profilingService;
+
+  @Parameterized.Parameters(name = "tracingLevel: {0}")
+  public static Collection<Object[]> data() {
+    return asList(new Object[][] {
+        {OVERVIEW.name(), 1, getOverviewExpectedSpanTestHierarchy()},
+        {MONITORING.name(), 5, getMonitoringExpectedSpanTestHierarchy()},
+        {DEBUG.name(), 5, getDebugExpectedSpanTestHierarchy()}
+    });
+  }
+
+  private static Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> getOverviewExpectedSpanTestHierarchy() {
+    return exportedSpans -> {
+      SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
+      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME);
+      return expectedSpanHierarchy;
+    };
+  }
+
+  private static Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> getMonitoringExpectedSpanTestHierarchy() {
+    return exportedSpans -> {
+      SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
+      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_UNTIL_SUCCESSFUL_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_ATTEMPT_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_LOGGER_SPAN_NAME)
+          .child(EXPECTED_SET_PAYLOAD_SPAN_NAME)
+          .endChildren()
+          .endChildren()
+          .endChildren();
+
+      return expectedSpanHierarchy;
+    };
+  }
+
+  private static Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> getDebugExpectedSpanTestHierarchy() {
+    // In this case debug and monitoring level are the same.
+    return getMonitoringExpectedSpanTestHierarchy();
+  }
+
+  @Override
+  protected void doSetUpBeforeMuleContextCreation() throws Exception {
+    setProperty(TRACING_LEVEL_CONFIGURATION_PATH, traceLevel.toLowerCase() + FileSystems.getDefault().getSeparator());
+    super.doSetUpBeforeMuleContextCreation();
+  }
+
+  public void doAfter() {
+    clearProperty(TRACING_LEVEL_CONFIGURATION_PATH);
+  }
+
+  public UntilSuccessfulSuccessOpenTelemetryTracingTestCase(String traceLevel, int expectedSpans,
+                                                            Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> spanHierarchyRetriever) {
+    this.traceLevel = traceLevel;
+    this.expectedSpans = expectedSpans;
+    this.spanHierarchyRetriever = spanHierarchyRetriever;
+  }
+
 
   @Override
   protected String getConfigFile() {
@@ -67,7 +139,7 @@ public class UntilSuccessfulSuccessOpenTelemetryTracingTestCase extends MuleArti
         @Override
         protected boolean test() {
           Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();;
-          return exportedSpans.size() == 5;
+          return exportedSpans.size() == expectedSpans;
         }
 
         @Override
@@ -77,21 +149,7 @@ public class UntilSuccessfulSuccessOpenTelemetryTracingTestCase extends MuleArti
       });
 
       Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
-
-      SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
-      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
-          .beginChildren()
-          .child(EXPECTED_UNTIL_SUCCESSFUL_SPAN_NAME)
-          .beginChildren()
-          .child(EXPECTED_ATTEMPT_SPAN_NAME)
-          .beginChildren()
-          .child(EXPECTED_LOGGER_SPAN_NAME)
-          .child(EXPECTED_SET_PAYLOAD_SPAN_NAME)
-          .endChildren()
-          .endChildren()
-          .endChildren();
-
-      expectedSpanHierarchy.assertSpanTree();
+      spanHierarchyRetriever.apply(exportedSpans).assertSpanTree();
     } finally {
       spanCapturer.dispose();
     }

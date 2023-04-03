@@ -11,6 +11,14 @@ import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExpor
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_ENABLED;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_ENDPOINT;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_TYPE;
+import static org.mule.runtime.api.util.MuleSystemProperties.TRACING_LEVEL_CONFIGURATION_PATH;
+import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_BACKOFF_MAX_ATTEMPTS;
+import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_ENABLED;
+import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_ENDPOINT;
+import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_TYPE;
+import static org.mule.runtime.tracing.level.api.config.TracingLevel.DEBUG;
+import static org.mule.runtime.tracing.level.api.config.TracingLevel.MONITORING;
+import static org.mule.runtime.tracing.level.api.config.TracingLevel.OVERVIEW;
 import static org.mule.test.components.tracing.OpenTelemetryProtobufSpanUtils.getSpans;
 
 import static java.lang.Boolean.TRUE;
@@ -32,10 +40,12 @@ import org.mule.test.runner.RunnerDelegateTo;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.file.FileSystems;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 
 import com.linecorp.armeria.common.HttpRequest;
 import com.linecorp.armeria.common.HttpResponse;
@@ -56,6 +66,9 @@ import org.junit.runners.Parameterized;
 public class DistributedOpenTelemetryTracingTestCase extends
     MuleArtifactFunctionalTestCase implements OpenTelemetryTracingTestRunnerConfigAnnotation {
 
+  private final String traceLevel;
+  private final int expectedSpansCount;
+  private final Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> spanHierarchyRetriever;
   @Rule
   public DynamicPort httpPort = new DynamicPort("port");
 
@@ -86,17 +99,70 @@ public class DistributedOpenTelemetryTracingTestCase extends
   public static Collection<Object[]> data() {
     return asList(new Object[][] {
         // TODO: Add the GRPC Version
-        {"HTTP", ""}
+        {"HTTP", "", OVERVIEW.name(), 3, getOverviewExpectedSpanTestHierarchy()},
+        {"HTTP", "", MONITORING.name(), 4, getMonitoringExpectedSpanTestHierarchy()},
+        {"HTTP", "", DEBUG.name(), 4, getDebugExpectedSpanTestHierarchy()}
     });
   }
 
-  public DistributedOpenTelemetryTracingTestCase(String type, String path) {
+  private static Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> getOverviewExpectedSpanTestHierarchy() {
+    return exportedSpans -> {
+      SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
+      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_HTTP_REQUEST_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_HTTP_FLOW_SPAN_NAME)
+          .endChildren();
+      return expectedSpanHierarchy;
+    };
+  }
+
+  private static Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> getMonitoringExpectedSpanTestHierarchy() {
+    return exportedSpans -> {
+      SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
+      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_HTTP_REQUEST_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_HTTP_FLOW_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_LOGGER_SPAN_NAME)
+          .endChildren()
+          .endChildren();
+
+      return expectedSpanHierarchy;
+    };
+  }
+
+  private static Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> getDebugExpectedSpanTestHierarchy() {
+    // In this case debug and monitoring level are the same.
+    return getMonitoringExpectedSpanTestHierarchy();
+  }
+
+  @Override
+  protected void doSetUpBeforeMuleContextCreation() throws Exception {
+    setProperty(TRACING_LEVEL_CONFIGURATION_PATH, traceLevel.toLowerCase() + FileSystems.getDefault().getSeparator());
+    super.doSetUpBeforeMuleContextCreation();
+  }
+
+
+  public void doAfter() {
+    clearProperty(TRACING_LEVEL_CONFIGURATION_PATH);
+  }
+
+  public DistributedOpenTelemetryTracingTestCase(String type, String path, String traceLevel, int expectedSpansCount,
+                                                 Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> spanHierarchyRetriever) {
     this.type = type;
     this.path = path;
+    this.traceLevel = traceLevel;
+    this.expectedSpansCount = expectedSpansCount;
+    this.spanHierarchyRetriever = spanHierarchyRetriever;
   }
 
   @Before
   public void before() {
+    httpServer.reset();
     setProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENABLED, TRUE.toString());
     setProperty(MULE_OPEN_TELEMETRY_EXPORTER_TYPE, type);
     setProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENDPOINT,
@@ -122,7 +188,7 @@ public class DistributedOpenTelemetryTracingTestCase extends
       @Override
       protected boolean test() {
         Collection<CapturedExportedSpan> exportedSpans = httpServer.getCapturedExportedSpans();
-        return exportedSpans.size() == 4;
+        return exportedSpans.size() == expectedSpansCount;
       }
 
       @Override
@@ -131,21 +197,7 @@ public class DistributedOpenTelemetryTracingTestCase extends
       }
     });
 
-    Collection<CapturedExportedSpan> exportedSpans = httpServer.getCapturedExportedSpans();
-
-
-    SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
-    expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
-        .beginChildren()
-        .child(EXPECTED_HTTP_REQUEST_SPAN_NAME)
-        .beginChildren()
-        .child(EXPECTED_HTTP_FLOW_SPAN_NAME)
-        .beginChildren()
-        .child(EXPECTED_LOGGER_SPAN_NAME)
-        .endChildren()
-        .endChildren();
-
-    expectedSpanHierarchy.assertSpanTree();
+    spanHierarchyRetriever.apply(httpServer.getCapturedExportedSpans()).assertSpanTree();
   }
 
   private static final class TestServerRule extends ServerRule {
@@ -180,6 +232,10 @@ public class DistributedOpenTelemetryTracingTestCase extends
 
     public List<CapturedExportedSpan> getCapturedExportedSpans() {
       return capturedExportedSpans;
+    }
+
+    public void reset() {
+      capturedExportedSpans.clear();
     }
   }
 }

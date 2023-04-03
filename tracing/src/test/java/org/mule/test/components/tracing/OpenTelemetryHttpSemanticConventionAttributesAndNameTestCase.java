@@ -7,8 +7,16 @@
 
 package org.mule.test.components.tracing;
 
+import static org.mule.runtime.api.util.MuleSystemProperties.TRACING_LEVEL_CONFIGURATION_PATH;
+import static org.mule.runtime.tracing.level.api.config.TracingLevel.DEBUG;
+import static org.mule.runtime.tracing.level.api.config.TracingLevel.MONITORING;
+import static org.mule.runtime.tracing.level.api.config.TracingLevel.OVERVIEW;
 import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.DEFAULT_CORE_EVENT_TRACER;
+
+import static java.lang.System.clearProperty;
+import static java.lang.System.setProperty;
+import static java.util.Arrays.asList;
 
 import static org.hamcrest.Matchers.aMapWithSize;
 import static org.hamcrest.Matchers.equalTo;
@@ -21,8 +29,14 @@ import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
 import org.mule.runtime.tracer.api.sniffer.ExportedSpanSniffer;
 import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.tck.junit4.rule.DynamicPort;
+import org.mule.tck.probe.JUnitProbe;
+import org.mule.tck.probe.PollingProber;
+import org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy;
+import org.mule.test.runner.RunnerDelegateTo;
 
+import java.nio.file.FileSystems;
 import java.util.Collection;
+import java.util.function.Function;
 
 import javax.inject.Inject;
 
@@ -31,12 +45,11 @@ import io.qameta.allure.Story;
 import junit.framework.AssertionFailedError;
 import org.junit.Rule;
 import org.junit.Test;
-import org.mule.tck.probe.JUnitProbe;
-import org.mule.tck.probe.PollingProber;
-import org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy;
+import org.junit.runners.Parameterized;
 
 @Feature(PROFILING)
 @Story(DEFAULT_CORE_EVENT_TRACER)
+@RunnerDelegateTo(Parameterized.class)
 public class OpenTelemetryHttpSemanticConventionAttributesAndNameTestCase extends MuleArtifactFunctionalTestCase
     implements OpenTelemetryTracingTestRunnerConfigAnnotation {
 
@@ -66,8 +79,111 @@ public class OpenTelemetryHttpSemanticConventionAttributesAndNameTestCase extend
   public static final String SPAN_KIND_ATTRIBUTE = "span.kind.override";
   public static final String SPAN_STATUS_ATTRIBUTE = "status.override";
 
+  private final String tracingLevel;
+  private final int expectedSpansForSuccessCount;
+  private final Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> spanHierarchySuccessRetriever;
+  private final int expectedSpansForErrorCount;
+  private final Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> spanHierarchyErrorRetriever;
+
   @Inject
   PrivilegedProfilingService profilingService;
+
+  @Parameterized.Parameters(name = "tracingLevel: {0}")
+  public static Collection<Object[]> data() {
+    return asList(new Object[][] {
+        {OVERVIEW.name(), 3, getOverviewExpectedSpanTestHierarchyForSuccessFlow(), 3,
+            getOverviewExpectedSpanTestHierarchyForErrorFlow()},
+        {MONITORING.name(), 4, getMonitoringExpectedSpanTestHierarchyForSuccessFlow(), 5,
+            getMonitoringExpectedSpanTestHierarchyForErrorFlow()},
+        {DEBUG.name(), 4, getDebugExpectedSpanTestHierarchyForSuccessFlow(), 5, getDebugExpectedSpanTestHierarchyForErrorFlow()}
+    });
+  }
+
+  public OpenTelemetryHttpSemanticConventionAttributesAndNameTestCase(String tracingLevel,
+                                                                      int expectedSpansForSuccessCount,
+                                                                      Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> spanHierarchySuccessRetriever,
+                                                                      int expectedSpansForErrorCount,
+                                                                      Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> spanHierarchyErrorRetriever) {
+    this.tracingLevel = tracingLevel;
+    this.expectedSpansForSuccessCount = expectedSpansForSuccessCount;
+    this.expectedSpansForErrorCount = expectedSpansForErrorCount;
+    this.spanHierarchySuccessRetriever = spanHierarchySuccessRetriever;
+    this.spanHierarchyErrorRetriever = spanHierarchyErrorRetriever;
+  }
+
+  private static Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> getOverviewExpectedSpanTestHierarchyForSuccessFlow() {
+    return exportedSpans -> {
+      SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
+      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_HTTP_REQUEST_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_HTTP_FLOW_SPAN_NAME)
+          .endChildren();
+
+      return expectedSpanHierarchy;
+    };
+  }
+
+  private static Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> getMonitoringExpectedSpanTestHierarchyForSuccessFlow() {
+    return exportedSpans -> {
+      SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
+      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_HTTP_REQUEST_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_HTTP_FLOW_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_LOGGER_SPAN_NAME)
+          .endChildren()
+          .endChildren();
+
+      return expectedSpanHierarchy;
+    };
+  }
+
+  private static Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> getDebugExpectedSpanTestHierarchyForSuccessFlow() {
+    // In this case debug and monitoring level are the same.
+    return getMonitoringExpectedSpanTestHierarchyForSuccessFlow();
+  }
+
+  private static Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> getDebugExpectedSpanTestHierarchyForErrorFlow() {
+    // In this case debug and monitoring level are the same.
+    return getMonitoringExpectedSpanTestHierarchyForErrorFlow();
+  }
+
+  private static Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> getMonitoringExpectedSpanTestHierarchyForErrorFlow() {
+    return exportedSpans -> {
+      SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
+      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_HTTP_REQUEST_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_HTTP_FLOW_SPAN_NAME_200)
+          .beginChildren()
+          .child(EXPECTED_RAISE_ERROR_SPAN)
+          .child(EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME)
+          .endChildren()
+          .endChildren()
+          .endChildren();
+
+      return expectedSpanHierarchy;
+    };
+  }
+
+  private static Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> getOverviewExpectedSpanTestHierarchyForErrorFlow() {
+    return exportedSpans -> {
+      SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
+      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_HTTP_REQUEST_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_HTTP_FLOW_SPAN_NAME_200)
+          .endChildren();
+
+      return expectedSpanHierarchy;
+    };
+  }
 
   @Rule
   public DynamicPort httpPort = new DynamicPort("port");
@@ -77,8 +193,19 @@ public class OpenTelemetryHttpSemanticConventionAttributesAndNameTestCase extend
     return "tracing/http-semantic-conventions-tracing.xml";
   }
 
+  @Override
+  protected void doSetUpBeforeMuleContextCreation() throws Exception {
+    setProperty(TRACING_LEVEL_CONFIGURATION_PATH, tracingLevel.toLowerCase() + FileSystems.getDefault().getSeparator());
+    super.doSetUpBeforeMuleContextCreation();
+  }
+
+
+  public void doAfter() {
+    clearProperty(TRACING_LEVEL_CONFIGURATION_PATH);
+  }
+
   @Test
-  public void testFlow() throws Exception {
+  public void testSuccessFlow() throws Exception {
     ExportedSpanSniffer spanCapturer = profilingService.getSpanExportManager().getExportedSpanSniffer();
 
     try {
@@ -91,7 +218,7 @@ public class OpenTelemetryHttpSemanticConventionAttributesAndNameTestCase extend
         @Override
         protected boolean test() {
           Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
-          return exportedSpans.size() == 4;
+          return exportedSpans.size() == expectedSpansForSuccessCount;
         }
 
         @Override
@@ -102,18 +229,7 @@ public class OpenTelemetryHttpSemanticConventionAttributesAndNameTestCase extend
 
       Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
 
-      SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
-      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
-          .beginChildren()
-          .child(EXPECTED_HTTP_REQUEST_SPAN_NAME)
-          .beginChildren()
-          .child(EXPECTED_HTTP_FLOW_SPAN_NAME)
-          .beginChildren()
-          .child(EXPECTED_LOGGER_SPAN_NAME)
-          .endChildren()
-          .endChildren();
-
-      expectedSpanHierarchy.assertSpanTree();
+      spanHierarchySuccessRetriever.apply(exportedSpans).assertSpanTree();
 
       CapturedExportedSpan listenerExportedSpan =
           exportedSpans.stream().filter(exportedSpan -> exportedSpan.getName().equals(EXPECTED_HTTP_FLOW_SPAN_NAME))
@@ -170,7 +286,7 @@ public class OpenTelemetryHttpSemanticConventionAttributesAndNameTestCase extend
         @Override
         protected boolean test() {
           Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
-          return exportedSpans.size() == 5;
+          return exportedSpans.size() == expectedSpansForErrorCount;
         }
 
         @Override
@@ -181,20 +297,7 @@ public class OpenTelemetryHttpSemanticConventionAttributesAndNameTestCase extend
 
       Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
 
-      SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
-      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
-          .beginChildren()
-          .child(EXPECTED_HTTP_REQUEST_SPAN_NAME)
-          .beginChildren()
-          .child(EXPECTED_HTTP_FLOW_SPAN_NAME_200)
-          .beginChildren()
-          .child(EXPECTED_RAISE_ERROR_SPAN)
-          .child(EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME)
-          .endChildren()
-          .endChildren()
-          .endChildren();
-
-      expectedSpanHierarchy.assertSpanTree();
+      spanHierarchyErrorRetriever.apply(exportedSpans).assertSpanTree();
 
       CapturedExportedSpan listenerExportedSpan =
           exportedSpans.stream().filter(exportedSpan -> exportedSpan.getName().equals(EXPECTED_HTTP_FLOW_SPAN_NAME_200))

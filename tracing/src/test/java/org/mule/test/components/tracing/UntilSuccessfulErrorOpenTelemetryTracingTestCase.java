@@ -6,8 +6,16 @@
  */
 package org.mule.test.components.tracing;
 
+import static org.mule.runtime.api.util.MuleSystemProperties.TRACING_LEVEL_CONFIGURATION_PATH;
+import static org.mule.runtime.tracing.level.api.config.TracingLevel.DEBUG;
+import static org.mule.runtime.tracing.level.api.config.TracingLevel.MONITORING;
+import static org.mule.runtime.tracing.level.api.config.TracingLevel.OVERVIEW;
 import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.DEFAULT_CORE_EVENT_TRACER;
+
+import static java.lang.System.clearProperty;
+import static java.lang.System.setProperty;
+import static java.util.Arrays.asList;
 
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
@@ -18,16 +26,21 @@ import org.mule.tck.probe.JUnitProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy;
 
+import java.nio.file.FileSystems;
 import java.util.Collection;
+import java.util.function.Function;
 
 import javax.inject.Inject;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
 import org.junit.Test;
+import org.junit.runners.Parameterized;
+import org.mule.test.runner.RunnerDelegateTo;
 
 @Feature(PROFILING)
 @Story(DEFAULT_CORE_EVENT_TRACER)
+@RunnerDelegateTo(Parameterized.class)
 public class UntilSuccessfulErrorOpenTelemetryTracingTestCase extends MuleArtifactFunctionalTestCase
     implements OpenTelemetryTracingTestRunnerConfigAnnotation {
 
@@ -43,41 +56,32 @@ public class UntilSuccessfulErrorOpenTelemetryTracingTestCase extends MuleArtifa
   public static final String ON_ERROR_PROPAGATE_SPAN_NAME = "mule:on-error-propagate";
   public static final String NO_PARENT_SPAN = "0000000000000000";
   public static final int NUMBER_OF_RETRIES = 2;
+  private final String traceLevel;
+  private final int expectedSpansCount;
+  private final Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> spanHierarchyRetriever;
 
   @Inject
   PrivilegedProfilingService profilingService;
 
-  @Override
-  protected String getConfigFile() {
-    return "tracing/until-successful-error.xml";
+  @Parameterized.Parameters(name = "tracingLevel: {0}")
+  public static Collection<Object[]> data() {
+    return asList(new Object[][] {
+        {OVERVIEW.name(), 4, getOverviewExpectedSpanTestHierarchy()},
+        {MONITORING.name(), (NUMBER_OF_RETRIES + 1) * 3 + 3, getMonitoringExpectedSpanTestHierarchy()},
+        {DEBUG.name(), (NUMBER_OF_RETRIES + 1) * 3 + 3, getDebugExpectedSpanTestHierarchy()}
+    });
   }
 
-  @Test
-  public void testUntilSuccessfulFlowWithError() throws Exception {
-    ExportedSpanSniffer spanCapturer = profilingService.getSpanExportManager().getExportedSpanSniffer();
+  private static Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> getOverviewExpectedSpanTestHierarchy() {
+    return exportedSpans -> {
+      SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
+      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME);
+      return expectedSpanHierarchy;
+    };
+  }
 
-    try {
-      flowRunner(UNTIL_SUCCESSFUL_FLOW).withPayload(AbstractMuleTestCase.TEST_PAYLOAD).dispatch();
-
-      PollingProber prober = new PollingProber(TIMEOUT_MILLIS, POLL_DELAY_MILLIS);
-
-      prober.check(new JUnitProbe() {
-
-        @Override
-        protected boolean test() {
-          Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();;
-          return exportedSpans.size() == (NUMBER_OF_RETRIES + 1) * 3 + 3;
-        }
-
-        @Override
-        public String describeFailure() {
-          return "The exact amount of spans was not captured";
-        }
-      });
-
-
-      Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
-
+  private static Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> getMonitoringExpectedSpanTestHierarchy() {
+    return exportedSpans -> {
       SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
       expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
           .beginChildren()
@@ -102,7 +106,63 @@ public class UntilSuccessfulErrorOpenTelemetryTracingTestCase extends MuleArtifa
           .child(ON_ERROR_PROPAGATE_SPAN_NAME)
           .endChildren();
 
-      expectedSpanHierarchy.assertSpanTree();
+      return expectedSpanHierarchy;
+    };
+  }
+
+  private static Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> getDebugExpectedSpanTestHierarchy() {
+    // In this case debug and monitoring level are the same.
+    return getMonitoringExpectedSpanTestHierarchy();
+  }
+
+  @Override
+  protected void doSetUpBeforeMuleContextCreation() throws Exception {
+    setProperty(TRACING_LEVEL_CONFIGURATION_PATH, traceLevel.toLowerCase() + FileSystems.getDefault().getSeparator());
+    super.doSetUpBeforeMuleContextCreation();
+  }
+
+  public void doAfter() {
+    clearProperty(TRACING_LEVEL_CONFIGURATION_PATH);
+  }
+
+  public UntilSuccessfulErrorOpenTelemetryTracingTestCase(String traceLevel, int expectedSpansCount,
+                                                          Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> spanHierarchyRetriever) {
+    this.traceLevel = traceLevel;
+    this.expectedSpansCount = expectedSpansCount;
+    this.spanHierarchyRetriever = spanHierarchyRetriever;
+  }
+
+  @Override
+  protected String getConfigFile() {
+    return "tracing/until-successful-error.xml";
+  }
+
+  @Test
+  public void testUntilSuccessfulFlowWithError() throws Exception {
+    ExportedSpanSniffer spanCapturer = profilingService.getSpanExportManager().getExportedSpanSniffer();
+
+    try {
+      flowRunner(UNTIL_SUCCESSFUL_FLOW).withPayload(AbstractMuleTestCase.TEST_PAYLOAD).dispatch();
+
+      PollingProber prober = new PollingProber(TIMEOUT_MILLIS, POLL_DELAY_MILLIS);
+
+      prober.check(new JUnitProbe() {
+
+        @Override
+        protected boolean test() {
+          Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
+          return exportedSpans.size() == expectedSpansCount;
+        }
+
+        @Override
+        public String describeFailure() {
+          return "The exact amount of spans was not captured";
+        }
+      });
+
+
+      Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
+      spanHierarchyRetriever.apply(exportedSpans).assertSpanTree();
     } finally {
       spanCapturer.dispose();
     }
