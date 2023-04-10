@@ -138,7 +138,7 @@ public class RedeliveryPolicyTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void redeliveryPolicyDoesntUseCpuLite() throws Exception {
-    if (PROACTOR_PROCESSING_STRATEGY_CLASSNAME.equals(processingStrategyFactoryClassname)) {
+    if (!PROACTOR_PROCESSING_STRATEGY_CLASSNAME.equals(processingStrategyFactoryClassname)) {
       return;
     }
 
