@@ -73,7 +73,8 @@ public class IdempotentMessageValidatorNamespaceHandlerTestCase extends Abstract
     assertEquals(1, processors.size());
 
     final Processor firstMP = processors.get(0);
-    assertThat(firstMP.getClass().getName(), equalTo("org.mule.runtime.core.components.internal.routing.IdempotentMessageValidator"));
+    assertThat(firstMP.getClass().getName(),
+               equalTo("org.mule.runtime.core.components.internal.routing.IdempotentMessageValidator"));
 
     return firstMP;
   }
