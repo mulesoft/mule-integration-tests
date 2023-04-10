@@ -1002,8 +1002,11 @@ public class ParameterAstTestCase extends BaseParameterAstTestCase {
   @Test
   @Issue("MULE-19809")
   public void generationInformationSyntaxForNotAllowInlineDefinitionNestedParam() {
-    // Do not run this test that verifies generationInformation if populateGenerationInformation is disabled
-    assumeThat(isPopulateGenerationInformation(), is(true));
+    if (!isPopulateGenerationInformation()) {
+      // Do not run this test that verifies generationInformation if populateGenerationInformation is disabled
+      // Returning instead of using assumeThat to avoid it being marked as "skipped".
+      return;
+    }
 
     ArtifactAst artifactAst = buildArtifactAst("parameters-test-pojo-config.xml",
                                                HeisenbergExtension.class, SubTypesMappingConnector.class, VeganExtension.class);
