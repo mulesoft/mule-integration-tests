@@ -58,7 +58,7 @@ public class TransactionalTryTestCase extends AbstractIntegrationTestCase {
   @Test
   public void resolvesStandardTransactionFactory() throws Exception {
     Processor processor = standardTryFlow.getProcessors().get(0);
-    assertThat(processor.getClass().getName(), equalTo("org.mule.runtime.core.internal.processor.TryScope"));
+    assertThat(processor.getClass().getName(), equalTo("org.mule.runtime.core.components.internal.processor.TryScope"));
 
     Method getTransactionConfigMethod = processor.getClass().getMethod("getTransactionConfig");
     MuleTransactionConfig transactionConfig = (MuleTransactionConfig) getTransactionConfigMethod.invoke(processor);

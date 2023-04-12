@@ -91,24 +91,24 @@ public class ConfigurationComponentLocatorTestCase extends AbstractIntegrationTe
     Optional<Component> processor =
         locator.find(myFlowProcessorsLocationBuilder.addIndexPart(0).build());
     assertThat(processor.isPresent(), is(true));
-    assertThat(processor.get().getClass().getName(), equalTo("org.mule.runtime.core.internal.processor.LoggerMessageProcessor"));
+    assertThat(processor.get().getClass().getName(), equalTo("org.mule.runtime.core.components.internal.processor.LoggerMessageProcessor"));
     processor = locator.find(myFlowProcessorsLocationBuilder.addIndexPart(1).build());
     assertThat(processor.isPresent(), is(true));
     assertThat(processor.get().getClass().getName(),
-               equalTo("org.mule.runtime.core.internal.processor.simple.SetPayloadMessageProcessor"));
+               equalTo("org.mule.runtime.core.components.internal.processor.simple.SetPayloadMessageProcessor"));
     processor = locator.find(myFlowProcessorsLocationBuilder.addIndexPart(2).build());
     assertThat(processor.isPresent(), is(true));
     assertThat(processor.get().getClass().getName(),
-               equalTo("org.mule.runtime.core.internal.processor.AsyncDelegateMessageProcessor"));
+               equalTo("org.mule.runtime.core.components.internal.processor.AsyncDelegateMessageProcessor"));
     processor = locator
         .find(myFlowProcessorsLocationBuilder.addIndexPart(2).addProcessorsPart().addIndexPart(0).build());
     assertThat(processor.isPresent(), is(true));
     assertThat(processor.get().getClass().getName(),
-               equalTo("org.mule.runtime.core.internal.processor.simple.SetPayloadMessageProcessor"));
+               equalTo("org.mule.runtime.core.components.internal.processor.simple.SetPayloadMessageProcessor"));
     processor = locator
         .find(myFlowProcessorsLocationBuilder.addIndexPart(2).addProcessorsPart().addIndexPart(1).build());
     assertThat(processor.isPresent(), is(true));
-    assertThat(processor.get().getClass().getName(), equalTo("org.mule.runtime.core.internal.processor.LoggerMessageProcessor"));
+    assertThat(processor.get().getClass().getName(), equalTo("org.mule.runtime.core.components.internal.processor.LoggerMessageProcessor"));
   }
 
   @Description("Search all scheduler message sources within the configuration")
