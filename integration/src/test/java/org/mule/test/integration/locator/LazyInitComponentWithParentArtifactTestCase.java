@@ -32,7 +32,7 @@ import org.mule.runtime.api.component.location.ConfigurationComponentLocator;
 import org.mule.runtime.api.meta.NamedObject;
 import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.config.api.LazyComponentInitializer;
-import org.mule.runtime.core.api.extension.MuleExtensionModelProvider;
+import org.mule.runtime.core.api.extension.provider.MuleExtensionModelProvider;
 import org.mule.runtime.extension.api.loader.ExtensionModelLoadingRequest;
 import org.mule.runtime.module.extension.internal.loader.java.DefaultJavaExtensionModelLoader;
 import org.mule.test.petstore.extension.PetStoreConnector;

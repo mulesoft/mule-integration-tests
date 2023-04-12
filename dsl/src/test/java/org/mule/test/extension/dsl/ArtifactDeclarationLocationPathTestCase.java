@@ -30,7 +30,7 @@ import org.mule.runtime.app.declaration.api.fluent.ParameterSimpleValue;
 import org.mule.runtime.ast.api.DependencyResolutionMode;
 import org.mule.runtime.config.api.dsl.ArtifactDeclarationXmlSerializer;
 import org.mule.runtime.config.api.dsl.model.DslElementModelFactory;
-import org.mule.runtime.core.api.extension.MuleExtensionModelProvider;
+import org.mule.runtime.core.api.extension.provider.MuleExtensionModelProvider;
 import org.mule.tck.junit4.rule.SystemProperty;
 
 import java.util.Optional;

@@ -26,7 +26,7 @@ import static org.mule.runtime.app.declaration.api.fluent.SimpleValueType.BOOLEA
 import static org.mule.runtime.app.declaration.api.fluent.SimpleValueType.NUMBER;
 import static org.mule.runtime.app.declaration.api.fluent.SimpleValueType.STRING;
 import static org.mule.runtime.ast.api.DependencyResolutionMode.MINIMAL;
-import static org.mule.runtime.core.api.extension.MuleExtensionModelProvider.STRING_TYPE;
+import static org.mule.runtime.core.api.extension.provider.MuleExtensionModelProvider.STRING_TYPE;
 import static org.mule.runtime.core.api.util.FileUtils.stringToFile;
 import static org.mule.runtime.core.api.util.IOUtils.getResourceAsString;
 import static org.mule.runtime.core.api.util.IOUtils.getResourceAsUrl;

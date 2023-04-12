@@ -32,7 +32,7 @@ import org.mule.runtime.ast.api.ArtifactAst;
 import org.mule.runtime.ast.api.ComponentAst;
 import org.mule.runtime.ast.api.xml.AstXmlParser;
 import org.mule.runtime.config.api.dsl.model.DslElementModelFactory;
-import org.mule.runtime.core.api.extension.MuleExtensionModelProvider;
+import org.mule.runtime.core.api.extension.provider.MuleExtensionModelProvider;
 import org.mule.runtime.metadata.api.dsl.DslElementModel;
 import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
 

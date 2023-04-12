@@ -9,7 +9,8 @@ package org.mule.test.config.ast;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertThat;
-import static org.mule.runtime.core.api.extension.MuleExtensionModelProvider.MULE_NAME;
+
+import static org.mule.runtime.core.api.extension.provider.MuleExtensionModelProvider.MULE_NAME;
 import static org.mule.test.allure.AllureConstants.ArtifactAst.ARTIFACT_AST;
 
 import org.mule.runtime.api.meta.model.ExtensionModel;
