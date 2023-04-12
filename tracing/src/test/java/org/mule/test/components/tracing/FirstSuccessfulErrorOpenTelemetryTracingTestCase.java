@@ -7,11 +7,16 @@
 
 package org.mule.test.components.tracing;
 
+import static org.mule.runtime.api.util.MuleSystemProperties.TRACING_LEVEL_CONFIGURATION_PATH;
+import static org.mule.runtime.tracing.level.api.config.TracingLevel.DEBUG;
+import static org.mule.runtime.tracing.level.api.config.TracingLevel.MONITORING;
+import static org.mule.runtime.tracing.level.api.config.TracingLevel.OVERVIEW;
 import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.DEFAULT_CORE_EVENT_TRACER;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertThat;
+import static java.lang.System.clearProperty;
+import static java.lang.System.setProperty;
+import static java.util.Arrays.asList;
 
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
@@ -22,16 +27,21 @@ import org.mule.tck.probe.JUnitProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy;
 
+import java.nio.file.FileSystems;
 import java.util.Collection;
+import java.util.function.Function;
 
 import javax.inject.Inject;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
 import org.junit.Test;
+import org.junit.runners.Parameterized;
+import org.mule.test.runner.RunnerDelegateTo;
 
 @Feature(PROFILING)
 @Story(DEFAULT_CORE_EVENT_TRACER)
+@RunnerDelegateTo(Parameterized.class)
 public class FirstSuccessfulErrorOpenTelemetryTracingTestCase extends MuleArtifactFunctionalTestCase
     implements OpenTelemetryTracingTestRunnerConfigAnnotation {
 
@@ -49,6 +59,74 @@ public class FirstSuccessfulErrorOpenTelemetryTracingTestCase extends MuleArtifa
   public static final String NO_PARENT_SPAN = "0000000000000000";
   public static final int NUMBER_OF_ROUTES = 2;
   public static final String EXPECTED_RAISE_ERROR_SPAN = "mule:raise-error";
+  private final String traceLevel;
+  private final int expectedSpansCount;
+  private final Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> spanHierarchyRetriever;
+
+  @Parameterized.Parameters(name = "tracingLevel: {0}")
+  public static Collection<Object[]> data() {
+    return asList(new Object[][] {
+        {OVERVIEW.name(), 1, getOverviewExpectedSpanTestHierarchy()},
+        {MONITORING.name(), 3 * NUMBER_OF_ROUTES + 4, getMonitoringExpectedSpanTestHierarchy()},
+        {DEBUG.name(), 3 * NUMBER_OF_ROUTES + 4, getDebugExpectedSpanTestHierarchy()}
+    });
+  }
+
+  private static Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> getOverviewExpectedSpanTestHierarchy() {
+    return exportedSpans -> {
+      SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
+      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME);
+      return expectedSpanHierarchy;
+    };
+  }
+
+  private static Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> getMonitoringExpectedSpanTestHierarchy() {
+    return exportedSpans -> {
+      SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
+      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_SET_VARIABLE_SPAN_NAME)
+          .child(EXPECTED_FIRST_SUCCESSFUL_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_ROUTE_SPAN_NAME_ATTEMPT_1)
+          .beginChildren()
+          .child(EXPECTED_SET_PAYLOAD_SPAN_NAME)
+          .child(EXPECTED_RAISE_ERROR_SPAN)
+          .endChildren()
+          .child(EXPECTED_ROUTE_SPAN_NAME_ATTEMPT_2)
+          .beginChildren()
+          .child(EXPECTED_SET_PAYLOAD_SPAN_NAME)
+          .child(EXPECTED_LOGGER_SPAN_NAME)
+          .endChildren()
+          .endChildren()
+          .child(EXPECTED_SET_VARIABLE_SPAN_NAME)
+          .endChildren();
+
+      return expectedSpanHierarchy;
+    };
+  }
+
+  private static Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> getDebugExpectedSpanTestHierarchy() {
+    // In this case debug and monitoring level are the same.
+    return getMonitoringExpectedSpanTestHierarchy();
+  }
+
+  @Override
+  protected void doSetUpBeforeMuleContextCreation() throws Exception {
+    setProperty(TRACING_LEVEL_CONFIGURATION_PATH, traceLevel.toLowerCase() + FileSystems.getDefault().getSeparator());
+    super.doSetUpBeforeMuleContextCreation();
+  }
+
+  public void doAfter() {
+    clearProperty(TRACING_LEVEL_CONFIGURATION_PATH);
+  }
+
+  public FirstSuccessfulErrorOpenTelemetryTracingTestCase(String traceLevel, int expectedSpansCount,
+                                                          Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> spanHierarchyRetriever) {
+    this.traceLevel = traceLevel;
+    this.expectedSpansCount = expectedSpansCount;
+    this.spanHierarchyRetriever = spanHierarchyRetriever;
+  }
 
   @Inject
   PrivilegedProfilingService profilingService;
@@ -71,8 +149,8 @@ public class FirstSuccessfulErrorOpenTelemetryTracingTestCase extends MuleArtifa
 
         @Override
         protected boolean test() {
-          Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();;
-          return exportedSpans.size() == 3 * NUMBER_OF_ROUTES + 4;
+          Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
+          return exportedSpans.size() == expectedSpansCount;
         }
 
         @Override
@@ -80,30 +158,7 @@ public class FirstSuccessfulErrorOpenTelemetryTracingTestCase extends MuleArtifa
           return "The exact amount of spans was not captured";
         }
       });
-
-      Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
-
-      SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
-      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
-          .beginChildren()
-          .child(EXPECTED_SET_VARIABLE_SPAN_NAME)
-          .child(EXPECTED_FIRST_SUCCESSFUL_SPAN_NAME)
-          .beginChildren()
-          .child(EXPECTED_ROUTE_SPAN_NAME_ATTEMPT_1)
-          .beginChildren()
-          .child(EXPECTED_SET_PAYLOAD_SPAN_NAME)
-          .child(EXPECTED_RAISE_ERROR_SPAN)
-          .endChildren()
-          .child(EXPECTED_ROUTE_SPAN_NAME_ATTEMPT_2)
-          .beginChildren()
-          .child(EXPECTED_SET_PAYLOAD_SPAN_NAME)
-          .child(EXPECTED_LOGGER_SPAN_NAME)
-          .endChildren()
-          .endChildren()
-          .child(EXPECTED_SET_VARIABLE_SPAN_NAME)
-          .endChildren();
-
-      expectedSpanHierarchy.assertSpanTree();
+      spanHierarchyRetriever.apply(spanCapturer.getExportedSpans()).assertSpanTree();
     } finally {
       spanCapturer.dispose();
     }

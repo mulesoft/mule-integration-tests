@@ -7,11 +7,19 @@
 
 package org.mule.test.components.tracing;
 
+import static org.mule.runtime.api.util.MuleSystemProperties.TRACING_LEVEL_CONFIGURATION_PATH;
+import static org.mule.runtime.tracing.level.api.config.TracingLevel.DEBUG;
+import static org.mule.runtime.tracing.level.api.config.TracingLevel.MONITORING;
+import static org.mule.runtime.tracing.level.api.config.TracingLevel.OVERVIEW;
 import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.DEFAULT_CORE_EVENT_TRACER;
 import static org.mule.test.infrastructure.profiling.tracing.TracingTestUtils.ARTIFACT_ID_KEY;
 import static org.mule.test.infrastructure.profiling.tracing.TracingTestUtils.createAttributeMap;
 import static org.mule.test.infrastructure.profiling.tracing.TracingTestUtils.getDefaultAttributesToAssertExistence;
+
+import static java.lang.System.clearProperty;
+import static java.lang.System.setProperty;
+import static java.util.Arrays.asList;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -24,18 +32,23 @@ import org.mule.tck.junit4.AbstractMuleTestCase;
 import org.mule.tck.probe.JUnitProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy;
+import org.mule.test.runner.RunnerDelegateTo;
 
+import java.nio.file.FileSystems;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.BiFunction;
 
 import javax.inject.Inject;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
 import org.junit.Test;
+import org.junit.runners.Parameterized;
 
 @Feature(PROFILING)
 @Story(DEFAULT_CORE_EVENT_TRACER)
+@RunnerDelegateTo(Parameterized.class)
 public class CustomScopeErrorOpenTelemetryTracingTestCase extends MuleArtifactFunctionalTestCase
     implements OpenTelemetryTracingTestRunnerConfigAnnotation {
 
@@ -51,6 +64,81 @@ public class CustomScopeErrorOpenTelemetryTracingTestCase extends MuleArtifactFu
   private static final String EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME = "mule:on-error-propagate";
 
   public static final String TEST_ARTIFACT_ID = "CustomScopeErrorOpenTelemetryTracingTestCase#testCustomScopeFlow";
+  private final String tracingLevel;
+  private final int expectedSpansCount;
+  private final BiFunction<Collection<CapturedExportedSpan>, String, SpanTestHierarchy> spanHierarchyRetriever;
+
+  @Parameterized.Parameters(name = "tracingLevel: {0}")
+  public static Collection<Object[]> data() {
+    return asList(new Object[][] {
+        {OVERVIEW.name(), 1, getOverviewExpectedSpanTestHierarchy()},
+        {MONITORING.name(), 5, getMonitoringExpectedSpanTestHierarchy()},
+        {DEBUG.name(), 5, getDebugExpectedSpanTestHierarchy()}
+    });
+  }
+
+  public CustomScopeErrorOpenTelemetryTracingTestCase(String tracingLevel, int expectedSpansCount,
+                                                      BiFunction<Collection<CapturedExportedSpan>, String, SpanTestHierarchy> spanHierarchyRetriever) {
+    this.tracingLevel = tracingLevel;
+    this.expectedSpansCount = expectedSpansCount;
+    this.spanHierarchyRetriever = spanHierarchyRetriever;
+  }
+
+  private static BiFunction<Collection<CapturedExportedSpan>, String, SpanTestHierarchy> getOverviewExpectedSpanTestHierarchy() {
+    return (exportedSpans, artifactId) -> {
+      SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
+      List<String> attributesToAssertExistence = getDefaultAttributesToAssertExistence();
+
+      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
+          .addAttributesToAssertValue(createAttributeMap("custom-scope-flow", artifactId))
+          .addAttributesToAssertExistence(attributesToAssertExistence);
+
+      return expectedSpanHierarchy;
+    };
+  }
+
+  private static BiFunction<Collection<CapturedExportedSpan>, String, SpanTestHierarchy> getMonitoringExpectedSpanTestHierarchy() {
+    return (exportedSpans, artifactId) -> {
+      List<String> attributesToAssertExistence = getDefaultAttributesToAssertExistence();
+
+      SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
+      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
+          .addAttributesToAssertValue(createAttributeMap("custom-scope-flow", artifactId))
+          .addAttributesToAssertExistence(attributesToAssertExistence)
+          .beginChildren()
+          .child(EXPECTED_CUSTOM_SCOPE_SPAN_NAME)
+          .addAttributesToAssertValue(createAttributeMap("custom-scope-flow/processors/0", artifactId))
+          .addAttributesToAssertExistence(attributesToAssertExistence)
+          .beginChildren()
+          .child(EXPECTED_LOGGER_SPAN_NAME)
+          .addAttributesToAssertValue(createAttributeMap("custom-scope-flow/processors/0/processors/0", artifactId))
+          .addAttributesToAssertExistence(attributesToAssertExistence)
+          .child(EXPECTED_RAISE_ERROR_SPAN_NAME)
+          .addAttributesToAssertValue(createAttributeMap("custom-scope-flow/processors/0/processors/1", artifactId))
+          .addAttributesToAssertExistence(attributesToAssertExistence)
+          .endChildren()
+          .child(EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME)
+          .endChildren();
+
+      return expectedSpanHierarchy;
+    };
+  }
+
+  private static BiFunction<Collection<CapturedExportedSpan>, String, SpanTestHierarchy> getDebugExpectedSpanTestHierarchy() {
+    // In this case debug and monitoring level are the same.
+    return getMonitoringExpectedSpanTestHierarchy();
+  }
+
+  @Override
+  protected void doSetUpBeforeMuleContextCreation() throws Exception {
+    setProperty(TRACING_LEVEL_CONFIGURATION_PATH, tracingLevel.toLowerCase() + FileSystems.getDefault().getSeparator());
+    super.doSetUpBeforeMuleContextCreation();
+  }
+
+  public void doAfter() {
+    clearProperty(TRACING_LEVEL_CONFIGURATION_PATH);
+  }
+
 
   @Inject
   PrivilegedProfilingService profilingService;
@@ -74,7 +162,7 @@ public class CustomScopeErrorOpenTelemetryTracingTestCase extends MuleArtifactFu
         @Override
         protected boolean test() {
           Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();;
-          return exportedSpans.size() == 5;
+          return exportedSpans.size() == expectedSpansCount;
         }
 
         @Override
@@ -84,29 +172,7 @@ public class CustomScopeErrorOpenTelemetryTracingTestCase extends MuleArtifactFu
       });
 
       Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
-
-      List<String> attributesToAssertExistence = getDefaultAttributesToAssertExistence();
-
-      SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
-      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
-          .addAttributesToAssertValue(createAttributeMap("custom-scope-flow", TEST_ARTIFACT_ID))
-          .addAttributesToAssertExistence(attributesToAssertExistence)
-          .beginChildren()
-          .child(EXPECTED_CUSTOM_SCOPE_SPAN_NAME)
-          .addAttributesToAssertValue(createAttributeMap("custom-scope-flow/processors/0", TEST_ARTIFACT_ID))
-          .addAttributesToAssertExistence(attributesToAssertExistence)
-          .beginChildren()
-          .child(EXPECTED_LOGGER_SPAN_NAME)
-          .addAttributesToAssertValue(createAttributeMap("custom-scope-flow/processors/0/processors/0", TEST_ARTIFACT_ID))
-          .addAttributesToAssertExistence(attributesToAssertExistence)
-          .child(EXPECTED_RAISE_ERROR_SPAN_NAME)
-          .addAttributesToAssertValue(createAttributeMap("custom-scope-flow/processors/0/processors/1", TEST_ARTIFACT_ID))
-          .addAttributesToAssertExistence(attributesToAssertExistence)
-          .endChildren()
-          .child(EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME)
-          .endChildren();
-
-      expectedSpanHierarchy.assertSpanTree();
+      spanHierarchyRetriever.apply(exportedSpans, TEST_ARTIFACT_ID + "[tracingLevel: " + tracingLevel + "]").assertSpanTree();
       exportedSpans.forEach(span -> assertThat(span.getServiceName(), equalTo(span.getAttributes().get(ARTIFACT_ID_KEY))));
     } finally {
       spanCapturer.dispose();
