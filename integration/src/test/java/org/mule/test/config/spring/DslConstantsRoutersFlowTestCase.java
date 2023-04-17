@@ -42,15 +42,18 @@ public class DslConstantsRoutersFlowTestCase extends AbstractIntegrationTestCase
     Processor router = lookupMessageProcessorFromFlow("IdempotentSecureHashReceiverRouter");
     assertThat(router.getClass().getName(),
                equalTo("org.mule.runtime.core.internal.routing.IdempotentMessageValidator"));
-
     assertThat(getObjectStore(router), not(nullValue()));
   }
 
   @Test
   public void testIdempotentReceiverRouter() throws Exception {
     Processor router = lookupMessageProcessorFromFlow("IdempotentReceiverRouter");
+<<<<<<< HEAD
     assertThat(router.getClass().getName(),
                equalTo("org.mule.runtime.core.internal.routing.IdempotentMessageValidator"));
+=======
+    assertThat(router.getClass().getName(), equalTo("org.mule.runtime.core.internal.routing.IdempotentMessageValidator"));
+>>>>>>> 6b3de5ec2 (W-12967336: Revert previous core-component pkg changes)
 
     assertThat(getIdExpression(router), is("#[id + '-' + correlationId]"));
     assertThat(getObjectStore(router), not(nullValue()));
