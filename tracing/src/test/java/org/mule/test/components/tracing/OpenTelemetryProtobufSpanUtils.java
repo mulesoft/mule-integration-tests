@@ -15,7 +15,7 @@ import static java.util.stream.Collectors.toMap;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
-import org.mule.runtime.tracer.api.sniffer.CapturedEvent;
+import org.mule.runtime.tracer.api.sniffer.CapturedEventData;
 import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
 
 import java.util.ArrayList;
@@ -121,7 +121,7 @@ public class OpenTelemetryProtobufSpanUtils {
     }
 
     @Override
-    public List<CapturedEvent> getEvents() {
+    public List<CapturedEventData> getEvents() {
       throw new UnsupportedOperationException("Not implemented yet");
     }
 
