@@ -18,6 +18,17 @@
         </petstore:pets>
     </petstore:config>
 
+    <petstore:config name="simple-failing-connection" cashierName="tracing">
+        <petstore:connection username="not-john" password="not-doe"/>
+        <petstore:pets>
+            <petstore:pet value="Dog"/>
+        </petstore:pets>
+    </petstore:config>
+
+    <flow name="operation-with-simple-failing-connection">
+        <petstore:get-pets config-ref="simple-failing-connection" ownerName="not-john" ownerSignature="x"/>
+    </flow>
+
     <flow name="operation-with-simple-connection">
         <petstore:get-connection-age config-ref="simple-connection"/>
     </flow>
