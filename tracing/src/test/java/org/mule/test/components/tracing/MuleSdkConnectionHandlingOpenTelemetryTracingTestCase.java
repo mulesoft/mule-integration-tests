@@ -7,7 +7,6 @@
 
 package org.mule.test.components.tracing;
 
-import static java.lang.String.format;
 import static org.mule.runtime.api.util.MuleSystemProperties.TRACING_LEVEL_CONFIGURATION_PATH;
 import static org.mule.runtime.core.api.config.MuleDeploymentProperties.MULE_LAZY_CONNECTIONS_DEPLOYMENT_PROPERTY;
 import static org.mule.runtime.tracing.level.api.config.TracingLevel.DEBUG;
@@ -16,10 +15,9 @@ import static org.mule.runtime.tracing.level.api.config.TracingLevel.OVERVIEW;
 import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.DEFAULT_CORE_EVENT_TRACER;
 
+import static java.lang.String.format;
 import static java.util.Arrays.asList;
 
-import org.junit.Rule;
-import org.junit.runners.Parameterized;
 import org.mule.runtime.api.config.custom.ServiceConfigurator;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
@@ -47,6 +45,8 @@ import io.qameta.allure.Story;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.Rule;
+import org.junit.runners.Parameterized;
 
 @Feature(PROFILING)
 @Story(DEFAULT_CORE_EVENT_TRACER)
