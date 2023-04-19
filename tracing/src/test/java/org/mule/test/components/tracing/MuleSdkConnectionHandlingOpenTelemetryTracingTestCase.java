@@ -7,12 +7,18 @@
 
 package org.mule.test.components.tracing;
 
+import static java.lang.String.format;
+import static org.mule.runtime.api.util.MuleSystemProperties.TRACING_LEVEL_CONFIGURATION_PATH;
 import static org.mule.runtime.core.api.config.MuleDeploymentProperties.MULE_LAZY_CONNECTIONS_DEPLOYMENT_PROPERTY;
+import static org.mule.runtime.tracing.level.api.config.TracingLevel.DEBUG;
+import static org.mule.runtime.tracing.level.api.config.TracingLevel.MONITORING;
+import static org.mule.runtime.tracing.level.api.config.TracingLevel.OVERVIEW;
 import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.DEFAULT_CORE_EVENT_TRACER;
 
 import static java.util.Arrays.asList;
 
+import org.junit.Rule;
 import org.junit.runners.Parameterized;
 import org.mule.runtime.api.config.custom.ServiceConfigurator;
 import org.mule.runtime.core.api.MuleContext;
@@ -21,14 +27,18 @@ import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
 import org.mule.runtime.tracer.api.sniffer.ExportedSpanSniffer;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
+import org.mule.runtime.tracer.customization.api.InternalSpanNames;
+import org.mule.runtime.tracing.level.api.config.TracingLevel;
 import org.mule.tck.junit4.AbstractMuleTestCase;
 import org.mule.tck.junit4.matcher.ErrorTypeMatcher;
+import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.tck.probe.JUnitProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy;
 import org.mule.test.runner.RunnerDelegateTo;
 
 import javax.inject.Inject;
+import java.nio.file.FileSystems;
 import java.util.Collection;
 import java.util.List;
 
@@ -48,17 +58,27 @@ public class MuleSdkConnectionHandlingOpenTelemetryTracingTestCase extends MuleA
   private static final int POLL_DELAY_MILLIS = 100;
   public static final String EXPECTED_FLOW_SPAN_NAME = "mule:flow";
   public static final String EXPECTED_PETSTORE_GET_CONNECTION_AGE_SPAN = "petstore:get-connection-age";
+  public static final String EXPECTED_PETSTORE_GET_PETS_SPAN = "petstore:get-pets";
   public static final String EXPECTED_MULE_GET_CONNECTION_SPAN = "mule:get-connection";
   private static final String OPERATION_WITH_SIMPLE_CONNECTION = "operation-with-simple-connection";
 
   private static final String OPERATION_WITH_SIMPLE_FAILING_CONNECTION = "operation-with-simple-failing-connection";
   private ExportedSpanSniffer spanCapturer;
   @Inject
-  PrivilegedProfilingService profilingService;
-  public final String lazyConnections;
+  private PrivilegedProfilingService profilingService;
+  private final String lazyConnections;
 
-  public MuleSdkConnectionHandlingOpenTelemetryTracingTestCase(String lazyConnections) {
+  private final TracingLevel tracingLevel;
+
+  @Rule
+  public SystemProperty tracingLevelConfigFilePath;
+
+  public MuleSdkConnectionHandlingOpenTelemetryTracingTestCase(String lazyConnections, TracingLevel tracingLevel) {
     this.lazyConnections = lazyConnections;
+    this.tracingLevel = tracingLevel;
+    tracingLevelConfigFilePath = new SystemProperty(TRACING_LEVEL_CONFIGURATION_PATH,
+                                                    tracingLevel.name().toLowerCase() + FileSystems.getDefault().getSeparator());
+
   }
 
   @Override
@@ -66,9 +86,16 @@ public class MuleSdkConnectionHandlingOpenTelemetryTracingTestCase extends MuleA
     return "tracing/mule-sdk-connection-handling.xml";
   }
 
-  @Parameterized.Parameters(name = "lazyConnections")
-  public static Collection<String> parameters() {
-    return asList("true", "false");
+  @Parameterized.Parameters(name = "lazyConnections: {0} - tracingLevel: {1}")
+  public static Collection<Object[]> data() {
+    return asList(new Object[][] {
+        {"true", OVERVIEW},
+        {"false", OVERVIEW},
+        {"true", MONITORING},
+        {"false", MONITORING},
+        {"true", DEBUG},
+        {"false", DEBUG}
+    });
   }
 
   @Before
@@ -105,25 +132,46 @@ public class MuleSdkConnectionHandlingOpenTelemetryTracingTestCase extends MuleA
 
     flowRunner(OPERATION_WITH_SIMPLE_CONNECTION).withPayload(AbstractMuleTestCase.TEST_PAYLOAD)
         .run();
+    assertSpans();
+  }
 
-    PollingProber prober = new PollingProber(TIMEOUT_MILLIS, POLL_DELAY_MILLIS);
+  @Test
+  public void testOperationWithFailingSimpleConnection() throws Exception {
+    flowRunner(OPERATION_WITH_SIMPLE_FAILING_CONNECTION).withPayload(AbstractMuleTestCase.TEST_PAYLOAD)
+        .runExpectingException(ErrorTypeMatcher.errorType("PETSTORE", "CONNECTIVITY"));
+    assertFailingSpans();
+  }
 
-    prober.check(new JUnitProbe() {
+  private void assertSpans() {
+    if (tracingLevel.equals(OVERVIEW)) {
+      waitForSpans(1);
+      assertOverviewSpans(spanCapturer.getExportedSpans());
+    } else if (tracingLevel.equals(MONITORING)) {
+      waitForSpans(2);
+      assertMonitoringSpans(spanCapturer.getExportedSpans());
+    } else if (tracingLevel.equals(DEBUG)) {
+      waitForSpans(3);
+      assertDebugSpans(spanCapturer.getExportedSpans());
+    } else {
+      throw new IllegalArgumentException(format("Unrecognized tracing level: %s", tracingLevel.name()));
+    }
+  }
 
-      @Override
-      protected boolean test() {
-        Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();;
-        return exportedSpans.size() == 3;
-      }
+  private void assertOverviewSpans(Collection<CapturedExportedSpan> capturedExportedSpans) {
+    SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(capturedExportedSpans);
+    expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME);
+    expectedSpanHierarchy.assertSpanTree();
+  }
 
-      @Override
-      public String describeFailure() {
-        return "The exact amount of spans was not captured";
-      }
-    });
+  private void assertMonitoringSpans(Collection<CapturedExportedSpan> capturedExportedSpans) {
+    SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(capturedExportedSpans);
+    expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
+        .beginChildren()
+        .child(EXPECTED_PETSTORE_GET_CONNECTION_AGE_SPAN);
+    expectedSpanHierarchy.assertSpanTree();
+  }
 
-    Collection<CapturedExportedSpan> capturedExportedSpans = spanCapturer.getExportedSpans();
-
+  private void assertDebugSpans(Collection<CapturedExportedSpan> capturedExportedSpans) {
     SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(capturedExportedSpans);
     expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
         .beginChildren()
@@ -133,20 +181,54 @@ public class MuleSdkConnectionHandlingOpenTelemetryTracingTestCase extends MuleA
     expectedSpanHierarchy.assertSpanTree();
   }
 
-  @Test
-  public void testOperationWithFailingSimpleConnection() throws Exception {
+  private void assertFailingSpans() {
+    if (tracingLevel.equals(OVERVIEW)) {
+      waitForSpans(1);
+      assertOverviewFailingSpans(spanCapturer.getExportedSpans());
+    } else if (tracingLevel.equals(MONITORING)) {
+      waitForSpans(3);
+      assertMonitoringFailingSpans(spanCapturer.getExportedSpans());
+    } else if (tracingLevel.equals(DEBUG)) {
+      waitForSpans(4);
+      assertDebugFailingSpans(spanCapturer.getExportedSpans());
+    } else {
+      throw new IllegalArgumentException(format("Unrecognized tracing level: %s", tracingLevel.name()));
+    }
+  }
 
-    flowRunner(OPERATION_WITH_SIMPLE_FAILING_CONNECTION).withPayload(AbstractMuleTestCase.TEST_PAYLOAD)
-        .runExpectingException(ErrorTypeMatcher.errorType("PETSTORE", "CONNECTIVITY"));
+  private void assertOverviewFailingSpans(Collection<CapturedExportedSpan> capturedExportedSpans) {
+    SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(capturedExportedSpans);
+    expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME).addExceptionData("PETSTORE:CONNECTIVITY");
+    expectedSpanHierarchy.assertSpanTree();
+  }
 
-    PollingProber prober = new PollingProber(TIMEOUT_MILLIS, POLL_DELAY_MILLIS);
+  private void assertMonitoringFailingSpans(Collection<CapturedExportedSpan> capturedExportedSpans) {
+    SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(capturedExportedSpans);
+    expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME).addExceptionData("PETSTORE:CONNECTIVITY")
+        .beginChildren()
+        .child(InternalSpanNames.ON_ERROR_PROPAGATE_SPAN_NAME)
+        .child(EXPECTED_PETSTORE_GET_PETS_SPAN).addExceptionData("PETSTORE:CONNECTIVITY");
+    expectedSpanHierarchy.assertSpanTree();
+  }
 
-    prober.check(new JUnitProbe() {
+  private void assertDebugFailingSpans(Collection<CapturedExportedSpan> capturedExportedSpans) {
+    SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(capturedExportedSpans);
+    expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME).addExceptionData("PETSTORE:CONNECTIVITY")
+        .beginChildren()
+        .child(InternalSpanNames.ON_ERROR_PROPAGATE_SPAN_NAME)
+        .child(EXPECTED_PETSTORE_GET_PETS_SPAN).addExceptionData("PETSTORE:CONNECTIVITY")
+        .beginChildren()
+        .child(EXPECTED_MULE_GET_CONNECTION_SPAN);
+    expectedSpanHierarchy.assertSpanTree();
+  }
+
+  private void waitForSpans(int numberOfSpans) {
+    new PollingProber(TIMEOUT_MILLIS, POLL_DELAY_MILLIS).check(new JUnitProbe() {
 
       @Override
       protected boolean test() {
-        Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();;
-        return exportedSpans.size() == 4;
+        Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
+        return exportedSpans.size() == numberOfSpans;
       }
 
       @Override
@@ -154,16 +236,6 @@ public class MuleSdkConnectionHandlingOpenTelemetryTracingTestCase extends MuleA
         return "The exact amount of spans was not captured";
       }
     });
-
-    Collection<CapturedExportedSpan> capturedExportedSpans = spanCapturer.getExportedSpans();
-
-    SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(capturedExportedSpans);
-    expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME).addExceptionData("PETSTORE:CONNECTIVITY")
-        .beginChildren()
-        .child(EXPECTED_PETSTORE_GET_CONNECTION_AGE_SPAN).addExceptionData("PETSTORE:CONNECTIVITY")
-        .beginChildren()
-        .child(EXPECTED_MULE_GET_CONNECTION_SPAN);
-    expectedSpanHierarchy.assertSpanTree();
   }
 
 }
