@@ -7,3 +7,4 @@ additionalConfigFileMetadataProviderList:
   - fileId: mule-runtime-maven-settings-MuleSettings
     variable: org.mule.maven.client.api.SettingsSupplierFactory.userSettings
 projectType: runtime
+jdkTool: OPEN-JDK17
