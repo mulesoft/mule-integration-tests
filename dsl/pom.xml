@@ -17,6 +17,7 @@
     <properties>
         <activemq.version>5.14.5</activemq.version>
         <javaxJmsApiVersion>2.0.1</javaxJmsApiVersion>
+        <jsonassert.version>1.5.2</jsonassert.version>
 
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
     </properties>
@@ -270,8 +271,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.skyscreamer</groupId>
+            <groupId>org.mule.skyscreamer</groupId>
             <artifactId>jsonassert</artifactId>
+            <version>${jsonassert.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
