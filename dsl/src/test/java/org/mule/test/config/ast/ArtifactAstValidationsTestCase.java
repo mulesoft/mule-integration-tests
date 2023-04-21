@@ -61,18 +61,16 @@ import javax.inject.Singleton;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Features;
 import io.qameta.allure.Story;
-import org.codejargon.feather.Feather;
-import org.codejargon.feather.Provides;
+//import org.codejargon.feather.Feather;
+//import org.codejargon.feather.Provides;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-/*
 import com.google.inject.Guice;
 import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
 import com.google.inject.Inject;
 import com.google.inject.Provides;
-*/
 
 /**
  * Provides an example of how code running outside of the Mule Runtime may invoke the AST validations that require a base
@@ -82,52 +80,60 @@ import com.google.inject.Provides;
 @Story(DSL_VALIDATION_STORY)
 public class ArtifactAstValidationsTestCase extends AbstractMuleContextTestCase {
 
-  /*
-   * class BasicModule extends AbstractModule {
-   * 
-   * @Override protected void configure() { //
-   * bind(FeatureFlaggingService.class).to(DefaultFeatureFlaggingService.class).in(Singleton.class);
-   * bind(ExtendedExpressionManager.class).to(DefaultExpressionManager.class);
-   * bind(ValidationsProvider.class).to(CoreValidationsProvider.class); bind(MuleContext.class).to(DefaultMuleContext.class);
-   * bind(TransformersRegistry.class).to(DefaultTransformersRegistry.class);
-   * 
-   * bind(Object.class).to(String.class);
-   * 
-   * bind(Transformer.class).to(StringToBoolean.class); }
-   * 
-   * @Provides
-   * 
-   * @Singleton public FeatureFlaggingService provideFeatureFlaggingService() { return new DefaultFeatureFlaggingService("abcd2",
-   * new HashMap<>()); }
-   * 
-   * @Provides
-   * 
-   * @Singleton public ExpressionLanguage expressionLanguage() { return new
-   * WeaveDefaultExpressionLanguageFactoryService(null).create(); }
-   * 
-   * @Provides
-   * 
-   * @Singleton
-   * 
-   * @Named("_compatibilityPluginInstalled") Optional<Object> provideOptionalCompatibilityPluginInstalled(Object object) { return
-   * Optional.of(object); }
-   * 
-   * @Provides
-   * 
-   * @Singleton Optional<FeatureFlaggingService> provideOptionalFeatureFlaggingService(FeatureFlaggingService
-   * featureFlaggingService) { return Optional.of(featureFlaggingService); }
-   * 
-   * 
-   * @Provides
-   * 
-   * @Singleton Collection<Transformer> provideCollectionTransformer() { return new ArrayList<Transformer>(); }
-   * 
-   * @Provides
-   * 
-   * @Singleton List<TransformerResolver> provideListTransformerResolver() { return new ArrayList<TransformerResolver>(); }
-   * 
-   * }
-   */
+  class BasicModule extends AbstractModule {
+
+    @Override
+    protected void configure() {
+      // bind(FeatureFlaggingService.class).to(DefaultFeatureFlaggingService.class).in(Singleton.class);
+      bind(ExtendedExpressionManager.class).to(DefaultExpressionManager.class);
+      bind(ValidationsProvider.class).to(CoreValidationsProvider.class);
+      bind(MuleContext.class).to(DefaultMuleContext.class);
+      bind(TransformersRegistry.class).to(DefaultTransformersRegistry.class);
+
+      bind(Object.class).to(String.class);
+
+      bind(Transformer.class).to(StringToBoolean.class);
+    }
+
+    @Provides
+    @Singleton
+    public FeatureFlaggingService provideFeatureFlaggingService() {
+      return new DefaultFeatureFlaggingService("abcd2", new HashMap<>());
+    }
+
+    @Provides
+    @Singleton
+    public ExpressionLanguage expressionLanguage() {
+      return new WeaveDefaultExpressionLanguageFactoryService(null).create();
+    }
+
+    @Provides
+    @Singleton
+    @Named("_compatibilityPluginInstalled")
+    Optional<Object> provideOptionalCompatibilityPluginInstalled(Object object) {
+      return Optional.of(object);
+    }
+
+    @Provides
+    @Singleton
+    Optional<FeatureFlaggingService> provideOptionalFeatureFlaggingService(FeatureFlaggingService featureFlaggingService) {
+      return Optional.of(featureFlaggingService);
+    }
+
+
+    @Provides
+    @Singleton
+    Collection<Transformer> provideCollectionTransformer() {
+      return new ArrayList<Transformer>();
+    }
+
+    @Provides
+    @Singleton
+    List<TransformerResolver> provideListTransformerResolver() {
+      return new ArrayList<TransformerResolver>();
+    }
+
+  }
 
   private static Set<ExtensionModel> runtimeExtensionModels;
   private DefaultExtensionManager extensionManager;
@@ -157,16 +163,13 @@ public class ArtifactAstValidationsTestCase extends AbstractMuleContextTestCase 
   }
 
   protected List<ValidationResultItem> doValidate(ArtifactAst ast) throws ConfigurationException {
-    Feather feather = Feather.with(new BaseRegistryForValidationsModule());
-    // Injector injector = Guice.createInjector(new BasicModule());
-
-    /*
-     * ArtifactAstValidator astValidator = validatorBuilder() // .withValidationEnricher(feather::injectFields)
-     * .withValidationEnricher(p -> { }) .build();
-     */
+    // Feather feather = Feather.with(new BaseRegistryForValidationsModule());
+    Injector injector = Guice.createInjector(new BasicModule());
 
     ArtifactAstValidator astValidator = validatorBuilder()
-        .withValidationEnricher(feather::injectFields)
+        // .withValidationEnricher(feather::injectFields)
+        .withValidationEnricher(p -> {
+        })
         .build();
 
     ValidationResult result = astValidator.validate(ast);
