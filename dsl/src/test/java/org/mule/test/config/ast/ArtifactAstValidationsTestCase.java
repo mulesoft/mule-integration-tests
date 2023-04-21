@@ -32,6 +32,7 @@ import org.mule.runtime.ast.api.validation.ValidationsProvider;
 import org.mule.runtime.ast.api.xml.AstXmlParser;
 //import org.mule.runtime.core.api.Injector;
 
+import org.mule.runtime.ast.internal.validation.DefaultValidatorBuilder;
 import org.mule.runtime.config.internal.validation.CoreValidationsProvider;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.config.ConfigurationException;
@@ -85,7 +86,9 @@ public class ArtifactAstValidationsTestCase extends AbstractMuleContextTestCase 
 
     @Override
     public ExpressionLanguage get() {
-      return new WeaveDefaultExpressionLanguageFactoryService(null).create();
+      ExpressionLanguage el = new WeaveDefaultExpressionLanguageFactoryService(null).create();
+      System.out.println("EL" + el);
+      return el;
     }
   }
 
@@ -94,7 +97,7 @@ public class ArtifactAstValidationsTestCase extends AbstractMuleContextTestCase 
     @Override
     protected void configure() {
       // bind(FeatureFlaggingService.class).to(DefaultFeatureFlaggingService.class).in(Singleton.class);
-      bind(ExpressionLanguage.class).toProvider(ExpressionLanguageProvider.class);
+      bind(ExpressionLanguage.class).toProvider(ExpressionLanguageProvider.class).in(Singleton.class);
       bind(ExtendedExpressionManager.class).to(DefaultExpressionManager.class);
       bind(ValidationsProvider.class).to(CoreValidationsProvider.class);
       bind(MuleContext.class).to(DefaultMuleContext.class);
@@ -115,8 +118,8 @@ public class ArtifactAstValidationsTestCase extends AbstractMuleContextTestCase 
     /*
      * @Provides
      * 
-     * @Singleton public ExpressionLanguage provideExpressionLanguage() { return new
-     * WeaveDefaultExpressionLanguageFactoryService(null).create(); }
+     * @Singleton public ExpressionLanguage provideExpressionLanguage() { ExpressionLanguage el = new
+     * WeaveDefaultExpressionLanguageFactoryService(null).create(); System.out.println("EL" + el); return el; }
      */
 
     @Provides
@@ -178,11 +181,14 @@ public class ArtifactAstValidationsTestCase extends AbstractMuleContextTestCase 
     // Feather feather = Feather.with(new BaseRegistryForValidationsModule());
     Injector injector = Guice.createInjector(new BasicModule());
 
-    ArtifactAstValidator astValidator = validatorBuilder()
-        // .withValidationEnricher(feather::injectFields)
+    ArtifactAstValidator astValidator = injector.getInstance(DefaultValidatorBuilder.class)
         .withValidationEnricher(p -> {
         })
         .build();
+    /*
+     * ArtifactAstValidator astValidator = validatorBuilder() // .withValidationEnricher(feather::injectFields)
+     * .withValidationEnricher(p -> { }) .build();
+     */
 
     ValidationResult result = astValidator.validate(ast);
 
