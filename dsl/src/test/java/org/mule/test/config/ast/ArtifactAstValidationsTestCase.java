@@ -56,6 +56,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import io.qameta.allure.Feature;
@@ -80,15 +81,25 @@ import com.google.inject.Provides;
 @Story(DSL_VALIDATION_STORY)
 public class ArtifactAstValidationsTestCase extends AbstractMuleContextTestCase {
 
+  public static class ExpressionLanguageProvider implements Provider<ExpressionLanguage> {
+
+    @Override
+    public ExpressionLanguage get() {
+      return new WeaveDefaultExpressionLanguageFactoryService(null).create();
+    }
+  }
+
   class BasicModule extends AbstractModule {
 
     @Override
     protected void configure() {
       // bind(FeatureFlaggingService.class).to(DefaultFeatureFlaggingService.class).in(Singleton.class);
+      bind(ExpressionLanguage.class).toProvider(ExpressionLanguageProvider.class);
       bind(ExtendedExpressionManager.class).to(DefaultExpressionManager.class);
       bind(ValidationsProvider.class).to(CoreValidationsProvider.class);
       bind(MuleContext.class).to(DefaultMuleContext.class);
       bind(TransformersRegistry.class).to(DefaultTransformersRegistry.class);
+
 
       bind(Object.class).to(String.class);
 
@@ -101,11 +112,12 @@ public class ArtifactAstValidationsTestCase extends AbstractMuleContextTestCase 
       return new DefaultFeatureFlaggingService("abcd2", new HashMap<>());
     }
 
-    @Provides
-    @Singleton
-    public ExpressionLanguage expressionLanguage() {
-      return new WeaveDefaultExpressionLanguageFactoryService(null).create();
-    }
+    /*
+     * @Provides
+     * 
+     * @Singleton public ExpressionLanguage provideExpressionLanguage() { return new
+     * WeaveDefaultExpressionLanguageFactoryService(null).create(); }
+     */
 
     @Provides
     @Singleton
