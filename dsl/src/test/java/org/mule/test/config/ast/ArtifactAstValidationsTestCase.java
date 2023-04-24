@@ -22,7 +22,6 @@ import static java.util.Collections.singletonMap;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
-import static org.mockito.Mockito.mock;
 
 import org.mule.runtime.api.config.FeatureFlaggingService;
 import org.mule.runtime.api.el.ExpressionLanguage;
@@ -34,7 +33,6 @@ import org.mule.runtime.ast.api.validation.ValidationResult;
 import org.mule.runtime.ast.api.validation.ValidationResultItem;
 import org.mule.runtime.ast.api.validation.ValidationsProvider;
 import org.mule.runtime.ast.api.xml.AstXmlParser;
-//import org.mule.runtime.core.api.Injector;
 
 import org.mule.runtime.ast.internal.validation.DefaultValidatorBuilder;
 import org.mule.runtime.config.internal.validation.CoreValidationsProvider;
@@ -56,22 +54,19 @@ import org.mule.weave.v2.el.WeaveDefaultExpressionLanguageFactoryService;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
 import javax.inject.Named;
-import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Features;
+import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
-//import org.codejargon.feather.Feather;
-//import org.codejargon.feather.Provides;
+
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -79,7 +74,6 @@ import org.junit.Test;
 import com.google.inject.Guice;
 import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
-import com.google.inject.Inject;
 import com.google.inject.Provides;
 
 /**
@@ -95,14 +89,6 @@ public class ArtifactAstValidationsTestCase extends AbstractMuleContextTestCase 
   @Rule
   public SystemProperty systemProperty = new SystemProperty(ENFORCE_EXPRESSION_VALIDATION_PROPERTY, "true");
 
-  public static class ExpressionLanguageProvider implements Provider<ExpressionLanguage> {
-
-    @Override
-    public ExpressionLanguage get() {
-      return new WeaveDefaultExpressionLanguageFactoryService(null).create();
-    }
-  }
-
   class BasicModule extends AbstractModule {
 
     private Map<org.mule.runtime.api.config.Feature, Boolean> featureBooleanMap =
@@ -110,19 +96,20 @@ public class ArtifactAstValidationsTestCase extends AbstractMuleContextTestCase 
 
     @Override
     protected void configure() {
-      // bind(FeatureFlaggingService.class).to(DefaultFeatureFlaggingService.class).in(Singleton.class);
-
       bind(ArtifactAstValidatorBuilder.class).to(DefaultValidatorBuilder.class);
-      bind(ExpressionLanguage.class).toProvider(ExpressionLanguageProvider.class);
       bind(ExtendedExpressionManager.class).to(DefaultExpressionManager.class);
       bind(ValidationsProvider.class).to(CoreValidationsProvider.class);
       bind(MuleContext.class).to(DefaultMuleContext.class);
       bind(TransformersRegistry.class).to(DefaultTransformersRegistry.class);
 
-
       bind(Object.class).to(String.class);
-
       bind(Transformer.class).to(StringToBoolean.class);
+    }
+
+    @Provides
+    @Singleton
+    public ExpressionLanguage provideExpressionLanguage() {
+      return new WeaveDefaultExpressionLanguageFactoryService(null).create();
     }
 
     @Provides
@@ -130,15 +117,6 @@ public class ArtifactAstValidationsTestCase extends AbstractMuleContextTestCase 
     public FeatureFlaggingService provideFeatureFlaggingService() {
       return new DefaultFeatureFlaggingService("abcd", featureBooleanMap);
     }
-
-
-    /*
-     * @Provides
-     * 
-     * @Singleton public ExpressionLanguage provideExpressionLanguage() { return new
-     * WeaveDefaultExpressionLanguageFactoryService(null).create(); }
-     */
-
 
     @Provides
     @Singleton
@@ -153,7 +131,6 @@ public class ArtifactAstValidationsTestCase extends AbstractMuleContextTestCase 
       return Optional.of(featureFlaggingService);
     }
 
-
     @Provides
     @Singleton
     Collection<Transformer> provideCollectionTransformer() {
@@ -165,7 +142,6 @@ public class ArtifactAstValidationsTestCase extends AbstractMuleContextTestCase 
     List<TransformerResolver> provideListTransformerResolver() {
       return new ArrayList<TransformerResolver>();
     }
-
   }
 
   private static Set<ExtensionModel> runtimeExtensionModels;
@@ -182,10 +158,10 @@ public class ArtifactAstValidationsTestCase extends AbstractMuleContextTestCase 
     muleContext.setExtensionManager(extensionManager);
     initialiseIfNeeded(extensionManager, muleContext);
     injector = Guice.createInjector(new BasicModule());
-    // injector.injectMembers(this);
   }
 
   @Test
+  @Issue("W-12637937")
   public void astValidationsWithBaseRegistryOutsideRuntime() throws ConfigurationException {
     ArtifactAst ast = buildArtifactAst("expression-language-illegal-syntax-dw-config.xml");
 
@@ -198,9 +174,6 @@ public class ArtifactAstValidationsTestCase extends AbstractMuleContextTestCase 
   }
 
   protected List<ValidationResultItem> doValidate(ArtifactAst ast) throws ConfigurationException {
-    // Feather feather = Feather.with(new BaseRegistryForValidationsModule());
-    // Injector injector = Guice.createInjector(new BasicModule());
-
     ArtifactAstValidator astValidator = validatorBuilder()
         .withValidationEnricher(p -> injector.injectMembers(p))
         .build();
@@ -214,15 +187,6 @@ public class ArtifactAstValidationsTestCase extends AbstractMuleContextTestCase 
     return errors;
   }
 
-  public class BaseRegistryForValidationsModule {
-
-    @Provides
-    @Singleton
-    public ExpressionLanguage expressionLanguage() {
-      return new WeaveDefaultExpressionLanguageFactoryService(null).create();
-    }
-
-  }
 
   protected ArtifactAst buildArtifactAst(final String configFile) {
     return AstXmlParser.builder()
