@@ -19,6 +19,7 @@ import static org.mule.test.allure.AllureConstants.MuleDsl.DslValidationStory.DS
 import static java.util.stream.Collectors.toList;
 import static java.util.Collections.singletonMap;
 
+import static com.google.inject.Guice.createInjector;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
@@ -71,7 +72,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
-import com.google.inject.Guice;
 import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
 import com.google.inject.Provides;
@@ -101,7 +101,6 @@ public class ArtifactAstValidationsTestCase extends AbstractMuleContextTestCase 
       bind(ValidationsProvider.class).to(CoreValidationsProvider.class);
       bind(MuleContext.class).to(DefaultMuleContext.class);
       bind(TransformersRegistry.class).to(DefaultTransformersRegistry.class);
-
       bind(Object.class).to(String.class);
       bind(Transformer.class).to(StringToBoolean.class);
     }
@@ -157,7 +156,7 @@ public class ArtifactAstValidationsTestCase extends AbstractMuleContextTestCase 
     extensionManager = new DefaultExtensionManager();
     muleContext.setExtensionManager(extensionManager);
     initialiseIfNeeded(extensionManager, muleContext);
-    injector = Guice.createInjector(new BasicModule());
+    injector = createInjector(new BasicModule());
   }
 
   @Test
