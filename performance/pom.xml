@@ -12,6 +12,7 @@
     <description>Micro-benchmarks to test the performance of extensions</description>
 
     <properties>
+        <javaModuleName>org.mule.runtime.integration.tests.performance</javaModuleName>
         <jmh.version>1.22</jmh.version>
 
         <formatterConfigPath>../formatter.xml</formatterConfigPath>

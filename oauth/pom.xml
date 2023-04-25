@@ -9,6 +9,7 @@
     <artifactId>mule-module-oauth-tests</artifactId>
     
     <properties>
+        <javaModuleName>org.mule.runtime.integration.tests.oauth</javaModuleName>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
         <muleHttpServiceVersion>1.7.0-SNAPSHOT</muleHttpServiceVersion>
     </properties>

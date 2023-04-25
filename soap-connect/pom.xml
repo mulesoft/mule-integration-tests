@@ -14,6 +14,7 @@
     <packaging>pom</packaging>
 
     <properties>
+        <javaModuleName>org.mule.runtime.integration.tests.soap.connect</javaModuleName>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
     </properties>
 
