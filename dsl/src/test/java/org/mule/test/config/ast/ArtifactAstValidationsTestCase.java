@@ -86,9 +86,11 @@ public class ArtifactAstValidationsTestCase extends AbstractMuleContextTestCase 
 
   private Injector injector;
 
-  @Rule
-  public SystemProperty systemProperty = new SystemProperty(ENFORCE_EXPRESSION_VALIDATION_PROPERTY, "true");
-
+  /**
+   * This will serve as an example of how to inject fields for AST validators in a Java 17 compliant way using some DI framework,
+   * Guice in this example. Earlier we were using feather and that does not work with Java 17. The way injection done here works
+   * both withh Java 8 and 17
+   */
   class BasicModule extends AbstractModule {
 
     private Map<org.mule.runtime.api.config.Feature, Boolean> featureBooleanMap =
@@ -174,7 +176,7 @@ public class ArtifactAstValidationsTestCase extends AbstractMuleContextTestCase 
 
   protected List<ValidationResultItem> doValidate(ArtifactAst ast) throws ConfigurationException {
     ArtifactAstValidator astValidator = validatorBuilder()
-        .withValidationEnricher(p -> injector.injectMembers(p))
+        .withValidationEnricher(injector::injectMembers)
         .build();
 
     ValidationResult result = astValidator.validate(ast);
