@@ -6,8 +6,6 @@
  */
 package org.mule.test.config.ast;
 
-import static org.mule.runtime.api.config.MuleRuntimeFeature.ENFORCE_EXPRESSION_VALIDATION;
-import static org.mule.runtime.api.util.MuleSystemProperties.ENFORCE_EXPRESSION_VALIDATION_PROPERTY;
 import static org.mule.runtime.ast.api.util.MuleAstUtils.validatorBuilder;
 import static org.mule.runtime.ast.api.validation.Validation.Level.ERROR;
 import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.initialiseIfNeeded;
@@ -17,51 +15,24 @@ import static org.mule.test.allure.AllureConstants.ExpressionLanguageFeature.EXP
 import static org.mule.test.allure.AllureConstants.MuleDsl.DslValidationStory.DSL_VALIDATION_STORY;
 
 import static java.util.stream.Collectors.toList;
-import static java.util.Collections.singletonMap;
 
 import static com.google.inject.Guice.createInjector;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 
-import org.mule.runtime.api.config.FeatureFlaggingService;
-import org.mule.runtime.api.el.ExpressionLanguage;
 import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.ast.api.ArtifactAst;
 import org.mule.runtime.ast.api.validation.ArtifactAstValidator;
-import org.mule.runtime.ast.api.validation.ArtifactAstValidatorBuilder;
 import org.mule.runtime.ast.api.validation.ValidationResult;
 import org.mule.runtime.ast.api.validation.ValidationResultItem;
-import org.mule.runtime.ast.api.validation.ValidationsProvider;
 import org.mule.runtime.ast.api.xml.AstXmlParser;
-
-import org.mule.runtime.ast.internal.validation.DefaultValidatorBuilder;
-import org.mule.runtime.config.internal.validation.CoreValidationsProvider;
-import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.config.ConfigurationException;
-import org.mule.runtime.core.api.el.ExtendedExpressionManager;
-import org.mule.runtime.core.api.transformer.Transformer;
-import org.mule.runtime.core.internal.context.DefaultMuleContext;
-import org.mule.runtime.core.internal.el.DefaultExpressionManager;
-import org.mule.runtime.core.internal.registry.TransformerResolver;
-import org.mule.runtime.core.internal.transformer.DefaultTransformersRegistry;
-import org.mule.runtime.core.internal.transformer.simple.StringToBoolean;
-import org.mule.runtime.core.privileged.transformer.TransformersRegistry;
-import org.mule.runtime.feature.internal.config.DefaultFeatureFlaggingService;
 import org.mule.runtime.module.extension.internal.manager.DefaultExtensionManager;
 import org.mule.tck.junit4.AbstractMuleContextTestCase;
-import org.mule.tck.junit4.rule.SystemProperty;
-import org.mule.weave.v2.el.WeaveDefaultExpressionLanguageFactoryService;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
-
-import javax.inject.Named;
-import javax.inject.Singleton;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Features;
@@ -70,11 +41,8 @@ import io.qameta.allure.Story;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Rule;
 import org.junit.Test;
-import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
-import com.google.inject.Provides;
 
 /**
  * Provides an example of how code running outside of the Mule Runtime may invoke the AST validations that require a base
@@ -85,71 +53,11 @@ import com.google.inject.Provides;
 public class ArtifactAstValidationsTestCase extends AbstractMuleContextTestCase {
 
   private Injector injector;
-
-  /**
-   * This will serve as an example of how to inject fields for AST validators in a Java 17 compliant way using some DI framework,
-   * Guice in this example. Earlier we were using feather and that does not work with Java 17. The way injection done here works
-   * both withh Java 8 and 17
-   */
-  class BasicModule extends AbstractModule {
-
-    private Map<org.mule.runtime.api.config.Feature, Boolean> featureBooleanMap =
-        singletonMap(ENFORCE_EXPRESSION_VALIDATION, Boolean.valueOf(true));
-
-    @Override
-    protected void configure() {
-      bind(ArtifactAstValidatorBuilder.class).to(DefaultValidatorBuilder.class);
-      bind(ExtendedExpressionManager.class).to(DefaultExpressionManager.class);
-      bind(ValidationsProvider.class).to(CoreValidationsProvider.class);
-      bind(MuleContext.class).to(DefaultMuleContext.class);
-      bind(TransformersRegistry.class).to(DefaultTransformersRegistry.class);
-      bind(Object.class).to(String.class);
-      bind(Transformer.class).to(StringToBoolean.class);
-    }
-
-    @Provides
-    @Singleton
-    public ExpressionLanguage provideExpressionLanguage() {
-      return new WeaveDefaultExpressionLanguageFactoryService(null).create();
-    }
-
-    @Provides
-    @Singleton
-    public FeatureFlaggingService provideFeatureFlaggingService() {
-      return new DefaultFeatureFlaggingService("abcd", featureBooleanMap);
-    }
-
-    @Provides
-    @Singleton
-    @Named("_compatibilityPluginInstalled")
-    Optional<Object> provideOptionalCompatibilityPluginInstalled(Object object) {
-      return Optional.of(object);
-    }
-
-    @Provides
-    @Singleton
-    Optional<FeatureFlaggingService> provideOptionalFeatureFlaggingService(FeatureFlaggingService featureFlaggingService) {
-      return Optional.of(featureFlaggingService);
-    }
-
-    @Provides
-    @Singleton
-    Collection<Transformer> provideCollectionTransformer() {
-      return new ArrayList<Transformer>();
-    }
-
-    @Provides
-    @Singleton
-    List<TransformerResolver> provideListTransformerResolver() {
-      return new ArrayList<TransformerResolver>();
-    }
-  }
-
   private static Set<ExtensionModel> runtimeExtensionModels;
   private DefaultExtensionManager extensionManager;
 
   @BeforeClass
-  public static void beforeClass() throws Exception {
+  public static void beforeClass() {
     runtimeExtensionModels = discoverRuntimeExtensionModels();
   }
 
