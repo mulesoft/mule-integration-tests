@@ -10,6 +10,7 @@ import static org.mule.runtime.api.config.MuleRuntimeFeature.ENFORCE_EXPRESSION_
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonMap;
+import static java.util.Optional.of;
 
 import org.mule.runtime.api.config.FeatureFlaggingService;
 import org.mule.runtime.api.el.ExpressionLanguage;
@@ -41,9 +42,9 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 
 /**
- * This class will serve as an example of how to inject fields for AST validators in a Java 17 compliant way using some DI framework,
- * Guice in this example. Earlier we were using feather and that does not work with Java 17. The way injection done here works
- * both with Java 8 and 17
+ * This class will serve as an example of how to inject fields for AST validators in a Java 17 compliant way using some DI
+ * framework, Guice in this example. Earlier we were using feather and that does not work with Java 17. The way injection done
+ * here works both with Java 8 and 17
  */
 class BasicModule extends AbstractModule {
 
@@ -77,13 +78,13 @@ class BasicModule extends AbstractModule {
   @Singleton
   @Named("_compatibilityPluginInstalled")
   public Optional<Object> provideOptionalCompatibilityPluginInstalled(Object object) {
-    return Optional.of(object);
+    return of(object);
   }
 
   @Provides
   @Singleton
   public Optional<FeatureFlaggingService> provideOptionalFeatureFlaggingService(FeatureFlaggingService featureFlaggingService) {
-    return Optional.of(featureFlaggingService);
+    return of(featureFlaggingService);
   }
 
   @Provides
