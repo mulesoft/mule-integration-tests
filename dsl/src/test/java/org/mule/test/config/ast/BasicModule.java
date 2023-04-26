@@ -41,7 +41,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 
 /**
- * This will serve as an example of how to inject fields for AST validators in a Java 17 compliant way using some DI framework,
+ * This class will serve as an example of how to inject fields for AST validators in a Java 17 compliant way using some DI framework,
  * Guice in this example. Earlier we were using feather and that does not work with Java 17. The way injection done here works
  * both with Java 8 and 17
  */
