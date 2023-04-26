@@ -13,7 +13,7 @@
     <packaging>jar</packaging>
 
     <properties>
-        <javaModuleName>org.mule.runtime.integration.tests.logging</javaModuleName>
+        <javaModuleName>org.mule.test.integration.logging</javaModuleName>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
     </properties>
 

@@ -13,7 +13,7 @@
     <packaging>jar</packaging>
 
     <properties>
-        <javaModuleName>org.mule.runtime.integration.tests.tracing</javaModuleName>
+        <javaModuleName>org.mule.test.integration.tracing</javaModuleName>
         <skipExportTests>false</skipExportTests>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
         <muleTracingModuleVersion>1.0.0</muleTracingModuleVersion>

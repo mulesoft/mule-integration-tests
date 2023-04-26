@@ -13,7 +13,7 @@
     <name>MUnit Integration Tests</name>
 
     <properties>
-        <javaModuleName>org.mule.runtime.integration.tests.munit</javaModuleName>
+        <javaModuleName>org.mule.test.integration.munit</javaModuleName>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
     </properties>
 

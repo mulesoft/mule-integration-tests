@@ -15,7 +15,7 @@
     <name>Mule Extensions DSL Integration Tests</name>
 
     <properties>
-        <javaModuleName>org.mule.runtime.integration.tests.dsl</javaModuleName>
+        <javaModuleName>org.mule.test.integration.dsl</javaModuleName>
         <activemq.version>5.14.5</activemq.version>
         <javaxJmsApiVersion>2.0.1</javaxJmsApiVersion>
         <jsonassert.version>1.5.2</jsonassert.version>

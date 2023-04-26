@@ -12,7 +12,7 @@
     <artifactId>tooling-support-tests</artifactId>
 
     <properties>
-        <javaModuleName>org.mule.runtime.integration.tests.tooling.support</javaModuleName>
+        <javaModuleName>org.mule.test.tooling.support</javaModuleName>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
         <settingsFile>${java.io.tmpdir}/settings.xml</settingsFile>
         <testExtensionVersion>4.6.0-SNAPSHOT</testExtensionVersion>

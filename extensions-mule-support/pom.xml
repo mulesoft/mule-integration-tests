@@ -12,7 +12,7 @@
     <name>Mule SDK Extensions Support Integration Tests</name>
 
     <properties>
-        <javaModuleName>org.mule.runtime.integration.tests.extensions.mule.support</javaModuleName>
+        <javaModuleName>org.mule.test.integration.extensions.mule.support </javaModuleName>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
     </properties>
 
