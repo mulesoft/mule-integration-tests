@@ -26,6 +26,6 @@ public class LoggingExtension {
     public LoggingExtension() {}
 
     public String getMessage() {
-        return "Expected logging Message";
+        return message;
     }
 }

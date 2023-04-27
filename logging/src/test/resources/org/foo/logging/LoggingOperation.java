@@ -14,16 +14,32 @@ import org.mule.runtime.extension.api.annotation.param.Config;
 import org.mule.runtime.extension.api.annotation.param.MediaType;
 
 import org.foo.logging.LoggingExtension;
+import org.mule.runtime.extension.api.runtime.process.CompletionCallback;
 import org.slf4j.Logger;
 
 public class LoggingOperation {
 
     private static final Logger LOGGER = getLogger(LoggingOperation.class);
+    public static final String SECOND_MESSAGE = "Second Message";
+    public static final String NON_BLOCKING_MESSAGE = "Non Blocking Message";
+
     public LoggingOperation() {}
 
     @MediaType(value = TEXT_PLAIN, strict = false)
     public String log(@Config LoggingExtension config) {
-        LOGGER.info("logging message: " + config.getMessage());
+        LOGGER.info(config.getMessage());
         return config.getMessage();
+    }
+
+    @MediaType(value = TEXT_PLAIN, strict = false)
+    public String logWithMessage(@Config LoggingExtension config) {
+        LOGGER.info(SECOND_MESSAGE);
+        return SECOND_MESSAGE;
+    }
+
+    @MediaType(value = TEXT_PLAIN, strict = false)
+    public void nonBlockingOperationLog(CompletionCallback<Object, Object> completionCallback) {
+        LOGGER.info(NON_BLOCKING_MESSAGE);
+        completionCallback.success(null);
     }
 }

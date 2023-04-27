@@ -3,7 +3,9 @@
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:logging="http://www.mulesoft.org/schema/mule/logging"
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-      http://www.mulesoft.org/schema/mule/logging http://www.mulesoft.org/schema/mule/hello/current/mule-logging.xsd">
+      http://www.mulesoft.org/schema/mule/logging http://www.mulesoft.org/schema/mule/logging/current/mule-logging.xsd">
+
+    <logging:config name="default" message="First Message"/>
 
     <flow name="logging">
         <scheduler>
@@ -12,7 +14,11 @@
             </scheduling-strategy>
         </scheduler>
 
-        <logging:log />
+        <logging:log config-ref="default" />
+
+        <logging:log-with-message config-ref="default" />
+
+        <logging:non-blocking-operation-log />
 
 
 

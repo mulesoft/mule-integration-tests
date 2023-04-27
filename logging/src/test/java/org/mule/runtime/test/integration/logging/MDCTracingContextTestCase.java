@@ -141,7 +141,7 @@ public class MDCTracingContextTestCase extends AbstractFakeMuleServerTestCase {
       @Override
       protected boolean test() {
         Collection<CapturedExportedSpan> exportedSpans = httpServer.getCapturedExportedSpans();
-        return exportedSpans.size() == 2;
+        return exportedSpans.size() == 4;
       }
 
       @Override
@@ -151,7 +151,7 @@ public class MDCTracingContextTestCase extends AbstractFakeMuleServerTestCase {
     });
 
     List<CapturedExportedSpan> capturedExportedSpans = httpServer.getCapturedExportedSpans();
-    verifyMDCTracingValues("expected log message", capturedExportedSpans);
+    verifyMDCTracingValues("First Message", "Second Message", "Non Blocking Message", capturedExportedSpans);
   }
 
   private void startRuntimeWithApp() throws URISyntaxException, IOException, MuleException, MalformedURLException {
@@ -167,22 +167,42 @@ public class MDCTracingContextTestCase extends AbstractFakeMuleServerTestCase {
     muleServer.start();
   }
 
-  private void verifyMDCTracingValues(String expectedMessage, List<CapturedExportedSpan> capturedExportedSpans)
+  private void verifyMDCTracingValues(String expectedFirstMessage, String expectedSecondMessage, String nonBlockingMessage,
+                                      List<CapturedExportedSpan> capturedExportedSpans)
       throws IOException {
     File logFile = new File(muleServer.getLogsDir().toString() + "/test.log");
 
-    CapturedExportedSpan loggerSpan = getUniqueSpanBuName(capturedExportedSpans, "mule:logger");
+    CapturedExportedSpan loggerSpan = getUniqueSpanBuName(capturedExportedSpans, "logging:log");
 
-    List<String> lines = readLines(logFile).stream().filter(line -> line.contains(expectedMessage)).collect(Collectors.toList());
+    CapturedExportedSpan loggerWithMessageSpan = getUniqueSpanBuName(capturedExportedSpans, "logging:log-with-message");
 
-    assertThat(lines, hasSize(1));
+    CapturedExportedSpan nonBlockingOperationMessageSpan =
+        getUniqueSpanBuName(capturedExportedSpans, "logging:non-blocking-operation-log");
 
-    Matcher matcher = pattern.matcher(lines.get(0));
+    List<String> logLinesForFirstMessage =
+        readLines(logFile).stream().filter(line -> line.contains(expectedFirstMessage)).collect(Collectors.toList());
+
+    List<String> logLinesForSecondMessage =
+        readLines(logFile).stream().filter(line -> line.contains(expectedSecondMessage)).collect(Collectors.toList());
+
+    List<String> logLinesWithNonBlockingOperationMessage =
+        readLines(logFile).stream().filter(line -> line.contains(nonBlockingMessage)).collect(Collectors.toList());
+
+
+    assertThat(logLinesForFirstMessage, hasSize(1));
+
+    verifyLoggingTraceIdAndSpan(loggerSpan, logLinesForFirstMessage);
+    verifyLoggingTraceIdAndSpan(loggerWithMessageSpan, logLinesForSecondMessage);
+    verifyLoggingTraceIdAndSpan(nonBlockingOperationMessageSpan, logLinesWithNonBlockingOperationMessage);
+
+  }
+
+  private static void verifyLoggingTraceIdAndSpan(CapturedExportedSpan loggerSpan, List<String> logLinesForFirstMessage) {
+    Matcher matcher = pattern.matcher(logLinesForFirstMessage.get(0));
     if (matcher.find()) {
       assertThat(matcher.group(1), equalTo(loggerSpan.getSpanId()));
       assertThat(matcher.group(2), equalTo(loggerSpan.getTraceId()));
     }
-
   }
 
   private CapturedExportedSpan getUniqueSpanBuName(List<CapturedExportedSpan> capturedExportedSpans, String componentName) {
