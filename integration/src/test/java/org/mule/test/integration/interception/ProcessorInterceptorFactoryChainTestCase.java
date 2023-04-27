@@ -6,14 +6,20 @@
  */
 package org.mule.test.integration.interception;
 
-import static java.lang.Thread.currentThread;
-import static java.util.Arrays.asList;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 import static org.mule.functional.api.exception.ExpectedError.none;
 import static org.mule.runtime.api.interception.ProcessorInterceptorFactory.INTERCEPTORS_ORDER_REGISTRY_KEY;
-import static org.mule.test.allure.AllureConstants.InterceptonApi.INTERCEPTION_API;
 import static org.mule.test.allure.AllureConstants.InterceptonApi.ComponentInterceptionStory.COMPONENT_INTERCEPTION_STORY;
+import static org.mule.test.allure.AllureConstants.InterceptonApi.INTERCEPTION_API;
+
+import static java.lang.Thread.currentThread;
+import static java.util.Arrays.asList;
+
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 import org.mule.functional.api.exception.ExpectedError;
 import org.mule.runtime.api.component.location.ComponentLocation;
@@ -25,6 +31,7 @@ import org.mule.runtime.api.interception.ProcessorInterceptorFactory.ProcessorIn
 import org.mule.runtime.api.interception.ProcessorParameterValue;
 import org.mule.runtime.extension.api.runtime.route.Chain;
 import org.mule.runtime.module.extension.api.runtime.privileged.EventedResult;
+import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.VerboseExceptions;
 import org.mule.test.AbstractIntegrationTestCase;
 
@@ -38,13 +45,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 
-import org.junit.ClassRule;
-import org.junit.Rule;
-import org.junit.Test;
-
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Rule;
+import org.junit.Test;
 
 @Feature(INTERCEPTION_API)
 @Story(COMPONENT_INTERCEPTION_STORY)
@@ -56,6 +64,19 @@ public class ProcessorInterceptorFactoryChainTestCase extends AbstractIntegratio
 
   @Rule
   public ExpectedError expectedError = none();
+
+  @Rule
+  public DynamicPort wireMockPort = new DynamicPort("wireMockPort");
+
+  @Rule
+  public WireMockRule wireMock = new WireMockRule(wireMockConfig()
+      .bindAddress("127.0.0.1")
+      .port(wireMockPort.getNumber()));
+
+  @Before
+  public void setUp() {
+    wireMock.stubFor(get(urlMatching("/404")).willReturn(aResponse().withStatus(404)));
+  }
 
   @Override
   protected String getConfigFile() {
