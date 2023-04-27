@@ -6,7 +6,20 @@
  */
 package org.mule.test.integration.interception;
 
+import static org.mule.functional.api.exception.ExpectedError.none;
+import static org.mule.runtime.api.interception.ProcessorInterceptorFactory.INTERCEPTORS_ORDER_REGISTRY_KEY;
+import static org.mule.test.allure.AllureConstants.InterceptonApi.ComponentInterceptionStory.COMPONENT_INTERCEPTION_STORY;
+import static org.mule.test.allure.AllureConstants.InterceptonApi.INTERCEPTION_API;
+import static org.mule.test.heisenberg.extension.HeisenbergConnectionProvider.getActiveConnections;
+import static org.mule.test.heisenberg.extension.HeisenbergConnectionProvider.getConnects;
+import static org.mule.test.heisenberg.extension.HeisenbergConnectionProvider.getDisconnects;
+
 import static java.util.Arrays.asList;
+
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
@@ -15,13 +28,6 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeThat;
-import static org.mule.functional.api.exception.ExpectedError.none;
-import static org.mule.runtime.api.interception.ProcessorInterceptorFactory.INTERCEPTORS_ORDER_REGISTRY_KEY;
-import static org.mule.test.allure.AllureConstants.InterceptonApi.INTERCEPTION_API;
-import static org.mule.test.allure.AllureConstants.InterceptonApi.ComponentInterceptionStory.COMPONENT_INTERCEPTION_STORY;
-import static org.mule.test.heisenberg.extension.HeisenbergConnectionProvider.getActiveConnections;
-import static org.mule.test.heisenberg.extension.HeisenbergConnectionProvider.getConnects;
-import static org.mule.test.heisenberg.extension.HeisenbergConnectionProvider.getDisconnects;
 
 import org.mule.functional.api.exception.ExpectedError;
 import org.mule.runtime.api.component.location.ComponentLocation;
@@ -32,6 +38,7 @@ import org.mule.runtime.api.interception.ProcessorInterceptorFactory;
 import org.mule.runtime.api.interception.ProcessorInterceptorFactory.ProcessorInterceptorOrder;
 import org.mule.runtime.api.interception.ProcessorParameterValue;
 import org.mule.runtime.core.api.event.CoreEvent;
+import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.heisenberg.extension.HeisenbergConnection;
 import org.mule.test.integration.interception.ProcessorInterceptorFactoryTestCase.HasInjectedAttributesInterceptor;
@@ -46,17 +53,17 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import io.qameta.allure.Description;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
+import io.qameta.allure.Story;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-
-import io.qameta.allure.Description;
-import io.qameta.allure.Feature;
-import io.qameta.allure.Issue;
-import io.qameta.allure.Story;
 
 @Feature(INTERCEPTION_API)
 @Story(COMPONENT_INTERCEPTION_STORY)
@@ -75,6 +82,19 @@ public class ProcessorInterceptorFactoryCustomActionTestCase extends AbstractInt
   @Parameters(name = "mutateEventBefore: {0}")
   public static Collection<Object> data() {
     return asList(true, false);
+  }
+
+  @Rule
+  public DynamicPort wireMockPort = new DynamicPort("wireMockPort");
+
+  @Rule
+  public WireMockRule wireMock = new WireMockRule(wireMockConfig()
+      .bindAddress("127.0.0.1")
+      .port(wireMockPort.getNumber()));
+
+  @Before
+  public void setUp() {
+    wireMock.stubFor(get(urlMatching("/404")).willReturn(aResponse().withStatus(404)));
   }
 
   @Override
