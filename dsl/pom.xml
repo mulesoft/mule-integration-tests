@@ -18,7 +18,7 @@
         <activemq.version>5.14.5</activemq.version>
         <javaxJmsApiVersion>2.0.1</javaxJmsApiVersion>
         <jsonassert.version>1.5.2</jsonassert.version>
-
+        <guice.version>5.0.1</guice.version>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
     </properties>
 
@@ -282,9 +282,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.codejargon.feather</groupId>
-            <artifactId>feather</artifactId>
-            <version>1.0</version>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+            <version>${guice.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
