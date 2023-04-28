@@ -6,11 +6,6 @@
  */
 package org.mule.runtime.module.tooling;
 
-import static java.util.stream.Collectors.toList;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.vpOnContentDeepFieldOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.vpOnContentDependsOnOwnAttributeOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.vpOnContentDependsOnOwnDeepFieldAsPojoOPDeclaration;
@@ -33,13 +28,19 @@ import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.vpOn
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.vpOnStreamMultipleFieldsOPDeclaration;
 import static org.mule.sdk.api.values.ValueResolvingException.INVALID_VALUE_RESOLVER_NAME;
 
+import static java.util.stream.Collectors.toList;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
+
 import org.mule.runtime.api.value.Value;
 import org.mule.runtime.api.value.ValueResult;
 import org.mule.runtime.app.declaration.api.ComponentElementDeclaration;
 import org.mule.runtime.app.declaration.api.OperationElementDeclaration;
 import org.mule.runtime.module.tooling.api.artifact.DeclarationSession;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class FieldValueProviderTestCase extends DeclarationSessionTestCase {
@@ -96,7 +97,6 @@ public class FieldValueProviderTestCase extends DeclarationSessionTestCase {
   }
 
   @Test
-  @Ignore("MULE-19465")
   public void vpOnPojoMultipleFields() {
     OperationElementDeclaration operationDeclaration = vpOnPojoMultipleFieldsOPDeclaration();
     validateFieldValuesSuccess(operationDeclaration, "complexActingParameter", "stringParam", "simpleValue");
@@ -172,7 +172,6 @@ public class FieldValueProviderTestCase extends DeclarationSessionTestCase {
   }
 
   @Test
-  @Ignore("MULE-19465")
   public void vpOnContentMultipleFields() {
     OperationElementDeclaration operationElementDeclaration = vpOnContentMultipleFieldsOPDeclaration();
     validateFieldValuesSuccess(operationElementDeclaration, "parameter", "innerPojoParam.stringParam", "simpleValue");
@@ -205,7 +204,6 @@ public class FieldValueProviderTestCase extends DeclarationSessionTestCase {
   }
 
   @Test
-  @Ignore("MULE-19465")
   public void vpOnStreamMultipleFields() {
     OperationElementDeclaration operationElementDeclaration = vpOnStreamMultipleFieldsOPDeclaration();
     validateFieldValuesSuccess(operationElementDeclaration, "parameter", "innerPojoParam.stringParam", "simpleValue");
