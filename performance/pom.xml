@@ -12,7 +12,7 @@
     <description>Micro-benchmarks to test the performance of extensions</description>
 
     <properties>
-        <jmh.version>1.22</jmh.version>
+        <jmh.version>1.33</jmh.version>
 
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
     </properties>
