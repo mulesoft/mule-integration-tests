@@ -6,7 +6,6 @@
  */
 package org.mule.test.functional;
 
-import static org.mule.runtime.api.util.MuleSystemProperties.ENABLE_BYTE_BUDDY_OBJECT_CREATION_PROPERTY;
 import static org.mule.test.allure.AllureConstants.XmlSdk.XML_SDK;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -26,9 +25,6 @@ import org.junit.Test;
 @Feature(XML_SDK)
 @Issue("W-12362157")
 public class XmlSdkConfigDeploymentTestCase extends AbstractCeXmlExtensionMuleArtifactFunctionalTestCase {
-
-  @Rule
-  public SystemProperty enableByteBuddy = new SystemProperty(ENABLE_BYTE_BUDDY_OBJECT_CREATION_PROPERTY, "true");
 
   @Override
   protected String getModulePath() {
