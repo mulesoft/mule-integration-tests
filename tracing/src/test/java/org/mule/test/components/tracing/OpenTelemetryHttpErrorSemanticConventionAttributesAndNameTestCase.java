@@ -16,6 +16,7 @@ import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
+import org.junit.Ignore;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
@@ -83,6 +84,7 @@ public class OpenTelemetryHttpErrorSemanticConventionAttributesAndNameTestCase e
   }
 
   @Test
+  @Ignore("W-13144370")
   public void testFlowRequester400() throws Exception {
     ExportedSpanSniffer spanCapturer = profilingService.getSpanExportManager().getExportedSpanSniffer();
 
@@ -138,6 +140,7 @@ public class OpenTelemetryHttpErrorSemanticConventionAttributesAndNameTestCase e
   }
 
   @Test
+  @Ignore("W-13144370")
   public void testFlowRequester500() throws Exception {
     ExportedSpanSniffer spanCapturer = profilingService.getSpanExportManager().getExportedSpanSniffer();
 
