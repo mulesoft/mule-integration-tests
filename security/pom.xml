@@ -15,6 +15,7 @@
     <name>Mule Extensions Security Integration Tests</name>
 
     <properties>
+        <javaModuleName>org.mule.test.integration.security</javaModuleName>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
         <springSecurityVersion>5.1.0.RELEASE</springSecurityVersion>
     </properties>
