@@ -7,6 +7,7 @@
 
 package org.mule.test.components.tracing;
 
+import static java.lang.String.format;
 import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.DEFAULT_CORE_EVENT_TRACER;
 
@@ -102,7 +103,8 @@ public class OpenTelemetryHttpErrorSemanticConventionAttributesAndNameTestCase e
 
         @Override
         public String describeFailure() {
-          return "The exact amount of spans was not captured";
+          return format("The exact amount of spans was not captured. Captured spans: %s",
+                        spanCapturer.getExportedSpans().toString());
         }
       });
 
@@ -158,7 +160,8 @@ public class OpenTelemetryHttpErrorSemanticConventionAttributesAndNameTestCase e
 
         @Override
         public String describeFailure() {
-          return "The exact amount of spans was not captured";
+          return format("The exact amount of spans was not captured. Captured spans: %s",
+                        spanCapturer.getExportedSpans().toString());
         }
       });
 
@@ -213,7 +216,8 @@ public class OpenTelemetryHttpErrorSemanticConventionAttributesAndNameTestCase e
 
         @Override
         public String describeFailure() {
-          return "The exact amount of spans was not captured";
+          return format("The exact amount of spans was not captured. Captured spans: %s",
+                        spanCapturer.getExportedSpans().toString());
         }
       });
 
@@ -295,7 +299,8 @@ public class OpenTelemetryHttpErrorSemanticConventionAttributesAndNameTestCase e
 
         @Override
         public String describeFailure() {
-          return "The exact amount of spans was not captured";
+          return format("The exact amount of spans was not captured. Captured spans: %s",
+                        spanCapturer.getExportedSpans().toString());
         }
       });
 
@@ -377,7 +382,8 @@ public class OpenTelemetryHttpErrorSemanticConventionAttributesAndNameTestCase e
 
         @Override
         public String describeFailure() {
-          return "The exact amount of spans was not captured";
+          return format("The exact amount of spans was not captured. Captured spans: %s",
+                        spanCapturer.getExportedSpans().toString());
         }
       });
 
