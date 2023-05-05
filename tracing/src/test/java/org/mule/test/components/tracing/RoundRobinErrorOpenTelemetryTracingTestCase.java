@@ -23,7 +23,6 @@ import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
-import org.junit.runners.Parameterized;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
 import org.mule.runtime.tracer.api.sniffer.ExportedSpanSniffer;
@@ -42,6 +41,8 @@ import javax.inject.Inject;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
+import org.junit.runners.Parameterized;
+import org.junit.After;
 import org.junit.Test;
 import org.mule.test.runner.RunnerDelegateTo;
 
@@ -132,7 +133,9 @@ public class RoundRobinErrorOpenTelemetryTracingTestCase extends MuleArtifactFun
     super.doSetUpBeforeMuleContextCreation();
   }
 
+  @After
   public void doAfter() {
+    // TODO W-13160648: Add a Rule for selecting LEVEL of tracing in integration test and make it work in parallel
     clearProperty(TRACING_LEVEL_CONFIGURATION_PATH);
   }
 

@@ -42,6 +42,7 @@ import javax.inject.Inject;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
 import org.junit.runners.Parameterized;
+import org.junit.After;
 import org.junit.Test;
 
 @Feature(PROFILING)
@@ -137,7 +138,9 @@ public class ChoiceRouterOpenTelemetryTracingTestCase extends MuleArtifactFuncti
   }
 
 
+  @After
   public void doAfter() {
+    // TODO W-13160648: Add a Rule for selecting LEVEL of tracing in integration test and make it work in parallel
     clearProperty(TRACING_LEVEL_CONFIGURATION_PATH);
   }
 

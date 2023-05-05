@@ -18,7 +18,6 @@ import static java.lang.System.clearProperty;
 import static java.lang.System.setProperty;
 import static java.util.Arrays.asList;
 
-import org.junit.runners.Parameterized;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
 import org.mule.runtime.tracer.api.sniffer.ExportedSpanSniffer;
@@ -37,7 +36,10 @@ import javax.inject.Inject;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
+import org.junit.runners.Parameterized;
 import org.junit.Test;
+import org.junit.After;
+
 
 @Feature(PROFILING)
 @Story(DEFAULT_CORE_EVENT_TRACER)
@@ -110,7 +112,9 @@ public class ForEachErrorOpenTelemetryTracingTestCase extends MuleArtifactFuncti
     super.doSetUpBeforeMuleContextCreation();
   }
 
+  @After
   public void doAfter() {
+    // TODO W-13160648: Add a Rule for selecting LEVEL of tracing in integration test and make it work in parallel
     clearProperty(TRACING_LEVEL_CONFIGURATION_PATH);
   }
 

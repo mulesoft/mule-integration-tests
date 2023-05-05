@@ -146,11 +146,6 @@ public class DistributedOpenTelemetryTracingTestCase extends
     super.doSetUpBeforeMuleContextCreation();
   }
 
-
-  public void doAfter() {
-    clearProperty(TRACING_LEVEL_CONFIGURATION_PATH);
-  }
-
   public DistributedOpenTelemetryTracingTestCase(String type, String path, String traceLevel, int expectedSpansCount,
                                                  Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> spanHierarchyRetriever) {
     this.type = type;
@@ -176,6 +171,9 @@ public class DistributedOpenTelemetryTracingTestCase extends
     clearProperty(MULE_OPEN_TELEMETRY_EXPORTER_TYPE);
     clearProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENDPOINT);
     clearProperty(MULE_OPEN_TELEMETRY_EXPORTER_BACKOFF_MAX_ATTEMPTS);
+
+    // TODO W-13160648: Add a Rule for selecting LEVEL of tracing in integration test and make it work in parallel
+    clearProperty(TRACING_LEVEL_CONFIGURATION_PATH);
   }
 
   @Test
