@@ -97,7 +97,9 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
 
   @Before
   public void setUp() {
+    wireMock.stubFor(get(urlMatching("/200")).willReturn(aResponse().withStatus(200)));
     wireMock.stubFor(get(urlMatching("/404")).willReturn(aResponse().withStatus(404)));
+    wireMock.stubFor(get(urlMatching("/418")).willReturn(aResponse().withStatus(418)));
   }
 
   @Override
