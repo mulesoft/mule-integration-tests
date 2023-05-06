@@ -25,7 +25,6 @@ import static com.linecorp.armeria.common.HttpResponse.from;
 import static com.linecorp.armeria.common.HttpStatus.OK;
 import static com.linecorp.armeria.common.HttpStatus.REQUEST_TIMEOUT;
 
-import org.junit.After;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
 import org.mule.tck.probe.JUnitProbe;
@@ -50,6 +49,7 @@ import com.linecorp.armeria.server.ServiceRequestContext;
 import com.linecorp.armeria.testing.junit4.server.ServerRule;
 import io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceRequest;
 import org.jetbrains.annotations.NotNull;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;

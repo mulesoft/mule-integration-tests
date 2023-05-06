@@ -72,8 +72,10 @@ public class CustomSpanNameAndAttributesTestCaseOpenTelemetry extends MuleArtifa
   }
 
   @After
-  public void dispose() {
+  public void doAfter() {
     spanCapturer.dispose();
+    // TODO W-13160648: Add a Rule for selecting LEVEL of tracing in integration test and make it work in parallel
+    clearProperty(TRACING_LEVEL_CONFIGURATION_PATH);
   }
 
   @Override
@@ -136,11 +138,6 @@ public class CustomSpanNameAndAttributesTestCaseOpenTelemetry extends MuleArtifa
   protected void doSetUpBeforeMuleContextCreation() throws Exception {
     setProperty(TRACING_LEVEL_CONFIGURATION_PATH, tracingLevel.toLowerCase() + FileSystems.getDefault().getSeparator());
     super.doSetUpBeforeMuleContextCreation();
-  }
-
-
-  public void doAfter() {
-    clearProperty(TRACING_LEVEL_CONFIGURATION_PATH);
   }
 
   private static Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> getDebugExpectedSpanTestHierarchy() {

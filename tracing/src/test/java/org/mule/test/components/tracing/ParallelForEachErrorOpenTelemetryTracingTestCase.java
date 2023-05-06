@@ -36,6 +36,7 @@ import javax.inject.Inject;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
 
@@ -124,7 +125,9 @@ public class ParallelForEachErrorOpenTelemetryTracingTestCase extends MuleArtifa
     super.doSetUpBeforeMuleContextCreation();
   }
 
+  @After
   public void doAfter() {
+    // TODO W-13160648: Add a Rule for selecting LEVEL of tracing in integration test and make it work in parallel
     clearProperty(TRACING_LEVEL_CONFIGURATION_PATH);
   }
 
