@@ -8,4 +8,6 @@ additionalConfigFileMetadataProviderList:
     variable: org.mule.maven.client.api.SettingsSupplierFactory.userSettings
 projectType: runtime
 agentLabel: windows2019-heavy
+buildTimeoutTime : 20
+buildTimeoutUnit : "MINUTES"
 
