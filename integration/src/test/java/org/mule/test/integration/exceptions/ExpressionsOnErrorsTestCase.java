@@ -8,15 +8,24 @@ package org.mule.test.integration.exceptions;
 
 import static java.lang.System.lineSeparator;
 import static java.nio.charset.StandardCharsets.UTF_8;
+
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ErrorHandlingStory.ERROR_HANDLER;
 
 import org.mule.runtime.api.streaming.bytes.CursorStreamProvider;
+import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import org.apache.commons.io.IOUtils;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
 import io.qameta.allure.Feature;
@@ -26,6 +35,19 @@ import io.qameta.allure.Story;
 @Feature(ERROR_HANDLING)
 @Story(ERROR_HANDLER)
 public class ExpressionsOnErrorsTestCase extends AbstractIntegrationTestCase {
+
+  @Rule
+  public DynamicPort wireMockPort = new DynamicPort("wireMockPort");
+
+  @Rule
+  public WireMockRule wireMock = new WireMockRule(wireMockConfig()
+      .bindAddress("127.0.0.1")
+      .port(wireMockPort.getNumber()));
+
+  @Before
+  public void setUp() {
+    wireMock.stubFor(get(urlMatching("/500")).willReturn(aResponse().withStatus(500)));
+  }
 
   @Override
   protected String getConfigFile() {

@@ -64,6 +64,7 @@ public class ProcessorInterceptorFactoryFailingInterceptorsTestCase extends Abst
   @Before
   public void setUp() {
     wireMock.stubFor(get(urlMatching("/404")).willReturn(aResponse().withStatus(404)));
+    wireMock.stubFor(get(urlMatching("/418")).willReturn(aResponse().withStatus(418)));
   }
 
   @Override

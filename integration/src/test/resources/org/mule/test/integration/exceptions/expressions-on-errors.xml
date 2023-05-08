@@ -24,7 +24,7 @@
     </flow>
 
     <flow name="infoElementSdkOp">
-        <http:request method="GET" config-ref="HTTP_Request_configuration" url="https://httpbin.org/status/500"/>
+        <http:request method="GET" config-ref="HTTP_Request_configuration" url="http://localhost:${wireMockPort}/500"/>
         <error-handler>
             <on-error-continue>
                 <set-payload value="#[error.failingComponent]"/>
@@ -44,7 +44,7 @@
     <http:request-config name="HTTP_Request_configuration"/>
 
     <flow name="infoElementDeprecatedSdkOp">
-        <http:request method="GET" config-ref="HTTP_Request_configuration" url="https://httpbin.org/status/500"/>
+        <http:request method="GET" config-ref="HTTP_Request_configuration" url="http://localhost:${wireMockPort}/500"/>
         <error-handler>
             <on-error-continue>
                 <set-payload value="#[message.message.exceptionPayload.info.Element]"/>
