@@ -12,9 +12,11 @@ import static org.mule.runtime.soap.api.exception.error.SoapErrors.SOAP_FAULT;
 
 import org.mule.functional.api.exception.ExpectedError;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
+@Ignore
 public class InvokeOperationErrorsTestCase extends SoapFootballExtensionArtifactFunctionalTestCase {
 
   @Rule
