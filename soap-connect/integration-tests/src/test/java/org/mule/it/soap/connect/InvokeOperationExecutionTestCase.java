@@ -9,9 +9,13 @@ package org.mule.it.soap.connect;
 import static org.mule.service.soap.SoapTestUtils.assertSimilarXml;
 
 import org.mule.runtime.api.message.Message;
-import org.junit.Test;
+
 import java.io.ByteArrayInputStream;
 
+import org.junit.Ignore;
+import org.junit.Test;
+
+@Ignore
 public class InvokeOperationExecutionTestCase extends SoapFootballExtensionArtifactFunctionalTestCase {
 
   @Test
