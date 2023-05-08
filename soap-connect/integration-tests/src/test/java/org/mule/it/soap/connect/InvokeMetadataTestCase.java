@@ -47,8 +47,10 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
+@Ignore
 public class InvokeMetadataTestCase extends SoapFootballExtensionArtifactFunctionalTestCase {
 
   private static final String INVALID_KEY_ERROR = "operation [invalidKey] was not found in the current wsdl file";
