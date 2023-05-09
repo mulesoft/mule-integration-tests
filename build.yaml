@@ -10,5 +10,6 @@ projectType: runtime
 agentLabel: windows2019-heavy
 buildTimeoutTime : 30
 buildTimeoutUnit : "MINUTES"
-mavenTestAdditionalArgs: "-X -e"
+#mavenTestAdditionalArgs: "-X -e"
+mavenTestAdditionalArgs: "-e"
 
