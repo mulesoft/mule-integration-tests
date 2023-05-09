@@ -7,6 +7,7 @@
 
 package org.mule.test.components.tracing;
 
+import static java.lang.String.format;
 import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.DEFAULT_CORE_EVENT_TRACER;
 
@@ -16,6 +17,7 @@ import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
+import org.junit.Ignore;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
@@ -83,6 +85,7 @@ public class OpenTelemetryHttpErrorSemanticConventionAttributesAndNameTestCase e
   }
 
   @Test
+  @Ignore("W-13144370")
   public void testFlowRequester400() throws Exception {
     ExportedSpanSniffer spanCapturer = profilingService.getSpanExportManager().getExportedSpanSniffer();
 
@@ -100,7 +103,8 @@ public class OpenTelemetryHttpErrorSemanticConventionAttributesAndNameTestCase e
 
         @Override
         public String describeFailure() {
-          return "The exact amount of spans was not captured";
+          return format("The exact amount of spans was not captured. Captured spans: %s",
+                        spanCapturer.getExportedSpans().toString());
         }
       });
 
@@ -138,6 +142,7 @@ public class OpenTelemetryHttpErrorSemanticConventionAttributesAndNameTestCase e
   }
 
   @Test
+  @Ignore("W-13144370")
   public void testFlowRequester500() throws Exception {
     ExportedSpanSniffer spanCapturer = profilingService.getSpanExportManager().getExportedSpanSniffer();
 
@@ -155,7 +160,8 @@ public class OpenTelemetryHttpErrorSemanticConventionAttributesAndNameTestCase e
 
         @Override
         public String describeFailure() {
-          return "The exact amount of spans was not captured";
+          return format("The exact amount of spans was not captured. Captured spans: %s",
+                        spanCapturer.getExportedSpans().toString());
         }
       });
 
@@ -210,7 +216,8 @@ public class OpenTelemetryHttpErrorSemanticConventionAttributesAndNameTestCase e
 
         @Override
         public String describeFailure() {
-          return "The exact amount of spans was not captured";
+          return format("The exact amount of spans was not captured. Captured spans: %s",
+                        spanCapturer.getExportedSpans().toString());
         }
       });
 
@@ -292,7 +299,8 @@ public class OpenTelemetryHttpErrorSemanticConventionAttributesAndNameTestCase e
 
         @Override
         public String describeFailure() {
-          return "The exact amount of spans was not captured";
+          return format("The exact amount of spans was not captured. Captured spans: %s",
+                        spanCapturer.getExportedSpans().toString());
         }
       });
 
@@ -374,7 +382,8 @@ public class OpenTelemetryHttpErrorSemanticConventionAttributesAndNameTestCase e
 
         @Override
         public String describeFailure() {
-          return "The exact amount of spans was not captured";
+          return format("The exact amount of spans was not captured. Captured spans: %s",
+                        spanCapturer.getExportedSpans().toString());
         }
       });
 

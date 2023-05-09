@@ -8,6 +8,7 @@
 package org.mule.test.components.tracing;
 
 import static org.mule.runtime.api.util.MuleSystemProperties.TRACING_LEVEL_CONFIGURATION_PATH;
+import static org.mule.runtime.tracer.customization.api.InternalSpanNames.GET_CONNECTION_SPAN_NAME;
 import static org.mule.runtime.tracing.level.api.config.TracingLevel.DEBUG;
 import static org.mule.runtime.tracing.level.api.config.TracingLevel.MONITORING;
 import static org.mule.runtime.tracing.level.api.config.TracingLevel.OVERVIEW;
@@ -96,7 +97,7 @@ public class OpenTelemetryHttpSemanticConventionAttributesAndNameTestCase extend
             getOverviewExpectedSpanTestHierarchyForErrorFlow()},
         {MONITORING.name(), 4, getMonitoringExpectedSpanTestHierarchyForSuccessFlow(), 5,
             getMonitoringExpectedSpanTestHierarchyForErrorFlow()},
-        {DEBUG.name(), 4, getDebugExpectedSpanTestHierarchyForSuccessFlow(), 5, getDebugExpectedSpanTestHierarchyForErrorFlow()}
+        {DEBUG.name(), 5, getDebugExpectedSpanTestHierarchyForSuccessFlow(), 6, getDebugExpectedSpanTestHierarchyForErrorFlow()}
     });
   }
 
@@ -144,13 +145,41 @@ public class OpenTelemetryHttpSemanticConventionAttributesAndNameTestCase extend
   }
 
   private static Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> getDebugExpectedSpanTestHierarchyForSuccessFlow() {
-    // In this case debug and monitoring level are the same.
-    return getMonitoringExpectedSpanTestHierarchyForSuccessFlow();
+    return exportedSpans -> {
+      SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
+      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_HTTP_REQUEST_SPAN_NAME)
+          .beginChildren()
+          .child(GET_CONNECTION_SPAN_NAME)
+          .child(EXPECTED_HTTP_FLOW_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_LOGGER_SPAN_NAME)
+          .endChildren()
+          .endChildren();
+
+      return expectedSpanHierarchy;
+    };
   }
 
   private static Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> getDebugExpectedSpanTestHierarchyForErrorFlow() {
-    // In this case debug and monitoring level are the same.
-    return getMonitoringExpectedSpanTestHierarchyForErrorFlow();
+    return exportedSpans -> {
+      SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
+      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_HTTP_REQUEST_SPAN_NAME)
+          .beginChildren()
+          .child(GET_CONNECTION_SPAN_NAME)
+          .child(EXPECTED_HTTP_FLOW_SPAN_NAME_200)
+          .beginChildren()
+          .child(EXPECTED_RAISE_ERROR_SPAN)
+          .child(EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME)
+          .endChildren()
+          .endChildren()
+          .endChildren();
+
+      return expectedSpanHierarchy;
+    };
   }
 
   private static Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> getMonitoringExpectedSpanTestHierarchyForErrorFlow() {

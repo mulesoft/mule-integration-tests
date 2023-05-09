@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) MuleSoft, Inc.  All rights reserved.  http://www.mulesoft.com
+  ~ The software in this package is published under the terms of the CPAL v1.0
+  ~ license, a copy of which has been included with this distribution in the
+  ~ LICENSE.txt file.
+  -->
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:petstore="http://www.mulesoft.org/schema/mule/petstore"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+                          http://www.mulesoft.org/schema/mule/petstore http://www.mulesoft.org/schema/mule/petstore/current/mule-petstore.xsd">
+
+    <petstore:config name="simple-connection" cashierName="tracing">
+        <petstore:connection username="john" password="doe"/>
+        <petstore:pets>
+            <petstore:pet value="Dog"/>
+        </petstore:pets>
+    </petstore:config>
+
+    <petstore:config name="simple-failing-connection" cashierName="tracing">
+        <petstore:connection username="not-john" password="not-doe"/>
+        <petstore:pets>
+            <petstore:pet value="Dog"/>
+        </petstore:pets>
+    </petstore:config>
+
+    <flow name="operation-with-simple-failing-connection">
+        <petstore:get-pets config-ref="simple-failing-connection" ownerName="not-john" ownerSignature="x"/>
+    </flow>
+
+    <flow name="operation-with-simple-connection">
+        <petstore:get-connection-age config-ref="simple-connection"/>
+    </flow>
+
+</mule>

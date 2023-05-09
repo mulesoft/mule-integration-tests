@@ -55,6 +55,7 @@ public class UntilSuccessfulErrorOpenTelemetryTracingTestCase extends MuleArtifa
   public static final String EXPECTED_FLOW_SPAN_NAME = "mule:flow";
   public static final String EXPECTED_HTTP_REQUEST_SPAN_NAME = "http:request";
   public static final String ON_ERROR_PROPAGATE_SPAN_NAME = "mule:on-error-propagate";
+  public static final String EXPECTED_RAISE_ERROR_SPAN = "mule:raise-error";
   public static final String NO_PARENT_SPAN = "0000000000000000";
   public static final int NUMBER_OF_RETRIES = 2;
   private final String traceLevel;
@@ -67,7 +68,7 @@ public class UntilSuccessfulErrorOpenTelemetryTracingTestCase extends MuleArtifa
   @Parameterized.Parameters(name = "tracingLevel: {0}")
   public static Collection<Object[]> data() {
     return asList(new Object[][] {
-        {OVERVIEW.name(), 4, getOverviewExpectedSpanTestHierarchy()},
+        {OVERVIEW.name(), 1, getOverviewExpectedSpanTestHierarchy()},
         {MONITORING.name(), (NUMBER_OF_RETRIES + 1) * 3 + 3, getMonitoringExpectedSpanTestHierarchy()},
         {DEBUG.name(), (NUMBER_OF_RETRIES + 1) * 3 + 3, getDebugExpectedSpanTestHierarchy()}
     });
@@ -91,17 +92,17 @@ public class UntilSuccessfulErrorOpenTelemetryTracingTestCase extends MuleArtifa
           .child(EXPECTED_ATTEMPT_SPAN_NAME)
           .beginChildren()
           .child(EXPECTED_LOGGER_SPAN_NAME)
-          .child(EXPECTED_HTTP_REQUEST_SPAN_NAME)
+          .child(EXPECTED_RAISE_ERROR_SPAN)
           .endChildren()
           .child(EXPECTED_ATTEMPT_SPAN_NAME)
           .beginChildren()
           .child(EXPECTED_LOGGER_SPAN_NAME)
-          .child(EXPECTED_HTTP_REQUEST_SPAN_NAME)
+          .child(EXPECTED_RAISE_ERROR_SPAN)
           .endChildren()
           .child(EXPECTED_ATTEMPT_SPAN_NAME)
           .beginChildren()
           .child(EXPECTED_LOGGER_SPAN_NAME)
-          .child(EXPECTED_HTTP_REQUEST_SPAN_NAME)
+          .child(EXPECTED_RAISE_ERROR_SPAN)
           .endChildren()
           .endChildren()
           .child(ON_ERROR_PROPAGATE_SPAN_NAME)

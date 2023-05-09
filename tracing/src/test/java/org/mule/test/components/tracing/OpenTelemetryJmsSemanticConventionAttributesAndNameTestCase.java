@@ -9,9 +9,10 @@ package org.mule.test.components.tracing;
 import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.DEFAULT_CORE_EVENT_TRACER;
 
+import static java.lang.String.format;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.nullValue;
 
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
@@ -90,7 +91,8 @@ public class OpenTelemetryJmsSemanticConventionAttributesAndNameTestCase extends
 
         @Override
         public String describeFailure() {
-          return "The exact amount of spans was not captured";
+          return format("The exact amount of spans was not captured. Captured spans: %s",
+                        spanCapturer.getExportedSpans().toString());
         }
       });
 
