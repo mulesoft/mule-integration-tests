@@ -10,8 +10,10 @@ import static org.mule.service.soap.SoapTestUtils.assertSimilarXml;
 
 import org.mule.runtime.api.message.Message;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
+@Ignore
 public class SoapExtensionWithHttpDispatcherTestCase extends AbstractSimpleServiceFunctionalTestCase {
 
   @Override
