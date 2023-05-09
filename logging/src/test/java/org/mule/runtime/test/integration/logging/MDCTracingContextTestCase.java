@@ -8,6 +8,7 @@ package org.mule.runtime.test.integration.logging;
 
 
 import static org.mule.runtime.api.util.MuleSystemProperties.ENABLE_PROFILING_SERVICE_PROPERTY;
+import static org.mule.runtime.api.util.MuleSystemProperties.PUT_TRACE_ID_AND_SPAN_ID_IN_MDC_PROPERTY;
 import static org.mule.runtime.test.integration.logging.plugin.TestPluginsCatalog.loggingExtensionPlugin;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_ENABLED;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_ENDPOINT;
@@ -27,6 +28,7 @@ import static org.apache.logging.log4j.LogManager.shutdown;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import static org.slf4j.bridge.SLF4JBridgeHandler.install;
 import static org.slf4j.bridge.SLF4JBridgeHandler.removeHandlersForRootLogger;
 import static org.slf4j.bridge.SLF4JBridgeHandler.uninstall;
@@ -81,6 +83,9 @@ import javax.inject.Inject;
 @Features({@Feature(DEFAULT_PROFILING_SERVICE), @Feature(LOGGING)})
 @Story(TRACING_CONFIGURATION)
 public class MDCTracingContextTestCase extends AbstractFakeMuleServerTestCase {
+
+  @Rule
+  public SystemProperty propagateDisposeError = new SystemProperty(PUT_TRACE_ID_AND_SPAN_ID_IN_MDC_PROPERTY, TRUE.toString());
 
   private static final int TIMEOUT_MILLIS = 30000;
   private static final int POLL_DELAY_MILLIS = 100;
@@ -202,6 +207,8 @@ public class MDCTracingContextTestCase extends AbstractFakeMuleServerTestCase {
     if (matcher.find()) {
       assertThat(matcher.group(1), equalTo(loggerSpan.getSpanId()));
       assertThat(matcher.group(2), equalTo(loggerSpan.getTraceId()));
+    } else {
+      fail("No lines found in the logs with the corresponding span id and trace id");
     }
   }
 
