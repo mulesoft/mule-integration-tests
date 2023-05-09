@@ -7,18 +7,24 @@
 
 package org.mule.test.components.tracing;
 
-import static java.lang.String.format;
+import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
 import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.DEFAULT_CORE_EVENT_TRACER;
 
+import static java.lang.String.format;
+
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.hamcrest.Matchers.aMapWithSize;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
-import org.junit.Ignore;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
+import org.mule.runtime.api.util.LazyValue;
 import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
 import org.mule.runtime.tracer.api.sniffer.ExportedSpanSniffer;
@@ -31,11 +37,13 @@ import java.util.Collection;
 
 import javax.inject.Inject;
 
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
 import junit.framework.AssertionFailedError;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.Before;
 
 @Feature(PROFILING)
 @Story(DEFAULT_CORE_EVENT_TRACER)
@@ -73,11 +81,32 @@ public class OpenTelemetryHttpErrorSemanticConventionAttributesAndNameTestCase e
   public static final String SPAN_STATUS_ATTRIBUTE = "status.override";
   public static final String SPAN_KIND_ATTRIBUTE = "span.kind.override";
 
+
   @Inject
   PrivilegedProfilingService profilingService;
 
   @Rule
-  public DynamicPort httpPort = new DynamicPort("port");
+  public DynamicPort mockedServerPort = new DynamicPort("mockedServerPort");
+
+  public final LazyValue<String> HTTP_URL_400 =
+      new LazyValue<>(() -> String.format("https://localhost:%s/status/400", mockedServerPort.getValue()));
+  public final LazyValue<String> HTTP_URL_500 =
+      new LazyValue<>(() -> String.format("https://localhost:%s/status/500", mockedServerPort.getValue()));
+
+  @Rule
+  public DynamicPort listenerServerPort = new DynamicPort("listenerServerPort");
+
+  @Rule
+  public WireMockRule wireMock = new WireMockRule(wireMockConfig()
+      .bindAddress("127.0.0.1")
+      .needClientAuth(false)
+      .httpsPort(mockedServerPort.getNumber()));
+
+  @Before
+  public void setUp() {
+    wireMock.stubFor(get(urlMatching("/status/400")).willReturn(aResponse().withStatus(400)));
+    wireMock.stubFor(get(urlMatching("/status/500")).willReturn(aResponse().withStatus(500)));
+  }
 
   @Override
   protected String getConfigFile() {
@@ -85,13 +114,12 @@ public class OpenTelemetryHttpErrorSemanticConventionAttributesAndNameTestCase e
   }
 
   @Test
-  @Ignore("W-13144370")
   public void testFlowRequester400() throws Exception {
     ExportedSpanSniffer spanCapturer = profilingService.getSpanExportManager().getExportedSpanSniffer();
 
     try {
       PollingProber prober = new PollingProber(TIMEOUT_MILLIS, POLL_DELAY_MILLIS);
-      flowRunner(REQUEST_400_FLOW).dispatch();
+      flowRunner(REQUEST_400_FLOW).runExpectingException(errorType("HTTP", "BAD_REQUEST"));
 
       prober.check(new JUnitProbe() {
 
@@ -125,9 +153,10 @@ public class OpenTelemetryHttpErrorSemanticConventionAttributesAndNameTestCase e
               .orElseThrow(() -> new AssertionFailedError("No span for http request flow found!"));
 
       assertThat(requestExportedSpan.getAttributes(), aMapWithSize(13));
-      assertThat(requestExportedSpan.getAttributes(), hasEntry(NET_PEER_NAME, "httpbin.org"));
-      assertThat(requestExportedSpan.getAttributes(), hasEntry(NET_PEER_PORT, "-1"));
-      assertThat(requestExportedSpan.getAttributes(), hasEntry(HTTP_URL, "https://httpbin.org/status/400"));
+      assertThat(requestExportedSpan.getAttributes(), hasEntry(NET_PEER_NAME, "localhost"));
+      assertThat(requestExportedSpan.getAttributes(), hasEntry(NET_PEER_PORT, mockedServerPort.getValue()));
+      assertThat(requestExportedSpan.getAttributes(),
+                 hasEntry(HTTP_URL, HTTP_URL_400.get()));
       assertThat(requestExportedSpan.getAttributes(), hasEntry(HTTP_METHOD, "GET"));
       assertThat(requestExportedSpan.getAttributes(), hasEntry(HTTP_FLAVOR, "1.1"));
       assertThat(requestExportedSpan.getAttributes(), hasEntry(HTTP_STATUS_CODE, "400"));
@@ -142,13 +171,12 @@ public class OpenTelemetryHttpErrorSemanticConventionAttributesAndNameTestCase e
   }
 
   @Test
-  @Ignore("W-13144370")
   public void testFlowRequester500() throws Exception {
     ExportedSpanSniffer spanCapturer = profilingService.getSpanExportManager().getExportedSpanSniffer();
 
     try {
       PollingProber prober = new PollingProber(TIMEOUT_MILLIS, POLL_DELAY_MILLIS);
-      flowRunner(REQUEST_500_FLOW).dispatch();
+      flowRunner(REQUEST_500_FLOW).runExpectingException(errorType("HTTP", "INTERNAL_SERVER_ERROR"));
 
       prober.check(new JUnitProbe() {
 
@@ -180,11 +208,11 @@ public class OpenTelemetryHttpErrorSemanticConventionAttributesAndNameTestCase e
           exportedSpans.stream().filter(exportedSpan -> exportedSpan.getName().equals(EXPECTED_HTTPS_REQUEST_SPAN_NAME))
               .findFirst()
               .orElseThrow(() -> new AssertionFailedError("No span for http request flow found!"));
-
       assertThat(requestExportedSpan.getAttributes(), aMapWithSize(13));
-      assertThat(requestExportedSpan.getAttributes(), hasEntry(NET_PEER_NAME, "httpbin.org"));
-      assertThat(requestExportedSpan.getAttributes(), hasEntry(NET_PEER_PORT, "-1"));
-      assertThat(requestExportedSpan.getAttributes(), hasEntry(HTTP_URL, "https://httpbin.org/status/500"));
+      assertThat(requestExportedSpan.getAttributes(), hasEntry(NET_PEER_NAME, "localhost"));
+      assertThat(requestExportedSpan.getAttributes(), hasEntry(NET_PEER_PORT, mockedServerPort.getValue()));
+      assertThat(requestExportedSpan.getAttributes(),
+                 hasEntry(HTTP_URL, HTTP_URL_500.get()));
       assertThat(requestExportedSpan.getAttributes(), hasEntry(HTTP_METHOD, "GET"));
       assertThat(requestExportedSpan.getAttributes(), hasEntry(HTTP_FLAVOR, "1.1"));
       assertThat(requestExportedSpan.getAttributes(), hasEntry(HTTP_STATUS_CODE, "500"));
@@ -250,7 +278,7 @@ public class OpenTelemetryHttpErrorSemanticConventionAttributesAndNameTestCase e
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_SCHEME, "http"));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_FLAVOR, "1.1"));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_USER_AGENT, "AHC/1.0"));
-      assertThat(listenerExportedSpan.getAttributes(), hasEntry(NET_HOST_PORT, httpPort.getValue()));
+      assertThat(listenerExportedSpan.getAttributes(), hasEntry(NET_HOST_PORT, listenerServerPort.getValue()));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_METHOD, "GET"));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_STATUS_CODE, "500"));
       assertThat(listenerExportedSpan.getAttributes().get(SPAN_KIND_ATTRIBUTE), nullValue());
@@ -266,8 +294,9 @@ public class OpenTelemetryHttpErrorSemanticConventionAttributesAndNameTestCase e
 
       assertThat(requestExportedSpan.getAttributes(), aMapWithSize(13));
       assertThat(requestExportedSpan.getAttributes(), hasEntry(NET_PEER_NAME, "localhost"));
-      assertThat(requestExportedSpan.getAttributes(), hasEntry(NET_PEER_PORT, httpPort.getValue()));
-      assertThat(requestExportedSpan.getAttributes(), hasEntry(HTTP_URL, "http://localhost:" + httpPort.getValue() + "/test"));
+      assertThat(requestExportedSpan.getAttributes(), hasEntry(NET_PEER_PORT, listenerServerPort.getValue()));
+      assertThat(requestExportedSpan.getAttributes(),
+                 hasEntry(HTTP_URL, "http://localhost:" + listenerServerPort.getValue() + "/test"));
       assertThat(requestExportedSpan.getAttributes(), hasEntry(HTTP_METHOD, "GET"));
       assertThat(requestExportedSpan.getAttributes(), hasEntry(HTTP_FLAVOR, "1.1"));
       assertThat(requestExportedSpan.getAttributes(), hasEntry(HTTP_STATUS_CODE, "500"));
@@ -287,7 +316,7 @@ public class OpenTelemetryHttpErrorSemanticConventionAttributesAndNameTestCase e
 
     try {
       PollingProber prober = new PollingProber(TIMEOUT_MILLIS, POLL_DELAY_MILLIS);
-      flowRunner(HTTP_LISTENER_400_FLOW).dispatch();
+      flowRunner(HTTP_LISTENER_400_FLOW).runExpectingException(errorType("HTTP", "BAD_REQUEST"));
 
       prober.check(new JUnitProbe() {
 
@@ -333,7 +362,7 @@ public class OpenTelemetryHttpErrorSemanticConventionAttributesAndNameTestCase e
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_SCHEME, "http"));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_FLAVOR, "1.1"));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_USER_AGENT, "AHC/1.0"));
-      assertThat(listenerExportedSpan.getAttributes(), hasEntry(NET_HOST_PORT, httpPort.getValue()));
+      assertThat(listenerExportedSpan.getAttributes(), hasEntry(NET_HOST_PORT, listenerServerPort.getValue()));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_METHOD, "GET"));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_STATUS_CODE, "400"));
       assertThat(listenerExportedSpan.getAttributes().get(SPAN_KIND_ATTRIBUTE), nullValue());
@@ -349,8 +378,9 @@ public class OpenTelemetryHttpErrorSemanticConventionAttributesAndNameTestCase e
 
       assertThat(requestExportedSpan.getAttributes(), aMapWithSize(13));
       assertThat(requestExportedSpan.getAttributes(), hasEntry(NET_PEER_NAME, "localhost"));
-      assertThat(requestExportedSpan.getAttributes(), hasEntry(NET_PEER_PORT, httpPort.getValue()));
-      assertThat(requestExportedSpan.getAttributes(), hasEntry(HTTP_URL, "http://localhost:" + httpPort.getValue() + "/test400"));
+      assertThat(requestExportedSpan.getAttributes(), hasEntry(NET_PEER_PORT, listenerServerPort.getValue()));
+      assertThat(requestExportedSpan.getAttributes(),
+                 hasEntry(HTTP_URL, "http://localhost:" + listenerServerPort.getValue() + "/test400"));
       assertThat(requestExportedSpan.getAttributes(), hasEntry(HTTP_METHOD, "GET"));
       assertThat(requestExportedSpan.getAttributes(), hasEntry(HTTP_FLAVOR, "1.1"));
       assertThat(requestExportedSpan.getAttributes(), hasEntry(HTTP_STATUS_CODE, "400"));
@@ -370,7 +400,7 @@ public class OpenTelemetryHttpErrorSemanticConventionAttributesAndNameTestCase e
 
     try {
       PollingProber prober = new PollingProber(TIMEOUT_MILLIS, POLL_DELAY_MILLIS);
-      flowRunner(HTTP_LISTENER_500_FLOW).dispatch();
+      flowRunner(HTTP_LISTENER_500_FLOW).runExpectingException(errorType("HTTP", "INTERNAL_SERVER_ERROR"));
 
       prober.check(new JUnitProbe() {
 
@@ -415,7 +445,7 @@ public class OpenTelemetryHttpErrorSemanticConventionAttributesAndNameTestCase e
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_SCHEME, "http"));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_FLAVOR, "1.1"));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_USER_AGENT, "AHC/1.0"));
-      assertThat(listenerExportedSpan.getAttributes(), hasEntry(NET_HOST_PORT, httpPort.getValue()));
+      assertThat(listenerExportedSpan.getAttributes(), hasEntry(NET_HOST_PORT, listenerServerPort.getValue()));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_METHOD, "GET"));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_STATUS_CODE, "500"));
       assertThat(listenerExportedSpan.getAttributes().get(SPAN_KIND_ATTRIBUTE), nullValue());
@@ -431,8 +461,9 @@ public class OpenTelemetryHttpErrorSemanticConventionAttributesAndNameTestCase e
 
       assertThat(requestExportedSpan.getAttributes(), aMapWithSize(13));
       assertThat(requestExportedSpan.getAttributes(), hasEntry(NET_PEER_NAME, "localhost"));
-      assertThat(requestExportedSpan.getAttributes(), hasEntry(NET_PEER_PORT, httpPort.getValue()));
-      assertThat(requestExportedSpan.getAttributes(), hasEntry(HTTP_URL, "http://localhost:" + httpPort.getValue() + "/test500"));
+      assertThat(requestExportedSpan.getAttributes(), hasEntry(NET_PEER_PORT, listenerServerPort.getValue()));
+      assertThat(requestExportedSpan.getAttributes(),
+                 hasEntry(HTTP_URL, "http://localhost:" + listenerServerPort.getValue() + "/test500"));
       assertThat(requestExportedSpan.getAttributes(), hasEntry(HTTP_METHOD, "GET"));
       assertThat(requestExportedSpan.getAttributes(), hasEntry(HTTP_FLAVOR, "1.1"));
       assertThat(requestExportedSpan.getAttributes(), hasEntry(HTTP_STATUS_CODE, "500"));
