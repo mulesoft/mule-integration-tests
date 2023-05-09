@@ -126,7 +126,7 @@ public class OpenTelemetryHttpErrorSemanticConventionAttributesAndNameTestCase e
 
       assertThat(requestExportedSpan.getAttributes(), aMapWithSize(13));
       assertThat(requestExportedSpan.getAttributes(), hasEntry(NET_PEER_NAME, "httpbin.org"));
-      assertThat(requestExportedSpan.getAttributes(), hasEntry(NET_PEER_PORT, "-1"));
+      assertThat(requestExportedSpan.getAttributes(), hasEntry(NET_PEER_PORT, "80"));
       assertThat(requestExportedSpan.getAttributes(), hasEntry(HTTP_URL, "https://httpbin.org/status/400"));
       assertThat(requestExportedSpan.getAttributes(), hasEntry(HTTP_METHOD, "GET"));
       assertThat(requestExportedSpan.getAttributes(), hasEntry(HTTP_FLAVOR, "1.1"));
@@ -183,7 +183,7 @@ public class OpenTelemetryHttpErrorSemanticConventionAttributesAndNameTestCase e
 
       assertThat(requestExportedSpan.getAttributes(), aMapWithSize(13));
       assertThat(requestExportedSpan.getAttributes(), hasEntry(NET_PEER_NAME, "httpbin.org"));
-      assertThat(requestExportedSpan.getAttributes(), hasEntry(NET_PEER_PORT, "-1"));
+      assertThat(requestExportedSpan.getAttributes(), hasEntry(NET_PEER_PORT, "80"));
       assertThat(requestExportedSpan.getAttributes(), hasEntry(HTTP_URL, "https://httpbin.org/status/500"));
       assertThat(requestExportedSpan.getAttributes(), hasEntry(HTTP_METHOD, "GET"));
       assertThat(requestExportedSpan.getAttributes(), hasEntry(HTTP_FLAVOR, "1.1"));
