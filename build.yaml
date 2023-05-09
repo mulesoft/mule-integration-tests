@@ -10,16 +10,5 @@ projectType: runtime
 agentLabel: windows2019-heavy
 buildTimeoutTime : 30
 buildTimeoutUnit : "MINUTES"
-mavenTestGoal: "install
-    -Dmaven.javadoc.skip
-    -Dmaven.buildNumber.skip
-    -Drevapi.skip
-    -DmuleModule.analyze.skip
-    -Denforcer.skip
-    -Dformatter.skip
-    -Dmaven.gitcommitid.skip
-    -Dgpg.skip=true -DskipGpg=true
-    -Dinvoker.writeJunitReport=true
-    -Dmule.extensions.disableMuleVersionSuffixValidation=true
-    -e"
+mavenTestAdditionalArgs: "-X -e"
 
