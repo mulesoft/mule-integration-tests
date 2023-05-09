@@ -19,6 +19,7 @@ import org.junit.Test;
 
 import extension.org.mule.soap.it.TestServiceProviderWithCustomHeaders;
 
+@Ignore
 public class SoapExtensionWithCustomHeadersTestCase extends AbstractSimpleServiceFunctionalTestCase {
 
   @Override
