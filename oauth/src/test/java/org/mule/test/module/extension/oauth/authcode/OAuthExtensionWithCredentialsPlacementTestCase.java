@@ -12,9 +12,10 @@ import static com.github.tomakehurst.wiremock.client.WireMock.matching;
 import static com.github.tomakehurst.wiremock.client.WireMock.notMatching;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+
+import static org.mule.oauth.client.internal.OAuthConstants.CLIENT_ID_PARAMETER;
+import static org.mule.oauth.client.internal.OAuthConstants.CLIENT_SECRET_PARAMETER;
 import static org.mule.runtime.http.api.HttpHeaders.Names.AUTHORIZATION;
-import static org.mule.runtime.oauth.internal.OAuthConstants.CLIENT_ID_PARAMETER;
-import static org.mule.runtime.oauth.internal.OAuthConstants.CLIENT_SECRET_PARAMETER;
 
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.module.extension.oauth.BaseOAuthExtensionTestCase;

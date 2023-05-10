@@ -6,20 +6,23 @@
  */
 package org.mule.test.module.extension.oauth.authcode;
 
-import com.github.tomakehurst.wiremock.client.WireMock;
-import io.qameta.allure.Description;
-import io.qameta.allure.Issue;
-import org.junit.Test;
-import org.mule.test.module.extension.oauth.BaseOAuthExtensionTestCase;
-import org.mule.test.oauth.TestOAuthConnection;
-import org.mule.test.oauth.TestOAuthConnectionState;
-
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+
+import org.mule.test.module.extension.oauth.BaseOAuthExtensionTestCase;
+import org.mule.test.oauth.TestOAuthConnection;
+import org.mule.test.oauth.TestOAuthConnectionState;
+
+import com.github.tomakehurst.wiremock.client.WireMock;
+
+import org.junit.Test;
+
+import io.qameta.allure.Description;
+import io.qameta.allure.Issue;
 
 public class MultipleOwnersTestCase extends BaseOAuthExtensionTestCase {
 
@@ -33,8 +36,8 @@ public class MultipleOwnersTestCase extends BaseOAuthExtensionTestCase {
   @Description("Tests that only the credentials of the corresponding resource owner are updated during " +
       "authorization, token refresh and token invalidation")
   public void multipleResourceOwners() throws Exception {
-    ResourceOwnerData firstOwner = new ResourceOwnerData("firstOwnerId", "Xt1muTTSTkb6jRADop6QccB08SCIR3js");
-    ResourceOwnerData secondOwner = new ResourceOwnerData("secondOwnerId", "Ilvx1MdOls66E3ZxO6jHcgrYKRnX5Kyb");
+    ResourceOwnerData firstOwner = new ResourceOwnerData("firstOwnerId", "1stOwnerAccessToken");
+    ResourceOwnerData secondOwner = new ResourceOwnerData("secondOwnerId", "2ndOwnerAccessToken");
 
     simulateCallback(firstOwner.id, firstOwner.accessToken);
     TestOAuthConnectionState firstOwnerConnection = getConnection(firstOwner.id);
