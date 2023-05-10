@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <Appenders>
+        <File name="file" fileName="${sys:mule.home}${sys:file.separator}logs${sys:file.separator}test.log">
+            <PatternLayout pattern="[%d{MM-dd HH:mm:ss}] %-5p [%t] span-id: %X{span-id}; trace-id: %X{trace-id}; %m%n]" />
+        </File>
+    </Appenders>
+
+    <Loggers>
+
+        <AsyncRoot level="INFO">
+            <AppenderRef ref="file"/>
+        </AsyncRoot>
+    </Loggers>
+
+</Configuration>
