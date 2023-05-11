@@ -8,6 +8,8 @@
 package org.mule.test.components.tracing;
 
 import static org.mule.runtime.tracer.customization.api.InternalSpanNames.GET_CONNECTION_SPAN_NAME;
+import static org.mule.runtime.tracer.customization.api.InternalSpanNames.PARAMETERS_RESOLUTION_SPAN_NAME;
+import static org.mule.runtime.tracer.customization.api.InternalSpanNames.VALUE_RESOLUTION_SPAN_NAME;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_BACKOFF_MAX_ATTEMPTS;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_ENABLED;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_ENDPOINT;
@@ -98,7 +100,7 @@ public class DistributedOpenTelemetryTracingTestCase extends
         // TODO: Add the GRPC Version
         {"HTTP", "", OVERVIEW.name(), 3, getOverviewExpectedSpanTestHierarchy()},
         {"HTTP", "", MONITORING.name(), 4, getMonitoringExpectedSpanTestHierarchy()},
-        {"HTTP", "", DEBUG.name(), 5, getDebugExpectedSpanTestHierarchy()}
+        {"HTTP", "", DEBUG.name(), 18, getDebugExpectedSpanTestHierarchy()}
     });
   }
 
@@ -110,6 +112,7 @@ public class DistributedOpenTelemetryTracingTestCase extends
           .child(EXPECTED_HTTP_REQUEST_SPAN_NAME)
           .beginChildren()
           .child(EXPECTED_HTTP_FLOW_SPAN_NAME)
+          .endChildren()
           .endChildren();
       return expectedSpanHierarchy;
     };
@@ -126,6 +129,7 @@ public class DistributedOpenTelemetryTracingTestCase extends
           .beginChildren()
           .child(EXPECTED_LOGGER_SPAN_NAME)
           .endChildren()
+          .endChildren()
           .endChildren();
 
       return expectedSpanHierarchy;
@@ -140,9 +144,25 @@ public class DistributedOpenTelemetryTracingTestCase extends
           .child(EXPECTED_HTTP_REQUEST_SPAN_NAME)
           .beginChildren()
           .child(GET_CONNECTION_SPAN_NAME)
+          .child(PARAMETERS_RESOLUTION_SPAN_NAME)
+          .beginChildren()
+          .child(VALUE_RESOLUTION_SPAN_NAME)
+          .child(VALUE_RESOLUTION_SPAN_NAME)
+          .child(VALUE_RESOLUTION_SPAN_NAME)
+          .child(VALUE_RESOLUTION_SPAN_NAME)
+          .child(VALUE_RESOLUTION_SPAN_NAME)
+          .child(VALUE_RESOLUTION_SPAN_NAME)
+          .child(VALUE_RESOLUTION_SPAN_NAME)
+          .child(VALUE_RESOLUTION_SPAN_NAME)
+          .child(VALUE_RESOLUTION_SPAN_NAME)
+          .child(VALUE_RESOLUTION_SPAN_NAME)
+          .child(VALUE_RESOLUTION_SPAN_NAME)
+          .child(VALUE_RESOLUTION_SPAN_NAME)
+          .endChildren()
           .child(EXPECTED_HTTP_FLOW_SPAN_NAME)
           .beginChildren()
           .child(EXPECTED_LOGGER_SPAN_NAME)
+          .endChildren()
           .endChildren()
           .endChildren();
 
