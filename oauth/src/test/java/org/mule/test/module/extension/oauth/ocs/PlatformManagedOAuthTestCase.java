@@ -11,10 +11,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import static org.mule.oauth.client.api.state.DancerState.HAS_TOKEN;
 import static org.mule.runtime.extension.internal.ocs.OCSConstants.OCS_ENABLED;
-import static org.mule.runtime.oauth.api.state.DancerState.HAS_TOKEN;
 import static org.mule.test.allure.AllureConstants.OauthFeature.OCS_SUPPORT;
 
+import org.mule.oauth.client.api.state.DancerState;
+import org.mule.oauth.client.api.state.ResourceOwnerOAuthContext;
 import org.mule.runtime.api.el.MuleExpressionLanguage;
 import org.mule.runtime.api.lock.LockFactory;
 import org.mule.runtime.core.api.MuleContext;
@@ -25,8 +28,6 @@ import org.mule.runtime.oauth.api.OAuthService;
 import org.mule.runtime.oauth.api.PlatformManagedConnectionDescriptor;
 import org.mule.runtime.oauth.api.PlatformManagedOAuthDancer;
 import org.mule.runtime.oauth.api.builder.OAuthPlatformManagedDancerBuilder;
-import org.mule.runtime.oauth.api.state.DancerState;
-import org.mule.runtime.oauth.api.state.ResourceOwnerOAuthContext;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.module.extension.oauth.BaseOAuthExtensionTestCase;
 import org.mule.test.runner.RunnerDelegateTo;
