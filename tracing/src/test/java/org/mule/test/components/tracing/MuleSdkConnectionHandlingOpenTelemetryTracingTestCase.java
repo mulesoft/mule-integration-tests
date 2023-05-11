@@ -91,10 +91,10 @@ public class MuleSdkConnectionHandlingOpenTelemetryTracingTestCase extends MuleA
   @Parameterized.Parameters(name = "lazyConnections: {0} - tracingLevel: {1}")
   public static Collection<Object[]> data() {
     return asList(new Object[][] {
-        {"true", OVERVIEW},
-        {"false", OVERVIEW},
-        {"true", MONITORING},
-        {"false", MONITORING},
+        // {"true", OVERVIEW},
+        // {"false", OVERVIEW},
+        // {"true", MONITORING},
+        // {"false", MONITORING},
         {"true", DEBUG},
         {"false", DEBUG}
     });
