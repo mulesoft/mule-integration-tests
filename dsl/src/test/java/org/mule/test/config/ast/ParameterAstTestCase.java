@@ -991,12 +991,12 @@ public class ParameterAstTestCase extends BaseParameterAstTestCase {
     ComponentParameterAst contentParam = sendAndReceiveOp.getParameter(DEFAULT_GROUP_NAME, "content");
 
     assertThat(contentParam.getValue().getRight(), is("POST /test HTTP/1.1\n" +
-        "Host: localhost:8081" + lineSeparator() +
-        "Transfer-Encoding: chunked, deflate" + lineSeparator() +
-        "2" + lineSeparator() +
-        "OK" + lineSeparator() +
+        "Host: localhost:8081\n" +
+        "Transfer-Encoding: chunked, deflate\n" +
+        "2\n" +
+        "OK\n" +
         // This trailing double line separator MUST be kept!
-        "0" + lineSeparator() + lineSeparator()));
+        "0\n\n"));
   }
 
   @Test
