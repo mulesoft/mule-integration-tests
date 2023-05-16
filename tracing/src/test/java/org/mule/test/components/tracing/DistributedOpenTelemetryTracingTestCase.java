@@ -7,15 +7,12 @@
 
 package org.mule.test.components.tracing;
 
+import static org.mule.runtime.tracer.customization.api.InternalSpanNames.GET_CONNECTION_SPAN_NAME;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_BACKOFF_MAX_ATTEMPTS;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_ENABLED;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_ENDPOINT;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_TYPE;
 import static org.mule.runtime.api.util.MuleSystemProperties.TRACING_LEVEL_CONFIGURATION_PATH;
-import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_BACKOFF_MAX_ATTEMPTS;
-import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_ENABLED;
-import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_ENDPOINT;
-import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_TYPE;
 import static org.mule.runtime.tracing.level.api.config.TracingLevel.DEBUG;
 import static org.mule.runtime.tracing.level.api.config.TracingLevel.MONITORING;
 import static org.mule.runtime.tracing.level.api.config.TracingLevel.OVERVIEW;
@@ -95,13 +92,13 @@ public class DistributedOpenTelemetryTracingTestCase extends
   @ClassRule
   public static final TestServerRule httpServer = new TestServerRule();
 
-  @Parameterized.Parameters(name = "{0}")
+  @Parameterized.Parameters(name = "Transport: {0} - Tracing Level: {2}")
   public static Collection<Object[]> data() {
     return asList(new Object[][] {
         // TODO: Add the GRPC Version
         {"HTTP", "", OVERVIEW.name(), 3, getOverviewExpectedSpanTestHierarchy()},
         {"HTTP", "", MONITORING.name(), 4, getMonitoringExpectedSpanTestHierarchy()},
-        {"HTTP", "", DEBUG.name(), 4, getDebugExpectedSpanTestHierarchy()}
+        {"HTTP", "", DEBUG.name(), 5, getDebugExpectedSpanTestHierarchy()}
     });
   }
 
@@ -136,8 +133,21 @@ public class DistributedOpenTelemetryTracingTestCase extends
   }
 
   private static Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> getDebugExpectedSpanTestHierarchy() {
-    // In this case debug and monitoring level are the same.
-    return getMonitoringExpectedSpanTestHierarchy();
+    return exportedSpans -> {
+      SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
+      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_HTTP_REQUEST_SPAN_NAME)
+          .beginChildren()
+          .child(GET_CONNECTION_SPAN_NAME)
+          .child(EXPECTED_HTTP_FLOW_SPAN_NAME)
+          .beginChildren()
+          .child(EXPECTED_LOGGER_SPAN_NAME)
+          .endChildren()
+          .endChildren();
+
+      return expectedSpanHierarchy;
+    };
   }
 
   @Override
