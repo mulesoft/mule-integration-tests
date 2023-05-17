@@ -8,6 +8,8 @@
 package org.mule.test.components.tracing;
 
 import static org.mule.runtime.api.util.MuleSystemProperties.TRACING_LEVEL_CONFIGURATION_PATH;
+import static org.mule.runtime.tracer.customization.api.InternalSpanNames.PARAMETERS_RESOLUTION_SPAN_NAME;
+import static org.mule.runtime.tracer.customization.api.InternalSpanNames.VALUE_RESOLUTION_SPAN_NAME;
 import static org.mule.runtime.tracing.level.api.config.TracingLevel.DEBUG;
 import static org.mule.runtime.tracing.level.api.config.TracingLevel.MONITORING;
 import static org.mule.runtime.tracing.level.api.config.TracingLevel.OVERVIEW;
@@ -28,7 +30,6 @@ import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
 import org.mule.runtime.tracer.api.sniffer.ExportedSpanSniffer;
 import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
-import org.mule.runtime.tracer.customization.api.InternalSpanNames;
 import org.mule.tck.junit4.AbstractMuleTestCase;
 import org.mule.tck.probe.JUnitProbe;
 import org.mule.tck.probe.PollingProber;
@@ -139,10 +140,10 @@ public class CustomScopeErrorOpenTelemetryTracingTestCase extends MuleArtifactFu
           .addAttributesToAssertValue(createAttributeMap("custom-scope-flow/processors/0", artifactId))
           .addAttributesToAssertExistence(attributesToAssertExistence)
           .beginChildren()
-          .child(InternalSpanNames.PARAMETERS_RESOLUTION_SPAN_NAME)
+          .child(PARAMETERS_RESOLUTION_SPAN_NAME)
           .beginChildren()
-          .child(InternalSpanNames.VALUE_RESOLUTION_SPAN_NAME)
-          .child(InternalSpanNames.VALUE_RESOLUTION_SPAN_NAME)
+          .child(VALUE_RESOLUTION_SPAN_NAME)
+          .child(VALUE_RESOLUTION_SPAN_NAME)
           .endChildren()
           .child(EXPECTED_LOGGER_SPAN_NAME)
           .addAttributesToAssertValue(createAttributeMap("custom-scope-flow/processors/0/processors/0", artifactId))
