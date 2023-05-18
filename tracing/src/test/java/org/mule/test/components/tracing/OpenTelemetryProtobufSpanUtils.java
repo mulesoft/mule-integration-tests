@@ -10,6 +10,10 @@ package org.mule.test.components.tracing;
 import static org.mule.runtime.core.api.util.StringUtils.isEmpty;
 import static org.mule.runtime.core.api.util.StringUtils.toHexString;
 
+import static java.util.Collections.emptyMap;
+
+import static io.opentelemetry.api.trace.propagation.internal.W3CTraceContextEncoding.decodeTraceState;
+
 import static java.util.stream.Collectors.toMap;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -163,6 +167,14 @@ public class OpenTelemetryProtobufSpanUtils {
     @Override
     public long getEndSpanEpochNanos() {
       return openTelemetryProtobufSpan.getEndTimeUnixNano();
+    }
+
+    @Override
+    public Map<String, String> getTraceState() {
+      if (!openTelemetryProtobufSpan.getTraceState().isEmpty()) {
+        return decodeTraceState(openTelemetryProtobufSpan.getTraceState()).asMap();
+      }
+      return emptyMap();
     }
 
   }

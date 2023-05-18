@@ -14,11 +14,16 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
         <http:listener-connection host="0.0.0.0" port="${port}" />
     </http:listener-config>
 
+    <http:listener-config name="Entry_HTTP_Config">
+        <http:listener-connection host="0.0.0.0" port="${entryListenerPort}" />
+    </http:listener-config>
+
     <http:request-config name="requestConfig">
         <http:request-connection host="localhost" port="${port}"/>
     </http:request-config>
 
     <flow name="startingFlow">
+        <http:listener config-ref="Entry_HTTP_Config" path="/entry" />
         <http:request method="GET" config-ref="requestConfig" path="/test"/>
     </flow>
 

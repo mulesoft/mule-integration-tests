@@ -7,6 +7,7 @@
 
 package org.mule.runtime.test.integration.logging;
 
+import static io.opentelemetry.api.trace.propagation.internal.W3CTraceContextEncoding.decodeTraceState;
 import static org.mule.runtime.core.api.util.StringUtils.isEmpty;
 import static org.mule.runtime.core.api.util.StringUtils.toHexString;
 
@@ -15,6 +16,7 @@ import static java.util.stream.Collectors.toMap;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
+import io.opentelemetry.api.trace.propagation.internal.W3CTraceContextEncoding;
 import org.mule.runtime.tracer.api.sniffer.CapturedEventData;
 import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
 
@@ -163,6 +165,11 @@ public class OpenTelemetryProtobufSpanUtils {
     @Override
     public long getEndSpanEpochNanos() {
       return openTelemetryProtobufSpan.getEndTimeUnixNano();
+    }
+
+    @Override
+    public Map<String, String> getTraceState() {
+      return decodeTraceState(openTelemetryProtobufSpan.getTraceState()).asMap();
     }
 
   }
