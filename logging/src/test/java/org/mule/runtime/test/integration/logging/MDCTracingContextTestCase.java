@@ -18,13 +18,9 @@ import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceSto
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.TRACING_CONFIGURATION;
 
 import static java.lang.Boolean.TRUE;
-import static java.lang.System.clearProperty;
-import static java.lang.System.setProperty;
 import static java.util.regex.Pattern.compile;
 
 import static org.apache.commons.io.FileUtils.readLines;
-import static org.apache.logging.log4j.LogManager.setFactory;
-import static org.apache.logging.log4j.LogManager.shutdown;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
@@ -33,28 +29,14 @@ import static org.slf4j.bridge.SLF4JBridgeHandler.install;
 import static org.slf4j.bridge.SLF4JBridgeHandler.removeHandlersForRootLogger;
 import static org.slf4j.bridge.SLF4JBridgeHandler.uninstall;
 
-import org.mule.runtime.module.deployment.impl.internal.builder.ApplicationFileBuilder;
-import org.mule.runtime.module.launcher.log4j2.MuleLog4jContextFactory;
 import org.mule.runtime.api.exception.MuleException;
-import org.mule.runtime.test.integration.logging.plugin.TestPluginsCatalog;
+import org.mule.runtime.module.deployment.impl.internal.builder.ApplicationFileBuilder;
 import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.tck.probe.JUnitProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.test.infrastructure.deployment.AbstractFakeMuleServerTestCase;
-
-import com.linecorp.armeria.common.HttpStatus;
-import com.linecorp.armeria.common.HttpRequest;
-import com.linecorp.armeria.common.HttpResponse;
-import com.linecorp.armeria.server.AbstractHttpService;
-import com.linecorp.armeria.server.ServerBuilder;
-import com.linecorp.armeria.server.ServiceRequestContext;
-import com.linecorp.armeria.testing.junit4.server.ServerRule;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.spi.LoggerContextFactory;
-import org.junit.After;
-import org.junit.Before;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -69,16 +51,25 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceRequest;
-import io.qameta.allure.Feature;
-import io.qameta.allure.Features;
-import io.qameta.allure.Story;
+import com.linecorp.armeria.common.HttpRequest;
+import com.linecorp.armeria.common.HttpResponse;
+import com.linecorp.armeria.common.HttpStatus;
+import com.linecorp.armeria.server.AbstractHttpService;
+import com.linecorp.armeria.server.ServerBuilder;
+import com.linecorp.armeria.server.ServiceRequestContext;
+import com.linecorp.armeria.testing.junit4.server.ServerRule;
+
 import org.jetbrains.annotations.NotNull;
+
+import io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceRequest;
+
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
-import javax.inject.Inject;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Features;
+import io.qameta.allure.Story;
 
 @Features({@Feature(DEFAULT_PROFILING_SERVICE), @Feature(LOGGING)})
 @Story(TRACING_CONFIGURATION)
@@ -92,29 +83,16 @@ public class MDCTracingContextTestCase extends AbstractFakeMuleServerTestCase {
 
   private static final Pattern pattern = compile("span-id: ([^;]+); trace-id: ([^;]+)");;
 
-  private static final MuleLog4jContextFactory muleLog4jContextFactory = new MuleLog4jContextFactory(true);
-  private LoggerContextFactory originalLog4jContextFactory;
+  @Rule
+  public SystemProperty openTelemetryExporterEnabled = new SystemProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENABLED, TRUE.toString());
+  @Rule
+  public SystemProperty openTelemetryExporterType = new SystemProperty(MULE_OPEN_TELEMETRY_EXPORTER_TYPE, "HTTP");
+  @Rule
+  public SystemProperty openTelemetryExporterEndpoint = new SystemProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENDPOINT,
+                                                                           "http://localhost:" + httpServer.httpPort() + "/");
 
-  @Before
-  public void before() {
-    originalLog4jContextFactory = LogManager.getFactory();
-    setProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENABLED, TRUE.toString());
-    setProperty(MULE_OPEN_TELEMETRY_EXPORTER_TYPE, "HTTP");
-    setProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENDPOINT,
-                "http://localhost:" + httpServer.httpPort() + "/");
-    setFactory(muleLog4jContextFactory);
-  }
-
-  @After
-  public void after() {
-    // We can safely force a removal of the old logger contexts instead of waiting for the reaper thread to do it.
-    ((MuleLog4jContextFactory) LogManager.getFactory()).dispose();
-    clearProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENABLED);
-    clearProperty(MULE_OPEN_TELEMETRY_EXPORTER_TYPE);
-    clearProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENDPOINT);
-    setFactory(originalLog4jContextFactory);
-    shutdown();
-  }
+  @Rule
+  public UseMuleLog4jContextFactory muleLogging = new UseMuleLog4jContextFactory();
 
   @ClassRule
   public static final TestServerRule httpServer = new TestServerRule();
