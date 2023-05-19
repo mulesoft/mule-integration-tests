@@ -8,6 +8,7 @@
 package org.mule.test.components.tracing;
 
 import static org.mule.runtime.api.util.MuleSystemProperties.TRACING_LEVEL_CONFIGURATION_PATH;
+import static org.mule.runtime.tracer.customization.api.InternalSpanNames.OPERATION_EXECUTION_SPAN_NAME;
 import static org.mule.runtime.tracer.customization.api.InternalSpanNames.PARAMETERS_RESOLUTION_SPAN_NAME;
 import static org.mule.runtime.tracer.customization.api.InternalSpanNames.VALUE_RESOLUTION_SPAN_NAME;
 import static org.mule.runtime.tracing.level.api.config.TracingLevel.DEBUG;
@@ -76,7 +77,7 @@ public class CustomScopeErrorOpenTelemetryTracingTestCase extends MuleArtifactFu
     return asList(new Object[][] {
         {OVERVIEW.name(), 1, getOverviewExpectedSpanTestHierarchy()},
         {MONITORING.name(), 5, getMonitoringExpectedSpanTestHierarchy()},
-        {DEBUG.name(), 8, getDebugExpectedSpanTestHierarchy()}
+        {DEBUG.name(), 9, getDebugExpectedSpanTestHierarchy()}
     });
   }
 
@@ -145,12 +146,15 @@ public class CustomScopeErrorOpenTelemetryTracingTestCase extends MuleArtifactFu
           .child(VALUE_RESOLUTION_SPAN_NAME)
           .child(VALUE_RESOLUTION_SPAN_NAME)
           .endChildren()
+          .child(OPERATION_EXECUTION_SPAN_NAME)
+          .beginChildren()
           .child(EXPECTED_LOGGER_SPAN_NAME)
           .addAttributesToAssertValue(createAttributeMap("custom-scope-flow/processors/0/processors/0", artifactId))
           .addAttributesToAssertExistence(attributesToAssertExistence)
           .child(EXPECTED_RAISE_ERROR_SPAN_NAME)
           .addAttributesToAssertValue(createAttributeMap("custom-scope-flow/processors/0/processors/1", artifactId))
           .addAttributesToAssertExistence(attributesToAssertExistence)
+          .endChildren()
           .endChildren()
           .child(EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME)
           .endChildren();

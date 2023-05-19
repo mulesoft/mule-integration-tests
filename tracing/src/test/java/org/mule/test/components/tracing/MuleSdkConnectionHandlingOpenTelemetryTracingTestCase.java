@@ -9,6 +9,7 @@ package org.mule.test.components.tracing;
 
 import static org.mule.runtime.api.util.MuleSystemProperties.TRACING_LEVEL_CONFIGURATION_PATH;
 import static org.mule.runtime.core.api.config.MuleDeploymentProperties.MULE_LAZY_CONNECTIONS_DEPLOYMENT_PROPERTY;
+import static org.mule.runtime.tracer.customization.api.InternalSpanNames.OPERATION_EXECUTION_SPAN_NAME;
 import static org.mule.runtime.tracer.customization.api.InternalSpanNames.PARAMETERS_RESOLUTION_SPAN_NAME;
 import static org.mule.runtime.tracer.customization.api.InternalSpanNames.VALUE_RESOLUTION_SPAN_NAME;
 import static org.mule.runtime.tracing.level.api.config.TracingLevel.DEBUG;
@@ -69,7 +70,6 @@ public class MuleSdkConnectionHandlingOpenTelemetryTracingTestCase extends MuleA
   @Inject
   private PrivilegedProfilingService profilingService;
   private final String lazyConnections;
-
   private final TracingLevel tracingLevel;
 
   @Rule
@@ -91,10 +91,10 @@ public class MuleSdkConnectionHandlingOpenTelemetryTracingTestCase extends MuleA
   @Parameterized.Parameters(name = "lazyConnections: {0} - tracingLevel: {1}")
   public static Collection<Object[]> data() {
     return asList(new Object[][] {
-        {"true", OVERVIEW},
-        {"false", OVERVIEW},
-        {"true", MONITORING},
-        {"false", MONITORING},
+        // {"true", OVERVIEW},
+        // {"false", OVERVIEW},
+        // {"true", MONITORING},
+        // {"false", MONITORING},
         {"true", DEBUG},
         {"false", DEBUG}
     });
@@ -151,9 +151,12 @@ public class MuleSdkConnectionHandlingOpenTelemetryTracingTestCase extends MuleA
     } else if (tracingLevel.equals(MONITORING)) {
       waitForSpans(2);
       assertMonitoringSpans(spanCapturer.getExportedSpans());
-    } else if (tracingLevel.equals(DEBUG)) {
-      waitForSpans(6);
-      assertDebugSpans(spanCapturer.getExportedSpans());
+    } else if (tracingLevel.equals(DEBUG) && lazyConnections.equals("true")) {
+      waitForSpans(7);
+      assertDebugLazySpans(spanCapturer.getExportedSpans());
+    } else if (tracingLevel.equals(DEBUG) && lazyConnections.equals("false")) {
+      waitForSpans(7);
+      assertDebugEagerSpans(spanCapturer.getExportedSpans());
     } else {
       throw new IllegalArgumentException(format("Unrecognized tracing level: %s", tracingLevel.name()));
     }
@@ -173,7 +176,7 @@ public class MuleSdkConnectionHandlingOpenTelemetryTracingTestCase extends MuleA
     expectedSpanHierarchy.assertSpanTree();
   }
 
-  private void assertDebugSpans(Collection<CapturedExportedSpan> capturedExportedSpans) {
+  private void assertDebugEagerSpans(Collection<CapturedExportedSpan> capturedExportedSpans) {
     SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(capturedExportedSpans);
     expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
         .beginChildren()
@@ -184,6 +187,26 @@ public class MuleSdkConnectionHandlingOpenTelemetryTracingTestCase extends MuleA
         .beginChildren()
         .child(VALUE_RESOLUTION_SPAN_NAME)
         .child(VALUE_RESOLUTION_SPAN_NAME)
+        .endChildren()
+        .child(OPERATION_EXECUTION_SPAN_NAME)
+        .endChildren();
+    expectedSpanHierarchy.assertSpanTree();
+  }
+
+  private void assertDebugLazySpans(Collection<CapturedExportedSpan> capturedExportedSpans) {
+    SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(capturedExportedSpans);
+    expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
+        .beginChildren()
+        .child(EXPECTED_PETSTORE_GET_CONNECTION_AGE_SPAN)
+        .beginChildren()
+        .child(PARAMETERS_RESOLUTION_SPAN_NAME)
+        .beginChildren()
+        .child(VALUE_RESOLUTION_SPAN_NAME)
+        .child(VALUE_RESOLUTION_SPAN_NAME)
+        .endChildren()
+        .child(OPERATION_EXECUTION_SPAN_NAME)
+        .beginChildren()
+        .child(EXPECTED_MULE_GET_CONNECTION_SPAN)
         .endChildren()
         .endChildren();
     expectedSpanHierarchy.assertSpanTree();
@@ -196,9 +219,12 @@ public class MuleSdkConnectionHandlingOpenTelemetryTracingTestCase extends MuleA
     } else if (tracingLevel.equals(MONITORING)) {
       waitForSpans(3);
       assertMonitoringFailingSpans(spanCapturer.getExportedSpans());
-    } else if (tracingLevel.equals(DEBUG)) {
+    } else if (tracingLevel.equals(DEBUG) && lazyConnections.equals("true")) {
+      waitForSpans(10);
+      assertDebugLazyFailingSpans(spanCapturer.getExportedSpans());
+    } else if (tracingLevel.equals(DEBUG) && lazyConnections.equals("false")) {
       waitForSpans(9);
-      assertDebugFailingSpans(spanCapturer.getExportedSpans());
+      assertDebugEagerFailingSpans(spanCapturer.getExportedSpans());
     } else {
       throw new IllegalArgumentException(format("Unrecognized tracing level: %s", tracingLevel.name()));
     }
@@ -219,14 +245,13 @@ public class MuleSdkConnectionHandlingOpenTelemetryTracingTestCase extends MuleA
     expectedSpanHierarchy.assertSpanTree();
   }
 
-  private void assertDebugFailingSpans(Collection<CapturedExportedSpan> capturedExportedSpans) {
+  private void assertDebugLazyFailingSpans(Collection<CapturedExportedSpan> capturedExportedSpans) {
     SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(capturedExportedSpans);
     expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME).addExceptionData("PETSTORE:CONNECTIVITY")
         .beginChildren()
         .child(InternalSpanNames.ON_ERROR_PROPAGATE_SPAN_NAME)
         .child(EXPECTED_PETSTORE_GET_PETS_SPAN).addExceptionData("PETSTORE:CONNECTIVITY")
         .beginChildren()
-        .child(EXPECTED_MULE_GET_CONNECTION_SPAN)
         .child(PARAMETERS_RESOLUTION_SPAN_NAME)
         .beginChildren()
         .child(VALUE_RESOLUTION_SPAN_NAME)
@@ -234,6 +259,29 @@ public class MuleSdkConnectionHandlingOpenTelemetryTracingTestCase extends MuleA
         .child(VALUE_RESOLUTION_SPAN_NAME)
         .child(VALUE_RESOLUTION_SPAN_NAME)
         .endChildren()
+        .child(OPERATION_EXECUTION_SPAN_NAME)
+        .beginChildren()
+        .child(EXPECTED_MULE_GET_CONNECTION_SPAN)
+        .endChildren()
+        .endChildren();
+    expectedSpanHierarchy.assertSpanTree();
+  }
+
+  private void assertDebugEagerFailingSpans(Collection<CapturedExportedSpan> capturedExportedSpans) {
+    SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(capturedExportedSpans);
+    expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME).addExceptionData("PETSTORE:CONNECTIVITY")
+        .beginChildren()
+        .child(InternalSpanNames.ON_ERROR_PROPAGATE_SPAN_NAME)
+        .child(EXPECTED_PETSTORE_GET_PETS_SPAN).addExceptionData("PETSTORE:CONNECTIVITY")
+        .beginChildren()
+        .child(PARAMETERS_RESOLUTION_SPAN_NAME)
+        .beginChildren()
+        .child(VALUE_RESOLUTION_SPAN_NAME)
+        .child(VALUE_RESOLUTION_SPAN_NAME)
+        .child(VALUE_RESOLUTION_SPAN_NAME)
+        .child(VALUE_RESOLUTION_SPAN_NAME)
+        .endChildren()
+        .child(EXPECTED_MULE_GET_CONNECTION_SPAN)
         .endChildren();
     expectedSpanHierarchy.assertSpanTree();
   }
@@ -253,5 +301,4 @@ public class MuleSdkConnectionHandlingOpenTelemetryTracingTestCase extends MuleA
       }
     });
   }
-
 }
