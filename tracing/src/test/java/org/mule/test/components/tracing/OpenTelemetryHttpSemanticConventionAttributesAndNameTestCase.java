@@ -9,6 +9,8 @@ package org.mule.test.components.tracing;
 
 import static org.mule.runtime.api.util.MuleSystemProperties.TRACING_LEVEL_CONFIGURATION_PATH;
 import static org.mule.runtime.tracer.customization.api.InternalSpanNames.GET_CONNECTION_SPAN_NAME;
+import static org.mule.runtime.tracer.customization.api.InternalSpanNames.PARAMETERS_RESOLUTION_SPAN_NAME;
+import static org.mule.runtime.tracer.customization.api.InternalSpanNames.VALUE_RESOLUTION_SPAN_NAME;
 import static org.mule.runtime.tracing.level.api.config.TracingLevel.DEBUG;
 import static org.mule.runtime.tracing.level.api.config.TracingLevel.MONITORING;
 import static org.mule.runtime.tracing.level.api.config.TracingLevel.OVERVIEW;
@@ -97,7 +99,7 @@ public class OpenTelemetryHttpSemanticConventionAttributesAndNameTestCase extend
             getOverviewExpectedSpanTestHierarchyForErrorFlow()},
         {MONITORING.name(), 4, getMonitoringExpectedSpanTestHierarchyForSuccessFlow(), 5,
             getMonitoringExpectedSpanTestHierarchyForErrorFlow()},
-        {DEBUG.name(), 5, getDebugExpectedSpanTestHierarchyForSuccessFlow(), 6, getDebugExpectedSpanTestHierarchyForErrorFlow()}
+        {DEBUG.name(), 18, getDebugExpectedSpanTestHierarchyForSuccessFlow(), 19, getDebugExpectedSpanTestHierarchyForErrorFlow()}
     });
   }
 
@@ -151,6 +153,21 @@ public class OpenTelemetryHttpSemanticConventionAttributesAndNameTestCase extend
           .beginChildren()
           .child(EXPECTED_HTTP_REQUEST_SPAN_NAME)
           .beginChildren()
+          .child(PARAMETERS_RESOLUTION_SPAN_NAME)
+          .beginChildren()
+          .child(VALUE_RESOLUTION_SPAN_NAME)
+          .child(VALUE_RESOLUTION_SPAN_NAME)
+          .child(VALUE_RESOLUTION_SPAN_NAME)
+          .child(VALUE_RESOLUTION_SPAN_NAME)
+          .child(VALUE_RESOLUTION_SPAN_NAME)
+          .child(VALUE_RESOLUTION_SPAN_NAME)
+          .child(VALUE_RESOLUTION_SPAN_NAME)
+          .child(VALUE_RESOLUTION_SPAN_NAME)
+          .child(VALUE_RESOLUTION_SPAN_NAME)
+          .child(VALUE_RESOLUTION_SPAN_NAME)
+          .child(VALUE_RESOLUTION_SPAN_NAME)
+          .child(VALUE_RESOLUTION_SPAN_NAME)
+          .endChildren()
           .child(GET_CONNECTION_SPAN_NAME)
           .child(EXPECTED_HTTP_FLOW_SPAN_NAME)
           .beginChildren()
@@ -169,6 +186,21 @@ public class OpenTelemetryHttpSemanticConventionAttributesAndNameTestCase extend
           .beginChildren()
           .child(EXPECTED_HTTP_REQUEST_SPAN_NAME)
           .beginChildren()
+          .child(PARAMETERS_RESOLUTION_SPAN_NAME)
+          .beginChildren()
+          .child(VALUE_RESOLUTION_SPAN_NAME)
+          .child(VALUE_RESOLUTION_SPAN_NAME)
+          .child(VALUE_RESOLUTION_SPAN_NAME)
+          .child(VALUE_RESOLUTION_SPAN_NAME)
+          .child(VALUE_RESOLUTION_SPAN_NAME)
+          .child(VALUE_RESOLUTION_SPAN_NAME)
+          .child(VALUE_RESOLUTION_SPAN_NAME)
+          .child(VALUE_RESOLUTION_SPAN_NAME)
+          .child(VALUE_RESOLUTION_SPAN_NAME)
+          .child(VALUE_RESOLUTION_SPAN_NAME)
+          .child(VALUE_RESOLUTION_SPAN_NAME)
+          .child(VALUE_RESOLUTION_SPAN_NAME)
+          .endChildren()
           .child(GET_CONNECTION_SPAN_NAME)
           .child(EXPECTED_HTTP_FLOW_SPAN_NAME_200)
           .beginChildren()

@@ -8,6 +8,8 @@
 package org.mule.test.components.tracing;
 
 import static org.mule.runtime.api.util.MuleSystemProperties.TRACING_LEVEL_CONFIGURATION_PATH;
+import static org.mule.runtime.tracer.customization.api.InternalSpanNames.PARAMETERS_RESOLUTION_SPAN_NAME;
+import static org.mule.runtime.tracer.customization.api.InternalSpanNames.VALUE_RESOLUTION_SPAN_NAME;
 import static org.mule.runtime.tracing.level.api.config.TracingLevel.DEBUG;
 import static org.mule.runtime.tracing.level.api.config.TracingLevel.MONITORING;
 import static org.mule.runtime.tracing.level.api.config.TracingLevel.OVERVIEW;
@@ -74,7 +76,7 @@ public class CustomScopeErrorOpenTelemetryTracingTestCase extends MuleArtifactFu
     return asList(new Object[][] {
         {OVERVIEW.name(), 1, getOverviewExpectedSpanTestHierarchy()},
         {MONITORING.name(), 5, getMonitoringExpectedSpanTestHierarchy()},
-        {DEBUG.name(), 5, getDebugExpectedSpanTestHierarchy()}
+        {DEBUG.name(), 8, getDebugExpectedSpanTestHierarchy()}
     });
   }
 
@@ -126,8 +128,35 @@ public class CustomScopeErrorOpenTelemetryTracingTestCase extends MuleArtifactFu
   }
 
   private static BiFunction<Collection<CapturedExportedSpan>, String, SpanTestHierarchy> getDebugExpectedSpanTestHierarchy() {
-    // In this case debug and monitoring level are the same.
-    return getMonitoringExpectedSpanTestHierarchy();
+    return (exportedSpans, artifactId) -> {
+      List<String> attributesToAssertExistence = getDefaultAttributesToAssertExistence();
+
+      SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
+      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
+          .addAttributesToAssertValue(createAttributeMap("custom-scope-flow", artifactId))
+          .addAttributesToAssertExistence(attributesToAssertExistence)
+          .beginChildren()
+          .child(EXPECTED_CUSTOM_SCOPE_SPAN_NAME)
+          .addAttributesToAssertValue(createAttributeMap("custom-scope-flow/processors/0", artifactId))
+          .addAttributesToAssertExistence(attributesToAssertExistence)
+          .beginChildren()
+          .child(PARAMETERS_RESOLUTION_SPAN_NAME)
+          .beginChildren()
+          .child(VALUE_RESOLUTION_SPAN_NAME)
+          .child(VALUE_RESOLUTION_SPAN_NAME)
+          .endChildren()
+          .child(EXPECTED_LOGGER_SPAN_NAME)
+          .addAttributesToAssertValue(createAttributeMap("custom-scope-flow/processors/0/processors/0", artifactId))
+          .addAttributesToAssertExistence(attributesToAssertExistence)
+          .child(EXPECTED_RAISE_ERROR_SPAN_NAME)
+          .addAttributesToAssertValue(createAttributeMap("custom-scope-flow/processors/0/processors/1", artifactId))
+          .addAttributesToAssertExistence(attributesToAssertExistence)
+          .endChildren()
+          .child(EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME)
+          .endChildren();
+
+      return expectedSpanHierarchy;
+    };
   }
 
   @Override
@@ -164,7 +193,7 @@ public class CustomScopeErrorOpenTelemetryTracingTestCase extends MuleArtifactFu
 
         @Override
         protected boolean test() {
-          Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();;
+          Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
           return exportedSpans.size() == expectedSpansCount;
         }
 
