@@ -10,6 +10,7 @@ package org.mule.test.components.tracing;
 import static org.mule.runtime.api.util.MuleSystemProperties.ADD_MULE_SPECIFIC_TRACING_INFORMATION_IN_TRACE_STATE_PROPERTY;
 import static org.mule.runtime.api.util.MuleSystemProperties.TRACING_LEVEL_CONFIGURATION_PATH;
 import static org.mule.runtime.tracer.customization.api.InternalSpanNames.GET_CONNECTION_SPAN_NAME;
+import static org.mule.runtime.tracer.customization.api.InternalSpanNames.OPERATION_EXECUTION_SPAN_NAME;
 import static org.mule.runtime.tracer.customization.api.InternalSpanNames.PARAMETERS_RESOLUTION_SPAN_NAME;
 import static org.mule.runtime.tracer.customization.api.InternalSpanNames.VALUE_RESOLUTION_SPAN_NAME;
 import static org.mule.runtime.tracing.level.api.config.TracingLevel.DEBUG;
@@ -106,7 +107,7 @@ public class OpenTelemetryHttpSemanticConventionAttributesAndNameTestCase extend
             getOverviewExpectedSpanTestHierarchyForErrorFlow()},
         {MONITORING.name(), 4, getMonitoringExpectedSpanTestHierarchyForSuccessFlow(), 5,
             getMonitoringExpectedSpanTestHierarchyForErrorFlow()},
-        {DEBUG.name(), 18, getDebugExpectedSpanTestHierarchyForSuccessFlow(), 19, getDebugExpectedSpanTestHierarchyForErrorFlow()}
+        {DEBUG.name(), 19, getDebugExpectedSpanTestHierarchyForSuccessFlow(), 20, getDebugExpectedSpanTestHierarchyForErrorFlow()}
     });
   }
 
@@ -179,11 +180,15 @@ public class OpenTelemetryHttpSemanticConventionAttributesAndNameTestCase extend
           .child(VALUE_RESOLUTION_SPAN_NAME)
           .endChildren()
           .child(GET_CONNECTION_SPAN_NAME)
+          .child(OPERATION_EXECUTION_SPAN_NAME)
+          .beginChildren()
           .child(EXPECTED_HTTP_FLOW_SPAN_NAME)
           .addTraceStateKeyPresentAssertion(ANCESTOR_MULE_SPAN_ID)
           .beginChildren()
           .child(EXPECTED_LOGGER_SPAN_NAME)
           .addTraceStateKeyNotPresentAssertion(ANCESTOR_MULE_SPAN_ID)
+          .endChildren()
+          .endChildren()
           .endChildren()
           .endChildren();
 
@@ -214,6 +219,8 @@ public class OpenTelemetryHttpSemanticConventionAttributesAndNameTestCase extend
           .child(VALUE_RESOLUTION_SPAN_NAME)
           .endChildren()
           .child(GET_CONNECTION_SPAN_NAME)
+          .child(OPERATION_EXECUTION_SPAN_NAME)
+          .beginChildren()
           .child(EXPECTED_HTTP_FLOW_SPAN_NAME_200)
           .addTraceStateKeyPresentAssertion(ANCESTOR_MULE_SPAN_ID)
           .beginChildren()
@@ -221,6 +228,7 @@ public class OpenTelemetryHttpSemanticConventionAttributesAndNameTestCase extend
           .addTraceStateKeyNotPresentAssertion(ANCESTOR_MULE_SPAN_ID)
           .child(EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME)
           .addTraceStateKeyNotPresentAssertion(ANCESTOR_MULE_SPAN_ID)
+          .endChildren()
           .endChildren()
           .endChildren()
           .endChildren();
