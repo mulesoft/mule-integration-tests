@@ -200,6 +200,7 @@ public class TraceStatePropagationTestCase extends
           .child(EXPECTED_LOGGER_SPAN_NAME)
           .addTraceStateKeyValueAssertion("key1", "value1")
           .addTraceStateKeyValueAssertion("key2", "value2")
+          .addTraceStateKeyNotPresentAssertion("ancestor-mule-span-id")
           .endChildren()
           .endChildren()
           .endChildren();
