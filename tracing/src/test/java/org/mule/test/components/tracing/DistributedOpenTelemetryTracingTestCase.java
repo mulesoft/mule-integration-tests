@@ -19,7 +19,6 @@ import static org.mule.runtime.tracing.level.api.config.TracingLevel.OVERVIEW;
 import static org.mule.test.components.tracing.OpenTelemetryProtobufSpanUtils.getSpans;
 
 import static java.lang.Boolean.TRUE;
-import static java.lang.String.valueOf;
 import static java.lang.System.clearProperty;
 import static java.lang.System.setProperty;
 import static java.util.Arrays.asList;
@@ -30,6 +29,7 @@ import static com.linecorp.armeria.common.HttpStatus.OK;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
 import org.mule.tck.junit4.rule.DynamicPort;
+import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.tck.probe.JUnitProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy;
@@ -53,7 +53,6 @@ import com.linecorp.armeria.testing.junit4.server.ServerRule;
 import io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceRequest;
 import org.jetbrains.annotations.NotNull;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -69,6 +68,9 @@ public class DistributedOpenTelemetryTracingTestCase extends
   @Rule
   public DynamicPort httpPort = new DynamicPort("port");
 
+  @Rule
+  public DynamicPort entryListenerPort = new DynamicPort("entryListenerPort");
+
   private static final String STARTING_FLOW = "startingFlow";
 
   private static final String EXPECTED_HTTP_REQUEST_SPAN_NAME = "HTTP GET";
@@ -79,10 +81,25 @@ public class DistributedOpenTelemetryTracingTestCase extends
   public static final int TIMEOUT_MILLIS = 30000;
 
   private static final int POLL_DELAY_MILLIS = 100;
-  public static final int MAX_BACKOFF_ATTEMPTS = 2;
+  public static final String MAX_BACKOFF_ATTEMPTS = "2";
 
   private final String type;
   private final String path;
+
+  @Rule
+  public SystemProperty openTelemetryExporterEnabled = new SystemProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENABLED, TRUE.toString());
+
+  @Rule
+  public SystemProperty openTelemetryExporterType = new SystemProperty(MULE_OPEN_TELEMETRY_EXPORTER_TYPE, "HTTP");
+
+  @Rule
+  public SystemProperty openTelemetryExporterEndpoint = new SystemProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENDPOINT,
+                                                                           "http://localhost:" + httpServer.httpPort() + "/");
+
+  @Rule
+  public SystemProperty openTelemetryMaxBackOffAttempts = new SystemProperty(MULE_OPEN_TELEMETRY_EXPORTER_BACKOFF_MAX_ATTEMPTS,
+                                                                             MAX_BACKOFF_ATTEMPTS);
+
 
   @Override
   protected String getConfigFile() {
@@ -165,25 +182,11 @@ public class DistributedOpenTelemetryTracingTestCase extends
     this.spanHierarchyRetriever = spanHierarchyRetriever;
   }
 
-  @Before
-  public void before() {
-    httpServer.reset();
-    setProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENABLED, TRUE.toString());
-    setProperty(MULE_OPEN_TELEMETRY_EXPORTER_TYPE, type);
-    setProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENDPOINT,
-                "http://localhost:" + httpServer.httpPort() + "/" + path);
-    setProperty(MULE_OPEN_TELEMETRY_EXPORTER_BACKOFF_MAX_ATTEMPTS, valueOf(MAX_BACKOFF_ATTEMPTS));
-  }
-
   @After
   public void after() {
-    clearProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENABLED);
-    clearProperty(MULE_OPEN_TELEMETRY_EXPORTER_TYPE);
-    clearProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENDPOINT);
-    clearProperty(MULE_OPEN_TELEMETRY_EXPORTER_BACKOFF_MAX_ATTEMPTS);
-
     // TODO W-13160648: Add a Rule for selecting LEVEL of tracing in integration test and make it work in parallel
     clearProperty(TRACING_LEVEL_CONFIGURATION_PATH);
+    httpServer.reset();
   }
 
   @Test

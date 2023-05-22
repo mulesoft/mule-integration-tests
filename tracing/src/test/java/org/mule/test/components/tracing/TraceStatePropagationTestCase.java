@@ -10,7 +10,6 @@ package org.mule.test.components.tracing;
 import static org.mule.runtime.api.util.MuleSystemProperties.ADD_MULE_SPECIFIC_TRACING_INFORMATION_IN_TRACE_STATE_PROPERTY;
 import static org.mule.runtime.http.api.HttpConstants.Method.GET;
 import static org.mule.runtime.tracer.customization.api.InternalSpanNames.GET_CONNECTION_SPAN_NAME;
-import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_BACKOFF_MAX_ATTEMPTS;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_ENABLED;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_ENDPOINT;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_TYPE;
@@ -83,7 +82,6 @@ import io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceRequest;
 import io.opentelemetry.sdk.OpenTelemetrySdk;
 import org.jetbrains.annotations.NotNull;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -112,8 +110,6 @@ public class TraceStatePropagationTestCase extends
   @Rule
   public TestHttpClient httpClient = new TestHttpClient.Builder(getService(HttpService.class)).build();
 
-  private static final String STARTING_FLOW = "startingFlow";
-
   private static final String EXPECTED_HTTP_REQUEST_SPAN_NAME = "HTTP GET";
   private static final String EXPECTED_HTTP_FLOW_SPAN_NAME = "/test";
   private static final String EXPECTED_LOGGER_SPAN_NAME = "mule:logger";
@@ -126,6 +122,16 @@ public class TraceStatePropagationTestCase extends
   private final String type;
   private final String path;
   private int expectedSpansCount;
+
+  @Rule
+  public SystemProperty openTelemetryExporterEnabled = new SystemProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENABLED, TRUE.toString());
+
+  @Rule
+  public SystemProperty openTelemetryExporterType = new SystemProperty(MULE_OPEN_TELEMETRY_EXPORTER_TYPE, "HTTP");
+
+  @Rule
+  public SystemProperty openTelemetryExporterEndpoint = new SystemProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENDPOINT,
+                                                                           "http://localhost:" + httpServer.httpPort() + "/");
 
   @Override
   protected String getConfigFile() {
@@ -254,24 +260,11 @@ public class TraceStatePropagationTestCase extends
     this.spanHierarchyRetriever = spanHierarchyRetriever;
   }
 
-  @Before
-  public void before() {
-    httpServer.reset();
-    setProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENABLED, TRUE.toString());
-    setProperty(MULE_OPEN_TELEMETRY_EXPORTER_TYPE, type);
-    setProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENDPOINT,
-                "http://localhost:" + httpServer.httpPort() + "/" + path);
-  }
-
   @After
   public void after() {
-    clearProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENABLED);
-    clearProperty(MULE_OPEN_TELEMETRY_EXPORTER_TYPE);
-    clearProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENDPOINT);
-    clearProperty(MULE_OPEN_TELEMETRY_EXPORTER_BACKOFF_MAX_ATTEMPTS);
-
     // TODO W-13160648: Add a Rule for selecting LEVEL of tracing in integration test and make it work in parallel
     clearProperty(TRACING_LEVEL_CONFIGURATION_PATH);
+    httpServer.reset();
   }
 
   @Test
