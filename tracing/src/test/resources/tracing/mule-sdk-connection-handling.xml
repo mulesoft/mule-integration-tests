@@ -11,26 +11,41 @@
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
                           http://www.mulesoft.org/schema/mule/petstore http://www.mulesoft.org/schema/mule/petstore/current/mule-petstore.xsd">
 
-    <petstore:config name="simple-connection" cashierName="tracing">
+    <petstore:config name="working-connection" cashierName="tracing">
         <petstore:connection username="john" password="doe"/>
         <petstore:pets>
             <petstore:pet value="Dog"/>
         </petstore:pets>
     </petstore:config>
 
-    <petstore:config name="simple-failing-connection" cashierName="tracing">
+    <petstore:config name="failing-connection" cashierName="tracing">
         <petstore:connection username="not-john" password="not-doe"/>
         <petstore:pets>
             <petstore:pet value="Dog"/>
         </petstore:pets>
     </petstore:config>
 
-    <flow name="operation-with-simple-failing-connection">
-        <petstore:get-pets config-ref="simple-failing-connection" ownerName="not-john" ownerSignature="x"/>
+    <petstore:config name="retried-failing-connection" cashierName="tracing">
+        <petstore:connection username="not-john" password="not-doe">
+            <reconnection>
+                <reconnect count="1" frequency="5"/>
+            </reconnection>
+        </petstore:connection>
+        <petstore:pets>
+            <petstore:pet value="Dog"/>
+        </petstore:pets>
+    </petstore:config>
+
+    <flow name="operation-with-connection-retry">
+        <petstore:get-pets config-ref="retried-failing-connection" ownerName="not-john" ownerSignature="x"/>
     </flow>
 
-    <flow name="operation-with-simple-connection">
-        <petstore:get-connection-age config-ref="simple-connection"/>
+    <flow name="operation-with-failing-connection">
+        <petstore:get-pets config-ref="failing-connection" ownerName="not-john" ownerSignature="x"/>
+    </flow>
+
+    <flow name="operation-with-connection">
+        <petstore:get-connection-age config-ref="working-connection"/>
     </flow>
 
 </mule>
