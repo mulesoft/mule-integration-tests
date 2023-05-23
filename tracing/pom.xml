@@ -8,7 +8,7 @@
         <version>4.6.0-SNAPSHOT</version>
     </parent>
     <artifactId>mule-tests-tracing</artifactId>
-    <name>Integration Tests</name>
+    <name>Tracing Integration Tests</name>
     <description>Tests for Optel Tracing</description>
     <packaging>jar</packaging>
 

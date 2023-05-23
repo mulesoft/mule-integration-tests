@@ -16,9 +16,9 @@ import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.OPEN_TELEMETRY_EXPORTER;
 
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
-import org.mule.runtime.api.config.custom.ServiceConfigurator;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
+import org.mule.runtime.core.api.config.custom.ServiceConfigurator;
 import org.mule.runtime.tracer.exporter.config.api.SpanExporterConfiguration;
 import org.mule.runtime.tracer.exporter.impl.OpenTelemetrySpanExporterFactory;
 import org.mule.tck.junit4.AbstractMuleTestCase;
@@ -26,18 +26,21 @@ import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.tck.probe.PollingProber;
 import org.mule.tck.probe.Probe;
 
-import javax.inject.Inject;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
+import javax.inject.Inject;
+
 import io.opentelemetry.sdk.common.CompletableResultCode;
 import io.opentelemetry.sdk.trace.data.SpanData;
 import io.opentelemetry.sdk.trace.export.SpanExporter;
-import io.qameta.allure.Feature;
-import io.qameta.allure.Story;
+
 import org.junit.Rule;
 import org.junit.Test;
+
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 
 @Feature(PROFILING)
 @Story(OPEN_TELEMETRY_EXPORTER)

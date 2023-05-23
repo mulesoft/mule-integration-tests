@@ -6,18 +6,20 @@
  */
 package org.mule.test.config.spring;
 
+import static org.mule.runtime.api.store.ObjectStoreManager.BASE_IN_MEMORY_OBJECT_STORE_KEY;
+import static org.mule.runtime.api.store.ObjectStoreManager.BASE_PERSISTENT_OBJECT_STORE_KEY;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
-import static org.mule.runtime.api.store.ObjectStoreManager.BASE_IN_MEMORY_OBJECT_STORE_KEY;
-import static org.mule.runtime.api.store.ObjectStoreManager.BASE_PERSISTENT_OBJECT_STORE_KEY;
-import org.mule.runtime.api.config.custom.ServiceConfigurator;
+
 import org.mule.runtime.api.store.ObjectStore;
 import org.mule.runtime.api.store.ObjectStoreManager;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.runtime.core.api.config.ConfigurationException;
+import org.mule.runtime.core.api.config.custom.ServiceConfigurator;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.runner.RunnerDelegateTo;
 
@@ -26,6 +28,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.junit.Test;
+
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -52,6 +55,7 @@ public class InjectPrimaryObjectStoreManagerTestCase extends AbstractIntegration
 
       @Override
       public void addServiceConfigurator(ServiceConfigurator serviceConfigurator) {}
+
     });
   }
 

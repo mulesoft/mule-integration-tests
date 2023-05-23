@@ -6,20 +6,21 @@
  */
 package org.mule.test.integration.schedule;
 
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 import static org.mule.test.allure.AllureConstants.NotificationsFeature.NOTIFICATIONS;
 import static org.mule.test.allure.AllureConstants.SchedulerFeature.SCHEDULER;
 import static org.mule.test.allure.AllureConstants.SchedulerFeature.SchedulerStories.SCHEDULED_FLOW_EXECUTION;
 
-import org.mule.runtime.api.config.custom.ServiceConfigurator;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+
 import org.mule.runtime.api.notification.ConnectorMessageNotification;
 import org.mule.runtime.api.notification.ConnectorMessageNotificationListener;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.runtime.core.api.config.ConfigurationException;
+import org.mule.runtime.core.api.config.custom.ServiceConfigurator;
 import org.mule.tck.probe.JUnitLambdaProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.tck.probe.Prober;
