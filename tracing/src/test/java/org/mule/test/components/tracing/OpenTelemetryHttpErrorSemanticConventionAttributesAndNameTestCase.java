@@ -7,6 +7,7 @@
 
 package org.mule.test.components.tracing;
 
+import static org.mule.runtime.api.util.MuleSystemProperties.ADD_MULE_SPECIFIC_TRACING_INFORMATION_IN_TRACE_STATE_PROPERTY;
 import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
 import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.DEFAULT_CORE_EVENT_TRACER;
@@ -29,6 +30,7 @@ import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
 import org.mule.runtime.tracer.api.sniffer.ExportedSpanSniffer;
 import org.mule.tck.junit4.rule.DynamicPort;
+import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.tck.probe.JUnitProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy;
@@ -50,8 +52,13 @@ import org.junit.Before;
 public class OpenTelemetryHttpErrorSemanticConventionAttributesAndNameTestCase extends MuleArtifactFunctionalTestCase
     implements OpenTelemetryTracingTestRunnerConfigAnnotation {
 
+  @Rule
+  public SystemProperty addAncestorSpanId =
+      new SystemProperty(ADD_MULE_SPECIFIC_TRACING_INFORMATION_IN_TRACE_STATE_PROPERTY, "true");
   private static final int TIMEOUT_MILLIS = 30000;
   private static final int POLL_DELAY_MILLIS = 100;
+
+  public static final String ANCESTOR_MULE_SPAN_ID = "ancestor-mule-span-id";
 
   private static final String HTTP_LISTENER_ERROR_FLOW = "httpListenerError";
   private static final String HTTP_LISTENER_400_FLOW = "httpListenerError400";
@@ -341,12 +348,16 @@ public class OpenTelemetryHttpErrorSemanticConventionAttributesAndNameTestCase e
           .child(EXPECTED_HTTP_REQUEST_SPAN_NAME)
           .beginChildren()
           .child(EXPECTED_HTTP_FLOW_SPAN_NAME_400)
+          .addTraceStateKeyPresentAssertion(ANCESTOR_MULE_SPAN_ID)
           .beginChildren()
           .child(EXPECTED_RAISE_ERROR_SPAN)
+          .addTraceStateKeyNotPresentAssertion(ANCESTOR_MULE_SPAN_ID)
           .child(EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME)
+          .addTraceStateKeyNotPresentAssertion(ANCESTOR_MULE_SPAN_ID)
           .endChildren()
           .endChildren()
           .child(EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME)
+          .addTraceStateKeyNotPresentAssertion(ANCESTOR_MULE_SPAN_ID)
           .endChildren();
 
       expectedSpanHierarchy.assertSpanTree();
@@ -425,11 +436,14 @@ public class OpenTelemetryHttpErrorSemanticConventionAttributesAndNameTestCase e
           .child(EXPECTED_HTTP_REQUEST_SPAN_NAME)
           .beginChildren()
           .child(EXPECTED_HTTP_FLOW_SPAN_NAME_500)
+          .addTraceStateKeyPresentAssertion(ANCESTOR_MULE_SPAN_ID)
           .beginChildren()
           .child(EXPECTED_LOGGER_SPAN_NAME)
+          .addTraceStateKeyNotPresentAssertion(ANCESTOR_MULE_SPAN_ID)
           .endChildren()
           .endChildren()
           .child(EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME)
+          .addTraceStateKeyNotPresentAssertion(ANCESTOR_MULE_SPAN_ID)
           .endChildren();
 
       expectedSpanHierarchy.assertSpanTree();

@@ -12,6 +12,7 @@ import static org.mule.runtime.core.api.util.StringUtils.toHexString;
 
 import static java.util.stream.Collectors.toMap;
 
+import static io.opentelemetry.api.trace.propagation.internal.W3CTraceContextEncoding.decodeTraceState;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
@@ -163,6 +164,11 @@ public class OpenTelemetryProtobufSpanUtils {
     @Override
     public long getEndSpanEpochNanos() {
       return openTelemetryProtobufSpan.getEndTimeUnixNano();
+    }
+
+    @Override
+    public Map<String, String> getTraceState() {
+      return decodeTraceState(openTelemetryProtobufSpan.getTraceState()).asMap();
     }
 
   }
