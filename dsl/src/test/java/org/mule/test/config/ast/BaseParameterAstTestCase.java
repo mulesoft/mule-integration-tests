@@ -7,12 +7,13 @@
 package org.mule.test.config.ast;
 
 import static org.mule.runtime.ast.internal.serialization.ArtifactAstSerializerFactory.JSON;
+import static org.mule.runtime.core.api.extension.provider.RuntimeExtensionModelProvider.discoverRuntimeExtensionModels;
 import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.initialiseIfNeeded;
-import static org.mule.runtime.module.artifact.activation.api.extension.discovery.ExtensionModelDiscoverer.discoverRuntimeExtensionModels;
 import static org.mule.test.allure.AllureConstants.ArtifactAst.ARTIFACT_AST;
 import static org.mule.test.allure.AllureConstants.ArtifactAst.ParameterAst.PARAMETER_AST;
 
 import static java.util.Arrays.asList;
+
 import static org.junit.Assert.fail;
 
 import org.mule.runtime.api.component.ComponentIdentifier;
@@ -35,13 +36,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import io.qameta.allure.Feature;
-import io.qameta.allure.Story;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 
 @Feature(ARTIFACT_AST)
 @Story(PARAMETER_AST)
