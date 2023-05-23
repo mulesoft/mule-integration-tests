@@ -16,12 +16,14 @@ import org.mule.test.runner.RunnerDelegateTo;
 
 import java.util.Collection;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
+@Ignore("W-12967303 - unignore when munit changes are done")
 @RunnerDelegateTo(Parameterized.class)
 public class MUnitAstValidationsTestCase extends MuleArtifactFunctionalTestCase {
 

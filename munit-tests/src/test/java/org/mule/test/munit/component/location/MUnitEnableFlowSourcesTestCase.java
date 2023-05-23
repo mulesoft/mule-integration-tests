@@ -20,10 +20,12 @@ import org.mule.runtime.config.api.LazyComponentInitializer;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import io.qameta.allure.Issue;
 
+@Ignore("W-12967303 - unignore when munit changes are done")
 public class MUnitEnableFlowSourcesTestCase extends MuleArtifactFunctionalTestCase {
 
   @Inject

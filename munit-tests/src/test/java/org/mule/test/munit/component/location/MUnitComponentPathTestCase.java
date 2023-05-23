@@ -16,12 +16,14 @@ import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
 
+@Ignore("W-12967303 - unignore when munit changes are done")
 @Feature(CONFIGURATION_COMPONENT_LOCATOR)
 @Story(MUNIT_COMPONENT_LOCATION)
 public class MUnitComponentPathTestCase extends MuleArtifactFunctionalTestCase {
