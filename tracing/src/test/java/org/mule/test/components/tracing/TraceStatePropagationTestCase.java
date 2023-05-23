@@ -113,7 +113,12 @@ public class TraceStatePropagationTestCase extends
   private static final String EXPECTED_HTTP_REQUEST_SPAN_NAME = "HTTP GET";
   private static final String EXPECTED_HTTP_FLOW_SPAN_NAME = "/test";
   private static final String EXPECTED_LOGGER_SPAN_NAME = "mule:logger";
-  public static final String EXPECTED_FLOW_SPAN_NAME = "/entry";
+
+  private static final String EXPECTED_FLOW_SPAN_NAME = "/entry";
+
+  private static final String EXPECTED_VALUE_RESOLUTION_SPAN_NAME = "mule:value-resolution";
+
+  private static final String EXPECTED_PARAMETERS_RESOLUTION_SPAN_NAME = "mule:parameters-resolution";
 
   public static final int TIMEOUT_MILLIS = 30000;
 
@@ -147,7 +152,7 @@ public class TraceStatePropagationTestCase extends
         // TODO: Add the GRPC Version
         {"HTTP", "", OVERVIEW.name(), 4, getOverviewExpectedSpanTestHierarchy()},
         {"HTTP", "", MONITORING.name(), 5, getMonitoringExpectedSpanTestHierarchy()},
-        {"HTTP", "", DEBUG.name(), 6, getDebugExpectedSpanTestHierarchy()}
+        {"HTTP", "", DEBUG.name(), 19, getDebugExpectedSpanTestHierarchy()}
     });
   }
 
@@ -228,20 +233,67 @@ public class TraceStatePropagationTestCase extends
           .addTraceStateKeyValueAssertion("key1", "value1")
           .addTraceStateKeyValueAssertion("key2", "value2")
           .addTraceStateKeyNotPresentAssertion("ancestor-mule-span-id")
-          .child(EXPECTED_HTTP_FLOW_SPAN_NAME)
+          .child(EXPECTED_PARAMETERS_RESOLUTION_SPAN_NAME)
           .addTraceStateKeyValueAssertion("key1", "value1")
           .addTraceStateKeyValueAssertion("key2", "value2")
-          .addTraceStateKeyPresentAssertion("ancestor-mule-span-id")
+          .addTraceStateKeyNotPresentAssertion("ancestor-mule-span-id")
           .beginChildren()
-          .child(EXPECTED_LOGGER_SPAN_NAME)
+          .child(EXPECTED_VALUE_RESOLUTION_SPAN_NAME)
+          .addTraceStateKeyValueAssertion("key1", "value1")
+          .addTraceStateKeyValueAssertion("key2", "value2")
+          .addTraceStateKeyNotPresentAssertion("ancestor-mule-span-id")
+          .child(EXPECTED_VALUE_RESOLUTION_SPAN_NAME)
+          .addTraceStateKeyValueAssertion("key1", "value1")
+          .addTraceStateKeyValueAssertion("key2", "value2")
+          .addTraceStateKeyNotPresentAssertion("ancestor-mule-span-id")
+          .child(EXPECTED_VALUE_RESOLUTION_SPAN_NAME)
+          .addTraceStateKeyValueAssertion("key1", "value1")
+          .addTraceStateKeyValueAssertion("key2", "value2")
+          .addTraceStateKeyNotPresentAssertion("ancestor-mule-span-id")
+          .child(EXPECTED_VALUE_RESOLUTION_SPAN_NAME)
+          .addTraceStateKeyValueAssertion("key1", "value1")
+          .addTraceStateKeyValueAssertion("key2", "value2")
+          .addTraceStateKeyNotPresentAssertion("ancestor-mule-span-id")
+          .child(EXPECTED_VALUE_RESOLUTION_SPAN_NAME)
+          .addTraceStateKeyValueAssertion("key1", "value1")
+          .addTraceStateKeyValueAssertion("key2", "value2")
+          .addTraceStateKeyNotPresentAssertion("ancestor-mule-span-id")
+          .child(EXPECTED_VALUE_RESOLUTION_SPAN_NAME)
+          .addTraceStateKeyValueAssertion("key1", "value1")
+          .addTraceStateKeyValueAssertion("key2", "value2")
+          .addTraceStateKeyNotPresentAssertion("ancestor-mule-span-id")
+          .child(EXPECTED_VALUE_RESOLUTION_SPAN_NAME)
+          .addTraceStateKeyValueAssertion("key1", "value1")
+          .addTraceStateKeyValueAssertion("key2", "value2")
+          .addTraceStateKeyNotPresentAssertion("ancestor-mule-span-id")
+          .child(EXPECTED_VALUE_RESOLUTION_SPAN_NAME)
+          .addTraceStateKeyValueAssertion("key1", "value1")
+          .addTraceStateKeyValueAssertion("key2", "value2")
+          .addTraceStateKeyNotPresentAssertion("ancestor-mule-span-id")
+          .child(EXPECTED_VALUE_RESOLUTION_SPAN_NAME)
+          .addTraceStateKeyValueAssertion("key1", "value1")
+          .addTraceStateKeyValueAssertion("key2", "value2")
+          .addTraceStateKeyNotPresentAssertion("ancestor-mule-span-id")
+          .child(EXPECTED_VALUE_RESOLUTION_SPAN_NAME)
+          .addTraceStateKeyValueAssertion("key1", "value1")
+          .addTraceStateKeyValueAssertion("key2", "value2")
+          .addTraceStateKeyNotPresentAssertion("ancestor-mule-span-id")
+          .child(EXPECTED_VALUE_RESOLUTION_SPAN_NAME)
+          .addTraceStateKeyValueAssertion("key1", "value1")
+          .addTraceStateKeyValueAssertion("key2", "value2")
+          .addTraceStateKeyNotPresentAssertion("ancestor-mule-span-id")
+          .child(EXPECTED_VALUE_RESOLUTION_SPAN_NAME)
           .addTraceStateKeyValueAssertion("key1", "value1")
           .addTraceStateKeyValueAssertion("key2", "value2")
           .addTraceStateKeyNotPresentAssertion("ancestor-mule-span-id")
           .endChildren()
+          .child(EXPECTED_HTTP_FLOW_SPAN_NAME)
+          .addTraceStateKeyValueAssertion("key1", "value1")
+          .addTraceStateKeyValueAssertion("key2", "value2")
+          .addTraceStateKeyPresentAssertion("ancestor-mule-span-id")
           .endChildren()
           .endChildren()
           .endChildren();
-
       return expectedSpanHierarchy;
     };
   }
