@@ -23,7 +23,7 @@ import org.junit.Test;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
 
-@Ignore("W-12967303 - unignore when munit changes are done")
+@Ignore("TD-0147651 - unignore when munit changes are done")
 @Feature(CONFIGURATION_COMPONENT_LOCATOR)
 @Story(MUNIT_COMPONENT_LOCATION)
 public class MUnitComponentPathTestCase extends MuleArtifactFunctionalTestCase {
