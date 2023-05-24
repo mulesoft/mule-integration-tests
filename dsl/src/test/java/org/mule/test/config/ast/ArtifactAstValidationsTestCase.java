@@ -8,8 +8,8 @@ package org.mule.test.config.ast;
 
 import static org.mule.runtime.ast.api.util.MuleAstUtils.validatorBuilder;
 import static org.mule.runtime.ast.api.validation.Validation.Level.ERROR;
+import static org.mule.runtime.core.api.extension.provider.RuntimeExtensionModelProvider.discoverRuntimeExtensionModels;
 import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.initialiseIfNeeded;
-import static org.mule.runtime.module.artifact.activation.api.extension.discovery.ExtensionModelDiscoverer.discoverRuntimeExtensionModels;
 import static org.mule.test.allure.AllureConstants.ArtifactAst.ARTIFACT_AST;
 import static org.mule.test.allure.AllureConstants.ExpressionLanguageFeature.EXPRESSION_LANGUAGE;
 import static org.mule.test.allure.AllureConstants.MuleDsl.DslValidationStory.DSL_VALIDATION_STORY;
@@ -34,15 +34,16 @@ import org.mule.tck.junit4.AbstractMuleContextTestCase;
 import java.util.List;
 import java.util.Set;
 
-import io.qameta.allure.Feature;
-import io.qameta.allure.Features;
-import io.qameta.allure.Issue;
-import io.qameta.allure.Story;
+import com.google.inject.Injector;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import com.google.inject.Injector;
+
+import io.qameta.allure.Feature;
+import io.qameta.allure.Features;
+import io.qameta.allure.Issue;
+import io.qameta.allure.Story;
 
 /**
  * Provides an example of how code running outside of the Mule Runtime may invoke the AST validations that require a base
