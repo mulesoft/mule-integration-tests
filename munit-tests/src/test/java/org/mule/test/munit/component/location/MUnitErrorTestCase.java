@@ -8,10 +8,12 @@ package org.mule.test.munit.component.location;
 
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import io.qameta.allure.Issue;
 
+@Ignore("TD-0147651 - unignore when munit changes are done")
 public class MUnitErrorTestCase extends MuleArtifactFunctionalTestCase {
 
   @Override
