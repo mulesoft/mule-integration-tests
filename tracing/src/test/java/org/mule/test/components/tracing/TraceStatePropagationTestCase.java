@@ -10,6 +10,7 @@ package org.mule.test.components.tracing;
 import static org.mule.runtime.api.util.MuleSystemProperties.ADD_MULE_SPECIFIC_TRACING_INFORMATION_IN_TRACE_STATE_PROPERTY;
 import static org.mule.runtime.http.api.HttpConstants.Method.GET;
 import static org.mule.runtime.tracer.customization.api.InternalSpanNames.GET_CONNECTION_SPAN_NAME;
+import static org.mule.runtime.tracer.customization.api.InternalSpanNames.OPERATION_EXECUTION_SPAN_NAME;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_ENABLED;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_ENDPOINT;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_TYPE;
@@ -152,7 +153,7 @@ public class TraceStatePropagationTestCase extends
         // TODO: Add the GRPC Version
         {"HTTP", "", OVERVIEW.name(), 4, getOverviewExpectedSpanTestHierarchy()},
         {"HTTP", "", MONITORING.name(), 5, getMonitoringExpectedSpanTestHierarchy()},
-        {"HTTP", "", DEBUG.name(), 19, getDebugExpectedSpanTestHierarchy()}
+        {"HTTP", "", DEBUG.name(), 20, getDebugExpectedSpanTestHierarchy()}
     });
   }
 
@@ -287,10 +288,13 @@ public class TraceStatePropagationTestCase extends
           .addTraceStateKeyValueAssertion("key2", "value2")
           .addTraceStateKeyNotPresentAssertion("ancestor-mule-span-id")
           .endChildren()
+          .child(OPERATION_EXECUTION_SPAN_NAME)
+          .beginChildren()
           .child(EXPECTED_HTTP_FLOW_SPAN_NAME)
           .addTraceStateKeyValueAssertion("key1", "value1")
           .addTraceStateKeyValueAssertion("key2", "value2")
           .addTraceStateKeyPresentAssertion("ancestor-mule-span-id")
+          .endChildren()
           .endChildren()
           .endChildren()
           .endChildren();

@@ -8,6 +8,7 @@
 package org.mule.test.components.tracing;
 
 import static org.mule.runtime.tracer.customization.api.InternalSpanNames.GET_CONNECTION_SPAN_NAME;
+import static org.mule.runtime.tracer.customization.api.InternalSpanNames.OPERATION_EXECUTION_SPAN_NAME;
 import static org.mule.runtime.tracer.customization.api.InternalSpanNames.PARAMETERS_RESOLUTION_SPAN_NAME;
 import static org.mule.runtime.tracer.customization.api.InternalSpanNames.VALUE_RESOLUTION_SPAN_NAME;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_BACKOFF_MAX_ATTEMPTS;
@@ -30,6 +31,8 @@ import static com.linecorp.armeria.common.HttpStatus.OK;
 
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
+import org.mule.runtime.tracer.api.span.InternalSpan;
+import org.mule.runtime.tracer.customization.api.InternalSpanNames;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.tck.probe.JUnitProbe;
@@ -117,7 +120,7 @@ public class DistributedOpenTelemetryTracingTestCase extends
         // TODO: Add the GRPC Version
         {"HTTP", "", OVERVIEW.name(), 3, getOverviewExpectedSpanTestHierarchy()},
         {"HTTP", "", MONITORING.name(), 4, getMonitoringExpectedSpanTestHierarchy()},
-        {"HTTP", "", DEBUG.name(), 18, getDebugExpectedSpanTestHierarchy()}
+        {"HTTP", "", DEBUG.name(), 19, getDebugExpectedSpanTestHierarchy()}
     });
   }
 
@@ -176,9 +179,12 @@ public class DistributedOpenTelemetryTracingTestCase extends
           .child(VALUE_RESOLUTION_SPAN_NAME)
           .child(VALUE_RESOLUTION_SPAN_NAME)
           .endChildren()
+          .child(OPERATION_EXECUTION_SPAN_NAME)
+          .beginChildren()
           .child(EXPECTED_HTTP_FLOW_SPAN_NAME)
           .beginChildren()
           .child(EXPECTED_LOGGER_SPAN_NAME)
+          .endChildren()
           .endChildren()
           .endChildren()
           .endChildren();
