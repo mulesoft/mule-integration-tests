@@ -65,6 +65,37 @@
           <artifactId>munit-extensions-maven-plugin</artifactId>
           <version>${munitExtensionsMavenPlugin}</version>
         </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${mavenCompilerVersion}</version>
+                    <executions>
+                        <execution>
+                            <id>default-testCompile</id>
+                            <configuration>
+                                <testRelease>11</testRelease>
+                                <!-- no excludes: compile everything to ensure module-info contains right entries -->
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>base-testCompile</id>
+                            <goals>
+                                <goal>testCompile</goal>
+                            </goals>
+                            <configuration>
+                                <testRelease>${javaReleaseVersion}</testRelease>
+                                <!-- recompile everything for target VM except the module-info.java -->
+                                <testExcludes>
+                                    <testExclude>module-info.java</testExclude>
+                                </testExcludes>
+                            </configuration>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <encoding>ISO-8859-1</encoding>
+                        <proc>none</proc>
+                    </configuration>
+                </plugin>
       </plugins>
     </pluginManagement>
   </build>
@@ -114,6 +145,11 @@
         <exclusion>
           <groupId>com.fasterxml.jackson.core</groupId>
           <artifactId>*</artifactId>
+        </exclusion>
+        <!-- Avoid split package with jcl-over-slf4j -->
+        <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
