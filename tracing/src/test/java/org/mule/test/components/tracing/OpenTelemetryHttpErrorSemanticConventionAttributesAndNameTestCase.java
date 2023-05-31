@@ -11,6 +11,8 @@ import static org.mule.runtime.api.util.MuleSystemProperties.ADD_MULE_SPECIFIC_T
 import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
 import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.DEFAULT_CORE_EVENT_TRACER;
+import static org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy.ERROR_STATUS;
+import static org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy.UNSET_STATUS;
 
 import static java.lang.String.format;
 
@@ -23,8 +25,6 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
-import static org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy.ERROR_STATUS;
-import static org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy.UNSET_STATUS;
 
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.api.util.LazyValue;
