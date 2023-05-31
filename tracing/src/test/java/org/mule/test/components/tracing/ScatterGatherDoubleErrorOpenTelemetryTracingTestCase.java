@@ -76,7 +76,7 @@ public class ScatterGatherDoubleErrorOpenTelemetryTracingTestCase extends MuleAr
   private static Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> getOverviewExpectedSpanTestHierarchy() {
     return exportedSpans -> {
       SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
-      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME);
+      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME).addExceptionData("MULE:COMPOSITE_ROUTING");
       return expectedSpanHierarchy;
     };
   }
@@ -84,18 +84,18 @@ public class ScatterGatherDoubleErrorOpenTelemetryTracingTestCase extends MuleAr
   private static Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> getMonitoringExpectedSpanTestHierarchy() {
     return exportedSpans -> {
       SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
-      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
+      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME).addExceptionData("MULE:COMPOSITE_ROUTING")
           .beginChildren()
-          .child(EXPECTED_SCATTER_GATHER_SPAN_NAME)
+          .child(EXPECTED_SCATTER_GATHER_SPAN_NAME).addExceptionData("MULE:COMPOSITE_ROUTING")
           .beginChildren()
-          .child(EXPECTED_ROUTE_SPAN_NAME)
+          .child(EXPECTED_ROUTE_SPAN_NAME).addExceptionData("ANY:EXPECTED")
           .beginChildren()
           .child(EXPECTED_SET_PAYLOAD_SPAN_NAME)
-          .child(EXPECTED_RAISE_ERROR_SPAN)
+          .child(EXPECTED_RAISE_ERROR_SPAN).addExceptionData("ANY:EXPECTED")
           .endChildren()
-          .child(EXPECTED_ROUTE_SPAN_NAME)
+          .child(EXPECTED_ROUTE_SPAN_NAME).addExceptionData("ANY:EXPECTED")
           .beginChildren()
-          .child(EXPECTED_RAISE_ERROR_SPAN)
+          .child(EXPECTED_RAISE_ERROR_SPAN).addExceptionData("ANY:EXPECTED")
           .endChildren()
           .endChildren()
           .child(EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME)

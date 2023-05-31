@@ -28,7 +28,7 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
         <http:listener config-ref="HTTP_Listener_config" path="/test200" >
             <http:error-response statusCode="200"/>
         </http:listener>
-        <raise-error type="ANY"/>
+        <raise-error type="ANY:EXPECTED"/>
         <logger />
     </flow>
 </mule>

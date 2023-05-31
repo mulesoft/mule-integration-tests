@@ -118,7 +118,7 @@ public class AsyncErrorOpenTelemetryTracingTestCase extends MuleArtifactFunction
           .child(EXPECTED_ASYNC_SPAN_NAME)
           .beginChildren()
           .child(EXPECTED_LOGGER_SPAN_NAME)
-          .child(EXPECTED_RAISE_ERROR_SPAN_NAME)
+          .child(EXPECTED_RAISE_ERROR_SPAN_NAME).addExceptionData("ANY:EXPECTED")
           .endChildren()
           .child(EXPECTED_SET_VARIABLE_SPAN_NAME)
           .endChildren();

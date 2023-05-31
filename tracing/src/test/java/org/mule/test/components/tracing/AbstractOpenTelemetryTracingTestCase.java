@@ -70,10 +70,10 @@ public abstract class AbstractOpenTelemetryTracingTestCase extends
   private static final Integer COLLECTOR_HEALTH_CHECK_PORT = 13133;
 
   protected final String exporterType;
-  private final String schema;
-  private final int port;
-  private final String path;
-  private final boolean secure;
+  protected final String schema;
+  protected final int port;
+  protected final String path;
+  protected final boolean secure;
 
   protected GenericContainer<?> collector;
 
@@ -86,7 +86,7 @@ public abstract class AbstractOpenTelemetryTracingTestCase extends
   @ClassRule
   public static final TestGrpcServerRule server = new TestGrpcServerRule();
 
-  @Parameterized.Parameters(name = "{0}")
+  @Parameterized.Parameters(name = "type: {0} - path: {3} - secure: {4}")
   public static Collection<Object[]> data() {
     return asList(new Object[][] {
         {"GRPC", "http://", COLLECTOR_OTLP_GRPC_PORT, "", false},

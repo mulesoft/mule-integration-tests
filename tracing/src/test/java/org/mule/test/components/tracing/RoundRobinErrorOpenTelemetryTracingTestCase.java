@@ -84,7 +84,7 @@ public class RoundRobinErrorOpenTelemetryTracingTestCase extends MuleArtifactFun
   private static BiFunction<Collection<CapturedExportedSpan>, String, SpanTestHierarchy> getOverviewExpectedSpanTestHierarchy() {
     return (exportedSpans, artifactId) -> {
       SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
-      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME);
+      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME).addExceptionData("ANY:EXPECTED");
       return expectedSpanHierarchy;
     };
   }
@@ -93,22 +93,22 @@ public class RoundRobinErrorOpenTelemetryTracingTestCase extends MuleArtifactFun
     return (exportedSpans, artifactId) -> {
       List<String> attributesToAssertExistence = getDefaultAttributesToAssertExistence();
       SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
-      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
+      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME).addExceptionData("ANY:EXPECTED")
           .addAttributesToAssertValue(createAttributeMap("round-robin-flow", artifactId))
           .addAttributesToAssertExistence(attributesToAssertExistence)
           .beginChildren()
-          .child(EXPECTED_ROUND_ROBIN_SPAN_NAME)
+          .child(EXPECTED_ROUND_ROBIN_SPAN_NAME).addExceptionData("ANY:EXPECTED")
           .addAttributesToAssertValue(createAttributeMap("round-robin-flow/processors/0", artifactId))
           .addAttributesToAssertExistence(attributesToAssertExistence)
           .beginChildren()
-          .child(EXPECTED_ROUTE_SPAN_NAME)
+          .child(EXPECTED_ROUTE_SPAN_NAME).addExceptionData("ANY:EXPECTED")
           .addAttributesToAssertValue(createAttributeMap("round-robin-flow/processors/0", artifactId))
           .addAttributesToAssertExistence(attributesToAssertExistence)
           .beginChildren()
           .child(EXPECTED_LOGGER_SPAN_NAME)
           .addAttributesToAssertValue(createAttributeMap("round-robin-flow/processors/0/route/0/processors/0", artifactId))
           .addAttributesToAssertExistence(attributesToAssertExistence)
-          .child(EXPECTED_RAISE_ERROR_SPAN)
+          .child(EXPECTED_RAISE_ERROR_SPAN).addExceptionData("ANY:EXPECTED")
           .addAttributesToAssertValue(createAttributeMap("round-robin-flow/processors/0/route/0/processors/1", artifactId))
           .addAttributesToAssertExistence(attributesToAssertExistence)
           .endChildren()

@@ -23,6 +23,8 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
+import static org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy.ERROR_STATUS;
+import static org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy.UNSET_STATUS;
 
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.api.util.LazyValue;
@@ -146,9 +148,9 @@ public class OpenTelemetryHttpErrorSemanticConventionAttributesAndNameTestCase e
       Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
 
       SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
-      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
+      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME).addExceptionData("HTTP:BAD_REQUEST")
           .beginChildren()
-          .child(EXPECTED_HTTPS_REQUEST_SPAN_NAME)
+          .child(EXPECTED_HTTPS_REQUEST_SPAN_NAME).addExceptionData("HTTP:BAD_REQUEST")
           .child(EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME)
           .endChildren();
 
@@ -203,9 +205,9 @@ public class OpenTelemetryHttpErrorSemanticConventionAttributesAndNameTestCase e
       Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
 
       SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
-      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
+      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME).addExceptionData("HTTP:INTERNAL_SERVER_ERROR")
           .beginChildren()
-          .child(EXPECTED_HTTPS_REQUEST_SPAN_NAME)
+          .child(EXPECTED_HTTPS_REQUEST_SPAN_NAME).addExceptionData("HTTP:INTERNAL_SERVER_ERROR")
           .child(EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME)
           .endChildren();
 
@@ -259,13 +261,13 @@ public class OpenTelemetryHttpErrorSemanticConventionAttributesAndNameTestCase e
       Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
 
       SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
-      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
+      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME).addExceptionData("HTTP:INTERNAL_SERVER_ERROR")
           .beginChildren()
-          .child(EXPECTED_HTTP_REQUEST_SPAN_NAME)
+          .child(EXPECTED_HTTP_REQUEST_SPAN_NAME).addExceptionData("HTTP:INTERNAL_SERVER_ERROR")
           .beginChildren()
-          .child(EXPECTED_HTTP_FLOW_SPAN_NAME)
+          .child(EXPECTED_HTTP_FLOW_SPAN_NAME).addExceptionData("CUSTOM:ERROR")
           .beginChildren()
-          .child(EXPECTED_RAISE_ERROR_SPAN)
+          .child(EXPECTED_RAISE_ERROR_SPAN).addExceptionData("CUSTOM:ERROR")
           .child(EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME)
           .endChildren()
           .endChildren()
@@ -292,7 +294,7 @@ public class OpenTelemetryHttpErrorSemanticConventionAttributesAndNameTestCase e
       assertThat(listenerExportedSpan.getAttributes().get(SPAN_STATUS_ATTRIBUTE), nullValue());
       assertThat(listenerExportedSpan.getSpanKindName(), equalTo("SERVER"));
       assertThat(listenerExportedSpan.hasErrorStatus(), equalTo(true));
-      assertThat(listenerExportedSpan.getStatusAsString(), equalTo("ERROR"));
+      assertThat(listenerExportedSpan.getStatusAsString(), equalTo(ERROR_STATUS));
 
       CapturedExportedSpan requestExportedSpan =
           exportedSpans.stream().filter(exportedSpan -> exportedSpan.getName().equals(EXPECTED_HTTP_REQUEST_SPAN_NAME))
@@ -311,7 +313,7 @@ public class OpenTelemetryHttpErrorSemanticConventionAttributesAndNameTestCase e
       assertThat(requestExportedSpan.getAttributes().get(SPAN_STATUS_ATTRIBUTE), nullValue());
       assertThat(requestExportedSpan.getSpanKindName(), equalTo("CLIENT"));
       assertThat(requestExportedSpan.hasErrorStatus(), equalTo(true));
-      assertThat(requestExportedSpan.getStatusAsString(), equalTo("ERROR"));
+      assertThat(requestExportedSpan.getStatusAsString(), equalTo(ERROR_STATUS));
     } finally {
       spanCapturer.dispose();
     }
@@ -343,14 +345,15 @@ public class OpenTelemetryHttpErrorSemanticConventionAttributesAndNameTestCase e
       Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
 
       SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
-      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
+      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME).addExceptionData("HTTP:BAD_REQUEST")
           .beginChildren()
-          .child(EXPECTED_HTTP_REQUEST_SPAN_NAME)
+          .child(EXPECTED_HTTP_REQUEST_SPAN_NAME).addExceptionData("HTTP:BAD_REQUEST")
           .beginChildren()
-          .child(EXPECTED_HTTP_FLOW_SPAN_NAME_400)
+          .child(EXPECTED_HTTP_FLOW_SPAN_NAME_400).addExceptionData("CUSTOM:ERROR")
+          .addStatusData(UNSET_STATUS)
           .addTraceStateKeyPresentAssertion(ANCESTOR_MULE_SPAN_ID)
           .beginChildren()
-          .child(EXPECTED_RAISE_ERROR_SPAN)
+          .child(EXPECTED_RAISE_ERROR_SPAN).addExceptionData("CUSTOM:ERROR")
           .addTraceStateKeyNotPresentAssertion(ANCESTOR_MULE_SPAN_ID)
           .child(EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME)
           .addTraceStateKeyNotPresentAssertion(ANCESTOR_MULE_SPAN_ID)
@@ -361,6 +364,7 @@ public class OpenTelemetryHttpErrorSemanticConventionAttributesAndNameTestCase e
           .endChildren();
 
       expectedSpanHierarchy.assertSpanTree();
+
 
       CapturedExportedSpan listenerExportedSpan =
           exportedSpans.stream().filter(exportedSpan -> exportedSpan.getName().equals(EXPECTED_HTTP_FLOW_SPAN_NAME_400))
@@ -380,7 +384,7 @@ public class OpenTelemetryHttpErrorSemanticConventionAttributesAndNameTestCase e
       assertThat(listenerExportedSpan.getAttributes().get(SPAN_STATUS_ATTRIBUTE), nullValue());
       assertThat(listenerExportedSpan.getSpanKindName(), equalTo("SERVER"));
       assertThat(listenerExportedSpan.hasErrorStatus(), equalTo(false));
-      assertThat(listenerExportedSpan.getStatusAsString(), equalTo("UNSET"));
+      assertThat(listenerExportedSpan.getStatusAsString(), equalTo(UNSET_STATUS));
 
       CapturedExportedSpan requestExportedSpan =
           exportedSpans.stream().filter(exportedSpan -> exportedSpan.getName().equals(EXPECTED_HTTP_REQUEST_SPAN_NAME))
@@ -399,7 +403,7 @@ public class OpenTelemetryHttpErrorSemanticConventionAttributesAndNameTestCase e
       assertThat(requestExportedSpan.getAttributes().get(SPAN_STATUS_ATTRIBUTE), nullValue());
       assertThat(requestExportedSpan.getSpanKindName(), equalTo("CLIENT"));
       assertThat(requestExportedSpan.hasErrorStatus(), equalTo(true));
-      assertThat(requestExportedSpan.getStatusAsString(), equalTo("ERROR"));
+      assertThat(requestExportedSpan.getStatusAsString(), equalTo(ERROR_STATUS));
     } finally {
       spanCapturer.dispose();
     }
@@ -431,11 +435,12 @@ public class OpenTelemetryHttpErrorSemanticConventionAttributesAndNameTestCase e
       Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
 
       SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
-      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
+      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME).addExceptionData("HTTP:INTERNAL_SERVER_ERROR")
           .beginChildren()
-          .child(EXPECTED_HTTP_REQUEST_SPAN_NAME)
+          .child(EXPECTED_HTTP_REQUEST_SPAN_NAME).addExceptionData("HTTP:INTERNAL_SERVER_ERROR")
           .beginChildren()
           .child(EXPECTED_HTTP_FLOW_SPAN_NAME_500)
+          .addStatusData(ERROR_STATUS)
           .addTraceStateKeyPresentAssertion(ANCESTOR_MULE_SPAN_ID)
           .beginChildren()
           .child(EXPECTED_LOGGER_SPAN_NAME)
@@ -466,7 +471,7 @@ public class OpenTelemetryHttpErrorSemanticConventionAttributesAndNameTestCase e
       assertThat(listenerExportedSpan.getAttributes().get(SPAN_STATUS_ATTRIBUTE), nullValue());
       assertThat(listenerExportedSpan.getSpanKindName(), equalTo("SERVER"));
       assertThat(listenerExportedSpan.hasErrorStatus(), equalTo(true));
-      assertThat(listenerExportedSpan.getStatusAsString(), equalTo("ERROR"));
+      assertThat(listenerExportedSpan.getStatusAsString(), equalTo(ERROR_STATUS));
 
       CapturedExportedSpan requestExportedSpan =
           exportedSpans.stream().filter(exportedSpan -> exportedSpan.getName().equals(EXPECTED_HTTP_REQUEST_SPAN_NAME))
@@ -485,7 +490,7 @@ public class OpenTelemetryHttpErrorSemanticConventionAttributesAndNameTestCase e
       assertThat(requestExportedSpan.getAttributes().get(SPAN_STATUS_ATTRIBUTE), nullValue());
       assertThat(requestExportedSpan.getSpanKindName(), equalTo("CLIENT"));
       assertThat(requestExportedSpan.hasErrorStatus(), equalTo(true));
-      assertThat(requestExportedSpan.getStatusAsString(), equalTo("ERROR"));
+      assertThat(requestExportedSpan.getStatusAsString(), equalTo(ERROR_STATUS));
     } finally {
       spanCapturer.dispose();
     }

@@ -9,6 +9,7 @@ package org.mule.test.components.tracing;
 
 import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.DEFAULT_CORE_EVENT_TRACER;
+import static org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy.OK_STATUS;
 import static org.mule.test.infrastructure.profiling.tracing.TracingTestUtils.createAttributeMap;
 import static org.mule.test.infrastructure.profiling.tracing.TracingTestUtils.getDefaultAttributesToAssertExistence;
 
@@ -86,7 +87,7 @@ public class SimpleOpenTelemetryTracingTestCase extends AbstractOpenTelemetryTra
 
     List<String> attributesToAssertExistence = getDefaultAttributesToAssertExistence();
 
-    String artifactId = TEST_ARTIFACT_ID + "[" + exporterType + "]";
+    String artifactId = TEST_ARTIFACT_ID + "[type: " + exporterType + " - path: " + super.path + " - secure: " + secure + "]";
     Map<String, String> setPayloadAttributeMap = createAttributeMap(SET_PAYLOAD_LOCATION, artifactId);
     setPayloadAttributeMap.put(TEST_VAR_NAME, TRACE_VAR_VALUE);
     Map<String, String> setVariableAttributeMap = createAttributeMap(SET_VARIABLE_LOCATION, artifactId);

@@ -80,7 +80,7 @@ public class SchedulerErrorOpenTelemetryTracingTestCase extends MuleArtifactFunc
   private static Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> getOverviewExpectedSpanTestHierarchy() {
     return exportedSpans -> {
       SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
-      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME);
+      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME).addExceptionData("ANY:EXPECTED");
       return expectedSpanHierarchy;
     };
   }
@@ -88,10 +88,10 @@ public class SchedulerErrorOpenTelemetryTracingTestCase extends MuleArtifactFunc
   private static Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> getMonitoringExpectedSpanTestHierarchy() {
     return exportedSpans -> {
       SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
-      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
+      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME).addExceptionData("ANY:EXPECTED")
           .beginChildren()
           .child(EXPECTED_SET_VARIABLE_SPAN_NAME)
-          .child(EXPECTED_RAISE_ERROR_SPAN_NAME)
+          .child(EXPECTED_RAISE_ERROR_SPAN_NAME).addExceptionData("ANY:EXPECTED")
           .child(ON_ERROR_PROPAGATE_SPAN_NAME)
           .endChildren();
 
