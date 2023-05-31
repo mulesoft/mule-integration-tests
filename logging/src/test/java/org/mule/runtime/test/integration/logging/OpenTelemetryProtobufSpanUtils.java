@@ -143,7 +143,7 @@ public class OpenTelemetryProtobufSpanUtils {
 
     @Override
     public String getStatusAsString() {
-      return openTelemetryProtobufSpan.getStatus().getCode().toString();
+      return openTelemetryProtobufSpan.getStatus().getCode().toString().toUpperCase();
     }
 
     public String getLocation() {
