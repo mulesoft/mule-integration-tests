@@ -85,7 +85,7 @@ public class TryScopeErrorOpenTelemetryTracingTestCase extends MuleArtifactFunct
   private static BiFunction<Collection<CapturedExportedSpan>, String, SpanTestHierarchy> getOverviewExpectedSpanTestHierarchy() {
     return (exportedSpans, artifactId) -> {
       SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
-      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME);
+      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME).addExceptionData("ANY:EXPECTED");
       return expectedSpanHierarchy;
     };
   }
@@ -94,18 +94,18 @@ public class TryScopeErrorOpenTelemetryTracingTestCase extends MuleArtifactFunct
     return (exportedSpans, artifactId) -> {
       List<String> attributesToAssertExistence = getDefaultAttributesToAssertExistence();
       SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
-      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
+      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME).addExceptionData("ANY:EXPECTED")
           .addAttributesToAssertValue(createAttributeMap("try-scope-flow", artifactId))
           .addAttributesToAssertExistence(attributesToAssertExistence)
           .beginChildren()
-          .child(EXPECTED_TRY_SCOPE_SPAN_NAME)
+          .child(EXPECTED_TRY_SCOPE_SPAN_NAME).addExceptionData("ANY:EXPECTED")
           .addAttributesToAssertValue(createAttributeMap("try-scope-flow/processors/0", artifactId))
           .addAttributesToAssertExistence(attributesToAssertExistence)
           .beginChildren()
           .child(EXPECTED_LOGGER_SPAN_NAME)
           .addAttributesToAssertValue(createAttributeMap("try-scope-flow/processors/0/processors/0", artifactId))
           .addAttributesToAssertExistence(attributesToAssertExistence)
-          .child(EXPECTED_RAISE_ERROR_SPAN_NAME)
+          .child(EXPECTED_RAISE_ERROR_SPAN_NAME).addExceptionData("ANY:EXPECTED")
           .addAttributesToAssertValue(createAttributeMap("try-scope-flow/processors/0/processors/1", artifactId))
           .addAttributesToAssertExistence(attributesToAssertExistence)
           .child(EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME)

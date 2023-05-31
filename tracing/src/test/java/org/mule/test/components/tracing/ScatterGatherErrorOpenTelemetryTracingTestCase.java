@@ -16,6 +16,7 @@ import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceSto
 import static java.lang.System.clearProperty;
 import static java.lang.System.setProperty;
 import static java.util.Arrays.asList;
+import static org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy.ERROR_STATUS;
 
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
@@ -76,7 +77,7 @@ public class ScatterGatherErrorOpenTelemetryTracingTestCase extends MuleArtifact
   private static Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> getOverviewExpectedSpanTestHierarchy() {
     return exportedSpans -> {
       SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
-      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME);
+      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME).addExceptionData("MULE:COMPOSITE_ROUTING");
       return expectedSpanHierarchy;
     };
   }
@@ -84,14 +85,15 @@ public class ScatterGatherErrorOpenTelemetryTracingTestCase extends MuleArtifact
   private static Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> getMonitoringExpectedSpanTestHierarchy() {
     return exportedSpans -> {
       SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
-      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
+      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME).addExceptionData("MULE:COMPOSITE_ROUTING")
           .beginChildren()
-          .child(EXPECTED_SCATTER_GATHER_SPAN_NAME)
+          .child(EXPECTED_SCATTER_GATHER_SPAN_NAME).addExceptionData("MULE:COMPOSITE_ROUTING")
           .beginChildren()
-          .child(EXPECTED_ROUTE_SPAN_NAME)
+          .child(EXPECTED_ROUTE_SPAN_NAME).addExceptionData("ANY:EXPECTED").addStatusData(ERROR_STATUS)
+          .addAttributeToAssertValue("location", "scatter-gather-flow/processors/0")
           .beginChildren()
           .child(EXPECTED_SET_PAYLOAD_SPAN_NAME)
-          .child(EXPECTED_RAISE_ERROR_SPAN)
+          .child(EXPECTED_RAISE_ERROR_SPAN).addExceptionData("ANY:EXPECTED")
           .endChildren()
           .child(EXPECTED_ROUTE_SPAN_NAME)
           .beginChildren()

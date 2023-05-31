@@ -83,6 +83,9 @@ public class ChoiceRouterOpenTelemetryTracingTestCase extends MuleArtifactFuncti
     return (exportedSpans, spanTestHierarchyParameters) -> {
       SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
       expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME);
+      if (spanTestHierarchyParameters.isError()) {
+        expectedSpanHierarchy = expectedSpanHierarchy.addExceptionData("ANY:EXPECTED");
+      }
       return expectedSpanHierarchy;
     };
   }
@@ -91,22 +94,35 @@ public class ChoiceRouterOpenTelemetryTracingTestCase extends MuleArtifactFuncti
     return (exportedSpans, spanTestHierarchyParameters) -> {
       List<String> attributesToAssertExistence = getDefaultAttributesToAssertExistence();
       SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
-      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
+      expectedSpanHierarchy = expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
           .addAttributesToAssertValue(createAttributeMap("choice-flow", spanTestHierarchyParameters.getArtifactId()))
-          .addAttributesToAssertExistence(attributesToAssertExistence)
-          .beginChildren()
-          .child(EXPECTED_CHOICE_SPAN_NAME)
+          .addAttributesToAssertExistence(attributesToAssertExistence);
+      if (spanTestHierarchyParameters.isError()) {
+        expectedSpanHierarchy = expectedSpanHierarchy.addExceptionData("ANY:EXPECTED");
+      }
+      expectedSpanHierarchy = expectedSpanHierarchy.beginChildren()
+          .child(EXPECTED_CHOICE_SPAN_NAME);
+      if (spanTestHierarchyParameters.isError()) {
+        expectedSpanHierarchy = expectedSpanHierarchy.addExceptionData("ANY:EXPECTED");
+      }
+      expectedSpanHierarchy = expectedSpanHierarchy
           .addAttributesToAssertValue(createAttributeMap("choice-flow/processors/0", spanTestHierarchyParameters.getArtifactId()))
           .addAttributesToAssertExistence(attributesToAssertExistence)
           .beginChildren()
-          .child(EXPECTED_ROUTE_SPAN_NAME)
+          .child(EXPECTED_ROUTE_SPAN_NAME);
+      if (spanTestHierarchyParameters.isError()) {
+        expectedSpanHierarchy = expectedSpanHierarchy.addExceptionData("ANY:EXPECTED");
+      }
+      expectedSpanHierarchy = expectedSpanHierarchy
           .addAttributesToAssertValue(createAttributeMap("choice-flow/processors/0", spanTestHierarchyParameters.getArtifactId()))
           .addAttributesToAssertExistence(attributesToAssertExistence)
           .beginChildren()
-          .child(spanTestHierarchyParameters.getChildSpanName())
-          .endChildren()
+          .child(spanTestHierarchyParameters.getChildSpanName());
+      if (spanTestHierarchyParameters.isError()) {
+        expectedSpanHierarchy = expectedSpanHierarchy.addExceptionData("ANY:EXPECTED");
+      }
+      expectedSpanHierarchy = expectedSpanHierarchy.endChildren()
           .endChildren();
-
       if (spanTestHierarchyParameters.isError()) {
         expectedSpanHierarchy.child(EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME)
             .addAttributesToAssertValue(createAttributeMap("unknown", spanTestHierarchyParameters.getArtifactId()))

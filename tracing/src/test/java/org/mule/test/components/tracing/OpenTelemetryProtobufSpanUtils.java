@@ -23,6 +23,7 @@ import org.mule.runtime.tracer.api.sniffer.CapturedEventData;
 import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -126,7 +127,8 @@ public class OpenTelemetryProtobufSpanUtils {
 
     @Override
     public List<CapturedEventData> getEvents() {
-      throw new UnsupportedOperationException("Not implemented yet");
+      return openTelemetryProtobufSpan.getEventsList().stream().map(OpenTelemetryCapturedProtoEventData::new)
+          .collect(Collectors.toList());
     }
 
     @Override
@@ -146,7 +148,7 @@ public class OpenTelemetryProtobufSpanUtils {
 
     @Override
     public String getStatusAsString() {
-      return openTelemetryProtobufSpan.getStatus().toString();
+      return openTelemetryProtobufSpan.getStatus().getCode().toString().toUpperCase();
     }
 
     public String getLocation() {
@@ -177,6 +179,31 @@ public class OpenTelemetryProtobufSpanUtils {
       return emptyMap();
     }
 
+  }
+
+  /**
+   * A {@link CapturedEventData} that can be built from a {@link Span.Event} (protobuf) event.
+   */
+  private static class OpenTelemetryCapturedProtoEventData implements CapturedEventData {
+
+    private final String name;
+    private final Map<String, Object> attributes = new HashMap<>();
+
+    public OpenTelemetryCapturedProtoEventData(Span.Event protoEvent) {
+      this.name = protoEvent.getName();
+      protoEvent.getAttributesList()
+          .forEach(attributeKeyValue -> attributes.put(attributeKeyValue.getKey(), attributeKeyValue.getStringValue()));
+    }
+
+    @Override
+    public String getName() {
+      return name;
+    }
+
+    @Override
+    public Map<String, Object> getAttributes() {
+      return attributes;
+    }
   }
 
 }

@@ -77,7 +77,7 @@ public class UntilSuccessfulErrorOpenTelemetryTracingTestCase extends MuleArtifa
   private static Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> getOverviewExpectedSpanTestHierarchy() {
     return exportedSpans -> {
       SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
-      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME);
+      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME).addExceptionData("MULE:RETRY_EXHAUSTED");
       return expectedSpanHierarchy;
     };
   }
@@ -85,24 +85,24 @@ public class UntilSuccessfulErrorOpenTelemetryTracingTestCase extends MuleArtifa
   private static Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> getMonitoringExpectedSpanTestHierarchy() {
     return exportedSpans -> {
       SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
-      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
+      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME).addExceptionData("MULE:RETRY_EXHAUSTED")
           .beginChildren()
-          .child(EXPECTED_UNTIL_SUCCESSFUL_SPAN_NAME)
+          .child(EXPECTED_UNTIL_SUCCESSFUL_SPAN_NAME).addExceptionData("MULE:RETRY_EXHAUSTED")
           .beginChildren()
-          .child(EXPECTED_ATTEMPT_SPAN_NAME)
+          .child(EXPECTED_ATTEMPT_SPAN_NAME).addExceptionData("ANY:EXPECTED")
           .beginChildren()
           .child(EXPECTED_LOGGER_SPAN_NAME)
-          .child(EXPECTED_RAISE_ERROR_SPAN)
+          .child(EXPECTED_RAISE_ERROR_SPAN).addExceptionData("ANY:EXPECTED")
           .endChildren()
-          .child(EXPECTED_ATTEMPT_SPAN_NAME)
+          .child(EXPECTED_ATTEMPT_SPAN_NAME).addExceptionData("ANY:EXPECTED")
           .beginChildren()
           .child(EXPECTED_LOGGER_SPAN_NAME)
-          .child(EXPECTED_RAISE_ERROR_SPAN)
+          .child(EXPECTED_RAISE_ERROR_SPAN).addExceptionData("ANY:EXPECTED")
           .endChildren()
-          .child(EXPECTED_ATTEMPT_SPAN_NAME)
+          .child(EXPECTED_ATTEMPT_SPAN_NAME).addExceptionData("ANY:EXPECTED")
           .beginChildren()
           .child(EXPECTED_LOGGER_SPAN_NAME)
-          .child(EXPECTED_RAISE_ERROR_SPAN)
+          .child(EXPECTED_RAISE_ERROR_SPAN).addExceptionData("ANY:EXPECTED")
           .endChildren()
           .endChildren()
           .child(ON_ERROR_PROPAGATE_SPAN_NAME)

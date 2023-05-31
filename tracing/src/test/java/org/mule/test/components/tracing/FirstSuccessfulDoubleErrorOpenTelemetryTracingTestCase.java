@@ -77,7 +77,7 @@ public class FirstSuccessfulDoubleErrorOpenTelemetryTracingTestCase extends Mule
   private static Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> getOverviewExpectedSpanTestHierarchy() {
     return exportedSpans -> {
       SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
-      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME);
+      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME).addExceptionData("ANY:EXPECTED");
       return expectedSpanHierarchy;
     };
   }
@@ -85,21 +85,21 @@ public class FirstSuccessfulDoubleErrorOpenTelemetryTracingTestCase extends Mule
   private static Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> getMonitoringExpectedSpanTestHierarchy() {
     return exportedSpans -> {
       SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
-      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
+      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME).addExceptionData("ANY:EXPECTED")
           .beginChildren()
           .child(EXPECTED_SET_VARIABLE_SPAN_NAME)
-          .child(EXPECTED_FIRST_SUCCESSFUL_SPAN_NAME)
+          .child(EXPECTED_FIRST_SUCCESSFUL_SPAN_NAME).addExceptionData("ANY:EXPECTED")
           .beginChildren()
-          .child(EXPECTED_ROUTE_SPAN_NAME_ATTEMPT_1)
+          .child(EXPECTED_ROUTE_SPAN_NAME_ATTEMPT_1).addExceptionData("ANY:EXPECTED")
           .beginChildren()
           .child(EXPECTED_SET_PAYLOAD_SPAN_NAME)
-          .child(EXPECTED_RAISE_ERROR_SPAN)
+          .child(EXPECTED_RAISE_ERROR_SPAN).addExceptionData("ANY:EXPECTED")
           .endChildren()
-          .child(EXPECTED_ROUTE_SPAN_NAME_ATTEMPT_2)
+          .child(EXPECTED_ROUTE_SPAN_NAME_ATTEMPT_2).addExceptionData("ANY:EXPECTED")
           .beginChildren()
           .child(EXPECTED_SET_PAYLOAD_SPAN_NAME)
           .child(EXPECTED_LOGGER_SPAN_NAME)
-          .child(EXPECTED_RAISE_ERROR_SPAN)
+          .child(EXPECTED_RAISE_ERROR_SPAN).addExceptionData("ANY:EXPECTED")
           .endChildren()
           .endChildren()
           .child(EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME)

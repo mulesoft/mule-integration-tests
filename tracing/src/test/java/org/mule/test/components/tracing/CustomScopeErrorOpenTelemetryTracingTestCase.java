@@ -93,7 +93,7 @@ public class CustomScopeErrorOpenTelemetryTracingTestCase extends MuleArtifactFu
       SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
       List<String> attributesToAssertExistence = getDefaultAttributesToAssertExistence();
 
-      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
+      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME).addExceptionData("ANY:EXPECTED")
           .addAttributesToAssertValue(createAttributeMap("custom-scope-flow", artifactId))
           .addAttributesToAssertExistence(attributesToAssertExistence);
 
@@ -106,18 +106,18 @@ public class CustomScopeErrorOpenTelemetryTracingTestCase extends MuleArtifactFu
       List<String> attributesToAssertExistence = getDefaultAttributesToAssertExistence();
 
       SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
-      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
+      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME).addExceptionData("ANY:EXPECTED")
           .addAttributesToAssertValue(createAttributeMap("custom-scope-flow", artifactId))
           .addAttributesToAssertExistence(attributesToAssertExistence)
           .beginChildren()
-          .child(EXPECTED_CUSTOM_SCOPE_SPAN_NAME)
+          .child(EXPECTED_CUSTOM_SCOPE_SPAN_NAME).addExceptionData("ANY:EXPECTED")
           .addAttributesToAssertValue(createAttributeMap("custom-scope-flow/processors/0", artifactId))
           .addAttributesToAssertExistence(attributesToAssertExistence)
           .beginChildren()
           .child(EXPECTED_LOGGER_SPAN_NAME)
           .addAttributesToAssertValue(createAttributeMap("custom-scope-flow/processors/0/processors/0", artifactId))
           .addAttributesToAssertExistence(attributesToAssertExistence)
-          .child(EXPECTED_RAISE_ERROR_SPAN_NAME)
+          .child(EXPECTED_RAISE_ERROR_SPAN_NAME).addExceptionData("ANY:EXPECTED")
           .addAttributesToAssertValue(createAttributeMap("custom-scope-flow/processors/0/processors/1", artifactId))
           .addAttributesToAssertExistence(attributesToAssertExistence)
           .endChildren()
@@ -133,11 +133,11 @@ public class CustomScopeErrorOpenTelemetryTracingTestCase extends MuleArtifactFu
       List<String> attributesToAssertExistence = getDefaultAttributesToAssertExistence();
 
       SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
-      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
+      expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME).addExceptionData("ANY:EXPECTED")
           .addAttributesToAssertValue(createAttributeMap("custom-scope-flow", artifactId))
           .addAttributesToAssertExistence(attributesToAssertExistence)
           .beginChildren()
-          .child(EXPECTED_CUSTOM_SCOPE_SPAN_NAME)
+          .child(EXPECTED_CUSTOM_SCOPE_SPAN_NAME).addExceptionData("ANY:EXPECTED")
           .addAttributesToAssertValue(createAttributeMap("custom-scope-flow/processors/0", artifactId))
           .addAttributesToAssertExistence(attributesToAssertExistence)
           .beginChildren()
@@ -151,7 +151,7 @@ public class CustomScopeErrorOpenTelemetryTracingTestCase extends MuleArtifactFu
           .child(EXPECTED_LOGGER_SPAN_NAME)
           .addAttributesToAssertValue(createAttributeMap("custom-scope-flow/processors/0/processors/0", artifactId))
           .addAttributesToAssertExistence(attributesToAssertExistence)
-          .child(EXPECTED_RAISE_ERROR_SPAN_NAME)
+          .child(EXPECTED_RAISE_ERROR_SPAN_NAME).addExceptionData("ANY:EXPECTED")
           .addAttributesToAssertValue(createAttributeMap("custom-scope-flow/processors/0/processors/1", artifactId))
           .addAttributesToAssertExistence(attributesToAssertExistence)
           .endChildren()

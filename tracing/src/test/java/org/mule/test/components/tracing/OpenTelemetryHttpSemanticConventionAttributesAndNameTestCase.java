@@ -28,6 +28,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
+import static org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy.UNSET_STATUS;
 
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
@@ -221,10 +222,10 @@ public class OpenTelemetryHttpSemanticConventionAttributesAndNameTestCase extend
           .child(GET_CONNECTION_SPAN_NAME)
           .child(OPERATION_EXECUTION_SPAN_NAME)
           .beginChildren()
-          .child(EXPECTED_HTTP_FLOW_SPAN_NAME_200)
+          .child(EXPECTED_HTTP_FLOW_SPAN_NAME_200).addExceptionData("ANY:EXPECTED").addStatusData(UNSET_STATUS)
           .addTraceStateKeyPresentAssertion(ANCESTOR_MULE_SPAN_ID)
           .beginChildren()
-          .child(EXPECTED_RAISE_ERROR_SPAN)
+          .child(EXPECTED_RAISE_ERROR_SPAN).addExceptionData("ANY:EXPECTED")
           .addTraceStateKeyNotPresentAssertion(ANCESTOR_MULE_SPAN_ID)
           .child(EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME)
           .addTraceStateKeyNotPresentAssertion(ANCESTOR_MULE_SPAN_ID)
@@ -244,9 +245,9 @@ public class OpenTelemetryHttpSemanticConventionAttributesAndNameTestCase extend
           .beginChildren()
           .child(EXPECTED_HTTP_REQUEST_SPAN_NAME)
           .beginChildren()
-          .child(EXPECTED_HTTP_FLOW_SPAN_NAME_200)
+          .child(EXPECTED_HTTP_FLOW_SPAN_NAME_200).addExceptionData("ANY:EXPECTED").addStatusData(UNSET_STATUS)
           .beginChildren()
-          .child(EXPECTED_RAISE_ERROR_SPAN)
+          .child(EXPECTED_RAISE_ERROR_SPAN).addExceptionData("ANY:EXPECTED")
           .child(EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME)
           .endChildren()
           .endChildren()
@@ -263,7 +264,7 @@ public class OpenTelemetryHttpSemanticConventionAttributesAndNameTestCase extend
           .beginChildren()
           .child(EXPECTED_HTTP_REQUEST_SPAN_NAME)
           .beginChildren()
-          .child(EXPECTED_HTTP_FLOW_SPAN_NAME_200)
+          .child(EXPECTED_HTTP_FLOW_SPAN_NAME_200).addExceptionData("ANY:EXPECTED").addStatusData(UNSET_STATUS)
           .endChildren();
 
       return expectedSpanHierarchy;
