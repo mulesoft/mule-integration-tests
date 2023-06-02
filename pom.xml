@@ -83,7 +83,7 @@
                 <classifier>mule-service</classifier>
                 <scope>provided</scope>
                 <exclusions>
-	            <exclusion>
+	                <exclusion>
                         <groupId>*</groupId>
                         <artifactId>*</artifactId>
                     </exclusion>
