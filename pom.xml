@@ -77,16 +77,22 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
-    </dependencies>
-  </dependencyManagement>
-
-  <dependencies>
     <dependency>
       <groupId>org.mule.services</groupId>
       <artifactId>mule-service-weave</artifactId>
       <classifier>mule-service</classifier>
       <scope>provided</scope>
+      <exclusions>
+	      <exclusion>
+			  <groupId>*</groupId>
+			  <artifactId>*</artifactId>
+		  </exclusion>
+	  </exclusions>
     </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <dependencies>
      <dependency>
         <groupId>org.mule.runtime</groupId>
         <artifactId>mule-dwb-api</artifactId> 
