@@ -88,12 +88,6 @@
             <artifactId>mule-service-weave</artifactId>
             <classifier>mule-service</classifier>
             <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.mule.runtime</groupId>
