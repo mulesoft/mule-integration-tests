@@ -81,7 +81,7 @@
                 <groupId>org.mule.services</groupId>
                 <artifactId>mule-service-weave</artifactId>
                 <classifier>mule-service</classifier>
-                <scope>provided</scope>
+                <version>${weaveVersion}</version>
                 <exclusions>
 	                <exclusion>
                         <groupId>*</groupId>
