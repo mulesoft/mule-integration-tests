@@ -7,26 +7,24 @@
 package org.mule.test.integration.schedule;
 
 import static java.util.concurrent.Executors.newSingleThreadScheduledExecutor;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.meta.NameableObject;
 
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.springframework.beans.factory.BeanNameAware;
+public class MockScheduler implements NameableObject {
 
-public class MockScheduler implements NameableObject, BeanNameAware {
-
-  private AtomicInteger count = new AtomicInteger(0);
+  private final AtomicInteger count = new AtomicInteger(0);
   private ScheduledExecutorService executorService;
   private String name;
   private Runnable task;
 
   @Override
   public void setName(String name) {
-    // Do Nothing
+    this.name = name;
   }
 
   @Override
@@ -37,16 +35,11 @@ public class MockScheduler implements NameableObject, BeanNameAware {
   public void start() throws MuleException {
     executorService = newSingleThreadScheduledExecutor();
     task = () -> count.incrementAndGet();
-    executorService.scheduleAtFixedRate(task, 1000, 2000, TimeUnit.MILLISECONDS);
+    executorService.scheduleAtFixedRate(task, 1000, 2000, MILLISECONDS);
   }
 
   public void stop() throws MuleException {
     executorService.shutdown();
-  }
-
-  @Override
-  public void setBeanName(String name) {
-    this.name = name;
   }
 
   public int getCount() {
