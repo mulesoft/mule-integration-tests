@@ -7,6 +7,7 @@
 package org.mule.test.config.ast;
 
 import static org.mule.runtime.api.config.MuleRuntimeFeature.ENFORCE_EXPRESSION_VALIDATION;
+import static org.mule.tck.config.WeaveExpressionLanguageFactoryServiceProvider.provideDefaultExpressionLanguageFactoryService;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonMap;
@@ -28,7 +29,6 @@ import org.mule.runtime.core.internal.transformer.DefaultTransformersRegistry;
 import org.mule.runtime.core.internal.transformer.simple.StringToBoolean;
 import org.mule.runtime.core.privileged.transformer.TransformersRegistry;
 import org.mule.runtime.feature.internal.config.DefaultFeatureFlaggingService;
-import org.mule.weave.v2.el.WeaveDefaultExpressionLanguageFactoryService;
 
 import java.util.Collection;
 import java.util.List;
@@ -48,7 +48,7 @@ import com.google.inject.Provides;
  */
 class BasicModule extends AbstractModule {
 
-  private Map<org.mule.runtime.api.config.Feature, Boolean> featureBooleanMap =
+  private final Map<org.mule.runtime.api.config.Feature, Boolean> featureBooleanMap =
       singletonMap(ENFORCE_EXPRESSION_VALIDATION, Boolean.valueOf(true));
 
   @Override
@@ -65,7 +65,7 @@ class BasicModule extends AbstractModule {
   @Provides
   @Singleton
   public ExpressionLanguage provideExpressionLanguage() {
-    return new WeaveDefaultExpressionLanguageFactoryService(null).create();
+    return provideDefaultExpressionLanguageFactoryService().create();
   }
 
   @Provides
