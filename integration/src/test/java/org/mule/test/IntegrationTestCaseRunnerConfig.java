@@ -15,7 +15,7 @@ import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
         "org.mule.tests:mule-activemq-broker",
         "org.mule.tests:mule-tests-model",
         "org.apache.derby:derby",
-        "org.codehaus.groovy:groovy-all"
+        "org.apache.groovy:groovy"
     },
     extraPrivilegedArtifacts = {"org.mule.tests:mule-tests-parsers-plugin"},
     testRunnerExportedRuntimeLibs = {"org.mule.tests:mule-tests-functional"})
