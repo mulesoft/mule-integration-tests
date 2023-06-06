@@ -16,7 +16,6 @@
 
     <properties>
         <javaModuleName>org.mule.test.integration.dsl</javaModuleName>
-        <activemq.version>5.14.5</activemq.version>
         <javaxJmsApiVersion>2.0.1</javaxJmsApiVersion>
         <jsonassert.version>1.5.2</jsonassert.version>
         <guice.version>5.0.1</guice.version>
@@ -223,23 +222,9 @@
 
         <!-- ActiveMQ Dependencies-->
         <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-client</artifactId>
-            <version>${activemq.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <!-- Used for in memory broker -->
-        <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-broker</artifactId>
-            <version>${activemq.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <!-- Used by ActiveMQ if persistent=true -->
-        <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-kahadb-store</artifactId>
-            <version>${activemq.version}</version>
+            <groupId>org.mule.tests</groupId>
+            <artifactId>mule-activemq-broker</artifactId>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
 
