@@ -83,7 +83,7 @@
                 <classifier>mule-service</classifier>
                 <version>${weaveVersion}</version>
                 <exclusions>
-	                <exclusion>
+                    <exclusion>
                         <groupId>*</groupId>
                         <artifactId>*</artifactId>
                     </exclusion>
