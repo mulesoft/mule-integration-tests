@@ -6,6 +6,7 @@
  */
 package org.mule.test;
 
+import static org.mule.tck.config.WeaveExpressionLanguageFactoryServiceProvider.provideExpressionLanguageMetadataService;
 import static org.mule.test.allure.AllureConstants.ReuseFeature.REUSE;
 import static org.mule.test.allure.AllureConstants.ReuseFeature.ReuseStory.OPERATIONS;
 
@@ -16,12 +17,12 @@ import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.api.metadata.ExpressionLanguageMetadataService;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.test.subtypes.extension.CarDoor;
-import org.mule.weave.v2.el.metadata.WeaveExpressionLanguageMetadataServiceImpl;
+
+import org.junit.Test;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
-import org.junit.Test;
 
 @Feature(REUSE)
 @Story(OPERATIONS)
@@ -55,6 +56,6 @@ public class MuleOperationUsingTypesFromDependenciesTestCase extends MuleArtifac
 
   @Override
   protected ExpressionLanguageMetadataService getExpressionLanguageMetadataService() {
-    return new WeaveExpressionLanguageMetadataServiceImpl();
+    return provideExpressionLanguageMetadataService();
   }
 }

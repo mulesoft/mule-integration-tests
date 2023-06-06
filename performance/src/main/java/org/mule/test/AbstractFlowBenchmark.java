@@ -13,6 +13,7 @@ import static org.mule.runtime.core.api.event.EventContextFactory.create;
 import static org.mule.runtime.core.api.processor.ReactiveProcessor.ProcessingType.BLOCKING;
 import static org.mule.runtime.core.privileged.registry.LegacyRegistryUtils.registerObject;
 import static org.mule.runtime.dsl.api.component.config.DefaultComponentLocation.from;
+import static org.mule.tck.config.WeaveExpressionLanguageFactoryServiceProvider.provideDefaultExpressionLanguageFactoryService;
 
 import static java.lang.Class.forName;
 import static java.lang.Thread.sleep;
@@ -40,7 +41,6 @@ import org.mule.runtime.core.internal.config.builders.MinimalConfigurationBuilde
 import org.mule.runtime.core.internal.processor.strategy.AbstractStreamProcessingStrategyFactory;
 import org.mule.service.scheduler.internal.DefaultSchedulerService;
 import org.mule.tck.TriggerableMessageSource;
-import org.mule.weave.v2.el.WeaveDefaultExpressionLanguageFactoryService;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -238,7 +238,7 @@ public abstract class AbstractFlowBenchmark extends AbstractBenchmark {
         registerObject(muleContext, schedulerService.getName(),
                        newProxyInstance(getClass().getClassLoader(), new Class[] {SchedulerService.class},
                                         new PassThroughInvocationHandler(schedulerService)));
-        DefaultExpressionLanguageFactoryService weaveExpressionExecutor = new WeaveDefaultExpressionLanguageFactoryService(null);
+        DefaultExpressionLanguageFactoryService weaveExpressionExecutor = provideDefaultExpressionLanguageFactoryService();
         registerObject(muleContext, weaveExpressionExecutor.getName(), weaveExpressionExecutor);
       }
     });
