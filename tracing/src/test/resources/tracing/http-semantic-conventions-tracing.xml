@@ -31,4 +31,13 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
         <raise-error type="ANY:EXPECTED"/>
         <logger />
     </flow>
+
+    <flow name="httpRequestUriParams">
+        <http:request method="GET" config-ref="requestConfig" path="/param1/param2"/>
+    </flow>
+
+    <flow name="httpListenerUriParams">
+        <http:listener config-ref="HTTP_Listener_config" path="/{uriParam1}/{uriParam2}" />
+        <logger />
+    </flow>
 </mule>
