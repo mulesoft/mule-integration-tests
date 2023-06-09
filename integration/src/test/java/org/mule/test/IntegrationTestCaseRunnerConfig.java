@@ -10,14 +10,14 @@ package org.mule.test;
 import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
 
 @ArtifactClassLoaderRunnerConfig(
-    applicationRuntimeLibs = {"org.apache.commons:commons-lang3"},
+    // applicationRuntimeLibs = {"org.apache.commons:commons-lang3"},
     applicationSharedRuntimeLibs = {
         "org.mule.tests:mule-activemq-broker",
         "org.mule.tests:mule-tests-model",
         "org.apache.derby:derby",
-        "org.codehaus.groovy:groovy-all"
+    // "org.codehaus.groovy:groovy-all"
     },
-    extraPrivilegedArtifacts = {"org.mule.tests:mule-tests-parsers-plugin"},
+    // extraPrivilegedArtifacts = {"org.mule.tests:mule-tests-parsers-plugin"},
     testRunnerExportedRuntimeLibs = {"org.mule.tests:mule-tests-functional"})
 public interface IntegrationTestCaseRunnerConfig {
 
