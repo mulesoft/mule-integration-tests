@@ -1,0 +1,17 @@
+#%RAML 1.0
+title: template-rest-api-spec
+description: REST API Template spec.This API specification provides basic endpoints to return sample status and error response
+version: v1
+
+mediaType:
+- application/java
+
+/status:
+  get:
+    description: Endpoint to return API status for Health Check
+    responses:
+      200:
+        body:
+          application/java:
+            example: |
+              OK
