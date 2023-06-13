@@ -18,6 +18,7 @@ import static org.mule.runtime.tracing.level.api.config.TracingLevel.MONITORING;
 import static org.mule.runtime.tracing.level.api.config.TracingLevel.OVERVIEW;
 import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.DEFAULT_CORE_EVENT_TRACER;
+import static org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy.UNSET_STATUS;
 
 import static java.lang.System.clearProperty;
 import static java.lang.System.setProperty;
@@ -28,12 +29,11 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
-import static org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy.UNSET_STATUS;
 
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
+import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
 import org.mule.runtime.tracer.api.sniffer.ExportedSpanSniffer;
-import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.tck.probe.JUnitProbe;
@@ -69,10 +69,12 @@ public class OpenTelemetryHttpSemanticConventionAttributesAndNameTestCase extend
   private static final int POLL_DELAY_MILLIS = 100;
 
   private static final String STARTING_FLOW = "startingFlow";
+  private static final String HTTP_FLOW_URI_PARAMS = "httpRequestUriParams";
   private static final String HTTP_LISTENER_ERROR_200_FLOW = "httpListenerErrorButReturns200";
   public static final String EXPECTED_FLOW_SPAN_NAME = "mule:flow";
   private static final String EXPECTED_HTTP_REQUEST_SPAN_NAME = "HTTP GET";
   private static final String EXPECTED_HTTP_FLOW_SPAN_NAME = "/test";
+  private static final String EXPECTED_HTTP_URI_PARAMS_FLOW_SPAN_NAME = "/{uriParam1}/{uriParam2}";
   private static final String EXPECTED_HTTP_FLOW_SPAN_NAME_200 = "/test200";
   private static final String EXPECTED_LOGGER_SPAN_NAME = "mule:logger";
   public static final String EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME = "mule:on-error-propagate";
@@ -88,6 +90,7 @@ public class OpenTelemetryHttpSemanticConventionAttributesAndNameTestCase extend
   public static final String NET_HOST_PORT = "net.host.port";
   public static final String HTTP_SCHEME = "http.scheme";
   public static final String HTTP_STATUS_CODE = "http.status_code";
+  public static final String HTTP_ROUTE = "http.route";
   public static final String SPAN_KIND_ATTRIBUTE = "span.kind.override";
   public static final String SPAN_STATUS_ATTRIBUTE = "status.override";
   public static final String ANCESTOR_MULE_SPAN_ID = "ancestor-mule-span-id";
@@ -95,6 +98,7 @@ public class OpenTelemetryHttpSemanticConventionAttributesAndNameTestCase extend
   private final String tracingLevel;
   private final int expectedSpansForSuccessCount;
   private final Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> spanHierarchySuccessRetriever;
+  private final Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> spanHierarchySuccessUriRetriever;
   private final int expectedSpansForErrorCount;
   private final Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> spanHierarchyErrorRetriever;
 
@@ -104,11 +108,15 @@ public class OpenTelemetryHttpSemanticConventionAttributesAndNameTestCase extend
   @Parameterized.Parameters(name = "tracingLevel: {0}")
   public static Collection<Object[]> data() {
     return asList(new Object[][] {
-        {OVERVIEW.name(), 3, getOverviewExpectedSpanTestHierarchyForSuccessFlow(), 3,
-            getOverviewExpectedSpanTestHierarchyForErrorFlow()},
-        {MONITORING.name(), 4, getMonitoringExpectedSpanTestHierarchyForSuccessFlow(), 5,
-            getMonitoringExpectedSpanTestHierarchyForErrorFlow()},
-        {DEBUG.name(), 19, getDebugExpectedSpanTestHierarchyForSuccessFlow(), 20, getDebugExpectedSpanTestHierarchyForErrorFlow()}
+        {OVERVIEW.name(), 3, getOverviewExpectedSpanTestHierarchyForSuccessFlow(EXPECTED_HTTP_FLOW_SPAN_NAME), 3,
+            getOverviewExpectedSpanTestHierarchyForErrorFlow(),
+            getOverviewExpectedSpanTestHierarchyForSuccessFlow(EXPECTED_HTTP_URI_PARAMS_FLOW_SPAN_NAME)},
+        {MONITORING.name(), 4, getMonitoringExpectedSpanTestHierarchyForSuccessFlow(EXPECTED_HTTP_FLOW_SPAN_NAME), 5,
+            getMonitoringExpectedSpanTestHierarchyForErrorFlow(),
+            getMonitoringExpectedSpanTestHierarchyForSuccessFlow(EXPECTED_HTTP_URI_PARAMS_FLOW_SPAN_NAME)},
+        {DEBUG.name(), 19, getDebugExpectedSpanTestHierarchyForSuccessFlow(EXPECTED_HTTP_FLOW_SPAN_NAME), 20,
+            getDebugExpectedSpanTestHierarchyForErrorFlow(),
+            getDebugExpectedSpanTestHierarchyForSuccessFlow(EXPECTED_HTTP_URI_PARAMS_FLOW_SPAN_NAME)}
     });
   }
 
@@ -116,22 +124,24 @@ public class OpenTelemetryHttpSemanticConventionAttributesAndNameTestCase extend
                                                                       int expectedSpansForSuccessCount,
                                                                       Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> spanHierarchySuccessRetriever,
                                                                       int expectedSpansForErrorCount,
-                                                                      Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> spanHierarchyErrorRetriever) {
+                                                                      Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> spanHierarchyErrorRetriever,
+                                                                      Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> spanHierarchySuccessUriRetriever) {
     this.tracingLevel = tracingLevel;
     this.expectedSpansForSuccessCount = expectedSpansForSuccessCount;
     this.expectedSpansForErrorCount = expectedSpansForErrorCount;
     this.spanHierarchySuccessRetriever = spanHierarchySuccessRetriever;
     this.spanHierarchyErrorRetriever = spanHierarchyErrorRetriever;
+    this.spanHierarchySuccessUriRetriever = spanHierarchySuccessUriRetriever;
   }
 
-  private static Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> getOverviewExpectedSpanTestHierarchyForSuccessFlow() {
+  private static Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> getOverviewExpectedSpanTestHierarchyForSuccessFlow(String httpFlowSpanName) {
     return exportedSpans -> {
       SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
       expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
           .beginChildren()
           .child(EXPECTED_HTTP_REQUEST_SPAN_NAME)
           .beginChildren()
-          .child(EXPECTED_HTTP_FLOW_SPAN_NAME)
+          .child(httpFlowSpanName)
           .addTraceStateKeyPresentAssertion("ancestor-mule-span-id")
           .endChildren();
 
@@ -139,14 +149,14 @@ public class OpenTelemetryHttpSemanticConventionAttributesAndNameTestCase extend
     };
   }
 
-  private static Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> getMonitoringExpectedSpanTestHierarchyForSuccessFlow() {
+  private static Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> getMonitoringExpectedSpanTestHierarchyForSuccessFlow(String httpFlowSpanName) {
     return exportedSpans -> {
       SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
       expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
           .beginChildren()
           .child(EXPECTED_HTTP_REQUEST_SPAN_NAME)
           .beginChildren()
-          .child(EXPECTED_HTTP_FLOW_SPAN_NAME)
+          .child(httpFlowSpanName)
           .addTraceStateKeyPresentAssertion(ANCESTOR_MULE_SPAN_ID)
           .beginChildren()
           .child(EXPECTED_LOGGER_SPAN_NAME)
@@ -158,7 +168,7 @@ public class OpenTelemetryHttpSemanticConventionAttributesAndNameTestCase extend
     };
   }
 
-  private static Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> getDebugExpectedSpanTestHierarchyForSuccessFlow() {
+  private static Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> getDebugExpectedSpanTestHierarchyForSuccessFlow(String httpFlowSpanName) {
     return exportedSpans -> {
       SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
       expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
@@ -183,7 +193,7 @@ public class OpenTelemetryHttpSemanticConventionAttributesAndNameTestCase extend
           .child(GET_CONNECTION_SPAN_NAME)
           .child(OPERATION_EXECUTION_SPAN_NAME)
           .beginChildren()
-          .child(EXPECTED_HTTP_FLOW_SPAN_NAME)
+          .child(httpFlowSpanName)
           .addTraceStateKeyPresentAssertion(ANCESTOR_MULE_SPAN_ID)
           .beginChildren()
           .child(EXPECTED_LOGGER_SPAN_NAME)
@@ -324,7 +334,7 @@ public class OpenTelemetryHttpSemanticConventionAttributesAndNameTestCase extend
               .findFirst()
               .orElseThrow(() -> new AssertionFailedError("No span for http listener flow found!"));
 
-      assertThat(listenerExportedSpan.getAttributes(), aMapWithSize(15));
+      assertThat(listenerExportedSpan.getAttributes(), aMapWithSize(16));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(NET_HOST_NAME, "0.0.0.0"));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_TARGET, "/test"));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_SCHEME, "http"));
@@ -333,6 +343,7 @@ public class OpenTelemetryHttpSemanticConventionAttributesAndNameTestCase extend
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(NET_HOST_PORT, httpPort.getValue()));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_METHOD, "GET"));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_STATUS_CODE, "200"));
+      assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_ROUTE, "/test"));
       assertThat(listenerExportedSpan.getAttributes().get(SPAN_KIND_ATTRIBUTE), nullValue());
       assertThat(listenerExportedSpan.getAttributes().get(SPAN_STATUS_ATTRIBUTE), nullValue());
       assertThat(listenerExportedSpan.getSpanKindName(), equalTo("SERVER"));
@@ -348,6 +359,77 @@ public class OpenTelemetryHttpSemanticConventionAttributesAndNameTestCase extend
       assertThat(requestExportedSpan.getAttributes(), hasEntry(NET_PEER_NAME, "localhost"));
       assertThat(requestExportedSpan.getAttributes(), hasEntry(NET_PEER_PORT, httpPort.getValue()));
       assertThat(requestExportedSpan.getAttributes(), hasEntry(HTTP_URL, "http://localhost:" + httpPort.getValue() + "/test"));
+      assertThat(requestExportedSpan.getAttributes(), hasEntry(HTTP_METHOD, "GET"));
+      assertThat(requestExportedSpan.getAttributes(), hasEntry(HTTP_FLAVOR, "1.1"));
+      assertThat(requestExportedSpan.getAttributes(), hasEntry(HTTP_STATUS_CODE, "200"));
+      assertThat(requestExportedSpan.getAttributes().get(SPAN_KIND_ATTRIBUTE), nullValue());
+      assertThat(requestExportedSpan.getAttributes().get(SPAN_STATUS_ATTRIBUTE), nullValue());
+      assertThat(requestExportedSpan.getSpanKindName(), equalTo("CLIENT"));
+      assertThat(requestExportedSpan.hasErrorStatus(), equalTo(false));
+      assertThat(requestExportedSpan.getStatusAsString(), equalTo("UNSET"));
+    } finally {
+      spanCapturer.dispose();
+    }
+  }
+
+  @Test
+  public void testSuccessFlowWithUriParams() throws Exception {
+    ExportedSpanSniffer spanCapturer = profilingService.getSpanExportManager().getExportedSpanSniffer();
+
+    try {
+      flowRunner(HTTP_FLOW_URI_PARAMS).run();
+
+      PollingProber prober = new PollingProber(TIMEOUT_MILLIS, POLL_DELAY_MILLIS);
+
+      prober.check(new JUnitProbe() {
+
+        @Override
+        protected boolean test() {
+          Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
+          return exportedSpans.size() == expectedSpansForSuccessCount;
+        }
+
+        @Override
+        public String describeFailure() {
+          return "The exact amount of spans was not captured";
+        }
+      });
+
+      Collection<CapturedExportedSpan> exportedSpans = spanCapturer.getExportedSpans();
+
+      spanHierarchySuccessUriRetriever.apply(exportedSpans).assertSpanTree();
+
+      CapturedExportedSpan listenerExportedSpan =
+          exportedSpans.stream().filter(exportedSpan -> exportedSpan.getName().equals(EXPECTED_HTTP_URI_PARAMS_FLOW_SPAN_NAME))
+              .findFirst()
+              .orElseThrow(() -> new AssertionFailedError("No span for http listener flow found!"));
+
+      assertThat(listenerExportedSpan.getAttributes(), aMapWithSize(16));
+      assertThat(listenerExportedSpan.getAttributes(), hasEntry(NET_HOST_NAME, "0.0.0.0"));
+      assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_TARGET, "/{uriParam1}/{uriParam2}"));
+      assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_SCHEME, "http"));
+      assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_FLAVOR, "1.1"));
+      assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_USER_AGENT, "AHC/1.0"));
+      assertThat(listenerExportedSpan.getAttributes(), hasEntry(NET_HOST_PORT, httpPort.getValue()));
+      assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_METHOD, "GET"));
+      assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_STATUS_CODE, "200"));
+      assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_ROUTE, "/{uriParam1}/{uriParam2}"));
+      assertThat(listenerExportedSpan.getAttributes().get(SPAN_KIND_ATTRIBUTE), nullValue());
+      assertThat(listenerExportedSpan.getAttributes().get(SPAN_STATUS_ATTRIBUTE), nullValue());
+      assertThat(listenerExportedSpan.getSpanKindName(), equalTo("SERVER"));
+      assertThat(listenerExportedSpan.hasErrorStatus(), equalTo(false));
+      assertThat(listenerExportedSpan.getStatusAsString(), equalTo("UNSET"));
+
+      CapturedExportedSpan requestExportedSpan =
+          exportedSpans.stream().filter(exportedSpan -> exportedSpan.getName().equals(EXPECTED_HTTP_REQUEST_SPAN_NAME))
+              .findFirst()
+              .orElseThrow(() -> new AssertionFailedError("No span for http request flow found!"));
+
+      assertThat(requestExportedSpan.getAttributes(), aMapWithSize(13));
+      assertThat(requestExportedSpan.getAttributes(), hasEntry(NET_PEER_NAME, "localhost"));
+      assertThat(requestExportedSpan.getAttributes(), hasEntry(NET_PEER_PORT, httpPort.getValue()));
+      assertThat(requestExportedSpan.getAttributes(),
+                 hasEntry(HTTP_URL, "http://localhost:" + httpPort.getValue() + "/param1/param2"));
       assertThat(requestExportedSpan.getAttributes(), hasEntry(HTTP_METHOD, "GET"));
       assertThat(requestExportedSpan.getAttributes(), hasEntry(HTTP_FLAVOR, "1.1"));
       assertThat(requestExportedSpan.getAttributes(), hasEntry(HTTP_STATUS_CODE, "200"));
@@ -392,7 +474,7 @@ public class OpenTelemetryHttpSemanticConventionAttributesAndNameTestCase extend
               .findFirst()
               .orElseThrow(() -> new AssertionFailedError("No span for http listener flow found!"));
 
-      assertThat(listenerExportedSpan.getAttributes(), aMapWithSize(15));
+      assertThat(listenerExportedSpan.getAttributes(), aMapWithSize(16));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(NET_HOST_NAME, "0.0.0.0"));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_TARGET, "/test200"));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_SCHEME, "http"));
@@ -401,6 +483,7 @@ public class OpenTelemetryHttpSemanticConventionAttributesAndNameTestCase extend
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(NET_HOST_PORT, httpPort.getValue()));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_METHOD, "GET"));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_STATUS_CODE, "200"));
+      assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_ROUTE, "/test200"));
       assertThat(listenerExportedSpan.getAttributes().get(SPAN_KIND_ATTRIBUTE), nullValue());
       assertThat(listenerExportedSpan.getAttributes().get(SPAN_STATUS_ATTRIBUTE), nullValue());
       assertThat(listenerExportedSpan.getSpanKindName(), equalTo("SERVER"));

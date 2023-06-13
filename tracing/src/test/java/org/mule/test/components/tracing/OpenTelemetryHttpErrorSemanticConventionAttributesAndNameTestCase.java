@@ -83,6 +83,7 @@ public class OpenTelemetryHttpErrorSemanticConventionAttributesAndNameTestCase e
   public static final String HTTP_FLAVOR = "http.flavor";
   public static final String NET_HOST_NAME = "net.host.name";
   public static final String HTTP_TARGET = "http.target";
+  public static final String HTTP_ROUTE = "http.route";
   public static final String HTTP_USER_AGENT = "http.user_agent";
   public static final String NET_HOST_PORT = "net.host.port";
   public static final String HTTP_SCHEME = "http.scheme";
@@ -281,7 +282,7 @@ public class OpenTelemetryHttpErrorSemanticConventionAttributesAndNameTestCase e
               .findFirst()
               .orElseThrow(() -> new AssertionFailedError("No span for http listener flow found!"));
 
-      assertThat(listenerExportedSpan.getAttributes(), aMapWithSize(15));
+      assertThat(listenerExportedSpan.getAttributes(), aMapWithSize(16));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(NET_HOST_NAME, "0.0.0.0"));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_TARGET, "/test"));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_SCHEME, "http"));
@@ -290,6 +291,7 @@ public class OpenTelemetryHttpErrorSemanticConventionAttributesAndNameTestCase e
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(NET_HOST_PORT, listenerServerPort.getValue()));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_METHOD, "GET"));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_STATUS_CODE, "500"));
+      assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_ROUTE, "/test"));
       assertThat(listenerExportedSpan.getAttributes().get(SPAN_KIND_ATTRIBUTE), nullValue());
       assertThat(listenerExportedSpan.getAttributes().get(SPAN_STATUS_ATTRIBUTE), nullValue());
       assertThat(listenerExportedSpan.getSpanKindName(), equalTo("SERVER"));
@@ -371,7 +373,7 @@ public class OpenTelemetryHttpErrorSemanticConventionAttributesAndNameTestCase e
               .findFirst()
               .orElseThrow(() -> new AssertionFailedError("No span for http listener flow found!"));
 
-      assertThat(listenerExportedSpan.getAttributes(), aMapWithSize(15));
+      assertThat(listenerExportedSpan.getAttributes(), aMapWithSize(16));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(NET_HOST_NAME, "0.0.0.0"));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_TARGET, "/test400"));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_SCHEME, "http"));
@@ -380,6 +382,7 @@ public class OpenTelemetryHttpErrorSemanticConventionAttributesAndNameTestCase e
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(NET_HOST_PORT, listenerServerPort.getValue()));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_METHOD, "GET"));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_STATUS_CODE, "400"));
+      assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_ROUTE, "/test400"));
       assertThat(listenerExportedSpan.getAttributes().get(SPAN_KIND_ATTRIBUTE), nullValue());
       assertThat(listenerExportedSpan.getAttributes().get(SPAN_STATUS_ATTRIBUTE), nullValue());
       assertThat(listenerExportedSpan.getSpanKindName(), equalTo("SERVER"));
@@ -458,7 +461,7 @@ public class OpenTelemetryHttpErrorSemanticConventionAttributesAndNameTestCase e
               .findFirst()
               .orElseThrow(() -> new AssertionFailedError("No span for http listener flow found!"));
 
-      assertThat(listenerExportedSpan.getAttributes(), aMapWithSize(15));
+      assertThat(listenerExportedSpan.getAttributes(), aMapWithSize(16));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(NET_HOST_NAME, "0.0.0.0"));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_TARGET, "/test500"));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_SCHEME, "http"));
@@ -467,6 +470,7 @@ public class OpenTelemetryHttpErrorSemanticConventionAttributesAndNameTestCase e
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(NET_HOST_PORT, listenerServerPort.getValue()));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_METHOD, "GET"));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_STATUS_CODE, "500"));
+      assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_ROUTE, "/test500"));
       assertThat(listenerExportedSpan.getAttributes().get(SPAN_KIND_ATTRIBUTE), nullValue());
       assertThat(listenerExportedSpan.getAttributes().get(SPAN_STATUS_ATTRIBUTE), nullValue());
       assertThat(listenerExportedSpan.getSpanKindName(), equalTo("SERVER"));
