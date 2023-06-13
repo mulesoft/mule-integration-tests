@@ -6,10 +6,13 @@
  */
 package org.mule.test.extension.dsl;
 
+import static org.mule.runtime.api.component.ComponentIdentifier.builder;
+
 import static java.lang.String.format;
 import static java.lang.System.getProperty;
 import static java.lang.System.lineSeparator;
 import static java.lang.Thread.currentThread;
+
 import static org.custommonkey.xmlunit.XMLUnit.setIgnoreAttributeOrder;
 import static org.custommonkey.xmlunit.XMLUnit.setIgnoreComments;
 import static org.custommonkey.xmlunit.XMLUnit.setIgnoreWhitespace;
@@ -18,7 +21,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.fail;
-import static org.mule.runtime.api.component.ComponentIdentifier.builder;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
@@ -52,22 +54,21 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import com.google.common.collect.ImmutableSet;
+
 import org.custommonkey.xmlunit.DetailedDiff;
 import org.custommonkey.xmlunit.Diff;
 import org.custommonkey.xmlunit.Difference;
 import org.custommonkey.xmlunit.XMLUnit;
-import org.junit.Before;
 import org.slf4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.google.common.collect.ImmutableSet;
+import org.junit.Before;
 
 @ArtifactClassLoaderRunnerConfig(applicationSharedRuntimeLibs = {
     "org.apache.derby:derby",
-    "org.apache.activemq:activemq-client",
-    "org.apache.activemq:activemq-broker",
-    "org.apache.activemq:activemq-kahadb-store"})
+    "org.mule.tests:mule-activemq-broker",})
 public abstract class AbstractElementModelTestCase extends MuleArtifactFunctionalTestCase {
 
   private static final Logger LOGGER = getLogger(AbstractElementModelTestCase.class);

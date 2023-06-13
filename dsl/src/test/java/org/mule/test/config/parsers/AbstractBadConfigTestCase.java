@@ -20,9 +20,7 @@ import org.junit.rules.ExpectedException;
  */
 @ArtifactClassLoaderRunnerConfig(applicationSharedRuntimeLibs = {
     "org.apache.derby:derby",
-    "org.apache.activemq:activemq-client",
-    "org.apache.activemq:activemq-broker",
-    "org.apache.activemq:activemq-kahadb-store"})
+    "org.mule.tests:mule-activemq-broker"})
 public abstract class AbstractBadConfigTestCase extends MuleArtifactFunctionalTestCase {
 
   @Rule
