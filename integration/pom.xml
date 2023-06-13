@@ -17,9 +17,6 @@
         <skipExportTests>false</skipExportTests>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
 
-        <activemqVersion>5.15.3</activemqVersion>
-        <hawtbufVersion>1.1</hawtbufVersion>
-        <activemqProtobuf>1.1</activemqProtobuf>
         <groovy.version>2.4.21</groovy.version>
         <muleScriptingModuleVersion>2.0.1</muleScriptingModuleVersion>
     </properties>
@@ -149,47 +146,11 @@
             <artifactId>mule-jms-connector</artifactId>
             <classifier>mule-plugin</classifier>
         </dependency>
+        <!-- ActiveMQ Dependencies-->
         <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-broker</artifactId>
-            <version>${activemqVersion}</version>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>jackson-databind</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-client</artifactId>
-            <version>${activemqVersion}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.fusesource.hawtbuf</groupId>
-            <artifactId>hawtbuf</artifactId>
-            <version>${hawtbufVersion}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.activemq.protobuf</groupId>
-            <artifactId>activemq-protobuf</artifactId>
-            <version>${activemqProtobuf}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-jaas</artifactId>
-            <version>${activemqVersion}</version>
-            <scope>test</scope>
-        </dependency>
-        <!-- Used by ActiveMQ if persistent=true -->
-        <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-kahadb-store</artifactId>
-            <version>${activemqVersion}</version>
+            <groupId>org.mule.tests</groupId>
+            <artifactId>mule-activemq-broker</artifactId>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
 
