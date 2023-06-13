@@ -341,6 +341,13 @@
             <groupId>org.apache.groovy</groupId>
             <artifactId>groovy</artifactId>
             <version>${groovyVersionBuild}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.groovy</groupId>
+            <artifactId>groovy-jsr223</artifactId>
+            <version>${groovyVersionBuild}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>
