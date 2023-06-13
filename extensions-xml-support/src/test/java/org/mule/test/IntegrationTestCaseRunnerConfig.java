@@ -9,8 +9,9 @@ package org.mule.test;
 
 import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
 
-@ArtifactClassLoaderRunnerConfig(applicationSharedRuntimeLibs = {"org.apache.activemq:activemq-client",
-    "org.apache.activemq:activemq-broker", "org.apache.activemq:activemq-kahadb-store", "org.fusesource.hawtbuf:hawtbuf"})
+@ArtifactClassLoaderRunnerConfig(applicationSharedRuntimeLibs = {
+    "org.mule.tests:mule-activemq-broker"
+})
 public interface IntegrationTestCaseRunnerConfig {
 
 }
