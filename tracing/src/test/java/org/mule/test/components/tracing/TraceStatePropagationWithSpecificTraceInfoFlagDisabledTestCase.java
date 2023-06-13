@@ -22,27 +22,22 @@ import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.DEFAULT_CORE_EVENT_TRACER;
 import static org.mule.test.components.tracing.OpenTelemetryProtobufSpanUtils.getSpans;
 
+import static java.lang.Boolean.TRUE;
 import static java.lang.String.format;
+import static java.lang.System.clearProperty;
+import static java.lang.System.setProperty;
+import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 
+import static com.linecorp.armeria.common.HttpResponse.from;
+import static com.linecorp.armeria.common.HttpStatus.OK;
 import static io.opentelemetry.api.trace.Span.getInvalid;
 import static io.opentelemetry.api.trace.SpanKind.INTERNAL;
 import static io.opentelemetry.api.trace.StatusCode.UNSET;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
-
-import static java.lang.Boolean.TRUE;
-import static java.lang.System.clearProperty;
-import static java.lang.System.setProperty;
-import static java.util.Arrays.asList;
-
-import static com.linecorp.armeria.common.HttpResponse.from;
-import static com.linecorp.armeria.common.HttpStatus.OK;
-
-import io.qameta.allure.Feature;
-import io.qameta.allure.Story;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.api.util.MultiMap;
 import org.mule.runtime.http.api.HttpService;
@@ -81,6 +76,8 @@ import io.opentelemetry.context.Context;
 import io.opentelemetry.context.propagation.TextMapSetter;
 import io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceRequest;
 import io.opentelemetry.sdk.OpenTelemetrySdk;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 import org.jetbrains.annotations.NotNull;
 import org.junit.After;
 import org.junit.ClassRule;
