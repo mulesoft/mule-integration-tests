@@ -13,6 +13,9 @@ import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
     applicationRuntimeLibs = {"org.apache.commons:commons-lang3"},
     applicationSharedRuntimeLibs = {
         "org.mule.tests:mule-activemq-broker",
+        "com.fasterxml.jackson.core:jackson-core",
+        "com.fasterxml.jackson.core:jackson-annotations",
+        "com.fasterxml.jackson.core:jackson-databind",
         "org.mule.tests:mule-tests-model",
         "org.apache.derby:derby",
         "org.codehaus.groovy:groovy-all"

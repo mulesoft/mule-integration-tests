@@ -40,6 +40,7 @@
 
     <apacheHttpClientVersion>4.5.13</apacheHttpClientVersion>
     <springVersion>5.1.6.RELEASE</springVersion>
+    <jacksonVersion>2.15.0</jacksonVersion>
 
     <muleDependenciesVersion>1.x-SNAPSHOT</muleDependenciesVersion>
     <muleTestComponentsVersion>4.5.0-SNAPSHOT</muleTestComponentsVersion>
