@@ -1,0 +1,16 @@
+# Error
+"async-flow": "mule:flow"
+"async-flow/processors/0": "mule:set-variable"
+"async-flow/processors/1": "mule:async"
+"async-flow/processors/1/processors/0": "mule:logger"
+"async-flow/processors/1/processors/1": "mule:raise-error"
+"async-flow/processors/1/processors/2": "mule:set-payload"
+"async-flow/processors/2": "mule:set-variable"
+
+# Success
+"async-flow": "mule:flow"
+"async-flow/processors/0": "mule:set-variable"
+"async-flow/processors/1": "mule:async"
+"async-flow/processors/1/processors/0": "mule:logger"
+"async-flow/processors/1/processors/1": "mule:set-payload"
+"async-flow/processors/2": "mule:set-variable"

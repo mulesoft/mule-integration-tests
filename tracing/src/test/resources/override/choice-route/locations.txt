@@ -1,0 +1,13 @@
+# Error
+"choice-flow": "mule:flow"
+"choice-flow/processors/0": "mule:choice", "mule:choice:route"
+"choice-flow/processors/0/route/0/processors/0": "mule:logger"
+"choice-flow/processors/0/route/1/processors/0": "mule:raise-error"
+"choice-flow/processors/0/route/2/processors/0": "mule:set-payload"
+
+# Success
+"choice-flow": "mule:flow"
+"choice-flow/processors/0": "mule:choice", "mule:choice:route"
+"choice-flow/processors/0/route/0/processors/0": "mule:logger"
+"choice-flow/processors/0/route/1/processors/0": "mule:raise-error"
+"choice-flow/processors/0/route/2/processors/0": "mule:set-payload"
