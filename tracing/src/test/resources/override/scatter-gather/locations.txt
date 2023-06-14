@@ -1,0 +1,23 @@
+# Double Error
+"scatter-gather-flow": "mule:flow"
+"scatter-gather-flow/processors/0": "mule:scatter-gather", "mule:scatter-gather:route"
+"scatter-gather-flow/processors/0/route/0/processors/0": "mule:set-payload"
+"scatter-gather-flow/processors/0/route/0/processors/1": "mule:raise-error"
+"scatter-gather-flow/processors/0/route/1/processors/0": "mule:raise-error"
+"scatter-gather-flow/processors/0/route/1/processors/1": "mule:set-payload"
+"scatter-gather-flow/processors/1": "mule:logger"
+
+# Error
+"scatter-gather-flow": "mule:flow"
+"scatter-gather-flow/processors/0": "mule:scatter-gather", "mule:scatter-gather:route"
+"scatter-gather-flow/processors/0/route/0/processors/0": "mule:set-payload"
+"scatter-gather-flow/processors/0/route/0/processors/1": "mule:raise-error"
+"scatter-gather-flow/processors/0/route/1/processors/0": "mule:logger"
+"scatter-gather-flow/processors/1": "mule:logger"
+
+# Success
+"scatter-gather-flow": "mule:flow"
+"scatter-gather-flow/processors/0": "mule:scatter-gather", "mule:scatter-gather:route"
+"scatter-gather-flow/processors/0/route/0/processors/0": "mule:set-payload"
+"scatter-gather-flow/processors/0/route/1/processors/0": "mule:set-payload"
+"scatter-gather-flow/processors/1": "mule:logger"

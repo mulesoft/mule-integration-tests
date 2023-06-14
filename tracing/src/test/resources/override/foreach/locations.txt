@@ -1,0 +1,16 @@
+# Error
+"for-each-telemetryFlow": "mule:flow"
+"for-each-telemetryFlow/processors/0": "mule:set-payload"
+"for-each-telemetryFlow/processors/1": "mule:foreach", "mule:foreach:iteration"
+"for-each-telemetryFlow/processors/1/route/0/processors/0": "mule:logger"
+"for-each-telemetryFlow/processors/1/route/0/processors/1": "mule:raise-error"
+"for-each-telemetryFlow/processors/1/route/0/processors/2": "mule:set-variable"
+"for-each-telemetryFlow/processors/2": "mule:set-payload"
+
+# Success
+"for-each-telemetryFlow": "mule:flow"
+"for-each-telemetryFlow/processors/0": "mule:set-payload"
+"for-each-telemetryFlow/processors/1": "mule:foreach", "mule:foreach:iteration"
+"for-each-telemetryFlow/processors/1/route/0/processors/1": "mule:logger"
+"for-each-telemetryFlow/processors/1/route/1/processors/0": "mule:set-variable"
+"for-each-telemetryFlow/processors/2": "mule:set-payload"

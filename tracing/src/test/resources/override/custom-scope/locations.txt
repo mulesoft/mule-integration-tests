@@ -1,0 +1,11 @@
+# Error
+"custom-scope-flow": "mule:flow"
+"custom-scope-flow/processors/0": "heisenberg:execute-anything"
+"custom-scope-flow/processors/0/processors/0": "mule:logger"
+"custom-scope-flow/processors/0/processors/1": "mule:raise-error"
+"custom-scope-flow/processors/0/processors/2": "mule:set-payload"
+
+# Success
+"custom-scope-flow": "mule:flow"
+"custom-scope-flow/processors/0": "heisenberg:execute-anything"
+"custom-scope-flow/processors/0/processors/0": "mule:logger"

@@ -1,0 +1,12 @@
+# Error
+"round-robin-flow": "mule:flow"
+"round-robin-flow/processors/0": "mule:round-robin", "mule:round-robin:route"
+"round-robin-flow/processors/0/route/0/processors/0": "mule:logger"
+"round-robin-flow/processors/0/route/0/processors/1": "mule:raise-error"
+
+# Success
+"round-robin-flow": "mule:flow"
+"round-robin-flow/processors/0": "mule:round-robin", "mule:round-robin:route"
+"round-robin-flow/processors/0/route/0/processors/0": "mule:logger"
+"round-robin-flow/processors/0/route/0/processors/1": "mule:set-payload"
+"round-robin-flow/processors/0/route/1/processors/0": "mule:logger"

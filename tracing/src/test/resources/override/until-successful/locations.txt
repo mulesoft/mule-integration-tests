@@ -1,0 +1,11 @@
+# Error
+"until-successful-flow": "mule:flow"
+"until-successful-flow/processors/0": "mule:until-successful", "mule:until-successful:attempt"
+"until-successful-flow/processors/0/processors/0": "mule:logger"
+"until-successful-flow/processors/0/processors/1": "mule:raise-error"
+
+# Success
+"until-successful-flow": "mule:flow"
+"until-successful-flow/processors/0": "mule:until-successful", "mule:until-successful:attempt"
+"until-successful-flow/processors/0/processors/0": "mule:logger"
+"until-successful-flow/processors/0/processors/1": "mule:set-payload"

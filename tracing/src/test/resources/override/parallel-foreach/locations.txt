@@ -1,0 +1,16 @@
+# Error
+"parallel-for-eachFlow": "mule:flow"
+"parallel-for-eachFlow/processors/0": "mule:set-payload"
+"parallel-for-eachFlow/processors/1": "mule:parallel-foreach", "mule:parallel-foreach:iteration"
+"parallel-for-eachFlow/processors/1/route/0/processors/0": "mule:logger"
+"parallel-for-eachFlow/processors/1/route/0/processors/1": "mule:raise-error"
+"parallel-for-eachFlow/processors/1/route/0/processors/2": "mule:set-variable"
+"parallel-for-eachFlow/processors/2": "mule:set-payload"
+
+# Success
+"parallel-for-eachFlow": "mule:flow"
+"parallel-for-eachFlow/processors/0": "mule:set-payload"
+"parallel-for-eachFlow/processors/1": "mule:parallel-foreach", "mule:parallel-foreach:iteration"
+"parallel-for-eachFlow/processors/1/route/0/processors/0": "mule:logger"
+"parallel-for-eachFlow/processors/1/route/1/processors/1": "mule:set-payload"
+"parallel-for-eachFlow/processors/2": "mule:set-payload"

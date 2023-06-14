@@ -1,0 +1,32 @@
+# Double Error
+"first-successful-telemetryFlow": "mule:flow"
+"first-successful-telemetryFlow/processors/0": "mule:set-variable"
+"first-successful-telemetryFlow/processors/1": "mule:first-successful", "mule:first-successful:attempt:1", "mule:first-successful:attempt:2"
+"first-successful-telemetryFlow/processors/1/route/0/processors/0": "mule:set-payload"
+"first-successful-telemetryFlow/processors/1/route/0/processors/1": "mule:raise-error"
+"first-successful-telemetryFlow/processors/1/route/0/processors/2": "mule:logger"
+"first-successful-telemetryFlow/processors/1/route/1/processors/0": "mule:set-payload"
+"first-successful-telemetryFlow/processors/1/route/1/processors/1": "mule:logger"
+"first-successful-telemetryFlow/processors/1/route/1/processors/2": "mule:raise-error"
+"first-successful-telemetryFlow/processors/2": "mule:set-variable"
+
+# Error
+"first-successful-telemetryFlow": "mule:flow"
+"first-successful-telemetryFlow/processors/0": "mule:set-variable"
+"first-successful-telemetryFlow/processors/1": "mule:first-successful", "mule:first-successful:attempt:1", "mule:first-successful:attempt:2"
+"first-successful-telemetryFlow/processors/1/route/0/processors/0": "mule:set-payload"
+"first-successful-telemetryFlow/processors/1/route/0/processors/1": "mule:raise-error"
+"first-successful-telemetryFlow/processors/1/route/0/processors/2": "mule:logger"
+"first-successful-telemetryFlow/processors/1/route/1/processors/0": "mule:set-payload"
+"first-successful-telemetryFlow/processors/1/route/1/processors/1": "mule:logger"
+"first-successful-telemetryFlow/processors/2": "mule:set-variable"
+
+# Success
+"first-successful-telemetryFlow": "mule:flow"
+"first-successful-telemetryFlow/processors/0": "mule:set-variable"
+"first-successful-telemetryFlow/processors/1": "mule:first-successful", "mule:first-successful:attempt:1"
+"first-successful-telemetryFlow/processors/1/route/0/processors/0": "mule:set-payload"
+"first-successful-telemetryFlow/processors/1/route/0/processors/1": "mule:logger"
+"first-successful-telemetryFlow/processors/1/route/1/processors/0": "mule:set-payload"
+"first-successful-telemetryFlow/processors/1/route/1/processors/1": "mule:logger"
+"first-successful-telemetryFlow/processors/2": "mule:set-variable"

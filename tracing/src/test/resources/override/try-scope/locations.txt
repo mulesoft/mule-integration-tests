@@ -1,0 +1,11 @@
+# Error
+"try-scope-flow": "mule:flow"
+"try-scope-flow/processors/0": "mule:try"
+"try-scope-flow/processors/0/processors/0": "mule:logger"
+"try-scope-flow/processors/0/processors/1": "mule:raise-error"
+"try-scope-flow/processors/0/processors/2": "mule:set-payload"
+
+# Success
+"try-scope-flow": "mule:flow"
+"try-scope-flow/processors/0": "mule:try"
+"try-scope-flow/processors/0/processors/0": "mule:logger"
