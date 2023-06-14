@@ -31,8 +31,6 @@ import static com.linecorp.armeria.common.HttpStatus.OK;
 
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
-import org.mule.runtime.tracer.api.span.InternalSpan;
-import org.mule.runtime.tracer.customization.api.InternalSpanNames;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.tck.probe.JUnitProbe;
