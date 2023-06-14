@@ -6,11 +6,12 @@
  */
 package org.mule.test.integration.exceptions;
 
+import static org.mule.test.integration.exceptions.OnErrorContinueTestCase.JSON_REQUEST;
+import static org.mule.test.integration.exceptions.OnErrorContinueTestCase.JSON_RESPONSE;
+
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
-import static org.mule.test.integration.exceptions.OnErrorContinueTestCase.JSON_REQUEST;
-import static org.mule.test.integration.exceptions.OnErrorContinueTestCase.JSON_RESPONSE;
 
 import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.exception.MuleException;
@@ -25,8 +26,9 @@ import org.mule.test.runner.RunnerDelegateTo;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.junit.Test;
 import org.junit.runners.Parameterized;
 
