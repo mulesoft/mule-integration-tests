@@ -215,8 +215,9 @@
 
         <!-- DB Drivers -->
         <dependency>
-            <groupId>org.apache.derby</groupId>
-            <artifactId>derby</artifactId>
+            <groupId>org.mule.tests</groupId>
+            <artifactId>mule-derby-all</artifactId>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
 

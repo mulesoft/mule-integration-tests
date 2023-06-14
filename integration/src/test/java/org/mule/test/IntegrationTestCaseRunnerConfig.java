@@ -17,7 +17,7 @@ import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
         "com.fasterxml.jackson.core:jackson-annotations",
         "com.fasterxml.jackson.core:jackson-databind",
         "org.mule.tests:mule-tests-model",
-        "org.apache.derby:derby",
+        "org.mule.tests:mule-derby-all",
         "org.apache.groovy:groovy",
         "org.apache.groovy:groovy-jsr223"
     },

@@ -31,7 +31,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 @ArtifactClassLoaderRunnerConfig(applicationSharedRuntimeLibs = {
-    "org.apache.derby:derby",
+    "org.mule.tests:mule-derby-all",
     "org.mule.tests:mule-activemq-broker"
 })
 public class XmlDslProcessingTestCase extends MuleArtifactFunctionalTestCase {
