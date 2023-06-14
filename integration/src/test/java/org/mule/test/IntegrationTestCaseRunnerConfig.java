@@ -18,7 +18,8 @@ import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
         "com.fasterxml.jackson.core:jackson-databind",
         "org.mule.tests:mule-tests-model",
         "org.apache.derby:derby",
-        "org.codehaus.groovy:groovy-all"
+        "org.apache.groovy:groovy",
+        "org.apache.groovy:groovy-jsr223"
     },
     extraPrivilegedArtifacts = {"org.mule.tests:mule-tests-parsers-plugin"},
     testRunnerExportedRuntimeLibs = {"org.mule.tests:mule-tests-functional"})
