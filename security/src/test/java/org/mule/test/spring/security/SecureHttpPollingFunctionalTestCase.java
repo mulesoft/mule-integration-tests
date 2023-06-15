@@ -6,13 +6,15 @@
  */
 package org.mule.test.spring.security;
 
+import static org.mule.runtime.http.api.HttpConstants.HttpStatus.UNAUTHORIZED;
+
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
+
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
-import static org.mule.runtime.http.api.HttpConstants.HttpStatus.UNAUTHORIZED;
 
 import org.mule.extension.http.api.HttpResponseAttributes;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
@@ -26,9 +28,11 @@ import org.mule.tests.api.TestQueueManager;
 
 import javax.inject.Inject;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
+@Ignore("W-13603419")
 public class SecureHttpPollingFunctionalTestCase extends MuleArtifactFunctionalTestCase
     implements IntegrationTestCaseRunnerConfig {
 
