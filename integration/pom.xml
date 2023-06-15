@@ -181,9 +181,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.derby</groupId>
-            <artifactId>derby</artifactId>
-            <version>${derbyVersion}</version>
+            <groupId>org.mule.tests</groupId>
+            <artifactId>mule-derby-all</artifactId>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
 

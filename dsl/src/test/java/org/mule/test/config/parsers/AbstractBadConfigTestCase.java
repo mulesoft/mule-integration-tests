@@ -19,7 +19,7 @@ import org.junit.rules.ExpectedException;
  * A stripped-down version of FunctionalTestCase that allows us to test the parsing of a bad configuration.
  */
 @ArtifactClassLoaderRunnerConfig(applicationSharedRuntimeLibs = {
-    "org.apache.derby:derby",
+    "org.mule.tests:mule-derby-all",
     "org.mule.tests:mule-activemq-broker"})
 public abstract class AbstractBadConfigTestCase extends MuleArtifactFunctionalTestCase {
 

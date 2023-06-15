@@ -67,7 +67,7 @@ import org.w3c.dom.Element;
 import org.junit.Before;
 
 @ArtifactClassLoaderRunnerConfig(applicationSharedRuntimeLibs = {
-    "org.apache.derby:derby",
+    "org.mule.tests:mule-derby-all",
     "org.mule.tests:mule-activemq-broker",})
 public abstract class AbstractElementModelTestCase extends MuleArtifactFunctionalTestCase {
 
