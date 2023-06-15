@@ -130,6 +130,11 @@
         </dependency>
         <dependency>
             <groupId>org.mule.connectors</groupId>
+            <artifactId>mule-jms-client</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.connectors</groupId>
             <artifactId>mule-wsc-connector</artifactId>
             <classifier>mule-plugin</classifier>
             <scope>test</scope>
@@ -198,6 +203,11 @@
             <groupId>org.mule.connectors</groupId>
             <artifactId>mule-http-connector</artifactId>
             <classifier>mule-plugin</classifier>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.modules</groupId>
+            <artifactId>mule-module-cors-kernel</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
