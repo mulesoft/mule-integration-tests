@@ -9,7 +9,6 @@ package org.mule.test.components.tracing;
 
 import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.DEFAULT_CORE_EVENT_TRACER;
-import static org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy.OK_STATUS;
 import static org.mule.test.infrastructure.profiling.tracing.TracingTestUtils.createAttributeMap;
 import static org.mule.test.infrastructure.profiling.tracing.TracingTestUtils.getDefaultAttributesToAssertExistence;
 
@@ -33,25 +32,24 @@ import org.junit.Test;
 @Story(DEFAULT_CORE_EVENT_TRACER)
 public class SimpleOpenTelemetryTracingTestCase extends AbstractOpenTelemetryTracingTestCase {
 
+  private static final int TIMEOUT_MILLIS = 30000;
+  private static final int POLL_DELAY_MILLIS = 100;
   private static final String EXPECTED_FLOW_SPAN_NAME = "mule:flow";
   private static final String EXPECTED_SET_PAYLOAD_SPAN_NAME = "mule:set-payload";
   private static final String EXPECTED_TRACING_CORRELATION_ID_SPAN_NAME = "tracing:with-correlation-id";
   private static final String EXPECTED_SET_VARIABLE_SPAN_NAME = "mule:set-variable";
   private static final String EXPECTED_SET_LOGGING_VARIABLE_SPAN_NAME = "tracing:set-logging-variable";
   private static final String SIMPLE_FLOW = "simple-flow";
-  public static final String CORRELATION_ID_KEY = "correlation.id";
+  private static final String CORRELATION_ID_KEY = "correlation.id";
   private static final String TEST_ARTIFACT_ID = "SimpleOpenTelemetryTracingTestCase#testSimpleFlow";
   private static final String FLOW_LOCATION = "simple-flow";
   private static final String SET_PAYLOAD_LOCATION = "simple-flow/processors/2";
   private static final String SET_VARIABLE_LOCATION = "simple-flow/processors/0/processors/0";
   private static final String SET_LOGGING_VARIABLE_LOCATION = "simple-flow/processors/1";
   private static final String TRACING_SET_CORRELATION_ID_LOCATION = "simple-flow/processors/0";
-  public static final String TEST_VAR_NAME = "testVar";
-  public static final String TRACE_VAR_VALUE = "Hello World!";
-  public static final String CORRELATION_ID_CUSTOM_VALUE = "Fua";
-
-  private static final int TIMEOUT_MILLIS = 30000;
-  private static final int POLL_DELAY_MILLIS = 100;
+  private static final String TEST_VAR_NAME = "testVar";
+  private static final String TRACE_VAR_VALUE = "Hello World!";
+  private static final String CORRELATION_ID_CUSTOM_VALUE = "Fua";
 
   public SimpleOpenTelemetryTracingTestCase(String exporterType, String schema, int port, String path, boolean secure) {
     super(exporterType, schema, port, path, secure);
