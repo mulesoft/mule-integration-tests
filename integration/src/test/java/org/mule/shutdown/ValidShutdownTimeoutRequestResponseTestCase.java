@@ -6,32 +6,32 @@
  */
 package org.mule.shutdown;
 
-import io.qameta.allure.Feature;
-import io.qameta.allure.Story;
-import org.junit.After;
-import org.junit.Rule;
-import org.junit.Test;
-import org.mule.runtime.api.exception.MuleRuntimeException;
+import static org.mule.runtime.http.api.HttpConstants.Method.GET;
+import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.LIFECYCLE_AND_DEPENDENCY_INJECTION;
+import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.GracefulShutdownStory.GRACEFUL_SHUTDOWN_STORY;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+
 import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.runtime.http.api.HttpService;
 import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;
 import org.mule.runtime.http.api.domain.message.request.HttpRequest;
 import org.mule.runtime.http.api.domain.message.response.HttpResponse;
 import org.mule.service.http.TestHttpClient;
-import org.mule.tck.junit4.FlakinessDetectorTestRunner;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.tck.probe.JUnitLambdaProbe;
 import org.mule.tck.probe.PollingProber;
-import org.mule.test.runner.RunnerDelegateTo;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mule.runtime.http.api.HttpConstants.Method.GET;
-import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.GracefulShutdownStory.GRACEFUL_SHUTDOWN_STORY;
-import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.LIFECYCLE_AND_DEPENDENCY_INJECTION;
+import org.junit.After;
+import org.junit.Rule;
+import org.junit.Test;
+
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 
 @Feature(LIFECYCLE_AND_DEPENDENCY_INJECTION)
 @Story(GRACEFUL_SHUTDOWN_STORY)
@@ -80,19 +80,13 @@ public class ValidShutdownTimeoutRequestResponseTestCase extends AbstractShutdow
 
   private void doShutDownTest(final String payload, final String url) throws Throwable {
     final Future<?> requestTask = executor.submit(() -> {
-      try {
-        new PollingProber().check(new JUnitLambdaProbe(() -> {
-          HttpRequest request =
-              HttpRequest.builder().uri(url).method(GET).entity(new ByteArrayHttpEntity(payload.getBytes())).build();
-          final HttpResponse response =
-              httpClient.send(request, 1000, false, null);
-          assertThat(IOUtils.toString(response.getEntity().getContent()), is(payload));
-          return true;
-        }, "Was not able to process message "));
-
-      } catch (Exception e) {
-        throw new MuleRuntimeException(e);
-      }
+      new PollingProber().check(new JUnitLambdaProbe(() -> {
+        HttpRequest request =
+            HttpRequest.builder().uri(url).method(GET).entity(new ByteArrayHttpEntity(payload.getBytes())).build();
+        final HttpResponse response = httpClient.send(request, RECEIVE_TIMEOUT, false, null);
+        assertThat(IOUtils.toString(response.getEntity().getContent()), is(payload));
+        return true;
+      }));
     });
 
     // Make sure to give the request enough time to get to the waiting portion of the feed.
