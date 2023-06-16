@@ -66,7 +66,7 @@
 
     <flow name="operationErrorWithMappings">
         <!-- This test uses http because the original issue couldn't be reproduced with heisenberg:call-gus-fring -->
-        <http:request method="GET" config-ref="HTTP_Request_configuration" url="https://httpbin.org/status/404">
+        <http:request method="GET" config-ref="HTTP_Request_configuration" url="http://localhost:${wireMockPort}/404">
             <error-mapping sourceType="HTTP:NOT_FOUND" targetType="APP:MAPPED_CONNECTIVITY"/>
             <error-mapping targetType="APP:ANYTHING_ELSE" />
         </http:request>
@@ -74,7 +74,7 @@
 
     <flow name="executeKillWithClient">
         <heisenberg:execute-remote-kill extension="HTTP" configName="HTTP_Request_configuration" operation="request" >
-            <heisenberg:parameters>#[{'url': 'https://httpbin.org/status/200'}]</heisenberg:parameters>
+            <heisenberg:parameters>#[{'url': 'http://localhost:${wireMockPort}/200'}]</heisenberg:parameters>
         </heisenberg:execute-remote-kill>
     </flow>
 
@@ -87,7 +87,7 @@
     </flow>
 
     <flow name="flowUnknownStatusCodeHttpRequest">
-        <http:request method="GET" config-ref="HTTP_Request_configuration" url="https://httpbin.org/status/418"/>
+        <http:request method="GET" config-ref="HTTP_Request_configuration" url="http://localhost:${wireMockPort}/418"/>
     </flow>
 
     <flow name="loggerWithTemplate">

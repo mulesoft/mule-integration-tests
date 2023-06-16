@@ -6,14 +6,20 @@
  */
 package org.mule.test.integration.interception;
 
-import static java.util.Arrays.asList;
-import static org.hamcrest.Matchers.sameInstance;
 import static org.mule.functional.api.exception.ExpectedError.none;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 import static org.mule.runtime.api.interception.ProcessorInterceptorFactory.INTERCEPTORS_ORDER_REGISTRY_KEY;
-import static org.mule.test.allure.AllureConstants.InterceptonApi.INTERCEPTION_API;
 import static org.mule.test.allure.AllureConstants.InterceptonApi.ComponentInterceptionStory.COMPONENT_INTERCEPTION_STORY;
+import static org.mule.test.allure.AllureConstants.InterceptonApi.INTERCEPTION_API;
 import static org.mule.test.allure.AllureConstants.XmlSdk.XML_SDK;
+
+import static java.util.Arrays.asList;
+
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
+import static org.hamcrest.Matchers.sameInstance;
 
 import org.mule.functional.api.exception.ExpectedError;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
@@ -23,6 +29,7 @@ import org.mule.runtime.api.interception.InterceptionEvent;
 import org.mule.runtime.api.interception.ProcessorInterceptor;
 import org.mule.runtime.api.interception.ProcessorInterceptorFactory;
 import org.mule.runtime.api.interception.ProcessorInterceptorFactory.ProcessorInterceptorOrder;
+import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.IntegrationTestCaseRunnerConfig;
 
 import java.util.HashMap;
@@ -30,14 +37,14 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Features;
 import io.qameta.allure.Story;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
 
 /**
  * Test robustness of the Mule Runtime with misbehaving interceptors.
@@ -49,6 +56,20 @@ public class XmlSdkProcessorInterceptorFactoryFailingInterceptorsTestCase extend
 
   @Rule
   public ExpectedError expectedError = none();
+
+  @Rule
+  public DynamicPort wireMockPort = new DynamicPort("wireMockPort");
+
+  @Rule
+  public WireMockRule wireMock = new WireMockRule(wireMockConfig()
+      .bindAddress("127.0.0.1")
+      .port(wireMockPort.getNumber()));
+
+  @Before
+  public void setUp() {
+    wireMock.stubFor(get(urlMatching("/404")).willReturn(aResponse().withStatus(404)));
+    wireMock.stubFor(get(urlMatching("/418")).willReturn(aResponse().withStatus(418)));
+  }
 
   @Override
   protected String getConfigFile() {
