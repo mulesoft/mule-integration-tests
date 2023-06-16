@@ -114,19 +114,7 @@ public class ExportConfigurationChangeTestCase extends
     flowRunner(FLOW_LOCATION).withPayload(TEST_PAYLOAD).run().getMessage();
     PollingProber prober = new PollingProber(TIMEOUT_MILLIS, POLL_DELAY_MILLIS);
 
-    prober.check(new JUnitProbe() {
-
-      @Override
-      protected boolean test() {
-        Collection<CapturedExportedSpan> exportedSpans = originalServer.getCapturedExportedSpans();
-        return exportedSpans.size() == 2;
-      }
-
-      @Override
-      public String describeFailure() {
-        return "The exact amount of spans was not captured";
-      }
-    });
+    pollTillExportedSpansCaptured(prober, originalServer);
 
     List<String> attributesToAssertExistence = getDefaultAttributesToAssertExistence();
 
@@ -134,17 +122,7 @@ public class ExportConfigurationChangeTestCase extends
 
     Map<String, String> setPayloadAttributeMap = createAttributeMap(SET_PAYLOAD_LOCATION, TEST_ARTIFACT_ID);
 
-    SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
-    expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
-        .addAttributesToAssertValue(createAttributeMap(FLOW_LOCATION, TEST_ARTIFACT_ID))
-        .addAttributesToAssertExistence(attributesToAssertExistence)
-        .beginChildren()
-        .child(EXPECTED_SET_PAYLOAD_SPAN_NAME)
-        .addAttributesToAssertValue(setPayloadAttributeMap)
-        .addAttributesToAssertExistence(attributesToAssertExistence)
-        .endChildren();
-
-    expectedSpanHierarchy.assertSpanTree();
+    assertExpectedSpanTree(attributesToAssertExistence, exportedSpans, setPayloadAttributeMap);
 
     // We update the file by recopying it.
     setProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENDPOINT,
@@ -152,6 +130,15 @@ public class ExportConfigurationChangeTestCase extends
     copy(configFile, Paths.get(file.getPath()), StandardCopyOption.REPLACE_EXISTING);
 
     flowRunner(FLOW_LOCATION).withPayload(TEST_PAYLOAD).run().getMessage();
+    pollTillExportedSpansCaptured(prober, afterConfigurationChangeServer);
+
+
+    exportedSpans = afterConfigurationChangeServer.getCapturedExportedSpans();
+
+    assertExpectedSpanTree(attributesToAssertExistence, exportedSpans, setPayloadAttributeMap);
+  }
+
+  private static void pollTillExportedSpansCaptured(PollingProber prober, TestServerRule afterConfigurationChangeServer) {
     prober.check(new JUnitProbe() {
 
       @Override
@@ -165,12 +152,12 @@ public class ExportConfigurationChangeTestCase extends
         return "The exact amount of spans was not captured";
       }
     });
+  }
 
-
-    exportedSpans = afterConfigurationChangeServer.getCapturedExportedSpans();
-
-    expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
-
+  private static void assertExpectedSpanTree(List<String> attributesToAssertExistence,
+                                             Collection<CapturedExportedSpan> exportedSpans,
+                                             Map<String, String> setPayloadAttributeMap) {
+    SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
     expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
         .addAttributesToAssertValue(createAttributeMap(FLOW_LOCATION, TEST_ARTIFACT_ID))
         .addAttributesToAssertExistence(attributesToAssertExistence)
