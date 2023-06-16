@@ -83,7 +83,6 @@ public class ValidShutdownTimeoutRequestResponseTestCase extends AbstractShutdow
       new PollingProber().check(new JUnitLambdaProbe(() -> {
         HttpRequest request =
             HttpRequest.builder().uri(url).method(GET).entity(new ByteArrayHttpEntity(payload.getBytes())).build();
-        System.out.println("Sending...");
         final HttpResponse response = httpClient.send(request, RECEIVE_TIMEOUT, false, null);
         assertThat(IOUtils.toString(response.getEntity().getContent()), is(payload));
         return true;
