@@ -21,6 +21,7 @@ import static java.lang.Boolean.TRUE;
 import static java.lang.System.clearProperty;
 import static java.lang.System.setProperty;
 import static java.nio.file.Files.copy;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 import static com.linecorp.armeria.common.HttpResponse.from;
 import static com.linecorp.armeria.common.HttpStatus.OK;
@@ -94,7 +95,7 @@ public class ExportConfigurationChangeTestCase extends
   protected void doSetUpBeforeMuleContextCreation() throws Exception {
     file = createTempFile("tracing", "test");
     configFile = Paths.get(getClass().getResource("/tracing/config/exporter.conf").getPath());
-    copy(configFile, Paths.get(file.getPath()), StandardCopyOption.REPLACE_EXISTING);
+    copy(configFile, Paths.get(file.getPath()), REPLACE_EXISTING);
     setProperty(MULE_OPEN_TELEMETRY_TRACING_CONFIGURATION_FILE_PATH, file.getAbsolutePath());
     setProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENABLED, TRUE.toString());
     setProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENDPOINT,
@@ -127,7 +128,7 @@ public class ExportConfigurationChangeTestCase extends
     // We update the file by recopying it.
     setProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENDPOINT,
                 "http://localhost:" + afterConfigurationChangeServer.httpPort());
-    copy(configFile, Paths.get(file.getPath()), StandardCopyOption.REPLACE_EXISTING);
+    copy(configFile, Paths.get(file.getPath()), REPLACE_EXISTING);
 
     flowRunner(FLOW_LOCATION).withPayload(TEST_PAYLOAD).run().getMessage();
     pollTillExportedSpansCaptured(prober, afterConfigurationChangeServer);
