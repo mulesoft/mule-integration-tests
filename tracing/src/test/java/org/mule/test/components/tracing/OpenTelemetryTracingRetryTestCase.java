@@ -50,7 +50,6 @@ import com.linecorp.armeria.testing.junit4.server.ServerRule;
 import io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceRequest;
 import org.jetbrains.annotations.NotNull;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
@@ -59,18 +58,14 @@ import org.junit.runners.Parameterized;
 public class OpenTelemetryTracingRetryTestCase extends
     MuleArtifactFunctionalTestCase implements OpenTelemetryTracingTestRunnerConfigAnnotation {
 
+  private static final int TIMEOUT_MILLIS = 30000;
+  private static final int POLL_DELAY_MILLIS = 100;
+  private static final int MAX_BACKOFF_ATTEMPTS = 2;
   private static final String EXPECTED_FLOW_SPAN_NAME = "mule:flow";
   private static final String EXPECTED_SET_PAYLOAD_SPAN_NAME = "mule:set-payload";
   private static final String FLOW_LOCATION = "retry-flow";
-
-  private static final String TEST_ARTIFACT_ID = "OpenTelemetryTracingRetryTestCase#testRetryBackoffTest";
-
-  public static final int TIMEOUT_MILLIS = 30000;
-
-  private static final int POLL_DELAY_MILLIS = 100;
-  public static final int MAX_BACKOFF_ATTEMPTS = 2;
-
   private static final String SET_PAYLOAD_LOCATION = "retry-flow/processors/0";
+  private static final String TEST_ARTIFACT_ID = "OpenTelemetryTracingRetryTestCase#testRetryBackoffTest";
   private final String type;
   private final String path;
 
@@ -93,10 +88,11 @@ public class OpenTelemetryTracingRetryTestCase extends
   public OpenTelemetryTracingRetryTestCase(String type, String path) {
     this.type = type;
     this.path = path;
+
+    setOpenTelemetryExporterProperties();
   }
 
-  @Before
-  public void before() {
+  private void setOpenTelemetryExporterProperties() {
     setProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENABLED, TRUE.toString());
     setProperty(MULE_OPEN_TELEMETRY_EXPORTER_TYPE, type);
     setProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENDPOINT,
