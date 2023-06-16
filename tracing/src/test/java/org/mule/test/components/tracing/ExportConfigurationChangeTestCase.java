@@ -20,6 +20,7 @@ import static java.io.File.createTempFile;
 import static java.lang.Boolean.TRUE;
 import static java.lang.System.clearProperty;
 import static java.lang.System.setProperty;
+import static java.lang.Thread.sleep;
 import static java.nio.file.Files.copy;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
@@ -38,7 +39,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -113,9 +113,8 @@ public class ExportConfigurationChangeTestCase extends
   @Test
   public void test() throws Exception {
     flowRunner(FLOW_LOCATION).withPayload(TEST_PAYLOAD).run().getMessage();
-    PollingProber prober = new PollingProber(TIMEOUT_MILLIS, POLL_DELAY_MILLIS);
 
-    pollTillExportedSpansCaptured(prober, originalServer);
+    pollTillExportedSpansCaptured(originalServer);
 
     List<String> attributesToAssertExistence = getDefaultAttributesToAssertExistence();
 
@@ -130,17 +129,19 @@ public class ExportConfigurationChangeTestCase extends
                 "http://localhost:" + afterConfigurationChangeServer.httpPort());
     copy(configFile, Paths.get(file.getPath()), REPLACE_EXISTING);
 
-    flowRunner(FLOW_LOCATION).withPayload(TEST_PAYLOAD).run().getMessage();
-    pollTillExportedSpansCaptured(prober, afterConfigurationChangeServer);
+    // We wait for the configuration to take place.
+    sleep(1000);
 
+    flowRunner(FLOW_LOCATION).withPayload(TEST_PAYLOAD).run().getMessage();
+    pollTillExportedSpansCaptured(afterConfigurationChangeServer);
 
     exportedSpans = afterConfigurationChangeServer.getCapturedExportedSpans();
 
     assertExpectedSpanTree(attributesToAssertExistence, exportedSpans, setPayloadAttributeMap);
   }
 
-  private static void pollTillExportedSpansCaptured(PollingProber prober, TestServerRule afterConfigurationChangeServer) {
-    prober.check(new JUnitProbe() {
+  private static void pollTillExportedSpansCaptured(TestServerRule afterConfigurationChangeServer) {
+    new PollingProber(TIMEOUT_MILLIS, POLL_DELAY_MILLIS).check(new JUnitProbe() {
 
       @Override
       protected boolean test() {
