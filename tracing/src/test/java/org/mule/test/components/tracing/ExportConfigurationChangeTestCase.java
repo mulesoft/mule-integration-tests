@@ -140,12 +140,12 @@ public class ExportConfigurationChangeTestCase extends
     assertExpectedSpanTree(attributesToAssertExistence, exportedSpans, setPayloadAttributeMap);
   }
 
-  private static void pollTillExportedSpansCaptured(TestServerRule afterConfigurationChangeServer) {
+  private static void pollTillExportedSpansCaptured(TestServerRule server) {
     new PollingProber(TIMEOUT_MILLIS, POLL_DELAY_MILLIS).check(new JUnitProbe() {
 
       @Override
       protected boolean test() {
-        Collection<CapturedExportedSpan> exportedSpans = afterConfigurationChangeServer.getCapturedExportedSpans();
+        Collection<CapturedExportedSpan> exportedSpans = server.getCapturedExportedSpans();
         return exportedSpans.size() == 2;
       }
 
