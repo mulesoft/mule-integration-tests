@@ -41,6 +41,7 @@
     <apacheHttpClientVersion>4.5.13</apacheHttpClientVersion>
     <springVersion>5.1.6.RELEASE</springVersion>
     <jacksonVersion>2.15.0</jacksonVersion>
+    <wireMockVersion>1.58</wireMockVersion>
 
     <muleDependenciesVersion>1.x-SNAPSHOT</muleDependenciesVersion>
     <muleTestComponentsVersion>4.5.0-SNAPSHOT</muleTestComponentsVersion>
@@ -99,6 +100,17 @@
                     <exclusion>
                         <groupId>xml-apis</groupId>
                         <artifactId>xml-apis</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>com.github.tomakehurst</groupId>
+                <artifactId>wiremock</artifactId>
+                <version>${wireMockVersion}</version>
+                    <exclusions>
+                        <exclusion>
+                        <groupId>com.fasterxml.jackson.core</groupId>
+                        <artifactId>*</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
