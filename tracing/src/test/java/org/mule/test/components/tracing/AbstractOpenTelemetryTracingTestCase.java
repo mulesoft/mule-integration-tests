@@ -100,12 +100,10 @@ public abstract class AbstractOpenTelemetryTracingTestCase extends
     this.port = port;
     this.path = path;
     this.secure = secure;
-
-    configureCollector();
-    setOpenTelemetryExporterProperties();
   }
 
-  private void configureCollector() {
+  @Override
+  protected void doSetUpBeforeMuleContextCreation() {
     withContextClassLoader(GenericContainer.class.getClassLoader(), () -> {
       exposeHostPorts(server.httpPort());
       // Configuring the collector test-container
@@ -137,20 +135,17 @@ public abstract class AbstractOpenTelemetryTracingTestCase extends
               .waitingFor(Wait.forHttp("/").forPort(COLLECTOR_HEALTH_CHECK_PORT));
 
       collector.start();
+      setProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENABLED, TRUE.toString());
+      setProperty(MULE_OPEN_TELEMETRY_EXPORTER_TYPE, exporterType);
+      setProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENDPOINT,
+                  schema + collector.getHost() + ":" + collector.getMappedPort(port) + path);
+      setProperty(MULE_OPEN_TELEMETRY_EXPORTER_TLS_ENABLED, Boolean.toString(secure));
+      if (secure) {
+        setProperty(MULE_OPEN_TELEMETRY_EXPORTER_KEY_FILE_LOCATION, clientTls.privateKeyFile().toPath().toString());
+        setProperty(MULE_OPEN_TELEMETRY_EXPORTER_CERT_FILE_LOCATION, clientTls.certificateFile().toPath().toString());
+        setProperty(MULE_OPEN_TELEMETRY_EXPORTER_CA_FILE_LOCATION, serverTls.certificateFile().toPath().toString());
+      }
     });
-  }
-
-  private void setOpenTelemetryExporterProperties() {
-    setProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENABLED, TRUE.toString());
-    setProperty(MULE_OPEN_TELEMETRY_EXPORTER_TYPE, exporterType);
-    setProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENDPOINT,
-        schema + collector.getHost() + ":" + collector.getMappedPort(port) + path);
-    setProperty(MULE_OPEN_TELEMETRY_EXPORTER_TLS_ENABLED, Boolean.toString(secure));
-    if (secure) {
-      setProperty(MULE_OPEN_TELEMETRY_EXPORTER_KEY_FILE_LOCATION, clientTls.privateKeyFile().toPath().toString());
-      setProperty(MULE_OPEN_TELEMETRY_EXPORTER_CERT_FILE_LOCATION, clientTls.certificateFile().toPath().toString());
-      setProperty(MULE_OPEN_TELEMETRY_EXPORTER_CA_FILE_LOCATION, serverTls.certificateFile().toPath().toString());
-    }
   }
 
   @After

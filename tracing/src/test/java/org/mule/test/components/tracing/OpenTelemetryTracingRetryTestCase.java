@@ -88,11 +88,10 @@ public class OpenTelemetryTracingRetryTestCase extends
   public OpenTelemetryTracingRetryTestCase(String type, String path) {
     this.type = type;
     this.path = path;
-
-    setOpenTelemetryExporterProperties();
   }
 
-  private void setOpenTelemetryExporterProperties() {
+  @Override
+  protected void doSetUpBeforeMuleContextCreation() {
     setProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENABLED, TRUE.toString());
     setProperty(MULE_OPEN_TELEMETRY_EXPORTER_TYPE, type);
     setProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENDPOINT,
