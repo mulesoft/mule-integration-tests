@@ -21,6 +21,7 @@
         <activemqVersion>5.15.3</activemqVersion>
         <hawtbufVersion>1.1</hawtbufVersion>
         <activemqProtobuf>1.1</activemqProtobuf>
+        <groovy.version>2.4.16</groovy.version>
     </properties>
 
     <build>
@@ -592,6 +593,14 @@
             <groupId>org.mule.tests</groupId>
             <artifactId>mule-tests-model</artifactId>
             <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!--Groovy-->
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-all</artifactId>
+            <version>${groovy.version}</version>
+            <classifier>indy</classifier>
             <scope>test</scope>
         </dependency>
     </dependencies>
