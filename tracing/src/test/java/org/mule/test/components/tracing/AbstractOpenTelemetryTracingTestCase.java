@@ -15,6 +15,7 @@ import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExpor
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_KEY_FILE_LOCATION;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_TLS_ENABLED;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_TYPE;
+import static org.mule.test.components.tracing.OpenTelemetryProtobufSpanUtils.verifyResourceAndScopeGrouping;
 
 import static java.lang.Boolean.TRUE;
 import static java.lang.System.clearProperty;
@@ -23,8 +24,6 @@ import static java.util.Arrays.asList;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 
 import static io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceRequest.parseFrom;
-
-import static org.mule.test.components.tracing.OpenTelemetryProtobufSpanUtils.verifyResourceAndScopeGrouping;
 import static org.testcontainers.Testcontainers.exposeHostPorts;
 import static org.testcontainers.containers.BindMode.READ_ONLY;
 import static org.testcontainers.utility.MountableFile.forHostPath;
@@ -48,7 +47,6 @@ import com.linecorp.armeria.testing.junit4.server.ServerRule;
 import io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceResponse;
 import org.jetbrains.annotations.NotNull;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.runners.Parameterized;
 import org.testcontainers.containers.GenericContainer;
@@ -104,8 +102,8 @@ public abstract class AbstractOpenTelemetryTracingTestCase extends
     this.secure = secure;
   }
 
-  @Before
-  public void before() {
+  @Override
+  protected void doSetUpBeforeMuleContextCreation() {
     withContextClassLoader(GenericContainer.class.getClassLoader(), () -> {
       exposeHostPorts(server.httpPort());
       // Configuring the collector test-container
@@ -160,6 +158,7 @@ public abstract class AbstractOpenTelemetryTracingTestCase extends
     clearProperty(MULE_OPEN_TELEMETRY_EXPORTER_KEY_FILE_LOCATION);
     clearProperty(MULE_OPEN_TELEMETRY_EXPORTER_CERT_FILE_LOCATION);
     clearProperty(MULE_OPEN_TELEMETRY_EXPORTER_CA_FILE_LOCATION);
+    collector.stop();
   }
 
   protected List<CapturedExportedSpan> getSpans() {
