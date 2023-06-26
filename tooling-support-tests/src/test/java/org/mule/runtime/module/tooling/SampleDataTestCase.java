@@ -7,6 +7,7 @@
 package org.mule.runtime.module.tooling;
 
 import static java.lang.String.format;
+import static java.lang.System.lineSeparator;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.Matchers.contains;
@@ -91,7 +92,8 @@ public class SampleDataTestCase extends DeclarationSessionTestCase {
     OperationElementDeclaration elementDeclaration = configLessOPDeclaration("");
     String message = "The sample data provider requires a connection and none was provided";
     String reason =
-        "org.mule.sdk.api.data.sample.SampleDataException: The sample data provider requires a connection and none was provided\n";
+        "org.mule.sdk.api.data.sample.SampleDataException: The sample data provider requires a connection and none was provided"
+            + lineSeparator();
     assertSampleDataFailure(elementDeclaration, message, reason, MISSING_REQUIRED_PARAMETERS);
   }
 
@@ -107,7 +109,7 @@ public class SampleDataTestCase extends DeclarationSessionTestCase {
     String actingParameter = "actingParameter";
     String message =
         "Unable to retrieve Sample Data. There are missing required parameters for the resolution: [actingParameter]";
-    String reason = "org.mule.sdk.api.data.sample.SampleDataException: " + message + "\n";
+    String reason = "org.mule.sdk.api.data.sample.SampleDataException: " + message + lineSeparator();
     ComponentElementDeclaration<?> elementDeclaration = actingParameterOptionalWithoutDefaultOPDeclaration(CONFIG_NAME, null);
     assertSampleDataFailure(elementDeclaration, message, reason, "MISSING_REQUIRED_PARAMETERS");
   }
@@ -166,7 +168,7 @@ public class SampleDataTestCase extends DeclarationSessionTestCase {
     String actingParameter = "actingParameter";
     List<String> listValue = singletonList("single");
     String message = "Unable to retrieve Sample Data. There are missing required parameters for the resolution: [intParam]";
-    String reason = "org.mule.sdk.api.data.sample.SampleDataException: " + message + "\n";
+    String reason = "org.mule.sdk.api.data.sample.SampleDataException: " + message + lineSeparator();
     ComponentElementDeclaration<?> elementDeclaration =
         actingParameterGroupOPDeclaration(CONFIG_NAME, actingParameter, null, listValue);
     assertSampleDataFailure(elementDeclaration, message, reason, "MISSING_REQUIRED_PARAMETERS");
@@ -178,7 +180,7 @@ public class SampleDataTestCase extends DeclarationSessionTestCase {
     elementDeclaration.getParameterGroups().get(0).getParameters().remove(0);
     String message =
         "Unable to retrieve Sample Data. There are missing required parameters for the resolution: [actingParameter]";
-    String reason = "org.mule.sdk.api.data.sample.SampleDataException: " + message + "\n";
+    String reason = "org.mule.sdk.api.data.sample.SampleDataException: " + message + lineSeparator();
     assertSampleDataFailure(elementDeclaration, message, reason, MISSING_REQUIRED_PARAMETERS);
   }
 
@@ -217,7 +219,7 @@ public class SampleDataTestCase extends DeclarationSessionTestCase {
   public void customErrorCodeFromProvider() {
     ComponentElementDeclaration<?> elementDeclaration = errorSampleDataOP(CONFIG_NAME);
     String message = "Expected error";
-    String reason = "org.mule.sdk.api.data.sample.SampleDataException: " + message + "\n";
+    String reason = "org.mule.sdk.api.data.sample.SampleDataException: " + message + lineSeparator();
     assertSampleDataFailure(elementDeclaration, message, reason, CUSTOM_ERROR_CODE);
   }
 
