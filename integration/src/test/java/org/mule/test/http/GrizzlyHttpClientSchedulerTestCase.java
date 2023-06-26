@@ -88,7 +88,7 @@ public class GrizzlyHttpClientSchedulerTestCase extends AbstractIntegrationTestC
     };
 
     Field schedulerServiceField = httpClient.getClass().getDeclaredField("schedulerService");
-    setFinalField(httpClient, schedulerServiceField, testSchedulerService);
+    setSchedulerServiceField(httpClient, schedulerServiceField, testSchedulerService);
   }
 
   @Test
@@ -185,13 +185,8 @@ public class GrizzlyHttpClientSchedulerTestCase extends AbstractIntegrationTestC
     }
   }
 
-  private void setFinalField(Object object, Field field, Object newValue) throws Exception {
+  private void setSchedulerServiceField(Object object, Field field, Object newValue) throws Exception {
     field.setAccessible(true);
-
-    Field modifiersField = Field.class.getDeclaredField("modifiers");
-    modifiersField.setAccessible(true);
-    modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-
     field.set(object, newValue);
   }
 
