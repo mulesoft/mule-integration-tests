@@ -6,6 +6,7 @@
  */
 package org.mule.test.components.tracing;
 
+import static org.mule.runtime.core.api.util.IOUtils.getResourceAsUrl;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_CONFIGURATION_WATCHER_DEFAULT_DELAY_PROPERTY;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_ENABLED;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_ENDPOINT;
@@ -22,6 +23,7 @@ import static java.lang.System.clearProperty;
 import static java.lang.System.setProperty;
 import static java.lang.Thread.sleep;
 import static java.nio.file.Files.copy;
+import static java.nio.file.Paths.get;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 import static com.linecorp.armeria.common.HttpResponse.from;
@@ -37,8 +39,7 @@ import org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -77,8 +78,11 @@ public class ExportConfigurationChangeTestCase extends
   public static final int MAX_BACKOFF_ATTEMPTS = 2;
 
   private static final String SET_PAYLOAD_LOCATION = "flow/processors/0";
-  private Path configFile;
+  public static final String EXPORTER_CONF_NAME = "exporter.conf";
+  public static final String TEST_FILE_PREFIX = "tracing";
+  public static final String TEST_FILE_SUFFIX = "test";
   private File file;
+  private URI configFileUri;
 
   @Override
   protected String getConfigFile() {
@@ -93,9 +97,9 @@ public class ExportConfigurationChangeTestCase extends
 
   @Override
   protected void doSetUpBeforeMuleContextCreation() throws Exception {
-    file = createTempFile("tracing", "test");
-    configFile = Paths.get(getClass().getResource("/tracing/config/exporter.conf").getPath());
-    copy(configFile, Paths.get(file.getPath()), REPLACE_EXISTING);
+    file = createTempFile(TEST_FILE_PREFIX, TEST_FILE_SUFFIX);
+    configFileUri = getResourceAsUrl(EXPORTER_CONF_NAME, getClass()).toURI();
+    copy(get(configFileUri), get(file.getPath()), REPLACE_EXISTING);
     setProperty(MULE_OPEN_TELEMETRY_TRACING_CONFIGURATION_FILE_PATH, file.getAbsolutePath());
     setProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENABLED, TRUE.toString());
     setProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENDPOINT,
@@ -128,7 +132,7 @@ public class ExportConfigurationChangeTestCase extends
     // We update the file by recopying it.
     setProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENDPOINT,
                 "http://localhost:" + afterConfigurationChangeServer.httpPort());
-    copy(configFile, Paths.get(file.getPath()), REPLACE_EXISTING);
+    copy(get(configFileUri), get(file.getPath()), REPLACE_EXISTING);
 
     // We wait for the configuration to take place.
     sleep(1000);
