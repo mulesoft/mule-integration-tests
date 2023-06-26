@@ -7,6 +7,7 @@
 package org.mule.test.module.extension.oauth.clientcredentials;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.containing;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
@@ -132,6 +133,7 @@ public class OAuthClientCredentialsExtensionTestCase extends BaseOAuthExtensionT
         .withQueryParam("immediate", equalTo("true"))
         .withQueryParam("prompt", equalTo("false"))
         .withHeader("knownCustomHeader", equalTo("myHeader"))
+        .withRequestBody(containing("bodyParameter=body"))
         .willReturn(aResponse()
             .withStatus(OK.getStatusCode())
             .withBody(accessTokenContent())
