@@ -14,7 +14,7 @@
 
     <test-oauth:auth-code-config name="oauth">
         <test-oauth:with-params-connection display="PAGE" immediate="true" prompt="false"
-                                           queryParam="queryParam" header="header"
+                                           queryParam="queryParam" header="header" bodyParameter="body"
                                            withAlias="withAlias" defaultPlacement="defaultPlacement">
             <test-oauth:oauth-authorization-code consumerKey="${consumerKey}"
                                                  consumerSecret="${consumerSecret}"
