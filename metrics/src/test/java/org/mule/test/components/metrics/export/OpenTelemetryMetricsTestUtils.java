@@ -6,15 +6,14 @@
  */
 package org.mule.test.components.metrics.export;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceRequest;
 import io.opentelemetry.proto.common.v1.KeyValue;
 import io.opentelemetry.proto.metrics.v1.InstrumentationLibraryMetrics;
 import io.opentelemetry.proto.metrics.v1.Metric;
 import io.opentelemetry.proto.metrics.v1.ResourceMetrics;
-
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Utils for metrics testing.
  */

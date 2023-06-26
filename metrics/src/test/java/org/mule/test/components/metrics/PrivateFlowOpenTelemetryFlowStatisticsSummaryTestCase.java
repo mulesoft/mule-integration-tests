@@ -6,9 +6,9 @@
  */
 package org.mule.test.components.metrics;
 
-import io.qameta.allure.Feature;
-
 import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
+
+import io.qameta.allure.Feature;
 
 @Feature(PROFILING)
 public class PrivateFlowOpenTelemetryFlowStatisticsSummaryTestCase extends AbstractOpenTelemetryFlowStatisticsSummaryTestCase {

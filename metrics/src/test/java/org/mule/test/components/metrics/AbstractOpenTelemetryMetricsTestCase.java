@@ -13,9 +13,6 @@ import static org.mule.runtime.metrics.exporter.api.MeterExporterProperties.METR
 import static org.mule.runtime.metrics.exporter.api.MeterExporterProperties.METRIC_EXPORTER_ENDPOINT;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_ENABLED;
 
-import org.mule.test.components.metrics.export.ExportedMeter;
-import org.mule.test.components.metrics.export.OpenTelemetryMetricsTestUtils;
-
 import static java.lang.Boolean.TRUE;
 import static java.lang.System.clearProperty;
 import static java.lang.System.setProperty;
@@ -25,6 +22,8 @@ import static io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceRe
 import static org.testcontainers.Testcontainers.exposeHostPorts;
 import static org.testcontainers.containers.BindMode.READ_ONLY;
 
+import org.mule.test.components.metrics.export.ExportedMeter;
+import org.mule.test.components.metrics.export.OpenTelemetryMetricsTestUtils;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 
 import java.io.UncheckedIOException;
