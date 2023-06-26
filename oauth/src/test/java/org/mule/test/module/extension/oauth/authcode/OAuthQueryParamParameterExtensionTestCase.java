@@ -6,8 +6,10 @@
  */
 package org.mule.test.module.extension.oauth.authcode;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.containing;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 
 import org.mule.test.module.extension.oauth.BaseOAuthExtensionTestCase;
@@ -46,6 +48,14 @@ public class OAuthQueryParamParameterExtensionTestCase extends BaseOAuthExtensio
     simulateDanceStart();
     wireMock.verify(getRequestedFor(urlPathEqualTo("/" + AUTHORIZE_PATH))
         .withQueryParam("queryParam", equalTo("queryParam")));
+  }
+
+  @Test
+  public void customHeaderAndBodyParams() throws Exception {
+    simulateCallback(callbackPort.getNumber());
+    wireMock.verify(postRequestedFor(urlPathEqualTo("/" + TOKEN_PATH))
+        .withHeader("header", equalTo("header"))
+        .withRequestBody(containing("bodyParameter=body")));
   }
 
 }
