@@ -68,11 +68,11 @@ public class OpenTelemetryHttpErrorSemanticConventionAttributesAndNameTestCase e
   private static final String REQUEST_400_FLOW = "requestTo400";
   private static final String REQUEST_500_FLOW = "requestTo500";
   public static final String EXPECTED_FLOW_SPAN_NAME = "mule:flow";
-  private static final String EXPECTED_HTTP_REQUEST_SPAN_NAME = "HTTP GET";
-  private static final String EXPECTED_HTTPS_REQUEST_SPAN_NAME = "HTTPS GET";
-  private static final String EXPECTED_HTTP_FLOW_SPAN_NAME = "/test";
-  private static final String EXPECTED_HTTP_FLOW_SPAN_NAME_400 = "/test400";
-  private static final String EXPECTED_HTTP_FLOW_SPAN_NAME_500 = "/test500";
+  private static final String EXPECTED_HTTP_REQUEST_SPAN_NAME = "GET";
+  private static final String EXPECTED_HTTPS_REQUEST_SPAN_NAME = "GET";
+  private static final String EXPECTED_HTTP_FLOW_SPAN_NAME = "GET /test";
+  private static final String EXPECTED_HTTP_FLOW_SPAN_NAME_400 = "GET /test400";
+  private static final String EXPECTED_HTTP_FLOW_SPAN_NAME_500 = "GET /test500";
   private static final String EXPECTED_LOGGER_SPAN_NAME = "mule:logger";
   public static final String EXPECTED_ON_ERROR_PROPAGATE_SPAN_NAME = "mule:on-error-propagate";
   public static final String EXPECTED_RAISE_ERROR_SPAN = "mule:raise-error";
