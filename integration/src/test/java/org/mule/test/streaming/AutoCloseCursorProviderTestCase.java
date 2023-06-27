@@ -11,12 +11,15 @@ import static org.mule.test.allure.AllureConstants.StreamingFeature.STREAMING;
 import static org.mule.test.allure.AllureConstants.StreamingFeature.StreamingStory.STREAM_MANAGEMENT;
 
 import static org.apache.commons.io.FileUtils.writeStringToFile;
+import static org.apache.commons.lang3.JavaVersion.JAVA_17;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
+import static org.apache.commons.lang3.SystemUtils.isJavaVersionAtLeast;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assume.assumeThat;
 
 import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.exception.MuleException;
@@ -33,16 +36,22 @@ import javax.inject.Inject;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
+import org.hamcrest.core.Is;
+import org.junit.BeforeClass;
 import org.junit.ClassRule;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 @Feature(STREAMING)
 @Story(STREAM_MANAGEMENT)
-@Ignore("TD-0147155")
 public class AutoCloseCursorProviderTestCase extends AbstractIntegrationTestCase {
+
+  @BeforeClass
+  public static void skipForJava17() {
+    assumeThat("TD-0147155: When running on Java 17, File Commons fails because it depends on CGLib",
+            isJavaVersionAtLeast(JAVA_17), Is.is(false));
+  }
 
   private static final int OPEN_PROVIDERS = 100;
   private static final int TIMEOUT_MILLIS = 10000;

@@ -12,9 +12,12 @@ import static org.mule.runtime.api.metadata.MediaType.XML;
 import static org.mule.runtime.core.api.util.IOUtils.closeQuietly;
 import static org.mule.test.allure.AllureConstants.XmlSdk.XML_SDK;
 
+import static org.apache.commons.lang3.JavaVersion.JAVA_17;
+import static org.apache.commons.lang3.SystemUtils.isJavaVersionAtLeast;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeThat;
 
 import org.mule.functional.api.flow.FlowRunner;
 import org.mule.runtime.api.metadata.MediaType;
@@ -28,16 +31,15 @@ import java.io.InputStream;
 import io.qameta.allure.Feature;
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.FileUtils;
+import org.hamcrest.core.Is;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 @Feature(XML_SDK)
-@Ignore("TD-0147155")
 public class ModulesConsumingMimeTypeTestCase extends AbstractCeXmlExtensionMuleArtifactFunctionalTestCase {
 
   private static final String JSON_CONTENT_FILE = "{\n"
@@ -74,6 +76,9 @@ public class ModulesConsumingMimeTypeTestCase extends AbstractCeXmlExtensionMule
 
   @BeforeClass
   public static void setUp() throws Exception {
+    assumeThat("TD-0147155: When running on Java 17, File Commons fails because it depends on CGLib",
+            isJavaVersionAtLeast(JAVA_17), Is.is(false));
+
     if (!temporaryFolder.getRoot().exists()) {
       temporaryFolder.getRoot().mkdir();
     }
