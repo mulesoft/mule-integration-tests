@@ -29,6 +29,7 @@
     <module>logging</module>
     <module>tooling-support-tests</module>
     <module>tracing</module>
+    <module>metrics</module>
   </modules>
 
   <properties>
