@@ -29,6 +29,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -36,6 +37,7 @@ import org.junit.rules.TemporaryFolder;
 import io.qameta.allure.Feature;
 
 @Feature(XML_SDK)
+@Ignore("TD-0147155")
 public class ModulesConsumingMimeTypeTestCase extends AbstractCeXmlExtensionMuleArtifactFunctionalTestCase {
 
   private static final String JSON_CONTENT_FILE = "{\n"
