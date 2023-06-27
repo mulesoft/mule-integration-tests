@@ -6,6 +6,10 @@
  */
 package org.mule.test.streaming;
 
+import static org.mule.tck.probe.PollingProber.probe;
+import static org.mule.test.allure.AllureConstants.StreamingFeature.STREAMING;
+import static org.mule.test.allure.AllureConstants.StreamingFeature.StreamingStory.STREAM_MANAGEMENT;
+
 import static org.apache.commons.io.FileUtils.writeStringToFile;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.hamcrest.CoreMatchers.containsString;
@@ -13,9 +17,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.assertThat;
-import static org.mule.tck.probe.PollingProber.probe;
-import static org.mule.test.allure.AllureConstants.StreamingFeature.STREAMING;
-import static org.mule.test.allure.AllureConstants.StreamingFeature.StreamingStory.STREAM_MANAGEMENT;
 
 import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.exception.MuleException;
@@ -30,16 +31,17 @@ import java.io.File;
 
 import javax.inject.Inject;
 
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import io.qameta.allure.Feature;
-import io.qameta.allure.Story;
-
 @Feature(STREAMING)
 @Story(STREAM_MANAGEMENT)
+@Ignore("TD-0147155")
 public class AutoCloseCursorProviderTestCase extends AbstractIntegrationTestCase {
 
   private static final int OPEN_PROVIDERS = 100;

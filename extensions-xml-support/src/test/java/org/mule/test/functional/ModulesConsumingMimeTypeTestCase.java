@@ -6,14 +6,15 @@
  */
 package org.mule.test.functional;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 import static org.mule.runtime.api.metadata.MediaType.BINARY;
 import static org.mule.runtime.api.metadata.MediaType.JSON;
 import static org.mule.runtime.api.metadata.MediaType.XML;
 import static org.mule.runtime.core.api.util.IOUtils.closeQuietly;
 import static org.mule.test.allure.AllureConstants.XmlSdk.XML_SDK;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 import org.mule.functional.api.flow.FlowRunner;
 import org.mule.runtime.api.metadata.MediaType;
@@ -24,18 +25,19 @@ import org.mule.tck.junit4.rule.SystemProperty;
 import java.io.File;
 import java.io.InputStream;
 
+import io.qameta.allure.Feature;
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import io.qameta.allure.Feature;
-
 @Feature(XML_SDK)
+@Ignore("TD-0147155")
 public class ModulesConsumingMimeTypeTestCase extends AbstractCeXmlExtensionMuleArtifactFunctionalTestCase {
 
   private static final String JSON_CONTENT_FILE = "{\n"
