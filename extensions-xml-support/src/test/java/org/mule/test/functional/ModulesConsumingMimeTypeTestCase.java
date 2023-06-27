@@ -77,7 +77,7 @@ public class ModulesConsumingMimeTypeTestCase extends AbstractCeXmlExtensionMule
   @BeforeClass
   public static void setUp() throws Exception {
     assumeThat("TD-0147155: When running on Java 17, File Commons fails because it depends on CGLib",
-            isJavaVersionAtLeast(JAVA_17), Is.is(false));
+               isJavaVersionAtLeast(JAVA_17), Is.is(false));
 
     if (!temporaryFolder.getRoot().exists()) {
       temporaryFolder.getRoot().mkdir();
