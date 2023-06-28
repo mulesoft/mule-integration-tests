@@ -76,8 +76,8 @@ public class DistributedOpenTelemetryTracingTestCase extends
 
   private static final String STARTING_FLOW = "startingFlow";
 
-  private static final String EXPECTED_HTTP_REQUEST_SPAN_NAME = "HTTP GET";
-  private static final String EXPECTED_HTTP_FLOW_SPAN_NAME = "/test";
+  private static final String EXPECTED_HTTP_REQUEST_SPAN_NAME = "GET";
+  private static final String EXPECTED_HTTP_FLOW_SPAN_NAME = "GET /test";
   private static final String EXPECTED_LOGGER_SPAN_NAME = "mule:logger";
   public static final String EXPECTED_FLOW_SPAN_NAME = "mule:flow";
 
