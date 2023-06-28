@@ -111,11 +111,11 @@ public class TraceStatePropagationTestCase extends
   @Rule
   public TestHttpClient httpClient = new TestHttpClient.Builder(getService(HttpService.class)).build();
 
-  private static final String EXPECTED_HTTP_REQUEST_SPAN_NAME = "HTTP GET";
-  private static final String EXPECTED_HTTP_FLOW_SPAN_NAME = "/test";
+  private static final String EXPECTED_HTTP_REQUEST_SPAN_NAME = "GET";
+  private static final String EXPECTED_HTTP_FLOW_SPAN_NAME = "GET /test";
   private static final String EXPECTED_LOGGER_SPAN_NAME = "mule:logger";
 
-  private static final String EXPECTED_FLOW_SPAN_NAME = "/entry";
+  private static final String EXPECTED_FLOW_SPAN_NAME = "GET /entry";
 
   private static final String EXPECTED_VALUE_RESOLUTION_SPAN_NAME = "mule:value-resolution";
 

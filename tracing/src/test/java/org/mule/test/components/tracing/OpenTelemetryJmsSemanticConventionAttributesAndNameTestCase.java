@@ -48,7 +48,7 @@ public class OpenTelemetryJmsSemanticConventionAttributesAndNameTestCase extends
   private static final int TIMEOUT_MILLIS = 30000;
   private static final int POLL_DELAY_MILLIS = 100;
 
-  public static final String EXPECTED_HTTP_FLOW_SPAN_NAME = "/";
+  public static final String EXPECTED_HTTP_FLOW_SPAN_NAME = "GET /";
   public static final String EXPECTED_JMS_PUBLISH_NAME = "test_queue send";
   public static final String EXPECTED_JMS_CONSUME_NAME = "test_queue receive";
   private static final String EXPECTED_SET_PAYLOAD_SPAN_NAME = "mule:set-payload";
