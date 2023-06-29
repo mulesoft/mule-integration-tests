@@ -6,14 +6,6 @@
  */
 package org.mule.runtime.module.tooling;
 
-import static java.lang.String.format;
-import static java.util.Optional.of;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.anyOf;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertThat;
 import static org.mule.metadata.api.utils.MetadataTypeUtils.getTypeId;
 import static org.mule.runtime.api.metadata.resolving.FailureCode.COMPONENT_NOT_FOUND;
 import static org.mule.runtime.api.metadata.resolving.FailureCode.INVALID_METADATA_KEY;
@@ -36,6 +28,16 @@ import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.requ
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.resolverUsesResourcesCacheOP;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.sourceDeclaration;
 
+import static java.lang.String.format;
+import static java.util.Optional.of;
+
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.anyOf;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.Assert.assertThat;
+
 import org.mule.metadata.api.annotation.DefaultValueAnnotation;
 import org.mule.metadata.internal.utils.MetadataTypeWriter;
 import org.mule.runtime.api.metadata.descriptor.ComponentMetadataTypesDescriptor;
@@ -45,9 +47,10 @@ import org.mule.runtime.api.metadata.resolving.MetadataResult;
 import org.mule.runtime.app.declaration.api.OperationElementDeclaration;
 import org.mule.runtime.app.declaration.api.SourceElementDeclaration;
 
+import org.junit.Test;
+
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
-import org.junit.Test;
 
 public class MetadataTypesTestCase extends DeclarationSessionTestCase {
 
@@ -241,7 +244,7 @@ public class MetadataTypesTestCase extends DeclarationSessionTestCase {
     assertThat(metadataTypes.getFailures().get(0).getFailureCode(), is(COMPONENT_NOT_FOUND));
     assertThat(metadataTypes.getFailures().get(0).getFailingComponent(), is(COMPONENT));
     assertThat(metadataTypes.getFailures().get(0).getMessage(),
-               is(format("ElementDeclaration is defined for extension: '%s' which is not part of the context: '[mule, ToolingSupportTest, module]'",
+               is(format("ElementDeclaration is defined for extension: '%s' which is not part of the context: '[mule, ToolingSupportTest, module, tls]'",
                          invalidExtensionModel)));
   }
 
