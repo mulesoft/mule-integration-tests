@@ -141,7 +141,6 @@ public class MDCTracingContextTestCase extends AbstractFakeMuleServerTestCase {
     final ApplicationFileBuilder appFileBuilder =
         new ApplicationFileBuilder("logging-app").definedBy("log/tracing/logging-app.xml")
             .containingResource("log/tracing/log4j-config.xml", "log4j2.xml")
-            .containingResource("log/tracing/tracer-exporter.conf", "tracer-exporter.conf")
             .dependingOn(loggingExtensionPlugin);
 
 
