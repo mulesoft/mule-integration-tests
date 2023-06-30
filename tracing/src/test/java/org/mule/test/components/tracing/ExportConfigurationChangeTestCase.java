@@ -18,6 +18,7 @@ import static org.mule.test.infrastructure.profiling.tracing.TracingTestUtils.cr
 import static org.mule.test.infrastructure.profiling.tracing.TracingTestUtils.getDefaultAttributesToAssertExistence;
 
 import static java.io.File.createTempFile;
+import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static java.lang.System.clearProperty;
 import static java.lang.System.setProperty;
@@ -25,6 +26,9 @@ import static java.lang.Thread.sleep;
 import static java.nio.file.Files.copy;
 import static java.nio.file.Paths.get;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
 
 import static com.linecorp.armeria.common.HttpResponse.from;
 import static com.linecorp.armeria.common.HttpStatus.OK;
@@ -101,7 +105,7 @@ public class ExportConfigurationChangeTestCase extends
     configFileUri = getResourceAsUrl(EXPORTER_CONF_NAME, getClass()).toURI();
     copy(get(configFileUri), get(file.getPath()), REPLACE_EXISTING);
     setProperty(MULE_OPEN_TELEMETRY_TRACING_CONFIGURATION_FILE_PATH, file.getAbsolutePath());
-    setProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENABLED, TRUE.toString());
+    setProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENABLED, FALSE.toString());
     setProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENDPOINT,
                 "http://localhost:" + originalServer.httpPort());
     setProperty(MULE_OPEN_TELEMETRY_EXPORTER_CONFIGURATION_WATCHER_DEFAULT_DELAY_PROPERTY, "1000");
@@ -119,6 +123,18 @@ public class ExportConfigurationChangeTestCase extends
   public void test() throws Exception {
     flowRunner(FLOW_LOCATION).withPayload(TEST_PAYLOAD).run().getMessage();
 
+    // verify that initially we are not exporting.
+    sleep(5000);
+    assertThat(originalServer.getCapturedExportedSpans().size(), equalTo(0));
+
+    // We update the file by recopying it and we enable the exporter.
+    setProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENABLED, TRUE.toString());
+    copy(get(configFileUri), get(file.getPath()), REPLACE_EXISTING);
+
+    // We wait for the configuration to take place.
+    sleep(1000);
+
+    flowRunner(FLOW_LOCATION).withPayload(TEST_PAYLOAD).run().getMessage();
     pollTillExportedSpansCaptured(originalServer);
 
     List<String> attributesToAssertExistence = getDefaultAttributesToAssertExistence();
