@@ -6,15 +6,6 @@
  */
 package org.mule.runtime.module.tooling;
 
-import static java.lang.String.format;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasProperty;
-import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
-import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.metadata.resolving.FailureCode.COMPONENT_NOT_FOUND;
 import static org.mule.runtime.api.metadata.resolving.FailureCode.UNKNOWN;
 import static org.mule.runtime.api.metadata.resolving.MetadataComponent.KEYS;
@@ -28,6 +19,17 @@ import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.requ
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.sourceDeclaration;
 import static org.mule.tck.junit4.matcher.MetadataKeyMatcher.metadataKeyWithId;
 
+import static java.lang.String.format;
+
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
+import static org.junit.Assert.assertThat;
+
 import org.mule.runtime.api.metadata.MetadataKey;
 import org.mule.runtime.api.metadata.MetadataKeysContainer;
 import org.mule.runtime.api.metadata.resolving.FailureCode;
@@ -37,9 +39,10 @@ import org.mule.runtime.app.declaration.api.ComponentElementDeclaration;
 
 import java.util.Set;
 
+import org.junit.Test;
+
 import org.hamcrest.Matchers;
 import org.hamcrest.collection.IsCollectionWithSize;
-import org.junit.Test;
 
 public class MetadataKeysTestCase extends DeclarationSessionTestCase {
 
@@ -184,7 +187,7 @@ public class MetadataKeysTestCase extends DeclarationSessionTestCase {
     assertThat(metadataKeys.getFailures().get(0).getFailureCode(), is(COMPONENT_NOT_FOUND));
     assertThat(metadataKeys.getFailures().get(0).getFailingComponent(), is(KEYS));
     assertThat(metadataKeys.getFailures().get(0).getMessage(),
-               is(format("ElementDeclaration is defined for extension: '%s' which is not part of the context: '[mule, ToolingSupportTest, module]'",
+               is(format("ElementDeclaration is defined for extension: '%s' which is not part of the context: '[mule, ToolingSupportTest, module, tls]'",
                          invalidExtensionModel)));
   }
 
