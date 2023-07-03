@@ -6,21 +6,13 @@
  */
 package org.mule.test.core.context.notification.processors;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
-import static java.util.Optional.empty;
-import static java.util.OptionalInt.of;
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.component.ComponentIdentifier.buildFromStringRepresentation;
+import static org.mule.runtime.api.component.TypedComponentIdentifier.builder;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.CHAIN;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.FLOW;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.OPERATION;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.ROUTER;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.SCOPE;
-import static org.mule.runtime.api.component.TypedComponentIdentifier.builder;
 import static org.mule.runtime.api.dsl.DslResolvingContext.getDefault;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.ASYNC_IDENTIFIER;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.CHOICE_IDENTIFIER;
@@ -36,18 +28,28 @@ import static org.mule.runtime.config.api.dsl.CoreDslConstants.TRY_IDENTIFIER;
 import static org.mule.runtime.config.api.dsl.CoreDslConstants.UNTIL_SUCCESSFUL_IDENTIFIER;
 import static org.mule.runtime.extension.api.ExtensionConstants.XML_SDK_LOADER_ID;
 import static org.mule.runtime.extension.api.ExtensionConstants.XML_SDK_RESOURCE_PROPERTY_NAME;
+import static org.mule.runtime.extension.api.loader.ExtensionModelLoadingRequest.builder;
 import static org.mule.runtime.module.artifact.activation.api.extension.discovery.boot.ExtensionLoaderUtils.getLoaderById;
 import static org.mule.tck.probe.PollingProber.check;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentLocationStory.COMPONENT_LOCATION;
 import static org.mule.test.allure.AllureConstants.XmlSdk.XML_SDK;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
+import static java.util.Optional.empty;
+import static java.util.OptionalInt.of;
+
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.api.component.TypedComponentIdentifier;
 import org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType;
 import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.api.component.location.Location;
-import org.mule.runtime.api.dsl.DslResolvingContext;
 import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.api.notification.MessageProcessorNotification;
 import org.mule.runtime.ast.api.ArtifactAst;
@@ -63,25 +65,25 @@ import org.mule.test.IntegrationTestCaseRunnerConfig;
 import org.mule.test.runner.api.IsolatedClassLoaderExtensionsManagerConfigurationBuilder;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.Set;
 
 import com.google.common.collect.ImmutableList;
+
+import org.junit.After;
+import org.junit.Test;
+
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Features;
 import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
 import io.qameta.allure.junit4.DisplayName;
-import org.junit.After;
-import org.junit.Test;
 
 @DisplayName("XML Connectors Path generation")
 @Features({@Feature(XML_SDK), @Feature(CONFIGURATION_COMPONENT_LOCATOR)})
@@ -867,15 +869,13 @@ public class ModuleComponentPathTestCase extends MuleArtifactFunctionalTestCase 
       private void registerXmlExtensions(ExtensionManager extensionManager) {
         final Set<ExtensionModel> extensions = new HashSet<>();
         extensions.addAll(extensionManager.getExtensions());
-        final ClassLoader classLoader = getClass().getClassLoader();
-        final ExtensionModelLoader loader = getLoaderById(classLoader, XML_SDK_LOADER_ID);
+        final ExtensionModelLoader loader = getLoaderById(XML_SDK_LOADER_ID);
 
         for (String modulePath : getModulePaths()) {
-          Map<String, Object> params = new HashMap<>();
-          params.put(XML_SDK_RESOURCE_PROPERTY_NAME, modulePath);
-          final DslResolvingContext dslResolvingContext = getDefault(extensions);
-          final ExtensionModel extensionModel = loader.loadExtensionModel(classLoader, dslResolvingContext, params);
-          extensions.add(extensionModel);
+          extensions.add(loader.loadExtensionModel(builder(getClass().getClassLoader(),
+                                                           getDefault(extensions))
+                                                               .addParameter(XML_SDK_RESOURCE_PROPERTY_NAME, modulePath)
+                                                               .build()));
         }
 
         for (ExtensionModel extension : extensions) {

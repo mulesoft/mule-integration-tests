@@ -6,15 +6,6 @@
  */
 package org.mule.runtime.module.tooling;
 
-import static java.time.Instant.now;
-import static java.util.Arrays.asList;
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasProperty;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
-import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.metadata.resolving.FailureCode.COMPONENT_NOT_FOUND;
 import static org.mule.runtime.app.declaration.api.fluent.ElementDeclarer.newParameterGroup;
 import static org.mule.runtime.app.declaration.api.fluent.ParameterSimpleValue.plain;
@@ -43,6 +34,17 @@ import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.vpWi
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.vpWithBindingToTopLevelOPDeclaration;
 import static org.mule.sdk.api.values.ValueResolvingException.UNKNOWN;
 
+import static java.time.Instant.now;
+import static java.util.Arrays.asList;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
+import static org.junit.Assert.assertThat;
+
 import org.mule.runtime.api.value.Value;
 import org.mule.runtime.api.value.ValueResult;
 import org.mule.runtime.app.declaration.api.ComponentElementDeclaration;
@@ -64,6 +66,7 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import com.google.common.collect.ImmutableMap;
+
 import org.junit.Test;
 
 public class ComponentValueProviderTestCase extends DeclarationSessionTestCase {
@@ -299,7 +302,7 @@ public class ComponentValueProviderTestCase extends DeclarationSessionTestCase {
                 .getDeclaration())
             .getDeclaration();
     validateValuesFailure(session, operationElementDeclaration, "anyParameter",
-                          "ElementDeclaration is defined for extension: 'WrongExtension' which is not part of the context: '[mule, ToolingSupportTest, module]'",
+                          "ElementDeclaration is defined for extension: 'WrongExtension' which is not part of the context: '[mule, ToolingSupportTest, module, tls]'",
                           COMPONENT_NOT_FOUND.getName());
   }
 
