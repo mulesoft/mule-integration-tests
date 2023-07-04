@@ -11,6 +11,8 @@ import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExpor
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_ENABLED;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_ENDPOINT;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_TRACING_CONFIGURATION_FILE_PATH;
+import static org.mule.runtime.tracing.level.api.config.TracingLevel.MONITORING;
+import static org.mule.runtime.tracing.level.api.config.TracingLevel.OVERVIEW;
 import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.DEFAULT_CORE_EVENT_TRACER;
 import static org.mule.test.components.tracing.OpenTelemetryProtobufSpanUtils.getSpans;
@@ -83,10 +85,14 @@ public class ExportConfigurationChangeTestCase extends
 
   private static final String SET_PAYLOAD_LOCATION = "flow/processors/0";
   public static final String EXPORTER_CONF_NAME = "exporter.conf";
+  public static final String EXPORTER_CONF_WITH_OVERRIDES_NAME = "exporter_with_overrides.conf";
   public static final String TEST_FILE_PREFIX = "tracing";
   public static final String TEST_FILE_SUFFIX = "test";
+  public static final String TEST_LEVEL = "test.level";
   private File file;
   private URI configFileUri;
+
+  private URI configFileUriWithOverrides;
 
   @Override
   protected String getConfigFile() {
@@ -103,12 +109,14 @@ public class ExportConfigurationChangeTestCase extends
   protected void doSetUpBeforeMuleContextCreation() throws Exception {
     file = createTempFile(TEST_FILE_PREFIX, TEST_FILE_SUFFIX);
     configFileUri = getResourceAsUrl(EXPORTER_CONF_NAME, getClass()).toURI();
+    configFileUriWithOverrides = getResourceAsUrl(EXPORTER_CONF_WITH_OVERRIDES_NAME, getClass()).toURI();
     copy(get(configFileUri), get(file.getPath()), REPLACE_EXISTING);
     setProperty(MULE_OPEN_TELEMETRY_TRACING_CONFIGURATION_FILE_PATH, file.getAbsolutePath());
     setProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENABLED, FALSE.toString());
     setProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENDPOINT,
                 "http://localhost:" + originalServer.httpPort());
-    setProperty(MULE_OPEN_TELEMETRY_EXPORTER_CONFIGURATION_WATCHER_DEFAULT_DELAY_PROPERTY, "1000");
+    setProperty(TEST_LEVEL, MONITORING.name());
+    setProperty(MULE_OPEN_TELEMETRY_EXPORTER_CONFIGURATION_WATCHER_DEFAULT_DELAY_PROPERTY, "100");
   }
 
   @After
@@ -117,6 +125,7 @@ public class ExportConfigurationChangeTestCase extends
     clearProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENDPOINT);
     clearProperty(MULE_OPEN_TELEMETRY_EXPORTER_CONFIGURATION_WATCHER_DEFAULT_DELAY_PROPERTY);
     clearProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENABLED);
+    clearProperty(TEST_LEVEL);
   }
 
   @Test
@@ -132,10 +141,10 @@ public class ExportConfigurationChangeTestCase extends
     copy(get(configFileUri), get(file.getPath()), REPLACE_EXISTING);
 
     // We wait for the configuration to take place.
-    sleep(1000);
+    sleep(2000);
 
     flowRunner(FLOW_LOCATION).withPayload(TEST_PAYLOAD).run().getMessage();
-    pollTillExportedSpansCaptured(originalServer);
+    pollTillExportedSpansCaptured(originalServer, 2);
 
     List<String> attributesToAssertExistence = getDefaultAttributesToAssertExistence();
 
@@ -143,7 +152,7 @@ public class ExportConfigurationChangeTestCase extends
 
     Map<String, String> setPayloadAttributeMap = createAttributeMap(SET_PAYLOAD_LOCATION, TEST_ARTIFACT_ID);
 
-    assertExpectedSpanTree(attributesToAssertExistence, exportedSpans, setPayloadAttributeMap);
+    assertExpectedSpanTreeMonitoring(attributesToAssertExistence, exportedSpans, setPayloadAttributeMap);
 
     // We update the file by recopying it.
     setProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENDPOINT,
@@ -151,23 +160,50 @@ public class ExportConfigurationChangeTestCase extends
     copy(get(configFileUri), get(file.getPath()), REPLACE_EXISTING);
 
     // We wait for the configuration to take place.
-    sleep(1000);
+    sleep(2000);
 
     flowRunner(FLOW_LOCATION).withPayload(TEST_PAYLOAD).run().getMessage();
-    pollTillExportedSpansCaptured(afterConfigurationChangeServer);
+    pollTillExportedSpansCaptured(afterConfigurationChangeServer, 2);
 
     exportedSpans = afterConfigurationChangeServer.getCapturedExportedSpans();
 
-    assertExpectedSpanTree(attributesToAssertExistence, exportedSpans, setPayloadAttributeMap);
+    assertExpectedSpanTreeMonitoring(attributesToAssertExistence, exportedSpans, setPayloadAttributeMap);
+
+    setProperty(TEST_LEVEL, OVERVIEW.name());
+    copy(get(configFileUri), get(file.getPath()), REPLACE_EXISTING);
+    afterConfigurationChangeServer.reset();
+
+    // We wait for the configuration to take place.
+    sleep(2000);
+    flowRunner(FLOW_LOCATION).withPayload(TEST_PAYLOAD).run().getMessage();
+
+    pollTillExportedSpansCaptured(afterConfigurationChangeServer, 1);
+    exportedSpans = afterConfigurationChangeServer.getCapturedExportedSpans();
+
+    assertExpectedSpanTreeOverview(attributesToAssertExistence, exportedSpans, setPayloadAttributeMap);
+
+    // Copy a configuration with overrides
+    copy(get(configFileUriWithOverrides), get(file.getPath()), REPLACE_EXISTING);
+    afterConfigurationChangeServer.reset();
+
+    // We wait for the configuration to take place.
+    sleep(2000);
+    flowRunner(FLOW_LOCATION).withPayload(TEST_PAYLOAD).run().getMessage();
+
+    pollTillExportedSpansCaptured(afterConfigurationChangeServer, 2);
+    exportedSpans = afterConfigurationChangeServer.getCapturedExportedSpans();
+
+    // This should behave the same as monitoring.
+    assertExpectedSpanTreeMonitoring(attributesToAssertExistence, exportedSpans, setPayloadAttributeMap);
   }
 
-  private static void pollTillExportedSpansCaptured(TestServerRule server) {
+  private static void pollTillExportedSpansCaptured(TestServerRule server, int expectedSpansCount) {
     new PollingProber(TIMEOUT_MILLIS, POLL_DELAY_MILLIS).check(new JUnitProbe() {
 
       @Override
       protected boolean test() {
         Collection<CapturedExportedSpan> exportedSpans = server.getCapturedExportedSpans();
-        return exportedSpans.size() == 2;
+        return exportedSpans.size() == expectedSpansCount;
       }
 
       @Override
@@ -177,9 +213,9 @@ public class ExportConfigurationChangeTestCase extends
     });
   }
 
-  private static void assertExpectedSpanTree(List<String> attributesToAssertExistence,
-                                             Collection<CapturedExportedSpan> exportedSpans,
-                                             Map<String, String> setPayloadAttributeMap) {
+  private static void assertExpectedSpanTreeMonitoring(List<String> attributesToAssertExistence,
+                                                       Collection<CapturedExportedSpan> exportedSpans,
+                                                       Map<String, String> setPayloadAttributeMap) {
     SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
     expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
         .addAttributesToAssertValue(createAttributeMap(FLOW_LOCATION, TEST_ARTIFACT_ID))
@@ -189,6 +225,17 @@ public class ExportConfigurationChangeTestCase extends
         .addAttributesToAssertValue(setPayloadAttributeMap)
         .addAttributesToAssertExistence(attributesToAssertExistence)
         .endChildren();
+
+    expectedSpanHierarchy.assertSpanTree();
+  }
+
+  private static void assertExpectedSpanTreeOverview(List<String> attributesToAssertExistence,
+                                                     Collection<CapturedExportedSpan> exportedSpans,
+                                                     Map<String, String> setPayloadAttributeMap) {
+    SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
+    expectedSpanHierarchy.withRoot(EXPECTED_FLOW_SPAN_NAME)
+        .addAttributesToAssertValue(createAttributeMap(FLOW_LOCATION, TEST_ARTIFACT_ID))
+        .addAttributesToAssertExistence(attributesToAssertExistence);
 
     expectedSpanHierarchy.assertSpanTree();
   }
@@ -232,6 +279,10 @@ public class ExportConfigurationChangeTestCase extends
 
     public List<CapturedExportedSpan> getCapturedExportedSpans() {
       return capturedExportedSpans;
+    }
+
+    public void reset() {
+      capturedExportedSpans.clear();
     }
   }
 
