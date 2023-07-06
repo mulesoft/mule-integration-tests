@@ -6,7 +6,15 @@
  */
 package org.mule.runtime.test.integration.lifecycle;
 
+import static org.mule.runtime.core.privileged.registry.LegacyRegistryUtils.lookupObject;
+import static org.mule.runtime.core.privileged.registry.LegacyRegistryUtils.lookupObjects;
+import static org.mule.runtime.core.privileged.registry.LegacyRegistryUtils.lookupObjectsForLifecycle;
+import static org.mule.runtime.core.privileged.registry.LegacyRegistryUtils.registerObject;
+import static org.mule.test.allure.AllureConstants.RegistryFeature.REGISTRY;
+import static org.mule.test.allure.AllureConstants.RegistryFeature.DomainObjectRegistrationStory.OBJECT_REGISTRATION;
+
 import static java.util.concurrent.Executors.newCachedThreadPool;
+
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
@@ -16,12 +24,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.withSettings;
-import static org.mule.runtime.core.privileged.registry.LegacyRegistryUtils.lookupObject;
-import static org.mule.runtime.core.privileged.registry.LegacyRegistryUtils.lookupObjects;
-import static org.mule.runtime.core.privileged.registry.LegacyRegistryUtils.lookupObjectsForLifecycle;
-import static org.mule.runtime.core.privileged.registry.LegacyRegistryUtils.registerObject;
-import static org.mule.test.allure.AllureConstants.RegistryFeature.REGISTRY;
-import static org.mule.test.allure.AllureConstants.RegistryFeature.DomainObjectRegistrationStory.OBJECT_REGISTRATION;
 
 import org.mule.functional.junit4.ApplicationContextBuilder;
 import org.mule.functional.junit4.DomainContextBuilder;
@@ -62,7 +64,7 @@ public class ApplicationWithDomainRegistryTestCase extends AbstractMuleTestCase 
   @Before
   public void createContexts() throws Exception {
     final ArtifactContext domainArtifactContext = new DomainContextBuilder()
-        .setContextId(MuleContextLifecycleTestCase.class.getSimpleName())
+        .setContextId(ApplicationWithDomainRegistryTestCase.class.getSimpleName() + "_domain")
         .setDomainConfig("domain/empty-domain-config.xml")
         .build();
     domainContext = domainArtifactContext

@@ -17,6 +17,7 @@
 
   <modules>
     <module>integration</module>
+    <module>integration-config-failures</module>
     <module>performance</module>
     <module>dsl</module>
     <module>soap-connect</module>
