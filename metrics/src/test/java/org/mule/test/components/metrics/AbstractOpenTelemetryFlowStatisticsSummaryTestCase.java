@@ -40,8 +40,6 @@ public abstract class AbstractOpenTelemetryFlowStatisticsSummaryTestCase extends
   private static final int TIMEOUT_MILLIS = 30000;
   private static final int POLL_DELAY_MILLIS = 100;
 
-  private static final String SIMPLE_FLOW = "simple-flow";
-
   @Test
   public void test() {
     PollingProber prober = new PollingProber(TIMEOUT_MILLIS, POLL_DELAY_MILLIS);
