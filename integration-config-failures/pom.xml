@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.mule.tests</groupId>
+        <artifactId>mule-extensions-integration-tests</artifactId>
+        <version>4.5.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>mule-tests-integration-config-failures</artifactId>
+    <name>Integration Tests - Config Failures</name>
+    <description>Tests which ensure that Mule sub projects work well together.</description>
+    <packaging>jar</packaging>
+
+    <properties>
+        <javaModuleName>org.mule.test.integration</javaModuleName>
+        <skipExportTests>false</skipExportTests>
+        <formatterConfigPath>../formatter.xml</formatterConfigPath>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <argLine>-Dfile.encoding=UTF-8 -Xmx1024m -Xms256m -XX:+HeapDumpOnOutOfMemoryError
+                        -javaagent:${settings.localRepository}/org/aspectj/aspectjweaver/${aspectjVersion}/aspectjweaver-${aspectjVersion}.jar
+                        -javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco.version}/org.jacoco.agent-${jacoco.version}-runtime.jar=destfile='${session.executionRootDirectory}/target/jacoco.exec'
+                    </argLine>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.mule.runtime</groupId>
+            <artifactId>mule-core</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.tests</groupId>
+            <artifactId>mule-tests-runner</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.tests</groupId>
+            <artifactId>mule-tests-functional</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Include all Mule Modules -->
+        <dependency>
+            <groupId>org.mule.runtime</groupId>
+            <artifactId>mule-modules-all</artifactId>
+            <version>${project.version}</version>
+            <type>pom</type>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mule.runtime</groupId>
+            <artifactId>mule-module-service</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Mule Services -->
+
+        <dependency>
+            <groupId>org.mule.services</groupId>
+            <artifactId>mule-service-weave</artifactId>
+            <classifier>mule-service</classifier>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.runtime</groupId>
+            <artifactId>mule-dwb-api</artifactId> 
+            <scope>provided</scope>         
+        </dependency> 
+        <dependency>
+            <groupId>org.mule.services</groupId>
+            <artifactId>mule-service-http</artifactId>
+            <classifier>mule-service</classifier>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.services</groupId>
+            <artifactId>mule-service-http</artifactId>
+            <scope>test</scope>
+            <type>test-jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.services</groupId>
+            <artifactId>mule-service-scheduler</artifactId>
+            <classifier>mule-service</classifier>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Mule Plugins -->
+        <dependency>
+            <groupId>org.mule.connectors</groupId>
+            <artifactId>mule-sockets-connector</artifactId>
+            <classifier>mule-plugin</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.connectors</groupId>
+            <artifactId>mule-http-connector</artifactId>
+            <classifier>mule-plugin</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.modules</groupId>
+            <artifactId>mule-module-cors-kernel</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.tests</groupId>
+            <artifactId>mule-heisenberg-extension</artifactId>
+            <version>${project.version}</version>
+            <classifier>mule-plugin</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mule.tests</groupId>
+            <artifactId>mule-tests-allure</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.tests</groupId>
+            <artifactId>mule-tests-unit</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mule.tests</groupId>
+            <artifactId>test-components</artifactId>
+            <classifier>mule-plugin</classifier>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>
