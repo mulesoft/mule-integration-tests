@@ -9,9 +9,11 @@ package org.mule.test.components.metrics;
 
 import static org.mule.runtime.api.util.MuleSystemProperties.MULE_ENABLE_STATISTICS;
 import static org.mule.runtime.core.api.util.ClassUtils.withContextClassLoader;
+import static org.mule.runtime.core.api.util.IOUtils.getResourceAsUrl;
 import static org.mule.runtime.metrics.exporter.api.MeterExporterProperties.METRIC_EXPORTER_ENABLED_PROPERTY;
-import static org.mule.runtime.metrics.exporter.api.MeterExporterProperties.METRIC_EXPORTER_ENDPOINT;
-import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_ENABLED;
+import static org.mule.runtime.metrics.exporter.config.api.OpenTelemetryMeterExporterConfigurationProperties.MULE_OPEN_TELEMETRY_METER_EXPORTER_CONFIGURATION_FILE_PATH;
+import static org.mule.runtime.metrics.exporter.config.api.OpenTelemetryMeterExporterConfigurationProperties.MULE_OPEN_TELEMETRY_METER_EXPORTER_ENABLED;
+import static org.mule.runtime.metrics.exporter.config.api.OpenTelemetryMeterExporterConfigurationProperties.MULE_OPEN_TELEMETRY_METER_EXPORTER_ENDPOINT;
 
 import static java.lang.Boolean.TRUE;
 import static java.lang.System.clearProperty;
@@ -56,41 +58,48 @@ public abstract class AbstractOpenTelemetryMetricsTestCase extends
   private static final Integer COLLECTOR_OTLP_GRPC_PORT = 4317;
   private static final Integer COLLECTOR_HEALTH_CHECK_PORT = 13133;
 
+  private static final String EXPORTER_CONF_FILE = "conf/meter-exporter.conf";
+
   protected GenericContainer<?> collector;
+
   @ClassRule
   public static final TestGrpcServerRule server = new TestGrpcServerRule();
 
   @Override
   protected void doSetUpBeforeMuleContextCreation() throws Exception {
-    setProperty(MULE_ENABLE_STATISTICS, "true");
-    setProperty(METRIC_EXPORTER_ENABLED_PROPERTY, "true");
     withContextClassLoader(GenericContainer.class.getClassLoader(), () -> {
       exposeHostPorts(server.httpPort());
       // Configuring the collector test-container
       collector =
           new GenericContainer<>(COLLECTOR_IMAGE)
               .withImagePullPolicy(PullPolicy.alwaysPull())
-              .withEnv(
-                       "OTLP_EXPORTER_ENDPOINT", "host.testcontainers.internal:" + server.httpPort())
-              .withClasspathResourceMapping(
-                                            "otel.yaml", "/otel.yaml", READ_ONLY)
+              .withEnv("OTLP_EXPORTER_ENDPOINT", "host.testcontainers.internal:" + server.httpPort())
+              .withClasspathResourceMapping("otel.yaml", "/otel.yaml", READ_ONLY)
               .withCommand("--config", "/otel.yaml")
-              .withExposedPorts(
-                                COLLECTOR_OTLP_GRPC_PORT,
-                                COLLECTOR_HEALTH_CHECK_PORT)
+              .withExposedPorts(COLLECTOR_OTLP_GRPC_PORT, COLLECTOR_HEALTH_CHECK_PORT)
               .waitingFor(Wait.forHttp("/").forPort(COLLECTOR_HEALTH_CHECK_PORT));
 
       collector.start();
-      setProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENABLED, TRUE.toString());
-      setProperty("mule.open.telelemetry.metric.exporter",
-                  "http://" + collector.getHost() + ":" + collector.getMappedPort(COLLECTOR_OTLP_GRPC_PORT) + "/");
     });
-    setProperty(METRIC_EXPORTER_ENDPOINT, "http://localhost:" + collector.getMappedPort(COLLECTOR_OTLP_GRPC_PORT));
+
+    setProperty(MULE_ENABLE_STATISTICS, TRUE.toString());
+    setProperty(METRIC_EXPORTER_ENABLED_PROPERTY, TRUE.toString());
+
+    String configurationFilePath = getResourceAsUrl(EXPORTER_CONF_FILE, getClass()).toURI().getPath();
+    setProperty(MULE_OPEN_TELEMETRY_METER_EXPORTER_CONFIGURATION_FILE_PATH, configurationFilePath);
+    setProperty(MULE_OPEN_TELEMETRY_METER_EXPORTER_ENABLED, TRUE.toString());
+    setProperty(MULE_OPEN_TELEMETRY_METER_EXPORTER_ENDPOINT,
+                "http://localhost:" + collector.getMappedPort(COLLECTOR_OTLP_GRPC_PORT));
   }
 
   @After
   public void after() {
-    clearProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENABLED);
+    collector.stop();
+    clearProperty(MULE_ENABLE_STATISTICS);
+    clearProperty(METRIC_EXPORTER_ENABLED_PROPERTY);
+    clearProperty(MULE_OPEN_TELEMETRY_METER_EXPORTER_CONFIGURATION_FILE_PATH);
+    clearProperty(MULE_OPEN_TELEMETRY_METER_EXPORTER_ENABLED);
+    clearProperty(MULE_OPEN_TELEMETRY_METER_EXPORTER_ENDPOINT);
     server.reset();
   }
 
