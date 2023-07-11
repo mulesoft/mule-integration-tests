@@ -11,8 +11,8 @@ import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExpor
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_ENABLED;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_ENDPOINT;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_TRACING_CONFIGURATION_FILE_PATH;
-import static org.mule.runtime.tracing.level.api.config.TracingLevel.MONITORING;
-import static org.mule.runtime.tracing.level.api.config.TracingLevel.OVERVIEW;
+import static org.mule.runtime.tracing.level.api.config.TracingLevelId.MONITORING;
+import static org.mule.runtime.tracing.level.api.config.TracingLevelId.OVERVIEW;
 import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.DEFAULT_CORE_EVENT_TRACER;
 import static org.mule.test.components.tracing.OpenTelemetryProtobufSpanUtils.getSpans;

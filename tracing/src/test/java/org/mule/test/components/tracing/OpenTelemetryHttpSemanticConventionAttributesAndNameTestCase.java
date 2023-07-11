@@ -13,9 +13,9 @@ import static org.mule.runtime.tracer.customization.api.InternalSpanNames.GET_CO
 import static org.mule.runtime.tracer.customization.api.InternalSpanNames.OPERATION_EXECUTION_SPAN_NAME;
 import static org.mule.runtime.tracer.customization.api.InternalSpanNames.PARAMETERS_RESOLUTION_SPAN_NAME;
 import static org.mule.runtime.tracer.customization.api.InternalSpanNames.VALUE_RESOLUTION_SPAN_NAME;
-import static org.mule.runtime.tracing.level.api.config.TracingLevel.DEBUG;
-import static org.mule.runtime.tracing.level.api.config.TracingLevel.MONITORING;
-import static org.mule.runtime.tracing.level.api.config.TracingLevel.OVERVIEW;
+import static org.mule.runtime.tracing.level.api.config.TracingLevelId.DEBUG;
+import static org.mule.runtime.tracing.level.api.config.TracingLevelId.MONITORING;
+import static org.mule.runtime.tracing.level.api.config.TracingLevelId.OVERVIEW;
 import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.DEFAULT_CORE_EVENT_TRACER;
 import static org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy.UNSET_STATUS;
