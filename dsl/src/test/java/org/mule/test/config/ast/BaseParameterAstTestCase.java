@@ -6,6 +6,7 @@
  */
 package org.mule.test.config.ast;
 
+import static org.mule.runtime.api.dsl.DslResolvingContext.getDefault;
 import static org.mule.runtime.ast.internal.serialization.ArtifactAstSerializerFactory.JSON;
 import static org.mule.runtime.core.api.extension.provider.RuntimeExtensionModelProvider.discoverRuntimeExtensionModels;
 import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.initialiseIfNeeded;
@@ -13,6 +14,7 @@ import static org.mule.test.allure.AllureConstants.ArtifactAst.ARTIFACT_AST;
 import static org.mule.test.allure.AllureConstants.ArtifactAst.ParameterAst.PARAMETER_AST;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.singleton;
 
 import static org.junit.Assert.fail;
 
@@ -24,6 +26,7 @@ import org.mule.runtime.ast.api.serialization.ArtifactAstDeserializer;
 import org.mule.runtime.ast.api.serialization.ArtifactAstSerializer;
 import org.mule.runtime.ast.api.serialization.ArtifactAstSerializerProvider;
 import org.mule.runtime.ast.api.xml.AstXmlParser;
+import org.mule.runtime.core.api.extension.provider.MuleExtensionModelProvider;
 import org.mule.runtime.module.extension.internal.loader.java.DefaultJavaExtensionModelLoader;
 import org.mule.runtime.module.extension.internal.manager.DefaultExtensionManager;
 import org.mule.tck.junit4.AbstractMuleContextTestCase;
@@ -32,8 +35,10 @@ import org.mule.test.runner.infrastructure.ExtensionsTestInfrastructureDiscovere
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import org.junit.Before;
@@ -86,8 +91,9 @@ public abstract class BaseParameterAstTestCase extends AbstractMuleContextTestCa
     ExtensionsTestInfrastructureDiscoverer discoverer = new ExtensionsTestInfrastructureDiscoverer(extensionManager);
 
     DefaultJavaExtensionModelLoader extensionModelLoader = new DefaultJavaExtensionModelLoader();
+    Set<ExtensionModel> dependencies = new HashSet<>(singleton(MuleExtensionModelProvider.getExtensionModel()));
     for (Class<?> annotatedClass : extensions) {
-      discoverer.discoverExtension(annotatedClass, extensionModelLoader);
+      dependencies.add(discoverer.discoverExtension(annotatedClass, extensionModelLoader, getDefault(dependencies)));
     }
 
     ArtifactAst parsedAst = AstXmlParser.builder()
