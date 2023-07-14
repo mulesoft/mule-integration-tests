@@ -8,6 +8,7 @@ package org.mule.test.config.ast;
 
 import static org.mule.runtime.api.dsl.DslResolvingContext.getDefault;
 import static org.mule.runtime.ast.internal.serialization.ArtifactAstSerializerFactory.JSON;
+import static org.mule.runtime.core.api.extension.provider.MuleExtensionModelProvider.getExtensionModel;
 import static org.mule.runtime.core.api.extension.provider.RuntimeExtensionModelProvider.discoverRuntimeExtensionModels;
 import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.initialiseIfNeeded;
 import static org.mule.test.allure.AllureConstants.ArtifactAst.ARTIFACT_AST;
@@ -91,7 +92,7 @@ public abstract class BaseParameterAstTestCase extends AbstractMuleContextTestCa
     ExtensionsTestInfrastructureDiscoverer discoverer = new ExtensionsTestInfrastructureDiscoverer(extensionManager);
 
     DefaultJavaExtensionModelLoader extensionModelLoader = new DefaultJavaExtensionModelLoader();
-    Set<ExtensionModel> dependencies = new HashSet<>(singleton(MuleExtensionModelProvider.getExtensionModel()));
+    Set<ExtensionModel> dependencies = new HashSet<>(singleton(getExtensionModel()));
     for (Class<?> annotatedClass : extensions) {
       dependencies.add(discoverer.discoverExtension(annotatedClass, extensionModelLoader, getDefault(dependencies)));
     }
