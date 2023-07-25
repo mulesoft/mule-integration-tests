@@ -22,7 +22,6 @@ import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
-import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.api.util.LazyValue;
 import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
@@ -47,7 +46,7 @@ import org.junit.Before;
 
 @Feature(PROFILING)
 @Story(DEFAULT_CORE_EVENT_TRACER)
-public class OpenTelemetryHttpErrorSemanticConventionAttributesAndNameTestCase extends MuleArtifactFunctionalTestCase
+public class OpenTelemetryHttpErrorSemanticConventionAttributesAndNameTestCase extends OpenTelemetryTracingSnifferTestCase
     implements OpenTelemetryTracingTestRunnerConfigAnnotation {
 
   @Rule

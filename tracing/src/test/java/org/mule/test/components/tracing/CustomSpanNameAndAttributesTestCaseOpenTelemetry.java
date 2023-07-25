@@ -17,7 +17,6 @@ import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.junit.Assert.assertThat;
 
-import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.api.lifecycle.Startable;
 import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
 import org.mule.runtime.tracer.api.sniffer.ExportedSpanSniffer;
@@ -44,7 +43,7 @@ import org.junit.runners.Parameterized;
 @Feature(PROFILING)
 @Story(DEFAULT_CORE_EVENT_TRACER)
 @RunnerDelegateTo(Parameterized.class)
-public class CustomSpanNameAndAttributesTestCaseOpenTelemetry extends MuleArtifactFunctionalTestCase
+public class CustomSpanNameAndAttributesTestCaseOpenTelemetry extends OpenTelemetryTracingSnifferTestCase
     implements OpenTelemetryTracingTestRunnerConfigAnnotation {
 
   public static final String EXPECTED_SOURCE_SPAN_NAME = "pet-store-list-modified";
