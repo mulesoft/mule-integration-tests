@@ -6,25 +6,21 @@ package org.mule.test.components.tracing;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_ENABLED;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.USE_MULE_OPEN_TELEMETRY_EXPORTER_SNIFFER;
 
-import static java.lang.System.clearProperty;
-import static java.lang.System.setProperty;
+import static java.lang.Boolean.TRUE;
 
-import org.junit.After;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
+import org.mule.tck.junit4.rule.SystemProperty;
 
+import org.junit.Rule;
 
+/**
+ * Abstract class for CE OTEL tests.
+ */
 public abstract class OpenTelemetryTracingSnifferTestCase extends MuleArtifactFunctionalTestCase {
 
-  @Override
-  protected void doSetUpBeforeMuleContextCreation() throws Exception {
-    setProperty(USE_MULE_OPEN_TELEMETRY_EXPORTER_SNIFFER, "true");
-    setProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENABLED, "true");
-    super.doSetUpBeforeMuleContextCreation();
-  }
+  @Rule
+  public SystemProperty enableTracing = new SystemProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENABLED, TRUE.toString());
 
-  @After
-  public void clearProperties() {
-    clearProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENABLED);
-    clearProperty(USE_MULE_OPEN_TELEMETRY_EXPORTER_SNIFFER);
-  }
+  @Rule
+  public SystemProperty enableSniffing = new SystemProperty(USE_MULE_OPEN_TELEMETRY_EXPORTER_SNIFFER, TRUE.toString());
 }
