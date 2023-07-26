@@ -3,7 +3,7 @@
  */
 package org.mule.runtime.test.integration.logging;
 
-import static org.mule.runtime.module.log4j.internal.MuleLog4jConfiguratorUtils.createContextFactory;
+import static org.mule.runtime.module.log4j.internal.MuleLog4jConfiguratorUtils.configureSelector;
 
 import static org.apache.logging.log4j.LogManager.setFactory;
 import static org.apache.logging.log4j.LogManager.shutdown;
@@ -21,7 +21,7 @@ import org.junit.rules.ExternalResource;
  */
 public class UseMuleLog4jContextFactory extends ExternalResource {
 
-  private static final MuleLog4jContextFactory muleLog4jContextFactory = createContextFactory(true);
+  private static final MuleLog4jContextFactory muleLog4jContextFactory = createContextFactory();
 
   private LoggerContextFactory originalLog4jContextFactory;
 
@@ -37,5 +37,11 @@ public class UseMuleLog4jContextFactory extends ExternalResource {
     ((MuleLog4jContextFactory) LogManager.getFactory()).dispose();
     setFactory(originalLog4jContextFactory);
     shutdown();
+  }
+
+  private static MuleLog4jContextFactory createContextFactory() {
+    MuleLog4jContextFactory contextFactory = new MuleLog4jContextFactory();
+    configureSelector(contextFactory, true);
+    return contextFactory;
   }
 }
