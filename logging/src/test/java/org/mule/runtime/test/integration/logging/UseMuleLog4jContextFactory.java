@@ -9,7 +9,7 @@ import static org.apache.logging.log4j.LogManager.setFactory;
 import static org.apache.logging.log4j.LogManager.shutdown;
 
 import org.mule.runtime.core.api.MuleContext;
-import org.mule.runtime.module.log4j.internal.MuleLog4jContextFactory;
+import org.mule.runtime.module.log4j.boot.api.MuleLog4jContextFactory;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.spi.LoggerContextFactory;
