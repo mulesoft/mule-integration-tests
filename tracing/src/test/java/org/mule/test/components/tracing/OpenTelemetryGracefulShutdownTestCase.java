@@ -11,6 +11,7 @@ import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExpor
 import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.OPEN_TELEMETRY_EXPORTER;
 
+import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.api.config.custom.ServiceConfigurator;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
@@ -36,7 +37,7 @@ import org.junit.Test;
 
 @Feature(PROFILING)
 @Story(OPEN_TELEMETRY_EXPORTER)
-public class OpenTelemetryGracefulShutdownTestCase extends OpenTelemetryTracingSnifferTestCase
+public class OpenTelemetryGracefulShutdownTestCase extends MuleArtifactFunctionalTestCase
     implements OpenTelemetryTracingTestRunnerConfigAnnotation {
 
   @Inject
