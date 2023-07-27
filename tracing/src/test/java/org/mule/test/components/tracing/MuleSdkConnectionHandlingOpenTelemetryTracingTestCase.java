@@ -24,7 +24,6 @@ import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
 import org.mule.runtime.tracer.api.sniffer.ExportedSpanSniffer;
-import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.runtime.tracer.customization.api.InternalSpanNames;
 import org.mule.runtime.tracing.level.api.config.TracingLevel;
@@ -52,7 +51,7 @@ import org.junit.runners.Parameterized;
 @Feature(PROFILING)
 @Story(DEFAULT_CORE_EVENT_TRACER)
 @RunnerDelegateTo(Parameterized.class)
-public class MuleSdkConnectionHandlingOpenTelemetryTracingTestCase extends MuleArtifactFunctionalTestCase
+public class MuleSdkConnectionHandlingOpenTelemetryTracingTestCase extends OpenTelemetryTracingSnifferTestCase
     implements OpenTelemetryTracingTestRunnerConfigAnnotation {
 
   private static final int TIMEOUT_MILLIS = 30000;

@@ -14,7 +14,6 @@ import static java.lang.System.clearProperty;
 import static java.lang.System.setProperty;
 import static java.util.Arrays.asList;
 
-import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
 import org.mule.runtime.tracer.api.sniffer.ExportedSpanSniffer;
 import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
@@ -40,7 +39,7 @@ import org.junit.After;
 @Feature(PROFILING)
 @Story(DEFAULT_CORE_EVENT_TRACER)
 @RunnerDelegateTo(Parameterized.class)
-public class ForEachErrorOpenTelemetryTracingTestCase extends MuleArtifactFunctionalTestCase
+public class ForEachErrorOpenTelemetryTracingTestCase extends OpenTelemetryTracingSnifferTestCase
     implements OpenTelemetryTracingTestRunnerConfigAnnotation {
 
   private static final int TIMEOUT_MILLIS = 30000;
