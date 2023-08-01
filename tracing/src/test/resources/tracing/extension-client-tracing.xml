@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:heisenberg="http://www.mulesoft.org/schema/mule/heisenberg"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+        http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+        http://www.mulesoft.org/schema/mule/heisenberg http://www.mulesoft.org/schema/mule/heisenberg/current/mule-heisenberg.xsd">
+
+    <http:request-config name="HTTP_Request_configuration"/>
+
+    <heisenberg:config name="heisenberg" cancer="true" money="1000000" finalHealth="CANCER">
+        <heisenberg:enemies>
+            <heisenberg:enemy value="Gustavo Fring" />
+            <heisenberg:enemy value="Hank" />
+        </heisenberg:enemies>
+        <heisenberg:monthly-incomes>
+            <heisenberg:monthly-income value="12000" />
+            <heisenberg:monthly-income value="500" />
+        </heisenberg:monthly-incomes>
+        <heisenberg:known-addresses>
+            <heisenberg:known-address value="one address" />
+        </heisenberg:known-addresses>
+    </heisenberg:config>
+
+    <flow name="flow">
+        <heisenberg:execute-remote-kill extension="HTTP" configName="HTTP_Request_configuration" operation="request" >
+            <heisenberg:parameters>#[{'url': 'http://localhost:${wireMockPort}/200'}]</heisenberg:parameters>
+        </heisenberg:execute-remote-kill>
+    </flow>
+
+</mule>
