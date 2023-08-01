@@ -14,16 +14,10 @@ import static java.lang.System.clearProperty;
 import static java.lang.System.setProperty;
 import static java.util.Arrays.asList;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
-import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
-
 import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
 import org.mule.runtime.tracer.api.sniffer.ExportedSpanSniffer;
 import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.tck.junit4.AbstractMuleTestCase;
-import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.probe.JUnitProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy;
@@ -35,13 +29,11 @@ import java.util.function.Function;
 
 import javax.inject.Inject;
 
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
-import org.junit.Rule;
 
 @Feature(PROFILING)
 @Story(DEFAULT_CORE_EVENT_TRACER)
@@ -58,20 +50,13 @@ public class ExtensionsClientTracingTestCase extends OpenTelemetryTracingSniffer
   public static final String MULE_OPERATION_EXECUTION_SPAN_NAME = "mule:operation-execution";
   public static final String MULE_PARAMETERS_RESOLUTION_SPAN_NAME = "mule:parameters-resolution";
   public static final String MULE_VALUE_RESOLUTION = "mule:value-resolution";
+  public static final String MULE_GET_CONNECTION = "mule:get-connection";
   private final String tracingLevel;
   private final int expectedSpans;
   private final Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> spanHierarchyRetriever;
 
   @Inject
   PrivilegedProfilingService profilingService;
-
-  @Rule
-  public DynamicPort wireMockPort = new DynamicPort("wireMockPort");
-
-  @Rule
-  public WireMockRule wireMock = new WireMockRule(wireMockConfig()
-      .bindAddress("127.0.0.1")
-      .port(wireMockPort.getNumber()));
 
   @Override
   protected String getConfigFile() {
@@ -83,7 +68,7 @@ public class ExtensionsClientTracingTestCase extends OpenTelemetryTracingSniffer
     return asList(new Object[][] {
         {OVERVIEW.name(), 1, getOverviewExpectedSpanTestHierarchy()},
         {MONITORING.name(), 2, getMonitoringExpectedSpanTestHierarchy()},
-        {DEBUG.name(), 9, getDebugExpectedSpanTestHierarchy()}
+        {DEBUG.name(), 10, getDebugExpectedSpanTestHierarchy()}
     });
   }
 
@@ -116,6 +101,9 @@ public class ExtensionsClientTracingTestCase extends OpenTelemetryTracingSniffer
           .child(HEISENBERG_EXECUTE_REMOTE_KILL_SPAN_NAME)
           .beginChildren()
           .child(MULE_OPERATION_EXECUTION_SPAN_NAME)
+          .beginChildren()
+          .child(MULE_GET_CONNECTION)
+          .endChildren()
           .child(MULE_PARAMETERS_RESOLUTION_SPAN_NAME)
           .beginChildren()
           .child(MULE_VALUE_RESOLUTION)
@@ -142,7 +130,6 @@ public class ExtensionsClientTracingTestCase extends OpenTelemetryTracingSniffer
   @Override
   protected void doSetUpBeforeMuleContextCreation() throws Exception {
     setProperty(TRACING_LEVEL_CONFIGURATION_PATH, tracingLevel.toLowerCase() + FileSystems.getDefault().getSeparator());
-    wireMock.stubFor(get(urlMatching("/200")).willReturn(aResponse().withStatus(200)));
     super.doSetUpBeforeMuleContextCreation();
   }
 
