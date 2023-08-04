@@ -104,4 +104,11 @@
         </http:request>
     </flow>
 
+    <flow name="defaultRedeliveryPolicyFlow">
+        <http:listener config-ref="defaultHttpListenerConfig" path="/runInfra" primaryNodeOnly="true">
+            <redelivery-policy/>
+        </http:listener>
+        <logger/>
+    </flow>
+
 </mule>
