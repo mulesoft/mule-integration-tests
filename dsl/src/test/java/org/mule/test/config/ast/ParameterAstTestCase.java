@@ -16,7 +16,6 @@ import static org.mule.test.allure.AllureConstants.ArtifactAst.ParameterAst.PARA
 import static org.mule.test.allure.AllureConstants.SourcesFeature.SOURCES;
 
 import static java.lang.Boolean.TRUE;
-import static java.lang.System.lineSeparator;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static java.util.stream.Collectors.toList;
@@ -32,7 +31,6 @@ import static org.hamcrest.collection.ArrayMatching.hasItemInArray;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assume.assumeThat;
 
 import org.mule.extension.aggregator.internal.AggregatorsExtension;
 import org.mule.extension.db.internal.DbConnector;
@@ -320,6 +318,29 @@ public class ParameterAstTestCase extends BaseParameterAstTestCase {
                is(3000L));
     assertThat(operationReconnection.getParameter("reconnect", "count").getValue().getRight(),
                is(3));
+  }
+
+  @Test
+  @Issue("W-12438526")
+  public void defaultRedeliveryPolicyFlow() {
+    ArtifactAst artifactAst = buildArtifactAst("parameters-test-http-oauth-proxy-config.xml",
+                                               HttpConnector.class, SocketsExtension.class, OAuthExtension.class);
+
+    Optional<ComponentAst> defaultRedeliveryPolicyFlow =
+        findComponent(artifactAst.topLevelComponentsStream(), FLOW_IDENTIFIER, "defaultRedeliveryPolicyFlow");
+    assertThat(defaultRedeliveryPolicyFlow, not(empty()));
+
+    final List<ComponentAst> flowChildren = defaultRedeliveryPolicyFlow.get().directChildrenStream().collect(toList());
+
+    final ComponentAst source = flowChildren.get(0);
+
+    final ComponentAst redeliveryPolicy =
+        (ComponentAst) (source.getParameter(DEFAULT_GROUP_NAME, "redeliveryPolicy").getValue().getRight());
+    // The default value as set in the infrastructure type
+    assertThat(redeliveryPolicy.getParameter("RedeliveryPolicy", "maxRedeliveryCount").getValue().getRight(),
+               is(5));
+    assertThat(redeliveryPolicy.getParameter("RedeliveryPolicy", "useSecureHash").getValue().getRight(),
+               is(true));
   }
 
   @Test
