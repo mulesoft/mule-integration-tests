@@ -35,7 +35,7 @@
 
   <properties>
     <munitVersion>2.4.0-SNAPSHOT</munitVersion>
-    <muleExtensionTestSoapTestVersion>1.5.0-SNAPSHOT</muleExtensionTestSoapTestVersion>
+    <muleExtensionTestSoapTestVersion>1.5.0-rc10</muleExtensionTestSoapTestVersion>
     <muleSpringModuleTestVersion>1.4.0-SNAPSHOT</muleSpringModuleTestVersion>
 
     <munitExtensionsMavenPlugin>1.1.3</munitExtensionsMavenPlugin>
