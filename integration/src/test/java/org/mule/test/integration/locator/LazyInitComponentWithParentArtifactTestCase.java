@@ -39,6 +39,7 @@ import java.util.Set;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Features;
+import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,6 +51,7 @@ public class LazyInitComponentWithParentArtifactTestCase extends DomainFunctiona
   private static final String APP_NAME = "app-depending-on-parent-config";
 
   private LazyComponentInitializer appLazyComponentInitializer;
+  private LazyComponentInitializer domainLazyComponentInitializer;
   private ConfigurationComponentLocator appLocator;
   private ConfigurationComponentLocator domainLocator;
 
@@ -85,6 +87,7 @@ public class LazyInitComponentWithParentArtifactTestCase extends DomainFunctiona
   @Before
   public void grabObjectsFromArtifactsInfrastructure() {
     appLazyComponentInitializer = getLazyComponentInitializerForApp(APP_NAME);
+    domainLazyComponentInitializer = getLazyComponentInitializerForDomain();
     appLocator = getLocatorForApp(APP_NAME);
     domainLocator = getLocatorForDomain();
   }
@@ -169,8 +172,45 @@ public class LazyInitComponentWithParentArtifactTestCase extends DomainFunctiona
     assertLocationsNotInitialized(domainLocator, "anotherConfigThatShouldNotBeInitialized");
   }
 
+  @Test
+  @Issue("W-13917141")
+  public void whenCreatingArtifactContextWithAlreadyInitializedParentArtifactThenItDoesntFail() throws Exception {
+    // Initializes a config directly from the domain, triggering the domain initialization cycle
+    domainLazyComponentInitializer.initializeComponent(builderFromStringRepresentation("configInDomain").build());
+
+    // In order to trigger the issue we need to create an application context using a parent context that has already been
+    // initialized
+    ArtifactInstanceInfrastructure artifactInstanceInfrastructure = createAppMuleContext(getConfigResources()[0]);
+
+    LazyComponentInitializer appLazyComponentInitializer =
+        getLazyComponentInitializerFromArtifactInfrastructure(artifactInstanceInfrastructure);
+    ConfigurationComponentLocator appLocator = getLocatorFromArtifactInfrastructure(artifactInstanceInfrastructure);
+
+    // Initializes something from the app that depends on something from the domain (not already initialized)
+    appLazyComponentInitializer
+        .initializeComponent(builderFromStringRepresentation("anotherFlowDependingOnAnotherConfigFromDomain").build());
+
+    // Components in the app
+    assertFlowsInitialized(appLocator, "anotherFlowDependingOnAnotherConfigFromDomain");
+    assertLocationsInitialized(appLocator, "anotherFlowDependingOnAnotherConfigFromDomain",
+                               "anotherFlowDependingOnAnotherConfigFromDomain/source");
+    assertLocationsNotInitialized(appLocator, "anotherFlowThatShouldNotBeInitialized");
+
+    // Components in the domain
+    assertLocationsInitialized(domainLocator, "configInDomain");
+    assertLocationsInitialized(domainLocator, "anotherConfigInDomain");
+    assertLocationsNotInitialized(domainLocator, "anotherConfigThatShouldNotBeInitialized");
+
+    // Disposes the application context created specifically for this test
+    artifactInstanceInfrastructure.getMuleContext().dispose();
+  }
+
   private LazyComponentInitializer getLazyComponentInitializerForApp(String appName) {
     return getLazyComponentInitializerFromArtifactInfrastructure(getInfrastructureForApp(appName));
+  }
+
+  private LazyComponentInitializer getLazyComponentInitializerForDomain() {
+    return getLazyComponentInitializerFromArtifactInfrastructure(getDomainInfrastructure());
   }
 
   private ConfigurationComponentLocator getLocatorForApp(String appName) {
