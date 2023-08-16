@@ -79,7 +79,6 @@ class BasicModule extends AbstractModule {
     return of(new DefaultArtifactAstDependencyGraphProvider());
   }
 
-
   @Provides
   @Singleton
   @Named("_compatibilityPluginInstalled")
