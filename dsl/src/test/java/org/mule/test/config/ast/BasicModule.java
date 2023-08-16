@@ -17,11 +17,11 @@ import org.mule.runtime.ast.api.validation.ValidationsProvider;
 import org.mule.runtime.ast.graph.api.ArtifactAstDependencyGraphProvider;
 import org.mule.runtime.ast.internal.validation.DefaultValidatorBuilder;
 import org.mule.runtime.config.internal.validation.CoreValidationsProvider;
+import org.mule.runtime.config.internal.validation.ast.ReusableArtifactAstDependencyGraphProvider;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.el.ExtendedExpressionManager;
 import org.mule.runtime.core.api.transformer.Transformer;
 import org.mule.runtime.core.internal.context.DefaultMuleContext;
-import org.mule.runtime.core.internal.context.ast.CachingArtifactAstGraphDependencyProvider;
 import org.mule.runtime.core.internal.el.DefaultExpressionManager;
 import org.mule.runtime.core.internal.registry.TransformerResolver;
 import org.mule.runtime.core.internal.transformer.DefaultTransformersRegistry;
@@ -59,7 +59,7 @@ class BasicModule extends AbstractModule {
     bind(TransformersRegistry.class).to(DefaultTransformersRegistry.class);
     bind(Object.class).to(String.class);
     bind(Transformer.class).to(StringToBoolean.class);
-    bind(ArtifactAstDependencyGraphProvider.class).to(CachingArtifactAstGraphDependencyProvider.class);
+    bind(ArtifactAstDependencyGraphProvider.class).to(ReusableArtifactAstDependencyGraphProvider.class);
   }
 
   @Provides
