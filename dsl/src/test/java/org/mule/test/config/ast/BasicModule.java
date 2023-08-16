@@ -14,8 +14,10 @@ import org.mule.runtime.api.config.FeatureFlaggingService;
 import org.mule.runtime.api.el.ExpressionLanguage;
 import org.mule.runtime.ast.api.validation.ArtifactAstValidatorBuilder;
 import org.mule.runtime.ast.api.validation.ValidationsProvider;
+import org.mule.runtime.ast.graph.api.ArtifactAstDependencyGraphProvider;
 import org.mule.runtime.ast.internal.validation.DefaultValidatorBuilder;
 import org.mule.runtime.config.internal.validation.CoreValidationsProvider;
+import org.mule.runtime.config.internal.validation.DefaultArtifactAstDependencyGraphProvider;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.el.ExtendedExpressionManager;
 import org.mule.runtime.core.api.transformer.Transformer;
@@ -69,6 +71,12 @@ class BasicModule extends AbstractModule {
   @Singleton
   public FeatureFlaggingService provideFeatureFlaggingService() {
     return new DefaultFeatureFlaggingService("abcd", featureBooleanMap);
+  }
+
+  @Provides
+  @Singleton
+  public Optional<ArtifactAstDependencyGraphProvider> provideArtifactAstDependencyGraphProvider() {
+    return of(new DefaultArtifactAstDependencyGraphProvider());
   }
 
   @Provides
