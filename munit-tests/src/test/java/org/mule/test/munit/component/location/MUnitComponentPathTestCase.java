@@ -4,12 +4,13 @@
 package org.mule.test.munit.component.location;
 
 import static org.mule.runtime.api.component.location.Location.builderFromStringRepresentation;
+import static org.mule.tck.junit4.matcher.IsEmptyOptional.empty;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.MUnitComponentLocatorStory.MUNIT_COMPONENT_LOCATION;
 
 import static java.util.stream.Collectors.toCollection;
 
-import static com.github.npathai.hamcrestopt.OptionalMatchers.isPresent;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
@@ -51,103 +52,103 @@ public class MUnitComponentPathTestCase extends MuleArtifactFunctionalTestCase {
   public void beforeSuiteComponentLocations() throws Exception {
     assertThat("locations: " + locations,
                locator.find(builderFromStringRepresentation("beforeSuite").build()),
-               isPresent());
+               not(empty()));
     assertThat("locations: " + locations,
                locator.find(builderFromStringRepresentation("beforeSuite/processors/0").build()),
-               isPresent());
+               not(empty()));
     assertThat("locations: " + locations,
                locator.find(builderFromStringRepresentation("beforeSuite/processors/1").build()),
-               isPresent());
+               not(empty()));
   }
 
   @Test
   public void afterSuiteComponentLocations() throws Exception {
     assertThat("locations: " + locations,
                locator.find(builderFromStringRepresentation("afterSuite").build()),
-               isPresent());
+               not(empty()));
     assertThat("locations: " + locations,
                locator.find(builderFromStringRepresentation("afterSuite/processors/0").build()),
-               isPresent());
+               not(empty()));
     assertThat("locations: " + locations,
                locator.find(builderFromStringRepresentation("afterSuite/processors/0/route/0/processors/0").build()),
-               isPresent());
+               not(empty()));
   }
 
   @Test
   public void beforeTestComponentLocations() throws Exception {
     assertThat("locations: " + locations,
                locator.find(builderFromStringRepresentation("beforeTest").build()),
-               isPresent());
+               not(empty()));
     assertThat("locations: " + locations,
                locator.find(builderFromStringRepresentation("beforeTest/processors/0").build()),
-               isPresent());
+               not(empty()));
     assertThat("locations: " + locations,
                locator.find(builderFromStringRepresentation("beforeTest/processors/0/processors/0").build()),
-               isPresent());
+               not(empty()));
     assertThat("locations: " + locations,
                locator.find(builderFromStringRepresentation("beforeTest/processors/0/processors/0/route/0/processors/0").build()),
-               isPresent());
+               not(empty()));
     assertThat("locations: " + locations,
                locator.find(builderFromStringRepresentation("beforeTest/processors/0/processors/0/route/1/processors/0").build()),
-               isPresent());
+               not(empty()));
   }
 
   @Test
   public void afterTestComponentLocations() throws Exception {
     assertThat("locations: " + locations,
                locator.find(builderFromStringRepresentation("afterTest").build()),
-               isPresent());
+               not(empty()));
     assertThat("locations: " + locations,
                locator.find(builderFromStringRepresentation("afterTest/processors/0").build()),
-               isPresent());
+               not(empty()));
   }
 
   @Test
   public void testComponentLocations() throws Exception {
     assertThat("locations: " + locations,
                locator.find(builderFromStringRepresentation("test").build()),
-               isPresent());
+               not(empty()));
     assertThat("locations: " + locations,
                locator.find(builderFromStringRepresentation("test/route/0").build()),
-               isPresent());
+               not(empty()));
     assertThat("locations: " + locations,
                locator.find(builderFromStringRepresentation("test/route/0/processors/0").build()),
-               isPresent());
+               not(empty()));
     assertThat("locations: " + locations,
                locator.find(builderFromStringRepresentation("test/route/0/processors/0/processors/0").build()),
-               isPresent());
+               not(empty()));
     assertThat("locations: " + locations,
                locator
                    .find(builderFromStringRepresentation("test/route/0/processors/0/processors/0/route/0/processors/0").build()),
-               isPresent());
+               not(empty()));
     assertThat("locations: " + locations,
                locator
                    .find(builderFromStringRepresentation("test/route/0/processors/0/processors/0/route/0/processors/0/processors/0")
                        .build()),
-               isPresent());
+               not(empty()));
     assertThat("locations: " + locations,
                locator.find(builderFromStringRepresentation("test/route/0/processors/0/processors/0/route/0").build()),
-               isPresent());
+               not(empty()));
     assertThat("locations: " + locations,
                locator.find(builderFromStringRepresentation("test/route/0/processors/0/errorHandler").build()),
-               isPresent());
+               not(empty()));
     assertThat("locations: " + locations,
                locator.find(builderFromStringRepresentation("test/route/0/processors/0/errorHandler/0").build()),
-               isPresent());
+               not(empty()));
 
     assertThat("locations: " + locations,
                locator.find(builderFromStringRepresentation("test/route/1").build()),
-               isPresent());
+               not(empty()));
     assertThat("locations: " + locations,
                locator.find(builderFromStringRepresentation("test/route/1/processors/0").build()),
-               isPresent());
+               not(empty()));
 
     assertThat("locations: " + locations,
                locator.find(builderFromStringRepresentation("test/route/2").build()),
-               isPresent());
+               not(empty()));
     assertThat("locations: " + locations,
                locator.find(builderFromStringRepresentation("test/route/2/processors/0").build()),
-               isPresent());
+               not(empty()));
   }
 
 }
