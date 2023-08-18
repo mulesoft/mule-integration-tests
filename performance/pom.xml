@@ -103,6 +103,12 @@
         <dependency>
             <groupId>org.mule.services</groupId>
             <artifactId>mule-service-scheduler</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.graalvm.js</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>                
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.mule.services</groupId>
