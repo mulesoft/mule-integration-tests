@@ -39,7 +39,6 @@ import org.junit.Test;
 
 @Feature(PROFILING)
 @Story(DEFAULT_CORE_EVENT_TRACER)
-@Ignore("W-13966789")
 public class OpenTelemetryJmsSemanticConventionAttributesAndNameTestCase extends OpenTelemetryTracingSnifferTestCase
     implements OpenTelemetryTracingTestRunnerConfigAnnotation {
 
