@@ -26,7 +26,6 @@ import org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
-import org.junit.Ignore;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
@@ -39,7 +38,6 @@ import org.junit.Test;
 
 @Feature(PROFILING)
 @Story(DEFAULT_CORE_EVENT_TRACER)
-@Ignore("W-13966789")
 public class OpenTelemetryJmsSemanticConventionAttributesAndNameTestCase extends OpenTelemetryTracingSnifferTestCase
     implements OpenTelemetryTracingTestRunnerConfigAnnotation {
 
