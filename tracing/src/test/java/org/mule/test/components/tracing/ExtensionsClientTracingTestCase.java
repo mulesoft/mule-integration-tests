@@ -68,7 +68,7 @@ public class ExtensionsClientTracingTestCase extends OpenTelemetryTracingSniffer
     return asList(new Object[][] {
         {OVERVIEW.name(), 1, getOverviewExpectedSpanTestHierarchy()},
         {MONITORING.name(), 2, getMonitoringExpectedSpanTestHierarchy()},
-        {DEBUG.name(), 10, getDebugExpectedSpanTestHierarchy()}
+        {DEBUG.name(), 14, getDebugExpectedSpanTestHierarchy()}
     });
   }
 
@@ -103,6 +103,12 @@ public class ExtensionsClientTracingTestCase extends OpenTelemetryTracingSniffer
           .child(MULE_OPERATION_EXECUTION_SPAN_NAME)
           .beginChildren()
           .child(MULE_GET_CONNECTION)
+          .child(MULE_PARAMETERS_RESOLUTION_SPAN_NAME)
+          .beginChildren()
+          .child(MULE_VALUE_RESOLUTION)
+          .child(MULE_VALUE_RESOLUTION)
+          .endChildren()
+          .child(MULE_OPERATION_EXECUTION_SPAN_NAME)
           .endChildren()
           .child(MULE_PARAMETERS_RESOLUTION_SPAN_NAME)
           .beginChildren()
