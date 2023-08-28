@@ -32,6 +32,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
+import io.qameta.allure.Issue;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -97,6 +98,7 @@ public class OAuthSourceRefreshExtensionTestCase extends BaseOAuthExtensionTestC
   }
 
   @Test
+  @Issue("W-13628406")
   public void refreshTokenOnSource() throws Exception {
     simulateCallback();
 
@@ -110,6 +112,7 @@ public class OAuthSourceRefreshExtensionTestCase extends BaseOAuthExtensionTestC
   }
 
   @Test
+  @Issue("W-13628406")
   public void refreshTokenFailsOnSource() throws Exception {
     assertRefreshTokenOnSource("source");
   }
@@ -124,8 +127,8 @@ public class OAuthSourceRefreshExtensionTestCase extends BaseOAuthExtensionTestC
 
     WireMock.reset();
     wireMock.stubFor(post(urlMatching("/" + TOKEN_PATH)).willReturn(aResponse()
-                                                                      .withStatus(INTERNAL_SERVER_ERROR.getStatusCode())
-                                                                      .withBody("no token for you!")));
+        .withStatus(INTERNAL_SERVER_ERROR.getStatusCode())
+        .withBody("no token for you!")));
 
     Latch latch = new Latch();
     final ExceptionNotificationListener listener = notification -> {
