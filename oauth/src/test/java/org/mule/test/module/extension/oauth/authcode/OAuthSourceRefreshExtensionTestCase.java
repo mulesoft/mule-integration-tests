@@ -98,7 +98,6 @@ public class OAuthSourceRefreshExtensionTestCase extends BaseOAuthExtensionTestC
   }
 
   @Test
-  @Issue("W-13628406")
   public void refreshTokenOnSource() throws Exception {
     simulateCallback();
 
@@ -118,6 +117,7 @@ public class OAuthSourceRefreshExtensionTestCase extends BaseOAuthExtensionTestC
   }
 
   @Test
+  @Issue("W-13628406")
   public void refreshTokenFailsOnPollingSource() throws Exception {
     assertRefreshTokenOnSource("pollingSource");
   }
