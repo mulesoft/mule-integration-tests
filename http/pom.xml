@@ -18,6 +18,8 @@
 
         <junit.version>4.13.2</junit.version>
         <jaxb.runtime.version>4.0.2</jaxb.runtime.version>
+        <grizzly.version>2.3.36-MULE-026-SNAPSHOT</grizzly.version>
+        <grizzly.ahc.version>1.14-MULE-024-SNAPSHOT</grizzly.ahc.version>
 
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
     </properties>
@@ -54,6 +56,23 @@
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>fluent-hc</artifactId>
             <version>${apacheHttpClientVersion}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.glassfish.grizzly</groupId>
+            <artifactId>tls-sni</artifactId>
+            <version>${grizzly.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.glassfish.grizzly</groupId>
+            <artifactId>grizzly-http-server</artifactId>
+            <version>${grizzly.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.glassfish.grizzly</groupId>
+            <artifactId>grizzly-http-client</artifactId>
+            <version>${grizzly.ahc.version}</version>
             <scope>test</scope>
         </dependency>
 
