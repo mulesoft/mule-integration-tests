@@ -18,9 +18,14 @@
 
         <junit.version>4.13.2</junit.version>
         <jaxb.runtime.version>4.0.2</jaxb.runtime.version>
+
+        <javax.servlet.api.version>3.1.0</javax.servlet.api.version>
+
         <grizzly.version>2.3.36-MULE-026-SNAPSHOT</grizzly.version>
         <grizzly.ahc.version>1.14-MULE-024-SNAPSHOT</grizzly.ahc.version>
         <apacheAsyncClientVersion>4.1.5</apacheAsyncClientVersion>
+        <jettyVersion>9.4.51.v20230217</jettyVersion>
+        <httpMimeVersion>4.5.14</httpMimeVersion>
 
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
     </properties>
@@ -35,6 +40,19 @@
         </dependency>
 
         <!-- Third party dependencies -->
+
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>${javax.servlet.api.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-util</artifactId>
+            <version>${jettyVersion}</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -63,6 +81,12 @@
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpasyncclient</artifactId>
             <version>${apacheAsyncClientVersion}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpmime</artifactId>
+            <version>${httpMimeVersion}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
