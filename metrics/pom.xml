@@ -8,7 +8,7 @@
         <version>4.6.0-SNAPSHOT</version>
     </parent>
     <artifactId>mule-tests-metrics</artifactId>
-    <name>Integration Tests</name>
+    <name>Metrics Integration Tests</name>
     <description>Tests for Optel Metrics</description>
     <packaging>jar</packaging>
 
@@ -16,13 +16,9 @@
         <javaModuleName>org.mule.test.integration.metrics</javaModuleName>
         <skipExportTests>false</skipExportTests>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
+
         <protobufVersion>3.21.9</protobufVersion>
         <opentelemetryVersion>1.20.1</opentelemetryVersion>
-        <activemqVersion>5.15.9</activemqVersion>
-        <hawtbufVersion>1.1</hawtbufVersion>
-        <activemqProtobuf>1.1</activemqProtobuf>
-        <groovy.version>2.4.21</groovy.version>
-        <apikitVersion>1.5.8</apikitVersion>
     </properties>
 
     <build>
@@ -63,13 +59,11 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
-            <version>${jacksonVersion}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>${jacksonVersion}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -151,7 +145,6 @@
         <dependency>
             <groupId>org.mule.modules</groupId>
             <artifactId>mule-apikit-module</artifactId>
-            <version>${apikitVersion}</version>
             <classifier>mule-plugin</classifier>
         </dependency>
 
@@ -207,7 +200,6 @@
         <dependency>
             <groupId>org.mule.tests</groupId>
             <artifactId>test-components</artifactId>
-            <version>${muleTestComponentsVersion}</version>
             <classifier>mule-plugin</classifier>
             <scope>test</scope>
         </dependency>
@@ -262,7 +254,6 @@
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers</artifactId>
-            <version>1.17.6</version>
             <scope>test</scope>
         </dependency>
         <dependency>
