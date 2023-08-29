@@ -20,6 +20,7 @@
         <jaxb.runtime.version>4.0.2</jaxb.runtime.version>
         <grizzly.version>2.3.36-MULE-026-SNAPSHOT</grizzly.version>
         <grizzly.ahc.version>1.14-MULE-024-SNAPSHOT</grizzly.ahc.version>
+        <apacheAsyncClientVersion>4.1.5</apacheAsyncClientVersion>
 
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
     </properties>
@@ -61,7 +62,7 @@
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpasyncclient</artifactId>
-            <version>4.1.4</version>
+            <version>${apacheAsyncClientVersion}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
