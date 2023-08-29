@@ -31,6 +31,7 @@
         <module>tooling-support-tests</module>
         <module>tracing</module>
         <module>metrics</module>
+        <module>http</module>
     </modules>
 
     <properties>
@@ -40,7 +41,8 @@
 
         <munitExtensionsMavenPlugin>1.1.3</munitExtensionsMavenPlugin>
 
-        <apacheHttpClientVersion>4.5.13</apacheHttpClientVersion>
+        <apacheHttpClientVersion>4.5.14</apacheHttpClientVersion>
+        <apacheHttpCoreVersion>4.4.15</apacheHttpCoreVersion>
         <springVersion>5.1.6.RELEASE</springVersion>
         <jacksonVersion>2.15.0</jacksonVersion>
         <wireMockVersion>1.58</wireMockVersion>
