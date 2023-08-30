@@ -41,7 +41,6 @@
         </dependency>
 
         <!-- Third party dependencies -->
-
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
@@ -142,6 +141,13 @@
         </dependency>
 
         <!-- Mule dependencies -->
+        <dependency>
+            <groupId>org.mule.modules</groupId>
+            <artifactId>mule-module-cors-kernel</artifactId>
+            <version>1.1.2</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-api</artifactId>
