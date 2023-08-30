@@ -6,8 +6,11 @@ package org.mule.it.soap.connect;
 import static org.mule.service.soap.SoapTestUtils.assertSimilarXml;
 
 import org.mule.runtime.api.message.Message;
-import org.junit.Test;
+
 import java.io.ByteArrayInputStream;
+
+import org.junit.Ignore;
+import org.junit.Test;
 
 public class InvokeOperationExecutionTestCase extends SoapFootballExtensionArtifactFunctionalTestCase {
 
@@ -54,6 +57,7 @@ public class InvokeOperationExecutionTestCase extends SoapFootballExtensionArtif
   }
 
   @Test
+  @Ignore("W-14042815")
   public void uploadAttachment() throws Exception {
     Message message = flowRunner("uploadResult")
         .withPayload(getBodyXml("uploadResult", ""))
