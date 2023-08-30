@@ -43,6 +43,8 @@ public abstract class AbstractHttpTestCase extends MuleArtifactFunctionalTestCas
   protected static final String J8_275_SSL_ERROR_RESPONSE = "Certificate signature validation failed";
   // Expected validation error message for JDK 11.
   protected static final String J11_SSL_ERROR_RESPONSE = "PKIX path building failed";
+  // Expected validation error message for JDK 17.
+  protected static final String J17_SSL_ERROR_RESPONSE = "PKIX path validation failed";
 
   @Rule
   public TestHttpClient httpClient = new TestHttpClient.Builder(getService(HttpService.class)).build();
