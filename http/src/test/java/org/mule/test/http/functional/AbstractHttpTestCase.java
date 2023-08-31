@@ -28,7 +28,7 @@ import io.qameta.allure.Feature;
 import org.junit.Rule;
 
 @Feature(HTTP_EXTENSION)
-public abstract class AbstractHttpTestCase extends MuleArtifactFunctionalTestCase {
+public abstract class AbstractHttpTestCase extends MuleArtifactFunctionalTestCase implements HttpTestCaseRunnerConfig {
 
   protected static final String DEFAULT_PROCESSING_STRATEGY_CLASSNAME =
       "org.mule.runtime.core.internal.processor.strategy.TransactionAwareStreamEmitterProcessingStrategyFactory";

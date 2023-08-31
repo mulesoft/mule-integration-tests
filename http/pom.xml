@@ -40,7 +40,27 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- Connectors used in tests -->
+        <dependency>
+            <groupId>org.mule.modules</groupId>
+            <artifactId>mule-scripting-module</artifactId>
+            <classifier>mule-plugin</classifier>
+            <scope>test</scope>
+        </dependency>
+
         <!-- Third party dependencies -->
+        <dependency>
+            <groupId>org.apache.groovy</groupId>
+            <artifactId>groovy</artifactId>
+            <version>${groovyVersionBuild}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.groovy</groupId>
+            <artifactId>groovy-jsr223</artifactId>
+            <version>${groovyVersionBuild}</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
@@ -50,6 +70,12 @@
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-util</artifactId>
+            <version>${jettyVersion}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-server</artifactId>
             <version>${jettyVersion}</version>
             <scope>test</scope>
         </dependency>

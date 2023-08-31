@@ -9,6 +9,10 @@ package org.mule.test.http.functional;
 import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
 
 @ArtifactClassLoaderRunnerConfig(
+    applicationSharedRuntimeLibs = {
+        "org.apache.groovy:groovy",
+        "org.apache.groovy:groovy-jsr223"
+    },
     testRunnerExportedRuntimeLibs = {"org.mule.tests:mule-tests-functional"})
 public interface HttpTestCaseRunnerConfig {
 
