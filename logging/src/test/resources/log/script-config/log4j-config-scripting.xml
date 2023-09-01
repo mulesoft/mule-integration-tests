@@ -2,7 +2,7 @@
 <Configuration>
     <Appenders>
         <ScriptAppenderSelector name="scripting">
-            <Script language="nashorn"><![CDATA['file' + 2]]></Script>
+            <Script language="javascript"><![CDATA['file' + 2]]></Script>
 
             <AppenderSet>
                 <File name="file1" fileName="${sys:mule.home}${sys:file.separator}logs${sys:file.separator}unwanted.log">
