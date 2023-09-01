@@ -13,11 +13,7 @@ import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
         "org.apache.commons:commons-lang3"
     },
     applicationSharedRuntimeLibs = {
-        "org.apache.activemq:activemq-broker",
-        "org.apache.activemq:activemq-client",
-        "org.apache.activemq:activemq-kahadb-store",
-        "org.fusesource.hawtbuf:hawtbuf",
-        "org.apache.activemq.protobuf:activemq-protobuf",
+        "org.mule.tests:mule-activemq-broker",
         "org.mule.tests:mule-tests-model",
         "org.mule.runtime:mule-tracer-exporter-impl",
         "org.mule.runtime:mule-tracer-configuration-api"
