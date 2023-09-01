@@ -13,11 +13,19 @@
     <packaging>jar</packaging>
 
     <properties>
+        <surefire.args>
+            -Xmx1024m
+            -Xms256m
+            -XX:+HeapDumpOnOutOfMemoryError
+            ${surefire.args.base}
+        </surefire.args>
+        
         <javaModuleName>org.mule.test.integration.logging</javaModuleName>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
         <protobufVersion>3.21.9</protobufVersion>
         <openTelemetryProtoVersion>0.3.0</openTelemetryProtoVersion>
         <opentelemetryVersion>1.20.1</opentelemetryVersion>
+        <graaljsVersion>22.3.3</graaljsVersion>
     </properties>
 
     <build>
@@ -26,7 +34,17 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <argLine>-Dfile.encoding=UTF-8 -Xmx1024m -Xms256m -XX:+HeapDumpOnOutOfMemoryError -javaagent:${settings.localRepository}/org/aspectj/aspectjweaver/${aspectjVersion}/aspectjweaver-${aspectjVersion}.jar -javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco.version}/org.jacoco.agent-${jacoco.version}-runtime.jar=destfile='${session.executionRootDirectory}/target/jacoco.exec'</argLine>
+                    <systemPropertyVariables>
+                        <ibmIcu4jJarLoc>${com.ibm.icu:icu4j:jar}</ibmIcu4jJarLoc>
+                        <graalVmSdkJarLoc>${org.graalvm.sdk:graal-sdk:jar}</graalVmSdkJarLoc>
+                        <graalVmTruffleJarLoc>${org.graalvm.truffle:truffle-api:jar}</graalVmTruffleJarLoc>
+                        <graalVmJsJarLoc>${org.graalvm.js:js:jar}</graalVmJsJarLoc>
+                        <graalVmJsScriptEngineJarLoc>${org.graalvm.js:js-scriptengine:jar}</graalVmJsScriptEngineJarLoc>
+                    </systemPropertyVariables>
+                    <classpathDependencyExcludes>
+                        <!-- this is not needed on the test classpath, just to get the location -->
+                        <classpathDependencyExclude>org.graalvm.js:js-scriptengine</classpathDependencyExclude>
+                    </classpathDependencyExcludes>
                 </configuration>
             </plugin>
         </plugins>
@@ -131,13 +149,6 @@
             <type>test-jar</type>
         </dependency>
         <dependency>
-            <groupId>org.mule.runtime</groupId>
-            <artifactId>mule-module-deployment</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-            <type>test-jar</type>
-        </dependency>
-        <dependency>
             <groupId>io.opentelemetry</groupId>
             <artifactId>opentelemetry-api</artifactId>
             <scope>test</scope>
@@ -172,12 +183,28 @@
             <artifactId>armeria-junit4</artifactId>
             <version>1.20.3</version>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.code.findbugs</groupId>
+                    <artifactId>jsr305</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.linecorp.armeria</groupId>
             <artifactId>armeria-grpc</artifactId>
             <version>1.20.3</version>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.code.findbugs</groupId>
+                    <artifactId>jsr305</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>io.grpc</groupId>
+                    <artifactId>grpc-context</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>io.opentelemetry</groupId>
@@ -208,6 +235,18 @@
                     <artifactId>protobuf-java</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.graalvm.js</groupId>
+            <artifactId>js</artifactId>
+            <version>${graaljsVersion}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.graalvm.js</groupId>
+            <artifactId>js-scriptengine</artifactId>
+            <version>${graaljsVersion}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>
