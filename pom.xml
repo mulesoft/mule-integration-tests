@@ -32,6 +32,7 @@
         <module>tracing</module>
         <module>metrics</module>
         <module>http</module>
+        <module>cors</module>
     </modules>
 
     <properties>

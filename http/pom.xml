@@ -168,13 +168,6 @@
 
         <!-- Mule dependencies -->
         <dependency>
-            <groupId>org.mule.modules</groupId>
-            <artifactId>mule-module-cors-kernel</artifactId>
-            <version>1.1.2</version>
-            <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-api</artifactId>
         </dependency>
