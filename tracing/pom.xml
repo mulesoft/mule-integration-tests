@@ -8,39 +8,24 @@
         <version>4.6.0-SNAPSHOT</version>
     </parent>
     <artifactId>mule-tests-tracing</artifactId>
-    <name>Integration Tests</name>
+    <name>Tracing Integration Tests</name>
     <description>Tests for Optel Tracing</description>
     <packaging>jar</packaging>
 
     <properties>
+        <surefire.args.base>
+            -Dfile.encoding=UTF-8
+            -Xmx1024m
+            -Xms256m
+            -XX:+HeapDumpOnOutOfMemoryError
+            -javaagent:${settings.localRepository}/org/aspectj/aspectjweaver/${aspectjVersion}/aspectjweaver-${aspectjVersion}.jar
+            -javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco.version}/org.jacoco.agent-${jacoco.version}-runtime.jar=destfile='${session.executionRootDirectory}/target/jacoco.exec'
+        </surefire.args.base>
+
         <javaModuleName>org.mule.test.integration.tracing</javaModuleName>
         <skipExportTests>false</skipExportTests>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
-        <muleTracingModuleVersion>1.0.0</muleTracingModuleVersion>
-        <protobufVersion>3.21.9</protobufVersion>
-        <openTelemetryProtoVersion>0.3.0</openTelemetryProtoVersion>
-        <opentelemetryVersion>1.20.1</opentelemetryVersion>
-        <muleTracingModuleVersion>1.0.0</muleTracingModuleVersion>
-        <activemqVersion>5.15.9</activemqVersion>
-        <hawtbufVersion>1.1</hawtbufVersion>
-        <activemqProtobuf>1.1</activemqProtobuf>
-        <groovy.version>2.4.21</groovy.version>
     </properties>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <argLine>-Dfile.encoding=UTF-8 -Xmx1024m -Xms256m -XX:+HeapDumpOnOutOfMemoryError
-                        -javaagent:${settings.localRepository}/org/aspectj/aspectjweaver/${aspectjVersion}/aspectjweaver-${aspectjVersion}.jar
-                        -javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco.version}/org.jacoco.agent-${jacoco.version}-runtime.jar=destfile='${session.executionRootDirectory}/target/jacoco.exec'
-                    </argLine>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 
     <dependencyManagement>
         <dependencies>
@@ -115,47 +100,11 @@
             <version>${project.version}</version>
             <classifier>mule-plugin</classifier>
         </dependency>
+        <!-- ActiveMQ Dependencies-->
         <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-broker</artifactId>
-            <version>${activemqVersion}</version>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>jackson-databind</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-client</artifactId>
-            <version>${activemqVersion}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.fusesource.hawtbuf</groupId>
-            <artifactId>hawtbuf</artifactId>
-            <version>${hawtbufVersion}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.activemq.protobuf</groupId>
-            <artifactId>activemq-protobuf</artifactId>
-            <version>${activemqProtobuf}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-jaas</artifactId>
-            <version>${activemqVersion}</version>
-            <scope>test</scope>
-        </dependency>
-        <!-- Used by ActiveMQ if persistent=true -->
-        <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-kahadb-store</artifactId>
-            <version>${activemqVersion}</version>
+            <groupId>org.mule.tests</groupId>
+            <artifactId>mule-activemq-broker</artifactId>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -218,7 +167,6 @@
             <groupId>org.mule.modules</groupId>
             <artifactId>mule-tracing-module</artifactId>
             <classifier>mule-plugin</classifier>
-            <version>${muleTracingModuleVersion}</version>
         </dependency>
 
         <!-- Plugins for testing sources -->
@@ -227,25 +175,6 @@
             <artifactId>mule-jms-connector</artifactId>
             <classifier>mule-plugin</classifier>
         </dependency>
-        <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-broker</artifactId>
-            <version>${activemqVersion}</version>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>jackson-databind</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-client</artifactId>
-            <version>${activemqVersion}</version>
-            <scope>provided</scope>
-        </dependency>
-
 
         <dependency>
             <groupId>org.mule.tests.plugin</groupId>
@@ -387,7 +316,6 @@
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers</artifactId>
-            <version>1.17.6</version>
             <scope>test</scope>
         </dependency>
         <dependency>
