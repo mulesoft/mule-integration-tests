@@ -7,6 +7,7 @@
 package org.mule.test.config.ast;
 
 import static org.mule.runtime.api.dsl.DslResolvingContext.getDefault;
+import static org.mule.runtime.api.util.MuleSystemProperties.SYSTEM_PROPERTY_PREFIX;
 import static org.mule.runtime.ast.internal.serialization.ArtifactAstSerializerFactory.JSON;
 import static org.mule.runtime.core.api.extension.provider.MuleExtensionModelProvider.getExtensionModel;
 import static org.mule.runtime.core.api.extension.provider.RuntimeExtensionModelProvider.discoverRuntimeExtensionModels;
@@ -27,10 +28,10 @@ import org.mule.runtime.ast.api.serialization.ArtifactAstDeserializer;
 import org.mule.runtime.ast.api.serialization.ArtifactAstSerializer;
 import org.mule.runtime.ast.api.serialization.ArtifactAstSerializerProvider;
 import org.mule.runtime.ast.api.xml.AstXmlParser;
-import org.mule.runtime.core.api.extension.provider.MuleExtensionModelProvider;
 import org.mule.runtime.module.extension.internal.loader.java.DefaultJavaExtensionModelLoader;
 import org.mule.runtime.module.extension.internal.manager.DefaultExtensionManager;
 import org.mule.tck.junit4.AbstractMuleContextTestCase;
+import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.runner.infrastructure.ExtensionsTestInfrastructureDiscoverer;
 
 import java.io.IOException;
@@ -44,6 +45,7 @@ import java.util.stream.Stream;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
@@ -70,6 +72,21 @@ public abstract class BaseParameterAstTestCase extends AbstractMuleContextTestCa
         {true, false},
         {true, true}});
   }
+
+  /**
+   * System property to set the enforcement policy. Defined here as a decision was made not to expose it as an API yet. For now,
+   * it will be for internal use only.
+   *
+   * @since 4.5.0
+   */
+  static final String EXTENSION_JVM_ENFORCEMENT_PROPERTY = SYSTEM_PROPERTY_PREFIX + "jvm.version.extension.enforcement";
+  static final String JVM_ENFORCEMENT_LOOSE = "LOOSE";
+
+  // This is needed apart from the setting in {@code @ArtifactClassLoaderRunnerConfig} because tha validation also takes place
+  // during extension registering, not only during its discovery.
+  @Rule
+  public SystemProperty jvmVersionExtensionEnforcementLoose =
+      new SystemProperty(EXTENSION_JVM_ENFORCEMENT_PROPERTY, JVM_ENFORCEMENT_LOOSE);
 
   private final boolean serialize;
   private final boolean populateGenerationInformation;
