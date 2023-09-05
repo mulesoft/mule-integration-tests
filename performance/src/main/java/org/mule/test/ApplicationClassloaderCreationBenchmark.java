@@ -12,8 +12,6 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.emptySet;
 import static java.util.Collections.singleton;
 import static java.util.Collections.singletonList;
-import static java.util.Optional.empty;
-import static java.util.Optional.of;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.stream.Collectors.toSet;
 
@@ -22,6 +20,7 @@ import static org.openjdk.jmh.annotations.Scope.Benchmark;
 
 import org.mule.runtime.container.api.ModuleRepository;
 import org.mule.runtime.container.api.MuleModule;
+import org.mule.runtime.jpms.api.MuleContainerModule;
 import org.mule.runtime.module.artifact.activation.internal.classloader.DefaultArtifactClassLoaderResolver;
 import org.mule.runtime.module.artifact.api.classloader.MuleArtifactClassLoader;
 import org.mule.runtime.module.artifact.api.classloader.MuleDeployableArtifactClassLoader;
@@ -61,7 +60,7 @@ public class ApplicationClassloaderCreationBenchmark extends AbstractArtifactAct
   private ApplicationDescriptor newApplicationDescriptorForCache;
   private MuleArtifactClassLoader plugin2ClassLoaderForCache;
   private MuleModule muleModule;
-  private List<MuleModule> muleModuleSingletonList;
+  private List<MuleContainerModule> muleModuleSingletonList;
 
   @Override
   @Setup
