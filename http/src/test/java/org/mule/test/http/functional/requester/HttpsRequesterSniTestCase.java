@@ -46,7 +46,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-// TODO: Create a test extension with the SNI server and migrate this test to MTF
 public class HttpsRequesterSniTestCase extends AbstractHttpTestCase {
 
   private static final String FQDN = "localhost.localdomain";
