@@ -20,6 +20,7 @@ import com.google.common.collect.Sets;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -144,7 +145,12 @@ public abstract class AbstractHttpRequestTestCase extends AbstractHttpTestCase {
   }
 
   public String getFirstReceivedHeader(String headerName) {
-    return headers.get(headerName).iterator().next();
+    Iterator<String> it = headers.get(headerName).iterator();
+    if (it.hasNext()) {
+      return it.next();
+    } else {
+      return null;
+    }
   }
 
   private List<String> getHeaderNames(Request baseRequest) {
