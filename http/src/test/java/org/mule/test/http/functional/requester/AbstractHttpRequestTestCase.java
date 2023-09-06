@@ -34,7 +34,7 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
-import org.eclipse.jetty.server.handler.HandlerWrapper;
+
 
 public abstract class AbstractHttpRequestTestCase extends AbstractHttpTestCase {
 
@@ -80,7 +80,7 @@ public abstract class AbstractHttpRequestTestCase extends AbstractHttpTestCase {
   }
 
   protected void enableHttpsServer(Server server) {
-    SslContextFactory sslContextFactory = new SslContextFactory();
+    SslContextFactory sslContextFactory = new SslContextFactory.Server();
 
     try {
       sslContextFactory.setKeyStorePath(FileUtils.getResourcePath("tls/serverKeystore", getClass()));
