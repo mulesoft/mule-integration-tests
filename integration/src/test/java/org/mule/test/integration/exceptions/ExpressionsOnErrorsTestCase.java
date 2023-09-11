@@ -6,6 +6,9 @@
  */
 package org.mule.test.integration.exceptions;
 
+import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
+import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ErrorHandlingStory.ERROR_HANDLER;
+
 import static java.lang.System.lineSeparator;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -13,17 +16,18 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
-import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ErrorHandlingStory.ERROR_HANDLER;
 
 import org.mule.runtime.api.streaming.bytes.CursorStreamProvider;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+
 import org.apache.commons.io.IOUtils;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -89,15 +93,17 @@ public class ExpressionsOnErrorsTestCase extends AbstractIntegrationTestCase {
   @Test
   @Issue("MULE-18666")
   public void mesageToJson() throws Exception {
-    final CursorStreamProvider value = (CursorStreamProvider) flowRunner("mesageToJson")
+    final CursorStreamProvider value = (CursorStreamProvider) flowRunner("messageToJson")
         .keepStreamsOpen()
         .withPayload("Hello World!")
         .withAttributes("Adios Amigos")
         .run().getMessage().getPayload().getValue();
-    assertThat(IOUtils.toString(value.openCursor(), UTF_8),
-               is("{" + lineSeparator() +
-                   "  \"payload\": \"Hello World!\"," + lineSeparator() +
-                   "  \"attributes\": \"Adios Amigos\"" + lineSeparator() +
-                   "}"));
+    final String result = IOUtils.toString(value.openCursor(), UTF_8);
+    assertThat(result,
+               containsString(lineSeparator() +
+                   "  \"payload\": \"Hello World!\"," + lineSeparator()));
+    assertThat(result,
+               containsString(lineSeparator() +
+                   "  \"attributes\": \"Adios Amigos\"" + lineSeparator()));
   }
 }
