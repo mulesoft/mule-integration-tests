@@ -19,7 +19,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
 import org.mule.runtime.container.api.ModuleRepository;
-import org.mule.runtime.container.api.MuleModule;
+import org.mule.runtime.jpms.api.MuleContainerModule;
 import org.mule.runtime.module.artifact.activation.internal.classloader.DefaultArtifactClassLoaderResolver;
 import org.mule.runtime.module.artifact.activation.internal.nativelib.DefaultNativeLibraryFinderFactory;
 import org.mule.runtime.module.artifact.api.classloader.MuleDeployableArtifactClassLoader;
@@ -110,14 +110,14 @@ public abstract class AbstractArtifactActivationBenchmark extends AbstractMuleTe
 
   public static class DummyModuleRepository implements ModuleRepository {
 
-    private final List<MuleModule> muleModules;
+    private final List<MuleContainerModule> muleModules;
 
-    public DummyModuleRepository(List<MuleModule> muleModules) {
+    public DummyModuleRepository(List<MuleContainerModule> muleModules) {
       this.muleModules = muleModules;
     }
 
     @Override
-    public List<MuleModule> getModules() {
+    public List<MuleContainerModule> getModules() {
       return muleModules;
     }
   }

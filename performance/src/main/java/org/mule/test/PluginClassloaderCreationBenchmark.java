@@ -23,6 +23,7 @@ import static org.openjdk.jmh.annotations.Scope.Benchmark;
 
 import org.mule.runtime.container.api.ModuleRepository;
 import org.mule.runtime.container.api.MuleModule;
+import org.mule.runtime.jpms.api.MuleContainerModule;
 import org.mule.runtime.module.artifact.activation.internal.classloader.DefaultArtifactClassLoaderResolver;
 import org.mule.runtime.module.artifact.activation.internal.nativelib.DefaultNativeLibraryFinderFactory;
 import org.mule.runtime.module.artifact.api.classloader.MuleArtifactClassLoader;
@@ -68,12 +69,12 @@ public class PluginClassloaderCreationBenchmark extends AbstractArtifactActivati
   private ClassLoaderConfiguration pluginDependantClassLoaderConfiguration;
   private ClassLoaderConfiguration pluginExportingPackageClassLoaderConfiguration;
   private ClassLoaderConfiguration plugin2ExportingPackageClassLoaderConfiguration;
-  private List<MuleModule> privilegeMuleModuleSingletonList;
+  private List<MuleContainerModule> privilegeMuleModuleSingletonList;
   private ClassLoaderConfiguration pluginDependantWithLocalPackageClassLoaderConfiguration;
   private ClassLoaderConfiguration pluginWithLocalPackageClassLoaderConfiguration;
 
   private MuleModule muleModule;
-  private List<MuleModule> muleModuleSingletonList;
+  private List<MuleContainerModule> muleModuleSingletonList;
 
   private DefaultArtifactClassLoaderResolver artifactClassLoaderResolverForPrivilegedContainerAccess;
   private ModuleRepository moduleRepositoryForPrivilegedContainerAccess;
