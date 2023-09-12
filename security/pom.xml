@@ -15,6 +15,10 @@
     <name>Mule Extensions Security Integration Tests</name>
 
     <properties>
+        <surefire.args>
+            ${surefire.test.unit.open.args}
+        </surefire.args>
+
         <springSecurityVersion>5.1.0.RELEASE</springSecurityVersion>
 
         <javaModuleName>org.mule.test.integration.security</javaModuleName>

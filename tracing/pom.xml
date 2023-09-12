@@ -13,14 +13,10 @@
     <packaging>jar</packaging>
 
     <properties>
-        <surefire.args.base>
-            -Dfile.encoding=UTF-8
-            -Xmx1024m
-            -Xms256m
-            -XX:+HeapDumpOnOutOfMemoryError
-            -javaagent:${settings.localRepository}/org/aspectj/aspectjweaver/${aspectjVersion}/aspectjweaver-${aspectjVersion}.jar
-            -javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco.version}/org.jacoco.agent-${jacoco.version}-runtime.jar=destfile='${session.executionRootDirectory}/target/jacoco.exec'
-        </surefire.args.base>
+        <surefire.args>
+            -Xmx1024m -Xms256m -XX:+HeapDumpOnOutOfMemoryError
+            ${surefire.test.unit.open.args}
+        </surefire.args>
 
         <javaModuleName>org.mule.test.integration.tracing</javaModuleName>
         <skipExportTests>false</skipExportTests>

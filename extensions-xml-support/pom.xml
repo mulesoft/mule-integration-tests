@@ -15,6 +15,10 @@
     </description>
 
     <properties>
+        <surefire.args>
+            ${surefire.test.unit.open.args}
+        </surefire.args>
+
         <javaModuleName>org.mule.test.integration.extensions.xml.support </javaModuleName>
         <javaxJmsApiVersion>2.0.1</javaxJmsApiVersion>
 
