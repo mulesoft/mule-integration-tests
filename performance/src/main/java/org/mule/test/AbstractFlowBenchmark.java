@@ -39,7 +39,7 @@ import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.processor.strategy.ProcessingStrategyFactory;
 import org.mule.runtime.core.internal.config.builders.MinimalConfigurationBuilder;
 import org.mule.runtime.core.internal.processor.strategy.AbstractStreamProcessingStrategyFactory;
-import org.mule.service.scheduler.internal.DefaultSchedulerService;
+import org.mule.service.scheduler.internal.service.DefaultSchedulerService;
 import org.mule.tck.TriggerableMessageSource;
 
 import java.lang.reflect.InvocationHandler;
