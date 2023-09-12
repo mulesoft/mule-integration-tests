@@ -9,6 +9,10 @@
     <artifactId>schedulers-tests</artifactId>
 
     <properties>
+        <surefire.args>
+            ${surefire.test.unit.open.args}
+        </surefire.args>
+
         <javaModuleName>org.mule.test.integration.scheduler</javaModuleName>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
     </properties>

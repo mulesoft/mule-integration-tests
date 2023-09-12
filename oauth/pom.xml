@@ -9,6 +9,10 @@
     <artifactId>mule-module-oauth-tests</artifactId>
     
     <properties>
+        <surefire.args>
+            ${surefire.test.unit.open.args}
+        </surefire.args>
+
         <javaModuleName>org.mule.test.integration.oauth</javaModuleName>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
         <muleHttpServiceVersion>1.7.0-SNAPSHOT</muleHttpServiceVersion>
