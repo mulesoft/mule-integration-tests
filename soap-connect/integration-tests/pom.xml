@@ -14,7 +14,11 @@
     <packaging>jar</packaging>
 
     <properties>
-        <surefire.args>${surefire.test.unit.open.args}</surefire.args>
+        <surefire.args>
+            ${surefire.test.unit.open.args}
+            --module-path=${org.slf4j:slf4j-api:jar}
+            --add-modules=org.slf4j
+        </surefire.args>
 
         <javaModuleName>org.mule.test.integration.soap.connect</javaModuleName>
         <cxfVersion>3.5.1</cxfVersion>
