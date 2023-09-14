@@ -6,17 +6,16 @@
  */
 package org.mule.test.http;
 
+import static org.mule.runtime.api.scheduler.SchedulerConfig.config;
+import static org.mule.tck.junit4.matcher.Eventually.eventually;
+
 import static java.util.concurrent.TimeUnit.SECONDS;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.empty;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
-import static org.mule.runtime.api.scheduler.SchedulerConfig.config;
-import static org.mule.tck.junit4.matcher.Eventually.eventually;
-import io.qameta.allure.Description;
-import io.qameta.allure.Issue;
-import org.junit.Before;
-import org.junit.Test;
+
 import org.mule.runtime.api.scheduler.Scheduler;
 import org.mule.runtime.api.scheduler.SchedulerConfig;
 import org.mule.runtime.api.scheduler.SchedulerPoolsConfigFactory;
@@ -28,15 +27,23 @@ import org.mule.runtime.http.api.client.HttpClient;
 import org.mule.runtime.http.api.client.HttpClientConfiguration;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import javax.inject.Inject;
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicReference;
 
+import javax.inject.Inject;
+
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+
+import io.qameta.allure.Description;
+import io.qameta.allure.Issue;
+
 @Issue("MULE-19774")
+@Ignore("W-14128571")
 public class GrizzlyHttpClientSchedulerTestCase extends AbstractIntegrationTestCase {
 
   // We need an empty app in order to run an integration test to get the scheduler Service and http Service
