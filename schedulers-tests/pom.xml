@@ -10,7 +10,7 @@
 
     <properties>
         <surefire.args>
-            ${surefire.test.unit.open.args}
+            ${surefire.slf4j.module.args}
         </surefire.args>
 
         <javaModuleName>org.mule.test.integration.scheduler</javaModuleName>

@@ -14,7 +14,9 @@
     <packaging>jar</packaging>
 
     <properties>
-        <surefire.args>${surefire.test.unit.open.args}</surefire.args>
+        <surefire.args>
+            ${surefire.slf4j.module.args}
+        </surefire.args>
 
         <javaModuleName>org.mule.test.integration.soap.connect</javaModuleName>
         <cxfVersion>3.5.1</cxfVersion>
