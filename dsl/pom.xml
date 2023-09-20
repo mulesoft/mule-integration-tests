@@ -16,7 +16,7 @@
 
     <properties>
         <surefire.args>
-            ${surefire.test.unit.open.args}
+            ${surefire.slf4j.module.args}
         </surefire.args>
 
         <javaxJmsApiVersion>2.0.1</javaxJmsApiVersion>

@@ -1,37 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.mule.runtime</groupId>
-    <artifactId>mule</artifactId>
-    <version>4.6.0-SNAPSHOT</version>
-    <relativePath></relativePath>
-  </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.mule.runtime</groupId>
+        <artifactId>mule</artifactId>
+        <version>4.6.0-SNAPSHOT</version>
+        <relativePath></relativePath>
+    </parent>
   
-  <groupId>org.mule.tests</groupId>
-  <artifactId>mule-extensions-integration-tests</artifactId>
-  <version>4.6.0-SNAPSHOT</version>
+    <groupId>org.mule.tests</groupId>
+    <artifactId>mule-extensions-integration-tests</artifactId>
+    <version>4.6.0-SNAPSHOT</version>
 
-  <packaging>pom</packaging>
-  <name>Mule Tests</name>
+    <packaging>pom</packaging>
+    <name>Mule Tests</name>
 
-  <modules>
-    <module>integration</module>
-    <module>integration-config-failures</module>
-    <module>performance</module>
-    <module>dsl</module>
-    <module>soap-connect</module>
-    <module>security</module>
-    <module>oauth</module>
-    <module>schedulers-tests</module>
-    <module>munit-tests</module>
-    <module>extensions-mule-support</module>
-    <module>extensions-xml-support</module>
-    <module>logging</module>
-    <module>tooling-support-tests</module>
-    <module>tracing</module>
-    <module>metrics</module>
-  </modules>
+    <modules>
+        <module>integration</module>
+        <module>integration-config-failures</module>
+        <module>performance</module>
+        <module>dsl</module>
+        <module>soap-connect</module>
+        <module>security</module>
+        <module>oauth</module>
+        <module>schedulers-tests</module>
+        <module>munit-tests</module>
+        <module>extensions-mule-support</module>
+        <module>extensions-xml-support</module>
+        <module>logging</module>
+        <module>tooling-support-tests</module>
+        <module>tracing</module>
+        <module>metrics</module>
+    </modules>
 
     <properties>
         <munitVersion>2.4.0-SNAPSHOT</munitVersion>
@@ -76,16 +76,16 @@
             </plugin>
         </plugins>
 
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>com.mulesoft.munit</groupId>
-          <artifactId>munit-extensions-maven-plugin</artifactId>
-          <version>${munitExtensionsMavenPlugin}</version>
-        </plugin>
-      </plugins>
-    </pluginManagement>
-  </build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>com.mulesoft.munit</groupId>
+                    <artifactId>munit-extensions-maven-plugin</artifactId>
+                    <version>${munitExtensionsMavenPlugin}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 
     <dependencyManagement>
         <dependencies>

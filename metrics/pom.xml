@@ -15,7 +15,7 @@
     <properties>
         <surefire.args>
             -Xmx1024m -Xms256m -XX:+HeapDumpOnOutOfMemoryError
-            ${surefire.test.unit.open.args}
+            ${surefire.slf4j.module.args}
         </surefire.args>
 
         <javaModuleName>org.mule.test.integration.metrics</javaModuleName>
