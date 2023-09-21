@@ -18,9 +18,13 @@
     will be replaced with the actual value IF that value is a literal.
     That implies that the protocol using the expression #[vars.protocolConfig] will be replaced by HTTP (default value). -->
     <property name="protocolConfig" type="string" defaultValue="HTTP"/>
+    <property name="retryInterval" type="number" defaultValue="5000"/>
 
     <http:request-config name="simple-config" basePath="/basic-auth/">
         <http:request-connection host="localhost" protocol="#[vars.protocolConfig]" port="#[vars.port]">
+            <mule:reconnection>
+                <mule:reconnect count="4" frequency="#[vars.retryInterval]" />
+            </mule:reconnection>
             <http:authentication>
                 <http:basic-authentication username="#[vars.someUserConfig]" password="#[vars.somePassConfig]"/>
             </http:authentication>
