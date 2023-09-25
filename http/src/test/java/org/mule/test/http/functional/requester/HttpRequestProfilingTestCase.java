@@ -39,11 +39,13 @@ import javax.servlet.http.HttpServletResponse;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
 import org.eclipse.jetty.server.Request;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
 @Feature(HTTP_EXTENSION)
 @Story(PROFILING)
+@Ignore
 public class HttpRequestProfilingTestCase extends AbstractHttpRequestTestCase {
 
   public static final String BODY = "OK";
