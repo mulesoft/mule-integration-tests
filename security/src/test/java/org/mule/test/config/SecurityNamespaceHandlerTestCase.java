@@ -60,10 +60,6 @@ public class SecurityNamespaceHandlerTestCase extends MuleArtifactFunctionalTest
 
   @Test
   public void testProvidersAreInitialized() throws Exception {
-    // SecurityManager securityManager = muleContext.getSecurityManager();
-    // SecurityProvider customDelegateSecurityProvider = securityManager.getProvider("initializableProvider");
-    // InitTrackerSecurityProvider initTrackerSecurityProvider =
-    // (InitTrackerSecurityProvider) readField(customDelegateSecurityProvider, "delegate", true);;
     assertThat(initTrackerSecurityProvider.isInitialised(), is(true));
   }
 
