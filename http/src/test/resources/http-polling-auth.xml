@@ -54,12 +54,13 @@
         </http:request-connection>
     </http:request-config>
 
-    <flow name="faiingBasicAuthRequest">
+    <flow name="failingBasicAuthRequest">
         <http:polling-source config-ref="basicFailingConfig" path="/basic">
             <scheduling-strategy >
                 <fixed-frequency frequency="1" timeUnit="SECONDS" startDelay="2"/>
             </scheduling-strategy>
         </http:polling-source>
+        <logger level="ERROR" />
         <set-payload value="#[%dw 2.0 output application/java --- payload.^raw as String]"/>
         <flow-ref name="failureAuthProcessor"/>
     </flow>
