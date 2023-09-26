@@ -23,12 +23,12 @@ import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.runtime.http.api.HttpConstants.HttpStatus;
 import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;
 import org.mule.runtime.http.api.domain.message.request.HttpRequest;
-import org.mule.service.http.SocketRequester;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.http.functional.AbstractHttpTestCase;
 import org.mule.test.http.functional.matcher.HttpResponseReasonPhraseMatcher;
 import org.mule.test.http.functional.matcher.HttpResponseStatusCodeMatcher;
+import org.mule.test.http.functional.utils.SocketRequester;
 
 import java.io.IOException;
 import java.net.InetAddress;
