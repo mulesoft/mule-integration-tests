@@ -6,7 +6,6 @@
  */
 package org.mule.test.config;
 
-import static org.apache.commons.lang3.reflect.FieldUtils.readField;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
@@ -26,6 +25,8 @@ import org.mule.test.IntegrationTestCaseRunnerConfig;
 
 import java.util.Iterator;
 
+import javax.inject.Inject;
+
 import org.slf4j.Logger;
 
 import org.junit.Test;
@@ -33,6 +34,9 @@ import org.junit.Test;
 public class SecurityNamespaceHandlerTestCase extends MuleArtifactFunctionalTestCase implements IntegrationTestCaseRunnerConfig {
 
   private static final Logger LOGGER = getLogger(SecurityNamespaceHandlerTestCase.class);
+
+  @Inject
+  private InitTrackerSecurityProvider initTrackerSecurityProvider;
 
   @Override
   protected String getConfigFile() {
@@ -56,10 +60,6 @@ public class SecurityNamespaceHandlerTestCase extends MuleArtifactFunctionalTest
 
   @Test
   public void testProvidersAreInitialized() throws Exception {
-    SecurityManager securityManager = muleContext.getSecurityManager();
-    SecurityProvider customDelegateSecurityProvider = securityManager.getProvider("initializableProvider");
-    InitTrackerSecurityProvider initTrackerSecurityProvider =
-        (InitTrackerSecurityProvider) readField(customDelegateSecurityProvider, "delegate", true);;
     assertThat(initTrackerSecurityProvider.isInitialised(), is(true));
   }
 
