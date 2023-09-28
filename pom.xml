@@ -45,7 +45,7 @@
     <jacksonVersion>2.15.0</jacksonVersion>
     <wireMockVersion>1.58</wireMockVersion>
 
-    <muleDependenciesVersion>1.x-SNAPSHOT</muleDependenciesVersion>
+    <muleDependenciesVersion>1.0.20</muleDependenciesVersion>
     <muleTestComponentsVersion>4.5.0-rc13</muleTestComponentsVersion>
   </properties>
 
