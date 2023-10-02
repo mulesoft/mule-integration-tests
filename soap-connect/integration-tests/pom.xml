@@ -16,7 +16,7 @@
     <properties>
         <javaModuleName>org.mule.test.integration.soap.connect</javaModuleName>
         <cxfVersion>3.5.1</cxfVersion>
-        <muleSdkApiVersion>0.7.0-SNAPSHOT</muleSdkApiVersion>
+        <muleSdkApiVersion>0.7.1-SNAPSHOT</muleSdkApiVersion>
         <javax.jws-api.version>1.1</javax.jws-api.version>
         <formatterConfigPath>../../formatter.xml</formatterConfigPath>
     </properties>
