@@ -46,7 +46,7 @@
     <wireMockVersion>1.58</wireMockVersion>
 
     <muleDependenciesVersion>1.0.20</muleDependenciesVersion>
-    <muleTestComponentsVersion>4.5.0-rc13</muleTestComponentsVersion>
+    <muleTestComponentsVersion>4.5.0</muleTestComponentsVersion>
   </properties>
 
   <build>
