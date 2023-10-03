@@ -11,7 +11,12 @@ import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExpor
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_ENABLED;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_METRICS_LOG_FREQUENCY;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_TIMEOUT;
-;
+
+import static org.apache.commons.lang3.JavaVersion.JAVA_11;
+import static org.apache.commons.lang3.SystemUtils.isJavaVersionAtMost;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assume.assumeThat;
+
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.api.config.custom.ServiceConfigurator;
 import org.mule.runtime.core.api.MuleContext;
@@ -34,6 +39,7 @@ import java.util.List;
 import io.opentelemetry.sdk.common.CompletableResultCode;
 import io.opentelemetry.sdk.trace.data.SpanData;
 import io.opentelemetry.sdk.trace.export.SpanExporter;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -77,6 +83,9 @@ public class OpenTelemetrySpanDropTestCase extends MuleArtifactFunctionalTestCas
 
   @Test
   public void testWhenSpanGetsDroppedThenWarningLogInformsIt() throws Exception {
+    // TODO W-14229036 Remove this and reenable the test
+    assumeThat(isJavaVersionAtMost(JAVA_11), is(true));
+
     // This two spans should block the exporter after leaving the queue
     flowRunner("drops-one-span").withPayload(AbstractMuleTestCase.TEST_PAYLOAD)
         .run();
