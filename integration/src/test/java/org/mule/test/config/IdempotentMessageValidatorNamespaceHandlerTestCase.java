@@ -13,7 +13,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeThat;
-import static org.apache.commons.lang3.JavaVersion.JAVA_1_8;
+import static org.apache.commons.lang3.JavaVersion.JAVA_11;
 
 import org.mule.runtime.api.store.ObjectStore;
 import org.mule.runtime.api.store.ObjectStoreManager;
@@ -57,7 +57,7 @@ public class IdempotentMessageValidatorNamespaceHandlerTestCase extends Abstract
   @Test
   public void testCustomObjectStore() throws Exception {
     // TODO (W-14226830): remove assumeThat
-    assumeThat(isJavaVersionAtMost(JAVA_1_8), is(true));
+    assumeThat(isJavaVersionAtMost(JAVA_11), is(true));
     objectStore = osManager.getObjectStore(customObjectStore.getValue());
     objectStore.store(KEY, VALUE);
     testPojoObjectStore("customObjectStoreFlow");

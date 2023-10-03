@@ -6,7 +6,7 @@
  */
 package org.mule.test.config.spring;
 
-import static org.apache.commons.lang3.JavaVersion.JAVA_1_8;
+import static org.apache.commons.lang3.JavaVersion.JAVA_11;
 import static org.apache.commons.lang3.SystemUtils.isJavaVersionAtMost;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -44,7 +44,7 @@ public class DslConstantsRoutersFlowTestCase extends AbstractIntegrationTestCase
   @Test
   public void testIdempotentSecureHashReceiverRouter() throws Exception {
     // TODO (W-14226830): remove assumeThat
-    assumeThat(isJavaVersionAtMost(JAVA_1_8), is(true));
+    assumeThat(isJavaVersionAtMost(JAVA_11), is(true));
     Processor router = lookupMessageProcessorFromFlow("IdempotentSecureHashReceiverRouter");
     assertThat(router.getClass().getName(),
                equalTo("org.mule.runtime.core.internal.routing.IdempotentMessageValidator"));
@@ -54,7 +54,7 @@ public class DslConstantsRoutersFlowTestCase extends AbstractIntegrationTestCase
   @Test
   public void testIdempotentReceiverRouter() throws Exception {
     // TODO (W-14226830): remove assumeThat
-    assumeThat(isJavaVersionAtMost(JAVA_1_8), is(true));
+    assumeThat(isJavaVersionAtMost(JAVA_11), is(true));
     Processor router = lookupMessageProcessorFromFlow("IdempotentReceiverRouter");
     assertThat(router.getClass().getName(),
                equalTo("org.mule.runtime.core.internal.routing.IdempotentMessageValidator"));
