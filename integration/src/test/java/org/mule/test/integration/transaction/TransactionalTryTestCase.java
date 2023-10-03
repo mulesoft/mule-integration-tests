@@ -22,7 +22,6 @@ import org.mule.runtime.core.api.transaction.MuleTransactionConfig;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.Test;
-import org.hamcrest.CoreMatchers;
 import org.mule.test.runner.RunnerDelegateTo;
 
 import java.lang.reflect.Method;
@@ -62,7 +61,7 @@ public class TransactionalTryTestCase extends AbstractIntegrationTestCase {
   @Test
   public void resolvesStandardTransactionFactory() throws Exception {
     // TODO (W-14226830): remove assumeThat
-    assumeThat(isJavaVersionAtMost(JAVA_1_8), CoreMatchers.is(true));
+    assumeThat(isJavaVersionAtMost(JAVA_1_8), is(true));
     Processor processor = standardTryFlow.getProcessors().get(0);
     assertThat(processor.getClass().getName(), equalTo("org.mule.runtime.core.internal.processor.TryScope"));
 

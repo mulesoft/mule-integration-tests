@@ -15,7 +15,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeThat;
 import static org.apache.commons.lang3.JavaVersion.JAVA_1_8;
 
-import io.qameta.allure.Issue;
 import org.mule.runtime.api.store.ObjectStore;
 import org.mule.runtime.api.store.ObjectStoreManager;
 import org.mule.runtime.core.api.construct.Flow;
