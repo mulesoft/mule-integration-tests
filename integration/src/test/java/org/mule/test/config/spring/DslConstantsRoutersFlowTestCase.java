@@ -18,7 +18,6 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assume.assumeThat;
 import static org.junit.rules.ExpectedException.none;
 
-import org.hamcrest.CoreMatchers;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.runtime.core.api.processor.Processor;
@@ -45,7 +44,7 @@ public class DslConstantsRoutersFlowTestCase extends AbstractIntegrationTestCase
   @Test
   public void testIdempotentSecureHashReceiverRouter() throws Exception {
     // TODO (W-14226830): remove assumeThat
-    assumeThat(isJavaVersionAtMost(JAVA_1_8), CoreMatchers.is(true));
+    assumeThat(isJavaVersionAtMost(JAVA_1_8), is(true));
     Processor router = lookupMessageProcessorFromFlow("IdempotentSecureHashReceiverRouter");
     assertThat(router.getClass().getName(),
                equalTo("org.mule.runtime.core.internal.routing.IdempotentMessageValidator"));
@@ -55,7 +54,7 @@ public class DslConstantsRoutersFlowTestCase extends AbstractIntegrationTestCase
   @Test
   public void testIdempotentReceiverRouter() throws Exception {
     // TODO (W-14226830): remove assumeThat
-    assumeThat(isJavaVersionAtMost(JAVA_1_8), CoreMatchers.is(true));
+    assumeThat(isJavaVersionAtMost(JAVA_1_8), is(true));
     Processor router = lookupMessageProcessorFromFlow("IdempotentReceiverRouter");
     assertThat(router.getClass().getName(),
                equalTo("org.mule.runtime.core.internal.routing.IdempotentMessageValidator"));
