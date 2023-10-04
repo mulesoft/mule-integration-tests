@@ -6,11 +6,6 @@
  */
 package org.mule.test.integration.security;
 
-import static java.lang.String.format;
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 import static org.mule.runtime.core.api.util.IOUtils.closeQuietly;
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.OK;
@@ -18,10 +13,14 @@ import static org.mule.runtime.http.api.HttpConstants.HttpStatus.UNAUTHORIZED;
 import static org.mule.runtime.http.api.HttpHeaders.Names.AUTHORIZATION;
 import static org.mule.runtime.http.api.HttpHeaders.Names.WWW_AUTHENTICATE;
 import static org.mule.test.allure.AllureConstants.HttpFeature.HTTP_EXTENSION;
-import static org.mule.test.http.functional.matcher.HttpResponseReasonPhraseMatcher.hasReasonPhrase;
-import static org.mule.test.http.functional.matcher.HttpResponseStatusCodeMatcher.hasStatusCode;
 
-import org.mule.functional.api.component.TestConnectorQueueHandler;
+import static java.lang.String.format;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.tck.junit4.rule.DynamicPort;
@@ -45,8 +44,6 @@ import org.apache.http.impl.client.HttpClients;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
-
-import io.qameta.allure.Feature;
 
 @Feature(HTTP_EXTENSION)
 public class HttpListenerAuthenticationTestCase extends MuleArtifactFunctionalTestCase
@@ -100,8 +97,8 @@ public class HttpListenerAuthenticationTestCase extends MuleArtifactFunctionalTe
     CredentialsProvider credsProvider = getCredentialsProvider(VALID_USER, VALID_PASSWORD);
     getHttpResponse(credsProvider, "zaraza");
 
-    assertThat(httpResponse, hasStatusCode(INTERNAL_SERVER_ERROR.getStatusCode()));
-    assertThat(httpResponse, hasReasonPhrase(INTERNAL_SERVER_ERROR.getReasonPhrase()));
+    assertThat(httpResponse.getStatusLine().getStatusCode(), is(INTERNAL_SERVER_ERROR.getStatusCode()));
+    assertThat(httpResponse.getStatusLine().getReasonPhrase(), is(INTERNAL_SERVER_ERROR.getReasonPhrase()));
     assertThat(queueManager.read("basicAuthentication", RECEIVE_TIMEOUT, MILLISECONDS).getMessage(), is(notNullValue()));
   }
 
