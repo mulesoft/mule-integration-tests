@@ -197,18 +197,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.mule.connectors</groupId>
-            <artifactId>mule-http-connector</artifactId>
-            <type>test-jar</type>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
             <groupId>org.mule.apache.commons-httpclient</groupId>
             <artifactId>commons-httpclient</artifactId>
             <scope>test</scope>
