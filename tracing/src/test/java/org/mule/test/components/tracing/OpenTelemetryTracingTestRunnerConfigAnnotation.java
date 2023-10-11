@@ -15,8 +15,7 @@ import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
     applicationSharedRuntimeLibs = {
         "org.mule.tests:mule-activemq-broker",
         "org.mule.tests:mule-tests-model",
-        "org.mule.runtime:mule-tracer-exporter-impl",
-        "org.mule.runtime:mule-tracer-configuration-api"
+        "org.mule.runtime:mule-tracer-exporter-impl"
     },
     extraPrivilegedArtifacts = {
         "org.mule.tests:mule-tests-parsers-plugin"
