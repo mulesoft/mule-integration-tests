@@ -52,7 +52,7 @@
         </error-handler>
     </flow>
 
-    <flow name="mesageToJson">
+    <flow name="messageToJson">
         <set-payload value="#[output application/json --- message]"/>
     </flow>
 
