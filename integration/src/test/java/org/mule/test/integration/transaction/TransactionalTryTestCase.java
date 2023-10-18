@@ -6,10 +6,13 @@
  */
 package org.mule.test.integration.transaction;
 
+import static org.apache.commons.lang3.JavaVersion.JAVA_11;
+import static org.apache.commons.lang3.SystemUtils.isJavaVersionAtMost;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assume.assumeThat;
 
 import org.junit.runners.Parameterized;
 import org.mule.runtime.core.api.construct.Flow;
@@ -57,6 +60,8 @@ public class TransactionalTryTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void resolvesStandardTransactionFactory() throws Exception {
+    // TODO (W-14226830): remove assumeThat
+    assumeThat(isJavaVersionAtMost(JAVA_11), is(true));
     Processor processor = standardTryFlow.getProcessors().get(0);
     assertThat(processor.getClass().getName(), equalTo("org.mule.runtime.core.internal.processor.TryScope"));
 
