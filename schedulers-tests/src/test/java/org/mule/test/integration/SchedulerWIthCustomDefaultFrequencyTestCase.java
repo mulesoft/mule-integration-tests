@@ -19,7 +19,10 @@ import org.mule.test.AbstractSchedulerTestCase;
 import org.junit.Rule;
 import org.junit.Test;
 
-public class SchedulerWIthCustomDefaultFrequency extends AbstractSchedulerTestCase {
+import io.qameta.allure.Issue;
+
+@Issue("MULE-18262")
+public class SchedulerWIthCustomDefaultFrequencyTestCase extends AbstractSchedulerTestCase {
 
   private static final long CUSTOM_FREQ = 42;
 
