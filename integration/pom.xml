@@ -163,18 +163,6 @@
             <classifier>mule-plugin</classifier>
         </dependency>
         <dependency>
-            <groupId>org.mule.connectors</groupId>
-            <artifactId>mule-http-connector</artifactId>
-            <type>test-jar</type>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
             <groupId>org.mule.modules</groupId>
             <artifactId>mule-spring-module</artifactId>
             <version>${muleSpringModuleTestVersion}</version>
