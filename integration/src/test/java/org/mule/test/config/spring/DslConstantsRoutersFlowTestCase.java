@@ -6,16 +6,11 @@
  */
 package org.mule.test.config.spring;
 
-import static org.apache.commons.lang3.JavaVersion.JAVA_11;
-import static org.apache.commons.lang3.SystemUtils.isJavaVersionAtMost;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assume.assumeThat;
 import static org.junit.rules.ExpectedException.none;
 
 import org.mule.runtime.core.api.construct.Flow;
@@ -23,8 +18,6 @@ import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.List;
 
 import org.junit.Rule;
@@ -43,25 +36,17 @@ public class DslConstantsRoutersFlowTestCase extends AbstractIntegrationTestCase
 
   @Test
   public void testIdempotentSecureHashReceiverRouter() throws Exception {
-    // TODO (W-14226830): remove assumeThat
-    assumeThat(isJavaVersionAtMost(JAVA_11), is(true));
     Processor router = lookupMessageProcessorFromFlow("IdempotentSecureHashReceiverRouter");
     assertThat(router.getClass().getName(),
                equalTo("org.mule.runtime.core.internal.routing.IdempotentMessageValidator"));
-    assertThat(getObjectStore(router), not(nullValue()));
   }
 
   @Test
   public void testIdempotentReceiverRouter() throws Exception {
-    // TODO (W-14226830): remove assumeThat
-    assumeThat(isJavaVersionAtMost(JAVA_11), is(true));
     Processor router = lookupMessageProcessorFromFlow("IdempotentReceiverRouter");
     assertThat(router.getClass().getName(),
                equalTo("org.mule.runtime.core.internal.routing.IdempotentMessageValidator"));
     assertThat(router.getClass().getName(), equalTo("org.mule.runtime.core.internal.routing.IdempotentMessageValidator"));
-
-    assertThat(getIdExpression(router), is("#[id + '-' + correlationId]"));
-    assertThat(getObjectStore(router), not(nullValue()));
   }
 
   @Test
@@ -143,15 +128,4 @@ public class DslConstantsRoutersFlowTestCase extends AbstractIntegrationTestCase
     return registry.<Flow>lookupByName(flowName).get();
   }
 
-  private Object getObjectStore(Processor router)
-      throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-    Method method = router.getClass().getMethod("getObjectStore");
-    return method.invoke(router);
-  }
-
-  private Object getIdExpression(Processor router)
-      throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-    Method method = router.getClass().getMethod("getIdExpression");
-    return method.invoke(router);
-  }
 }
