@@ -6,23 +6,36 @@
  */
 package org.mule.test.spring;
 
+import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.LIFECYCLE_AND_DEPENDENCY_INJECTION;
+import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.NULL_OBJECTS_IN_SPRING5_REGISTRY;
+
+import static org.apache.commons.lang3.JavaVersion.JAVA_11;
+import static org.apache.commons.lang3.SystemUtils.isJavaVersionAtMost;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.LIFECYCLE_AND_DEPENDENCY_INJECTION;
-import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.NULL_OBJECTS_IN_SPRING5_REGISTRY;
+import static org.junit.Assume.assumeTrue;
+
 import org.mule.test.AbstractIntegrationTestCase;
 
 import javax.transaction.TransactionManager;
 
+import org.junit.BeforeClass;
+import org.junit.Test;
+
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
-import org.junit.Test;
 
 @Feature(LIFECYCLE_AND_DEPENDENCY_INJECTION)
 @Story(NULL_OBJECTS_IN_SPRING5_REGISTRY)
 public class LookupNullObjectTestCase extends AbstractIntegrationTestCase {
+
+  // TODO W-14338813
+  @BeforeClass
+  public static void ignoreJava17() {
+    assumeTrue(isJavaVersionAtMost(JAVA_11));
+  }
 
   @Override
   protected String[] getConfigFiles() {

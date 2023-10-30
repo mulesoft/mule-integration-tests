@@ -6,18 +6,28 @@
  */
 package org.mule.test.integration.transaction;
 
+import static org.apache.commons.lang3.JavaVersion.JAVA_11;
+import static org.apache.commons.lang3.SystemUtils.isJavaVersionAtMost;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assume.assumeTrue;
 
 import org.mule.test.AbstractIntegrationTestCase;
-
-import org.junit.Test;
 
 import javax.inject.Inject;
 import javax.transaction.TransactionManager;
 
+import org.junit.BeforeClass;
+import org.junit.Test;
+
 public class TransactionManagerInjectTestCase extends AbstractIntegrationTestCase {
+
+  // TODO W-14338813
+  @BeforeClass
+  public static void ignoreJava17() {
+    assumeTrue(isJavaVersionAtMost(JAVA_11));
+  }
 
   @Override
   protected String getConfigFile() {
