@@ -17,7 +17,6 @@
         <skipExportTests>false</skipExportTests>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
         <protobufVersion>3.21.9</protobufVersion>
-        <opentelemetryVersion>1.20.1</opentelemetryVersion>
         <activemqVersion>5.15.9</activemqVersion>
         <hawtbufVersion>1.1</hawtbufVersion>
         <activemqProtobuf>1.1</activemqProtobuf>
