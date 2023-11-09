@@ -9,6 +9,7 @@ package org.mule.test.components.tracing;
 import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
 import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.DEFAULT_CORE_EVENT_TRACER;
+import static org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy.LOCATION_KEY;
 import static org.mule.test.infrastructure.profiling.tracing.TracingTestUtils.createAttributeMap;
 
 import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
@@ -69,6 +70,7 @@ public class FlowErrorHandlingOpenTelemetryTracingTestCase extends OpenTelemetry
   private static final String FLOW_WITH_FAILING_ON_ERROR_PROPAGATE = "flow-with-failing-on-error-propagate";
   private static final String FLOW_WITH_ON_ERROR_PROPAGATE_AND_ON_ERROR_CONTINUE_COMPOSITION =
       "flow-with-on-error-propagate-and-on-error-continue-composition";
+  public static final String SUB_FLOW_WITH_NO_ERROR_HANDLING_LOCATION = "sub-flow-with-no-error-handling";
 
   private ExportedSpanSniffer spanCapturer;
 
@@ -448,7 +450,8 @@ public class FlowErrorHandlingOpenTelemetryTracingTestCase extends OpenTelemetry
         .beginChildren()
         .child(EXPECTED_FLOW_REF_SPAN).addExceptionData(ERROR_TYPE_1)
         .beginChildren()
-        .child(EXPECTED_SUBFLOW_SPAN).addExceptionData(ERROR_TYPE_1)
+        .child(EXPECTED_SUBFLOW_SPAN).addAttributeToAssertValue(LOCATION_KEY, SUB_FLOW_WITH_NO_ERROR_HANDLING_LOCATION)
+        .addExceptionData(ERROR_TYPE_1)
         .beginChildren()
         .child(EXPECTED_RAISE_ERROR_SPAN).addExceptionData(ERROR_TYPE_1)
         .endChildren()
@@ -487,7 +490,8 @@ public class FlowErrorHandlingOpenTelemetryTracingTestCase extends OpenTelemetry
         .beginChildren()
         .child(EXPECTED_FLOW_REF_SPAN).addExceptionData(ERROR_TYPE_1)
         .beginChildren()
-        .child(EXPECTED_SUBFLOW_SPAN).addExceptionData(ERROR_TYPE_1)
+        .child(EXPECTED_SUBFLOW_SPAN).addAttributeToAssertValue(LOCATION_KEY, SUB_FLOW_WITH_NO_ERROR_HANDLING_LOCATION)
+        .addExceptionData(ERROR_TYPE_1)
         .beginChildren()
         .child(EXPECTED_RAISE_ERROR_SPAN).addExceptionData(ERROR_TYPE_1)
         .endChildren()
