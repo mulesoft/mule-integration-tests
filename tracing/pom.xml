@@ -19,7 +19,6 @@
         <muleTracingModuleVersion>1.0.0</muleTracingModuleVersion>
         <protobufVersion>3.21.9</protobufVersion>
         <openTelemetryProtoVersion>0.3.0</openTelemetryProtoVersion>
-        <opentelemetryVersion>1.20.1</opentelemetryVersion>
         <muleTracingModuleVersion>1.0.0</muleTracingModuleVersion>
         <activemqVersion>5.15.9</activemqVersion>
         <hawtbufVersion>1.1</hawtbufVersion>
