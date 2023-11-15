@@ -46,7 +46,7 @@
         <wireMockVersion>1.58</wireMockVersion>
 
         <muleDependenciesVersion>1.0.21</muleDependenciesVersion>
-        <muleTestComponentsVersion>4.6.0-rc1</muleTestComponentsVersion>
+        <muleTestComponentsVersion>4.6.0-rc2</muleTestComponentsVersion>
 
         <protobufVersion>3.21.9</protobufVersion>
         <openTelemetryProtoVersion>0.3.0</openTelemetryProtoVersion>
