@@ -18,6 +18,7 @@
             ${surefire.slf4j.module.args}
         </surefire.args>
 
+        <muleBomVersion>4.6.0-SNAPSHOT</muleBomVersion>
         <javaModuleName>org.mule.test.integration.tracing</javaModuleName>
         <skipExportTests>false</skipExportTests>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
@@ -26,9 +27,9 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>io.opentelemetry</groupId>
-                <artifactId>opentelemetry-bom</artifactId>
-                <version>${opentelemetryVersion}</version>
+                <groupId>org.mule</groupId>
+                <artifactId>mule-runtime-bom</artifactId>
+                <version>${muleBomVersion}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
