@@ -10,6 +10,7 @@ package org.mule.runtime.test.integration.logging;
 import static org.mule.runtime.api.util.MuleSystemProperties.ENABLE_PROFILING_SERVICE_PROPERTY;
 import static org.mule.runtime.api.util.MuleSystemProperties.PUT_TRACE_ID_AND_SPAN_ID_IN_MDC_PROPERTY;
 import static org.mule.runtime.test.integration.logging.plugin.TestPluginsCatalog.loggingExtensionPlugin;
+import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_DEFAULT_TRACING_LEVEL;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_ENABLED;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_ENDPOINT;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_TYPE;
@@ -74,6 +75,10 @@ import io.qameta.allure.Story;
 @Features({@Feature(DEFAULT_PROFILING_SERVICE), @Feature(LOGGING)})
 @Story(TRACING_CONFIGURATION)
 public class MDCTracingContextTestCase extends AbstractFakeMuleServerTestCase {
+
+  @Rule
+  public SystemProperty defaultTracingLevel =
+      new SystemProperty(MULE_OPEN_TELEMETRY_EXPORTER_DEFAULT_TRACING_LEVEL, "monitoring");
 
   @Rule
   public SystemProperty propagateDisposeError = new SystemProperty(PUT_TRACE_ID_AND_SPAN_ID_IN_MDC_PROPERTY, TRUE.toString());
