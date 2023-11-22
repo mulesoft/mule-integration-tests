@@ -4,12 +4,13 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.runtime.module.tooling;
+package org.mule.runtime.module.tooling.test;
+
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.configurationDeclarationMissingRequiredParameter;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.connectionDeclaration;
 
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.rules.ExpectedException.none;
-import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.configurationDeclarationMissingRequiredParameter;
-import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.connectionDeclaration;
 
 import org.mule.runtime.app.declaration.api.fluent.ArtifactDeclarer;
 import org.mule.runtime.core.api.config.ConfigurationException;
