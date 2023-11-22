@@ -13,6 +13,20 @@
 
     <properties>
         <javaModuleName>org.mule.test.tooling.support</javaModuleName>
+        
+        <surefire.args>
+            -XX:+IgnoreUnrecognizedVMOptions
+            --add-exports=org.mule.runtime.deployment/org.mule.runtime.module.deployment.internal=org.mule.test.infrastructure
+            --add-exports=org.mule.runtime.deployment/org.mule.runtime.module.deployment.internal.processor=org.mule.test.infrastructure
+            --add-exports=org.mule.runtime.deployment.model.impl/org.mule.runtime.module.deployment.impl.internal=org.mule.test.infrastructure
+            --add-exports=org.mule.runtime.launcher/org.mule.runtime.module.launcher.coreextension=org.mule.test.infrastructure
+            --add-exports=org.mule.runtime.memory.management/org.mule.runtime.internal.memory.management=org.mule.test.infrastructure
+            --add-exports=org.mule.runtime.metadata.model.api/org.mule.metadata.internal.utils=org.mule.test.tooling.support
+            --add-exports=org.mule.runtime.repository/org.mule.runtime.module.repository.internal=org.mule.test.infrastructure
+            --add-exports=org.mule.runtime.tooling.support/org.mule.runtime.module.tooling.internal=org.mule.test.infrastructure
+            ${surefire.args.base}
+        </surefire.args>
+        
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
         <settingsFile>${java.io.tmpdir}/settings.xml</settingsFile>
         <testExtensionVersion>4.6.0-SNAPSHOT</testExtensionVersion>
@@ -81,11 +95,42 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-testCompile</id>
+                        <configuration>
+                            <compilerArgs>
+                                <arg>--add-exports=org.mule.runtime.metadata.model.api/org.mule.metadata.internal.utils=org.mule.test.tooling.support</arg>
+                            </compilerArgs>
+                            <testRelease>11</testRelease>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>base-testCompile</id>
+                        <goals>
+                            <goal>testCompile</goal>
+                        </goals>
+                        <configuration>
+                            <testRelease>${javaReleaseVersion}</testRelease>
+                            <!-- recompile everything for target VM except the module-info.java -->
+                            <testExcludes>
+                                <testExclude>module-info.java</testExclude>
+                            </testExcludes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <systemPropertyVariables>
                         <mule.version>${project.version}</mule.version>
                         <settings.file>${settingsFile}</settings.file>
+
+                        <xmlApisLib>${xml-apis:xml-apis:jar}</xmlApisLib>
+                        <apiAnnotationsLib>${org.mule.runtime:api-annotations:jar}</apiAnnotationsLib>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
@@ -124,7 +169,6 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
-                        <version>2.22.2</version>
                         <configuration>
                             <skipTests>true</skipTests>
                         </configuration>
