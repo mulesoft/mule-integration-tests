@@ -4,14 +4,16 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.runtime.module.tooling;
+package org.mule.runtime.module.tooling.test;
+
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.configurationDeclaration;
+import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.connectionDeclaration;
 
 import static java.lang.String.format;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
-import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.configurationDeclaration;
-import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.connectionDeclaration;
+
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.app.declaration.api.fluent.ArtifactDeclarer;

@@ -4,13 +4,8 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.runtime.module.tooling;
+package org.mule.runtime.module.tooling.test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
 import static org.mule.maven.client.test.MavenTestUtils.getMavenProperty;
 import static org.mule.runtime.app.declaration.api.fluent.ElementDeclarer.newArtifact;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.TEST_EXTENSION_DECLARER;
@@ -18,6 +13,14 @@ import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.conf
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.connectionDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.failingConnectionDeclaration;
 import static org.mule.test.infrastructure.maven.MavenTestUtils.getMavenLocalRepository;
+
+import static java.nio.file.Files.createTempDirectory;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.value.ResolvingFailure;
@@ -33,6 +36,7 @@ import org.mule.test.infrastructure.deployment.AbstractFakeMuleServerTestCase;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
 
 import org.junit.After;
 import org.junit.ClassRule;
@@ -72,9 +76,19 @@ public abstract class DeclarationSessionTestCase extends AbstractFakeMuleServerT
 
   protected DeclarationSession session;
 
+  private static Path mavenArtifactsDirTempDirectory;
+  static {
+    try {
+      mavenArtifactsDirTempDirectory = createTempDirectory("DeclarationSessionTestCase.mavenArtifactsDir");
+    } catch (IOException e) {
+      e.printStackTrace();
+      throw new RuntimeException(e);
+    }
+  }
+
   @ClassRule
   public static SystemProperty artifactsLocation =
-      new SystemProperty("mule.test.maven.artifacts.dir", DeclarationSession.class.getResource("/").getPath());
+      new SystemProperty("mule.test.maven.artifacts.dir", mavenArtifactsDirTempDirectory.toAbsolutePath().toString());
 
   @Rule
   public SystemProperty repositoryLocation =
