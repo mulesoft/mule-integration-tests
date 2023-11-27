@@ -28,7 +28,7 @@ import org.mule.runtime.core.api.construct.FlowConstruct;
 import org.mule.runtime.core.api.security.SecurityManager;
 import org.mule.runtime.core.api.streaming.StreamingManager;
 import org.mule.runtime.core.api.util.queue.QueueManager;
-import org.mule.runtime.core.internal.context.MuleContextWithRegistry;
+import org.mule.runtime.core.privileged.context.registry.MuleContextWithRegistry;
 import org.mule.runtime.core.internal.el.mvel.ExpressionLanguageExtension;
 import org.mule.runtime.core.internal.lifecycle.phases.LifecycleObjectSorter;
 import org.mule.runtime.core.internal.registry.MuleRegistry;
