@@ -27,7 +27,9 @@ import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
         "io.opentelemetry:opentelemetry-sdk-common",
         "io.opentelemetry:opentelemetry-sdk-trace",
         "io.opentelemetry:opentelemetry-sdk-metrics",
-        "io.opentelemetry:opentelemetry-context"
+        "io.opentelemetry:opentelemetry-context",
+        "io.opentelemetry:opentelemetry-exporter-common",
+        "io.opentelemetry:opentelemetry-exporter-otlp"
     })
 public interface OpenTelemetryTracingTestRunnerConfigAnnotation {
 
