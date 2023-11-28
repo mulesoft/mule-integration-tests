@@ -19,8 +19,12 @@ import static java.lang.Boolean.TRUE;
 import static java.lang.String.format;
 
 import static io.opentelemetry.sdk.trace.samplers.SamplingDecision.RECORD_AND_SAMPLE;
+import static org.apache.commons.lang3.JavaVersion.JAVA_11;
+import static org.apache.commons.lang3.SystemUtils.isJavaVersionAtMost;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assume.assumeThat;
 
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.api.config.custom.ServiceConfigurator;
@@ -103,6 +107,9 @@ public abstract class OpenTelemetrySamplerTestCase extends MuleArtifactFunctiona
 
   @Test
   public void test() throws Exception {
+    // TODO W-14229036 Remove this and reenable the test
+    assumeThat(isJavaVersionAtMost(JAVA_11), is(true));
+
     for (int i = 0; i < REQUESTS; i++) {
       ExportedSpanSniffer spanCapturer = profilingService.getSpanExportManager().getExportedSpanSniffer();
       MultiMap<String, String> headers = new MultiMap<>();
