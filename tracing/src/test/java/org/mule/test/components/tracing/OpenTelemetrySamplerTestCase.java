@@ -21,9 +21,7 @@ import static java.lang.String.format;
 import static io.opentelemetry.sdk.trace.samplers.SamplingDecision.RECORD_AND_SAMPLE;
 import static org.apache.commons.lang3.JavaVersion.JAVA_11;
 import static org.apache.commons.lang3.SystemUtils.isJavaVersionAtMost;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assume.assumeThat;
 
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
@@ -154,7 +152,20 @@ public abstract class OpenTelemetrySamplerTestCase extends MuleArtifactFunctiona
         }
       });
 
-      assertThat(spanCapturer.getExportedSpans().size(), equalTo(expectedSpan()));
+      prober.check(new JUnitProbe() {
+
+        @Override
+        protected boolean test() {
+          return spanCapturer.getExportedSpans().size() == expectedSpan();
+        }
+
+        @Override
+        public String describeFailure() {
+          return "The amount of exported spans is not correct. Exported: " + spanCapturer.getExportedSpans().size()
+              + ", Expected: " + expectedSpan();
+        }
+      });
+
       spanExporter.clear();
 
     }
