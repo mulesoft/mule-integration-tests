@@ -9,9 +9,9 @@ package org.mule.test.components.tracing;
 import static org.mule.runtime.http.api.HttpConstants.Method.GET;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_DEFAULT_TRACING_LEVEL;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_ENABLED;
+import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_OTEL_TRACES_SAMPLER;
+import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_OTEL_TRACES_SAMPLER_ARG;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.USE_MULE_OPEN_TELEMETRY_EXPORTER_SNIFFER;
-import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterEnvProperties.OTEL_TRACES_SAMPLER_ARG_ENV;
-import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterEnvProperties.OTEL_TRACES_SAMPLER_ENV;
 import static org.mule.runtime.tracer.exporter.impl.OpenTelemetrySpanExporterUtils.getSampler;
 import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.OPEN_TELEMETRY_EXPORTER;
@@ -31,6 +31,7 @@ import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.runtime.http.api.HttpService;
 import org.mule.runtime.http.api.client.HttpRequestOptions;
 import org.mule.runtime.tracer.api.sniffer.ExportedSpanSniffer;
+import org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties;
 import org.mule.runtime.tracer.exporter.impl.OpenTelemetrySpanExporterFactory;
 import org.mule.service.http.TestHttpClient;
 import org.mule.tck.junit4.rule.DynamicPort;
@@ -83,10 +84,10 @@ public abstract class OpenTelemetrySamplerTestCase extends MuleArtifactFunctiona
   public TestHttpClient httpClient = new TestHttpClient.Builder(getService(HttpService.class)).build();
 
   @Rule
-  public SystemProperty systemProperty = new SystemProperty(OTEL_TRACES_SAMPLER_ENV, getSamplerName());
+  public SystemProperty systemProperty = new SystemProperty(MULE_OPEN_TELEMETRY_OTEL_TRACES_SAMPLER, getSamplerName());
 
   @Rule
-  public SystemProperty systemProperty = new SystemProperty(OTEL_TRACES_SAMPLER_ARG_ENV, getSamplerName());
+  public SystemProperty systemProperty = new SystemProperty(MULE_OPEN_TELEMETRY_OTEL_TRACES_SAMPLER_ARG, getSamplerName());
   @Rule
   public DynamicPort entryListenerPort = new DynamicPort("httpPort");
 
