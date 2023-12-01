@@ -21,6 +21,7 @@ module org.mule.test.tooling.support {
   requires org.mule.runtime.metadata.model.api;
   requires org.mule.runtime.oauth.api;
   requires org.mule.runtime.tooling.support;
+  requires org.mule.weave.mule.dwb.api;
 
   requires org.apache.logging.log4j;
   requires java.sql;
