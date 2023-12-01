@@ -113,6 +113,11 @@ public abstract class DeclarationSessionTestCase extends AbstractFakeMuleServerT
   }
 
   @Override
+  protected boolean classloaderContainerJpmsModuleLayer() {
+    return true;
+  }
+
+  @Override
   protected boolean addExpressionLanguageMetadataService() {
     return false;
   }
