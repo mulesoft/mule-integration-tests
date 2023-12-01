@@ -17,7 +17,6 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.collection.IsIterableContainingInRelativeOrder.containsInRelativeOrder;
 import static org.junit.Assert.assertThat;
 
-import org.mule.functional.junit4.TestComponentBuildingDefinitionRegistryFactory;
 import org.mule.runtime.api.component.Component;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.lifecycle.Disposable;
@@ -38,11 +37,10 @@ import java.util.function.Consumer;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.junit.Test;
+
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 @Feature(ERROR_HANDLING)
 @Story(GLOBAL_ERROR_HANDLER)
@@ -71,20 +69,6 @@ public class GlobalErrorHandlerLifecycleTestCase extends AbstractIntegrationTest
   @Inject
   @Named("anotherGlobalFlow2")
   private FlowConstruct anotherGlobalFlow2;
-
-  private static TestComponentBuildingDefinitionRegistryFactory previous;
-
-  @BeforeClass
-  public static void beforeClass() {
-    previous = componentBuildingDefinitionRegistryFactory;
-    componentBuildingDefinitionRegistryFactory = new TestComponentBuildingDefinitionRegistryFactory();
-    componentBuildingDefinitionRegistryFactory.setRefreshRuntimeComponentBuildingDefinitions(true);
-  }
-
-  @AfterClass
-  public static void afterClass() {
-    componentBuildingDefinitionRegistryFactory = previous;
-  }
 
   @Test
   public void testLifecycleGlobalErrorHandler() throws Exception {
