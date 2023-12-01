@@ -6,13 +6,13 @@
  */
 package org.mule.test.components.tracing;
 
+import static org.mule.runtime.core.api.config.MuleProperties.MULE_CORE_EXPORTER_FACTORY_KEY;
 import static org.mule.runtime.http.api.HttpConstants.Method.GET;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_DEFAULT_TRACING_LEVEL;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_ENABLED;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_OTEL_TRACES_SAMPLER;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_OTEL_TRACES_SAMPLER_ARG;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.USE_MULE_OPEN_TELEMETRY_EXPORTER_SNIFFER;
-import static org.mule.runtime.tracer.exporter.impl.OpenTelemetrySpanExporterUtils.getSampler;
 import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.OPEN_TELEMETRY_EXPORTER;
 
@@ -26,12 +26,14 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assume.assumeThat;
 
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
+import org.mule.runtime.api.config.custom.ServiceConfigurator;
 import org.mule.runtime.api.util.MultiMap;
+import org.mule.runtime.core.api.MuleContext;
+import org.mule.runtime.core.api.config.ConfigurationBuilder;
 import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.runtime.http.api.HttpService;
 import org.mule.runtime.http.api.client.HttpRequestOptions;
 import org.mule.runtime.tracer.api.sniffer.ExportedSpanSniffer;
-import org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties;
 import org.mule.runtime.tracer.exporter.impl.OpenTelemetrySpanExporterFactory;
 import org.mule.service.http.TestHttpClient;
 import org.mule.tck.junit4.rule.DynamicPort;
@@ -75,7 +77,7 @@ public abstract class OpenTelemetrySamplerTestCase extends MuleArtifactFunctiona
   public static final int EXPECTED_EVALUATED_SPANS = 2;
   @Inject
   PrivilegedProfilingService profilingService;
-  private final TestSamplerSpanExporter spanExporter = new TestSamplerSpanExporter(getSamplerName(), getSamplerArg());
+  private final TestSamplerSpanExporter spanExporter = new TestSamplerSpanExporter();
 
   private static final int TIMEOUT_MILLIS = 30000;
   private static final int POLL_DELAY_MILLIS = 100;
@@ -84,10 +86,11 @@ public abstract class OpenTelemetrySamplerTestCase extends MuleArtifactFunctiona
   public TestHttpClient httpClient = new TestHttpClient.Builder(getService(HttpService.class)).build();
 
   @Rule
-  public SystemProperty systemProperty = new SystemProperty(MULE_OPEN_TELEMETRY_OTEL_TRACES_SAMPLER, getSamplerName());
+  public SystemProperty systemPropertySampler = new SystemProperty(MULE_OPEN_TELEMETRY_OTEL_TRACES_SAMPLER, getSamplerName());
 
   @Rule
-  public SystemProperty systemProperty = new SystemProperty(MULE_OPEN_TELEMETRY_OTEL_TRACES_SAMPLER_ARG, getSamplerName());
+  public SystemProperty systemPropertySamplerArg =
+      new SystemProperty(MULE_OPEN_TELEMETRY_OTEL_TRACES_SAMPLER_ARG, getSamplerArg());
   @Rule
   public DynamicPort entryListenerPort = new DynamicPort("httpPort");
 
@@ -179,9 +182,31 @@ public abstract class OpenTelemetrySamplerTestCase extends MuleArtifactFunctiona
     return !isRemoteRequestSpanSampled() ? 0 : spanExporter.getSampledCount();
   }
 
+  @Override
+  protected void addBuilders(List<ConfigurationBuilder> builders) {
+    super.addBuilders(builders);
+    builders.add(getCustomSpanExporterFactoryBuilder());
+  }
+
   abstract String getSamplerName();
 
   abstract String getSamplerArg();
+
+  private ConfigurationBuilder getCustomSpanExporterFactoryBuilder() {
+    return new ConfigurationBuilder() {
+
+      @Override
+      public void addServiceConfigurator(ServiceConfigurator serviceConfigurator) {
+        // Nothing to do
+      }
+
+      @Override
+      public void configure(MuleContext muleContext) {
+        muleContext.getCustomizationService().overrideDefaultServiceImpl(MULE_CORE_EXPORTER_FACTORY_KEY,
+                                                                         spanExporter);
+      }
+    };
+  }
 
   protected boolean isRemoteRequestSpanSampled() {
     return true;
@@ -189,14 +214,11 @@ public abstract class OpenTelemetrySamplerTestCase extends MuleArtifactFunctiona
 
   private static class TestSamplerSpanExporter extends OpenTelemetrySpanExporterFactory {
 
-    private final TestSamplerWrapper sampler;
-
-    public TestSamplerSpanExporter(String samplerName, String samplerArg) {
-      this.sampler = new TestSamplerWrapper(getSampler(samplerName, samplerArg));
-    }
+    private TestSamplerWrapper sampler;
 
     @Override
     protected Sampler resolveSampler() {
+      sampler = new TestSamplerWrapper(super.resolveSampler());
       return sampler;
     }
 
