@@ -6,10 +6,12 @@
  */
 package org.mule.test.functional;
 
+import static org.mule.test.allure.AllureConstants.XmlSdk.XML_SDK;
+
 import static java.util.Arrays.asList;
+
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.mule.test.allure.AllureConstants.XmlSdk.XML_SDK;
 
 import org.mule.extension.http.api.request.validator.ResponseValidatorTypedException;
 import org.mule.functional.api.exception.ExpectedError;
@@ -107,11 +109,5 @@ public class ModuleWithGlobalElementTestCase extends AbstractModuleWithHttpTestC
   @Test
   public void testHttpDoLoginGonnet() throws Exception {
     assertFlowForUsername("testHttpDoLoginGonnet", "userGonnet");
-  }
-
-  @Override
-  public boolean mustRegenerateComponentBuildingDefinitionRegistryFactory() {
-    // returns true because not same extensions are loaded by all tests.
-    return true;
   }
 }

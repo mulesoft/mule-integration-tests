@@ -6,12 +6,14 @@
  */
 package org.mule.test.functional;
 
+import static org.mule.runtime.core.api.util.StreamingUtils.withCursoredEvent;
+import static org.mule.test.allure.AllureConstants.XmlSdk.XML_SDK;
+
 import static java.util.Arrays.asList;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
-import static org.mule.runtime.core.api.util.StreamingUtils.withCursoredEvent;
-import static org.mule.test.allure.AllureConstants.XmlSdk.XML_SDK;
 
 import org.mule.extension.file.common.api.FileAttributes;
 import org.mule.runtime.api.connection.ConnectionProvider;
@@ -156,9 +158,4 @@ public class ModuleWithMultipleGlobalElementsTestCase extends AbstractCeXmlExten
     });
   }
 
-  @Override
-  public boolean mustRegenerateComponentBuildingDefinitionRegistryFactory() {
-    // returns true because not same extensions are loaded by all tests.
-    return true;
-  }
 }

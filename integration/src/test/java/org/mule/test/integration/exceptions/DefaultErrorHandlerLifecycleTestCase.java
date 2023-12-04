@@ -14,7 +14,6 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.collection.IsIterableContainingInRelativeOrder.containsInRelativeOrder;
 import static org.junit.Assert.assertThat;
 
-import org.mule.functional.junit4.TestComponentBuildingDefinitionRegistryFactory;
 import org.mule.runtime.api.lifecycle.Disposable;
 import org.mule.runtime.api.lifecycle.Initialisable;
 import org.mule.runtime.api.lifecycle.Lifecycle;
@@ -29,11 +28,10 @@ import java.util.Collection;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.junit.Test;
+
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 @Feature(ERROR_HANDLING)
 @Story(DEFAULT_ERROR_HANDLER)
@@ -58,20 +56,6 @@ public class DefaultErrorHandlerLifecycleTestCase extends AbstractIntegrationTes
   @Inject
   @Named("flowF")
   private FlowConstruct flowF;
-
-  private static TestComponentBuildingDefinitionRegistryFactory previous;
-
-  @BeforeClass
-  public static void beforeClass() {
-    previous = componentBuildingDefinitionRegistryFactory;
-    componentBuildingDefinitionRegistryFactory = new TestComponentBuildingDefinitionRegistryFactory();
-    componentBuildingDefinitionRegistryFactory.setRefreshRuntimeComponentBuildingDefinitions(true);
-  }
-
-  @AfterClass
-  public static void afterClass() {
-    componentBuildingDefinitionRegistryFactory = previous;
-  }
 
   @Test
   public void testLifecycleDefaultErrorHandler() throws Exception {
