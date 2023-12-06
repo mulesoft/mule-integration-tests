@@ -50,6 +50,8 @@
 
         <protobufVersion>3.21.9</protobufVersion>
         <openTelemetryProtoVersion>0.3.0</openTelemetryProtoVersion>
+    
+        <skipMuleModuleMojos>true</skipMuleModuleMojos>
     </properties>
 
     <build>
