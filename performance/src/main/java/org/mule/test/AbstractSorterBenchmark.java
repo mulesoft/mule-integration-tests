@@ -25,11 +25,9 @@ import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.config.Config;
 import org.mule.runtime.core.api.config.MuleConfiguration;
 import org.mule.runtime.core.api.construct.FlowConstruct;
-import org.mule.runtime.core.api.security.SecurityManager;
 import org.mule.runtime.core.api.streaming.StreamingManager;
 import org.mule.runtime.core.api.util.queue.QueueManager;
 import org.mule.runtime.core.internal.context.MuleContextWithRegistry;
-import org.mule.runtime.core.internal.el.mvel.ExpressionLanguageExtension;
 import org.mule.runtime.core.internal.lifecycle.phases.LifecycleObjectSorter;
 import org.mule.runtime.core.internal.registry.MuleRegistry;
 import org.mule.runtime.extension.api.runtime.config.ConfigurationProvider;
@@ -38,6 +36,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
 import javax.inject.Inject;
 
 import org.openjdk.jmh.annotations.Fork;
@@ -65,7 +64,6 @@ public class AbstractSorterBenchmark extends FunctionalTestCase {
   public static final Class<?>[] allowedTypes = new Class<?>[] {
       LockFactory.class,
       ObjectStoreManager.class,
-      ExpressionLanguageExtension.class,
       ExpressionLanguage.class,
       QueueManager.class,
       StreamingManager.class,
@@ -102,10 +100,12 @@ public class AbstractSorterBenchmark extends FunctionalTestCase {
     return muleContext;
   }
 
+  @Override
   protected boolean isStartContext() {
     return false;
   }
 
+  @Override
   protected boolean doTestClassInjection() {
     return true;
   }

@@ -36,9 +36,6 @@
             <on-error-continue type="REDELIVERY_EXHAUSTED">
                 <logger/>
             </on-error-continue>
-            <on-error-propagate when="#[mel:exception.causedBy(java.io.IOException)]">
-                <logger/>
-            </on-error-propagate>
             <on-error-continue>
                 <logger/>
             </on-error-continue>
