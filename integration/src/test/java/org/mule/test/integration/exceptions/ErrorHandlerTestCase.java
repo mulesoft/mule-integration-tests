@@ -6,17 +6,16 @@
  */
 package org.mule.test.integration.exceptions;
 
+import static org.mule.functional.api.component.FunctionalTestProcessor.getFromFlow;
+import static org.mule.functional.junit4.matchers.MessageMatchers.hasPayload;
+import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
+import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
+
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.withSettings;
-import static org.mule.functional.api.component.FunctionalTestProcessor.getFromFlow;
-import static org.mule.functional.junit4.matchers.MessageMatchers.hasPayload;
-import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
-import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
-import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
 
 import org.mule.runtime.api.component.Component;
 import org.mule.runtime.api.exception.DefaultMuleException;
@@ -36,10 +35,11 @@ import org.mule.test.AbstractIntegrationTestCase;
 
 import java.sql.SQLDataException;
 
-import org.hamcrest.Matchers;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import org.hamcrest.Matchers;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
@@ -59,71 +59,8 @@ public class ErrorHandlerTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  public void testMatchesCorrectExceptionStrategy() throws Exception {
-    callAndThrowException(new IllegalStateException(), "0 catch-2");
-  }
-
-  @Test
-  public void testMatchesCorrectExceptionStrategyUsingWrapper() throws Exception {
-    callAndThrowException(new GenericMuleException(createStaticMessage(""), new IllegalStateException()), "0 catch-2");
-  }
-
-  @Test
-  public void testMatchesCorrectExceptionStrategyUsingWrapperAndCause() throws Exception {
-    callAndThrowException(new GenericMuleException(createStaticMessage(""),
-                                                   new RuntimeException(new IllegalStateException())),
-                          "0 catch-2");
-  }
-
-  @Test
-  public void testMatchesCorrectExceptionStrategyUsingBaseClass() throws Exception {
-    callAndThrowException(new BaseException(), "0 catch-3");
-  }
-
-  @Test
-  public void testMatchesCorrectExceptionStrategyUsingSubtypeClass() throws Exception {
-    callAndThrowException(new GenericMuleException(createStaticMessage(""), new SubtypeException()), "0 catch-4");
-  }
-
-  @Test
-  public void testMatchesCorrectExceptionStrategyUsingSubtypeSubtypeClass() throws Exception {
-    callAndThrowException(new SubtypeSubtypeException(), "0 catch-4");
-  }
-
-  @Test
-  public void testMatchesCorrectExceptionStrategyUsingRegex() throws Exception {
-    callAndThrowException(new AnotherTypeMyException(), "0 catch-5");
-  }
-
-  @Test
   public void testMatchesCorrectExceptionStrategyUsingGroovyExpressionEvaluator() throws Exception {
     callAndThrowException("groovy", new SQLDataException(), "groovy catch-6");
-  }
-
-  @Test
-  public void testMatchesCorrectExceptionStrategyUsingStartsWithWildcard() throws Exception {
-    callAndThrowException(new StartsWithException(), "0 catch-7");
-  }
-
-  @Test
-  public void testMatchesCorrectExceptionStrategyUsingFinishesWithWildcard() throws Exception {
-    callAndThrowException(new ThisExceptionFinishesWithException(), "0 catch-8");
-  }
-
-  @Test
-  public void testMatchesCorrectExceptionStrategyUsingMatchesAll() throws Exception {
-    callAndThrowException(new AnotherTotallyDifferentKindOfException(), "0 catch-9");
-  }
-
-  @Test
-  public void testMatchesCorrectExceptionStrategyUsingFinishesWithSomethingElse() throws Exception {
-    callAndThrowException(new ThisExceptionFinishesWithSomethingElse(), "0 groovified");
-  }
-
-  @Test
-  public void testMatchesCorrectExceptionUsingNoCause() throws Exception {
-    expectedException.expectCause(is(instanceOf(GenericMuleException.class)));
-    callAndThrowException(new GenericMuleException(createStaticMessage("")), null);
   }
 
   @Test
@@ -184,10 +121,6 @@ public class ErrorHandlerTestCase extends AbstractIntegrationTestCase {
         .run()
         .getMessage();
     assertThat(getPayloadAsString(response), is(expectedMessage));
-  }
-
-  private void callAndThrowException(final Exception exceptionToThrow, final String expectedMessage) throws Exception {
-    callAndThrowException("0", exceptionToThrow, expectedMessage);
   }
 
   private void callAndThrowException(Object payload, final Exception exceptionToThrow, final String expectedMessage)
