@@ -114,7 +114,8 @@ public abstract class DeclarationSessionTestCase extends AbstractFakeMuleServerT
 
   @Override
   protected boolean classloaderContainerJpmsModuleLayer() {
-    return true;
+    // These tests have all dependencies in the boot layer, and they conflict with the libs of the DW service
+    return false;
   }
 
   @Override
