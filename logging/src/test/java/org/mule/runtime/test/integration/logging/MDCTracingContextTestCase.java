@@ -14,6 +14,7 @@ import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExpor
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_ENABLED;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_ENDPOINT;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_TYPE;
+import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_OTEL_TRACES_SAMPLER;
 import static org.mule.test.allure.AllureConstants.Logging.LOGGING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.DEFAULT_PROFILING_SERVICE;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.TRACING_CONFIGURATION;
@@ -79,6 +80,10 @@ public class MDCTracingContextTestCase extends AbstractFakeMuleServerTestCase {
   @Rule
   public SystemProperty defaultTracingLevel =
       new SystemProperty(MULE_OPEN_TELEMETRY_EXPORTER_DEFAULT_TRACING_LEVEL, "monitoring");
+
+  @Rule
+  public SystemProperty defaultSampler =
+      new SystemProperty(MULE_OPEN_TELEMETRY_OTEL_TRACES_SAMPLER, "always_on");
 
   @Rule
   public SystemProperty propagateDisposeError = new SystemProperty(PUT_TRACE_ID_AND_SPAN_ID_IN_MDC_PROPERTY, TRUE.toString());

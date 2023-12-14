@@ -11,6 +11,7 @@ import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExpor
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_BATCH_SCHEDULED_DELAY;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_ENABLED;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_MAX_BATCH_SIZE;
+import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_OTEL_TRACES_SAMPLER;
 import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.OPEN_TELEMETRY_EXPORTER;
 
@@ -61,6 +62,10 @@ public class OpenTelemetryGracefulShutdownTestCase extends MuleArtifactFunctiona
   // A size higher than the generated spans prevents export triggering
   @Rule
   public SystemProperty batchQueueSize = new SystemProperty(MULE_OPEN_TELEMETRY_EXPORTER_BATCH_QUEUE_SIZE, "3");
+
+  @Rule
+  public SystemProperty defaultSampler =
+      new SystemProperty(MULE_OPEN_TELEMETRY_OTEL_TRACES_SAMPLER, "always_on");
 
   private static final SpanExporterConfiguration privilegedConfiguration = key -> {
     // A higher time than the test time prevents export triggering
