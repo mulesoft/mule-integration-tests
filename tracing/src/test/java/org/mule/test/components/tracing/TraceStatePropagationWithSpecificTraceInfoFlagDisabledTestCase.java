@@ -14,6 +14,7 @@ import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExpor
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_ENDPOINT;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_TYPE;
 import static org.mule.runtime.api.util.MuleSystemProperties.TRACING_LEVEL_CONFIGURATION_PATH;
+import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_OTEL_TRACES_SAMPLER;
 import static org.mule.runtime.tracing.level.api.config.TracingLevel.DEBUG;
 import static org.mule.runtime.tracing.level.api.config.TracingLevel.MONITORING;
 import static org.mule.runtime.tracing.level.api.config.TracingLevel.OVERVIEW;
@@ -97,6 +98,10 @@ public class TraceStatePropagationWithSpecificTraceInfoFlagDisabledTestCase exte
   @Rule
   public SystemProperty addAncestorSpanId =
       new SystemProperty(ADD_MULE_SPECIFIC_TRACING_INFORMATION_IN_TRACE_STATE_PROPERTY, "false");
+
+  @Rule
+  public SystemProperty defaultSampler =
+      new SystemProperty(MULE_OPEN_TELEMETRY_OTEL_TRACES_SAMPLER, "always_on");
 
   @Rule
   public DynamicPort httpPort = new DynamicPort("port");

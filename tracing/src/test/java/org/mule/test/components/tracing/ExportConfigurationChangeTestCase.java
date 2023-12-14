@@ -39,7 +39,6 @@ import static com.linecorp.armeria.common.HttpStatus.REQUEST_TIMEOUT;
 
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
-import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.tck.probe.JUnitProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy;
@@ -74,10 +73,6 @@ import org.junit.Test;
 @Story(DEFAULT_CORE_EVENT_TRACER)
 public class ExportConfigurationChangeTestCase extends
     MuleArtifactFunctionalTestCase implements OpenTelemetryTracingTestRunnerConfigAnnotation {
-
-  @Rule
-  public SystemProperty defaultSampler =
-      new SystemProperty(MULE_OPEN_TELEMETRY_OTEL_TRACES_SAMPLER, "always_on");
 
   private static final String EXPECTED_FLOW_SPAN_NAME = "mule:flow";
   private static final String EXPECTED_SET_PAYLOAD_SPAN_NAME = "mule:set-payload";
@@ -124,6 +119,7 @@ public class ExportConfigurationChangeTestCase extends
                 "http://localhost:" + originalServer.httpPort());
     setProperty(TEST_LEVEL, MONITORING.name());
     setProperty(MULE_OPEN_TELEMETRY_EXPORTER_CONFIGURATION_WATCHER_DEFAULT_DELAY_PROPERTY, "100");
+    setProperty(MULE_OPEN_TELEMETRY_OTEL_TRACES_SAMPLER, "always_on");
   }
 
   @After
@@ -133,6 +129,7 @@ public class ExportConfigurationChangeTestCase extends
     clearProperty(MULE_OPEN_TELEMETRY_EXPORTER_CONFIGURATION_WATCHER_DEFAULT_DELAY_PROPERTY);
     clearProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENABLED);
     clearProperty(TEST_LEVEL);
+    clearProperty(MULE_OPEN_TELEMETRY_OTEL_TRACES_SAMPLER);
   }
 
   @Test
