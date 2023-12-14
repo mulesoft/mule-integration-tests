@@ -31,7 +31,7 @@ public class LookupNullObjectTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  public void noTransactionManagerThroughRegistryLookup() {
+  public void notFoundThroughRegistryLookup() {
     assertThat(registry.lookupByType(IAmSearchingForYou.class).isPresent(), is(false));
     assertThat(registry.lookupAllByType(IAmSearchingForYou.class), hasSize(0));
   }
