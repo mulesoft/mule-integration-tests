@@ -37,7 +37,6 @@ import static com.linecorp.armeria.common.HttpResponse.from;
 import static com.linecorp.armeria.common.HttpStatus.OK;
 import static com.linecorp.armeria.common.HttpStatus.REQUEST_TIMEOUT;
 
-import org.junit.Rule;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
 import org.mule.tck.junit4.rule.SystemProperty;
@@ -68,6 +67,7 @@ import io.qameta.allure.Story;
 import org.jetbrains.annotations.NotNull;
 import org.junit.After;
 import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 
 @Feature(PROFILING)
