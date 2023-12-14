@@ -10,6 +10,7 @@ import static org.mule.runtime.core.api.util.IOUtils.getResourceAsUrl;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_CONFIGURATION_WATCHER_DEFAULT_DELAY_PROPERTY;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_ENABLED;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_ENDPOINT;
+import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_OTEL_TRACES_SAMPLER;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_TRACING_CONFIGURATION_FILE_PATH;
 import static org.mule.runtime.tracing.level.api.config.TracingLevel.MONITORING;
 import static org.mule.runtime.tracing.level.api.config.TracingLevel.OVERVIEW;
@@ -36,8 +37,10 @@ import static com.linecorp.armeria.common.HttpResponse.from;
 import static com.linecorp.armeria.common.HttpStatus.OK;
 import static com.linecorp.armeria.common.HttpStatus.REQUEST_TIMEOUT;
 
+import org.junit.Rule;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
+import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.tck.probe.JUnitProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy;
@@ -71,6 +74,10 @@ import org.junit.Test;
 @Story(DEFAULT_CORE_EVENT_TRACER)
 public class ExportConfigurationChangeTestCase extends
     MuleArtifactFunctionalTestCase implements OpenTelemetryTracingTestRunnerConfigAnnotation {
+
+  @Rule
+  public SystemProperty defaultSampler =
+      new SystemProperty(MULE_OPEN_TELEMETRY_OTEL_TRACES_SAMPLER, "always_on");
 
   private static final String EXPECTED_FLOW_SPAN_NAME = "mule:flow";
   private static final String EXPECTED_SET_PAYLOAD_SPAN_NAME = "mule:set-payload";
