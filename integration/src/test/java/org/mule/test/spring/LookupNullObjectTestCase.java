@@ -13,6 +13,8 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
+import io.qameta.allure.Description;
+import io.qameta.allure.Issue;
 import org.mule.test.AbstractIntegrationTestCase;
 
 
@@ -31,6 +33,8 @@ public class LookupNullObjectTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
+  @Issue("MULE-16899")
+  @Description("Tests that lookup for a class in the registry, that has no match, doesn't result in a ClassCastException")
   public void notFoundThroughRegistryLookup() {
     assertThat(registry.lookupByType(IAmSearchingForYou.class).isPresent(), is(false));
     assertThat(registry.lookupAllByType(IAmSearchingForYou.class), hasSize(0));
