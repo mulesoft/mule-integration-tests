@@ -6,8 +6,6 @@
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
 
-    <bean class="org.mule.extension.spring.api.security.PreAuthenticatedAuthenticationProvider" name="authenticationProvider"/>
-
     <ss:authentication-manager alias="authenticationManager">
         <ss:authentication-provider>
             <ss:user-service id="userService">
