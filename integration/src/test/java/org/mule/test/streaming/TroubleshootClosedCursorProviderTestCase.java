@@ -15,11 +15,14 @@ import static java.nio.charset.Charset.defaultCharset;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import static org.apache.commons.io.FileUtils.writeStringToFile;
+import static org.apache.commons.lang3.JavaVersion.JAVA_17;
+import static org.apache.commons.lang3.SystemUtils.isJavaVersionAtLeast;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeThat;
 
 import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.exception.MuleException;
@@ -44,8 +47,9 @@ import java.util.concurrent.TimeoutException;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
+import org.hamcrest.core.Is;
+import org.junit.BeforeClass;
 import org.junit.ClassRule;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -53,8 +57,13 @@ import org.junit.rules.TemporaryFolder;
 
 @Feature(STREAMING)
 @Story(STREAM_MANAGEMENT)
-@Ignore("TD-0147155")
 public class TroubleshootClosedCursorProviderTestCase extends AbstractIntegrationTestCase {
+
+  @BeforeClass
+  public static void skipForJava17() {
+    assumeThat("TD-0147155: When running on Java 17, File Commons fails because it depends on CGLib",
+               isJavaVersionAtLeast(JAVA_17), Is.is(false));
+  }
 
   private static final String FILE_NAME = "dummy.txt";
 
