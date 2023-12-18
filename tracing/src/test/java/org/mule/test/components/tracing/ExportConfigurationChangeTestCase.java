@@ -10,7 +10,6 @@ import static org.mule.runtime.core.api.util.IOUtils.getResourceAsUrl;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_CONFIGURATION_WATCHER_DEFAULT_DELAY_PROPERTY;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_ENABLED;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_ENDPOINT;
-import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_OTEL_TRACES_SAMPLER;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_TRACING_CONFIGURATION_FILE_PATH;
 import static org.mule.runtime.tracing.level.api.config.TracingLevel.MONITORING;
 import static org.mule.runtime.tracing.level.api.config.TracingLevel.OVERVIEW;
@@ -66,7 +65,6 @@ import io.qameta.allure.Story;
 import org.jetbrains.annotations.NotNull;
 import org.junit.After;
 import org.junit.ClassRule;
-import org.junit.Rule;
 import org.junit.Test;
 
 @Feature(PROFILING)
@@ -119,7 +117,6 @@ public class ExportConfigurationChangeTestCase extends
                 "http://localhost:" + originalServer.httpPort());
     setProperty(TEST_LEVEL, MONITORING.name());
     setProperty(MULE_OPEN_TELEMETRY_EXPORTER_CONFIGURATION_WATCHER_DEFAULT_DELAY_PROPERTY, "100");
-    setProperty(MULE_OPEN_TELEMETRY_OTEL_TRACES_SAMPLER, "always_on");
   }
 
   @After
@@ -129,7 +126,6 @@ public class ExportConfigurationChangeTestCase extends
     clearProperty(MULE_OPEN_TELEMETRY_EXPORTER_CONFIGURATION_WATCHER_DEFAULT_DELAY_PROPERTY);
     clearProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENABLED);
     clearProperty(TEST_LEVEL);
-    clearProperty(MULE_OPEN_TELEMETRY_OTEL_TRACES_SAMPLER);
   }
 
   @Test
