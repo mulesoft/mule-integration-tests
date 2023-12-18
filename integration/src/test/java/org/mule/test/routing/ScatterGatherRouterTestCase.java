@@ -6,6 +6,16 @@
  */
 package org.mule.test.routing;
 
+import static org.mule.functional.junit4.matchers.ThrowableMessageMatcher.hasMessage;
+import static org.mule.runtime.api.metadata.MediaType.ANY;
+import static org.mule.runtime.api.metadata.MediaType.JSON;
+import static org.mule.runtime.api.metadata.MediaType.TEXT;
+import static org.mule.tck.junit4.matcher.HasClassInHierarchy.withClassName;
+import static org.mule.test.allure.AllureConstants.ExecutionEngineFeature.ExecutionEngineStory.MAX_CONCURRENCY;
+import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
+import static org.mule.test.allure.AllureConstants.RoutersFeature.ScatterGatherStory.SCATTER_GATHER;
+import static org.mule.test.routing.ThreadCaptor.getCapturedThreads;
+
 import static java.lang.System.lineSeparator;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
@@ -20,14 +30,6 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.junit.rules.ExpectedException.none;
-import static org.mule.functional.junit4.matchers.ThrowableMessageMatcher.hasMessage;
-import static org.mule.runtime.api.metadata.MediaType.ANY;
-import static org.mule.runtime.api.metadata.MediaType.JSON;
-import static org.mule.runtime.api.metadata.MediaType.TEXT;
-import static org.mule.tck.junit4.matcher.HasClassInHierarchy.withClassName;
-import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
-import static org.mule.test.allure.AllureConstants.RoutersFeature.ScatterGatherStory.SCATTER_GATHER;
-import static org.mule.test.routing.ThreadCaptor.getCapturedThreads;
 
 import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.exception.ComposedErrorException;
@@ -47,10 +49,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import org.hamcrest.Matchers;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import org.hamcrest.Matchers;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
@@ -177,6 +180,7 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
+  @Story(MAX_CONCURRENCY)
   @Description("Only a single thread is used to process all routes when configured with maxConcurrency=1.")
   public void sequentialProcessing() throws Exception {
     flowRunner("sequentialProcessing").withVariable("latch", new Latch()).run();

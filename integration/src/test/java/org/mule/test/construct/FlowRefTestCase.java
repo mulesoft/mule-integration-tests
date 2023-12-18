@@ -37,6 +37,7 @@ import static org.mule.tck.probe.PollingProber.probe;
 import static org.mule.test.allure.AllureConstants.ComponentsFeature.CORE_COMPONENTS;
 import static org.mule.test.allure.AllureConstants.ComponentsFeature.FlowReferenceStory.FLOW_REFERENCE;
 import static org.mule.test.allure.AllureConstants.ExecutionEngineFeature.ExecutionEngineStory.BACKPRESSURE;
+import static org.mule.test.allure.AllureConstants.ExecutionEngineFeature.ExecutionEngineStory.MAX_CONCURRENCY;
 
 import org.mule.functional.api.exception.ExpectedError;
 import org.mule.runtime.api.component.AbstractComponent;
@@ -58,6 +59,7 @@ import org.mule.service.http.TestHttpClient;
 import org.mule.tck.junit4.matcher.ErrorTypeMatcher;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.test.allure.AllureConstants.ExecutionEngineFeature.ExecutionEngineStory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,6 +73,7 @@ import javax.inject.Inject;
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Issue;
+import io.qameta.allure.Stories;
 import io.qameta.allure.Story;
 
 import org.junit.After;
@@ -383,7 +386,7 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
 
   @Test
   @Issue("MULE-18178")
-  @Story(BACKPRESSURE)
+  @Stories({ @Story(BACKPRESSURE), @Story(MAX_CONCURRENCY)})
   @Description("The maxConcurrency of a target flow called via flow-ref is enforced")
   public void backpressureFlowRefMaxConcurrencyStatic() throws Exception {
     flowRunner("backpressureFlowRefOuterMaxConcurrencyStatic").dispatchAsync(asyncFlowRunnerScheduler);
