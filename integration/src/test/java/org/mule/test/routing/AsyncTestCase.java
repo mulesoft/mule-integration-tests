@@ -6,11 +6,6 @@
  */
 package org.mule.test.routing;
 
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.util.MuleSystemProperties.MULE_FLOW_TRACE;
 import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.startIfNeeded;
 import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.stopIfNeeded;
@@ -19,6 +14,13 @@ import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjecti
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.AsyncStory.ASYNC;
 import static org.mule.test.allure.AllureConstants.TransactionFeature.LocalStory.LOCAL_TRANSACTION;
+
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.startsWith;
+import static org.junit.Assert.assertThat;
 
 import org.mule.functional.api.flow.FlowRunner;
 import org.mule.runtime.api.component.location.Location;
@@ -29,6 +31,7 @@ import org.mule.runtime.core.privileged.event.BaseEventContext;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.test.allure.AllureConstants.ExecutionEngineFeature.ExecutionEngineStory;
 import org.mule.tests.api.TestQueueManager;
 
 import java.util.concurrent.CountDownLatch;
@@ -43,6 +46,7 @@ import org.junit.Test;
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Issue;
+import io.qameta.allure.Stories;
 import io.qameta.allure.Story;
 
 @Feature(ROUTERS)
@@ -95,7 +99,7 @@ public class AsyncTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  @Story(BACKPRESSURE)
+  @Stories({@Story(BACKPRESSURE), @Story(ExecutionEngineStory.MAX_CONCURRENCY)})
   @Description("Assert that async maxConcurrency is honored")
   public void withMaxConcurrency() throws Exception {
     testAsyncMaxConcurrency("with-max-concurrency");
@@ -115,14 +119,14 @@ public class AsyncTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  @Story(BACKPRESSURE)
+  @Stories({@Story(BACKPRESSURE), @Story(ExecutionEngineStory.MAX_CONCURRENCY)})
   @Description("Assert that if no maxConcurrency is configured for an async, the value from the flow is inherited")
   public void withFlowMaxConcurrency() throws Exception {
     testAsyncMaxConcurrency("with-flow-max-concurrency");
   }
 
   @Test
-  @Story(BACKPRESSURE)
+  @Stories({@Story(BACKPRESSURE), @Story(ExecutionEngineStory.MAX_CONCURRENCY)})
   @Description("Assert that if both flow and async have maxConcurrency, they are independent")
   public void withLowerFlowMaxConcurrency() throws Exception {
     testAsyncMaxConcurrency("with-lower-flow-max-concurrency");

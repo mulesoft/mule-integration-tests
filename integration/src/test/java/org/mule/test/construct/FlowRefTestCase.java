@@ -6,22 +6,6 @@
  */
 package org.mule.test.construct;
 
-import static java.lang.Runtime.getRuntime;
-import static java.lang.String.format;
-import static java.util.Collections.synchronizedList;
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static java.util.stream.Collectors.toList;
-import static org.apache.logging.log4j.core.util.Throwables.getRootCause;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.endsWith;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 import static org.mule.functional.api.exception.ExpectedError.none;
 import static org.mule.functional.junit4.matchers.ThrowableMessageMatcher.hasMessage;
 import static org.mule.runtime.api.metadata.DataType.TEXT_STRING;
@@ -37,6 +21,25 @@ import static org.mule.tck.probe.PollingProber.probe;
 import static org.mule.test.allure.AllureConstants.ComponentsFeature.CORE_COMPONENTS;
 import static org.mule.test.allure.AllureConstants.ComponentsFeature.FlowReferenceStory.FLOW_REFERENCE;
 import static org.mule.test.allure.AllureConstants.ExecutionEngineFeature.ExecutionEngineStory.BACKPRESSURE;
+import static org.mule.test.allure.AllureConstants.ExecutionEngineFeature.ExecutionEngineStory.MAX_CONCURRENCY;
+
+import static java.lang.Runtime.getRuntime;
+import static java.lang.String.format;
+import static java.util.Collections.synchronizedList;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static java.util.stream.Collectors.toList;
+
+import static org.apache.logging.log4j.core.util.Throwables.getRootCause;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.endsWith;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 import org.mule.functional.api.exception.ExpectedError;
 import org.mule.runtime.api.component.AbstractComponent;
@@ -50,6 +53,7 @@ import org.mule.runtime.api.scheduler.Scheduler;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
+import org.mule.runtime.core.api.processor.ReactiveProcessor.ProcessingType;
 import org.mule.runtime.http.api.HttpService;
 import org.mule.runtime.http.api.client.HttpRequestOptions;
 import org.mule.runtime.http.api.domain.message.request.HttpRequest;
@@ -68,16 +72,17 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.inject.Inject;
 
-import io.qameta.allure.Description;
-import io.qameta.allure.Feature;
-import io.qameta.allure.Issue;
-import io.qameta.allure.Story;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
+
+import io.qameta.allure.Description;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
+import io.qameta.allure.Stories;
+import io.qameta.allure.Story;
 
 @Feature(CORE_COMPONENTS)
 @Story(FLOW_REFERENCE)
@@ -383,7 +388,7 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
 
   @Test
   @Issue("MULE-18178")
-  @Story(BACKPRESSURE)
+  @Stories({@Story(BACKPRESSURE), @Story(MAX_CONCURRENCY)})
   @Description("The maxConcurrency of a target flow called via flow-ref is enforced")
   public void backpressureFlowRefMaxConcurrencyStatic() throws Exception {
     flowRunner("backpressureFlowRefOuterMaxConcurrencyStatic").dispatchAsync(asyncFlowRunnerScheduler);
