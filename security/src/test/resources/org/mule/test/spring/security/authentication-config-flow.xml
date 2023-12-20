@@ -12,8 +12,6 @@
 
     <spring:security-manager>
         <spring:delegate-security-provider name="memory-dao" delegate-ref="authenticationManager"/>
-        <spring:delegate-security-provider name="memory-dao-with-provider" delegate-ref="authenticationManager" 
-            authenticationProvider-ref="authenticationProvider"  />
     </spring:security-manager>
 
     <http:listener-config name="listenerConfig">
