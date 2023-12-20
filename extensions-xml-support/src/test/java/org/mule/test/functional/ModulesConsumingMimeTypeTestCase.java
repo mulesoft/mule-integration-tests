@@ -25,19 +25,21 @@ import org.mule.tck.junit4.rule.SystemProperty;
 import java.io.File;
 import java.io.InputStream;
 
-import io.qameta.allure.Feature;
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.FileUtils;
+import org.json.XML;
+import org.mortbay.util.ajax.JSON;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import io.qameta.allure.Feature;
+
 @Feature(XML_SDK)
-@Ignore("TD-0147155")
 public class ModulesConsumingMimeTypeTestCase extends AbstractCeXmlExtensionMuleArtifactFunctionalTestCase {
 
   private static final String JSON_CONTENT_FILE = "{\n"
