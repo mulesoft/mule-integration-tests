@@ -13,7 +13,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.core.api.config.MuleProperties.OBJECT_SECURITY_MANAGER;
 
-import org.mule.extension.spring.api.security.PreAuthenticatedAuthenticationProvider;
 import org.mule.extension.spring.api.security.SpringProviderAdapter;
 import org.mule.extension.spring.api.security.UserAndPasswordAuthenticationProvider;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
@@ -45,10 +44,9 @@ public class AuthenticationNamespaceHandlerFlowTestCase extends MuleArtifactFunc
     assertNotNull(securityManager);
 
     Collection<SecurityProvider> providers = securityManager.getProviders();
-    assertThat(providers, hasSize(2));
+    assertThat(providers, hasSize(1));
 
     assertThat(containsSecurityProvider(providers, UserAndPasswordAuthenticationProvider.class), is(true));
-    assertThat(containsSecurityProvider(providers, PreAuthenticatedAuthenticationProvider.class), is(true));
   }
 
   private boolean containsSecurityProvider(Collection<SecurityProvider> providers, Class authenticationProviderClass) {
