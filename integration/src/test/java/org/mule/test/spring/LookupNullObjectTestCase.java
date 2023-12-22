@@ -9,19 +9,15 @@ package org.mule.test.spring;
 import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.LIFECYCLE_AND_DEPENDENCY_INJECTION;
 import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.NULL_OBJECTS_IN_SPRING5_REGISTRY;
 
-import static org.apache.commons.lang3.JavaVersion.JAVA_11;
-import static org.apache.commons.lang3.SystemUtils.isJavaVersionAtMost;
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assume.assumeTrue;
 
+import io.qameta.allure.Description;
+import io.qameta.allure.Issue;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import javax.transaction.TransactionManager;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import io.qameta.allure.Feature;
@@ -31,26 +27,20 @@ import io.qameta.allure.Story;
 @Story(NULL_OBJECTS_IN_SPRING5_REGISTRY)
 public class LookupNullObjectTestCase extends AbstractIntegrationTestCase {
 
-  // TODO W-14338813
-  @BeforeClass
-  public static void ignoreJava17() {
-    assumeTrue(isJavaVersionAtMost(JAVA_11));
-  }
-
   @Override
   protected String[] getConfigFiles() {
     return new String[] {};
   }
 
   @Test
-  public void noTransactionManagerThroughMuleContext() {
-    TransactionManager txManager = muleContext.getTransactionManager();
-    assertThat(txManager, is(nullValue()));
+  @Issue("MULE-16899")
+  @Description("Tests that lookup for a class in the registry, that has no match, doesn't result in a ClassCastException")
+  public void notFoundThroughRegistryLookup() {
+    assertThat(registry.lookupByType(IAmSearchingForYou.class).isPresent(), is(false));
+    assertThat(registry.lookupAllByType(IAmSearchingForYou.class), hasSize(0));
   }
 
-  @Test
-  public void noTransactionManagerThroughRegistryLookup() {
-    assertThat(registry.lookupByType(TransactionManager.class).isPresent(), is(false));
-    assertThat(registry.lookupAllByType(TransactionManager.class), hasSize(0));
+  public interface IAmSearchingForYou {
+
   }
 }

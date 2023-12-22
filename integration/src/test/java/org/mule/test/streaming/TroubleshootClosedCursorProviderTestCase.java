@@ -15,14 +15,14 @@ import static java.nio.charset.Charset.defaultCharset;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import static org.apache.commons.io.FileUtils.writeStringToFile;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.isA;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 
 import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.exception.MuleException;
+import org.mule.runtime.api.streaming.CursorProvider;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.runtime.core.api.processor.Processor;
@@ -38,22 +38,19 @@ import org.mule.test.AbstractIntegrationTestCase;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.concurrent.TimeoutException;
 
-import io.qameta.allure.Feature;
-import io.qameta.allure.Story;
 import org.junit.ClassRule;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
+
 @Feature(STREAMING)
 @Story(STREAM_MANAGEMENT)
-@Ignore("TD-0147155")
 public class TroubleshootClosedCursorProviderTestCase extends AbstractIntegrationTestCase {
 
   private static final String FILE_NAME = "dummy.txt";
@@ -117,13 +114,8 @@ public class TroubleshootClosedCursorProviderTestCase extends AbstractIntegratio
     @Override
     public CoreEvent process(CoreEvent event) throws MuleException {
       Object mcp = event.getMessage().getPayload().getValue();
-      try {
-        Method close = mcp.getClass().getMethod("close");
-        assertNotNull("Expected a closeable payload", close);
-        close.invoke(mcp);
-      } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-        fail(e.getMessage());
-      }
+      assertThat(mcp, instanceOf(CursorProvider.class));
+      ((CursorProvider) mcp).close();
       return event;
     }
   }

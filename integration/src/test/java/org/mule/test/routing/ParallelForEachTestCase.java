@@ -12,6 +12,7 @@ import static org.mule.runtime.core.api.error.Errors.ComponentIdentifiers.Handle
 import static org.mule.runtime.core.api.error.Errors.ComponentIdentifiers.Handleable.UNKNOWN;
 import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
 import static org.mule.tck.junit4.matcher.HasClassInHierarchy.withClassName;
+import static org.mule.test.allure.AllureConstants.ExecutionEngineFeature.ExecutionEngineStory.MAX_CONCURRENCY;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 import static org.mule.test.allure.AllureConstants.ScopeFeature.ParallelForEachStory.PARALLEL_FOR_EACH;
 import static org.mule.test.routing.ThreadCaptor.getCapturedThreads;
@@ -194,6 +195,7 @@ public class ParallelForEachTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
+  @Story(MAX_CONCURRENCY)
   @Description("Only a single thread is used to process all routes when configured with maxConcurrency=1.")
   public void sequentialProcessing() throws Exception {
     flowRunner("sequentialProcessing").withPayload(fruitList).withVariable("latch", new Latch()).run();
