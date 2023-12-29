@@ -48,6 +48,8 @@
         <muleDependenciesVersion>1.0.21</muleDependenciesVersion>
         <muleTestComponentsVersion>4.6.0-rc3</muleTestComponentsVersion>
 
+        <muleBomVersion>4.6.0-rc3</muleBomVersion>
+
         <protobufVersion>3.21.9</protobufVersion>
         <openTelemetryProtoVersion>0.3.0</openTelemetryProtoVersion>
     </properties>
