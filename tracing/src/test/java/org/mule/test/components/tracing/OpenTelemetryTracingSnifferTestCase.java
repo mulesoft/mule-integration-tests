@@ -6,8 +6,10 @@
  */
 package org.mule.test.components.tracing;
 
+import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.ALWAYS_ON_SAMPLER;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_DEFAULT_TRACING_LEVEL;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_ENABLED;
+import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_OTEL_TRACES_SAMPLER;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.USE_MULE_OPEN_TELEMETRY_EXPORTER_SNIFFER;
 
 import static java.lang.Boolean.TRUE;
@@ -29,6 +31,5 @@ public abstract class OpenTelemetryTracingSnifferTestCase extends MuleArtifactFu
   public SystemProperty enableSniffing = new SystemProperty(USE_MULE_OPEN_TELEMETRY_EXPORTER_SNIFFER, TRUE.toString());
 
   @Rule
-  public SystemProperty defaultTracingLevel =
-      new SystemProperty(MULE_OPEN_TELEMETRY_EXPORTER_DEFAULT_TRACING_LEVEL, "monitoring");
+  public SystemProperty doNotSample = new SystemProperty(MULE_OPEN_TELEMETRY_OTEL_TRACES_SAMPLER, ALWAYS_ON_SAMPLER);
 }
