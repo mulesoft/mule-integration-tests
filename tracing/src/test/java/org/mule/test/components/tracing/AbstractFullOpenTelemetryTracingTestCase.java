@@ -54,7 +54,7 @@ import org.testcontainers.images.PullPolicy;
 import org.testcontainers.utility.DockerImageName;
 
 @RunnerDelegateTo(Parameterized.class)
-public abstract class AbstractOpenTelemetryTracingTestCase extends
+public abstract class AbstractFullOpenTelemetryTracingTestCase extends
     MuleArtifactFunctionalTestCase implements OpenTelemetryTracingTestRunnerConfigAnnotation {
 
   private static final DockerImageName COLLECTOR_IMAGE =
@@ -93,7 +93,7 @@ public abstract class AbstractOpenTelemetryTracingTestCase extends
     });
   }
 
-  public AbstractOpenTelemetryTracingTestCase(String exporterType, String schema, int port, String path, boolean secure) {
+  public AbstractFullOpenTelemetryTracingTestCase(String exporterType, String schema, int port, String path, boolean secure) {
     this.exporterType = exporterType;
     this.schema = schema;
     this.port = port;
