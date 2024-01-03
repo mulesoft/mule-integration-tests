@@ -15,7 +15,7 @@ import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExpor
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_ENABLED;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_OTEL_TRACES_SAMPLER;
 
-public class OpenTelemetryTracingTestCase extends MuleArtifactFunctionalTestCase {
+public abstract class OpenTelemetryTracingTestCase extends MuleArtifactFunctionalTestCase {
 
   @Rule
   public SystemProperty enableTracing = new SystemProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENABLED, TRUE.toString());
