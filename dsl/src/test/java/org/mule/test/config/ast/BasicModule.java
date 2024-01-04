@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.inject.Named;
 import javax.inject.Singleton;
 
 import com.google.inject.AbstractModule;
@@ -80,13 +79,6 @@ class BasicModule extends AbstractModule {
   @Singleton
   public Optional<ArtifactAstDependencyGraphProvider> provideArtifactAstDependencyGraphProvider() {
     return of(new DefaultArtifactAstDependencyGraphProvider());
-  }
-
-  @Provides
-  @Singleton
-  @Named("_compatibilityPluginInstalled")
-  public Optional<Object> provideOptionalCompatibilityPluginInstalled(Object object) {
-    return of(object);
   }
 
   @Provides
