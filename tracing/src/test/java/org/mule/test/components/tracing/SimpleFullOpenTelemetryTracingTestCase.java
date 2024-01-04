@@ -32,7 +32,7 @@ import org.junit.Test;
 
 @Feature(PROFILING)
 @Story(DEFAULT_CORE_EVENT_TRACER)
-public class SimpleOpenTelemetryTracingTestCase extends AbstractOpenTelemetryTracingTestCase {
+public class SimpleFullOpenTelemetryTracingTestCase extends AbstractFullOpenTelemetryTracingTestCase {
 
   @Rule
   public SystemProperty defaultTracingLevel =
@@ -47,7 +47,7 @@ public class SimpleOpenTelemetryTracingTestCase extends AbstractOpenTelemetryTra
   private static final String EXPECTED_SET_LOGGING_VARIABLE_SPAN_NAME = "tracing:set-logging-variable";
   private static final String SIMPLE_FLOW = "simple-flow";
   private static final String CORRELATION_ID_KEY = "correlation.id";
-  private static final String TEST_ARTIFACT_ID = "SimpleOpenTelemetryTracingTestCase#testSimpleFlow";
+  private static final String TEST_ARTIFACT_ID = "SimpleFullOpenTelemetryTracingTestCase#testSimpleFlow";
   private static final String FLOW_LOCATION = "simple-flow";
   private static final String SET_PAYLOAD_LOCATION = "simple-flow/processors/2";
   private static final String SET_VARIABLE_LOCATION = "simple-flow/processors/0/processors/0";
@@ -57,7 +57,7 @@ public class SimpleOpenTelemetryTracingTestCase extends AbstractOpenTelemetryTra
   private static final String TRACE_VAR_VALUE = "Hello World!";
   private static final String CORRELATION_ID_CUSTOM_VALUE = "Fua";
 
-  public SimpleOpenTelemetryTracingTestCase(String exporterType, String schema, int port, String path, boolean secure) {
+  public SimpleFullOpenTelemetryTracingTestCase(String exporterType, String schema, int port, String path, boolean secure) {
     super(exporterType, schema, port, path, secure);
   }
 
