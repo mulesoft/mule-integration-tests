@@ -10,10 +10,12 @@ package org.mule.runtime.test.integration.logging;
 import static org.mule.runtime.api.util.MuleSystemProperties.ENABLE_PROFILING_SERVICE_PROPERTY;
 import static org.mule.runtime.api.util.MuleSystemProperties.PUT_TRACE_ID_AND_SPAN_ID_IN_MDC_PROPERTY;
 import static org.mule.runtime.test.integration.logging.plugin.TestPluginsCatalog.loggingExtensionPlugin;
+import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.ALWAYS_ON_SAMPLER;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_DEFAULT_TRACING_LEVEL;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_ENABLED;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_ENDPOINT;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_TYPE;
+import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_OTEL_TRACES_SAMPLER;
 import static org.mule.test.allure.AllureConstants.Logging.LOGGING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.DEFAULT_PROFILING_SERVICE;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.TRACING_CONFIGURATION;
@@ -77,10 +79,6 @@ import io.qameta.allure.Story;
 public class MDCTracingContextTestCase extends AbstractFakeMuleServerTestCase {
 
   @Rule
-  public SystemProperty defaultTracingLevel =
-      new SystemProperty(MULE_OPEN_TELEMETRY_EXPORTER_DEFAULT_TRACING_LEVEL, "monitoring");
-
-  @Rule
   public SystemProperty propagateDisposeError = new SystemProperty(PUT_TRACE_ID_AND_SPAN_ID_IN_MDC_PROPERTY, TRUE.toString());
 
   private static final int TIMEOUT_MILLIS = 30000;
@@ -90,6 +88,8 @@ public class MDCTracingContextTestCase extends AbstractFakeMuleServerTestCase {
 
   @Rule
   public SystemProperty openTelemetryExporterEnabled = new SystemProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENABLED, TRUE.toString());
+  @Rule
+  public SystemProperty disableSampling = new SystemProperty(MULE_OPEN_TELEMETRY_OTEL_TRACES_SAMPLER, ALWAYS_ON_SAMPLER);
   @Rule
   public SystemProperty openTelemetryExporterType = new SystemProperty(MULE_OPEN_TELEMETRY_EXPORTER_TYPE, "HTTP");
   @Rule
