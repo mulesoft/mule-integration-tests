@@ -55,7 +55,7 @@ import org.testcontainers.utility.DockerImageName;
 
 @RunnerDelegateTo(Parameterized.class)
 public abstract class AbstractFullOpenTelemetryTracingTestCase extends
-    MuleArtifactFunctionalTestCase implements OpenTelemetryTracingTestRunnerConfigAnnotation {
+    OpenTelemetryTracingTestCase implements OpenTelemetryTracingTestRunnerConfigAnnotation {
 
   private static final DockerImageName COLLECTOR_IMAGE =
       DockerImageName.parse("ghcr.io/open-telemetry/opentelemetry-java/otel-collector");
