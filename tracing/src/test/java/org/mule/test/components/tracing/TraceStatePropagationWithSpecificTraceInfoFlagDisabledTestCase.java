@@ -88,7 +88,7 @@ import org.junit.runners.Parameterized;
 @Feature(PROFILING)
 @Story(DEFAULT_CORE_EVENT_TRACER)
 public class TraceStatePropagationWithSpecificTraceInfoFlagDisabledTestCase extends
-    MuleArtifactFunctionalTestCase implements OpenTelemetryTracingTestRunnerConfigAnnotation {
+    OpenTelemetryTracingTestCase implements OpenTelemetryTracingTestRunnerConfigAnnotation {
 
   public static final String ROOT_SPAN_NAME = "rootSpan";
   private final String traceLevel;
@@ -124,9 +124,6 @@ public class TraceStatePropagationWithSpecificTraceInfoFlagDisabledTestCase exte
   private final String type;
   private final String path;
   private int expectedSpansCount;
-
-  @Rule
-  public SystemProperty openTelemetryExporterEnabled = new SystemProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENABLED, TRUE.toString());
 
   @Rule
   public SystemProperty openTelemetryExporterType = new SystemProperty(MULE_OPEN_TELEMETRY_EXPORTER_TYPE, "HTTP");
