@@ -10,6 +10,7 @@ import static org.mule.runtime.ast.api.util.MuleAstUtils.validatorBuilder;
 import static org.mule.runtime.ast.api.validation.Validation.Level.ERROR;
 import static org.mule.runtime.core.api.extension.provider.RuntimeExtensionModelProvider.discoverRuntimeExtensionModels;
 import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.initialiseIfNeeded;
+import static org.mule.tck.junit4.matcher.ast.ValidationResultItemMessageMatcher.message;
 import static org.mule.test.allure.AllureConstants.ArtifactAst.ARTIFACT_AST;
 import static org.mule.test.allure.AllureConstants.ExpressionLanguageFeature.EXPRESSION_LANGUAGE;
 import static org.mule.test.allure.AllureConstants.MuleDsl.DslValidationStory.DSL_VALIDATION_STORY;
@@ -19,7 +20,7 @@ import static java.util.stream.Collectors.toList;
 import static com.google.inject.Guice.createInjector;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
+import static org.hamcrest.core.IsIterableContaining.hasItem;
 
 import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.ast.api.ArtifactAst;
@@ -77,10 +78,7 @@ public class ArtifactAstValidationsTestCase extends AbstractMuleContextTestCase 
 
     List<ValidationResultItem> errors = doValidate(ast);
 
-    assertThat(errors, hasSize(1));
-
-    ValidationResultItem error = errors.get(0);
-    assertThat(error.getMessage(), equalTo("Missing Expression"));
+    assertThat(errors, hasItem(message(equalTo("Missing Expression"))));
   }
 
   protected List<ValidationResultItem> doValidate(ArtifactAst ast) throws ConfigurationException {
