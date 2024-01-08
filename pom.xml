@@ -43,7 +43,7 @@
         <apacheHttpClientVersion>4.5.13</apacheHttpClientVersion>
         <assertJVersion>3.5.2</assertJVersion>
         <jacksonVersion>2.15.0</jacksonVersion>
-        <jettyVersion>9.0.7.v20131107</jettyVersion>
+        <jettyVersion>9.4.53.v20231009</jettyVersion>
         <springVersion>5.1.6.RELEASE</springVersion>
         <wireMockVersion>1.58</wireMockVersion>
 
