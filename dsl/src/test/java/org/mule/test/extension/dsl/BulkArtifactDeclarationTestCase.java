@@ -67,6 +67,7 @@ import org.mule.runtime.config.api.dsl.model.DslElementModelFactory;
 import org.mule.runtime.core.api.extension.provider.MuleExtensionModelProvider;
 import org.mule.runtime.extension.api.dsl.syntax.DslElementSyntax;
 import org.mule.runtime.extension.api.dsl.syntax.resolver.DslSyntaxResolver;
+import org.mule.runtime.extension.api.property.QNameModelProperty;
 
 import java.io.File;
 import java.util.List;
@@ -247,6 +248,7 @@ public class BulkArtifactDeclarationTestCase extends AbstractElementModelTestCas
           group.getParameterModels()
               .stream()
               .filter(p -> !(p.getType() instanceof UnionType))
+              .filter(p -> !p.getModelProperty(QNameModelProperty.class).isPresent())
               .forEach(param -> addParameter(param.getType(),
                                              isContent(param) || param.getExpressionSupport().equals(REQUIRED),
                                              isText(param),
