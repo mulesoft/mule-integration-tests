@@ -12,6 +12,9 @@
     <name>Mule SDK Extensions Support Integration Tests</name>
 
     <properties>
+        <!-- Test Extensions -->
+        <muleTestingProcessingStrategiesExtensionVersion>4.7.0-SNAPSHOT</muleTestingProcessingStrategiesExtensionVersion>
+
         <surefire.args>
             ${surefire.slf4j.module.args}
         </surefire.args>
@@ -86,6 +89,13 @@
             <groupId>org.mule.tests</groupId>
             <artifactId>mule-subtypes-extension</artifactId>
             <version>${project.version}</version>
+            <classifier>mule-plugin</classifier>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.extension</groupId>
+            <artifactId>mule-testing-processing-strategies</artifactId>
+            <version>${muleTestingProcessingStrategiesExtensionVersion}</version>
             <classifier>mule-plugin</classifier>
             <scope>test</scope>
         </dependency>
