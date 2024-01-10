@@ -6,14 +6,14 @@
  */
 package org.mule.it.soap.connect;
 
-import org.junit.rules.RuleChain;
-import org.junit.rules.TestRule;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.ExternalProcess;
 import org.mule.tck.junit4.rule.SystemProperty;
 
 import org.junit.Rule;
+import org.junit.rules.RuleChain;
+import org.junit.rules.TestRule;
 
 public abstract class SoapFootballExtensionArtifactFunctionalTestCase extends MuleArtifactFunctionalTestCase {
 
@@ -45,8 +45,9 @@ public abstract class SoapFootballExtensionArtifactFunctionalTestCase extends Mu
   // These need to run with a plain classloader to avoid conflicting libs in different artifacts in the Mule classloader
   // hierarchy, in order to avoid a LinkageError when running in JDK 11 or higher.
   public ExternalProcess getLaLigaServiceServer() {
-    return new ExternalProcess(line -> line
-        .contains("org.eclipse.jetty.server.ServerConnector: Started ServerConnector"),
+    return new ExternalProcess("LaLigaServiceServer",
+                               line -> line
+                                   .contains("org.eclipse.jetty.server.AbstractConnector: Started ServerConnector"),
                                "java", "-cp",
                                System.getProperty("soapHttpServerClasspath"),
                                "org.mule.service.soap.server.HttpServer",
@@ -55,8 +56,9 @@ public abstract class SoapFootballExtensionArtifactFunctionalTestCase extends Mu
   }
 
   public ExternalProcess getFootballServiceServer() {
-    return new ExternalProcess(line -> line
-        .contains("org.eclipse.jetty.server.ServerConnector: Started ServerConnector"),
+    return new ExternalProcess("FootballServiceServer",
+                               line -> line
+                                   .contains("org.eclipse.jetty.server.AbstractConnector: Started ServerConnector"),
                                "java", "-cp",
                                System.getProperty("soapHttpServerClasspath"),
                                "org.mule.service.soap.server.HttpServer",
