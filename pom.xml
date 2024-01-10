@@ -31,6 +31,7 @@
         <module>tooling-support-tests</module>
         <module>tracing</module>
         <module>metrics</module>
+        <module>artifact-ast-tests</module>
     </modules>
 
     <properties>
