@@ -5,42 +5,23 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.mule.tests</groupId>
-        <artifactId>mule-extensions-integration-tests</artifactId>
+        <artifactId>mule-artifact-ast-integration-tests</artifactId>
         <version>4.7.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>mule-artifact-ast-serialization-tests</artifactId>
-    <name>Mule Artifact AST Serialization Integration Tests</name>
+    <artifactId>mule-artifact-ast-old-extension-model-compatibility-tests</artifactId>
+    <name>Mule Artifact AST Compatibility Tests</name>
 
     <properties>
-        <formatterConfigPath>../formatter.xml</formatterConfigPath>
+        <formatterConfigPath>../../formatter.xml</formatterConfigPath>
         <muleArtifactAstSerializerVersion>1.3.0-SNAPSHOT</muleArtifactAstSerializerVersion>
 
-        <!-- Uses and old version of the AST and the parser to simulate a miss-match with the Core Extension Models that happened
+        <!-- Uses and old version of the Core Extension Models to simulate a miss-match with the AST and the parser that happened
         in the packager -->
-        <oldMuleArtifactAstVersion>1.1.0-rc3</oldMuleArtifactAstVersion>
+        <muleRuntimeExtensionModelsVerion>4.5.0-rc8</muleRuntimeExtensionModelsVerion>
     </properties>
 
     <dependencies>
-        <!-- Testing harness -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mule.tests</groupId>
-            <artifactId>mule-tests-allure</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- Dependencies under test -->
         <dependency>
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-artifact-ast-serialization</artifactId>
@@ -50,19 +31,19 @@
         <dependency>
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-artifact-ast-xml-parser</artifactId>
-            <version>${oldMuleArtifactAstVersion}</version>
+            <version>${muleArtifactAstSerializerVersion}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-artifact-ast</artifactId>
-            <version>${oldMuleArtifactAstVersion}</version>
+            <version>${muleArtifactAstSerializerVersion}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-runtime-extension-model</artifactId>
-            <version>${project.version}</version>
+            <version>${muleRuntimeExtensionModelsVerion}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

@@ -24,7 +24,7 @@ import org.mule.runtime.ast.api.serialization.ArtifactAstSerializer;
 import org.mule.runtime.ast.api.serialization.ArtifactAstSerializerProvider;
 import org.mule.runtime.ast.api.xml.AstXmlParser;
 import org.mule.runtime.ast.internal.serialization.json.JsonArtifactAstSerializerFormat;
-import org.mule.runtime.core.api.extension.provider.MuleExtensionModelProvider;
+import org.mule.runtime.core.api.extension.MuleExtensionModelProvider;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -58,13 +58,24 @@ public class OldArtifactAstWithNewSerializerAndRuntimeExtensionModelsTestCase {
   public String version;
 
   private final ArtifactAstSerializerProvider serializerProvider = new ArtifactAstSerializerProvider();
+  private ArtifactAst artifactAst;
   private InputStream serializedAst;
 
   @Before
   public void setup() {
-    ArtifactAst artifactAst = createArtifactFromXmlFile(APP_RESOURCE_PATH);
+    artifactAst = createArtifactFromXmlFile(APP_RESOURCE_PATH);
     ArtifactAstSerializer serializer = serializerProvider.getSerializer("JSON", version);
     serializedAst = serializer.serialize(artifactAst);
+  }
+
+  @Test
+  @Issue("W-14722981")
+  public void parametersAllowingExpressionsWithoutMarkersAreCorrectlyLoadedFromXML() {
+    // Control test: ArtifactAst already has the wrong value for the parameter that allowed expressions without markers
+    // This happened because the version of the ArtifactAst classes do not match with the version of the Runtime Extension Model
+    Either<String, Boolean> choiceParameterValue = getChoiceParameterValue(artifactAst);
+    assertThat(choiceParameterValue.isLeft(), is(true));
+    assertThat(choiceParameterValue.getLeft(), is("0 != 1"));
   }
 
   @Test
@@ -74,15 +85,8 @@ public class OldArtifactAstWithNewSerializerAndRuntimeExtensionModelsTestCase {
     consumeHeaderLine(serializedAst);
 
     JSONObject choiceParameterValueJson = getChoiceParameterValue(serializedAst);
-    if ("1.0".equals(version)) {
-      // When serializing with 1.0 the value must not be fixed
-      assertThat(choiceParameterValueJson.has("expression"), is(false));
-      assertThat(choiceParameterValueJson.has("aBoolean"), is(true));
-      assertThat(choiceParameterValueJson.getBoolean("aBoolean"), is(false));
-    } else {
-      assertThat(choiceParameterValueJson.has("expression"), is(true));
-      assertThat(choiceParameterValueJson.getString("expression"), is("0 != 1"));
-    }
+    assertThat(choiceParameterValueJson.has("expression"), is(true));
+    assertThat(choiceParameterValueJson.getString("expression"), is("0 != 1"));
   }
 
   @Test
@@ -128,15 +132,7 @@ public class OldArtifactAstWithNewSerializerAndRuntimeExtensionModelsTestCase {
         .withPropertyResolver(p -> p)
         .build();
 
-    ArtifactAst artifactAst = xmlParser.parse(this.getClass().getClassLoader().getResource(xmlResourcePath));
-
-    // Control test: ArtifactAst already has the wrong value for the parameter that allowed expressions without markers
-    // This happened because the version of the ArtifactAst classes do not match with the version of the Runtime Extension Model
-    Either<String, Boolean> choiceParameterValue = getChoiceParameterValue(artifactAst);
-    assertThat(choiceParameterValue.isRight(), is(true));
-    assertThat(choiceParameterValue.getRight(), is(false));
-
-    return artifactAst;
+    return xmlParser.parse(this.getClass().getClassLoader().getResource(xmlResourcePath));
   }
 
   public ExtensionModel resolveExtensionModel(String name) throws IllegalArgumentException {
