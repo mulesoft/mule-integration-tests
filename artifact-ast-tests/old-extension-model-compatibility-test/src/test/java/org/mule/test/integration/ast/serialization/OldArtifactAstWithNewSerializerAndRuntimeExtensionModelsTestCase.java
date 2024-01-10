@@ -6,6 +6,7 @@
  */
 package org.mule.test.integration.ast.serialization;
 
+import static org.mule.tck.junit4.matcher.EitherMatcher.leftMatches;
 import static org.mule.test.allure.AllureConstants.ArtifactAst.ArtifactAstSerialization.AST_SERIALIZATION;
 import static org.mule.test.allure.AllureConstants.ArtifactAst.ArtifactAstSerialization.AST_SERIALIZATION_END_TO_END;
 
@@ -25,6 +26,7 @@ import org.mule.runtime.ast.api.serialization.ArtifactAstSerializerProvider;
 import org.mule.runtime.ast.api.xml.AstXmlParser;
 import org.mule.runtime.ast.internal.serialization.json.JsonArtifactAstSerializerFormat;
 import org.mule.runtime.core.api.extension.MuleExtensionModelProvider;
+import org.mule.tck.junit4.matcher.EitherMatcher;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -74,8 +76,7 @@ public class OldArtifactAstWithNewSerializerAndRuntimeExtensionModelsTestCase {
     // Control test: ArtifactAst already has the wrong value for the parameter that allowed expressions without markers
     // This happened because the version of the ArtifactAst classes do not match with the version of the Runtime Extension Model
     Either<String, Boolean> choiceParameterValue = getChoiceParameterValue(artifactAst);
-    assertThat(choiceParameterValue.isLeft(), is(true));
-    assertThat(choiceParameterValue.getLeft(), is("0 != 1"));
+    assertThat(choiceParameterValue, leftMatches(is("0 != 1")));
   }
 
   @Test
@@ -97,8 +98,7 @@ public class OldArtifactAstWithNewSerializerAndRuntimeExtensionModelsTestCase {
     Either<String, Boolean> choiceParameterValue = getChoiceParameterValue(deserializedAst);
 
     // No matter the serialized version, it must always be deserialized to the correct value
-    assertThat(choiceParameterValue.isLeft(), is(true));
-    assertThat(choiceParameterValue.getLeft(), is("0 != 1"));
+    assertThat(choiceParameterValue, leftMatches(is("0 != 1")));
   }
 
   private void consumeHeaderLine(InputStream serializedAst) throws IOException {
