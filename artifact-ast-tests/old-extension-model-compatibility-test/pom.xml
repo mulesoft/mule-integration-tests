@@ -13,6 +13,7 @@
     <name>Mule Artifact AST Compatibility Tests</name>
 
     <properties>
+        <javaModuleName>org.mule.test.integration.ast.compatibility</javaModuleName>
         <formatterConfigPath>../../formatter.xml</formatterConfigPath>
         <muleArtifactAstSerializerVersion>1.3.0-SNAPSHOT</muleArtifactAstSerializerVersion>
 
