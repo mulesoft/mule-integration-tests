@@ -13,12 +13,6 @@
         </parse-template>
     </flow>
 
-    <flow name="mel-expression" initialState="stopped">
-        <parse-template>
-            <content>${file::org/mule/processors/mel-expression.ptem}</content>
-        </parse-template>
-    </flow>
-
     <flow name="dw-expression" initialState="stopped">
         <parse-template>
             <content>${file::org/mule/processors/dw-expression.ptem}</content>
@@ -29,10 +23,6 @@
         <parse-template location="org/mule/processors/no-expression.ptem"/>
     </flow>
 
-    <flow name="mel-expression-from-location" initialState="stopped">
-        <parse-template location="org/mule/processors/mel-expression.ptem"/>
-    </flow>
-
     <flow name="dw-expression-from-location" initialState="stopped">
         <parse-template location="org/mule/processors/dw-expression.ptem"/>
     </flow>
@@ -40,12 +30,6 @@
     <flow name="no-expression-inline" initialState="stopped">
         <parse-template>
             <content>This template does not have any expressions to parse</content>
-        </parse-template>
-    </flow>
-
-    <flow name="mel-expression-inline" initialState="stopped">
-        <parse-template>
-            <content>This template has a MEL expression to parse from #[mel:flowVars.flowName] flow</content>
         </parse-template>
     </flow>
 

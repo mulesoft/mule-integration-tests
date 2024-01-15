@@ -17,7 +17,7 @@
     </configuration>
 
     <flow name="flow">
-        <test:assert expression="#[mel:loc.getName().equals('java.util.Locale')]" />
+		<logger/>
     </flow>
 
 </mule>
