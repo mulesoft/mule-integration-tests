@@ -20,6 +20,7 @@ import static java.util.stream.Collectors.toList;
 import static com.google.inject.Guice.createInjector;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.collection.IsIterableWithSize.iterableWithSize;
 import static org.hamcrest.core.IsIterableContaining.hasItem;
 
 import org.mule.runtime.api.meta.model.ExtensionModel;
@@ -78,6 +79,7 @@ public class ArtifactAstValidationsTestCase extends AbstractMuleContextTestCase 
 
     List<ValidationResultItem> errors = doValidate(ast);
 
+    assertThat(errors, iterableWithSize(1));
     assertThat(errors, hasItem(message(equalTo("Missing Expression"))));
   }
 
