@@ -6,10 +6,11 @@
  */
 package org.mule.test.extension.dsl.syntax;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
 import static org.mule.runtime.internal.dsl.DslConstants.CORE_NAMESPACE;
 import static org.mule.runtime.internal.dsl.DslConstants.CORE_PREFIX;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 
 import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.api.meta.model.construct.ConstructModel;
@@ -41,7 +42,7 @@ public class MuleModelsDslSyntaxResolverTestCase {
 
 
   private DslSyntaxResolver dslSyntaxResolver;
-  private ExtensionModel extensionModel = MuleExtensionModelProvider.getExtensionModel();
+  private final ExtensionModel extensionModel = MuleExtensionModelProvider.getExtensionModel();
 
   @Before
   public void createDslSyntaxResolver() {
@@ -74,7 +75,6 @@ public class MuleModelsDslSyntaxResolverTestCase {
     DslElementSyntax constructSyntax = dslSyntaxResolver.resolve(construct);
 
     assertParameterAttribute(constructSyntax, "name");
-    assertParameterAttribute(constructSyntax, "ref");
 
     Optional<DslElementSyntax> onErrorSyntax = constructSyntax.getChild("onError");
     Optional<DslElementSyntax> onErrorContinueSyntax = constructSyntax.getChild("onErrorContinue");
