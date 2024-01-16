@@ -12,6 +12,8 @@ import static org.mule.runtime.api.metadata.MediaType.XML;
 import static org.mule.runtime.core.api.util.IOUtils.closeQuietly;
 import static org.mule.test.allure.AllureConstants.XmlSdk.XML_SDK;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
@@ -25,10 +27,7 @@ import org.mule.tck.junit4.rule.SystemProperty;
 import java.io.File;
 import java.io.InputStream;
 
-import org.apache.commons.io.Charsets;
 import org.apache.commons.io.FileUtils;
-import org.json.XML;
-import org.mortbay.util.ajax.JSON;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -80,16 +79,16 @@ public class ModulesConsumingMimeTypeTestCase extends AbstractCeXmlExtensionMule
       temporaryFolder.getRoot().mkdir();
     }
     final File jsonFileWithExtension = temporaryFolder.newFile(JSON_FILENAME_WITH_EXTENSION);
-    FileUtils.write(jsonFileWithExtension, JSON_CONTENT_FILE, Charsets.UTF_8);
+    FileUtils.write(jsonFileWithExtension, JSON_CONTENT_FILE, UTF_8);
 
     final File jsonFileWithoutExtension = temporaryFolder.newFile(JSON_FILENAME);
-    FileUtils.write(jsonFileWithoutExtension, JSON_CONTENT_FILE, Charsets.UTF_8);
+    FileUtils.write(jsonFileWithoutExtension, JSON_CONTENT_FILE, UTF_8);
 
     final File xmlFileWithExtension = temporaryFolder.newFile(XML_FILENAME_WITH_EXTENSION);
-    FileUtils.write(xmlFileWithExtension, XML_CONTENT_FILE, Charsets.UTF_8);
+    FileUtils.write(xmlFileWithExtension, XML_CONTENT_FILE, UTF_8);
 
     final File xmlFileWithoutExtension = temporaryFolder.newFile(XML_FILENAME);
-    FileUtils.write(xmlFileWithoutExtension, XML_CONTENT_FILE, Charsets.UTF_8);
+    FileUtils.write(xmlFileWithoutExtension, XML_CONTENT_FILE, UTF_8);
   }
 
   @AfterClass
