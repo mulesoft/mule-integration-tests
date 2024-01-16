@@ -164,6 +164,11 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+            <dependency>
+                <groupId>com.github.tomakehurst</groupId>
+                <artifactId>wiremock-standalone</artifactId>
+                <version>${wireMockVersion}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

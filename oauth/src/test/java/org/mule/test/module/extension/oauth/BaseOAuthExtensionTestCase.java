@@ -6,6 +6,16 @@
  */
 package org.mule.test.module.extension.oauth;
 
+import static org.mule.extension.http.api.HttpHeaders.Names.CONTENT_TYPE;
+import static org.mule.oauth.client.internal.OAuthConstants.ACCESS_TOKEN_PARAMETER;
+import static org.mule.oauth.client.internal.OAuthConstants.EXPIRES_IN_PARAMETER;
+import static org.mule.oauth.client.internal.OAuthConstants.REFRESH_TOKEN_PARAMETER;
+import static org.mule.runtime.http.api.HttpConstants.HttpStatus.OK;
+import static org.mule.runtime.http.api.utils.HttpEncoderDecoderUtils.encodeQueryString;
+import static org.mule.tck.probe.PollingProber.check;
+
+import static java.lang.String.format;
+
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.containing;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
@@ -17,19 +27,11 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED;
-import static java.lang.String.format;
 import static org.apache.commons.codec.binary.Base64.encodeBase64String;
 import static org.apache.http.client.fluent.Request.Get;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
-import static org.mule.extension.http.api.HttpHeaders.Names.CONTENT_TYPE;
-import static org.mule.oauth.client.internal.OAuthConstants.ACCESS_TOKEN_PARAMETER;
-import static org.mule.oauth.client.internal.OAuthConstants.EXPIRES_IN_PARAMETER;
-import static org.mule.oauth.client.internal.OAuthConstants.REFRESH_TOKEN_PARAMETER;
-import static org.mule.runtime.http.api.HttpConstants.HttpStatus.OK;
-import static org.mule.runtime.http.api.utils.HttpEncoderDecoderUtils.encodeQueryString;
-import static org.mule.tck.probe.PollingProber.check;
 
 import org.mule.oauth.client.api.state.ResourceOwnerOAuthContext;
 import org.mule.runtime.api.store.ObjectStore;
@@ -42,14 +44,15 @@ import org.mule.test.oauth.TestOAuthConnectionState;
 import java.io.IOException;
 import java.util.Map;
 
-import org.apache.http.client.fluent.Response;
-import org.junit.Rule;
-import org.junit.rules.ExpectedException;
-
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.google.common.collect.ImmutableMap;
+
+import org.apache.http.client.fluent.Response;
+
+import org.junit.Rule;
+import org.junit.rules.ExpectedException;
 
 public abstract class BaseOAuthExtensionTestCase extends AbstractExtensionFunctionalTestCase {
 
@@ -101,7 +104,8 @@ public abstract class BaseOAuthExtensionTestCase extends AbstractExtensionFuncti
   @Rule
   public WireMockRule wireMock = new WireMockRule(wireMockConfig()
       .bindAddress("127.0.0.1")
-      .port(oauthServerPort.getNumber()));
+      .port(oauthServerPort.getNumber()),
+                                                  false);
 
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
@@ -228,7 +232,7 @@ public abstract class BaseOAuthExtensionTestCase extends AbstractExtensionFuncti
           .withQueryParam("redirect_uri", equalTo(toUrl(CALLBACK_PATH, port)))
           .withQueryParam("client_id", equalTo(CONSUMER_KEY))
           .withQueryParam("state", containing(STATE))
-          .withQueryParam("scope", equalTo(scopes.replaceAll(" ", "\\+"))));
+          .withQueryParam("scope", equalTo(scopes)));
     } else {
       wireMock.verify(getRequestedFor(urlPathEqualTo("/" + AUTHORIZE_PATH))
           .withQueryParam("redirect_uri", equalTo(toUrl(CALLBACK_PATH, port)))
