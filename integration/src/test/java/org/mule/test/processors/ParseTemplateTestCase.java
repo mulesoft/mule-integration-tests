@@ -6,20 +6,21 @@
  */
 package org.mule.test.processors;
 
-import static java.nio.charset.StandardCharsets.UTF_16;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isA;
-import static org.hamcrest.core.IsNot.not;
-import static org.junit.Assert.assertEquals;
 import static org.mule.functional.junit4.matchers.MessageMatchers.hasMediaType;
 import static org.mule.runtime.api.metadata.MediaType.APPLICATION_JSON;
 import static org.mule.runtime.api.metadata.MediaType.JSON;
 import static org.mule.test.allure.AllureConstants.ComponentsFeature.CORE_COMPONENTS;
 import static org.mule.test.allure.AllureConstants.ComponentsFeature.ParseTemplateStory.PARSE_TEMPLATE;
 
-import io.qameta.allure.Issue;
+import static java.nio.charset.StandardCharsets.UTF_16;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
+import static org.hamcrest.core.IsNot.not;
+import static org.junit.Assert.assertEquals;
+
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -29,6 +30,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
 
 @Feature(CORE_COMPONENTS)
@@ -36,7 +38,6 @@ import io.qameta.allure.Story;
 public class ParseTemplateTestCase extends AbstractIntegrationTestCase {
 
   private static final String PARSED_NO_EXPRESSION = "This template does not have any expressions to parse";
-  private static final String PARSED_MEL_EXPRESSION = "This template has a MEL expression to parse from mel-expression flow";
   private static final String PARSED_DW_EXPRESSION =
       "This template has a DW expression to parse from dw-expression flow. Remember, the name of the flow is dw-expression";
 
@@ -57,13 +58,6 @@ public class ParseTemplateTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  public void melExpressionInline() throws Exception {
-    CoreEvent event = flowRunner("mel-expression-inline").withVariable("flowName", "mel-expression").run();
-    String msg = (String) event.getMessage().getPayload().getValue();
-    assertEquals(PARSED_MEL_EXPRESSION, msg);
-  }
-
-  @Test
   public void dwExpressionInline() throws Exception {
     CoreEvent event = flowRunner("dw-expression-inline").withVariable("flowName", "dw-expression").run();
     String msg = (String) event.getMessage().getPayload().getValue();
@@ -78,13 +72,6 @@ public class ParseTemplateTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  public void melExpressionFromFile() throws Exception {
-    CoreEvent event = flowRunner("mel-expression").withVariable("flowName", "mel-expression").run();
-    String msg = (String) event.getMessage().getPayload().getValue();
-    assertEquals(PARSED_MEL_EXPRESSION, msg);
-  }
-
-  @Test
   public void dwExpressionFromFile() throws Exception {
     CoreEvent event = flowRunner("dw-expression").withVariable("flowName", "dw-expression").run();
     String msg = (String) event.getMessage().getPayload().getValue();
@@ -96,13 +83,6 @@ public class ParseTemplateTestCase extends AbstractIntegrationTestCase {
     CoreEvent event = flowRunner("no-expression-from-location").run();
     String msg = (String) event.getMessage().getPayload().getValue();
     assertEquals(PARSED_NO_EXPRESSION, msg);
-  }
-
-  @Test
-  public void melExpressionFromLocation() throws Exception {
-    CoreEvent event = flowRunner("mel-expression-from-location").withVariable("flowName", "mel-expression").run();
-    String msg = (String) event.getMessage().getPayload().getValue();
-    assertEquals(PARSED_MEL_EXPRESSION, msg);
   }
 
   @Test
