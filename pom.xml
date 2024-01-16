@@ -46,7 +46,7 @@
         <jacksonVersion>2.15.0</jacksonVersion>
         <jettyVersion>9.4.53.v20231009</jettyVersion>
         <springVersion>5.1.6.RELEASE</springVersion>
-        <wireMockVersion>1.58</wireMockVersion>
+        <wireMockVersion>2.27.2</wireMockVersion>
 
         <muleDependenciesVersion>1.x-SNAPSHOT</muleDependenciesVersion>
         <muleTestComponentsVersion>4.7.0-SNAPSHOT</muleTestComponentsVersion>
@@ -157,16 +157,17 @@
                 <artifactId>wiremock</artifactId>
                 <version>${wireMockVersion}</version>
                 <exclusions>
-                    <exclusion>
-                        <groupId>com.fasterxml.jackson.core</groupId>
-                        <artifactId>*</artifactId>
-                    </exclusion>
                     <!-- prevent conflict with httpclient used by the maven client do download dependencies -->
                     <exclusion>
                         <groupId>org.apache.httpcomponents</groupId>
                         <artifactId>httpclient</artifactId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>com.github.tomakehurst</groupId>
+                <artifactId>wiremock-standalone</artifactId>
+                <version>${wireMockVersion}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

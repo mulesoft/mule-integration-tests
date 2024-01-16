@@ -40,12 +40,15 @@ import java.util.Collection;
 import javax.inject.Inject;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import io.qameta.allure.Feature;
-import io.qameta.allure.Story;
-import junit.framework.AssertionFailedError;
+
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.Before;
+
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
+
+import junit.framework.AssertionFailedError;
 
 @Feature(PROFILING)
 @Story(DEFAULT_CORE_EVENT_TRACER)

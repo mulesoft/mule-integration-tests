@@ -342,9 +342,10 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <!-- This module uses the standalone lib to address an incompatibility between the jetty version wiremock is compiled against and the jetty version used in the test suite -->
         <dependency>
             <groupId>com.github.tomakehurst</groupId>
-            <artifactId>wiremock</artifactId>
+            <artifactId>wiremock-standalone</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
