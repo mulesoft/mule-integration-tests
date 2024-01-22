@@ -6,7 +6,11 @@
  */
 package org.mule.runtime.test.integration.logging;
 
+import static org.mule.runtime.api.util.MuleSystemProperties.SINGLE_APP_MODE_PROPERTY;
+import static org.mule.runtime.module.launcher.DefaultMuleContainer.configureContextFactory;
 import static org.mule.runtime.module.log4j.internal.MuleLog4jConfiguratorUtils.configureSelector;
+
+import static java.lang.Boolean.getBoolean;
 
 import static org.apache.logging.log4j.LogManager.setFactory;
 import static org.apache.logging.log4j.LogManager.shutdown;
@@ -31,6 +35,9 @@ public class UseMuleLog4jContextFactory extends ExternalResource {
   @Override
   protected void before() {
     originalLog4jContextFactory = LogManager.getFactory();
+    if (getBoolean(SINGLE_APP_MODE_PROPERTY)) {
+      configureContextFactory(muleLog4jContextFactory);
+    }
     setFactory(muleLog4jContextFactory);
   }
 
