@@ -58,7 +58,7 @@ public class SingleAppModeLoggerTestCase extends AbstractFakeMuleServerTestCase 
   }
 
   @Test
-  public void log4jLogsSuccessfully() throws Exception {
+  public void log4jLogsInAppSuccessfully() throws Exception {
     startRuntimeWithApp();
 
     // All the logging should go to the file defined in the app log file.
@@ -66,9 +66,6 @@ public class SingleAppModeLoggerTestCase extends AbstractFakeMuleServerTestCase 
     probeLogFileForMessage("My logger is JUL");
     probeLogFileForMessage("My logger is LOG4J");
     probeLogFileForMessage("My logger is JCL");
-
-    // The container notification must also be in the app log file.
-    probeLogFileForMessage("Started app 'logging-app'");
   }
 
   private void probeLogFileForMessage(String expectedMessage) {

@@ -52,7 +52,6 @@ public class UseMuleLog4jContextFactory extends ExternalResource {
 
   private static MuleLog4jContextFactory createContextFactory() {
     MuleLog4jContextFactory contextFactory = new MuleLog4jContextFactory();
-    configureSelector(contextFactory, true);
     return contextFactory;
   }
 
@@ -60,6 +59,8 @@ public class UseMuleLog4jContextFactory extends ExternalResource {
     MuleLog4jContextFactory muleLog4jContextFactory = createContextFactory();
     if (selector != null) {
       configureSelector(muleLog4jContextFactory, selector);
+    } else {
+      configureSelector(muleLog4jContextFactory, true);
     }
     return muleLog4jContextFactory;
   }
