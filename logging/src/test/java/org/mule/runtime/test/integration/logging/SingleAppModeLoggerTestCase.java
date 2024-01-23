@@ -16,7 +16,6 @@ import static java.lang.String.format;
 
 import static org.hamcrest.CoreMatchers.containsString;
 
-import org.apache.logging.log4j.core.selector.ContextSelector;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.module.deployment.impl.internal.builder.ApplicationFileBuilder;
 import org.mule.runtime.module.deployment.impl.internal.builder.JarFileBuilder;
