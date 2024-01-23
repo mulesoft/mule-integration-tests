@@ -76,11 +76,11 @@ public class SingleAppModeLoggerTestCase extends AbstractFakeMuleServerTestCase 
     probeLogFileForMessage(THIRD_LOG);
     probeLogFileForMessage(FOURTH_LOG);
 
-    // To verify that the loggers are reconfigured I have to use a logger created
-    // in the test before starting the fake server.
-    // The classes that should be in the container classloader in a real mule server have loggers that are retrieved
-    // in static fields with the first test that loads them in the module and they cannot be reconfigured using
-    // the server because the selector/contexts are lost.
+    // To verify that the non app loggers are reconfigured I use a logger defined in the test.
+    // The loggers in static fields can be affected by other tests retrieved
+    // using ArtifactAwareContextSelector and they cannot be accessed for
+    // reconfiguration. In this way I don't depend on the order in which the tests are executed
+    // in the module.
     logger.error(LOG_MESSAGE);
     probeLogFileForMessage(LOG_MESSAGE);
   }
