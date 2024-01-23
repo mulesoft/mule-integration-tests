@@ -6,7 +6,6 @@
  */
 package org.mule.runtime.test.integration.logging;
 
-import static org.mule.runtime.api.util.MuleSystemProperties.SINGLE_APP_MODE_PROPERTY;
 import static org.mule.tck.probe.PollingProber.probe;
 import static org.mule.test.allure.AllureConstants.ArtifactDeploymentFeature.SingleAppDeploymentStory.SINGLE_APP_DEPLOYMENT;
 import static org.mule.test.allure.AllureConstants.IntegrationTestsFeature.INTEGRATIONS_TESTS;
@@ -17,16 +16,18 @@ import static java.lang.String.format;
 
 import static org.hamcrest.CoreMatchers.containsString;
 
+import org.apache.logging.log4j.core.selector.ContextSelector;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.module.deployment.impl.internal.builder.ApplicationFileBuilder;
 import org.mule.runtime.module.deployment.impl.internal.builder.JarFileBuilder;
-import org.mule.tck.junit4.rule.SystemProperty;
+import org.mule.runtime.module.log4j.internal.ApplicationReconfigurableLoggerContextSelector;
 import org.mule.tck.util.CompilerUtils;
 import org.mule.test.infrastructure.deployment.AbstractFakeMuleServerTestCase;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.function.Consumer;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Features;
@@ -39,12 +40,10 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
 @Story(SINGLE_APP_DEPLOYMENT)
 public class SingleAppModeLoggerTestCase extends AbstractFakeMuleServerTestCase {
 
+  private ApplicationReconfigurableLoggerContextSelector contextSelector = new ApplicationReconfigurableLoggerContextSelector();
   @Rule
-  public SystemProperty singleAppModeLogging =
-      new SystemProperty(SINGLE_APP_MODE_PROPERTY, "true");
-
-  @Rule
-  public UseMuleLog4jContextFactory muleLogging = new UseMuleLog4jContextFactory();
+  public UseMuleLog4jContextFactory muleLogging =
+      new UseMuleLog4jContextFactory(contextSelector);
 
   @Override
   public void setUp() throws Exception {
@@ -93,5 +92,10 @@ public class SingleAppModeLoggerTestCase extends AbstractFakeMuleServerTestCase 
 
     muleServer.start();
     muleServer.deploy(loggingAppFileBuilder.getArtifactFile().toURI().toURL(), "logging-app");
+  }
+
+  @Override
+  protected Consumer<ClassLoader> getActionOnMuleArtifactDeployment() {
+    return classLoader -> contextSelector.reconfigureAccordingToAppClassloader(classLoader);
   }
 }
