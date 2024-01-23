@@ -15,6 +15,7 @@ import static org.mule.test.infrastructure.FileContainsInLine.hasLine;
 import static java.lang.String.format;
 
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.module.deployment.impl.internal.builder.ApplicationFileBuilder;
@@ -33,12 +34,19 @@ import io.qameta.allure.Features;
 import io.qameta.allure.Story;
 import org.junit.Rule;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 @Features({@Feature(INTEGRATIONS_TESTS), @Feature(LOGGING)})
 @Story(SINGLE_APP_DEPLOYMENT)
 public class SingleAppModeLoggerTestCase extends AbstractFakeMuleServerTestCase {
 
+  public static final String FIRST_LOG = "My logger is LOG4J";
+  public static final String SECOND_LOG = "My logger is JUL";
+  public static final String THIRD_LOG = "My logger is LOG4J";
+  public static final String FOURTH_LOG = "My logger is JCL";
+  public static final String LOG_MESSAGE = "This log should be present in the app log.";
   private ApplicationReconfigurableLoggerContextSelector contextSelector = new ApplicationReconfigurableLoggerContextSelector();
   @Rule
   public UseMuleLog4jContextFactory muleLogging =
@@ -59,13 +67,22 @@ public class SingleAppModeLoggerTestCase extends AbstractFakeMuleServerTestCase 
 
   @Test
   public void log4jLogsInAppSuccessfully() throws Exception {
+    Logger logger = getLogger(SingleAppModeLoggerTestCase.class);
     startRuntimeWithApp();
 
     // All the logging should go to the file defined in the app log file.
-    probeLogFileForMessage("My logger is LOG4J");
-    probeLogFileForMessage("My logger is JUL");
-    probeLogFileForMessage("My logger is LOG4J");
-    probeLogFileForMessage("My logger is JCL");
+    probeLogFileForMessage(FIRST_LOG);
+    probeLogFileForMessage(SECOND_LOG);
+    probeLogFileForMessage(THIRD_LOG);
+    probeLogFileForMessage(FOURTH_LOG);
+
+    // To verify that the loggers are reconfigured I have to use a logger created
+    // in the test before starting the fake server.
+    // The classes that should be in the container classloader in a real mule server have loggers that are retrieved
+    // in static fields with the first test that loads them in the module and they cannot be reconfigured using
+    // the server because the selector/contexts are lost.
+    logger.error(LOG_MESSAGE);
+    probeLogFileForMessage(LOG_MESSAGE);
   }
 
   private void probeLogFileForMessage(String expectedMessage) {
