@@ -19,7 +19,6 @@ import org.mule.runtime.module.log4j.boot.api.MuleLog4jContextFactory;
 import org.mule.runtime.module.log4j.internal.ApplicationReconfigurableLoggerContextSelector;
 
 import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.core.selector.ContextSelector;
 import org.apache.logging.log4j.spi.LoggerContextFactory;
 
 import org.junit.rules.ExternalResource;
@@ -29,18 +28,13 @@ import org.junit.rules.ExternalResource;
  */
 public class UseMuleLog4jContextFactory extends ExternalResource {
 
-  private static final MuleLog4jContextFactory muleLog4jContextFactory = createContextFactory();
+  private final MuleLog4jContextFactory muleLog4jContextFactory = getContextFactory();
 
   private LoggerContextFactory originalLog4jContextFactory;
-  private ContextSelector oldSelector;
 
   @Override
   protected void before() {
     originalLog4jContextFactory = LogManager.getFactory();
-    oldSelector = muleLog4jContextFactory.getSelector();
-    if (getBoolean(SINGLE_APP_MODE_PROPERTY)) {
-      configureSelector(muleLog4jContextFactory, new ApplicationReconfigurableLoggerContextSelector());
-    }
     setFactory(muleLog4jContextFactory);
   }
 
@@ -48,7 +42,6 @@ public class UseMuleLog4jContextFactory extends ExternalResource {
   protected void after() {
     // We can safely force a removal of the old logger contexts instead of waiting for the reaper thread to do it.
     ((MuleLog4jContextFactory) LogManager.getFactory()).dispose();
-    configureSelector(muleLog4jContextFactory, oldSelector);
     setFactory(originalLog4jContextFactory);
     shutdown();
   }
@@ -58,4 +51,13 @@ public class UseMuleLog4jContextFactory extends ExternalResource {
     configureSelector(contextFactory, true);
     return contextFactory;
   }
+
+  private static MuleLog4jContextFactory getContextFactory() {
+    MuleLog4jContextFactory muleLog4jContextFactory = createContextFactory();
+    if (getBoolean(SINGLE_APP_MODE_PROPERTY)) {
+      configureSelector(muleLog4jContextFactory, new ApplicationReconfigurableLoggerContextSelector());
+    }
+    return muleLog4jContextFactory;
+  }
+
 }
