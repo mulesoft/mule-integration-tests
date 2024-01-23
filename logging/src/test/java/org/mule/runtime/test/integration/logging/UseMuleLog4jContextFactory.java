@@ -7,7 +7,6 @@
 package org.mule.runtime.test.integration.logging;
 
 import static org.mule.runtime.api.util.MuleSystemProperties.SINGLE_APP_MODE_PROPERTY;
-import static org.mule.runtime.module.launcher.DefaultMuleContainer.configureContextFactory;
 import static org.mule.runtime.module.log4j.internal.MuleLog4jConfiguratorUtils.configureSelector;
 
 import static java.lang.Boolean.getBoolean;
@@ -17,8 +16,10 @@ import static org.apache.logging.log4j.LogManager.shutdown;
 
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.module.log4j.boot.api.MuleLog4jContextFactory;
+import org.mule.runtime.module.log4j.internal.ApplicationReconfigurableLoggerContextSelector;
 
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.selector.ContextSelector;
 import org.apache.logging.log4j.spi.LoggerContextFactory;
 
 import org.junit.rules.ExternalResource;
@@ -31,12 +32,14 @@ public class UseMuleLog4jContextFactory extends ExternalResource {
   private static final MuleLog4jContextFactory muleLog4jContextFactory = createContextFactory();
 
   private LoggerContextFactory originalLog4jContextFactory;
+  private ContextSelector oldSelector;
 
   @Override
   protected void before() {
     originalLog4jContextFactory = LogManager.getFactory();
+    oldSelector = muleLog4jContextFactory.getSelector();
     if (getBoolean(SINGLE_APP_MODE_PROPERTY)) {
-      configureContextFactory(muleLog4jContextFactory);
+      configureSelector(muleLog4jContextFactory, new ApplicationReconfigurableLoggerContextSelector());
     }
     setFactory(muleLog4jContextFactory);
   }
@@ -45,6 +48,7 @@ public class UseMuleLog4jContextFactory extends ExternalResource {
   protected void after() {
     // We can safely force a removal of the old logger contexts instead of waiting for the reaper thread to do it.
     ((MuleLog4jContextFactory) LogManager.getFactory()).dispose();
+    configureSelector(muleLog4jContextFactory, oldSelector);
     setFactory(originalLog4jContextFactory);
     shutdown();
   }
