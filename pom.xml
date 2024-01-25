@@ -32,6 +32,7 @@
         <module>tracing</module>
         <module>metrics</module>
         <module>artifact-ast-tests</module>
+        <module>single-app-mode</module>
     </modules>
 
     <properties>
