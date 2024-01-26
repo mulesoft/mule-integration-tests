@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.mule.tests</groupId>
+        <artifactId>mule-extensions-integration-tests</artifactId>
+        <version>4.7.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>mule-tests-single-app-mode</artifactId>
+    <name>Single App Mode Integration Tests</name>
+    <description>Integration Tests for Mule Single App</description>
+    <packaging>jar</packaging>
+
+    <properties>
+        <surefire.args>
+            -Xmx1024m
+            -Xms256m
+            -XX:+HeapDumpOnOutOfMemoryError
+            ${surefire.args.base}
+        </surefire.args>
+
+        <javaModuleName>org.mule.test.integration.singleapp</javaModuleName>
+        <formatterConfigPath>../formatter.xml</formatterConfigPath>
+        <protobufVersion>3.21.9</protobufVersion>
+        <openTelemetryProtoVersion>0.3.0</openTelemetryProtoVersion>
+        <graaljsVersion>22.3.3</graaljsVersion>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <systemPropertyVariables>
+                        <xmlApisLib>${xml-apis:xml-apis:jar}</xmlApisLib>
+                        <apiAnnotationsLib>${org.mule.runtime:api-annotations:jar}</apiAnnotationsLib>
+                    </systemPropertyVariables>
+                    <classpathDependencyExcludes>
+                        <!-- this is not needed on the test classpath, just to get the location -->
+                        <classpathDependencyExclude>org.graalvm.js:js-scriptengine</classpathDependencyExclude>
+                    </classpathDependencyExcludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.mule</groupId>
+                <artifactId>mule-runtime-bom</artifactId>
+                <version>${muleBomVersion}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.mule.runtime</groupId>
+            <artifactId>mule-modules-all</artifactId>
+            <version>${project.version}</version>
+            <type>pom</type>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.runtime</groupId>
+            <artifactId>mule-core</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.tests</groupId>
+            <artifactId>mule-tests-runner</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.tests</groupId>
+            <artifactId>mule-tests-functional</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.tests</groupId>
+            <artifactId>mule-tests-infrastructure</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.tests</groupId>
+            <artifactId>mule-tests-allure</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.runtime</groupId>
+            <artifactId>mule-module-deployment-model-impl</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+            <type>test-jar</type>
+        </dependency>
+    </dependencies>
+</project>
