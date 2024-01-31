@@ -15,8 +15,8 @@ import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.module.log4j.boot.api.MuleLog4jContextFactory;
 
 import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.core.selector.ContextSelector;
 import org.apache.logging.log4j.spi.LoggerContextFactory;
+
 import org.junit.rules.ExternalResource;
 
 /**
@@ -24,22 +24,12 @@ import org.junit.rules.ExternalResource;
  */
 public class UseMuleLog4jContextFactory extends ExternalResource {
 
-  private final MuleLog4jContextFactory muleLog4jContextFactory;
-
   private LoggerContextFactory originalLog4jContextFactory;
-
-  public UseMuleLog4jContextFactory() {
-    this(null);
-  }
-
-  public UseMuleLog4jContextFactory(ContextSelector selector) {
-    this.muleLog4jContextFactory = getContextFactory(selector);
-  }
 
   @Override
   protected void before() {
     originalLog4jContextFactory = LogManager.getFactory();
-    setFactory(muleLog4jContextFactory);
+    setFactory(createContextFactory());
   }
 
   @Override
@@ -50,19 +40,9 @@ public class UseMuleLog4jContextFactory extends ExternalResource {
     shutdown();
   }
 
-  private static MuleLog4jContextFactory createContextFactory() {
+  private MuleLog4jContextFactory createContextFactory() {
     MuleLog4jContextFactory contextFactory = new MuleLog4jContextFactory();
+    configureSelector(contextFactory);
     return contextFactory;
   }
-
-  private static MuleLog4jContextFactory getContextFactory(ContextSelector selector) {
-    MuleLog4jContextFactory muleLog4jContextFactory = createContextFactory();
-    if (selector != null) {
-      configureSelector(muleLog4jContextFactory, selector);
-    } else {
-      configureSelector(muleLog4jContextFactory, true);
-    }
-    return muleLog4jContextFactory;
-  }
-
 }
