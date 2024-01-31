@@ -58,8 +58,8 @@ public class SingleAppModeLoggerReconfigurationOnMuleAppDeploymentTestCase exten
       .around(new UseMuleLog4jContextFactory());
 
   @Test
-  @Description("After an app is deployed in single app mode, all the logs go to the config of the app. " +
-      "In this case the tests classloader logs works as the container log.")
+  @Description("After an app is deployed in single app mode, all the logs respect the log config of the app." +
+      " In this case the tests classloader logs works as the container log.")
   public void afterAppDeploymentAllLogsAreSentToAppendersAccordingToAppLogConfig() throws Exception {
     muleServer.start();
 
