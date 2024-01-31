@@ -6,7 +6,6 @@
  */
 package org.mule.runtime.test.integration.logging;
 
-import static org.junit.rules.RuleChain.outerRule;
 import static org.mule.runtime.api.util.MuleSystemProperties.SINGLE_APP_MODE_PROPERTY;
 import static org.mule.tck.probe.PollingProber.probe;
 import static org.mule.test.allure.AllureConstants.ArtifactDeploymentFeature.SingleAppDeploymentStory.SINGLE_APP_DEPLOYMENT;
@@ -18,6 +17,7 @@ import static java.lang.String.format;
 import static java.lang.System.getProperty;
 
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.junit.rules.RuleChain.outerRule;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import org.mule.runtime.api.exception.MuleException;
