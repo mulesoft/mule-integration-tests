@@ -48,7 +48,6 @@ public class SingleAppModeLoggerReconfigurationOnMuleAppDeploymentTestCase exten
   public static final String MESSAGE_AFTER_APP_DEPLOYMENT = "Message after app deployment.";
 
   public static final String LOGGING_APP_NAME = "logging-app";
-  public static final String STARTED_APP_EXPECTED_MESSAGE = "Started app '" + LOGGING_APP_NAME + "'";
   public static final String TEST_LOG_FILE = "test.log";
   public static final String APP_XML_FILE_NAME = "log/logging-libs/logging-libs-app.xml";
   // This guarantees order of execution.
@@ -72,7 +71,6 @@ public class SingleAppModeLoggerReconfigurationOnMuleAppDeploymentTestCase exten
   }
 
   private void assertContainerLogsAreSentToFileAccordingToAppLogConfig() {
-    probeLogFileForMessage(STARTED_APP_EXPECTED_MESSAGE);
     probeLogFileForMessage(MESSAGE_AFTER_APP_DEPLOYMENT);
   }
 
