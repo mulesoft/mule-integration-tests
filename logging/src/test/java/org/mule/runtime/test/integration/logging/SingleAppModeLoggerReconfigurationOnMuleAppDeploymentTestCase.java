@@ -20,6 +20,7 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.rules.RuleChain.outerRule;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import io.qameta.allure.Description;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.module.deployment.impl.internal.builder.ApplicationFileBuilder;
 import org.mule.runtime.module.deployment.impl.internal.builder.JarFileBuilder;
@@ -50,12 +51,15 @@ public class SingleAppModeLoggerReconfigurationOnMuleAppDeploymentTestCase exten
   public static final String LOGGING_APP_NAME = "logging-app";
   public static final String TEST_LOG_FILE = "test.log";
   public static final String APP_XML_FILE_NAME = "log/logging-libs/logging-libs-app.xml";
-  // This guarantees order of execution.
+
+  // This guarantees order of rule execution.
   @Rule
   public TestRule chain = outerRule(new SystemProperty(SINGLE_APP_MODE_PROPERTY, "true"))
       .around(new UseMuleLog4jContextFactory());
 
   @Test
+  @Description("After an app is deployed in single app mode, all the logs go to the config of the app. " +
+      "In this case the tests classloader logs works as the container log.")
   public void afterAppDeploymentAllLogsAreSentToAppendersAccordingToAppLogConfig() throws Exception {
     muleServer.start();
 
@@ -65,16 +69,16 @@ public class SingleAppModeLoggerReconfigurationOnMuleAppDeploymentTestCase exten
     logger.error(MESSAGE_AFTER_APP_DEPLOYMENT);
 
     assertAppLogsAreSentToFileAccordingToAppLogConfig();
-    assertContainerLogsAreSentToFileAccordingToAppLogConfig();
-    assertContainerLogsBeforeAppDeploymentAreNotSentToFileAccordingToAppLogConfig();
+    assertRootLogsAreSentToFileAccordingToAppLogConfig();
+    assertRootLogsBeforeAppDeploymentAreNotSentToFileAccordingToAppLogConfig();
 
   }
 
-  private void assertContainerLogsAreSentToFileAccordingToAppLogConfig() {
+  private void assertRootLogsAreSentToFileAccordingToAppLogConfig() {
     probeLogFileForMessage(MESSAGE_AFTER_APP_DEPLOYMENT);
   }
 
-  private void assertContainerLogsBeforeAppDeploymentAreNotSentToFileAccordingToAppLogConfig() {
+  private void assertRootLogsBeforeAppDeploymentAreNotSentToFileAccordingToAppLogConfig() {
     probeLogFileForNotExistingMessage(MESSAGE_BEFORE_APP_DEPLOYMENT);
   }
 
