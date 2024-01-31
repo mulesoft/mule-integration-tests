@@ -20,7 +20,6 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.rules.RuleChain.outerRule;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import io.qameta.allure.Description;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.module.deployment.impl.internal.builder.ApplicationFileBuilder;
 import org.mule.runtime.module.deployment.impl.internal.builder.JarFileBuilder;
@@ -33,6 +32,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
+import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Features;
 import io.qameta.allure.Story;
