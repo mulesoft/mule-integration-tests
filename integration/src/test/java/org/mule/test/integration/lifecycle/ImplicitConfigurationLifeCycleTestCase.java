@@ -6,12 +6,14 @@
  */
 package org.mule.test.integration.lifecycle;
 
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 import static org.mule.test.allure.AllureConstants.RegistryFeature.DomainObjectRegistrationStory.OBJECT_REGISTRATION;
 import static org.mule.test.allure.AllureConstants.RegistryFeature.REGISTRY;
+
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.SECONDS;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 import org.mule.functional.api.flow.FlowRunner;
 import org.mule.runtime.api.exception.MuleException;
