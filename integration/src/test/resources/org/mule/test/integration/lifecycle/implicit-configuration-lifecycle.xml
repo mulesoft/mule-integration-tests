@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+	  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	  xmlns:implicit="http://www.mulesoft.org/schema/mule/implicit"
+	  xmlns:test="http://www.mulesoft.org/schema/mule/test"
+	  xmlns:test-components="http://www.mulesoft.org/schema/mule/test-components"
+	  xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+			http://www.mulesoft.org/schema/mule/implicit http://www.mulesoft.org/schema/mule/implicit/current/mule-implicit.xsd
+			http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
+			http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
+
+	<test-components:queue-config name="flowErrorQueue">
+		<test-components:connection />
+	</test-components:queue-config>
+
+	<!-- There is no other way to know that the MuleContext stop is actually stopping the flows + deferring such stop process than intercept a processor's stop -->
+	<flow name="muleContextIsStoppingFlow">
+		<test:processor class="org.mule.test.integration.lifecycle.ImplicitConfigurationLifeCycleTestCase$SignalMuleContextIsStopping"/>
+	</flow>
+
+	<flow name="flowThatAddsRegistryEntryDuringFirstEventProcessing">
+		<!-- A dynamic subflow causes the implicit configuration to be lazily resolved when the first event arrives to the FlowRefFactoryBean -->
+		<flow-ref name="#['implicitConfigurationSubFlow']"/>
+		<error-handler>
+			<on-error-propagate>
+				<test-components:queue-push config-ref="flowErrorQueue">
+					<test-components:content><![CDATA[#[error]]]></test-components:content>
+				</test-components:queue-push>
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+
+	<sub-flow name="implicitConfigurationSubFlow">
+		<test:processor class="org.mule.test.integration.lifecycle.ImplicitConfigurationLifeCycleTestCase$TriggerMuleContextStopWhileSubFlowIsBeingInitialized"/>
+		<implicit:get-config/>
+	</sub-flow>
+</mule>
