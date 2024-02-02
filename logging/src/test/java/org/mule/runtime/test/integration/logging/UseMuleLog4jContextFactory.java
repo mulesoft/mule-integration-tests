@@ -24,14 +24,12 @@ import org.junit.rules.ExternalResource;
  */
 public class UseMuleLog4jContextFactory extends ExternalResource {
 
-  private static final MuleLog4jContextFactory muleLog4jContextFactory = createContextFactory();
-
   private LoggerContextFactory originalLog4jContextFactory;
 
   @Override
   protected void before() {
     originalLog4jContextFactory = LogManager.getFactory();
-    setFactory(muleLog4jContextFactory);
+    setFactory(createContextFactory());
   }
 
   @Override
@@ -42,9 +40,9 @@ public class UseMuleLog4jContextFactory extends ExternalResource {
     shutdown();
   }
 
-  private static MuleLog4jContextFactory createContextFactory() {
+  private MuleLog4jContextFactory createContextFactory() {
     MuleLog4jContextFactory contextFactory = new MuleLog4jContextFactory();
-    configureSelector(contextFactory, true);
+    configureSelector(contextFactory);
     return contextFactory;
   }
 }
