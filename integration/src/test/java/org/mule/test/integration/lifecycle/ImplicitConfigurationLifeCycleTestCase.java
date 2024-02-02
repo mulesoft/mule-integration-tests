@@ -6,6 +6,7 @@
  */
 package org.mule.test.integration.lifecycle;
 
+import io.qameta.allure.Issue;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -62,7 +63,8 @@ public class ImplicitConfigurationLifeCycleTestCase extends AbstractIntegrationT
   }
 
   @Test
-  public void flowThatRegistersConfigDuringEventProcessing() throws Exception {
+  @Issue("W-14722908")
+  public void flowThatRegistersImplicitConfigurationDuringMuleContextStop() throws Exception {
     FlowRunner flowRunner = flowRunner("flowThatAddsRegistryEntryDuringFirstEventProcessing");
     flowRunner.dispatchAsync(scheduler);
     // Wait until the sub flow signals it's initialization to start stopping the mule context.
