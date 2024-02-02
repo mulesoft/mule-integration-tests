@@ -6,10 +6,13 @@
  */
 package org.mule.test.integration.lifecycle;
 
-import io.qameta.allure.Issue;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mule.test.allure.AllureConstants.RegistryFeature.DomainObjectRegistrationStory.OBJECT_REGISTRATION;
+import static org.mule.test.allure.AllureConstants.RegistryFeature.REGISTRY;
+
 import org.mule.functional.api.flow.FlowRunner;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.exception.MuleRuntimeException;
@@ -26,11 +29,15 @@ import org.mule.tests.api.TestQueueManager;
 
 import javax.inject.Inject;
 
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
+import io.qameta.allure.Story;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
+@Feature(REGISTRY)
+@Story(OBJECT_REGISTRATION)
 public class ImplicitConfigurationLifeCycleTestCase extends AbstractIntegrationTestCase {
 
   private Scheduler scheduler;
