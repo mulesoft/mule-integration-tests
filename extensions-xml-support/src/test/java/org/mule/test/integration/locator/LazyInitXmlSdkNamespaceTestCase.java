@@ -44,14 +44,9 @@ public class LazyInitXmlSdkNamespaceTestCase extends AbstractXmlExtensionMuleArt
     return true;
   }
 
-  @Override
-  public boolean disableXmlValidations() {
-    return true;
-  }
-
   @Test
   @Issue("W-14559071")
-  @Description("Using the same namespace with the current module/extension's namespace shouldn't throw an error.")
+  @Description("Within the scope of XML SDK component, using the same namespace with the current module/extension's namespace shouldn't throw an error.")
   public void errorMappingWithoutNamespaceError() {
     lazyComponentInitializer.initializeComponent(builderFromStringRepresentation("test-flow").build());
   }
