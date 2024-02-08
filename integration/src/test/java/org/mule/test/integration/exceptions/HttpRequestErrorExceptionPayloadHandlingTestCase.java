@@ -8,6 +8,9 @@ package org.mule.test.integration.exceptions;
 
 import static org.mule.functional.junit4.matchers.MessageMatchers.hasPayload;
 
+import static java.lang.String.join;
+import static java.lang.System.lineSeparator;
+
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
@@ -34,12 +37,12 @@ public class HttpRequestErrorExceptionPayloadHandlingTestCase extends AbstractIn
   public void connectivity() throws Exception {
     CoreEvent result = flowRunner("handled").withVariable("port", unusedPort.getNumber()).run();
     assertThat(result.getMessage(),
-               hasPayload(equalTo(String.join(System.lineSeparator(),
-                                              "<http:request config-ref=\"simpleConfig\" path=\"testPath\" responseTimeout=\"1000\">",
-                                              "<http:headers><![CDATA[",
-                                              "#[{'Content-Type': 'application/xml'}]",
-                                              "]]></http:headers>",
-                                              "</http:request>"))));
+               hasPayload(equalTo(join(lineSeparator(),
+                                       "<http:request config-ref=\"simpleConfig\" path=\"testPath\" responseTimeout=\"1000\">",
+                                       "<http:headers><![CDATA[",
+                                       "#[{'Content-Type': 'application/xml'}]",
+                                       "]]></http:headers>",
+                                       "</http:request>"))));
   }
 
 }
