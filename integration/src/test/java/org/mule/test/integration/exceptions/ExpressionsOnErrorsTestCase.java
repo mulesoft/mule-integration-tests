@@ -100,10 +100,8 @@ public class ExpressionsOnErrorsTestCase extends AbstractIntegrationTestCase {
         .run().getMessage().getPayload().getValue();
     final String result = IOUtils.toString(value.openCursor(), UTF_8);
     assertThat(result,
-               containsString(lineSeparator() +
-                   "  \"payload\": \"Hello World!\"," + lineSeparator()));
+               containsString("\n  \"payload\": \"Hello World!\",\n"));
     assertThat(result,
-               containsString(lineSeparator() +
-                   "  \"attributes\": \"Adios Amigos\"" + lineSeparator()));
+               containsString("\n  \"attributes\": \"Adios Amigos\"\n"));
   }
 }
