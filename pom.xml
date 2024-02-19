@@ -49,7 +49,7 @@
         <muleDependenciesVersion>1.x-SNAPSHOT</muleDependenciesVersion>
         <muleTestComponentsVersion>4.6.1-SNAPSHOT</muleTestComponentsVersion>
 
-        <muleBomVersion>4.6.1-SNAPSHOT</muleBomVersion>
+        <muleBomVersion>4.6.1-rc1</muleBomVersion>
 
         <protobufVersion>3.21.9</protobufVersion>
         <openTelemetryProtoVersion>0.3.0</openTelemetryProtoVersion>
