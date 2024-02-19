@@ -7,6 +7,7 @@
     xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
     xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting"
     xmlns:reconnection="http://www.mulesoft.org/schema/mule/reconnection"
+    xmlns:tracing="http://www.mulesoft.org/schema/mule/tracing"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
                http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
@@ -14,6 +15,7 @@
                http://www.mulesoft.org/schema/mule/heisenberg http://www.mulesoft.org/schema/mule/heisenberg/current/mule-heisenberg.xsd
                http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd
                http://www.mulesoft.org/schema/mule/reconnection http://www.mulesoft.org/schema/mule/reconnection/current/mule-reconnection.xsd
+               http://www.mulesoft.org/schema/mule/tracing http://www.mulesoft.org/schema/mule/tracing/current/mule-tracing.xsd
                http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
 
     <configuration defaultErrorHandler-ref="globalErrorHandler" />
@@ -58,6 +60,10 @@
 
     <flow name="callSaul">
         <heisenberg:call-saul config-ref="heisenberg" />
+    </flow>
+
+    <flow name="tracing">
+        <tracing:set-logging-variable variableName="x-trace-id" value="#['aaa']"/>
     </flow>
 
     <flow name="callGusFring">

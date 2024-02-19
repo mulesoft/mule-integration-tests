@@ -22,6 +22,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
@@ -152,6 +153,17 @@ public class ProcessorInterceptorFactoryCustomActionTestCase extends AbstractInt
     assertThat(getActiveConnections(), empty());
     assertThat(getConnects() - connectsBefore, is(mutateEventBefore ? 2 : 1));
     assertThat(getDisconnects() - disconnectsBefore, is(mutateEventBefore ? 2 : 1));
+  }
+
+  @Test
+  @Description("The params are solved, when a tracing operation is used.")
+  @Issue("W-14773408")
+  public void resolvedParamsForTracingOperation() throws Exception {
+    flowRunner("tracing").run();
+    List<InterceptionParameters> interceptionParameters = HasInjectedAttributesInterceptor.interceptionParameters;
+    assertThat(interceptionParameters, hasSize(1));
+    assertThat(interceptionParameters.get(0).getParameters(), hasKey("variableName"));
+    assertThat(interceptionParameters.get(0).getParameters(), hasKey("value"));
   }
 
   @Test
