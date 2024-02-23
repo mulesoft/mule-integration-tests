@@ -25,6 +25,7 @@ import static java.io.File.createTempFile;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static java.lang.System.clearProperty;
+import static java.lang.System.currentTimeMillis;
 import static java.lang.System.setProperty;
 import static java.lang.Thread.sleep;
 import static java.nio.file.Files.copy;
@@ -132,7 +133,7 @@ public class ExportConfigurationChangeTestCase extends
     clearProperty(MULE_OPEN_TELEMETRY_OTEL_TRACES_SAMPLER);
   }
 
-  @Test
+  @Test(timeout = 90000)
   public void test() throws Exception {
     flowRunner(FLOW_LOCATION).withPayload(TEST_PAYLOAD).run().getMessage();
 
@@ -140,9 +141,9 @@ public class ExportConfigurationChangeTestCase extends
     sleep(5000);
     assertThat(originalServer.getCapturedExportedSpans().size(), equalTo(0));
 
-    // We update the file by recopying it and we enable the exporter.
+    // We update the last modified date.
     setProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENABLED, TRUE.toString());
-    copy(get(configFileUri), get(file.getPath()), REPLACE_EXISTING);
+    file.setLastModified(currentTimeMillis());
 
     // We wait for the configuration to take place.
     sleep(2000);
@@ -158,10 +159,10 @@ public class ExportConfigurationChangeTestCase extends
 
     assertExpectedSpanTreeMonitoring(attributesToAssertExistence, exportedSpans, setPayloadAttributeMap);
 
-    // We update the file by recopying it.
+    // We update the last modified date.
     setProperty(MULE_OPEN_TELEMETRY_EXPORTER_ENDPOINT,
                 "http://localhost:" + afterConfigurationChangeServer.httpPort());
-    copy(get(configFileUri), get(file.getPath()), REPLACE_EXISTING);
+    file.setLastModified(currentTimeMillis());
 
     // We wait for the configuration to take place.
     sleep(2000);
@@ -174,7 +175,8 @@ public class ExportConfigurationChangeTestCase extends
     assertExpectedSpanTreeMonitoring(attributesToAssertExistence, exportedSpans, setPayloadAttributeMap);
 
     setProperty(TEST_LEVEL, OVERVIEW.name());
-    copy(get(configFileUri), get(file.getPath()), REPLACE_EXISTING);
+    // We update the last modified date.
+    file.setLastModified(currentTimeMillis());
     afterConfigurationChangeServer.reset();
 
     // We wait for the configuration to take place.
@@ -188,6 +190,7 @@ public class ExportConfigurationChangeTestCase extends
 
     // Copy a configuration with overrides
     copy(get(configFileUriWithOverrides), get(file.getPath()), REPLACE_EXISTING);
+    file.setLastModified(currentTimeMillis());
     afterConfigurationChangeServer.reset();
 
     // We wait for the configuration to take place.
