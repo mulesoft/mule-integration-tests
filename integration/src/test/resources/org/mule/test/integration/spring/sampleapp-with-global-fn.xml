@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+	<error-handler name="DefaultErrorHandler" doc:id="67a492ab-0885-43c8-b11f-705a8dc9d8a8" >
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" type="ANY">
+			<flow-ref doc:name="Flow Reference" doc:id="30d43fff-f72d-4431-a9cb-6ea96e55fc87" name="generic-error-handler-subflow" />
+			</on-error-propagate>
+	</error-handler>
+
+	<configuration doc:name="Configuration" doc:id="64c197f9-b4a5-4883-ae62-3cd32f347690" defaultErrorHandler-ref="DefaultErrorHandler">
+        <expression-language>
+            <global-functions>def printHello(){
+					return 'Hello';
+				}</global-functions>
+        </expression-language>
+    </configuration>
+
+	<flow name="main-flow">
+		<flow-ref name="generic-error-handler-subflow"/>
+	</flow>
+
+    <sub-flow name="generic-error-handler-subflow">
+		<logger level="INFO" doc:name="Logger" />
+		<set-payload value="Test payload"/>
+	</sub-flow>
+</mule>
