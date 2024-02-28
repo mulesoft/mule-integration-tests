@@ -75,6 +75,7 @@ public class ImplicitConfigurationLifeCycleTestCase extends AbstractIntegrationT
   @Issue("W-14722908")
   public void flowThatRegistersImplicitConfigurationDuringMuleContextStop() throws Exception {
     FlowRunner flowRunner = flowRunner("flowThatAddsRegistryEntryDuringFirstEventProcessing");
+    // Send a first event asynchronously (this allows stopping the mule context in the middle of it's processing).
     flowRunner.dispatchAsync(scheduler);
     // Wait until the sub flow signals it's initialization to start stopping the mule context.
     subflowIsInitializingLatch.await();
@@ -85,18 +86,19 @@ public class ImplicitConfigurationLifeCycleTestCase extends AbstractIntegrationT
         throw new RuntimeException(e);
       }
     });
-    // Check that the expected registration error happens
+    // Retrieve the first event expected error
     Message responseMessage = queueManager.read("flowErrorQueue", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
-    Error processingError = (Error) responseMessage.getPayload().getValue();
-    assertThat(processingError.getDescription(),
-               is("Could not add entry with key 'implicit-config-implicit': Registry was shutting down."));
-    assertThat(processingError.getDetailedDescription(),
-               is("Found exception while registering configuration provider 'implicit-config-implicit'"));
     eventHasBeenProcessedLatch.release();
-    // Restart the mule context and check that the flow can process an event without issues.
+    // Restart the mule context and check that the flow can process a second event without issues.
     muleContext.start();
     flowRunner.reset();
     flowRunner.run();
+    Error processingError = (Error) responseMessage.getPayload().getValue();
+    // Assert that the first event failed with the expected message.
+    assertThat(processingError.getDescription(),
+               is("Could not add entry with key 'implicit-config-implicit': Registry has been stopped."));
+    assertThat(processingError.getDetailedDescription(),
+               is("Found exception while registering configuration provider 'implicit-config-implicit'"));
   }
 
   public static class SignalMuleContextIsStopping implements Processor, Stoppable {
