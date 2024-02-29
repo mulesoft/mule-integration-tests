@@ -14,6 +14,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 import org.mule.functional.api.flow.FlowRunner;
 import org.mule.runtime.api.exception.MuleException;
@@ -21,12 +22,14 @@ import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.lifecycle.Initialisable;
 import org.mule.runtime.api.lifecycle.Stoppable;
 import org.mule.runtime.api.message.Error;
-import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.scheduler.Scheduler;
 import org.mule.runtime.api.util.concurrent.Latch;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
+import org.mule.tck.junit4.FlakinessDetectorTestRunner;
+import org.mule.tck.junit4.FlakyTest;
 import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.test.runner.RunnerDelegateTo;
 import org.mule.tests.api.TestQueueManager;
 
 import javax.inject.Inject;
@@ -40,18 +43,22 @@ import org.junit.Test;
 
 @Feature(REGISTRY)
 @Story(OBJECT_REGISTRATION)
+@RunnerDelegateTo(FlakinessDetectorTestRunner.class)
 public class ImplicitConfigurationLifeCycleTestCase extends AbstractIntegrationTestCase {
 
   private Scheduler scheduler;
-  private static final Latch subflowIsInitializingLatch = new Latch();
-  private static final Latch muleContextIsStoppingLatch = new Latch();
-  private static final Latch eventHasBeenProcessedLatch = new Latch();
+  private static Latch subflowIsInitializingLatch;
+  private static Latch muleContextIsStoppingLatch;
+  private static Latch eventHasBeenProcessedLatch;
 
   @Inject
   private TestQueueManager queueManager;
 
   @Before
   public void before() {
+    subflowIsInitializingLatch = new Latch();
+    muleContextIsStoppingLatch = new Latch();
+    eventHasBeenProcessedLatch = new Latch();
     scheduler =
         muleContext.getSchedulerService().ioScheduler(muleContext.getSchedulerBaseConfig().withShutdownTimeout(10, SECONDS));
   }
@@ -73,6 +80,7 @@ public class ImplicitConfigurationLifeCycleTestCase extends AbstractIntegrationT
 
   @Test
   @Issue("W-14722908")
+  @FlakyTest(times = 1000)
   public void flowThatRegistersImplicitConfigurationDuringMuleContextStop() throws Exception {
     FlowRunner flowRunner = flowRunner("flowThatAddsRegistryEntryDuringFirstEventProcessing");
     // Send a first event asynchronously (this allows stopping the mule context in the middle of it's processing).
@@ -87,13 +95,16 @@ public class ImplicitConfigurationLifeCycleTestCase extends AbstractIntegrationT
       }
     });
     // Retrieve the first event expected error
-    Message responseMessage = queueManager.read("flowErrorQueue", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
+    CoreEvent response = queueManager.read("flowErrorQueue", RECEIVE_TIMEOUT, MILLISECONDS);
+    if (response == null) {
+      fail("Timeout while waiting for the first event response");
+    }
     eventHasBeenProcessedLatch.release();
     // Restart the mule context and check that the flow can process a second event without issues.
     muleContext.start();
     flowRunner.reset();
     flowRunner.run();
-    Error processingError = (Error) responseMessage.getPayload().getValue();
+    Error processingError = (Error) response.getMessage().getPayload().getValue();
     // Assert that the first event failed with the expected message.
     assertThat(processingError.getDescription(),
                is("Could not add entry with key 'implicit-config-implicit': Registry has been stopped."));
