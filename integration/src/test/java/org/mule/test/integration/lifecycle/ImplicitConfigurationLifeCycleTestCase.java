@@ -86,7 +86,7 @@ public class ImplicitConfigurationLifeCycleTestCase extends AbstractIntegrationT
     // Send a first event asynchronously (this allows stopping the mule context in the middle of it's processing).
     flowRunner.dispatchAsync(scheduler);
     // Wait until the sub flow signals it's initialization to start stopping the mule context.
-    subflowIsInitializingLatch.await();
+    subflowIsInitializingLatch.await(RECEIVE_TIMEOUT, MILLISECONDS);
     scheduler.submit(() -> {
       try {
         muleContext.stop();
@@ -124,7 +124,7 @@ public class ImplicitConfigurationLifeCycleTestCase extends AbstractIntegrationT
       muleContextIsStoppingLatch.release();
       try {
         // Defer the rest of the flow under test stop until the event processing is done.
-        eventHasBeenProcessedLatch.await();
+        eventHasBeenProcessedLatch.await(RECEIVE_TIMEOUT, MILLISECONDS);
       } catch (InterruptedException e) {
         throw new RuntimeException(e);
       }
@@ -143,7 +143,7 @@ public class ImplicitConfigurationLifeCycleTestCase extends AbstractIntegrationT
       subflowIsInitializingLatch.release();
       try {
         // Defer the rest of the initialization until the mule context is being stopped.
-        muleContextIsStoppingLatch.await();
+        muleContextIsStoppingLatch.await(RECEIVE_TIMEOUT, MILLISECONDS);
       } catch (InterruptedException e) {
         throw new MuleRuntimeException(e);
       }
