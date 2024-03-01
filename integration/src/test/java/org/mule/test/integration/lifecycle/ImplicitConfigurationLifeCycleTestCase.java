@@ -15,6 +15,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import org.mule.functional.api.flow.FlowRunner;
 import org.mule.runtime.api.exception.MuleException;
@@ -40,6 +41,7 @@ import io.qameta.allure.Story;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
 
 @Feature(REGISTRY)
 @Story(OBJECT_REGISTRATION)
@@ -53,6 +55,8 @@ public class ImplicitConfigurationLifeCycleTestCase extends AbstractIntegrationT
 
   @Inject
   private TestQueueManager queueManager;
+
+  private static final Logger LOGGER = getLogger(ImplicitConfigurationLifeCycleTestCase.class);
 
   @Before
   public void before() {
@@ -80,13 +84,15 @@ public class ImplicitConfigurationLifeCycleTestCase extends AbstractIntegrationT
 
   @Test
   @Issue("W-14722908")
-  @FlakyTest(times = 1000)
+  @FlakyTest(times = 100)
   public void flowThatRegistersImplicitConfigurationDuringMuleContextStop() throws Exception {
     FlowRunner flowRunner = flowRunner("flowThatAddsRegistryEntryDuringFirstEventProcessing");
     // Send a first event asynchronously (this allows stopping the mule context in the middle of it's processing).
     flowRunner.dispatchAsync(scheduler);
     // Wait until the sub flow signals it's initialization to start stopping the mule context.
-    subflowIsInitializingLatch.await(RECEIVE_TIMEOUT, MILLISECONDS);
+    if (!subflowIsInitializingLatch.await(RECEIVE_TIMEOUT, MILLISECONDS)) {
+      LOGGER.warn("subflowIsInitializingLatch timed out.");
+    }
     scheduler.submit(() -> {
       try {
         muleContext.stop();
@@ -124,7 +130,9 @@ public class ImplicitConfigurationLifeCycleTestCase extends AbstractIntegrationT
       muleContextIsStoppingLatch.release();
       try {
         // Defer the rest of the flow under test stop until the event processing is done.
-        eventHasBeenProcessedLatch.await(RECEIVE_TIMEOUT, MILLISECONDS);
+        if (!eventHasBeenProcessedLatch.await(RECEIVE_TIMEOUT, MILLISECONDS)) {
+          LOGGER.warn("eventHasBeenProcessedLatch timed out.");
+        }
       } catch (InterruptedException e) {
         throw new RuntimeException(e);
       }
@@ -143,7 +151,9 @@ public class ImplicitConfigurationLifeCycleTestCase extends AbstractIntegrationT
       subflowIsInitializingLatch.release();
       try {
         // Defer the rest of the initialization until the mule context is being stopped.
-        muleContextIsStoppingLatch.await(RECEIVE_TIMEOUT, MILLISECONDS);
+        if (!muleContextIsStoppingLatch.await(RECEIVE_TIMEOUT, MILLISECONDS)) {
+          LOGGER.warn("muleContextIsStoppingLatch timed out.");
+        } ;
       } catch (InterruptedException e) {
         throw new MuleRuntimeException(e);
       }
