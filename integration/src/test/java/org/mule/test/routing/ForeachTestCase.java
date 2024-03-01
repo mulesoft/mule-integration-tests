@@ -15,8 +15,8 @@ import static org.mule.runtime.api.metadata.MediaType.APPLICATION_JSON;
 import static org.mule.runtime.api.metadata.MediaType.APPLICATION_XML;
 import static org.mule.sdk.api.error.MuleErrors.CONNECTIVITY;
 import static org.mule.tck.processor.FlowAssert.verify;
-import static org.mule.test.allure.AllureConstants.RoutersFeature.ForeachStory.FOR_EACH;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
+import static org.mule.test.allure.AllureConstants.RoutersFeature.ForeachStory.FOR_EACH;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonMap;
@@ -27,11 +27,11 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.startsWith;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.collection.IsArrayWithSize.arrayWithSize;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -54,16 +54,20 @@ import java.util.concurrent.CountDownLatch;
 import javax.inject.Inject;
 
 import com.google.common.collect.ImmutableList;
-import io.qameta.allure.Description;
-import io.qameta.allure.Feature;
-import io.qameta.allure.Issue;
-import io.qameta.allure.Story;
+
 import org.apache.commons.text.RandomStringGenerator;
-import org.hamcrest.core.Is;
+
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
+
+import org.hamcrest.core.Is;
+
+import io.qameta.allure.Description;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
+import io.qameta.allure.Story;
 
 @Feature(ROUTERS)
 @Story(FOR_EACH)
@@ -460,7 +464,7 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
-  public void mvelError() throws Exception {
+  public void errorExpression() throws Exception {
     MuleException me = (MuleException) flowRunner("errorExpression").runExpectingException();
     assertThat((String) me.getInfo().get(INFO_LOCATION_KEY), startsWith("errorExpression/processors/0 @"));
   }
