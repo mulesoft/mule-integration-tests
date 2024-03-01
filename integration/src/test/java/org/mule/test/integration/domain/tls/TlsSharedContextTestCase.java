@@ -6,18 +6,22 @@
  */
 package org.mule.test.integration.domain.tls;
 
-import static java.lang.String.format;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.mule.runtime.core.api.util.SystemUtils.getDefaultEncoding;
 import static org.mule.runtime.http.api.HttpConstants.Method.GET;
+
+import static java.lang.String.format;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 import org.mule.functional.api.flow.FlowRunner;
 import org.mule.functional.junit4.DomainFunctionalTestCase;
 import org.mule.runtime.api.artifact.Registry;
+import org.mule.runtime.api.message.Message;
+import org.mule.runtime.api.metadata.DataType;
 import org.mule.runtime.api.tls.TlsContextFactory;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.util.IOUtils;
-import org.mule.runtime.core.privileged.event.PrivilegedEvent;
 import org.mule.runtime.http.api.client.HttpClient;
 import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;
 import org.mule.runtime.http.api.domain.message.request.HttpRequest;
@@ -25,14 +29,14 @@ import org.mule.runtime.http.api.domain.message.response.HttpResponse;
 import org.mule.service.http.TestHttpClient;
 import org.mule.tck.junit4.rule.DynamicPort;
 
-import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.Test;
-
 import java.util.Collections;
 import java.util.Map;
 
 import javax.inject.Inject;
+
+import org.junit.Ignore;
+import org.junit.Rule;
+import org.junit.Test;
 
 import io.qameta.allure.Issue;
 
@@ -106,6 +110,14 @@ public class TlsSharedContextTestCase extends DomainFunctionalTestCase {
 
   private void testFlowForApp(String flowName, String appName, String expected) throws Exception {
     CoreEvent response = new FlowRunner(getInfrastructureForApp(appName).getRegistry(), flowName).withPayload(DATA).run();
-    assertThat(((PrivilegedEvent) response).getMessageAsString(getMuleContextForApp(appName)), is(expected));
+
+    final org.mule.runtime.core.api.MuleContext appMuleContext = getMuleContextForApp(appName);
+    Message transformedMessage = appMuleContext.getTransformationService()
+        .transform(response.getMessage(), DataType.builder()
+            .type(String.class)
+            .charset(getDefaultEncoding(appMuleContext.getConfiguration()))
+            .build());
+
+    assertThat((String) transformedMessage.getPayload().getValue(), is(expected));
   }
 }
