@@ -17,6 +17,7 @@
     <description>A Mule extension for testing the deprecated Oauth Client API</description>
 
     <properties>
+        <javaModuleName>org.mule.test.integration.extension.deprecated.oauth.client.api</javaModuleName>
         <formatterConfigPath>../../formatter.xml</formatterConfigPath>
         <skip.integration.tests>false</skip.integration.tests>
     </properties>

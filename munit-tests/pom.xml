@@ -11,10 +11,16 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>munit-tests</artifactId>
     <name>MUnit Integration Tests</name>
+    <packaging>pom</packaging>
 
     <properties>
-        <javaModuleName>org.mule.test.integration.munit</javaModuleName>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
     </properties>
+
+    <modules>
+        <module>munit-tests-functional</module>
+        <module>forward-compatibility-extension</module>
+        <module>test-oauth-extension-deprecated-oauth-client-api</module>
+    </modules>
 
 </project>
