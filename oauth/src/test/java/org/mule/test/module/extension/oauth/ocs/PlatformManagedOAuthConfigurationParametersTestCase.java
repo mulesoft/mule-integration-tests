@@ -94,7 +94,7 @@ public class PlatformManagedOAuthConfigurationParametersTestCase extends Platfor
         public Class<String> getType() {
           return null;
         }
-      }, ZONED_DATE_TIME_VALUE, EXTERNAL_POJO_VALUE);
+      }, ZONED_DATE_TIME_VALUE, EXTERNAL_POJO_VALUE, null);
   private static final String ZONED_DATE_TIME_FIELD_VALUE = "2021-04-27T12:00:00-03:00";
   private static final String ZONED_DATE_TIME_FIELD_NAME = "connectionTime";
   private static final String LITERAL_STRING_PARAMETER_IN_PG_VALUE = "literal1";
