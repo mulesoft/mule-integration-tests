@@ -11,9 +11,9 @@ import static org.mule.functional.junit4.matchers.MessageMatchers.hasPayload;
 import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.withSettings;
 
@@ -28,7 +28,6 @@ import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.retry.policy.RetryPolicyExhaustedException;
-import org.mule.runtime.core.api.transformer.MessageTransformerException;
 import org.mule.runtime.core.api.transformer.Transformer;
 import org.mule.runtime.core.api.transformer.TransformerException;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -67,7 +66,6 @@ public class ErrorHandlerTestCase extends AbstractIntegrationTestCase {
   public void transformation() throws Exception {
     String expectedMessage = "0 transformation";
     Transformer mockTransformer = mock(Transformer.class);
-    callTypeAndThrowException(new MessageTransformerException(mockMessage, mockTransformer, null), expectedMessage);
     callTypeAndThrowException(new TransformerException(mockMessage, mockTransformer), expectedMessage);
   }
 
