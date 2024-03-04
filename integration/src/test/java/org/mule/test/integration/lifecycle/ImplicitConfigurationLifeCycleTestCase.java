@@ -6,6 +6,7 @@
  */
 package org.mule.test.integration.lifecycle;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.mule.test.allure.AllureConstants.RegistryFeature.DomainObjectRegistrationStory.OBJECT_REGISTRATION;
 import static org.mule.test.allure.AllureConstants.RegistryFeature.REGISTRY;
 
@@ -13,7 +14,7 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.fail;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -30,6 +31,7 @@ import org.mule.runtime.core.api.processor.Processor;
 import org.mule.tck.junit4.FlakinessDetectorTestRunner;
 import org.mule.tck.junit4.FlakyTest;
 import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.test.implicit.config.extension.extension.api.ImplicitConfigExtension;
 import org.mule.test.runner.RunnerDelegateTo;
 import org.mule.tests.api.TestQueueManager;
 
@@ -101,21 +103,25 @@ public class ImplicitConfigurationLifeCycleTestCase extends AbstractIntegrationT
       }
     });
     // Retrieve the first event expected error
-    CoreEvent response = queueManager.read("flowErrorQueue", RECEIVE_TIMEOUT, MILLISECONDS);
-    if (response == null) {
-      fail("Timeout while waiting for the first event response");
+    CoreEvent errorResponse = queueManager.read("flowErrorQueue", RECEIVE_TIMEOUT, MILLISECONDS);
+    if (errorResponse == null) {
+      fail("Timeout while waiting for the event error response");
     }
     eventHasBeenProcessedLatch.release();
     // Restart the mule context and check that the flow can process a second event without issues.
     muleContext.start();
-    flowRunner.reset();
-    flowRunner.dispatch();
-    Error processingError = (Error) response.getMessage().getPayload().getValue();
-    // Assert that the first event failed with the expected message.
+    // New FlowRunner instance because once FlowRunner.dispatchAsync() is called FlowRunner.run() is also async.
+    flowRunner = flowRunner("flowThatAddsRegistryEntryDuringFirstEventProcessing");
+    CoreEvent successfulResponse = flowRunner.run();
+    // Assert that the first event processing failed with the expected message.
+    Error processingError = (Error) errorResponse.getMessage().getPayload().getValue();
     assertThat(processingError.getDescription(),
                is("Could not add entry with key 'implicit-config-implicit': Registry has been stopped."));
     assertThat(processingError.getDetailedDescription(),
                is("Found exception while registering configuration provider 'implicit-config-implicit'"));
+    // Assert that the second event processing succeeded.
+    assertThat(successfulResponse.getMessage().getPayload().getValue(),
+               instanceOf(ImplicitConfigExtension.class));
   }
 
   public static class SignalMuleContextIsStopping implements Processor, Stoppable {
