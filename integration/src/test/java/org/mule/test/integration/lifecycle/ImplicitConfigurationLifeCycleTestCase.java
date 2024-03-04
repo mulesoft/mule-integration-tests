@@ -84,7 +84,7 @@ public class ImplicitConfigurationLifeCycleTestCase extends AbstractIntegrationT
 
   @Test
   @Issue("W-14722908")
-  @FlakyTest(times = 100)
+  @FlakyTest(times = 200)
   public void flowThatRegistersImplicitConfigurationDuringMuleContextStop() throws Exception {
     FlowRunner flowRunner = flowRunner("flowThatAddsRegistryEntryDuringFirstEventProcessing");
     // Send a first event asynchronously (this allows stopping the mule context in the middle of it's processing).
@@ -109,7 +109,7 @@ public class ImplicitConfigurationLifeCycleTestCase extends AbstractIntegrationT
     // Restart the mule context and check that the flow can process a second event without issues.
     muleContext.start();
     flowRunner.reset();
-    flowRunner.run();
+    flowRunner.dispatch();
     Error processingError = (Error) response.getMessage().getPayload().getValue();
     // Assert that the first event failed with the expected message.
     assertThat(processingError.getDescription(),
