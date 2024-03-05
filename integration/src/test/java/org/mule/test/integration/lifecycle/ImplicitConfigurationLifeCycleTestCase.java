@@ -27,11 +27,8 @@ import org.mule.runtime.api.scheduler.Scheduler;
 import org.mule.runtime.api.util.concurrent.Latch;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
-import org.mule.tck.junit4.FlakinessDetectorTestRunner;
-import org.mule.tck.junit4.FlakyTest;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.implicit.config.extension.extension.api.ImplicitConfigExtension;
-import org.mule.test.runner.RunnerDelegateTo;
 import org.mule.tests.api.TestQueueManager;
 
 import javax.inject.Inject;
@@ -46,7 +43,6 @@ import org.slf4j.Logger;
 
 @Feature(REGISTRY)
 @Story(OBJECT_REGISTRATION)
-@RunnerDelegateTo(FlakinessDetectorTestRunner.class)
 public class ImplicitConfigurationLifeCycleTestCase extends AbstractIntegrationTestCase {
 
   private Scheduler scheduler;
@@ -86,12 +82,11 @@ public class ImplicitConfigurationLifeCycleTestCase extends AbstractIntegrationT
 
   @Test
   @Issue("W-14722908")
-  @FlakyTest(times = 200)
   public void flowThatRegistersImplicitConfigurationDuringMuleContextStop() throws Exception {
     FlowRunner flowRunner = flowRunner("flowThatAddsRegistryEntryDuringFirstEventProcessing");
-    // Send an event asynchronously (this allows stopping the mule context in the middle of it's processing).
+    // Send an event asynchronously (this allows stopping the mule context in the middle of its processing).
     flowRunner.dispatchAsync(scheduler);
-    // Wait until the sub flow signals it's initialization to start stopping the mule context.
+    // Wait until the sub flow signals its initialization to start stopping the mule context.
     if (!subflowIsInitializingLatch.await(RECEIVE_TIMEOUT, MILLISECONDS)) {
       LOGGER.warn("subflowIsInitializingLatch timed out.");
     }
@@ -102,7 +97,7 @@ public class ImplicitConfigurationLifeCycleTestCase extends AbstractIntegrationT
         throw new RuntimeException(e);
       }
     });
-    // Retrieve the expected event processing error
+    // Retrieve the expected event processing error.
     CoreEvent errorResponse = queueManager.read("flowErrorQueue", RECEIVE_TIMEOUT, MILLISECONDS);
     if (errorResponse == null) {
       fail("Timeout while waiting for the event error response");
