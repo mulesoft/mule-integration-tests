@@ -15,7 +15,6 @@
     <properties>
         <javaModuleName>org.mule.test.integration.ast.compatibility</javaModuleName>
         <formatterConfigPath>../../formatter.xml</formatterConfigPath>
-        <muleArtifactAstSerializerVersion>1.3.0-SNAPSHOT</muleArtifactAstSerializerVersion>
 
         <!-- Uses and old version of the Core Extension Models to simulate a miss-match with the AST and the parser that happened
         in the packager -->
@@ -26,19 +25,16 @@
         <dependency>
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-artifact-ast-serialization</artifactId>
-            <version>${muleArtifactAstSerializerVersion}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-artifact-ast-xml-parser</artifactId>
-            <version>${muleArtifactAstSerializerVersion}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-artifact-ast</artifactId>
-            <version>${muleArtifactAstSerializerVersion}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
