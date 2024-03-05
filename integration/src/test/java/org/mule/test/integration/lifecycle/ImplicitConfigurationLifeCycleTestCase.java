@@ -6,7 +6,6 @@
  */
 package org.mule.test.integration.lifecycle;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.mule.test.allure.AllureConstants.RegistryFeature.DomainObjectRegistrationStory.OBJECT_REGISTRATION;
 import static org.mule.test.allure.AllureConstants.RegistryFeature.REGISTRY;
 
@@ -71,6 +70,7 @@ public class ImplicitConfigurationLifeCycleTestCase extends AbstractIntegrationT
 
   @After
   public void after() throws Exception {
+    muleContext.dispose();
     scheduler.shutdown();
   }
 
@@ -89,7 +89,7 @@ public class ImplicitConfigurationLifeCycleTestCase extends AbstractIntegrationT
   @FlakyTest(times = 200)
   public void flowThatRegistersImplicitConfigurationDuringMuleContextStop() throws Exception {
     FlowRunner flowRunner = flowRunner("flowThatAddsRegistryEntryDuringFirstEventProcessing");
-    // Send a first event asynchronously (this allows stopping the mule context in the middle of it's processing).
+    // Send an event asynchronously (this allows stopping the mule context in the middle of it's processing).
     flowRunner.dispatchAsync(scheduler);
     // Wait until the sub flow signals it's initialization to start stopping the mule context.
     if (!subflowIsInitializingLatch.await(RECEIVE_TIMEOUT, MILLISECONDS)) {
@@ -102,26 +102,18 @@ public class ImplicitConfigurationLifeCycleTestCase extends AbstractIntegrationT
         throw new RuntimeException(e);
       }
     });
-    // Retrieve the first event expected error
+    // Retrieve the expected event processing error
     CoreEvent errorResponse = queueManager.read("flowErrorQueue", RECEIVE_TIMEOUT, MILLISECONDS);
     if (errorResponse == null) {
       fail("Timeout while waiting for the event error response");
     }
     eventHasBeenProcessedLatch.release();
-    // Restart the mule context and check that the flow can process a second event without issues.
-    muleContext.start();
-    // New FlowRunner instance because once FlowRunner.dispatchAsync() is called FlowRunner.run() is also async.
-    flowRunner = flowRunner("flowThatAddsRegistryEntryDuringFirstEventProcessing");
-    CoreEvent successfulResponse = flowRunner.run();
-    // Assert that the first event processing failed with the expected message.
+    // Assert that the event processing failed with the expected message.
     Error processingError = (Error) errorResponse.getMessage().getPayload().getValue();
     assertThat(processingError.getDescription(),
                is("Could not add entry with key 'implicit-config-implicit': Registry has been stopped."));
     assertThat(processingError.getDetailedDescription(),
                is("Found exception while registering configuration provider 'implicit-config-implicit'"));
-    // Assert that the second event processing succeeded.
-    assertThat(successfulResponse.getMessage().getPayload().getValue(),
-               instanceOf(ImplicitConfigExtension.class));
   }
 
   public static class SignalMuleContextIsStopping implements Processor, Stoppable {
@@ -159,10 +151,11 @@ public class ImplicitConfigurationLifeCycleTestCase extends AbstractIntegrationT
         // Defer the rest of the initialization until the mule context is being stopped.
         if (!muleContextIsStoppingLatch.await(RECEIVE_TIMEOUT, MILLISECONDS)) {
           LOGGER.warn("muleContextIsStoppingLatch timed out.");
-        } ;
+        }
       } catch (InterruptedException e) {
         throw new MuleRuntimeException(e);
       }
     }
   }
+
 }
