@@ -20,31 +20,30 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import io.qameta.allure.Description;
-import org.junit.rules.ExpectedException;
 import org.mule.runtime.module.deployment.impl.internal.builder.ApplicationFileBuilder;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.infrastructure.deployment.AbstractFakeMuleServerTestCase;
 
+import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 @Feature(INTEGRATIONS_TESTS)
 @Story(SINGLE_APP_DEPLOYMENT)
 public class SingleAppModeTestCase extends AbstractFakeMuleServerTestCase {
 
-  public static final String SIMPLE_APP_NAME = "simple-app";
+  private static final String SIMPLE_APP_NAME = "simple-app";
+  private static final String SECOND_SIMPLE_APP_NAME = "second-simple-app";
 
-  public static final String SECOND_SIMPLE_APP_NAME = "second-simple-app";
+  private static final String SIMPLE_APP_NAME_APP_DEPLOYMENT = "simple-app-1.0.0-mule-application";
+  private static final String SIMPLE_APP_ROUTE = "apps/simple-app/simple-app.xml";
+  private static final String SIMPLE_APP_LOG_CONF_ROUTE = "apps/simple-app/log4j2.xml";
 
-  public static final String SIMPLE_APP_NAME_APP_DEPLOYMENT = "simple-app-1.0.0-mule-application";
-  public static final String SIMPLE_APP_ROUTE = "apps/simple-app/simple-app.xml";
-  public static final String SIMPLE_APP_LOG_CONF_ROUTE = "apps/simple-app/log4j2.xml";
-
-  public static final long TIMEOUT = 5000;
-  public static final long POLLING_INTERVAL = 1000;
+  private static final long TIMEOUT = 5000;
+  private static final long POLLING_INTERVAL = 1000;
 
   @Rule
   public ExpectedException expected = ExpectedException.none();
@@ -103,5 +102,4 @@ public class SingleAppModeTestCase extends AbstractFakeMuleServerTestCase {
     muleServer.deploy(new ApplicationFileBuilder(SECOND_SIMPLE_APP_NAME).definedBy(SIMPLE_APP_ROUTE)
         .containingResource(SIMPLE_APP_LOG_CONF_ROUTE, "log4j2.xml").getArtifactFile().toURI().toURL(), SECOND_SIMPLE_APP_NAME);
   }
-
 }
