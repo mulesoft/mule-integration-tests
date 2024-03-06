@@ -6,13 +6,15 @@
  */
 package org.mule.test.core;
 
-import static java.util.Arrays.asList;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.mock;
 import static org.mule.tck.processor.FlowAssert.verify;
 
+import static java.util.Arrays.asList;
+
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+
+import org.mule.runtime.core.api.transaction.Transaction;
 import org.mule.runtime.core.api.transaction.TransactionCoordination;
-import org.mule.runtime.core.privileged.transaction.TransactionAdapter;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.runner.RunnerDelegateTo;
 
@@ -183,7 +185,7 @@ public class NonBlockingFunctionalTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void untilSuccessfulWithRetryTransactional() throws Exception {
-    TransactionCoordination.getInstance().bindTransaction(mock(TransactionAdapter.class));
+    TransactionCoordination.getInstance().bindTransaction(mock(Transaction.class));
 
     final CountDownLatch countDownLatch = new CountDownLatch(2);
 
