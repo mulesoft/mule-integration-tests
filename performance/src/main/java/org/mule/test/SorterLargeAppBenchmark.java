@@ -52,30 +52,4 @@ public class SorterLargeAppBenchmark extends AbstractSorterBenchmark {
     return graphSorter.getSortedObjects();
   }
 
-  @Benchmark
-  @BenchmarkMode(AverageTime)
-  public List<Object> largeAppSpringSorter() {
-    // add objects
-    LifecycleObjectSorter springSorter = getSpringSorter(springRegistry);
-    addObjectsToSorter(springSorter, lookupObjects);
-
-    // sort objects
-    return springSorter.getSortedObjects();
-  }
-
-  @Benchmark
-  @BenchmarkMode(AverageTime)
-  public void largeAppSpringSorterAddObjectsOnly() {
-    // add objects
-    LifecycleObjectSorter springSorter = getSpringSorter(springRegistry);
-    addObjectsToSorter(springSorter, lookupObjects);
-  }
-
-  @Benchmark
-  @BenchmarkMode(AverageTime)
-  public List<Object> largeAppSpringSorterGetSortedObjectsOnly() {
-    // sort objects
-    return springSorter.getSortedObjects();
-  }
-
 }

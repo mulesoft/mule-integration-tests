@@ -6,7 +6,6 @@
  */
 package org.mule.test.routing;
 
-import static org.mule.runtime.api.util.MuleSystemProperties.MULE_FLOW_TRACE;
 import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.startIfNeeded;
 import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.stopIfNeeded;
 import static org.mule.test.allure.AllureConstants.ExecutionEngineFeature.ExecutionEngineStory.BACKPRESSURE;
@@ -63,11 +62,6 @@ public class AsyncTestCase extends AbstractIntegrationTestCase {
 
   @Rule
   public SystemProperty maxConcurrency = new SystemProperty("maxConcurrency", "" + MAX_CONCURRENCY);
-
-  @Rule
-  // TODO MULE-17752: Remove this to re-enable flowTrace for this test case
-  public SystemProperty disableFlowStack = new SystemProperty(MULE_FLOW_TRACE, "false");
-
 
   private CountDownLatch terminationLatch;
 
