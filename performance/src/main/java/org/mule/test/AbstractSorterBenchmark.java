@@ -15,7 +15,6 @@ import org.mule.runtime.api.lifecycle.Initialisable;
 import org.mule.runtime.api.lock.LockFactory;
 import org.mule.runtime.api.store.ObjectStoreManager;
 import org.mule.runtime.config.internal.DependencyGraphLifecycleObjectSorter;
-import org.mule.runtime.config.internal.registry.SpringLifecycleObjectSorter;
 import org.mule.runtime.config.internal.registry.SpringRegistry;
 import org.mule.runtime.config.internal.resolvers.AutoDiscoveredDependencyResolver;
 import org.mule.runtime.config.internal.resolvers.ConfigurationDependencyResolver;
@@ -59,7 +58,6 @@ public class AbstractSorterBenchmark extends FunctionalTestCase {
   protected Map<String, Object> lookupObjects;
   protected DependencyGraphBeanDependencyResolver resolver;
   protected DependencyGraphLifecycleObjectSorter graphSorter;
-  protected SpringLifecycleObjectSorter springSorter;
 
   public static final Class<?>[] allowedTypes = new Class<?>[] {
       LockFactory.class,
@@ -92,8 +90,6 @@ public class AbstractSorterBenchmark extends FunctionalTestCase {
 
     graphSorter = getGraphSorter(resolver);
     addObjectsToSorter(graphSorter, lookupObjects);
-    springSorter = getSpringSorter(springRegistry);
-    addObjectsToSorter(springSorter, lookupObjects);
   }
 
   public MuleContext getMuleContext() {
@@ -120,10 +116,6 @@ public class AbstractSorterBenchmark extends FunctionalTestCase {
 
   protected DependencyGraphLifecycleObjectSorter getGraphSorter(DependencyGraphBeanDependencyResolver resolver) {
     return new DependencyGraphLifecycleObjectSorter(resolver, allowedTypes);
-  }
-
-  protected SpringLifecycleObjectSorter getSpringSorter(SpringRegistry springRegistry) {
-    return new SpringLifecycleObjectSorter(allowedTypes, springRegistry);
   }
 
   protected void addObjectsToSorter(LifecycleObjectSorter sorter, Map<String, Object> lookupObjects) {
