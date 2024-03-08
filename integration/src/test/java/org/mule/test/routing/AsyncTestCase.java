@@ -6,21 +6,20 @@
  */
 package org.mule.test.routing;
 
-import static org.mule.runtime.api.util.MuleSystemProperties.MULE_FLOW_TRACE;
 import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.startIfNeeded;
 import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.stopIfNeeded;
 import static org.mule.test.allure.AllureConstants.ExecutionEngineFeature.ExecutionEngineStory.BACKPRESSURE;
 import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.GracefulShutdownStory.GRACEFUL_SHUTDOWN_STORY;
-import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
-import static org.mule.test.allure.AllureConstants.RoutersFeature.AsyncStory.ASYNC;
+import static org.mule.test.allure.AllureConstants.ScopeFeature.SCOPE;
+import static org.mule.test.allure.AllureConstants.ScopeFeature.AsyncStory.ASYNC;
 import static org.mule.test.allure.AllureConstants.TransactionFeature.LocalStory.LOCAL_TRANSACTION;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.assertThat;
 
 import org.mule.functional.api.flow.FlowRunner;
 import org.mule.runtime.api.component.location.Location;
@@ -49,7 +48,7 @@ import io.qameta.allure.Issue;
 import io.qameta.allure.Stories;
 import io.qameta.allure.Story;
 
-@Feature(ROUTERS)
+@Feature(SCOPE)
 @Story(ASYNC)
 public class AsyncTestCase extends AbstractIntegrationTestCase {
 
@@ -63,11 +62,6 @@ public class AsyncTestCase extends AbstractIntegrationTestCase {
 
   @Rule
   public SystemProperty maxConcurrency = new SystemProperty("maxConcurrency", "" + MAX_CONCURRENCY);
-
-  @Rule
-  // TODO MULE-17752: Remove this to re-enable flowTrace for this test case
-  public SystemProperty disableFlowStack = new SystemProperty(MULE_FLOW_TRACE, "false");
-
 
   private CountDownLatch terminationLatch;
 
