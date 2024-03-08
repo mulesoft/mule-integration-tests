@@ -17,7 +17,7 @@ import org.mule.functional.api.exception.ExpectedError;
 import org.mule.runtime.api.security.UnauthorisedException;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.runtime.core.api.processor.Processor;
-import org.mule.runtime.core.privileged.routing.RoutingException;
+import org.mule.runtime.core.internal.routing.result.RoutingException;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import io.qameta.allure.Feature;

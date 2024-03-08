@@ -20,7 +20,7 @@ import org.mule.extension.validation.api.ValidationException;
 import org.mule.functional.api.exception.ExpectedError;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.event.CoreEvent;
-import org.mule.runtime.core.privileged.routing.CompositeRoutingException;
+import org.mule.runtime.core.internal.routing.result.CompositeRoutingException;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.tests.api.TestQueueManager;
 
