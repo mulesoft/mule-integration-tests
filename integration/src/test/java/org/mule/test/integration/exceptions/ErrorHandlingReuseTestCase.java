@@ -6,24 +6,25 @@
  */
 package org.mule.test.integration.exceptions;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
 import static org.mule.functional.junit4.matchers.MessageMatchers.hasPayload;
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 import static org.mule.tck.junit4.matcher.EventMatcher.hasMessage;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+
 import org.mule.functional.api.exception.ExpectedError;
+import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.security.UnauthorisedException;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
-import org.mule.runtime.core.api.processor.Processor;
-import org.mule.runtime.core.privileged.routing.RoutingException;
 import org.mule.test.AbstractIntegrationTestCase;
+
+import org.junit.Rule;
+import org.junit.Test;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
-import org.junit.Rule;
-import org.junit.Test;
 
 @Feature(ERROR_HANDLING)
 @Story("Error Handling Reuse")
@@ -71,15 +72,15 @@ public class ErrorHandlingReuseTestCase extends AbstractIntegrationTestCase {
   @Test
   public void goesThroughReferencedOnError() throws Exception {
     verifyFlowWhenThrowing("withSharedHandlersInline",
-                           new RoutingException(createStaticMessage("Wrong turn"), mock(Processor.class)),
-                           " routing");
+                           new ConnectionException("Wrong turn"),
+                           " connectivity");
   }
 
   @Test
   public void usesReferencedErrorHandlerInTry() throws Exception {
     verifyFlowWhenThrowing("withTryAndSharedHandler",
-                           new RoutingException(createStaticMessage("Wrong turn"), mock(Processor.class)),
-                           " hey routing");
+                           new ConnectionException("Wrong turn"),
+                           " hey connectivity");
   }
 
   @Test
