@@ -39,8 +39,8 @@
         <flow-ref name="throw-exception"/>
         <error-handler>
             <on-error ref="sharedExpressionErrorHandler"/>
-            <on-error-continue type="ROUTING">
-                <set-payload value="#[payload ++ ' routing']"/>
+            <on-error-continue type="CONNECTIVITY">
+                <set-payload value="#[payload ++ ' connectivity']"/>
             </on-error-continue>
             <on-error-propagate>
                 <set-payload value="#[payload ++ ' any']"/>
@@ -62,8 +62,8 @@
             <flow-ref name="throw-exception"/>
             <error-handler>
                 <on-error ref="sharedExpressionErrorHandler"/>
-                <on-error-continue type="ROUTING">
-                    <set-payload value="#[payload ++ ' routing']"/>
+                <on-error-continue type="CONNECTIVITY">
+                    <set-payload value="#[payload ++ ' connectivity']"/>
                 </on-error-continue>
                 <on-error-propagate>
                     <set-payload value="#[payload ++ ' any']"/>
@@ -71,5 +71,5 @@
             </error-handler>
         </try>
     </flow>
-
+    
 </mule>

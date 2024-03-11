@@ -24,10 +24,10 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.startsWith;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.both;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.junit.rules.ExpectedException.none;
 
@@ -112,7 +112,7 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
   @Test
   @Description("Router times out if routes take longer than the timeout configured to complete.")
   public void timeout() throws Exception {
-    expectedException.expectCause(withClassName("org.mule.runtime.core.privileged.routing.CompositeRoutingException"));
+    expectedException.expectCause(withClassName("org.mule.runtime.core.internal.routing.result.CompositeRoutingException"));
     flowRunner("timeout").run();
   }
 
@@ -168,7 +168,7 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
       flowRunner(flow).run();
       fail("Was expecting a failure");
     } catch (Exception e) {
-      assertThat(e.getCause(), withClassName("org.mule.runtime.core.privileged.routing.CompositeRoutingException"));
+      assertThat(e.getCause(), withClassName("org.mule.runtime.core.internal.routing.result.CompositeRoutingException"));
 
       Throwable compositeRoutingException = e.getCause();
       exceptionMessageMatcher.accept(compositeRoutingException.getMessage());

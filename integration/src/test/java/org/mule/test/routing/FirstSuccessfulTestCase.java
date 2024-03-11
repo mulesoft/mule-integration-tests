@@ -14,7 +14,7 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.mule.extension.validation.api.ValidationException;
 import org.mule.functional.api.exception.ExpectedError;
@@ -116,7 +116,6 @@ public class FirstSuccessfulTestCase extends AbstractIntegrationTestCase {
   @Issue("W-10619792")
   @Description("When a First Successful is followed by a Raise Error inside a Scatter Gather's route, should error.")
   public void firstSuccessfulAndRaiseErrorInsideScatterGather() throws Exception {
-    expectedError.expectCause(instanceOf(CompositeRoutingException.class));
     expectedError.expectErrorType("MULE", "COMPOSITE_ROUTING");
     flowRunner("firstSuccessfulAndRaiseErrorInsideScatterGather").run();
   }
