@@ -28,8 +28,8 @@ import org.mule.runtime.core.internal.context.DefaultMuleContext;
 import org.mule.runtime.core.internal.el.DefaultExpressionManager;
 import org.mule.runtime.core.internal.registry.TransformerResolver;
 import org.mule.runtime.core.internal.transformer.DefaultTransformersRegistry;
+import org.mule.runtime.core.internal.transformer.TransformersRegistry;
 import org.mule.runtime.core.internal.transformer.simple.StringToBoolean;
-import org.mule.runtime.core.privileged.transformer.TransformersRegistry;
 import org.mule.runtime.feature.internal.config.DefaultFeatureFlaggingService;
 
 import java.util.Collection;
