@@ -178,7 +178,7 @@
         {
           "name": "foreach",
           "declaringExtension": "mule",
-          "kind": "CONSTRUCT",
+          "kind": "OPERATION",
           "customConfigurationParameters": [],
           "metadataProperties": {},
           "parameterGroups": [],
