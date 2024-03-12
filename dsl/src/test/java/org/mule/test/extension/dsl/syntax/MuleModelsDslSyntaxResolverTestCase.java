@@ -12,8 +12,10 @@ import static org.mule.runtime.internal.dsl.DslConstants.CORE_PREFIX;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
+import org.mule.runtime.api.meta.model.ComponentModel;
 import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.api.meta.model.construct.ConstructModel;
+import org.mule.runtime.api.meta.model.operation.OperationModel;
 import org.mule.runtime.core.api.extension.provider.MuleExtensionModelProvider;
 import org.mule.runtime.extension.api.dsl.syntax.DslElementSyntax;
 import org.mule.runtime.extension.api.dsl.syntax.resolver.DslSyntaxResolver;
@@ -89,7 +91,7 @@ public class MuleModelsDslSyntaxResolverTestCase {
 
   @Test
   public void choiceComponentDslSyntax() {
-    ConstructModel construct = extensionModel.getConstructModel(CHOICE_COMPONENT).get();
+    OperationModel construct = extensionModel.getOperationModel(CHOICE_COMPONENT).get();
     DslElementSyntax constructSyntax = dslSyntaxResolver.resolve(construct);
 
     Optional<DslElementSyntax> whenSyntax = constructSyntax.getChild("when");
@@ -131,29 +133,34 @@ public class MuleModelsDslSyntaxResolverTestCase {
     assertComponentWithRouteDsl(ROUND_ROBIN_COMPONENT);
   }
 
+  private ComponentModel getComponent(String modelName) {
+    return (modelName.equals(FLOW_COMPONENT) || modelName.equals(SUBFLOW_COMPONENT))
+        ? extensionModel.getConstructModel(modelName).get()
+        : extensionModel.getOperationModel(modelName).get();
+  }
+
   private void assertComponentDsl(String modelName, String... attributes) {
-    DslElementSyntax constructSyntax = getAndAssertConstruct(modelName, attributes);
+    DslElementSyntax constructSyntax = assertComponent(getComponent(modelName), attributes);
     Optional<DslElementSyntax> processorsSyntax = constructSyntax.getChild("processors");
     assertThat(processorsSyntax.isPresent(), is(false));
   }
 
   private void assertComponentWithRouteDsl(String modelName, String... attributes) {
-    DslElementSyntax constructSyntax = getAndAssertConstruct(modelName, attributes);
+    DslElementSyntax constructSyntax = assertComponent(getComponent(modelName), attributes);
     Optional<DslElementSyntax> routeSyntax = constructSyntax.getChild("route");
     assertThat(routeSyntax.isPresent(), is(true));
     Optional<DslElementSyntax> processorsSyntax = routeSyntax.get().getChild("processors");
     assertThat(processorsSyntax.isPresent(), is(false));
   }
 
-  private DslElementSyntax getAndAssertConstruct(String modelName, String[] attributes) {
-    ConstructModel construct = extensionModel.getConstructModel(modelName).get();
-    DslElementSyntax constructSyntax = dslSyntaxResolver.resolve(construct);
+  private DslElementSyntax assertComponent(ComponentModel component, String[] attributes) {
+    DslElementSyntax componentSyntax = dslSyntaxResolver.resolve(component);
 
-    assertThat(constructSyntax.getPrefix(), is(CORE_PREFIX));
-    assertThat(constructSyntax.getNamespace(), is(CORE_NAMESPACE));
+    assertThat(componentSyntax.getPrefix(), is(CORE_PREFIX));
+    assertThat(componentSyntax.getNamespace(), is(CORE_NAMESPACE));
 
-    Arrays.stream(attributes).forEach(attribute -> assertParameterAttribute(constructSyntax, attribute));
-    return constructSyntax;
+    Arrays.stream(attributes).forEach(attribute -> assertParameterAttribute(componentSyntax, attribute));
+    return componentSyntax;
   }
 
   private void assertParameterAttribute(DslElementSyntax dslElementSyntax, String parameterName) {

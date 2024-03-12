@@ -5,11 +5,43 @@
             <scheduling-strategy/>
         </scheduler>
     </flow>
+    <flow name="flowFor-async">
+        <async maxConcurrency="10000" name="Attribute">
+            <logger/>
+        </async>
+    </flow>
+    <flow name="flowFor-choice">
+        <choice target="Attribute" targetValue="#[payload]">
+            <when expression="Attribute">
+                <logger/>
+            </when>
+            <otherwise>
+                <logger/>
+            </otherwise>
+        </choice>
+    </flow>
+    <flow name="flowFor-firstSuccessful">
+        <first-successful target="Attribute" targetValue="#[payload]">
+            <route>
+                <logger/>
+            </route>
+        </first-successful>
+    </flow>
+    <flow name="flowFor-foreach">
+        <foreach batchSize="10000" collection="#[payload]" counterVariableName="counter" rootMessageVariableName="rootMessage">
+            <logger/>
+        </foreach>
+    </flow>
     <flow name="flowFor-idempotentMessageValidator">
         <idempotent-message-validator idExpression="#[correlationId]" objectStore="OS:OBJECT_STORE" storePrefix="Attribute" valueExpression="#[correlationId]"/>
     </flow>
     <flow name="flowFor-logger">
         <logger category="Attribute" level="INFO" message="Attribute"/>
+    </flow>
+    <flow name="flowFor-parallelForeach">
+        <parallel-foreach collection="#[payload]" maxConcurrency="2147483647" target="Attribute" targetValue="#[payload]" timeout="9223372036854775807">
+            <logger/>
+        </parallel-foreach>
     </flow>
     <flow name="flowFor-parseTemplate">
         <parse-template location="Attribute" outputEncoding="Attribute" outputMimeType="Attribute" target="Attribute" targetValue="#[payload]">
@@ -22,26 +54,37 @@
     <flow name="flowFor-removeVariable">
         <remove-variable variableName="Attribute"/>
     </flow>
+    <flow name="flowFor-roundRobin">
+        <round-robin target="Attribute" targetValue="#[payload]">
+            <route>
+                <logger/>
+            </route>
+        </round-robin>
+    </flow>
+    <flow name="flowFor-scatterGather">
+        <scatter-gather maxConcurrency="2147483647" target="Attribute" targetValue="#[payload]" timeout="9223372036854775807">
+            <collect-list/>
+            <route>
+                <logger/>
+            </route>
+        </scatter-gather>
+    </flow>
     <flow name="flowFor-setPayload">
         <set-payload encoding="Attribute" mimeType="Attribute" value="Attribute"/>
     </flow>
     <flow name="flowFor-setVariable">
         <set-variable encoding="Attribute" mimeType="Attribute" value="Attribute" variableName="Attribute"/>
     </flow>
-    <flow name="flowFor-async">
-        <async maxConcurrency="10000" name="Attribute">
+    <flow name="flowFor-try">
+        <try target="Attribute" targetValue="#[payload]" transactionType="LOCAL" transactionalAction="INDIFFERENT">
             <logger/>
-        </async>
+            <logger/>
+        </try>
     </flow>
-    <flow name="flowFor-choice">
-        <choice>
-            <when expression="Attribute">
-                <logger/>
-            </when>
-            <otherwise>
-                <logger/>
-            </otherwise>
-        </choice>
+    <flow name="flowFor-untilSuccessful">
+        <until-successful maxRetries="5" millisBetweenRetries="60000" target="Attribute" targetValue="#[payload]">
+            <logger/>
+        </until-successful>
     </flow>
     <configuration correlationIdGeneratorExpression="#['ExpressionAttribute']" defaultErrorHandler-ref="MULE:ERROR_HANDLER" defaultObjectSerializer-ref="MULE:SERIALIZER" defaultResponseTimeout="10000" defaultTransactionTimeout="30000" inheritIterableRepeatability="false" maxQueueTransactionFilesSize="500" shutdownTimeout="5000">
         <dynamic-config-expiration frequency="5" timeUnit="MINUTES">
@@ -63,22 +106,10 @@
         </on-error-propagate>
         <logger/>
     </error-handler>
-    <flow name="flowFor-firstSuccessful">
-        <first-successful>
-            <route>
-                <logger/>
-            </route>
-        </first-successful>
-    </flow>
     <flow initialState="started" maxConcurrency="10000" name="global-flow">
         <logger/>
         <logger/>
         <logger/>
-    </flow>
-    <flow name="flowFor-foreach">
-        <foreach batchSize="10000" collection="#[payload]" counterVariableName="counter" rootMessageVariableName="rootMessage">
-            <logger/>
-        </foreach>
     </flow>
     <global-property name="Attribute" value="Attribute"/>
     <notifications dynamic="false">
@@ -93,26 +124,6 @@
     <on-error-propagate enableNotifications="true" logException="true" name="global-onErrorPropagate" type="Attribute" when="Attribute">
         <logger/>
     </on-error-propagate>
-    <flow name="flowFor-parallelForeach">
-        <parallel-foreach collection="#[payload]" maxConcurrency="2147483647" target="Attribute" targetValue="#[payload]" timeout="9223372036854775807">
-            <logger/>
-        </parallel-foreach>
-    </flow>
-    <flow name="flowFor-roundRobin">
-        <round-robin>
-            <route>
-                <logger/>
-            </route>
-        </round-robin>
-    </flow>
-    <flow name="flowFor-scatterGather">
-        <scatter-gather maxConcurrency="2147483647" target="Attribute" targetValue="#[payload]" timeout="9223372036854775807">
-            <collect-list/>
-            <route>
-                <logger/>
-            </route>
-        </scatter-gather>
-    </flow>
     <security-manager>
         <logger/>
         <logger/>
@@ -122,15 +133,4 @@
     <sub-flow name="global-subFlow">
         <logger/>
     </sub-flow>
-    <flow name="flowFor-try">
-        <try transactionType="LOCAL" transactionalAction="INDIFFERENT">
-            <logger/>
-            <logger/>
-        </try>
-    </flow>
-    <flow name="flowFor-untilSuccessful">
-        <until-successful maxRetries="5" millisBetweenRetries="60000">
-            <logger/>
-        </until-successful>
-    </flow>
 </mule>
