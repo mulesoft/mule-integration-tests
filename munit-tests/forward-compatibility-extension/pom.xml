@@ -21,8 +21,6 @@
         <javaModuleName>org.mule.test.integration.extension.forward.compatibility</javaModuleName>
         <testExtensionModelLoaderId>java</testExtensionModelLoaderId>
         <formatterConfigPath>../../formatter.xml</formatterConfigPath>
-        <mule.sdk.api.version>0.9.0-SNAPSHOT</mule.sdk.api.version>
-        <mule.sdk.compatibility.api.version>0.9.0-SNAPSHOT</mule.sdk.compatibility.api.version>
 
         <munit.input.directory>src/test/munit</munit.input.directory>
         <munit.output.directory>${basedir}/target/test-mule/munit</munit.output.directory>
@@ -46,7 +44,7 @@
         <dependency>
             <groupId>org.mule.sdk</groupId>
             <artifactId>mule-sdk-compatibility-api</artifactId>
-            <version>${mule.sdk.compatibility.api.version}</version>
+            <version>${mule.sdk.api.version}</version>
         </dependency>
     </dependencies>
 
