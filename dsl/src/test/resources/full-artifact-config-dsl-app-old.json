@@ -397,7 +397,7 @@
   {
     "name": "choice",
     "declaringExtension": "mule",
-    "kind": "CONSTRUCT",
+    "kind": "OPERATION",
     "customConfigurationParameters": [],
     "metadataProperties": {},
     "parameterGroups": [],
@@ -452,7 +452,7 @@
   {
     "name": "foreach",
     "declaringExtension": "mule",
-    "kind": "CONSTRUCT",
+    "kind": "OPERATION",
     "customConfigurationParameters": [],
     "metadataProperties": {},
     "parameterGroups": [
@@ -589,7 +589,7 @@
   {
     "name": "try",
     "declaringExtension": "mule",
-    "kind": "CONSTRUCT",
+    "kind": "OPERATION",
     "customConfigurationParameters": [],
     "metadataProperties": {},
     "parameterGroups": [],
