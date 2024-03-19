@@ -21,6 +21,8 @@
         <javaModuleName>org.mule.test.integration.tracing</javaModuleName>
         <skipExportTests>false</skipExportTests>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
+
+        <openTelemetryProtoVersion>0.3.0</openTelemetryProtoVersion>
     </properties>
 
     <dependencyManagement>
@@ -29,13 +31,6 @@
                 <groupId>org.mule</groupId>
                 <artifactId>mule-runtime-bom</artifactId>
                 <version>${muleBomVersion}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.testcontainers</groupId>
-                <artifactId>testcontainers-bom</artifactId>
-                <version>1.17.6</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -304,19 +299,11 @@
         <dependency>
             <groupId>com.linecorp.armeria</groupId>
             <artifactId>armeria-junit4</artifactId>
-            <version>1.20.3</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.linecorp.armeria</groupId>
             <artifactId>armeria-grpc</artifactId>
-            <version>1.20.3</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.opentelemetry</groupId>
-            <artifactId>opentelemetry-proto</artifactId>
-            <version>0.17.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -325,22 +312,10 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.google.protobuf</groupId>
-            <artifactId>protobuf-java</artifactId>
-            <version>${protobufVersion}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>io.opentelemetry</groupId>
             <artifactId>opentelemetry-proto</artifactId>
             <version>${openTelemetryProtoVersion}</version>
             <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.google.protobuf</groupId>
-                    <artifactId>protobuf-java</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <!-- This module uses the standalone lib to address an incompatibility between the jetty version wiremock is compiled against and the jetty version used in the test suite -->
         <dependency>

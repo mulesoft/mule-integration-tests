@@ -32,13 +32,6 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-            <dependency>
-                <groupId>org.testcontainers</groupId>
-                <artifactId>testcontainers-bom</artifactId>
-                <version>1.17.6</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -223,13 +216,11 @@
         <dependency>
             <groupId>com.linecorp.armeria</groupId>
             <artifactId>armeria-junit4</artifactId>
-            <version>1.20.3</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.linecorp.armeria</groupId>
             <artifactId>armeria-grpc</artifactId>
-            <version>1.20.3</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -241,12 +232,6 @@
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.google.protobuf</groupId>
-            <artifactId>protobuf-java</artifactId>
-            <version>${protobufVersion}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

@@ -43,9 +43,7 @@
         <munitExtensionsMavenPlugin>1.1.3</munitExtensionsMavenPlugin>
 
         <apacheHttpClientVersion>4.5.13</apacheHttpClientVersion>
-        <assertJVersion>3.5.2</assertJVersion>
         <jacksonVersion>2.15.0</jacksonVersion>
-        <jettyVersion>9.4.53.v20231009</jettyVersion>
         <springVersion>5.1.6.RELEASE</springVersion>
         <wireMockVersion>2.27.2</wireMockVersion>
 
@@ -54,9 +52,6 @@
 
         <muleBomVersion>4.7.0-SNAPSHOT</muleBomVersion>
 
-        <protobufVersion>3.21.9</protobufVersion>
-        <openTelemetryProtoVersion>0.3.0</openTelemetryProtoVersion>
-    
         <skipMuleModuleMojos>true</skipMuleModuleMojos>
     </properties>
 
