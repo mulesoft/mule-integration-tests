@@ -13,8 +13,6 @@ import static org.hamcrest.core.Is.is;
 import static org.mule.runtime.api.meta.model.parameter.ParameterGroupModel.DEFAULT_GROUP_NAME;
 import static org.mule.runtime.extension.api.ExtensionConstants.RECONNECTION_STRATEGY_PARAMETER_NAME;
 import static org.mule.runtime.extension.api.ExtensionConstants.TLS_PARAMETER_NAME;
-import static org.mule.runtime.internal.dsl.DslConstants.KEY_ATTRIBUTE_NAME;
-import static org.mule.runtime.internal.dsl.DslConstants.VALUE_ATTRIBUTE_NAME;
 
 import org.mule.metadata.api.model.ObjectType;
 import org.mule.runtime.api.component.ComponentIdentifier;
@@ -39,6 +37,9 @@ import org.junit.Rule;
 import org.junit.Test;
 
 public class ConfigurationBasedElementModelFactoryTestCase extends AbstractElementModelTestCase {
+
+  private static final String KEY_ATTRIBUTE_NAME = "key";
+  private static final String VALUE_ATTRIBUTE_NAME = "value";
 
   @Rule
   public DynamicPort port = new DynamicPort("port");
