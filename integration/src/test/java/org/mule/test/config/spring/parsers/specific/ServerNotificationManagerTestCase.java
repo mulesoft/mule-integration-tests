@@ -8,6 +8,7 @@ package org.mule.test.config.spring.parsers.specific;
 
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.instanceOf;
@@ -17,7 +18,6 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.IsIterableContaining.hasItem;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -48,6 +48,9 @@ import org.hamcrest.TypeSafeMatcher;
 public class ServerNotificationManagerTestCase extends AbstractIntegrationTestCase {
 
   @Inject
+  private ServerNotificationManager manager;
+
+  @Inject
   private TestListener listener;
 
   @Inject
@@ -76,13 +79,11 @@ public class ServerNotificationManagerTestCase extends AbstractIntegrationTestCa
 
   @Test
   public void testDynamicAttribute() {
-    ServerNotificationManager manager = muleContext.getNotificationManager();
     assertThat(manager.isNotificationDynamic(), is(true));
   }
 
   @Test
   public void testRoutingConfiguration() {
-    ServerNotificationManager manager = muleContext.getNotificationManager();
     assertThat(manager.getInterfaceToTypes().entrySet(), hasSize(greaterThan(2)));
     Object ifaces = manager.getInterfaceToTypes().get(TestInterface.class);
     assertThat(ifaces, not(nullValue()));
@@ -96,7 +97,6 @@ public class ServerNotificationManagerTestCase extends AbstractIntegrationTestCa
 
   @Test
   public void testSimpleNotification() throws InterruptedException {
-    ServerNotificationManager manager = muleContext.getNotificationManager();
     Collection<ListenerSubscriptionPair> listeners = manager.getListeners();
     // Now all transformers are registered as listeners in order to get a context disposing notification
     assertThat(listeners, hasSize(greaterThan(5)));
@@ -111,7 +111,6 @@ public class ServerNotificationManagerTestCase extends AbstractIntegrationTestCa
 
   @Test
   public void testExplicitlyConiguredNotificationListenerRegistration() throws InterruptedException {
-    ServerNotificationManager manager = muleContext.getNotificationManager();
     assertThat(manager.getListeners(), hasItem(withListener(listener)));
     assertThat(manager.getListeners(), hasItem(withListener(listener2)));
     assertThat(manager.getListeners(), hasItem(withListener(securityListener)));
@@ -124,15 +123,12 @@ public class ServerNotificationManagerTestCase extends AbstractIntegrationTestCa
 
   @Test
   public void testAdhocNotificationListenerRegistrations() throws InterruptedException {
-    ServerNotificationManager manager = muleContext.getNotificationManager();
-
     // Registered as configured
     assertThat(manager.getListeners(), hasItem(withListener(listener4)));
   }
 
   @Test
   public void testDisabledNotification() throws Exception {
-    ServerNotificationManager manager = muleContext.getNotificationManager();
     Collection<ListenerSubscriptionPair> listeners = manager.getListeners();
     // Now all transformers are registered as listeners in order to get a context disposing notification
     assertThat(listeners, hasSize(greaterThan(5)));
@@ -208,7 +204,7 @@ public class ServerNotificationManagerTestCase extends AbstractIntegrationTestCa
   protected static class TestEvent extends AbstractServerNotification {
 
     public TestEvent() {
-      super(new Object(), 0);
+      super(new Object(), NO_ACTION_ID);
     }
 
     @Override
@@ -225,7 +221,7 @@ public class ServerNotificationManagerTestCase extends AbstractIntegrationTestCa
     }
 
     public TestSecurityEvent(MuleContext muleContext) throws Exception {
-      super(new UnauthorisedException(createStaticMessage("dummy")), 0);
+      super(new UnauthorisedException(createStaticMessage("dummy")), NO_ACTION_ID);
     }
 
     @Override
