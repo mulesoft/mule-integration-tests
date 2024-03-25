@@ -39,7 +39,9 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
 @Story(LOGGING_LIBS_SUPPORT)
 public class LoggingLibsSupportTestCase extends AbstractFakeMuleServerTestCase {
 
-  private static final long PROBE_TIMEOUT = 5000;
+  // The processor that logs the expected messages is triggered by a scheduler, and the loggers are flushed
+  // asynchronously. We use a timeout longer than the default here to mitigate flakiness.
+  private static final long LOGGERS_PROBE_TIMEOUT = 5000;
 
   @Rule
   public UseMuleLog4jContextFactory muleLogging = new UseMuleLog4jContextFactory();
@@ -84,7 +86,7 @@ public class LoggingLibsSupportTestCase extends AbstractFakeMuleServerTestCase {
   private void probeLogFileForMessage(String expectedMessage) {
     File logFile = new File(muleServer.getLogsDir().toString() + "/mule-app-logging-app.log");
 
-    probe(PROBE_TIMEOUT, DEFAULT_POLLING_INTERVAL,
+    probe(LOGGERS_PROBE_TIMEOUT, DEFAULT_POLLING_INTERVAL,
           () -> hasLine(containsString(expectedMessage)).matches(logFile),
           () -> format("Text '%s' not present in the logs", expectedMessage));
   }
