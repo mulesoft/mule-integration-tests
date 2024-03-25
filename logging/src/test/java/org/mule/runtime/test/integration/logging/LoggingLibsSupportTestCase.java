@@ -6,6 +6,7 @@
  */
 package org.mule.runtime.test.integration.logging;
 
+import static org.mule.tck.probe.PollingProber.DEFAULT_POLLING_INTERVAL;
 import static org.mule.tck.probe.PollingProber.probe;
 import static org.mule.test.allure.AllureConstants.IntegrationTestsFeature.INTEGRATIONS_TESTS;
 import static org.mule.test.allure.AllureConstants.Logging.LOGGING;
@@ -27,19 +28,18 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 
-import org.slf4j.bridge.SLF4JBridgeHandler;
-
-import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.Test;
-
 import io.qameta.allure.Feature;
 import io.qameta.allure.Features;
 import io.qameta.allure.Story;
+import org.junit.Rule;
+import org.junit.Test;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 
 @Features({@Feature(INTEGRATIONS_TESTS), @Feature(LOGGING)})
 @Story(LOGGING_LIBS_SUPPORT)
 public class LoggingLibsSupportTestCase extends AbstractFakeMuleServerTestCase {
+
+  private static final long PROBE_TIMEOUT = 5000;
 
   @Rule
   public UseMuleLog4jContextFactory muleLogging = new UseMuleLog4jContextFactory();
@@ -70,7 +70,6 @@ public class LoggingLibsSupportTestCase extends AbstractFakeMuleServerTestCase {
   }
 
   @Test
-  @Ignore("W-11730386")
   public void jclLibraryLogsSuccessfully() throws Exception {
     startRuntimeWithApp();
     probeLogFileForMessage("My logger is JCL");
@@ -85,7 +84,8 @@ public class LoggingLibsSupportTestCase extends AbstractFakeMuleServerTestCase {
   private void probeLogFileForMessage(String expectedMessage) {
     File logFile = new File(muleServer.getLogsDir().toString() + "/mule-app-logging-app.log");
 
-    probe(() -> hasLine(containsString(expectedMessage)).matches(logFile),
+    probe(PROBE_TIMEOUT, DEFAULT_POLLING_INTERVAL,
+          () -> hasLine(containsString(expectedMessage)).matches(logFile),
           () -> format("Text '%s' not present in the logs", expectedMessage));
   }
 
