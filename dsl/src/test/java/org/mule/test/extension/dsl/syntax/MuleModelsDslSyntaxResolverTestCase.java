@@ -6,8 +6,7 @@
  */
 package org.mule.test.extension.dsl.syntax;
 
-import static org.mule.runtime.internal.dsl.DslConstants.CORE_NAMESPACE;
-import static org.mule.runtime.internal.dsl.DslConstants.CORE_PREFIX;
+import static java.lang.String.format;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -41,6 +40,10 @@ public class MuleModelsDslSyntaxResolverTestCase {
   private static final String ROUND_ROBIN_COMPONENT = "roundRobin";
   private static final String FLOW_COMPONENT = "flow";
   private static final String SUBFLOW_COMPONENT = "subFlow";
+
+  private static final String DEFAULT_NAMESPACE_URI_MASK = "http://www.mulesoft.org/schema/mule/%s";
+  private static final String CORE_NAMESPACE = format(DEFAULT_NAMESPACE_URI_MASK, "core");
+  private static final String CORE_PREFIX = "mule";
 
 
   private DslSyntaxResolver dslSyntaxResolver;
