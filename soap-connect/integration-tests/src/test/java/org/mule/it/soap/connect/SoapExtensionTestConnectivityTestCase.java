@@ -10,10 +10,10 @@ import static org.mule.runtime.api.connectivity.ConnectivityTestingService.CONNE
 import static org.mule.test.allure.AllureConstants.SdkToolingSupport.SDK_TOOLING_SUPPORT;
 import static org.mule.test.allure.AllureConstants.SdkToolingSupport.ConnectivityTestingStory.CONNECTIVITY_TESTING_SERVICE;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 
 import org.mule.runtime.api.component.location.Location;
 import org.mule.runtime.api.connection.ConnectionValidationResult;

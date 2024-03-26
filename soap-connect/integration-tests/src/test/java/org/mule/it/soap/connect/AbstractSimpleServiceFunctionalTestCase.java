@@ -12,6 +12,7 @@ import org.mule.tck.junit4.rule.ExternalProcess;
 import org.mule.tck.junit4.rule.SystemProperty;
 
 import org.custommonkey.xmlunit.XMLUnit;
+
 import org.junit.ClassRule;
 import org.junit.Rule;
 
@@ -25,9 +26,12 @@ public abstract class AbstractSimpleServiceFunctionalTestCase extends MuleArtifa
   // hierarchy, in order to avoid a LinkageError when running in JDK 11 or higher.
   @ClassRule
   public static ExternalProcess server =
-      new ExternalProcess(line -> line.contains("org.eclipse.jetty.server.ServerConnector: Started ServerConnector"),
-                          "java", "-cp", System.getProperty("soapHttpServerClasspath"), "org.mule.service.soap.server.HttpServer",
-                          "" + port.getNumber(), "org.mule.service.soap.service.Soap11Service");
+      new ExternalProcess(line -> line.contains("Setting the server's publish address to be /server"),
+                          "java", "-cp",
+                          System.getProperty("soapHttpServerClasspath"),
+                          "org.mule.service.soap.server.HttpServer",
+                          "" + port.getNumber(),
+                          "org.mule.service.soap.service.Soap11Service");
 
   @Rule
   public SystemProperty address = new SystemProperty("address", "http://localhost:" + port.getNumber() + "/server");
