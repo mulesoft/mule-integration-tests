@@ -51,7 +51,6 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import io.qameta.allure.Feature;
@@ -59,7 +58,6 @@ import io.qameta.allure.Story;
 
 @Feature(SDK_TOOLING_SUPPORT)
 @Story(METADATA_SERVICE)
-@Ignore("W-13907547: Fix flaky test")
 public class InvokeMetadataTestCase extends SoapFootballExtensionArtifactFunctionalTestCase {
 
   private static final String INVALID_KEY_ERROR = "operation [invalidKey] was not found in the current wsdl file";

@@ -12,10 +12,8 @@ import org.mule.runtime.api.message.Message;
 
 import java.io.ByteArrayInputStream;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
-@Ignore("W-13907547: Fix flaky test")
 public class InvokeOperationExecutionTestCase extends SoapFootballExtensionArtifactFunctionalTestCase {
 
   @Test
