@@ -8,7 +8,7 @@ package org.mule.test.config.ast;
 
 import static org.mule.runtime.ast.api.util.MuleAstUtils.validatorBuilder;
 import static org.mule.runtime.ast.api.validation.Validation.Level.ERROR;
-import static org.mule.runtime.core.api.extension.provider.RuntimeExtensionModelProvider.discoverRuntimeExtensionModels;
+import static org.mule.runtime.extension.api.provider.RuntimeExtensionModelProvider.discoverRuntimeExtensionModels;
 import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.initialiseIfNeeded;
 import static org.mule.tck.junit4.matcher.ast.ValidationResultItemMessageMatcher.message;
 import static org.mule.test.allure.AllureConstants.ArtifactAst.ARTIFACT_AST;
