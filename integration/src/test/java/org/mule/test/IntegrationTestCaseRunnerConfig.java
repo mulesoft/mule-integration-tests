@@ -25,7 +25,8 @@ import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
         "org.springframework:spring-expression",
         "org.springframework.security:spring-security-core",
         "org.springframework.security:spring-security-config",
-        "org.apache.derby:derby"
+        "org.apache.derby:derby",
+        "org.codehaus.groovy:groovy-all"
     },
     extraPrivilegedArtifacts = {"org.mule.tests:mule-tests-parsers-plugin"},
     testRunnerExportedRuntimeLibs = {"org.mule.tests:mule-tests-functional"})
