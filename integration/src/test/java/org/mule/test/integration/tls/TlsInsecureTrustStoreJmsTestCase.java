@@ -26,11 +26,15 @@ import java.security.cert.CertificateException;
 
 import javax.net.ssl.KeyManagerFactory;
 
-import io.qameta.allure.Issue;
 import org.apache.activemq.broker.SslBrokerService;
+
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
+import io.qameta.allure.Issue;
+
+@Ignore("W-15429716")
 public class TlsInsecureTrustStoreJmsTestCase extends AbstractIntegrationTestCase {
 
   private static final String EXPECTED_RESPONSE = "Message received was: test";
