@@ -15,7 +15,7 @@
 
         <javaModuleName>org.mule.test.integration.oauth</javaModuleName>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
-        <muleHttpServiceVersion>1.7.0-SNAPSHOT</muleHttpServiceVersion>
+        <muleHttpServiceVersion>1.9.0-rc1</muleHttpServiceVersion>
     </properties>
 
     <dependencies>
