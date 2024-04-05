@@ -46,7 +46,7 @@ public abstract class SoapFootballExtensionArtifactFunctionalTestCase extends Mu
   // hierarchy, in order to avoid a LinkageError when running in JDK 11 or higher.
   public ExternalProcess getLaLigaServiceServer() {
     return new ExternalProcess(line -> line
-        .contains("org.eclipse.jetty.server.ServerConnector: Started ServerConnector"),
+        .contains("Setting the server's publish address to be /server"),
                                "java", "-cp",
                                System.getProperty("soapHttpServerClasspath"),
                                "org.mule.service.soap.server.HttpServer",
@@ -56,7 +56,7 @@ public abstract class SoapFootballExtensionArtifactFunctionalTestCase extends Mu
 
   public ExternalProcess getFootballServiceServer() {
     return new ExternalProcess(line -> line
-        .contains("org.eclipse.jetty.server.ServerConnector: Started ServerConnector"),
+        .contains("Setting the server's publish address to be /server"),
                                "java", "-cp",
                                System.getProperty("soapHttpServerClasspath"),
                                "org.mule.service.soap.server.HttpServer",
