@@ -25,6 +25,7 @@ import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -226,5 +227,43 @@ public class ParseTemplateTestCase extends AbstractIntegrationTestCase {
   public void nestedBackslash() throws Exception {
     CoreEvent event = flowRunner("nestedBackslash").withVariable("method", "GET").run();
     assertThat(event.getMessage().getPayload().getValue(), equalTo("get:\\test\\GET"));
+  }
+
+  @Test
+  public void subexpressionsExampleFromDocs() throws Exception {
+    CoreEvent event = flowRunner("subexpressionsExampleFromDocs").run();
+    assertThat(event.getMessage().getPayload().getValue(), equalTo("<td>hello WORLD</td>\n"
+        + "<td>hello WORLD</td>\n"
+        + "<td>hello upper(\"world\")</td>\n"
+        + "<td>hello ++ upper(\"world\")</td>"));
+  }
+
+  @Test
+  public void escapeExampleFromDocs() throws Exception {
+    CoreEvent event = flowRunner("escapeExampleFromDocs").run();
+
+    // Current behavior here has [JKL] preceded by the escape character in the result which is not what we have in the docs
+    assertThat(event.getMessage().getPayload().getValue(), equalTo("<td>#[</td>\n"
+        + "<td>abcd#[-1234WORLD.log</td>\n"
+        + "<td>'abc'def'</td>\n"
+        + "<td>abc'def</td>\n"
+        + "<td>\"xyz\"xyz\"</td>\n"
+        + "<td>xyz\"xyz</td>\n"
+        + "<td>abc$DEF#ghi\\[JKL]</td>"));
+  }
+
+  @Test
+  @Issue("W-15141905")
+  public void nestedExpression() throws Exception {
+    String payload = "#[sum([1, 2, 3])]";
+    CoreEvent event = flowRunner("nestedExpression").withPayload(payload).run();
+    assertThat(event.getMessage().getPayload().getValue(), equalTo("#[sum([1, 2, 3])]"));
+  }
+
+  @Test
+  @Ignore("This case is not really supported at the moment. This test is just a remainder of that.")
+  public void expressionWithinTransformation() throws Exception {
+    CoreEvent event = flowRunner("expressionWithinTransformation").withPayload("world").run();
+    assertThat(event.getMessage().getPayload().getValue(), equalTo("uppercase payload is: WORLD"));
   }
 }
