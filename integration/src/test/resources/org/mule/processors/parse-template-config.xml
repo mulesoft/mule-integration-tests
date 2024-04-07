@@ -159,4 +159,26 @@
             <content>#["get:\\test\\" ++ vars.method]</content>
         </parse-template>
     </flow>
+
+    <flow name="subexpressionsExampleFromDocs" initialState="stopped">
+        <parse-template location="org/mule/processors/example-sub-exp.ptem">
+        </parse-template>
+    </flow>
+
+    <flow name="escapeExampleFromDocs" initialState="stopped">
+        <parse-template location="org/mule/processors/example-escape.ptem">
+        </parse-template>
+    </flow>
+
+    <flow name="nestedExpression" initialState="stopped">
+        <parse-template>
+            <content>#[payload]</content>
+        </parse-template>
+    </flow>
+
+    <flow name="expressionWithinTransformation" initialState="stopped">
+        <parse-template>
+            <content>#['uppercase payload is:' ++ upper("#[payload]")]</content>
+        </parse-template>
+    </flow>
 </mule>
