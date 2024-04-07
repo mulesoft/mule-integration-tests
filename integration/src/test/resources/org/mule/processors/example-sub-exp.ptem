@@ -1,0 +1,4 @@
+<td>#['hello #[upper("world")]']</td>
+<td>#['hello ' ++ upper("world")]</td>
+<td>#['hello upper("world")']</td>
+<td>#['hello ++ upper("world")']</td>
