@@ -1,0 +1,7 @@
+<td>\#[</td>
+<td>#['abcd\#[-1234' ++ upper("world") ++ '.log']</td>
+<td>'abc'def'</td>
+<td>#['abc\'def']</td>
+<td>"xyz"xyz"</td>
+<td>#["xyz\"xyz"]</td>
+<td>#["abc\$DEF\#ghi\[JKL]"]</td>
