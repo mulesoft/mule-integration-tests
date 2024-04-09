@@ -19,8 +19,6 @@
         </surefire.args>
 
         <javaModuleName>org.mule.test.integration.soap.connect</javaModuleName>
-        <cxfVersion>3.5.7</cxfVersion>
-        <muleSdkApiVersion>0.10.0-SNAPSHOT</muleSdkApiVersion>
         <javax.jws-api.version>1.1</javax.jws-api.version>
         <formatterConfigPath>../../formatter.xml</formatterConfigPath>
     </properties>
@@ -77,7 +75,6 @@
         <dependency>
             <groupId>org.mule.sdk</groupId>
             <artifactId>mule-sdk-api</artifactId>
-            <version>${muleSdkApiVersion}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -194,22 +191,18 @@
         <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-transports-http-jetty</artifactId>
-            <version>${cxfVersion}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-transports-http</artifactId>
-            <version>${cxfVersion}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-frontend-jaxws</artifactId>
-            <version>${cxfVersion}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-ws-security</artifactId>
-            <version>${cxfVersion}</version>
             <exclusions>
                 <exclusion>
                     <groupId>joda-time</groupId>
