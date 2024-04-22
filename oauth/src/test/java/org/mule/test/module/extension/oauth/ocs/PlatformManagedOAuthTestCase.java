@@ -13,7 +13,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import static org.mule.oauth.client.api.state.DancerState.HAS_TOKEN;
-import static org.mule.runtime.extension.internal.ocs.OCSConstants.OCS_ENABLED;
+import static org.mule.runtime.extension.api.ocs.OCSConstants.OCS_ENABLED;
 import static org.mule.test.allure.AllureConstants.OauthFeature.OCS_SUPPORT;
 
 import org.mule.oauth.client.api.state.DancerState;
