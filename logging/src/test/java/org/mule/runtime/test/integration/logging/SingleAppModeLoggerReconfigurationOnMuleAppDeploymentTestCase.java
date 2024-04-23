@@ -7,6 +7,7 @@
 package org.mule.runtime.test.integration.logging;
 
 import static org.mule.runtime.api.util.MuleSystemProperties.SINGLE_APP_MODE_PROPERTY;
+import static org.mule.runtime.api.util.MuleSystemProperties.USE_APP_LOG4J_CONFIGURATION_ON_SINGLE_APP_DEPLOYMENT;
 import static org.mule.tck.probe.PollingProber.probe;
 import static org.mule.test.allure.AllureConstants.ArtifactDeploymentFeature.SingleAppDeploymentStory.SINGLE_APP_DEPLOYMENT;
 import static org.mule.test.allure.AllureConstants.IntegrationTestsFeature.INTEGRATIONS_TESTS;
@@ -21,7 +22,6 @@ import static org.junit.rules.RuleChain.outerRule;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import org.mule.runtime.api.exception.MuleException;
-import org.mule.runtime.api.util.MuleSystemProperties;
 import org.mule.runtime.module.deployment.impl.internal.builder.ApplicationFileBuilder;
 import org.mule.runtime.module.deployment.impl.internal.builder.JarFileBuilder;
 import org.mule.tck.junit4.rule.SystemProperty;
@@ -56,7 +56,7 @@ public class SingleAppModeLoggerReconfigurationOnMuleAppDeploymentTestCase exten
   // This guarantees order of rule execution.
   @Rule
   public TestRule chain = outerRule(new SystemProperty(SINGLE_APP_MODE_PROPERTY, "true"))
-      .around(new SystemProperty(MuleSystemProperties.USE_APP_LOG4J_CONFIGURATION_ON_SINGLE_APP_DEPLOYMENT, "true"))
+      .around(new SystemProperty(USE_APP_LOG4J_CONFIGURATION_ON_SINGLE_APP_DEPLOYMENT, "true"))
       .around(new UseMuleLog4jContextFactory());
 
   @Test
