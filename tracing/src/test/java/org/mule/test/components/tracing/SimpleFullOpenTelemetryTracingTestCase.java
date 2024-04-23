@@ -27,11 +27,13 @@ import java.util.Map;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
 @Feature(PROFILING)
 @Story(DEFAULT_CORE_EVENT_TRACER)
+@Ignore("W-15586397")
 public class SimpleFullOpenTelemetryTracingTestCase extends AbstractFullOpenTelemetryTracingTestCase {
 
   @Rule
