@@ -124,6 +124,19 @@ public class ProcessorInterceptorFactoryChainTestCase extends AbstractIntegratio
     }
   }
 
+  @Test
+  @Issue("W-15314786")
+  public void operationWithRouterChainAndCallback() throws Exception {
+    AtomicBoolean afterCallbackCalled = new AtomicBoolean(false);
+    ProcessorInterceptorFactoryTestCase.AfterWithCallbackInterceptor.callback =
+        (interceptionEvent, throwable) -> afterCallbackCalled.getAndSet(true);
+    try {
+      flowRunner("operationWithRouterChainAndCallback").run();
+    } finally {
+      assertThat(afterCallbackCalled.get(), is(true));
+    }
+  }
+
   public static class ExecutesTapPhonesOperationInnerChainInterceptorFactory implements ProcessorInterceptorFactory {
 
     private List<String> excludeRootLocations;
