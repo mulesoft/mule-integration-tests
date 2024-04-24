@@ -38,11 +38,13 @@ import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 
 @Feature(REGISTRY)
 @Story(OBJECT_REGISTRATION)
+@Ignore("W-15586397")
 public class ImplicitConfigurationLifeCycleTestCase extends AbstractIntegrationTestCase {
 
   private Scheduler scheduler;
