@@ -9,7 +9,7 @@ package org.mule.test.extension.dsl;
 import static java.util.Arrays.asList;
 import static org.mule.runtime.app.declaration.api.fluent.ElementDeclarer.newArtifact;
 import static org.mule.runtime.app.declaration.api.fluent.ElementDeclarer.newParameterGroup;
-import static org.mule.runtime.extension.internal.ocs.OCSConstants.OCS_ENABLED;
+import static org.mule.runtime.extension.api.ocs.OCSConstants.OCS_ENABLED;
 import static org.mule.tck.junit4.rule.SystemProperty.callWithProperty;
 
 import org.mule.runtime.app.declaration.api.ArtifactDeclaration;

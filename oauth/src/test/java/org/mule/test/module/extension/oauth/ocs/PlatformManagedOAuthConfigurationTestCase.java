@@ -6,11 +6,12 @@
  */
 package org.mule.test.module.extension.oauth.ocs;
 
-import static org.mule.runtime.extension.internal.ocs.OCSConstants.OCS_CLIENT_ID;
-import static org.mule.runtime.extension.internal.ocs.OCSConstants.OCS_CLIENT_SECRET;
-import static org.mule.runtime.extension.internal.ocs.OCSConstants.OCS_ORG_ID;
-import static org.mule.runtime.extension.internal.ocs.OCSConstants.OCS_PLATFORM_AUTH_URL;
-import static org.mule.runtime.extension.internal.ocs.OCSConstants.OCS_SERVICE_URL;
+import static org.mule.runtime.extension.api.ocs.OCSConstants.OCS_CLIENT_ID;
+import static org.mule.runtime.extension.api.ocs.OCSConstants.OCS_CLIENT_SECRET;
+import static org.mule.runtime.extension.api.ocs.OCSConstants.OCS_ORG_ID;
+import static org.mule.runtime.extension.api.ocs.OCSConstants.OCS_PLATFORM_AUTH_URL;
+import static org.mule.runtime.extension.api.ocs.OCSConstants.OCS_SERVICE_URL;
+
 import org.mule.tck.junit4.rule.SystemProperty;
 
 import org.junit.ClassRule;

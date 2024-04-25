@@ -8,9 +8,9 @@ package org.mule.test.module.extension.oauth.ocs;
 
 import static org.junit.internal.matchers.ThrowableCauseMatcher.hasCause;
 import static org.mule.functional.junit4.matchers.ThrowableMessageMatcher.hasMessage;
-import static org.mule.runtime.extension.internal.ocs.OCSConstants.OCS_CLIENT_ID;
-import static org.mule.runtime.extension.internal.ocs.OCSConstants.OCS_PLATFORM_AUTH_URL;
-import static org.mule.runtime.extension.internal.ocs.OCSConstants.OCS_SERVICE_URL;
+import static org.mule.runtime.extension.api.ocs.OCSConstants.OCS_CLIENT_ID;
+import static org.mule.runtime.extension.api.ocs.OCSConstants.OCS_PLATFORM_AUTH_URL;
+import static org.mule.runtime.extension.api.ocs.OCSConstants.OCS_SERVICE_URL;
 import static org.mule.test.allure.AllureConstants.OauthFeature.OCS_SUPPORT;
 import static org.mule.test.allure.AllureConstants.OauthFeature.OcsStory.OCS_CONNECTION_VALIDATION;
 
