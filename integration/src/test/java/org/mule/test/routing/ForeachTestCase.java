@@ -15,8 +15,8 @@ import static org.mule.runtime.api.metadata.MediaType.APPLICATION_JSON;
 import static org.mule.runtime.api.metadata.MediaType.APPLICATION_XML;
 import static org.mule.sdk.api.error.MuleErrors.CONNECTIVITY;
 import static org.mule.tck.processor.FlowAssert.verify;
-import static org.mule.test.allure.AllureConstants.RoutersFeature.ForeachStory.FOR_EACH;
-import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
+import static org.mule.test.allure.AllureConstants.ScopeFeature.SCOPE;
+import static org.mule.test.allure.AllureConstants.ScopeFeature.ForeachStory.FOR_EACH;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonMap;
@@ -65,7 +65,14 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
-@Feature(ROUTERS)
+import org.hamcrest.core.Is;
+
+import io.qameta.allure.Description;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
+import io.qameta.allure.Story;
+
+@Feature(SCOPE)
 @Story(FOR_EACH)
 public class ForeachTestCase extends AbstractIntegrationTestCase {
 
@@ -521,6 +528,28 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
   @Issue("MULE-18462")
   public void forEachEmptyCollection() throws Exception {
     flowRunner("emptyForEach").run();
+  }
+
+  @Test
+  @Issue("W-15617764")
+  public void sequenceInfoAccessible() throws Exception {
+    final Collection<String> payload = new ArrayList<>();
+    payload.add("bruce");
+    payload.add("dickinson");
+
+    Message result = flowRunner("sequence-info-accessible").withPayload(payload).run().getMessage();
+    assertThat(result.getPayload().getValue(), instanceOf(Collection.class));
+    Collection<?> resultPayload = (Collection<?>) result.getPayload().getValue();
+    assertThat(resultPayload, hasSize(2));
+    assertSame(payload, resultPayload);
+
+    Message out = queueManager.read("out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
+    assertThat(out.getPayload().getValue(), instanceOf(String.class));
+    assertThat(out.getPayload().getValue(), is("0"));
+
+    out = queueManager.read("out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
+    assertThat(out.getPayload().getValue(), instanceOf(String.class));
+    assertThat(out.getPayload().getValue(), is("1"));
   }
 
   // TODO MULE-17934 remove this
