@@ -336,7 +336,7 @@
         </foreach>
     </flow>
 
-    <flow name="foreachInErrorHandler">
+    <flow name="foreachInErrorHandler" initialState="stopped">
         <raise-error type="APP:SOME"/>
         <error-handler>
             <on-error-continue>
@@ -348,7 +348,7 @@
         </error-handler>
     </flow>
 
-    <flow name="forEachWithTry">
+    <flow name="forEachWithTry" initialState="stopped">
         <foreach>
             <try>
                 <raise-error type="APP:SOME"/>
@@ -361,13 +361,20 @@
         </foreach>
     </flow>
 
-    <flow name="emptyForEach">
+    <flow name="emptyForEach" initialState="stopped">
         <set-variable variableName="work" value="Mondi" />
         <set-payload value="#[[]]"/>
         <foreach>
             <set-variable variableName="work" value="hello" />
         </foreach>
         <test:assert expression="#[vars.work == 'Mondi']"/>
+    </flow>
+
+    <flow name="sequence-info-accessible" initialState="stopped">
+        <foreach>
+            <set-payload value="#[itemSequenceInfo.position as String]"/>
+            <test-components:queue-push config-ref="out"/>
+        </foreach>
     </flow>
 
 </mule>
