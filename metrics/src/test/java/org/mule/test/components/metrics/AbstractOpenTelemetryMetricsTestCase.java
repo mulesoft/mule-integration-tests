@@ -52,7 +52,7 @@ public abstract class AbstractOpenTelemetryMetricsTestCase extends
     MuleArtifactFunctionalTestCase implements OpenTelemetryMetricsTestRunnerConfigAnnotation {
 
   private static final DockerImageName COLLECTOR_IMAGE =
-      DockerImageName.parse("ghcr.io/open-telemetry/opentelemetry-java/otel-collector");
+      DockerImageName.parse("otel/opentelemetry-collector:0.99.0");
 
   private static final Integer COLLECTOR_OTLP_GRPC_PORT = 4317;
   private static final Integer COLLECTOR_HEALTH_CHECK_PORT = 13133;
