@@ -4,13 +4,13 @@
   <parent>
     <groupId>org.mule.runtime</groupId>
     <artifactId>mule</artifactId>
-    <version>4.4.1-SNAPSHOT</version>
+    <version>4.4.0-20240503</version>
     <relativePath></relativePath>
   </parent>
 
   <groupId>org.mule.tests</groupId>
   <artifactId>mule-extensions-integration-tests</artifactId>
-  <version>4.4.1-SNAPSHOT</version>
+  <version>4.4.0-20240503</version>
 
   <packaging>pom</packaging>
   <name>Mule Tests</name>
@@ -30,8 +30,8 @@
   </modules>
 
   <properties>
-    <munitVersion>2.4.0-SNAPSHOT</munitVersion>
-    <muleExtensionTestSoapTestVersion>1.4.3-SNAPSHOT</muleExtensionTestSoapTestVersion>
+    <munitVersion>2.3.6</munitVersion>
+    <muleExtensionTestSoapTestVersion>1.4.2</muleExtensionTestSoapTestVersion>
     <muleSpringModuleTestVersion>1.4.0-SNAPSHOT</muleSpringModuleTestVersion>
 
     <munitExtensionsMavenPlugin>1.1.1</munitExtensionsMavenPlugin>
@@ -39,8 +39,8 @@
     <apacheHttpClientVersion>4.5.13</apacheHttpClientVersion>
     <springVersion>5.1.6.RELEASE</springVersion>
 
-    <muleDependenciesVersion>1.x-SNAPSHOT</muleDependenciesVersion>
-    <muleTestComponentsVersion>4.4.1-SNAPSHOT</muleTestComponentsVersion>
+    <muleDependenciesVersion>1.0.19</muleDependenciesVersion>
+    <muleTestComponentsVersion>4.4.0-20240503</muleTestComponentsVersion>
     <muleSdkCompatibilityApiVersion>0.5.0</muleSdkCompatibilityApiVersion>
     <muleSdkApiVersion>0.5.0</muleSdkApiVersion>
   </properties>
