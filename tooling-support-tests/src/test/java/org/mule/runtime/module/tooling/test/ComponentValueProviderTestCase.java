@@ -33,17 +33,18 @@ import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.vpWi
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.vpWithBindingToFieldOPDeclarer;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.vpWithBindingToTopLevelOPDeclaration;
 import static org.mule.sdk.api.values.ValueResolvingException.UNKNOWN;
+import static org.mule.tck.junit4.matcher.value.ValueResultSuccessMatcher.isSuccess;
 
 import static java.time.Instant.now;
 import static java.util.Arrays.asList;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
-import static org.junit.Assert.assertThat;
 
 import org.mule.runtime.api.value.Value;
 import org.mule.runtime.api.value.ValueResult;
@@ -337,7 +338,7 @@ public class ComponentValueProviderTestCase extends DeclarationSessionTestCase {
     ComponentElementDeclaration elementDeclaration = sourceWithMultiLevelValue(CONFIG_NAME, "America", "USA");
     // ProviderName is groupName
     ValueResult valueResult = getValueResult(session, elementDeclaration, "values");
-    assertThat(valueResult.isSuccess(), is(true));
+    assertThat(valueResult, isSuccess());
     // ValueResult for multi level no matter if previous levels are set it would always return the whole tree
     assertThat(valueResult.getValues(), hasSize(1));
     Value america = valueResult.getValues().stream().findFirst().get();
@@ -349,7 +350,7 @@ public class ComponentValueProviderTestCase extends DeclarationSessionTestCase {
   public void preserverOrderValuesResolver() {
     ComponentElementDeclaration elementDeclaration = multipleNestedVPsOPDeclaration(CONFIG_NAME);
     ValueResult valueResult = getValueResult(session, elementDeclaration, "levelOne");
-    assertThat(valueResult.isSuccess(), is(true));
+    assertThat(valueResult, isSuccess());
     assertThat(valueResult.getValues(), contains(
                                                  hasProperty("id", equalTo("ONE")),
                                                  hasProperty("id", equalTo("TWO")),
@@ -360,7 +361,7 @@ public class ComponentValueProviderTestCase extends DeclarationSessionTestCase {
   public void enumExportedParameterWithDefaultValue() {
     OperationElementDeclaration elementDeclaration = enumExportedWithDefaultValueOPDeclaration();
     ValueResult valueResult = getValueResult(session, elementDeclaration, "vpParam");
-    assertThat(valueResult.isSuccess(), is(true));
+    assertThat(valueResult, isSuccess());
     assertThat(valueResult.getValues(), contains(
                                                  hasProperty("id", equalTo("ConfigLessConnectionLessNoActingParameter"))));
   }

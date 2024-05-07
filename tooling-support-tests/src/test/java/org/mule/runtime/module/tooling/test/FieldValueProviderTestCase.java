@@ -27,6 +27,7 @@ import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.vpOn
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.vpOnStreamFieldOPDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.vpOnStreamMultipleFieldsOPDeclaration;
 import static org.mule.sdk.api.values.ValueResolvingException.INVALID_VALUE_RESOLVER_NAME;
+import static org.mule.tck.junit4.matcher.value.ValueResultSuccessMatcher.isSuccess;
 
 import static java.util.stream.Collectors.toList;
 
@@ -34,6 +35,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.not;
 
 import org.mule.runtime.api.value.Value;
 import org.mule.runtime.api.value.ValueResult;
@@ -57,7 +59,7 @@ public class FieldValueProviderTestCase extends DeclarationSessionTestCase {
   public void vpOnPojoWrongParameterName() {
     OperationElementDeclaration operationDeclaration = vpOnPojoFieldOPDeclaration();
     ValueResult providerResult = getFieldValues(session, operationDeclaration, "wrongParameter", "dont.care");
-    assertThat(providerResult.isSuccess(), equalTo(false));
+    assertThat(providerResult, not(isSuccess()));
     assertThat(providerResult.getFailure().get().getMessage(),
                equalTo("Unable to find model for parameter or parameter group with name 'wrongParameter'."));
     assertThat(providerResult.getFailure().get().getFailureCode(), equalTo(INVALID_VALUE_RESOLVER_NAME));
@@ -216,7 +218,7 @@ public class FieldValueProviderTestCase extends DeclarationSessionTestCase {
                                           String targetSelector,
                                           String... expectedValues) {
     ValueResult providerResult = getFieldValues(session, elementDeclaration, parameterName, targetSelector);
-    assertThat(providerResult.isSuccess(), equalTo(true));
+    assertThat(providerResult, isSuccess());
     assertThat(providerResult.getValues(), hasSize(expectedValues.length));
     assertThat(providerResult.getValues().stream().map(Value::getId).collect(toList()),
                containsInAnyOrder(expectedValues));
@@ -228,7 +230,7 @@ public class FieldValueProviderTestCase extends DeclarationSessionTestCase {
                                          String expectedMessage,
                                          String expectedCode) {
     ValueResult providerResult = getFieldValues(session, elementDeclaration, parameterName, targetSelector);
-    assertThat(providerResult.isSuccess(), equalTo(false));
+    assertThat(providerResult, not(isSuccess()));
     assertThat(providerResult.getFailure().get().getMessage(), equalTo(expectedMessage));
     assertThat(providerResult.getFailure().get().getFailureCode(), equalTo(expectedCode));
   }

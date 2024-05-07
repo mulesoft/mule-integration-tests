@@ -12,15 +12,16 @@ import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.TEST
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.configurationDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.connectionDeclaration;
 import static org.mule.runtime.module.tooling.TestExtensionDeclarationUtils.failingConnectionDeclaration;
+import static org.mule.tck.junit4.matcher.value.ValueResultSuccessMatcher.isSuccess;
 import static org.mule.test.infrastructure.maven.MavenTestUtils.getMavenLocalRepository;
 
 import static java.nio.file.Files.createTempDirectory;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.value.ResolvingFailure;
@@ -147,7 +148,8 @@ public abstract class DeclarationSessionTestCase extends AbstractFakeMuleServerT
                                        String parameterName,
                                        String expectedValue) {
     ValueResult providerResult = getValueResult(session, elementDeclaration, parameterName);
-    assertThat(providerResult.isSuccess(), equalTo(true));
+
+    assertThat(providerResult, isSuccess());
     assertThat(providerResult.getValues(), hasSize(1));
     assertThat(providerResult.getValues().iterator().next().getId(), is(expectedValue));
   }
@@ -164,8 +166,7 @@ public abstract class DeclarationSessionTestCase extends AbstractFakeMuleServerT
                                        String code,
                                        String... reason) {
     ValueResult providerResult = getValueResult(session, elementDeclaration, parameterName);
-    assertThat(providerResult.isSuccess(), is(false));
-    assertThat(providerResult.getFailure().isPresent(), is(true));
+    assertThat(providerResult, not(isSuccess()));
     final ResolvingFailure failure = providerResult.getFailure().get();
     assertThat(failure.getFailureCode(), is(code));
     assertThat(failure.getMessage(), is(message));
