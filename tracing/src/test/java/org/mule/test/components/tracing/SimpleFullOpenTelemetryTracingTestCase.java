@@ -33,7 +33,6 @@ import org.junit.Test;
 
 @Feature(PROFILING)
 @Story(DEFAULT_CORE_EVENT_TRACER)
-@Ignore("W-15586397")
 public class SimpleFullOpenTelemetryTracingTestCase extends AbstractFullOpenTelemetryTracingTestCase {
 
   @Rule

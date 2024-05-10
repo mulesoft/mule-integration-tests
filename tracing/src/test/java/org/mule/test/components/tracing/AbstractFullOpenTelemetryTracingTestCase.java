@@ -23,6 +23,7 @@ import static java.util.Arrays.asList;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 
 import static io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceRequest.parseFrom;
+import static org.slf4j.LoggerFactory.getLogger;
 import static org.testcontainers.Testcontainers.exposeHostPorts;
 import static org.testcontainers.containers.BindMode.READ_ONLY;
 import static org.testcontainers.utility.MountableFile.forHostPath;
@@ -48,6 +49,7 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.After;
 import org.junit.ClassRule;
 import org.junit.runners.Parameterized;
+import org.slf4j.Logger;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.images.PullPolicy;
@@ -57,8 +59,10 @@ import org.testcontainers.utility.DockerImageName;
 public abstract class AbstractFullOpenTelemetryTracingTestCase extends
     OpenTelemetryTracingTestCase implements OpenTelemetryTracingTestRunnerConfigAnnotation {
 
+  private static final Logger LOGGER = getLogger(AbstractFullOpenTelemetryTracingTestCase.class);
+
   private static final DockerImageName COLLECTOR_IMAGE =
-      DockerImageName.parse("otel/opentelemetry-collector:0.99.0");
+      DockerImageName.parse("ghcr.io/open-telemetry/opentelemetry-java/otel-collector");
 
   private static final Integer COLLECTOR_OTLP_GRPC_PORT = 4317;
   private static final Integer COLLECTOR_OTLP_HTTP_PORT = 4318;
@@ -131,6 +135,11 @@ public abstract class AbstractFullOpenTelemetryTracingTestCase extends
                                 COLLECTOR_OTLP_GRPC_MTLS_PORT,
                                 COLLECTOR_OTLP_HTTP_MTLS_PORT,
                                 COLLECTOR_HEALTH_CHECK_PORT)
+              .withLogConsumer(log -> {
+                if (log != null && log.getBytes() != null) {
+                  LOGGER.error(new String(log.getBytes()));
+                }
+              })
               .waitingFor(Wait.forHttp("/").forPort(COLLECTOR_HEALTH_CHECK_PORT));
 
       collector.start();

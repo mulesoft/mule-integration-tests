@@ -27,9 +27,11 @@ exporters:
     tls:
       insecure: true
     compression: none
+  logging:
+     verbosity: detailed
 service:
   extensions: [health_check]
   pipelines:
     traces:
       receivers: [otlp, otlp/mtls]
-      exporters: [otlp]
+      exporters: [otlp, logging]
