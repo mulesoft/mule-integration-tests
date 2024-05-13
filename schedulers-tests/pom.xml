@@ -54,6 +54,7 @@
         <dependency>
             <groupId>org.mule.modules</groupId>
             <artifactId>mule-spring-test-plugin</artifactId>
+            <version>1.4.0</version>
             <classifier>mule-plugin</classifier>
             <scope>test</scope>
         </dependency>
