@@ -28,8 +28,8 @@ import static org.testcontainers.Testcontainers.exposeHostPorts;
 import static org.testcontainers.containers.BindMode.READ_ONLY;
 import static org.testcontainers.utility.MountableFile.forHostPath;
 
-import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
+import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.runner.RunnerDelegateTo;
 
 import java.io.UncheckedIOException;
@@ -86,6 +86,9 @@ public abstract class AbstractFullOpenTelemetryTracingTestCase extends
 
   @ClassRule
   public static final TestGrpcServerRule server = new TestGrpcServerRule();
+
+  @ClassRule
+  public static DynamicPort serverPort = new DynamicPort("serverPort");
 
   @Parameterized.Parameters(name = "type: {0} - path: {3} - secure: {4}")
   public static Collection<Object[]> data() {
@@ -198,7 +201,7 @@ public abstract class AbstractFullOpenTelemetryTracingTestCase extends
                      return completedFuture(ExportTraceServiceResponse.getDefaultInstance().toByteArray());
                    }
                  });
-      sb.http(0);
+      sb.http(serverPort.getNumber());
     }
 
     public void reset() {
