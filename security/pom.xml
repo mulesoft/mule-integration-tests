@@ -19,7 +19,7 @@
             ${surefire.slf4j.module.args}
         </surefire.args>
 
-        <springSecurityVersion>5.1.0.RELEASE</springSecurityVersion>
+        <springSecurityVersion>5.7.12</springSecurityVersion>
 
         <javaModuleName>org.mule.test.integration.security</javaModuleName>
         <skipExportTests>false</skipExportTests>
