@@ -73,7 +73,6 @@
         <dependency>
             <groupId>org.mule.modules</groupId>
             <artifactId>mule-spring-module</artifactId>
-            <version>${muleSpringModuleTestVersion}</version>
             <classifier>mule-plugin</classifier>
         </dependency>
 
