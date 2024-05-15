@@ -110,7 +110,7 @@ public class ModuleComponentPathTestCase extends MuleArtifactFunctionalTestCase 
   private static final Optional<TypedComponentIdentifier> FLOW_TYPED_COMPONENT_IDENTIFIER =
       Optional.of(builder().identifier(FLOW_IDENTIFIER).type(FLOW).build());
   private static final Optional<TypedComponentIdentifier> SUBFLOW_TYPED_COMPONENT_IDENTIFIER =
-      Optional.of(builder().identifier(SUBFLOW_IDENTIFIER).type(SCOPE).build());
+      Optional.of(builder().identifier(SUBFLOW_IDENTIFIER).type(CHAIN).build());
 
   private static final DefaultComponentLocation getFlowLocation(final String flowName, final int flowLineNumber) {
     return new DefaultComponentLocation(Optional
