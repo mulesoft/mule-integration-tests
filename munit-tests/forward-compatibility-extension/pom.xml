@@ -24,8 +24,8 @@
 
         <munit.input.directory>src/test/munit</munit.input.directory>
         <munit.output.directory>${basedir}/target/test-mule/munit</munit.output.directory>
-        <munit.version>2.3.11</munit.version>
-        <mtf.tools.version>1.1.2</mtf.tools.version>
+        <munit.version>3.1.0</munit.version>
+        <mtf.tools.version>1.2.0</mtf.tools.version>
 
         <mulesoftLicenseVersion>1.1.0</mulesoftLicenseVersion>
         <licensePath>LICENSE_HEADER_80.txt</licensePath>
@@ -147,16 +147,4 @@
         </plugins>
     </build>
 
-    <profiles>
-        <!-- TODO TD-0146415: Remove this when MUnit works with Java 17 -->
-        <profile>
-            <id>skip-munit-java-17</id>
-            <activation>
-                <jdk>[17,)</jdk>
-            </activation>
-            <properties>
-                <skipMunitTests>true</skipMunitTests>
-            </properties>
-        </profile>
-    </profiles>
 </project>
