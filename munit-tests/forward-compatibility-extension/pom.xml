@@ -33,6 +33,9 @@
         <license.maven.plugin.version>4.2</license.maven.plugin.version>
         <licensePath>LICENSE_HEADER_80.txt</licensePath>
         <licenseYear>2023</licenseYear>
+
+        <!-- TODO W-15794905 - remove when version discovery works correctly -->
+        <skipMunitTests>true</skipMunitTests>
     </properties>
 
     <dependencies>
