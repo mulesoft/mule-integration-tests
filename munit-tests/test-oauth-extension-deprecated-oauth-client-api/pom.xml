@@ -21,6 +21,9 @@
         <javaModuleName>org.mule.test.integration.extension.deprecated.oauth.client.api</javaModuleName>
         <formatterConfigPath>../../formatter.xml</formatterConfigPath>
         <skip.integration.tests>false</skip.integration.tests>
+
+        <!-- TODO W-15794905 - remove when version discovery works correctly -->
+        <skipMunitTests>true</skipMunitTests>
     </properties>
 
     <build>
