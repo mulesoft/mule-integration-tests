@@ -32,6 +32,7 @@ import org.mule.runtime.core.api.extension.ExtensionManager;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.extension.api.loader.ExtensionModelLoader;
 import org.mule.tck.junit4.rule.SystemProperty;
+import org.mule.test.IntegrationTestCaseRunnerConfig;
 import org.mule.test.runner.RunnerDelegateTo;
 
 import java.util.HashSet;
@@ -47,7 +48,7 @@ import org.junit.runners.Parameterized;
 import org.slf4j.MDC;
 
 @RunnerDelegateTo(Parameterized.class)
-public class LoggerMDCTestCase extends MuleArtifactFunctionalTestCase {
+public class LoggerMDCTestCase extends MuleArtifactFunctionalTestCase implements IntegrationTestCaseRunnerConfig {
 
   private static final String BASE_PATH_XML = "org/mule/test/integration/logging/";
   private static final String LOGGER_FLOW_XML = "logger-flow.xml";
@@ -108,14 +109,13 @@ public class LoggerMDCTestCase extends MuleArtifactFunctionalTestCase {
         final ExtensionModelLoader loader = getLoaderById(XML_SDK_LOADER_ID);
 
         for (String modulePath : getModulePaths()) {
-          extensions.add(loader.loadExtensionModel(builder(getClass().getClassLoader(),
-                                                           getDefault(extensions))
-                                                               .addParameter(XML_SDK_RESOURCE_PROPERTY_NAME, modulePath)
-                                                               .build()));
-        }
-
-        for (ExtensionModel extension : extensions) {
-          extensionManager.registerExtension(extension);
+          ExtensionModel extensionModel = loader.loadExtensionModel(builder(getClass().getClassLoader(),
+                                                                            getDefault(extensions))
+                                                                                .addParameter(XML_SDK_RESOURCE_PROPERTY_NAME,
+                                                                                              modulePath)
+                                                                                .build());
+          extensions.add(extensionModel);
+          extensionManager.registerExtension(extensionModel);
         }
       }
     });
@@ -127,6 +127,7 @@ public class LoggerMDCTestCase extends MuleArtifactFunctionalTestCase {
     public CoreEvent process(CoreEvent event) {
       Map<String, String> contextMap = MDC.getCopyOfContextMap();
       assertThat(TRACE_ID_NOT_EXPECTED_ERROR_MESSAGE, contextMap.get("trace-id"), is(nullValue()));
+      assertThat(contextMap.get("main-trace-id"), is("traceId"));
 
       return event;
     }
