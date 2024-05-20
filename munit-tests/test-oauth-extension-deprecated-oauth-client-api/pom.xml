@@ -38,6 +38,10 @@
                             </goals>
                         </execution>
                     </executions>
+                    <configuration>
+                        <runtimeProduct>MULE_EE</runtimeProduct>
+                        <runtimeVersion>${mule.version}</runtimeVersion>
+                    </configuration>
                     <dependencies>
                         <!-- MUnit Dependencies -->
                         <dependency>
