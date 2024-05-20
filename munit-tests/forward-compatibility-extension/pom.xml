@@ -24,6 +24,7 @@
 
         <munit.input.directory>src/test/munit</munit.input.directory>
         <munit.output.directory>${basedir}/target/test-mule/munit</munit.output.directory>
+        <mtf.tools.version>1.2.0</mtf.tools.version>
 
         <mulesoftLicenseVersion>1.1.0</mulesoftLicenseVersion>
         <licensePath>LICENSE_HEADER_80.txt</licensePath>
