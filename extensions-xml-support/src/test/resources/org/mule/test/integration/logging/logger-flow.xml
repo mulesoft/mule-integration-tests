@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:simple-tracing="http://www.mulesoft.org/schema/mule/simple-tracing"
+      xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xmlns:tracing="http://www.mulesoft.org/schema/mule/tracing"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+      http://www.mulesoft.org/schema/mule/simple-tracing http://www.mulesoft.org/schema/mule/simple-tracing/current/mule-simple-tracing.xsd
+      http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
+      http://www.mulesoft.org/schema/mule/tracing http://www.mulesoft.org/schema/mule/tracing/current/mule-tracing.xsd">
+
+    <flow name="second-flow">
+        <test:processor class="org.mule.test.integration.logging.LoggerMDCTestCase$LoggerMDCAssertProcessor"/>
+    </flow>
+    <flow name="main-flow">
+        <tracing:set-logging-variable variableName="main-trace-id" value="traceId"/>
+        <simple-tracing:set-trace-id/>
+        <test:processor class="org.mule.test.integration.logging.LoggerMDCTestCase$LoggerMDCAssertProcessor"/>
+        <flow-ref name="second-flow"/>
+    </flow>
+</mule>
