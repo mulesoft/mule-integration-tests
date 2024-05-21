@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="simple-tracing"
+        prefix="simple-tracing"
+        xmlns="http://www.mulesoft.org/schema/mule/module"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:tracing="http://www.mulesoft.org/schema/mule/tracing"
+        xsi:schemaLocation="
+           http://www.mulesoft.org/schema/mule/module http://www.mulesoft.org/schema/mule/module/current/mule-module.xsd
+           http://www.mulesoft.org/schema/mule/tracing http://www.mulesoft.org/schema/mule/tracing/current/mule-tracing.xsd">
+
+    <operation name="set-trace-id">
+        <body>
+            <tracing:set-logging-variable variableName="trace-id" value="traceId"/>
+        </body>
+    </operation>
+</module>
