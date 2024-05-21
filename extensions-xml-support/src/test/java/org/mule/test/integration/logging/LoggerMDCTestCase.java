@@ -8,10 +8,7 @@ package org.mule.test.integration.logging;
 
 import static org.mule.runtime.api.dsl.DslResolvingContext.getDefault;
 import static org.mule.runtime.api.util.MuleSystemProperties.ENABLE_XML_SDK_MDC_RESET_PROPERTY;
-import static org.mule.runtime.extension.api.ExtensionConstants.XML_SDK_LOADER_ID;
-import static org.mule.runtime.extension.api.ExtensionConstants.XML_SDK_RESOURCE_PROPERTY_NAME;
-import static org.mule.runtime.extension.api.loader.ExtensionModelLoadingRequest.builder;
-import static org.mule.runtime.module.artifact.activation.api.extension.discovery.boot.ExtensionLoaderUtils.getLoaderById;
+import static org.mule.test.runner.utils.ExtensionLoaderUtils.getLoaderById;
 
 import static java.util.Arrays.asList;
 
@@ -35,6 +32,7 @@ import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.IntegrationTestCaseRunnerConfig;
 import org.mule.test.runner.RunnerDelegateTo;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -54,6 +52,8 @@ public class LoggerMDCTestCase extends MuleArtifactFunctionalTestCase implements
   private static final String LOGGER_FLOW_XML = "logger-flow.xml";
   private static final String MODULE_TRACING_XML = "module-tracing.xml";
   private static final String TRACE_ID_NOT_EXPECTED_ERROR_MESSAGE = "traceId not expected outside XML SDK operation";
+  public static final String XML_SDK_LOADER_ID = "xml-based";
+  public static final String XML_SDK_RESOURCE_PROPERTY_NAME = "resource-xml";
 
   @Parameterized.Parameters(name = "System Property: " + ENABLE_XML_SDK_MDC_RESET_PROPERTY + "={0}")
   public static List<Object[]> data() {
@@ -109,11 +109,10 @@ public class LoggerMDCTestCase extends MuleArtifactFunctionalTestCase implements
         final ExtensionModelLoader loader = getLoaderById(XML_SDK_LOADER_ID);
 
         for (String modulePath : getModulePaths()) {
-          ExtensionModel extensionModel = loader.loadExtensionModel(builder(getClass().getClassLoader(),
-                                                                            getDefault(extensions))
-                                                                                .addParameter(XML_SDK_RESOURCE_PROPERTY_NAME,
-                                                                                              modulePath)
-                                                                                .build());
+          Map<String, Object> attributeMap = new HashMap<>();
+          attributeMap.put(XML_SDK_RESOURCE_PROPERTY_NAME, modulePath);
+          ExtensionModel extensionModel =
+              loader.loadExtensionModel(getClass().getClassLoader(), getDefault(extensions), attributeMap);
           extensions.add(extensionModel);
           extensionManager.registerExtension(extensionModel);
         }
