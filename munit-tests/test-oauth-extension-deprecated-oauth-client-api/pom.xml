@@ -38,6 +38,10 @@
                             </goals>
                         </execution>
                     </executions>
+                    <configuration>
+                        <runtimeProduct>MULE_EE</runtimeProduct>
+                        <runtimeVersion>${mule.version}</runtimeVersion>
+                    </configuration>
                     <dependencies>
                         <!-- MUnit Dependencies -->
                         <dependency>
@@ -67,18 +71,5 @@
             <version>0.8.0</version>
         </dependency>
     </dependencies>
-
-    <profiles>
-        <!-- TODO TD-0146415: Remove this when MUnit works with Java 17 -->
-        <profile>
-            <id>skip-munit-java-17</id>
-            <activation>
-                <jdk>[17,)</jdk>
-            </activation>
-            <properties>
-                <skipMunitTests>true</skipMunitTests>
-            </properties>
-        </profile>
-    </profiles>
 
 </project>
