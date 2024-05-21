@@ -191,6 +191,12 @@
             <classifier>mule-plugin</classifier>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.mule.modules</groupId>
+            <artifactId>mule-tracing-module</artifactId>
+            <classifier>mule-plugin</classifier>
+            <scope>test</scope>
+        </dependency>
 
         <dependency>
             <groupId>org.mule.module</groupId>
