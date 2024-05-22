@@ -24,6 +24,7 @@ import org.mule.runtime.container.api.ModuleRepository;
 import org.mule.runtime.container.api.MuleModule;
 import org.mule.runtime.jpms.api.MuleContainerModule;
 import org.mule.runtime.module.artifact.activation.internal.classloader.DefaultArtifactClassLoaderResolver;
+import org.mule.runtime.module.artifact.api.classloader.ArtifactClassLoader;
 import org.mule.runtime.module.artifact.api.classloader.MuleArtifactClassLoader;
 import org.mule.runtime.module.artifact.api.classloader.MuleDeployableArtifactClassLoader;
 import org.mule.runtime.module.artifact.api.descriptor.ApplicationDescriptor;
@@ -60,7 +61,7 @@ public class ApplicationClassloaderCreationBenchmark extends AbstractArtifactAct
   private ClassLoaderConfiguration classLoaderConfiguration;
   private MuleDeployableArtifactClassLoader applicationClassLoaderForCache;
   private ApplicationDescriptor newApplicationDescriptorForCache;
-  private MuleArtifactClassLoader plugin2ClassLoaderForCache;
+  private ArtifactClassLoader plugin2ClassLoaderForCache;
   private MuleModule muleModule;
   private List<MuleContainerModule> muleModuleSingletonList;
 
