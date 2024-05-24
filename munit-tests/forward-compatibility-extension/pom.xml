@@ -26,7 +26,7 @@
         <munit.output.directory>${basedir}/target/test-mule/munit</munit.output.directory>
         <munit.extensions.maven.plugin.version>1.1.3</munit.extensions.maven.plugin.version>
         <mavenResources.version>3.2.0</mavenResources.version>
-        <mtf.tools.version>1.2.0</mtf.tools.version>
+        <mtf.tools.version>1.1.2</mtf.tools.version>
 
         <mulesoftLicenseVersion>1.1.0</mulesoftLicenseVersion>
         <license.maven.plugin.version>4.2</license.maven.plugin.version>
