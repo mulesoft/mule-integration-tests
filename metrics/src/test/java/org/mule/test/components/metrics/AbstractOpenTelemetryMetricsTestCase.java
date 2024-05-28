@@ -6,9 +6,6 @@
  */
 package org.mule.test.components.metrics;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.util.MuleSystemProperties.MULE_ENABLE_STATISTICS;
 import static org.mule.runtime.core.api.util.ClassUtils.withContextClassLoader;
 import static org.mule.runtime.core.api.util.IOUtils.getResourceAsUrl;
@@ -23,6 +20,9 @@ import static java.lang.System.setProperty;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 
 import static io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceRequest.parseFrom;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.Assert.assertThat;
 import static org.testcontainers.Testcontainers.exposeHostPorts;
 import static org.testcontainers.containers.BindMode.READ_ONLY;
 
@@ -137,7 +137,6 @@ public abstract class AbstractOpenTelemetryMetricsTestCase extends
                                                                             @NotNull ServiceRequestContext ctx,
                                                                             byte @NotNull [] message) {
                      try {
-                       System.out.println(OpenTelemetryMetricsTestUtils.getMetrics(parseFrom(message)));
                        if (metrics == null) {
                          metrics = OpenTelemetryMetricsTestUtils.getMetrics(parseFrom(message));
                        }
