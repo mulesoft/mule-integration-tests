@@ -6,9 +6,10 @@
  */
 package org.mule.test.components.metrics;
 
-import org.junit.Test;
 import org.mule.tck.probe.JUnitProbe;
 import org.mule.tck.probe.PollingProber;
+
+import org.junit.Test;
 
 public class OpenTelemetryErrorCountersTestCase extends AbstractOpenTelemetryMetricsTestCase {
 
