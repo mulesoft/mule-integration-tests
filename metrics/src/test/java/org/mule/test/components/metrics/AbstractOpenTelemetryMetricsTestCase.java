@@ -6,6 +6,9 @@
  */
 package org.mule.test.components.metrics;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.util.MuleSystemProperties.MULE_ENABLE_STATISTICS;
 import static org.mule.runtime.core.api.util.ClassUtils.withContextClassLoader;
 import static org.mule.runtime.core.api.util.IOUtils.getResourceAsUrl;
@@ -30,6 +33,7 @@ import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import java.io.UncheckedIOException;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
+import java.util.stream.Collectors;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.linecorp.armeria.server.ServerBuilder;
@@ -102,6 +106,19 @@ public abstract class AbstractOpenTelemetryMetricsTestCase extends
     server.reset();
   }
 
+  protected void verifyMetricsExists(String metricName, String description, String resourceName, String instrumentationName,
+                                     long expectedValue, List<ExportedMeter> metrics) {
+    List<ExportedMeter> exportedMetersForMetric =
+        metrics.stream().filter(metric -> metric.getName().equals(metricName)).collect(Collectors.toList());
+    assertThat(exportedMetersForMetric, hasSize(1));
+    ExportedMeter exportedMeter = exportedMetersForMetric.get(0);
+    assertThat(exportedMeter.getName(), equalTo(metricName));
+    assertThat(exportedMeter.getDescription(), equalTo(description));
+    assertThat(exportedMeter.getResourceName(), equalTo(resourceName));
+    assertThat(exportedMeter.getInstrumentName(), equalTo(instrumentationName));
+    assertThat(exportedMeter.getValue(), equalTo(expectedValue));
+  }
+
   /**
    * A Test Grpc Server Rule that captures the metrics. Till reset, it will obtain only the first metrics exported.
    */
@@ -120,6 +137,7 @@ public abstract class AbstractOpenTelemetryMetricsTestCase extends
                                                                             @NotNull ServiceRequestContext ctx,
                                                                             byte @NotNull [] message) {
                      try {
+                       System.out.println(OpenTelemetryMetricsTestUtils.getMetrics(parseFrom(message)));
                        if (metrics == null) {
                          metrics = OpenTelemetryMetricsTestUtils.getMetrics(parseFrom(message));
                        }
