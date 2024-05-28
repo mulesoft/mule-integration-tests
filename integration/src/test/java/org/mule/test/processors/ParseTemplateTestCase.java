@@ -12,6 +12,7 @@ import static org.mule.runtime.api.metadata.MediaType.JSON;
 import static org.mule.test.allure.AllureConstants.ComponentsFeature.CORE_COMPONENTS;
 import static org.mule.test.allure.AllureConstants.ComponentsFeature.ParseTemplateStory.PARSE_TEMPLATE;
 
+import static java.lang.System.lineSeparator;
 import static java.nio.charset.StandardCharsets.UTF_16;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -232,9 +233,9 @@ public class ParseTemplateTestCase extends AbstractIntegrationTestCase {
   @Test
   public void subexpressionsExampleFromDocs() throws Exception {
     CoreEvent event = flowRunner("subexpressionsExampleFromDocs").run();
-    assertThat(event.getMessage().getPayload().getValue(), equalTo("<td>hello WORLD</td>\n"
-        + "<td>hello WORLD</td>\n"
-        + "<td>hello upper(\"world\")</td>\n"
+    assertThat(event.getMessage().getPayload().getValue(), equalTo("<td>hello WORLD</td>" + lineSeparator()
+        + "<td>hello WORLD</td>" + lineSeparator()
+        + "<td>hello upper(\"world\")</td>" + lineSeparator()
         + "<td>hello ++ upper(\"world\")</td>"));
   }
 
