@@ -244,12 +244,12 @@ public class ParseTemplateTestCase extends AbstractIntegrationTestCase {
     CoreEvent event = flowRunner("escapeExampleFromDocs").run();
 
     // Current behavior here has [JKL] preceded by the escape character in the result which is not what we have in the docs
-    assertThat(event.getMessage().getPayload().getValue(), equalTo("<td>#[</td>\n"
-        + "<td>abcd#[-1234WORLD.log</td>\n"
-        + "<td>'abc'def'</td>\n"
-        + "<td>abc'def</td>\n"
-        + "<td>\"xyz\"xyz\"</td>\n"
-        + "<td>xyz\"xyz</td>\n"
+    assertThat(event.getMessage().getPayload().getValue(), equalTo("<td>#[</td>" + lineSeparator()
+        + "<td>abcd#[-1234WORLD.log</td>" + lineSeparator()
+        + "<td>'abc'def'</td>" + lineSeparator()
+        + "<td>abc'def</td>" + lineSeparator()
+        + "<td>\"xyz\"xyz\"</td>" + lineSeparator()
+        + "<td>xyz\"xyz</td>" + lineSeparator()
         + "<td>abc$DEF#ghi\\[JKL]</td>"));
   }
 
