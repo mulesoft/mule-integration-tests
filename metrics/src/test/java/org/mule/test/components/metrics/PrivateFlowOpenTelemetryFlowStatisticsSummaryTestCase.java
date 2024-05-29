@@ -9,10 +9,8 @@ package org.mule.test.components.metrics;
 import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 
 import io.qameta.allure.Feature;
-import org.junit.Ignore;
 
 @Feature(PROFILING)
-@Ignore("W-15586397")
 public class PrivateFlowOpenTelemetryFlowStatisticsSummaryTestCase extends AbstractOpenTelemetryFlowStatisticsSummaryTestCase {
 
   private static final String RESOURCE_NAME = "PrivateFlowOpenTelemetryFlowStatisticsSummaryTestCase#test";

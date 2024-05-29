@@ -23,6 +23,7 @@ import static io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceRe
 import static org.testcontainers.Testcontainers.exposeHostPorts;
 import static org.testcontainers.containers.BindMode.READ_ONLY;
 
+import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.components.metrics.export.ExportedMeter;
 import org.mule.test.components.metrics.export.OpenTelemetryMetricsTestUtils;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
@@ -39,7 +40,7 @@ import com.linecorp.armeria.testing.junit4.server.ServerRule;
 import io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceResponse;
 import org.jetbrains.annotations.NotNull;
 import org.junit.After;
-import org.junit.ClassRule;
+import org.junit.Rule;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.images.PullPolicy;
@@ -51,6 +52,7 @@ import org.testcontainers.utility.DockerImageName;
 public abstract class AbstractOpenTelemetryMetricsTestCase extends
     MuleArtifactFunctionalTestCase implements OpenTelemetryMetricsTestRunnerConfigAnnotation {
 
+  public static final String RECEIVER_PORT = "receiverPort";
   private static final DockerImageName COLLECTOR_IMAGE =
       DockerImageName.parse("otel/opentelemetry-collector:0.99.0");
 
@@ -61,8 +63,8 @@ public abstract class AbstractOpenTelemetryMetricsTestCase extends
 
   protected GenericContainer<?> collector;
 
-  @ClassRule
-  public static final TestGrpcServerRule server = new TestGrpcServerRule();
+  @Rule
+  public final TestGrpcServerRule server = new TestGrpcServerRule(new DynamicPort(RECEIVER_PORT));
 
   @Override
   protected void doSetUpBeforeMuleContextCreation() throws Exception {
@@ -105,10 +107,15 @@ public abstract class AbstractOpenTelemetryMetricsTestCase extends
   /**
    * A Test Grpc Server Rule that captures the metrics. Till reset, it will obtain only the first metrics exported.
    */
-  protected static final class TestGrpcServerRule extends ServerRule {
+  protected final class TestGrpcServerRule extends ServerRule {
 
     public static final String PATH_PATTERN = "/opentelemetry.proto.collector.metrics.v1.MetricsService/Export";
+    private final DynamicPort port;
     private List<ExportedMeter> metrics;
+
+    public TestGrpcServerRule(DynamicPort port) {
+      this.port = port;
+    }
 
     @Override
     protected void configure(ServerBuilder sb) {
@@ -129,7 +136,7 @@ public abstract class AbstractOpenTelemetryMetricsTestCase extends
                      return completedFuture(ExportTraceServiceResponse.getDefaultInstance().toByteArray());
                    }
                  });
-      sb.http(0);
+      sb.http(port.getNumber());
     }
 
     public List<ExportedMeter> getMetrics() {
