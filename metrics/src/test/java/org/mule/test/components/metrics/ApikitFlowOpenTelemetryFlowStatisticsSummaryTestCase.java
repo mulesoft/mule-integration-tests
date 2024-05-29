@@ -11,11 +11,9 @@ import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import org.mule.tck.junit4.rule.DynamicPort;
 
 import io.qameta.allure.Feature;
-import org.junit.Ignore;
 import org.junit.Rule;
 
 @Feature(PROFILING)
-@Ignore("W-15586397")
 public class ApikitFlowOpenTelemetryFlowStatisticsSummaryTestCase extends AbstractOpenTelemetryFlowStatisticsSummaryTestCase {
 
   @Rule
