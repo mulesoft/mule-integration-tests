@@ -27,8 +27,8 @@ import static org.testcontainers.Testcontainers.exposeHostPorts;
 import static org.testcontainers.containers.BindMode.READ_ONLY;
 import static org.testcontainers.utility.MountableFile.forHostPath;
 
+import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
-import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.runner.RunnerDelegateTo;
 
 import java.io.UncheckedIOException;
@@ -47,7 +47,6 @@ import io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceResponse;
 import org.jetbrains.annotations.NotNull;
 import org.junit.After;
 import org.junit.ClassRule;
-import org.junit.Rule;
 import org.junit.runners.Parameterized;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
@@ -81,10 +80,8 @@ public abstract class AbstractFullOpenTelemetryTracingTestCase extends
   @ClassRule
   public static SelfSignedCertificateRule clientTls = new SelfSignedCertificateRule();
 
-  private static final String RECEIVER_PORT = "receiverPort";
-
-  @Rule
-  public final TestGrpcServerRule server = new TestGrpcServerRule(new DynamicPort(RECEIVER_PORT));
+  @ClassRule
+  public static final TestGrpcServerRule server = new TestGrpcServerRule();
 
   @Parameterized.Parameters(name = "type: {0} - path: {3} - secure: {4}")
   public static Collection<Object[]> data() {
@@ -172,11 +169,6 @@ public abstract class AbstractFullOpenTelemetryTracingTestCase extends
     public static final String PATH_PATTERN = "/opentelemetry.proto.collector.trace.v1.TraceService/Export";
 
     private final List<CapturedExportedSpan> capturedExportedSpans = new ArrayList<>();
-    private final DynamicPort port;
-
-    public TestGrpcServerRule(DynamicPort port) {
-      this.port = port;
-    }
 
     @Override
     protected void configure(ServerBuilder sb) {
@@ -197,7 +189,7 @@ public abstract class AbstractFullOpenTelemetryTracingTestCase extends
                      return completedFuture(ExportTraceServiceResponse.getDefaultInstance().toByteArray());
                    }
                  });
-      sb.http(port.getNumber());
+      sb.http(0);
     }
 
     public void reset() {
