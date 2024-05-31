@@ -111,8 +111,6 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <runtimeProduct>MULE_EE</runtimeProduct>
-                    <runtimeVersion>${mule.version}</runtimeVersion>
                     <systemPropertyVariables>
                         <mule.enable.profiling.service>true</mule.enable.profiling.service>
                     </systemPropertyVariables>
