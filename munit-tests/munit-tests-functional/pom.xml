@@ -94,13 +94,13 @@
         <dependency>
             <groupId>com.mulesoft.munit</groupId>
             <artifactId>munit-runner</artifactId>
-            <version>${munitVersion}</version>
+            <version>${munit.version}</version>
             <classifier>mule-plugin</classifier>
         </dependency>
         <dependency>
             <groupId>com.mulesoft.munit</groupId>
             <artifactId>munit-tools</artifactId>
-            <version>${munitVersion}</version>
+            <version>${munit.version}</version>
             <classifier>mule-plugin</classifier>
         </dependency>
         <dependency>
