@@ -117,14 +117,6 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <runtimeConfiguration>
-                        <discoverRuntimes>
-                            <product>EE</product>
-                            <includeSnapshots>true</includeSnapshots>
-                            <minMuleVersion>4.6.0</minMuleVersion>
-                        </discoverRuntimes>
-                    </runtimeConfiguration>
-
                     <systemPropertyVariables>
                         <mule.enable.profiling.service>true</mule.enable.profiling.service>
                     </systemPropertyVariables>
