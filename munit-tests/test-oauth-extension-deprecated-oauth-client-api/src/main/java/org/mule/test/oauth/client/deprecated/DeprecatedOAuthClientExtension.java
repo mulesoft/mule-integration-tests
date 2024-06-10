@@ -6,11 +6,17 @@
  */
 package org.mule.test.oauth.client.deprecated;
 
+import static org.mule.sdk.api.meta.JavaVersion.JAVA_11;
+import static org.mule.sdk.api.meta.JavaVersion.JAVA_17;
+import static org.mule.sdk.api.meta.JavaVersion.JAVA_8;
+
 import org.mule.runtime.extension.api.annotation.Configurations;
 import org.mule.runtime.extension.api.annotation.Extension;
 import org.mule.runtime.extension.api.annotation.dsl.xml.Xml;
+import org.mule.sdk.api.annotation.JavaVersionSupport;
 
 @Extension(name = "Deprecated OAuth Client API Test Extension")
+@JavaVersionSupport({JAVA_8, JAVA_11, JAVA_17})
 @Configurations({TestOAuthConfig.class})
 @Xml(prefix = "test-deprecated-oauth-client")
 public class DeprecatedOAuthClientExtension {
