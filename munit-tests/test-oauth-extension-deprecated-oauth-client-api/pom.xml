@@ -24,38 +24,14 @@
     </properties>
 
     <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>com.mulesoft.munit</groupId>
-                    <artifactId>munit-extensions-maven-plugin</artifactId>
-                    <version>${munit.extensions.maven.plugin.version}</version>
-                    <executions>
-                        <execution>
-                            <phase>integration-test</phase>
-                            <goals>
-                                <goal>test</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                    <dependencies>
-                        <!-- MUnit Dependencies -->
-                        <dependency>
-                            <groupId>com.mulesoft.munit</groupId>
-                            <artifactId>munit-runner</artifactId>
-                            <version>${munit.version}</version>
-                            <classifier>mule-plugin</classifier>
-                        </dependency>
-                    </dependencies>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-
         <plugins>
             <plugin>
                 <groupId>com.mulesoft.munit</groupId>
                 <artifactId>munit-extensions-maven-plugin</artifactId>
-                <version>${munit.extensions.maven.plugin.version}</version>
+                <configuration>
+                    <runtimeProduct>MULE_EE</runtimeProduct>
+                    <runtimeVersion>${mule.version}</runtimeVersion>
+                </configuration>
             </plugin>
         </plugins>
     </build>
@@ -67,18 +43,5 @@
             <version>0.8.0</version>
         </dependency>
     </dependencies>
-
-    <profiles>
-        <!-- TODO TD-0146415: Remove this when MUnit works with Java 17 -->
-        <profile>
-            <id>skip-munit-java-17</id>
-            <activation>
-                <jdk>[17,)</jdk>
-            </activation>
-            <properties>
-                <skipMunitTests>true</skipMunitTests>
-            </properties>
-        </profile>
-    </profiles>
 
 </project>
