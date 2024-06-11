@@ -28,6 +28,10 @@
             <plugin>
                 <groupId>com.mulesoft.munit</groupId>
                 <artifactId>munit-extensions-maven-plugin</artifactId>
+                <configuration>
+                    <runtimeProduct>MULE_EE</runtimeProduct>
+                    <runtimeVersion>${mule.version}</runtimeVersion>
+                </configuration>
             </plugin>
         </plugins>
     </build>
