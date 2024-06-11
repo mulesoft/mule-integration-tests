@@ -39,8 +39,6 @@
         <munitVersion>3.2.0</munitVersion>
         <muleExtensionTestSoapTestVersion>1.8.0-SNAPSHOT</muleExtensionTestSoapTestVersion>
 
-        <munitExtensionsMavenPlugin>1.2.0</munitExtensionsMavenPlugin>
-
         <apacheHttpClientVersion>4.5.13</apacheHttpClientVersion>
 
         <muleDependenciesVersion>1.x-SNAPSHOT</muleDependenciesVersion>
@@ -73,16 +71,6 @@
                 </executions>
             </plugin>
         </plugins>
-
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>com.mulesoft.munit</groupId>
-                    <artifactId>munit-extensions-maven-plugin</artifactId>
-                    <version>${munitExtensionsMavenPlugin}</version>
-                </plugin>
-            </plugins>
-        </pluginManagement>
     </build>
 
     <dependencyManagement>
