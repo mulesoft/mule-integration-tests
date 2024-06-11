@@ -53,7 +53,8 @@ public class MuleOperationProcessingStrategyTestCase extends MuleArtifactFunctio
       "when they are executed in that order, the BLOCKING child execution thread is the same as the CPU_LITE")
   public void blockingOperationInsideBodyDoesNotJumpThreadAfterExecute() throws Exception {
     flowRunner("blockingFlow").run();
-    assertThat(executionPhaseForKey("Blocking child"), is(executionPhaseForKey("After operation with one blocking child")));
+    assertThat(executionThreadTracker.toString(), executionPhaseForKey("After operation with one blocking child"),
+               is(executionPhaseForKey("Blocking child")));
   }
 
   @Test
