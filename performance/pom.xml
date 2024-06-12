@@ -93,6 +93,10 @@
             <artifactId>mule-tests-unit</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
 
         <!-- Services -->
         <!--TODO: MULE-10837-->
@@ -335,7 +339,6 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-shade-plugin</artifactId>
-                        <version>${shade.plugin.version}</version>
                         <executions>
                             <execution>
                                 <phase>package</phase>
