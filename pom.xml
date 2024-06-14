@@ -43,7 +43,7 @@
         <jacksonVersion>2.15.0</jacksonVersion>
         <springVersion>5.1.6.RELEASE</springVersion>
 
-        <muleDependenciesVersion>1.0.23</muleDependenciesVersion>
+        <muleDependenciesVersion>1.0.24</muleDependenciesVersion>
         <muleTestComponentsVersion>4.7.1-rc1</muleTestComponentsVersion>
 
         <muleBomVersion>4.7.1-rc1</muleBomVersion>
