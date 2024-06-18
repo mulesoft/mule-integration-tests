@@ -53,7 +53,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.mule.tests.extension</groupId>
+            <groupId>org.mule.tests.extensions</groupId>
             <artifactId>mule-extension-test-soap</artifactId>
             <version>${muleExtensionTestSoapTestVersion}</version>
             <classifier>mule-plugin</classifier>
