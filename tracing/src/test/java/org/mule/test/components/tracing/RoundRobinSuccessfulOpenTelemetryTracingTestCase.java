@@ -23,6 +23,7 @@ import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
+import org.apache.commons.lang3.function.TriFunction;
 import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
 import org.mule.runtime.tracer.api.sniffer.ExportedSpanSniffer;
 import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
@@ -44,7 +45,6 @@ import io.qameta.allure.Story;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
-import org.testcontainers.shaded.org.apache.commons.lang3.function.TriFunction;
 
 @Feature(PROFILING)
 @Story(DEFAULT_CORE_EVENT_TRACER)
