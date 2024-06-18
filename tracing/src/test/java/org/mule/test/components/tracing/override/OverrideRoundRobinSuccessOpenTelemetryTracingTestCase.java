@@ -32,7 +32,6 @@ import org.mule.test.components.tracing.OpenTelemetryTracingSnifferTestCase;
 import org.mule.test.components.tracing.OpenTelemetryTracingTestRunnerConfigAnnotation;
 import org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy;
 import org.mule.test.runner.RunnerDelegateTo;
-import org.testcontainers.shaded.org.apache.commons.lang3.function.TriFunction;
 
 import java.util.Collection;
 import java.util.List;
@@ -40,6 +39,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.function.TriFunction;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
 import org.junit.After;

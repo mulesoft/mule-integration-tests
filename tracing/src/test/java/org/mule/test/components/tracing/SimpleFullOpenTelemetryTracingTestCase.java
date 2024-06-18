@@ -27,13 +27,11 @@ import java.util.Map;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
 @Feature(PROFILING)
 @Story(DEFAULT_CORE_EVENT_TRACER)
-@Ignore("W-15586397")
 public class SimpleFullOpenTelemetryTracingTestCase extends AbstractFullOpenTelemetryTracingTestCase {
 
   @Rule
@@ -59,8 +57,8 @@ public class SimpleFullOpenTelemetryTracingTestCase extends AbstractFullOpenTele
   private static final String TRACE_VAR_VALUE = "Hello World!";
   private static final String CORRELATION_ID_CUSTOM_VALUE = "Fua";
 
-  public SimpleFullOpenTelemetryTracingTestCase(String exporterType, String schema, int port, String path, boolean secure) {
-    super(exporterType, schema, port, path, secure);
+  public SimpleFullOpenTelemetryTracingTestCase(String exporterType, String schema, boolean secure) {
+    super(exporterType, schema, secure);
   }
 
   @Override
