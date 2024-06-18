@@ -24,7 +24,6 @@ import static java.lang.System.setProperty;
 import static java.util.Arrays.asList;
 
 import static org.hamcrest.Matchers.aMapWithSize;
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.nullValue;
@@ -341,7 +340,7 @@ public class OpenTelemetryHttpSemanticConventionAttributesAndNameTestCase extend
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_FLAVOR, "1.1"));
       assertThat(listenerExportedSpan.getAttributes(), anyOf(
                                                              hasEntry(HTTP_USER_AGENT, "AHC/1.0"),
-                                                             hasEntry(equalTo(HTTP_USER_AGENT), containsString("Netty"))));
+                                                             hasEntry(HTTP_USER_AGENT, "Mule HTTP Client")));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(NET_HOST_PORT, httpPort.getValue()));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_METHOD, "GET"));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_STATUS_CODE, "200"));
@@ -413,7 +412,7 @@ public class OpenTelemetryHttpSemanticConventionAttributesAndNameTestCase extend
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_FLAVOR, "1.1"));
       assertThat(listenerExportedSpan.getAttributes(), anyOf(
                                                              hasEntry(HTTP_USER_AGENT, "AHC/1.0"),
-                                                             hasEntry(equalTo(HTTP_USER_AGENT), containsString("Netty"))));
+                                                             hasEntry(HTTP_USER_AGENT, "Mule HTTP Client")));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(NET_HOST_PORT, httpPort.getValue()));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_METHOD, "GET"));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_STATUS_CODE, "200"));
@@ -485,7 +484,7 @@ public class OpenTelemetryHttpSemanticConventionAttributesAndNameTestCase extend
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_FLAVOR, "1.1"));
       assertThat(listenerExportedSpan.getAttributes(), anyOf(
                                                              hasEntry(HTTP_USER_AGENT, "AHC/1.0"),
-                                                             hasEntry(equalTo(HTTP_USER_AGENT), containsString("Netty"))));
+                                                             hasEntry(HTTP_USER_AGENT, "Mule HTTP Client")));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(NET_HOST_PORT, httpPort.getValue()));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_METHOD, "GET"));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_STATUS_CODE, "200"));

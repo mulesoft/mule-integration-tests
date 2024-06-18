@@ -20,7 +20,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.hamcrest.Matchers.aMapWithSize;
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.nullValue;
@@ -292,7 +291,7 @@ public class OpenTelemetryHttpErrorSemanticConventionAttributesAndNameTestCase e
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_FLAVOR, "1.1"));
       assertThat(listenerExportedSpan.getAttributes(), anyOf(
                                                              hasEntry(HTTP_USER_AGENT, "AHC/1.0"),
-                                                             hasEntry(equalTo(HTTP_USER_AGENT), containsString("Netty"))));
+                                                             hasEntry(HTTP_USER_AGENT, "Mule HTTP Client")));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(NET_HOST_PORT, listenerServerPort.getValue()));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_METHOD, "GET"));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_STATUS_CODE, "500"));
@@ -385,7 +384,7 @@ public class OpenTelemetryHttpErrorSemanticConventionAttributesAndNameTestCase e
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_FLAVOR, "1.1"));
       assertThat(listenerExportedSpan.getAttributes(), anyOf(
                                                              hasEntry(HTTP_USER_AGENT, "AHC/1.0"),
-                                                             hasEntry(equalTo(HTTP_USER_AGENT), containsString("Netty"))));
+                                                             hasEntry(HTTP_USER_AGENT, "Mule HTTP Client")));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(NET_HOST_PORT, listenerServerPort.getValue()));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_METHOD, "GET"));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_STATUS_CODE, "400"));
@@ -475,7 +474,7 @@ public class OpenTelemetryHttpErrorSemanticConventionAttributesAndNameTestCase e
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_FLAVOR, "1.1"));
       assertThat(listenerExportedSpan.getAttributes(), anyOf(
                                                              hasEntry(HTTP_USER_AGENT, "AHC/1.0"),
-                                                             hasEntry(equalTo(HTTP_USER_AGENT), containsString("Netty"))));
+                                                             hasEntry(HTTP_USER_AGENT, "Mule HTTP Client")));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(NET_HOST_PORT, listenerServerPort.getValue()));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_METHOD, "GET"));
       assertThat(listenerExportedSpan.getAttributes(), hasEntry(HTTP_STATUS_CODE, "500"));
