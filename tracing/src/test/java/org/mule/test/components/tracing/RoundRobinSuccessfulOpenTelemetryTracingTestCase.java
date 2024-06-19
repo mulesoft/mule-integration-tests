@@ -39,12 +39,12 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.function.TriFunction;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
-import org.testcontainers.shaded.org.apache.commons.lang3.function.TriFunction;
 
 @Feature(PROFILING)
 @Story(DEFAULT_CORE_EVENT_TRACER)
