@@ -7,7 +7,6 @@
 package org.mule.test.components.metrics;
 
 import static org.mule.runtime.api.util.MuleSystemProperties.MULE_ENABLE_STATISTICS;
-import static org.mule.runtime.core.api.util.ClassUtils.withContextClassLoader;
 import static org.mule.runtime.core.api.util.IOUtils.getResourceAsUrl;
 import static org.mule.runtime.metrics.exporter.api.MeterExporterProperties.METRIC_EXPORTER_ENABLED_PROPERTY;
 import static org.mule.runtime.metrics.exporter.config.api.OpenTelemetryMeterExporterConfigurationProperties.MULE_OPEN_TELEMETRY_METER_EXPORTER_CONFIGURATION_FILE_PATH;
@@ -20,8 +19,6 @@ import static java.lang.System.setProperty;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 
 import static io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceRequest.parseFrom;
-import static org.testcontainers.Testcontainers.exposeHostPorts;
-import static org.testcontainers.containers.BindMode.READ_ONLY;
 
 import org.mule.test.components.metrics.export.ExportedMeter;
 import org.mule.test.components.metrics.export.OpenTelemetryMetricsTestUtils;
@@ -37,13 +34,8 @@ import com.linecorp.armeria.server.ServiceRequestContext;
 import com.linecorp.armeria.server.grpc.protocol.AbstractUnaryGrpcService;
 import com.linecorp.armeria.testing.junit4.server.ServerRule;
 import io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceResponse;
-import org.jetbrains.annotations.NotNull;
 import org.junit.After;
-import org.junit.ClassRule;
-import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.wait.strategy.Wait;
-import org.testcontainers.images.PullPolicy;
-import org.testcontainers.utility.DockerImageName;
+import org.junit.Rule;
 
 /**
  * Generic metrics case for integration metrics case.
@@ -51,36 +43,13 @@ import org.testcontainers.utility.DockerImageName;
 public abstract class AbstractOpenTelemetryMetricsTestCase extends
     MuleArtifactFunctionalTestCase implements OpenTelemetryMetricsTestRunnerConfigAnnotation {
 
-  private static final DockerImageName COLLECTOR_IMAGE =
-      DockerImageName.parse("otel/opentelemetry-collector:0.99.0");
-
-  private static final Integer COLLECTOR_OTLP_GRPC_PORT = 4317;
-  private static final Integer COLLECTOR_HEALTH_CHECK_PORT = 13133;
-
   private static final String EXPORTER_CONF_FILE = "conf/meter-exporter.conf";
 
-  protected GenericContainer<?> collector;
-
-  @ClassRule
-  public static final TestGrpcServerRule server = new TestGrpcServerRule();
+  @Rule
+  public final TestGrpcServerRule server = new TestGrpcServerRule();
 
   @Override
   protected void doSetUpBeforeMuleContextCreation() throws Exception {
-    withContextClassLoader(GenericContainer.class.getClassLoader(), () -> {
-      exposeHostPorts(server.httpPort());
-      // Configuring the collector test-container
-      collector =
-          new GenericContainer<>(COLLECTOR_IMAGE)
-              .withImagePullPolicy(PullPolicy.alwaysPull())
-              .withEnv("OTLP_EXPORTER_ENDPOINT", "host.testcontainers.internal:" + server.httpPort())
-              .withClasspathResourceMapping("otel.yaml", "/otel.yaml", READ_ONLY)
-              .withCommand("--config", "/otel.yaml")
-              .withExposedPorts(COLLECTOR_OTLP_GRPC_PORT, COLLECTOR_HEALTH_CHECK_PORT)
-              .waitingFor(Wait.forHttp("/").forPort(COLLECTOR_HEALTH_CHECK_PORT));
-
-      collector.start();
-    });
-
     setProperty(MULE_ENABLE_STATISTICS, TRUE.toString());
     setProperty(METRIC_EXPORTER_ENABLED_PROPERTY, TRUE.toString());
 
@@ -88,12 +57,11 @@ public abstract class AbstractOpenTelemetryMetricsTestCase extends
     setProperty(MULE_OPEN_TELEMETRY_METER_EXPORTER_CONFIGURATION_FILE_PATH, configurationFilePath);
     setProperty(MULE_OPEN_TELEMETRY_METER_EXPORTER_ENABLED, TRUE.toString());
     setProperty(MULE_OPEN_TELEMETRY_METER_EXPORTER_ENDPOINT,
-                "http://localhost:" + collector.getMappedPort(COLLECTOR_OTLP_GRPC_PORT));
+                "http://localhost:" + server.httpPort());
   }
 
   @After
   public void after() {
-    collector.stop();
     clearProperty(MULE_ENABLE_STATISTICS);
     clearProperty(METRIC_EXPORTER_ENABLED_PROPERTY);
     clearProperty(MULE_OPEN_TELEMETRY_METER_EXPORTER_CONFIGURATION_FILE_PATH);
@@ -116,9 +84,9 @@ public abstract class AbstractOpenTelemetryMetricsTestCase extends
                  new AbstractUnaryGrpcService() {
 
                    @Override
-                   protected @NotNull CompletionStage<byte[]> handleMessage(
-                                                                            @NotNull ServiceRequestContext ctx,
-                                                                            byte @NotNull [] message) {
+                   protected CompletionStage<byte[]> handleMessage(
+                                                                   ServiceRequestContext ctx,
+                                                                   byte[] message) {
                      try {
                        if (metrics == null) {
                          metrics = OpenTelemetryMetricsTestUtils.getMetrics(parseFrom(message));
