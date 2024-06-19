@@ -59,8 +59,8 @@ public class SimpleOpenTelemetryTracingTestCase extends AbstractOpenTelemetryTra
   private static final String TRACE_VAR_VALUE = "Hello World!";
   private static final String CORRELATION_ID_CUSTOM_VALUE = "Fua";
 
-  public SimpleOpenTelemetryTracingTestCase(String exporterType, String schema, int port, String path, boolean secure) {
-    super(exporterType, schema, port, path, secure);
+  public SimpleOpenTelemetryTracingTestCase(String exporterType, String path, boolean secure) {
+    super(exporterType, path, secure);
   }
 
   @Override
