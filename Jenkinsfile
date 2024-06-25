@@ -1,4 +1,4 @@
-def UPSTREAM_PROJECTS_LIST = [ "Mule-runtime/mule/4.3.0-APRIL-2023" ]
+def UPSTREAM_PROJECTS_LIST = [ "Mule-runtime/mule/4.3.0-APRIL-2023-WITH-W-15141905-W-15782010" ]
 
 Map pipelineParams = [ "upstreamProjects" : UPSTREAM_PROJECTS_LIST.join(','),
                        // MULE-18045: Comment public setting to get raml-parser 2 from private repo until it is released in a public repo
