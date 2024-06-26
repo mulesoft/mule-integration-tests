@@ -32,7 +32,7 @@
   <properties>
     <munitVersion>2.3.6</munitVersion>
     <muleExtensionTestSoapTestVersion>1.4.2</muleExtensionTestSoapTestVersion>
-    <muleSpringModuleTestVersion>1.4.0-SNAPSHOT</muleSpringModuleTestVersion>
+    <muleSpringModuleTestVersion>1.4.0</muleSpringModuleTestVersion>
 
     <munitExtensionsMavenPlugin>1.1.1</munitExtensionsMavenPlugin>
 
