@@ -1,0 +1,13 @@
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:spring-module="http://www.mulesoft.org/schema/mule/spring"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+      http://www.mulesoft.org/schema/mule/spring http://www.mulesoft.org/schema/mule/spring/current/mule-spring.xsd">
+
+    <spring-module:config name="springConfig" files="spring/spring-config-with-bean-depending-on-extensions-client.xml"/>
+
+    <flow name="mainFlow">
+        <!-- Invokes a getter from a singleton bean which delegates to an extension using the ExtensionsClient -->
+        <set-payload value="#[app.registry.beanDependingOnExtensionsClient.ResultFromEatingApple]"/>
+    </flow>
+</mule>
