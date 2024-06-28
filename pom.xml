@@ -33,6 +33,7 @@
         <module>metrics</module>
         <module>artifact-ast-tests</module>
         <module>single-app-mode</module>
+        <module>spring</module>
     </modules>
 
     <properties>
