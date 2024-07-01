@@ -83,4 +83,9 @@ public class ErrorHandlingConfigurationWarningsBeforeDeploymentTestCase
     return extensions;
   }
 
+  @Override
+  public boolean ignoreParamsWithProperties() {
+    return true;
+  }
+
 }
