@@ -44,7 +44,7 @@
         <springVersion>5.1.6.RELEASE</springVersion>
 
         <muleDependenciesVersion>1.0.24</muleDependenciesVersion>
-        <muleTestComponentsVersion>4.7.1-rc3</muleTestComponentsVersion>
+        <muleTestComponentsVersion>4.7.1</muleTestComponentsVersion>
 
         <muleBomVersion>4.7.1</muleBomVersion>
 
