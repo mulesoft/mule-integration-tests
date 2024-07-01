@@ -196,7 +196,7 @@
         </dependency>
         <dependency>
             <groupId>org.graalvm.js</groupId>
-            <artifactId>js</artifactId>
+            <artifactId>js-language</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
