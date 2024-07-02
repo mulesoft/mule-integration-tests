@@ -13,9 +13,90 @@
                           http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
 
     <flow name="simple-flow">
-        <raise-error type="APP:UNEXPECTED" description="Expected error" />
+        <raise-error type="APP:EXPECTED_ONE" description="Expected error one" />
+    </flow>
+
+    <flow name="simple-propagate-flow">
+        <raise-error type="APP:EXPECTED_ONE" description="Expected error one" />
         <error-handler>
-            <on-error-continue/>
+            <on-error-propagate>
+                <logger/>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+
+    <flow name="simple-continue-flow">
+        <raise-error type="APP:EXPECTED_ONE" description="Expected error one" />
+        <error-handler>
+            <on-error-continue>
+                <logger/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="failed-propagate-flow">
+        <raise-error type="APP:EXPECTED_ONE" description="Expected error one" />
+        <error-handler>
+            <on-error-propagate><raise-error type="APP:EXPECTED_TWO" description="Expected error two" /></on-error-propagate>
+        </error-handler>
+    </flow>
+
+    <flow name="failed-continue-flow">
+        <raise-error type="APP:EXPECTED_ONE" description="Expected error one" />
+        <error-handler>
+            <on-error-continue><raise-error type="APP:EXPECTED_TWO" description="Expected error two" /></on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="failed-try-propagate-flow">
+        <try>
+            <raise-error type="APP:EXPECTED_ONE" description="Expected error one" />
+            <error-handler>
+                <on-error-propagate><raise-error type="APP:EXPECTED_TWO" description="Expected error two" /></on-error-propagate>
+            </error-handler>
+        </try>
+        <error-handler>
+            <on-error-propagate>
+                <logger/>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+
+    <flow name="failed-try-continue-flow">
+        <try>
+            <raise-error type="APP:EXPECTED_ONE" description="Expected error one" />
+            <error-handler>
+                <on-error-propagate><raise-error type="APP:EXPECTED_TWO" description="Expected error two" /></on-error-propagate>
+            </error-handler>
+        </try>
+        <error-handler>
+            <on-error-continue>
+                <logger/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="failed-try-and-continue-flow">
+        <try>
+            <raise-error type="APP:EXPECTED_ONE" description="Expected error one" />
+            <error-handler>
+                <on-error-continue><raise-error type="APP:EXPECTED_TWO" description="Expected error two" /></on-error-continue>
+            </error-handler>
+        </try>
+        <error-handler>
+            <on-error-continue><raise-error type="APP:EXPECTED_THREE" description="Expected error three" /></on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="failed-try-and-propagate-flow">
+        <try>
+            <raise-error type="APP:EXPECTED_ONE" description="Expected error one" />
+            <error-handler>
+                <on-error-propagate><raise-error type="APP:EXPECTED_TWO" description="Expected error two" /></on-error-propagate>
+            </error-handler>
+        </try>
+        <error-handler>
+            <on-error-propagate><raise-error type="APP:EXPECTED_THREE" description="Expected error three" /></on-error-propagate>
         </error-handler>
     </flow>
 
