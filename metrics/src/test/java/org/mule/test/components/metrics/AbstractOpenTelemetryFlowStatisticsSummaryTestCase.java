@@ -20,11 +20,16 @@ import static org.mule.runtime.core.internal.management.stats.DefaultFlowsSummar
 import static org.mule.runtime.core.internal.management.stats.DefaultFlowsSummaryStatistics.DECLARED_TRIGGER_FLOWS_APP_NAME;
 import static org.mule.runtime.core.internal.management.stats.DefaultFlowsSummaryStatistics.FLOWS_SUMMARY_APP_STATISTICS_NAME;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 
 import org.mule.tck.probe.JUnitProbe;
 import org.mule.tck.probe.PollingProber;
+import org.mule.test.components.metrics.export.ExportedMeter;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.Test;
 
@@ -75,6 +80,19 @@ public abstract class AbstractOpenTelemetryFlowStatisticsSummaryTestCase extends
         return statsInfo.toString();
       }
     });
+  }
+
+  private void verifyMetricsExists(String metricName, String description, String resourceName, String instrumentationName,
+                                   long expectedValue, List<ExportedMeter> metrics) {
+    List<ExportedMeter> exportedMetersForMetric =
+        metrics.stream().filter(metric -> metric.getName().equals(metricName)).collect(Collectors.toList());
+    assertThat(exportedMetersForMetric, hasSize(1));
+    ExportedMeter exportedMeter = exportedMetersForMetric.get(0);
+    assertThat(exportedMeter.getName(), equalTo(metricName));
+    assertThat(exportedMeter.getDescription(), equalTo(description));
+    assertThat(exportedMeter.getResourceName(), equalTo(resourceName));
+    assertThat(exportedMeter.getInstrumentName(), equalTo(instrumentationName));
+    assertThat(exportedMeter.getValue(), equalTo(expectedValue));
   }
 
   abstract String getResourceName();
