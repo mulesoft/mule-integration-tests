@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration shutdownHook="disable">
+
+    <Appenders>
+        <Console name="metrics" target="SYSTEM_OUT" follow="true">
+            <PatternLayout pattern="%m%n"/>
+        </Console>
+    </Appenders>
+
+    <Loggers>
+        <AsyncLogger name="org.mule.runtime.metrics.exporter.impl.optel.resources.logging.LoggingMeterExporter" level="INFO" additivity="false">
+            <AppenderRef ref="metrics"/>
+        </AsyncLogger>
+    </Loggers>
+
+</Configuration>

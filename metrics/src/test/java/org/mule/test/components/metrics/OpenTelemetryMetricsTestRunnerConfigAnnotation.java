@@ -13,6 +13,9 @@ import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
     applicationRuntimeLibs = {
         "org.apache.commons:commons-lang3"
     },
+    applicationSharedRuntimeLibs = {
+        "org.mule.runtime:mule-metrics-impl"
+    },
     extraPrivilegedArtifacts = {
         "org.mule.tests:mule-tests-parsers-plugin"
     })
