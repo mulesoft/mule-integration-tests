@@ -34,6 +34,7 @@
         <module>artifact-ast-tests</module>
         <module>single-app-mode</module>
         <module>spring</module>
+        <module>extensions-client-deprecated</module>
     </modules>
 
     <properties>
