@@ -106,7 +106,6 @@ public abstract class AbstractOpenTelemetryMetricsTestCase extends
                                                                             @NotNull ServiceRequestContext ctx,
                                                                             byte @NotNull [] message) {
                      try {
-                       System.out.println(OpenTelemetryMetricsTestUtils.getMetrics(parseFrom(message)));
                        if (metrics == null) {
                          metrics = OpenTelemetryMetricsTestUtils.getMetrics(parseFrom(message));
                        }
