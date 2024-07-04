@@ -6,10 +6,12 @@
  */
 package org.mule.test.components.metrics;
 
+import static org.mule.runtime.core.api.config.MuleProperties.MULE_ERROR_METRICS_FACTORY_KEY;
+
 import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
+
 import static org.apache.commons.lang3.StringUtils.countMatches;
-import static org.mule.runtime.core.api.config.MuleProperties.MULE_ERROR_METRICS_FACTORY_KEY;
 
 import org.mule.functional.api.flow.FlowRunner;
 import org.mule.runtime.api.config.custom.ServiceConfigurator;
