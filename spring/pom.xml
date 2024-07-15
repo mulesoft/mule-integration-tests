@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.mule.tests</groupId>
         <artifactId>mule-extensions-integration-tests</artifactId>
-        <version>4.8.0-SNAPSHOT</version>
+        <version>4.7.2-SNAPSHOT</version>
     </parent>
 
     <artifactId>mule-tests-spring</artifactId>
@@ -17,6 +17,7 @@
         <javaModuleName>org.mule.test.integration.spring</javaModuleName>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
         <surefire.args>${surefire.test.unit.open.args}</surefire.args>
+        <springSecurityVersion>5.7.12</springSecurityVersion>
     </properties>
 
     <dependencies>
@@ -82,6 +83,7 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-core</artifactId>
+            <version>${springSecurityVersion}</version>
             <scope>test</scope>
         </dependency>
 
