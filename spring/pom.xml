@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.mule.tests</groupId>
         <artifactId>mule-extensions-integration-tests</artifactId>
-        <version>4.8.0-SNAPSHOT</version>
+        <version>4.6.6-SNAPSHOT</version>
     </parent>
 
     <artifactId>mule-tests-spring</artifactId>
@@ -17,10 +17,18 @@
         <javaModuleName>org.mule.test.integration.spring</javaModuleName>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
         <surefire.args>${surefire.test.unit.open.args}</surefire.args>
+        <springSecurityVersion>5.7.12</springSecurityVersion>
     </properties>
 
     <dependencies>
         <!-- Dependencies needed for the integration test framework -->
+        <dependency>
+            <groupId>org.mule.runtime</groupId>
+            <artifactId>mule-service-http-api</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-module-extensions-support</artifactId>
@@ -82,36 +90,42 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-core</artifactId>
+            <version>${springSecurityVersion}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
+            <version>${springVersion}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
+            <version>${springVersion}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>
+            <version>${springVersion}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-expression</artifactId>
+            <version>${springVersion}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-aop</artifactId>
+            <version>${springVersion}</version>
             <scope>test</scope>
         </dependency>
 
