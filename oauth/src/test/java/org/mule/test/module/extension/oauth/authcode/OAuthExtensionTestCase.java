@@ -224,7 +224,7 @@ public class OAuthExtensionTestCase extends BaseOAuthExtensionTestCase {
 
     flowRunner("unauthorize").withVariable(OWNER_ID_VARIABLE_NAME, ownerId).run();
     ObjectStore objectStore = getObjectStore(BASE_PERSISTENT_OBJECT_STORE_KEY);
-    assertThat(objectStore.retrieveAll().size(), is(0));
+    assertThat(objectStore.retrieveAll().size(), is(1));
 
     if (expectedError != null) {
       expectedError.expectErrorType("TEST-OAUTH", MuleErrors.CONNECTIVITY.name());

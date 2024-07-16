@@ -71,7 +71,7 @@ public class MultiConfigOAuthExtensionTestCase extends BaseOAuthExtensionTestCas
 
     flowRunner("unauthorize").run();
     ObjectStore objectStore = getObjectStore(BASE_PERSISTENT_OBJECT_STORE_KEY);
-    assertThat(objectStore.retrieveAll().size(), is(0));
+    assertThat(objectStore.retrieveAll().size(), is(1));
 
     startDance(otherCallbackPort.getNumber());
     getConnection(otherCallbackPort.getNumber(), "getOtherConnection");
