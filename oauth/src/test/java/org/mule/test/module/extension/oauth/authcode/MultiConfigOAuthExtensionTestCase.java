@@ -9,15 +9,13 @@ package org.mule.test.module.extension.oauth.authcode;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.store.ObjectStoreManager.BASE_PERSISTENT_OBJECT_STORE_KEY;
-
-import org.mule.oauth.client.api.state.ResourceOwnerOAuthContext;
+import org.mule.runtime.api.store.ObjectStore;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.module.extension.oauth.BaseOAuthExtensionTestCase;
 import org.mule.test.oauth.TestOAuthConnection;
 import org.mule.test.oauth.TestOAuthConnectionState;
 
 import java.io.IOException;
-import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -54,7 +52,7 @@ public class MultiConfigOAuthExtensionTestCase extends BaseOAuthExtensionTestCas
         .run().getMessage().getPayload().getValue()).getState();
 
     assertConnectionState(connection);
-    validateObjectStoreEntries(1);
+    assertOAuthStateStored(BASE_PERSISTENT_OBJECT_STORE_KEY, ownerId);
 
     getObjectStore(BASE_PERSISTENT_OBJECT_STORE_KEY).clear();
     simulateCallback(otherCallbackPort.getNumber());
@@ -68,32 +66,30 @@ public class MultiConfigOAuthExtensionTestCase extends BaseOAuthExtensionTestCas
 
   @Test
   public void unauthorize() throws Exception {
-    executeFlow(callbackPort.getNumber(), "getConnection", "unauthorize", 1);
-    executeFlow(otherCallbackPort.getNumber(), "getOtherConnection", "unauthorizeOther", 2);
+    startDance(callbackPort.getNumber());
+    getConnection(callbackPort.getNumber(), "getConnection");
+
+    flowRunner("unauthorize").run();
+    ObjectStore objectStore = getObjectStore(BASE_PERSISTENT_OBJECT_STORE_KEY);
+    assertThat(objectStore.retrieveAll().size(), is(0));
+
+    startDance(otherCallbackPort.getNumber());
+    getConnection(otherCallbackPort.getNumber(), "getOtherConnection");
+
+    flowRunner("unauthorizeOther").run();
+    assertThat(objectStore.retrieveAll().size(), is(0));
   }
 
-  private void executeFlow(int portNumber, String getConnectionFlow, String unauthorizeFlow, int expectedEntriesSize)
-      throws Exception {
-    startDance(portNumber);
-    simulateCallback(portNumber);
+  private void getConnection(int port, String flowName) throws Exception {
+    simulateCallback(port);
 
-    TestOAuthConnectionState connectionState = ((TestOAuthConnection) flowRunner(getConnectionFlow)
+    TestOAuthConnectionState connection = ((TestOAuthConnection) flowRunner(flowName)
         .run().getMessage().getPayload().getValue()).getState();
 
-    assertConnectionState(connectionState);
-
-    validateObjectStoreEntries(expectedEntriesSize);
-
-    flowRunner(unauthorizeFlow).run();
-    validateObjectStoreEntries(expectedEntriesSize);
+    assertConnectionState(connection);
+    assertOAuthStateStored(BASE_PERSISTENT_OBJECT_STORE_KEY, ownerId);
   }
 
-  private void validateObjectStoreEntries(int expectedEntriesSize) throws Exception {
-    Map<String, ResourceOwnerOAuthContext> entries = getObjectStore(BASE_PERSISTENT_OBJECT_STORE_KEY).retrieveAll();
-    assertThat(entries.size(), is(expectedEntriesSize));
-    ResourceOwnerOAuthContext context = (ResourceOwnerOAuthContext) entries.values().toArray()[0];
-    assertThat(context.getResourceOwnerId(), is(ownerId));
-  }
 
   private void startDance(int port) throws IOException {
     simulateDanceStart(port);
