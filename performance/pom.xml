@@ -16,6 +16,8 @@
 
         <javaModuleName>org.mule.test.integration.performance</javaModuleName>
 
+        <jmh.version>1.35</jmh.version>
+
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
     </properties>
 
@@ -260,7 +262,30 @@
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>
-                        <version>3.1.0</version>
+                        <configuration>
+                            <classpathScope>test</classpathScope>
+                            <executable>java</executable>
+                            <workingDirectory>${basedir}/target</workingDirectory>
+                            <arguments>
+                                <argument>-classpath</argument>
+                                <classpath/>
+                                <mainClass>org.openjdk.jmh.Main</mainClass>
+                                <!--Run only a certain class-->
+                                <argument>${jmh.benchmark}</argument>
+                                <!--Create json report-->
+                                <argument>-rf</argument>
+                                <argument>json</argument>
+                                <!--Enable gc profiler-->
+                                <argument>-prof</argument>
+                                <argument>gc</argument>
+                                <!--Number of Iterations-->
+                                <argument>-i</argument>
+                                <argument>10</argument>
+                                <!--Number of Warmup Iterations-->
+                                <argument>-wi</argument>
+                                <argument>10</argument>
+                            </arguments>
+                        </configuration>
                         <executions>
                             <execution>
                                 <id>run-benchmarks</id>
@@ -268,30 +293,6 @@
                                 <goals>
                                     <goal>exec</goal>
                                 </goals>
-                                <configuration>
-                                    <classpathScope>test</classpathScope>
-                                    <executable>java</executable>
-                                    <workingDirectory>${basedir}/target</workingDirectory>
-                                    <arguments>
-                                        <argument>-classpath</argument>
-                                        <classpath/>
-                                        <mainClass>org.openjdk.jmh.Main</mainClass>
-                                        <!--Run only a certain class-->
-                                        <argument>${jmh.benchmark}</argument>
-                                        <!--Create json report-->
-                                        <argument>-rf</argument>
-                                        <argument>json</argument>
-                                        <!--Enable gc profiler-->
-                                        <argument>-prof</argument>
-                                        <argument>gc</argument>
-                                        <!--Number of Iterations-->
-                                        <argument>-i</argument>
-                                        <argument>10</argument>
-                                        <!--Number of Warmup Iterations-->
-                                        <argument>-wi</argument>
-                                        <argument>10</argument>
-                                    </arguments>
-                                </configuration>
                             </execution>
                         </executions>
                     </plugin>
@@ -325,34 +326,22 @@
                 <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-shade-plugin</artifactId>
+                        <artifactId>maven-assembly-plugin</artifactId>
                         <executions>
                             <execution>
                                 <phase>package</phase>
                                 <goals>
-                                    <goal>shade</goal>
+                                    <goal>single</goal>
                                 </goals>
                                 <configuration>
-                                    <finalName>mule-runtime-integration-benchmarks-${project.version}</finalName>
-                                    <transformers>
-                                        <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <archive>
+                                        <manifest>
                                             <mainClass>org.openjdk.jmh.Main</mainClass>
-                                        </transformer>
-                                    </transformers>
-                                    <filters>
-                                        <filter>
-                                            <!--
-                                                Shading signed JARs will fail without this.
-                                                http://stackoverflow.com/questions/999489/invalid-signature-file-when-attempting-to-run-a-jar
-                                            -->
-                                            <artifact>*:*</artifact>
-                                            <excludes>
-                                                <exclude>META-INF/*.SF</exclude>
-                                                <exclude>META-INF/*.DSA</exclude>
-                                                <exclude>META-INF/*.RSA</exclude>
-                                            </excludes>
-                                        </filter>
-                                    </filters>
+                                        </manifest>
+                                    </archive>
+                                    <descriptorRefs>
+                                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                                    </descriptorRefs>
                                 </configuration>
                             </execution>
                         </executions>
