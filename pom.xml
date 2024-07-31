@@ -38,7 +38,7 @@
 
     <properties>
         <munitVersion>3.2.0</munitVersion>
-        <muleExtensionTestSoapTestVersion>1.7.2-SNAPSHOT</muleExtensionTestSoapTestVersion>
+        <muleExtensionTestSoapTestVersion>1.7.3-SNAPSHOT</muleExtensionTestSoapTestVersion>
 
         <apacheHttpClientVersion>4.5.13</apacheHttpClientVersion>
         <jacksonVersion>2.15.0</jacksonVersion>
