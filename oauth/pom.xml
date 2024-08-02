@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.mule.tests</groupId>
         <artifactId>mule-extensions-integration-tests</artifactId>
-        <version>4.6.6-SNAPSHOT</version>
+        <version>4.6.7-SNAPSHOT</version>
     </parent>
     <artifactId>mule-module-oauth-tests</artifactId>
     
@@ -15,7 +15,7 @@
 
         <javaModuleName>org.mule.test.integration.oauth</javaModuleName>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
-        <muleHttpServiceVersion>1.8.6-SNAPSHOT</muleHttpServiceVersion>
+        <muleHttpServiceVersion>1.8.7-SNAPSHOT</muleHttpServiceVersion>
     </properties>
 
     <dependencies>
