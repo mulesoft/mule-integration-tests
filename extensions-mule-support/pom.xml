@@ -13,7 +13,7 @@
 
     <properties>
         <!-- Test Extensions -->
-        <muleTestingProcessingStrategiesExtensionVersion>4.8.0-SNAPSHOT</muleTestingProcessingStrategiesExtensionVersion>
+        <muleTestingProcessingStrategiesExtensionVersion>4.9.0-SNAPSHOT</muleTestingProcessingStrategiesExtensionVersion>
 
         <surefire.args>
             ${surefire.slf4j.module.args}
