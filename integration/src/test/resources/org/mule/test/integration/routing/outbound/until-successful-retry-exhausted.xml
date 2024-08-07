@@ -161,13 +161,13 @@
     </flow>
 
     <flow name="retryExhaustedErrorWithSuppressionsJsonSerializationCheck">
-        <until-successful maxRetries="1" millisBetweenRetries="10">
+        <until-successful maxRetries="1" millisBetweenRetries="0">
             <test:throw exception="org.mule.test.integration.routing.outbound.UntilSuccessfulRetryExhaustedTestCase.MuleRuntimeError" error="SECURITY"/>
         </until-successful>
         <error-handler>
             <on-error-continue>
                 <test-components:queue-push config-ref="dlq">
-                    <test-components:content>#[output json --- error.cause]</test-components:content>
+                    <test-components:content>#[error.cause]</test-components:content>
                 </test-components:queue-push>
             </on-error-continue>
         </error-handler>
