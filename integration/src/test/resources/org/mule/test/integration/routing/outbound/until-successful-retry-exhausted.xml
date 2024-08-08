@@ -160,4 +160,17 @@
         </error-handler>
     </flow>
 
+    <flow name="retryExhaustedErrorSerializationCheck">
+        <until-successful maxRetries="1" millisBetweenRetries="10">
+            <test:throw exception="org.mule.test.integration.routing.outbound.UntilSuccessfulRetryExhaustedTestCase.MuleRuntimeError" error="SECURITY"/>
+        </until-successful>
+        <error-handler>
+            <on-error-continue>
+                <test-components:queue-push config-ref="dlq">
+                    <test-components:content>#[error]</test-components:content>
+                </test-components:queue-push>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
 </mule>
