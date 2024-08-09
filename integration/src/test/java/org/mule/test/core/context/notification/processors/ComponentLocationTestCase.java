@@ -15,8 +15,8 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mule.runtime.api.component.AbstractComponent.LOCATION_KEY;
 import static org.mule.runtime.api.component.ComponentIdentifier.buildFromStringRepresentation;
+import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.SUB_FLOW;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.builder;
-import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.CHAIN;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.FLOW;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.ON_ERROR;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.OPERATION;
@@ -67,7 +67,7 @@ public class ComponentLocationTestCase extends AbstractIntegrationTestCase {
       Optional.of(builder().identifier(FLOW_IDENTIFIER).type(FLOW).build());
 
   private static final Optional<TypedComponentIdentifier> SUB_FLOW_TYPED_COMPONENT_IDENTIFIER =
-      Optional.of(builder().identifier(SUBFLOW_IDENTIFIER).type(CHAIN).build());
+      Optional.of(builder().identifier(SUBFLOW_IDENTIFIER).type(SUB_FLOW).build());
 
   private static final Optional<String> CONFIG_FILE_NAME =
       Optional.of("org/mule/test/integration/notifications/component-path-test-flow.xml");

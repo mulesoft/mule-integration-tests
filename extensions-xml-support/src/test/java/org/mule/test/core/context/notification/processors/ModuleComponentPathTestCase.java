@@ -7,6 +7,7 @@
 package org.mule.test.core.context.notification.processors;
 
 import static org.mule.runtime.api.component.ComponentIdentifier.buildFromStringRepresentation;
+import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.SUB_FLOW;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.builder;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.CHAIN;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.FLOW;
@@ -110,7 +111,7 @@ public class ModuleComponentPathTestCase extends MuleArtifactFunctionalTestCase 
   private static final Optional<TypedComponentIdentifier> FLOW_TYPED_COMPONENT_IDENTIFIER =
       Optional.of(builder().identifier(FLOW_IDENTIFIER).type(FLOW).build());
   private static final Optional<TypedComponentIdentifier> SUBFLOW_TYPED_COMPONENT_IDENTIFIER =
-      Optional.of(builder().identifier(SUBFLOW_IDENTIFIER).type(CHAIN).build());
+      Optional.of(builder().identifier(SUBFLOW_IDENTIFIER).type(SUB_FLOW).build());
 
   private static final DefaultComponentLocation getFlowLocation(final String flowName, final int flowLineNumber) {
     return new DefaultComponentLocation(Optional
