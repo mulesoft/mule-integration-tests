@@ -17,7 +17,6 @@ import static org.mule.runtime.api.component.AbstractComponent.LOCATION_KEY;
 import static org.mule.runtime.api.component.ComponentIdentifier.buildFromStringRepresentation;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.SUB_FLOW;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.builder;
-import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.CHAIN;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.FLOW;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.ON_ERROR;
 import static org.mule.runtime.api.component.TypedComponentIdentifier.ComponentType.OPERATION;
