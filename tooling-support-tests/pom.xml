@@ -103,20 +103,8 @@
                             <compilerArgs>
                                 <arg>--add-exports=org.mule.runtime.metadata.model.api/org.mule.metadata.internal.utils=org.mule.test.tooling.support</arg>
                             </compilerArgs>
+                            <!-- TODO: W-14572268 remove this -->
                             <testRelease>11</testRelease>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>base-testCompile</id>
-                        <goals>
-                            <goal>testCompile</goal>
-                        </goals>
-                        <configuration>
-                            <testRelease>${javaReleaseVersion}</testRelease>
-                            <!-- recompile everything for target VM except the module-info.java -->
-                            <testExcludes>
-                                <testExclude>module-info.java</testExclude>
-                            </testExcludes>
                         </configuration>
                     </execution>
                 </executions>
