@@ -26,6 +26,7 @@ import org.mule.runtime.container.api.MuleModule;
 import org.mule.runtime.jpms.api.MuleContainerModule;
 import org.mule.runtime.module.artifact.activation.internal.classloader.DefaultArtifactClassLoaderResolver;
 import org.mule.runtime.module.artifact.activation.internal.nativelib.DefaultNativeLibraryFinderFactory;
+import org.mule.runtime.module.artifact.api.classloader.ArtifactClassLoader;
 import org.mule.runtime.module.artifact.api.classloader.MuleArtifactClassLoader;
 import org.mule.runtime.module.artifact.api.classloader.MuleDeployableArtifactClassLoader;
 import org.mule.runtime.module.artifact.api.descriptor.ApplicationDescriptor;
@@ -133,7 +134,7 @@ public class PluginClassloaderCreationBenchmark extends AbstractArtifactActivati
 
   @Benchmark
   @BenchmarkMode(AverageTime)
-  public MuleArtifactClassLoader createDependantPluginClassLoader() {
+  public ArtifactClassLoader createDependantPluginClassLoader() {
     plugin1Descriptor.setClassLoaderConfiguration(pluginDependantClassLoaderConfiguration);
     plugin2Descriptor.setClassLoaderConfiguration(pluginExportingPackageClassLoaderConfiguration);
     return artifactClassLoaderResolver.createMulePluginClassLoader(applicationClassLoader, plugin1Descriptor,
@@ -142,14 +143,14 @@ public class PluginClassloaderCreationBenchmark extends AbstractArtifactActivati
 
   @Benchmark
   @BenchmarkMode(AverageTime)
-  public MuleArtifactClassLoader createPluginClassLoaderWithPrivilegedContainerAccess() {
+  public ArtifactClassLoader createPluginClassLoaderWithPrivilegedContainerAccess() {
     return artifactClassLoaderResolverForPrivilegedContainerAccess
         .createMulePluginClassLoader(applicationClassLoader, plugin1Descriptor, (apds, d) -> empty());
   }
 
   @Benchmark
   @BenchmarkMode(AverageTime)
-  public MuleArtifactClassLoader createsPluginClassLoaderWithPrivilegedPluginAccess() {
+  public ArtifactClassLoader createsPluginClassLoaderWithPrivilegedPluginAccess() {
     plugin1Descriptor.setClassLoaderConfiguration(pluginDependantClassLoaderConfiguration);
     return artifactClassLoaderResolver.createMulePluginClassLoader(applicationClassLoader, plugin1Descriptor,
                                                                    (apds, d) -> of(plugin2Descriptor));
@@ -157,7 +158,7 @@ public class PluginClassloaderCreationBenchmark extends AbstractArtifactActivati
 
   @Benchmark
   @BenchmarkMode(AverageTime)
-  public MuleArtifactClassLoader createPluginClassLoaderWithExportedLocalPackage() {
+  public ArtifactClassLoader createPluginClassLoaderWithExportedLocalPackage() {
     plugin2Descriptor.setClassLoaderConfiguration(plugin2ExportingPackageClassLoaderConfiguration);
     plugin1Descriptor.setClassLoaderConfiguration(pluginDependantWithLocalPackageClassLoaderConfiguration);
     return artifactClassLoaderResolver.createMulePluginClassLoader(applicationClassLoader, plugin1Descriptor,
@@ -166,7 +167,7 @@ public class PluginClassloaderCreationBenchmark extends AbstractArtifactActivati
 
   @Benchmark
   @BenchmarkMode(AverageTime)
-  public MuleArtifactClassLoader createPluginClassLoaderWithIgnoredLocalPackages() {
+  public ArtifactClassLoader createPluginClassLoaderWithIgnoredLocalPackages() {
     plugin1Descriptor.setClassLoaderConfiguration(pluginWithLocalPackageClassLoaderConfiguration);
     return artifactClassLoaderResolverWithModules
         .createMulePluginClassLoader(applicationClassLoader, plugin1Descriptor, (apds, d) -> empty());
