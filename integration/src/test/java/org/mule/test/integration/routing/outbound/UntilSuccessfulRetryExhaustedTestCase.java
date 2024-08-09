@@ -6,6 +6,7 @@
  */
 package org.mule.test.integration.routing.outbound;
 
+import static java.lang.String.format;
 import static org.mule.runtime.api.util.MuleSystemProperties.SUPPRESS_ERRORS_PROPERTY;
 import static org.mule.test.allure.AllureConstants.ScopeFeature.SCOPE;
 import static org.mule.test.allure.AllureConstants.ScopeFeature.UntilSuccessfulStory.UNTIL_SUCCESSFUL;
@@ -38,6 +39,7 @@ import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.runner.RunnerDelegateTo;
 
+import java.io.InputStream;
 import java.util.Collection;
 
 import javax.inject.Inject;
@@ -63,6 +65,8 @@ public class UntilSuccessfulRetryExhaustedTestCase extends AbstractIntegrationTe
   @Inject
   private ObjectSerializer defaultSerializer;
 
+  private final boolean isSuppressErrors;
+
   @Override
   protected String getConfigFile() {
     return "org/mule/test/integration/routing/outbound/until-successful-retry-exhausted.xml";
@@ -75,6 +79,7 @@ public class UntilSuccessfulRetryExhaustedTestCase extends AbstractIntegrationTe
 
   public UntilSuccessfulRetryExhaustedTestCase(String suppressErrors) {
     this.suppressErrors = new SystemProperty(SUPPRESS_ERRORS_PROPERTY, suppressErrors);
+    this.isSuppressErrors = parseBoolean(suppressErrors);
   }
 
   @Test
@@ -187,13 +192,6 @@ public class UntilSuccessfulRetryExhaustedTestCase extends AbstractIntegrationTe
     }
   }
 
-  public static class MuleRuntimeError extends MuleRuntimeException {
-
-    public MuleRuntimeError() {
-      super(I18nMessageFactory.createStaticMessage("Mule runtime error"));
-    }
-  }
-
   @Test
   @Issue("W-15643200")
   public void retryExhaustedErrorSerializationCheck() throws Exception {
@@ -205,6 +203,27 @@ public class UntilSuccessfulRetryExhaustedTestCase extends AbstractIntegrationTe
     Error errorDeserialization = defaultSerializer.getInternalProtocol().deserialize(errorSerialization);
     assertThat(errorDeserialization.getCause(), instanceOf(RetryPolicyExhaustedException.class));
     assertThat(errorDeserialization.getDescription(), equalTo("Mule runtime error"));
+  }
+
+  @Test
+  @Issue("W-15643200")
+  public void retryExhaustedLegacyErrorSerializationCheck() throws Exception {
+    // Deserialize the legacy error.
+    try (InputStream errorSerializationInputStream =
+        getClass()
+            .getResourceAsStream(format("UntilSuccessfulRetryExhaustedTestCase_retryExhaustedErrorSerializationCheck%s.bin",
+                                        isSuppressErrors ? "_suppressedTrue" : "_suppressedFalse"))) {
+      Error deserializedError = defaultSerializer.getInternalProtocol().deserialize(errorSerializationInputStream);
+      assertThat(deserializedError.getCause(), instanceOf(RetryPolicyExhaustedException.class));
+      assertThat(deserializedError.getDescription(), equalTo("Mule runtime error"));
+    }
+  }
+
+  public static class MuleRuntimeError extends MuleRuntimeException {
+
+    public MuleRuntimeError() {
+      super(I18nMessageFactory.createStaticMessage("Mule runtime error"));
+    }
   }
 
 }
