@@ -6,7 +6,6 @@
  */
 package org.mule.test.integration.routing.outbound;
 
-import static java.lang.String.format;
 import static org.mule.runtime.api.util.MuleSystemProperties.SUPPRESS_ERRORS_PROPERTY;
 import static org.mule.test.allure.AllureConstants.ScopeFeature.SCOPE;
 import static org.mule.test.allure.AllureConstants.ScopeFeature.UntilSuccessfulStory.UNTIL_SUCCESSFUL;
@@ -14,6 +13,7 @@ import static org.mule.test.allure.AllureConstants.ScopeFeature.UntilSuccessfulS
 import static java.lang.Boolean.parseBoolean;
 import static java.util.Arrays.asList;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.lang.String.format;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.instanceOf;
