@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.mule.tests</groupId>
         <artifactId>mule-extensions-integration-tests</artifactId>
-        <version>4.8.0-SNAPSHOT</version>
+        <version>4.9.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -29,7 +29,7 @@
         
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
         <settingsFile>${java.io.tmpdir}/settings.xml</settingsFile>
-        <testExtensionVersion>4.8.0-SNAPSHOT</testExtensionVersion>
+        <testExtensionVersion>4.9.0-SNAPSHOT</testExtensionVersion>
         <weave.service.location>services/weave</weave.service.location>
     </properties>
 
@@ -103,20 +103,8 @@
                             <compilerArgs>
                                 <arg>--add-exports=org.mule.runtime.metadata.model.api/org.mule.metadata.internal.utils=org.mule.test.tooling.support</arg>
                             </compilerArgs>
+                            <!-- TODO: W-14572268 remove this -->
                             <testRelease>11</testRelease>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>base-testCompile</id>
-                        <goals>
-                            <goal>testCompile</goal>
-                        </goals>
-                        <configuration>
-                            <testRelease>${javaReleaseVersion}</testRelease>
-                            <!-- recompile everything for target VM except the module-info.java -->
-                            <testExcludes>
-                                <testExclude>module-info.java</testExclude>
-                            </testExcludes>
                         </configuration>
                     </execution>
                 </executions>
