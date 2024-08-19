@@ -42,7 +42,7 @@
         <dependency>
             <groupId>org.mule.sdk</groupId>
             <artifactId>mule-sdk-compatibility-api</artifactId>
-            <version>${mule.sdk.api.version}</version>
+            <version>${mule.sdk.compatibility.api.version}</version>
         </dependency>
     </dependencies>
 
