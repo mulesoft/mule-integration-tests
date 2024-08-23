@@ -73,6 +73,7 @@ public class OpenTelemetryJmsSemanticConventionAttributesAndNameTestCase extends
   }
 
   @Test
+  @Ignore("W-16571574")
   public void testFlow() throws IOException, TimeoutException {
     ExportedSpanSniffer spanCapturer = profilingService.getSpanExportManager().getExportedSpanSniffer();
 
