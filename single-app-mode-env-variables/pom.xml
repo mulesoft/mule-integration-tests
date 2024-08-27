@@ -39,7 +39,6 @@
                         <MULE_APPS_PATH>${project.build.testOutputDirectory}/apps/single-app/</MULE_APPS_PATH>
                     </environmentVariables>
                     <systemPropertyVariables>
-                        <xmlApisLib>${xml-apis:xml-apis:jar}</xmlApisLib>
                         <apiAnnotationsLib>${org.mule.runtime:api-annotations:jar}</apiAnnotationsLib>
                     </systemPropertyVariables>
                     <classpathDependencyExcludes>

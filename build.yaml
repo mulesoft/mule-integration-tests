@@ -8,4 +8,3 @@ additionalConfigFileMetadataProviderList:
     variable: org.mule.maven.client.api.SettingsSupplierFactory.userSettings
 projectType: runtime
 jdkTool: OPEN-JDK17
-mavenAdditionalArgs: -P!testJdkWithoutXmlModule

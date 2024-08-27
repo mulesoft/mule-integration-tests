@@ -38,7 +38,6 @@
                         <graalVmJsJarLoc>${org.graalvm.js:js:jar}</graalVmJsJarLoc>
                         <graalVmJsScriptEngineJarLoc>${org.graalvm.js:js-scriptengine:jar}</graalVmJsScriptEngineJarLoc>
 
-                        <xmlApisLib>${xml-apis:xml-apis:jar}</xmlApisLib>
                         <apiAnnotationsLib>${org.mule.runtime:api-annotations:jar}</apiAnnotationsLib>
                     </systemPropertyVariables>
                     <classpathDependencyExcludes>
