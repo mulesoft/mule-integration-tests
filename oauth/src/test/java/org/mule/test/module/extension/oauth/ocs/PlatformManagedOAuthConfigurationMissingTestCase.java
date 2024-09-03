@@ -6,13 +6,13 @@
  */
 package org.mule.test.module.extension.oauth.ocs;
 
-import static org.junit.internal.matchers.ThrowableCauseMatcher.hasCause;
-import static org.mule.functional.junit4.matchers.ThrowableMessageMatcher.hasMessage;
 import static org.mule.runtime.extension.api.ocs.OCSConstants.OCS_CLIENT_ID;
 import static org.mule.runtime.extension.api.ocs.OCSConstants.OCS_PLATFORM_AUTH_URL;
 import static org.mule.runtime.extension.api.ocs.OCSConstants.OCS_SERVICE_URL;
 import static org.mule.test.allure.AllureConstants.OauthFeature.OCS_SUPPORT;
 import static org.mule.test.allure.AllureConstants.OauthFeature.OcsStory.OCS_CONNECTION_VALIDATION;
+
+import static org.hamcrest.core.StringEndsWith.endsWith;
 
 import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.tck.junit4.rule.SystemProperty;
@@ -40,7 +40,6 @@ public class PlatformManagedOAuthConfigurationMissingTestCase extends PlatformMa
   @Override
   protected void addExceptionAssertions(ExpectedException expectedException) {
     expectedException.expect(InitialisationException.class);
-    expectedException
-        .expectCause(hasCause(hasCause(hasMessage("OCS property 'ocs.service.client.secret' has not been set"))));
+    expectedException.expectMessage(endsWith("OCS property 'ocs.service.client.secret' has not been set"));
   }
 }
