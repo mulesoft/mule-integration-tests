@@ -34,7 +34,6 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <systemPropertyVariables>
-                        <xmlApisLib>${xml-apis:xml-apis:jar}</xmlApisLib>
                         <apiAnnotationsLib>${org.mule.runtime:api-annotations:jar}</apiAnnotationsLib>
                     </systemPropertyVariables>
                     <classpathDependencyExcludes>

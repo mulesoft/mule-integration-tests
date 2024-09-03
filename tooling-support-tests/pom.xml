@@ -115,7 +115,6 @@
                         <mule.version>${project.version}</mule.version>
                         <settings.file>${settingsFile}</settings.file>
 
-                        <xmlApisLib>${xml-apis:xml-apis:jar}</xmlApisLib>
                         <apiAnnotationsLib>${org.mule.runtime:api-annotations:jar}</apiAnnotationsLib>
                     </systemPropertyVariables>
                 </configuration>
