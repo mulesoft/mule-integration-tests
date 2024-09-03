@@ -344,6 +344,10 @@
             <artifactId>wiremock</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>jakarta.jws</groupId>
+            <artifactId>jakarta.jws-api</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.mule.tests</groupId>
