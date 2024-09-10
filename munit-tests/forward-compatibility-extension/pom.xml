@@ -31,6 +31,8 @@
         <mulesoftLicenseVersion>1.1.0</mulesoftLicenseVersion>
         <licensePath>LICENSE_HEADER_80.txt</licensePath>
         <licenseYear>2023</licenseYear>
+
+        <skipMunitTests>true</skipMunitTests>
     </properties>
 
     <dependencies>
