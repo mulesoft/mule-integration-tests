@@ -312,10 +312,9 @@
             <version>${openTelemetryProtoVersion}</version>
             <scope>test</scope>
         </dependency>
-        <!-- This module uses the standalone lib to address an incompatibility between the jetty version wiremock is compiled against and the jetty version used in the test suite -->
         <dependency>
-            <groupId>com.github.tomakehurst</groupId>
-            <artifactId>wiremock-standalone</artifactId>
+            <groupId>org.wiremock</groupId>
+            <artifactId>wiremock</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
