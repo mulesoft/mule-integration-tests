@@ -25,8 +25,6 @@
         <munit.version>3.3.0-SNAPSHOT</munit.version>
         <munit.extensions.maven.plugin.version>1.4.0-SNAPSHOT</munit.extensions.maven.plugin.version>
         <mtf.tools.version>1.2.0-SNAPSHOT</mtf.tools.version>
-
-        <skipMunitTests>true</skipMunitTests>
     </properties>
 
     <build>
