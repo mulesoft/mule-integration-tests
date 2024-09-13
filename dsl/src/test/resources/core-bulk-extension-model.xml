@@ -50,7 +50,7 @@
         <logger/>
         <logger/>
     </configuration>
-    <configuration-properties file="Attribute"/>
+    <configuration-properties encoding="Attribute" file="Attribute"/>
     <flow name="flowFor-encryptionSecurityFilter">
         <encryption-security-filter strategy-ref="Attribute"/>
     </flow>
