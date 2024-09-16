@@ -45,7 +45,7 @@
         <apacheHttpClientVersion>4.5.13</apacheHttpClientVersion>
 
         <muleDependenciesVersion>1.x-SNAPSHOT</muleDependenciesVersion>
-        <muleTestComponentsVersion>4.8.0-SNAPSHOT</muleTestComponentsVersion>
+        <muleTestComponentsVersion>4.8.0-rc2</muleTestComponentsVersion>
 
         <muleBomVersion>4.8.0-rc2</muleBomVersion>
 
