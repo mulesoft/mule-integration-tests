@@ -9,9 +9,6 @@ package org.mule.test.components.metrics;
 import static org.mule.runtime.core.api.config.MuleProperties.MULE_ERROR_METRICS_FACTORY_KEY;
 
 import static java.util.Arrays.asList;
-import static java.util.Arrays.stream;
-
-import static org.apache.commons.lang3.StringUtils.countMatches;
 
 import org.mule.functional.api.flow.FlowRunner;
 import org.mule.runtime.api.config.custom.ServiceConfigurator;
@@ -28,17 +25,9 @@ import org.mule.tck.probe.JUnitProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.test.runner.RunnerDelegateTo;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
 
@@ -47,7 +36,6 @@ public class OpenTelemetryErrorCountersTestCase extends AbstractOpenTelemetryMet
 
   private static final int TIMEOUT_MILLIS = 5000;
   private static final int POLL_DELAY_MILLIS = 100;
-  private static final SystemOutRecorder logRecorder = new SystemOutRecorder();
 
   private final String flowName;
   private final boolean shouldFail;
@@ -72,17 +60,6 @@ public class OpenTelemetryErrorCountersTestCase extends AbstractOpenTelemetryMet
     this.flowName = flowName;
     this.shouldFail = shouldFail;
     this.expectedErrorDataPoints = expectedErrorDataPoints;
-  }
-
-  @Before
-  public void initialize() {
-    logRecorder.startRecording();
-  }
-
-  @After
-  public void dispose() {
-    logRecorder.stopRecording();
-    logRecorder.clearRecord();
   }
 
   @Override
@@ -123,7 +100,14 @@ public class OpenTelemetryErrorCountersTestCase extends AbstractOpenTelemetryMet
 
       @Override
       protected boolean test() throws Exception {
-        return getLoggedDataPoints() == expected;
+        try {
+          verifyMetricsExists("error-count", "Mule runtime error count",
+                              "OpenTelemetryErrorCountersTestCase#errorMetricsCount[" + flowName + "]",
+                              "Mule runtime error metrics", expectedErrorDataPoints, server.getMetrics());
+        } catch (Throwable e) {
+          return false;
+        }
+        return true;
       }
 
       @Override
@@ -131,12 +115,6 @@ public class OpenTelemetryErrorCountersTestCase extends AbstractOpenTelemetryMet
         return "Expected data points where not exported. Check the test log for non matching exported metrics.";
       }
     });
-  }
-
-  private int getLoggedDataPoints() throws UnsupportedEncodingException {
-    return stream(logRecorder.getRecordedLogLines(StandardCharsets.UTF_8))
-        .map(s -> countMatches(s, "ImmutableLongPointData"))
-        .reduce(Integer::sum).orElse(0);
   }
 
   @Override
@@ -161,87 +139,6 @@ public class OpenTelemetryErrorCountersTestCase extends AbstractOpenTelemetryMet
         }
       });
     }
-  }
-
-  private static class SystemOutRecorder extends PrintStream {
-
-    private final PrintStream systemOut;
-    private boolean recording = false;
-
-    private SystemOutRecorder() {
-      super(new ByteArrayOutputStream(), true);
-      if (System.out instanceof SystemOutRecorder) {
-        throw new IllegalStateException("Multiple recorder instances are not supported");
-      }
-      this.systemOut = System.out;
-      System.setOut(this);
-    }
-
-    @Override
-    public void write(byte[] b) throws IOException {
-      systemOut.write(b);
-      if (recording) {
-        super.write(b);
-      }
-    }
-
-    @Override
-    public void write(byte[] b, int off, int len) {
-      systemOut.write(b, off, len);
-      if (recording) {
-        super.write(b, off, len);
-      }
-    }
-
-    @Override
-    public void write(int b) {
-      systemOut.write(b);
-      if (recording) {
-        super.write(b);
-      }
-    }
-
-    @Override
-    public void flush() {
-      systemOut.flush();
-      // ByteArrayOutputStream does not flush
-    }
-
-    @Override
-    public void close() {
-      // ByteArrayOutputStream does not close and System.out should not close
-    }
-
-    public void startRecording() {
-      if (recording) {
-        throw new IllegalStateException("Recording already in progress!");
-      } else {
-        System.setOut(this);
-        recording = true;
-      }
-    }
-
-    public void stopRecording() {
-      if (!recording) {
-        throw new IllegalStateException("Recording not in progress!");
-      } else {
-        System.setOut(systemOut);
-        recording = false;
-      }
-    }
-
-    public boolean isRecording() {
-      return recording;
-    }
-
-    public void clearRecord() {
-      out = new ByteArrayOutputStream();
-    }
-
-    public String[] getRecordedLogLines(Charset charset) throws UnsupportedEncodingException {
-      return ((ByteArrayOutputStream) out).toString(charset.name()).split(System.lineSeparator());
-    }
-
   }
 
 }

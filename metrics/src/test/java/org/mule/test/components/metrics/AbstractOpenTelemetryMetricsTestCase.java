@@ -19,6 +19,9 @@ import static java.lang.System.setProperty;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 
 import static io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceRequest.parseFrom;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.Assert.assertThat;
 
 import org.mule.test.components.metrics.export.ExportedMeter;
 import org.mule.test.components.metrics.export.OpenTelemetryMetricsTestUtils;
@@ -27,6 +30,7 @@ import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import java.io.UncheckedIOException;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
+import java.util.stream.Collectors;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.linecorp.armeria.server.ServerBuilder;
@@ -69,6 +73,19 @@ public abstract class AbstractOpenTelemetryMetricsTestCase extends
     clearProperty(MULE_OPEN_TELEMETRY_METER_EXPORTER_ENABLED);
     clearProperty(MULE_OPEN_TELEMETRY_METER_EXPORTER_ENDPOINT);
     server.reset();
+  }
+
+  protected void verifyMetricsExists(String metricName, String description, String resourceName, String instrumentationName,
+                                     long expectedValue, List<ExportedMeter> metrics) {
+    List<ExportedMeter> exportedMetersForMetric =
+        metrics.stream().filter(metric -> metric.getName().equals(metricName)).collect(Collectors.toList());
+    assertThat(exportedMetersForMetric, hasSize(1));
+    ExportedMeter exportedMeter = exportedMetersForMetric.get(0);
+    assertThat(exportedMeter.getName(), equalTo(metricName));
+    assertThat(exportedMeter.getDescription(), equalTo(description));
+    assertThat(exportedMeter.getResourceName(), equalTo(resourceName));
+    assertThat(exportedMeter.getInstrumentName(), equalTo(instrumentationName));
+    assertThat(exportedMeter.getValue(), equalTo(expectedValue));
   }
 
   /**
