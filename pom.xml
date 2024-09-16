@@ -47,7 +47,7 @@
         <muleDependenciesVersion>1.x-SNAPSHOT</muleDependenciesVersion>
         <muleTestComponentsVersion>4.8.0-SNAPSHOT</muleTestComponentsVersion>
 
-        <muleBomVersion>4.8.0-SNAPSHOT</muleBomVersion>
+        <muleBomVersion>4.8.0-rc2</muleBomVersion>
 
         <skipMuleModuleMojos>true</skipMuleModuleMojos>
     </properties>
