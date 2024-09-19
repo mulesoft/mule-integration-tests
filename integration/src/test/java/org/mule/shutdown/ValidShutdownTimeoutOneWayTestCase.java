@@ -25,7 +25,6 @@ import java.util.concurrent.Future;
 
 import javax.inject.Inject;
 
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
