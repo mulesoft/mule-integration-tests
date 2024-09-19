@@ -34,7 +34,10 @@
                     <systemPropertyVariables>
                         <ibmIcu4jJarLoc>${com.ibm.icu:icu4j:jar}</ibmIcu4jJarLoc>
                         <graalVmSdkJarLoc>${org.graalvm.sdk:graal-sdk:jar}</graalVmSdkJarLoc>
+                        <graalVmSdkCollectionsJarLoc>${org.graalvm.sdk:collections:jar}</graalVmSdkCollectionsJarLoc>
+                        <graalVmSdkNativeImageJarLoc>${org.graalvm.sdk:nativeimage:jar}</graalVmSdkNativeImageJarLoc>
                         <graalVmTruffleJarLoc>${org.graalvm.truffle:truffle-api:jar}</graalVmTruffleJarLoc>
+                        <graalVmPolyglotJarLoc>${org.graalvm.polyglot:polyglot:jar}</graalVmPolyglotJarLoc>
                         <graalVmJsJarLoc>${org.graalvm.js:js:jar}</graalVmJsJarLoc>
                         <graalVmJsScriptEngineJarLoc>${org.graalvm.js:js-scriptengine:jar}</graalVmJsScriptEngineJarLoc>
 

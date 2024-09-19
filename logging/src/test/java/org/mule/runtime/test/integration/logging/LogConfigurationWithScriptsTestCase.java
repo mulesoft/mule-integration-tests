@@ -15,12 +15,10 @@ import static org.mule.test.infrastructure.FileContainsInLine.hasLine;
 import static java.lang.String.format;
 import static java.lang.System.getProperty;
 
-import static org.apache.commons.lang3.JavaVersion.JAVA_11;
-import static org.apache.commons.lang3.SystemUtils.isJavaVersionAtLeast;
 import static org.apache.logging.log4j.core.util.Constants.SCRIPT_LANGUAGES;
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsMapContaining.hasKey;
-import static org.junit.Assert.assertThat;
 
 import org.mule.runtime.deployment.model.api.application.Application;
 import org.mule.runtime.module.deployment.impl.internal.builder.ApplicationFileBuilder;
@@ -66,21 +64,23 @@ public class LogConfigurationWithScriptsTestCase extends AbstractFakeMuleServerT
     muleServer.start();
     ApplicationFileBuilder applicationFileBuilder = new ApplicationFileBuilder(APP_NAME)
         .definedBy("log/script-config/mule-config.xml")
-        .usingResource("log/script-config/log4j-config-scripting.xml", "log4j2-test.xml");
-    if (isJavaVersionAtLeast(JAVA_11)) {
-      applicationFileBuilder =
-          applicationFileBuilder
-              .dependingOn(new JarFileBuilder("ibm-icu4j",
-                                              new File(getProperty("ibmIcu4jJarLoc"))))
-              .dependingOn(new JarFileBuilder("graal-sdk",
-                                              new File(getProperty("graalVmSdkJarLoc"))))
-              .dependingOn(new JarFileBuilder("truffle-api",
-                                              new File(getProperty("graalVmTruffleJarLoc"))))
-              .dependingOn(new JarFileBuilder("js",
-                                              new File(getProperty("graalVmJsJarLoc"))))
-              .dependingOn(new JarFileBuilder("js-scriptengine",
-                                              new File(getProperty("graalVmJsScriptEngineJarLoc"))));
-    }
+        .usingResource("log/script-config/log4j-config-scripting.xml", "log4j2-test.xml")
+        .dependingOn(new JarFileBuilder("ibm-icu4j",
+                                        new File(getProperty("ibmIcu4jJarLoc"))))
+        .dependingOn(new JarFileBuilder("graal-sdk",
+                                        new File(getProperty("graalVmSdkJarLoc"))))
+        .dependingOn(new JarFileBuilder("graal-sdk-collections",
+                                        new File(getProperty("graalVmSdkCollectionsJarLoc"))))
+        .dependingOn(new JarFileBuilder("graal-sdk-nativeimage",
+                                        new File(getProperty("graalVmSdkNativeImageJarLoc"))))
+        .dependingOn(new JarFileBuilder("graal-polyglot",
+                                        new File(getProperty("graalVmPolyglotJarLoc"))))
+        .dependingOn(new JarFileBuilder("truffle-api",
+                                        new File(getProperty("graalVmTruffleJarLoc"))))
+        .dependingOn(new JarFileBuilder("js",
+                                        new File(getProperty("graalVmJsJarLoc"))))
+        .dependingOn(new JarFileBuilder("js-scriptengine",
+                                        new File(getProperty("graalVmJsScriptEngineJarLoc"))));
 
     muleServer.deploy(applicationFileBuilder.getArtifactFile().toURI().toURL(), APP_NAME);
     Application app = muleServer.findApplication(APP_NAME);
