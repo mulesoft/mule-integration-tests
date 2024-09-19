@@ -43,7 +43,7 @@
         <muleExtensionTestSoapTestVersion>1.9.0-SNAPSHOT</muleExtensionTestSoapTestVersion>
 
         <muleDependenciesVersion>1.x-SNAPSHOT</muleDependenciesVersion>
-        <muleTestComponentsVersion>4.9.0-SNAPSHOT</muleTestComponentsVersion>
+        <muleTestComponentsVersion>4.9.0-20240919</muleTestComponentsVersion>
 
         <muleBomVersion>4.9.0-20240919</muleBomVersion>
 
