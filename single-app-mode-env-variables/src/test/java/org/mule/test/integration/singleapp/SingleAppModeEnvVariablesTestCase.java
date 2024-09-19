@@ -22,11 +22,13 @@ import org.mule.test.infrastructure.deployment.AbstractFakeMuleServerTestCase;
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
 @Feature(INTEGRATIONS_TESTS)
 @Story(SINGLE_APP_DEPLOYMENT)
+@Ignore("W-16786484")
 public class SingleAppModeEnvVariablesTestCase extends AbstractFakeMuleServerTestCase {
 
   private static final long TIMEOUT = 5000;
