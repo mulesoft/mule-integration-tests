@@ -103,10 +103,12 @@
             <plugin>
                 <groupId>com.mulesoft.munit</groupId>
                 <artifactId>munit-extensions-maven-plugin</artifactId>
-                <version>${munit.extensions.maven.plugin.version}</version>
                 <configuration>
                     <runtimeProduct>MULE_EE</runtimeProduct>
                     <runtimeVersion>${mule.version}</runtimeVersion>
+                    <systemPropertyVariables>
+                        <mule.jvm.version.extension.enforcement>LOOSE</mule.jvm.version.extension.enforcement>
+                    </systemPropertyVariables>
                 </configuration>
             </plugin>
         </plugins>
