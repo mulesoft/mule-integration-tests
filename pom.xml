@@ -39,7 +39,7 @@
     </modules>
 
     <properties>
-        <munit.version>3.3.0-SNAPSHOT</munit.version>
+        <munit.version>3.3.0</munit.version>
         <muleExtensionTestSoapTestVersion>1.9.0-SNAPSHOT</muleExtensionTestSoapTestVersion>
 
         <muleDependenciesVersion>1.x-SNAPSHOT</muleDependenciesVersion>
