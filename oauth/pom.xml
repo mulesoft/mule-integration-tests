@@ -102,20 +102,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.mule.tests</groupId>
-            <artifactId>mule-football-soap-extension</artifactId>
-            <version>${project.version}</version>
-            <classifier>mule-plugin</classifier>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mule.tests</groupId>
-            <artifactId>mule-rick-and-morty-extension</artifactId>
-            <version>${project.version}</version>
-            <classifier>mule-plugin</classifier>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.mule.connectors</groupId>
             <artifactId>mule-http-connector</artifactId>
             <classifier>mule-plugin</classifier>
@@ -141,12 +127,6 @@
             <artifactId>mule-dwb-api</artifactId> 
             <scope>provided</scope>         
         </dependency> 
-        <dependency>
-            <groupId>org.mule.services</groupId>
-            <artifactId>mule-service-soap</artifactId>
-            <classifier>mule-service</classifier>
-            <scope>provided</scope>
-        </dependency>
         <dependency>
             <groupId>org.mule.services</groupId>
             <artifactId>mule-service-oauth</artifactId>
