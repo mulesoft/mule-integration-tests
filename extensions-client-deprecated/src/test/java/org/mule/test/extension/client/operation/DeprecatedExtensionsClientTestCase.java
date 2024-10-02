@@ -10,8 +10,10 @@ import static org.mule.runtime.extension.api.client.DefaultOperationParameters.b
 import static org.mule.test.allure.AllureConstants.ExtensionsClientFeature.EXTENSIONS_CLIENT;
 import static org.mule.test.heisenberg.extension.model.types.WeaponType.FIRE_WEAPON;
 
+import static org.apache.commons.lang3.SystemUtils.IS_JAVA_17;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assume.assumeTrue;
 
 import org.mule.runtime.extension.api.client.DefaultOperationParametersBuilder;
 import org.mule.runtime.extension.api.client.OperationParameters;
@@ -24,12 +26,19 @@ import org.mule.test.module.extension.client.operation.ExtensionsClientTestCase;
 import java.util.Map;
 import java.util.Optional;
 
+import org.junit.BeforeClass;
+import org.junit.Test;
+
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
-import org.junit.Test;
 
 @Feature(EXTENSIONS_CLIENT)
 public abstract class DeprecatedExtensionsClientTestCase extends ExtensionsClientTestCase {
+
+  @BeforeClass
+  public static void checkJavaVersion() {
+    assumeTrue("Deprecated extensions client is unsupported for Java 21", IS_JAVA_17);
+  }
 
   @Override
   protected <T, A> Result<T, A> doExecute(String extension, String operation, Optional<String> configName,
