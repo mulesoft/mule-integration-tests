@@ -3,9 +3,8 @@
  */
 package org.mule.test.forward.internal;
 
-import static org.mule.sdk.api.meta.JavaVersion.JAVA_11;
 import static org.mule.sdk.api.meta.JavaVersion.JAVA_17;
-import static org.mule.sdk.api.meta.JavaVersion.JAVA_8;
+import static org.mule.sdk.api.meta.JavaVersion.JAVA_21;
 
 import org.mule.runtime.extension.api.annotation.Configurations;
 import org.mule.runtime.extension.api.annotation.Extension;
@@ -14,7 +13,7 @@ import org.mule.sdk.api.annotation.JavaVersionSupport;
 
 @Xml(prefix = "forward-compatibility")
 @Extension(name = "Forward-Compatibility")
-@JavaVersionSupport({JAVA_8, JAVA_11, JAVA_17})
+@JavaVersionSupport({JAVA_17, JAVA_21})
 @Configurations(ForwardCompatibilityConfiguration.class)
 public class ForwardCompatibilityExtension {
 
