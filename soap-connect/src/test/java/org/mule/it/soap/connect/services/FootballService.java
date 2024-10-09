@@ -7,7 +7,7 @@
 package org.mule.it.soap.connect.services;
 
 import static java.util.Arrays.asList;
-import static javax.jws.WebParam.Mode.OUT;
+import static jakarta.jws.WebParam.Mode.OUT;
 import static org.mule.test.soap.extension.CalcioServiceProvider.CALCIO_FRIENDLY_NAME;
 import static org.mule.test.soap.extension.FootballSoapExtension.LEAGUES_PORT;
 import static org.mule.test.soap.extension.FootballSoapExtension.LEAGUES_SERVICE;
@@ -17,11 +17,11 @@ import org.mule.service.soap.service.EchoException;
 
 import java.util.List;
 
-import javax.jws.WebMethod;
-import javax.jws.WebParam;
-import javax.jws.WebResult;
-import javax.jws.WebService;
-import javax.xml.ws.Holder;
+import jakarta.jws.WebMethod;
+import jakarta.jws.WebParam;
+import jakarta.jws.WebResult;
+import jakarta.jws.WebService;
+import jakarta.xml.ws.Holder;
 
 @WebService(portName = LEAGUES_PORT, serviceName = LEAGUES_SERVICE)
 public class FootballService {
