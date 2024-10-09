@@ -6,9 +6,9 @@
  */
 package org.mule.test.integration.tck;
 
-import javax.jws.WebParam;
-import javax.jws.WebResult;
-import javax.jws.WebService;
+import jakarta.jws.WebParam;
+import jakarta.jws.WebResult;
+import jakarta.jws.WebService;
 
 /**
  * Simple web service to use for test cases.
