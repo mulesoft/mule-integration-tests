@@ -98,7 +98,8 @@
         <http:listener config-ref="httpListener"
                        primaryNodeOnly="true"
                        path="testBuilder"
-                       responseStreamingMode="AUTO">
+                       responseStreamingMode="AUTO"
+                       deferredResponse="false">
             <redelivery-policy maxRedeliveryCount="2" useSecureHash="true"/>
             <reconnect blocking="true" count="1" frequency="0"/>
             <http:response>
