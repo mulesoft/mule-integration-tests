@@ -7,8 +7,8 @@
 package org.mule.test.integration.routing.outbound;
 
 import static org.mule.runtime.api.util.MuleSystemProperties.SUPPRESS_ERRORS_PROPERTY;
+import static org.mule.test.allure.AllureConstants.RoutersFeature.UntilSuccessfulStory.UNTIL_SUCCESSFUL;
 import static org.mule.test.allure.AllureConstants.ScopeFeature.SCOPE;
-import static org.mule.test.allure.AllureConstants.ScopeFeature.UntilSuccessfulStory.UNTIL_SUCCESSFUL;
 
 import static java.lang.Boolean.parseBoolean;
 import static java.util.Arrays.asList;
