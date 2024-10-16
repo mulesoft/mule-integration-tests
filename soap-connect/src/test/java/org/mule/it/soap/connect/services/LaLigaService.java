@@ -15,7 +15,7 @@ import org.mule.runtime.core.api.util.IOUtils;
 import java.io.IOException;
 import java.util.List;
 
-import javax.activation.DataHandler;
+import jakarta.activation.DataHandler;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebResult;
