@@ -15,11 +15,11 @@ import org.mule.runtime.core.api.util.IOUtils;
 import java.io.IOException;
 import java.util.List;
 
-import javax.activation.DataHandler;
-import javax.jws.WebMethod;
-import javax.jws.WebParam;
-import javax.jws.WebResult;
-import javax.jws.WebService;
+import jakarta.activation.DataHandler;
+import jakarta.jws.WebMethod;
+import jakarta.jws.WebParam;
+import jakarta.jws.WebResult;
+import jakarta.jws.WebService;
 
 @WebService(portName = LA_LIGA_PORT_A, serviceName = LA_LIGA_SERVICE_A)
 public class LaLigaService {

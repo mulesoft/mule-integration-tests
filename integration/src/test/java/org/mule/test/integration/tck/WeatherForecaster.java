@@ -6,8 +6,8 @@
  */
 package org.mule.test.integration.tck;
 
-import javax.jws.WebMethod;
-import javax.jws.WebService;
+import jakarta.jws.WebMethod;
+import jakarta.jws.WebService;
 
 @WebService(serviceName = "WeatherForecaster", portName = "WeatherForecasterPort")
 public class WeatherForecaster {
