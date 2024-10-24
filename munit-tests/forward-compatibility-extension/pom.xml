@@ -25,7 +25,7 @@
         <munit.input.directory>src/test/munit</munit.input.directory>
         <munit.output.directory>${basedir}/target/test-mule/munit</munit.output.directory>
         <munit.version>3.3.0</munit.version>
-        <munit.extensions.maven.plugin.version>1.4.0-SNAPSHOT</munit.extensions.maven.plugin.version>
+        <munit.extensions.maven.plugin.version>1.4.0</munit.extensions.maven.plugin.version>
         <mtf.tools.version>1.2.0-SNAPSHOT</mtf.tools.version>
 
         <mulesoftLicenseVersion>1.1.0</mulesoftLicenseVersion>
@@ -108,6 +108,20 @@
                     <runtimeProduct>MULE_EE</runtimeProduct>
                     <runtimeVersion>${mule.version}</runtimeVersion>
                 </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.mulesoft.munit</groupId>
+                        <artifactId>munit-runner</artifactId>
+                        <version>${munit.version}</version>
+                        <classifier>mule-plugin</classifier>
+                    </dependency>
+                    <dependency>
+                        <groupId>com.mulesoft.munit</groupId>
+                        <artifactId>munit-tools</artifactId>
+                        <version>${munit.version}</version>
+                        <classifier>mule-plugin</classifier>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>
