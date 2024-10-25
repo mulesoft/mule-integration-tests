@@ -13,8 +13,8 @@ import static java.util.Arrays.asList;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 
-import org.mule.runtime.core.api.transaction.Transaction;
-import org.mule.runtime.core.api.transaction.TransactionCoordination;
+import org.mule.runtime.core.internal.transaction.Transaction;
+import org.mule.runtime.core.internal.transaction.TransactionCoordination;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.runner.RunnerDelegateTo;
 

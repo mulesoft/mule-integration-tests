@@ -17,7 +17,7 @@ import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.api.util.concurrent.Latch;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
-import org.mule.runtime.core.api.transaction.TransactionCoordination;
+import org.mule.runtime.core.internal.transaction.TransactionCoordination;
 
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;

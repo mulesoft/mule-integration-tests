@@ -18,7 +18,7 @@ import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjecti
 
 import org.mule.functional.api.flow.FlowRunner;
 import org.mule.runtime.api.exception.MuleRuntimeException;
-import org.mule.runtime.core.api.transaction.Transaction;
+import org.mule.runtime.core.internal.transaction.Transaction;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.tck.testmodels.mule.TestTransactionFactory;
 import org.mule.test.runner.RunnerDelegateTo;
