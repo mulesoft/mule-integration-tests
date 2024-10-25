@@ -6,12 +6,6 @@
  */
 package org.mule.test.integration.exceptions;
 
-import static java.lang.String.format;
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.core.IsNull.notNullValue;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 import static org.mule.functional.api.exception.ExpectedError.none;
 import static org.mule.runtime.core.api.error.Errors.Identifiers.REDELIVERY_EXHAUSTED_ERROR_IDENTIFIER;
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.INTERNAL_SERVER_ERROR;
@@ -19,11 +13,19 @@ import static org.mule.runtime.http.api.HttpConstants.HttpStatus.SERVICE_UNAVAIL
 import static org.mule.runtime.http.api.HttpConstants.Method.POST;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
 
-import io.qameta.allure.Issue;
+import static java.lang.String.format;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.notNullValue;
+
 import org.mule.functional.api.exception.ExpectedError;
 import org.mule.runtime.api.message.Error;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.http.api.HttpService;
+import org.mule.runtime.http.api.client.HttpRequestOptions;
 import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;
 import org.mule.runtime.http.api.domain.message.request.HttpRequest;
 import org.mule.runtime.http.api.domain.message.response.HttpResponse;
@@ -33,16 +35,17 @@ import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.tests.api.TestQueueManager;
 
-import org.junit.Rule;
-import org.junit.Test;
-
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
 import javax.inject.Inject;
 
+import org.junit.Rule;
+import org.junit.Test;
+
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
 
 @Feature(ERROR_HANDLING)
@@ -119,7 +122,10 @@ public class RedeliveryExhaustedTestCase extends AbstractIntegrationTestCase {
   private HttpResponse sendThroughHttp() throws IOException, TimeoutException {
     HttpRequest request = HttpRequest.builder().uri(getUrl()).method(POST)
         .entity(new ByteArrayHttpEntity(TEST_MESSAGE.getBytes())).build();
-    return httpClient.send(request, RECEIVE_TIMEOUT, false, null);
+    return httpClient.send(request, HttpRequestOptions.builder()
+        .responseTimeout(RECEIVE_TIMEOUT)
+        .followsRedirect(false)
+        .build());
   }
 
 
