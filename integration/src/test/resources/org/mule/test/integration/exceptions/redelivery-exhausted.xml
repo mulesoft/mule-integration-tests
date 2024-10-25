@@ -13,7 +13,7 @@
     <configuration defaultErrorHandler-ref="globalErrorHandler" />
 
     <error-handler name="globalErrorHandler">
-        <on-error-propagate type="REDELIVERY_EXHAUSTED">
+        <on-error-propagate type="REDELIVERY_EXHAUSTED" logException="false">
             <set-payload value="#[error]"/>
             <test-components:queue-push config-ref="defaultErrorHandler"/>
         </on-error-propagate>
@@ -71,7 +71,7 @@
 
         <raise-error type="APP:TEST" />
         <error-handler>
-            <on-error-propagate type="REDELIVERY_EXHAUSTED">
+            <on-error-propagate type="REDELIVERY_EXHAUSTED" logException="false">
                 <set-payload value="#[error]"/>
                 <test-components:queue-push config-ref="customErrorHandler"/>
             </on-error-propagate>
