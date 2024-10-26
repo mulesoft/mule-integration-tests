@@ -42,7 +42,7 @@
         <munit.version>3.3.0</munit.version>
         <muleExtensionTestSoapTestVersion>1.9.0-20241025</muleExtensionTestSoapTestVersion>
 
-        <muleDependenciesVersion>1.x-SNAPSHOT</muleDependenciesVersion>
+        <muleDependenciesVersion>1.0.25</muleDependenciesVersion>
         <muleTestComponentsVersion>4.9.0-20241025</muleTestComponentsVersion>
 
         <muleBomVersion>4.9.0-20241025</muleBomVersion>
