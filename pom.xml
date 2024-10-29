@@ -32,7 +32,6 @@
         <module>security</module>
         <module>single-app-mode</module>
         <module>single-app-mode-env-variables</module>
-        <module>soap-connect</module>
         <module>spring</module>
         <module>tooling-support-tests</module>
         <module>tracing</module>
