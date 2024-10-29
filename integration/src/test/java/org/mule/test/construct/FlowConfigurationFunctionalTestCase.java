@@ -6,16 +6,19 @@
  */
 package org.mule.test.construct;
 
+import static org.mule.functional.api.flow.TransactionConfigEnum.ACTION_ALWAYS_BEGIN;
+
 import static java.lang.Thread.currentThread;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
+
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsNot.not;
+import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
-import static org.mule.functional.api.flow.TransactionConfigEnum.ACTION_ALWAYS_BEGIN;
 
 import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.exception.MuleException;
@@ -25,7 +28,6 @@ import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.transaction.Transaction;
 import org.mule.runtime.core.api.transaction.TransactionCoordination;
-import org.mule.tck.testmodels.mule.TestTransactionFactory;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.tests.api.TestQueueManager;
 
@@ -62,9 +64,9 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
   public void testAsyncAsynchronous() throws Exception {
     flowRunner("asynchronousAsync").withPayload("0").run();
     Message message = queueManager.read("asynchronous-async-out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
-    assertNotNull(message);
+    assertThat(message, not(nullValue()));
     Thread thread = (Thread) message.getPayload().getValue();
-    assertNotNull(thread);
+    assertThat(thread, not(nullValue()));
     assertNotSame(currentThread(), thread);
   }
 
@@ -84,7 +86,7 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
   public void testComponentsFlow() throws Exception {
     final Message result = flowRunner("components").withPayload("0").run().getMessage();
 
-    assertNotNull(result);
+    assertThat(result, not(nullValue()));
     assertNotSame(TEST_MESSAGE + "test", result.getPayload().getValue());
   }
 
@@ -94,8 +96,8 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
     final Message result = queueManager.read("async-oneway-out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
     final Message asyncResult = queueManager.read("async-async-oneway-out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
 
-    assertNotNull(result);
-    assertNotNull(asyncResult);
+    assertThat(result, not(nullValue()));
+    assertThat(asyncResult, not(nullValue()));
     assertEquals("0ac", getPayloadAsString(result));
     assertEquals("0ab", getPayloadAsString(asyncResult));
   }
@@ -118,10 +120,10 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
     })).when(transaction).begin();
 
     try {
-      CoreEvent syncResult =
-          flowRunner("async-tx").withPayload("0").transactionally(ACTION_ALWAYS_BEGIN, new TestTransactionFactory(transaction))
-              .run();
-
+      CoreEvent syncResult = flowRunner("async-tx")
+          .withPayload("0")
+          .transactionally(ACTION_ALWAYS_BEGIN, transaction)
+          .run();
 
       final Message result = queueManager.read("async-tx-out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
       final Message asyncResult = queueManager.read("async-async-tx-out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
@@ -133,9 +135,9 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
   }
 
   private void assertAsync(Message syncResult, Message result, Message asyncResult) throws Exception {
-    assertNotNull(syncResult);
-    assertNotNull(result);
-    assertNotNull(asyncResult);
+    assertThat(syncResult, not(nullValue()));
+    assertThat(result, not(nullValue()));
+    assertThat(asyncResult, not(nullValue()));
     assertEquals("0ac", getPayloadAsString(syncResult));
     assertEquals("0ac", getPayloadAsString(result));
     assertEquals("0ab", getPayloadAsString(asyncResult));
@@ -178,14 +180,14 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
   @Test
   public void testPoll() throws Exception {
     Message message = queueManager.read("poll-out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
-    assertNotNull(message);
+    assertThat(message, not(nullValue()));
     assertEquals(" Hello fooout", getPayloadAsString(message));
   }
 
   @Test
   public void testPollFlowRef() throws Exception {
     Message message = queueManager.read("poll2-out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
-    assertNotNull(message);
+    assertThat(message, not(nullValue()));
     assertEquals("nullpollappendout", getPayloadAsString(message));
   }
 
@@ -193,7 +195,7 @@ public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTest
   public void testSubFlowMessageFilter() throws Exception {
     flowRunner("messagefiltersubflow").withPayload("0").run();
     Message message = queueManager.read("messagefiltersubflow-out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
-    assertNotNull(message);
+    assertThat(message, not(nullValue()));
   }
 
   @Test
