@@ -9,8 +9,8 @@ package org.mule.test.integration.interception;
 import static org.mule.functional.api.exception.ExpectedError.none;
 import static org.mule.runtime.api.interception.ProcessorInterceptorFactory.INTERCEPTORS_ORDER_REGISTRY_KEY;
 import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
-import static org.mule.test.allure.AllureConstants.InterceptonApi.ComponentInterceptionStory.COMPONENT_INTERCEPTION_STORY;
 import static org.mule.test.allure.AllureConstants.InterceptonApi.INTERCEPTION_API;
+import static org.mule.test.allure.AllureConstants.InterceptonApi.ComponentInterceptionStory.COMPONENT_INTERCEPTION_STORY;
 import static org.mule.test.heisenberg.extension.HeisenbergConnectionProvider.getActiveConnections;
 import static org.mule.test.heisenberg.extension.HeisenbergOperations.CALL_GUS_MESSAGE;
 
@@ -22,6 +22,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.endsWith;
@@ -30,7 +31,7 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.collection.IsMapWithSize.aMapWithSize;
 
 import org.mule.extension.http.api.request.validator.ResponseValidatorException;
 import org.mule.extension.test.extension.reconnection.ReconnectableConnectionProvider;
@@ -71,14 +72,17 @@ import java.util.function.Function;
 import javax.inject.Inject;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+
+import org.junit.After;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
+import org.junit.Rule;
+import org.junit.Test;
+
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
 
 @Feature(INTERCEPTION_API)
 @Story(COMPONENT_INTERCEPTION_STORY)
@@ -87,16 +91,16 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
   @Rule
   public ExpectedError expectedError = none();
 
-  @Rule
-  public DynamicPort wireMockPort = new DynamicPort("wireMockPort");
+  @ClassRule
+  public static DynamicPort wireMockPort = new DynamicPort("wireMockPort");
 
-  @Rule
-  public WireMockRule wireMock = new WireMockRule(wireMockConfig()
+  @ClassRule
+  public static WireMockRule wireMock = new WireMockRule(wireMockConfig()
       .bindAddress("127.0.0.1")
       .port(wireMockPort.getNumber()));
 
-  @Before
-  public void setUp() {
+  @BeforeClass
+  public static void setUp() {
     wireMock.stubFor(get(urlMatching("/200")).willReturn(aResponse().withStatus(200)));
     wireMock.stubFor(get(urlMatching("/404")).willReturn(aResponse().withStatus(404)));
     wireMock.stubFor(get(urlMatching("/418")).willReturn(aResponse().withStatus(418)));
@@ -508,9 +512,10 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     assertThat(interceptionParameters, hasSize(1));
 
     Map<String, ProcessorParameterValue> scriptingParameters = interceptionParameters.get(0).getParameters();
-    assertThat(scriptingParameters.keySet(), hasSize(5));
+
+    assertThat(scriptingParameters.keySet().toString(), scriptingParameters, aMapWithSize(6));
     assertThat(scriptingParameters.keySet(),
-               containsInAnyOrder("engine", "doc:name", "target", "code", "targetValue"));
+               containsInAnyOrder("engine", "doc:name", "target", "code", "targetValue", "executionMode"));
     assertThat(scriptingParameters.get("doc:name").resolveValue(), is("Execute 5"));
   }
 
