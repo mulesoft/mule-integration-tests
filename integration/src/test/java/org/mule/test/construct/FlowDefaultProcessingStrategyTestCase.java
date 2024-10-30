@@ -6,15 +6,17 @@
  */
 package org.mule.test.construct;
 
-import static java.lang.Thread.currentThread;
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
 import static org.mule.functional.api.flow.TransactionConfigEnum.ACTION_ALWAYS_BEGIN;
 import static org.mule.runtime.api.metadata.DataType.STRING;
+
+import static java.lang.Thread.currentThread;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
 
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
@@ -24,7 +26,6 @@ import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.transaction.Transaction;
 import org.mule.runtime.core.api.transaction.TransactionCoordination;
-import org.mule.tck.testmodels.mule.TestTransactionFactory;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.tests.api.TestQueueManager;
 
@@ -65,7 +66,7 @@ public class FlowDefaultProcessingStrategyTestCase extends AbstractIntegrationTe
     Transaction transaction = createTransactionMock();
 
     try {
-      flowRunner("Flow").withPayload(TEST_PAYLOAD).transactionally(ACTION_ALWAYS_BEGIN, new TestTransactionFactory(transaction))
+      flowRunner("Flow").withPayload(TEST_PAYLOAD).transactionally(ACTION_ALWAYS_BEGIN, transaction)
           .run();
 
       Message message = queueManager.read("out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
@@ -81,8 +82,7 @@ public class FlowDefaultProcessingStrategyTestCase extends AbstractIntegrationTe
     Transaction transaction = createTransactionMock();
 
     try {
-      flowRunner("Flow").withPayload(TEST_PAYLOAD).transactionally(ACTION_ALWAYS_BEGIN, new TestTransactionFactory(
-                                                                                                                   transaction))
+      flowRunner("Flow").withPayload(TEST_PAYLOAD).transactionally(ACTION_ALWAYS_BEGIN, transaction)
           .run();
 
       Message message = queueManager.read("out", RECEIVE_TIMEOUT, MILLISECONDS).getMessage();
