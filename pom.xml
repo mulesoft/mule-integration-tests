@@ -24,6 +24,7 @@
         <module>integration</module>
         <module>integration-config-failures</module>
         <module>logging</module>
+        <module>logging-modularized</module>
         <module>metrics</module>
         <module>munit-tests</module>
         <module>oauth</module>
