@@ -20,8 +20,7 @@ module org.mule.runtime.test.integration.logging.modularized {
   requires org.mule.test.infrastructure;
   requires org.mule.test.unit;
 
-  // Log bridges
-  requires jul.to.slf4j;
-//  requires org.apache.log4j;
+  // Logging
+  requires org.mule.runtime.logging;
 
 }

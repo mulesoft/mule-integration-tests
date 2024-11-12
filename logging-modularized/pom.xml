@@ -29,6 +29,7 @@
             --add-exports=org.mule.runtime.memory.management/org.mule.runtime.internal.memory.management=org.mule.test.infrastructure
             --add-exports=org.mule.runtime.repository/org.mule.runtime.module.repository.internal=org.mule.test.infrastructure
             --add-exports=org.mule.runtime.tooling.support/org.mule.runtime.module.tooling.internal=org.mule.test.infrastructure
+            --add-exports=org.mule.runtime.log4j/org.mule.runtime.module.log4j.internal=org.mule.runtime.test.integration.logging.modularized
             ${surefire.args.base}
         </surefire.args>
         <javaModuleName>org.mule.test.integration.logging </javaModuleName>
@@ -56,6 +57,11 @@
                         <configuration>
                             <testRelease>11</testRelease>
                             <!-- no excludes: compile everything to ensure module-info contains right entries -->
+
+                            <!-- Configure the exports needed in COMPILE time -->
+                            <compilerArgs>
+                                <arg>--add-exports=org.mule.runtime.log4j/org.mule.runtime.module.log4j.internal=org.mule.runtime.test.integration.logging.modularized</arg>
+                            </compilerArgs>
                         </configuration>
                     </execution>
                     <execution>
