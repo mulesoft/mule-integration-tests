@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:vm="http://www.mulesoft.org/schema/mule/vm"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+                           http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd">
+
+    <object name="operation" class="org.mule.test.routing.TransactionWithGlobalErrorHandlerTestCase$Operation"/>
+
+    <vm:config name="VM_Config">
+        <vm:queues >
+            <vm:queue queueName="Q1" />
+        </vm:queues>
+    </vm:config>
+
+    <flow name="execute">
+        <vm:publish-consume queueName="Q1" config-ref="VM_Config"/>
+    </flow>
+
+    <flow name="listener">
+        <vm:listener queueName="Q1" config-ref="VM_Config" numberOfConsumers="4" transactionalAction="ALWAYS_BEGIN"/>
+        <raise-error type="APP:SOME"/>
+        <error-handler ref="global"/>
+    </flow>
+
+    <error-handler name="global">
+        <on-error-continue>
+            <set-payload value="hello"/>
+            <flow-ref name="operation"/>
+        </on-error-continue>
+    </error-handler>
+
+</mule>
