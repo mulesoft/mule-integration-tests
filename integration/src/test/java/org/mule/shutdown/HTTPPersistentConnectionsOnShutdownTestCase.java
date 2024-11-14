@@ -14,6 +14,8 @@ import static org.apache.http.HttpVersion.HTTP_1_1;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+
 import static org.mule.runtime.core.api.util.StringUtils.isEmpty;
 import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.GracefulShutdownStory.GRACEFUL_SHUTDOWN_STORY;
 import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.LIFECYCLE_AND_DEPENDENCY_INJECTION;
@@ -35,6 +37,7 @@ import java.util.concurrent.ExecutorService;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -82,6 +85,12 @@ public class HTTPPersistentConnectionsOnShutdownTestCase extends AbstractIntegra
   @Test
   public void requestInflightDuringShutdownIsRespondedIncludingConnectionCloseHeader() throws IOException {
     try (Socket slowRequestConnection = new Socket("localhost", dynamicPort.getNumber())) {
+      // Response before stop is ok, and connection close header is not added.
+      sendRequest(slowRequestConnection, SLOW_PROCESSING_ENDPOINT);
+      String responseBeforeStop = getResponse(slowRequestConnection);
+      assertResponse(responseBeforeStop, true);
+      assertThat(responseBeforeStop, not(containsString("Connection: close")));
+
       sendRequest(slowRequestConnection, SLOW_PROCESSING_ENDPOINT);
 
       // Stop mule in parallel.
@@ -103,6 +112,9 @@ public class HTTPPersistentConnectionsOnShutdownTestCase extends AbstractIntegra
       sendRequest(slowRequestConnection, FAST_PROCESSING_ENDPOINT);
       slowRequestResponse = getResponse(slowRequestConnection);
       assertResponse(slowRequestResponse, false);
+
+      slowRequestConnection.close();
+      assertContextHasStopped(100 * SMALL_TIMEOUT_MILLIS);
     }
   }
 
