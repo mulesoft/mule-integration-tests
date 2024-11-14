@@ -20,7 +20,7 @@
 
     <flow name="slowFlow">
         <http:listener config-ref="httpConfig" path="/slow" />
-        <logger level="WARN" message="Slow endpoint invoked" />
+        <logger level="INFO" message="Slow endpoint invoked" />
         <scripting:execute engine="groovy">
             <scripting:code>
                 try {

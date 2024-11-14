@@ -6,17 +6,21 @@
  */
 package org.mule.shutdown;
 
+import static org.mule.runtime.core.api.util.StringUtils.isEmpty;
+import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.GracefulShutdownStory.GRACEFUL_SHUTDOWN_STORY;
+import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.LIFECYCLE_AND_DEPENDENCY_INJECTION;
+
 import static java.lang.String.format;
 import static java.lang.Thread.sleep;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
+
 import static org.apache.http.HttpVersion.HTTP_1_1;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.mule.runtime.core.api.util.StringUtils.isEmpty;
-import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.GracefulShutdownStory.GRACEFUL_SHUTDOWN_STORY;
-import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.LIFECYCLE_AND_DEPENDENCY_INJECTION;
+import static org.hamcrest.Matchers.not;
+
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.tck.junit4.rule.DynamicPort;
@@ -82,6 +86,12 @@ public class HTTPPersistentConnectionsOnShutdownTestCase extends AbstractIntegra
   @Test
   public void requestInflightDuringShutdownIsRespondedIncludingConnectionCloseHeader() throws IOException {
     try (Socket slowRequestConnection = new Socket("localhost", dynamicPort.getNumber())) {
+      // Response before stop is ok, and connection close header is not added.
+      sendRequest(slowRequestConnection, SLOW_PROCESSING_ENDPOINT);
+      String responseBeforeStop = getResponse(slowRequestConnection);
+      assertResponse(responseBeforeStop, true);
+      assertThat(responseBeforeStop, not(containsString("Connection: close")));
+
       sendRequest(slowRequestConnection, SLOW_PROCESSING_ENDPOINT);
 
       // Stop mule in parallel.
@@ -103,6 +113,9 @@ public class HTTPPersistentConnectionsOnShutdownTestCase extends AbstractIntegra
       sendRequest(slowRequestConnection, FAST_PROCESSING_ENDPOINT);
       slowRequestResponse = getResponse(slowRequestConnection);
       assertResponse(slowRequestResponse, false);
+
+      slowRequestConnection.close();
+      assertContextHasStopped(100 * SMALL_TIMEOUT_MILLIS);
     }
   }
 
