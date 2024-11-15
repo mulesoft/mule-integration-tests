@@ -148,6 +148,10 @@ public class TransactionRollbackedByOwnerTestCase extends AbstractIntegrationTes
         // states after the expected ones have to be ignored given they belong to different transactions
         new Object[] {"Global Error Handler", "org/mule/test/integration/transaction/transaction-source-owner-global-err.xml",
             "rollback-error-in-nested-flow", true, asList("start", "continue", "continue", "rollback"), true},
+        // TODO W-17239370 - uncomment
+        // new Object[] {"Global Error Handler", "org/mule/test/integration/transaction/transaction-owner-global-err.xml",
+        // "rollback-error-in-nested-try-within-sub-flow-with-same-error-handler", true,
+        // asList("start", "continue", "continue", "rollback"), false},
 
         new Object[] {"Default Error Handler", "org/mule/test/integration/transaction/transaction-owner-default-err.xml",
             "rollback", true, asList("start", "rollback"), false},
