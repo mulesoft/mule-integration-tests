@@ -115,6 +115,20 @@
         </try>
     </flow>
 
+    <flow name="rollback-error-in-nested-try-within-sub-flow-with-same-error-handler">
+        <try transactionalAction="BEGIN_OR_JOIN">
+            <flow-ref name="sub-flow-within-tx"/>
+            <error-handler ref="globalPropagate"/>
+        </try>
+    </flow>
+
+    <sub-flow name="sub-flow-within-tx">
+        <try>
+            <raise-error type="APP:EXPECTED"/>
+            <error-handler ref="globalPropagate"/>
+        </try>
+    </sub-flow>
+
     <flow name="rollback-flowref">
         <raise-error type="APP:EXPECTED"/>
     </flow>
