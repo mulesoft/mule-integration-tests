@@ -96,6 +96,25 @@
         </try>
     </flow>
 
+    <flow name="rollback-error-in-nested-try">
+        <try transactionalAction="BEGIN_OR_JOIN">
+            <try>
+                <raise-error type="APP:EXPECTED"/>
+            </try>
+            <error-handler ref="globalPropagate"/>
+        </try>
+    </flow>
+
+    <flow name="rollback-error-in-nested-try-with-same-error-handler">
+        <try transactionalAction="BEGIN_OR_JOIN">
+            <try>
+                <raise-error type="APP:EXPECTED"/>
+                <error-handler ref="globalPropagate"/>
+            </try>
+            <error-handler ref="globalPropagate"/>
+        </try>
+    </flow>
+
 
     <flow name="rollback-flowref">
         <raise-error type="APP:EXPECTED"/>
