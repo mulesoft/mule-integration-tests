@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xmlns:vm="http://www.mulesoft.org/schema/mule/vm"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+                          http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd
+                          http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+
+    <vm:config name="VM_Config">
+        <vm:queues>
+            <vm:queue queueName="Q1"/>
+        </vm:queues>
+    </vm:config>
+
+    <error-handler name="globalPropagate">
+        <on-error-propagate>
+            <test:processor/>
+        </on-error-propagate>
+    </error-handler>
+
+    <flow name="rollback-error-in-nested-flow">
+        <vm:publish-consume queueName="Q1" config-ref="VM_Config" timeout="1"/>
+    </flow>
+
+    <flow name="rollback-error-in-nested-flow-process" maxConcurrency="1">
+        <vm:listener queueName="Q1" config-ref="VM_Config" transactionalAction="ALWAYS_BEGIN">
+            <redelivery-policy maxRedeliveryCount="0" idExpression="#['id']"/>
+        </vm:listener>
+
+        <try>
+            <raise-error type="APP:EXPECTED"/>
+        </try>
+
+        <error-handler ref="globalPropagate"/>
+    </flow>
+
+</mule>
