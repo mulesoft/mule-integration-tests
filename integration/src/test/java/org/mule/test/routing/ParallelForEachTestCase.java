@@ -27,8 +27,8 @@ import static org.hamcrest.Matchers.both;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.fail;
-import static org.junit.rules.ExpectedException.none;
 
 import org.mule.functional.junit4.rules.HttpServerRule;
 import org.mule.runtime.api.component.AbstractComponent;
@@ -49,7 +49,6 @@ import java.util.function.Consumer;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
@@ -65,9 +64,6 @@ public class ParallelForEachTestCase extends AbstractIntegrationTestCase {
 
   private static final String EXCEPTION_MESSAGE_TITLE_PREFIX = "Error(s) were found for route(s):" + lineSeparator();
   private final String[] fruitList = new String[] {"apple", "banana", "orange"};
-
-  @Rule
-  public ExpectedException expectedException = none();
 
   @Rule
   public DynamicPort port = new DynamicPort("port");
@@ -119,8 +115,9 @@ public class ParallelForEachTestCase extends AbstractIntegrationTestCase {
   @Test
   @Description("Router times out if routes take longer than the timeout configured to complete.")
   public void timeout() throws Exception {
-    expectedException.expectCause(withClassName("org.mule.runtime.core.internal.routing.result.CompositeRoutingException"));
-    flowRunner("timeout").withPayload(fruitList).run();
+    var runner = flowRunner("timeout").withPayload(fruitList);
+    var thrown = assertThrows(Exception.class, () -> runner.run());
+    assertThat(thrown.getCause(), withClassName("org.mule.runtime.core.internal.routing.result.CompositeRoutingException"));
   }
 
   @Test
