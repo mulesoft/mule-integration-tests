@@ -13,9 +13,15 @@
     <packaging>jar</packaging>
 
     <properties>
+        <surefire.module.path>
+            ${org.slf4j:slf4j-api:jar}:${org.mule.runtime.boot:mule-module-jpms-utils:jar}
+        </surefire.module.path>
+        <surefire.add.modules>
+            org.slf4j,org.mule.runtime.jpms.utils
+        </surefire.add.modules>
         <surefire.args>
             -Xmx1024m -Xms256m -XX:+HeapDumpOnOutOfMemoryError
-            ${surefire.slf4j.module.args}
+            ${surefire.module.args}
         </surefire.args>
 
         <javaModuleName>org.mule.test.integration.metrics</javaModuleName>
@@ -232,7 +238,6 @@
         <dependency>
             <groupId>io.opentelemetry</groupId>
             <artifactId>opentelemetry-proto</artifactId>
-            <version>1.7.1-alpha</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

@@ -15,10 +15,10 @@ import static org.mule.test.allure.AllureConstants.RegistryFeature.DomainObjectR
 
 import static java.util.concurrent.Executors.newCachedThreadPool;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -100,7 +100,7 @@ public class ApplicationWithDomainRegistryTestCase extends AbstractMuleTestCase 
   @Test
   public void lookupByIdReturnsApplicationContextBeanEvenIfSameBeanIsInDomain() throws Exception {
     registerObject(applicationContext, BEAN_KEY, BEAN_KEY);
-    registerObject(domainContext, BEAN_KEY, new Integer(10));
+    registerObject(domainContext, BEAN_KEY, Integer.valueOf(10));
     assertThat(lookupObject(applicationContext, BEAN_KEY), is(instanceOf(String.class)));
   }
 
