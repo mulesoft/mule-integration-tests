@@ -14,9 +14,18 @@
     <description>Integration Tests using Spring Module</description>
 
     <properties>
+        <surefire.module.path>
+            ${org.mule.runtime.boot:mule-module-jpms-utils:jar}
+        </surefire.module.path>
+        <surefire.add.modules>
+            org.mule.runtime.jpms.utils
+        </surefire.add.modules>
+        <surefire.args>
+            ${surefire.module.args}
+        </surefire.args>
+
         <javaModuleName>org.mule.test.integration.spring</javaModuleName>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
-        <surefire.args>${surefire.test.unit.open.args}</surefire.args>
     </properties>
 
     <dependencies>
