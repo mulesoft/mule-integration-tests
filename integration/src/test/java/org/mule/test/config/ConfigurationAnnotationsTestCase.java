@@ -6,16 +6,18 @@
  */
 package org.mule.test.config;
 
-import static java.lang.System.lineSeparator;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.component.Component.NS_MULE_DOCUMENTATION;
 import static org.mule.runtime.api.component.Component.Annotations.NAME_ANNOTATION_KEY;
 import static org.mule.runtime.api.util.ComponentLocationProvider.getSourceCode;
 import static org.mule.test.allure.AllureConstants.MuleDsl.MULE_DSL;
 import static org.mule.test.allure.AllureConstants.MuleDsl.DslAnnotationsStory.DSL_ANNOTATIONS_STORY;
+
+import static java.lang.System.lineSeparator;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.mule.runtime.api.component.Component;
 import org.mule.runtime.core.api.construct.Flow;
@@ -25,8 +27,9 @@ import org.mule.test.AbstractIntegrationTestCase;
 
 import javax.xml.namespace.QName;
 
-import org.junit.Test;
 import org.springframework.context.annotation.Description;
+
+import org.junit.Test;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Issue;
@@ -51,7 +54,7 @@ public class ConfigurationAnnotationsTestCase extends AbstractIntegrationTestCas
     assertThat(getSourceCode(flow),
                is("<flow name=\"Bridge\" doc:name=\"Bridge flow\">" + lineSeparator() + "<annotations>"
                    + lineSeparator() + "<doc:description>"
-                   + "<![CDATA[" + lineSeparator() + "Main flow" + lineSeparator() + "]]>"
+                   + "<![CDATA[Main flow]]>"
                    + "</doc:description>" + lineSeparator()
                    + "</annotations>" + lineSeparator() + "<logger doc:name=\"echo\">" + "</logger>"
                    + lineSeparator() + "</flow>"));
