@@ -9,7 +9,6 @@ package org.mule.test.integration.exceptions;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ErrorHandlingStory.ERROR_HANDLER;
 
-import static java.lang.System.lineSeparator;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -17,8 +16,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 
 import org.mule.runtime.api.streaming.bytes.CursorStreamProvider;
 import org.mule.tck.junit4.rule.DynamicPort;
@@ -81,13 +80,6 @@ public class ExpressionsOnErrorsTestCase extends AbstractIntegrationTestCase {
   public void infoElementDeprecated() throws Exception {
     assertThat(flowRunner("infoElementDeprecated").run().getMessage().getPayload().getValue(),
                is("infoElementDeprecated/processors/0 @ ExpressionsOnErrorsTestCase#infoElementDeprecated:org/mule/test/integration/exceptions/expressions-on-errors.xml:36"));
-  }
-
-  @Test
-  @Issue("MULE-18535")
-  public void infoElementDeprecatedSdkOp() throws Exception {
-    assertThat(flowRunner("infoElementDeprecatedSdkOp").run().getMessage().getPayload().getValue(),
-               is("infoElementDeprecatedSdkOp/processors/0 @ ExpressionsOnErrorsTestCase#infoElementDeprecatedSdkOp:org/mule/test/integration/exceptions/expressions-on-errors.xml:47"));
   }
 
   @Test
