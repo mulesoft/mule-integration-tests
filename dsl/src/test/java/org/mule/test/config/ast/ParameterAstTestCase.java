@@ -396,7 +396,7 @@ public class ParameterAstTestCase extends BaseParameterAstTestCase {
 
     final ComponentParameterAst configTls = petStoreInlineTls.getParameter(DEFAULT_GROUP_NAME, "tlsContext");
 
-    var tlsCtxFactoryType = configTls.getModel().getType();
+    MetadataType tlsCtxFactoryType = configTls.getModel().getType();
     assertThat("petStore imported types: " + petStoreInlineTls.getExtensionModel().getImportedTypes(),
                petStoreInlineTls.getExtensionModel().getImportedTypes()
                    .stream()
