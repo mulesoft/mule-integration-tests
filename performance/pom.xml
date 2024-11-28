@@ -12,11 +12,11 @@
     <description>Micro-benchmarks to test the performance of extensions</description>
 
     <properties>
+        <!-- These use the jar of the service directly, not as the service-->
+        <surefire.test.unit.open.args.target>ALL-UNNAMED</surefire.test.unit.open.args.target>
         <surefire.args>${surefire.test.unit.open.args}</surefire.args>
 
         <javaModuleName>org.mule.test.integration.performance</javaModuleName>
-
-        <jmh.version>1.35</jmh.version>
 
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
     </properties>
@@ -192,7 +192,6 @@
         <dependency>
             <groupId>org.openjdk.jmh</groupId>
             <artifactId>jmh-core</artifactId>
-            <version>${jmh.version}</version>
         </dependency>
         <dependency>
             <groupId>org.mule.tests</groupId>

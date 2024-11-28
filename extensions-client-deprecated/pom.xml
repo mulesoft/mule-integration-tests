@@ -13,9 +13,15 @@
     <artifactId>mule-tests-extensions-client-deprecated</artifactId>
 
     <properties>
+        <surefire.module.path>
+            ${org.slf4j:slf4j-api:jar}:${org.mule.runtime.boot:mule-module-jpms-utils:jar}
+        </surefire.module.path>
+        <surefire.add.modules>
+            org.slf4j,org.mule.runtime.jpms.utils
+        </surefire.add.modules>
         <surefire.args>
             -XX:+IgnoreUnrecognizedVMOptions
-            ${surefire.test.unit.open.args}
+            ${surefire.module.args}
         </surefire.args>
 
         <javaModuleName>org.mule.test.integration.extensions.client</javaModuleName>
@@ -31,6 +37,9 @@
                 <configuration>
                     <!-- Module layer is created by the tests-runner, don't need surefire to config the boot layer for the JVM -->
                     <useModulePath>false</useModulePath>
+                    <classpathDependencyExcludes>
+                        <classpathDependencyExclude>org.mule.runtime.boot:mule-module-jpms-utils</classpathDependencyExclude>
+                    </classpathDependencyExcludes>
                 </configuration>
             </plugin>
         </plugins>

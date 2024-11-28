@@ -67,7 +67,6 @@ public class AbstractSorterBenchmark extends FunctionalTestCase {
       StreamingManager.class,
       ConfigurationProvider.class,
       Config.class,
-      SecurityManager.class,
       FlowConstruct.class,
       MuleConfiguration.class,
       Initialisable.class
