@@ -33,7 +33,7 @@ import static org.hamcrest.collection.ArrayMatching.arrayContaining;
 import static org.hamcrest.collection.ArrayMatching.hasItemInArray;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.mule.extension.aggregator.internal.AggregatorsExtension;
 import org.mule.extension.db.internal.DbConnector;
@@ -383,6 +383,25 @@ public class ParameterAstTestCase extends BaseParameterAstTestCase {
     ComponentParameterAst revocationCheck = pojoTls.getParameter("Tls", "revocation-check");
     assertThat(revocationCheck, not(nullValue()));
     assertThat(revocationCheck.getValue().getRight(), not(nullValue()));
+  }
+
+  @Test
+  public void tlsContextFactoryTypeImported() {
+    ArtifactAst artifactAst = buildArtifactAst("parameters-test-tls-config.xml", PetStoreConnector.class);
+
+    final ComponentAst petStoreInlineTls = artifactAst.topLevelComponentsStream()
+        .filter(componentAst -> componentAst.getComponentId().map(id -> id.equals("inlineTls")).orElse(false))
+        .findFirst()
+        .get();
+
+    final ComponentParameterAst configTls = petStoreInlineTls.getParameter(DEFAULT_GROUP_NAME, "tlsContext");
+
+    MetadataType tlsCtxFactoryType = configTls.getModel().getType();
+    assertThat("petStore imported types: " + petStoreInlineTls.getExtensionModel().getImportedTypes(),
+               petStoreInlineTls.getExtensionModel().getImportedTypes()
+                   .stream()
+                   .anyMatch(importedType -> importedType.getImportedType().equals(tlsCtxFactoryType)),
+               is(true));
   }
 
   @Test
