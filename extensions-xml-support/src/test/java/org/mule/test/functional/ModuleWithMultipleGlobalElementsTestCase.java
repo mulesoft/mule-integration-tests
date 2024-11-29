@@ -13,7 +13,7 @@ import static java.util.Arrays.asList;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.mule.extension.file.common.api.FileAttributes;
 import org.mule.runtime.api.connection.ConnectionProvider;
@@ -125,7 +125,7 @@ public class ModuleWithMultipleGlobalElementsTestCase extends AbstractCeXmlExten
   }
 
   private void doTestConnection(String globalElement) throws MuleException {
-    ConfigurationInstance config = muleContext.getExtensionManager().getConfiguration(globalElement, testEvent());
+    ConfigurationInstance config = extensionManager.getConfiguration(globalElement, testEvent());
     assertThat(config, is(notNullValue()));
     assertThat(config.getConnectionProvider().isPresent(), is(true));
     final ConnectionProvider connectionProvider = config.getConnectionProvider().get();
