@@ -6,20 +6,25 @@
  */
 package org.mule.test.functional;
 
+import static org.mule.runtime.config.api.ArtifactContextFactory.CACHE_COMPONENT_BUILDING_DEFINITION_REGISTRY_DISABLE_OVERRIDE_PROPERTY;
+import static org.mule.test.allure.AllureConstants.XmlSdk.XML_SDK;
+
 import static java.util.Arrays.asList;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
-import static org.mule.test.allure.AllureConstants.XmlSdk.XML_SDK;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.mule.runtime.api.connection.ConnectionProvider;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.extension.api.runtime.config.ConfigurationInstance;
+import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.runner.RunnerDelegateTo;
 
 import java.util.Collection;
 
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
 
@@ -28,6 +33,10 @@ import io.qameta.allure.Feature;
 @Feature(XML_SDK)
 @RunnerDelegateTo(Parameterized.class)
 public class ModuleTestConnectionSuccessfulTestCase extends AbstractCeXmlExtensionMuleArtifactFunctionalTestCase {
+
+  @ClassRule
+  public static SystemProperty disableCacheComponentBuildingDefinitionRegistry =
+      new SystemProperty(CACHE_COMPONENT_BUILDING_DEFINITION_REGISTRY_DISABLE_OVERRIDE_PROPERTY, "true");
 
   @Parameterized.Parameter
   public String path;
@@ -64,8 +73,7 @@ public class ModuleTestConnectionSuccessfulTestCase extends AbstractCeXmlExtensi
   }
 
   private void doTestConnection(String beanName) throws MuleException {
-    ConfigurationInstance config = muleContext.getExtensionManager().getConfiguration(
-                                                                                      beanName, testEvent());
+    ConfigurationInstance config = extensionManager.getConfiguration(beanName, testEvent());
     assertThat(config, is(notNullValue()));
     assertThat(config.getConnectionProvider().isPresent(), is(true));
     final ConnectionProvider connectionProvider = config.getConnectionProvider().get();

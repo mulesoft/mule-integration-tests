@@ -6,15 +6,17 @@
  */
 package org.mule.test.module.extension.oauth.ocs;
 
+import static org.mule.oauth.client.api.state.DancerState.HAS_TOKEN;
+import static org.mule.runtime.config.api.ArtifactContextFactory.CACHE_COMPONENT_BUILDING_DEFINITION_REGISTRY_DISABLE_OVERRIDE_PROPERTY;
+import static org.mule.runtime.extension.api.ocs.OCSConstants.OCS_ENABLED;
+import static org.mule.test.allure.AllureConstants.OauthFeature.OCS_SUPPORT;
+
 import static java.util.Arrays.asList;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
-import static org.mule.oauth.client.api.state.DancerState.HAS_TOKEN;
-import static org.mule.runtime.extension.api.ocs.OCSConstants.OCS_ENABLED;
-import static org.mule.test.allure.AllureConstants.OauthFeature.OCS_SUPPORT;
 
 import org.mule.oauth.client.api.state.DancerState;
 import org.mule.oauth.client.api.state.ResourceOwnerOAuthContext;
@@ -73,10 +75,13 @@ public abstract class PlatformManagedOAuthTestCase extends BaseOAuthExtensionTes
   protected static final String API_VERSION_PARAMETER_NAME = "apiVersion";
   protected static final String PROMPT_PARAMETER_NAME = "prompt";
   protected static final boolean PROMPT_TEST = false;
-  protected static final Double API_VERSION_TEST = new Double(5.3);
+  protected static final Double API_VERSION_TEST = Double.valueOf(5.3);
 
   @ClassRule
   public static SystemProperty enableOcs = new SystemProperty(OCS_ENABLED, "true");
+  @ClassRule
+  public static SystemProperty disableCacheComponentBuildingDefinitionRegistry =
+      new SystemProperty(CACHE_COMPONENT_BUILDING_DEFINITION_REGISTRY_DISABLE_OVERRIDE_PROPERTY, "true");
 
   protected OAuthPlatformManagedDancerBuilder mockPlatformManagedDancerBuilder =
       mock(OAuthPlatformManagedDancerBuilder.class, RETURNS_DEEP_STUBS);
