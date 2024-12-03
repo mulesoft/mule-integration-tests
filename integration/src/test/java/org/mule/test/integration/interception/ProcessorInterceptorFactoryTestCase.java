@@ -508,9 +508,10 @@ public class ProcessorInterceptorFactoryTestCase extends AbstractIntegrationTest
     assertThat(interceptionParameters, hasSize(1));
 
     Map<String, ProcessorParameterValue> scriptingParameters = interceptionParameters.get(0).getParameters();
-    assertThat(scriptingParameters.keySet(), hasSize(5));
+    System.out.println("Scropting parameters" + scriptingParameters.keySet());
+    assertThat(scriptingParameters.keySet(), hasSize(6));
     assertThat(scriptingParameters.keySet(),
-               containsInAnyOrder("engine", "doc:name", "target", "code", "targetValue"));
+               containsInAnyOrder("engine", "executionMode", "doc:name", "target", "code", "targetValue"));
     assertThat(scriptingParameters.get("doc:name").resolveValue(), is("Execute 5"));
   }
 
