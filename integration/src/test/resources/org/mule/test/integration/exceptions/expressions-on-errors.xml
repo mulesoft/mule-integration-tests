@@ -36,21 +36,13 @@
         <raise-error type="APP:EXPECTED"/>
         <error-handler>
             <on-error-continue>
-                <set-payload value="#[message.message.exceptionPayload.info.Element]"/>
+                <logger level="WARN" message="#[error]"/>
+                <set-payload value="#[error.cause.info.Element]"/>
             </on-error-continue>
         </error-handler>
     </flow>
 
     <http:request-config name="HTTP_Request_configuration"/>
-
-    <flow name="infoElementDeprecatedSdkOp">
-        <http:request method="GET" config-ref="HTTP_Request_configuration" url="http://localhost:${wireMockPort}/500"/>
-        <error-handler>
-            <on-error-continue>
-                <set-payload value="#[message.message.exceptionPayload.info.Element]"/>
-            </on-error-continue>
-        </error-handler>
-    </flow>
 
     <flow name="messageToJson">
         <set-payload value="#[output application/json --- message]"/>

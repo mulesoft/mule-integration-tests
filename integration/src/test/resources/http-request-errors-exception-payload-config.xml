@@ -16,7 +16,7 @@
         </http:request>
         <error-handler>
             <on-error-continue type="http:CONNECTIVITY">
-                <set-payload value="#[message.message.exceptionPayload.info.'Element DSL']"/>
+                <set-payload value="#[error.dslSource]"/>
             </on-error-continue>
         </error-handler>
     </flow>

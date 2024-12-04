@@ -169,10 +169,8 @@
         <error-handler>
             <on-error-continue type="COMPOSITE_ROUTING">
                 <test:assert
-                        expression="#[mel:exception.cause.getClass().getName().equals('org.mule.runtime.core.privileged.routing.CompositeRoutingException')]"/>
-                <test:assert expression="#[error.errorMessage.payload.failures['0'] == null]"/>
-                <test:assert expression="#[error.errorMessage.payload.failures['1'] != null]"/>
-                <test:assert expression="#[error.errorMessage.payload.failures['2'] != null]"/>
+                        expression="#[error.cause.^class == 'org.mule.runtime.core.privileged.routing.CompositeRoutingException']"/>
+                <test:assert expression="#[sizeOf(error.childErrors) == 2]"/>
                 <test:assert expression="#[error.errorMessage.payload.results['0'] != null]"/>
                 <test:assert expression="#[error.errorMessage.payload.results['1'] == null]"/>
                 <test:assert expression="#[error.errorMessage.payload.results['2'] == null]"/>
