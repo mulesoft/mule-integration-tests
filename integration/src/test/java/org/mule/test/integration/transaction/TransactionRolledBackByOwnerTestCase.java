@@ -46,7 +46,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 @RunnerDelegateTo(Parameterized.class)
-public class TransactionRollbackedByOwnerTestCase extends AbstractIntegrationTestCase {
+public class TransactionRolledBackByOwnerTestCase extends AbstractIntegrationTestCase {
 
   private static final int POLL_DELAY_MILLIS = 100;
 
@@ -144,10 +144,12 @@ public class TransactionRollbackedByOwnerTestCase extends AbstractIntegrationTes
         new Object[] {"Global Error Handler", "org/mule/test/integration/transaction/transaction-owner-global-err.xml",
             "rollback-error-in-nested-try-with-same-error-handler", true, asList("start", "continue", "continue", "rollback"),
             false},
-        // The VM connector used for this test flow will create a new transaction before checking the redelivery count, so extra
-        // states after the expected ones have to be ignored given they belong to different transactions
+        // The `start` state is omitted from the expected states since given the test source is a polling source, it starts a
+        // transaction every time it polls, so it might have already started a transaction right before this specific test case is
+        // run and the first state registered by the profiling data consumer would be a `continue` in that case. Anyway, the goal
+        // of the test is to check that the state sequence shows a rollback after the `continue` states.
         new Object[] {"Global Error Handler", "org/mule/test/integration/transaction/transaction-source-owner-global-err.xml",
-            "rollback-error-in-nested-flow", true, asList("start", "continue", "continue", "rollback"), true},
+            "rollback-error-in-nested-flow", true, asList("continue", "continue", "rollback"), true},
         // TODO W-17239370 - uncomment
         // new Object[] {"Global Error Handler", "org/mule/test/integration/transaction/transaction-owner-global-err.xml",
         // "rollback-error-in-nested-try-within-sub-flow-with-same-error-handler", true,
@@ -167,7 +169,7 @@ public class TransactionRollbackedByOwnerTestCase extends AbstractIntegrationTes
     };
   }
 
-  public TransactionRollbackedByOwnerTestCase(String type, String config, String flowName, boolean throwsMessagingException,
+  public TransactionRolledBackByOwnerTestCase(String type, String config, String flowName, boolean throwsMessagingException,
                                               List<String> expectedStates, boolean ignoreExtraStates) {
     this.flowName = flowName;
     this.expectedStates = expectedStates;
@@ -247,11 +249,20 @@ public class TransactionRollbackedByOwnerTestCase extends AbstractIntegrationTes
   private void assertCorrectStates() {
     if (ignoreExtraStates) {
       for (int i = 0; i < expectedStates.size(); i++) {
-        assertThat(states.get(i), is(expectedStates.get(i)));
+        assertThat("Expected " + expectedStates + " but obtained " + states, containsSequence(states, expectedStates), is(true));
       }
     } else {
       assertThat(states, contains(expectedStates.toArray()));
     }
+  }
+
+  private boolean containsSequence(List<String> obtainedStates, List<String> expectedStates) {
+    for (int i = 0; i <= obtainedStates.size() - expectedStates.size(); i++) {
+      if (obtainedStates.subList(i, i + expectedStates.size()).equals(expectedStates)) {
+        return true;
+      }
+    }
+    return false;
   }
 
 }
