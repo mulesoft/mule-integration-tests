@@ -248,9 +248,7 @@ public class TransactionRolledBackByOwnerTestCase extends AbstractIntegrationTes
 
   private void assertCorrectStates() {
     if (ignoreExtraStates) {
-      for (int i = 0; i < expectedStates.size(); i++) {
-        assertThat("Expected " + expectedStates + " but obtained " + states, containsSequence(states, expectedStates), is(true));
-      }
+      assertThat("Expected " + expectedStates + " but obtained " + states, containsSequence(states, expectedStates), is(true));
     } else {
       assertThat(states, contains(expectedStates.toArray()));
     }
