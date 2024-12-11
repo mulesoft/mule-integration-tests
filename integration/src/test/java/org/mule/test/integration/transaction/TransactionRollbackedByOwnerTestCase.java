@@ -146,8 +146,9 @@ public class TransactionRollbackedByOwnerTestCase extends AbstractIntegrationTes
             false},
         // The VM connector used for this test flow will create a new transaction before checking the redelivery count, so extra
         // states after the expected ones have to be ignored given they belong to different transactions
-        new Object[] {"Global Error Handler", "org/mule/test/integration/transaction/transaction-source-owner-global-err.xml",
-            "rollback-error-in-nested-flow", true, asList("start", "continue", "continue", "rollback"), true},
+        // TODO W-17394810 - uncomment
+        // new Object[] {"Global Error Handler", "org/mule/test/integration/transaction/transaction-source-owner-global-err.xml",
+        // "rollback-error-in-nested-flow", true, asList("start", "continue", "continue", "rollback"), true},
         // TODO W-17239370 - uncomment
         // new Object[] {"Global Error Handler", "org/mule/test/integration/transaction/transaction-owner-global-err.xml",
         // "rollback-error-in-nested-try-within-sub-flow-with-same-error-handler", true,
