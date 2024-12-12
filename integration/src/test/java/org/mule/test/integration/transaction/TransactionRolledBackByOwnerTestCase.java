@@ -19,6 +19,7 @@ import static org.mule.runtime.api.profiling.type.RuntimeProfilingEventTypes.TX_
 import static org.mule.runtime.api.util.MuleSystemProperties.DEFAULT_ERROR_HANDLER_NOT_ROLLBACK_IF_NOT_CORRESPONDING_PROPERTY;
 
 import static java.util.Arrays.asList;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -32,6 +33,7 @@ import org.mule.tck.probe.JUnitProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.runner.RunnerDelegateTo;
+import org.mule.tests.api.TestQueueManager;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -52,6 +54,9 @@ public class TransactionRolledBackByOwnerTestCase extends AbstractIntegrationTes
 
   @Inject
   private PrivilegedProfilingService service;
+
+  @Inject
+  private TestQueueManager queueManager;
 
   private List<String> states;
   private final String flowName;
@@ -246,6 +251,14 @@ public class TransactionRolledBackByOwnerTestCase extends AbstractIntegrationTes
       }
     }
 
+    System.out.println("PENDING EVENTS " + queueManager.countPendingEvents("globalPropagateQueue"));
+    System.out.println("QUEUE ELEMENT 1 " + queueManager.read("globalPropagateQueue", RECEIVE_TIMEOUT, MILLISECONDS));
+    System.out.println("QUEUE ELEMENT 2 " + queueManager.read("globalPropagateQueue", RECEIVE_TIMEOUT, MILLISECONDS));
+    System.out.println("QUEUE ELEMENT 3 " + queueManager.read("globalPropagateQueue", RECEIVE_TIMEOUT, MILLISECONDS));
+    System.out.println("QUEUE ELEMENT 4 " + queueManager.read("globalPropagateQueue", RECEIVE_TIMEOUT, MILLISECONDS));
+    System.out.println("QUEUE ELEMENT 5 " + queueManager.read("globalPropagateQueue", RECEIVE_TIMEOUT, MILLISECONDS));
+    System.out.println("QUEUE ELEMENT 6 " + queueManager.read("globalPropagateQueue", RECEIVE_TIMEOUT, MILLISECONDS));
+    System.out.println("QUEUE ELEMENT 7 " + queueManager.read("globalPropagateQueue", RECEIVE_TIMEOUT, MILLISECONDS));
     assertStatesArrived();
     assertCorrectStates();
   }

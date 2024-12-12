@@ -3,8 +3,11 @@
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:test="http://www.mulesoft.org/schema/mule/test"
-      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-                          http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd">
+      xmlns:test-components="http://www.mulesoft.org/schema/mule/test-components"
+      xsi:schemaLocation="
+       http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+       http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
+       http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
 
     <error-handler name="globalContinue">
         <on-error-continue>
@@ -14,9 +17,14 @@
 
     <error-handler name="globalPropagate">
         <on-error-propagate>
-            <test:processor/>
+            <set-payload value="#[error]"/>
+            <test-components:queue-push config-ref="globalPropagateQueue"/>
         </on-error-propagate>
     </error-handler>
+
+    <test-components:queue-config name="globalPropagateQueue">
+        <test-components:connection />
+    </test-components:queue-config>
 
     <flow name="no-rollback">
         <try transactionalAction="BEGIN_OR_JOIN">
@@ -158,6 +166,26 @@
 
     <flow name="error-flowref-flowref">
         <try transactionalAction="BEGIN_OR_JOIN">
+            <logger/>
+            <error-handler ref="globalPropagate"/>
+        </try>
+        <try transactionalAction="BEGIN_OR_JOIN">
+            <flow-ref name="error-flowref-flowref-2"/>
+            <error-handler ref="globalPropagate"/>
+        </try>
+        <try transactionalAction="BEGIN_OR_JOIN">
+            <logger/>
+            <error-handler ref="globalPropagate"/>
+        </try>
+        <error-handler ref="globalPropagate"/>
+    </flow>
+
+    <flow name="error-flowref-flowref-2">
+        <try transactionalAction="BEGIN_OR_JOIN">
+            <logger/>
+            <error-handler ref="globalPropagate"/>
+        </try>
+        <try transactionalAction="BEGIN_OR_JOIN">
             <flow-ref name="error-flowref"/>
             <error-handler ref="globalPropagate"/>
         </try>
@@ -169,9 +197,12 @@
     </flow>
 
     <flow name="error-flowref">
-        <try transactionalAction="ALWAYS_BEGIN">
-            <test:processor/>
-            <error-handler ref="globalContinue"/>
+        <try>
+            <try transactionalAction="ALWAYS_BEGIN">
+                <test:processor/>
+                <error-handler ref="globalContinue"/>
+            </try>
+            <error-handler ref="globalPropagate"/>
         </try>
         <raise-error type="APP:EXPECTED"/>
         <error-handler ref="globalPropagate"/>
