@@ -20,11 +20,36 @@
         </try>
     </flow>
 
+    <flow name="rollback-with-error-handler-reference-at-inner-transaction-location">
+        <try transactionalAction="BEGIN_OR_JOIN">
+            <raise-error type="APP:EXPECTED"/>
+            <try transactionalAction="BEGIN_OR_JOIN">
+                <logger/>
+            </try>
+        </try>
+    </flow>
+
     <flow name="no-rollback-outside-try">
         <try transactionalAction="BEGIN_OR_JOIN">
             <test:processor />
         </try>
         <raise-error type="APP:EXPECTED"/>
+    </flow>
+
+    <flow name="rollback-error-in-nested-try">
+        <try transactionalAction="BEGIN_OR_JOIN">
+            <try>
+                <raise-error type="APP:EXPECTED"/>
+            </try>
+        </try>
+    </flow>
+
+    <flow name="rollback-error-in-nested-try-with-same-error-handler">
+        <try transactionalAction="BEGIN_OR_JOIN">
+            <try>
+                <raise-error type="APP:EXPECTED"/>
+            </try>
+        </try>
     </flow>
 
     <flow name="rollback-error-in-flow-ref-with-try">
@@ -55,6 +80,34 @@
         </try>
     </flow>
 
+    <flow name="rollback-error-in-flow-ref-with-try-3-levels">
+        <try transactionalAction="BEGIN_OR_JOIN">
+            <flow-ref name="error-flowref-flowref"/>
+            <error-handler ref="globalPropagate"/>
+        </try>
+        <error-handler ref="globalPropagate"/>
+    </flow>
+
+    <flow name="rollback-error-start-tx-in-flow-ref-with-try-3-levels">
+        <try>
+            <flow-ref name="error-flowref-flowref"/>
+            <error-handler ref="globalPropagate"/>
+        </try>
+        <error-handler ref="globalPropagate"/>
+    </flow>
+
+    <flow name="error-flowref-flowref">
+        <try transactionalAction="BEGIN_OR_JOIN">
+            <flow-ref name="error-flowref"/>
+            <error-handler ref="globalPropagate"/>
+        </try>
+        <try transactionalAction="BEGIN_OR_JOIN">
+            <logger/>
+            <error-handler ref="globalPropagate"/>
+        </try>
+        <error-handler ref="globalPropagate"/>
+    </flow>
+
     <flow name="error-flowref">
         <try transactionalAction="ALWAYS_BEGIN">
             <test:processor/>
@@ -63,6 +116,19 @@
             </error-handler>
         </try>
         <raise-error type="APP:EXPECTED"/>
+    </flow>
+
+    <flow name="rollback-in-flowref">
+        <flow-ref name="error-flowref-tx-owner"/>
+    </flow>
+
+    <flow name="error-flowref-tx-owner">
+        <try transactionalAction="BEGIN_OR_JOIN">
+            <raise-error type="APP:EXPECTED"/>
+            <try transactionalAction="BEGIN_OR_JOIN">
+                <logger/>
+            </try>
+        </try>
     </flow>
 
 </mule>
