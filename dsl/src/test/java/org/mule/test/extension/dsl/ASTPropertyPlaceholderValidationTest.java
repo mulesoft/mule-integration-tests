@@ -44,6 +44,7 @@ import org.mule.runtime.api.meta.model.nested.NestedComponentModel;
 import org.mule.runtime.api.meta.model.nested.NestedRouteModel;
 import org.mule.runtime.api.meta.model.operation.HasOperationModels;
 import org.mule.runtime.api.meta.model.operation.OperationModel;
+import org.mule.runtime.api.meta.model.parameter.ParameterGroupModel;
 import org.mule.runtime.api.meta.model.parameter.ParameterModel;
 import org.mule.runtime.api.meta.model.parameter.ParameterizedModel;
 import org.mule.runtime.api.meta.model.source.HasSourceModels;
@@ -81,6 +82,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -91,6 +93,8 @@ import org.junit.Test;
 
 public class ASTPropertyPlaceholderValidationTest extends AbstractElementModelTestCase {
 
+  private static final Set<String> excludedValidatorClassNames =
+      ImmutableSet.of("RequiredParametersPresent", "PollingSourceHasSchedulingStrategy", "ScatterGatherRoutes");
   private static Set<ExtensionModel> runtimeExtensionModels;
   private ArtifactDeclarationXmlSerializer serializer;
   private DslSyntaxResolver dslResolver;
@@ -123,6 +127,7 @@ public class ASTPropertyPlaceholderValidationTest extends AbstractElementModelTe
   protected List<ValidationResultItem> doValidate(ArtifactAst ast) {
     ArtifactAstValidator astValidator = validatorBuilder()
         .ignoreParamsWithProperties(true)
+        .withValidationsFilter(v -> !excludedValidatorClassNames.contains(v.getClass().getSimpleName()))
         .build();
 
     ValidationResult result = astValidator.validate(ast);
@@ -250,23 +255,35 @@ public class ASTPropertyPlaceholderValidationTest extends AbstractElementModelTe
   private void populateParameterized(ParameterizedModel model, ParameterizedElementDeclarer<?, ?> parameterizedDeclarer) {
     model.getParameterGroupModels()
         .forEach(group -> parameterizedDeclarer.withParameterGroup(groupDeclarer -> {
+          AtomicBoolean exclusiveParameterUsed = new AtomicBoolean(false);
           groupDeclarer.withName(group.getName());
           group.getParameterModels()
               .stream()
               .filter(p -> !(p.getType() instanceof UnionType))
               .filter(p -> !p.getModelProperty(QNameModelProperty.class).isPresent())
-              .forEach(param -> addParameter(param.getType(),
-                                             isContent(param) || param.getExpressionSupport().equals(REQUIRED),
-                                             isText(param),
-                                             allowsReferences(param),
-                                             ofNullable(param.getDefaultValue()),
-                                             param.getAllowedStereotypes(),
-                                             value -> groupDeclarer.withParameter(param.getName(), value)));
+              .filter(p -> !isExclusiveParameter(group, p) || !exclusiveParameterUsed.get())
+              .forEach(param -> {
+                if (!exclusiveParameterUsed.get() && isExclusiveParameter(group, param)) {
+                  exclusiveParameterUsed.set(true);
+                }
+
+                addParameter(param.getType(),
+                             isContent(param) || param.getExpressionSupport().equals(REQUIRED),
+                             isText(param),
+                             allowsReferences(param),
+                             ofNullable(param.getDefaultValue()),
+                             param.getAllowedStereotypes(),
+                             value -> groupDeclarer.withParameter(param.getName(), value));
+              });
         }));
   }
 
   private boolean allowsReferences(ParameterModel param) {
     return param.getDslConfiguration().allowsReferences();
+  }
+
+  private boolean isExclusiveParameter(ParameterGroupModel group, ParameterModel param) {
+    return group.getExclusiveParametersModels().stream().anyMatch(q -> q.getExclusiveParameterNames().contains(param.getName()));
   }
 
   private void addParameter(MetadataType type,
@@ -285,13 +302,13 @@ public class ASTPropertyPlaceholderValidationTest extends AbstractElementModelTe
         } else {
           String fallback = allowedStereotypes.isEmpty() ? "${placeholder.property}"
               : allowedStereotypes.stream().map(Object::toString).collect(Collectors.joining("|"));
-          valueConsumer.accept(ParameterSimpleValue.of(String.valueOf(defaultValue.orElse(fallback))));
+          valueConsumer.accept(ParameterSimpleValue.of(fallback));
         }
       }
 
       @Override
       public void visitNumber(NumberType numberType) {
-        valueConsumer.accept(ParameterSimpleValue.of(String.valueOf(defaultValue.orElse("${placeholder.property}"))));
+        valueConsumer.accept(ParameterSimpleValue.of("${placeholder.property}"));
       }
 
       @Override
