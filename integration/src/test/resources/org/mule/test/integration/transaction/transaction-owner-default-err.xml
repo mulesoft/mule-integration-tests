@@ -40,6 +40,9 @@
         <try transactionalAction="BEGIN_OR_JOIN">
             <try>
                 <raise-error type="APP:EXPECTED"/>
+                <error-handler>
+                    <on-error-propagate/>
+                </error-handler>
             </try>
         </try>
     </flow>
@@ -52,13 +55,13 @@
         </try>
     </flow>
 
-    <flow name="rollback-error-in-flow-ref-with-try">
+    <flow name="rollback-error-in-flowref-with-try">
         <try transactionalAction="BEGIN_OR_JOIN">
             <flow-ref name="error-flowref"/>
         </try>
     </flow>
 
-    <flow name="rollback-error-in-flow-ref-with-nested-try">
+    <flow name="rollback-error-in-flowref-with-nested-try">
         <try>
             <try transactionalAction="BEGIN_OR_JOIN">
                 <flow-ref name="error-flowref"/>
@@ -69,7 +72,7 @@
         </try>
     </flow>
 
-    <flow name="no-rollback-error-in-flow-ref-with-nested-try">
+    <flow name="no-rollback-error-in-flowref-with-nested-try">
         <try transactionalAction="BEGIN_OR_JOIN">
             <try>
                 <flow-ref name="error-flowref"/>
@@ -80,32 +83,55 @@
         </try>
     </flow>
 
-    <flow name="rollback-error-in-flow-ref-with-try-3-levels">
+    <flow name="rollback-error-in-flowref-with-try-3-levels">
         <try transactionalAction="BEGIN_OR_JOIN">
-            <flow-ref name="error-flowref-flowref"/>
-            <error-handler ref="globalPropagate"/>
+            <flow-ref name="error-flowref-2-levels"/>
         </try>
-        <error-handler ref="globalPropagate"/>
     </flow>
 
-    <flow name="rollback-error-start-tx-in-flow-ref-with-try-3-levels">
+    <flow name="rollback-error-in-flowref-with-try-4-levels">
+        <try transactionalAction="BEGIN_OR_JOIN">
+            <flow-ref name="error-flowref-3-levels"/>
+        </try>
+    </flow>
+
+    <flow name="rollback-error-start-tx-in-flowref-with-try-3-levels">
         <try>
-            <flow-ref name="error-flowref-flowref"/>
-            <error-handler ref="globalPropagate"/>
+            <flow-ref name="error-flowref-2-levels"/>
         </try>
-        <error-handler ref="globalPropagate"/>
     </flow>
 
-    <flow name="error-flowref-flowref">
+
+    <flow name="error-flowref-3-levels">
+        <!-- We add processors that reference the default handler that are not in the path of the failing component to
+            test they are filtered out correctly -->
+        <try>
+            <logger/>
+        </try>
+        <try transactionalAction="BEGIN_OR_JOIN">
+            <flow-ref name="error-flowref-2-levels"/>
+        </try>
+        <!-- We add processors that reference the default handler that are not in the path of the failing component to
+            test they are filtered out correctly -->
+        <try>
+            <logger/>
+        </try>
+    </flow>
+
+    <flow name="error-flowref-2-levels">
+        <!-- We add processors that reference the default handler that are not in the path of the failing component to
+            test they are filtered out correctly -->
+        <try>
+            <logger/>
+        </try>
         <try transactionalAction="BEGIN_OR_JOIN">
             <flow-ref name="error-flowref"/>
-            <error-handler ref="globalPropagate"/>
         </try>
-        <try transactionalAction="BEGIN_OR_JOIN">
+        <!-- We add processors that reference the default handler that are not in the path of the failing component to
+            test they are filtered out correctly -->
+        <try>
             <logger/>
-            <error-handler ref="globalPropagate"/>
         </try>
-        <error-handler ref="globalPropagate"/>
     </flow>
 
     <flow name="error-flowref">
