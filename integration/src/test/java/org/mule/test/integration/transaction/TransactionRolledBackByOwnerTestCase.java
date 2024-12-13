@@ -261,6 +261,9 @@ public class TransactionRolledBackByOwnerTestCase extends AbstractIntegrationTes
             "rollback-second-execution",
             new FlowExecutions(new FlowExecution("commit-or-rollback-after-error", "commit", false, "commit", null),
                                new FlowExecution("commit-or-rollback-after-error", true, "rollback", 4))},
+        new Object[] {"Local Error Handler", "org/mule/test/integration/transaction/transaction-owner.xml",
+            "rollbackIfErrorDuringContinue",
+            new FlowExecutions(new FlowExecution("rollbackIfErrorDuringContinue", true, "rollback", null))}
     };
   }
 
