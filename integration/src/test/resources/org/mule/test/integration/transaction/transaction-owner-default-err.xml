@@ -101,6 +101,28 @@
         </try>
     </flow>
 
+    <flow name="commit-or-rollback-after-error">
+        <try transactionalAction="BEGIN_OR_JOIN">
+            <try>
+                <choice>
+                    <when expression="#[payload == 'commit']">
+                        <try>
+                            <flow-ref name="error-flowref"/>
+                            <error-handler>
+                                <on-error-continue/>
+                            </error-handler>
+                        </try>
+                    </when>
+                    <otherwise>
+                        <try>
+                            <flow-ref name="error-flowref"/>
+                        </try>
+                    </otherwise>
+                </choice>
+            </try>
+        </try>
+    </flow>
+
 
     <flow name="error-flowref-3-levels">
         <!-- We add processors that reference the default handler that are not in the path of the failing component to

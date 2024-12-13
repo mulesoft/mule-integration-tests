@@ -49,22 +49,6 @@
         </try>
     </flow>
 
-    <flow name="no-rollback-after-continue">
-        <try transactionalAction="BEGIN_OR_JOIN">
-            <try>
-                <try>
-                    <raise-error type="APP:EXPECTED"/>
-                    <error-handler ref="globalPropagate"/>
-                </try>
-                <error-handler>
-                    <on-error-continue/>
-                </error-handler>
-            </try>
-            <error-handler ref="globalPropagate"/>
-        </try>
-        <error-handler ref="globalPropagate"/>
-    </flow>
-
     <flow name="no-rollback-outside-try">
         <try transactionalAction="BEGIN_OR_JOIN">
             <test:processor />
@@ -174,6 +158,31 @@
 
     <flow name="rollback-flowref">
         <raise-error type="APP:EXPECTED"/>
+    </flow>
+
+    <flow name="commit-or-rollback-after-error">
+        <try transactionalAction="BEGIN_OR_JOIN">
+            <try>
+                <choice>
+                    <when expression="#[payload == 'commit']">
+                        <try>
+                            <flow-ref name="error-flowref"/>
+                            <error-handler>
+                                <on-error-continue/>
+                            </error-handler>
+                        </try>
+                    </when>
+                    <otherwise>
+                        <try>
+                            <flow-ref name="error-flowref"/>
+                            <error-handler ref="globalPropagate"/>
+                        </try>
+                    </otherwise>
+                </choice>
+            </try>
+            <error-handler ref="globalPropagate"/>
+        </try>
+        <error-handler ref="globalPropagate"/>
     </flow>
 
     <flow name="error-flowref-JOIN">

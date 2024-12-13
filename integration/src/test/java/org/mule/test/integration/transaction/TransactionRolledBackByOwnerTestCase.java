@@ -7,7 +7,6 @@
 package org.mule.test.integration.transaction;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.iterableWithSize;
@@ -197,10 +196,22 @@ public class TransactionRolledBackByOwnerTestCase extends AbstractIntegrationTes
         new Object[] {"Global Error Handler", "org/mule/test/integration/transaction/transaction-owner-global-err.xml",
             "rollback-error-start-tx-in-flowref-with-try-3-levels",
             new FlowExecutions("rollback-error-start-tx-in-flowref-with-try-3-levels", true, "rollback", 3)},
+        // Tests that the error handler count started by the first globalPropagate execution and left dangling by the
+        // on-error-continue is correctly handled and doesn't affect the next execution of the flow, avoiding an unexpected
+        // rollback. Both flow executions need to have the same transaction location and failing component to properly test
+        // this scenario.
         new Object[] {"Global Error Handler", "org/mule/test/integration/transaction/transaction-owner-global-err.xml",
-            "no-rollback-after-continue",
-            new FlowExecutions(new FlowExecution("no-rollback-after-continue", false, "commit", null),
-                               new FlowExecution("no-rollback-after-continue", false, "commit", null))},
+            "no-rollback-second-execution",
+            new FlowExecutions(new FlowExecution("commit-or-rollback-after-error", "commit", false, "commit", null),
+                               new FlowExecution("commit-or-rollback-after-error", "commit", false, "commit", null))},
+        // Tests that the error handler count started by the first globalPropagate execution and left dangling by the
+        // on-error-continue is correctly handled and doesn't affect the next execution of the flow, avoiding the rollback
+        // to be done before than when it should. Both flow executions need to have the same transaction location and failing
+        // component to properly test this scenario.
+        new Object[] {"Global Error Handler", "org/mule/test/integration/transaction/transaction-owner-global-err.xml",
+            "rollback-second-execution",
+            new FlowExecutions(new FlowExecution("commit-or-rollback-after-error", "commit", false, "commit", null),
+                               new FlowExecution("commit-or-rollback-after-error", true, "rollback", 4))},
 
         new Object[] {"Default Error Handler", "org/mule/test/integration/transaction/transaction-owner-default-err.xml",
             "rollback",
@@ -238,6 +249,22 @@ public class TransactionRolledBackByOwnerTestCase extends AbstractIntegrationTes
         new Object[] {"Default Error Handler", "org/mule/test/integration/transaction/transaction-owner-default-err.xml",
             "rollback-error-start-tx-in-flowref-with-try-3-levels",
             new FlowExecutions("rollback-error-start-tx-in-flowref-with-try-3-levels", true, "rollback", 2)},
+        // Tests that the error handler count started by the first globalPropagate execution and left dangling by the
+        // on-error-continue is correctly handled and doesn't affect the next execution of the flow, avoiding an unexpected
+        // rollback. Both flow executions need to have the same transaction location and failing component to properly test
+        // this scenario.
+        new Object[] {"Default Error Handler", "org/mule/test/integration/transaction/transaction-owner-default-err.xml",
+            "no-rollback-second-execution",
+            new FlowExecutions(new FlowExecution("commit-or-rollback-after-error", "commit", false, "commit", null),
+                               new FlowExecution("commit-or-rollback-after-error", "commit", false, "commit", null))},
+        // Tests that the error handler count started by the first globalPropagate execution and left dangling by the
+        // on-error-continue is correctly handled and doesn't affect the next execution of the flow, avoiding the rollback
+        // to be done before than when it should. Both flow executions need to have the same transaction location and failing
+        // component to properly test this scenario.
+        new Object[] {"Default Error Handler", "org/mule/test/integration/transaction/transaction-owner-default-err.xml",
+            "rollback-second-execution",
+            new FlowExecutions(new FlowExecution("commit-or-rollback-after-error", "commit", false, "commit", null),
+                               new FlowExecution("commit-or-rollback-after-error", true, "rollback", 4))},
     };
   }
 
@@ -253,8 +280,7 @@ public class TransactionRolledBackByOwnerTestCase extends AbstractIntegrationTes
 
   @Override
   protected void doSetUp() throws Exception {
-    states = new ArrayList<>();
-    statesPerLocation = new HashMap<>();
+    cleanStates();
     service.registerProfilingDataConsumer(new ProfilingDataConsumer<TransactionProfilingEventContext>() {
 
       @Override
@@ -264,8 +290,6 @@ public class TransactionRolledBackByOwnerTestCase extends AbstractIntegrationTes
         String originatingLocation = profilingEventContext.getEventOrginatingLocation().getLocation();
         statesPerLocation.computeIfAbsent(originatingLocation, k -> new ArrayList<>());
         statesPerLocation.get(originatingLocation).add(profilingEventType.toString());
-        System.out
-            .println("STATE " + profilingEventType + " " + originatingLocation);
       }
 
       @Override
@@ -283,20 +307,25 @@ public class TransactionRolledBackByOwnerTestCase extends AbstractIntegrationTes
         return tx -> true;
       }
     });
+  }
 
+  private void cleanStates() {
+    states = new ArrayList<>();
+    statesPerLocation = new HashMap<>();
   }
 
   @Test
   public void checkRollback() {
     flowExecutions.forEach(flowExecution -> {
+      cleanStates();
       try {
-        flowRunner(flowExecution.flowName).withPayload("message").run();
+        flowRunner(flowExecution.flowName).withPayload(flowExecution.payload).run();
         if (flowExecution.throwsMessagingException) {
           fail("Should have thrown Exception from unhandled error");
         }
       } catch (Exception e) {
         if (!flowExecution.throwsMessagingException) {
-          fail("Should have not thrown Exception from handled error");
+          fail("Should have not thrown Exception from handled error: " + e);
         }
       }
 
@@ -361,13 +390,20 @@ public class TransactionRolledBackByOwnerTestCase extends AbstractIntegrationTes
   private static class FlowExecution {
 
     final String flowName;
+    final Object payload;
     final boolean throwsMessagingException;
     final String expectedFinalState;
     final Integer globalHandlerExecutionsBeforeRollback;
 
     public FlowExecution(String flowName, boolean throwsMessagingException, String expectedFinalState,
                          Integer globalHandlerExecutionsBeforeRollback) {
+      this(flowName, "message", throwsMessagingException, expectedFinalState, globalHandlerExecutionsBeforeRollback);
+    }
+
+    public FlowExecution(String flowName, Object payload, boolean throwsMessagingException, String expectedFinalState,
+                         Integer globalHandlerExecutionsBeforeRollback) {
       this.flowName = flowName;
+      this.payload = payload;
       this.throwsMessagingException = throwsMessagingException;
       this.expectedFinalState = expectedFinalState;
       this.globalHandlerExecutionsBeforeRollback = globalHandlerExecutionsBeforeRollback;
