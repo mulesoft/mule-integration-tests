@@ -20,7 +20,7 @@ import static org.mule.runtime.api.profiling.type.RuntimeProfilingEventTypes.TX_
 import static org.mule.runtime.api.util.MuleSystemProperties.DEFAULT_ERROR_HANDLER_NOT_ROLLBACK_IF_NOT_CORRESPONDING_PROPERTY;
 
 import static java.util.Arrays.asList;
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.Collections.singletonList;
 
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -42,6 +42,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import javax.inject.Inject;
@@ -54,6 +55,7 @@ import org.junit.runners.Parameterized.Parameters;
 public class TransactionRolledBackByOwnerTestCase extends AbstractIntegrationTestCase {
 
   private static final int POLL_DELAY_MILLIS = 100;
+  private final FlowExecutions flowExecutions;
 
   @Inject
   private PrivilegedProfilingService service;
@@ -63,11 +65,7 @@ public class TransactionRolledBackByOwnerTestCase extends AbstractIntegrationTes
 
   private List<String> states;
   private Map<String, List<String>> statesPerLocation;
-  private final String flowName;
-  private final String expectedFinalState;
-  private final boolean throwsMessagingException;
   private final String config;
-  private final Integer globalHandlerExecutionsBeforeRollback;
 
   @ClassRule
   public static SystemProperty enableProfilingService = new SystemProperty("mule.enable.profiling.service", "true");
@@ -84,118 +82,168 @@ public class TransactionRolledBackByOwnerTestCase extends AbstractIntegrationTes
   public static Object[][] params() {
     return new Object[][] {
         new Object[] {"Local Error Handler", "org/mule/test/integration/transaction/transaction-owner.xml",
-            "no-rollback", false, "commit", null},
+            "no-rollback",
+            new FlowExecutions("no-rollback", false, "commit", null)},
         new Object[] {"Local Error Handler", "org/mule/test/integration/transaction/transaction-owner.xml",
-            "rollback", true, "rollback", null},
+            "rollback",
+            new FlowExecutions("rollback", true, "rollback", null)},
         new Object[] {"Local Error Handler", "org/mule/test/integration/transaction/transaction-owner.xml",
-            "no-rollback-outside-try", true, "commit", null},
+            "no-rollback-outside-try",
+            new FlowExecutions("no-rollback-outside-try", true, "commit", null)},
         new Object[] {"Local Error Handler", "org/mule/test/integration/transaction/transaction-owner.xml",
-            "no-rollback-flowref", false, "commit", null},
+            "no-rollback-flowref",
+            new FlowExecutions("no-rollback-flowref", false, "commit", null)},
         new Object[] {"Local Error Handler", "org/mule/test/integration/transaction/transaction-owner.xml",
-            "no-rollback-error-in-flow-ref", false, "commit", null},
+            "no-rollback-error-in-flow-ref",
+            new FlowExecutions("no-rollback-error-in-flow-ref", false, "commit", null)},
         new Object[] {"Local Error Handler", "org/mule/test/integration/transaction/transaction-owner.xml",
-            "rollback-error-in-flow-ref-with-try", true, "rollback", null},
+            "rollback-error-in-flow-ref-with-try",
+            new FlowExecutions("rollback-error-in-flow-ref-with-try", true, "rollback", null)},
         new Object[] {"Local Error Handler", "org/mule/test/integration/transaction/transaction-owner.xml",
-            "no-rollback-error-in-flow-ref-with-try", false, "commit", null},
+            "no-rollback-error-in-flow-ref-with-try",
+            new FlowExecutions("no-rollback-error-in-flow-ref-with-try", false, "commit", null)},
         new Object[] {"Local Error Handler", "org/mule/test/integration/transaction/transaction-owner.xml",
-            "no-rollback-error-in-flow-ref-with-try-join-tx", false, "commit", null},
+            "no-rollback-error-in-flow-ref-with-try-join-tx",
+            new FlowExecutions("no-rollback-error-in-flow-ref-with-try-join-tx", false, "commit", null)},
         new Object[] {"Local Error Handler", "org/mule/test/integration/transaction/transaction-owner.xml",
-            "with-implicit-default-EH-executed-commits", false, "commit", null},
+            "with-implicit-default-EH-executed-commits",
+            new FlowExecutions("with-implicit-default-EH-executed-commits", false, "commit", null)},
         new Object[] {"Local Error Handler", "org/mule/test/integration/transaction/transaction-owner.xml",
-            "with-implicit-default-EH-executed-rollback", true, "rollback", null},
+            "with-implicit-default-EH-executed-rollback",
+            new FlowExecutions("with-implicit-default-EH-executed-rollback", true, "rollback", null)},
         new Object[] {"Local Error Handler", "org/mule/test/integration/transaction/transaction-owner.xml",
-            "with-default-EH-executed-commits", false, "commit", null},
+            "with-default-EH-executed-commits",
+            new FlowExecutions("with-default-EH-executed-commits", false, "commit", null)},
         new Object[] {"Local Error Handler", "org/mule/test/integration/transaction/transaction-owner.xml",
-            "with-default-EH-executed-rollback", false, "rollback", null},
+            "with-default-EH-executed-rollback",
+            new FlowExecutions("with-default-EH-executed-rollback", false, "rollback", null)},
 
         new Object[] {"Local Error Handler", "org/mule/test/integration/transaction/transaction-owner-subflow.xml",
-            "rollback-on-error-prop", false, "rollback", null},
+            "rollback-on-error-prop",
+            new FlowExecutions("rollback-on-error-prop", false, "rollback", null)},
         new Object[] {"Local Error Handler", "org/mule/test/integration/transaction/transaction-owner-subflow.xml",
-            "rollback-default-on-error-prop", true, "rollback", null},
+            "rollback-default-on-error-prop",
+            new FlowExecutions("rollback-default-on-error-prop", true, "rollback", null)},
         new Object[] {"Local Error Handler", "org/mule/test/integration/transaction/transaction-owner-subflow.xml",
-            "rollback-in-flow", true, "rollback", null},
+            "rollback-in-flow",
+            new FlowExecutions("rollback-in-flow", true, "rollback", null)},
         new Object[] {"Local Error Handler", "org/mule/test/integration/transaction/transaction-owner-subflow.xml",
-            "commit-flow-on-error-continue", false, "commit", null},
+            "commit-flow-on-error-continue",
+            new FlowExecutions("commit-flow-on-error-continue", false, "commit", null)},
         new Object[] {"Local Error Handler", "org/mule/test/integration/transaction/transaction-owner-subflow.xml",
-            "rollback-nested-subflows", true, "rollback", null},
+            "rollback-nested-subflows",
+            new FlowExecutions("rollback-nested-subflows", true, "rollback", null)},
         new Object[] {"Local Error Handler", "org/mule/test/integration/transaction/transaction-owner-subflow.xml",
-            "commit-nested-subflows", false, "commit", null},
+            "commit-nested-subflows",
+            new FlowExecutions("commit-nested-subflows", false, "commit", null)},
         new Object[] {"Local Error Handler", "org/mule/test/integration/transaction/transaction-owner-subflow.xml",
-            "rollback-nested-flows", true, "rollback", null},
+            "rollback-nested-flows",
+            new FlowExecutions("rollback-nested-flows", true, "rollback", null)},
         new Object[] {"Local Error Handler", "org/mule/test/integration/transaction/transaction-owner-subflow.xml",
-            "commit-nested-flows", false, "commit", null},
+            "commit-nested-flows",
+            new FlowExecutions("commit-nested-flows", false, "commit", null)},
 
         new Object[] {"Global Error Handler", "org/mule/test/integration/transaction/transaction-owner-global-err.xml",
-            "no-rollback", false, "commit", null},
+            "no-rollback",
+            new FlowExecutions("no-rollback", false, "commit", null)},
         new Object[] {"Global Error Handler", "org/mule/test/integration/transaction/transaction-owner-global-err.xml",
-            "rollback", false, "rollback", 1},
+            "rollback",
+            new FlowExecutions("rollback", false, "rollback", 1)},
         new Object[] {"Global Error Handler", "org/mule/test/integration/transaction/transaction-owner-global-err.xml",
-            "rollback-with-error-handler-reference-at-inner-transaction-location", true, "rollback", 1},
+            "rollback-with-error-handler-reference-at-inner-transaction-location",
+            new FlowExecutions("rollback-with-error-handler-reference-at-inner-transaction-location", true, "rollback", 1)},
         new Object[] {"Global Error Handler", "org/mule/test/integration/transaction/transaction-owner-global-err.xml",
-            "rollback-in-flowref", true, "rollback", 1},
+            "rollback-in-flowref",
+            new FlowExecutions("rollback-in-flowref", true, "rollback", 1)},
         new Object[] {"Global Error Handler", "org/mule/test/integration/transaction/transaction-owner-global-err.xml",
-            "no-rollback-outside-try", true, "commit", null},
+            "no-rollback-outside-try",
+            new FlowExecutions("no-rollback-outside-try", true, "commit", null)},
         new Object[] {"Global Error Handler", "org/mule/test/integration/transaction/transaction-owner-global-err.xml",
-            "no-rollback-flowref", false, "commit", null},
+            "no-rollback-flowref",
+            new FlowExecutions("no-rollback-flowref", false, "commit", null)},
         new Object[] {"Global Error Handler", "org/mule/test/integration/transaction/transaction-owner-global-err.xml",
-            "no-rollback-error-in-flowref", false, "commit", null},
+            "no-rollback-error-in-flowref",
+            new FlowExecutions("no-rollback-error-in-flowref", false, "commit", null)},
         new Object[] {"Global Error Handler", "org/mule/test/integration/transaction/transaction-owner-global-err.xml",
-            "rollback-error-in-flowref-with-try", true, "rollback", 3},
+            "rollback-error-in-flowref-with-try",
+            new FlowExecutions("rollback-error-in-flowref-with-try", true, "rollback", 3)},
         new Object[] {"Global Error Handler", "org/mule/test/integration/transaction/transaction-owner-global-err.xml",
-            "no-rollback-error-in-flowref-with-try", false, "commit", null},
+            "no-rollback-error-in-flowref-with-try",
+            new FlowExecutions("no-rollback-error-in-flowref-with-try", false, "commit", null)},
         new Object[] {"Global Error Handler", "org/mule/test/integration/transaction/transaction-owner-global-err.xml",
-            "rollback-error-in-flowref-with-nested-try", false, "rollback", 3},
+            "rollback-error-in-flowref-with-nested-try",
+            new FlowExecutions("rollback-error-in-flowref-with-nested-try", false, "rollback", 3)},
         new Object[] {"Global Error Handler", "org/mule/test/integration/transaction/transaction-owner-global-err.xml",
-            "no-rollback-error-in-flowref-with-nested-try", false, "commit", null},
+            "no-rollback-error-in-flowref-with-nested-try",
+            new FlowExecutions("no-rollback-error-in-flowref-with-nested-try", false, "commit", null)},
         new Object[] {"Global Error Handler", "org/mule/test/integration/transaction/transaction-owner-global-err.xml",
-            "no-rollback-error-in-flowref-with-try-join-tx", false, "commit", null},
+            "no-rollback-error-in-flowref-with-try-join-tx",
+            new FlowExecutions("no-rollback-error-in-flowref-with-try-join-tx", false, "commit", null)},
         new Object[] {"Global Error Handler", "org/mule/test/integration/transaction/transaction-owner-global-err.xml",
-            "rollback-error-in-nested-try", true, "rollback", 1},
+            "rollback-error-in-nested-try",
+            new FlowExecutions("rollback-error-in-nested-try", true, "rollback", 1)},
         new Object[] {"Global Error Handler", "org/mule/test/integration/transaction/transaction-owner-global-err.xml",
-            "rollback-error-in-nested-try-with-same-error-handler", true, "rollback", 2},
+            "rollback-error-in-nested-try-with-same-error-handler",
+            new FlowExecutions("rollback-error-in-nested-try-with-same-error-handler", true, "rollback", 2)},
         new Object[] {"Global Error Handler", "org/mule/test/integration/transaction/transaction-source-owner-global-err.xml",
-            "rollback-error-in-nested-flow", true, "rollback", 2},
+            "rollback-error-in-nested-flow",
+            new FlowExecutions("rollback-error-in-nested-flow", true, "rollback", 2)},
         new Object[] {"Global Error Handler", "org/mule/test/integration/transaction/transaction-owner-global-err.xml",
-            "rollback-error-in-flowref-with-try-3-levels", true, "rollback", 5},
+            "rollback-error-in-flowref-with-try-3-levels",
+            new FlowExecutions("rollback-error-in-flowref-with-try-3-levels", true, "rollback", 5)},
         new Object[] {"Global Error Handler", "org/mule/test/integration/transaction/transaction-owner-global-err.xml",
-            "rollback-error-in-flowref-with-try-4-levels", true, "rollback", 7},
+            "rollback-error-in-flowref-with-try-4-levels",
+            new FlowExecutions("rollback-error-in-flowref-with-try-4-levels", true, "rollback", 7)},
         new Object[] {"Global Error Handler", "org/mule/test/integration/transaction/transaction-owner-global-err.xml",
-            "rollback-error-start-tx-in-flowref-with-try-3-levels", true, "rollback", 3},
+            "rollback-error-start-tx-in-flowref-with-try-3-levels",
+            new FlowExecutions("rollback-error-start-tx-in-flowref-with-try-3-levels", true, "rollback", 3)},
+        new Object[] {"Global Error Handler", "org/mule/test/integration/transaction/transaction-owner-global-err.xml",
+            "no-rollback-after-continue",
+            new FlowExecutions(new FlowExecution("no-rollback-after-continue", false, "commit", null),
+                               new FlowExecution("no-rollback-after-continue", false, "commit", null))},
 
         new Object[] {"Default Error Handler", "org/mule/test/integration/transaction/transaction-owner-default-err.xml",
-            "rollback", true, "rollback", 1},
+            "rollback",
+            new FlowExecutions("rollback", true, "rollback", 1)},
         new Object[] {"Default Error Handler", "org/mule/test/integration/transaction/transaction-owner-default-err.xml",
-            "rollback-with-error-handler-reference-at-inner-transaction-location", true, "rollback", 1},
+            "rollback-with-error-handler-reference-at-inner-transaction-location",
+            new FlowExecutions("rollback-with-error-handler-reference-at-inner-transaction-location", true, "rollback", 1)},
         new Object[] {"Default Error Handler", "org/mule/test/integration/transaction/transaction-owner-default-err.xml",
-            "rollback-in-flowref", true, "rollback", 1},
+            "rollback-in-flowref",
+            new FlowExecutions("rollback-in-flowref", true, "rollback", 1)},
         new Object[] {"Default Error Handler", "org/mule/test/integration/transaction/transaction-owner-default-err.xml",
-            "no-rollback-outside-try", true, "commit", null},
+            "no-rollback-outside-try",
+            new FlowExecutions("no-rollback-outside-try", true, "commit", null)},
         new Object[] {"Default Error Handler", "org/mule/test/integration/transaction/transaction-owner-default-err.xml",
-            "rollback-error-in-flowref-with-try", true, "rollback", 2},
+            "rollback-error-in-flowref-with-try",
+            new FlowExecutions("rollback-error-in-flowref-with-try", true, "rollback", 2)},
         new Object[] {"Default Error Handler", "org/mule/test/integration/transaction/transaction-owner-default-err.xml",
-            "rollback-error-in-flowref-with-nested-try", false, "rollback", 2},
+            "rollback-error-in-flowref-with-nested-try",
+            new FlowExecutions("rollback-error-in-flowref-with-nested-try", false, "rollback", 2)},
         new Object[] {"Default Error Handler", "org/mule/test/integration/transaction/transaction-owner-default-err.xml",
-            "no-rollback-error-in-flowref-with-nested-try", false, "commit", null},
+            "no-rollback-error-in-flowref-with-nested-try",
+            new FlowExecutions("no-rollback-error-in-flowref-with-nested-try", false, "commit", null)},
         new Object[] {"Default Error Handler", "org/mule/test/integration/transaction/transaction-owner-default-err.xml",
-            "rollback-error-in-nested-try", true, "rollback", 1},
+            "rollback-error-in-nested-try",
+            new FlowExecutions("rollback-error-in-nested-try", true, "rollback", 1)},
         new Object[] {"Default Error Handler", "org/mule/test/integration/transaction/transaction-owner-default-err.xml",
-            "rollback-error-in-nested-try-with-same-error-handler", true, "rollback", 2},
+            "rollback-error-in-nested-try-with-same-error-handler",
+            new FlowExecutions("rollback-error-in-nested-try-with-same-error-handler", true, "rollback", 2)},
         new Object[] {"Default Error Handler", "org/mule/test/integration/transaction/transaction-owner-default-err.xml",
-            "rollback-error-in-flowref-with-try-3-levels", true, "rollback", 4},
+            "rollback-error-in-flowref-with-try-3-levels",
+            new FlowExecutions("rollback-error-in-flowref-with-try-3-levels", true, "rollback", 4)},
         new Object[] {"Default Error Handler", "org/mule/test/integration/transaction/transaction-owner-default-err.xml",
-            "rollback-error-in-flowref-with-try-4-levels", true, "rollback", 6},
+            "rollback-error-in-flowref-with-try-4-levels",
+            new FlowExecutions("rollback-error-in-flowref-with-try-4-levels", true, "rollback", 6)},
         new Object[] {"Default Error Handler", "org/mule/test/integration/transaction/transaction-owner-default-err.xml",
-            "rollback-error-start-tx-in-flowref-with-try-3-levels", true, "rollback", 2},
+            "rollback-error-start-tx-in-flowref-with-try-3-levels",
+            new FlowExecutions("rollback-error-start-tx-in-flowref-with-try-3-levels", true, "rollback", 2)},
     };
   }
 
-  public TransactionRolledBackByOwnerTestCase(String type, String config, String flowName, boolean throwsMessagingException,
-                                              String expectedFinalState, Integer globalHandlerExecutionsBeforeRollback) {
-    this.flowName = flowName;
-    this.expectedFinalState = expectedFinalState;
-    this.throwsMessagingException = throwsMessagingException;
+  public TransactionRolledBackByOwnerTestCase(String type, String config, String testFlow, FlowExecutions flowExecutions) {
     this.config = config;
-    this.globalHandlerExecutionsBeforeRollback = globalHandlerExecutionsBeforeRollback;
+    this.flowExecutions = flowExecutions;
   }
 
   @Override
@@ -240,22 +288,24 @@ public class TransactionRolledBackByOwnerTestCase extends AbstractIntegrationTes
 
   @Test
   public void checkRollback() {
-    try {
-      flowRunner(flowName).withPayload("message").run();
-      if (throwsMessagingException) {
-        fail("Should have thrown Exception from unhandled error");
+    flowExecutions.forEach(flowExecution -> {
+      try {
+        flowRunner(flowExecution.flowName).withPayload("message").run();
+        if (flowExecution.throwsMessagingException) {
+          fail("Should have thrown Exception from unhandled error");
+        }
+      } catch (Exception e) {
+        if (!flowExecution.throwsMessagingException) {
+          fail("Should have not thrown Exception from handled error");
+        }
       }
-    } catch (Exception e) {
-      if (!throwsMessagingException) {
-        fail("Should have not thrown Exception from handled error");
-      }
-    }
 
-    assertStatesArrived();
-    assertCorrectStates();
-    if (globalHandlerExecutionsBeforeRollback != null) {
-      assertTransactionRolledBackAtTheRightHandler();
-    }
+      assertStatesArrived();
+      assertCorrectStates(flowExecution);
+      if (flowExecution.globalHandlerExecutionsBeforeRollback != null) {
+        assertTransactionRolledBackAtTheRightHandler(flowExecution.globalHandlerExecutionsBeforeRollback);
+      }
+    });
   }
 
   private void assertStatesArrived() {
@@ -275,16 +325,54 @@ public class TransactionRolledBackByOwnerTestCase extends AbstractIntegrationTes
     });
   }
 
-  private void assertCorrectStates() {
-    assertThat("Expected final state from " + states + " to be " + expectedFinalState, states.get(states.size() - 1),
-               is(expectedFinalState));
+  private void assertCorrectStates(FlowExecution flowExecution) {
+    assertThat("Expected final state from " + states + " to be " + flowExecution.expectedFinalState,
+               states.get(states.size() - 1),
+               is(flowExecution.expectedFinalState));
   }
 
-  private void assertTransactionRolledBackAtTheRightHandler() {
+  private void assertTransactionRolledBackAtTheRightHandler(Integer globalHandlerExecutionsBeforeRollback) {
     List<String> states = statesPerLocation.get("globalPropagate/0");
     String reason = "Expected 'globalPropagate' handler to be executed " + globalHandlerExecutionsBeforeRollback
         + " times, but it got executed with states " + states;
     assertThat(reason, states, iterableWithSize(globalHandlerExecutionsBeforeRollback));
+  }
+
+  private static class FlowExecutions {
+
+    final List<FlowExecution> flowExecutions;
+
+    public FlowExecutions(String flowName, boolean throwsMessagingException, String expectedFinalState,
+                          Integer globalHandlerExecutionsBeforeRollback) {
+      flowExecutions = singletonList(new FlowExecution(flowName, throwsMessagingException, expectedFinalState,
+                                                       globalHandlerExecutionsBeforeRollback));
+    }
+
+    public FlowExecutions(FlowExecution... flowExecutions) {
+      this.flowExecutions = asList(flowExecutions);
+    }
+
+    public void forEach(Consumer<FlowExecution> action) {
+      flowExecutions.forEach(action);
+    }
+
+  }
+
+  private static class FlowExecution {
+
+    final String flowName;
+    final boolean throwsMessagingException;
+    final String expectedFinalState;
+    final Integer globalHandlerExecutionsBeforeRollback;
+
+    public FlowExecution(String flowName, boolean throwsMessagingException, String expectedFinalState,
+                         Integer globalHandlerExecutionsBeforeRollback) {
+      this.flowName = flowName;
+      this.throwsMessagingException = throwsMessagingException;
+      this.expectedFinalState = expectedFinalState;
+      this.globalHandlerExecutionsBeforeRollback = globalHandlerExecutionsBeforeRollback;
+    }
+
   }
 
 }
