@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xsi:schemaLocation="
+               http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+               http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+
+    <http:request-config name="streamingResponseConfig">
+        <http:request-connection host="localhost" port="${httpPort}" streamResponse="true" />
+    </http:request-config>
+
+    <flow name="theFlow">
+        <http:request config-ref="streamingResponseConfig" path="/" >
+            <http:response-validator>
+                <!-- Just something that consumes the stream, to trigger the exception -->
+                <http:expression-response-validator expression="#[sizeOf(payload) > 0]" />
+            </http:response-validator>
+        </http:request>
+    </flow>
+</mule>
