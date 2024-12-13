@@ -103,6 +103,12 @@
             <version>${project.version}</version>
             <type>pom</type>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.mule.apache</groupId>
+                    <artifactId>xerces2-xsd11</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -126,6 +132,12 @@
             <groupId>org.mule.modules</groupId>
             <artifactId>mule-apikit-module</artifactId>
             <classifier>mule-plugin</classifier>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.exist-db.thirdparty.xerces</groupId>
+                    <artifactId>xercesImpl</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
