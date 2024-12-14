@@ -33,7 +33,6 @@ import org.mule.tck.probe.JUnitProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.runner.RunnerDelegateTo;
-import org.mule.tests.api.TestQueueManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -58,9 +57,6 @@ public class TransactionRolledBackByOwnerTestCase extends AbstractIntegrationTes
 
   @Inject
   private PrivilegedProfilingService service;
-
-  @Inject
-  private TestQueueManager queueManager;
 
   private List<String> states;
   private Map<String, List<String>> statesPerLocation;
