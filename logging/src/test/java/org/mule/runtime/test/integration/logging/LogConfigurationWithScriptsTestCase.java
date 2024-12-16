@@ -65,22 +65,10 @@ public class LogConfigurationWithScriptsTestCase extends AbstractFakeMuleServerT
     ApplicationFileBuilder applicationFileBuilder = new ApplicationFileBuilder(APP_NAME)
         .definedBy("log/script-config/mule-config.xml")
         .usingResource("log/script-config/log4j-config-scripting.xml", "log4j2-test.xml")
-        .dependingOn(new JarFileBuilder("ibm-icu4j",
-                                        new File(getProperty("ibmIcu4jJarLoc"))))
-        .dependingOn(new JarFileBuilder("graal-sdk",
-                                        new File(getProperty("graalVmSdkJarLoc"))))
-        .dependingOn(new JarFileBuilder("graal-sdk-collections",
-                                        new File(getProperty("graalVmSdkCollectionsJarLoc"))))
-        .dependingOn(new JarFileBuilder("graal-sdk-nativeimage",
-                                        new File(getProperty("graalVmSdkNativeImageJarLoc"))))
-        .dependingOn(new JarFileBuilder("graal-polyglot",
-                                        new File(getProperty("graalVmPolyglotJarLoc"))))
-        .dependingOn(new JarFileBuilder("truffle-api",
-                                        new File(getProperty("graalVmTruffleJarLoc"))))
-        .dependingOn(new JarFileBuilder("js",
-                                        new File(getProperty("graalVmJsJarLoc"))))
-        .dependingOn(new JarFileBuilder("js-scriptengine",
-                                        new File(getProperty("graalVmJsScriptEngineJarLoc"))));
+        .dependingOn(new JarFileBuilder("rhino",
+                                        new File(getProperty("rhinoJarLoc"))))
+        .dependingOn(new JarFileBuilder("rhino-engine",
+                                        new File(getProperty("rhinoEngineJarLoc"))));
 
     muleServer.deploy(applicationFileBuilder.getArtifactFile().toURI().toURL(), APP_NAME);
     Application app = muleServer.findApplication(APP_NAME);

@@ -26,7 +26,6 @@
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
         <protobufVersion>3.21.9</protobufVersion>
         <openTelemetryProtoVersion>0.3.0</openTelemetryProtoVersion>
-        <graaljsVersion>22.3.3</graaljsVersion>
     </properties>
 
     <build>
@@ -41,10 +40,6 @@
                     <systemPropertyVariables>
                         <apiAnnotationsLib>${org.mule.runtime:api-annotations:jar}</apiAnnotationsLib>
                     </systemPropertyVariables>
-                    <classpathDependencyExcludes>
-                        <!-- this is not needed on the test classpath, just to get the location -->
-                        <classpathDependencyExclude>org.graalvm.js:js-scriptengine</classpathDependencyExclude>
-                    </classpathDependencyExcludes>
                 </configuration>
             </plugin>
         </plugins>

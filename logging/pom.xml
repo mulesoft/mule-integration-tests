@@ -32,20 +32,14 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <systemPropertyVariables>
-                        <ibmIcu4jJarLoc>${com.ibm.icu:icu4j:jar}</ibmIcu4jJarLoc>
-                        <graalVmSdkJarLoc>${org.graalvm.sdk:graal-sdk:jar}</graalVmSdkJarLoc>
-                        <graalVmSdkCollectionsJarLoc>${org.graalvm.sdk:collections:jar}</graalVmSdkCollectionsJarLoc>
-                        <graalVmSdkNativeImageJarLoc>${org.graalvm.sdk:nativeimage:jar}</graalVmSdkNativeImageJarLoc>
-                        <graalVmTruffleJarLoc>${org.graalvm.truffle:truffle-api:jar}</graalVmTruffleJarLoc>
-                        <graalVmPolyglotJarLoc>${org.graalvm.polyglot:polyglot:jar}</graalVmPolyglotJarLoc>
-                        <graalVmJsJarLoc>${org.graalvm.js:js:jar}</graalVmJsJarLoc>
-                        <graalVmJsScriptEngineJarLoc>${org.graalvm.js:js-scriptengine:jar}</graalVmJsScriptEngineJarLoc>
+                        <rhinoJarLoc>${org.mozilla:rhino:jar}</rhinoJarLoc>
+                        <rhinoEngineJarLoc>${org.mozilla:rhino-engine:jar}</rhinoEngineJarLoc>
 
                         <apiAnnotationsLib>${org.mule.runtime:api-annotations:jar}</apiAnnotationsLib>
                     </systemPropertyVariables>
                     <classpathDependencyExcludes>
                         <!-- this is not needed on the test classpath, just to get the location -->
-                        <classpathDependencyExclude>org.graalvm.js:js-scriptengine</classpathDependencyExclude>
+                        <classpathDependencyExclude>org.mozilla:rhino-engine:jar</classpathDependencyExclude>
                     </classpathDependencyExcludes>
                 </configuration>
             </plugin>
@@ -197,13 +191,13 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.graalvm.js</groupId>
-            <artifactId>js</artifactId>
+            <groupId>org.mozilla</groupId>
+            <artifactId>rhino</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.graalvm.js</groupId>
-            <artifactId>js-scriptengine</artifactId>
+            <groupId>org.mozilla</groupId>
+            <artifactId>rhino-engine</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
