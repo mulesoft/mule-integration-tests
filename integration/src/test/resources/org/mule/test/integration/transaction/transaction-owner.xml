@@ -174,4 +174,23 @@
         </try>
     </flow>
 
+    <flow name="rollbackIfErrorDuringContinueGlobalEH">
+        <try transactionalAction="ALWAYS_BEGIN">
+            <test:processor/>
+            <try>
+                <raise-error type="APP:EXPECTED"/>
+                <error-handler>
+                    <on-error-continue type="EXPRESSION"/>
+                </error-handler>
+            </try>
+            <error-handler ref="forRollbackIfErrorDuringContinue"/>
+        </try>
+    </flow>
+
+    <error-handler name="forRollbackIfErrorDuringContinue">
+        <on-error-continue type="APP:EXPECTED">
+            <raise-error type="APP:EXPECTED"/>
+        </on-error-continue>
+    </error-handler>
+
 </mule>
