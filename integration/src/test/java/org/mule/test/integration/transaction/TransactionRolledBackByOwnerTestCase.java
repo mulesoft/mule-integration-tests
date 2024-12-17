@@ -18,6 +18,7 @@ import static org.mule.runtime.api.profiling.type.RuntimeProfilingEventTypes.TX_
 import static org.mule.runtime.api.profiling.type.RuntimeProfilingEventTypes.TX_START;
 import static org.mule.runtime.api.util.MuleSystemProperties.DEFAULT_ERROR_HANDLER_NOT_ROLLBACK_IF_NOT_CORRESPONDING_PROPERTY;
 
+import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 
@@ -180,9 +181,13 @@ public class TransactionRolledBackByOwnerTestCase extends AbstractIntegrationTes
         new Object[] {"Global Error Handler", "org/mule/test/integration/transaction/transaction-owner-global-err.xml",
             "rollback-error-in-nested-try-with-same-error-handler",
             new FlowExecutions("rollback-error-in-nested-try-with-same-error-handler", true, "rollback", 2)},
+        // Extra states might be received for this test since one of the flows involved has a polling source, which starts a
+        // transaction every time it polls. The polling might happen before the flow that publishes content to the polling source
+        // (the one starting the actual test) is run, and it continues after the test scenario is finished. Those extra states
+        // have to be ignored.
         new Object[] {"Global Error Handler", "org/mule/test/integration/transaction/transaction-source-owner-global-err.xml",
             "rollback-error-in-nested-flow",
-            new FlowExecutions("rollback-error-in-nested-flow", true, "rollback", 2)},
+            new FlowExecutions("rollback-error-in-nested-flow", true, "rollback", 2, true)},
         new Object[] {"Global Error Handler", "org/mule/test/integration/transaction/transaction-owner-global-err.xml",
             "rollback-error-in-flowref-with-try-3-levels",
             new FlowExecutions("rollback-error-in-flowref-with-try-3-levels", true, "rollback", 5)},
@@ -328,7 +333,7 @@ public class TransactionRolledBackByOwnerTestCase extends AbstractIntegrationTes
       assertStatesArrived();
       assertCorrectStates(flowExecution);
       if (flowExecution.globalHandlerExecutionsBeforeRollback != null) {
-        assertTransactionRolledBackAtTheRightHandler(flowExecution.globalHandlerExecutionsBeforeRollback);
+        assertTransactionRolledBackAtTheRightHandler(flowExecution);
       }
     });
   }
@@ -351,16 +356,28 @@ public class TransactionRolledBackByOwnerTestCase extends AbstractIntegrationTes
   }
 
   private void assertCorrectStates(FlowExecution flowExecution) {
-    assertThat("Expected final state from " + states + " to be " + flowExecution.expectedFinalState,
-               states.get(states.size() - 1),
-               is(flowExecution.expectedFinalState));
+    if (flowExecution.ignoreExtraStates) {
+      List<String> filteredStates = states.stream().filter(state -> state.equals(flowExecution.expectedFinalState)).toList();
+      assertThat("Expected final state " + flowExecution.expectedFinalState + " to be received only once: " + states,
+                 filteredStates, iterableWithSize(1));
+    } else {
+      assertThat("Expected final state from " + states + " to be " + flowExecution.expectedFinalState,
+                 states.get(states.size() - 1),
+                 is(flowExecution.expectedFinalState));
+    }
   }
 
-  private void assertTransactionRolledBackAtTheRightHandler(Integer globalHandlerExecutionsBeforeRollback) {
+  private void assertTransactionRolledBackAtTheRightHandler(FlowExecution flowExecution) {
     List<String> states = statesPerLocation.get("globalPropagate/0");
-    String reason = "Expected 'globalPropagate' handler to be executed " + globalHandlerExecutionsBeforeRollback
-        + " times, but it got executed with states " + states;
-    assertThat(reason, states, iterableWithSize(globalHandlerExecutionsBeforeRollback));
+    String reason = "Expected 'globalPropagate' handler to be executed " + flowExecution.globalHandlerExecutionsBeforeRollback
+        + " times, but it got executed with states %s";
+    if (flowExecution.ignoreExtraStates) {
+      // We are only interested in the calls to the handler made up to the final state
+      states = states.subList(0, states.indexOf(flowExecution.expectedFinalState));
+      assertThat(format(reason, states), states, iterableWithSize(1));
+    } else {
+      assertThat(format(reason, states), states, iterableWithSize(flowExecution.globalHandlerExecutionsBeforeRollback));
+    }
   }
 
   private static class FlowExecutions {
@@ -369,8 +386,13 @@ public class TransactionRolledBackByOwnerTestCase extends AbstractIntegrationTes
 
     public FlowExecutions(String flowName, boolean throwsMessagingException, String expectedFinalState,
                           Integer globalHandlerExecutionsBeforeRollback) {
+      this(flowName, throwsMessagingException, expectedFinalState, globalHandlerExecutionsBeforeRollback, false);
+    }
+
+    public FlowExecutions(String flowName, boolean throwsMessagingException, String expectedFinalState,
+                          Integer globalHandlerExecutionsBeforeRollback, boolean ignoreExtraStates) {
       flowExecutions = singletonList(new FlowExecution(flowName, throwsMessagingException, expectedFinalState,
-                                                       globalHandlerExecutionsBeforeRollback));
+                                                       globalHandlerExecutionsBeforeRollback, ignoreExtraStates));
     }
 
     public FlowExecutions(FlowExecution... flowExecutions) {
@@ -390,21 +412,33 @@ public class TransactionRolledBackByOwnerTestCase extends AbstractIntegrationTes
     final boolean throwsMessagingException;
     final String expectedFinalState;
     final Integer globalHandlerExecutionsBeforeRollback;
+    final boolean ignoreExtraStates;
 
     public FlowExecution(String flowName, boolean throwsMessagingException, String expectedFinalState,
                          Integer globalHandlerExecutionsBeforeRollback) {
-      this(flowName, "message", throwsMessagingException, expectedFinalState, globalHandlerExecutionsBeforeRollback);
+      this(flowName, throwsMessagingException, expectedFinalState, globalHandlerExecutionsBeforeRollback, false);
+    }
+
+    public FlowExecution(String flowName, boolean throwsMessagingException, String expectedFinalState,
+                         Integer globalHandlerExecutionsBeforeRollback, boolean ignoreExtraStates) {
+      this(flowName, "message", throwsMessagingException, expectedFinalState, globalHandlerExecutionsBeforeRollback,
+           ignoreExtraStates);
     }
 
     public FlowExecution(String flowName, Object payload, boolean throwsMessagingException, String expectedFinalState,
                          Integer globalHandlerExecutionsBeforeRollback) {
+      this(flowName, payload, throwsMessagingException, expectedFinalState, globalHandlerExecutionsBeforeRollback, false);
+    }
+
+    public FlowExecution(String flowName, Object payload, boolean throwsMessagingException, String expectedFinalState,
+                         Integer globalHandlerExecutionsBeforeRollback, boolean ignoreExtraStates) {
       this.flowName = flowName;
       this.payload = payload;
       this.throwsMessagingException = throwsMessagingException;
       this.expectedFinalState = expectedFinalState;
       this.globalHandlerExecutionsBeforeRollback = globalHandlerExecutionsBeforeRollback;
+      this.ignoreExtraStates = ignoreExtraStates;
     }
-
   }
 
 }
