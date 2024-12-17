@@ -99,7 +99,11 @@ public class TransactionRollbackedByOwnerTestCase extends AbstractIntegrationTes
         new Object[] {"Global Error Handler", "org/mule/test/integration/transaction/transaction-owner-global-err.xml",
             "no-rollback-error-in-flow-ref-with-try", false, "commit"},
         new Object[] {"Global Error Handler", "org/mule/test/integration/transaction/transaction-owner-global-err.xml",
-            "no-rollback-error-in-flow-ref-with-try-join-tx", false, "commit"}
+            "no-rollback-error-in-flow-ref-with-try-join-tx", false, "commit"},
+        new Object[] {"Local Error Handler", "org/mule/test/integration/transaction/transaction-owner.xml",
+            "rollbackIfErrorDuringContinue", true, "rollback"},
+        new Object[] {"Global Error Handler", "org/mule/test/integration/transaction/transaction-owner.xml",
+            "rollbackIfErrorDuringContinueGlobalEH", true, "rollback"}
     };
   }
 
