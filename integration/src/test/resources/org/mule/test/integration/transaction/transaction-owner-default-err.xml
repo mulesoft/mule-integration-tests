@@ -20,6 +20,15 @@
         </try>
     </flow>
 
+    <flow name="rollback-with-error-handler-reference-at-inner-transaction-location">
+        <try transactionalAction="BEGIN_OR_JOIN">
+            <raise-error type="APP:EXPECTED"/>
+            <try transactionalAction="BEGIN_OR_JOIN">
+                <logger/>
+            </try>
+        </try>
+    </flow>
+
     <flow name="no-rollback-outside-try">
         <try transactionalAction="BEGIN_OR_JOIN">
             <test:processor />
@@ -27,13 +36,32 @@
         <raise-error type="APP:EXPECTED"/>
     </flow>
 
-    <flow name="rollback-error-in-flow-ref-with-try">
+    <flow name="rollback-error-in-nested-try">
+        <try transactionalAction="BEGIN_OR_JOIN">
+            <try>
+                <raise-error type="APP:EXPECTED"/>
+                <error-handler>
+                    <on-error-propagate/>
+                </error-handler>
+            </try>
+        </try>
+    </flow>
+
+    <flow name="rollback-error-in-nested-try-with-same-error-handler">
+        <try transactionalAction="BEGIN_OR_JOIN">
+            <try>
+                <raise-error type="APP:EXPECTED"/>
+            </try>
+        </try>
+    </flow>
+
+    <flow name="rollback-error-in-flowref-with-try">
         <try transactionalAction="BEGIN_OR_JOIN">
             <flow-ref name="error-flowref"/>
         </try>
     </flow>
 
-    <flow name="rollback-error-in-flow-ref-with-nested-try">
+    <flow name="rollback-error-in-flowref-with-nested-try">
         <try>
             <try transactionalAction="BEGIN_OR_JOIN">
                 <flow-ref name="error-flowref"/>
@@ -44,7 +72,7 @@
         </try>
     </flow>
 
-    <flow name="no-rollback-error-in-flow-ref-with-nested-try">
+    <flow name="no-rollback-error-in-flowref-with-nested-try">
         <try transactionalAction="BEGIN_OR_JOIN">
             <try>
                 <flow-ref name="error-flowref"/>
@@ -52,6 +80,79 @@
             <error-handler>
                 <on-error-continue/>
             </error-handler>
+        </try>
+    </flow>
+
+    <flow name="rollback-error-in-flowref-with-try-3-levels">
+        <try transactionalAction="BEGIN_OR_JOIN">
+            <flow-ref name="error-flowref-2-levels"/>
+        </try>
+    </flow>
+
+    <flow name="rollback-error-in-flowref-with-try-4-levels">
+        <try transactionalAction="BEGIN_OR_JOIN">
+            <flow-ref name="error-flowref-3-levels"/>
+        </try>
+    </flow>
+
+    <flow name="rollback-error-start-tx-in-flowref-with-try-3-levels">
+        <try>
+            <flow-ref name="error-flowref-2-levels"/>
+        </try>
+    </flow>
+
+    <flow name="commit-or-rollback-after-error">
+        <try transactionalAction="BEGIN_OR_JOIN">
+            <try>
+                <choice>
+                    <when expression="#[payload == 'commit']">
+                        <try>
+                            <flow-ref name="error-flowref"/>
+                            <error-handler>
+                                <on-error-continue/>
+                            </error-handler>
+                        </try>
+                    </when>
+                    <otherwise>
+                        <try>
+                            <flow-ref name="error-flowref"/>
+                        </try>
+                    </otherwise>
+                </choice>
+            </try>
+        </try>
+    </flow>
+
+
+    <flow name="error-flowref-3-levels">
+        <!-- We add processors that reference the default handler that are not in the path of the failing component to
+            test they are filtered out correctly -->
+        <try>
+            <logger/>
+        </try>
+        <try transactionalAction="BEGIN_OR_JOIN">
+            <flow-ref name="error-flowref-2-levels"/>
+        </try>
+        <!-- We add processors that reference the default handler that are not in the path of the failing component to
+            test they are filtered out correctly -->
+        <try>
+            <logger/>
+        </try>
+    </flow>
+
+    <flow name="error-flowref-2-levels">
+        <!-- We add processors that reference the default handler that are not in the path of the failing component to
+            test they are filtered out correctly -->
+        <try>
+            <logger/>
+        </try>
+        <try transactionalAction="BEGIN_OR_JOIN">
+            <flow-ref name="error-flowref"/>
+        </try>
+        <!-- We add processors that reference the default handler that are not in the path of the failing component to
+            test they are filtered out correctly -->
+        <try>
+            <logger/>
         </try>
     </flow>
 
@@ -63,6 +164,19 @@
             </error-handler>
         </try>
         <raise-error type="APP:EXPECTED"/>
+    </flow>
+
+    <flow name="rollback-in-flowref">
+        <flow-ref name="error-flowref-tx-owner"/>
+    </flow>
+
+    <flow name="error-flowref-tx-owner">
+        <try transactionalAction="BEGIN_OR_JOIN">
+            <raise-error type="APP:EXPECTED"/>
+            <try transactionalAction="BEGIN_OR_JOIN">
+                <logger/>
+            </try>
+        </try>
     </flow>
 
 </mule>
