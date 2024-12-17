@@ -69,15 +69,16 @@ public class HttpClientResponseStreamingTestCase extends AbstractIntegrationTest
       this.port = port;
     }
 
+    private Socket acceptOneConnection(int port) throws IOException {
+      try (ServerSocket passiveSocket = new ServerSocket(port)) {
+        return passiveSocket.accept();
+      }
+    }
+
     @Override
     public void run() {
-      try {
-        ServerSocket passiveSocket = new ServerSocket(port);
-        Socket peerSocket = passiveSocket.accept();
-        passiveSocket.close();
-
-        DevNullReaderThread reader = new DevNullReaderThread(peerSocket);
-        reader.start();
+      try (Socket peerSocket = acceptOneConnection(port)) {
+        readUntilDoubleLineReturn(peerSocket);
 
         OutputStream outputStream = peerSocket.getOutputStream();
         outputStream.write(("""
@@ -90,36 +91,28 @@ public class HttpClientResponseStreamingTestCase extends AbstractIntegrationTest
             """).getBytes());
         outputStream.flush();
         outputStream.close();
-
-        reader.join();
-      } catch (IOException | InterruptedException e) {
+      } catch (IOException e) {
         throw new RuntimeException(e);
       }
     }
-  }
 
-  /**
-   * Reads the input stream from the passed socket, and does nothing with the data.
-   */
-  private static class DevNullReaderThread extends Thread {
+    private void readUntilDoubleLineReturn(Socket peerSocket) throws IOException {
+      InputStream inputStream = peerSocket.getInputStream();
 
-    private final InputStream peerIS;
-
-    public DevNullReaderThread(Socket peer) throws IOException {
-      this.peerIS = peer.getInputStream();
-    }
-
-    @Override
-    public void run() {
-      boolean eos = false;
-      while (!eos) {
-        try {
-          if (peerIS.read() == -1) {
-            eos = true;
+      StringBuilder sb = new StringBuilder();
+      boolean found = false;
+      boolean endOfStream = false;
+      while (!found && !endOfStream) {
+        byte[] buffer = new byte[1024];
+        int read = inputStream.read(buffer);
+        if (read == -1) {
+          endOfStream = true;
+        } else {
+          sb.append(new String(buffer, 0, read));
+          String current = sb.toString();
+          if (current.contains("\r\n\r\n") || current.contains("\n\n")) {
+            found = true;
           }
-        } catch (IOException e) {
-          System.out.println(e.getMessage());
-          eos = true;
         }
       }
     }
