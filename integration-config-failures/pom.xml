@@ -94,20 +94,6 @@
 
         <!-- Mule Plugins -->
         <dependency>
-            <groupId>org.mule.connectors</groupId>
-            <artifactId>mule-sockets-connector</artifactId>
-            <classifier>mule-plugin</classifier>
-        </dependency>
-        <dependency>
-            <groupId>org.mule.connectors</groupId>
-            <artifactId>mule-http-connector</artifactId>
-            <classifier>mule-plugin</classifier>
-        </dependency>
-        <dependency>
-            <groupId>org.mule.modules</groupId>
-            <artifactId>mule-module-cors-kernel</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.mule.tests</groupId>
             <artifactId>mule-heisenberg-extension</artifactId>
             <version>${project.version}</version>
