@@ -47,7 +47,7 @@ public class ErrorHandlingConfigurationWarningsBeforeDeploymentTestCase
     loadConfiguration("org/mule/test/integration/exceptions/property-error-mapping-target-config.xml");
 
     assertThat(getWarningMessages(),
-               hasItem("'request' has 'type' '${error.type}' which is resolved with a property and may cause the artifact to have different behavior on different environments."));
+               hasItem("'cure-cancer' has 'type' '${error.type}' which is resolved with a property and may cause the artifact to have different behavior on different environments."));
   }
 
   @Test
@@ -56,7 +56,7 @@ public class ErrorHandlingConfigurationWarningsBeforeDeploymentTestCase
     loadConfiguration("org/mule/test/integration/exceptions/property-error-mapping-source-config.xml");
 
     assertThat(getWarningMessages(),
-               hasItem("'request' has 'type' '${error.type}' which is resolved with a property and may cause the artifact to have different behavior on different environments."));
+               hasItem("'cure-cancer' has 'type' '${error.type}' which is resolved with a property and may cause the artifact to have different behavior on different environments."));
   }
 
   @Test
