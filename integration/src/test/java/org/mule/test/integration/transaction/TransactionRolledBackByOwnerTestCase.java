@@ -36,6 +36,7 @@ import org.mule.tck.probe.PollingProber;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.runner.RunnerDelegateTo;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -375,7 +376,7 @@ public class TransactionRolledBackByOwnerTestCase extends AbstractIntegrationTes
         + " times, but it got executed with states %s";
     if (flowExecution.ignoreExtraStates) {
       // We are only interested in the calls to the handler made up to the final state
-      states = states.subList(0, states.indexOf(flowExecution.expectedFinalState));
+      states = new ArrayList<>(states.subList(0, states.indexOf(flowExecution.expectedFinalState)));
       assertThat(format(reason, states), states, iterableWithSize(1));
     } else {
       assertThat(format(reason, states), states, iterableWithSize(flowExecution.globalHandlerExecutionsBeforeRollback));
