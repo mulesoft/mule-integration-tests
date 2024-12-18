@@ -21,6 +21,7 @@ import static org.mule.runtime.api.util.MuleSystemProperties.DEFAULT_ERROR_HANDL
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
+import static java.util.stream.Collectors.toList;
 
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -357,7 +358,8 @@ public class TransactionRolledBackByOwnerTestCase extends AbstractIntegrationTes
 
   private void assertCorrectStates(FlowExecution flowExecution) {
     if (flowExecution.ignoreExtraStates) {
-      List<String> filteredStates = states.stream().filter(state -> state.equals(flowExecution.expectedFinalState)).toList();
+      List<String> filteredStates =
+          states.stream().filter(state -> state.equals(flowExecution.expectedFinalState)).collect(toList());
       assertThat("Expected final state " + flowExecution.expectedFinalState + " to be received only once: " + states,
                  filteredStates, iterableWithSize(1));
     } else {
