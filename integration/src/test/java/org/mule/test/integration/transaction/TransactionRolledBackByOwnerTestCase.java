@@ -36,12 +36,12 @@ import org.mule.tck.probe.PollingProber;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.runner.RunnerDelegateTo;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -290,7 +290,7 @@ public class TransactionRolledBackByOwnerTestCase extends AbstractIntegrationTes
                                    TransactionProfilingEventContext profilingEventContext) {
         states.add(profilingEventType.toString());
         String originatingLocation = profilingEventContext.getEventOrginatingLocation().getLocation();
-        statesPerLocation.computeIfAbsent(originatingLocation, k -> new ArrayList<>());
+        statesPerLocation.computeIfAbsent(originatingLocation, k -> new CopyOnWriteArrayList<>());
         statesPerLocation.get(originatingLocation).add(profilingEventType.toString());
       }
 
@@ -312,8 +312,8 @@ public class TransactionRolledBackByOwnerTestCase extends AbstractIntegrationTes
   }
 
   private void cleanStates() {
-    states = new ArrayList<>();
-    statesPerLocation = new HashMap<>();
+    states = new CopyOnWriteArrayList<>();
+    statesPerLocation = new ConcurrentHashMap<>();
   }
 
   @Test
