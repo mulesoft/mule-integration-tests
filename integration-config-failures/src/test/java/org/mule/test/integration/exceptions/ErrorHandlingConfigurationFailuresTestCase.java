@@ -19,21 +19,19 @@ import static org.mule.test.allure.AllureConstants.MuleDsl.DslValidationStory.DS
 
 import static java.lang.String.format;
 import static java.util.Collections.emptySet;
-import static java.util.Collections.singleton;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertThrows;
 
-import org.mule.extension.http.internal.temporary.HttpConnector;
-import org.mule.extension.socket.api.SocketsExtension;
 import org.mule.functional.junit4.AbstractConfigurationFailuresTestCase;
 import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.api.meta.MuleVersion;
 import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.core.api.config.ConfigurationException;
 import org.mule.runtime.core.api.config.DefaultMuleConfiguration;
+import org.mule.test.heisenberg.extension.HeisenbergExtension;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -166,7 +164,7 @@ public class ErrorHandlingConfigurationFailuresTestCase extends AbstractConfigur
   public void usedNamespaceMappingsNotAllowed() throws Exception {
     var thrown = assertThrows(ConfigurationException.class,
                               () -> loadConfiguration("org/mule/test/integration/exceptions/used-namespace-mappings-config.xml"));
-    assertThat(thrown.getMessage(), containsString("Cannot use error type 'HTTP:NOT_FOUND': namespace already exists"));
+    assertThat(thrown.getMessage(), containsString("Cannot use error type 'HEISENBERG:HEALTH': namespace already exists"));
   }
 
   @Test
@@ -174,7 +172,7 @@ public class ErrorHandlingConfigurationFailuresTestCase extends AbstractConfigur
     var thrown =
         assertThrows(ConfigurationException.class,
                      () -> loadConfiguration("org/mule/test/integration/exceptions/used-namespace-nonexistent-type-mappings-config.xml"));
-    assertThat(thrown.getMessage(), containsString("Cannot use error type 'HTTP:NONEXISTENT': namespace already exists"));
+    assertThat(thrown.getMessage(), containsString("Cannot use error type 'HEISENBERG:NONEXISTENT': namespace already exists"));
   }
 
   @Test
@@ -190,7 +188,7 @@ public class ErrorHandlingConfigurationFailuresTestCase extends AbstractConfigur
     var thrown =
         assertThrows(ConfigurationException.class,
                      () -> loadConfiguration("org/mule/test/integration/exceptions/used-namespace-raise-error-config.xml"));
-    assertThat(thrown.getMessage(), containsString("Cannot use error type 'HTTP:TIMEOUT': namespace already exists"));
+    assertThat(thrown.getMessage(), containsString("Cannot use error type 'HEISENBERG:HEALTH': namespace already exists"));
   }
 
   @Test
@@ -198,7 +196,7 @@ public class ErrorHandlingConfigurationFailuresTestCase extends AbstractConfigur
     var thrown =
         assertThrows(ConfigurationException.class,
                      () -> loadConfiguration("org/mule/test/integration/exceptions/used-namespace-nonexistent-type-raise-error-config.xml"));
-    assertThat(thrown.getMessage(), containsString("Cannot use error type 'HTTP:NOT_FOUND': namespace already exists."));
+    assertThat(thrown.getMessage(), containsString("Cannot use error type 'HEISENBERG:NONEXISTENT': namespace already exists."));
   }
 
   @Test
@@ -243,13 +241,11 @@ public class ErrorHandlingConfigurationFailuresTestCase extends AbstractConfigur
 
   @Override
   protected List<ExtensionModel> getRequiredExtensions() {
-    ExtensionModel sockets = loadExtension(SocketsExtension.class, emptySet());
-    ExtensionModel http = loadExtension(HttpConnector.class, singleton(sockets));
+    ExtensionModel heisenberg = loadExtension(HeisenbergExtension.class, emptySet());
 
     final List<ExtensionModel> extensions = new ArrayList<>();
     extensions.addAll(super.getRequiredExtensions());
-    extensions.add(http);
-    extensions.add(sockets);
+    extensions.add(heisenberg);
 
     return extensions;
   }
