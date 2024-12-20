@@ -8,6 +8,7 @@ package org.mule.test.integration.transaction;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.iterableWithSize;
 import static org.junit.Assert.fail;
@@ -338,7 +339,7 @@ public class TransactionRolledBackByOwnerTestCase extends AbstractIntegrationTes
         }
       }
 
-      assertStatesArrived();
+      assertStatesArrived(flowExecution.expectedFinalState);
       assertCorrectStates(flowExecution);
       if (flowExecution.globalHandlerExecutionsBeforeRollback != null) {
         assertTransactionRolledBackAtTheRightHandler(flowExecution);
@@ -346,19 +347,19 @@ public class TransactionRolledBackByOwnerTestCase extends AbstractIntegrationTes
     });
   }
 
-  private void assertStatesArrived() {
+  private void assertStatesArrived(String expectedFinalState) {
     PollingProber pollingProber = new PollingProber(RECEIVE_TIMEOUT, POLL_DELAY_MILLIS);
     pollingProber.check(new JUnitProbe() {
 
       @Override
       protected boolean test() {
-        assertThat(states.size(), greaterThanOrEqualTo(2));
+        assertThat(states, hasItem(expectedFinalState));
         return true;
       }
 
       @Override
       public String describeFailure() {
-        return "States did not arrive";
+        return "Final state " + expectedFinalState + " not received " + states;
       }
     });
   }
