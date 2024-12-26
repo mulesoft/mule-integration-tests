@@ -16,9 +16,12 @@ import static java.lang.String.format;
 
 import static org.hamcrest.CoreMatchers.containsString;
 
+import org.junit.runner.RunWith;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.module.deployment.impl.internal.builder.ApplicationFileBuilder;
 import org.mule.runtime.module.deployment.impl.internal.builder.JarFileBuilder;
+import org.mule.tck.junit4.FlakinessDetectorTestRunner;
+import org.mule.tck.junit4.FlakyTest;
 import org.mule.tck.util.CompilerUtils;
 import org.mule.test.infrastructure.deployment.AbstractFakeMuleServerTestCase;
 
@@ -39,6 +42,7 @@ import io.qameta.allure.Story;
 
 @Features({@Feature(INTEGRATIONS_TESTS), @Feature(LOGGING)})
 @Story(LOGGING_LIBS_SUPPORT)
+@RunWith(FlakinessDetectorTestRunner.class)
 public class LoggingLibsSupportTestCase extends AbstractFakeMuleServerTestCase {
 
   @Rule
@@ -70,7 +74,7 @@ public class LoggingLibsSupportTestCase extends AbstractFakeMuleServerTestCase {
   }
 
   @Test
-  @Ignore("W-11730386")
+  @FlakyTest
   public void jclLibraryLogsSuccessfully() throws Exception {
     startRuntimeWithApp();
     probeLogFileForMessage("My logger is JCL");
@@ -89,7 +93,7 @@ public class LoggingLibsSupportTestCase extends AbstractFakeMuleServerTestCase {
           () -> format("Text '%s' not present in the logs", expectedMessage));
   }
 
-  private void startRuntimeWithApp() throws URISyntaxException, IOException, MuleException, MalformedURLException {
+  private void startRuntimeWithApp() throws IOException, MuleException, URISyntaxException {
     final ApplicationFileBuilder loggingAppFileBuilder =
         new ApplicationFileBuilder("logging-app").definedBy("log/logging-libs/logging-libs-app.xml")
             .dependingOn(new JarFileBuilder("loggerLibsClient",
@@ -100,5 +104,6 @@ public class LoggingLibsSupportTestCase extends AbstractFakeMuleServerTestCase {
 
     muleServer.start();
     muleServer.deploy(loggingAppFileBuilder.getArtifactFile().toURI().toURL(), "logging-app");
+    muleServer.stop();
   }
 }
