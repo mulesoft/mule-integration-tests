@@ -16,14 +16,18 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
+import org.junit.runner.RunWith;
 import org.mule.extension.http.api.HttpResponseAttributes;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.notification.SecurityNotification;
 import org.mule.runtime.api.notification.SecurityNotificationListener;
 import org.mule.runtime.api.util.concurrent.Latch;
+import org.mule.tck.junit4.FlakinessDetectorTestRunner;
+import org.mule.tck.junit4.FlakyTest;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.IntegrationTestCaseRunnerConfig;
+import org.mule.test.runner.RunnerDelegateTo;
 import org.mule.tests.api.TestQueueManager;
 
 import javax.inject.Inject;
@@ -32,7 +36,8 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
-@Ignore("W-13603419")
+//@Ignore("W-13603419")
+@RunnerDelegateTo(FlakinessDetectorTestRunner.class)
 public class SecureHttpPollingFunctionalTestCase extends MuleArtifactFunctionalTestCase
     implements IntegrationTestCaseRunnerConfig {
 
@@ -50,6 +55,7 @@ public class SecureHttpPollingFunctionalTestCase extends MuleArtifactFunctionalT
   }
 
   @Test
+  @FlakyTest(times = 1000)
   public void testPollingHttpConnectorSentCredentials() throws Exception {
     final Latch latch = new Latch();
     notificationListenerRegistry.registerListener(new SecurityNotificationListener<SecurityNotification>() {
