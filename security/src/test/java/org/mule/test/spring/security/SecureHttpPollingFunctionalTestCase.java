@@ -55,7 +55,7 @@ public class SecureHttpPollingFunctionalTestCase extends MuleArtifactFunctionalT
   }
 
   @Test
-  @FlakyTest(times = 1000)
+  @FlakyTest(times = 10000)
   public void testPollingHttpConnectorSentCredentials() throws Exception {
     final Latch latch = new Latch();
     notificationListenerRegistry.registerListener(new SecurityNotificationListener<SecurityNotification>() {
