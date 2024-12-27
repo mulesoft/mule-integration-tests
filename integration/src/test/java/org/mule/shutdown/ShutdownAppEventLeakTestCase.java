@@ -6,24 +6,23 @@
  */
 package org.mule.shutdown;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 import static org.mule.runtime.core.privileged.event.PrivilegedEvent.getCurrentEvent;
-import static org.mule.runtime.http.api.HttpConstants.Method.GET;
-import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.LIFECYCLE_AND_DEPENDENCY_INJECTION;
 import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.GracefulShutdownStory.GRACEFUL_SHUTDOWN_STORY;
+import static org.mule.test.allure.AllureConstants.LifecycleAndDependencyInjectionFeature.LIFECYCLE_AND_DEPENDENCY_INJECTION;
 
-import org.mule.functional.junit4.DomainFunctionalTestCase;
+import static org.apache.http.impl.client.HttpClients.createDefault;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
-import org.mule.runtime.http.api.domain.message.request.HttpRequest;
-import org.mule.service.http.TestHttpClient;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.probe.JUnitProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.tck.report.HeapDumpOnFailure;
+import org.mule.test.AbstractIntegrationTestCase;
 
 import java.io.IOException;
 import java.lang.ref.PhantomReference;
@@ -32,21 +31,21 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
 
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.Test;
-
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
 
 /**
  * Tests that threads in pools defined in a domain do not hold references to objects of the application in their thread locals.
  */
-@Ignore("MULE-10335")
 @Feature(LIFECYCLE_AND_DEPENDENCY_INJECTION)
 @Story(GRACEFUL_SHUTDOWN_STORY)
-public class ShutdownAppInDomainTestCase extends DomainFunctionalTestCase {
+public class ShutdownAppEventLeakTestCase extends AbstractIntegrationTestCase {
 
   private static final int PROBER_POLLING_INTERVAL = 100;
   private static final int PROBER_POLIING_TIMEOUT = 5000;
@@ -54,6 +53,8 @@ public class ShutdownAppInDomainTestCase extends DomainFunctionalTestCase {
 
   @Rule
   public HeapDumpOnFailure heapDumpOnFailure = new HeapDumpOnFailure();
+
+  private CloseableHttpClient httpClient;
 
   private static final Set<PhantomReference<CoreEvent>> requestContextRefs = new HashSet<>();
 
@@ -68,34 +69,29 @@ public class ShutdownAppInDomainTestCase extends DomainFunctionalTestCase {
 
   @Before
   public void before() {
+    httpClient = createDefault();
     requestContextRefs.clear();
   }
 
-  @Rule
-  public TestHttpClient httpClient = new TestHttpClient.Builder().build();
+  @After
+  public void after() throws IOException {
+    httpClient.close();
+  }
 
   @Rule
   public DynamicPort httpPort = new DynamicPort("httpPort");
 
   @Override
-  protected String getDomainConfig() {
-    return "org/mule/shutdown/domain-with-connectors.xml";
-  }
-
-  @Override
-  public ApplicationConfig[] getConfigResources() {
-    return new ApplicationConfig[] {
-        new ApplicationConfig("app-with-flows", new String[] {"org/mule/shutdown/app-with-flows.xml"})
-    };
+  protected String getConfigFile() {
+    return "org/mule/shutdown/app-with-flows.xml";
   }
 
   @Test
   public void httpListener() throws IOException, TimeoutException {
-    MuleContext muleContextForApp = getMuleContextForApp("app-with-flows");
+    MuleContext muleContextForApp = muleContext;
 
-    HttpRequest request =
-        HttpRequest.builder().uri("http://localhost:" + httpPort.getNumber() + "/sync").method(GET).build();
-    httpClient.send(request, MESSAGE_TIMEOUT, false, null);
+    HttpGet request = new HttpGet("http://localhost:" + httpPort.getNumber() + "/sync");
+    httpClient.execute(request);
 
     muleContextForApp.dispose();
 
@@ -104,11 +100,11 @@ public class ShutdownAppInDomainTestCase extends DomainFunctionalTestCase {
 
   @Test
   public void httpListenerNonBlocking() throws IOException, TimeoutException {
-    MuleContext muleContextForApp = getMuleContextForApp("app-with-flows");
+    MuleContext muleContextForApp = muleContext;
 
-    HttpRequest request =
-        HttpRequest.builder().uri("http://localhost:" + httpPort.getNumber() + "/nonBlocking").method(GET).build();
-    httpClient.send(request, MESSAGE_TIMEOUT, false, null);
+    HttpGet request = new HttpGet("http://localhost:" + httpPort.getNumber() + "/nonBlocking");
+    httpClient.execute(request);
+
 
     muleContextForApp.dispose();
 
@@ -117,24 +113,10 @@ public class ShutdownAppInDomainTestCase extends DomainFunctionalTestCase {
 
   @Test
   public void httpRequest() throws IOException, TimeoutException {
-    MuleContext muleContextForApp = getMuleContextForApp("app-with-flows");
+    MuleContext muleContextForApp = muleContext;
 
-    HttpRequest request =
-        HttpRequest.builder().uri("http://localhost:" + httpPort.getNumber() + "/request").method(GET).build();
-    httpClient.send(request, MESSAGE_TIMEOUT, false, null);
-    muleContextForApp.dispose();
-
-    assertEventsUnreferenced();
-  }
-
-  @Test
-  @Ignore("Reimplement with the new JMS Connector")
-  public void jms() throws MuleException {
-    final MuleContext muleContextForApp = getMuleContextForApp("app-with-flows");
-
-    // TODO: Replace with JMS connector
-    // muleContextForApp.getClient().dispatch("jms://in?connector=sharedJmsConnector", of("payload"));
-    // muleContextForApp.getClient().request("jms://out?connector=sharedJmsConnector", MESSAGE_TIMEOUT);
+    HttpGet request = new HttpGet("http://localhost:" + httpPort.getNumber() + "/request");
+    httpClient.execute(request);
 
     muleContextForApp.dispose();
 
