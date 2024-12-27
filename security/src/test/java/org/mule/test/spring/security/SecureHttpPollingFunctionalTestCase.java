@@ -28,11 +28,9 @@ import org.mule.tests.api.TestQueueManager;
 
 import javax.inject.Inject;
 
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
-@Ignore("W-13603419")
 public class SecureHttpPollingFunctionalTestCase extends MuleArtifactFunctionalTestCase
     implements IntegrationTestCaseRunnerConfig {
 
