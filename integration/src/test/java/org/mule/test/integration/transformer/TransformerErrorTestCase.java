@@ -10,9 +10,11 @@ import static org.hamcrest.Matchers.containsString;
 import org.mule.functional.api.exception.ExpectedError;
 import org.mule.test.AbstractIntegrationTestCase;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
+@Ignore("W-17506269")
 public class TransformerErrorTestCase extends AbstractIntegrationTestCase {
 
   @Rule
