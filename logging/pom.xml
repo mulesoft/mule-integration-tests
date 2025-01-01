@@ -22,7 +22,7 @@
 
         <javaModuleName>org.mule.test.integration.logging</javaModuleName>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
-        <openTelemetryProtoVersion>0.3.0</openTelemetryProtoVersion>
+        <openTelemetryProtoVersion>0.17.1</openTelemetryProtoVersion>
     </properties>
 
     <build>
