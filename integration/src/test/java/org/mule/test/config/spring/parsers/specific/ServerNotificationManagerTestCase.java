@@ -38,8 +38,8 @@ import org.mule.tck.probe.PollingProber;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Predicate;
 
 import javax.inject.Inject;
@@ -168,7 +168,7 @@ public class ServerNotificationManagerTestCase extends AbstractIntegrationTestCa
     verify(serverNotificationConfigurationChangeListener, times(6)).onServerNotificationConfigurationChange();
     manager.disableInterface(TestInterface.class);
     verify(serverNotificationConfigurationChangeListener, times(7)).onServerNotificationConfigurationChange();
-    manager.setDisabledInterfaces(Set.of(TestInterface.class));
+    manager.setDisabledInterfaces(Collections.singleton(TestInterface.class));
     verify(serverNotificationConfigurationChangeListener, times(8)).onServerNotificationConfigurationChange();
     manager.disableType(Notification.class);
     verify(serverNotificationConfigurationChangeListener, times(9)).onServerNotificationConfigurationChange();
