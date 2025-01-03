@@ -155,6 +155,7 @@ public class ServerNotificationManagerTestCase extends AbstractIntegrationTestCa
 
   @Test
   public void testServerNotificationConfigurationChangeListenerTestCase() throws Exception {
+    ServerNotificationManager manager = muleContext.getNotificationManager();
     ServerNotificationConfigurationChangeListener serverNotificationConfigurationChangeListener =
         mock(ServerNotificationConfigurationChangeListener.class);
     manager.registerServerNotificationConfigurationChangeListener(serverNotificationConfigurationChangeListener);
