@@ -19,6 +19,8 @@ import static org.hamcrest.Matchers.sameInstance;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.IsIterableContaining.hasItem;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.mule.runtime.api.notification.AbstractServerNotification;
@@ -29,12 +31,16 @@ import org.mule.runtime.api.notification.SecurityNotificationListener;
 import org.mule.runtime.api.security.UnauthorisedException;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.context.notification.ListenerSubscriptionPair;
+import org.mule.runtime.core.api.context.notification.ServerNotificationConfigurationChangeListener;
 import org.mule.runtime.core.api.context.notification.ServerNotificationManager;
 import org.mule.tck.probe.JUnitLambdaProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.function.Predicate;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -141,6 +147,31 @@ public class ServerNotificationManagerTestCase extends AbstractIntegrationTestCa
     manager.fireNotification(new TestSecurityEvent(muleContext));
     new PollingProber(2000, 100).check(new JUnitLambdaProbe(() -> listener2.isCalled(), "listener2 should be notified"));
     assertThat(securityListener.isCalled(), is(false));
+  }
+
+  @Test
+  public void testServerNotificationConfigurationChangeListenerTestCase() throws Exception {
+    ServerNotificationConfigurationChangeListener serverNotificationConfigurationChangeListener =
+        mock(ServerNotificationConfigurationChangeListener.class);
+    manager.registerServerNotificationConfigurationChangeListener(serverNotificationConfigurationChangeListener);
+    manager.addInterfaceToType(TestInterface.class, Notification.class);
+    verify(serverNotificationConfigurationChangeListener, times(1)).onServerNotificationConfigurationChange();
+    manager.setInterfaceToTypes(mock(Map.class));
+    verify(serverNotificationConfigurationChangeListener, times(2)).onServerNotificationConfigurationChange();
+    manager.addListener(mock(NotificationListener.class));
+    verify(serverNotificationConfigurationChangeListener, times(3)).onServerNotificationConfigurationChange();
+    manager.addListenerSubscriptionPair(new ListenerSubscriptionPair(mock(NotificationListener.class)));
+    verify(serverNotificationConfigurationChangeListener, times(4)).onServerNotificationConfigurationChange();
+    manager.addListenerSubscription(mock(NotificationListener.class), mock(Predicate.class));
+    verify(serverNotificationConfigurationChangeListener, times(5)).onServerNotificationConfigurationChange();
+    manager.removeListener(mock(NotificationListener.class));
+    verify(serverNotificationConfigurationChangeListener, times(6)).onServerNotificationConfigurationChange();
+    manager.disableInterface(TestInterface.class);
+    verify(serverNotificationConfigurationChangeListener, times(7)).onServerNotificationConfigurationChange();
+    manager.setDisabledInterfaces(Collections.singleton(TestInterface.class));
+    verify(serverNotificationConfigurationChangeListener, times(8)).onServerNotificationConfigurationChange();
+    manager.disableType(Notification.class);
+    verify(serverNotificationConfigurationChangeListener, times(9)).onServerNotificationConfigurationChange();
   }
 
   protected static interface TestInterface extends NotificationListener<TestEvent> {
