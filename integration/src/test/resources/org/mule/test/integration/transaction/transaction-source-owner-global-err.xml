@@ -29,8 +29,9 @@
             <redelivery-policy maxRedeliveryCount="0" idExpression="#['id']"/>
         </vm:listener>
 
-        <try>
+        <try transactionalAction="BEGIN_OR_JOIN">
             <raise-error type="APP:EXPECTED"/>
+            <error-handler ref="globalPropagate"/>
         </try>
 
         <error-handler ref="globalPropagate"/>

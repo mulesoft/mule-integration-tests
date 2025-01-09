@@ -19,26 +19,24 @@ import static org.mule.test.allure.AllureConstants.MuleDsl.DslValidationStory.DS
 
 import static java.lang.String.format;
 import static java.util.Collections.emptySet;
-import static java.util.Collections.singleton;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThrows;
 
-import org.mule.extension.http.internal.temporary.HttpConnector;
-import org.mule.extension.socket.api.SocketsExtension;
 import org.mule.functional.junit4.AbstractConfigurationFailuresTestCase;
 import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.api.meta.MuleVersion;
 import org.mule.runtime.api.meta.model.ExtensionModel;
 import org.mule.runtime.core.api.config.ConfigurationException;
 import org.mule.runtime.core.api.config.DefaultMuleConfiguration;
+import org.mule.test.heisenberg.extension.HeisenbergExtension;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Issue;
@@ -48,173 +46,189 @@ import io.qameta.allure.Story;
 @Story(DSL_VALIDATION_STORY)
 public class ErrorHandlingConfigurationFailuresTestCase extends AbstractConfigurationFailuresTestCase {
 
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
-
   // TODO MULE-10061 - Review once the MuleContext lifecycle is clearly defined
   @Test
   public void defaultErrorHandlerReferencesNonExistentErrorHandler() throws Exception {
-    expectedException.expect(InitialisationException.class);
-    expectedException.expectMessage(containsString("No global error handler defined with name 'nonExistentEh'."));
-    loadConfiguration("org/mule/test/integration/exceptions/default-error-handler-reference-non-existent-es.xml");
+    var thrown =
+        assertThrows(ConfigurationException.class,
+                     () -> loadConfiguration("org/mule/test/integration/exceptions/default-error-handler-reference-non-existent-es.xml"));
+    assertThat(thrown.getMessage(), containsString("No global error handler defined with name 'nonExistentEh'."));
   }
 
   @Test
   public void xaTransactionalTryNotAllowed() throws Exception {
-    expectedException.expect(InitialisationException.class);
-    expectedException.expectMessage(containsString("Unable to create Try Scope with a Transaction Type: [XA]"));
-    loadConfiguration("org/mule/test/integration/transaction/xa-transactional-try-config.xml");
+    var thrown = assertThrows(InitialisationException.class,
+                              () -> loadConfiguration("org/mule/test/integration/transaction/xa-transactional-try-config.xml"));
+    assertThat(thrown.getMessage(), containsString("Unable to create Try Scope with a Transaction Type: [XA]"));
   }
 
   @Test
   public void xaTransactionalTryNotAllowedWithGlobalErrorHandler() throws Exception {
-    expectedException.expect(InitialisationException.class);
-    expectedException.expectMessage(containsString("Unable to create Try Scope with a Transaction Type: [XA]"));
-    loadConfiguration("org/mule/test/integration/transaction/xa-transactional-try-config-global-err.xml");
+    var thrown =
+        assertThrows(InitialisationException.class,
+                     () -> loadConfiguration("org/mule/test/integration/transaction/xa-transactional-try-config-global-err.xml"));
+    assertThat(thrown.getMessage(), containsString("Unable to create Try Scope with a Transaction Type: [XA]"));
   }
 
   @Test
   public void unknownErrorFilteringNotAllowed() throws Exception {
-    expectedException.expect(ConfigurationException.class);
-    expectedException.expectMessage(containsString(notFound(UNKNOWN_ERROR_IDENTIFIER)));
-    loadConfiguration("org/mule/test/integration/exceptions/unknown-error-filtering-config.xml");
+    var thrown = assertThrows(ConfigurationException.class,
+                              () -> loadConfiguration("org/mule/test/integration/exceptions/unknown-error-filtering-config.xml"));
+    assertThat(thrown.getMessage(), containsString(notFound(UNKNOWN_ERROR_IDENTIFIER)));
   }
 
   @Test
   public void sourceErrorResponseFilteringNotAllowed() throws Exception {
-    expectedException.expect(ConfigurationException.class);
-    expectedException.expectMessage(containsString(notFound(SOURCE_ERROR_IDENTIFIER)));
-    loadConfiguration("org/mule/test/integration/exceptions/source-error-response-filtering-config.xml");
+    var thrown =
+        assertThrows(ConfigurationException.class,
+                     () -> loadConfiguration("org/mule/test/integration/exceptions/source-error-response-filtering-config.xml"));
+    assertThat(thrown.getMessage(), containsString(notFound(SOURCE_ERROR_IDENTIFIER)));
   }
 
   @Test
   public void raisesErrorEmptyErrorTypeNotAllowed() throws Exception {
-    expectedException.expect(ConfigurationException.class);
-    expectedException
-        .expectMessage(containsString("The value '' of attribute 'type' on element 'raise-error' is not valid with respect to its type, 'nonBlankString'"));
-    loadConfiguration("org/mule/test/integration/exceptions/raise-error-empty-type-config.xml");
+    var thrown = assertThrows(ConfigurationException.class,
+                              () -> loadConfiguration("org/mule/test/integration/exceptions/raise-error-empty-type-config.xml"));
+    assertThat(thrown.getMessage(),
+               containsString("The value '' of attribute 'type' on element 'raise-error' is not valid with respect to its type, 'nonBlankString'"));
   }
 
   @Test
   @Issue("W-11802232")
   public void raisesErrorPropertyErrorTypeNotAllowed() throws Exception {
-    expectedException.expect(ConfigurationException.class);
-    expectedException.expectMessage(containsString("Couldn't find configuration property value for key ${error.type}"));
-    loadConfiguration("org/mule/test/integration/exceptions/raise-error-property-type-config.xml");
+    var thrown =
+        assertThrows(ConfigurationException.class,
+                     () -> loadConfiguration("org/mule/test/integration/exceptions/raise-error-property-type-config.xml"));
+    assertThat(thrown.getMessage(), containsString("Couldn't find configuration property value for key ${error.type}"));
   }
 
   @Test
   public void sourceErrorResponseSendFilteringNotAllowed() throws Exception {
-    expectedException.expect(ConfigurationException.class);
-    expectedException.expectMessage(containsString(notFound(SOURCE_ERROR_RESPONSE_SEND_ERROR_IDENTIFIER)));
-    loadConfiguration("org/mule/test/integration/exceptions/source-error-response-send-filtering-config.xml");
+    var thrown =
+        assertThrows(ConfigurationException.class,
+                     () -> loadConfiguration("org/mule/test/integration/exceptions/source-error-response-send-filtering-config.xml"));
+    assertThat(thrown.getMessage(), containsString(notFound(SOURCE_ERROR_RESPONSE_SEND_ERROR_IDENTIFIER)));
   }
 
   @Test
   public void sourceErrorResponseGenerateFilteringNotAllowed() throws Exception {
-    expectedException.expect(ConfigurationException.class);
-    expectedException.expectMessage(containsString(notFound(SOURCE_ERROR_RESPONSE_GENERATE_ERROR_IDENTIFIER)));
-    loadConfiguration("org/mule/test/integration/exceptions/source-error-response-generate-filtering-config.xml");
+    var thrown =
+        assertThrows(ConfigurationException.class,
+                     () -> loadConfiguration("org/mule/test/integration/exceptions/source-error-response-generate-filtering-config.xml"));
+    assertThat(thrown.getMessage(), containsString(notFound(SOURCE_ERROR_RESPONSE_GENERATE_ERROR_IDENTIFIER)));
   }
 
   @Test
   public void criticalErrorFilteringNotAllowed() throws Exception {
-    expectedException.expect(ConfigurationException.class);
-    expectedException.expectMessage(containsString(notFound(CRITICAL_IDENTIFIER)));
-    loadConfiguration("org/mule/test/integration/exceptions/critical-error-filtering-config.xml");
+    var thrown =
+        assertThrows(ConfigurationException.class,
+                     () -> loadConfiguration("org/mule/test/integration/exceptions/critical-error-filtering-config.xml"));
+    assertThat(thrown.getMessage(), containsString(notFound(CRITICAL_IDENTIFIER)));
   }
 
   @Test
   public void nonExistingSourceMappingNotAllowed() throws Exception {
-    expectedException.expect(ConfigurationException.class);
-    expectedException.expectMessage(containsString("Could not find error 'NON_EXISTING'"));
-    loadConfiguration("org/mule/test/integration/exceptions/non-existing-source-mapping-config.xml");
+    var thrown =
+        assertThrows(ConfigurationException.class,
+                     () -> loadConfiguration("org/mule/test/integration/exceptions/non-existing-source-mapping-config.xml"));
+    assertThat(thrown.getMessage(), containsString("Could not find error 'NON_EXISTING'"));
   }
 
   @Test
   public void nonExistingCoreMappingsNotAllowed() throws Exception {
-    expectedException.expect(ConfigurationException.class);
-    expectedException.expectMessage(containsString("There's no MULE error named 'NON_EXISTING'"));
-    loadConfiguration("org/mule/test/integration/exceptions/non-existent-core-mapping-config.xml");
+    var thrown =
+        assertThrows(ConfigurationException.class,
+                     () -> loadConfiguration("org/mule/test/integration/exceptions/non-existent-core-mapping-config.xml"));
+    assertThat(thrown.getMessage(), containsString("There's no MULE error named 'NON_EXISTING'"));
   }
 
   @Test
   @Issue("W-11802232")
   public void propertyErrorMappingsSourceNotAllowed() throws Exception {
-    expectedException.expect(ConfigurationException.class);
-    expectedException.expectMessage(containsString("Couldn't find configuration property value for key ${error.type}"));
-    loadConfiguration("org/mule/test/integration/exceptions/property-error-mapping-source-config.xml");
+    var thrown =
+        assertThrows(ConfigurationException.class,
+                     () -> loadConfiguration("org/mule/test/integration/exceptions/property-error-mapping-source-config.xml"));
+    assertThat(thrown.getMessage(), containsString("Couldn't find configuration property value for key ${error.type}"));
   }
 
   @Test
   @Issue("W-11802232")
   public void propertyErrorMappingsTargetNotAllowed() throws Exception {
-    expectedException.expect(ConfigurationException.class);
-    expectedException.expectMessage(containsString("Couldn't find configuration property value for key ${error.type}"));
-    loadConfiguration("org/mule/test/integration/exceptions/property-error-mapping-target-config.xml");
+    var thrown =
+        assertThrows(ConfigurationException.class,
+                     () -> loadConfiguration("org/mule/test/integration/exceptions/property-error-mapping-target-config.xml"));
+    assertThat(thrown.getMessage(), containsString("Couldn't find configuration property value for key ${error.type}"));
   }
 
   @Test
   public void usedNamespaceMappingsNotAllowed() throws Exception {
-    expectedException.expect(ConfigurationException.class);
-    expectedException.expectMessage(containsString("Cannot use error type 'HTTP:NOT_FOUND': namespace already exists"));
-    loadConfiguration("org/mule/test/integration/exceptions/used-namespace-mappings-config.xml");
+    var thrown = assertThrows(ConfigurationException.class,
+                              () -> loadConfiguration("org/mule/test/integration/exceptions/used-namespace-mappings-config.xml"));
+    assertThat(thrown.getMessage(), containsString("Cannot use error type 'HEISENBERG:HEALTH': namespace already exists"));
   }
 
   @Test
   public void usedNamespaceNonExistentTypeMappingsNotAllowed() throws Exception {
-    expectedException.expect(ConfigurationException.class);
-    expectedException.expectMessage(containsString("Cannot use error type 'HTTP:NONEXISTENT': namespace already exists"));
-    loadConfiguration("org/mule/test/integration/exceptions/used-namespace-nonexistent-type-mappings-config.xml");
+    var thrown =
+        assertThrows(ConfigurationException.class,
+                     () -> loadConfiguration("org/mule/test/integration/exceptions/used-namespace-nonexistent-type-mappings-config.xml"));
+    assertThat(thrown.getMessage(), containsString("Cannot use error type 'HEISENBERG:NONEXISTENT': namespace already exists"));
   }
 
   @Test
   public void nonExistingCoreErrorCannotBeRaised() throws Exception {
-    expectedException.expect(ConfigurationException.class);
-    expectedException.expectMessage(containsString("There's no MULE error named 'NONEXISTENT'"));
-    loadConfiguration("org/mule/test/integration/exceptions/non-existent-core-raise-error-config.xml");
+    var thrown =
+        assertThrows(ConfigurationException.class,
+                     () -> loadConfiguration("org/mule/test/integration/exceptions/non-existent-core-raise-error-config.xml"));
+    assertThat(thrown.getMessage(), containsString("There's no MULE error named 'NONEXISTENT'"));
   }
 
   @Test
   public void usedNamespaceErrorCannotBeRaised() throws Exception {
-    expectedException.expect(ConfigurationException.class);
-    expectedException.expectMessage(containsString("Cannot use error type 'HTTP:TIMEOUT': namespace already exists"));
-    loadConfiguration("org/mule/test/integration/exceptions/used-namespace-raise-error-config.xml");
+    var thrown =
+        assertThrows(ConfigurationException.class,
+                     () -> loadConfiguration("org/mule/test/integration/exceptions/used-namespace-raise-error-config.xml"));
+    assertThat(thrown.getMessage(), containsString("Cannot use error type 'HEISENBERG:HEALTH': namespace already exists"));
   }
 
   @Test
   public void usedNamespaceNonExistentTypeErrorCannotBeRaised() throws Exception {
-    expectedException.expect(ConfigurationException.class);
-    expectedException.expectMessage(containsString("Cannot use error type 'HTTP:NOT_FOUND': namespace already exists."));
-    loadConfiguration("org/mule/test/integration/exceptions/used-namespace-nonexistent-type-raise-error-config.xml");
+    var thrown =
+        assertThrows(ConfigurationException.class,
+                     () -> loadConfiguration("org/mule/test/integration/exceptions/used-namespace-nonexistent-type-raise-error-config.xml"));
+    assertThat(thrown.getMessage(), containsString("Cannot use error type 'HEISENBERG:NONEXISTENT': namespace already exists."));
   }
 
   @Test
   public void sourceResponseGenerateOnErrorContinue() throws Exception {
-    expectedException.expect(InitialisationException.class);
-    expectedException.expectMessage(equalTo(notAllowed(SOURCE_RESPONSE_GENERATE_ERROR_IDENTIFIER)));
-    loadConfiguration("org/mule/test/integration/exceptions/on-error-continue-response-generate.xml");
+    var thrown =
+        assertThrows(InitialisationException.class,
+                     () -> loadConfiguration("org/mule/test/integration/exceptions/on-error-continue-response-generate.xml"));
+    assertThat(thrown.getMessage(), equalTo(notAllowed(SOURCE_RESPONSE_GENERATE_ERROR_IDENTIFIER)));
   }
 
   @Test
   public void sourceResponseSendOnErrorContinue() throws Exception {
-    expectedException.expect(InitialisationException.class);
-    expectedException.expectMessage(equalTo(notAllowed(SOURCE_RESPONSE_SEND_ERROR_IDENTIFIER)));
-    loadConfiguration("org/mule/test/integration/exceptions/on-error-continue-response-send.xml");
+    var thrown =
+        assertThrows(InitialisationException.class,
+                     () -> loadConfiguration("org/mule/test/integration/exceptions/on-error-continue-response-send.xml"));
+    assertThat(thrown.getMessage(), equalTo(notAllowed(SOURCE_RESPONSE_SEND_ERROR_IDENTIFIER)));
   }
 
   @Test
   public void sourceResponseErrorOnErrorContinue() throws Exception {
-    expectedException.expect(InitialisationException.class);
-    expectedException.expectMessage(equalTo(notAllowed(SOURCE_RESPONSE_ERROR_IDENTIFIER)));
-    loadConfiguration("org/mule/test/integration/exceptions/on-error-continue-response-error.xml");
+    var thrown =
+        assertThrows(InitialisationException.class,
+                     () -> loadConfiguration("org/mule/test/integration/exceptions/on-error-continue-response-error.xml"));
+    assertThat(thrown.getMessage(), equalTo(notAllowed(SOURCE_RESPONSE_ERROR_IDENTIFIER)));
   }
 
   @Test
   public void sourceErrorInListOnErrorContinue() throws Exception {
-    expectedException.expect(InitialisationException.class);
-    expectedException.expectMessage(equalTo(notAllowed(SOURCE_RESPONSE_ERROR_IDENTIFIER)));
-    loadConfiguration("org/mule/test/integration/exceptions/on-error-continue-source-error-list.xml");
+    var thrown =
+        assertThrows(InitialisationException.class,
+                     () -> loadConfiguration("org/mule/test/integration/exceptions/on-error-continue-source-error-list.xml"));
+    assertThat(thrown.getMessage(), equalTo(notAllowed(SOURCE_RESPONSE_ERROR_IDENTIFIER)));
   }
 
   private String notFound(String type) {
@@ -227,13 +241,11 @@ public class ErrorHandlingConfigurationFailuresTestCase extends AbstractConfigur
 
   @Override
   protected List<ExtensionModel> getRequiredExtensions() {
-    ExtensionModel sockets = loadExtension(SocketsExtension.class, emptySet());
-    ExtensionModel http = loadExtension(HttpConnector.class, singleton(sockets));
+    ExtensionModel heisenberg = loadExtension(HeisenbergExtension.class, emptySet());
 
     final List<ExtensionModel> extensions = new ArrayList<>();
     extensions.addAll(super.getRequiredExtensions());
-    extensions.add(http);
-    extensions.add(sockets);
+    extensions.add(heisenberg);
 
     return extensions;
   }

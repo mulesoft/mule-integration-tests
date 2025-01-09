@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.mule.tests</groupId>
         <artifactId>mule-extensions-integration-tests</artifactId>
-        <version>4.9.0-SNAPSHOT</version>
+        <version>4.10.0-SNAPSHOT</version>
     </parent>
     <artifactId>mule-tests-extensions-performance</artifactId>
     <packaging>jar</packaging>
@@ -105,12 +105,6 @@
         <dependency>
             <groupId>org.mule.services</groupId>
             <artifactId>mule-service-scheduler</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.graalvm.js</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>                
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.mule.services</groupId>
