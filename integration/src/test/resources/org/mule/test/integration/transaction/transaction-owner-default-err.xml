@@ -20,6 +20,30 @@
         </try>
     </flow>
 
+    <flow name="other-rollback">
+        <try transactionalAction="BEGIN_OR_JOIN">
+            <raise-error type="APP:EXPECTED"/>
+        </try>
+    </flow>
+
+    <flow name="other-other-rollback">
+        <try transactionalAction="BEGIN_OR_JOIN">
+            <flow-ref name="other-rollback"/>
+        </try>
+    </flow>
+
+    <flow name="containing-contained-flow-name">
+        <try transactionalAction="BEGIN_OR_JOIN">
+            <raise-error type="APP:EXPECTED"/>
+        </try>
+    </flow>
+
+    <flow name="contained-flow-name">
+        <try transactionalAction="BEGIN_OR_JOIN">
+            <flow-ref name="containing-contained-flow-name"/>
+        </try>
+    </flow>
+
     <flow name="rollback-with-error-handler-reference-at-inner-transaction-location">
         <try transactionalAction="BEGIN_OR_JOIN">
             <raise-error type="APP:EXPECTED"/>
