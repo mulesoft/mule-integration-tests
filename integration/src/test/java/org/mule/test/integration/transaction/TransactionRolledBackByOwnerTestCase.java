@@ -37,12 +37,11 @@ import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.runner.RunnerDelegateTo;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -62,6 +61,7 @@ public class TransactionRolledBackByOwnerTestCase extends AbstractIntegrationTes
   private PrivilegedProfilingService service;
 
   private List<String> states;
+  private final Object statesLock = new Object();
   private Map<String, List<String>> statesPerLocation;
   private final String config;
 
@@ -148,6 +148,15 @@ public class TransactionRolledBackByOwnerTestCase extends AbstractIntegrationTes
             "rollback",
             new FlowExecutions("rollback", false, "rollback", 1)},
         new Object[] {"Global Error Handler", "org/mule/test/integration/transaction/transaction-owner-global-err.xml",
+            "other-rollback",
+            new FlowExecutions("other-rollback", true, "rollback", 1)},
+        new Object[] {"Global Error Handler", "org/mule/test/integration/transaction/transaction-owner-global-err.xml",
+            "other-other-rollback",
+            new FlowExecutions("other-other-rollback", true, "rollback", 2)},
+        new Object[] {"Global Error Handler", "org/mule/test/integration/transaction/transaction-owner-global-err.xml",
+            "contained-flow-name",
+            new FlowExecutions("contained-flow-name", true, "rollback", 2)},
+        new Object[] {"Global Error Handler", "org/mule/test/integration/transaction/transaction-owner-global-err.xml",
             "rollback-with-error-handler-reference-at-inner-transaction-location",
             new FlowExecutions("rollback-with-error-handler-reference-at-inner-transaction-location", true, "rollback", 1)},
         new Object[] {"Global Error Handler", "org/mule/test/integration/transaction/transaction-owner-global-err.xml",
@@ -219,6 +228,15 @@ public class TransactionRolledBackByOwnerTestCase extends AbstractIntegrationTes
         new Object[] {"Default Error Handler", "org/mule/test/integration/transaction/transaction-owner-default-err.xml",
             "rollback",
             new FlowExecutions("rollback", true, "rollback", 1)},
+        new Object[] {"Default Error Handler", "org/mule/test/integration/transaction/transaction-owner-default-err.xml",
+            "other-rollback",
+            new FlowExecutions("other-rollback", true, "rollback", 1)},
+        new Object[] {"Default Error Handler", "org/mule/test/integration/transaction/transaction-owner-default-err.xml",
+            "other-other-rollback",
+            new FlowExecutions("other-other-rollback", true, "rollback", 3)},
+        new Object[] {"Default Error Handler", "org/mule/test/integration/transaction/transaction-owner-default-err.xml",
+            "contained-flow-name",
+            new FlowExecutions("contained-flow-name", true, "rollback", 3)},
         new Object[] {"Default Error Handler", "org/mule/test/integration/transaction/transaction-owner-default-err.xml",
             "rollback-with-error-handler-reference-at-inner-transaction-location",
             new FlowExecutions("rollback-with-error-handler-reference-at-inner-transaction-location", true, "rollback", 1)},
@@ -295,10 +313,12 @@ public class TransactionRolledBackByOwnerTestCase extends AbstractIntegrationTes
       @Override
       public void onProfilingEvent(ProfilingEventType<TransactionProfilingEventContext> profilingEventType,
                                    TransactionProfilingEventContext profilingEventContext) {
-        states.add(profilingEventType.toString());
-        String originatingLocation = profilingEventContext.getEventOrginatingLocation().getLocation();
-        statesPerLocation.computeIfAbsent(originatingLocation, k -> new CopyOnWriteArrayList<>());
-        statesPerLocation.get(originatingLocation).add(profilingEventType.toString());
+        synchronized (statesLock) {
+          states.add(profilingEventType.toString());
+          String originatingLocation = profilingEventContext.getEventOrginatingLocation().getLocation();
+          statesPerLocation.computeIfAbsent(originatingLocation, k -> new ArrayList<>());
+          statesPerLocation.get(originatingLocation).add(profilingEventType.toString());
+        }
       }
 
       @Override
@@ -319,8 +339,10 @@ public class TransactionRolledBackByOwnerTestCase extends AbstractIntegrationTes
   }
 
   private void cleanStates() {
-    states = new CopyOnWriteArrayList<>();
-    statesPerLocation = new ConcurrentHashMap<>();
+    synchronized (statesLock) {
+      states = new ArrayList<>();
+      statesPerLocation = new HashMap<>();
+    }
   }
 
   @Test
@@ -338,10 +360,12 @@ public class TransactionRolledBackByOwnerTestCase extends AbstractIntegrationTes
         }
       }
 
-      assertStatesArrived();
-      assertCorrectStates(flowExecution);
-      if (flowExecution.globalHandlerExecutionsBeforeRollback != null) {
-        assertTransactionRolledBackAtTheRightHandler(flowExecution);
+      synchronized (statesLock) {
+        assertStatesArrived();
+        assertCorrectStates(flowExecution);
+        if (flowExecution.globalHandlerExecutionsBeforeRollback != null) {
+          assertTransactionRolledBackAtTheRightHandler(flowExecution);
+        }
       }
     });
   }
@@ -382,7 +406,7 @@ public class TransactionRolledBackByOwnerTestCase extends AbstractIntegrationTes
         + " times, but it got executed with states %s";
     if (flowExecution.ignoreExtraStates) {
       // We are only interested in the calls to the handler made up to the final state
-      states = new ArrayList<>(states.subList(0, states.indexOf(flowExecution.expectedFinalState)));
+      states = states.subList(0, states.indexOf(flowExecution.expectedFinalState));
       assertThat(format(reason, states), states, iterableWithSize(1));
     } else {
       assertThat(format(reason, states), states, iterableWithSize(flowExecution.globalHandlerExecutionsBeforeRollback));
