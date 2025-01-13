@@ -7,12 +7,12 @@
 package org.mule.test.components.tracing;
 
 import static org.mule.runtime.api.util.MuleSystemProperties.ADD_MULE_SPECIFIC_TRACING_INFORMATION_IN_TRACE_STATE_PROPERTY;
+import static org.mule.runtime.api.util.MuleSystemProperties.TRACING_LEVEL_CONFIGURATION_PATH;
 import static org.mule.runtime.http.api.HttpConstants.Method.GET;
 import static org.mule.runtime.tracer.customization.api.InternalSpanNames.GET_CONNECTION_SPAN_NAME;
 import static org.mule.runtime.tracer.customization.api.InternalSpanNames.OPERATION_EXECUTION_SPAN_NAME;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_ENDPOINT;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_TYPE;
-import static org.mule.runtime.api.util.MuleSystemProperties.TRACING_LEVEL_CONFIGURATION_PATH;
 import static org.mule.runtime.tracing.level.api.config.TracingLevel.DEBUG;
 import static org.mule.runtime.tracing.level.api.config.TracingLevel.MONITORING;
 import static org.mule.runtime.tracing.level.api.config.TracingLevel.OVERVIEW;
@@ -21,25 +21,20 @@ import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceSto
 import static org.mule.test.components.tracing.OpenTelemetryProtobufSpanUtils.getSpans;
 
 import static java.lang.String.format;
-import static java.util.Collections.emptyList;
-import static java.util.Collections.emptyMap;
-
-import static io.opentelemetry.api.trace.Span.getInvalid;
-import static io.opentelemetry.api.trace.SpanKind.INTERNAL;
-import static io.opentelemetry.api.trace.StatusCode.UNSET;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
-
-
 import static java.lang.System.clearProperty;
 import static java.lang.System.setProperty;
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
 
-import static com.linecorp.armeria.common.HttpResponse.from;
+import static com.linecorp.armeria.common.HttpResponse.of;
 import static com.linecorp.armeria.common.HttpStatus.OK;
+import static io.opentelemetry.api.trace.Span.getInvalid;
+import static io.opentelemetry.api.trace.SpanKind.INTERNAL;
+import static io.opentelemetry.api.trace.StatusCode.UNSET;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 
-import io.qameta.allure.Feature;
-import io.qameta.allure.Story;
 import org.mule.runtime.api.util.MultiMap;
 import org.mule.runtime.http.api.HttpService;
 import org.mule.runtime.http.api.client.HttpRequestOptions;
@@ -69,6 +64,9 @@ import com.linecorp.armeria.server.AbstractHttpService;
 import com.linecorp.armeria.server.ServerBuilder;
 import com.linecorp.armeria.server.ServiceRequestContext;
 import com.linecorp.armeria.testing.junit4.server.ServerRule;
+
+import org.jetbrains.annotations.NotNull;
+
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.Tracer;
@@ -77,12 +75,15 @@ import io.opentelemetry.context.Context;
 import io.opentelemetry.context.propagation.TextMapSetter;
 import io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceRequest;
 import io.opentelemetry.sdk.OpenTelemetrySdk;
-import org.jetbrains.annotations.NotNull;
+
 import org.junit.After;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
+
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 
 @RunnerDelegateTo(Parameterized.class)
 @Feature(PROFILING)
@@ -377,9 +378,9 @@ public class TraceStatePropagationTestCase extends
 
                    @Override
                    protected @NotNull HttpResponse doPost(@NotNull ServiceRequestContext ctx, @NotNull HttpRequest req) {
-                     return HttpResponse.from(req.aggregate().handle((aReq, cause) -> {
+                     return HttpResponse.of(req.aggregate().handle((aReq, cause) -> {
                        CompletableFuture<HttpResponse> responseFuture = new CompletableFuture<>();
-                       HttpResponse res = from(responseFuture);
+                       HttpResponse res = of(responseFuture);
                        try {
                          capturedExportedSpans.addAll(getSpans(ExportTraceServiceRequest
                              .parseFrom(new ByteArrayInputStream(aReq.content().array()))));
