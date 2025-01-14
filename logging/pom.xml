@@ -22,7 +22,6 @@
 
         <javaModuleName>org.mule.test.integration.logging</javaModuleName>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
-        <openTelemetryProtoVersion>0.3.0</openTelemetryProtoVersion>
     </properties>
 
     <build>
@@ -187,7 +186,6 @@
         <dependency>
             <groupId>io.opentelemetry</groupId>
             <artifactId>opentelemetry-proto</artifactId>
-            <version>${openTelemetryProtoVersion}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
