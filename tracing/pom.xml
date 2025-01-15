@@ -27,8 +27,6 @@
         <javaModuleName>org.mule.test.integration.tracing</javaModuleName>
         <skipExportTests>false</skipExportTests>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
-
-        <openTelemetryProtoVersion>0.3.0</openTelemetryProtoVersion>
     </properties>
 
     <dependencyManagement>
@@ -299,7 +297,6 @@
         <dependency>
             <groupId>io.opentelemetry</groupId>
             <artifactId>opentelemetry-proto</artifactId>
-            <version>${openTelemetryProtoVersion}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

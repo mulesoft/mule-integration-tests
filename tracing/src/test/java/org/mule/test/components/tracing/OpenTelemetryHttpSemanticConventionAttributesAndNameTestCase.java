@@ -23,12 +23,12 @@ import static java.lang.System.clearProperty;
 import static java.lang.System.setProperty;
 import static java.util.Arrays.asList;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.aMapWithSize;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.AnyOf.anyOf;
-import static org.junit.Assert.assertThat;
 
 import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
@@ -46,13 +46,15 @@ import java.util.function.Function;
 
 import javax.inject.Inject;
 
-import io.qameta.allure.Feature;
-import io.qameta.allure.Story;
-import junit.framework.AssertionFailedError;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
+
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
+
+import junit.framework.AssertionFailedError;
 
 @Feature(PROFILING)
 @Story(DEFAULT_CORE_EVENT_TRACER)
