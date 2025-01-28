@@ -8,6 +8,6 @@
 
     <flow name="mainFlow">
         <!-- Invokes a getter from a singleton bean which delegates to an extension using the ExtensionsClient -->
-        <set-payload value="#[app.registry.beanDependingOnExtensionsClient.ResultFromEatingApple]"/>
+        <set-payload value="#[app.registry.beanDependingOnExtensionsClient.resultFromEatingApple]"/>
     </flow>
 </mule>
