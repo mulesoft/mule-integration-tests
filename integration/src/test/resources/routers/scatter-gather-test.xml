@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xmlns:db="http://www.mulesoft.org/schema/mule/db"
       xmlns:test-components="http://www.mulesoft.org/schema/mule/test-components"
       xmlns:http="http://www.mulesoft.org/schema/mule/http"
       xmlns="http://www.mulesoft.org/schema/mule/core"
       xsi:schemaLocation="
                http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+               http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
                http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
                http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
                http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
@@ -91,6 +93,26 @@
             </route>
             <route>
                 <set-payload value="#[java!org::mule::tck::junit4::AbstractMuleContextTestCase::sleepFor(payload, 10000)]"/>
+            </route>
+        </scatter-gather>
+    </flow>
+
+    <db:config name="config">
+        <db:derby-connection database="test" subsubProtocol="memory" create="true" />
+    </db:config>
+
+    <flow name="select-with-timeout-inside-scatter-gather">
+        <scatter-gather timeout="${scatterGather.timeout}">>
+            <route>
+                <db:select config-ref="config">
+                    <db:sql>select sleep(10)</db:sql>
+                </db:select>
+            </route>
+            <route>
+                <set-payload value="apple"/>
+            </route>
+            <route>
+                <set-payload value="banana"/>
             </route>
         </scatter-gather>
     </flow>

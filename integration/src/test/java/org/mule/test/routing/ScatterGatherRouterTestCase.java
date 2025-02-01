@@ -117,6 +117,13 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
   }
 
   @Test
+  @Description("Scatter Gather timeout should ensure the underlying resources (like db connection) are cleaned up")
+  public void scatterGatherTimeoutShouldEnsureResourcesAreCleanedUp() throws Exception {
+    expectedException.expectCause(withClassName("org.mule.runtime.core.internal.routing.result.CompositeRoutingException"));
+    flowRunner("select-with-timeout-inside-scatter-gather").run();
+  }
+
+  @Test
   @Description("An error in a route results in a CompositeRoutingException containing details of exceptions.")
   public void routeWithException() throws Exception {
     assertRouteException("routeWithException", EXCEPTION_MESSAGE_TITLE_PREFIX
