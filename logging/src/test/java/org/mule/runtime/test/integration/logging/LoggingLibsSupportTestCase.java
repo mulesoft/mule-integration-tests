@@ -29,7 +29,6 @@ import java.net.URISyntaxException;
 
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -70,7 +69,6 @@ public class LoggingLibsSupportTestCase extends AbstractFakeMuleServerTestCase {
   }
 
   @Test
-  @Ignore("W-11730386")
   public void jclLibraryLogsSuccessfully() throws Exception {
     startRuntimeWithApp();
     probeLogFileForMessage("My logger is JCL");
