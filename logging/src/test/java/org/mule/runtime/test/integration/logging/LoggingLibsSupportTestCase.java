@@ -24,10 +24,7 @@ import org.mule.test.infrastructure.deployment.AbstractFakeMuleServerTestCase;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
@@ -80,22 +77,10 @@ public class LoggingLibsSupportTestCase extends AbstractFakeMuleServerTestCase {
     File logFile = new File(muleServer.getLogsDir().toString() + "/mule-app-logging-app.log");
 
     probe(() -> hasLine(containsString(expectedMessage)).matches(logFile),
-          () -> {
-            String errorMessage = format("Text '%s' not present in the logs", expectedMessage);
-            String logContents = readLogFile(logFile);
-            return errorMessage + "\n\nLog file contents:\n" + logContents;
-          });
+          () -> format("Text '%s' not present in the logs", expectedMessage));
   }
 
-  private String readLogFile(File logFile) {
-    try {
-      return new String(Files.readAllBytes(logFile.toPath()), StandardCharsets.UTF_8);
-    } catch (IOException e) {
-      return "Failed to read log file: " + e.getMessage();
-    }
-  }
-
-  private void startRuntimeWithApp() throws URISyntaxException, IOException, MuleException, MalformedURLException {
+  private void startRuntimeWithApp() throws URISyntaxException, IOException, MuleException {
     final ApplicationFileBuilder loggingAppFileBuilder =
         new ApplicationFileBuilder("logging-app").definedBy("log/logging-libs/logging-libs-app.xml")
             .dependingOn(new JarFileBuilder("loggerLibsClient",

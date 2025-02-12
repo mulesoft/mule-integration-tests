@@ -24,12 +24,9 @@ import org.mule.test.infrastructure.deployment.AbstractFakeMuleServerTestCase;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 
-import org.slf4j.bridge.SLF4JBridgeHandler;
+import io.qameta.allure.Issue;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -40,23 +37,11 @@ import io.qameta.allure.Story;
 
 @Features({@Feature(INTEGRATIONS_TESTS), @Feature(LOGGING)})
 @Story(LOGGING_LIBS_SUPPORT)
+@Issue("W-11730386")
 public class JclLoggingSupportTestCase extends AbstractFakeMuleServerTestCase {
 
   @Rule
   public UseMuleLog4jContextFactory muleLogging = new UseMuleLog4jContextFactory();
-
-  @Override
-  public void setUp() throws Exception {
-    super.setUp();
-    SLF4JBridgeHandler.removeHandlersForRootLogger();
-    SLF4JBridgeHandler.install();
-  }
-
-  @Override
-  public void tearDown() throws Exception {
-    super.tearDown();
-    SLF4JBridgeHandler.uninstall();
-  }
 
   @Test
   public void jclLibraryLogsSuccessfully() throws Exception {
@@ -68,22 +53,10 @@ public class JclLoggingSupportTestCase extends AbstractFakeMuleServerTestCase {
     File logFile = new File(muleServer.getLogsDir().toString() + "/mule-app-logging-app.log");
 
     probe(() -> hasLine(containsString(expectedMessage)).matches(logFile),
-          () -> {
-            String errorMessage = format("Text '%s' not present in the logs", expectedMessage);
-            String logContents = readLogFile(logFile);
-            return errorMessage + "\n\nLog file contents:\n" + logContents;
-          });
+          () -> format("Text '%s' not present in the logs", expectedMessage));
   }
 
-  private String readLogFile(File logFile) {
-    try {
-      return new String(Files.readAllBytes(logFile.toPath()), StandardCharsets.UTF_8);
-    } catch (IOException e) {
-      return "Failed to read log file: " + e.getMessage();
-    }
-  }
-
-  private void startRuntimeWithApp() throws URISyntaxException, IOException, MuleException, MalformedURLException {
+  private void startRuntimeWithApp() throws URISyntaxException, IOException, MuleException {
     final ApplicationFileBuilder loggingAppFileBuilder =
         new ApplicationFileBuilder("logging-app").definedBy("log/logging-libs/jcl-logging-app.xml")
             .dependingOn(new JarFileBuilder("JclLoggerClient",
