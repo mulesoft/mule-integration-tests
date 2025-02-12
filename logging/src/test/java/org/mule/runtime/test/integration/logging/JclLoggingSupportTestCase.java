@@ -26,7 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import org.slf4j.bridge.SLF4JBridgeHandler;
+import io.qameta.allure.Issue;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -37,40 +37,16 @@ import io.qameta.allure.Story;
 
 @Features({@Feature(INTEGRATIONS_TESTS), @Feature(LOGGING)})
 @Story(LOGGING_LIBS_SUPPORT)
-public class LoggingLibsSupportTestCase extends AbstractFakeMuleServerTestCase {
+@Issue("W-11730386")
+public class JclLoggingSupportTestCase extends AbstractFakeMuleServerTestCase {
 
   @Rule
   public UseMuleLog4jContextFactory muleLogging = new UseMuleLog4jContextFactory();
 
-  @Override
-  public void setUp() throws Exception {
-    super.setUp();
-    SLF4JBridgeHandler.removeHandlersForRootLogger();
-    SLF4JBridgeHandler.install();
-  }
-
-  @Override
-  public void tearDown() throws Exception {
-    super.tearDown();
-    SLF4JBridgeHandler.uninstall();
-  }
-
   @Test
-  public void slf4jLibraryLogsSuccessfully() throws Exception {
+  public void jclLibraryLogsSuccessfully() throws Exception {
     startRuntimeWithApp();
-    probeLogFileForMessage("My logger is SLF4J");
-  }
-
-  @Test
-  public void log4jLibraryLogsSuccessfully() throws Exception {
-    startRuntimeWithApp();
-    probeLogFileForMessage("My logger is LOG4J");
-  }
-
-  @Test
-  public void julLibraryLogsSuccessfully() throws Exception {
-    startRuntimeWithApp();
-    probeLogFileForMessage("My logger is JUL");
+    probeLogFileForMessage("My logger is JCL");
   }
 
   private void probeLogFileForMessage(String expectedMessage) {
@@ -82,12 +58,12 @@ public class LoggingLibsSupportTestCase extends AbstractFakeMuleServerTestCase {
 
   private void startRuntimeWithApp() throws URISyntaxException, IOException, MuleException {
     final ApplicationFileBuilder loggingAppFileBuilder =
-        new ApplicationFileBuilder("logging-app").definedBy("log/logging-libs/logging-libs-app.xml")
-            .dependingOn(new JarFileBuilder("loggerLibsClient",
+        new ApplicationFileBuilder("logging-app").definedBy("log/logging-libs/jcl-logging-app.xml")
+            .dependingOn(new JarFileBuilder("JclLoggerClient",
                                             new CompilerUtils.JarCompiler()
-                                                .compiling(new File(LoggingLibsSupportTestCase.class
-                                                    .getResource("/log/logging-libs/java/logging/LoggerLibsClient.java").toURI()))
-                                                .compile("logger-libs-client.jar")));
+                                                .compiling(new File(JclLoggingSupportTestCase.class
+                                                    .getResource("/log/logging-libs/java/logging/JclLoggerClient.java").toURI()))
+                                                .compile("jcl-logger-client.jar")));
 
     muleServer.start();
     muleServer.deploy(loggingAppFileBuilder.getArtifactFile().toURI().toURL(), "logging-app");

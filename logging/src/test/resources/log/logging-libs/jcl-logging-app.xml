@@ -3,9 +3,9 @@
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 
-    <object name="logger" class="logging.LoggerLibsClient"/>
+    <object name="logger" class="logging.JclLoggerClient"/>
 
-    <flow name="logging">
+    <flow name="jclLogging">
         <scheduler>
             <scheduling-strategy >
                 <fixed-frequency timeUnit="DAYS" frequency="1"/>
