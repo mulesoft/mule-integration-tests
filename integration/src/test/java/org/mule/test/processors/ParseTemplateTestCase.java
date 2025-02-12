@@ -233,9 +233,9 @@ public class ParseTemplateTestCase extends AbstractIntegrationTestCase {
   @Test
   public void subexpressionsExampleFromDocs() throws Exception {
     CoreEvent event = flowRunner("subexpressionsExampleFromDocs").run();
-    assertThat(event.getMessage().getPayload().getValue(), equalTo("<td>hello WORLD</td>" + lineSeparator()
-        + "<td>hello WORLD</td>" + lineSeparator()
-        + "<td>hello upper(\"world\")</td>" + lineSeparator()
+    assertThat(event.getMessage().getPayload().getValue(), equalTo("<td>hello WORLD</td>\n"
+        + "<td>hello WORLD</td>\n"
+        + "<td>hello upper(\"world\")</td>\n"
         + "<td>hello ++ upper(\"world\")</td>"));
   }
 
@@ -244,12 +244,12 @@ public class ParseTemplateTestCase extends AbstractIntegrationTestCase {
     CoreEvent event = flowRunner("escapeExampleFromDocs").run();
 
     // Current behavior here has [JKL] preceded by the escape character in the result which is not what we have in the docs
-    assertThat(event.getMessage().getPayload().getValue(), equalTo("<td>#[</td>" + lineSeparator()
-        + "<td>abcd#[-1234WORLD.log</td>" + lineSeparator()
-        + "<td>'abc'def'</td>" + lineSeparator()
-        + "<td>abc'def</td>" + lineSeparator()
-        + "<td>\"xyz\"xyz\"</td>" + lineSeparator()
-        + "<td>xyz\"xyz</td>" + lineSeparator()
+    assertThat(event.getMessage().getPayload().getValue(), equalTo("<td>#[</td>\n"
+        + "<td>abcd#[-1234WORLD.log</td>\n"
+        + "<td>'abc'def'</td>\n"
+        + "<td>abc'def</td>\n"
+        + "<td>\"xyz\"xyz\"</td>\n"
+        + "<td>xyz\"xyz</td>\n"
         + "<td>abc$DEF#ghi\\[JKL]</td>"));
   }
 
