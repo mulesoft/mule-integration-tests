@@ -21,6 +21,8 @@
         <javaModuleName>org.mule.test.integration.extension.deprecated.oauth.client.api</javaModuleName>
         <formatterConfigPath>../../formatter.xml</formatterConfigPath>
         <skip.integration.tests>false</skip.integration.tests>
+
+        <munit.extensions.maven.plugin.version>1.5.0</munit.extensions.maven.plugin.version>
     </properties>
 
     <build>
