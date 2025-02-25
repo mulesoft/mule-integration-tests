@@ -25,6 +25,8 @@
         <munit.input.directory>src/test/munit</munit.input.directory>
         <munit.output.directory>${basedir}/target/test-mule/munit</munit.output.directory>
 
+        <munit.extensions.maven.plugin.version>1.5.0</munit.extensions.maven.plugin.version>
+
         <mulesoftLicenseVersion>1.1.0</mulesoftLicenseVersion>
         <license.maven.plugin.version>4.2</license.maven.plugin.version>
         <licensePath>LICENSE_HEADER_80.txt</licensePath>
