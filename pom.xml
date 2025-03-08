@@ -37,7 +37,7 @@
 
     <properties>
         <munitVersion>3.5.0-rc1</munitVersion>
-        <muleExtensionTestSoapTestVersion>1.6.15-SNAPSHOT</muleExtensionTestSoapTestVersion>
+        <muleExtensionTestSoapTestVersion>1.6.15-rc1</muleExtensionTestSoapTestVersion>
 
         <apacheHttpClientVersion>4.5.13</apacheHttpClientVersion>
         <springVersion>5.1.6.RELEASE</springVersion>
