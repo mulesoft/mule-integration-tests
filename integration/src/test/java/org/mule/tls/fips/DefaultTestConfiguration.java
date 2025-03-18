@@ -34,56 +34,6 @@ public class DefaultTestConfiguration implements TestConfiguration {
   }
 
   @Override
-  public String getTestStoreType() {
-    return delegate.getTestStoreType();
-  }
-
-  @Override
-  public String getTestSslCaCerts() {
-    return delegate.getTestSslCaCerts();
-  }
-
-  @Override
-  public String getTestSslKeyStore() {
-    return delegate.getTestSslKeyStore();
-  }
-
-  @Override
-  public String getTestStorePassword() {
-    return delegate.getTestStorePassword();
-  }
-
-  @Override
-  public String getTestServerKeyStore() {
-    return delegate.getTestServerKeyStore();
-  }
-
-  @Override
-  public String getTestGenericTrustKeyStore() {
-    return delegate.getTestGenericTrustKeyStore();
-  }
-
-  @Override
-  public String getTestClientKeyStore() {
-    return delegate.getTestClientKeyStore();
-  }
-
-  @Override
-  public String getTlsClientKeyStoreWithMultipleKeys() {
-    return delegate.getTlsClientKeyStoreWithMultipleKeys();
-  }
-
-  @Override
-  public String getTlsTrustStoreFileWithoutMuleServerCertificate() {
-    return delegate.getTlsTrustStoreFileWithoutMuleServerCertificate();
-  }
-
-  @Override
-  public int getRandomCount() {
-    return delegate.getRandomCount();
-  }
-
-  @Override
   public String getKeyStorePKS12Type() {
     return delegate.getKeyStorePKS12Type();
   }
@@ -101,45 +51,5 @@ public class DefaultTestConfiguration implements TestConfiguration {
   @Override
   public String getTrustFileForCrl() {
     return delegate.getTrustFileForCrl();
-  }
-
-  @Override
-  public String getTestSslKeyStoreWithHostName() {
-    return delegate.getTestSslKeyStoreWithHostName();
-  }
-
-  @Override
-  public String getTestSslTrustStoreWithHostName() {
-    return delegate.getTestSslTrustStoreWithHostName();
-  }
-
-  @Override
-  public String getTestSniClientTrustStore() {
-    return delegate.getTestSniClientTrustStore();
-  }
-
-  @Override
-  public String getTestTls13TrustStore() {
-    return delegate.getTestTls13TrustStore();
-  }
-
-  @Override
-  public String getTestTls13KeyStore() {
-    return delegate.getTestTls13KeyStore();
-  }
-
-  @Override
-  public String resolveStorePassword(String defaultPassword) {
-    return delegate.resolveStorePassword(defaultPassword);
-  }
-
-  @Override
-  public String getTestCipherSuite() {
-    return delegate.getTestCipherSuite();
-  }
-
-  @Override
-  public String getInvalidTestKeyStore() {
-    return delegate.getInvalidTestKeyStore();
   }
 }
