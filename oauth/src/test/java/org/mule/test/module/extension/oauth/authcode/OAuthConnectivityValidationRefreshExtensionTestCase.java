@@ -21,8 +21,8 @@ import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.api.connectivity.ConnectivityTestingService;
 import org.mule.test.module.extension.oauth.BaseOAuthExtensionTestCase;
 
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 

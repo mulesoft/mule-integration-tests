@@ -6,11 +6,13 @@
  */
 package org.mule.test.integration.schedule;
 
-import static java.util.Arrays.asList;
+
 import static org.mule.runtime.api.component.location.Location.builder;
 import static org.mule.test.allure.AllureConstants.LazyInitializationFeature.LAZY_INITIALIZATION;
 import static org.mule.test.allure.AllureConstants.MuleDsl.DslValidationStory.DSL_VALIDATION_STORY;
 import static org.mule.test.allure.AllureConstants.SchedulerFeature.SCHEDULER;
+
+import static java.util.Arrays.asList;
 
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.config.api.LazyComponentInitializer;
@@ -18,7 +20,7 @@ import org.mule.test.runner.RunnerDelegateTo;
 
 import java.util.Collection;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.junit.Rule;
 import org.junit.Test;

@@ -6,9 +6,10 @@
  */
 package org.mule.test.integration.parsing;
 
-import static org.hamcrest.core.StringStartsWith.startsWith;
-import static org.junit.Assert.assertThat;
 import static org.mule.test.allure.AllureConstants.XmlSdk.XML_SDK;
+
+import static org.hamcrest.core.StringStartsWith.startsWith;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.runtime.api.component.Component;
@@ -17,7 +18,7 @@ import org.mule.runtime.api.component.location.Location;
 import org.mule.runtime.api.util.ComponentLocationProvider;
 import org.mule.test.IntegrationTestCaseRunnerConfig;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.junit.Test;
 

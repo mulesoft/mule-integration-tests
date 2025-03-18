@@ -20,8 +20,8 @@ import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.api.connectivity.ConnectivityTestingService;
 import org.mule.test.IntegrationTestCaseRunnerConfig;
 
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 import org.junit.Test;
 

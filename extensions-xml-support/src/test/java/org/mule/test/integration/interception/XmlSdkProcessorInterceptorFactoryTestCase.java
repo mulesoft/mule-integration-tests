@@ -21,6 +21,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
+
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -31,7 +33,6 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
 
 import org.mule.functional.api.exception.ExpectedError;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
@@ -61,14 +62,16 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Features;
 import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
