@@ -34,7 +34,6 @@ public class HttpRequesterOcspNoRevocationTestCase extends AbstractHttpOcspRevoc
     super(configFile, VALID_OCSP_LIST, certAlias);
   }
 
-
   @Parameters
   public static Collection<Object[]> data() {
     return asList(new Object[][] {
@@ -48,5 +47,4 @@ public class HttpRequesterOcspNoRevocationTestCase extends AbstractHttpOcspRevoc
   public void testNoRevokedEntity() throws Exception {
     verifyNotRevokedEntity();
   }
-
 }

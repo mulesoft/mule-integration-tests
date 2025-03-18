@@ -18,5 +18,4 @@ public class HttpRequesterClrNoRevocationTestCase extends AbstractHttpRequesterC
   public void testServerNotRevoked() throws Exception {
     verifyNotRevokedEntity();
   }
-
 }

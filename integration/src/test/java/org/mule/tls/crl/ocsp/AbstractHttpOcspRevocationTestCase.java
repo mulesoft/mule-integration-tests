@@ -30,7 +30,7 @@ public abstract class AbstractHttpOcspRevocationTestCase extends AbstractHttpTls
   @Rule
   public SystemProperty certAliasSystemProperty;
 
-  private static String RUN_OCSP_SERVER_COMMAND = "openssl ocsp " +
+  private static final String RUN_OCSP_SERVER_COMMAND = "openssl ocsp " +
       "-index test-classes/tls/ocsp/%s " +
       "-port %d " +
       "-CA test-classes/tls/ocsp/server.crt " +
@@ -98,7 +98,7 @@ public abstract class AbstractHttpOcspRevocationTestCase extends AbstractHttpTls
   }
 
   @After
-  public void tearDown() throws IOException {
+  public void tearDown() {
     if (process != null) {
       process.destroy();
     }

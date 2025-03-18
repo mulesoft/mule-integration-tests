@@ -10,7 +10,7 @@ import static org.mule.tls.fips.DefaultTestConfiguration.isFipsTesting;
 
 import static java.util.Arrays.asList;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assume.assumeFalse;
 
 import org.mule.test.runner.RunnerDelegateTo;
@@ -20,6 +20,7 @@ import java.util.Collection;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 @RunnerDelegateTo(Parameterized.class)
 public class HttpRequesterOcspRevocationTestCase extends AbstractHttpOcspRevocationTestCase {
@@ -34,8 +35,7 @@ public class HttpRequesterOcspRevocationTestCase extends AbstractHttpOcspRevocat
     super(configFile, REVOKED_OCSP_LIST, certAlias);
   }
 
-
-  @Parameterized.Parameters
+  @Parameters
   public static Collection<Object[]> data() {
     return asList(new Object[][] {
         {"http-requester-ocsp-revocation-config.xml", null},
@@ -45,13 +45,8 @@ public class HttpRequesterOcspRevocationTestCase extends AbstractHttpOcspRevocat
   }
 
   @Test
-  public void testServerCertifiedAndRevoked() throws Exception {
-    try {
-      runRevocationTestFlow();
-      fail("CertificateRevokedException should have been thrown.");
-    } catch (Exception e) {
-      verifyRevocationException(e);
-    }
+  public void testServerCertifiedAndRevoked() {
+    var exception = assertThrows(Exception.class, this::runRevocationTestFlow);
+    verifyRevocationException(exception);
   }
-
 }

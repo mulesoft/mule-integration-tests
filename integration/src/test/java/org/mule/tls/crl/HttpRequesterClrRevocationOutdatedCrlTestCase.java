@@ -6,7 +6,7 @@
  */
 package org.mule.tls.crl;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThrows;
 
 import org.junit.Test;
 
@@ -18,13 +18,8 @@ public class HttpRequesterClrRevocationOutdatedCrlTestCase extends AbstractHttpR
   }
 
   @Test
-  public void testServerCertifiedAndOutdatedCrl() throws Exception {
-    try {
-      runRevocationTestFlow();
-      fail("CertPathValidatorException should have been thrown");
-    } catch (Exception e) {
-      verifyUndeterminedRevocationException(e);
-    }
+  public void testServerCertifiedAndOutdatedCrl() {
+    var exception = assertThrows(Exception.class, this::runRevocationTestFlow);
+    verifyUndeterminedRevocationException(exception);
   }
-
 }

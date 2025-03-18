@@ -14,20 +14,21 @@ import static java.security.cert.CRLReason.KEY_COMPROMISE;
 import static org.apache.commons.lang3.exception.ExceptionUtils.getRootCause;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertThat;
 
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
+import org.mule.test.AbstractIntegrationTestCase;
 
 import java.security.cert.CertPathValidatorException;
 import java.security.cert.CertificateRevokedException;
 
 import org.junit.Rule;
 
-public abstract class AbstractHttpTlsRevocationTestCase extends AbstractHttpTestCase {
+public abstract class AbstractHttpTlsRevocationTestCase extends AbstractIntegrationTestCase {
 
   private static final String UNDETERMINED_REVOCATION_ERROR_MESSAGE = "Could not determine revocation status";
 
@@ -54,11 +55,11 @@ public abstract class AbstractHttpTlsRevocationTestCase extends AbstractHttpTest
    * be returned and {@value ENTITY_CERTIFIED_REVOCATION_SUB_PATH } for revocation scenarios where tls/crl/validCrl list should be
    * returned.
    */
-  protected static String ENTITY_CERTIFIED_NO_REVOCATION_SUB_PATH = "entity1";
+  protected static final String ENTITY_CERTIFIED_NO_REVOCATION_SUB_PATH = "entity1";
 
-  protected static String ENTITY_CERTIFIED_OUTDATED_CRL_SUB_PATH = getEntity2KeyStore();
+  protected static final String ENTITY_CERTIFIED_OUTDATED_CRL_SUB_PATH = getEntity2KeyStore();
 
-  protected static String ENTITY_CERTIFIED_REVOCATION_SUB_PATH = "entity3";
+  protected static final String ENTITY_CERTIFIED_REVOCATION_SUB_PATH = "entity3";
 
   @Rule
   public DynamicPort port = new DynamicPort("port");

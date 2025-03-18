@@ -10,9 +10,9 @@ import static org.mule.tls.fips.DefaultTestConfiguration.isFipsTesting;
 
 import static org.apache.commons.lang3.exception.ExceptionUtils.getRootCause;
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assume.assumeFalse;
 
 import java.security.cert.CertPathValidatorException;
@@ -22,7 +22,7 @@ import org.junit.Test;
 
 public class HttpPreferringCrlTestCase extends AbstractHttpTlsRevocationTestCase {
 
-  public static String EXPECTED_OCSP_ERROR_MESSAGE = "Certificate does not specify OCSP responder";
+  public static final String EXPECTED_OCSP_ERROR_MESSAGE = "Certificate does not specify OCSP responder";
 
   public HttpPreferringCrlTestCase() {
     super("http-requester-tls-crl-standard-config.xml", REVOKED_CRL_FILE_PATH, ENTITY_CERTIFIED_REVOCATION_SUB_PATH);
@@ -35,46 +35,30 @@ public class HttpPreferringCrlTestCase extends AbstractHttpTlsRevocationTestCase
   }
 
   @Test
-  public void testPreferCrlWithFallback() throws Exception {
-    try {
-      runFlow("testFlowPreferCrl");
-      fail("CertificateRevokedException should have been thrown.");
-    } catch (Exception e) {
-      verifyRevocationException(e);
-    }
+  public void testPreferCrlWithFallback() {
+    verifyRevocationForFlow("testFlowPreferCrl");
   }
 
   @Test
-  public void testPreferCrlNoFallback() throws Exception {
-    try {
-      runFlow("testFlowPreferCrlNoFallback");
-      fail("CertificateRevokedException should have been thrown.");
-    } catch (Exception e) {
-      verifyRevocationException(e);
-    }
+  public void testPreferCrlNoFallback() {
+    verifyRevocationForFlow("testFlowPreferCrlNoFallback");
   }
 
   @Test
-  public void testNotPreferCrlWithFallback() throws Exception {
-    try {
-      runFlow("testFlowNotPreferCrl");
-      fail("CertificateRevokedException should have been thrown.");
-    } catch (Exception e) {
-      verifyRevocationException(e);
-    }
+  public void testNotPreferCrlWithFallback() {
+    verifyRevocationForFlow("testFlowNotPreferCrl");
   }
 
   @Test
-  public void testNotPreferCrlNoFallback() throws Exception {
-    try {
-      runFlow("testFlowNotPreferCrlNoFallback");
-      fail("If No preferring CRL and No fallback, so an exception that asks for an OCSP responder should be thrown " +
-          "since it is absent in the certificate");
-    } catch (Exception e) {
-      Throwable rootException = getRootCause(e);
-      assertThat(rootException, is(instanceOf(CertPathValidatorException.class)));
-      assertThat(rootException.getMessage(), is(EXPECTED_OCSP_ERROR_MESSAGE));
-    }
+  public void testNotPreferCrlNoFallback() {
+    var exception = assertThrows(Exception.class, () -> runFlow("testFlowNotPreferCrlNoFallback"));
+    Throwable rootException = getRootCause(exception);
+    assertThat(rootException, is(instanceOf(CertPathValidatorException.class)));
+    assertThat(rootException.getMessage(), is(EXPECTED_OCSP_ERROR_MESSAGE));
   }
 
+  private void verifyRevocationForFlow(String testFlowPreferCrl) {
+    var exception = assertThrows(Exception.class, () -> runFlow(testFlowPreferCrl));
+    verifyRevocationException(exception);
+  }
 }

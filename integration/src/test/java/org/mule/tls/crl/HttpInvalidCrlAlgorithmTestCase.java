@@ -12,8 +12,9 @@ import static java.util.Arrays.asList;
 
 import static org.apache.commons.lang3.exception.ExceptionUtils.getRootCause;
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assume.assumeFalse;
 
 import org.mule.functional.junit4.AbstractConfigurationFailuresTestCase;
@@ -39,15 +40,13 @@ public class HttpInvalidCrlAlgorithmTestCase extends AbstractConfigurationFailur
 
   @Test
   public void testInvalidCrlAlgorithm() {
-    try {
-      loadConfiguration("http-requester-tls-crl-invalid-algorithm-config.xml");
-    } catch (Exception e) {
-      Throwable rootCause = getRootCause(e);
-      assertThat(rootCause, instanceOf(CreateException.class));
-      assertThat(rootCause.getMessage(), is(INVALID_CRL_ALGORITHM_SunX509));
-    }
+    var exception = assertThrows(Exception.class, () -> loadConfiguration("http-requester-tls-crl-invalid-algorithm-config.xml"));
+    Throwable rootCause = getRootCause(exception);
+    assertThat(rootCause, instanceOf(CreateException.class));
+    assertThat(rootCause.getMessage(), is(INVALID_CRL_ALGORITHM_SunX509));
   }
 
+  @Override
   protected List<ExtensionModel> getRequiredExtensions() {
     ExtensionModel mule = MuleExtensionModelProvider.getExtensionModel();
     ExtensionModel tls = MuleExtensionModelProvider.getTlsExtensionModel();

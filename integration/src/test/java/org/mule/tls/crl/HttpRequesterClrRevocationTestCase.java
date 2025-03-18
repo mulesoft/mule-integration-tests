@@ -6,10 +6,7 @@
  */
 package org.mule.tls.crl;
 
-import static org.mule.tls.crl.AbstractHttpTlsRevocationTestCase.ENTITY_CERTIFIED_REVOCATION_SUB_PATH;
-import static org.mule.tls.crl.AbstractHttpTlsRevocationTestCase.REVOKED_CRL_FILE_PATH;
-
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThrows;
 
 import org.junit.Test;
 
@@ -20,13 +17,8 @@ public class HttpRequesterClrRevocationTestCase extends AbstractHttpRequesterClr
   }
 
   @Test
-  public void testServerCertifiedAndRevoked() throws Exception {
-    try {
-      runRevocationTestFlow();
-      fail("CertificateRevokedException should have been thrown.");
-    } catch (Exception e) {
-      verifyRevocationException(e);
-    }
+  public void testServerCertifiedAndRevoked() {
+    var exception = assertThrows(Exception.class, this::runRevocationTestFlow);
+    verifyRevocationException(exception);
   }
-
 }
