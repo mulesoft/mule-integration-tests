@@ -6,15 +6,17 @@
  */
 package org.mule.test.module.extension.oauth.authcode;
 
-import static java.util.Optional.empty;
-import static java.util.stream.Collectors.toList;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.component.location.Location.builder;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentLocatorStory.SEARCH_CONFIGURATION;
+
+import static java.util.Optional.empty;
+import static java.util.stream.Collectors.toList;
+
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.config.api.LazyComponentInitializer;
@@ -22,7 +24,7 @@ import org.mule.test.module.extension.oauth.BaseOAuthExtensionTestCase;
 
 import java.util.List;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.junit.Test;
 

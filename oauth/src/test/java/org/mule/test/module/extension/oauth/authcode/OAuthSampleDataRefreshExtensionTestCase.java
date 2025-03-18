@@ -34,8 +34,8 @@ import org.mule.test.module.extension.oauth.BaseOAuthExtensionTestCase;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 

@@ -12,7 +12,7 @@ import org.mule.tck.testmodels.fruit.Apple;
 
 import java.util.concurrent.ExecutionException;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 /**
  * Just a Spring bean that depends on {@link ExtensionsClient}.

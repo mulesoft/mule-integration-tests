@@ -36,7 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.openjdk.jmh.annotations.Fork;
 import org.openjdk.jmh.annotations.OutputTimeUnit;

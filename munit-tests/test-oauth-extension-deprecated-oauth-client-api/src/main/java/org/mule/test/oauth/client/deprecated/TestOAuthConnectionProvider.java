@@ -17,7 +17,7 @@ import org.mule.runtime.oauth.api.http.HttpClientFactory;
 import java.util.HashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 /**
  * A dummy connection provider that will simulate creating an OAuth Dancer extending from
