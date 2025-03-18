@@ -4,7 +4,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tls.crl;
+package org.mule.tls.crl.client;
 
 import static org.mule.tls.fips.DefaultTestConfiguration.getDefaultEnvironmentConfiguration;
 import static org.mule.tls.fips.DefaultTestConfiguration.isFipsTesting;
@@ -15,6 +15,7 @@ import static org.junit.runners.Parameterized.Parameters;
 
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.runner.RunnerDelegateTo;
+import org.mule.tls.crl.AbstractHttpTlsRevocationTestCase;
 
 import java.util.Collection;
 

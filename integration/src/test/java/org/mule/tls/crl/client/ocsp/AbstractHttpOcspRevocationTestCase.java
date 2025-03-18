@@ -4,7 +4,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tls.crl.ocsp;
+package org.mule.tls.crl.client.ocsp;
 
 import static java.lang.String.format;
 

@@ -4,7 +4,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.tls.crl;
+package org.mule.tls.crl.client;
 
 import static org.mule.tls.fips.DefaultTestConfiguration.isFipsTesting;
 
@@ -14,6 +14,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assume.assumeFalse;
+
+import org.mule.tls.crl.AbstractHttpTlsRevocationTestCase;
 
 import java.security.cert.CertPathValidatorException;
 
