@@ -36,8 +36,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
-import javax.inject.Inject;
-
 import io.opentelemetry.sdk.common.CompletableResultCode;
 import io.opentelemetry.sdk.trace.data.SpanData;
 import io.opentelemetry.sdk.trace.export.SpanExporter;
@@ -47,6 +45,8 @@ import org.junit.Test;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
+
+import jakarta.inject.Inject;
 
 @Feature(PROFILING)
 @Story(OPEN_TELEMETRY_EXPORTER)

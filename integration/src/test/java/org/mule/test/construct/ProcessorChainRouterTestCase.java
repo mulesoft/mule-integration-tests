@@ -11,18 +11,18 @@ import static org.mule.runtime.api.util.MuleSystemProperties.ENABLE_PROPAGATION_
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ProcessorChainRouterStory.PROCESSOR_CHAIN_ROUTER;
 
+import static java.lang.Boolean.parseBoolean;
+import static java.lang.System.setProperty;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.fail;
-import static org.junit.rules.ExpectedException.none;
-
-import static java.lang.Boolean.parseBoolean;
-import static java.lang.System.setProperty;
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import org.mule.functional.junit4.rules.HttpServerRule;
 import org.mule.runtime.api.component.execution.ComponentExecutionException;
@@ -39,19 +39,19 @@ import org.mule.tests.api.TestQueueManager;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-import javax.inject.Inject;
-import javax.inject.Named;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Rule;
+import org.junit.Test;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
-import org.junit.AfterClass;
-import org.junit.After;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 @Feature(ROUTERS)
 @Story(PROCESSOR_CHAIN_ROUTER)
@@ -98,9 +98,6 @@ public class ProcessorChainRouterTestCase extends AbstractIntegrationTestCase im
 
   @Rule
   public HttpServerRule httpServerRule = new HttpServerRule("httpPort");
-
-  @Rule
-  public ExpectedException expected = none();
 
   private static boolean previousPropagationEnabledInTracing;
 
@@ -260,10 +257,9 @@ public class ProcessorChainRouterTestCase extends AbstractIntegrationTestCase im
 
     CompletableFuture<ExecutionResult> completableFuture = invalidExpressionParamCompositeChainRouter.execute(event);
 
-    expected.expect(ExecutionException.class);
-    expected.expectCause(instanceOf(ComponentExecutionException.class));
-    expected.expectCause(hasCause(instanceOf(ExpressionRuntimeException.class)));
-    executionResult = completableFuture.get();
+    var thrown = assertThrows(ExecutionException.class, () -> executionResult = completableFuture.get());
+    assertThat(thrown.getCause(), instanceOf(ComponentExecutionException.class));
+    assertThat(thrown.getCause(), hasCause(instanceOf(ExpressionRuntimeException.class)));
   }
 
   private void assertProcessorChainResult(Event returnedEvent) {

@@ -12,15 +12,15 @@ import static org.mule.runtime.tracing.level.api.config.TracingLevel.MONITORING;
 import static org.mule.runtime.tracing.level.api.config.TracingLevel.OVERVIEW;
 import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.DEFAULT_CORE_EVENT_TRACER;
+import static org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy.ERROR_STATUS;
 
 import static java.lang.System.clearProperty;
 import static java.lang.System.setProperty;
 import static java.util.Arrays.asList;
-import static org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy.ERROR_STATUS;
 
+import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
 import org.mule.runtime.tracer.api.sniffer.ExportedSpanSniffer;
-import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.tck.junit4.AbstractMuleTestCase;
 import org.mule.tck.probe.JUnitProbe;
 import org.mule.tck.probe.PollingProber;
@@ -31,13 +31,14 @@ import java.nio.file.FileSystems;
 import java.util.Collection;
 import java.util.function.Function;
 
-import javax.inject.Inject;
-
-import io.qameta.allure.Feature;
-import io.qameta.allure.Story;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
+
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
+
+import jakarta.inject.Inject;
 
 @Feature(PROFILING)
 @Story(DEFAULT_CORE_EVENT_TRACER)

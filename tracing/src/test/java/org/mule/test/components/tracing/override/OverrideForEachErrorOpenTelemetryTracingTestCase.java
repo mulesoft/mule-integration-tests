@@ -11,9 +11,9 @@ import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.DEFAULT_CORE_EVENT_TRACER;
 import static org.mule.test.infrastructure.profiling.tracing.TracingTestUtils.getDefaultAttributesToAssertExistence;
 
+import static java.lang.String.format;
 import static java.lang.System.clearProperty;
 import static java.lang.System.setProperty;
-import static java.lang.String.format;
 import static java.nio.file.FileSystems.getDefault;
 import static java.util.Arrays.asList;
 
@@ -32,13 +32,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
 
-import javax.inject.Inject;
-
-import io.qameta.allure.Feature;
-import io.qameta.allure.Story;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
+
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
+
+import jakarta.inject.Inject;
 
 @Feature(PROFILING)
 @Story(DEFAULT_CORE_EVENT_TRACER)

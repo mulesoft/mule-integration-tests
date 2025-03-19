@@ -6,21 +6,23 @@
  */
 package org.mule.test.components;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertThat;
 import static org.mule.test.allure.AllureConstants.ObjectStoreFeature.OS_EXTENSION;
 import static org.mule.test.allure.AllureConstants.ObjectStoreFeature.ObjectStoreStory.OBJECT_STORE_AS_OPERATION_PARAMETER;
+
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.mule.runtime.api.store.ObjectStore;
 import org.mule.runtime.api.store.ObjectStoreManager;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import javax.inject.Inject;
+import org.junit.Test;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
-import org.junit.Test;
+
+import jakarta.inject.Inject;
 
 @Feature(OS_EXTENSION)
 @Story(OBJECT_STORE_AS_OPERATION_PARAMETER)

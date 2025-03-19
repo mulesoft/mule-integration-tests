@@ -19,12 +19,12 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.aMapWithSize;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.AnyOf.anyOf;
-import static org.junit.Assert.assertThat;
 
 import org.mule.runtime.api.util.LazyValue;
 import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
@@ -38,8 +38,6 @@ import org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy;
 
 import java.util.Collection;
 
-import javax.inject.Inject;
-
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 import org.junit.Before;
@@ -49,6 +47,7 @@ import org.junit.Test;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
 
+import jakarta.inject.Inject;
 import junit.framework.AssertionFailedError;
 
 @Feature(PROFILING)

@@ -34,7 +34,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.BiFunction;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;

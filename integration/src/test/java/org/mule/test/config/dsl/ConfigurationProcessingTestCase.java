@@ -6,9 +6,9 @@
  */
 package org.mule.test.config.dsl;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
-import static org.junit.Assert.assertThat;
 
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.tck.junit4.rule.SystemProperty;
@@ -17,8 +17,8 @@ import org.mule.test.AbstractIntegrationTestCase;
 import org.junit.Rule;
 import org.junit.Test;
 
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 public class ConfigurationProcessingTestCase extends AbstractIntegrationTestCase {
 

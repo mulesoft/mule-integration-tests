@@ -12,7 +12,9 @@ import static org.mule.runtime.tracer.customization.api.InternalSpanNames.PARAME
 import static org.mule.runtime.tracer.customization.api.InternalSpanNames.VALUE_RESOLUTION_SPAN_NAME;
 import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.DEFAULT_CORE_EVENT_TRACER;
-import static org.mule.test.infrastructure.profiling.tracing.TracingTestUtils.*;
+import static org.mule.test.infrastructure.profiling.tracing.TracingTestUtils.ARTIFACT_ID_KEY;
+import static org.mule.test.infrastructure.profiling.tracing.TracingTestUtils.createAttributeMap;
+import static org.mule.test.infrastructure.profiling.tracing.TracingTestUtils.getDefaultAttributesToAssertExistence;
 
 import static java.lang.String.format;
 import static java.lang.System.clearProperty;
@@ -20,8 +22,8 @@ import static java.lang.System.setProperty;
 import static java.nio.file.FileSystems.getDefault;
 import static java.util.Arrays.asList;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 
 import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
@@ -38,13 +40,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.BiFunction;
 
-import javax.inject.Inject;
-
-import io.qameta.allure.Feature;
-import io.qameta.allure.Story;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
+
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
+
+import jakarta.inject.Inject;
 
 @Feature(PROFILING)
 @Story(DEFAULT_CORE_EVENT_TRACER)

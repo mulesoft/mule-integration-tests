@@ -29,16 +29,17 @@ import org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
-import org.junit.Ignore;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
-import javax.inject.Inject;
+import org.junit.Ignore;
+import org.junit.Rule;
+import org.junit.Test;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
-import org.junit.Rule;
-import org.junit.Test;
+
+import jakarta.inject.Inject;
 
 @Feature(PROFILING)
 @Story(DEFAULT_CORE_EVENT_TRACER)

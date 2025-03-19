@@ -42,14 +42,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 
-import javax.inject.Inject;
-import javax.inject.Named;
+import org.checkerframework.checker.units.qual.N;
 
 import org.junit.Test;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
+
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 public class ServerNotificationManagerTestCase extends AbstractIntegrationTestCase {
 

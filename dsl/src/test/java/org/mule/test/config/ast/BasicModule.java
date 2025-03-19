@@ -40,10 +40,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.inject.Singleton;
-
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
+
+import jakarta.inject.Singleton;
 
 /**
  * This class will serve as an example of how to inject fields for AST validators in a Java 17 compliant way using some DI

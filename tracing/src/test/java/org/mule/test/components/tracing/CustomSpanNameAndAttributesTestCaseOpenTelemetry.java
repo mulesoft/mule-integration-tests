@@ -17,13 +17,13 @@ import static java.lang.System.clearProperty;
 import static java.lang.System.setProperty;
 import static java.util.Arrays.asList;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasEntry;
-import static org.junit.Assert.assertThat;
 
 import org.mule.runtime.api.lifecycle.Startable;
+import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
 import org.mule.runtime.tracer.api.sniffer.ExportedSpanSniffer;
-import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.tck.probe.JUnitProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy;
@@ -33,15 +33,16 @@ import java.nio.file.FileSystems;
 import java.util.Collection;
 import java.util.function.Function;
 
-import javax.inject.Inject;
-
-import io.qameta.allure.Feature;
-import io.qameta.allure.Story;
-import junit.framework.AssertionFailedError;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
+
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
+
+import jakarta.inject.Inject;
+import junit.framework.AssertionFailedError;
 
 @Feature(PROFILING)
 @Story(DEFAULT_CORE_EVENT_TRACER)
@@ -91,7 +92,7 @@ public class CustomSpanNameAndAttributesTestCaseOpenTelemetry extends OpenTeleme
   }
 
   private static Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> getOverviewExpectedSpanTestHierarchy() {
-    return (exportedSpans) -> {
+    return exportedSpans -> {
       SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
       expectedSpanHierarchy.withRoot(EXPECTED_SOURCE_SPAN_NAME);
       return expectedSpanHierarchy;
@@ -99,7 +100,7 @@ public class CustomSpanNameAndAttributesTestCaseOpenTelemetry extends OpenTeleme
   }
 
   private static Function<Collection<CapturedExportedSpan>, SpanTestHierarchy> getMonitoringExpectedSpanTestHierarchy() {
-    return (exportedSpans) -> {
+    return exportedSpans -> {
       SpanTestHierarchy expectedSpanHierarchy = new SpanTestHierarchy(exportedSpans);
       expectedSpanHierarchy.withRoot(EXPECTED_SOURCE_SPAN_NAME)
           .beginChildren()

@@ -6,10 +6,12 @@
  */
 package org.mule.test.routing;
 
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static org.junit.Assert.assertNotNull;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.RoundRobinStory.ROUND_ROBIN;
+
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+
+import static org.junit.Assert.assertNotNull;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import org.mule.runtime.api.message.Message;
@@ -19,13 +21,14 @@ import org.mule.tests.api.TestQueueManager;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
+import org.slf4j.Logger;
 
 import org.junit.Test;
-import org.slf4j.Logger;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
+
+import jakarta.inject.Inject;
 
 @Feature(ROUTERS)
 @Story(ROUND_ROBIN)

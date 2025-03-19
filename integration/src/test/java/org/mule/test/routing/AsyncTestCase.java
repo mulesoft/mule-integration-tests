@@ -35,9 +35,6 @@ import org.mule.tests.api.TestQueueManager;
 
 import java.util.concurrent.CountDownLatch;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
@@ -47,6 +44,9 @@ import io.qameta.allure.Feature;
 import io.qameta.allure.Issue;
 import io.qameta.allure.Stories;
 import io.qameta.allure.Story;
+
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 @Feature(SCOPE)
 @Story(ASYNC)
