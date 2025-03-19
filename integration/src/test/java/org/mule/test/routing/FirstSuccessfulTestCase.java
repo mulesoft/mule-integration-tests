@@ -6,8 +6,8 @@
  */
 package org.mule.test.routing;
 
-import static org.mule.test.allure.AllureConstants.RoutersFeature.FirstSuccessfulStory.FIRST_SUCCESSFUL;
 import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
+import static org.mule.test.allure.AllureConstants.RoutersFeature.FirstSuccessfulStory.FIRST_SUCCESSFUL;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
@@ -20,18 +20,18 @@ import org.mule.extension.validation.api.ValidationException;
 import org.mule.functional.api.exception.ExpectedError;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.core.api.event.CoreEvent;
-import org.mule.runtime.core.internal.routing.result.CompositeRoutingException;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.tests.api.TestQueueManager;
 
-import javax.inject.Inject;
+import org.junit.Rule;
+import org.junit.Test;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
-import org.junit.Rule;
-import org.junit.Test;
+
+import jakarta.inject.Inject;
 
 @Feature(ROUTERS)
 @Story(FIRST_SUCCESSFUL)

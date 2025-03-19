@@ -15,13 +15,14 @@ import static org.hamcrest.core.Is.is;
 import org.mule.runtime.api.component.ConfigurationProperties;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import javax.inject.Inject;
+import org.junit.Test;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
-import org.junit.Test;
+
+import jakarta.inject.Inject;
 
 @Feature(CONFIGURATION_PROPERTIES)
 @Story(CONFIGURATION_PROPERTIES_RESOLVER_STORY)

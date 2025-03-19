@@ -11,17 +11,17 @@ import static org.mule.test.allure.AllureConstants.ScopeFeature.SCOPE;
 import static org.mule.test.allure.AllureConstants.ScopeFeature.UntilSuccessfulStory.UNTIL_SUCCESSFUL;
 
 import static java.lang.Boolean.parseBoolean;
+import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static java.lang.String.format;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.fail;
 
 import org.mule.runtime.api.exception.MuleRuntimeException;
@@ -33,23 +33,24 @@ import org.mule.runtime.api.util.concurrent.Latch;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.retry.policy.RetryPolicyExhaustedException;
 import org.mule.runtime.extension.api.error.MuleErrors;
-import org.mule.tests.api.TestQueueManager;
 import org.mule.tck.junit4.matcher.ErrorTypeMatcher;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.runner.RunnerDelegateTo;
+import org.mule.tests.api.TestQueueManager;
 
 import java.io.InputStream;
 import java.util.Collection;
 
-import javax.inject.Inject;
-
-import io.qameta.allure.Issue;
-import io.qameta.allure.Feature;
-import io.qameta.allure.Story;
-import org.junit.runners.Parameterized;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runners.Parameterized;
+
+import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
+import io.qameta.allure.Story;
+
+import jakarta.inject.Inject;
 
 @Feature(SCOPE)
 @Story(UNTIL_SUCCESSFUL)

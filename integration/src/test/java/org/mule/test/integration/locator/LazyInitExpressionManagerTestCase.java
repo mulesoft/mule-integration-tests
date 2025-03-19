@@ -6,18 +6,18 @@
  */
 package org.mule.test.integration.locator;
 
-import static java.lang.Thread.currentThread;
-import static org.hamcrest.Matchers.sameInstance;
-import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.component.location.Location.builderFromStringRepresentation;
 import static org.mule.test.allure.AllureConstants.ExpressionLanguageFeature.EXPRESSION_LANGUAGE;
 import static org.mule.test.allure.AllureConstants.ExpressionLanguageFeature.ExpressionLanguageStory.SUPPORT_FUNCTIONS;
 import static org.mule.test.allure.AllureConstants.LazyInitializationFeature.LAZY_INITIALIZATION;
 
+import static java.lang.Thread.currentThread;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.sameInstance;
+
 import org.mule.runtime.config.api.LazyComponentInitializer;
 import org.mule.test.AbstractIntegrationTestCase;
-
-import javax.inject.Inject;
 
 import org.junit.Test;
 
@@ -26,6 +26,8 @@ import io.qameta.allure.Feature;
 import io.qameta.allure.Features;
 import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
+
+import jakarta.inject.Inject;
 
 @Features({@Feature(LAZY_INITIALIZATION), @Feature(EXPRESSION_LANGUAGE)})
 @Story(SUPPORT_FUNCTIONS)

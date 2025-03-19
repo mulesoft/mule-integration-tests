@@ -20,30 +20,31 @@ import static java.lang.System.clearProperty;
 import static java.lang.System.setProperty;
 import static java.util.Arrays.asList;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 
+import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
 import org.mule.runtime.tracer.api.sniffer.ExportedSpanSniffer;
-import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.tck.junit4.AbstractMuleTestCase;
 import org.mule.tck.probe.JUnitProbe;
 import org.mule.tck.probe.PollingProber;
 import org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy;
+import org.mule.test.runner.RunnerDelegateTo;
 
 import java.nio.file.FileSystems;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.BiFunction;
 
-import javax.inject.Inject;
+import org.junit.After;
+import org.junit.Test;
+import org.junit.runners.Parameterized;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
-import org.junit.runners.Parameterized;
-import org.junit.After;
-import org.junit.Test;
-import org.mule.test.runner.RunnerDelegateTo;
+
+import jakarta.inject.Inject;
 
 @Feature(PROFILING)
 @Story(DEFAULT_CORE_EVENT_TRACER)

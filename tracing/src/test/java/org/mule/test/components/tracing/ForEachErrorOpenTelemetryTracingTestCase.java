@@ -17,9 +17,9 @@ import static java.lang.System.clearProperty;
 import static java.lang.System.setProperty;
 import static java.util.Arrays.asList;
 
+import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
 import org.mule.runtime.tracer.api.sniffer.ExportedSpanSniffer;
-import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.tck.junit4.AbstractMuleTestCase;
 import org.mule.tck.probe.JUnitProbe;
 import org.mule.tck.probe.PollingProber;
@@ -30,13 +30,14 @@ import java.nio.file.FileSystems;
 import java.util.Collection;
 import java.util.function.Function;
 
-import javax.inject.Inject;
+import org.junit.After;
+import org.junit.Test;
+import org.junit.runners.Parameterized;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
-import org.junit.runners.Parameterized;
-import org.junit.Test;
-import org.junit.After;
+
+import jakarta.inject.Inject;
 
 
 @Feature(PROFILING)

@@ -28,10 +28,9 @@ import org.mule.runtime.api.util.concurrent.Latch;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.test.AbstractIntegrationTestCase;
-import org.mule.test.implicit.config.extension.extension.api.ImplicitConfigExtension;
 import org.mule.tests.api.TestQueueManager;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Issue;

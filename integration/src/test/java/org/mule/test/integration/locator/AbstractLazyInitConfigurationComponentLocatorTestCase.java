@@ -18,12 +18,11 @@ import static java.lang.String.format;
 import static java.util.Optional.empty;
 import static java.util.stream.Collectors.toList;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
-import static org.junit.rules.ExpectedException.none;
 
 import org.mule.runtime.api.artifact.Registry;
 import org.mule.runtime.api.component.location.Location;
@@ -37,16 +36,16 @@ import org.mule.test.core.context.notification.processors.ProcessorNotificationS
 import java.util.Collection;
 import java.util.List;
 
-import javax.inject.Inject;
+import org.junit.Rule;
+import org.junit.Test;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Features;
 import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+
+import jakarta.inject.Inject;
 
 /**
  * Abstract test case containing an environment and some tools useful for testing lazy initialization.
@@ -179,9 +178,6 @@ public abstract class AbstractLazyInitConfigurationComponentLocatorTestCase exte
       "os-contains-flow",
       "os-contains-flow/processors/0"};
   protected static final int TOTAL_NUMBER_OF_LOCATIONS = EXPECTED_LOCATIONS.length;
-
-  @Rule
-  public final ExpectedException expectedException = none();
 
   @Rule
   public DynamicPort listenPort = new DynamicPort("http.listener.port");

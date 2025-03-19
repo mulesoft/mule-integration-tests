@@ -6,26 +6,29 @@
  */
 package org.mule.test.config.spring;
 
-import io.qameta.allure.Description;
-import io.qameta.allure.Feature;
-import io.qameta.allure.Issue;
-import io.qameta.allure.Story;
-import org.junit.Test;
+import static org.mule.runtime.api.component.location.Location.builder;
+import static org.mule.runtime.config.api.LazyComponentInitializer.LAZY_COMPONENT_INITIALIZER_SERVICE_KEY;
+import static org.mule.test.allure.AllureConstants.LazyInitializationFeature.LAZY_INITIALIZATION;
+import static org.mule.test.allure.AllureConstants.ObjectSerializer.CUSTOM_OBJECT_SERIALIZER;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.MatcherAssert.assertThat;
+
 import org.mule.runtime.api.component.location.Location;
 import org.mule.runtime.api.serialization.ObjectSerializer;
 import org.mule.runtime.api.serialization.SerializationProtocol;
 import org.mule.runtime.config.api.LazyComponentInitializer;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import javax.inject.Inject;
-import javax.inject.Named;
+import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
-import static org.mule.runtime.api.component.location.Location.builder;
-import static org.mule.runtime.config.api.LazyComponentInitializer.LAZY_COMPONENT_INITIALIZER_SERVICE_KEY;
-import static org.mule.test.allure.AllureConstants.LazyInitializationFeature.LAZY_INITIALIZATION;
-import static org.mule.test.allure.AllureConstants.ObjectSerializer.CUSTOM_OBJECT_SERIALIZER;
+import io.qameta.allure.Description;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
+import io.qameta.allure.Story;
+
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 @Feature(LAZY_INITIALIZATION)
 @Story(CUSTOM_OBJECT_SERIALIZER)

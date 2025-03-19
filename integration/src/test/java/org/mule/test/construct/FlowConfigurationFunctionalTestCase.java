@@ -31,9 +31,9 @@ import org.mule.runtime.core.api.transaction.TransactionCoordination;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.tests.api.TestQueueManager;
 
-import javax.inject.Inject;
-
 import org.junit.Test;
+
+import jakarta.inject.Inject;
 
 public class FlowConfigurationFunctionalTestCase extends AbstractIntegrationTestCase {
 

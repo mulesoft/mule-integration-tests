@@ -6,11 +6,19 @@
  */
 package org.mule.test.routing;
 
+import static org.mule.functional.api.component.FunctionalTestProcessor.getFromFlow;
+import static org.mule.functional.junit4.matchers.ClassNameMatcher.hasClassName;
+import static org.mule.functional.junit4.matchers.ThrowableCauseMatcher.hasCause;
+import static org.mule.test.allure.AllureConstants.ScopeFeature.SCOPE;
+import static org.mule.test.allure.AllureConstants.ScopeFeature.UntilSuccessfulStory.UNTIL_SUCCESSFUL;
+
 import static java.lang.Runtime.getRuntime;
 import static java.lang.System.currentTimeMillis;
 import static java.util.Collections.synchronizedList;
 import static java.util.concurrent.Executors.newFixedThreadPool;
-import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
+
+import static org.apache.commons.lang3.RandomStringUtils.insecure;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
@@ -18,20 +26,7 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-import static org.mule.functional.api.component.FunctionalTestProcessor.getFromFlow;
-import static org.mule.functional.junit4.matchers.ThrowableCauseMatcher.hasCause;
-import static org.mule.functional.junit4.matchers.ClassNameMatcher.hasClassName;
-import static org.mule.test.allure.AllureConstants.RoutersFeature.ROUTERS;
-import static org.mule.test.allure.AllureConstants.RoutersFeature.UntilSuccessfulStory.UNTIL_SUCCESSFUL;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import static org.junit.Assert.assertThrows;
 
 import org.mule.functional.api.component.FunctionalTestProcessor;
 import org.mule.runtime.api.exception.MuleException;
@@ -47,21 +42,24 @@ import org.mule.tck.probe.PollingProber;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.tests.api.TestQueueManager;
 
-import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+
+import org.junit.Test;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
 
-@Feature(ROUTERS)
+import jakarta.inject.Inject;
+
+@Feature(SCOPE)
 @Story(UNTIL_SUCCESSFUL)
 public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
 
   @Inject
   private TestQueueManager queueManager;
-
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
 
   private FunctionalTestProcessor targetMessageProcessor;
 
@@ -111,9 +109,9 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void exceptionThrownFromInitializingRetryContextPropagates() throws Exception {
-    expectedException.expectMessage(containsString("You called the function '+' with these arguments"));
-    expectedException.expectCause(instanceOf(ExpressionRuntimeException.class));
-    flowRunner("scope-with-max-retry-expr-and-err-continue").withVariable("maxRetries", "gato").run();
+    var thrown = assertThrows(Exception.class, ()-> flowRunner("scope-with-max-retry-expr-and-err-continue").withVariable("maxRetries", "gato").run());
+    assertThat(thrown.getCause(), instanceOf(ExpressionRuntimeException.class));
+    assertThat(thrown.getMessage(), containsString("You called the function '+' with these arguments"));
   }
 
   @Test
@@ -124,7 +122,7 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void defaultConfiguration() throws Exception {
-    final String payload = randomAlphanumeric(20);
+    final String payload = insecure().nextAlphanumeric(20);
     flowRunner("minimal-config").withPayload(payload).run();
 
     final List<Object> receivedPayloads = ponderUntilMessageCountReceivedByTargetMessageProcessor(1);
@@ -134,7 +132,7 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void fullConfigurationMP() throws Exception {
-    final String payload = randomAlphanumeric(20);
+    final String payload = insecure().nextAlphanumeric(20);
     final Message response = flowRunner("full-config-with-mp").withPayload(payload).run().getMessage();
     assertThat(getPayloadAsString(response), is("ACK"));
 
@@ -165,7 +163,7 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
       for (int i = 0; i < times; ++i) {
         runnerPool.submit(() -> {
           try {
-            flowRunner("concurrency-error-handling").withPayload(randomAlphanumeric(20)).run();
+            flowRunner("concurrency-error-handling").withPayload(insecure().nextAlphanumeric(20)).run();
           } catch (Exception e) {
             throw new MuleRuntimeException(e);
           }
@@ -180,7 +178,7 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void retryOnEndpoint() throws Exception {
-    final String payload = randomAlphanumeric(20);
+    final String payload = insecure().nextAlphanumeric(20);
     flowRunner("retry-endpoint-config").withPayload(payload).run();
 
     final List<Object> receivedPayloads = ponderUntilMessageCountReceivedByTargetMessageProcessor(3);
@@ -192,15 +190,15 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void executeSynchronously() throws Exception {
-    final String payload = randomAlphanumeric(20);
-    expectedException.expectCause(instanceOf(RetryPolicyExhaustedException.class));
-    expectedException.expect(hasCause(hasCause(hasClassName(containsString("SuppressedMuleException")))));
-    flowRunner("synchronous").withPayload(payload).run();
+    final String payload = insecure().nextAlphanumeric(20);
+    var thrown = assertThrows(Exception.class, () -> flowRunner("synchronous").withPayload(payload).run());
+    assertThat(thrown.getCause(), instanceOf(RetryPolicyExhaustedException.class));
+    assertThat(thrown, hasCause(hasCause(hasClassName(containsString("SuppressedMuleException")))));
   }
 
   @Test
   public void executeSynchronouslyDoingRetries() throws Exception {
-    final String payload = randomAlphanumeric(20);
+    final String payload = insecure().nextAlphanumeric(20);
     flowRunner("synchronous-with-retry").withPayload(payload).runExpectingException();
     assertThat(queueManager.countPendingEvents("untilSuccessful"), is(4));
     assertThat(queueManager.countPendingEvents("exceptionStrategy"), is(1));
@@ -215,7 +213,7 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void executeWithoutRetrying() throws Exception {
-    final String payload = randomAlphanumeric(20);
+    final String payload = insecure().nextAlphanumeric(20);
     flowRunner("synchronous-without-retry").withPayload(payload).runExpectingException();
     assertThat(queueManager.countPendingEvents("untilSuccessfulNoRetry"), is(1));
     assertThat(queueManager.countPendingEvents("exceptionStrategyNoRetry"), is(1));
@@ -226,7 +224,7 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
    */
   @Test
   public void measureSynchronousWait() throws Exception {
-    final String payload = randomAlphanumeric(20);
+    final String payload = insecure().nextAlphanumeric(20);
     flowRunner("measureSynchronousWait").withPayload(payload).runExpectingException();
     assertThat(WaitMeasure.totalWait >= 1000, is(true));
   }

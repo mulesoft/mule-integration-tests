@@ -6,19 +6,23 @@
  */
 package org.mule.test.integration.locator;
 
-import static java.util.Optional.empty;
-import static java.util.stream.Collectors.toList;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.core.IsIterableContaining.hasItem;
-import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.component.location.Location.builder;
 import static org.mule.runtime.api.component.location.Location.builderFromStringRepresentation;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentLocatorStory.SEARCH_CONFIGURATION;
 import static org.mule.test.allure.AllureConstants.LazyInitializationFeature.LAZY_INITIALIZATION;
+
+import static java.util.Optional.empty;
+import static java.util.stream.Collectors.toList;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.core.IsIterableContaining.hasItem;
+import static org.hamcrest.core.StringContains.containsString;
+import static org.junit.Assert.assertThrows;
 
 import org.mule.runtime.api.component.Component;
 import org.mule.runtime.api.component.location.ComponentLocation;
@@ -41,9 +45,10 @@ public class LazyInitConfigurationComponentLocatorTestCase extends AbstractLazyI
 
   @Test
   public void whenInitializeComponentAndComponentDoesNotExistThenFails() {
-    expectedException.expect(MuleRuntimeException.class);
-    expectedException.expectMessage("No object found at location non-existent");
-    lazyComponentInitializer.initializeComponent(builderFromStringRepresentation("non-existent").build());
+    var thrown =
+        assertThrows(MuleRuntimeException.class,
+                     () -> lazyComponentInitializer.initializeComponent(builderFromStringRepresentation("non-existent").build()));
+    assertThat(thrown.getMessage(), containsString("No object found at location non-existent"));
   }
 
   @Description("Lazy init should not create components until an operation is done")

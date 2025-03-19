@@ -10,13 +10,15 @@ import static org.mule.tck.probe.PollingProber.probe;
 import static org.mule.test.allure.AllureConstants.StreamingFeature.STREAMING;
 import static org.mule.test.allure.AllureConstants.StreamingFeature.StreamingStory.STREAM_MANAGEMENT;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import static org.apache.commons.io.FileUtils.writeStringToFile;
-import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
+import static org.apache.commons.lang3.RandomStringUtils.insecure;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.lessThan;
-import static org.junit.Assert.assertThat;
 
 import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.exception.MuleException;
@@ -29,15 +31,16 @@ import org.mule.test.AbstractIntegrationTestCase;
 
 import java.io.File;
 
-import javax.inject.Inject;
-
-import io.qameta.allure.Feature;
-import io.qameta.allure.Story;
 import org.junit.ClassRule;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
+
+import jakarta.inject.Inject;
 
 @Feature(STREAMING)
 @Story(STREAM_MANAGEMENT)
@@ -94,9 +97,9 @@ public class AutoCloseCursorProviderTestCase extends AbstractIntegrationTestCase
 
   @Test
   public void openManyStreamsInForeachAndDiscard() throws Exception {
-    String content = randomAlphanumeric(1024 * 1024);
+    String content = insecure().nextAlphanumeric(1024 * 1024);
     File file = new File(temporaryFolder.getRoot(), "file.txt");
-    writeStringToFile(file, content);
+    writeStringToFile(file, content, UTF_8);
 
     flowRunner("openManyStreamsInForeachAndDiscard").run();
 

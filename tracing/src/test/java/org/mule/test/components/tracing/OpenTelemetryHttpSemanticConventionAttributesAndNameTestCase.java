@@ -44,8 +44,6 @@ import java.nio.file.FileSystems;
 import java.util.Collection;
 import java.util.function.Function;
 
-import javax.inject.Inject;
-
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
@@ -54,6 +52,7 @@ import org.junit.runners.Parameterized;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
 
+import jakarta.inject.Inject;
 import junit.framework.AssertionFailedError;
 
 @Feature(PROFILING)
