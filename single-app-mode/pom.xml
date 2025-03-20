@@ -23,7 +23,7 @@
         <javaModuleName>org.mule.test.integration.singleapp</javaModuleName>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
         <protobufVersion>3.21.9</protobufVersion>
-        <openTelemetryProtoVersion>0.3.0</openTelemetryProtoVersion>
+        <openTelemetryProtoVersion>1.5.0-SNAPSHOT</openTelemetryProtoVersion>
         <graaljsVersion>22.3.3</graaljsVersion>
     </properties>
 

@@ -28,7 +28,7 @@
         <skipExportTests>false</skipExportTests>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
 
-        <openTelemetryProtoVersion>0.3.0</openTelemetryProtoVersion>
+        <openTelemetryProtoVersion>1.5.0-alpha</openTelemetryProtoVersion>
     </properties>
 
     <dependencyManagement>
@@ -297,7 +297,7 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>io.opentelemetry</groupId>
+            <groupId>io.opentelemetry.proto</groupId>
             <artifactId>opentelemetry-proto</artifactId>
             <version>${openTelemetryProtoVersion}</version>
             <scope>test</scope>
