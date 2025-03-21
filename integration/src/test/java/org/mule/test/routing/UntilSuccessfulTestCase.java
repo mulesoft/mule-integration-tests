@@ -109,7 +109,9 @@ public class UntilSuccessfulTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void exceptionThrownFromInitializingRetryContextPropagates() throws Exception {
-    var thrown = assertThrows(Exception.class, ()-> flowRunner("scope-with-max-retry-expr-and-err-continue").withVariable("maxRetries", "gato").run());
+    var thrown =
+        assertThrows(Exception.class,
+                     () -> flowRunner("scope-with-max-retry-expr-and-err-continue").withVariable("maxRetries", "gato").run());
     assertThat(thrown.getCause(), instanceOf(ExpressionRuntimeException.class));
     assertThat(thrown.getMessage(), containsString("You called the function '+' with these arguments"));
   }
