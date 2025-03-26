@@ -56,8 +56,8 @@ public class OpenTelemetryProtobufSpanUtils {
         .get()
         .getValue().getStringValue();
 
-    resourceSpans.getInstrumentationLibrarySpansList()
-        .forEach(instrumentationLibrarySpans -> spans.addAll(instrumentationLibrarySpans.getSpansList()));
+    resourceSpans.getScopeSpansList()
+        .forEach(scopeSpans -> spans.addAll(scopeSpans.getSpansList()));
 
     return spans.stream().map(span -> new SpanDataWrapper(serviceName, span)).collect(toList());
   }
@@ -78,7 +78,7 @@ public class OpenTelemetryProtobufSpanUtils {
     assertThat("The number of expected resources for the export request is not 1. In the mule runtime there is only one resource per app",
                request.getResourceSpansCount(), equalTo(1));
     assertThat("The number of expected instrumentation scopes for the export request is not 1. In the mule runtime there is only one scope, which corresponds to the instrumentation code/library for open telemetry export module.",
-               request.getResourceSpans(0).getInstrumentationLibrarySpansCount(), equalTo(1));
+               request.getResourceSpans(0).getScopeSpansCount(), equalTo(1));
   }
 
   private static final class SpanDataWrapper implements CapturedExportedSpan {
