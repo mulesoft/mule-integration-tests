@@ -107,16 +107,17 @@ public class ErrorHandlerLazyInitTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void emptyRaiseErrorType() {
+    final Location location = builder().globalName("emptyRaiseErrorType").build();
     var thrown = assertThrows(MuleRuntimeException.class,
-                              () -> doCustomErrorTypesShouldDiscoveredTest(builder().globalName("emptyRaiseErrorType").build()));
+                              () -> doCustomErrorTypesShouldDiscoveredTest(location));
     assertThat(thrown.getMessage(), containsString("type cannot be an empty string or null"));
   }
 
   @Test
   public void invalidErrorTypeOnRaiseError() {
-    var thrown =
-        assertThrows(MuleRuntimeException.class,
-                     () -> doCustomErrorTypesShouldDiscoveredTest(builder().globalName("invalidErrorTypeOnRaiseError").build()));
+    final Location location = builder().globalName("invalidErrorTypeOnRaiseError").build();
+    var thrown = assertThrows(MuleRuntimeException.class,
+                              () -> doCustomErrorTypesShouldDiscoveredTest(location));
     assertThat(thrown.getMessage(), containsString("There's no MULE error named 'ERROR_NON_EXISTING"));
   }
 
