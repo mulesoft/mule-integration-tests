@@ -6,19 +6,21 @@
  */
 package org.mule.test.integration.locator;
 
-import static java.util.Arrays.stream;
-import static java.util.Optional.empty;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.hamcrest.core.IsNot.not;
-import static org.junit.Assert.assertThat;
-import static org.junit.rules.ExpectedException.none;
 import static org.mule.runtime.api.component.location.Location.builder;
 import static org.mule.runtime.config.api.LazyComponentInitializer.LAZY_COMPONENT_INITIALIZER_SERVICE_KEY;
 import static org.mule.tck.junit4.matcher.ErrorTypeMatcher.errorType;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.CONFIGURATION_COMPONENT_LOCATOR;
 import static org.mule.test.allure.AllureConstants.ConfigurationComponentLocatorFeature.ConfigurationComponentLocatorStory.SEARCH_CONFIGURATION;
 import static org.mule.test.allure.AllureConstants.LazyInitializationFeature.LAZY_INITIALIZATION;
+
+import static java.util.Arrays.stream;
+import static java.util.Optional.empty;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.hamcrest.core.IsNot.not;
+import static org.junit.Assert.assertThrows;
 
 import org.mule.runtime.api.artifact.Registry;
 import org.mule.runtime.api.component.ComponentIdentifier;
@@ -31,18 +33,16 @@ import org.mule.test.AbstractIntegrationTestCase;
 
 import java.util.Optional;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Features;
 import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
+
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 @Features({@Feature(LAZY_INITIALIZATION), @Feature(CONFIGURATION_COMPONENT_LOCATOR)})
 @Story(SEARCH_CONFIGURATION)
@@ -54,9 +54,6 @@ public class ErrorHandlerLazyInitTestCase extends AbstractIntegrationTestCase {
   @Inject
   @Named(value = LAZY_COMPONENT_INITIALIZER_SERVICE_KEY)
   private LazyComponentInitializer lazyComponentInitializer;
-
-  @Rule
-  public ExpectedException expectedException = none();
 
   @Override
   protected String getConfigFile() {
@@ -110,16 +107,18 @@ public class ErrorHandlerLazyInitTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void emptyRaiseErrorType() {
-    expectedException.expect(MuleRuntimeException.class);
-    expectedException.expectMessage(containsString("type cannot be an empty string or null"));
-    doCustomErrorTypesShouldDiscoveredTest(builder().globalName("emptyRaiseErrorType").build());
+    final Location location = builder().globalName("emptyRaiseErrorType").build();
+    var thrown = assertThrows(MuleRuntimeException.class,
+                              () -> doCustomErrorTypesShouldDiscoveredTest(location));
+    assertThat(thrown.getMessage(), containsString("type cannot be an empty string or null"));
   }
 
   @Test
   public void invalidErrorTypeOnRaiseError() {
-    expectedException.expect(MuleRuntimeException.class);
-    expectedException.expectMessage(containsString("There's no MULE error named 'ERROR_NON_EXISTING"));
-    doCustomErrorTypesShouldDiscoveredTest(builder().globalName("invalidErrorTypeOnRaiseError").build());
+    final Location location = builder().globalName("invalidErrorTypeOnRaiseError").build();
+    var thrown = assertThrows(MuleRuntimeException.class,
+                              () -> doCustomErrorTypesShouldDiscoveredTest(location));
+    assertThat(thrown.getMessage(), containsString("There's no MULE error named 'ERROR_NON_EXISTING"));
   }
 
   @Test

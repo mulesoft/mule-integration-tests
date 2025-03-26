@@ -7,15 +7,17 @@
 package org.mule.test.integration.exceptions;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static org.junit.Assert.assertNotNull;
-import org.mule.test.AbstractIntegrationTestCase;
-import org.mule.tck.junit4.rule.DynamicPort;
-import org.mule.tests.api.TestQueueManager;
 
-import javax.inject.Inject;
+import static org.junit.Assert.assertNotNull;
+
+import org.mule.tck.junit4.rule.DynamicPort;
+import org.mule.test.AbstractIntegrationTestCase;
+import org.mule.tests.api.TestQueueManager;
 
 import org.junit.Rule;
 import org.junit.Test;
+
+import jakarta.inject.Inject;
 
 public class AsyncExceptionHandlingTestCase extends AbstractIntegrationTestCase {
 

@@ -32,13 +32,13 @@ import org.mule.tck.junit4.rule.DynamicPort;
 import java.util.Collections;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
 import io.qameta.allure.Issue;
+
+import jakarta.inject.Inject;
 
 @Ignore("MULE-10633")
 @Issue("MULE-10633")

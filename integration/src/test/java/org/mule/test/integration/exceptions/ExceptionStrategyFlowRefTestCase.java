@@ -7,15 +7,17 @@
 package org.mule.test.integration.exceptions;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
+
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsNull.notNullValue;
-import static org.junit.Assert.assertThat;
+
 import org.mule.runtime.api.message.Message;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.tests.api.TestQueueManager;
 
-import javax.inject.Inject;
-
 import org.junit.Test;
+
+import jakarta.inject.Inject;
 
 public class ExceptionStrategyFlowRefTestCase extends AbstractIntegrationTestCase {
 

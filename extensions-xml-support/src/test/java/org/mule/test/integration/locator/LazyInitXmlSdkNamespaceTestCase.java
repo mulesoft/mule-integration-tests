@@ -14,7 +14,7 @@ import org.mule.runtime.config.api.LazyComponentInitializer;
 import org.mule.test.IntegrationTestCaseRunnerConfig;
 import org.mule.test.functional.AbstractXmlExtensionMuleArtifactFunctionalTestCase;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;

@@ -9,8 +9,8 @@ package org.mule.test.components;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 import org.mule.runtime.api.component.execution.ComponentExecutionException;
@@ -20,17 +20,16 @@ import org.mule.runtime.api.component.execution.InputEvent;
 import org.mule.runtime.api.event.Event;
 import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.metadata.TypedValue;
-
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import org.junit.After;
 import org.junit.Test;
+
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 public class FlowExecutionTestCase extends AbstractIntegrationTestCase {
 
@@ -106,7 +105,7 @@ public class FlowExecutionTestCase extends AbstractIntegrationTestCase {
     assertThat(resultEvent.getError().isPresent(), is(errorIdentifierExpected.isPresent()));
     assertThat(resultEvent.getMessage().getPayload().getValue(), is(3));
     Event finalResultEvent = resultEvent;
-    errorIdentifierExpected.ifPresent((errorIdentifier) -> {
+    errorIdentifierExpected.ifPresent(errorIdentifier -> {
       assertThat(finalResultEvent.getError().get().getErrorType().getIdentifier(), is(errorIdentifier));
     });
   }

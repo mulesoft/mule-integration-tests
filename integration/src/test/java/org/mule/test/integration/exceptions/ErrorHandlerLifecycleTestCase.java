@@ -9,9 +9,9 @@ package org.mule.test.integration.exceptions;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
 import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ErrorHandlingStory.ERROR_HANDLER;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsIterableContainingInRelativeOrder.containsInRelativeOrder;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 
 import org.mule.runtime.api.lifecycle.Disposable;
 import org.mule.runtime.api.lifecycle.Initialisable;
@@ -24,12 +24,13 @@ import org.mule.tests.api.LifecycleTrackerRegistry;
 
 import java.util.Collection;
 
-import javax.inject.Inject;
-import javax.inject.Named;
+import org.junit.Test;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
-import org.junit.Test;
+
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 @Feature(ERROR_HANDLING)
 @Story(ERROR_HANDLER)

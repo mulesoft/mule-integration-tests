@@ -10,7 +10,7 @@ import org.mule.sdk.compatibility.api.utils.ForwardCompatibilityHelper;
 
 import java.util.Optional;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 public class ForwardCompatibilityOperations {
 

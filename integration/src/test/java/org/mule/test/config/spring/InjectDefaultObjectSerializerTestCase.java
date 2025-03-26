@@ -6,24 +6,25 @@
  */
 package org.mule.test.config.spring;
 
+import static org.mule.runtime.api.serialization.ObjectSerializer.DEFAULT_OBJECT_SERIALIZER_NAME;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.sameInstance;
-import static org.junit.Assert.assertThat;
-import static org.mule.runtime.api.serialization.ObjectSerializer.DEFAULT_OBJECT_SERIALIZER_NAME;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.mule.runtime.api.serialization.ObjectSerializer;
 import org.mule.runtime.api.serialization.SerializationProtocol;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.test.runner.RunnerDelegateTo;
 
-import org.junit.Test;
-import org.junit.runners.Parameterized;
-
 import java.util.Arrays;
 import java.util.Collection;
 
-import javax.inject.Inject;
-import javax.inject.Named;
+import org.junit.Test;
+import org.junit.runners.Parameterized;
+
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 @RunnerDelegateTo(Parameterized.class)
 public class InjectDefaultObjectSerializerTestCase extends AbstractIntegrationTestCase {

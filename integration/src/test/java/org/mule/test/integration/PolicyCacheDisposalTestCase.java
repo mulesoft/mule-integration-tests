@@ -6,9 +6,11 @@
  */
 package org.mule.test.integration;
 
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertThat;
 import static org.mule.runtime.config.api.LazyComponentInitializer.LAZY_COMPONENT_INITIALIZER_SERVICE_KEY;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsEqual.equalTo;
+
 import org.mule.runtime.api.streaming.bytes.CursorStreamProvider;
 import org.mule.runtime.config.api.LazyComponentInitializer;
 import org.mule.runtime.core.api.event.CoreEvent;
@@ -16,12 +18,13 @@ import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
-import io.qameta.allure.Description;
 import org.junit.Rule;
 import org.junit.Test;
+
+import io.qameta.allure.Description;
+
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 public class PolicyCacheDisposalTestCase extends AbstractIntegrationTestCase {
 

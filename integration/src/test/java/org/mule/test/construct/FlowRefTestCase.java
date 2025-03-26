@@ -34,11 +34,10 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.endsWith;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 import org.mule.functional.api.exception.ExpectedError;
@@ -53,7 +52,6 @@ import org.mule.runtime.api.scheduler.Scheduler;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
-import org.mule.runtime.core.api.processor.ReactiveProcessor.ProcessingType;
 import org.mule.runtime.http.api.HttpService;
 import org.mule.runtime.http.api.client.HttpRequestOptions;
 import org.mule.runtime.http.api.domain.message.request.HttpRequest;
@@ -70,8 +68,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.inject.Inject;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -83,6 +79,8 @@ import io.qameta.allure.Feature;
 import io.qameta.allure.Issue;
 import io.qameta.allure.Stories;
 import io.qameta.allure.Story;
+
+import jakarta.inject.Inject;
 
 @Feature(CORE_COMPONENTS)
 @Story(FLOW_REFERENCE)
@@ -178,8 +176,8 @@ public class FlowRefTestCase extends AbstractIntegrationTestCase {
             .getPayload().getValue();
 
     List payloads = messageList.values().stream().map(msg -> msg.getPayload().getValue()).collect(toList());
-    assertEquals("0A", payloads.get(0));
-    assertEquals("0B", payloads.get(1));
+    assertThat(payloads.get(0), is("0A"));
+    assertThat(payloads.get(1), is("0B"));
   }
 
   @Test

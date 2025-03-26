@@ -6,18 +6,21 @@
  */
 package org.mule.test.components;
 
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-import com.google.common.collect.ImmutableMap;
-import org.junit.Rule;
-import org.junit.Test;
 import org.mule.runtime.api.component.ConfigurationProperties;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import javax.inject.Inject;
 import java.util.Map;
+
+import com.google.common.collect.ImmutableMap;
+
+import org.junit.Rule;
+import org.junit.Test;
+
+import jakarta.inject.Inject;
 
 public class PropertiesHierarchyTestCase extends AbstractIntegrationTestCase {
 

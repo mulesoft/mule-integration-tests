@@ -29,12 +29,14 @@ import org.mule.test.module.extension.oauth.BaseOAuthExtensionTestCase;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
-import io.qameta.allure.Issue;
+
 import org.junit.Before;
 import org.junit.Test;
+
+import io.qameta.allure.Issue;
 
 public class OAuthSourceRefreshExtensionTestCase extends BaseOAuthExtensionTestCase {
 

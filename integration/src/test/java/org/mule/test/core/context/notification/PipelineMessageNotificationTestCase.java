@@ -6,15 +6,17 @@
  */
 package org.mule.test.core.context.notification;
 
-import static java.util.Arrays.asList;
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.isA;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.notification.PipelineMessageNotification.PROCESS_COMPLETE;
 import static org.mule.runtime.api.notification.PipelineMessageNotification.PROCESS_END;
 import static org.mule.runtime.api.notification.PipelineMessageNotification.PROCESS_START;
+
+import static java.util.Arrays.asList;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
+import static org.junit.Assert.assertNotNull;
 
 import org.mule.functional.api.exception.ExpectedError;
 import org.mule.runtime.api.exception.DefaultMuleException;
@@ -26,11 +28,11 @@ import org.mule.tests.api.TestQueueManager;
 import java.util.List;
 import java.util.function.Consumer;
 
-import javax.inject.Inject;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
+
+import jakarta.inject.Inject;
 
 @RunnerDelegateTo(Parameterized.class)
 public class PipelineMessageNotificationTestCase extends AbstractNotificationTestCase {
@@ -62,7 +64,7 @@ public class PipelineMessageNotificationTestCase extends AbstractNotificationTes
                 .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_START)))
                 .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_END)))
                 .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_COMPLETE))),
-            (Consumer<PipelineMessageNotificationTestCase>) (qm) -> {
+            (Consumer<PipelineMessageNotificationTestCase>) qm -> {
             }
         },
         {
@@ -73,7 +75,7 @@ public class PipelineMessageNotificationTestCase extends AbstractNotificationTes
             new Node()
                 .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_START)))
                 .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_COMPLETE))),
-            (Consumer<PipelineMessageNotificationTestCase>) (qm) -> {
+            (Consumer<PipelineMessageNotificationTestCase>) qm -> {
 
             }
         },
@@ -86,7 +88,7 @@ public class PipelineMessageNotificationTestCase extends AbstractNotificationTes
                 .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_START)))
                 .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_END)))
                 .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_COMPLETE))),
-            (Consumer<PipelineMessageNotificationTestCase>) (t) -> {
+            (Consumer<PipelineMessageNotificationTestCase>) t -> {
               assertNotNull(t.queueManager.read("ow-out", RECEIVE_TIMEOUT, MILLISECONDS));
             }
         },
@@ -99,7 +101,7 @@ public class PipelineMessageNotificationTestCase extends AbstractNotificationTes
                 .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_START)))
                 .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_END)))
                 .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_COMPLETE))),
-            (Consumer<PipelineMessageNotificationTestCase>) (t) -> {
+            (Consumer<PipelineMessageNotificationTestCase>) t -> {
               assertNotNull(t.queueManager.read("owException-out", RECEIVE_TIMEOUT, MILLISECONDS));
             }
         },
@@ -117,7 +119,7 @@ public class PipelineMessageNotificationTestCase extends AbstractNotificationTes
                 .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_COMPLETE)))
                 .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_COMPLETE)))
                 .serial(new Node(PipelineMessageNotification.class, new IntegerAction(PROCESS_COMPLETE))),
-            (Consumer<PipelineMessageNotificationTestCase>) (t) -> {
+            (Consumer<PipelineMessageNotificationTestCase>) t -> {
             }
         }
     };

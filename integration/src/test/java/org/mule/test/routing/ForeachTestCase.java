@@ -51,8 +51,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
-import javax.inject.Inject;
-
 import com.google.common.collect.ImmutableList;
 
 import org.apache.commons.text.RandomStringGenerator;
@@ -68,6 +66,8 @@ import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
+
+import jakarta.inject.Inject;
 
 @Feature(SCOPE)
 @Story(FOR_EACH)
@@ -241,12 +241,13 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
   @Description("Splits a JSON into other JSON objects and executed expressions over each object")
   @Test
   public void splitJsonComplexValue() throws Exception {
-    String jsonUsers = "{ \"users\": [" +
-        "{ \"name\": \"Pepe\", \"lastname\": \"Le Pew\" }," +
-        "{ \"name\": \"Chuck\", \"lastname\": \"Jones\" }," +
-        "{ \"name\": \"Dick\", \"lastname\": \"Dastardly\" }," +
-        "{ \"name\": \"William\", \"lastname\": \"Hanna\" }" +
-        "] }";
+    String jsonUsers = """
+        { "users": [\
+        { "name": "Pepe", "lastname": "Le Pew" },\
+        { "name": "Chuck", "lastname": "Jones" },\
+        { "name": "Dick", "lastname": "Dastardly" },\
+        { "name": "William", "lastname": "Hanna" }\
+        ] }""";
     flowRunner("splitJsonComplexValue").withVariable("content", jsonUsers, JSON_STRING).withMediaType(APPLICATION_JSON)
         .run();
     assertQueueValueIs("splitJsonComplexValueOutQueue", "Pepe Le Pew");
@@ -307,9 +308,10 @@ public class ForeachTestCase extends AbstractIntegrationTestCase {
     assertQueueValueIs("splitStringOutQueue", "c");
   }
 
-  static String sampleXml = "<PurchaseOrder><Address><Name>Ellen Adams</Name></Address><Items>"
-      + "<Item PartNumber=\"872-AA\"><Price>140</Price></Item><Item PartNumber=\"926-AA\"><Price>35</Price></Item>"
-      + "</Items></PurchaseOrder>";
+  static String sampleXml = """
+      <PurchaseOrder><Address><Name>Ellen Adams</Name></Address><Items>\
+      <Item PartNumber="872-AA"><Price>140</Price></Item><Item PartNumber="926-AA"><Price>35</Price></Item>\
+      </Items></PurchaseOrder>""";
 
   private void xml(Object payload) throws Exception {
     CoreEvent result = flowRunner("process-order-update").withPayload(payload).withMediaType(APPLICATION_XML).run();

@@ -11,16 +11,17 @@ import static org.mule.test.allure.AllureConstants.ReuseFeature.ReuseStory.OPERA
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.mule.extension.mule.testing.processing.strategies.test.api.ExecutionThreadTracker;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
+
 import org.junit.Test;
 
 @Feature(REUSE)
