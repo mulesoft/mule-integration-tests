@@ -9,11 +9,13 @@ package org.mule.runtime.test.integration.logging;
 import static org.mule.runtime.core.api.util.StringUtils.isEmpty;
 import static org.mule.runtime.core.api.util.StringUtils.toHexString;
 
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
 import static io.opentelemetry.api.trace.propagation.internal.W3CTraceContextEncoding.decodeTraceState;
+import static io.opentelemetry.proto.trace.v1.Status.StatusCode.STATUS_CODE_OK;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 
 import org.mule.runtime.tracer.api.sniffer.CapturedEventData;
 import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
@@ -21,13 +23,12 @@ import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
+import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceRequest;
-import io.opentelemetry.proto.common.v1.AttributeKeyValue;
+import io.opentelemetry.proto.common.v1.KeyValue;
 import io.opentelemetry.proto.trace.v1.ResourceSpans;
 import io.opentelemetry.proto.trace.v1.Span;
-import io.opentelemetry.proto.trace.v1.Status;
 
 /**
  * Utils for the open telemetry protobuf.
@@ -41,19 +42,22 @@ public class OpenTelemetryProtobufSpanUtils {
   public static List<? extends CapturedExportedSpan> getSpans(ExportTraceServiceRequest exportTraceServiceRequest) {
     return exportTraceServiceRequest.getResourceSpansList().stream()
         .flatMap(resourceSpans -> processResourceSpans(resourceSpans).stream())
-        .collect(Collectors.toList());
+        .collect(toList());
   }
 
   private static List<SpanDataWrapper> processResourceSpans(ResourceSpans resourceSpans) {
     List<Span> spans = new ArrayList<>();
-    // TODO: verify a better way to parse the attributes.
-    String serviceName =
-        resourceSpans.getResource().getAttributes(0).getUnknownFields().toByteString().toStringUtf8().substring(4);
+    String serviceName = resourceSpans.getResource().getAttributesList()
+        .stream()
+        .filter(kv -> kv.getKey().equals("service.name"))
+        .findAny()
+        .get()
+        .getValue().getStringValue();
 
     resourceSpans.getScopeSpansList()
         .forEach(scopeSpans -> spans.addAll(scopeSpans.getSpansList()));
 
-    return spans.stream().map(span -> new SpanDataWrapper(serviceName, span)).collect(Collectors.toList());
+    return spans.stream().map(span -> new SpanDataWrapper(serviceName, span)).collect(toList());
   }
 
   /**
@@ -69,7 +73,6 @@ public class OpenTelemetryProtobufSpanUtils {
    * @param request the export request for traces.
    */
   public static void verifyResourceAndScopeGrouping(ExportTraceServiceRequest request) {
-
     assertThat("The number of expected resources for the export request is not 1. In the mule runtime there is only one resource per app",
                request.getResourceSpansCount(), equalTo(1));
     assertThat("The number of expected instrumentation scopes for the export request is not 1. In the mule runtime there is only one scope, which corresponds to the instrumentation code/library for open telemetry export module.",
@@ -114,10 +117,9 @@ public class OpenTelemetryProtobufSpanUtils {
 
     @Override
     public Map<String, String> getAttributes() {
-      // TODO: verify a better way to parse the attributes in optel protobuf.
       return openTelemetryProtobufSpan.getAttributesList().stream()
-          .collect(toMap(AttributeKeyValue::getKey,
-                         attributeKeyValue -> attributeKeyValue.getUnknownFields().toByteString().toStringUtf8().substring(4)));
+          .collect(toMap(KeyValue::getKey,
+                         attributeKeyValue -> attributeKeyValue.getValue().getStringValue()));
     }
 
     @Override
@@ -137,16 +139,12 @@ public class OpenTelemetryProtobufSpanUtils {
 
     @Override
     public boolean hasErrorStatus() {
-      return !openTelemetryProtobufSpan.getStatus().getCode().equals(Status.StatusCode.Ok);
+      return !openTelemetryProtobufSpan.getStatus().getCode().equals(STATUS_CODE_OK);
     }
 
     @Override
     public String getStatusAsString() {
-      return openTelemetryProtobufSpan.getStatus().getCode().toString().toUpperCase();
-    }
-
-    public String getLocation() {
-      return getAttributes().get("location");
+      return StatusCode.values()[openTelemetryProtobufSpan.getStatus().getCodeValue()].name();
     }
 
     @Override
