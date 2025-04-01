@@ -6,23 +6,22 @@
  */
 package org.mule.test.components;
 
-import static java.lang.Runtime.getRuntime;
-import static java.lang.String.format;
-import static java.util.Arrays.asList;
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.core.IsNull.notNullValue;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assume.assumeThat;
 import static org.mule.runtime.api.metadata.MediaType.APPLICATION_JAVA;
 import static org.mule.runtime.core.api.processor.ReactiveProcessor.ProcessingType.BLOCKING;
 import static org.mule.runtime.http.api.HttpConstants.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.mule.runtime.http.api.HttpConstants.Method.POST;
 import static org.mule.tck.probe.PollingProber.probe;
 
-import io.qameta.allure.Description;
-import org.junit.Rule;
+import static java.lang.Runtime.getRuntime;
+import static java.lang.String.format;
+import static java.util.Arrays.asList;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.core.IsNull.notNullValue;
+
 import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.exception.MuleRuntimeException;
@@ -45,14 +44,16 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.inject.Inject;
-
-import io.qameta.allure.Issue;
-
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
+
+import io.qameta.allure.Description;
+import io.qameta.allure.Issue;
+
+import jakarta.inject.Inject;
 
 @RunnerDelegateTo(Parameterized.class)
 public class RedeliveryPolicyTestCase extends AbstractIntegrationTestCase {
@@ -179,9 +180,10 @@ public class RedeliveryPolicyTestCase extends AbstractIntegrationTestCase {
 
   @Test
   @Issue("MULE-19916")
-  @Description("Test that when the evaluation of the message ID expression for the redelivery policy fails " +
-      "for a message from a source configured with transactions, the transaction is not rolled back by the source " +
-      "because of the flow finishing with an error.")
+  @Description("""
+      Test that when the evaluation of the message ID expression for the redelivery policy fails \
+      for a message from a source configured with transactions, the transaction is not rolled back by the source \
+      because of the flow finishing with an error.""")
   public void redeliveryInvalidMessageIdWithTransactionalSourceAndCustomErrorHandler() throws Exception {
     flowRunner("redeliveryInvalidMessageIdWithTransactionalSourceAndCustomErrorHandlerDispatch").runExpectingException();
     assertExpressionErrorRaisedOnlyOnce("transactionalSourceCustomErrorHandlerMessageQueue");
@@ -207,9 +209,10 @@ public class RedeliveryPolicyTestCase extends AbstractIntegrationTestCase {
 
   @Test
   @Issue("MULE-19921")
-  @Description("Test that when the message ID of the redelivery policy is blank for a message from a source " +
-      "configured with transactions, the transaction is not rolled back by the source " +
-      "because of the flow finishing with an error.")
+  @Description("""
+      Test that when the message ID of the redelivery policy is blank for a message from a source \
+      configured with transactions, the transaction is not rolled back by the source \
+      because of the flow finishing with an error.""")
   public void redeliveryBlankMessageIdWithTransactionalSourceAndCustomErrorHandler() throws Exception {
     flowRunner("redeliveryBlankMessageIdWithTransactionalSourceAndCustomErrorHandlerDispatch").runExpectingException();
     assertExpressionErrorRaisedOnlyOnce("transactionalSourceCustomErrorHandlerMessageQueue");

@@ -20,9 +20,9 @@ import org.mule.runtime.core.api.processor.Processor;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.tests.api.TestQueueManager;
 
-import javax.inject.Inject;
-
 import org.junit.Test;
+
+import jakarta.inject.Inject;
 
 public class ExceptionStrategyWithFlowExceptionTestCase extends AbstractIntegrationTestCase {
 

@@ -13,9 +13,9 @@ import static java.util.Optional.empty;
 
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.collection.IsIterableContainingInRelativeOrder.containsInRelativeOrder;
-import static org.junit.Assert.assertThat;
 
 import org.mule.runtime.api.component.Component;
 import org.mule.runtime.api.exception.MuleException;
@@ -34,13 +34,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import org.junit.Test;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
+
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 @Feature(ERROR_HANDLING)
 @Story(GLOBAL_ERROR_HANDLER)

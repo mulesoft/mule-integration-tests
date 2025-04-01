@@ -7,15 +7,16 @@
 package org.mule.test.construct;
 
 import static java.util.Arrays.asList;
+
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.tests.api.LifecycleTrackerRegistry;
 
-import javax.inject.Inject;
-
 import org.junit.Test;
+
+import jakarta.inject.Inject;
 
 public class ScopeLifecycleTestCase extends AbstractIntegrationTestCase {
 

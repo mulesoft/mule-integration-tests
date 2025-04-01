@@ -7,16 +7,16 @@
 package org.mule.test.construct;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
-import static org.junit.Assert.assertThat;
 
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.tests.api.LifecycleTrackerRegistry;
 
-import javax.inject.Inject;
-
 import org.junit.Test;
+
+import jakarta.inject.Inject;
 
 public class SubFlowTestCase extends AbstractIntegrationTestCase {
 

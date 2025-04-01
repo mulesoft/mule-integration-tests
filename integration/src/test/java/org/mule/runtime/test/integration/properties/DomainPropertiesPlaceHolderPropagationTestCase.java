@@ -60,7 +60,7 @@ public class DomainPropertiesPlaceHolderPropagationTestCase extends AbstractMule
     String appPropertyObject = getApplicationProperty("appPropertyObject");
     assertThat(appPropertyObject, is("9999"));
     String inlinePropertyObject = getApplicationProperty("inlinePropertyObject");
-    assertThat(inlinePropertyObject, is("file contents" + lineSeparator()));
+    assertThat(inlinePropertyObject, is("file contents\n"));
   }
 
   private String getApplicationProperty(String property) {

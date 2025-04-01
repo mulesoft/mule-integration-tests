@@ -7,6 +7,7 @@
 package org.mule.test.construct;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -16,10 +17,10 @@ import org.mule.tck.testmodels.fruit.Apple;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.tests.api.TestQueueManager;
 
-import javax.inject.Inject;
-
 import org.junit.Rule;
 import org.junit.Test;
+
+import jakarta.inject.Inject;
 
 public class FlowNestingTestCase extends AbstractIntegrationTestCase {
 

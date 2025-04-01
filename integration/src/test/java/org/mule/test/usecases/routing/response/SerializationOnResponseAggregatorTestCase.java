@@ -11,7 +11,7 @@ import static org.mule.runtime.http.api.HttpConstants.Method.POST;
 import static org.mule.runtime.http.api.client.HttpRequestOptions.builder;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.mule.runtime.api.serialization.ObjectSerializer;
 import org.mule.runtime.api.store.ObjectStoreException;
@@ -32,10 +32,10 @@ import org.mule.test.AbstractIntegrationTestCase;
 import java.io.Serializable;
 import java.util.List;
 
-import javax.inject.Inject;
-
 import org.junit.Rule;
 import org.junit.Test;
+
+import jakarta.inject.Inject;
 
 public class SerializationOnResponseAggregatorTestCase extends AbstractIntegrationTestCase {
 

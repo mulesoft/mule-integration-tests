@@ -14,7 +14,7 @@
 
     <properties>
         <surefire.module.path>
-            ${org.slf4j:slf4j-api:jar}:${org.mule.runtime.boot:mule-module-jpms-utils:jar}
+            ${org.slf4j:slf4j-api:jar}${path.separator}${org.mule.runtime.boot:mule-module-jpms-utils:jar}
         </surefire.module.path>
         <surefire.add.modules>
             org.slf4j,org.mule.runtime.jpms.utils
@@ -27,8 +27,6 @@
         <javaModuleName>org.mule.test.integration.tracing</javaModuleName>
         <skipExportTests>false</skipExportTests>
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
-
-        <openTelemetryProtoVersion>0.3.0</openTelemetryProtoVersion>
     </properties>
 
     <dependencyManagement>
@@ -297,15 +295,13 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>io.opentelemetry</groupId>
+            <groupId>io.opentelemetry.proto</groupId>
             <artifactId>opentelemetry-proto</artifactId>
-            <version>${openTelemetryProtoVersion}</version>
             <scope>test</scope>
         </dependency>
-        <!-- This module uses the standalone lib to address an incompatibility between the jetty version wiremock is compiled against and the jetty version used in the test suite -->
         <dependency>
-            <groupId>com.github.tomakehurst</groupId>
-            <artifactId>wiremock-standalone</artifactId>
+            <groupId>org.wiremock</groupId>
+            <artifactId>wiremock</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

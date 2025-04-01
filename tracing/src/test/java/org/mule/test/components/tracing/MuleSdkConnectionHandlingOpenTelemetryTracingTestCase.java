@@ -6,8 +6,6 @@
  */
 package org.mule.test.components.tracing;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.util.MuleSystemProperties.TRACING_LEVEL_CONFIGURATION_PATH;
 import static org.mule.runtime.core.api.config.MuleDeploymentProperties.MULE_LAZY_CONNECTIONS_DEPLOYMENT_PROPERTY;
 import static org.mule.runtime.tracer.customization.api.InternalSpanNames.OPERATION_EXECUTION_SPAN_NAME;
@@ -21,13 +19,16 @@ import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceSto
 
 import static java.util.Arrays.asList;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
 import org.mule.runtime.api.config.custom.ServiceConfigurator;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.config.ConfigurationBuilder;
+import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
 import org.mule.runtime.tracer.api.sniffer.ExportedSpanSniffer;
-import org.mule.runtime.core.privileged.profiling.PrivilegedProfilingService;
 import org.mule.runtime.tracer.customization.api.InternalSpanNames;
 import org.mule.runtime.tracing.level.api.config.TracingLevel;
 import org.mule.tck.junit4.AbstractMuleTestCase;
@@ -37,19 +38,21 @@ import org.mule.tck.probe.PollingProber;
 import org.mule.test.infrastructure.profiling.tracing.SpanTestHierarchy;
 import org.mule.test.runner.RunnerDelegateTo;
 
-import javax.inject.Inject;
 import java.nio.file.FileSystems;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Supplier;
 
-import io.qameta.allure.Feature;
-import io.qameta.allure.Story;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
 import org.junit.Rule;
+import org.junit.Test;
 import org.junit.runners.Parameterized;
+
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
+
+import jakarta.inject.Inject;
 
 @Feature(PROFILING)
 @Story(DEFAULT_CORE_EVENT_TRACER)

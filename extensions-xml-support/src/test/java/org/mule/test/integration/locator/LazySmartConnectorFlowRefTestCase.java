@@ -19,15 +19,15 @@ import org.mule.test.runner.RunnerDelegateTo;
 
 import java.util.Collection;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import io.qameta.allure.Story;
-import org.junit.Test;
-
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Features;
 import io.qameta.allure.Issue;
+
+import org.junit.Test;
 import org.junit.runners.Parameterized;
 
 @Story(FLOW_REFERENCE)

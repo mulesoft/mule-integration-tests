@@ -2,7 +2,7 @@
 <Configuration>
     <Appenders>
         <File name="file" fileName="${sys:mule.home}${sys:file.separator}logs${sys:file.separator}test.log">
-            <PatternLayout pattern="[%d{MM-dd HH:mm:ss}] %-5p [%t] span-id: %X{span-id}; trace-id: %X{trace-id}; %m%n]" />
+            <PatternLayout pattern="[%d{MM-dd HH:mm:ss}] %-5p [%t] span-id: %X{span_id}; trace-id: %X{trace_id}; %m%n]" />
         </File>
     </Appenders>
 

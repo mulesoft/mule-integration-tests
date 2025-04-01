@@ -6,14 +6,16 @@
  */
 package org.mule.test.construct;
 
+import static org.mule.runtime.api.metadata.DataType.STRING;
+
 import static java.lang.Thread.currentThread;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
+
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
-import static org.mule.runtime.api.metadata.DataType.STRING;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.message.Message;
@@ -25,9 +27,9 @@ import org.mule.tests.api.TestQueueManager;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.inject.Inject;
-
 import org.junit.Test;
+
+import jakarta.inject.Inject;
 
 public class FlowAsyncBeforeAfterOutboundTestCase extends AbstractIntegrationTestCase {
 

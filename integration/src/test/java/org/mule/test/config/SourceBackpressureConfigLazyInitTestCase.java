@@ -15,14 +15,14 @@ import org.mule.runtime.api.component.location.Location;
 import org.mule.runtime.config.api.LazyComponentInitializer;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import org.junit.Test;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
+
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 @Feature(LAZY_INITIALIZATION)
 @Story(BACKPRESSURE)

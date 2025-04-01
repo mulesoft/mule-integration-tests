@@ -12,15 +12,15 @@ import static org.mule.test.allure.AllureConstants.ComponentsFeature.FlowReferen
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import org.junit.Test;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
+
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 @Feature(CORE_COMPONENTS)
 @Story(FLOW_REFERENCE)

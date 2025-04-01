@@ -6,14 +6,16 @@
  */
 package org.mule.test.integration;
 
+import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
+import static org.mule.test.allure.AllureConstants.ScopeFeature.SCOPE;
+import static org.mule.test.allure.AllureConstants.ScopeFeature.AsyncStory.ASYNC;
+
 import static java.util.Arrays.asList;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
-import static org.mule.test.allure.AllureConstants.ErrorHandlingFeature.ERROR_HANDLING;
-import static org.mule.test.allure.AllureConstants.RoutersFeature.AsyncStory.ASYNC;
-import static org.mule.test.allure.AllureConstants.ScopeFeature.SCOPE;
 
 import org.mule.runtime.api.util.concurrent.Latch;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -21,8 +23,6 @@ import org.mule.test.runner.RunnerDelegateTo;
 import org.mule.tests.api.TestQueueManager;
 
 import java.util.Collection;
-
-import javax.inject.Inject;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -33,6 +33,8 @@ import io.qameta.allure.Feature;
 import io.qameta.allure.Issue;
 import io.qameta.allure.Stories;
 import io.qameta.allure.Story;
+
+import jakarta.inject.Inject;
 
 @Feature(SCOPE)
 @Stories({@Story(ASYNC), @Story(ERROR_HANDLING)})

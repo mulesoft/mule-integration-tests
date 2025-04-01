@@ -11,7 +11,6 @@ import static org.mule.runtime.api.util.MuleSystemProperties.ENABLE_PROFILING_SE
 import static org.mule.runtime.api.util.MuleSystemProperties.PUT_TRACE_ID_AND_SPAN_ID_IN_MDC_PROPERTY;
 import static org.mule.runtime.test.integration.logging.plugin.TestPluginsCatalog.loggingExtensionPlugin;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.ALWAYS_ON_SAMPLER;
-import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_DEFAULT_TRACING_LEVEL;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_ENABLED;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_ENDPOINT;
 import static org.mule.runtime.tracer.exporter.config.api.OpenTelemetrySpanExporterConfigurationProperties.MULE_OPEN_TELEMETRY_EXPORTER_TYPE;
@@ -61,18 +60,14 @@ import com.linecorp.armeria.server.AbstractHttpService;
 import com.linecorp.armeria.server.ServerBuilder;
 import com.linecorp.armeria.server.ServiceRequestContext;
 import com.linecorp.armeria.testing.junit4.server.ServerRule;
-
-import org.jetbrains.annotations.NotNull;
-
 import io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceRequest;
-
-import org.junit.ClassRule;
-import org.junit.Rule;
-import org.junit.Test;
-
 import io.qameta.allure.Feature;
 import io.qameta.allure.Features;
 import io.qameta.allure.Story;
+import org.jetbrains.annotations.NotNull;
+import org.junit.ClassRule;
+import org.junit.Rule;
+import org.junit.Test;
 
 @Features({@Feature(DEFAULT_PROFILING_SERVICE), @Feature(LOGGING)})
 @Story(TRACING_CONFIGURATION)

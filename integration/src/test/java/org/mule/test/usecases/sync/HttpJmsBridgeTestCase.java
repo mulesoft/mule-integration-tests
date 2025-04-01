@@ -6,17 +6,19 @@
  */
 package org.mule.test.usecases.sync;
 
-import static java.lang.String.format;
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 import static org.mule.runtime.http.api.HttpConstants.Method.POST;
 import static org.mule.tck.processor.FlowAssert.verify;
 
+import static java.lang.String.format;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNotNull;
+
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.http.api.HttpService;
 import org.mule.runtime.api.util.MultiMap;
+import org.mule.runtime.http.api.HttpService;
 import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;
 import org.mule.runtime.http.api.domain.message.request.HttpRequest;
 import org.mule.service.http.TestHttpClient;
@@ -24,10 +26,10 @@ import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.tests.api.TestQueueManager;
 
-import javax.inject.Inject;
-
 import org.junit.Rule;
 import org.junit.Test;
+
+import jakarta.inject.Inject;
 
 public class HttpJmsBridgeTestCase extends AbstractIntegrationTestCase {
 

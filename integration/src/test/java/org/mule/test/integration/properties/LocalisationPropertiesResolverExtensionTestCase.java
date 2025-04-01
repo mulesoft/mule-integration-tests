@@ -6,11 +6,13 @@
  */
 package org.mule.test.integration.properties;
 
-import static java.lang.Double.parseDouble;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 import static org.mule.test.allure.AllureConstants.ConfigurationProperties.CONFIGURATION_PROPERTIES;
 import static org.mule.test.allure.AllureConstants.ConfigurationProperties.ComponentConfigurationAttributesStory.CONFIGURATION_PROPERTIES_RESOLVER_STORY;
+
+import static java.lang.Double.parseDouble;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 
 import org.mule.runtime.api.component.ConfigurationProperties;
 import org.mule.test.AbstractIntegrationTestCase;
@@ -19,13 +21,14 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
 
-import javax.inject.Inject;
+import org.junit.Test;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
-import org.junit.Test;
+
+import jakarta.inject.Inject;
 
 @Feature(CONFIGURATION_PROPERTIES)
 @Story(CONFIGURATION_PROPERTIES_RESOLVER_STORY)

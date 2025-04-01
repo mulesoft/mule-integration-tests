@@ -7,7 +7,7 @@
 package org.mule.test.integration.locator;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mule.runtime.api.component.ComponentIdentifier.buildFromStringRepresentation;
 import static org.mule.runtime.api.component.location.Location.builderFromStringRepresentation;
 import static org.mule.test.allure.AllureConstants.LazyInitializationFeature.LAZY_INITIALIZATION;
@@ -17,7 +17,7 @@ import org.mule.runtime.config.api.LazyComponentInitializer;
 import org.mule.test.IntegrationTestCaseRunnerConfig;
 import org.mule.test.functional.AbstractXmlExtensionMuleArtifactFunctionalTestCase;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.junit.Test;
 

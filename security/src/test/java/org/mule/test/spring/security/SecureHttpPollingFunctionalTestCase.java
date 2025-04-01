@@ -14,7 +14,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.junit.runner.RunWith;
 import org.mule.extension.http.api.HttpResponseAttributes;
@@ -30,14 +30,12 @@ import org.mule.test.IntegrationTestCaseRunnerConfig;
 import org.mule.test.runner.RunnerDelegateTo;
 import org.mule.tests.api.TestQueueManager;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
-//@Ignore("W-13603419")
-@RunnerDelegateTo(FlakinessDetectorTestRunner.class)
+
 public class SecureHttpPollingFunctionalTestCase extends MuleArtifactFunctionalTestCase
     implements IntegrationTestCaseRunnerConfig {
 

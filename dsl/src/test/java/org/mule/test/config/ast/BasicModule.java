@@ -9,10 +9,12 @@ package org.mule.test.config.ast;
 import static org.mule.runtime.api.config.MuleRuntimeFeature.ENFORCE_EXPRESSION_VALIDATION;
 import static org.mule.tck.config.WeaveExpressionLanguageFactoryServiceProvider.provideDefaultExpressionLanguageFactoryService;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonMap;
 import static java.util.Optional.of;
 
+import org.mule.runtime.api.config.ArtifactEncoding;
 import org.mule.runtime.api.config.FeatureFlaggingService;
 import org.mule.runtime.api.el.ExpressionLanguage;
 import org.mule.runtime.ast.api.validation.ArtifactAstValidatorBuilder;
@@ -24,6 +26,7 @@ import org.mule.runtime.config.internal.validation.DefaultArtifactAstDependencyG
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.el.ExtendedExpressionManager;
 import org.mule.runtime.core.api.transformer.Transformer;
+import org.mule.runtime.core.internal.config.DefaultArtifactEncoding;
 import org.mule.runtime.core.internal.context.DefaultMuleContext;
 import org.mule.runtime.core.internal.el.DefaultExpressionManager;
 import org.mule.runtime.core.internal.registry.TransformerResolver;
@@ -37,10 +40,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.inject.Singleton;
-
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
+
+import jakarta.inject.Singleton;
 
 /**
  * This class will serve as an example of how to inject fields for AST validators in a Java 17 compliant way using some DI
@@ -97,6 +100,12 @@ class BasicModule extends AbstractModule {
   @Singleton
   public List<TransformerResolver> provideListTransformerResolver() {
     return emptyList();
+  }
+
+  @Provides
+  @Singleton
+  public ArtifactEncoding provideArtifactEncoding() {
+    return new DefaultArtifactEncoding(UTF_8.name());
   }
 }
 

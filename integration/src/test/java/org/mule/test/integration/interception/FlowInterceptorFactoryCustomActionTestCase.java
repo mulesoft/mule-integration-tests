@@ -6,12 +6,13 @@
  */
 package org.mule.test.integration.interception;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.sameInstance;
-import static org.junit.Assert.assertThat;
 import static org.mule.functional.api.exception.ExpectedError.none;
 import static org.mule.test.allure.AllureConstants.InterceptonApi.INTERCEPTION_API;
 import static org.mule.test.allure.AllureConstants.InterceptonApi.ComponentInterceptionStory.FLOW_INTERCEPTION_STORY;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 
 import org.mule.functional.api.exception.ExpectedError;
 import org.mule.runtime.api.interception.FlowInterceptor;
@@ -29,9 +30,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -39,6 +37,9 @@ import org.junit.Test;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
+
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 @Feature(INTERCEPTION_API)
 @Story(FLOW_INTERCEPTION_STORY)

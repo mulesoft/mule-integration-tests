@@ -8,7 +8,7 @@ package org.mule.test.config;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
@@ -25,7 +25,7 @@ import org.mule.test.IntegrationTestCaseRunnerConfig;
 
 import java.util.Iterator;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.slf4j.Logger;
 

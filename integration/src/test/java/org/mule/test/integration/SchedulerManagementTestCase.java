@@ -6,14 +6,16 @@
  */
 package org.mule.test.integration;
 
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static org.junit.Assert.fail;
 import static org.mule.functional.api.component.FunctionalTestProcessor.getFromFlow;
 import static org.mule.runtime.api.component.location.Location.builder;
 import static org.mule.test.allure.AllureConstants.SchedulerServiceFeature.SCHEDULER_SERVICE;
 import static org.mule.test.allure.AllureConstants.SchedulerServiceFeature.SchedulerServiceStory.SOURCE_MANAGEMENT;
-import org.mule.runtime.api.event.Event;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+
+import static org.junit.Assert.fail;
+
+import org.mule.runtime.api.event.Event;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.source.SchedulerMessageSource;
 import org.mule.runtime.api.util.concurrent.Latch;
@@ -22,15 +24,15 @@ import org.mule.tck.probe.Probe;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.tests.api.TestQueueManager;
 
-import org.junit.Test;
-
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.inject.Inject;
+import org.junit.Test;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
+
+import jakarta.inject.Inject;
 
 @Feature(SCHEDULER_SERVICE)
 @Story(SOURCE_MANAGEMENT)

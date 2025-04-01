@@ -24,9 +24,6 @@ import org.mule.runtime.api.metadata.resolving.MetadataResult;
 import org.mule.runtime.config.api.LazyComponentInitializer;
 import org.mule.test.AbstractIntegrationTestCase;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import org.junit.Test;
 
 import io.qameta.allure.Description;
@@ -34,6 +31,9 @@ import io.qameta.allure.Feature;
 import io.qameta.allure.Features;
 import io.qameta.allure.Stories;
 import io.qameta.allure.Story;
+
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 @Features({@Feature(LAZY_INITIALIZATION), @Feature(SDK_TOOLING_SUPPORT), @Feature(ROUTERS)})
 @Stories({@Story(METADATA_SERVICE), @Story(SCATTER_GATHER)})

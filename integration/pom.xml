@@ -14,7 +14,7 @@
 
     <properties>
         <surefire.module.path>
-            ${org.slf4j:slf4j-api:jar}:${org.mule.runtime.boot:mule-module-jpms-utils:jar}
+            ${org.slf4j:slf4j-api:jar}${path.separator}${org.mule.runtime.boot:mule-module-jpms-utils:jar}
         </surefire.module.path>
         <surefire.add.modules>
             org.slf4j,org.mule.runtime.jpms.utils
@@ -77,7 +77,7 @@
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-dwb-api</artifactId> 
             <scope>provided</scope>         
-        </dependency> 
+        </dependency>
         <dependency>
             <groupId>org.mule.services</groupId>
             <artifactId>mule-service-http</artifactId>
@@ -340,7 +340,7 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.tomakehurst</groupId>
+            <groupId>org.wiremock</groupId>
             <artifactId>wiremock</artifactId>
             <scope>test</scope>
         </dependency>
