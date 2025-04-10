@@ -9,7 +9,8 @@ package org.mule.test.scheduler;
 import static org.mule.service.scheduler.internal.config.ContainerThreadPoolsConfig.BIG_POOL_DEFAULT_SIZE;
 import static org.mule.tck.junit4.matcher.Eventually.eventually;
 
-import static java.util.concurrent.TimeUnit.DAYS;
+import static java.lang.Long.MAX_VALUE;
+import static java.util.concurrent.Executors.newFixedThreadPool;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -21,9 +22,10 @@ import org.mule.AbstractBenchmarkAssertionTestCase;
 import org.mule.runtime.api.scheduler.Scheduler;
 import org.mule.service.scheduler.internal.DefaultSchedulerService;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadInfo;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.hamcrest.Description;
@@ -33,26 +35,8 @@ import org.junit.Test;
 public class SchedulerPerformanceTestCase extends AbstractBenchmarkAssertionTestCase {
 
   @Test
-  public void negativeScheduleTime() throws Exception {
-    DefaultSchedulerService schedulerService = new DefaultSchedulerService();
-    schedulerService.start();
-
-    Scheduler scheduler = schedulerService.ioScheduler();
-    scheduler.schedule(() -> System.out.println("Executing MAX X"), Long.MAX_VALUE, NANOSECONDS);
-    scheduler.schedule(() -> System.out.println("Executing 10ms"), 10, MILLISECONDS);
-    scheduler.schedule(() -> System.out.println("Executing 10ms"), 10, MILLISECONDS);
-    scheduler.schedule(() -> System.out.println("Executing 10ms"), 10, MILLISECONDS);
-    scheduler.schedule(() -> System.out.println("Executing Immediate"), 0, NANOSECONDS);
-
-    Thread.sleep(10000);
-
-    scheduler.shutdown();
-    schedulerService.stop();
-  }
-
-  @Test
   public void withManyAndRee() throws Exception {
-    test(300, 300_000L, true);
+    test(500, 500_000L, true);
   }
 
   @Test
@@ -71,33 +55,48 @@ public class SchedulerPerformanceTestCase extends AbstractBenchmarkAssertionTest
   }
 
   private void test(int testSchedulerSize, long parallelSchedulesNumber, boolean forceRejections) throws Exception {
-    ExecutorService schedulerThatSchedules = Executors.newFixedThreadPool(testSchedulerSize);
+    ExecutorService schedulerThatSchedules = newFixedThreadPool(testSchedulerSize);
     AtomicLong counter = new AtomicLong();
 
     DefaultSchedulerService schedulerService = new DefaultSchedulerService();
     schedulerService.start();
 
     Scheduler scheduler = schedulerService.ioScheduler();
-    // Schedule some slow tasks to force temporary RejectedExecutionException's in the doSchedule() method
-    if (forceRejections) {
-      scheduleSlowTasks(scheduler, BIG_POOL_DEFAULT_SIZE);
-    }
 
-    // Many tasks with delay=0, and Many/100 tasks to be executed in 10 years...
-    for (long i = 0; i < parallelSchedulesNumber; i++) {
-      if (i % 100 == 0) {
-        schedulerThatSchedules
-            .submit(() -> scheduler.schedule(counter::incrementAndGet, 365_000, DAYS));
+    try {
+      // Schedule some slow tasks to force temporary RejectedExecutionException's in the doSchedule() method
+      if (forceRejections) {
+        scheduleSlowTasks(scheduler, BIG_POOL_DEFAULT_SIZE);
       }
-      schedulerThatSchedules.submit(() -> scheduler.schedule(counter::incrementAndGet, 0, MILLISECONDS));
+
+      // Many tasks with delay=0, and Many tasks to be executed infinitely in the future...
+      for (long i = 0; i < parallelSchedulesNumber; i++) {
+        schedulerThatSchedules.submit(() -> scheduler.schedule(counter::incrementAndGet, MAX_VALUE, NANOSECONDS));
+        schedulerThatSchedules.submit(() -> scheduler.schedule(counter::incrementAndGet, 0, MILLISECONDS));
+      }
+
+      // The "immediate" tasks are eventually executed, we won't wait infinitely for the others...
+      assertThat(counter, is(eventually(equalToLong(parallelSchedulesNumber)).atMostIn(50, SECONDS)));
+    } catch (AssertionError e) {
+      System.out.println("ISSUE REPRODUCED!!! Expected " + parallelSchedulesNumber + " but got " + counter.get());
+      dumpThreads();
+      throw e;
+    } finally {
+      scheduler.shutdown();
+      schedulerService.stop();
+      schedulerThatSchedules.shutdown();
+
     }
 
-    // The "immediate" tasks are eventually executed, we won't wait for 10 years...
-    assertThat(counter, is(eventually(equalTo(parallelSchedulesNumber)).atMostIn(50, SECONDS)));
+  }
 
-    scheduler.shutdown();
-    schedulerService.stop();
-    schedulerThatSchedules.shutdown();
+  private static void dumpThreads() {
+    final StringBuilder buf = new StringBuilder(8192);
+    for (ThreadInfo info : ManagementFactory.getThreadMXBean().dumpAllThreads(true, true)) {
+      buf.append(info);
+    }
+    buf.append('\n');
+    System.err.println(buf.toString());
   }
 
   private static void scheduleSlowTasks(Scheduler scheduler, long howMany) {
@@ -112,7 +111,7 @@ public class SchedulerPerformanceTestCase extends AbstractBenchmarkAssertionTest
     }
   }
 
-  private TypeSafeMatcher<AtomicLong> equalTo(long number) {
+  private TypeSafeMatcher<AtomicLong> equalToLong(long number) {
     return new TypeSafeMatcher<AtomicLong>() {
 
       @Override
