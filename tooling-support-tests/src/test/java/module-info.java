@@ -23,6 +23,7 @@ module org.mule.test.tooling.support {
   requires org.mule.runtime.tooling.support;
   requires org.mule.weave.mule.dwb.api;
 
+  requires com.google.common;
   requires org.apache.logging.log4j;
   requires java.sql;
 

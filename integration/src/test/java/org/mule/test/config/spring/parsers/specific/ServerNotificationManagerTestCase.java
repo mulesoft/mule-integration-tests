@@ -42,8 +42,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 
-import org.checkerframework.checker.units.qual.N;
-
 import org.junit.Test;
 
 import org.hamcrest.Description;
