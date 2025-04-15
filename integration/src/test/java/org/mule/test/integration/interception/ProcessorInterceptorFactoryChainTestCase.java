@@ -6,10 +6,9 @@
  */
 package org.mule.test.integration.interception;
 
-import static org.mule.functional.api.exception.ExpectedError.none;
 import static org.mule.runtime.api.interception.ProcessorInterceptorFactory.INTERCEPTORS_ORDER_REGISTRY_KEY;
-import static org.mule.test.allure.AllureConstants.InterceptonApi.ComponentInterceptionStory.COMPONENT_INTERCEPTION_STORY;
 import static org.mule.test.allure.AllureConstants.InterceptonApi.INTERCEPTION_API;
+import static org.mule.test.allure.AllureConstants.InterceptonApi.ComponentInterceptionStory.COMPONENT_INTERCEPTION_STORY;
 
 import static java.lang.Thread.currentThread;
 import static java.util.Arrays.asList;
@@ -21,7 +20,6 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMoc
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-import org.mule.functional.api.exception.ExpectedError;
 import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.api.interception.InterceptionAction;
 import org.mule.runtime.api.interception.InterceptionEvent;
@@ -46,13 +44,15 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import io.qameta.allure.Feature;
-import io.qameta.allure.Issue;
-import io.qameta.allure.Story;
+
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+
+import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
+import io.qameta.allure.Story;
 
 @Feature(INTERCEPTION_API)
 @Story(COMPONENT_INTERCEPTION_STORY)
@@ -61,9 +61,6 @@ public class ProcessorInterceptorFactoryChainTestCase extends AbstractIntegratio
   // Just to ensure the previous value is set after the test
   @ClassRule
   public static VerboseExceptions verboseExceptions = new VerboseExceptions(false);
-
-  @Rule
-  public ExpectedError expectedError = none();
 
   @Rule
   public DynamicPort wireMockPort = new DynamicPort("wireMockPort");

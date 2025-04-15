@@ -158,7 +158,7 @@
                         Element               : operationWithChainFailing/processors/0/processors/0 @ ProcessorInterceptorFactoryChainTestCase#operationWithChainFailingLogsCorrectly:org/mule/test/integration/interception/processor-interceptor-factory.xml:151
                         Element DSL           : <raise-error type="APP:EXPECTED"></raise-error>
                         Error type            : APP:EXPECTED
-                        FlowStack             : at operationWithChainFailing(operationWithChainFailing/processors/0/processors/0 @ ProcessorInterceptorFactoryChainTestCase#operationWithChainFailingLogsCorrectly:org/mule/test/integration/interception/processor-interceptor-factory.xml:151)
+                        FlowStack             : at operationWithChainFailing(operationWithChainFailing/processors/0/processors/0(org/mule/test/integration/interception/processor-interceptor-factory.xml:151))
                         (set debug level logging or '-Dmule.verbose.exceptions=true' for everything)
                     ]]>
                 </test:check-equals>

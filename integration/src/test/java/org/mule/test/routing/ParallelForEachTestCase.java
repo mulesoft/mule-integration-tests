@@ -20,13 +20,14 @@ import static org.mule.test.routing.ThreadCaptor.getCapturedThreads;
 import static java.lang.System.lineSeparator;
 import static java.util.Arrays.asList;
 
+import static org.apache.commons.lang3.time.DurationFormatUtils.formatDuration;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.startsWith;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.both;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.fail;
 
@@ -38,6 +39,7 @@ import org.mule.runtime.api.exception.DefaultMuleException;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.util.concurrent.Latch;
 import org.mule.runtime.core.api.event.CoreEvent;
+import org.mule.runtime.core.api.event.EventContextService;
 import org.mule.runtime.core.api.expression.ExpressionRuntimeException;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.tck.junit4.rule.DynamicPort;
@@ -45,8 +47,12 @@ import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
+import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -54,6 +60,8 @@ import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
+
+import jakarta.inject.Inject;
 
 @Feature(ROUTERS)
 @Story(PARALLEL_FOR_EACH)
@@ -251,5 +259,46 @@ public class ParallelForEachTestCase extends AbstractIntegrationTestCase {
     public CoreEvent process(CoreEvent event) throws MuleException {
       throw new NullPointerException("nonMule");
     }
+  }
+
+  @Inject
+  private EventContextService eventContextService;
+
+  private ScheduledExecutorService newScheduledThreadPool;
+
+  @Override
+  protected void doSetUp() throws Exception {
+    // // TODO Auto-generated method stub
+    // super.doSetUp();
+    // }
+    // @Before
+    // public void b1() {
+    newScheduledThreadPool = Executors.newScheduledThreadPool(1);
+    newScheduledThreadPool.scheduleAtFixedRate(() -> {
+      final var currentlyActiveFlowStacks = eventContextService.getCurrentlyActiveFlowStacks();
+      System.out.println(" ++ Event Dump!! ++");
+      currentlyActiveFlowStacks.stream()
+          .forEach(fs -> {
+            final var format = String.format("\"%s\", running for: %s, state: %s" + lineSeparator() + "%s",
+                                             fs.getEventId(),
+                                             formatDuration(fs.getExecutingTime().toMillis(), "mm:ss.SSS"),
+                                             fs.getState().name(),
+                                             fs.getFlowCallStack().toStringWithElapsedTime().indent(4));
+            // final var format = String.format("\"%s\" serverId=%s %s %s" + lineSeparator() + "%s",
+            // fs.getEventId(),
+            // fs.getServerId(), // only for non-single deployments
+            // formatDuration(fs.getExecutingTime().toMillis(), "mm:ss.SSS"),
+            // fs.getState().name(),
+            // fs.getFlowCallStack().toString());
+
+            System.out.println(format);
+          });
+      System.out.println(" ++ ++");
+    }, 0, 100, TimeUnit.MILLISECONDS);
+  }
+
+  @After
+  public void a1() {
+    newScheduledThreadPool.shutdownNow();
   }
 }

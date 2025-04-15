@@ -16,9 +16,7 @@ import org.mule.tck.junit4.rule.VerboseExceptions;
 import org.mule.test.IntegrationTestCaseRunnerConfig;
 
 import org.junit.ClassRule;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Features;
@@ -31,9 +29,6 @@ public class LogCheckXmlModuleTestCase extends MuleArtifactFunctionalTestCase im
   // Just to ensure the previous value is set after the test
   @ClassRule
   public static VerboseExceptions verboseExceptions = new VerboseExceptions(false);
-
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
 
   @Override
   protected String getConfigFile() {
