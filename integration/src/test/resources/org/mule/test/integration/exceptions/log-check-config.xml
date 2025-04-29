@@ -36,7 +36,7 @@
                         Element               : checkEqualsVerbose/processors/0 @ LogCheckTestCase#runVerboseCheckEqualsVerbose:org/mule/test/integration/exceptions/log-check-config.xml:30
                         Element DSL           : <raise-error type="APP:EXPECTED"></raise-error>
                         Error type            : APP:EXPECTED
-                        FlowStack             : at checkEqualsVerbose(checkEqualsVerbose/processors/0(org/mule/test/integration/exceptions/log-check-config.xml:30))
+                        FlowStack             : at checkEqualsVerbose/processors/0(org/mule/test/integration/exceptions/log-check-config.xml:30)
                         Payload               : null
                         Payload Type          : null
                     ]]>
@@ -125,7 +125,7 @@
                         Element               : allChecksTogetherNoneFailing/processors/0 @ LogCheckTestCase#runVerboseAllChecksTogetherNoneFailing:org/mule/test/integration/exceptions/log-check-config.xml:119
                         Element DSL           : <raise-error type="APP:EXPECTED"></raise-error>
                         Error type            : APP:EXPECTED
-                        FlowStack             : at allChecksTogetherNoneFailing(allChecksTogetherNoneFailing/processors/0(org/mule/test/integration/exceptions/log-check-config.xml:119))
+                        FlowStack             : at allChecksTogetherNoneFailing/processors/0(org/mule/test/integration/exceptions/log-check-config.xml:119)
                         Payload               : null
                         Payload Type          : null
                     ]]>
@@ -255,7 +255,7 @@
                                                 </until-successful>
                         Error type            : MULE:RETRY_EXHAUSTED
                         Caused by             : MULE:ANY: Error
-                        FlowStack : at suppressedMuleException(suppressedMuleException/processors/0(org/mule/test/integration/exceptions/log-check-config.xml:244))
+                        FlowStack : at suppressedMuleException/processors/0(org/mule/test/integration/exceptions/log-check-config.xml:244)
 
                         (set debug level logging or '-Dmule.verbose.exceptions=true' for everything)
                     ]]>
@@ -284,7 +284,7 @@
                         Error type            : MULE:RETRY_EXHAUSTED
                         Caused by             : MULE:RETRY_EXHAUSTED: 'until-successful' retries exhausted
                                                 MULE:ANY: Error
-                        FlowStack             : at suppressedMuleExceptions(suppressedMuleExceptions/processors/0(org/mule/test/integration/exceptions/log-check-config.xml:268))
+                        FlowStack             : at suppressedMuleExceptions/processors/0(org/mule/test/integration/exceptions/log-check-config.xml:268)
                         Payload               : null
                         Payload Type          : null
                     ]]>

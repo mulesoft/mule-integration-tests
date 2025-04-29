@@ -6,17 +6,19 @@
  */
 package org.mule.test.core.context.notification;
 
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.component.ComponentIdentifier.buildFromStringRepresentation;
 import static org.mule.tck.util.FlowTraceUtils.assertStackElements;
 import static org.mule.tck.util.FlowTraceUtils.isFlowStackElement;
-import static org.mule.tck.util.FlowTraceUtils.FlowStackAsserter.stackToAssert;
 import static org.mule.tck.util.FlowTraceUtils.withChainIdentifier;
+import static org.mule.tck.util.FlowTraceUtils.FlowStackAsserter.stackToAssert;
 import static org.mule.test.allure.AllureConstants.Logging.LOGGING;
 import static org.mule.test.allure.AllureConstants.Logging.LoggingStory.FLOW_STACK;
+
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.mule.runtime.api.notification.MessageProcessorNotification;
 import org.mule.runtime.api.notification.MessageProcessorNotificationListener;
@@ -55,8 +57,9 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
 
     assertThat(stackToAssert, not(nullValue()));
 
-    assertStackElements(stackToAssert, isFlowStackElement("flow", "flow/processors/0"),
-                        isFlowStackElement("flowStatic", "flowStatic/processors/0"));
+    assertStackElements(stackToAssert,
+                        isFlowStackElement("flow/processors/0"),
+                        isFlowStackElement("flowStatic/processors/0"));
 
     assertStackElements(stackToAssert, withChainIdentifier(buildFromStringRepresentation("flow")),
                         withChainIdentifier(buildFromStringRepresentation("flow")));
@@ -69,8 +72,8 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
     assertThat(stackToAssert, not(nullValue()));
 
     assertStackElements(stackToAssert,
-                        isFlowStackElement("subFlow", "subFlow/processors/0"),
-                        isFlowStackElement("subFlowStatic", "subFlowStatic/processors/0"));
+                        isFlowStackElement("subFlow/processors/0"),
+                        isFlowStackElement("subFlowStatic/processors/0"));
 
     assertStackElements(stackToAssert, withChainIdentifier(buildFromStringRepresentation("subflow")),
                         withChainIdentifier(buildFromStringRepresentation("flow")));
@@ -82,8 +85,9 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
 
     assertThat(stackToAssert, not(nullValue()));
 
-    assertStackElements(stackToAssert, isFlowStackElement("flow", "flow/processors/0"),
-                        isFlowStackElement("flowDynamic", "flowDynamic/processors/0"));
+    assertStackElements(stackToAssert,
+                        isFlowStackElement("flow/processors/0"),
+                        isFlowStackElement("flowDynamic/processors/0"));
   }
 
   @Test
@@ -93,8 +97,8 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
     assertThat(stackToAssert, not(nullValue()));
 
     assertStackElements(stackToAssert,
-                        isFlowStackElement("subFlow", "subFlow/processors/0"),
-                        isFlowStackElement("subFlowDynamic", "subFlowDynamic/processors/0"));
+                        isFlowStackElement("subFlow/processors/0"),
+                        isFlowStackElement("subFlowDynamic/processors/0"));
   }
 
   @Test
@@ -103,8 +107,9 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
 
     assertThat(stackToAssert, not(nullValue()));
 
-    assertStackElements(stackToAssert, isFlowStackElement("flow", "flow/processors/0"),
-                        isFlowStackElement("secondFlowStatic", "secondFlowStatic/processors/1"));
+    assertStackElements(stackToAssert,
+                        isFlowStackElement("flow/processors/0"),
+                        isFlowStackElement("secondFlowStatic/processors/1"));
   }
 
   @Test
@@ -114,8 +119,8 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
     assertThat(stackToAssert, not(nullValue()));
 
     assertStackElements(stackToAssert,
-                        isFlowStackElement("subFlow", "subFlow/processors/0"),
-                        isFlowStackElement("secondSubFlowStatic", "secondSubFlowStatic/processors/1"));
+                        isFlowStackElement("subFlow/processors/0"),
+                        isFlowStackElement("secondSubFlowStatic/processors/1"));
   }
 
   @Test
@@ -124,8 +129,9 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
 
     assertThat(stackToAssert, not(nullValue()));
 
-    assertStackElements(stackToAssert, isFlowStackElement("flow", "flow/processors/0"),
-                        isFlowStackElement("secondFlowDynamic", "secondFlowDynamic/processors/1"));
+    assertStackElements(stackToAssert,
+                        isFlowStackElement("flow/processors/0"),
+                        isFlowStackElement("secondFlowDynamic/processors/1"));
   }
 
   @Test
@@ -135,8 +141,8 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
     assertThat(stackToAssert, not(nullValue()));
 
     assertStackElements(stackToAssert,
-                        isFlowStackElement("subFlow", "subFlow/processors/0"),
-                        isFlowStackElement("secondSubFlowDynamic", "secondSubFlowDynamic/processors/1"));
+                        isFlowStackElement("subFlow/processors/0"),
+                        isFlowStackElement("secondSubFlowDynamic/processors/1"));
   }
 
   @Test
@@ -146,8 +152,9 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
     FlowStackAsyncAsserter.latch.await(RECEIVE_TIMEOUT, MILLISECONDS);
     assertThat(stackToAssert, not(nullValue()));
 
-    assertStackElements(stackToAssert, isFlowStackElement("flowInAsync", "flowInAsync/processors/0"),
-                        isFlowStackElement("flowStaticWithAsync", "flowStaticWithAsync/processors/0/processors/0"));
+    assertStackElements(stackToAssert,
+                        isFlowStackElement("flowInAsync/processors/0"),
+                        isFlowStackElement("flowStaticWithAsync/processors/0/processors/0"));
   }
 
   @Test
@@ -159,9 +166,8 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
     assertThat(stackToAssert, not(nullValue()));
 
     assertStackElements(stackToAssert,
-                        isFlowStackElement("subFlowInAsync",
-                                           "subFlowInAsync/processors/0"),
-                        isFlowStackElement("subFlowStaticWithAsync", "subFlowStaticWithAsync/processors/0/processors/0"));
+                        isFlowStackElement("subFlowInAsync/processors/0"),
+                        isFlowStackElement("subFlowStaticWithAsync/processors/0/processors/0"));
 
     assertStackElements(stackToAssert, withChainIdentifier(buildFromStringRepresentation("subflow")),
                         withChainIdentifier(buildFromStringRepresentation("flow")));
@@ -175,8 +181,9 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
 
     assertThat(stackToAssert, not(nullValue()));
 
-    assertStackElements(stackToAssert, isFlowStackElement("flowInAsync", "flowInAsync/processors/0"),
-                        isFlowStackElement("flowDynamicWithAsync", "flowDynamicWithAsync/processors/0/processors/0"));
+    assertStackElements(stackToAssert,
+                        isFlowStackElement("flowInAsync/processors/0"),
+                        isFlowStackElement("flowDynamicWithAsync/processors/0/processors/0"));
   }
 
   @Test
@@ -188,9 +195,8 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
     assertThat(stackToAssert, not(nullValue()));
 
     assertStackElements(stackToAssert,
-                        isFlowStackElement("subFlowInAsync",
-                                           "subFlowInAsync/processors/0"),
-                        isFlowStackElement("subFlowDynamicWithAsync", "subFlowDynamicWithAsync/processors/0/processors/0"));
+                        isFlowStackElement("subFlowInAsync/processors/0"),
+                        isFlowStackElement("subFlowDynamicWithAsync/processors/0/processors/0"));
   }
 
   @Test
@@ -199,9 +205,9 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
 
     assertThat(stackToAssert, not(nullValue()));
 
-    assertStackElements(stackToAssert, isFlowStackElement("flow", "flow/processors/0"),
-                        isFlowStackElement("flowStaticWithChoice",
-                                           "flowStaticWithChoice/processors/0/route/0/processors/0"));
+    assertStackElements(stackToAssert,
+                        isFlowStackElement("flow/processors/0"),
+                        isFlowStackElement("flowStaticWithChoice/processors/0/route/0/processors/0"));
   }
 
   @Test
@@ -211,9 +217,8 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
     assertThat(stackToAssert, not(nullValue()));
 
     assertStackElements(stackToAssert,
-                        isFlowStackElement("subFlow", "subFlow/processors/0"),
-                        isFlowStackElement("subFlowStaticWithChoice",
-                                           "subFlowStaticWithChoice/processors/0/route/0/processors/0"));
+                        isFlowStackElement("subFlow/processors/0"),
+                        isFlowStackElement("subFlowStaticWithChoice/processors/0/route/0/processors/0"));
   }
 
   @Test
@@ -222,9 +227,9 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
 
     assertThat(stackToAssert, not(nullValue()));
 
-    assertStackElements(stackToAssert, isFlowStackElement("flow", "flow/processors/0"),
-                        isFlowStackElement("flowDynamicWithChoice",
-                                           "flowDynamicWithChoice/processors/0/route/0/processors/0"));
+    assertStackElements(stackToAssert,
+                        isFlowStackElement("flow/processors/0"),
+                        isFlowStackElement("flowDynamicWithChoice/processors/0/route/0/processors/0"));
   }
 
   @Test
@@ -234,9 +239,8 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
     assertThat(stackToAssert, not(nullValue()));
 
     assertStackElements(stackToAssert,
-                        isFlowStackElement("subFlow", "subFlow/processors/0"),
-                        isFlowStackElement("subFlowDynamicWithChoice",
-                                           "subFlowDynamicWithChoice/processors/0/route/0/processors/0"));
+                        isFlowStackElement("subFlow/processors/0"),
+                        isFlowStackElement("subFlowDynamicWithChoice/processors/0/route/0/processors/0"));
   }
 
   @Test
@@ -245,9 +249,9 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
 
     assertThat(stackToAssert, not(nullValue()));
 
-    assertStackElements(stackToAssert, isFlowStackElement("flow", "flow/processors/0"),
-                        isFlowStackElement("flowStaticWithScatterGather",
-                                           "flowStaticWithScatterGather/processors/0/route/1/processors/0"));
+    assertStackElements(stackToAssert,
+                        isFlowStackElement("flow/processors/0"),
+                        isFlowStackElement("flowStaticWithScatterGather/processors/0/route/1/processors/0"));
   }
 
   @Test
@@ -257,9 +261,8 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
     assertThat(stackToAssert, not(nullValue()));
 
     assertStackElements(stackToAssert,
-                        isFlowStackElement("subFlow", "subFlow/processors/0"),
-                        isFlowStackElement("subFlowStaticWithScatterGather",
-                                           "subFlowStaticWithScatterGather/processors/0/route/1/processors/0"));
+                        isFlowStackElement("subFlow/processors/0"),
+                        isFlowStackElement("subFlowStaticWithScatterGather/processors/0/route/1/processors/0"));
   }
 
   @Test
@@ -268,9 +271,9 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
 
     assertThat(stackToAssert, not(nullValue()));
 
-    assertStackElements(stackToAssert, isFlowStackElement("flow", "flow/processors/0"),
-                        isFlowStackElement("flowDynamicWithScatterGather",
-                                           "flowDynamicWithScatterGather/processors/0/route/1/processors/0"));
+    assertStackElements(stackToAssert,
+                        isFlowStackElement("flow/processors/0"),
+                        isFlowStackElement("flowDynamicWithScatterGather/processors/0/route/1/processors/0"));
   }
 
   @Test
@@ -280,10 +283,8 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
     assertThat(stackToAssert, not(nullValue()));
 
     assertStackElements(stackToAssert,
-                        isFlowStackElement("subFlow",
-                                           "subFlow/processors/0"),
-                        isFlowStackElement("subFlowDynamicWithScatterGather",
-                                           "subFlowDynamicWithScatterGather/processors/0/route/1/processors/0"));
+                        isFlowStackElement("subFlow/processors/0"),
+                        isFlowStackElement("subFlowDynamicWithScatterGather/processors/0/route/1/processors/0"));
   }
 
   @Test
@@ -292,9 +293,9 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
 
     assertThat(stackToAssert, not(nullValue()));
 
-    assertStackElements(stackToAssert, isFlowStackElement("flow", "flow/processors/0"),
-                        isFlowStackElement("flowStaticWithScatterGatherChain",
-                                           "flowStaticWithScatterGatherChain/processors/0/route/1/processors/0"));
+    assertStackElements(stackToAssert,
+                        isFlowStackElement("flow/processors/0"),
+                        isFlowStackElement("flowStaticWithScatterGatherChain/processors/0/route/1/processors/0"));
   }
 
   @Test
@@ -304,10 +305,8 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
     assertThat(stackToAssert, not(nullValue()));
 
     assertStackElements(stackToAssert,
-                        isFlowStackElement("subFlow",
-                                           "subFlow/processors/0"),
-                        isFlowStackElement("subFlowStaticWithScatterGatherChain",
-                                           "subFlowStaticWithScatterGatherChain/processors/0/route/1/processors/0"));
+                        isFlowStackElement("subFlow/processors/0"),
+                        isFlowStackElement("subFlowStaticWithScatterGatherChain/processors/0/route/1/processors/0"));
   }
 
   @Test
@@ -316,9 +315,9 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
 
     assertThat(stackToAssert, not(nullValue()));
 
-    assertStackElements(stackToAssert, isFlowStackElement("flow", "flow/processors/0"),
-                        isFlowStackElement("flowDynamicWithScatterGatherChain",
-                                           "flowDynamicWithScatterGatherChain/processors/0/route/1/processors/0"));
+    assertStackElements(stackToAssert,
+                        isFlowStackElement("flow/processors/0"),
+                        isFlowStackElement("flowDynamicWithScatterGatherChain/processors/0/route/1/processors/0"));
   }
 
   @Test
@@ -328,10 +327,8 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
     assertThat(stackToAssert, not(nullValue()));
 
     assertStackElements(stackToAssert,
-                        isFlowStackElement("subFlow",
-                                           "subFlow/processors/0"),
-                        isFlowStackElement("subFlowDynamicWithScatterGatherChain",
-                                           "subFlowDynamicWithScatterGatherChain/processors/0/route/1/processors/0"));
+                        isFlowStackElement("subFlow/processors/0"),
+                        isFlowStackElement("subFlowDynamicWithScatterGatherChain/processors/0/route/1/processors/0"));
   }
 
   @Test
@@ -341,10 +338,8 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
     assertThat(stackToAssert, not(nullValue()));
 
     assertStackElements(stackToAssert,
-                        isFlowStackElement("flow",
-                                           "flow/processors/0"),
-                        isFlowStackElement("flowForEach",
-                                           "flowForEach/processors/0/processors/1"));
+                        isFlowStackElement("flow/processors/0"),
+                        isFlowStackElement("flowForEach/processors/0/processors/1"));
   }
 
   @Test
@@ -353,9 +348,7 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
     assertThat(stackToAssert, not(nullValue()));
 
     assertStackElements(stackToAssert,
-                        isFlowStackElement("flow",
-                                           "flow/processors/0"),
-                        isFlowStackElement("flowParallelForeach",
-                                           "flowParallelForeach/processors/0/processors/1"));
+                        isFlowStackElement("flow/processors/0"),
+                        isFlowStackElement("flowParallelForeach/processors/0/processors/1"));
   }
 }

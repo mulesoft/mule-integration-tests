@@ -22,7 +22,7 @@
                     <raise-error type="APP:EXPECTED"></raise-error>
                     </parallel-foreach>
                     Error type            : MULE:COMPOSITE_ROUTING
-                    FlowStack             : at parallelForEachFlow(parallelForEachFlow/processors/0(org/mule/test/integration/exceptions/fork-join-routers-log-config.xml:11))
+                    FlowStack             : at parallelForEachFlow/processors/0(org/mule/test/integration/exceptions/fork-join-routers-log-config.xml:11)
                       (set debug level logging or '-Dmule.verbose.exceptions=true' for everything)
 
                     Detailed Error(s) for route(s):
@@ -31,7 +31,7 @@
                             Element               : parallelForEachFlow/processors/0/processors/0 @ ForkJoinRoutersLogCheckTestCase#compositeRoutingExceptionForParallelForEach[Detailed log: true]:org/mule/test/integration/exceptions/fork-join-routers-log-config.xml:12
                             Element DSL           : <raise-error type="APP:EXPECTED"></raise-error>
                             Error type            : APP:EXPECTED
-                            FlowStack             : at parallelForEachFlow(parallelForEachFlow/processors/0/processors/0(org/mule/test/integration/exceptions/fork-join-routers-log-config.xml:12))
+                            FlowStack             : at parallelForEachFlow/processors/0/processors/0(org/mule/test/integration/exceptions/fork-join-routers-log-config.xml:12)
                               (set debug level logging or '-Dmule.verbose.exceptions=true' for everything)
 
 
@@ -70,7 +70,7 @@
                     </route>
                     </scatter-gather>
                     Error type            : MULE:COMPOSITE_ROUTING
-                    FlowStack             : at scatterGatherFlow(scatterGatherFlow/processors/0(org/mule/test/integration/exceptions/fork-join-routers-log-config.xml:47))
+                    FlowStack             : at scatterGatherFlow/processors/0(org/mule/test/integration/exceptions/fork-join-routers-log-config.xml:47)
                       (set debug level logging or '-Dmule.verbose.exceptions=true' for everything)
 
                     Detailed Error(s) for route(s):
@@ -79,7 +79,7 @@
                             Element               : scatterGatherFlow/processors/0/route/0/processors/0 @ ForkJoinRoutersLogCheckTestCase#compositeRoutingExceptionForScatterGather[Detailed log: true]:org/mule/test/integration/exceptions/fork-join-routers-log-config.xml:49
                             Element DSL           : <raise-error type="APP:EXPECTED" description="Scatter gather error"></raise-error>
                             Error type            : APP:EXPECTED
-                            FlowStack             : at scatterGatherFlow(scatterGatherFlow/processors/0/route/0/processors/0(org/mule/test/integration/exceptions/fork-join-routers-log-config.xml:49))
+                            FlowStack             : at scatterGatherFlow/processors/0/route/0/processors/0(org/mule/test/integration/exceptions/fork-join-routers-log-config.xml:49)
                               (set debug level logging or '-Dmule.verbose.exceptions=true' for everything)
                      ]]>
                 </test:check-equals>

@@ -10,6 +10,10 @@ import static org.mule.tck.junit4.rule.VerboseExceptions.setVerboseExceptions;
 import static org.mule.test.allure.AllureConstants.Logging.LOGGING;
 import static org.mule.test.allure.AllureConstants.Logging.LoggingStory.ERROR_REPORTING;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.junit.Assert.assertThrows;
+
 import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.i18n.I18nMessageFactory;
@@ -19,9 +23,7 @@ import org.mule.tck.junit4.rule.VerboseExceptions;
 import org.mule.test.AbstractIntegrationTestCase;
 
 import org.junit.ClassRule;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import io.qameta.allure.Feature;
 import io.qameta.allure.Issue;
@@ -34,9 +36,6 @@ public class LogCheckTestCase extends AbstractIntegrationTestCase {
   // Just to ensure the previous value is set after the test
   @ClassRule
   public static VerboseExceptions verboseExceptions = new VerboseExceptions(false);
-
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
 
   @Override
   protected String getConfigFile() {
@@ -100,9 +99,8 @@ public class LogCheckTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void noLoggingFailsIfFlagIsNotSet() throws Exception {
-    expectedException.expect(AssertionError.class);
-    expectedException.expectMessage("Could not check exception because it was never logged");
-    runSuccesses(false, "noLogFlowFlagNotSet");
+    var thrown = assertThrows(AssertionError.class, () -> runSuccesses(false, "noLogFlowFlagNotSet"));
+    assertThat(thrown.getMessage(), containsString("Could not check exception because it was never logged"));
   }
 
   @Test
@@ -112,9 +110,8 @@ public class LogCheckTestCase extends AbstractIntegrationTestCase {
 
   @Test
   public void assertFailsIfNoException() throws Exception {
-    expectedException.expect(AssertionError.class);
-    expectedException.expectMessage("Handler could not check any exception log because no exception was raise");
-    runSuccesses(false, "noExceptionFlow");
+    var thrown = assertThrows(AssertionError.class, () -> runSuccesses(false, "noExceptionFlow"));
+    assertThat(thrown.getMessage(), containsString("Handler could not check any exception log because no exception was raise"));
   }
 
   @Test
