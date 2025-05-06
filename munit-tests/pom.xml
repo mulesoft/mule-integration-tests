@@ -19,8 +19,6 @@
 
     <modules>
         <module>munit-tests-functional</module>
-        <module>forward-compatibility-extension</module>
-        <module>test-oauth-extension-deprecated-oauth-client-api</module>
     </modules>
 
 </project>
