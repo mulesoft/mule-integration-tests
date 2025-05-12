@@ -17,8 +17,6 @@
         <surefire.args>${surefire.test.unit.open.args}</surefire.args>
 
         <javaModuleName>org.mule.test.integration.performance</javaModuleName>
-
-        <formatterConfigPath>../formatter.xml</formatterConfigPath>
     </properties>
 
     <build>

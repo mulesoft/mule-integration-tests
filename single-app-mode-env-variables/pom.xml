@@ -23,7 +23,6 @@
         </surefire.args>
 
         <javaModuleName>org.mule.test.integration.singleapp</javaModuleName>
-        <formatterConfigPath>../formatter.xml</formatterConfigPath>
         <protobufVersion>3.21.9</protobufVersion>
         <openTelemetryProtoVersion>0.3.0</openTelemetryProtoVersion>
     </properties>

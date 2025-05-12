@@ -25,7 +25,6 @@
         </surefire.args>
 
         <javaModuleName>org.mule.test.integration.munit</javaModuleName>
-        <formatterConfigPath>../../formatter.xml</formatterConfigPath>
     </properties>
 
     <dependencies>

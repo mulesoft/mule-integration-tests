@@ -13,10 +13,6 @@
     <name>Mule Artifact AST Integration Tests</name>
     <packaging>pom</packaging>
 
-    <properties>
-        <formatterConfigPath>../formatter.xml</formatterConfigPath>
-    </properties>
-
     <modules>
         <module>old-extension-model-compatibility-test</module>
     </modules>
