@@ -43,7 +43,7 @@
             </otherwise>
         </choice>
     </flow>
-    <configuration correlationIdGeneratorExpression="#['ExpressionAttribute']" defaultErrorHandler-ref="MULE:ERROR_HANDLER" defaultObjectSerializer-ref="MULE:SERIALIZER" defaultResponseTimeout="10000" defaultTransactionTimeout="30000" inheritIterableRepeatability="false" maxQueueTransactionFilesSize="500" shutdownTimeout="5000">
+    <configuration correlationIdGeneratorExpression="#['ExpressionAttribute']" defaultErrorHandler-ref="MULE:ERROR_HANDLER" defaultObjectSerializer-ref="MULE:SERIALIZER" defaultResponseTimeout="10000" defaultTransactionTimeout="30000" inheritIterableRepeatability="false" maxQueueTransactionFilesSize="500" shutdownTimeout="10000">
         <dynamic-config-expiration frequency="5" timeUnit="MINUTES">
             <expiration-policy maxIdleTime="5" timeUnit="MINUTES"/>
         </dynamic-config-expiration>
