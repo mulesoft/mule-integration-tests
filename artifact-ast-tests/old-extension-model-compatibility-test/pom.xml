@@ -14,7 +14,6 @@
 
     <properties>
         <javaModuleName>org.mule.test.integration.ast.compatibility</javaModuleName>
-        <formatterConfigPath>../../formatter.xml</formatterConfigPath>
 
         <!-- Uses and old version of the Core Extension Models to simulate a miss-match with the AST and the parser that happened
         in the packager -->

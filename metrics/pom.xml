@@ -26,7 +26,6 @@
 
         <javaModuleName>org.mule.test.integration.metrics</javaModuleName>
         <skipExportTests>false</skipExportTests>
-        <formatterConfigPath>../formatter.xml</formatterConfigPath>
     </properties>
 
     <dependencyManagement>

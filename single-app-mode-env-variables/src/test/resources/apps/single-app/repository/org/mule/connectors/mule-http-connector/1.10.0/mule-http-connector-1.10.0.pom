@@ -29,7 +29,6 @@
         <mockitoVersion>4.11.0</mockitoVersion>
 
         <commonsLang3Version>3.12.0</commonsLang3Version>
-        <formatterConfigPath>../formatter.xml</formatterConfigPath>
 
         <muleSocketsConnectorVersion>1.2.4</muleSocketsConnectorVersion>
         <muleCorsKernelVersion>1.1.2</muleCorsKernelVersion>

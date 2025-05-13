@@ -26,8 +26,6 @@
         </surefire.args>
 
         <javaModuleName>org.mule.test.integration.extensions.xml.support </javaModuleName>
-
-        <formatterConfigPath>../formatter.xml</formatterConfigPath>
     </properties>
 
     <dependencies>

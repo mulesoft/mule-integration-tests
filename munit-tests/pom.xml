@@ -13,10 +13,6 @@
     <name>MUnit Integration Tests - Parent</name>
     <packaging>pom</packaging>
 
-    <properties>
-        <formatterConfigPath>../formatter.xml</formatterConfigPath>
-    </properties>
-
     <modules>
         <module>munit-tests-functional</module>
     </modules>

@@ -13,8 +13,6 @@
     <url>https://github.com/mulesoft/mule-sdk-api</url>
 
     <properties>
-        <formatterConfigPath>formatter.xml</formatterConfigPath>
-
         <javaVersion>1.8</javaVersion>
         <xDocLint>-Xdoclint:none</xDocLint>
         <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
@@ -27,7 +25,6 @@
         <jacoco.version>0.8.6</jacoco.version>
         <javaFormatter.plugin.version>2.14.0</javaFormatter.plugin.version>
         <maven.surefire.plugin.version>2.22.2</maven.surefire.plugin.version>
-        <formatterConfigPath>formatter.xml</formatterConfigPath>
         <formatterGoal>validate</formatterGoal>
         <skipCodeFormatting>false</skipCodeFormatting>
         <revapi.maven.plugin>0.12.1</revapi.maven.plugin>

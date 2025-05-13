@@ -26,7 +26,6 @@
 
         <javaModuleName>org.mule.test.integration.tracing</javaModuleName>
         <skipExportTests>false</skipExportTests>
-        <formatterConfigPath>../formatter.xml</formatterConfigPath>
     </properties>
 
     <dependencyManagement>

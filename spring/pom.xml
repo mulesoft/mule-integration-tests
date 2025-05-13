@@ -25,7 +25,6 @@
         </surefire.args>
 
         <javaModuleName>org.mule.test.integration.spring</javaModuleName>
-        <formatterConfigPath>../formatter.xml</formatterConfigPath>
     </properties>
 
     <dependencies>

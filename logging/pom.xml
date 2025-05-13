@@ -21,7 +21,6 @@
         </surefire.args>
 
         <javaModuleName>org.mule.test.integration.logging</javaModuleName>
-        <formatterConfigPath>../formatter.xml</formatterConfigPath>
     </properties>
 
     <build>
