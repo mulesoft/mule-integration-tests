@@ -33,7 +33,7 @@ public class IdempotentRouterWithFilterTestCase extends AbstractIntegrationTestC
 
   /**
    * This test will pass a message containing a String to the Mule server and verifies that it gets received.
-   * 
+   *
    * @throws Exception
    */
   @Test
@@ -49,7 +49,7 @@ public class IdempotentRouterWithFilterTestCase extends AbstractIntegrationTestC
 
   /**
    * This test will pass a message containing an Object to the Mule server and verifies that it does not get received.
-   * 
+   *
    * @throws Exception
    */
   @Test

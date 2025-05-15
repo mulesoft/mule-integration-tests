@@ -61,7 +61,7 @@ public abstract class AbstractModuleWithHttpTestCase extends AbstractCeXmlExtens
   /**
    * Asserts that a given flow can successfully be executed and it also checks that the authorization against the
    * {@link SimpleBasicAuthentication} handler does return a success response for the parametrized username
-   * 
+   *
    * @param flowName to execute
    * @param username to validate after hitting the HTTP endpoint
    */
