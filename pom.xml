@@ -41,7 +41,7 @@
         <munit.version>3.4.0</munit.version>
 
         <muleDependenciesVersion>1.x-SNAPSHOT</muleDependenciesVersion>
-        <muleTestComponentsVersion>4.9.6-SNAPSHOT</muleTestComponentsVersion>
+        <muleTestComponentsVersion>4.9.7-SNAPSHOT</muleTestComponentsVersion>
 
         <muleBomVersion>4.9.7-SNAPSHOT</muleBomVersion>
 
