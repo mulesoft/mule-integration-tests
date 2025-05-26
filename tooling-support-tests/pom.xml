@@ -29,7 +29,7 @@
         
         <formatterConfigPath>../formatter.xml</formatterConfigPath>
         <settingsFile>${java.io.tmpdir}/settings.xml</settingsFile>
-        <testExtensionVersion>4.8.6-rc1</testExtensionVersion>
+        <testExtensionVersion>4.8.6-rc2</testExtensionVersion>
         <weave.service.location>services/weave</weave.service.location>
     </properties>
 
