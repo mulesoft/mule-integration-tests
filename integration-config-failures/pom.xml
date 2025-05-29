@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.mule.tests</groupId>
         <artifactId>mule-extensions-integration-tests</artifactId>
-        <version>4.6.18-rc1</version>
+        <version>4.6.18-rc2</version>
     </parent>
     <artifactId>mule-tests-integration-config-failures</artifactId>
     <name>Integration Tests - Config Failures</name>
