@@ -2,13 +2,19 @@
 <mule xmlns="http://www.mulesoft.org/schema/mule/core" 
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns:classloading="http://www.mulesoft.org/schema/mule/classloading"
+      xmlns:new-java-versions="http://www.mulesoft.org/schema/mule/new-java-versions"
       xsi:schemaLocation="
        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-      http://www.mulesoft.org/schema/mule/classloading http://www.mulesoft.org/schema/mule/classloading/current/mule-classloading.xsd">
+      http://www.mulesoft.org/schema/mule/classloading http://www.mulesoft.org/schema/mule/classloading/current/mule-classloading.xsd
+      http://www.mulesoft.org/schema/mule/new-java-versions http://www.mulesoft.org/schema/mule/new-java-versions/current/mule-new-java-versions.xsd">
 
 
     <flow name="getMethods">
         <classloading:get-methods clazzName="#[payload]"/>
+    </flow>
+
+    <flow name="healthCheck">
+        <new-java-versions:health-check/>
     </flow>
 
 </mule>

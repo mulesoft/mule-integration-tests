@@ -8,7 +8,9 @@ package org.mule.test.integration.classloading;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
+
 import org.mule.test.AbstractIntegrationTestCase;
 
 import java.util.List;
@@ -45,4 +47,11 @@ public class SdkApiClassloadingTestCase extends AbstractIntegrationTestCase {
     assertThat(methods, hasSize(1));
     assertThat(methods, containsInAnyOrder(METHOD_IN_NEW_INTERFACE));
   }
+
+  @Test
+  public void sdkApiWithUnexpectedJavaVersions() throws Exception {
+    String response = (String) flowRunner("healthCheck").run().getMessage().getPayload().getValue();
+    assertThat(response, is("Extension running fine!"));
+  }
+
 }
