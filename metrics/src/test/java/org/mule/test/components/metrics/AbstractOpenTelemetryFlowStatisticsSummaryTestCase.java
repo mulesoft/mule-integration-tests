@@ -31,6 +31,9 @@ public abstract class AbstractOpenTelemetryFlowStatisticsSummaryTestCase extends
   private static final int TIMEOUT_MILLIS = 30000;
   private static final int POLL_DELAY_MILLIS = 100;
 
+  // TODO W-18668900: swap and remove once the pilot is concluded
+  private static final String PILOT_SUFFIX = "-pilot";
+
   @Test
   public void test() {
     PollingProber prober = new PollingProber(TIMEOUT_MILLIS, POLL_DELAY_MILLIS);
@@ -54,6 +57,32 @@ public abstract class AbstractOpenTelemetryFlowStatisticsSummaryTestCase extends
                               FLOWS_SUMMARY_APP_STATISTICS_NAME, getExpectedDeclaredTriggerFlows(), server.getMetrics());
           verifyMetricsExists(ACTIVE_TRIGGER_FLOWS_NAME, ACTIVE_TRIGGER_FLOWS_DESCRIPTION, getResourceName(),
                               FLOWS_SUMMARY_APP_STATISTICS_NAME, getExpectedActiveTriggerFlows(), server.getMetrics());
+
+          // TODO W-18668900: swap and remove once the pilot is concluded
+          verifyMetricsExists(DECLARED_PRIVATE_FLOWS_APP_NAME + PILOT_SUFFIX, DECLARED_PRIVATE_FLOWS_APP_DESCRIPTION,
+                              getResourceName(),
+                              FLOWS_SUMMARY_APP_STATISTICS_NAME, getExpectedDeclaredPrivateFlowsPilot(),
+                              server.getMetrics());
+          verifyMetricsExists(ACTIVE_PRIVATE_FLOWS_APP_NAME + PILOT_SUFFIX, ACTIVE_PRIVATE_FLOWS_APP_DESCRIPTION,
+                              getResourceName(),
+                              FLOWS_SUMMARY_APP_STATISTICS_NAME, getExpectedActivePrivateFlowsPilot(),
+                              server.getMetrics());
+
+          verifyMetricsExists(DECLARED_APIKIT_FLOWS_APP_NAME + PILOT_SUFFIX, DECLARED_APIKIT_FLOWS_APP_DESCRIPTION,
+                              getResourceName(),
+                              FLOWS_SUMMARY_APP_STATISTICS_NAME, getExpectedDeclaredApikitFlowsPilot(),
+                              server.getMetrics());
+          verifyMetricsExists(ACTIVE_APIKIT_FLOWS_APP_NAME + PILOT_SUFFIX, ACTIVE_APIKIT_FLOWS_APP_DESCRIPTION, getResourceName(),
+                              FLOWS_SUMMARY_APP_STATISTICS_NAME, getExpectedActiveApikitFlowsPilot(),
+                              server.getMetrics());
+
+          verifyMetricsExists(DECLARED_TRIGGER_FLOWS_APP_NAME + PILOT_SUFFIX, DECLARED_TRIGGER_FLOWS_APP_DESCRIPTION,
+                              getResourceName(),
+                              FLOWS_SUMMARY_APP_STATISTICS_NAME, getExpectedDeclaredTriggerFlowsPilot(),
+                              server.getMetrics());
+          verifyMetricsExists(ACTIVE_TRIGGER_FLOWS_NAME + PILOT_SUFFIX, ACTIVE_TRIGGER_FLOWS_DESCRIPTION, getResourceName(),
+                              FLOWS_SUMMARY_APP_STATISTICS_NAME, getExpectedActiveTriggerFlowsPilot(),
+                              server.getMetrics());
         } catch (Throwable e) {
           return false;
         }
@@ -67,8 +96,10 @@ public abstract class AbstractOpenTelemetryFlowStatisticsSummaryTestCase extends
 
       private String getShowStatsInfo() {
         StringBuffer statsInfo = new StringBuffer();
-        server.getMetrics().forEach(metric -> statsInfo.append(metric.getName()).append(": ").append(metric.getValue())
-            .append(System.lineSeparator()));
+        server.getMetrics()
+            .forEach(metric -> statsInfo.append(metric.getInstrumentName()).append(" - ").append(metric.getName()).append(": ")
+                .append(metric.getValue())
+                .append(System.lineSeparator()));
         return statsInfo.toString();
       }
     });
@@ -87,4 +118,28 @@ public abstract class AbstractOpenTelemetryFlowStatisticsSummaryTestCase extends
   abstract long getExpectedActiveApikitFlows();
 
   abstract long getExpectedActiveTriggerFlows();
+
+  protected long getExpectedDeclaredPrivateFlowsPilot() {
+    return getExpectedDeclaredPrivateFlows();
+  }
+
+  protected long getExpectedDeclaredApikitFlowsPilot() {
+    return getExpectedDeclaredApikitFlows();
+  }
+
+  protected long getExpectedDeclaredTriggerFlowsPilot() {
+    return getExpectedDeclaredTriggerFlows();
+  }
+
+  protected long getExpectedActivePrivateFlowsPilot() {
+    return getExpectedActivePrivateFlows();
+  }
+
+  protected long getExpectedActiveApikitFlowsPilot() {
+    return getExpectedActiveApikitFlows();
+  }
+
+  protected long getExpectedActiveTriggerFlowsPilot() {
+    return getExpectedActiveTriggerFlows();
+  }
 }

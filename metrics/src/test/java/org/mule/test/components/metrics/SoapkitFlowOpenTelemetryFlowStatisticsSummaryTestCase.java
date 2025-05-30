@@ -14,16 +14,16 @@ import io.qameta.allure.Feature;
 import org.junit.Rule;
 
 @Feature(PROFILING)
-public class ApikitFlowOpenTelemetryFlowStatisticsSummaryTestCase extends AbstractOpenTelemetryFlowStatisticsSummaryTestCase {
+public class SoapkitFlowOpenTelemetryFlowStatisticsSummaryTestCase extends AbstractOpenTelemetryFlowStatisticsSummaryTestCase {
 
   @Rule
   public DynamicPort httpPort = new DynamicPort("httpPort");
 
-  private static final String RESOURCE_NAME = "ApikitFlowOpenTelemetryFlowStatisticsSummaryTestCase#test";
+  private static final String RESOURCE_NAME = "SoapkitFlowOpenTelemetryFlowStatisticsSummaryTestCase#test";
 
   @Override
   protected String getConfigFile() {
-    return "metrics/apikit-flow-statistics-summary.xml";
+    return "metrics/soapkit-flow-statistics-summary.xml";
   }
 
   @Override
@@ -33,7 +33,7 @@ public class ApikitFlowOpenTelemetryFlowStatisticsSummaryTestCase extends Abstra
 
   @Override
   long getExpectedDeclaredPrivateFlows() {
-    return 1;
+    return 0;
   }
 
   @Override
@@ -48,7 +48,7 @@ public class ApikitFlowOpenTelemetryFlowStatisticsSummaryTestCase extends Abstra
 
   @Override
   long getExpectedActivePrivateFlows() {
-    return 1;
+    return 0;
   }
 
   @Override
@@ -68,7 +68,7 @@ public class ApikitFlowOpenTelemetryFlowStatisticsSummaryTestCase extends Abstra
 
   @Override
   protected long getExpectedDeclaredApikitFlowsPilot() {
-    return 2;
+    return 1;
   }
 
   @Override
@@ -78,6 +78,6 @@ public class ApikitFlowOpenTelemetryFlowStatisticsSummaryTestCase extends Abstra
 
   @Override
   protected long getExpectedActiveApikitFlowsPilot() {
-    return 2;
+    return 1;
   }
 }
