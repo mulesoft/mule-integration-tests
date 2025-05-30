@@ -62,22 +62,22 @@ public class SoapkitFlowOpenTelemetryFlowStatisticsSummaryTestCase extends Abstr
   }
 
   @Override
-  protected long getExpectedDeclaredPrivateFlowsPilot() {
+  protected long getExpectedDeclaredPrivateFlowsV2() {
     return 1;
   }
 
   @Override
-  protected long getExpectedDeclaredApikitFlowsPilot() {
+  protected long getExpectedDeclaredApikitFlowsV2() {
     return 1;
   }
 
   @Override
-  protected long getExpectedActivePrivateFlowsPilot() {
+  protected long getExpectedActivePrivateFlowsV2() {
     return 1;
   }
 
   @Override
-  protected long getExpectedActiveApikitFlowsPilot() {
+  protected long getExpectedActiveApikitFlowsV2() {
     return 1;
   }
 }
