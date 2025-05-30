@@ -9,39 +9,39 @@
 <mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns="http://www.mulesoft.org/schema/mule/core"
       xmlns:http="http://www.mulesoft.org/schema/mule/http"
-      xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
+      xmlns:apikit-soap="http://www.mulesoft.org/schema/mule/apikit-soap"
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
                           http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
-                          http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd">
+                          http://www.mulesoft.org/schema/mule/apikit-soap http://www.mulesoft.org/schema/mule/apikit-soap/current/mule-apikit-soap.xsd">
 
-    <apikit:config outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus"  name="apikit-router" api="metrics/spec.raml">
-        <apikit:flow-mappings >
-            <apikit:flow-mapping resource="/vehicleOptions" action="get" flow-ref="get-vehicleOptions-renamed" />
-        </apikit:flow-mappings>
-    </apikit:config>
+
+    <apikit-soap:config httpStatusVarName="httpStatus" name="soapkit-config" port="TshirtServicePort" service="TshirtService" wsdlLocation="metrics/tshirt2.wsdl"/>
 
     <http:listener-config name="HTTP_Listener_config" >
         <http:listener-connection host="0.0.0.0" port="${httpPort}" />
     </http:listener-config>
 
-    <!-- this one is a trigger flow even though it only has the apikit router, but it has a listener -->
+    <!-- this one is a trigger flow even though it only has the soapkit router, but it has a listener -->
     <flow name="simple-flow">
         <http:listener config-ref="HTTP_Listener_config" path="/"/>
-        <apikit:router config-ref="apikit-router"/>
+        <apikit-soap:router config-ref="soapkit-config">
+            <apikit-soap:attributes><![CDATA[#[%dw 2.0
+              output application/java
+              ---
+              {
+                  headers: attributes.headers,
+                  method: attributes.method,
+                  queryString: attributes.queryString
+            }]]]></apikit-soap:attributes>
+        </apikit-soap:router>
     </flow>
 
-    <flow name="get:\status:apikit-router">
+    <flow name="OrderTshirt:\soapkit-config">
         <set-payload value="OK"/>
     </flow>
 
-    <!-- this one should be counted as private because there is no apikit config routing to it -->
-    <flow name="get:\status:apikit-router-impl">
+    <!-- this one should be counted as private because there is no soapkit config routing to it -->
+    <flow name="OrderTshirt:\soapkit-config-impl">
         <set-payload value="OK"/>
     </flow>
-
-    <!-- this one should be counted as apikit because there is a mapping -->
-    <flow name="get-vehicleOptions-renamed">
-        <set-payload value="OK"/>
-    </flow>
-
 </mule>
