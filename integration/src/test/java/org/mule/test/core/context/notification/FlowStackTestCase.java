@@ -6,17 +6,19 @@
  */
 package org.mule.test.core.context.notification;
 
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
 import static org.mule.runtime.api.component.ComponentIdentifier.buildFromStringRepresentation;
 import static org.mule.tck.util.FlowTraceUtils.assertStackElements;
 import static org.mule.tck.util.FlowTraceUtils.isFlowStackElement;
-import static org.mule.tck.util.FlowTraceUtils.FlowStackAsserter.stackToAssert;
 import static org.mule.tck.util.FlowTraceUtils.withChainIdentifier;
+import static org.mule.tck.util.FlowTraceUtils.FlowStackAsserter.stackToAssert;
 import static org.mule.test.allure.AllureConstants.Logging.LOGGING;
 import static org.mule.test.allure.AllureConstants.Logging.LoggingStory.FLOW_STACK;
+
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.mule.runtime.api.notification.MessageProcessorNotification;
 import org.mule.runtime.api.notification.MessageProcessorNotificationListener;
@@ -292,7 +294,9 @@ public class FlowStackTestCase extends AbstractIntegrationTestCase {
 
     assertThat(stackToAssert, not(nullValue()));
 
-    assertStackElements(stackToAssert, isFlowStackElement("flow", "flow/processors/0"),
+    assertStackElements(stackToAssert,
+                        isFlowStackElement("flow",
+                                           "flow/processors/0"),
                         isFlowStackElement("flowStaticWithScatterGatherChain",
                                            "flowStaticWithScatterGatherChain/processors/0/route/1/processors/0"));
   }
