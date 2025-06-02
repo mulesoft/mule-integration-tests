@@ -6,11 +6,15 @@
  */
 package org.mule.test.components.metrics;
 
+import static org.mule.test.allure.AllureConstants.PricingMetricsFeature.FlowSummaryStory.ACTIVE_FLOWS_SUMMARY;
+import static org.mule.test.allure.AllureConstants.PricingMetricsFeature.PRICING_METRICS;
 import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
 
 import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 
-@Feature(PROFILING)
+@Feature(PRICING_METRICS)
+@Story(ACTIVE_FLOWS_SUMMARY)
 public class PrivateFlowOpenTelemetryFlowStatisticsSummaryTestCase extends AbstractOpenTelemetryFlowStatisticsSummaryTestCase {
 
   private static final String RESOURCE_NAME = "PrivateFlowOpenTelemetryFlowStatisticsSummaryTestCase#test";

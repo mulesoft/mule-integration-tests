@@ -6,14 +6,19 @@
  */
 package org.mule.test.components.metrics;
 
-import static org.mule.test.allure.AllureConstants.Profiling.PROFILING;
+import static org.mule.test.allure.AllureConstants.PricingMetricsFeature.FlowSummaryStory.ACTIVE_FLOWS_SUMMARY;
+import static org.mule.test.allure.AllureConstants.PricingMetricsFeature.FlowSummaryStory.DETECT_APIKIT_FLOWS_AS_TRIGGERS;
+import static org.mule.test.allure.AllureConstants.PricingMetricsFeature.PRICING_METRICS;
 
 import org.mule.tck.junit4.rule.DynamicPort;
 
 import io.qameta.allure.Feature;
+import io.qameta.allure.Stories;
+import io.qameta.allure.Story;
 import org.junit.Rule;
 
-@Feature(PROFILING)
+@Feature(PRICING_METRICS)
+@Stories({@Story(ACTIVE_FLOWS_SUMMARY), @Story(DETECT_APIKIT_FLOWS_AS_TRIGGERS)})
 public class SoapkitFlowOpenTelemetryFlowStatisticsSummaryTestCase extends AbstractOpenTelemetryFlowStatisticsSummaryTestCase {
 
   @Rule
