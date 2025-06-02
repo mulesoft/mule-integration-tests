@@ -20,16 +20,19 @@ import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceSto
 import static org.mule.test.allure.AllureConstants.Profiling.ProfilingServiceStory.TRACING_CONFIGURATION;
 
 import static java.lang.Boolean.TRUE;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.regex.Pattern.compile;
 
 import static org.apache.commons.io.FileUtils.readLines;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 import static org.slf4j.bridge.SLF4JBridgeHandler.install;
 import static org.slf4j.bridge.SLF4JBridgeHandler.removeHandlersForRootLogger;
 import static org.slf4j.bridge.SLF4JBridgeHandler.uninstall;
+
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
+
+import static org.junit.Assert.fail;
 
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.module.deployment.impl.internal.builder.ApplicationFileBuilder;
@@ -60,14 +63,16 @@ import com.linecorp.armeria.server.AbstractHttpService;
 import com.linecorp.armeria.server.ServerBuilder;
 import com.linecorp.armeria.server.ServiceRequestContext;
 import com.linecorp.armeria.testing.junit4.server.ServerRule;
-import io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceRequest;
-import io.qameta.allure.Feature;
-import io.qameta.allure.Features;
-import io.qameta.allure.Story;
+
 import org.jetbrains.annotations.NotNull;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+
+import io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceRequest;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Features;
+import io.qameta.allure.Story;
 
 @Features({@Feature(DEFAULT_PROFILING_SERVICE), @Feature(LOGGING)})
 @Story(TRACING_CONFIGURATION)
@@ -162,13 +167,13 @@ public class MDCTracingContextTestCase extends AbstractFakeMuleServerTestCase {
         getUniqueSpanBuName(capturedExportedSpans, "logging:non-blocking-operation-log");
 
     List<String> logLinesForFirstMessage =
-        readLines(logFile).stream().filter(line -> line.contains(expectedFirstMessage)).collect(Collectors.toList());
+        readLines(logFile, UTF_8).stream().filter(line -> line.contains(expectedFirstMessage)).collect(Collectors.toList());
 
     List<String> logLinesForSecondMessage =
-        readLines(logFile).stream().filter(line -> line.contains(expectedSecondMessage)).collect(Collectors.toList());
+        readLines(logFile, UTF_8).stream().filter(line -> line.contains(expectedSecondMessage)).collect(Collectors.toList());
 
     List<String> logLinesWithNonBlockingOperationMessage =
-        readLines(logFile).stream().filter(line -> line.contains(nonBlockingMessage)).collect(Collectors.toList());
+        readLines(logFile, UTF_8).stream().filter(line -> line.contains(nonBlockingMessage)).collect(Collectors.toList());
 
 
     assertThat(logLinesForFirstMessage, hasSize(1));
@@ -209,9 +214,9 @@ public class MDCTracingContextTestCase extends AbstractFakeMuleServerTestCase {
 
                    @Override
                    protected @NotNull HttpResponse doPost(@NotNull ServiceRequestContext ctx, @NotNull HttpRequest req) {
-                     return HttpResponse.from(req.aggregate().handle((aReq, cause) -> {
+                     return HttpResponse.of(req.aggregate().handle((aReq, cause) -> {
                        CompletableFuture<HttpResponse> responseFuture = new CompletableFuture<>();
-                       HttpResponse res = HttpResponse.from(responseFuture);
+                       HttpResponse res = HttpResponse.of(responseFuture);
                        try {
                          capturedExportedSpans.addAll(OpenTelemetryProtobufSpanUtils.getSpans(ExportTraceServiceRequest
                              .parseFrom(new ByteArrayInputStream(aReq.content().array()))));

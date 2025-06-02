@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Configuration status="info" packages="com.mycompany.log4jslow.logger">
+
+    <Appenders>
+        <File name="file" fileName="${sys:mule.home}${sys:file.separator}logs${sys:file.separator}log4j-plugin.log">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+        </File>
+
+        <Rewrite name="slowRewrite">
+            <AppenderRef ref="file"/>
+            <SlowLogInterceptor/>
+        </Rewrite>
+    </Appenders>
+
+    <Loggers>
+        <AsyncLogger name="com.mycompany" level="INFO">
+            <AppenderRef ref="slowRewrite"/>
+        </AsyncLogger>
+
+        <AsyncRoot level="WARN">
+            <AppenderRef ref="console" />
+        </AsyncRoot>
+    </Loggers>
+</Configuration>
