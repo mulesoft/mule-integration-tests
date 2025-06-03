@@ -133,6 +133,11 @@
             <artifactId>mule-apikit-module</artifactId>
             <classifier>mule-plugin</classifier>
         </dependency>
+        <dependency>
+            <groupId>org.mule.modules</groupId>
+            <artifactId>mule-soapkit-module</artifactId>
+            <classifier>mule-plugin</classifier>
+        </dependency>
 
         <dependency>
             <groupId>org.mule.tests.plugin</groupId>
