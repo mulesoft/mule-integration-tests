@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+
+    <flow name="floodFlow">
+        <scheduler>
+            <scheduling-strategy >
+                <fixed-frequency timeUnit="SECONDS" frequency="1"/>
+            </scheduling-strategy>
+        </scheduler>
+        <foreach collection="#[0 to 1000000000]">
+            <logger message="This log message should be appended sloooowwwwlyyyy..." category="com.mycompany"/>
+        </foreach>
+    </flow>
+
+    <flow name="latchReleaseFlow" initialState="stopped">
+        <scheduler>
+            <scheduling-strategy >
+                <fixed-frequency timeUnit="SECONDS" frequency="1"/>
+            </scheduling-strategy>
+        </scheduler>
+        <set-payload value="#[java!com::mycompany::log4jslow::logger::SlowLogInterceptor::releaseLatch()]"/>
+    </flow>
+</mule>
