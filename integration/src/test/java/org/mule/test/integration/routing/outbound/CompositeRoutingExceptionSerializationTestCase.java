@@ -9,6 +9,7 @@ package org.mule.test.integration.routing.outbound;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -18,21 +19,14 @@ import org.mule.runtime.core.privileged.routing.CompositeRoutingException;
 import org.mule.test.AbstractIntegrationTestCase;
 import org.mule.tests.api.TestQueueManager;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 
 import io.qameta.allure.Issue;
 import jakarta.inject.Inject;
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 /**
- * Integration test for verifying that CompositeRoutingException is serializable
+ * Integration test for verifying that CompositeRoutingException is serializable using the default Java serializer.
  */
 public class CompositeRoutingExceptionSerializationTestCase extends AbstractIntegrationTestCase {
 
@@ -55,8 +49,8 @@ public class CompositeRoutingExceptionSerializationTestCase extends AbstractInte
 
     // Assert that the inner errors are present in the CompositeRoutingException
     CompositeRoutingException ex = (CompositeRoutingException) deserializedError.getCause();
-    assertThat(ex.getErrors().get(0).getErrorType().toString(), CoreMatchers.equalTo("CUSTOM:ROUTE0"));
-    assertThat(ex.getErrors().get(1).getErrorType().toString(), CoreMatchers.equalTo("CUSTOM:ROUTE1"));
+    assertThat(ex.getErrors().get(0).getErrorType().toString(), equalTo("CUSTOM:ROUTE0"));
+    assertThat(ex.getErrors().get(1).getErrorType().toString(), equalTo("CUSTOM:ROUTE1"));
   }
 
   @Override
@@ -67,7 +61,7 @@ public class CompositeRoutingExceptionSerializationTestCase extends AbstractInte
   @Test
   @Issue("W-16562974")
   public void testJavaCanSerializeAndDeserializeCompositeRouterException() throws Exception {
-    // Run the flow that throws CompositeRoutingException and serializes it to JSON
+    // Run the flow that throws CompositeRoutingException and push the error to the dead letter queue
     flowRunner("compositeRoutingErrorFlow").run();
 
     // Read the error from the dead letter queue
