@@ -34,6 +34,7 @@
                         <rhinoEngineJarLoc>${org.mozilla:rhino-engine:jar}</rhinoEngineJarLoc>
 
                         <apiAnnotationsLib>${org.mule.runtime:api-annotations:jar}</apiAnnotationsLib>
+                        <dataWeaveService>${org.mule.services:mule-service-weave:jar:mule-service}</dataWeaveService>
                     </systemPropertyVariables>
                     <classpathDependencyExcludes>
                         <!-- this is not needed on the test classpath, just to get the location -->
@@ -111,6 +112,12 @@
             <artifactId>mule-service-weave</artifactId>
             <classifier>mule-service</classifier>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.mule.runtime</groupId>
