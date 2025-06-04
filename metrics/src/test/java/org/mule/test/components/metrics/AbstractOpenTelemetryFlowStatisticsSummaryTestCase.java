@@ -31,6 +31,9 @@ public abstract class AbstractOpenTelemetryFlowStatisticsSummaryTestCase extends
   private static final int TIMEOUT_MILLIS = 30000;
   private static final int POLL_DELAY_MILLIS = 100;
 
+  // TODO W-18668900: swap and remove once the pilot is concluded
+  private static final String V2_SUFFIX = "-v2";
+
   @Test
   public void test() {
     PollingProber prober = new PollingProber(TIMEOUT_MILLIS, POLL_DELAY_MILLIS);
@@ -54,6 +57,32 @@ public abstract class AbstractOpenTelemetryFlowStatisticsSummaryTestCase extends
                               FLOWS_SUMMARY_APP_STATISTICS_NAME, getExpectedDeclaredTriggerFlows(), server.getMetrics());
           verifyMetricsExists(ACTIVE_TRIGGER_FLOWS_NAME, ACTIVE_TRIGGER_FLOWS_DESCRIPTION, getResourceName(),
                               FLOWS_SUMMARY_APP_STATISTICS_NAME, getExpectedActiveTriggerFlows(), server.getMetrics());
+
+          // TODO W-18668900: swap and remove once the pilot is concluded
+          verifyMetricsExists(DECLARED_PRIVATE_FLOWS_APP_NAME + V2_SUFFIX, DECLARED_PRIVATE_FLOWS_APP_DESCRIPTION,
+                              getResourceName(),
+                              FLOWS_SUMMARY_APP_STATISTICS_NAME, getExpectedDeclaredPrivateFlowsV2(),
+                              server.getMetrics());
+          verifyMetricsExists(ACTIVE_PRIVATE_FLOWS_APP_NAME + V2_SUFFIX, ACTIVE_PRIVATE_FLOWS_APP_DESCRIPTION,
+                              getResourceName(),
+                              FLOWS_SUMMARY_APP_STATISTICS_NAME, getExpectedActivePrivateFlowsV2(),
+                              server.getMetrics());
+
+          verifyMetricsExists(DECLARED_APIKIT_FLOWS_APP_NAME + V2_SUFFIX, DECLARED_APIKIT_FLOWS_APP_DESCRIPTION,
+                              getResourceName(),
+                              FLOWS_SUMMARY_APP_STATISTICS_NAME, getExpectedDeclaredApikitFlowsV2(),
+                              server.getMetrics());
+          verifyMetricsExists(ACTIVE_APIKIT_FLOWS_APP_NAME + V2_SUFFIX, ACTIVE_APIKIT_FLOWS_APP_DESCRIPTION, getResourceName(),
+                              FLOWS_SUMMARY_APP_STATISTICS_NAME, getExpectedActiveApikitFlowsV2(),
+                              server.getMetrics());
+
+          verifyMetricsExists(DECLARED_TRIGGER_FLOWS_APP_NAME + V2_SUFFIX, DECLARED_TRIGGER_FLOWS_APP_DESCRIPTION,
+                              getResourceName(),
+                              FLOWS_SUMMARY_APP_STATISTICS_NAME, getExpectedDeclaredTriggerFlowsV2(),
+                              server.getMetrics());
+          verifyMetricsExists(ACTIVE_TRIGGER_FLOWS_NAME + V2_SUFFIX, ACTIVE_TRIGGER_FLOWS_DESCRIPTION, getResourceName(),
+                              FLOWS_SUMMARY_APP_STATISTICS_NAME, getExpectedActiveTriggerFlowsV2(),
+                              server.getMetrics());
         } catch (Throwable e) {
           return false;
         }
@@ -67,8 +96,10 @@ public abstract class AbstractOpenTelemetryFlowStatisticsSummaryTestCase extends
 
       private String getShowStatsInfo() {
         StringBuffer statsInfo = new StringBuffer();
-        server.getMetrics().forEach(metric -> statsInfo.append(metric.getName()).append(": ").append(metric.getValue())
-            .append(System.lineSeparator()));
+        server.getMetrics()
+            .forEach(metric -> statsInfo.append(metric.getInstrumentName()).append(" - ").append(metric.getName()).append(": ")
+                .append(metric.getValue())
+                .append(System.lineSeparator()));
         return statsInfo.toString();
       }
     });
@@ -87,4 +118,28 @@ public abstract class AbstractOpenTelemetryFlowStatisticsSummaryTestCase extends
   abstract long getExpectedActiveApikitFlows();
 
   abstract long getExpectedActiveTriggerFlows();
+
+  protected long getExpectedDeclaredPrivateFlowsV2() {
+    return getExpectedDeclaredPrivateFlows();
+  }
+
+  protected long getExpectedDeclaredApikitFlowsV2() {
+    return getExpectedDeclaredApikitFlows();
+  }
+
+  protected long getExpectedDeclaredTriggerFlowsV2() {
+    return getExpectedDeclaredTriggerFlows();
+  }
+
+  protected long getExpectedActivePrivateFlowsV2() {
+    return getExpectedActivePrivateFlows();
+  }
+
+  protected long getExpectedActiveApikitFlowsV2() {
+    return getExpectedActiveApikitFlows();
+  }
+
+  protected long getExpectedActiveTriggerFlowsV2() {
+    return getExpectedActiveTriggerFlows();
+  }
 }
