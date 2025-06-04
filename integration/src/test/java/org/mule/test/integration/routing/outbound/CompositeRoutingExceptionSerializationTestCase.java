@@ -20,9 +20,11 @@ import org.mule.tests.api.TestQueueManager;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 
 import io.qameta.allure.Issue;
 import jakarta.inject.Inject;
@@ -72,19 +74,8 @@ public class CompositeRoutingExceptionSerializationTestCase extends AbstractInte
     Error error = (Error) queueManager.read("dlq", RECEIVE_TIMEOUT, MILLISECONDS).getMessage().getPayload().getValue();
 
     // Serialize and deserialize the error
-    byte[] javaSerializedBytes;
-    try (ByteArrayOutputStream baos = new ByteArrayOutputStream(); ObjectOutputStream oos = new ObjectOutputStream(baos)) {
-      oos.writeObject(error);
-      oos.flush();
-      javaSerializedBytes = baos.toByteArray();
-    }
-
-    Error deserializedError;
-    try (ByteArrayInputStream bais = new ByteArrayInputStream(javaSerializedBytes);
-        ObjectInputStream ois = new ObjectInputStream(bais)) {
-      Object obj = ois.readObject();
-      deserializedError = (Error) obj;
-    }
+    byte[] errorSerialization = defaultSerializer.getInternalProtocol().serialize(error);
+    Error deserializedError = defaultSerializer.getInternalProtocol().deserialize(errorSerialization);
 
     // Verify the deserialized error content
     verifyDeserializedError(deserializedError);
@@ -95,10 +86,8 @@ public class CompositeRoutingExceptionSerializationTestCase extends AbstractInte
   public void testJavaCanDeserializeCompositeRouterExceptionFromLegacyVersion() throws Exception {
     // Deserialize the legacy error
     Error deserializedError;
-    try (InputStream errorSerializationInputStream = getClass().getResourceAsStream(JAVA_FILENAME);
-        ObjectInputStream ois = new ObjectInputStream(errorSerializationInputStream)) {
-      Object obj = ois.readObject();
-      deserializedError = (Error) obj;
+    try (InputStream errorSerializationInputStream = getClass().getResourceAsStream(JAVA_FILENAME)) {
+      deserializedError = defaultSerializer.getInternalProtocol().deserialize(errorSerializationInputStream);
     }
 
     // Verify the deserialized error content
