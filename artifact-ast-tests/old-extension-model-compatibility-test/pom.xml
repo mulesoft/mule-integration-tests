@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.mule.tests</groupId>
         <artifactId>mule-artifact-ast-integration-tests</artifactId>
-        <version>4.6.19-SNAPSHOT</version>
+        <version>4.6.20-SNAPSHOT</version>
     </parent>
 
     <artifactId>mule-artifact-ast-old-extension-model-compatibility-tests</artifactId>
