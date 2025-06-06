@@ -117,7 +117,7 @@ public class ParallelForEachTestCase extends AbstractIntegrationTestCase {
   public void timeout() throws Exception {
     var runner = flowRunner("timeout").withPayload(fruitList);
     var thrown = assertThrows(Exception.class, () -> runner.run());
-    assertThat(thrown.getCause(), withClassName("org.mule.runtime.core.internal.routing.result.CompositeRoutingException"));
+    assertThat(thrown.getCause(), withClassName("org.mule.runtime.core.privileged.routing.CompositeRoutingException"));
   }
 
   @Test
@@ -179,7 +179,7 @@ public class ParallelForEachTestCase extends AbstractIntegrationTestCase {
       flowRunner(flow).withPayload(fruitList).run();
       fail("Was expecting a failure");
     } catch (Exception e) {
-      assertThat(e.getCause(), withClassName("org.mule.runtime.core.internal.routing.result.CompositeRoutingException"));
+      assertThat(e.getCause(), withClassName("org.mule.runtime.core.privileged.routing.CompositeRoutingException"));
 
       Throwable compositeRoutingException = e.getCause();
       exceptionMessageMatcher.accept(compositeRoutingException.getMessage());

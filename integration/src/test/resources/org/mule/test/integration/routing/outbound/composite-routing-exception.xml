@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:test-components="http://www.mulesoft.org/schema/mule/test-components"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+        http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
+
+    <!-- This configuration sets up a dead-letter queue (DLQ) for handling errors in the composite routing flow. -->
+    <test-components:queue-config name="dlq">
+        <test-components:connection/>
+    </test-components:queue-config>
+
+    <!-- This flow generates a composite routing exception scenario where multiple routes are executed in parallel and each route raises an error. -->
+    <flow name="compositeRoutingErrorFlow">
+        <!-- Scatter Gather with two routes that raise errors -->
+        <scatter-gather>
+            <route>
+                <raise-error type="CUSTOM:ROUTE0" description="Route 0 failed - 474bab53-1135-4038-a894-b6ba646b3f00"/>
+            </route>
+            <route>
+                <raise-error type="CUSTOM:ROUTE1" description="Route 1 failed - 541ad1d6-0fc2-44d2-8b98-b8d71b9a5f66"/>
+            </route>
+        </scatter-gather>
+
+        <!-- Error handler that captures the composite routing exception and pushes it to a dead-letter queue. -->
+        <error-handler>
+            <on-error-continue enableNotifications="true" logException="true">
+                <test-components:queue-push config-ref="dlq">
+                    <test-components:content>#[error]</test-components:content>
+                </test-components:queue-push>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+</mule>
