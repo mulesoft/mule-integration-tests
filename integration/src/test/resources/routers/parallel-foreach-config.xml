@@ -169,7 +169,7 @@
         <error-handler>
             <on-error-continue type="COMPOSITE_ROUTING">
                 <test:assert
-                        expression="#[error.cause.^class == 'org.mule.runtime.core.internal.routing.result.CompositeRoutingException']"/>
+                        expression="#[error.cause.^class == 'org.mule.runtime.core.privileged.routing.CompositeRoutingException']"/>
                 <test:assert expression="#[sizeOf(error.childErrors) == 2]"/>
                 <test:assert expression="#[error.errorMessage.payload.results['0'] != null]"/>
                 <test:assert expression="#[error.errorMessage.payload.results['1'] == null]"/>
