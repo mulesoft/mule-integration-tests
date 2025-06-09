@@ -21,8 +21,9 @@ import org.mule.tests.api.TestQueueManager;
 
 import java.io.InputStream;
 
+import javax.inject.Inject;
+
 import io.qameta.allure.Issue;
-import jakarta.inject.Inject;
 import org.junit.Test;
 
 /**
