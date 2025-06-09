@@ -19,6 +19,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
+
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -93,7 +94,7 @@ public class ApplicationWithDomainRegistryTestCase extends AbstractMuleTestCase 
     registerObject(domainContext, BEAN_KEY, BEAN_KEY);
     registerObject(applicationContext, ANOTHER_BEAN_KEY, ANOTHER_BEAN_KEY);
     Collection<String> values = lookupObjects(applicationContext, String.class);
-    assertThat(values, hasSize(2));
+    assertThat(values.toString(), values, hasSize(2));
   }
 
   @Story(OBJECT_REGISTRATION)
@@ -109,7 +110,8 @@ public class ApplicationWithDomainRegistryTestCase extends AbstractMuleTestCase 
   public void lookupByLifecycleReturnsApplicationContextBeanOnly() throws Exception {
     registerObject(domainContext, BEAN_KEY, BEAN_KEY);
     registerObject(applicationContext, ANOTHER_BEAN_KEY, ANOTHER_BEAN_KEY);
-    assertThat(lookupObjectsForLifecycle(applicationContext, String.class).size(), is(1));
+    Collection<String> values = lookupObjectsForLifecycle(applicationContext, String.class);
+    assertThat(values.toString(), values, hasSize(1));
   }
 
   @Story(AllureConstants.RegistryFeature.ObjectRegistrationStory.OBJECT_REGISTRATION)
