@@ -28,7 +28,7 @@
         </surefire.args>
         
         <settingsFile>${java.io.tmpdir}/settings.xml</settingsFile>
-        <testExtensionVersion>4.10.0-SNAPSHOT</testExtensionVersion>
+        <testExtensionVersion>4.10.0-20250610</testExtensionVersion>
         <weave.service.location>services/weave</weave.service.location>
     </properties>
 
