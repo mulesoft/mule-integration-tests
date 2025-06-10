@@ -13,7 +13,7 @@
 
     <properties>
         <!-- Test Extensions -->
-        <muleTestingProcessingStrategiesExtensionVersion>4.10.0-SNAPSHOT</muleTestingProcessingStrategiesExtensionVersion>
+        <muleTestingProcessingStrategiesExtensionVersion>4.10.0-20250610</muleTestingProcessingStrategiesExtensionVersion>
 
         <surefire.module.path>
             ${org.slf4j:slf4j-api:jar}${path.separator}${org.mule.runtime.boot:mule-module-jpms-utils:jar}
