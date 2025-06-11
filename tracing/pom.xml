@@ -307,9 +307,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>io.opentelemetry</groupId>
+            <groupId>io.opentelemetry.proto</groupId>
             <artifactId>opentelemetry-proto</artifactId>
-            <version>0.17.1</version>
+            <version>1.5.0-alpha</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -319,7 +319,7 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>io.opentelemetry</groupId>
+            <groupId>io.opentelemetry.proto</groupId>
             <artifactId>opentelemetry-proto</artifactId>
             <version>${openTelemetryProtoVersion}</version>
             <scope>test</scope>
