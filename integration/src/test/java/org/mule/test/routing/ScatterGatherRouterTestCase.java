@@ -112,7 +112,7 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
   @Test
   @Description("Router times out if routes take longer than the timeout configured to complete.")
   public void timeout() throws Exception {
-    expectedException.expectCause(withClassName("org.mule.runtime.core.internal.routing.result.CompositeRoutingException"));
+    expectedException.expectCause(withClassName("org.mule.runtime.core.privileged.routing.CompositeRoutingException"));
     flowRunner("timeout").run();
   }
 
@@ -168,7 +168,7 @@ public class ScatterGatherRouterTestCase extends AbstractIntegrationTestCase {
       flowRunner(flow).run();
       fail("Was expecting a failure");
     } catch (Exception e) {
-      assertThat(e.getCause(), withClassName("org.mule.runtime.core.internal.routing.result.CompositeRoutingException"));
+      assertThat(e.getCause(), withClassName("org.mule.runtime.core.privileged.routing.CompositeRoutingException"));
 
       Throwable compositeRoutingException = e.getCause();
       exceptionMessageMatcher.accept(compositeRoutingException.getMessage());
