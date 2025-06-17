@@ -79,6 +79,13 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.mule.runtime</groupId>
+            <artifactId>mule-module-extensions-mule-support</artifactId>
+            <version>${project.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.mule.services</groupId>
             <artifactId>mule-service-scheduler</artifactId>
             <classifier>mule-service</classifier>
@@ -111,10 +118,29 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.mule.tests</groupId>
+            <artifactId>mule-tx-extension</artifactId>
+            <version>${project.version}</version>
+            <classifier>mule-plugin</classifier>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.tests</groupId>
+            <artifactId>mule-marvel-extension</artifactId>
+            <version>${project.version}</version>
+            <classifier>mule-plugin</classifier>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.mule.runtime</groupId>
             <artifactId>mule-service-http-api</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.skyscreamer</groupId>
+            <artifactId>jsonassert</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
     <build>
@@ -125,6 +151,7 @@
                 <configuration>
                     <systemPropertyVariables>
                         <mule.experimental.enableMuleSdk>true</mule.experimental.enableMuleSdk>
+                        <mule.experimental.enableDynamicConfigRef>true</mule.experimental.enableDynamicConfigRef>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
