@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:test="http://www.mulesoft.org/schema/mule/test"
+      xmlns:test-components="http://www.mulesoft.org/schema/mule/test-components"
+      xsi:schemaLocation="
+        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+        http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+        http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
+        http://www.mulesoft.org/schema/mule/test-components http://www.mulesoft.org/schema/mule/test-components/current/mule-test-components.xsd">
+
+    <http:listener-config name="listenerConfig">
+        <http:listener-connection host="localhost" port="${portListener}"/>
+    </http:listener-config>
+
+    <http:request-config name="requestConfig">
+        <http:request-connection host="localhost" port="${portRequester}" streamResponse="true"/>
+    </http:request-config>
+
+<!--    <http:request-config name="sseRequestConfig">-->
+<!--        <http:request-connection host="sse.dev" port="80" streamResponse="true"/>-->
+<!--    </http:request-config>-->
+
+    <flow name="slowRequesterBody">
+        <async>
+            <test-components:slow-infinite-input-stream-non-blocking delayBetweenReads="500">
+                <non-repeatable-stream/>
+            </test-components:slow-infinite-input-stream-non-blocking>
+<!--	        <http:request config-ref="sseRequestConfig" method="GET" path="/test">-->
+<!--	            <non-repeatable-stream/>-->
+<!--	        </http:request>-->
+	        <http:request config-ref="requestConfig" method="POST" path="/path1"/>
+        </async>
+    </flow>
+
+    <flow name="slowListenerResponseBody">
+        <http:listener path="/test" config-ref="listenerConfig" />
+        <test-components:slow-infinite-input-stream-non-blocking delayBetweenReads="500">
+            <non-repeatable-stream/>
+        </test-components:slow-infinite-input-stream-non-blocking>
+        <logger level="ERROR" message="slowwwly"/>
+<!--        <http:request config-ref="sseRequestConfig" method="GET" path="/test">-->
+<!--            <non-repeatable-stream/>-->
+<!--        </http:request>-->
+    </flow>
+
+</mule>
+
