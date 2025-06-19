@@ -78,13 +78,13 @@ import com.google.common.collect.ImmutableList;
 
 import org.junit.After;
 import org.junit.Test;
+import org.junit.jupiter.api.DisplayName;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Features;
 import io.qameta.allure.Issue;
 import io.qameta.allure.Story;
-import io.qameta.allure.junit4.DisplayName;
 
 @DisplayName("XML Connectors Path generation")
 @Features({@Feature(XML_SDK), @Feature(CONFIGURATION_COMPONENT_LOCATOR)})
