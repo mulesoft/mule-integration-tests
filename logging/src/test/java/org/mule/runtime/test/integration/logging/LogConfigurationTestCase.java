@@ -20,22 +20,16 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import org.mule.runtime.deployment.model.api.application.Application;
 import org.mule.runtime.module.deployment.impl.internal.builder.ApplicationFileBuilder;
 import org.mule.runtime.module.deployment.impl.internal.builder.DomainFileBuilder;
+import org.mule.runtime.test.integration.logging.util.UseMuleLog4jContextFactory;
 import org.mule.tck.junit4.rule.SystemProperty;
-import org.mule.test.infrastructure.deployment.AbstractFakeMuleServerTestCase;
 
 import java.io.File;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.Callable;
 
 import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.Appender;
-import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.appender.ConsoleAppender;
 import org.apache.logging.log4j.core.appender.RollingFileAppender;
 import org.junit.ClassRule;
@@ -53,7 +47,7 @@ import io.qameta.allure.Story;
  */
 @Features({@Feature(INTEGRATIONS_TESTS), @Feature(LOGGING)})
 @Stories({@Story(LOGGING_LIBS_SUPPORT), @Story(CONTEXT_FACTORY)})
-public class LogConfigurationTestCase extends AbstractFakeMuleServerTestCase {
+public class LogConfigurationTestCase extends AbstractLogConfigurationTestCase {
 
   public static final String APP_NAME = "app1";
   public static final String DOMAIN_NAME = "domain";
@@ -189,47 +183,7 @@ public class LogConfigurationTestCase extends AbstractFakeMuleServerTestCase {
     });
   }
 
-  private boolean loggerHasAppender(String appName, Logger logger, String appenderName) throws Exception {
-    return getContext(appName).getConfiguration().getLoggerConfig(logger.getName()).getAppenders().containsKey(appenderName);
-  }
-
-  private Logger getRootLoggerForApp(String appName) throws Exception {
-    return getContext(appName).getLogger("");
-  }
-
-  private LoggerContext getContext(final String appName) throws Exception {
-    return withAppClassLoader(appName, () -> {
-      Application app = muleServer.findApplication(appName);
-      ClassLoader classLoader = app.getArtifactClassLoader().getClassLoader();
-      return (LoggerContext) LogManager.getContext(classLoader, false);
-    });
-  }
-
-  private <T> T withAppClassLoader(String appName, Callable<T> closure) throws Exception {
-    Application app = muleServer.findApplication(appName);
-    ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
-    ClassLoader classLoader = app.getArtifactClassLoader().getClassLoader();
-    Thread.currentThread().setContextClassLoader(classLoader);
-    try {
-      return closure.call();
-    } finally {
-      Thread.currentThread().setContextClassLoader(currentClassLoader);
-    }
-  }
-
-  private List<Appender> selectByClass(String appName, Class<?> appenderClass) throws Exception {
-    LoggerContext context = getContext(appName);
-    List<Appender> filteredAppenders = new LinkedList<>();
-    for (Appender appender : context.getConfiguration().getAppenders().values()) {
-      if (appenderClass.isAssignableFrom(appender.getClass())) {
-        filteredAppenders.add(appender);
-      }
-    }
-
-    return filteredAppenders;
-  }
-
-  private int appendersCount(String appName) throws Exception {
+  protected int appendersCount(String appName) throws Exception {
     return selectByClass(appName, Appender.class).size();
   }
 }

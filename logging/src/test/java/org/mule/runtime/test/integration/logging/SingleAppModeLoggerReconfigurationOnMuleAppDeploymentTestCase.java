@@ -24,6 +24,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.module.deployment.impl.internal.builder.ApplicationFileBuilder;
 import org.mule.runtime.module.deployment.impl.internal.builder.JarFileBuilder;
+import org.mule.runtime.test.integration.logging.util.UseMuleLog4jContextFactory;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.tck.util.CompilerUtils;
 import org.mule.test.infrastructure.FileNotContainInLine;
@@ -73,7 +74,6 @@ public class SingleAppModeLoggerReconfigurationOnMuleAppDeploymentTestCase exten
     assertAppLogsAreSentToFileAccordingToAppLogConfig();
     assertRootLogsAreSentToFileAccordingToAppLogConfig();
     assertRootLogsBeforeAppDeploymentAreNotSentToFileAccordingToAppLogConfig();
-
   }
 
   private void assertRootLogsAreSentToFileAccordingToAppLogConfig() {

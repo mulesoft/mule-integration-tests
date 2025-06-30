@@ -24,6 +24,7 @@ import org.mule.runtime.api.lifecycle.Startable;
 import org.mule.runtime.core.api.alert.MuleAlertingSupport;
 import org.mule.runtime.module.deployment.impl.internal.builder.ApplicationFileBuilder;
 import org.mule.runtime.module.log4j.api.MuleAlertingAsyncQueueFullPolicy;
+import org.mule.runtime.test.integration.logging.util.UseMuleLog4jContextFactory;
 import org.mule.tck.junit4.rule.SystemProperty;
 import org.mule.tck.util.CompilerUtils;
 import org.mule.test.infrastructure.deployment.AbstractFakeMuleServerTestCase;

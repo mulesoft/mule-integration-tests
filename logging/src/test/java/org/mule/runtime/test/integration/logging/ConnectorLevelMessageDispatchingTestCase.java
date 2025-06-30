@@ -18,6 +18,7 @@ import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.privileged.registry.RegistrationException;
 import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;
 import org.mule.runtime.http.api.domain.message.request.HttpRequest;
+import org.mule.runtime.test.integration.logging.util.UseMuleLog4jContextFactory;
 import org.mule.service.http.TestHttpClient;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;

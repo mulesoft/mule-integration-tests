@@ -18,6 +18,7 @@ import static java.util.Objects.requireNonNull;
 import static org.hamcrest.CoreMatchers.containsString;
 
 import org.mule.runtime.module.deployment.impl.internal.builder.ApplicationFileBuilder;
+import org.mule.runtime.test.integration.logging.util.UseMuleLog4jContextFactory;
 import org.mule.tck.util.CompilerUtils;
 import org.mule.test.infrastructure.deployment.AbstractFakeMuleServerTestCase;
 

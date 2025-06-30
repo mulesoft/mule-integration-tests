@@ -35,6 +35,7 @@
         <module>spring</module>
         <module>tooling-support-tests</module>
         <module>tracing</module>
+        <module>mule-tests-logging-otel</module>
     </modules>
 
     <properties>

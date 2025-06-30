@@ -4,7 +4,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.runtime.test.integration.logging;
+package org.mule.runtime.test.integration.logging.util;
 
 import static org.mule.runtime.module.log4j.internal.MuleLog4jConfiguratorUtils.configureSelector;
 

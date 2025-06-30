@@ -4,7 +4,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.runtime.test.integration.logging;
+package org.mule.runtime.test.integration.logging.otel;
 
 
 import static org.mule.runtime.api.util.MuleSystemProperties.ENABLE_PROFILING_SERVICE_PROPERTY;
@@ -36,6 +36,7 @@ import static org.junit.Assert.fail;
 
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.module.deployment.impl.internal.builder.ApplicationFileBuilder;
+import org.mule.runtime.test.integration.logging.util.UseMuleLog4jContextFactory;
 import org.mule.runtime.tracer.api.sniffer.CapturedExportedSpan;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.tck.junit4.rule.SystemProperty;
